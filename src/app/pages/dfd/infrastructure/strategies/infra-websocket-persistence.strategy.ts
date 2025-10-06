@@ -49,12 +49,10 @@ export class WebSocketPersistenceStrategy implements PersistenceStrategy {
 
     // For undo/redo in collaboration mode, send history operation message
     if (isUndo || isRedo) {
-      const message = {
-        type: 'history-operation',
+      const message: any = {
+        message_type: 'history_operation',
         operation_type: isUndo ? 'undo' : 'redo',
-        diagram_id: operation.diagramId,
-        user_id: operation.metadata?.['userId'],
-        timestamp: Date.now(),
+        message: 'resync_required', // Default message value
       };
 
       this.logger.info('Sending WebSocket history operation', {
@@ -63,7 +61,7 @@ export class WebSocketPersistenceStrategy implements PersistenceStrategy {
       });
 
       // Send via WebSocket
-      this.webSocketAdapter.send(message);
+      this.webSocketAdapter.sendTMIMessage(message).subscribe();
 
       return of({
         success: true,

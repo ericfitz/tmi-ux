@@ -45,7 +45,7 @@ export interface DfdInitializationParams {
   readonly containerElement: HTMLElement;
   readonly collaborationEnabled: boolean;
   readonly readOnly: boolean;
-  readonly autoSaveMode: 'aggressive' | 'normal' | 'conservative' | 'manual';
+  readonly autoSaveMode: 'auto' | 'manual';
   readonly joinCollaboration?: boolean;
 }
 
@@ -195,7 +195,6 @@ export class AppDfdOrchestrator {
       tap(result => {
         if (result.success) {
           this._markUnsavedChanges();
-          this._triggerAutoSave(operation, result);
         } else {
           this._totalErrors++;
           this._updateStats();
@@ -238,8 +237,6 @@ export class AppDfdOrchestrator {
         const successfulResults = results.filter(r => r.success);
         if (successfulResults.length > 0) {
           this._markUnsavedChanges();
-          // Trigger auto-save for batch operations
-          this._triggerAutoSaveForBatch(operations, results);
         }
 
         const errorCount = results.filter(r => !r.success).length;
@@ -1171,16 +1168,10 @@ export class AppDfdOrchestrator {
   }
 
   private _setupEventIntegration(): void {
-    // Listen to operation completed events and trigger auto-save
-    this.appGraphOperationManager.operationCompleted$.subscribe(event => {
+    // ONLY history-based auto-save trigger (operations no longer trigger saves)
+    this.dfdInfrastructure.historyModified$.subscribe(({ historyIndex, isUndo, isRedo }) => {
       this._markUnsavedChanges();
-      this._triggerAutoSave(event.operation, event.result);
-    });
-
-    // Listen to history modifications and trigger auto-save
-    this.dfdInfrastructure.historyModified$.subscribe(() => {
-      this._markUnsavedChanges();
-      this._triggerAutoSaveFromHistory();
+      this._triggerAutoSave(historyIndex, isUndo, isRedo);
     });
 
     // Listen to auto-save completed events
@@ -1211,17 +1202,10 @@ export class AppDfdOrchestrator {
     });
   }
 
-  private _triggerAutoSave(operation: GraphOperation, result: OperationResult): void {
+  private _triggerAutoSave(historyIndex: number, isUndo: boolean, isRedo: boolean): void {
     if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
       return;
     }
-
-    const triggerEvent = {
-      type: 'operation-completed' as const,
-      operationType: operation.type,
-      affectedCellIds: result.affectedCellIds,
-      timestamp: Date.now(),
-    };
 
     const autoSaveContext = {
       diagramId: this._initParams.diagramId,
@@ -1229,69 +1213,11 @@ export class AppDfdOrchestrator {
       userId: this.authService.userId,
       userEmail: this.authService.userEmail,
       userName: this.authService.username,
-      getDiagramData: () => this._getGraphData(), // Use callback to get fresh data
-      preferredStrategy: 'websocket',
+      getDiagramData: () => this._getGraphData(),
+      preferredStrategy: this._state$.value.collaborating ? 'websocket' : 'rest',
     };
 
-    if (this.appAutoSaveManager.trigger) {
-      this.appAutoSaveManager.trigger(triggerEvent, autoSaveContext)?.subscribe?.();
-    }
-  }
-
-  private _triggerAutoSaveFromHistory(): void {
-    if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
-      return;
-    }
-
-    const triggerEvent = {
-      type: 'operation-completed' as const,
-      operationType: 'history-change',
-      timestamp: Date.now(),
-    };
-
-    const autoSaveContext = {
-      diagramId: this._initParams.diagramId,
-      threatModelId: this._initParams.threatModelId,
-      userId: this.authService.userId,
-      userEmail: this.authService.userEmail,
-      userName: this.authService.username,
-      getDiagramData: () => this._getGraphData(), // Use callback to get fresh data
-      preferredStrategy: 'websocket',
-    };
-
-    if (this.appAutoSaveManager.trigger) {
-      this.appAutoSaveManager.trigger(triggerEvent, autoSaveContext)?.subscribe?.();
-    }
-  }
-
-  private _triggerAutoSaveForBatch(
-    _operations: GraphOperation[],
-    results: OperationResult[],
-  ): void {
-    if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
-      return;
-    }
-
-    const triggerEvent = {
-      type: 'operation-completed' as const,
-      operationType: 'batch',
-      affectedCellIds: results.flatMap(r => r.affectedCellIds),
-      timestamp: Date.now(),
-    };
-
-    const autoSaveContext = {
-      diagramId: this._initParams.diagramId,
-      threatModelId: this._initParams.threatModelId,
-      userId: this.authService.userId,
-      userEmail: this.authService.userEmail,
-      userName: this.authService.username,
-      getDiagramData: () => this._getGraphData(), // Use callback to get fresh data
-      preferredStrategy: 'websocket',
-    };
-
-    if (this.appAutoSaveManager.trigger) {
-      this.appAutoSaveManager.trigger(triggerEvent, autoSaveContext)?.subscribe?.();
-    }
+    this.appAutoSaveManager.trigger(historyIndex, autoSaveContext, isUndo, isRedo)?.subscribe?.();
   }
 
   private _getGraphData(): any {
@@ -1300,27 +1226,9 @@ export class AppDfdOrchestrator {
       return { nodes: [], edges: [] };
     }
 
-    // Use X6's native toJSON() for proper serialization in X6 format
     const graphJson = graph.toJSON();
     const cells = graphJson.cells || [];
 
-    // Also get cells directly from the graph to compare
-    const directCells = graph.getCells();
-    const directEdges = graph.getEdges();
-    const directNodes = graph.getNodes();
-
-    this.logger.debug('[ORCHESTRATOR-DEBUG] _getGraphData called', {
-      totalCells: cells.length,
-      nodes: cells.filter((c: any) => c.shape !== 'edge').length,
-      edges: cells.filter((c: any) => c.shape === 'edge').length,
-      directCellsCount: directCells.length,
-      directNodesCount: directNodes.length,
-      directEdgesCount: directEdges.length,
-      directEdgeIds: directEdges.map((e: any) => e.id),
-      toJSONEdgeIds: cells.filter((c: any) => c.shape === 'edge').map((c: any) => c.id),
-    });
-
-    // Separate into nodes and edges with type field for backend
     const nodes = cells
       .filter((cell: any) => cell.shape !== 'edge')
       .map((cell: any) => ({

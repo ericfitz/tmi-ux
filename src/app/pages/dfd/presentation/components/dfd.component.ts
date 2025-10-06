@@ -369,7 +369,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       containerElement: this.graphContainer.nativeElement,
       collaborationEnabled: true,
       readOnly: this.isReadOnlyMode,
-      autoSaveMode: this.isReadOnlyMode ? ('manual' as const) : ('normal' as const),
+      autoSaveMode: this.isReadOnlyMode ? ('manual' as const) : ('auto' as const),
       joinCollaboration: this.joinCollaboration,
     };
 
@@ -416,17 +416,19 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private configureAutoSave(): void {
     // Configure auto-save based on user permission
-    const autoSavePolicy = this.isReadOnlyMode ? 'manual' : 'normal';
+    const autoSaveMode = this.isReadOnlyMode ? 'manual' : 'auto';
 
-    this.appAutoSaveManager.configure({
-      enabled: !this.isReadOnlyMode,
-      policy: autoSavePolicy,
-      debounceMs: autoSavePolicy === 'normal' ? 5000 : 30000,
-    });
+    if (this.isReadOnlyMode) {
+      this.appAutoSaveManager.disable();
+      this.appAutoSaveManager.setPolicyMode('manual');
+    } else {
+      this.appAutoSaveManager.enable();
+      this.appAutoSaveManager.setPolicyMode('auto');
+    }
 
     this.logger.info('Auto-save configured', {
       enabled: !this.isReadOnlyMode,
-      policy: autoSavePolicy,
+      mode: autoSaveMode,
       isReadOnlyMode: this.isReadOnlyMode,
       threatModelPermission: this.threatModelPermission,
     });
