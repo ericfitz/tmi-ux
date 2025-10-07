@@ -727,35 +727,34 @@ export class AppDfdOrchestrator {
             nodeType,
           });
 
-          return this.dfdInfrastructure.createNodeWithIntelligentPositioning(nodeType, true)
-            .pipe(
-              map(() => ({
-                success: true,
+          return this.dfdInfrastructure.createNodeWithIntelligentPositioning(nodeType, true).pipe(
+            map(() => ({
+              success: true,
+              operationId: `create-node-${Date.now()}`,
+              operationType: 'create-node' as const,
+              affectedCellIds: [], // Facade doesn't return the node ID, but creation will succeed
+              timestamp: Date.now(),
+              metadata: {
+                nodeType,
+                usedIntelligentPositioning: true,
+                method: 'AppDfdFacade.createNodeWithIntelligentPositioning',
+              },
+            })),
+            catchError(error => {
+              this.logger.error('AppDfdFacade node creation failed', {
+                error,
+                nodeType,
+              });
+              return of({
+                success: false,
                 operationId: `create-node-${Date.now()}`,
                 operationType: 'create-node' as const,
-                affectedCellIds: [], // Facade doesn't return the node ID, but creation will succeed
+                affectedCellIds: [],
                 timestamp: Date.now(),
-                metadata: {
-                  nodeType,
-                  usedIntelligentPositioning: true,
-                  method: 'AppDfdFacade.createNodeWithIntelligentPositioning',
-                },
-              })),
-              catchError(error => {
-                this.logger.error('AppDfdFacade node creation failed', {
-                  error,
-                  nodeType,
-                });
-                return of({
-                  success: false,
-                  operationId: `create-node-${Date.now()}`,
-                  operationType: 'create-node' as const,
-                  affectedCellIds: [],
-                  timestamp: Date.now(),
-                  error: `AppDfdFacade creation failed: ${error.message}`,
-                });
-              }),
-            );
+                error: `AppDfdFacade creation failed: ${error.message}`,
+              });
+            }),
+          );
         } else {
           // Position provided - fall back to operation manager for explicit positioning
           const nodeData: NodeData = {

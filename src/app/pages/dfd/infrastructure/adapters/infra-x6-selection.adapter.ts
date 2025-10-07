@@ -213,7 +213,9 @@ export class InfraX6SelectionAdapter {
    */
   selectCells(graph: Graph, cells: Cell[]): void {
     graph.select(cells);
-    this.logger.debugComponent('InfraX6SelectionAdapter', 'Selected cells', { count: cells.length });
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Selected cells', {
+      count: cells.length,
+    });
   }
 
   /**
@@ -222,7 +224,9 @@ export class InfraX6SelectionAdapter {
   selectAll(graph: Graph): void {
     const allCells = graph.getCells();
     this.selectCells(graph, allCells);
-    this.logger.debugComponent('InfraX6SelectionAdapter', 'Selected all cells', { count: allCells.length });
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Selected all cells', {
+      count: allCells.length,
+    });
   }
 
   /**
@@ -269,7 +273,9 @@ export class InfraX6SelectionAdapter {
       HISTORY_OPERATION_TYPES.MULTI_CELL_DELETE,
     );
 
-    this.logger.debugComponent('InfraX6SelectionAdapter', 'Deleted selected cells', { count: selectedCells.length });
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Deleted selected cells', {
+      count: selectedCells.length,
+    });
   }
 
   /**
@@ -312,7 +318,9 @@ export class InfraX6SelectionAdapter {
 
     // Select the pasted cells
     this.selectCells(graph, pastedCells);
-    this.logger.debugComponent('InfraX6SelectionAdapter', 'Pasted cells', { count: pastedCells.length });
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Pasted cells', {
+      count: pastedCells.length,
+    });
   }
 
   /**
@@ -413,7 +421,10 @@ export class InfraX6SelectionAdapter {
       node.setPosition(position.x, position.y);
     });
 
-    this.logger.debugComponent('InfraX6SelectionAdapter', 'Aligned nodes', { alignment, count: selectedNodes.length });
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Aligned nodes', {
+      alignment,
+      count: selectedNodes.length,
+    });
   }
 
   /**
@@ -433,7 +444,10 @@ export class InfraX6SelectionAdapter {
       node.setPosition(position.x, position.y);
     });
 
-    this.logger.debugComponent('InfraX6SelectionAdapter', 'Distributed nodes', { direction, count: selectedNodes.length });
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Distributed nodes', {
+      direction,
+      count: selectedNodes.length,
+    });
   }
 
   /**
