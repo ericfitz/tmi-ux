@@ -3,7 +3,7 @@
   "version": "0.11.2",
   "type": "module",
   "scripts": {
-    "prepare": "git config core.hooksPath .husky",
+    "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
     "ng": "ng",
     "start": "node server.js",
     "start:dev": "ng serve",
