@@ -150,12 +150,34 @@ export class AppDiagramService {
     });
 
     try {
+      // Deduplicate cells by ID before processing
+      const seenIds = new Set<string>();
+      const deduplicatedCells = cells.filter(cell => {
+        if (seenIds.has(cell.id)) {
+          this.logger.warn('Duplicate cell ID detected in server data, skipping duplicate', {
+            cellId: cell.id,
+            shape: cell.shape,
+          });
+          return false;
+        }
+        seenIds.add(cell.id);
+        return true;
+      });
+
+      if (deduplicatedCells.length < cells.length) {
+        this.logger.warn('Removed duplicate cells from server data', {
+          originalCount: cells.length,
+          deduplicatedCount: deduplicatedCells.length,
+          duplicatesRemoved: cells.length - deduplicatedCells.length,
+        });
+      }
+
       // Convert all cells to X6 format
       const convertedCells: any[] = [];
       const nodes: any[] = [];
       const edges: any[] = [];
 
-      cells.forEach(cell => {
+      deduplicatedCells.forEach(cell => {
         try {
           const convertedCell = this.convertMockCellToX6Format(cell, infraNodeConfigurationService);
           convertedCells.push(convertedCell);
