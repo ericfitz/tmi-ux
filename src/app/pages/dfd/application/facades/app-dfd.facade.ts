@@ -91,18 +91,9 @@ export class AppDfdFacade {
    */
   createNodeWithIntelligentPositioning(
     nodeType: NodeType,
-    containerWidth: number,
-    containerHeight: number,
-    diagramId: string,
     isInitialized: boolean,
   ): Observable<void> {
-    return this.infraNodeService.addGraphNode(
-      nodeType,
-      containerWidth,
-      containerHeight,
-      diagramId,
-      isInitialized,
-    );
+    return this.infraNodeService.addGraphNode(nodeType, isInitialized);
   }
 
   /**

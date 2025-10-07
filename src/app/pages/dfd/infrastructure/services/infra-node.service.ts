@@ -68,32 +68,25 @@ export class InfraNodeService {
   /**
    * Add a node at a predictable position
    */
-  addGraphNode(
-    shapeType: NodeType = 'actor',
-    containerWidth: number,
-    containerHeight: number,
-    diagramId: string,
-    isInitialized: boolean,
-  ): Observable<void> {
+  addGraphNode(shapeType: NodeType = 'actor', isInitialized: boolean): Observable<void> {
     if (!isInitialized) {
       this.logger.warn('Cannot add node: Graph is not initialized');
       throw new Error('Graph is not initialized');
     }
 
+    const graph = this.infraX6GraphAdapter.getGraph();
+
     // Calculate a predictable position using a grid-based algorithm
-    const position = this.calculateNextNodePosition(containerWidth, containerHeight);
+    const position = this.calculateNextNodePosition(graph);
 
     return this.createNode(shapeType, position);
   }
 
   /**
    * Calculate the next predictable position for a new node using a grid-based algorithm
-   * that ensures nodes are always placed in the viewable area
+   * that ensures nodes are always placed in the visible viewport area
    */
-  private calculateNextNodePosition(
-    containerWidth: number,
-    containerHeight: number,
-  ): { x: number; y: number } {
+  private calculateNextNodePosition(graph: Graph): { x: number; y: number } {
     // Use actor dimensions as the default for grid calculation (most common node type)
     const defaultDimensions = DFD_STYLING_HELPERS.getDefaultDimensions('actor');
     const nodeWidth = defaultDimensions.width;
@@ -103,11 +96,21 @@ export class InfraNodeService {
     const gridSpacingY = nodeHeight + padding;
     const offsetIncrement = 25; // Offset increment for layered placement
 
-    // Calculate available grid dimensions
-    const availableWidth = containerWidth - 2 * padding;
-    const availableHeight = containerHeight - 2 * padding;
-    const maxColumns = Math.floor(availableWidth / gridSpacingX);
-    const maxRows = Math.floor(availableHeight / gridSpacingY);
+    // Get the container element to determine visible area
+    const container = graph.container;
+    const containerRect = container.getBoundingClientRect();
+    const visibleWidth = containerRect.width;
+    const visibleHeight = containerRect.height;
+
+    // Calculate the visible viewport area in graph coordinates
+    // Start from upper-left of visible area
+    const viewportTopLeft = graph.pageToLocal(0, 0);
+
+    // Calculate available grid dimensions in the visible viewport
+    const availableWidth = visibleWidth - 2 * padding;
+    const availableHeight = visibleHeight - 2 * padding;
+    const maxColumns = Math.max(1, Math.floor(availableWidth / gridSpacingX));
+    const maxRows = Math.max(1, Math.floor(availableHeight / gridSpacingY));
     const totalGridPositions = maxColumns * maxRows;
 
     // Get existing nodes to determine occupied positions
@@ -125,28 +128,25 @@ export class InfraNodeService {
     const row = Math.floor(positionInLayer / maxColumns);
     const col = positionInLayer % maxColumns;
 
-    // Calculate the actual position with layer offset
-    const baseX = padding + col * gridSpacingX;
-    const baseY = padding + row * gridSpacingY;
+    // Calculate the actual position with layer offset, starting from viewport top-left
+    const baseX = viewportTopLeft.x + padding + col * gridSpacingX;
+    const baseY = viewportTopLeft.y + padding + row * gridSpacingY;
     const x = baseX + layerOffsetX;
     const y = baseY + layerOffsetY;
 
-    // Ensure the position stays within the viewable area
-    const clampedX = Math.min(Math.max(x, padding), containerWidth - nodeWidth - padding);
-    const clampedY = Math.min(Math.max(y, padding), containerHeight - nodeHeight - padding);
-
-    this.logger.info('Calculated predictable node position with layering', {
+    this.logger.info('Calculated predictable node position in visible viewport', {
       layer: currentLayer,
       positionInLayer,
       gridPosition: { col, row },
       layerOffset: { x: layerOffsetX, y: layerOffsetY },
-      calculatedPosition: { x, y },
-      finalPosition: { x: clampedX, y: clampedY },
+      viewportTopLeft,
+      visibleDimensions: { width: visibleWidth, height: visibleHeight },
+      finalPosition: { x, y },
       totalGridPositions,
       existingNodeCount: existingNodes.length,
     });
 
-    return { x: clampedX, y: clampedY };
+    return { x, y };
   }
 
   /**

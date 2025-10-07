@@ -725,20 +725,9 @@ export class AppDfdOrchestrator {
         if (!position) {
           this.logger.debug('Using InfraNodeService intelligent positioning for node creation', {
             nodeType,
-            containerSize: {
-              width: this._containerElement.clientWidth,
-              height: this._containerElement.clientHeight,
-            },
           });
 
-          return this.dfdInfrastructure
-            .createNodeWithIntelligentPositioning(
-              nodeType,
-              this._containerElement.clientWidth,
-              this._containerElement.clientHeight,
-              this._initParams?.diagramId || 'unknown',
-              true, // isInitialized
-            )
+          return this.dfdInfrastructure.createNodeWithIntelligentPositioning(nodeType, true)
             .pipe(
               map(() => ({
                 success: true,
