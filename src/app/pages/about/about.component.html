@@ -1,4 +1,8 @@
 <div class="page-container">
+  <div class="logo-row">
+    <img src="/TMI-FullLogo-Transparent.svg" alt="TMI Logo" class="logo" />
+  </div>
+
   <div class="title-row">
     <h1 class="page-title" [transloco]="'about.title'">About TMI</h1>
   </div>
@@ -114,5 +118,11 @@
       >
       {{ 'about.opensource.paragraph2-outro' | transloco }}
     </p>
+  </div>
+
+  <div class="button-row">
+    <button mat-raised-button color="primary" class="done-button" (click)="goBack()">
+      {{ 'common.done' | transloco }}
+    </button>
   </div>
 </div>

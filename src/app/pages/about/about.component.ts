@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
-import { COMMON_IMPORTS } from '@app/shared/imports';
+import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { OperatorService } from '../../core/services/operator.service';
 import { ServerConnectionService } from '../../core/services/server-connection.service';
 import { version } from '../../../../package.json';
@@ -8,7 +9,7 @@ import { version } from '../../../../package.json';
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [...COMMON_IMPORTS, TranslocoModule],
+  imports: [...COMMON_IMPORTS, ...CORE_MATERIAL_IMPORTS, TranslocoModule],
   templateUrl: './about.component.html',
   styleUrl: './about.component.scss',
 })
@@ -33,6 +34,7 @@ export class AboutComponent implements OnInit {
   constructor(
     private operatorService: OperatorService,
     private serverConnectionService: ServerConnectionService,
+    private location: Location,
   ) {}
 
   ngOnInit(): void {
@@ -41,5 +43,9 @@ export class AboutComponent implements OnInit {
     this.operatorJurisdiction = this.operatorService.getOperatorJurisdiction();
     this.webApplicationVersion = version;
     this.serverVersion = this.serverConnectionService.getServerVersion() || '';
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 }

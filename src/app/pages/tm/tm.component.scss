@@ -76,7 +76,7 @@
 mat-card-content {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .threat-model-info,
@@ -157,9 +157,12 @@ mat-card-content {
   }
 }
 
-.delete-button {
+button.delete-button {
   opacity: 0.6;
   transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     opacity: 1;
@@ -215,6 +218,10 @@ mat-card-content {
   color: #00796b; // Teal 700
   opacity: 0.7;
   transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 
   &:hover {
     opacity: 1;

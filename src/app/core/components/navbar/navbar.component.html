@@ -54,7 +54,12 @@
         matTooltipClass="multiline-tooltip"
         style="display: inline-block"
       >
-        <button mat-icon-button [class]="getServerStatusIconClass()" disabled>
+        <button
+          mat-icon-button
+          [class]="getServerStatusIconClass()"
+          [disabled]="serverConnectionStatus !== ServerConnectionStatus.CONNECTED"
+          (click)="openServerUrl()"
+        >
           <mat-icon>{{ getServerStatusIcon() }}</mat-icon>
         </button>
       </span>

@@ -4,6 +4,18 @@
   padding: 24px;
 }
 
+.logo-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+
+  .logo {
+    width: 200px;
+    height: auto;
+    max-width: 100%;
+  }
+}
+
 .title-row,
 .contact-title-row,
 .source-title-row,
@@ -29,5 +41,18 @@
     &:hover {
       text-decoration: underline;
     }
+  }
+}
+
+.button-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+  padding-bottom: 24px;
+
+  .done-button {
+    border-radius: 24px;
+    padding: 0 24px;
+    min-width: 120px;
   }
 }

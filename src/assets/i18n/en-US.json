@@ -84,6 +84,7 @@
     "deleteConfirm": "Delete Threat Model",
     "description": "Description",
     "diagramId": "Diagram ID",
+    "done": "Done",
     "edit": "Edit",
     "editThreat": "Edit Threat",
     "issueUrl": "Issue URL",

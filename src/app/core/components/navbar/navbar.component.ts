@@ -368,4 +368,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     return `${statusText}\n${wsUrl}`;
   }
+
+  /**
+   * Open the server URL in a new browser window
+   */
+  openServerUrl(): void {
+    if (this.serverConnectionStatus === ServerConnectionStatus.CONNECTED) {
+      window.open(environment.apiUrl, '_blank');
+    }
+  }
 }

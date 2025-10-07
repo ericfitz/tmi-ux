@@ -56,8 +56,12 @@
   color: var(--color-server-error);
 }
 
-.server-status-connected .mat-icon {
-  color: var(--color-server-connected);
+.server-status-connected {
+  cursor: pointer;
+
+  .mat-icon {
+    color: var(--color-server-connected);
+  }
 }
 
 // WebSocket connection status indicator styles

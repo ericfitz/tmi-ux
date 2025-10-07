@@ -84,6 +84,7 @@
     "deleteConfirm": "ลบโมเดลภัยคุกคาม",
     "description": "คำอธิบาย",
     "diagramId": "รหัสแผนภาพ",
+    "done": "เสร็จสิ้น",
     "edit": "แก้ไข",
     "editThreat": "แก้ไขภัยคุกคาม",
     "issueUrl": "URL ปัญหา",
