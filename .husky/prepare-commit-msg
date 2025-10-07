@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-. "$(dirname "$0")/_/h"
 
 # Automatic Version Bumping Hook
 # Bumps version based on conventional commit message format
