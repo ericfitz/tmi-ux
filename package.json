@@ -1,8 +1,9 @@
 {
   "name": "tmi-ux",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "type": "module",
   "scripts": {
+    "prepare": "git config core.hooksPath .husky",
     "ng": "ng",
     "start": "node server.js",
     "start:dev": "ng serve",
