@@ -1135,7 +1135,28 @@ export class AppDfdOrchestrator {
     // Configure auto-save manager
     this.appAutoSaveManager.setPolicyMode(params.autoSaveMode);
 
-    // Load existing diagram data if available
+    // Special handling for joinCollaboration flow:
+    // When joining a collaboration session, we need to wait for the WebSocket connection
+    // to be established before loading the diagram, since the persistence coordinator
+    // will only allow WebSocket strategy when collaborationIntent is true.
+    if (params.joinCollaboration) {
+      this.logger.info(
+        'Skipping automatic diagram load - waiting for WebSocket connection (joinCollaboration=true)',
+        {
+          diagramId: params.diagramId,
+          collaborationEnabled: params.collaborationEnabled,
+        },
+      );
+
+      // Initialize with empty diagram - the diagram will be loaded later
+      // once the WebSocket connection is established
+      this.logger.debug(
+        'Diagram initialization complete - waiting for collaboration connection',
+      );
+      return of(true);
+    }
+
+    // Load existing diagram data if available (normal flow without collaboration intent)
     return this.load(params.diagramId).pipe(
       catchError(() => {
         // If load fails, just continue with empty diagram

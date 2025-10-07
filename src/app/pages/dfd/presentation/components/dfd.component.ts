@@ -386,9 +386,43 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.isSystemInitialized = this.appDfdOrchestrator.getState().initialized;
           this.cdr.detectChanges();
 
-          // Load diagram data if we have a dfdId
-          if (this.dfdId) {
-            this.loadDiagramData(this.dfdId);
+          // Special handling for joinCollaboration flow
+          if (this.joinCollaboration) {
+            this.logger.info(
+              'Auto-joining collaboration session (joinCollaboration=true from query param)',
+            );
+            // Automatically start/join collaboration which will establish WebSocket
+            // and then load the diagram
+            this._subscriptions.add(
+              this.collaborationService.startOrJoinCollaboration().subscribe({
+                next: success => {
+                  if (success) {
+                    this.logger.info(
+                      'Successfully joined collaboration session, now loading diagram',
+                    );
+                    // Now that WebSocket is connected, load the diagram
+                    if (this.dfdId) {
+                      this.loadDiagramData(this.dfdId);
+                    }
+                  } else {
+                    this.logger.error('Failed to join collaboration session');
+                  }
+                },
+                error: error => {
+                  this.logger.error('Error joining collaboration session', { error });
+                  // Fall back to loading without collaboration
+                  if (this.dfdId) {
+                    this.logger.info('Falling back to non-collaborative load');
+                    this.loadDiagramData(this.dfdId);
+                  }
+                },
+              }),
+            );
+          } else {
+            // Normal flow: Load diagram data if we have a dfdId
+            if (this.dfdId) {
+              this.loadDiagramData(this.dfdId);
+            }
           }
         } else {
           this.logger.error('Failed to initialize DFD Orchestrator');
