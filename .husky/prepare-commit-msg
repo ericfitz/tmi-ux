@@ -8,8 +8,8 @@
 COMMIT_MSG_FILE=$1
 COMMIT_SOURCE=$2
 
-# Only run for regular commits (not merge, squash, etc.)
-if [ -n "$COMMIT_SOURCE" ]; then
+# Skip for merge and squash commits
+if [ "$COMMIT_SOURCE" = "merge" ] || [ "$COMMIT_SOURCE" = "squash" ]; then
   exit 0
 fi
 
