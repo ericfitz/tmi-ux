@@ -107,7 +107,7 @@ function validateDeployment(): ValidationResult {
   // Generate warnings
   if (result.conventionalCommits === 0) {
     result.warnings.push(
-      'No conventional commits found - version bump will require manual input or VERSION_BUMP env var',
+      'No conventional commits found - version will not be bumped automatically',
     );
   } else if (result.coverage < 100) {
     result.warnings.push(
@@ -123,14 +123,18 @@ function validateDeployment(): ValidationResult {
     result.suggestions.push('Example: "fix: correct login validation bug"');
   }
 
-  if (commitTypes.feat && commitTypes.fix) {
+  const hasMinorTrigger = commitTypes.feat || commitTypes.refactor;
+  const hasPatchTrigger = commitTypes.fix || commitTypes.chore || commitTypes.docs ||
+                          commitTypes.perf || commitTypes.test || commitTypes.ci || commitTypes.build;
+
+  if (hasMinorTrigger && hasPatchTrigger) {
     result.suggestions.push(
-      'Both feat and fix commits found - this will trigger a MINOR version bump',
+      'Both minor (feat/refactor) and patch commits found - will trigger MINOR version bump',
     );
-  } else if (commitTypes.feat) {
-    result.suggestions.push('Feature commits found - this will trigger a MINOR version bump');
-  } else if (commitTypes.fix || Object.keys(commitTypes).length > 0) {
-    result.suggestions.push('Only fix/chore commits found - this will trigger a PATCH version bump');
+  } else if (hasMinorTrigger) {
+    result.suggestions.push('feat/refactor commits found - will trigger MINOR version bump');
+  } else if (hasPatchTrigger) {
+    result.suggestions.push('fix/chore/docs commits found - will trigger PATCH version bump');
   }
 
   return result;
@@ -170,8 +174,9 @@ function displayResults(result: ValidationResult): void {
   if (result.conventionalCommits > 0) {
     console.log('✅ Deployment validation passed - automatic versioning will work');
   } else {
-    console.log('⚠️  Manual intervention may be required for version bump');
-    console.log('   Run: pnpm run version:set-minor or pnpm run version:set-patch');
+    console.log('⚠️  No conventional commits found');
+    console.log('   Version will not be bumped on next commit');
+    console.log('   Use conventional commit format to enable automatic versioning');
   }
   console.log('');
 }

@@ -225,25 +225,20 @@ The application uses WebSockets for real-time collaboration:
 
 ### Automatic Semantic Versioning
 
-The project uses automatic semantic versioning for deployment builds. Version bumps are determined by commit messages following the Conventional Commits specification.
+The project uses automatic semantic versioning via git hooks. Version bumps happen automatically on every commit that follows the Conventional Commits specification.
 
 #### How It Works
 
-1. **Deployment builds** (`build:prod`, `build:staging`, `build:hosted-container`) automatically bump version before building
-2. **Version determination** (hybrid approach):
-   - Primary: Analyzes commits since last `v*` tag using Conventional Commits format
-   - Fallback: Uses explicit version bump setting (via `version:set-minor` or `version:set-patch`)
-   - CI builds: Fails if no conventional commits and no explicit version set
-   - Local builds: Prompts interactively if no conventional commits found
-
-3. **Version bump rules**:
-   - `feat:` commits → minor version bump (0.x.0)
-   - `fix:`, `chore:`, `refactor:`, `docs:`, `perf:`, `test:`, `ci:`, `build:` → patch bump (0.0.x)
+1. **Automatic on commit**: A `prepare-commit-msg` hook analyzes your commit message and automatically bumps the version
+2. **Version bump rules**:
+   - `feat:` or `refactor:` commits → minor version bump (0.x.0)
+   - `fix:`, `chore:`, `docs:`, `perf:`, `test:`, `ci:`, `build:` → patch bump (0.0.x)
+   - Non-conventional commits → no version bump
    - Major version remains at 0 until launch
 
-4. **Git integration**:
+3. **Git integration**:
    - Updates `package.json` version field
-   - Creates commit: `chore: bump version to X.Y.Z`
+   - Stages the updated `package.json` with your commit
    - Creates annotated git tag: `vX.Y.Z`
 
 #### Commit Message Format (Conventional Commits)
@@ -252,60 +247,47 @@ Format: `<type>: <description>`
 
 Valid types:
 - `feat`: New feature (triggers **minor** bump)
+- `refactor`: Code refactoring (triggers **minor** bump)
 - `fix`: Bug fix (triggers **patch** bump)
-- `chore`: Maintenance, dependencies, tooling
-- `docs`: Documentation changes
-- `refactor`: Code refactoring without behavior change
-- `perf`: Performance improvements
-- `test`: Test additions or modifications
-- `ci`: CI/CD configuration changes
-- `build`: Build system changes
+- `chore`: Maintenance, dependencies, tooling (triggers **patch** bump)
+- `docs`: Documentation changes (triggers **patch** bump)
+- `perf`: Performance improvements (triggers **patch** bump)
+- `test`: Test additions or modifications (triggers **patch** bump)
+- `ci`: CI/CD configuration changes (triggers **patch** bump)
+- `build`: Build system changes (triggers **patch** bump)
 
 Examples:
 ```
-feat: add user authentication
-fix: correct login validation bug
-chore: update dependencies
-docs: update API documentation
+feat: add user authentication          # bumps minor version
+refactor: restructure auth module      # bumps minor version
+fix: correct login validation bug      # bumps patch version
+chore: update dependencies             # bumps patch version
+docs: update API documentation         # bumps patch version
 ```
 
-**Note**: The commit message hook is in **warning mode** - it alerts you about non-conventional commits but doesn't block them. This allows gradual adoption while maintaining automatic versioning capability.
+**Note**: The commit message validation hook is in **warning mode** - it alerts you about non-conventional commits but doesn't block them. However, only conventional commits will trigger automatic version bumps.
 
 #### Versioning Commands
 
 ```bash
-# Check versioning readiness before deployment
+# Check what commits will trigger version bumps
 pnpm run validate:deployment
 
-# Override automatic version detection (optional)
-pnpm run version:set-minor  # Next build will bump minor version
-pnpm run version:set-patch  # Next build will bump patch version
+# Build commands (no automatic version bumping)
+pnpm run build:prod      # Production build
+pnpm run build:staging   # Staging build
 
-# Deployment builds (automatically bump version)
-pnpm run build:prod      # Auto-bumps version
-pnpm run build:staging   # Auto-bumps version
-
-# Container builds (use deployment script)
-./scripts/push-heroku.sh  # Bumps version, then builds & deploys container
+# Container deployment
+./scripts/push-heroku.sh  # Builds and deploys container to Heroku
 ```
-
-#### Container Deployments
-
-For containerized deployments (Heroku, Cloud Run, etc.), version bumping happens **outside** the Docker build:
-
-- **Heroku**: Use `./scripts/push-heroku.sh` - it bumps version, then builds and deploys
-- **Manual container builds**: Run `./node_modules/.bin/tsx scripts/version-bump.ts` before `docker build`
-- **CI/CD pipelines**: Add version bump step before container build stage
-
-The `build:hosted-container` script does NOT auto-bump version (scripts/ is excluded from Docker context).
 
 #### Best Practices
 
-- Use conventional commit format for all commits (though not enforced)
-- Run `pnpm run validate:deployment` before deploying to check commit coverage
-- If you need specific version control, use `version:set-minor` or `version:set-patch` before building
-- In CI/CD, ensure commits follow conventional format or set VERSION_BUMP explicitly
-- For container deployments, always version before building the container
+- Use conventional commit format for all commits to enable automatic versioning
+- Run `pnpm run validate:deployment` before deploying to check which commits will bump the version
+- Version bumping happens automatically during commit, not during build
+- Builds (`build:prod`, `build:staging`) no longer bump versions - they just build the current version
+- For releases, ensure your last commit uses conventional format to trigger the appropriate version bump
 
 ## Code Style Guidelines
 
