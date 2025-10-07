@@ -171,7 +171,7 @@ export class InfraX6SelectionAdapter {
         });
       });
 
-      this.logger.info('Selection changed - visual adapter', {
+      this.logger.debugComponent('InfraX6SelectionAdapter', 'Selection changed - visual adapter', {
         added: added.length,
         removed: removed.length,
         total: graph.getSelectedCells().length,
@@ -213,7 +213,7 @@ export class InfraX6SelectionAdapter {
    */
   selectCells(graph: Graph, cells: Cell[]): void {
     graph.select(cells);
-    this.logger.info('Selected cells', { count: cells.length });
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Selected cells', { count: cells.length });
   }
 
   /**
@@ -222,7 +222,7 @@ export class InfraX6SelectionAdapter {
   selectAll(graph: Graph): void {
     const allCells = graph.getCells();
     this.selectCells(graph, allCells);
-    this.logger.info('Selected all cells', { count: allCells.length });
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Selected all cells', { count: allCells.length });
   }
 
   /**
@@ -234,7 +234,7 @@ export class InfraX6SelectionAdapter {
     if (selectedCells.length > 0) {
       graph.unselect(selectedCells);
     }
-    this.logger.info('Selection cleared');
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Selection cleared');
   }
 
   /**
@@ -243,7 +243,7 @@ export class InfraX6SelectionAdapter {
   deleteSelected(graph: Graph): void {
     const selectedCells = this.getSelectedCells(graph);
     if (selectedCells.length === 0) {
-      this.logger.info('No cells selected for deletion');
+      this.logger.debugComponent('InfraX6SelectionAdapter', 'No cells selected for deletion');
       return;
     }
 
@@ -269,7 +269,7 @@ export class InfraX6SelectionAdapter {
       HISTORY_OPERATION_TYPES.MULTI_CELL_DELETE,
     );
 
-    this.logger.info('Deleted selected cells', { count: selectedCells.length });
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Deleted selected cells', { count: selectedCells.length });
   }
 
   /**
@@ -285,7 +285,7 @@ export class InfraX6SelectionAdapter {
    */
   pasteCells(graph: Graph, cells: Cell[], offsetX: number = 20, offsetY: number = 20): void {
     if (cells.length === 0) {
-      this.logger.info('No cells to paste');
+      this.logger.debugComponent('InfraX6SelectionAdapter', 'No cells to paste');
       return;
     }
 
@@ -312,7 +312,7 @@ export class InfraX6SelectionAdapter {
 
     // Select the pasted cells
     this.selectCells(graph, pastedCells);
-    this.logger.info('Pasted cells', { count: pastedCells.length });
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Pasted cells', { count: pastedCells.length });
   }
 
   /**
@@ -322,7 +322,7 @@ export class InfraX6SelectionAdapter {
     const selectedNodes = this.getSelectedNodes(graph);
 
     if (!this.selectionService.canGroupNodes(selectedNodes)) {
-      this.logger.info('Cannot group selected nodes');
+      this.logger.debugComponent('InfraX6SelectionAdapter', 'Cannot group selected nodes');
       return null;
     }
 
@@ -351,7 +351,7 @@ export class InfraX6SelectionAdapter {
       HISTORY_OPERATION_TYPES.GROUP_CREATE,
     );
 
-    this.logger.info('Created group with nodes', {
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Created group with nodes', {
       groupId: groupNode.id,
       nodeCount: selectedNodes.length,
     });
@@ -381,7 +381,7 @@ export class InfraX6SelectionAdapter {
               // Remove the group node using InfraX6CoreOperationsService
               this.x6CoreOps.removeCellObject(graph, node);
 
-              this.logger.info('Ungrouped node', {
+              this.logger.debugComponent('InfraX6SelectionAdapter', 'Ungrouped node', {
                 groupId: node.id,
                 childCount: children.length,
               });
@@ -413,7 +413,7 @@ export class InfraX6SelectionAdapter {
       node.setPosition(position.x, position.y);
     });
 
-    this.logger.info('Aligned nodes', { alignment, count: selectedNodes.length });
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Aligned nodes', { alignment, count: selectedNodes.length });
   }
 
   /**
@@ -433,7 +433,7 @@ export class InfraX6SelectionAdapter {
       node.setPosition(position.x, position.y);
     });
 
-    this.logger.info('Distributed nodes', { direction, count: selectedNodes.length });
+    this.logger.debugComponent('InfraX6SelectionAdapter', 'Distributed nodes', { direction, count: selectedNodes.length });
   }
 
   /**
@@ -443,7 +443,7 @@ export class InfraX6SelectionAdapter {
     if (this.selectionPlugin) {
       this.selectionPlugin.enable();
       graph.enableSelection();
-      this.logger.info('Selection mode enabled');
+      this.logger.debugComponent('InfraX6SelectionAdapter', 'Selection mode enabled');
     }
   }
 
@@ -455,7 +455,7 @@ export class InfraX6SelectionAdapter {
       this.selectionPlugin.disable();
       graph.disableSelection();
       this.clearSelection(graph);
-      this.logger.info('Selection mode disabled');
+      this.logger.debugComponent('InfraX6SelectionAdapter', 'Selection mode disabled');
     }
   }
 

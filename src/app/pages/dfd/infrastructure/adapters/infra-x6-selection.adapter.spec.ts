@@ -385,7 +385,7 @@ describe('InfraX6SelectionAdapter', () => {
       expect(selectedCells).toHaveLength(2);
       expect(selectedCells).toContain(nodes[0]);
       expect(selectedCells).toContain(nodes[1]);
-      expect(mockLogger.info).toHaveBeenCalledWith('Selected cells', { count: 2 });
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'Selected cells', { count: 2 });
     });
 
     it('should clear selection on blank click', () => {
@@ -417,7 +417,7 @@ describe('InfraX6SelectionAdapter', () => {
       });
 
       // Verify logging
-      expect(mockLogger.info).toHaveBeenCalledWith('Selection changed - visual adapter', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'Selection changed - visual adapter', {
         added: 2,
         removed: 0,
         total: expect.any(Number),
@@ -470,7 +470,7 @@ describe('InfraX6SelectionAdapter', () => {
       // Verify all cells selected
       const selectedCells = adapter.getSelectedCells(graph);
       expect(selectedCells.length).toBeGreaterThanOrEqual(4); // 3 nodes + 1 edge
-      expect(mockLogger.info).toHaveBeenCalledWith('Selected all cells', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'Selected all cells', {
         count: expect.any(Number),
       });
     });
@@ -485,7 +485,7 @@ describe('InfraX6SelectionAdapter', () => {
       // Verify selection cleared
       const selectedCells = adapter.getSelectedCells(graph);
       expect(selectedCells).toHaveLength(0);
-      expect(mockLogger.info).toHaveBeenCalledWith('Selection cleared');
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'Selection cleared');
     });
   });
 
@@ -613,7 +613,7 @@ describe('InfraX6SelectionAdapter', () => {
       // Verify InfraX6CoreOperationsService.removeCellObject called for node
       expect(x6CoreOps.removeCellObject).toHaveBeenCalledWith(graph, node);
 
-      expect(mockLogger.info).toHaveBeenCalledWith('Deleted selected cells', { count: 2 });
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'Deleted selected cells', { count: 2 });
     });
 
     it('should handle deletion when no cells selected', () => {
@@ -630,7 +630,7 @@ describe('InfraX6SelectionAdapter', () => {
       // Verify no cells removed
       expect(x6CoreOps.removeCellObject).not.toHaveBeenCalled();
       expect(infraEdgeService.removeEdge).not.toHaveBeenCalled();
-      expect(mockLogger.info).toHaveBeenCalledWith('No cells selected for deletion');
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'No cells selected for deletion');
     });
   });
 
@@ -705,7 +705,7 @@ describe('InfraX6SelectionAdapter', () => {
 
       // Verify cells added with calculated positions
       expect(graph.addCell).toHaveBeenCalledTimes(2);
-      expect(mockLogger.info).toHaveBeenCalledWith('Pasted cells', { count: 2 });
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'Pasted cells', { count: 2 });
     });
 
     it('should handle paste with no cells', () => {
@@ -717,7 +717,7 @@ describe('InfraX6SelectionAdapter', () => {
 
       // Verify no cells added
       expect(graph.addCell).not.toHaveBeenCalled();
-      expect(mockLogger.info).toHaveBeenCalledWith('No cells to paste');
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'No cells to paste');
     });
 
     it('should clear selection and select pasted cells', () => {
@@ -811,7 +811,7 @@ describe('InfraX6SelectionAdapter', () => {
       expect(nodes[0].setPosition).toHaveBeenCalledWith(100, 100);
       expect(nodes[1].setPosition).toHaveBeenCalledWith(100, 150);
       expect(nodes[2].setPosition).toHaveBeenCalledWith(100, 200);
-      expect(mockLogger.info).toHaveBeenCalledWith('Aligned nodes', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'Aligned nodes', {
         alignment: 'left',
         count: 3,
       });
@@ -847,7 +847,7 @@ describe('InfraX6SelectionAdapter', () => {
       expect(nodes[0].setPosition).toHaveBeenCalledWith(100, 100);
       expect(nodes[1].setPosition).toHaveBeenCalledWith(200, 100);
       expect(nodes[2].setPosition).toHaveBeenCalledWith(300, 100);
-      expect(mockLogger.info).toHaveBeenCalledWith('Distributed nodes', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'Distributed nodes', {
         direction: 'horizontal',
         count: 3,
       });
@@ -957,7 +957,7 @@ describe('InfraX6SelectionAdapter', () => {
       expect(mockGroupNode.addChild).toHaveBeenCalledWith(nodes[1]);
       expect(result).toBe(mockGroupNode);
 
-      expect(mockLogger.info).toHaveBeenCalledWith('Created group with nodes', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'Created group with nodes', {
         groupId: 'group-1',
         nodeCount: 2,
       });
@@ -979,7 +979,7 @@ describe('InfraX6SelectionAdapter', () => {
       // Verify no group created
       expect(graph.addNode).not.toHaveBeenCalled();
       expect(result).toBeNull();
-      expect(mockLogger.info).toHaveBeenCalledWith('Cannot group selected nodes');
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'Cannot group selected nodes');
     });
 
     it('should ungroup selected nodes using SelectionService logic', () => {
@@ -1015,7 +1015,7 @@ describe('InfraX6SelectionAdapter', () => {
       expect(groupNode.removeChild).toHaveBeenCalledWith(nodes[1]);
       expect(graph.removeCell).toHaveBeenCalledWith(groupNode);
 
-      expect(mockLogger.info).toHaveBeenCalledWith('Ungrouped node', {
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'Ungrouped node', {
         groupId: groupNode.id,
         childCount: 2,
       });
@@ -1035,7 +1035,7 @@ describe('InfraX6SelectionAdapter', () => {
       // Verify enabled
       expect(mockSelectionPlugin.enable).toHaveBeenCalled();
       expect(graph.enableSelection).toHaveBeenCalled();
-      expect(mockLogger.info).toHaveBeenCalledWith('Selection mode enabled');
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'Selection mode enabled');
     });
 
     it('should disable selection mode', () => {
@@ -1052,7 +1052,7 @@ describe('InfraX6SelectionAdapter', () => {
       expect(mockSelectionPlugin.disable).toHaveBeenCalled();
       expect(graph.disableSelection).toHaveBeenCalled();
       expect(adapter.clearSelection).toHaveBeenCalledWith(graph);
-      expect(mockLogger.info).toHaveBeenCalledWith('Selection mode disabled');
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith('InfraX6SelectionAdapter', 'Selection mode disabled');
     });
   });
 });
