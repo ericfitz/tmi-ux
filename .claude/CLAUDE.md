@@ -25,15 +25,29 @@ You are a senior software engineer collaborating with a peer. Prioritize thoroug
 - Present trade-offs objectively without defaulting to agreement
 - Be conservative when suggesting refactoring, adopting patterns, or implementing additional layers
 
-## User Guidelines
+## Task Completion Requirements
 
-- Unused references should be removed rather than prefixed with an underscore, unless they are placeholders for future functionality.
-- When removing or relocating functionality, do not add comments indicating that the code has been removed or relocated.
-- No task is complete if pnpm run lint:all reports warnings or errors.
-- No coding task is complete if build does not complete without errors.
-- Do not disable or skip tests, we fix failing tests or ask what to do. If testing is part of a task, the task is not complete until the tests are passing.
-- Do not disable code that needs fixing, unless instructed to do so by the user.
-- Do not report a task complete while there is functionality that has not yet been implemented. If there is remaining work to do, we write it down in a document.
+Before completing any task, you must follow these requirements:
+
+### For Any File Changes
+
+1. **Format and Lint**: Run `pnpm run format` and `pnpm run lint:all`, then fix any lint issues related to the change
+2. **Git Commit**: Suggest a git commit message using conventional commit format (e.g., `feat:`, `fix:`, `chore:`, `refactor:`, etc.)
+
+### For Code Changes
+
+In addition to the above, also:
+
+1. **Build**: Run `pnpm run build` and fix all build errors, even those unrelated to your change
+2. **Test**: Run any tests related to the code that was changed and fix any failures
+3. **Never Skip Tests**: Do not disable or skip tests - always troubleshoot to root cause and fix, or ask what to do
+
+### General Guidelines
+
+- Unused references should be removed rather than prefixed with an underscore, unless they are placeholders for future functionality
+- When removing or relocating functionality, do not add comments indicating that the code has been removed or relocated
+- Do not disable code that needs fixing, unless instructed to do so by the user
+- Do not report a task complete while there is functionality that has not yet been implemented - write down remaining work in a document
 
 ## When Planning
 
@@ -51,10 +65,7 @@ You are a senior software engineer collaborating with a peer. Prioritize thoroug
 - Follow the agreed-upon plan precisely
 - If you discover an unforeseen issue, stop and discuss
 - Note concerns inline if you see them during implementation
-- Always lint before completing a task
-- When modifying a test file, always run the test and fix any failures before completing the task
-- Do not disable or skip failing tests, always troubleshoot to root cause and fix the test, or ask the user what to do
-- When modifying an executable file, always run build and test and fix any failures before completing the task
+- See "Task Completion Requirements" section for mandatory steps before completing any task
 
 ## What NOT to do
 

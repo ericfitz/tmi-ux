@@ -1150,9 +1150,7 @@ export class AppDfdOrchestrator {
 
       // Initialize with empty diagram - the diagram will be loaded later
       // once the WebSocket connection is established
-      this.logger.debug(
-        'Diagram initialization complete - waiting for collaboration connection',
-      );
+      this.logger.debug('Diagram initialization complete - waiting for collaboration connection');
       return of(true);
     }
 
