@@ -26,6 +26,14 @@ if echo "$COMMIT_MSG" | grep -qE "^chore: bump version"; then
   exit 0
 fi
 
+# Skip if package.json already has staged changes (manual version edit)
+if git diff --cached --name-only | grep -q "^package.json$"; then
+  echo ""
+  echo "ℹ️  package.json has staged changes - skipping automatic version bump"
+  echo ""
+  exit 0
+fi
+
 # Parse conventional commit format
 # Pattern: type(optional-scope): description
 if echo "$COMMIT_MSG" | grep -qE "^(feat|fix|docs|refactor|perf|test|build|ci|chore)(\(.+\))?\s*:.+"; then
