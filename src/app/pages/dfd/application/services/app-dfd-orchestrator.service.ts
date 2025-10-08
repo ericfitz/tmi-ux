@@ -17,6 +17,7 @@ import '@antv/x6-plugin-export';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { AuthService } from '../../../../auth/services/auth.service';
 import { ServerConnectionService } from '../../../../core/services/server-connection.service';
+import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
 import { AppPersistenceCoordinator } from './app-persistence-coordinator.service';
 import { AppDiagramLoadingService } from './app-diagram-loading.service';
@@ -102,6 +103,7 @@ export class AppDfdOrchestrator {
     private readonly logger: LoggerService,
     private readonly authService: AuthService,
     private readonly serverConnectionService: ServerConnectionService,
+    private readonly webSocketAdapter: WebSocketAdapter,
     private readonly appGraphOperationManager: AppGraphOperationManager,
     private readonly appPersistenceCoordinator: AppPersistenceCoordinator,
     private readonly appDiagramLoadingService: AppDiagramLoadingService,
@@ -255,6 +257,17 @@ export class AppDfdOrchestrator {
 
     this.logger.debug('AppDfdOrchestrator: Manual save triggered');
 
+    // Check actual WebSocket connection status, not just collaboration flag
+    const isWebSocketConnected =
+      this._state$.value.collaborating && this.webSocketAdapter.isConnected;
+    const useWebSocket = isWebSocketConnected;
+
+    this.logger.debug('Manual save strategy selection', {
+      collaborating: this._state$.value.collaborating,
+      webSocketConnected: this.webSocketAdapter.isConnected,
+      willUseWebSocket: useWebSocket,
+    });
+
     const saveOperation = {
       diagramId: this._initParams.diagramId,
       threatModelId: this._initParams.threatModelId,
@@ -266,8 +279,6 @@ export class AppDfdOrchestrator {
         userName: this.authService.username,
       },
     };
-
-    const useWebSocket = this._state$.value.collaborating;
 
     return this.appPersistenceCoordinator.save(saveOperation, useWebSocket).pipe(
       map(result => {
@@ -1206,8 +1217,18 @@ export class AppDfdOrchestrator {
       return;
     }
 
-    // Normal save - WebSocket (collaboration) or REST (solo)
-    const useWebSocket = this._state$.value.collaborating;
+    // Normal save - WebSocket (if connected) or REST
+    // Check actual WebSocket connection status, not just collaboration flag
+    const isWebSocketConnected =
+      this._state$.value.collaborating && this.webSocketAdapter.isConnected;
+    const useWebSocket = isWebSocketConnected;
+
+    this.logger.debug('Autosave strategy selection', {
+      collaborating: this._state$.value.collaborating,
+      webSocketConnected: this.webSocketAdapter.isConnected,
+      willUseWebSocket: useWebSocket,
+    });
+
     const saveOperation = {
       diagramId,
       threatModelId,
