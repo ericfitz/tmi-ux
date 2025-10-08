@@ -586,7 +586,8 @@ describe('InfraEmbeddingService', () => {
 
       const result = service.validateEmbedding(node, node);
 
-      expect(result.isValid).toBe(true); // Self-embedding should be valid from business logic perspective
+      expect(result.isValid).toBe(false); // Self-embedding should be prevented (circular embedding)
+      expect(result.reason).toContain('Circular embedding');
     });
 
     it('should handle z-index calculations with mixed node types', () => {

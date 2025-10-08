@@ -119,6 +119,64 @@ export class InfraX6EmbeddingAdapter {
   }
 
   /**
+   * Validate and fix embedding relationships after diagram load
+   * Ensures all loaded embeddings comply with current business rules
+   */
+  validateAndFixLoadedDiagram(graph: Graph): {
+    fixed: number;
+    violations: Array<{ nodeId: string; parentId: string; reason: string; action: string }>;
+  } {
+    const violations: Array<{ nodeId: string; parentId: string; reason: string; action: string }> =
+      [];
+    let fixedCount = 0;
+
+    this.logger.info('Validating embedding relationships after diagram load');
+
+    const allNodes = graph.getNodes();
+
+    allNodes.forEach(node => {
+      const parent = node.getParent();
+
+      // Check if node has a parent (is embedded)
+      if (parent && parent.isNode()) {
+        // Validate the embedding relationship
+        const validation = this.infraEmbeddingService.validateEmbedding(parent, node);
+
+        if (!validation.isValid) {
+          this.logger.warn('Invalid embedding detected in loaded diagram', {
+            nodeId: node.id,
+            parentId: parent.id,
+            reason: validation.reason,
+          });
+
+          violations.push({
+            nodeId: node.id,
+            parentId: parent.id,
+            reason: validation.reason || 'Unknown validation failure',
+            action: 'Unembedded node',
+          });
+
+          // Fix by unembedding the node
+          node.removeFromParent();
+          this.handleNodeUnembedded(graph, node);
+          fixedCount++;
+        }
+      }
+    });
+
+    if (fixedCount > 0) {
+      this.logger.warn('Fixed invalid embeddings in loaded diagram', {
+        fixedCount,
+        violations: violations.length,
+      });
+    } else {
+      this.logger.info('All embedding relationships validated successfully');
+    }
+
+    return { fixed: fixedCount, violations };
+  }
+
+  /**
    * Get all embedded children of a node
    */
   getEmbeddedChildren(node: Node): Node[] {
@@ -302,7 +360,7 @@ export class InfraX6EmbeddingAdapter {
             });
           }
         }
-        // Handle parent change (from one parent to another)
+        // Handle parent change (from one parent to another - re-embedding)
         else if (
           previousParentId &&
           currentParentId &&
@@ -318,7 +376,35 @@ export class InfraX6EmbeddingAdapter {
                 formerParentId: previousParentId,
                 newParentId: currentParentId,
               });
-              this.handleNodeEmbedded(graph, node, currentParent);
+
+              // Validate re-embedding
+              const validation = this.infraEmbeddingService.validateEmbedding(currentParent, node);
+
+              if (!validation.isValid) {
+                this.logger.warn('Re-embedding validation failed - reverting', {
+                  nodeId: node.id,
+                  formerParentId: previousParentId,
+                  attemptedParentId: currentParentId,
+                  reason: validation.reason,
+                });
+
+                // Get the previous parent to restore
+                const previousParent = graph.getCellById(previousParentId);
+                if (previousParent && previousParent.isNode()) {
+                  // Revert to previous parent
+                  node.setParent(previousParent);
+                } else {
+                  // If previous parent no longer exists, unembed entirely
+                  node.removeFromParent();
+                }
+
+                // Note: No need to show notification here - the X6 validate callback already did
+                return;
+              }
+
+              // Valid re-embedding - handle it
+              // Note: This will update appearance, z-order, and recalculate descendant depths
+              this.handleNodeReEmbedded(graph, node, currentParent);
             }
           } catch (error) {
             this.logger.warn('Error handling parent change (re-embedding)', {
@@ -482,6 +568,10 @@ export class InfraX6EmbeddingAdapter {
           // Use general unembedding z-index for other node types
           this.infraX6ZOrderAdapter.applyUnembeddingZIndex(graph, node);
         }
+
+        // CRITICAL FIX: Recalculate z-indexes for all descendants
+        // This handles nested security boundaries and deep embedding hierarchies
+        this.recalculateAllDescendantsZIndex(graph, node);
       });
     } catch (error) {
       this.logger.error('Error handling node unembedded event', {
@@ -489,6 +579,141 @@ export class InfraX6EmbeddingAdapter {
         error,
       });
     }
+  }
+
+  /**
+   * Recalculate z-indexes for all descendants of a node
+   * Called after unembedding to ensure nested children have correct z-order relative to their new hierarchy
+   */
+  private recalculateAllDescendantsZIndex(graph: Graph, node: Node): void {
+    const descendants = this.getAllDescendants(node);
+
+    if (descendants.length === 0) {
+      return;
+    }
+
+    this.logger.info('Recalculating z-indexes for descendants after unembed', {
+      parentId: node.id,
+      descendantCount: descendants.length,
+    });
+
+    descendants.forEach(descendant => {
+      const parent = descendant.getParent();
+      if (parent && parent.isNode()) {
+        // Recalculate based on parent's current z-index
+        const parentZIndex = parent.getZIndex() ?? 10;
+        const childType = (descendant as any).getNodeTypeInfo
+          ? (descendant as any).getNodeTypeInfo().type
+          : 'process';
+
+        let correctZIndex: number;
+        if (childType === 'security-boundary') {
+          correctZIndex = Math.max(parentZIndex + 1, 2);
+        } else {
+          correctZIndex = parentZIndex + 1;
+        }
+
+        descendant.setZIndex(correctZIndex);
+
+        // Also update connected edges
+        this.infraX6ZOrderAdapter.updateConnectedEdgesZOrder(graph, descendant, correctZIndex);
+
+        this.logger.debugComponent('Embedding', 'Recalculated descendant z-index', {
+          descendantId: descendant.id,
+          parentId: parent.id,
+          newZIndex: correctZIndex,
+        });
+      }
+    });
+  }
+
+  /**
+   * Get all descendants of a node recursively (children, grandchildren, etc.)
+   */
+  private getAllDescendants(node: Node): Node[] {
+    const descendants: Node[] = [];
+    const children = node.getChildren() || [];
+
+    children.forEach(child => {
+      if (child.isNode()) {
+        const childNode = child;
+        descendants.push(childNode);
+        // Recursive - get descendants of this child
+        descendants.push(...this.getAllDescendants(childNode));
+      }
+    });
+
+    return descendants;
+  }
+
+  /**
+   * Handle node re-embedded event (moving from one parent to another)
+   * This ensures descendant depths and appearances are recalculated
+   */
+  private handleNodeReEmbedded(graph: Graph, node: Node, newParent: Node): void {
+    if (!node || !newParent) {
+      this.logger.error('handleNodeReEmbedded called with invalid parameters', {
+        nodeId: node?.id || 'undefined',
+        newParentId: newParent?.id || 'undefined',
+      });
+      return;
+    }
+
+    this.logger.info('Node re-embedded to new parent', {
+      nodeId: node.id,
+      newParentId: newParent.id,
+    });
+
+    try {
+      // Update visual appearance and z-order without adding to history
+      // The setParent operation is already in history; these are just visual updates
+      this.historyCoordinator.executeVisualEffect(graph, () => {
+        // Update visual appearance for new embedding depth
+        this.updateEmbeddingAppearance(node, newParent);
+
+        // Update z-order
+        this.infraX6ZOrderAdapter.applyEmbeddingZIndexes(newParent, node);
+
+        // Update connected edges z-order
+        this.infraX6ZOrderAdapter.updateConnectedEdgesZOrder(graph, node, node.getZIndex() ?? 15);
+
+        // Recalculate descendant depths and appearances recursively
+        this.recalculateDescendantEmbeddings(graph, node);
+      });
+    } catch (error) {
+      this.logger.error('Error handling node re-embedded event', {
+        nodeId: node.id,
+        newParentId: newParent.id,
+        error,
+      });
+    }
+  }
+
+  /**
+   * Recalculate embedding depths and appearances for all descendants of a node
+   * Called when a node is re-embedded to ensure children maintain correct appearance
+   */
+  private recalculateDescendantEmbeddings(graph: Graph, parentNode: Node): void {
+    const children = this.getEmbeddedChildren(parentNode);
+
+    if (children.length === 0) {
+      return;
+    }
+
+    this.logger.info('Recalculating descendant embeddings', {
+      parentId: parentNode.id,
+      childCount: children.length,
+    });
+
+    children.forEach(child => {
+      // Update appearance based on new depth
+      const newDepth = this.infraEmbeddingService.calculateEmbeddingDepth(child);
+      const fillColor = this.infraEmbeddingService.calculateEmbeddingFillColor(newDepth);
+      this.applyEmbeddingVisualEffects(child, fillColor, newDepth);
+
+      // Recursively update grandchildren
+      this.recalculateDescendantEmbeddings(graph, child);
+    });
   }
 
   /**

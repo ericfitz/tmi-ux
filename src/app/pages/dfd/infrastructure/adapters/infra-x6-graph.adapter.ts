@@ -19,7 +19,7 @@
  * - Manages graph plugins (snapline, transform, history, export)
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Graph, Node, Edge, Cell } from '@antv/x6';
@@ -40,6 +40,7 @@ import { InfraEdgeQueryService } from '../services/infra-edge-query.service';
 import { InfraNodeConfigurationService } from '../services/infra-node-configuration.service';
 import { InfraEmbeddingService } from '../services/infra-embedding.service';
 import { InfraPortStateService } from '../services/infra-port-state.service';
+import { InfraVisualEffectsService } from '../services/infra-visual-effects.service';
 import { InfraX6KeyboardAdapter } from './infra-x6-keyboard.adapter';
 import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
 import { InfraX6EmbeddingAdapter } from './infra-x6-embedding.adapter';
@@ -53,6 +54,7 @@ import {
 } from '../../application/services/app-graph-history-coordinator.service';
 import { AppDiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
+import { AppNotificationService } from '../../application/services/app-notification.service';
 
 // Import the extracted shape definitions
 import { registerCustomShapes } from './infra-x6-shape-definitions';
@@ -121,6 +123,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     private readonly _nodeConfigurationService: InfraNodeConfigurationService,
     private readonly _embeddingService: InfraEmbeddingService,
     private readonly _portStateManager: InfraPortStateService,
+    private readonly _visualEffectsService: InfraVisualEffectsService,
     private readonly _keyboardHandler: InfraX6KeyboardAdapter,
     private readonly _zOrderAdapter: InfraX6ZOrderAdapter,
     private readonly _embeddingAdapter: InfraX6EmbeddingAdapter,
@@ -131,6 +134,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     private readonly _historyCoordinator: AppGraphHistoryCoordinator,
     private readonly _diagramOperationBroadcaster: AppDiagramOperationBroadcaster,
     private readonly _x6CoreOps: InfraX6CoreOperationsService,
+    private readonly _injector: Injector,
   ) {
     // Initialize X6 cell extensions once when the adapter is created
     initializeX6CellExtensions();
@@ -310,7 +314,79 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       // Enable embedding for drag-and-drop node nesting
       embedding: {
         enabled: true,
-        findParent: 'bbox', // Find parent based on bounding box overlap
+        // Custom findParent function with complete containment and validation
+        // X6 expects this to return an array of potential parents
+        findParent: ({ node }) => {
+          if (!node || !this._graph) {
+            return [];
+          }
+
+          // Get all potential parent nodes (exclude the node itself)
+          const allNodes = this._graph.getNodes().filter(n => n.id !== node.id);
+
+          // Find all nodes that completely contain this node
+          const potentialParents = allNodes.filter(potentialParent => {
+            // Check if child is completely contained within parent
+            if (!this._embeddingService.isCompletelyContained(node, potentialParent)) {
+              return false;
+            }
+
+            // Validate embedding rules
+            const validation = this._embeddingService.validateEmbedding(potentialParent, node);
+            return validation.isValid;
+          });
+
+          if (potentialParents.length === 0) {
+            return [];
+          }
+
+          // If multiple valid parents, select the one with highest z-index (topmost)
+          potentialParents.sort((a, b) => {
+            const aZIndex = a.getZIndex() ?? 1;
+            const bZIndex = b.getZIndex() ?? 1;
+            return bZIndex - aZIndex; // Descending order (highest first)
+          });
+
+          this.logger.debugComponent('X6Graph', 'Found valid parents for embedding', {
+            childId: node.id,
+            topParentId: potentialParents[0]?.id,
+            topParentZIndex: potentialParents[0]?.getZIndex(),
+            totalPotentialParents: potentialParents.length,
+          });
+
+          // Return the sorted array - X6 will pick the first one
+          return potentialParents;
+        },
+        // Validate embedding before allowing it
+        validate: ({ child, parent }) => {
+          if (!child || !parent) {
+            return false;
+          }
+
+          // Use embedding service for validation
+          const validation = this._embeddingService.validateEmbedding(parent, child);
+
+          if (!validation.isValid) {
+            this.logger.debugComponent('X6Graph', 'Embedding validation failed', {
+              childId: child.id,
+              parentId: parent.id,
+              reason: validation.reason,
+            });
+
+            // Apply visual feedback (red stroke on child)
+            this._visualEffectsService.applyInvalidEmbeddingFeedback(child, this._graph);
+
+            // Schedule removal of visual feedback after 300ms
+            setTimeout(() => {
+              this._visualEffectsService.removeInvalidEmbeddingFeedback(child, this._graph);
+            }, 300);
+
+            // Show notification to user explaining why embedding failed
+            this._showEmbeddingValidationError(validation.reason);
+          }
+
+          return validation.isValid;
+        },
       },
       // Enable interactive edge creation with proper port visibility
       connecting: {
@@ -1387,6 +1463,35 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Use getNodeTypeInfo for reliable node type detection
     const nodeTypeInfo = (node as any).getNodeTypeInfo();
     return nodeTypeInfo?.type || 'unknown';
+  }
+
+  /**
+   * Show embedding validation error notification to user
+   */
+  private _showEmbeddingValidationError(reason?: string): void {
+    if (!reason) {
+      return;
+    }
+
+    // Map validation reason to translation key
+    let translationKey: string;
+    if (reason.includes('text-box shapes cannot be embedded')) {
+      translationKey = 'editor.embedding.cannotEmbedTextBox';
+    } else if (reason.includes('cannot be embedded into text-box')) {
+      translationKey = 'editor.embedding.cannotEmbedIntoTextBox';
+    } else if (reason.includes('Circular embedding')) {
+      translationKey = 'editor.embedding.circularEmbeddingPrevented';
+    } else if (reason.includes('Security boundaries')) {
+      translationKey = 'editor.embedding.securityBoundaryRestriction';
+    } else {
+      // Generic fallback - just show the reason directly
+      this.logger.warn('Unknown embedding validation reason', { reason });
+      return;
+    }
+
+    // Show notification using AppNotificationService
+    const appNotificationService = this._injector.get(AppNotificationService);
+    appNotificationService.showEmbeddingValidationError(translationKey);
   }
 
   // - _getEmbeddingDepth() → InfraEmbeddingService.calculateEmbeddingDepth()

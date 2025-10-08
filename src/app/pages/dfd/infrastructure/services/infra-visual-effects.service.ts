@@ -145,6 +145,83 @@ export class InfraVisualEffectsService {
   }
 
   /**
+   * Apply invalid embedding visual feedback (red stroke)
+   * Shows user that the current drop target is not valid
+   */
+  applyInvalidEmbeddingFeedback(cell: Cell, _graph?: any): void {
+    if (!cell || this.activeEffects.has(cell.id)) {
+      return;
+    }
+
+    // Store original stroke attributes
+    const originalStroke = cell.attr('body/stroke') || '#333333';
+    const originalStrokeWidth = cell.attr('body/strokeWidth') || 2;
+
+    // Convert to string to avoid object serialization issues
+    const strokeStr = typeof originalStroke === 'string' ? originalStroke : '#333333';
+    const strokeWidthStr = String(Number(originalStrokeWidth));
+
+    if ((cell as any).setApplicationMetadata) {
+      (cell as any).setApplicationMetadata('_originalStroke', strokeStr);
+      (cell as any).setApplicationMetadata('_originalStrokeWidth', strokeWidthStr);
+    }
+
+    // Apply red stroke to indicate invalid target
+    cell.attr('body/stroke', '#ff0000'); // Red
+    cell.attr('body/strokeWidth', 3);
+
+    // Track the effect
+    this.activeEffects.set(cell.id, {
+      timer: null,
+      cell,
+      effectType: 'fade' as any, // Reuse type since TypeScript doesn't allow extending the union
+      startTime: Date.now(),
+      color: { r: 255, g: 0, b: 0 },
+    });
+
+    this.logger.debugComponent('DfdVisualEffects', 'Applied invalid embedding feedback', {
+      cellId: cell.id,
+    });
+  }
+
+  /**
+   * Remove invalid embedding visual feedback
+   * Restores original stroke attributes
+   */
+  removeInvalidEmbeddingFeedback(cell: Cell, _graph?: any): void {
+    const activeEffect = this.activeEffects.get(cell.id);
+    if (!activeEffect) {
+      return;
+    }
+
+    // Restore original stroke
+    let originalStroke = '#333333';
+    let originalStrokeWidth = 2;
+
+    if ((cell as any).getApplicationMetadata) {
+      const storedStroke = (cell as any).getApplicationMetadata('_originalStroke');
+      const storedWidth = (cell as any).getApplicationMetadata('_originalStrokeWidth');
+
+      if (storedStroke) originalStroke = storedStroke;
+      if (storedWidth) originalStrokeWidth = Number(storedWidth);
+    }
+
+    cell.attr('body/stroke', originalStroke);
+    cell.attr('body/strokeWidth', originalStrokeWidth);
+
+    // Clean up metadata and tracking
+    if ((cell as any).setApplicationMetadata) {
+      (cell as any).setApplicationMetadata('_originalStroke', null);
+      (cell as any).setApplicationMetadata('_originalStrokeWidth', null);
+    }
+    this.activeEffects.delete(cell.id);
+
+    this.logger.debugComponent('DfdVisualEffects', 'Removed invalid embedding feedback', {
+      cellId: cell.id,
+    });
+  }
+
+  /**
    * Start simple fade animation from bright to transparent over 1 second
    * Disables history for the entire animation lifecycle to prevent excessive history entries
    */

@@ -90,7 +90,7 @@ describe('AppDfdOrchestrator', () => {
     mockServerConnectionService = {
       isConnected: vi.fn().mockReturnValue(true),
       serverMode: vi.fn().mockReturnValue('remote'),
-      currentDetails: { isReachable: true, mode: 'remote' },
+      currentDetailedStatus: { isServerReachable: true, mode: 'remote' },
     };
 
     mockCollaborationService = {
@@ -177,6 +177,8 @@ describe('AppDfdOrchestrator', () => {
       emit: vi.fn(),
     };
 
+    const historyModifiedSubject = new Subject();
+
     mockDfdFacade = {
       initializeGraph: vi.fn().mockReturnValue(of(true)),
       getGraph: vi.fn().mockReturnValue(mockGraph),
@@ -189,7 +191,7 @@ describe('AppDfdOrchestrator', () => {
       handleResize: vi.fn(),
       destroy: vi.fn(),
       dispose: vi.fn(),
-      historyModified$: new Subject(),
+      historyModified$: historyModifiedSubject.asObservable(),
     };
 
     // Create mock container element
@@ -208,7 +210,6 @@ describe('AppDfdOrchestrator', () => {
       mockPersistenceCoordinator,
       mockDiagramLoadingService,
       mockExportService,
-      mockNodeConfigService,
       mockDfdFacade,
     );
   });

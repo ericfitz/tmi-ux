@@ -103,6 +103,73 @@ export class InfraEmbeddingService {
   }
 
   /**
+   * Check if a child node is completely contained within a parent node's bounds
+   * @param child The child node to check
+   * @param parent The potential parent node
+   * @returns true if child is 100% within parent bounds
+   */
+  isCompletelyContained(child: Node, parent: Node): boolean {
+    const childPosition = child.getPosition();
+    const childSize = child.getSize();
+    const childBounds = {
+      x: childPosition.x,
+      y: childPosition.y,
+      width: childSize.width,
+      height: childSize.height,
+    };
+
+    const parentPosition = parent.getPosition();
+    const parentSize = parent.getSize();
+    const parentBounds = {
+      x: parentPosition.x,
+      y: parentPosition.y,
+      width: parentSize.width,
+      height: parentSize.height,
+    };
+
+    // Check if child is completely within parent bounds (100% containment)
+    const isContained =
+      childBounds.x >= parentBounds.x &&
+      childBounds.y >= parentBounds.y &&
+      childBounds.x + childBounds.width <= parentBounds.x + parentBounds.width &&
+      childBounds.y + childBounds.height <= parentBounds.y + parentBounds.height;
+
+    return isContained;
+  }
+
+  /**
+   * Check if a node is a descendant of another node (for circular embedding detection)
+   */
+  isDescendant(potentialChild: Node, potentialAncestor: Node): boolean {
+    if (potentialChild.id === potentialAncestor.id) {
+      return true;
+    }
+
+    let current = potentialAncestor.getParent();
+    let depth = 0;
+
+    while (current && current.isNode()) {
+      if (current.id === potentialChild.id) {
+        return true;
+      }
+
+      current = current.getParent();
+      depth++;
+
+      // Safety check to prevent infinite loops
+      if (depth > 10) {
+        this.logger.warn('Maximum depth reached in descendant check', {
+          childId: potentialChild.id,
+          ancestorId: potentialAncestor.id,
+        });
+        break;
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * Validate embedding rules (business logic)
    */
   validateEmbedding(
@@ -118,6 +185,14 @@ export class InfraEmbeddingService {
     const childType = (child as any).getNodeTypeInfo
       ? (child as any).getNodeTypeInfo().type
       : 'process';
+
+    // Prevent circular embedding: check if parent is a descendant of child
+    if (this.isDescendant(child, parent)) {
+      return {
+        isValid: false,
+        reason: 'Circular embedding is not allowed',
+      };
+    }
 
     // text-box shapes cannot be embedded into other shapes
     if (childType === 'text-box') {

@@ -140,6 +140,11 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
       duration: 5000,
       panelClass: ['notification-error'],
     },
+    embeddingValidationError: {
+      type: NotificationType.WARN,
+      duration: 4000,
+      panelClass: ['notification-warning'],
+    },
     authenticationError: {
       type: NotificationType.ERROR,
       duration: 0, // Persistent - requires user action
@@ -538,6 +543,15 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    */
   showError(message: string, retryCallback?: () => void): Observable<void> {
     return this.showPreset('error', message, { actionCallback: retryCallback });
+  }
+
+  /**
+   * Show embedding validation error notification
+   * @param translationKey The translation key for the error message
+   */
+  showEmbeddingValidationError(translationKey: string): Observable<void> {
+    const message = this._transloco.translate(translationKey);
+    return this.showPreset('embeddingValidationError', message);
   }
 
   /**

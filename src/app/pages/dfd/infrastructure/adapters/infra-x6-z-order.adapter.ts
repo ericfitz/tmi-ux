@@ -350,43 +350,21 @@ export class InfraX6ZOrderAdapter {
 
   /**
    * Apply z-index changes for embedding
+   * Delegates to service for business logic
    */
   applyEmbeddingZIndexes(parent: Node, child: Node): void {
-    const parentType = (parent as any).getNodeTypeInfo
-      ? (parent as any).getNodeTypeInfo().type
-      : 'process';
-    const childType = (child as any).getNodeTypeInfo
-      ? (child as any).getNodeTypeInfo().type
-      : 'process';
+    // Use service to calculate proper z-indexes
+    const zIndexes = this.zOrderService.calculateEmbeddingZIndexes(parent, child);
 
-    // Parent keeps its base z-index (security boundaries stay behind)
-    let parentZIndex: number;
-    if (parentType === 'security-boundary') {
-      parentZIndex = 1; // Security boundaries stay at the back
-      parent.setZIndex(parentZIndex);
-    } else {
-      parentZIndex = 10;
-      parent.setZIndex(parentZIndex);
-    }
-
-    // Child gets appropriate z-index based on type
-    let childZIndex: number;
-    if (childType === 'security-boundary') {
-      // Security boundaries should always stay behind, even when embedded
-      childZIndex = 2; // Slightly higher than non-embedded security boundaries but still behind regular nodes
-      child.setZIndex(childZIndex);
-    } else {
-      childZIndex = 15; // Regular nodes appear in front when embedded
-      child.setZIndex(childZIndex);
-    }
+    // Apply calculated z-indexes
+    parent.setZIndex(zIndexes.parentZIndex);
+    child.setZIndex(zIndexes.childZIndex);
 
     this.logger.info('Applied embedding z-indexes', {
       parentId: parent.id,
-      parentType,
-      parentZIndex,
+      parentZIndex: zIndexes.parentZIndex,
       childId: child.id,
-      childType,
-      childZIndex,
+      childZIndex: zIndexes.childZIndex,
     });
   }
 
@@ -470,6 +448,84 @@ export class InfraX6ZOrderAdapter {
       nodeType,
       zIndex,
     });
+  }
+
+  /**
+   * Validate and correct all z-order relationships after diagram load
+   * Runs comprehensive validation and fixes any violations
+   */
+  validateAndCorrectLoadedDiagram(graph: Graph): {
+    fixed: number;
+    violations: Array<{ nodeId: string; issue: string; oldZIndex: number; newZIndex: number }>;
+  } {
+    const violations: Array<{
+      nodeId: string;
+      issue: string;
+      oldZIndex: number;
+      newZIndex: number;
+    }> = [];
+    let fixedCount = 0;
+
+    this.logger.info('Validating z-order relationships after diagram load');
+
+    const allNodes = graph.getNodes();
+
+    // Run comprehensive validation
+    const validationResult = this.zOrderService.validateComprehensiveZOrder(allNodes);
+
+    if (validationResult.violations.length > 0) {
+      this.logger.warn('Z-order violations detected in loaded diagram', {
+        violationsCount: validationResult.violations.length,
+        summary: validationResult.summary,
+      });
+
+      // Apply corrections
+      validationResult.violations.forEach(violation => {
+        const oldZIndex = violation.node.getZIndex() ?? 1;
+        violation.node.setZIndex(violation.correctedZIndex);
+        fixedCount++;
+
+        violations.push({
+          nodeId: violation.node.id,
+          issue: violation.issue,
+          oldZIndex,
+          newZIndex: violation.correctedZIndex,
+        });
+      });
+    }
+
+    // Also run embedding hierarchy validation
+    const embeddingViolations = this.zOrderService.validateEmbeddingZOrderHierarchy(allNodes);
+
+    if (embeddingViolations.length > 0) {
+      this.logger.warn('Embedding hierarchy z-order violations detected', {
+        violationsCount: embeddingViolations.length,
+      });
+
+      embeddingViolations.forEach(violation => {
+        const oldZIndex = violation.node.getZIndex() ?? 1;
+        violation.node.setZIndex(violation.correctedZIndex);
+        fixedCount++;
+
+        violations.push({
+          nodeId: violation.node.id,
+          issue: violation.issue,
+          oldZIndex,
+          newZIndex: violation.correctedZIndex,
+        });
+      });
+    }
+
+    if (fixedCount > 0) {
+      this.logger.warn('Fixed z-order violations in loaded diagram', {
+        fixedCount,
+        violations: violations.length,
+      });
+    } else {
+      this.logger.info('All z-order relationships validated successfully');
+    }
+
+    return { fixed: fixedCount, violations };
   }
 
   /**

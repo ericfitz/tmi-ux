@@ -592,6 +592,11 @@ export const HISTORY_OPERATION_TYPES = {
   GROUP_CREATE: 'group-create',
   GROUP_UNGROUP: 'group-ungroup',
 
+  // Embedding operations
+  NODE_EMBED: 'node-embed',
+  NODE_UNEMBED: 'node-unembed',
+  NODE_RE_EMBED: 'node-re-embed',
+
   // Collaboration operations
   REMOTE_OPERATION: 'remote-operation',
 

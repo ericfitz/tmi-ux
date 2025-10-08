@@ -158,6 +158,12 @@
   },
   "editor": {
     "diagramPrefix": "مخطط:",
+    "embedding": {
+      "cannotEmbedIntoTextBox": "Cannot embed shapes into text boxes",
+      "cannotEmbedTextBox": "Text boxes cannot be embedded into other shapes",
+      "circularEmbeddingPrevented": "Circular embedding is not allowed",
+      "securityBoundaryRestriction": "Security boundaries can only be embedded into other security boundaries"
+    },
     "flowLabel": "تدفق",
     "nodeLabels": {
       "actor": "ممثل",

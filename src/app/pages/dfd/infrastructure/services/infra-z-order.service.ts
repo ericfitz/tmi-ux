@@ -553,6 +553,59 @@ export class ZOrderService {
   }
 
   /**
+   * Calculate z-indexes for both parent and child during embedding
+   * Encapsulates the business logic for embedding z-index assignment
+   */
+  calculateEmbeddingZIndexes(
+    parent: Node,
+    child: Node,
+  ): {
+    parentZIndex: number;
+    childZIndex: number;
+  } {
+    const parentType = this.getNodeType(parent);
+    const childType = this.getNodeType(child);
+
+    let parentZIndex: number;
+    let childZIndex: number;
+
+    // Parent z-index based on type
+    if (parentType === 'security-boundary') {
+      parentZIndex = 1; // Security boundaries stay at the back
+    } else {
+      parentZIndex = 10; // Regular nodes default
+    }
+
+    // Child z-index based on type and parent
+    if (childType === 'security-boundary') {
+      // Embedded security boundaries must respect parent hierarchy
+      // Use Math.max to ensure child is always above parent
+      childZIndex = Math.max(parentZIndex + 1, 2);
+    } else {
+      // Regular nodes: parent + 1
+      childZIndex = parentZIndex + 1;
+    }
+
+    this.logger.info('Calculated embedding z-indexes', {
+      parentId: parent.id,
+      parentType,
+      parentZIndex,
+      childId: child.id,
+      childType,
+      childZIndex,
+    });
+
+    return { parentZIndex, childZIndex };
+  }
+
+  /**
+   * Helper to get node type safely
+   */
+  private getNodeType(node: Node): string {
+    return (node as any).getNodeTypeInfo ? (node as any).getNodeTypeInfo().type : 'process';
+  }
+
+  /**
    * Calculate z-index for unembedded security boundary node
    * Rule: When a security boundary node is unembedded and is no longer the child of any other object,
    * its zIndex is set back to the default zIndex for security boundary nodes
