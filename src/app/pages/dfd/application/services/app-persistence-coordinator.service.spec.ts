@@ -1,26 +1,24 @@
 /**
- * Test suite for AppPersistenceCoordinator
+ * Test suite for AppPersistenceCoordinator (Simplified)
  */
 
 import '@angular/compiler';
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import {
   AppPersistenceCoordinator,
   SaveOperation,
-  SaveResult,
-  SyncOperation,
-  SyncResult,
+  LoadOperation,
 } from './app-persistence-coordinator.service';
 
 describe('AppPersistenceCoordinator', () => {
   let service: AppPersistenceCoordinator;
   let mockLogger: any;
-  let mockStrategy: any;
-  let mockServerConnection: any;
-  let mockWebSocketAdapter: any;
+  let mockLocalStorageAdapter: any;
+  let mockRestStrategy: any;
+  let mockWebSocketStrategy: any;
 
   beforeEach(() => {
     // Create logger spy
@@ -31,29 +29,55 @@ describe('AppPersistenceCoordinator', () => {
       error: vi.fn(),
     };
 
-    // Create server connection mock
-    mockServerConnection = {
-      isConnected: vi.fn().mockReturnValue(true),
-      onConnectionStatusChange: vi.fn().mockReturnValue({ subscribe: vi.fn() }),
+    // Create localStorage adapter mock
+    mockLocalStorageAdapter = {
+      saveDiagram: vi.fn().mockReturnValue(of(true)),
+      loadDiagram: vi.fn().mockReturnValue(of(null)),
     };
 
-    // Create websocket adapter mock
-    mockWebSocketAdapter = {
-      isConnected: vi.fn().mockReturnValue(true),
-      send: vi.fn(),
+    // Create REST strategy mock
+    mockRestStrategy = {
+      type: 'rest',
+      save: vi.fn().mockReturnValue(
+        of({
+          success: true,
+          operationId: 'rest-save-123',
+          diagramId: 'test-diagram',
+          timestamp: Date.now(),
+        }),
+      ),
+      load: vi.fn().mockReturnValue(
+        of({
+          success: true,
+          diagramId: 'test-diagram',
+          data: { cells: [] },
+          source: 'api',
+          timestamp: Date.now(),
+        }),
+      ),
     };
 
-    // Create strategy spy - using 'cache-only' type so it's always available
-    mockStrategy = {
-      save: vi.fn(),
-      load: vi.fn(),
-      sync: vi.fn(),
-      type: 'cache-only',
-      priority: 100,
+    // Create WebSocket strategy mock
+    mockWebSocketStrategy = {
+      type: 'websocket',
+      save: vi.fn().mockReturnValue(
+        of({
+          success: true,
+          operationId: 'ws-save-123',
+          diagramId: 'test-diagram',
+          timestamp: Date.now(),
+        }),
+      ),
+      load: vi.fn().mockReturnValue(throwError(() => new Error('WebSocket does not support load'))),
     };
 
-    // Create service directly without TestBed
-    service = new AppPersistenceCoordinator(mockLogger, mockServerConnection, mockWebSocketAdapter);
+    // Create service directly
+    service = new AppPersistenceCoordinator(
+      mockLogger,
+      mockLocalStorageAdapter,
+      mockRestStrategy,
+      mockWebSocketStrategy,
+    );
   });
 
   describe('Service Initialization', () => {
@@ -61,166 +85,156 @@ describe('AppPersistenceCoordinator', () => {
       expect(service).toBeTruthy();
     });
 
-    it('should initialize with default configuration', () => {
-      const config = service.getConfiguration();
-      expect(config.enableCaching).toBe(true);
-      expect(config.operationTimeoutMs).toBe(30000);
-      expect(config.maxCacheEntries).toBe(100);
-    });
-
-    it('should be online by default', () => {
-      expect(service.isOnline()).toBe(true);
-    });
-  });
-
-  describe('Strategy Management', () => {
-    it('should allow adding strategies', () => {
-      service.addStrategy(mockStrategy);
-      const strategies = service.getStrategies();
-
-      expect(strategies).toContain(mockStrategy);
-      expect(strategies).toHaveLength(1);
-    });
-
-    it('should allow removing strategies', () => {
-      service.addStrategy(mockStrategy);
-      service.removeStrategy('cache-only');
-      const strategies = service.getStrategies();
-
-      expect(strategies).not.toContain(mockStrategy);
-      expect(strategies).toHaveLength(0);
-    });
-
-    it('should sort strategies by priority', () => {
-      const lowPriorityStrategy = {
-        save: vi.fn(),
-        load: vi.fn(),
-        type: 'low',
-        priority: 50,
-      };
-      const highPriorityStrategy = {
-        save: vi.fn(),
-        load: vi.fn(),
-        type: 'high',
-        priority: 150,
-      };
-
-      service.addStrategy(lowPriorityStrategy);
-      service.addStrategy(mockStrategy); // priority 100
-      service.addStrategy(highPriorityStrategy);
-
-      const strategies = service.getStrategies();
-      expect(strategies[0]).toBe(highPriorityStrategy);
-      expect(strategies[1]).toBe(mockStrategy);
-      expect(strategies[2]).toBe(lowPriorityStrategy);
-    });
-
-    it('should allow setting fallback strategy', () => {
-      service.addStrategy(mockStrategy);
-      service.setFallbackStrategy('cache-only');
-
-      // Should not throw error
-      expect(() => service.setFallbackStrategy('cache-only')).not.toThrow();
+    it('should initialize with zero statistics', () => {
+      const stats = service.getStats();
+      expect(stats.totalSaves).toBe(0);
+      expect(stats.successfulSaves).toBe(0);
+      expect(stats.failedSaves).toBe(0);
+      expect(stats.totalLoads).toBe(0);
+      expect(stats.successfulLoads).toBe(0);
+      expect(stats.failedLoads).toBe(0);
     });
   });
 
   describe('Save Operations', () => {
-    let saveOperation: SaveOperation;
-    let expectedResult: SaveResult;
+    const saveOperation: SaveOperation = {
+      diagramId: 'test-diagram',
+      threatModelId: 'test-tm',
+      data: { nodes: [], edges: [] },
+    };
 
-    beforeEach(() => {
-      saveOperation = {
-        diagramId: 'test-diagram',
-        data: { nodes: [], edges: [] },
-        strategyType: 'cache-only',
-        metadata: { userId: 'test-user' },
-      };
-
-      expectedResult = {
-        success: true,
-        operationId: 'save-123',
-        diagramId: 'test-diagram',
-        timestamp: Date.now(),
-        metadata: {},
-      };
-
-      service.addStrategy(mockStrategy);
+    it('should save via REST when useWebSocket=false', () => {
+      return new Promise<void>((resolve, reject) => {
+        service.save(saveOperation, false).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+            expect(mockRestStrategy.save).toHaveBeenCalledWith(saveOperation);
+            expect(mockWebSocketStrategy.save).not.toHaveBeenCalled();
+            resolve();
+          },
+          error: reject,
+        });
+      });
     });
 
-    // Test removed - obsolete strategy pattern
-
-    // Test removed - obsolete strategy pattern
+    it('should save via WebSocket when useWebSocket=true', () => {
+      return new Promise<void>((resolve, reject) => {
+        service.save(saveOperation, true).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+            expect(mockWebSocketStrategy.save).toHaveBeenCalledWith(saveOperation);
+            expect(mockRestStrategy.save).not.toHaveBeenCalled();
+            resolve();
+          },
+          error: reject,
+        });
+      });
+    });
 
     it('should emit save status events', () => {
-      mockStrategy.save.mockReturnValue(of(expectedResult));
+      return new Promise<void>((resolve, reject) => {
+        const statusEvents: any[] = [];
 
-      return new Promise<void>((resolve, _reject) => {
-        // Subscribe to save status
-        service.saveStatus$.subscribe(status => {
-          if (status.status === 'saving') {
-            expect(status.diagramId).toBe('test-diagram');
-            resolve();
-          }
+        service.saveStatus$.subscribe(event => {
+          statusEvents.push(event);
         });
 
-        service.save(saveOperation).subscribe();
-      });
-    });
-
-    it('should handle strategy not found error', () => {
-      const invalidOperation: SaveOperation = {
-        ...saveOperation,
-        strategyType: 'nonexistent-strategy',
-      };
-
-      return new Promise<void>((resolve, reject) => {
-        service.save(invalidOperation).subscribe({
-          next: () => reject(new Error('Should have failed')),
-          error: error => {
-            expect(error.message).toContain('not found');
+        service.save(saveOperation, false).subscribe({
+          next: () => {
+            expect(statusEvents.length).toBeGreaterThanOrEqual(2);
+            expect(statusEvents[0].status).toBe('saving');
+            expect(statusEvents[statusEvents.length - 1].status).toBe('saved');
             resolve();
           },
+          error: reject,
         });
       });
     });
 
-    // Test removed - obsolete strategy pattern
-  });
-
-  // Load Operations tests removed - obsolete strategy pattern
-
-  describe('Sync Operations', () => {
-    let syncOperation: SyncOperation;
-    let expectedResult: SyncResult;
-
-    beforeEach(() => {
-      syncOperation = {
-        diagramId: 'test-diagram',
-        strategyType: 'cache-only',
-        lastSyncTimestamp: Date.now() - 10000,
-      };
-
-      expectedResult = {
-        success: true,
-        operationId: 'sync-123',
-        diagramId: 'test-diagram',
-        hasChanges: false,
-        timestamp: Date.now(),
-        metadata: {},
-      };
-
-      service.addStrategy(mockStrategy);
+    it('should track save statistics on success', () => {
+      return new Promise<void>((resolve, reject) => {
+        service.save(saveOperation, false).subscribe({
+          next: () => {
+            const stats = service.getStats();
+            expect(stats.totalSaves).toBe(1);
+            expect(stats.successfulSaves).toBe(1);
+            expect(stats.failedSaves).toBe(0);
+            resolve();
+          },
+          error: reject,
+        });
+      });
     });
 
-    it('should execute sync operation successfully', () => {
-      mockStrategy.sync.mockReturnValue(of(expectedResult));
-
+    it('should track save statistics on failure', () => {
       return new Promise<void>((resolve, reject) => {
-        service.sync(syncOperation).subscribe({
-          next: (result: SyncResult) => {
+        mockRestStrategy.save.mockReturnValue(
+          of({
+            success: false,
+            operationId: 'save-123',
+            diagramId: 'test-diagram',
+            timestamp: Date.now(),
+            error: 'Save failed',
+          }),
+        );
+
+        service.save(saveOperation, false).subscribe({
+          next: () => {
+            const stats = service.getStats();
+            expect(stats.totalSaves).toBe(1);
+            expect(stats.successfulSaves).toBe(0);
+            expect(stats.failedSaves).toBe(1);
+            resolve();
+          },
+          error: reject,
+        });
+      });
+    });
+
+    it('should emit error status on save failure', () => {
+      return new Promise<void>((resolve, reject) => {
+        const statusEvents: any[] = [];
+
+        service.saveStatus$.subscribe(event => {
+          statusEvents.push(event);
+        });
+
+        mockRestStrategy.save.mockReturnValue(
+          of({
+            success: false,
+            operationId: 'save-123',
+            diagramId: 'test-diagram',
+            timestamp: Date.now(),
+            error: 'Save failed',
+          }),
+        );
+
+        service.save(saveOperation, false).subscribe({
+          next: () => {
+            const errorEvent = statusEvents.find(e => e.status === 'error');
+            expect(errorEvent).toBeDefined();
+            expect(errorEvent?.error).toBe('Save failed');
+            resolve();
+          },
+          error: reject,
+        });
+      });
+    });
+  });
+
+  describe('Save to LocalStorage', () => {
+    it('should save to localStorage adapter', () => {
+      return new Promise<void>((resolve, reject) => {
+        service.saveToLocalStorage('test-diagram', 'test-tm', { cells: [] }).subscribe({
+          next: result => {
             expect(result.success).toBe(true);
-            expect(result.diagramId).toBe('test-diagram');
-            expect(mockStrategy.sync).toHaveBeenCalledWith(syncOperation);
+            expect(mockLocalStorageAdapter.saveDiagram).toHaveBeenCalledWith(
+              'test-diagram',
+              'test-tm',
+              {
+                cells: [],
+              },
+            );
             resolve();
           },
           error: reject,
@@ -228,24 +242,32 @@ describe('AppPersistenceCoordinator', () => {
       });
     });
 
-    it('should handle sync operation failure', () => {
-      const errorResult: SyncResult = {
-        success: false,
-        operationId: 'sync-123',
-        diagramId: 'test-diagram',
-        hasChanges: false,
-        timestamp: Date.now(),
-        error: 'Sync failed',
-        metadata: {},
-      };
-
-      mockStrategy.sync.mockReturnValue(of(errorResult));
-
+    it('should track localStorage save statistics', () => {
       return new Promise<void>((resolve, reject) => {
-        service.sync(syncOperation).subscribe({
-          next: (result: SyncResult) => {
-            expect(result.success).toBe(false);
-            expect(result.error).toBe('Sync failed');
+        service.saveToLocalStorage('test-diagram', 'test-tm', { cells: [] }).subscribe({
+          next: () => {
+            const stats = service.getStats();
+            expect(stats.successfulSaves).toBe(1);
+            resolve();
+          },
+          error: reject,
+        });
+      });
+    });
+  });
+
+  describe('Load Operations', () => {
+    const loadOperation: LoadOperation = {
+      diagramId: 'test-diagram',
+      threatModelId: 'test-tm',
+    };
+
+    it('should load from REST API', () => {
+      return new Promise<void>((resolve, reject) => {
+        service.load(loadOperation).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+            expect(mockRestStrategy.load).toHaveBeenCalledWith(loadOperation);
             resolve();
           },
           error: reject,
@@ -253,157 +275,130 @@ describe('AppPersistenceCoordinator', () => {
       });
     });
 
-    it('should handle strategy without sync support', () => {
-      mockStrategy.sync = undefined as any;
-
+    it('should track load statistics on success', () => {
       return new Promise<void>((resolve, reject) => {
-        service.sync(syncOperation).subscribe({
+        service.load(loadOperation).subscribe({
+          next: () => {
+            const stats = service.getStats();
+            expect(stats.totalLoads).toBe(1);
+            expect(stats.successfulLoads).toBe(1);
+            expect(stats.failedLoads).toBe(0);
+            resolve();
+          },
+          error: reject,
+        });
+      });
+    });
+
+    it('should track load statistics on failure', () => {
+      return new Promise<void>((resolve, reject) => {
+        mockRestStrategy.load.mockReturnValue(throwError(() => new Error('Load failed')));
+
+        service.load(loadOperation).subscribe({
+          next: () => reject(new Error('Should have failed')),
+          error: () => {
+            const stats = service.getStats();
+            expect(stats.totalLoads).toBe(1);
+            expect(stats.successfulLoads).toBe(0);
+            expect(stats.failedLoads).toBe(1);
+            resolve();
+          },
+        });
+      });
+    });
+
+    it('should fallback to localStorage when allowed and REST fails', () => {
+      return new Promise<void>((resolve, reject) => {
+        mockRestStrategy.load.mockReturnValue(throwError(() => new Error('REST failed')));
+        mockLocalStorageAdapter.loadDiagram.mockReturnValue(
+          of({
+            diagramId: 'test-diagram',
+            threatModelId: 'test-tm',
+            data: { cells: [] },
+            timestamp: Date.now(),
+          }),
+        );
+
+        service.load(loadOperation, true).subscribe({
+          next: result => {
+            expect(result.success).toBe(true);
+            expect(result.source).toBe('local-storage');
+            expect(mockLocalStorageAdapter.loadDiagram).toHaveBeenCalledWith('test-diagram');
+            resolve();
+          },
+          error: reject,
+        });
+      });
+    });
+
+    it('should not fallback to localStorage when not allowed', () => {
+      return new Promise<void>((resolve, reject) => {
+        mockRestStrategy.load.mockReturnValue(throwError(() => new Error('REST failed')));
+
+        service.load(loadOperation, false).subscribe({
           next: () => reject(new Error('Should have failed')),
           error: error => {
-            expect(error.message).toContain('does not support sync');
+            expect(error.message).toBe('REST failed');
+            expect(mockLocalStorageAdapter.loadDiagram).not.toHaveBeenCalled();
             resolve();
           },
         });
       });
-    });
-  });
-
-  describe('Batch Operations', () => {
-    beforeEach(() => {
-      service.addStrategy(mockStrategy);
-    });
-
-    // Test removed - obsolete strategy pattern
-
-    // Test removed - obsolete strategy pattern
-
-    it('should handle empty batch operations', () => {
-      return new Promise<void>((resolve, reject) => {
-        service.saveBatch([]).subscribe({
-          next: (results: SaveResult[]) => {
-            expect(results).toHaveLength(0);
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-  });
-
-  describe('Cache Management', () => {
-    // Test removed - obsolete implementation
-
-    it('should clear cache for specific diagram', () => {
-      return new Promise<void>((resolve, reject) => {
-        service.clearCache('test-diagram').subscribe({
-          next: () => {
-            // Should complete without error
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
-    it('should clear all cache entries', () => {
-      return new Promise<void>((resolve, reject) => {
-        service.clearCache().subscribe({
-          next: () => {
-            // Should complete without error
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
-    it('should invalidate cache entries', () => {
-      return new Promise<void>((resolve, reject) => {
-        service.invalidateCache('test-diagram').subscribe({
-          next: () => {
-            // Should complete without error
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
-    it('should return null for non-existent cache entry', () => {
-      return new Promise<void>((resolve, reject) => {
-        service.getCacheEntry('nonexistent-diagram').subscribe({
-          next: entry => {
-            expect(entry).toBeNull();
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-  });
-
-  describe('Configuration Management', () => {
-    it('should allow configuration updates', () => {
-      const newConfig = {
-        enableCaching: false,
-        operationTimeoutMs: 60000,
-        maxCacheEntries: 50,
-      };
-
-      service.configure(newConfig);
-      const config = service.getConfiguration();
-
-      expect(config.enableCaching).toBe(false);
-      expect(config.operationTimeoutMs).toBe(60000);
-      expect(config.maxCacheEntries).toBe(50);
-    });
-
-    it('should maintain other config values when partially updating', () => {
-      const originalConfig = service.getConfiguration();
-
-      service.configure({ operationTimeoutMs: 45000 });
-      const updatedConfig = service.getConfiguration();
-
-      expect(updatedConfig.enableCaching).toBe(originalConfig.enableCaching);
-      expect(updatedConfig.operationTimeoutMs).toBe(45000);
     });
   });
 
   describe('Statistics and Monitoring', () => {
-    // Test removed - obsolete strategy pattern
-
-    it('should reset statistics', () => {
-      service.resetStats();
-      const stats = service.getStats();
-
-      expect(stats.totalOperations).toBe(0);
-      expect(stats.successfulOperations).toBe(0);
-      expect(stats.failedOperations).toBe(0);
-      expect(stats.cacheHits).toBe(0);
-      expect(stats.cacheMisses).toBe(0);
-    });
-
-    it('should provide health status', () => {
+    it('should track multiple operations', () => {
       return new Promise<void>((resolve, reject) => {
-        service.getHealthStatus().subscribe({
-          next: health => {
-            expect(health.overall).toBeDefined();
-            expect(health.strategies).toBeDefined();
-            expect(health.cacheHealth).toBeDefined();
-            expect(health.pendingOperations).toBeDefined();
-            resolve();
+        const saveOp: SaveOperation = {
+          diagramId: 'test-diagram',
+          threatModelId: 'test-tm',
+          data: {},
+        };
+        const loadOp: LoadOperation = {
+          diagramId: 'test-diagram',
+          threatModelId: 'test-tm',
+        };
+
+        service.save(saveOp, false).subscribe({
+          next: () => {
+            service.load(loadOp).subscribe({
+              next: () => {
+                const stats = service.getStats();
+                expect(stats.totalSaves).toBe(1);
+                expect(stats.totalLoads).toBe(1);
+                resolve();
+              },
+              error: reject,
+            });
           },
           error: reject,
         });
       });
     });
+
+    it('should reset statistics', () => {
+      const saveOp: SaveOperation = {
+        diagramId: 'test-diagram',
+        threatModelId: 'test-tm',
+        data: {},
+      };
+
+      service.save(saveOp, false).subscribe(() => {
+        service.resetStats();
+        const stats = service.getStats();
+        expect(stats.totalSaves).toBe(0);
+        expect(stats.successfulSaves).toBe(0);
+        expect(stats.failedSaves).toBe(0);
+      });
+    });
   });
 
-  // Fallback Strategy tests removed - obsolete strategy pattern
-
   describe('Cleanup', () => {
-    it('should dispose cleanly', () => {
-      expect(() => service.dispose()).not.toThrow();
+    it('should dispose observables', () => {
+      service.dispose();
+      // Should complete without error
+      expect(true).toBe(true);
     });
   });
 });

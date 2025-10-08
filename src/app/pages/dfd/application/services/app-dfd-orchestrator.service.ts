@@ -17,7 +17,7 @@ import '@antv/x6-plugin-export';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { AuthService } from '../../../../auth/services/auth.service';
 import { ServerConnectionService } from '../../../../core/services/server-connection.service';
-import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
+import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
 import { AppPersistenceCoordinator } from './app-persistence-coordinator.service';
 import { AppDiagramLoadingService } from './app-diagram-loading.service';
@@ -38,7 +38,6 @@ export interface DfdInitializationParams {
   readonly diagramId: string;
   readonly threatModelId: string;
   readonly containerElement: HTMLElement;
-  readonly collaborationEnabled: boolean;
   readonly readOnly: boolean;
   readonly autoSaveMode: 'auto' | 'manual';
   readonly joinCollaboration?: boolean;
@@ -47,7 +46,6 @@ export interface DfdInitializationParams {
 export interface DfdState {
   readonly initialized: boolean;
   readonly loading: boolean;
-  readonly collaborating: boolean;
   readonly readOnly: boolean;
   readonly hasUnsavedChanges: boolean;
   readonly lastSaved: Date | null;
@@ -103,7 +101,7 @@ export class AppDfdOrchestrator {
     private readonly logger: LoggerService,
     private readonly authService: AuthService,
     private readonly serverConnectionService: ServerConnectionService,
-    private readonly webSocketAdapter: WebSocketAdapter,
+    private readonly collaborationService: DfdCollaborationService,
     private readonly appGraphOperationManager: AppGraphOperationManager,
     private readonly appPersistenceCoordinator: AppPersistenceCoordinator,
     private readonly appDiagramLoadingService: AppDiagramLoadingService,
@@ -121,7 +119,6 @@ export class AppDfdOrchestrator {
   initialize(params: DfdInitializationParams): Observable<boolean> {
     this.logger.debug('AppDfdOrchestrator: Initializing DFD system', {
       diagramId: params.diagramId,
-      collaborationEnabled: params.collaborationEnabled,
       readOnly: params.readOnly,
     });
 
@@ -145,7 +142,6 @@ export class AppDfdOrchestrator {
         this._updateState({
           initialized: true,
           loading: false,
-          collaborating: params.collaborationEnabled,
           readOnly: params.readOnly,
           diagramId: params.diagramId,
           threatModelId: params.threatModelId,
@@ -257,14 +253,12 @@ export class AppDfdOrchestrator {
 
     this.logger.debug('AppDfdOrchestrator: Manual save triggered');
 
-    // Check actual WebSocket connection status, not just collaboration flag
-    const isWebSocketConnected =
-      this._state$.value.collaborating && this.webSocketAdapter.isConnected;
-    const useWebSocket = isWebSocketConnected;
+    // Check if in active collaboration session (socket is guaranteed connected if true)
+    const isCollaborating = this.collaborationService.isCollaborating();
+    const useWebSocket = isCollaborating;
 
     this.logger.debug('Manual save strategy selection', {
-      collaborating: this._state$.value.collaborating,
-      webSocketConnected: this.webSocketAdapter.isConnected,
+      isCollaborating,
       willUseWebSocket: useWebSocket,
     });
 
@@ -503,19 +497,10 @@ export class AppDfdOrchestrator {
   }
 
   /**
-   * Collaboration management
+   * Collaboration management - removed
+   * Collaboration state is now managed entirely by DfdCollaborationService
+   * Use collaborationService.createSession() / joinSession() / leaveSession() instead
    */
-  startCollaboration(): Observable<boolean> {
-    this.logger.debug('AppDfdOrchestrator: Starting collaboration');
-    this._updateState({ collaborating: true });
-    return of(true);
-  }
-
-  stopCollaboration(): Observable<boolean> {
-    this.logger.debug('AppDfdOrchestrator: Stopping collaboration');
-    this._updateState({ collaborating: false });
-    return of(true);
-  }
 
   /**
    * Selection management
@@ -582,13 +567,10 @@ export class AppDfdOrchestrator {
     return this._state$.asObservable();
   }
 
-  get collaborationStateChanged$(): Observable<boolean> {
-    return this._state$.pipe(
-      map(state => state.collaborating),
-      filter((value, index) => index === 0 || value !== this._previousCollaborationState),
-      tap(value => (this._previousCollaborationState = value)),
-    );
-  }
+  /**
+   * Collaboration state observable - removed
+   * Use DfdCollaborationService.collaborationState$ instead
+   */
 
   get selectionChanged$(): Observable<string[]> {
     return this.dfdInfrastructure.selectionChanged$.pipe(map(change => change.selected));
@@ -616,8 +598,6 @@ export class AppDfdOrchestrator {
       filter(error => error !== null),
     );
   }
-
-  private _previousCollaborationState = false;
 
   /**
    * Event handling
@@ -1112,8 +1092,8 @@ export class AppDfdOrchestrator {
       graph: this.dfdInfrastructure.getGraph(),
       diagramId: params.diagramId,
       threatModelId: params.threatModelId,
-      userId: this.authService.userId, // In real implementation, get from auth service
-      isCollaborating: params.collaborationEnabled,
+      userId: this.authService.userId,
+      isCollaborating: this.collaborationService.isCollaborating(),
       permissions: ['read', 'write'],
       suppressValidation: false,
       suppressHistory: false,
@@ -1132,7 +1112,6 @@ export class AppDfdOrchestrator {
         'Skipping automatic diagram load - waiting for WebSocket connection (joinCollaboration=true)',
         {
           diagramId: params.diagramId,
-          collaborationEnabled: params.collaborationEnabled,
         },
       );
 
@@ -1155,9 +1134,6 @@ export class AppDfdOrchestrator {
         this.logger.debug(
           'Diagram initialization complete - history filtering via GraphHistoryCoordinator',
         );
-        if (params.collaborationEnabled) {
-          this.logger.debug('Collaboration mode enabled - history managed by server');
-        }
       }),
     );
   }
@@ -1217,15 +1193,13 @@ export class AppDfdOrchestrator {
       return;
     }
 
-    // Normal save - WebSocket (if connected) or REST
-    // Check actual WebSocket connection status, not just collaboration flag
-    const isWebSocketConnected =
-      this._state$.value.collaborating && this.webSocketAdapter.isConnected;
-    const useWebSocket = isWebSocketConnected;
+    // Normal save - WebSocket (if in collaboration session) or REST
+    // If isCollaborating() returns true, WebSocket is guaranteed to be connected
+    const isCollaborating = this.collaborationService.isCollaborating();
+    const useWebSocket = isCollaborating;
 
     this.logger.debug('Autosave strategy selection', {
-      collaborating: this._state$.value.collaborating,
-      webSocketConnected: this.webSocketAdapter.isConnected,
+      isCollaborating,
       willUseWebSocket: useWebSocket,
     });
 
@@ -1348,7 +1322,6 @@ export class AppDfdOrchestrator {
     return {
       initialized: false,
       loading: false,
-      collaborating: false,
       readOnly: false,
       hasUnsavedChanges: false,
       lastSaved: null,

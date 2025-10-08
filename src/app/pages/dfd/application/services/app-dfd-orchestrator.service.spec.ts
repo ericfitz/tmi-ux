@@ -62,20 +62,18 @@ describe('AppDfdOrchestrator', () => {
   let service: AppDfdOrchestrator;
   let mockLogger: any;
   let mockAuthService: any;
+  let mockServerConnectionService: any;
+  let mockCollaborationService: any;
   let mockGraphOperationManager: any;
   let mockPersistenceCoordinator: any;
-  let mockAutoSaveManager: any;
   let mockDiagramLoadingService: any;
   let mockExportService: any;
   let mockNodeConfigService: any;
-  let mockRestStrategy: any;
-  let mockWebSocketStrategy: any;
-  let mockCacheStrategy: any;
   let mockDfdFacade: any;
   let mockContainerElement: HTMLElement;
 
   beforeEach(() => {
-    // Create all 12 required mocks
+    // Create all required mocks
     mockLogger = {
       info: vi.fn(),
       debug: vi.fn(),
@@ -86,6 +84,17 @@ describe('AppDfdOrchestrator', () => {
     mockAuthService = {
       getCurrentUser: vi.fn().mockReturnValue(of({ id: 'user-1', email: 'test@example.com' })),
       isAuthenticated: vi.fn().mockReturnValue(of(true)),
+      isUsingLocalProvider: vi.fn().mockReturnValue(false),
+    };
+
+    mockServerConnectionService = {
+      isConnected: vi.fn().mockReturnValue(true),
+      serverMode: vi.fn().mockReturnValue('remote'),
+      currentDetails: { isReachable: true, mode: 'remote' },
+    };
+
+    mockCollaborationService = {
+      isCollaborating: vi.fn().mockReturnValue(false),
     };
 
     mockGraphOperationManager = {
@@ -97,22 +106,24 @@ describe('AppDfdOrchestrator', () => {
     };
 
     mockPersistenceCoordinator = {
-      save: vi.fn(),
-      load: vi.fn(),
-      sync: vi.fn(),
-      addStrategy: vi.fn(),
-      setFallbackStrategy: vi.fn(),
-      getStrategies: vi.fn().mockReturnValue([]),
-    };
-
-    mockAutoSaveManager = {
-      trigger: vi.fn(),
-      triggerManualSave: vi.fn(),
-      enable: vi.fn(),
-      disable: vi.fn(),
-      getState: vi.fn(),
-      setPolicyMode: vi.fn(),
-      saveCompleted$: new Subject(),
+      save: vi.fn().mockReturnValue(
+        of({
+          success: true,
+          operationId: 'save-123',
+          diagramId: 'test-diagram',
+          timestamp: Date.now(),
+        }),
+      ),
+      load: vi.fn().mockReturnValue(
+        of({
+          success: true,
+          diagramId: 'test-diagram',
+          data: { cells: [] },
+          source: 'api',
+          timestamp: Date.now(),
+        }),
+      ),
+      saveStatus$: new Subject(),
     };
 
     mockDiagramLoadingService = {
@@ -134,27 +145,6 @@ describe('AppDfdOrchestrator', () => {
 
     mockNodeConfigService = {
       getNodeConfiguration: vi.fn(),
-    };
-
-    mockRestStrategy = {
-      save: vi.fn(),
-      load: vi.fn(),
-      type: 'rest',
-      priority: 100,
-    };
-
-    mockWebSocketStrategy = {
-      save: vi.fn(),
-      load: vi.fn(),
-      type: 'websocket',
-      priority: 90,
-    };
-
-    mockCacheStrategy = {
-      save: vi.fn(),
-      load: vi.fn(),
-      type: 'cache',
-      priority: 10,
     };
 
     // Create a mock graph that will be returned by facade.getGraph()
@@ -208,19 +198,17 @@ describe('AppDfdOrchestrator', () => {
     mockContainerElement.style.height = '600px';
     document.body.appendChild(mockContainerElement);
 
-    // Create service with all 12 dependencies
+    // Create service with correct dependencies
     service = new AppDfdOrchestrator(
       mockLogger,
       mockAuthService,
+      mockServerConnectionService,
+      mockCollaborationService,
       mockGraphOperationManager,
       mockPersistenceCoordinator,
-      mockAutoSaveManager,
       mockDiagramLoadingService,
       mockExportService,
       mockNodeConfigService,
-      mockRestStrategy,
-      mockWebSocketStrategy,
-      mockCacheStrategy,
       mockDfdFacade,
     );
   });
@@ -238,7 +226,6 @@ describe('AppDfdOrchestrator', () => {
       const state = service.getState();
       expect(state.initialized).toBe(false);
       expect(state.loading).toBe(false);
-      expect(state.collaborating).toBe(false);
       expect(state.readOnly).toBe(false);
       expect(state.hasUnsavedChanges).toBe(false);
       expect(state.lastSaved).toBeNull();

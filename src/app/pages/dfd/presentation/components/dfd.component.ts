@@ -363,7 +363,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       diagramId: this.dfdId || 'new-diagram',
       threatModelId: this.threatModelId || 'unknown',
       containerElement: this.graphContainer.nativeElement,
-      collaborationEnabled: true,
       readOnly: this.isReadOnlyMode,
       autoSaveMode: this.isReadOnlyMode ? ('manual' as const) : ('auto' as const),
       joinCollaboration: this.joinCollaboration,
