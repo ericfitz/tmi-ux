@@ -137,10 +137,6 @@
         {
           "id": "mobile-cell-1",
           "shape": "actor",
-          "x": 100,
-          "y": 200,
-          "width": 80,
-          "height": 80,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -160,15 +156,19 @@
               "key": "user_type",
               "value": "mobile_user"
             }
-          ]
+          ],
+          "position": {
+            "x": 100,
+            "y": 200
+          },
+          "size": {
+            "width": 80,
+            "height": 80
+          }
         },
         {
           "id": "mobile-cell-2",
           "shape": "process",
-          "x": 250,
-          "y": 200,
-          "width": 120,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -188,15 +188,19 @@
               "key": "app_type",
               "value": "flutter"
             }
-          ]
+          ],
+          "position": {
+            "x": 250,
+            "y": 200
+          },
+          "size": {
+            "width": 120,
+            "height": 60
+          }
         },
         {
           "id": "mobile-cell-3",
           "shape": "store",
-          "x": 250,
-          "y": 300,
-          "width": 120,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -216,15 +220,19 @@
               "key": "storage_type",
               "value": "sqlite"
             }
-          ]
+          ],
+          "position": {
+            "x": 250,
+            "y": 300
+          },
+          "size": {
+            "width": 120,
+            "height": 60
+          }
         },
         {
           "id": "mobile-cell-4",
           "shape": "process",
-          "x": 450,
-          "y": 200,
-          "width": 120,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -244,15 +252,19 @@
               "key": "gateway_type",
               "value": "api_gateway"
             }
-          ]
+          ],
+          "position": {
+            "x": 450,
+            "y": 200
+          },
+          "size": {
+            "width": 120,
+            "height": 60
+          }
         },
         {
           "id": "mobile-cell-5",
           "shape": "process",
-          "x": 650,
-          "y": 150,
-          "width": 120,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -272,15 +284,19 @@
               "key": "auth_type",
               "value": "oauth2"
             }
-          ]
+          ],
+          "position": {
+            "x": 650,
+            "y": 150
+          },
+          "size": {
+            "width": 120,
+            "height": 60
+          }
         },
         {
           "id": "mobile-cell-6",
           "shape": "process",
-          "x": 650,
-          "y": 250,
-          "width": 120,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -300,15 +316,19 @@
               "key": "service_type",
               "value": "business_logic"
             }
-          ]
+          ],
+          "position": {
+            "x": 650,
+            "y": 250
+          },
+          "size": {
+            "width": 120,
+            "height": 60
+          }
         },
         {
           "id": "mobile-cell-7",
           "shape": "store",
-          "x": 850,
-          "y": 200,
-          "width": 100,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -328,15 +348,19 @@
               "key": "db_type",
               "value": "postgresql"
             }
-          ]
+          ],
+          "position": {
+            "x": 850,
+            "y": 200
+          },
+          "size": {
+            "width": 100,
+            "height": 60
+          }
         },
         {
           "id": "mobile-cell-8",
           "shape": "security-boundary",
-          "x": 200,
-          "y": 150,
-          "width": 200,
-          "height": 250,
           "zIndex": 0,
           "visible": true,
           "attrs": {
@@ -357,15 +381,19 @@
               "key": "boundary_type",
               "value": "device"
             }
-          ]
+          ],
+          "position": {
+            "x": 200,
+            "y": 150
+          },
+          "size": {
+            "width": 200,
+            "height": 250
+          }
         },
         {
           "id": "mobile-cell-9",
           "shape": "security-boundary",
-          "x": 600,
-          "y": 100,
-          "width": 400,
-          "height": 250,
           "zIndex": 0,
           "visible": true,
           "attrs": {
@@ -386,7 +414,15 @@
               "key": "boundary_type",
               "value": "server"
             }
-          ]
+          ],
+          "position": {
+            "x": 600,
+            "y": 100
+          },
+          "size": {
+            "width": 400,
+            "height": 250
+          }
         },
         {
           "id": "edge-1",

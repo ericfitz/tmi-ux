@@ -19,46 +19,12 @@ export function createMockCell(type: CellType = 'process', overrides?: Partial<C
   const defaultCell: Cell = {
     id,
     shape: type,
-    value: isEdge ? '' : `Mock ${type.charAt(0).toUpperCase() + type.slice(1)}`,
-    geometry: isEdge
-      ? undefined
-      : {
-          x: Math.floor(Math.random() * 500),
-          y: Math.floor(Math.random() * 300),
-          width: 120,
-          height: 60,
-        },
-    style: getStyleForType(type),
-    vertex: !isEdge,
-    edge: isEdge,
+    position: isEdge ? undefined : { x: Math.floor(Math.random() * 500), y: Math.floor(Math.random() * 300) },
+    size: isEdge ? undefined : { width: 120, height: 60 },
     parent: null,
     source: isEdge ? 'source_id' : undefined,
     target: isEdge ? 'target_id' : undefined,
   };
 
   return { ...defaultCell, ...overrides };
-}
-
-/**
- * Gets the appropriate style string for a given cell type
- * @param type The type of cell
- * @returns A style string for the cell type
- */
-function getStyleForType(type: CellType): string {
-  switch (type) {
-    case 'process':
-      return 'shape=process;whiteSpace=wrap;html=1;';
-    case 'store':
-      return 'shape=cylinder;whiteSpace=wrap;html=1;';
-    case 'actor':
-      return 'shape=actor;whiteSpace=wrap;html=1;';
-    case 'edge':
-      return 'endArrow=classic;html=1;';
-    case 'textbox':
-      return 'text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;';
-    case 'security-boundary':
-      return 'shape=rectangle;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;strokeWidth=2;';
-    default:
-      return 'whiteSpace=wrap;html=1;';
-  }
 }

@@ -116,10 +116,6 @@
         {
           "id": "internet-actor-1",
           "shape": "actor",
-          "x": 50,
-          "y": 200,
-          "width": 80,
-          "height": 80,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -139,15 +135,19 @@
               "key": "trust_level",
               "value": "untrusted"
             }
-          ]
+          ],
+          "position": {
+            "x": 50,
+            "y": 200
+          },
+          "size": {
+            "width": 80,
+            "height": 80
+          }
         },
         {
           "id": "loadbalancer-process-1",
           "shape": "process",
-          "x": 200,
-          "y": 200,
-          "width": 120,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -167,15 +167,19 @@
               "key": "service_type",
               "value": "load_balancer"
             }
-          ]
+          ],
+          "position": {
+            "x": 200,
+            "y": 200
+          },
+          "size": {
+            "width": 120,
+            "height": 60
+          }
         },
         {
           "id": "webserver-process-1",
           "shape": "process",
-          "x": 400,
-          "y": 150,
-          "width": 120,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -195,15 +199,19 @@
               "key": "instance_type",
               "value": "ec2"
             }
-          ]
+          ],
+          "position": {
+            "x": 400,
+            "y": 150
+          },
+          "size": {
+            "width": 120,
+            "height": 60
+          }
         },
         {
           "id": "webserver-process-2",
           "shape": "process",
-          "x": 400,
-          "y": 250,
-          "width": 120,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -223,15 +231,19 @@
               "key": "instance_type",
               "value": "ec2"
             }
-          ]
+          ],
+          "position": {
+            "x": 400,
+            "y": 250
+          },
+          "size": {
+            "width": 120,
+            "height": 60
+          }
         },
         {
           "id": "database-store-1",
           "shape": "store",
-          "x": 600,
-          "y": 200,
-          "width": 120,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -251,15 +263,19 @@
               "key": "db_type",
               "value": "mysql"
             }
-          ]
+          ],
+          "position": {
+            "x": 600,
+            "y": 200
+          },
+          "size": {
+            "width": 120,
+            "height": 60
+          }
         },
         {
           "id": "vpc-boundary-1",
           "shape": "security-boundary",
-          "x": 150,
-          "y": 100,
-          "width": 600,
-          "height": 250,
           "zIndex": 0,
           "visible": true,
           "attrs": {
@@ -280,7 +296,15 @@
               "key": "security_zone",
               "value": "vpc"
             }
-          ]
+          ],
+          "position": {
+            "x": 150,
+            "y": 100
+          },
+          "size": {
+            "width": 600,
+            "height": 250
+          }
         },
         {
           "id": "edge-1",
@@ -481,10 +505,6 @@
         {
           "id": "firewall-process-1",
           "shape": "process",
-          "x": 150,
-          "y": 150,
-          "width": 100,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -504,15 +524,19 @@
               "key": "protection_type",
               "value": "web_application_firewall"
             }
-          ]
+          ],
+          "position": {
+            "x": 150,
+            "y": 150
+          },
+          "size": {
+            "width": 100,
+            "height": 60
+          }
         },
         {
           "id": "ids-process-1",
           "shape": "process",
-          "x": 300,
-          "y": 150,
-          "width": 100,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -532,15 +556,19 @@
               "key": "detection_type",
               "value": "intrusion_detection"
             }
-          ]
+          ],
+          "position": {
+            "x": 300,
+            "y": 150
+          },
+          "size": {
+            "width": 100,
+            "height": 60
+          }
         },
         {
           "id": "logs-store-1",
           "shape": "store",
-          "x": 450,
-          "y": 150,
-          "width": 120,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -560,7 +588,15 @@
               "key": "log_type",
               "value": "security_events"
             }
-          ]
+          ],
+          "position": {
+            "x": 450,
+            "y": 150
+          },
+          "size": {
+            "width": 120,
+            "height": 60
+          }
         }
       ]
     },
@@ -581,10 +617,6 @@
         {
           "id": "api-process-1",
           "shape": "process",
-          "x": 150,
-          "y": 200,
-          "width": 120,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -604,15 +636,19 @@
               "key": "gateway_type",
               "value": "api_gateway"
             }
-          ]
+          ],
+          "position": {
+            "x": 150,
+            "y": 200
+          },
+          "size": {
+            "width": 120,
+            "height": 60
+          }
         },
         {
           "id": "service-process-1",
           "shape": "process",
-          "x": 350,
-          "y": 150,
-          "width": 120,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -632,15 +668,19 @@
               "key": "service_name",
               "value": "user_service"
             }
-          ]
+          ],
+          "position": {
+            "x": 350,
+            "y": 150
+          },
+          "size": {
+            "width": 120,
+            "height": 60
+          }
         },
         {
           "id": "service-process-2",
           "shape": "process",
-          "x": 350,
-          "y": 250,
-          "width": 120,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -660,15 +700,19 @@
               "key": "service_name",
               "value": "order_service"
             }
-          ]
+          ],
+          "position": {
+            "x": 350,
+            "y": 250
+          },
+          "size": {
+            "width": 120,
+            "height": 60
+          }
         },
         {
           "id": "message-store-1",
           "shape": "store",
-          "x": 550,
-          "y": 200,
-          "width": 120,
-          "height": 60,
           "zIndex": 1,
           "visible": true,
           "attrs": {
@@ -688,7 +732,15 @@
               "key": "queue_type",
               "value": "sqs"
             }
-          ]
+          ],
+          "position": {
+            "x": 550,
+            "y": 200
+          },
+          "size": {
+            "width": 120,
+            "height": 60
+          }
         }
       ]
     }

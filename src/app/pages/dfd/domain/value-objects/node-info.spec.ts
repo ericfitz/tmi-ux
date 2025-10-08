@@ -517,13 +517,12 @@ describe('NodeInfo', () => {
       // Act
       const json = nodeInfo.toJSON();
 
-      // Assert
+      // Assert - verify OpenAPI spec compliance
       expect(json.id).toBe('node-1');
       expect(json.shape).toBe('process');
-      expect(json.x).toBe(100);
-      expect(json.y).toBe(100);
-      expect(json.width).toBe(120);
-      expect(json.height).toBe(60);
+      // Verify position/size objects per OpenAPI spec
+      expect(json.position).toEqual({ x: 100, y: 100 });
+      expect(json.size).toEqual({ width: 120, height: 60 });
       expect(json.zIndex).toBe(1);
       expect(json.visible).toBe(true);
       expect(json.attrs).toBeDefined();

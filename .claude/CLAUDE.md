@@ -98,11 +98,11 @@ TMI-UX (Threat Modeling Improved - User Interface) is an Angular-based web appli
 
 ## API and Backend
 
-- Backend API specification: `shared-api/api-specs/tmi-openapi.json`
-- WebSocket API specification: `shared-api/api-specs/tmi-asyncapi.yaml`
-- OAuth integration guide: `shared-api/docs/CLIENT_OAUTH_INTEGRATION.md`
-- Client integration guide: `shared-api/docs/CLIENT_INTEGRATION_GUIDE.md`
-- Authorization documentation: `shared-api/docs/AUTHORIZATION.md`
+- Backend API specification: `docs-server/reference/apis/tmi-openapi.json`
+- WebSocket API specification: `docs-server/reference/apis/tmi-asyncapi.yaml`
+- OAuth integration guide: `docs-server/developer/integration/CLIENT_OAUTH_INTEGRATION.md`
+- Client integration guide: `docs-server/developer/integration/CLIENT_INTEGRATION_GUIDE.md`
+- Authorization documentation: `docs-server/reference/architecture/AUTHORIZATION.md`
 - Role-based access control with Owner, Writer, and Reader roles
 
 ## Development Commands
@@ -257,6 +257,7 @@ The project uses automatic semantic versioning via git hooks. Version bumps happ
 Format: `<type>: <description>`
 
 Valid types:
+
 - `feat`: New feature (triggers **minor** bump)
 - `refactor`: Code refactoring (triggers **minor** bump)
 - `fix`: Bug fix (triggers **patch** bump)
@@ -268,6 +269,7 @@ Valid types:
 - `build`: Build system changes (triggers **patch** bump)
 
 Examples:
+
 ```
 feat: add user authentication          # bumps minor version
 refactor: restructure auth module      # bumps minor version

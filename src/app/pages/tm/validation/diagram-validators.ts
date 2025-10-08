@@ -140,7 +140,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
       return errors;
     }
 
-    // Required fields
+    // Required fields - validate cell.id is a valid UUID string
     if (!cell.id || typeof cell.id !== 'string') {
       errors.push(
         ValidationUtils.createError(
@@ -149,6 +149,19 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
           ValidationUtils.buildPath(cellPath, 'id'),
         ),
       );
+    } else {
+      // Validate UUID format (RFC 4122)
+      const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(cell.id)) {
+        errors.push(
+          ValidationUtils.createError(
+            'INVALID_CELL_ID',
+            `Cell id must be a valid UUID. Got: ${cell.id}`,
+            ValidationUtils.buildPath(cellPath, 'id'),
+          ),
+        );
+      }
     }
 
     // Validate cell type based on shape property (per OpenAPI spec)
@@ -201,41 +214,72 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   private validateNodeCell(cell: Cell, cellPath: string): ValidationError[] {
     const errors: ValidationError[] = [];
 
-    // Validate position and size for nodes (per OpenAPI spec)
-    // The spec uses flat x, y, width, height properties
-    if (typeof cell.x !== 'number' || typeof cell.y !== 'number') {
+    // Validate position object (required for nodes per OpenAPI spec)
+    if (!cell.position || typeof cell.position !== 'object') {
       errors.push(
         ValidationUtils.createError(
-          'INVALID_POSITION',
-          'Node must have numeric x and y coordinates',
-          cellPath,
+          'MISSING_POSITION',
+          'Node must have a position object',
+          ValidationUtils.buildPath(cellPath, 'position'),
         ),
       );
+    } else {
+      const position = cell.position as { x?: unknown; y?: unknown };
+      if (typeof position.x !== 'number' || typeof position.y !== 'number') {
+        errors.push(
+          ValidationUtils.createError(
+            'INVALID_POSITION',
+            'Node position must have numeric x and y coordinates',
+            ValidationUtils.buildPath(cellPath, 'position'),
+          ),
+        );
+      }
     }
 
-    if (typeof cell.width !== 'number' || typeof cell.height !== 'number') {
+    // Validate size object (required for nodes per OpenAPI spec)
+    if (!cell.size || typeof cell.size !== 'object') {
       errors.push(
         ValidationUtils.createError(
-          'INVALID_SIZE',
-          'Node must have numeric width and height',
-          cellPath,
+          'MISSING_SIZE',
+          'Node must have a size object',
+          ValidationUtils.buildPath(cellPath, 'size'),
         ),
       );
-    }
+    } else {
+      const size = cell.size as { width?: unknown; height?: unknown };
+      if (typeof size.width !== 'number' || typeof size.height !== 'number') {
+        errors.push(
+          ValidationUtils.createError(
+            'INVALID_SIZE',
+            'Node size must have numeric width and height',
+            ValidationUtils.buildPath(cellPath, 'size'),
+          ),
+        );
+      } else {
+        // Validate minimum dimensions per OpenAPI spec (width >= 40, height >= 30)
+        if (size.width < 40 || size.height < 30) {
+          errors.push(
+            ValidationUtils.createError(
+              'INVALID_DIMENSIONS',
+              `Node dimensions must meet minimum requirements (width >= 40, height >= 30). Got width=${size.width}, height=${size.height}`,
+              ValidationUtils.buildPath(cellPath, 'size'),
+              'error',
+            ),
+          );
+        }
 
-    if (
-      typeof cell.width === 'number' &&
-      typeof cell.height === 'number' &&
-      (cell.width <= 0 || cell.height <= 0)
-    ) {
-      errors.push(
-        ValidationUtils.createError(
-          'INVALID_DIMENSIONS',
-          'Node dimensions must be positive numbers',
-          cellPath,
-          'warning',
-        ),
-      );
+        // Also warn if dimensions are not positive
+        if (size.width <= 0 || size.height <= 0) {
+          errors.push(
+            ValidationUtils.createError(
+              'INVALID_DIMENSIONS',
+              'Node dimensions must be positive numbers',
+              ValidationUtils.buildPath(cellPath, 'size'),
+              'warning',
+            ),
+          );
+        }
+      }
     }
 
     return errors;

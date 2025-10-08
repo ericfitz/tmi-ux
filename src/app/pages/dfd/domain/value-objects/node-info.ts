@@ -630,10 +630,8 @@ export class NodeInfo {
   toJSON(): {
     id: string;
     shape: NodeType;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
+    position: { x: number; y: number };
+    size: { width: number; height: number };
     zIndex: number;
     visible: boolean;
     attrs: NodeAttrs;
@@ -647,10 +645,8 @@ export class NodeInfo {
     return {
       id: this.id,
       shape: this.shape,
-      x: this.x,
-      y: this.y,
-      width: this.width,
-      height: this.height,
+      position: { x: this.x, y: this.y },
+      size: { width: this.width, height: this.height },
       zIndex: this.zIndex,
       visible: this.visible,
       attrs: this.attrs,
