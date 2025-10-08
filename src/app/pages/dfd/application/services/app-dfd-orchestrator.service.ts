@@ -22,7 +22,6 @@ import { AppGraphOperationManager } from './app-graph-operation-manager.service'
 import { AppPersistenceCoordinator } from './app-persistence-coordinator.service';
 import { AppDiagramLoadingService } from './app-diagram-loading.service';
 import { AppExportService } from './app-export.service';
-import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
 import { AppDfdFacade } from '../facades/app-dfd.facade';
 import { NodeType } from '../../domain/value-objects/node-info';
 import {
@@ -106,7 +105,6 @@ export class AppDfdOrchestrator {
     private readonly appPersistenceCoordinator: AppPersistenceCoordinator,
     private readonly appDiagramLoadingService: AppDiagramLoadingService,
     private readonly appExportService: AppExportService,
-    private readonly infraNodeConfigurationService: InfraNodeConfigurationService,
     private readonly dfdInfrastructure: AppDfdFacade,
   ) {
     this.logger.debug('AppDfdOrchestrator initialized (simplified autosave)');
@@ -606,7 +604,6 @@ export class AppDfdOrchestrator {
     const graph = this.getGraph;
     if (graph) {
       graph.resize();
-      this.logger.debug('Graph resized for window resize');
     }
   }
 

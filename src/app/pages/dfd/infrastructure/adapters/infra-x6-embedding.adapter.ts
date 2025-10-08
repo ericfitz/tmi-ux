@@ -24,6 +24,7 @@ import { Graph, Node, Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraEmbeddingService } from '../services/infra-embedding.service';
 import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
+import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
 
 /**
  * X6 Embedding Adapter
@@ -36,6 +37,7 @@ export class InfraX6EmbeddingAdapter {
     private logger: LoggerService,
     private infraEmbeddingService: InfraEmbeddingService,
     private infraX6ZOrderAdapter: InfraX6ZOrderAdapter,
+    private historyCoordinator: AppGraphHistoryCoordinator,
   ) {}
 
   /**
@@ -145,17 +147,21 @@ export class InfraX6EmbeddingAdapter {
 
   /**
    * Update all embedding appearances in the graph
+   * This is a style consistency operation and should not be added to history
    */
   updateAllEmbeddingAppearances(graph: Graph): void {
     const nodes = graph.getNodes();
 
-    nodes.forEach(node => {
-      const parent = node.getParent();
-      if (parent?.isNode()) {
-        this.updateEmbeddingAppearance(node, parent);
-      } else {
-        this.resetEmbeddingAppearance(node);
-      }
+    // Wrap in executeVisualEffect to exclude from history
+    this.historyCoordinator.executeVisualEffect(graph, () => {
+      nodes.forEach(node => {
+        const parent = node.getParent();
+        if (parent?.isNode()) {
+          this.updateEmbeddingAppearance(node, parent);
+        } else {
+          this.resetEmbeddingAppearance(node);
+        }
+      });
     });
 
     this.logger.debugComponent('X6Embedding', 'Updated all embedding appearances', {
@@ -398,6 +404,8 @@ export class InfraX6EmbeddingAdapter {
 
   /**
    * Handle node embedded event
+   * Note: This is called AFTER setParent, which is already in history.
+   * Style updates should not create a separate history entry.
    */
   private handleNodeEmbedded(graph: Graph, node: Node, parent: Node): void {
     if (!node || !parent) {
@@ -414,14 +422,18 @@ export class InfraX6EmbeddingAdapter {
     });
 
     try {
-      // Update visual appearance
-      this.updateEmbeddingAppearance(node, parent);
+      // Update visual appearance and z-order without adding to history
+      // The setParent operation is already in history; these are just visual updates
+      this.historyCoordinator.executeVisualEffect(graph, () => {
+        // Update visual appearance
+        this.updateEmbeddingAppearance(node, parent);
 
-      // Update z-order
-      this.infraX6ZOrderAdapter.applyEmbeddingZIndexes(parent, node);
+        // Update z-order
+        this.infraX6ZOrderAdapter.applyEmbeddingZIndexes(parent, node);
 
-      // Update connected edges z-order
-      this.infraX6ZOrderAdapter.updateConnectedEdgesZOrder(graph, node, node.getZIndex() ?? 15);
+        // Update connected edges z-order
+        this.infraX6ZOrderAdapter.updateConnectedEdgesZOrder(graph, node, node.getZIndex() ?? 15);
+      });
     } catch (error) {
       this.logger.error('Error handling node embedded event', {
         nodeId: node.id,
@@ -433,6 +445,8 @@ export class InfraX6EmbeddingAdapter {
 
   /**
    * Handle node unembedded event
+   * Note: This is called AFTER removeFromParent, which is already in history.
+   * Style updates should not create a separate history entry.
    */
   private handleNodeUnembedded(graph: Graph, node: Node): void {
     if (!node) {
@@ -445,26 +459,30 @@ export class InfraX6EmbeddingAdapter {
     });
 
     try {
-      // Recalculate embedding appearance based on new embedding depth
-      const newDepth = this.infraEmbeddingService.calculateEmbeddingDepth(node);
-      const fillColor =
-        newDepth === 0
-          ? this._getOriginalFillColorForShape(node.shape)
-          : this.infraEmbeddingService.calculateEmbeddingFillColor(newDepth);
-      this.applyEmbeddingVisualEffects(node, fillColor, newDepth);
+      // Update visual appearance and z-order without adding to history
+      // The removeFromParent operation is already in history; these are just visual updates
+      this.historyCoordinator.executeVisualEffect(graph, () => {
+        // Recalculate embedding appearance based on new embedding depth
+        const newDepth = this.infraEmbeddingService.calculateEmbeddingDepth(node);
+        const fillColor =
+          newDepth === 0
+            ? this._getOriginalFillColorForShape(node.shape)
+            : this.infraEmbeddingService.calculateEmbeddingFillColor(newDepth);
+        this.applyEmbeddingVisualEffects(node, fillColor, newDepth);
 
-      // Reset z-order - check if this is a security boundary node
-      const nodeType = (node as any).getNodeTypeInfo
-        ? (node as any).getNodeTypeInfo().type
-        : 'process';
+        // Reset z-order - check if this is a security boundary node
+        const nodeType = (node as any).getNodeTypeInfo
+          ? (node as any).getNodeTypeInfo().type
+          : 'process';
 
-      if (nodeType === 'security-boundary') {
-        // Use specific rule for unembedded security boundary nodes
-        this.infraX6ZOrderAdapter.applyUnembeddedSecurityBoundaryZIndex(graph, node);
-      } else {
-        // Use general unembedding z-index for other node types
-        this.infraX6ZOrderAdapter.applyUnembeddingZIndex(graph, node);
-      }
+        if (nodeType === 'security-boundary') {
+          // Use specific rule for unembedded security boundary nodes
+          this.infraX6ZOrderAdapter.applyUnembeddedSecurityBoundaryZIndex(graph, node);
+        } else {
+          // Use general unembedding z-index for other node types
+          this.infraX6ZOrderAdapter.applyUnembeddingZIndex(graph, node);
+        }
+      });
     } catch (error) {
       this.logger.error('Error handling node unembedded event', {
         nodeId: node.id,
@@ -487,9 +505,12 @@ export class InfraX6EmbeddingAdapter {
       this.infraX6ZOrderAdapter.handleNodeMovedZOrderRestoration(graph, node);
 
       // Update embedding appearance if the node is embedded
+      // This is a style consistency operation and should not be added to history
       const parent = node.getParent();
       if (parent?.isNode()) {
-        this.updateEmbeddingAppearance(node, parent);
+        this.historyCoordinator.executeVisualEffect(graph, () => {
+          this.updateEmbeddingAppearance(node, parent);
+        });
       }
     } catch (error) {
       this.logger.error('Error handling node moved event', {

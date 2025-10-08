@@ -13,6 +13,7 @@ import { InfraX6EmbeddingAdapter } from './infra-x6-embedding.adapter';
 import { InfraEmbeddingService } from '../services/infra-embedding.service';
 import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
 import { ZOrderService } from '../services/infra-z-order.service';
+import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
 import { registerCustomShapes } from './infra-x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
@@ -83,6 +84,7 @@ describe('InfraX6EmbeddingAdapter', () => {
   let infraEmbeddingService: InfraEmbeddingService;
   let infraX6ZOrderAdapter: InfraX6ZOrderAdapter;
   let zOrderService: ZOrderService;
+  let historyCoordinator: AppGraphHistoryCoordinator;
   let container: HTMLElement;
 
   beforeEach(() => {
@@ -109,10 +111,12 @@ describe('InfraX6EmbeddingAdapter', () => {
     infraEmbeddingService = new InfraEmbeddingService(mockLogger as any);
     zOrderService = new ZOrderService(mockLogger as any);
     infraX6ZOrderAdapter = new InfraX6ZOrderAdapter(mockLogger as any, zOrderService);
+    historyCoordinator = new AppGraphHistoryCoordinator(mockLogger as any);
     adapter = new InfraX6EmbeddingAdapter(
       mockLogger as any,
       infraEmbeddingService,
       infraX6ZOrderAdapter,
+      historyCoordinator,
     );
 
     // Initialize embedding functionality
