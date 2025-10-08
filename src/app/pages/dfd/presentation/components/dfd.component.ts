@@ -43,7 +43,6 @@ import {
 
 // DFD v2 Architecture
 import { AppDfdOrchestrator } from '../../application/services/app-dfd-orchestrator.service';
-import { AppAutoSaveManager } from '../../application/services/app-auto-save-manager.service';
 import { AppDfdFacade } from '../../application/facades/app-dfd.facade';
 import { AppEdgeService } from '../../application/services/app-edge.service';
 import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
@@ -58,7 +57,6 @@ import { AppStateService } from '../../application/services/app-state.service';
 // Persistence strategies
 import { InfraRestPersistenceStrategy } from '../../infrastructure/strategies/infra-rest-persistence.strategy';
 import { WebSocketPersistenceStrategy } from '../../infrastructure/strategies/infra-websocket-persistence.strategy';
-import { InfraCacheOnlyPersistenceStrategy } from '../../infrastructure/strategies/infra-cache-only-persistence.strategy';
 
 // Infrastructure adapters and services
 import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
@@ -132,14 +130,12 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     AppDiagramLoadingService, // Diagram loading service
     AppDiagramOperationBroadcaster, // Operation broadcaster service
     AppGraphOperationManager, // Operation manager service
-    AppPersistenceCoordinator, // Persistence coordination service
-    AppAutoSaveManager, // Auto-save manager service (changed from root to component-scoped)
+    AppPersistenceCoordinator, // Simplified persistence coordination service
     AppDiagramResyncService, // Diagram resync service (changed from root to component-scoped)
     AppStateService, // State service (changed from root to component-scoped)
     // Persistence strategies (changed from root to component-scoped)
     InfraRestPersistenceStrategy,
     WebSocketPersistenceStrategy,
-    InfraCacheOnlyPersistenceStrategy,
     InfraVisualEffectsService, // Visual effects service
     // Infrastructure adapters and services required by InfraX6GraphAdapter
     InfraX6GraphAdapter,
@@ -202,7 +198,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private appDfdOrchestrator: AppDfdOrchestrator,
-    private appAutoSaveManager: AppAutoSaveManager,
+    private appPersistenceCoordinator: AppPersistenceCoordinator,
     private threatModelService: ThreatModelService,
     private dialog: MatDialog,
     private translocoService: TranslocoService,
@@ -478,11 +474,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const autoSaveMode = this.isReadOnlyMode ? 'manual' : 'auto';
 
     if (this.isReadOnlyMode) {
-      this.appAutoSaveManager.disable();
-      this.appAutoSaveManager.setPolicyMode('manual');
+      this.appDfdOrchestrator.disableAutoSave();
     } else {
-      this.appAutoSaveManager.enable();
-      this.appAutoSaveManager.setPolicyMode('auto');
+      this.appDfdOrchestrator.enableAutoSave();
     }
 
     this.logger.info('Auto-save configured', {
@@ -494,15 +488,17 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setupOrchestratorSubscriptions(): void {
-    // Subscribe to auto-save events
+    // Subscribe to auto-save events - now handled by orchestrator state
     this._subscriptions.add(
-      this.appAutoSaveManager.saveCompleted$.pipe(takeUntil(this._destroy$)).subscribe(result => {
-        if (result.success) {
-          this.logger.debug('Auto-save completed successfully');
-        } else {
-          this.logger.warn('Auto-save failed', { error: result.error });
-        }
-      }),
+      this.appPersistenceCoordinator.saveStatus$
+        .pipe(takeUntil(this._destroy$))
+        .subscribe(status => {
+          if (status.status === 'saved') {
+            this.logger.debug('Auto-save completed successfully');
+          } else if (status.status === 'error') {
+            this.logger.warn('Auto-save failed', { error: status.error });
+          }
+        }),
     );
 
     // Subscribe to orchestrator state changes

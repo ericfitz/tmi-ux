@@ -12,19 +12,15 @@ import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 import { InfraWebsocketCollaborationAdapter } from '../adapters/infra-websocket-collaboration.adapter';
 import { CellOperation } from '../../../../core/types/websocket-message.types';
 import {
-  PersistenceStrategy,
   SaveOperation,
   SaveResult,
   LoadOperation,
   LoadResult,
-  SyncOperation,
-  SyncResult,
 } from '../../application/services/app-persistence-coordinator.service';
 
 @Injectable()
-export class WebSocketPersistenceStrategy implements PersistenceStrategy {
+export class WebSocketPersistenceStrategy {
   readonly type = 'websocket' as const;
-  readonly priority = 200; // Higher priority than REST for real-time operations
 
   constructor(
     private readonly logger: LoggerService,
@@ -163,7 +159,6 @@ export class WebSocketPersistenceStrategy implements PersistenceStrategy {
   load(operation: LoadOperation): Observable<LoadResult> {
     this.logger.debug('WebSocket load operation started', {
       diagramId: operation.diagramId,
-      forceRefresh: operation.forceRefresh,
     });
 
     if (!this.webSocketAdapter.isConnected) {
@@ -172,63 +167,10 @@ export class WebSocketPersistenceStrategy implements PersistenceStrategy {
       return throwError(() => new Error(error));
     }
 
-    // For now, return empty diagram data
-    // In a real implementation, this would request via WebSocket and wait for response
-    return of({
-      success: true,
-      diagramId: operation.diagramId,
-      data: {
-        nodes: [],
-        edges: [],
-        metadata: {
-          diagramId: operation.diagramId,
-          version: 1,
-          created: new Date().toISOString(),
-          modified: new Date().toISOString(),
-        },
-      },
-      source: 'websocket' as const,
-      timestamp: Date.now(),
-    }).pipe(
-      map(result => {
-        this.logger.debug('WebSocket load completed successfully', {
-          diagramId: operation.diagramId,
-          hasData: !!result.data,
-        });
-        return result;
-      }),
-      catchError(error => {
-        const errorMessage = `WebSocket load failed: ${error.message || 'Unknown error'}`;
-        this.logger.error(errorMessage, {
-          diagramId: operation.diagramId,
-          error,
-        });
-        return of({
-          success: false,
-          diagramId: operation.diagramId,
-          source: 'websocket' as const,
-          timestamp: Date.now(),
-          error: errorMessage,
-        });
-      }),
-    );
-  }
-
-  sync(operation: SyncOperation): Observable<SyncResult> {
-    this.logger.debug('WebSocket sync operation started', { diagramId: operation.diagramId });
-
-    if (!this.webSocketAdapter.isConnected) {
-      const error = 'WebSocket not connected';
-      return throwError(() => new Error(error));
-    }
-
-    // For now, simulate successful sync
-    return of({
-      success: true,
-      diagramId: operation.diagramId,
-      conflicts: 0,
-      timestamp: Date.now(),
-    });
+    // WebSocket doesn't support load - always use REST API for loading
+    const errorMessage = 'WebSocket strategy does not support load operation - use REST';
+    this.logger.warn(errorMessage, { diagramId: operation.diagramId });
+    return throwError(() => new Error(errorMessage));
   }
 
   // Connection status methods

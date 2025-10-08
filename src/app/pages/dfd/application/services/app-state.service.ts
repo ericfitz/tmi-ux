@@ -27,7 +27,6 @@ import {
   ResyncRequestedEvent,
   ParticipantsUpdatedEvent,
 } from '../../infrastructure/adapters/infra-dfd-websocket.adapter';
-import { AppAutoSaveManager } from './app-auto-save-manager.service';
 
 /**
  * Represents the synchronization state of the diagram
@@ -109,7 +108,6 @@ export class AppStateService implements OnDestroy {
     private _webSocketService: InfraDfdWebsocketAdapter,
     private _collaborationService: DfdCollaborationService,
     private _threatModelService: ThreatModelService,
-    private _autoSaveManager: AppAutoSaveManager,
   ) {
     this._logger.info('AppStateService initialized');
   }
@@ -285,8 +283,7 @@ export class AppStateService implements OnDestroy {
       serverUpdateVector: event.update_vector,
     });
 
-    // Update the auto-save manager's server update_vector tracking
-    this._autoSaveManager.updateServerUpdateVector(event.update_vector);
+    // Note: update_vector tracking removed with simplified autosave
 
     // Update sync state to indicate we're out of sync
     this._updateSyncState({

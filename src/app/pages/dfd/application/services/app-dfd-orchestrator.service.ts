@@ -16,17 +16,11 @@ import '@antv/x6-plugin-export';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { AuthService } from '../../../../auth/services/auth.service';
+import { ServerConnectionService } from '../../../../core/services/server-connection.service';
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
-import {
-  AppPersistenceCoordinator,
-  StrategySelectionContext,
-} from './app-persistence-coordinator.service';
-import { AppAutoSaveManager } from './app-auto-save-manager.service';
+import { AppPersistenceCoordinator } from './app-persistence-coordinator.service';
 import { AppDiagramLoadingService } from './app-diagram-loading.service';
 import { AppExportService } from './app-export.service';
-import { InfraRestPersistenceStrategy } from '../../infrastructure/strategies/infra-rest-persistence.strategy';
-import { WebSocketPersistenceStrategy } from '../../infrastructure/strategies/infra-websocket-persistence.strategy';
-import { InfraCacheOnlyPersistenceStrategy } from '../../infrastructure/strategies/infra-cache-only-persistence.strategy';
 import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
 import { AppDfdFacade } from '../facades/app-dfd.facade';
 import { NodeType } from '../../domain/value-objects/node-info';
@@ -68,7 +62,7 @@ export interface DfdStats {
   readonly uptime: number;
   readonly lastActivity: Date | null;
   readonly collaborativeOperations: number;
-  readonly autoSaves: number;
+  autoSaves: number; // Not readonly - needs to be mutable for tracking
 }
 
 export interface ExportFormat {
@@ -86,7 +80,10 @@ export class AppDfdOrchestrator {
   private _operationContext: OperationContext | null = null;
   private _containerElement: HTMLElement | null = null;
   private _startTime = Date.now();
-  private _collaborationIntent = false;
+
+  // Simplified autosave tracking
+  private _lastSavedHistoryIndex = -1;
+  private _autoSaveEnabled = true;
 
   // Statistics tracking
   private _stats: DfdStats = {
@@ -104,20 +101,16 @@ export class AppDfdOrchestrator {
   constructor(
     private readonly logger: LoggerService,
     private readonly authService: AuthService,
+    private readonly serverConnectionService: ServerConnectionService,
     private readonly appGraphOperationManager: AppGraphOperationManager,
     private readonly appPersistenceCoordinator: AppPersistenceCoordinator,
-    private readonly appAutoSaveManager: AppAutoSaveManager,
     private readonly appDiagramLoadingService: AppDiagramLoadingService,
     private readonly appExportService: AppExportService,
     private readonly infraNodeConfigurationService: InfraNodeConfigurationService,
-    private readonly restStrategy: InfraRestPersistenceStrategy,
-    private readonly webSocketStrategy: WebSocketPersistenceStrategy,
-    private readonly cacheOnlyStrategy: InfraCacheOnlyPersistenceStrategy,
     private readonly dfdInfrastructure: AppDfdFacade,
   ) {
-    this.logger.debug('AppDfdOrchestrator initialized');
+    this.logger.debug('AppDfdOrchestrator initialized (simplified autosave)');
     this._setupEventIntegration();
-    this._setupPersistenceStrategies();
   }
 
   /**
@@ -143,7 +136,7 @@ export class AppDfdOrchestrator {
 
     this._initParams = params;
     this._containerElement = params.containerElement;
-    this._collaborationIntent = params.joinCollaboration || false;
+    this._autoSaveEnabled = params.autoSaveMode === 'auto';
 
     return this._performInitialization(params).pipe(
       tap(() => {
@@ -262,19 +255,24 @@ export class AppDfdOrchestrator {
 
     this.logger.debug('AppDfdOrchestrator: Manual save triggered');
 
-    const autoSaveContext = {
+    const saveOperation = {
       diagramId: this._initParams.diagramId,
       threatModelId: this._initParams.threatModelId,
-      userId: this.authService.userId,
-      userEmail: this.authService.userEmail,
-      userName: this.authService.username,
-      diagramData: this._getGraphData(),
-      preferredStrategy: this._state$.value.collaborating ? 'websocket' : 'rest',
+      data: this._getGraphData(),
+      metadata: {
+        saveType: 'manual',
+        userId: this.authService.userId,
+        userEmail: this.authService.userEmail,
+        userName: this.authService.username,
+      },
     };
 
-    return this.appAutoSaveManager.triggerManualSave(autoSaveContext).pipe(
+    const useWebSocket = this._state$.value.collaborating;
+
+    return this.appPersistenceCoordinator.save(saveOperation, useWebSocket).pipe(
       map(result => {
         if (result.success) {
+          this._stats.autoSaves++;
           this._updateState({
             hasUnsavedChanges: false,
             lastSaved: new Date(),
@@ -315,7 +313,6 @@ export class AppDfdOrchestrator {
     const loadOperation = {
       diagramId: targetDiagramId,
       threatModelId,
-      forceRefresh: false,
     };
 
     const graph = this.dfdInfrastructure.getGraph();
@@ -324,7 +321,10 @@ export class AppDfdOrchestrator {
       return throwError(() => new Error('Graph not initialized'));
     }
 
-    return this.appPersistenceCoordinator.load(loadOperation, this._createStrategyContext()).pipe(
+    // Determine if we should allow localStorage fallback (local provider without server)
+    const allowLocalStorageFallback = this._isLocalProviderOffline();
+
+    return this.appPersistenceCoordinator.load(loadOperation, allowLocalStorageFallback).pipe(
       map(result => {
         if (result.success && result.data && result.data.cells) {
           this.logger.info('Diagram data loaded from persistence, loading cells into graph', {
@@ -473,16 +473,21 @@ export class AppDfdOrchestrator {
    * Auto-save management
    */
   getAutoSaveState(): any {
-    return this.appAutoSaveManager.getState();
+    return {
+      enabled: this._autoSaveEnabled,
+      lastSavedHistoryIndex: this._lastSavedHistoryIndex,
+      hasUnsavedChanges: this._state$.value.hasUnsavedChanges,
+      lastSaved: this._state$.value.lastSaved,
+    };
   }
 
   enableAutoSave(): void {
-    this.appAutoSaveManager.enable();
+    this._autoSaveEnabled = true;
     this.logger.debug('Auto-save enabled');
   }
 
   disableAutoSave(): void {
-    this.appAutoSaveManager.disable();
+    this._autoSaveEnabled = false;
     this.logger.debug('Auto-save disabled');
   }
 
@@ -853,36 +858,7 @@ export class AppDfdOrchestrator {
    * Save/Load aliases
    */
   saveManually(): Observable<any> {
-    if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
-      return throwError(() => new Error('DFD system not initialized'));
-    }
-
-    this.logger.debug('AppDfdOrchestrator: Manual save triggered');
-
-    const autoSaveContext = {
-      diagramId: this._initParams.diagramId,
-      threatModelId: this._initParams.threatModelId,
-      userId: this.authService.userId,
-      userEmail: this.authService.userEmail,
-      userName: this.authService.username,
-      diagramData: this._getGraphData(),
-      preferredStrategy: this._state$.value.collaborating ? 'websocket' : 'rest',
-    };
-
-    return this.appAutoSaveManager.triggerManualSave(autoSaveContext).pipe(
-      tap(result => {
-        if (result.success) {
-          this._updateState({
-            hasUnsavedChanges: false,
-            lastSaved: new Date(),
-          });
-        }
-      }),
-      catchError(error => {
-        this.logger.error('Manual save failed', { error });
-        return throwError(() => error);
-      }),
-    );
+    return this.save();
   }
 
   /**
@@ -972,7 +948,10 @@ export class AppDfdOrchestrator {
       return throwError(() => new Error('Graph not initialized'));
     }
 
-    return this.appPersistenceCoordinator.load(loadOperation, this._createStrategyContext()).pipe(
+    // Determine if we should allow localStorage fallback (local provider without server)
+    const allowLocalStorageFallback = this._isLocalProviderOffline();
+
+    return this.appPersistenceCoordinator.load(loadOperation, allowLocalStorageFallback).pipe(
       tap(result => {
         if (result.success && result.data && result.data.cells) {
           this.logger.info('Diagram data loaded from persistence, loading cells into graph', {
@@ -1132,13 +1111,11 @@ export class AppDfdOrchestrator {
 
     // Note: Validation callbacks are now configured directly in graph options during creation
 
-    // Configure auto-save manager
-    this.appAutoSaveManager.setPolicyMode(params.autoSaveMode);
+    // Autosave is enabled/disabled based on autoSaveMode param (set in constructor)
 
     // Special handling for joinCollaboration flow:
     // When joining a collaboration session, we need to wait for the WebSocket connection
-    // to be established before loading the diagram, since the persistence coordinator
-    // will only allow WebSocket strategy when collaborationIntent is true.
+    // to be established before loading the diagram.
     if (params.joinCollaboration) {
       this.logger.info(
         'Skipping automatic diagram load - waiting for WebSocket connection (joinCollaboration=true)',
@@ -1175,56 +1152,108 @@ export class AppDfdOrchestrator {
   }
 
   private _setupEventIntegration(): void {
-    // ONLY history-based auto-save trigger (operations no longer trigger saves)
+    // Simple history-based auto-save trigger
     this.dfdInfrastructure.historyModified$.subscribe(({ historyIndex, isUndo, isRedo }) => {
       this._markUnsavedChanges();
       this._triggerAutoSave(historyIndex, isUndo, isRedo);
     });
-
-    // Listen to auto-save completed events
-    this.appAutoSaveManager.saveCompleted$.subscribe(result => {
-      if (result.success) {
-        this._updateState({
-          hasUnsavedChanges: false,
-          lastSaved: new Date(),
-        });
-      }
-    });
   }
 
-  private _setupPersistenceStrategies(): void {
-    this.logger.debug('Setting up persistence strategies');
-
-    // Register all available persistence strategies
-    this.appPersistenceCoordinator.addStrategy(this.restStrategy);
-    this.appPersistenceCoordinator.addStrategy(this.webSocketStrategy);
-    this.appPersistenceCoordinator.addStrategy(this.cacheOnlyStrategy);
-
-    // Set fallback strategy to REST API
-    this.appPersistenceCoordinator.setFallbackStrategy('rest');
-
-    this.logger.debug('Persistence strategies registered', {
-      strategies: this.appPersistenceCoordinator.getStrategies().map(s => s.type),
-      fallbackStrategy: 'rest',
-    });
-  }
-
-  private _triggerAutoSave(historyIndex: number, isUndo: boolean, isRedo: boolean): void {
+  /**
+   * Simplified autosave logic - no queue, no complex tracking
+   */
+  private _triggerAutoSave(historyIndex: number, _isUndo: boolean, _isRedo: boolean): void {
     if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
       return;
     }
 
-    const autoSaveContext = {
-      diagramId: this._initParams.diagramId,
-      threatModelId: this._initParams.threatModelId,
-      userId: this.authService.userId,
-      userEmail: this.authService.userEmail,
-      userName: this.authService.username,
-      getDiagramData: () => this._getGraphData(),
-      preferredStrategy: this._state$.value.collaborating ? 'websocket' : 'rest',
+    // Skip if autosave disabled
+    if (!this._autoSaveEnabled) {
+      return;
+    }
+
+    // Simple deduplication - skip if already saved this history index
+    if (historyIndex <= this._lastSavedHistoryIndex) {
+      this.logger.debug('Skipping autosave - already saved', {
+        historyIndex,
+        lastSaved: this._lastSavedHistoryIndex,
+      });
+      return;
+    }
+
+    const diagramId = this._initParams.diagramId;
+    const threatModelId = this._initParams.threatModelId;
+    const data = this._getGraphData();
+
+    // Check if local provider without server connection (offline mode)
+    if (this._isLocalProviderOffline()) {
+      this.logger.debug('Saving to localStorage (local provider offline)', { diagramId });
+      this.appPersistenceCoordinator.saveToLocalStorage(diagramId, threatModelId, data).subscribe({
+        next: result => {
+          if (result.success) {
+            this._lastSavedHistoryIndex = historyIndex;
+            this._stats.autoSaves++;
+            this._updateState({
+              hasUnsavedChanges: false,
+              lastSaved: new Date(),
+            });
+          }
+        },
+        error: error => {
+          this.logger.error('LocalStorage autosave failed', { error, diagramId });
+        },
+      });
+      return;
+    }
+
+    // Normal save - WebSocket (collaboration) or REST (solo)
+    const useWebSocket = this._state$.value.collaborating;
+    const saveOperation = {
+      diagramId,
+      threatModelId,
+      data,
+      metadata: {
+        saveType: 'auto',
+        historyIndex,
+        userId: this.authService.userId,
+        userEmail: this.authService.userEmail,
+        userName: this.authService.username,
+      },
     };
 
-    this.appAutoSaveManager.trigger(historyIndex, autoSaveContext, isUndo, isRedo)?.subscribe?.();
+    this.appPersistenceCoordinator.save(saveOperation, useWebSocket).subscribe({
+      next: result => {
+        if (result.success) {
+          this._lastSavedHistoryIndex = historyIndex;
+          this._stats.autoSaves++;
+          this._updateState({
+            hasUnsavedChanges: false,
+            lastSaved: new Date(),
+          });
+          this.logger.debug('Autosave completed', {
+            historyIndex,
+            strategy: useWebSocket ? 'WebSocket' : 'REST',
+          });
+        }
+      },
+      error: error => {
+        this.logger.error('Autosave failed', {
+          error,
+          diagramId,
+          historyIndex,
+        });
+      },
+    });
+  }
+
+  /**
+   * Check if we're using local provider without server connection
+   */
+  private _isLocalProviderOffline(): boolean {
+    const isLocalProvider = (this.authService as any).isUsingLocalProvider;
+    const isServerReachable = this.serverConnectionService.currentDetailedStatus.isServerReachable;
+
+    return isLocalProvider && !isServerReachable;
   }
 
   private _getGraphData(): any {
@@ -1306,16 +1335,7 @@ export class AppDfdOrchestrator {
     };
   }
 
-  /**
-   * Create strategy selection context based on current state
-   */
-  private _createStrategyContext(): StrategySelectionContext {
-    return {
-      collaborationIntent: this._collaborationIntent,
-      allowOfflineMode: true, // Allow offline fallback unless explicitly disabled
-      fastTimeout: this._collaborationIntent, // Use faster timeouts for collaboration
-    };
-  }
+  // Simplified autosave - no strategy context needed
 
   // Plugin setup is now handled by the infrastructure facade/graph adapter
 

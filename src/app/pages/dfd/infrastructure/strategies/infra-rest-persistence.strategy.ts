@@ -12,19 +12,15 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { AppDiagramService } from '../../application/services/app-diagram.service';
 import { ThreatModelService } from '../../../tm/services/threat-model.service';
 import {
-  PersistenceStrategy,
   SaveOperation,
   SaveResult,
   LoadOperation,
   LoadResult,
-  SyncOperation,
-  SyncResult,
 } from '../../application/services/app-persistence-coordinator.service';
 
 @Injectable()
-export class InfraRestPersistenceStrategy implements PersistenceStrategy {
+export class InfraRestPersistenceStrategy {
   readonly type = 'rest' as const;
-  readonly priority = 100;
 
   constructor(
     private readonly http: HttpClient,
@@ -40,8 +36,8 @@ export class InfraRestPersistenceStrategy implements PersistenceStrategy {
       diagramId: operation.diagramId,
     });
 
-    // Extract threatModelId from metadata
-    const threatModelId = operation.metadata?.['threatModelId'];
+    // Get threatModelId from operation
+    const threatModelId = operation.threatModelId;
     if (!threatModelId) {
       const errorMessage = 'Threat model ID is required for saving diagram';
       this.logger.error(errorMessage, { diagramId: operation.diagramId });
@@ -107,7 +103,6 @@ export class InfraRestPersistenceStrategy implements PersistenceStrategy {
     this.logger.debug('REST load operation started', {
       diagramId: operation.diagramId,
       threatModelId: operation.threatModelId,
-      forceRefresh: operation.forceRefresh,
     });
 
     if (!operation.threatModelId) {
@@ -173,17 +168,5 @@ export class InfraRestPersistenceStrategy implements PersistenceStrategy {
         });
       }),
     );
-  }
-
-  sync(operation: SyncOperation): Observable<SyncResult> {
-    this.logger.debug('REST sync operation started', { diagramId: operation.diagramId });
-
-    // For now, simulate successful sync
-    return of({
-      success: true,
-      diagramId: operation.diagramId,
-      conflicts: 0,
-      timestamp: Date.now(),
-    });
   }
 }
