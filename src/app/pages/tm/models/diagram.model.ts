@@ -10,9 +10,26 @@ export interface DiagramImage {
 
 /**
  * Cell interface for diagram graph data
+ * Aligned with OpenAPI spec which uses flat x, y, width, height and shape discriminator
  */
 export interface Cell {
   id: string;
+  shape: string;
+  // Node properties (when shape is actor, process, store, security-boundary, text-box)
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  // Edge properties (when shape is edge)
+  source?: { cell: string; port?: string } | string;
+  target?: { cell: string; port?: string } | string;
+  // Common optional properties
+  parent?: string | null;
+  zIndex?: number;
+  visible?: boolean;
+  attrs?: any;
+  data?: any;
+  // Legacy properties for backward compatibility
   value?: string;
   geometry?: {
     x: number;
@@ -21,11 +38,8 @@ export interface Cell {
     height: number;
   };
   style?: string;
-  vertex: boolean;
-  edge: boolean;
-  parent?: string | null;
-  source?: string | null;
-  target?: string | null;
+  vertex?: boolean;
+  edge?: boolean;
 }
 
 /**
@@ -66,43 +80,33 @@ export const MOCK_DIAGRAMS: Diagram[] = [
     cells: [
       {
         id: 'cell-web-server',
+        shape: 'process',
         value: 'Web Server',
         geometry: { x: 100, y: 100, width: 120, height: 60 },
         style: 'shape=process;whiteSpace=wrap;html=1;text=Web%20Server;',
-        vertex: true,
-        edge: false,
         parent: null,
-        source: null,
-        target: null,
       },
       {
         id: 'cell-database',
+        shape: 'store',
         value: 'User Database',
         geometry: { x: 300, y: 100, width: 120, height: 60 },
         style: 'shape=cylinder;whiteSpace=wrap;html=1;text=User%20Database;',
-        vertex: true,
-        edge: false,
         parent: null,
-        source: null,
-        target: null,
       },
       {
         id: 'cell-api-gateway',
+        shape: 'process',
         value: 'API Gateway',
         geometry: { x: 100, y: 250, width: 120, height: 60 },
         style: 'shape=process;whiteSpace=wrap;html=1;text=API%20Gateway;',
-        vertex: true,
-        edge: false,
         parent: null,
-        source: null,
-        target: null,
       },
       {
         id: 'edge-web-db',
+        shape: 'edge',
         value: '',
         style: 'endArrow=classic;html=1;label=Query%20Data;',
-        vertex: false,
-        edge: true,
         parent: null,
         source: 'cell-web-server',
         target: 'cell-database',
@@ -125,32 +129,25 @@ export const MOCK_DIAGRAMS: Diagram[] = [
     cells: [
       {
         id: 'cell-user-actor',
+        shape: 'actor',
         value: 'User',
         geometry: { x: 50, y: 150, width: 80, height: 60 },
         style: 'shape=actor;whiteSpace=wrap;html=1;text=User;',
-        vertex: true,
-        edge: false,
         parent: null,
-        source: null,
-        target: null,
       },
       {
         id: 'cell-auth-service',
+        shape: 'process',
         value: 'Authentication Service',
         geometry: { x: 200, y: 150, width: 140, height: 60 },
         style: 'shape=process;whiteSpace=wrap;html=1;text=Authentication%20Service;',
-        vertex: true,
-        edge: false,
         parent: null,
-        source: null,
-        target: null,
       },
       {
         id: 'edge-user-auth',
+        shape: 'edge',
         value: '',
         style: 'endArrow=classic;html=1;label=Login%20Request;',
-        vertex: false,
-        edge: true,
         parent: null,
         source: 'cell-user-actor',
         target: 'cell-auth-service',

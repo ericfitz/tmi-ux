@@ -93,7 +93,7 @@ describe('ThreatModel Validation Integration', () => {
           type: 'DFD-1.0.0',
           created_at: '2025-01-01T00:00:00Z',
           modified_at: '2025-01-01T00:00:00Z',
-          cells: [{ id: 'cell-1', vertex: true, value: 'Process' }],
+          cells: [{ id: 'cell-1', shape: 'process', x: 100, y: 100, width: 120, height: 60 }],
         },
       ],
       threats: [
@@ -138,9 +138,14 @@ describe('ThreatModel Validation Integration', () => {
           created_at: '2025-01-01T00:00:00Z',
           modified_at: '2025-01-01T00:00:00Z',
           cells: [
-            { id: 'cell-1', vertex: true, edge: true }, // Invalid: both vertex and edge
-            { id: 'cell-2', edge: true, source: 'cell-1', target: 'non-existent-cell' }, // Invalid target
-            { vertex: true, value: 'Process' }, // Missing ID
+            { id: 'cell-1', shape: 'invalid-shape', x: 100, y: 100, width: 120, height: 60 }, // Invalid: unknown shape
+            {
+              id: 'cell-2',
+              shape: 'edge',
+              source: { cell: 'cell-1' },
+              target: { cell: 'non-existent-cell' },
+            }, // Invalid target
+            { shape: 'process', x: 100, y: 100, width: 120, height: 60 }, // Missing ID
           ],
         },
       ],
@@ -308,22 +313,25 @@ describe('ThreatModel Validation Integration', () => {
           cells: [
             {
               id: 'process-1',
-              vertex: true,
-              value: 'Web Server',
-              geometry: { x: 100, y: 100, width: 120, height: 60 },
+              shape: 'process',
+              x: 100,
+              y: 100,
+              width: 120,
+              height: 60,
             },
             {
               id: 'store-1',
-              vertex: true,
-              value: 'Database',
-              geometry: { x: 300, y: 100, width: 100, height: 60 },
+              shape: 'store',
+              x: 300,
+              y: 100,
+              width: 100,
+              height: 60,
             },
             {
               id: 'flow-1',
-              edge: true,
-              source: 'process-1',
-              target: 'store-1',
-              value: 'Query Data',
+              shape: 'edge',
+              source: { cell: 'process-1' },
+              target: { cell: 'store-1' },
             },
           ],
         },

@@ -1666,8 +1666,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
       // Generate filename: threat model name (truncated to 63 chars) + "-threat-model.json"
       const filename = this.generateThreatModelFilename(this.threatModel.name);
 
+      // Normalize the threat model to ensure consistent date formats
+      const normalizedThreatModel = this.normalizeThreatModelForExport(this.threatModel);
+
       // Serialize the complete threat model as JSON
-      const jsonContent = JSON.stringify(this.threatModel, null, 2);
+      const jsonContent = JSON.stringify(normalizedThreatModel, null, 2);
       const blob = new Blob([jsonContent], { type: 'application/json' });
 
       // Use the same file picker pattern as DFD exports
@@ -1676,6 +1679,61 @@ export class TmEditComponent implements OnInit, OnDestroy {
       });
     } catch (error) {
       this.logger.error('Error preparing threat model download', error);
+    }
+  }
+
+  /**
+   * Normalize threat model data for export to ensure consistent formats
+   * - Converts dates to ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ)
+   * - Ensures all required fields are present
+   */
+  private normalizeThreatModelForExport(threatModel: ThreatModel): ThreatModel {
+    const normalized = { ...threatModel };
+
+    // Normalize top-level dates
+    normalized.created_at = this.normalizeDate(threatModel.created_at);
+    normalized.modified_at = this.normalizeDate(threatModel.modified_at);
+
+    // Normalize diagram dates
+    if (normalized.diagrams) {
+      normalized.diagrams = normalized.diagrams.map(diagram => ({
+        ...diagram,
+        created_at: this.normalizeDate(diagram.created_at),
+        modified_at: this.normalizeDate(diagram.modified_at),
+      }));
+    }
+
+    // Normalize threat dates
+    if (normalized.threats) {
+      normalized.threats = normalized.threats.map(threat => ({
+        ...threat,
+        created_at: this.normalizeDate(threat.created_at),
+        modified_at: this.normalizeDate(threat.modified_at),
+      }));
+    }
+
+    return normalized;
+  }
+
+  /**
+   * Normalize a date string to ISO 8601 format
+   * Handles various input formats and ensures output is YYYY-MM-DDTHH:mm:ss.sssZ
+   */
+  private normalizeDate(dateString: string): string {
+    if (!dateString) {
+      return new Date().toISOString();
+    }
+
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        this.logger.warn('Invalid date encountered, using current date', { dateString });
+        return new Date().toISOString();
+      }
+      return date.toISOString();
+    } catch (error) {
+      this.logger.error('Error normalizing date', { dateString, error });
+      return new Date().toISOString();
     }
   }
 

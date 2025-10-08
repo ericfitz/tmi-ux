@@ -116,7 +116,7 @@ describe('ThreatModelValidatorService', () => {
             type: 'DFD-1.0.0',
             created_at: '2025-01-01T00:00:00Z',
             modified_at: '2025-01-01T00:00:00Z',
-            cells: [{ id: 'cell-1', vertex: true, value: 'Process' }],
+            cells: [{ id: 'cell-1', shape: 'process', x: 100, y: 100, width: 120, height: 60 }],
           },
         ],
         threats: [
@@ -161,9 +161,14 @@ describe('ThreatModelValidatorService', () => {
             created_at: '2025-01-01T00:00:00Z',
             modified_at: '2025-01-01T00:00:00Z',
             cells: [
-              { id: 'cell-1', vertex: true, edge: true }, // Invalid: both vertex and edge
-              { id: 'cell-2', edge: true, source: 'cell-1', target: 'non-existent-cell' }, // Invalid target
-              { vertex: true, value: 'Process' }, // Missing ID
+              { id: 'cell-1', shape: 'invalid-shape', x: 100, y: 100, width: 120, height: 60 }, // Invalid: unknown shape
+              {
+                id: 'cell-2',
+                shape: 'edge',
+                source: { cell: 'cell-1' },
+                target: { cell: 'non-existent-cell' },
+              }, // Invalid target
+              { shape: 'process', x: 100, y: 100, width: 120, height: 60 }, // Missing ID
             ],
           },
         ],

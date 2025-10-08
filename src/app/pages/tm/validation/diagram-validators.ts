@@ -151,34 +151,39 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
       );
     }
 
-    // Validate vertex/edge properties
-    const isVertex = cell.vertex === true;
-    const isEdge = cell.edge === true;
+    // Validate cell type based on shape property (per OpenAPI spec)
+    const NODE_SHAPES = ['actor', 'process', 'store', 'security-boundary', 'text-box'];
+    const EDGE_SHAPES = ['edge'];
 
-    if (!isVertex && !isEdge) {
+    if (!cell.shape || typeof cell.shape !== 'string') {
+      errors.push(
+        ValidationUtils.createError(
+          'MISSING_SHAPE',
+          'Cell must have a valid shape property',
+          ValidationUtils.buildPath(cellPath, 'shape'),
+        ),
+      );
+      return errors;
+    }
+
+    const isNode = NODE_SHAPES.includes(cell.shape);
+    const isEdge = EDGE_SHAPES.includes(cell.shape);
+
+    if (!isNode && !isEdge) {
       errors.push(
         ValidationUtils.createError(
           'INVALID_CELL_TYPE',
-          'Cell must be either a vertex (vertex: true) or edge (edge: true)',
-          cellPath,
+          `Cell shape '${cell.shape}' is not a valid node or edge type. Valid nodes: ${NODE_SHAPES.join(', ')}. Valid edges: ${EDGE_SHAPES.join(', ')}`,
+          ValidationUtils.buildPath(cellPath, 'shape'),
         ),
       );
+      return errors;
     }
 
-    if (isVertex && isEdge) {
-      errors.push(
-        ValidationUtils.createError(
-          'AMBIGUOUS_CELL_TYPE',
-          'Cell cannot be both vertex and edge',
-          cellPath,
-        ),
-      );
-    }
-
-    // Validate vertex-specific properties
-    if (isVertex) {
-      const vertexErrors = this.validateVertexCell(cell, cellPath);
-      errors.push(...vertexErrors);
+    // Validate node-specific properties
+    if (isNode) {
+      const nodeErrors = this.validateNodeCell(cell, cellPath);
+      errors.push(...nodeErrors);
     }
 
     // Validate edge-specific properties
@@ -191,46 +196,46 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   }
 
   /**
-   * Validate vertex cell properties
+   * Validate node cell properties
    */
-  private validateVertexCell(cell: Cell, cellPath: string): ValidationError[] {
+  private validateNodeCell(cell: Cell, cellPath: string): ValidationError[] {
     const errors: ValidationError[] = [];
 
-    // Validate geometry for vertices
-    if (cell.geometry) {
-      const geometry = cell.geometry;
-      const geometryPath = ValidationUtils.buildPath(cellPath, 'geometry');
+    // Validate position and size for nodes (per OpenAPI spec)
+    // The spec uses flat x, y, width, height properties
+    if (typeof cell.x !== 'number' || typeof cell.y !== 'number') {
+      errors.push(
+        ValidationUtils.createError(
+          'INVALID_POSITION',
+          'Node must have numeric x and y coordinates',
+          cellPath,
+        ),
+      );
+    }
 
-      if (typeof geometry.x !== 'number' || typeof geometry.y !== 'number') {
-        errors.push(
-          ValidationUtils.createError(
-            'INVALID_GEOMETRY',
-            'Vertex geometry must have numeric x and y coordinates',
-            geometryPath,
-          ),
-        );
-      }
+    if (typeof cell.width !== 'number' || typeof cell.height !== 'number') {
+      errors.push(
+        ValidationUtils.createError(
+          'INVALID_SIZE',
+          'Node must have numeric width and height',
+          cellPath,
+        ),
+      );
+    }
 
-      if (typeof geometry.width !== 'number' || typeof geometry.height !== 'number') {
-        errors.push(
-          ValidationUtils.createError(
-            'INVALID_GEOMETRY',
-            'Vertex geometry must have numeric width and height',
-            geometryPath,
-          ),
-        );
-      }
-
-      if (geometry.width <= 0 || geometry.height <= 0) {
-        errors.push(
-          ValidationUtils.createError(
-            'INVALID_DIMENSIONS',
-            'Vertex dimensions must be positive numbers',
-            geometryPath,
-            'warning',
-          ),
-        );
-      }
+    if (
+      typeof cell.width === 'number' &&
+      typeof cell.height === 'number' &&
+      (cell.width <= 0 || cell.height <= 0)
+    ) {
+      errors.push(
+        ValidationUtils.createError(
+          'INVALID_DIMENSIONS',
+          'Node dimensions must be positive numbers',
+          cellPath,
+          'warning',
+        ),
+      );
     }
 
     return errors;
@@ -242,8 +247,8 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   private validateEdgeCell(cell: Cell, cellPath: string): ValidationError[] {
     const errors: ValidationError[] = [];
 
-    // Edges should have source and target
-    if (!cell.source || typeof cell.source !== 'string') {
+    // Edges should have source and target (can be string or object)
+    if (!cell.source) {
       errors.push(
         ValidationUtils.createError(
           'MISSING_EDGE_SOURCE',
@@ -251,9 +256,20 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
           ValidationUtils.buildPath(cellPath, 'source'),
         ),
       );
+    } else if (
+      typeof cell.source !== 'string' &&
+      (typeof cell.source !== 'object' || !cell.source.cell)
+    ) {
+      errors.push(
+        ValidationUtils.createError(
+          'INVALID_EDGE_SOURCE',
+          'Edge source must be a string or object with cell property',
+          ValidationUtils.buildPath(cellPath, 'source'),
+        ),
+      );
     }
 
-    if (!cell.target || typeof cell.target !== 'string') {
+    if (!cell.target) {
       errors.push(
         ValidationUtils.createError(
           'MISSING_EDGE_TARGET',
@@ -261,17 +277,30 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
           ValidationUtils.buildPath(cellPath, 'target'),
         ),
       );
+    } else if (
+      typeof cell.target !== 'string' &&
+      (typeof cell.target !== 'object' || !cell.target.cell)
+    ) {
+      errors.push(
+        ValidationUtils.createError(
+          'INVALID_EDGE_TARGET',
+          'Edge target must be a string or object with cell property',
+          ValidationUtils.buildPath(cellPath, 'target'),
+        ),
+      );
     }
 
     // Self-referencing edges warning
-    if (cell.source === cell.target) {
+    const sourceId = typeof cell.source === 'string' ? cell.source : cell.source?.cell;
+    const targetId = typeof cell.target === 'string' ? cell.target : cell.target?.cell;
+    if (sourceId && targetId && sourceId === targetId) {
       errors.push(
         ValidationUtils.createError(
           'SELF_REFERENCING_EDGE',
           'Edge references itself (source equals target)',
           cellPath,
           'warning',
-          { source: cell.source, target: cell.target },
+          { source: sourceId, target: targetId },
         ),
       );
     }
@@ -313,31 +342,35 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
 
     // Validate edge references
     cells.forEach((cell, index) => {
-      if (cell?.edge && cell.source && cell.target) {
+      if (cell?.shape === 'edge' && cell.source && cell.target) {
         const cellPath = ValidationUtils.buildPath(basePath, index);
 
+        // Extract source ID (handle both string and object formats)
+        const sourceId = typeof cell.source === 'string' ? cell.source : cell.source.cell;
         // Check if source exists
-        if (!cellIds.has(cell.source)) {
+        if (!cellIds.has(sourceId)) {
           errors.push(
             ValidationUtils.createError(
               'INVALID_EDGE_SOURCE',
-              `Edge source '${cell.source}' does not reference an existing cell`,
+              `Edge source '${sourceId}' does not reference an existing cell`,
               ValidationUtils.buildPath(cellPath, 'source'),
               'error',
-              { sourceId: cell.source, availableIds: Array.from(cellIds) },
+              { sourceId, availableIds: Array.from(cellIds) },
             ),
           );
         }
 
+        // Extract target ID (handle both string and object formats)
+        const targetId = typeof cell.target === 'string' ? cell.target : cell.target.cell;
         // Check if target exists
-        if (!cellIds.has(cell.target)) {
+        if (!cellIds.has(targetId)) {
           errors.push(
             ValidationUtils.createError(
               'INVALID_EDGE_TARGET',
-              `Edge target '${cell.target}' does not reference an existing cell`,
+              `Edge target '${targetId}' does not reference an existing cell`,
               ValidationUtils.buildPath(cellPath, 'target'),
               'error',
-              { targetId: cell.target, availableIds: Array.from(cellIds) },
+              { targetId, availableIds: Array.from(cellIds) },
             ),
           );
         }

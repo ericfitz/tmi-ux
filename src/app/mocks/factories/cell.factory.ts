@@ -18,6 +18,7 @@ export function createMockCell(type: CellType = 'process', overrides?: Partial<C
 
   const defaultCell: Cell = {
     id,
+    shape: type,
     value: isEdge ? '' : `Mock ${type.charAt(0).toUpperCase() + type.slice(1)}`,
     geometry: isEdge
       ? undefined
@@ -31,8 +32,8 @@ export function createMockCell(type: CellType = 'process', overrides?: Partial<C
     vertex: !isEdge,
     edge: isEdge,
     parent: null,
-    source: isEdge ? 'source_id' : null,
-    target: isEdge ? 'target_id' : null,
+    source: isEdge ? 'source_id' : undefined,
+    target: isEdge ? 'target_id' : undefined,
   };
 
   return { ...defaultCell, ...overrides };
