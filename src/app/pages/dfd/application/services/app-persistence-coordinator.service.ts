@@ -712,15 +712,17 @@ export class AppPersistenceCoordinator {
     const strategies = this.getStrategies();
 
     // Special handling for collaboration intent
+    // NOTE: For loading diagrams in collaboration mode, we use REST API to get the current state
+    // WebSocket is only used for broadcasting changes, not for loading initial state
     if (context.collaborationIntent) {
-      const wsStrategy = strategies.find(s => s.type === 'websocket');
-      if (wsStrategy && this._isStrategyAvailable(wsStrategy, context)) {
-        this.logger.debug('Using WebSocket strategy for collaboration', { context });
-        return wsStrategy;
+      const restStrategy = strategies.find(s => s.type === 'rest');
+      if (restStrategy && this._isStrategyAvailable(restStrategy, context)) {
+        this.logger.debug('Using REST strategy for collaboration diagram load', { context });
+        return restStrategy;
       }
-      // For collaboration intent, don't fall back to local strategies
-      this.logger.warn('Collaboration requires WebSocket connection', {
-        webSocketAvailable: wsStrategy ? this._isStrategyAvailable(wsStrategy, context) : false,
+      // For collaboration intent, require server connection
+      this.logger.warn('Collaboration requires server connection for loading diagram', {
+        restAvailable: restStrategy ? this._isStrategyAvailable(restStrategy, context) : false,
         context,
       });
       return null;

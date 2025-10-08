@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy, Optional, Inject } from '@angular/core';
-import { BehaviorSubject, Observable, throwError, Subscription, of, Subject } from 'rxjs';
-import { map, catchError, tap, skip } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError, Subscription, Subject } from 'rxjs';
+import { map, catchError, tap, skip, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { LoggerService } from './logger.service';
 import { WebSocketAdapter, WebSocketState, WebSocketErrorType } from './websocket.adapter';
@@ -483,13 +483,14 @@ export class DfdCollaborationService implements OnDestroy {
     // Set up WebSocket listeners before connecting
     this._setupWebSocketListeners();
 
-    // Connect to WebSocket - participant management happens via WebSocket
-    this._connectToWebSocket(existingSession.websocket_url);
-
-    // Show session joined notification
-    this._notificationService?.showSessionEvent('userJoined').subscribe();
-
-    return of(true);
+    // Connect to WebSocket and wait for connection to be established
+    return this._connectToWebSocket(existingSession.websocket_url).pipe(
+      tap(() => {
+        // Show session joined notification
+        this._notificationService?.showSessionEvent('userJoined').subscribe();
+      }),
+      map(() => true),
+    );
   }
 
   /**
@@ -555,12 +556,10 @@ export class DfdCollaborationService implements OnDestroy {
 
           // Set up WebSocket listeners before connecting
           this._setupWebSocketListeners();
-
-          // Connect to WebSocket immediately - no delay needed with unified state
-          this._connectToWebSocket(session.websocket_url);
-
-          // Store whether this was a new session for later
-          return { isNewSession: result.isNewSession };
+        }),
+        // Connect to WebSocket and wait for connection to be established
+        switchMap((result: { session: CollaborationSession; isNewSession: boolean }) => {
+          return this._connectToWebSocket(result.session.websocket_url).pipe(map(() => result));
         }),
         // No longer ensuring user in participant list via REST API
         // Participants will be managed through WebSocket messages only
@@ -642,9 +641,10 @@ export class DfdCollaborationService implements OnDestroy {
 
           // Set up WebSocket listeners before connecting
           this._setupWebSocketListeners();
-
-          // Connect to WebSocket immediately - no delay needed with unified state
-          this._connectToWebSocket(session.websocket_url);
+        }),
+        // Connect to WebSocket and wait for connection to be established
+        switchMap((session: CollaborationSession) => {
+          return this._connectToWebSocket(session.websocket_url).pipe(map(() => session));
         }),
         // No longer ensuring user in participant list via REST API
         // Participants will be managed through WebSocket messages only
@@ -1434,20 +1434,20 @@ export class DfdCollaborationService implements OnDestroy {
    * Connect to WebSocket for real-time collaboration
    * @param websocketUrl The WebSocket URL provided by the API
    */
-  private _connectToWebSocket(websocketUrl: string): void {
+  private _connectToWebSocket(websocketUrl: string): Observable<void> {
     const fullWebSocketUrl = this._getFullWebSocketUrl(websocketUrl);
     this._logger.info('Connecting to collaboration WebSocket', {
       originalUrl: websocketUrl,
       fullUrl: fullWebSocketUrl,
     });
 
-    this._webSocketAdapter.connect(fullWebSocketUrl).subscribe({
-      next: () => {
+    return this._webSocketAdapter.connect(fullWebSocketUrl).pipe(
+      tap(() => {
         this._logger.info('WebSocket connection established successfully');
         // The server handles participant tracking when the WebSocket connection is established
         // Client should not send join messages
-      },
-      error: (error: unknown) => {
+      }),
+      catchError((error: unknown) => {
         this._logger.error('Failed to connect to WebSocket', error);
 
         // Type guard for error object
@@ -1467,8 +1467,10 @@ export class DfdCollaborationService implements OnDestroy {
             // () => this._retryWebSocketConnection(), // COMMENTED OUT
           )
           .subscribe();
-      },
-    });
+
+        return throwError(() => error);
+      }),
+    );
   }
 
   /**
