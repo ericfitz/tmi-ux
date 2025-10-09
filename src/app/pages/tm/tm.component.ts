@@ -75,8 +75,13 @@ export class TmComponent implements OnInit, OnDestroy {
   collaborationSessions$!: Observable<CollaborationSession[]>;
   shouldShowCollaboration$!: Observable<boolean>;
 
+  // Loading state
+  isLoadingThreatModels = true;
+  isLoadingCollaborationSessions = true;
+
   private subscription: Subscription | null = null;
   private languageSubscription: Subscription | null = null;
+  private collaborationSessionsSubscription: Subscription | null = null;
   private currentLocale: string = 'en-US';
 
   constructor(
@@ -107,10 +112,18 @@ export class TmComponent implements OnInit, OnDestroy {
     this.collaborationSessions$ = this.collaborationSessionService.sessions$;
     this.shouldShowCollaboration$ = this.collaborationSessionService.shouldShowCollaboration$;
 
+    // Track collaboration sessions loading state
+    this.collaborationSessionsSubscription = this.collaborationSessions$.subscribe(() => {
+      this.isLoadingCollaborationSessions = false;
+      this.cdr.detectChanges();
+    });
+
     // Force refresh on dashboard load to ensure we have the latest data
+    this.isLoadingThreatModels = true;
     this.subscription = this.threatModelService.getThreatModelList().subscribe(models => {
       // Ensure models is always an array
       this.threatModels = models || [];
+      this.isLoadingThreatModels = false;
       this.logger.debugComponent('TM', 'TmComponent received threat model list', {
         count: this.threatModels.length,
         models: this.threatModels.map(tm => ({ id: tm.id, name: tm.name })),
@@ -137,6 +150,9 @@ export class TmComponent implements OnInit, OnDestroy {
     }
     if (this.languageSubscription) {
       this.languageSubscription.unsubscribe();
+    }
+    if (this.collaborationSessionsSubscription) {
+      this.collaborationSessionsSubscription.unsubscribe();
     }
 
     // Unsubscribe from collaboration session polling when leaving dashboard
@@ -296,7 +312,9 @@ export class TmComponent implements OnInit, OnDestroy {
    */
   refreshCollaborationSessions(): void {
     this.logger.info('Manually refreshing collaboration sessions');
+    this.isLoadingCollaborationSessions = true;
     this.collaborationSessionService.refreshSessions();
+    // Loading state will be cleared by the subscription to collaborationSessions$
   }
 
   /**
@@ -304,8 +322,10 @@ export class TmComponent implements OnInit, OnDestroy {
    */
   refreshThreatModels(): void {
     this.logger.info('Manually refreshing threat models');
+    this.isLoadingThreatModels = true;
     this.threatModelService.getThreatModelList().subscribe(models => {
       this.threatModels = models || [];
+      this.isLoadingThreatModels = false;
       this.logger.info('Threat models refreshed', { count: this.threatModels.length });
       this.cdr.detectChanges();
     });

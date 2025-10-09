@@ -235,6 +235,55 @@ button.delete-button {
   color: #00796b; // Teal 700
 }
 
+// Loading spinner
+.loading-container {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 0;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 12px solid #dbdcef;
+  border-radius: 50%;
+  position: relative;
+  transform: rotate(45deg);
+}
+
+.spinner::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 12px solid #1976d2;
+  animation: spinner-animation 2.4s infinite linear;
+}
+
+@keyframes spinner-animation {
+  0% {
+    clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0);
+  }
+
+  25% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0);
+  }
+
+  50% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%);
+  }
+
+  75% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%);
+  }
+
+  100% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0);
+  }
+}
+
 // RTL support
 :host-context([dir='rtl']) {
   .threat-model-icon,

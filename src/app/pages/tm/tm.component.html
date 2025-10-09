@@ -26,6 +26,10 @@
   </div>
 
   <div class="threat-models-list">
+    <div *ngIf="isLoadingThreatModels" class="loading-container">
+      <div class="spinner"></div>
+    </div>
+
     <mat-card
       *ngFor="let threatModel of threatModels"
       class="threat-model-card"
@@ -85,7 +89,7 @@
       </mat-card-content>
     </mat-card>
 
-    <div *ngIf="threatModels.length === 0" class="no-threat-models">
+    <div *ngIf="!isLoadingThreatModels && threatModels.length === 0" class="no-threat-models">
       <mat-icon class="empty-icon">sentiment_dissatisfied</mat-icon>
       <p [transloco]="'threatModels.noItemsMessage'">You don't have any threat models yet.</p>
       <button mat-raised-button color="primary" (click)="createThreatModel()">
@@ -104,6 +108,10 @@
   </div>
 
   <div class="collaboration-sessions-list">
+    <div *ngIf="isLoadingCollaborationSessions" class="loading-container">
+      <div class="spinner"></div>
+    </div>
+
     <mat-card
       *ngFor="let session of collaborationSessions$ | async"
       class="collaboration-session-card"
@@ -147,7 +155,10 @@
       </mat-card-content>
     </mat-card>
 
-    <div *ngIf="(collaborationSessions$ | async)?.length === 0" class="no-collaboration-sessions">
+    <div
+      *ngIf="!isLoadingCollaborationSessions && (collaborationSessions$ | async)?.length === 0"
+      class="no-collaboration-sessions"
+    >
       <mat-icon class="empty-icon">groups_off</mat-icon>
       <p>No active collaboration sessions</p>
     </div>
