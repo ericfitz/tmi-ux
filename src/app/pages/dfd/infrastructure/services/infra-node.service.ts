@@ -103,8 +103,8 @@ export class InfraNodeService {
     const visibleHeight = containerRect.height;
 
     // Calculate the visible viewport area in graph coordinates
-    // Start from upper-left of visible area
-    const viewportTopLeft = graph.pageToLocal(0, 0);
+    // Use the container's actual position on the page to get the top-left of the visible viewport
+    const viewportTopLeft = graph.pageToLocal(containerRect.left, containerRect.top);
 
     // Calculate available grid dimensions in the visible viewport
     const availableWidth = visibleWidth - 2 * padding;
