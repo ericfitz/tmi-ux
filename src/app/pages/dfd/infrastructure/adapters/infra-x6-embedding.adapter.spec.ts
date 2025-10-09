@@ -256,7 +256,7 @@ describe('InfraX6EmbeddingAdapter', () => {
 
       // Verify z-order was updated
       expect(parentNode.setZIndex).toHaveBeenCalledWith(1); // Security boundary z-index
-      expect(childNode.setZIndex).toHaveBeenCalledWith(15); // Regular node embedded z-index
+      expect(childNode.setZIndex).toHaveBeenCalledWith(2); // Regular node embedded z-index (parent + 1)
     });
   });
 

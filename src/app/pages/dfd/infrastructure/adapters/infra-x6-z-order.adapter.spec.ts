@@ -478,16 +478,14 @@ describe('InfraX6ZOrderAdapter', () => {
 
       // Parent (security boundary) should stay at z-index 1
       expect(parentNode.setZIndex).toHaveBeenCalledWith(1);
-      // Child (regular node) should get z-index 15 when embedded
-      expect(childNode.setZIndex).toHaveBeenCalledWith(15);
+      // Child (regular node) should get z-index parent + 1 = 2 when embedded
+      expect(childNode.setZIndex).toHaveBeenCalledWith(2);
 
       expect(mockLogger.info).toHaveBeenCalledWith('Applied embedding z-indexes', {
         parentId: parentNode.id,
-        parentType: 'security-boundary',
         parentZIndex: 1,
         childId: childNode.id,
-        childType: 'process',
-        childZIndex: 15,
+        childZIndex: 2,
       });
     });
 

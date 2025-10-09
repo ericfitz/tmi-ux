@@ -25,8 +25,8 @@ export interface Cell {
   parent?: string | null;
   zIndex?: number;
   visible?: boolean;
-  attrs?: any;
-  data?: any;
+  attrs?: Record<string, unknown>;
+  data?: Record<string, unknown>;
   // Legacy properties for backward compatibility - DEPRECATED, will be removed
   value?: string;
   geometry?: {

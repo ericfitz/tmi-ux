@@ -55,8 +55,7 @@ vi.mock('@antv/x6', () => {
 
 import { AppDfdOrchestrator, DfdInitializationParams } from './app-dfd-orchestrator.service';
 import { OperationResult, CreateNodeOperation } from '../../types/graph-operation.types';
-import { SaveResult, LoadResult } from '../../types/persistence.types';
-import { AutoSaveState } from '../../types/auto-save.types';
+import { LoadResult } from '../../types/persistence.types';
 
 describe('AppDfdOrchestrator', () => {
   let service: AppDfdOrchestrator;
@@ -68,7 +67,6 @@ describe('AppDfdOrchestrator', () => {
   let mockPersistenceCoordinator: any;
   let mockDiagramLoadingService: any;
   let mockExportService: any;
-  let mockNodeConfigService: any;
   let mockDfdFacade: any;
   let mockContainerElement: HTMLElement;
 
@@ -143,9 +141,6 @@ describe('AppDfdOrchestrator', () => {
       processSvg: vi.fn((svgString: string) => svgString),
     };
 
-    mockNodeConfigService = {
-      getNodeConfiguration: vi.fn(),
-    };
 
     // Create a mock graph that will be returned by facade.getGraph()
     const mockGraph = {
@@ -302,13 +297,15 @@ describe('AppDfdOrchestrator', () => {
     });
 
     it('should handle collaboration mode', () => {
-      const collabParams = { ...initParams, collaborationEnabled: true };
+      const collabParams = { ...initParams, joinCollaboration: true };
 
       return new Promise<void>((resolve, reject) => {
         service.initialize(collabParams).subscribe({
           next: () => {
             const state = service.getState();
-            expect(state.collaborating).toBe(true);
+            // Collaboration state is managed by DfdCollaborationService
+            // Just verify initialization succeeded
+            expect(state.initialized).toBe(true);
             resolve();
           },
           error: reject,
@@ -443,15 +440,12 @@ describe('AppDfdOrchestrator', () => {
       const uninitializedService = new AppDfdOrchestrator(
         mockLogger,
         mockAuthService,
+        mockServerConnectionService,
+        mockCollaborationService,
         mockGraphOperationManager,
         mockPersistenceCoordinator,
-        mockAutoSaveManager,
         mockDiagramLoadingService,
         mockExportService,
-        mockNodeConfigService,
-        mockRestStrategy,
-        mockWebSocketStrategy,
-        mockCacheStrategy,
         mockDfdFacade,
       );
 
@@ -655,21 +649,13 @@ describe('AppDfdOrchestrator', () => {
     });
 
     it('should save manually', () => {
-      const saveResult: SaveResult = {
-        success: true,
-        operationId: 'manual-save-123',
-        diagramId: 'test-diagram',
-        timestamp: Date.now(),
-        metadata: {},
-      };
-
-      mockAutoSaveManager.triggerManualSave.mockReturnValue(of(saveResult));
+      // mockPersistenceCoordinator.save is already set up to return success in beforeEach
 
       return new Promise<void>((resolve, reject) => {
         service.saveManually().subscribe({
-          next: (result: SaveResult) => {
-            expect(result.success).toBe(true);
-            expect(mockAutoSaveManager.triggerManualSave).toHaveBeenCalled();
+          next: (result: boolean) => {
+            expect(result).toBe(true);
+            expect(mockPersistenceCoordinator.save).toHaveBeenCalled();
 
             const state = service.getState();
             expect(state.hasUnsavedChanges).toBe(false);
@@ -842,110 +828,29 @@ describe('AppDfdOrchestrator', () => {
 
   describe('Auto-Save Management', () => {
     it('should get auto-save state', () => {
-      const mockState: AutoSaveState = {
-        enabled: true,
-        mode: 'normal',
-        pendingSave: false,
-        nextScheduledSave: null,
-        lastSaveTime: null,
-        changesSinceLastSave: 0,
-        stats: {
-          totalSaves: 0,
-          successfulSaves: 0,
-          failedSaves: 0,
-          manualSaves: 0,
-          scheduledSaves: 0,
-          forcedSaves: 0,
-          triggersReceived: 0,
-          averageResponseTime: 0,
-          lastResetTime: new Date(),
-        },
-      };
-
-      mockAutoSaveManager.getState.mockReturnValue(mockState);
-
       const state = service.getAutoSaveState();
-      expect(state.enabled).toBe(true);
-      expect(state.mode).toBe('normal');
+      expect(state.enabled).toBeDefined();
+      expect(state.lastSavedHistoryIndex).toBeDefined();
+      expect(state.hasUnsavedChanges).toBeDefined();
+      expect(state.lastSaved).toBeDefined();
     });
 
     it('should enable auto-save', () => {
       service.enableAutoSave();
-      expect(mockAutoSaveManager.enable).toHaveBeenCalled();
+      const state = service.getAutoSaveState();
+      expect(state.enabled).toBe(true);
     });
 
     it('should disable auto-save', () => {
       service.disableAutoSave();
-      expect(mockAutoSaveManager.disable).toHaveBeenCalled();
+      const state = service.getAutoSaveState();
+      expect(state.enabled).toBe(false);
     });
   });
 
-  describe('Collaboration Management', () => {
-    beforeEach(async () => {
-      const initParams: DfdInitializationParams = {
-        diagramId: 'test-diagram',
-        threatModelId: 'test-tm',
-        containerElement: mockContainerElement,
-        collaborationEnabled: false,
-        readOnly: false,
-        autoSaveMode: 'normal',
-      };
-
-      mockPersistenceCoordinator.load.mockReturnValue(
-        of({
-          success: true,
-          operationId: 'load-123',
-          diagramId: 'test-diagram',
-          data: { cells: [] },
-          timestamp: Date.now(),
-          metadata: {},
-        }),
-      );
-
-      await service.initialize(initParams).toPromise();
-    });
-
-    it('should start collaboration', () => {
-      return new Promise<void>((resolve, reject) => {
-        service.startCollaboration().subscribe({
-          next: (success: boolean) => {
-            expect(success).toBe(true);
-
-            const state = service.getState();
-            expect(state.collaborating).toBe(true);
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
-    it('should stop collaboration', () => {
-      return new Promise<void>((resolve, reject) => {
-        service.stopCollaboration().subscribe({
-          next: (success: boolean) => {
-            expect(success).toBe(true);
-
-            const state = service.getState();
-            expect(state.collaborating).toBe(false);
-            resolve();
-          },
-          error: reject,
-        });
-      });
-    });
-
-    it('should emit collaboration state changes', () => {
-      return new Promise<void>((resolve, _reject) => {
-        service.collaborationStateChanged$.subscribe(collaborating => {
-          expect(typeof collaborating).toBe('boolean');
-          resolve();
-        });
-
-        service.startCollaboration().subscribe();
-      });
-    });
-  });
+  // Collaboration Management tests removed
+  // Collaboration is now managed entirely by DfdCollaborationService
+  // Tests for collaboration should be added to DfdCollaborationService spec file
 
   describe('Selection Management', () => {
     beforeEach(async () => {
@@ -1089,21 +994,12 @@ describe('AppDfdOrchestrator', () => {
       };
       vi.spyOn(service, 'getGraph', 'get').mockReturnValue(mockGraph);
 
-      // Mock save result
-      mockAutoSaveManager.triggerManualSave.mockReturnValue(
-        of({
-          success: true,
-          operationId: 'save-123',
-          diagramId: 'test-diagram',
-          timestamp: Date.now(),
-          metadata: {},
-        }),
-      );
+      // Test Ctrl+S (save) - spy on save method
+      const saveSpy = vi.spyOn(service, 'saveManually').mockReturnValue(of(true));
 
-      // Test Ctrl+S (save)
       const saveEvent = new KeyboardEvent('keydown', { key: 's', ctrlKey: true });
       service.onKeyDown(saveEvent);
-      expect(mockAutoSaveManager.triggerManualSave).toHaveBeenCalled();
+      expect(saveSpy).toHaveBeenCalled();
 
       // Test Ctrl+A (select all)
       const selectAllEvent = new KeyboardEvent('keydown', { key: 'a', ctrlKey: true });
@@ -1148,16 +1044,7 @@ describe('AppDfdOrchestrator', () => {
     });
 
     it('should destroy cleanly', () => {
-      // Mock successful save for cleanup
-      mockAutoSaveManager.triggerManualSave.mockReturnValue(
-        of({
-          success: true,
-          operationId: 'cleanup-save',
-          diagramId: 'test-diagram',
-          timestamp: Date.now(),
-          metadata: {},
-        }),
-      );
+      // mockPersistenceCoordinator.save is already set up to return success
 
       return new Promise<void>((resolve, reject) => {
         service.destroy().subscribe({

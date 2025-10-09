@@ -147,13 +147,26 @@ describe('Embedding Operations Integration Tests', () => {
     embeddingService = new InfraEmbeddingService(loggerService);
     zOrderService = new ZOrderService(loggerService);
 
+    // Create mock history coordinator
+    const mockHistoryCoordinator = {
+      executeVisualEffect: vi.fn((graph: Graph, operation: () => void) => {
+        operation();
+      }),
+      executeAtomicOperation: vi.fn((graph: Graph, operation: () => any) => {
+        return operation();
+      }),
+      executeCompoundOperation: vi.fn((graph: Graph, operation: () => any) => {
+        return operation();
+      }),
+    };
+
     // Create adapters for post-load validation tests
     embeddingAdapter = new InfraX6EmbeddingAdapter(
       loggerService,
       embeddingService,
       {} as any, // visualEffectsService
       {} as any, // zOrderAdapter
-      {} as any, // historyCoordinator
+      mockHistoryCoordinator as any,
     );
 
     zOrderAdapter = new InfraX6ZOrderAdapter(loggerService, zOrderService);
