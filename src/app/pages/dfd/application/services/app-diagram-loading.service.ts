@@ -109,18 +109,18 @@ export class AppDiagramLoadingService {
           totalCellsInGraph: graphCells.length,
           cellIds: graphCells.map(cell => cell.id),
         });
+
+        // Update embedding appearances if requested (while history is still suppressed)
+        if (updateEmbedding) {
+          infraX6GraphAdapter.updateAllEmbeddingAppearances();
+          this.logger.debug('Updated embedding appearances after cell loading');
+        }
       } finally {
         // Restore diagram loading state if it was modified
         if (wasLoadingStateSuppressed) {
           // Clear the diagram loading state to allow normal history recording
           this.historyCoordinator.setDiagramLoadingState(false);
           this.logger.debug('Diagram loading state cleared - history recording restored');
-        }
-
-        // Update embedding appearances if requested
-        if (updateEmbedding) {
-          infraX6GraphAdapter.updateAllEmbeddingAppearances();
-          this.logger.debug('Updated embedding appearances after cell loading');
         }
       }
     } catch (error) {
