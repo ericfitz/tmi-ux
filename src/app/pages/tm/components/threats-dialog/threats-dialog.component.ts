@@ -23,6 +23,8 @@ interface ThreatUpdateResult {
   description: string;
   severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
   threat_type: string;
+  diagram_id?: string;
+  cell_id?: string;
   score?: number;
   priority?: string;
   mitigated?: boolean;
@@ -192,62 +194,38 @@ export class ThreatsDialogComponent implements OnInit {
         this.logger.info('Threat editor closed with changes, updating threat');
 
         // Update the threat with new data
-        const updatedThreat: Threat = {
-          ...threat,
+        const updatedThreatData: Partial<Threat> = {
           name: result.name,
           description: result.description,
           severity: result.severity,
           threat_type: result.threat_type,
+          diagram_id: result.diagram_id,
+          cell_id: result.cell_id,
           score: result.score,
           priority: result.priority,
           mitigated: result.mitigated,
           status: result.status,
           issue_url: result.issue_url,
-          modified_at: new Date().toISOString(),
           metadata: result.metadata || threat.metadata || [],
         };
 
-        // Update the threat in the threat model
+        // Update the threat via the API
         this.threatModelService
-          .getThreatModelById(this.data.threatModelId!)
+          .updateThreat(this.data.threatModelId!, threat.id, updatedThreatData)
           .pipe(take(1))
           .subscribe({
-            next: threatModel => {
-              if (!threatModel) {
-                this.logger.error('Threat model not found for update', {
-                  id: this.data.threatModelId,
-                });
-                return;
-              }
+            next: updatedThreat => {
+              this.logger.info('Threat updated successfully', { threatId: threat.id });
 
-              // Find and update the threat in the model
-              const threatIndex = threatModel.threats?.findIndex(t => t.id === threat.id) ?? -1;
-              if (threatIndex !== -1 && threatModel.threats) {
-                threatModel.threats[threatIndex] = updatedThreat;
-
-                // Save the updated threat model
-                this.threatModelService
-                  .updateThreatModel(threatModel)
-                  .pipe(take(1))
-                  .subscribe({
-                    next: () => {
-                      this.logger.info('Threat updated successfully', { threatId: threat.id });
-
-                      // Update the local data source
-                      const localIndex = this.dataSource.data.findIndex(t => t.id === threat.id);
-                      if (localIndex !== -1) {
-                        this.dataSource.data[localIndex] = updatedThreat;
-                        this.dataSource.data = [...this.dataSource.data]; // Trigger change detection
-                      }
-                    },
-                    error: error => {
-                      this.logger.error('Failed to update threat', error);
-                    },
-                  });
+              // Update the local data source
+              const localIndex = this.dataSource.data.findIndex(t => t.id === threat.id);
+              if (localIndex !== -1) {
+                this.dataSource.data[localIndex] = updatedThreat;
+                this.dataSource.data = [...this.dataSource.data]; // Trigger change detection
               }
             },
             error: error => {
-              this.logger.error('Failed to load threat model for update', error);
+              this.logger.error('Failed to update threat', error);
             },
           });
       }
