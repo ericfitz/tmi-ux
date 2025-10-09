@@ -227,7 +227,7 @@
     "appTitle": "TMI: Threat Modeling Improved",
     "copyUserEmail": "Copy User Email to Clipboard",
     "home": "Home",
-    "logoutButton": "Logout",
+    "logoutButton": "Sign Out",
     "serverStatus": {
       "noServerConfigured": "No Server Configured",
       "serverConnected": "Server Connected",
@@ -265,7 +265,7 @@
   "sessionExpiry": {
     "extendButton": "Extend Session",
     "extending": "Extending your session, please wait...",
-    "logoutButton": "Log Out Now",
+    "logoutButton": "Sign Out Now",
     "message": "Your session is about to expire. Would you like to extend your session or log out now?",
     "timeFormat": {
       "minutesSeconds": "{{minutes}}:{{seconds}}",

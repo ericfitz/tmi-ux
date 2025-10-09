@@ -19,7 +19,9 @@ export function createMockCell(type: CellType = 'process', overrides?: Partial<C
   const defaultCell: Cell = {
     id,
     shape: type,
-    position: isEdge ? undefined : { x: Math.floor(Math.random() * 500), y: Math.floor(Math.random() * 300) },
+    position: isEdge
+      ? undefined
+      : { x: Math.floor(Math.random() * 500), y: Math.floor(Math.random() * 300) },
     size: isEdge ? undefined : { width: 120, height: 60 },
     parent: null,
     source: isEdge ? 'source_id' : undefined,
