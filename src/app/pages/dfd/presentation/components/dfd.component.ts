@@ -508,6 +508,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           initialized: state.initialized,
           loading: state.loading,
           error: state.error,
+          diagramName: state.diagramName,
+          threatModelName: state.threatModelName,
         });
 
         // Set up edge event handlers when orchestrator becomes initialized
@@ -520,10 +522,21 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         this.isSystemInitialized = state.initialized;
+
+        // Update diagram name and threat model name from orchestrator state
+        if (state.diagramName) {
+          this.diagramName = state.diagramName;
+        }
+        if (state.threatModelName) {
+          this.threatModelName = state.threatModelName;
+        }
+
         this.cdr.detectChanges();
         this.logger.debug('Updated system initialization state and triggered change detection', {
           isSystemInitialized: this.isSystemInitialized,
           isReadOnlyMode: this.isReadOnlyMode,
+          diagramName: this.diagramName,
+          threatModelName: this.threatModelName,
         });
       }),
     );

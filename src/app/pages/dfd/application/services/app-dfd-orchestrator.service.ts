@@ -51,6 +51,8 @@ export interface DfdState {
   readonly error: string | null;
   readonly diagramId?: string;
   readonly threatModelId?: string;
+  readonly diagramName?: string;
+  readonly threatModelName?: string;
 }
 
 export interface DfdStats {
@@ -944,6 +946,8 @@ export class AppDfdOrchestrator {
         if (result.success && result.data && result.data.cells) {
           this.logger.info('Diagram data loaded from persistence, loading cells into graph', {
             cellCount: result.data.cells.length,
+            diagramName: result.data.name,
+            threatModelName: result.data.threatModelName,
           });
 
           // Use AppDiagramLoadingService to properly load cells into the graph
@@ -965,6 +969,8 @@ export class AppDfdOrchestrator {
             loading: false,
             hasUnsavedChanges: false,
             lastSaved: new Date(),
+            diagramName: result.data.name,
+            threatModelName: result.data.threatModelName,
           });
         }
       }),

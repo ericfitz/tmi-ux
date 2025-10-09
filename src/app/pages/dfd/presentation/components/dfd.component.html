@@ -2,7 +2,11 @@
   <div class="title-row">
     <div class="title-container">
       <h1 class="page-title">
-        {{ 'editor.diagramPrefix' | transloco }}
+        <span *ngIf="threatModelName">
+          {{ 'common.objectTypes.threatModel' | transloco }}: {{ threatModelName }}
+          <span class="title-separator">/</span>
+        </span>
+        {{ 'common.objectTypes.diagram' | transloco }}:
         {{ diagramName || ('editor.pageTitle' | transloco) }}
         <span *ngIf="isReadOnlyMode" class="read-only-indicator">(Read Only)</span>
       </h1>

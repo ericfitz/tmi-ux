@@ -24,6 +24,11 @@
 .page-title {
   margin: 0 0 2px;
 
+  .title-separator {
+    margin: 0 8px;
+    color: #999;
+  }
+
   .read-only-indicator {
     color: var(--color-warning);
     font-size: 0.8em;

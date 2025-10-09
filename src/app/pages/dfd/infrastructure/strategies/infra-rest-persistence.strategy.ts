@@ -134,6 +134,7 @@ export class InfraRestPersistenceStrategy {
               cells: loadResult.diagram.cells || [],
               name: loadResult.diagram.name,
               threatModelId: loadResult.diagram.threatModelId,
+              threatModelName: loadResult.diagram.threatModelName,
             },
             source: 'api' as const,
             timestamp: Date.now(),

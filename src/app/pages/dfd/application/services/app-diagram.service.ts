@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { map, catchError, timeout } from 'rxjs/operators';
+import { map, catchError, timeout, switchMap } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { ThreatModelService } from '../../../tm/services/threat-model.service';
@@ -23,6 +23,7 @@ export interface DiagramData {
   id: string;
   name: string;
   threatModelId?: string;
+  threatModelName?: string;
   cells?: any[]; // Full diagram cells data for rendering
 }
 
@@ -70,35 +71,42 @@ export class AppDiagramService {
       });
     }
 
-    // Use the dedicated diagram endpoint instead of fetching the entire threat model
+    // Load both diagram and threat model data to get diagram name and threat model name
     return this.threatModelService.getDiagramById(threatModelId, diagramId).pipe(
-      map(diagram => {
+      switchMap(diagram => {
         if (!diagram) {
           this.logger.warn('Diagram not found', { diagramId, threatModelId });
-          return {
+          return of({
             success: false,
             error: `Diagram with ID ${diagramId} not found`,
-          };
+          });
         }
 
-        const diagramData: DiagramData = {
-          id: diagramId,
-          name: diagram.name,
-          threatModelId,
-          cells: diagram.cells || [], // Use the diagram cells directly from the diagram endpoint
-        };
+        // Also load threat model to get its name
+        return this.threatModelService.getThreatModelById(threatModelId).pipe(
+          map(threatModel => {
+            const diagramData: DiagramData = {
+              id: diagramId,
+              name: diagram.name,
+              threatModelId,
+              threatModelName: threatModel?.name,
+              cells: diagram.cells || [], // Use the diagram cells directly from the diagram endpoint
+            };
 
-        this.logger.info('Successfully loaded diagram data using dedicated endpoint', {
-          name: diagramData.name,
-          id: diagramId,
-          threatModelId,
-          cellCount: diagramData.cells?.length || 0,
-        });
+            this.logger.info('Successfully loaded diagram and threat model data', {
+              diagramName: diagramData.name,
+              threatModelName: diagramData.threatModelName,
+              id: diagramId,
+              threatModelId,
+              cellCount: diagramData.cells?.length || 0,
+            });
 
-        return {
-          success: true,
-          diagram: diagramData,
-        };
+            return {
+              success: true,
+              diagram: diagramData,
+            };
+          }),
+        );
       }),
       catchError(error => {
         this.logger.error('Error loading diagram data using dedicated endpoint', error);
