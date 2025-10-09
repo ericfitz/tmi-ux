@@ -61,6 +61,35 @@ describe('ThreatModelValidatorService', () => {
       expect(result.metadata.duration).toBeGreaterThanOrEqual(0);
     });
 
+    it('should validate UUIDv7 identifiers', () => {
+      const threatModelWithUUIDv7 = {
+        id: '0199b111-621f-71bd-b4a9-59304aa963fa', // UUIDv7 format
+        name: 'Test Threat Model',
+        created_at: '2025-01-01T00:00:00Z',
+        modified_at: '2025-01-01T00:00:00Z',
+        owner: 'test@example.com',
+        created_by: 'test@example.com',
+        threat_model_framework: 'STRIDE',
+        authorization: [{ subject: 'test@example.com', role: 'owner' }],
+        threats: [
+          {
+            id: '0199b111-621f-71bd-b4a9-59304aa963fb', // UUIDv7 format
+            threat_model_id: '0199b111-621f-71bd-b4a9-59304aa963fa',
+            name: 'Test Threat',
+            threat_type: 'Tampering',
+            severity: 'High',
+            created_at: '2025-01-01T00:00:00Z',
+            modified_at: '2025-01-01T00:00:00Z',
+          },
+        ],
+      };
+
+      const result = service.validate(threatModelWithUUIDv7);
+
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
     it('should detect missing required fields', () => {
       const invalidThreatModel = {
         name: 'Test Threat Model',
