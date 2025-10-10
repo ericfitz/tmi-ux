@@ -28,6 +28,8 @@ export class AboutComponent implements OnInit {
     { name: 'Transloco', url: 'https://github.com/jsverse/transloco' },
     { name: 'Roboto', url: 'https://fonts.google.com/specimen/Roboto' },
     { name: 'Roboto Condensed', url: 'https://fonts.google.com/specimen/Roboto+Condensed' },
+    { name: 'Roboto Mono', url: 'https://fonts.google.com/specimen/Roboto+Mono' },
+    { name: 'Noto Sans', url: 'https://fonts.google.com/noto/specimen/Noto+Sans' },
     { name: 'Material Icons Outlined', url: 'https://fonts.google.com/icons' },
   ];
 

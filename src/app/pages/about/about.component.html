@@ -105,6 +105,8 @@
           <ng-container *ngIf="project.name === 'Roboto Condensed'"
             >the Roboto Condensed font</ng-container
           >
+          <ng-container *ngIf="project.name === 'Roboto Mono'">the Roboto Mono font</ng-container>
+          <ng-container *ngIf="project.name === 'Noto Sans'">the Noto Sans font</ng-container>
           <ng-container *ngIf="project.name === 'Material Icons Outlined'"
             >the Material Icons Outlined font</ng-container
           >
@@ -112,6 +114,8 @@
             *ngIf="
               project.name !== 'Roboto' &&
               project.name !== 'Roboto Condensed' &&
+              project.name !== 'Roboto Mono' &&
+              project.name !== 'Noto Sans' &&
               project.name !== 'Material Icons Outlined'
             "
             >{{ project.name }}</ng-container
