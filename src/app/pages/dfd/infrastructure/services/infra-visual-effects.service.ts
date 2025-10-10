@@ -166,9 +166,9 @@ export class InfraVisualEffectsService {
       (cell as any).setApplicationMetadata('_originalStrokeWidth', strokeWidthStr);
     }
 
-    // Apply red stroke to indicate invalid target
-    cell.attr('body/stroke', '#ff0000'); // Red
-    cell.attr('body/strokeWidth', 3);
+    // Apply red stroke to indicate invalid target (using constants)
+    cell.attr('body/stroke', DFD_STYLING.HIGHLIGHTING.INVALID_EMBEDDING.STROKE_COLOR);
+    cell.attr('body/strokeWidth', DFD_STYLING.HIGHLIGHTING.INVALID_EMBEDDING.STROKE_WIDTH);
 
     // Track the effect
     this.activeEffects.set(cell.id, {

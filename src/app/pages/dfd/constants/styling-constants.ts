@@ -78,6 +78,44 @@ export const DFD_STYLING = {
     FILTER_TEMPLATE: (blur: number, color: string) => `drop-shadow(0 0 ${blur}px ${color})`,
   },
 
+  // Embedding and highlighting styles for X6 interactions
+  HIGHLIGHTING: {
+    // Default highlighting (fallback)
+    DEFAULT: {
+      PADDING: 2,
+      STROKE_WIDTH: 2,
+      STROKE_COLOR: '#ff0000', // Red
+    },
+
+    // Embedding parent highlighting (orange border during drag)
+    EMBEDDING: {
+      PADDING: 4,
+      STROKE_WIDTH: 3,
+      STROKE_COLOR: '#ff6b00', // Orange
+    },
+
+    // Magnet/port highlighting (when connecting edges)
+    MAGNET_AVAILABLE: {
+      PADDING: 2,
+      STROKE_WIDTH: 2,
+      STROKE_COLOR: '#31D06E', // Green
+    },
+
+    // When a valid connection is made (magnet adsorbed)
+    MAGNET_ADSORBED: {
+      PADDING: 3,
+      STROKE_WIDTH: 3,
+      STROKE_COLOR: '#1890ff', // Blue
+    },
+
+    // Invalid embedding feedback (used in visual-effects service)
+    INVALID_EMBEDDING: {
+      STROKE_WIDTH: 3,
+      STROKE_COLOR: '#ff0000', // Red
+      DURATION_MS: 300,
+    },
+  },
+
   // Node-specific styling constants
   NODES: {
     MIN_WIDTH: 40,
@@ -347,6 +385,94 @@ export const DFD_STYLING_HELPERS = {
    */
   getLocalCreationColor(): { r: number; g: number; b: number } {
     return DFD_STYLING.CREATION.GLOW_COLOR_RGB;
+  },
+
+  /**
+   * Get X6 highlighter configuration for embedding (orange border)
+   */
+  getEmbeddingHighlighter(): {
+    name: string;
+    args: {
+      padding: number;
+      attrs: { 'stroke-width': number; stroke: string };
+    };
+  } {
+    return {
+      name: 'stroke',
+      args: {
+        padding: DFD_STYLING.HIGHLIGHTING.EMBEDDING.PADDING,
+        attrs: {
+          'stroke-width': DFD_STYLING.HIGHLIGHTING.EMBEDDING.STROKE_WIDTH,
+          stroke: DFD_STYLING.HIGHLIGHTING.EMBEDDING.STROKE_COLOR,
+        },
+      },
+    };
+  },
+
+  /**
+   * Get X6 highlighter configuration for magnet availability (green)
+   */
+  getMagnetAvailableHighlighter(): {
+    name: string;
+    args: {
+      padding: number;
+      attrs: { 'stroke-width': number; stroke: string };
+    };
+  } {
+    return {
+      name: 'stroke',
+      args: {
+        padding: DFD_STYLING.HIGHLIGHTING.MAGNET_AVAILABLE.PADDING,
+        attrs: {
+          'stroke-width': DFD_STYLING.HIGHLIGHTING.MAGNET_AVAILABLE.STROKE_WIDTH,
+          stroke: DFD_STYLING.HIGHLIGHTING.MAGNET_AVAILABLE.STROKE_COLOR,
+        },
+      },
+    };
+  },
+
+  /**
+   * Get X6 highlighter configuration for magnet adsorbed (blue)
+   */
+  getMagnetAdsorbedHighlighter(): {
+    name: string;
+    args: {
+      padding: number;
+      attrs: { 'stroke-width': number; stroke: string };
+    };
+  } {
+    return {
+      name: 'stroke',
+      args: {
+        padding: DFD_STYLING.HIGHLIGHTING.MAGNET_ADSORBED.PADDING,
+        attrs: {
+          'stroke-width': DFD_STYLING.HIGHLIGHTING.MAGNET_ADSORBED.STROKE_WIDTH,
+          stroke: DFD_STYLING.HIGHLIGHTING.MAGNET_ADSORBED.STROKE_COLOR,
+        },
+      },
+    };
+  },
+
+  /**
+   * Get X6 highlighter configuration for default highlighting (red)
+   */
+  getDefaultHighlighter(): {
+    name: string;
+    args: {
+      padding: number;
+      attrs: { 'stroke-width': number; stroke: string };
+    };
+  } {
+    return {
+      name: 'stroke',
+      args: {
+        padding: DFD_STYLING.HIGHLIGHTING.DEFAULT.PADDING,
+        attrs: {
+          'stroke-width': DFD_STYLING.HIGHLIGHTING.DEFAULT.STROKE_WIDTH,
+          stroke: DFD_STYLING.HIGHLIGHTING.DEFAULT.STROKE_COLOR,
+        },
+      },
+    };
   },
 
   /**

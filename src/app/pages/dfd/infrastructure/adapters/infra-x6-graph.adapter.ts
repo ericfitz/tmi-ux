@@ -30,7 +30,7 @@ import { Transform } from '@antv/x6-plugin-transform';
 import { History } from '@antv/x6-plugin-history';
 
 import { IGraphAdapter } from '../interfaces/graph-adapter.interface';
-import { DFD_STYLING } from '../../constants/styling-constants';
+import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 import { DiagramNode } from '../../domain/value-objects/diagram-node';
 import { DiagramEdge } from '../../domain/value-objects/diagram-edge';
 import { Point } from '../../domain/value-objects/point';
@@ -300,6 +300,13 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         maxScale: 3,
         minScale: 0.2,
       },
+      // Configure highlighting for various interactions
+      highlighting: {
+        default: DFD_STYLING_HELPERS.getDefaultHighlighter(),
+        embedding: DFD_STYLING_HELPERS.getEmbeddingHighlighter(),
+        magnetAvailable: DFD_STYLING_HELPERS.getMagnetAvailableHighlighter(),
+        magnetAdsorbed: DFD_STYLING_HELPERS.getMagnetAdsorbedHighlighter(),
+      },
       // Enable basic interactions
       interacting: {
         nodeMovable: true,
@@ -314,56 +321,16 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       // Enable embedding for drag-and-drop node nesting
       embedding: {
         enabled: true,
-        // Custom findParent function with complete containment and validation
-        // X6 expects this to return an array of potential parents
-        findParent: ({ node }) => {
-          if (!node || !this._graph) {
-            return [];
-          }
-
-          // Get all potential parent nodes (exclude the node itself)
-          const allNodes = this._graph.getNodes().filter(n => n.id !== node.id);
-
-          // Find all nodes that completely contain this node
-          const potentialParents = allNodes.filter(potentialParent => {
-            // Check if child is completely contained within parent
-            if (!this._embeddingService.isCompletelyContained(node, potentialParent)) {
-              return false;
-            }
-
-            // Validate embedding rules
-            const validation = this._embeddingService.validateEmbedding(potentialParent, node);
-            return validation.isValid;
-          });
-
-          if (potentialParents.length === 0) {
-            return [];
-          }
-
-          // If multiple valid parents, select the one with highest z-index (topmost)
-          potentialParents.sort((a, b) => {
-            const aZIndex = a.getZIndex() ?? 1;
-            const bZIndex = b.getZIndex() ?? 1;
-            return bZIndex - aZIndex; // Descending order (highest first)
-          });
-
-          this.logger.debugComponent('X6Graph', 'Found valid parents for embedding', {
-            childId: node.id,
-            topParentId: potentialParents[0]?.id,
-            topParentZIndex: potentialParents[0]?.getZIndex(),
-            totalPotentialParents: potentialParents.length,
-          });
-
-          // Return the sorted array - X6 will pick the first one
-          return potentialParents;
-        },
+        // Use X6's built-in bbox mode for more forgiving containment
+        // This checks bounding box overlap (more permissive than 100% containment)
+        findParent: 'bbox',
         // Validate embedding before allowing it
         validate: ({ child, parent }) => {
           if (!child || !parent) {
             return false;
           }
 
-          // Use embedding service for validation
+          // Use embedding service for validation (business rules)
           const validation = this._embeddingService.validateEmbedding(parent, child);
 
           if (!validation.isValid) {
@@ -376,10 +343,10 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
             // Apply visual feedback (red stroke on child)
             this._visualEffectsService.applyInvalidEmbeddingFeedback(child, this._graph);
 
-            // Schedule removal of visual feedback after 300ms
+            // Schedule removal of visual feedback after configured duration
             setTimeout(() => {
               this._visualEffectsService.removeInvalidEmbeddingFeedback(child, this._graph);
-            }, 300);
+            }, DFD_STYLING.HIGHLIGHTING.INVALID_EMBEDDING.DURATION_MS);
 
             // Show notification to user explaining why embedding failed
             this._showEmbeddingValidationError(validation.reason);

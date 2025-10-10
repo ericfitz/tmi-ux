@@ -109,30 +109,16 @@ export class InfraEmbeddingService {
    * @returns true if child is 100% within parent bounds
    */
   isCompletelyContained(child: Node, parent: Node): boolean {
-    const childPosition = child.getPosition();
-    const childSize = child.getSize();
-    const childBounds = {
-      x: childPosition.x,
-      y: childPosition.y,
-      width: childSize.width,
-      height: childSize.height,
-    };
-
-    const parentPosition = parent.getPosition();
-    const parentSize = parent.getSize();
-    const parentBounds = {
-      x: parentPosition.x,
-      y: parentPosition.y,
-      width: parentSize.width,
-      height: parentSize.height,
-    };
+    // Use getBBox() for absolute coordinates (works correctly with embedded nodes)
+    const childBBox = child.getBBox();
+    const parentBBox = parent.getBBox();
 
     // Check if child is completely within parent bounds (100% containment)
     const isContained =
-      childBounds.x >= parentBounds.x &&
-      childBounds.y >= parentBounds.y &&
-      childBounds.x + childBounds.width <= parentBounds.x + parentBounds.width &&
-      childBounds.y + childBounds.height <= parentBounds.y + parentBounds.height;
+      childBBox.x >= parentBBox.x &&
+      childBBox.y >= parentBBox.y &&
+      childBBox.x + childBBox.width <= parentBBox.x + parentBBox.width &&
+      childBBox.y + childBBox.height <= parentBBox.y + parentBBox.height;
 
     return isContained;
   }
