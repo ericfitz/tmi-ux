@@ -48,6 +48,7 @@
     "makePresenter": "设为主讲人",
     "manageCollaboration": "管理协作",
     "manageParticipants": "管理参与者",
+    "noActiveSessions": "没有活跃的协作会话",
     "participantRequestsPresenterRole": "参与者请求主讲人角色",
     "presenterModeRequested": "已请求演示模式",
     "removeFromSession": "从会话中移除",

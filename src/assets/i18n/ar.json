@@ -48,6 +48,7 @@
     "makePresenter": "جعله مقدمًا",
     "manageCollaboration": "إدارة التعاون",
     "manageParticipants": "إدارة المشاركين",
+    "noActiveSessions": "لا توجد جلسات تعاون نشطة",
     "participantRequestsPresenterRole": "المشارك يطلب دور المقدم",
     "presenterModeRequested": "تم طلب وضع المقدم",
     "removeFromSession": "إزالة من الجلسة",

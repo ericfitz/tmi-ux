@@ -48,6 +48,7 @@
     "makePresenter": "Make Presenter",
     "manageCollaboration": "Manage Collaboration",
     "manageParticipants": "Manage Participants",
+    "noActiveSessions": "No Active Collaboration Sessions",
     "participantRequestsPresenterRole": "Participant Requests Presenter Role",
     "presenterModeRequested": "Presenter Mode Requested",
     "removeFromSession": "Remove from Session",
