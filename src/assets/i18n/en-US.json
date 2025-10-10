@@ -358,7 +358,7 @@
       "part2": " page of this web site (\"The Operator\")."
     },
     "lastUpdated": "Last updated: ",
-    "lastUpdatedDate": "2025-09-30",
+    "lastUpdatedDate": "2025-10-10",
     "section1": {
       "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.",
       "title": "1. Acceptance of Terms"
@@ -377,7 +377,7 @@
     },
     "section5": {
       "content": {
-        "part1": "This website runs the TMI open source software. Its source code is available at the link provided on the ",
+        "part1": "This website runs the TMI open source software. Its source code is available at the links provided on the ",
         "part2": " page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. Unless stated otherwise, the Operator of this web site is not affiliated with the TMI project or its creators."
       },
       "title": "5. Open Source Software"
@@ -392,7 +392,7 @@
     },
     "section8": {
       "content": {
-        "part1": "These Terms are governed by the laws of the jurisdiction specified by the operator on the ",
+        "part1": "These Terms are governed by the laws of the jurisdiction specified by the Operator on the ",
         "part2": " page, without regard to conflict of law principles."
       },
       "title": "8. Governing Law"
