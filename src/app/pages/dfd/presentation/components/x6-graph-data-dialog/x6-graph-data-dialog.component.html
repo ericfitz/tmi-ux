@@ -1,0 +1,23 @@
+<h1 mat-dialog-title>X6 Graph Data</h1>
+
+<div mat-dialog-content>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Graph JSON</mat-label>
+    <textarea
+      matInput
+      readonly
+      [value]="graphJson"
+      rows="15"
+      class="json-textarea"
+      #jsonTextarea
+    ></textarea>
+  </mat-form-field>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCopyToClipboard()" tabindex="1" aria-label="Copy to clipboard">
+    <mat-icon>content_copy</mat-icon>
+    Copy to clipboard
+  </button>
+  <button mat-button (click)="onClose()" tabindex="2" aria-label="OK">OK</button>
+</div>

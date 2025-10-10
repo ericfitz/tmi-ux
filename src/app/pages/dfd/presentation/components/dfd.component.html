@@ -106,7 +106,20 @@
     </div>
 
     <div class="toolbar-group">
-      <button mat-icon-button (click)="showHistory()" [matTooltip]="'Show X6 History'">
+      <button
+        mat-icon-button
+        (click)="showGraphData()"
+        [matTooltip]="'Show Graph Data'"
+        *ngIf="!isProduction"
+      >
+        <mat-icon>data_object</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        (click)="showHistory()"
+        [matTooltip]="'Show X6 History'"
+        *ngIf="!isProduction"
+      >
         <mat-icon>history</mat-icon>
       </button>
       <button

@@ -94,6 +94,10 @@ import {
   X6HistoryDialogComponent,
   X6HistoryDialogData,
 } from './x6-history-dialog/x6-history-dialog.component';
+import {
+  X6GraphDataDialogComponent,
+  X6GraphDataDialogData,
+} from './x6-graph-data-dialog/x6-graph-data-dialog.component';
 
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
@@ -105,6 +109,7 @@ import {
   ThreatsDialogComponent,
   ThreatsDialogData,
 } from '../../../tm/components/threats-dialog/threats-dialog.component';
+import { environment } from '../../../../../environments/environment';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -191,6 +196,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // Context menu state
   contextMenuPosition = { x: '0px', y: '0px' };
   private _rightClickedCell: any = null;
+
+  // Environment flags for dev-only features
+  isProduction = environment.production;
 
   constructor(
     private logger: LoggerService,
@@ -686,6 +694,27 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.logger.info('Opened X6 history dialog');
+  }
+
+  showGraphData(): void {
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) {
+      this.logger.warn('Cannot show graph data: Graph not available');
+      return;
+    }
+
+    // Open the X6 graph data dialog
+    const dialogData: X6GraphDataDialogData = {
+      graph: graph,
+    };
+
+    this.dialog.open(X6GraphDataDialogComponent, {
+      width: '800px',
+      maxHeight: '90vh',
+      data: dialogData,
+    });
+
+    this.logger.info('Opened X6 graph data dialog');
   }
 
   onAddNode(nodeType: NodeType): void {
