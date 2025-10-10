@@ -63,10 +63,10 @@
     </p>
 
     <h2 [transloco]="'tos.section8.title'">8. Governing Law</h2>
-    <p class="page-content" [transloco]="'tos.section8.content'">
-      These Terms are governed by the laws of the jurisdiction in which The Operator is
-      headquartered (in the case of an organization) or resides (in the case of an individual)',
-      without regard to conflict of law principles.
+    <p class="page-content">
+      {{ 'tos.section8.content.part1' | transloco }}
+      <a [routerLink]="['/about']">{{ 'common.about' | transloco }}</a>
+      {{ 'tos.section8.content.part2' | transloco }}
     </p>
 
     <p class="page-content contact-info">

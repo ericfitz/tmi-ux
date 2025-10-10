@@ -95,28 +95,36 @@
 
   <div class="contact-content-row">
     <p class="page-content">
-      {{ 'about.opensource.paragraph1-intro' | transloco }}
-      <ng-container *ngFor="let project of openSourceProjects; let last = last; let i = index">
-        <ng-container *ngIf="project.name === 'Roboto' || project.name === 'Roboto Condensed'">
-          <ng-container *ngIf="project.name === 'Roboto'">the </ng-container>
-        </ng-container>
-        <a [href]="project.url" target="_blank" rel="noopener noreferrer">{{ project.name }}</a>
-        <ng-container *ngIf="project.name === 'Roboto Condensed'"> fonts</ng-container>
-        <ng-container *ngIf="project.name === 'Material Icons Outlined'"> font</ng-container>
-        <ng-container *ngIf="!last">
-          <ng-container *ngIf="i === openSourceProjects.length - 2">, and </ng-container>
-          <ng-container *ngIf="i !== openSourceProjects.length - 2">, </ng-container>
-        </ng-container>
-      </ng-container>
-      {{ 'about.opensource.paragraph1-outro' | transloco }}
+      {{ 'about.opensource.paragraph1' | transloco }}
     </p>
 
+    <ul class="opensource-list">
+      <li *ngFor="let project of openSourceProjects">
+        <a [href]="project.url" target="_blank" rel="noopener noreferrer">
+          <ng-container *ngIf="project.name === 'Roboto'">the Roboto font</ng-container>
+          <ng-container *ngIf="project.name === 'Roboto Condensed'"
+            >the Roboto Condensed font</ng-container
+          >
+          <ng-container *ngIf="project.name === 'Material Icons Outlined'"
+            >the Material Icons Outlined font</ng-container
+          >
+          <ng-container
+            *ngIf="
+              project.name !== 'Roboto' &&
+              project.name !== 'Roboto Condensed' &&
+              project.name !== 'Material Icons Outlined'
+            "
+            >{{ project.name }}</ng-container
+          >
+        </a>
+      </li>
+    </ul>
+
     <p class="page-content">
-      {{ 'about.opensource.paragraph2-intro' | transloco }}
-      <a href="https://www.threatdragon.org" target="_blank" rel="noopener noreferrer"
+      {{ 'about.opensource.paragraph2' | transloco
+      }}<a href="https://www.threatdragon.org" target="_blank" rel="noopener noreferrer"
         >OWASP Threat Dragon</a
-      >
-      {{ 'about.opensource.paragraph2-outro' | transloco }}
+      >.
     </p>
   </div>
 

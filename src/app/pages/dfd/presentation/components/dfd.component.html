@@ -2,14 +2,17 @@
   <div class="title-row">
     <div class="title-container">
       <h1 class="page-title">
-        <span *ngIf="threatModelName">
-          {{ 'common.objectTypes.threatModel' | transloco }}: {{ threatModelName }}
-          <span class="title-separator">/</span>
-        </span>
-        {{ 'common.objectTypes.diagram' | transloco }}:
-        {{ diagramName || ('editor.pageTitle' | transloco) }}
+        {{ 'editor.pageTitle' | transloco }}
         <span *ngIf="isReadOnlyMode" class="read-only-indicator">(Read Only)</span>
       </h1>
+      <div class="subtitle diagram-name">
+        <span class="label">{{ 'common.objectTypes.diagram' | transloco }}:</span>
+        <span class="value">{{ diagramName }}</span>
+      </div>
+      <div class="subtitle threat-model-name" *ngIf="threatModelName">
+        <span class="label">{{ 'common.objectTypes.threatModel' | transloco }}:</span>
+        <span class="value">{{ threatModelName }}</span>
+      </div>
     </div>
     <div class="collaboration-controls">
       <app-dfd-collaboration></app-dfd-collaboration>

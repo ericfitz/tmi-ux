@@ -1,4 +1,5 @@
 @use '../../styles/_dfd-styles' as dfd;
+@use '../../../../../styles/colors' as colors;
 
 .dfd-container {
   width: 100%;
@@ -22,7 +23,7 @@
 }
 
 .page-title {
-  margin: 0 0 2px;
+  margin: 0 0 4px;
 
   .title-separator {
     margin: 0 8px;
@@ -34,6 +35,23 @@
     font-size: 0.8em;
     font-weight: normal;
     margin-left: 8px;
+  }
+}
+
+.subtitle {
+  margin: 2px 0;
+  font-size: 0.9em;
+  line-height: 1.4;
+
+  .label {
+    color: colors.$primary-color;
+    font-weight: 500;
+  }
+
+  .value {
+    color: colors.$theme-cyan;
+    font-weight: 400;
+    margin-left: 4px;
   }
 }
 

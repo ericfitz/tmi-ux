@@ -9,10 +9,8 @@
     "description1": "TMI (Threat Modeling Improved) is a collaborative platform for creating, managing, and sharing threat models. Our mission is to make security threat modeling accessible, efficient, and integrated into the software development lifecycle.",
     "description2": "The platform features interactive diagram creation with real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams identify, analyze, and mitigate security threats through collaborative modeling.",
     "opensource": {
-      "paragraph1-intro": "This application is built with the support of exceptional open-source projects. We're grateful to the communities behind ",
-      "paragraph1-outro": " for their outstanding tools and resources that bring our interface and functionality to life.",
-      "paragraph2-intro": "A special thanks goes to the ",
-      "paragraph2-outro": " open-source project for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application."
+      "paragraph1": "This application is built with the support of exceptional open-source projects. We're grateful to the communities behind these projects for providing the capabilities that bring our interface and functionality to life.",
+      "paragraph2": "A special thanks for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application goes to "
     },
     "opensourcetitle": "Open Source",
     "server": "Server",
@@ -393,7 +391,10 @@
       "title": "7. Termination"
     },
     "section8": {
-      "content": "These Terms are governed by the laws of the jurisdiction in which The Operator is headquartered (in the case of an organization) or resides (in the case of an individual), without regard to conflict of law principles.",
+      "content": {
+        "part1": "These Terms are governed by the laws of the jurisdiction specified by the operator on the ",
+        "part2": " page, without regard to conflict of law principles."
+      },
       "title": "8. Governing Law"
     },
     "title": "Terms of Service"

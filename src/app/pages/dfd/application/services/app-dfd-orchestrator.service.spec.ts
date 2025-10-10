@@ -141,7 +141,6 @@ describe('AppDfdOrchestrator', () => {
       processSvg: vi.fn((svgString: string) => svgString),
     };
 
-
     // Create a mock graph that will be returned by facade.getGraph()
     const mockGraph = {
       dispose: vi.fn(),

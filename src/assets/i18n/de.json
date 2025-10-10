@@ -9,10 +9,8 @@
     "description1": "TMI (Threat Modeling Improved) ist eine kollaborative Plattform für die Erstellung, Verwaltung und gemeinsame Nutzung von Bedrohungsmodellen. Unsere Mission ist es, die Modellierung von Sicherheitsbedrohungen zugänglich, effizient und in den Software-Entwicklungslebenszyklus integriert zu gestalten.",
     "description2": "Die Plattform bietet interaktive Diagrammerstellung, Echtzeit-Zusammenarbeit und umfassende Funktionen zur Dokumentation von Bedrohungen. TMI wurde mit modernen Webtechnologien entwickelt und hilft Teams, Sicherheitsbedrohungen durch kollaborative Modellierung zu identifizieren, zu analysieren und zu mindern.",
     "opensource": {
-      "paragraph1-intro": "Diese Anwendung wird mit Unterstützung von außergewöhnlichen Open-Source-Projekten erstellt. Wir sind den Gemeinschaften hinter ",
-      "paragraph1-outro": " für ihre hervorragenden Tools und Ressourcen dankbar, die unsere Benutzeroberfläche und Funktionalität zum Leben erwecken.",
-      "paragraph2-intro": "Ein besonderer Dank geht an das ",
-      "paragraph2-outro": " Open-Source-Projekt, das Inspiration für unsere Vision und unseren Ansatz zum Aufbau einer sicheren und benutzerfreundlichen Anwendung geliefert hat."
+      "paragraph1": "Diese Anwendung wird mit Unterstützung von außergewöhnlichen Open-Source-Projekten erstellt. Wir sind den Gemeinschaften hinter diesen Projekten dankbar für die Bereitstellung der Funktionen, die unsere Benutzeroberfläche und Funktionalität zum Leben erwecken.",
+      "paragraph2": "Ein besonderer Dank für die Bereitstellung von Inspiration, die uns geholfen hat, unsere Vision und unseren Ansatz zum Aufbau einer sicheren und benutzerfreundlichen Anwendung zu gestalten, geht an "
     },
     "opensourcetitle": "Open Source",
     "server": "Server",
@@ -393,7 +391,10 @@
       "title": "7. Kündigung"
     },
     "section8": {
-      "content": "Diese Bedingungen unterliegen den Gesetzen der Rechtsordnung, in der der Betreiber seinen Hauptsitz hat (im Falle einer Organisation) oder wohnt (im Falle einer Einzelperson), ungeachtet der Grundsätze des Kollisionsrechts.",
+      "content": {
+        "part1": "Diese Bedingungen unterliegen den Gesetzen der vom Betreiber auf der ",
+        "part2": "-Seite angegebenen Gerichtsbarkeit, ungeachtet der Grundsätze des Kollisionsrechts."
+      },
       "title": "8. Geltendes Recht"
     },
     "title": "Nutzungsbedingungen"
