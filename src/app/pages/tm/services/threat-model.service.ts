@@ -484,6 +484,9 @@ export class ThreatModelService implements OnDestroy {
     framework: 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai' = 'STRIDE',
     issueUrl?: string,
   ): Observable<ThreatModel> {
+    // Ensure framework is never empty - use STRIDE as default
+    const validFramework = framework && framework.trim() !== '' ? framework : 'STRIDE';
+
     if (this._useMockData) {
       this.logger.debugComponent('ThreatModelService', 'Creating mock threat model');
 
@@ -498,7 +501,7 @@ export class ThreatModelService implements OnDestroy {
         modified_at: now,
         owner: currentUser,
         created_by: currentUser,
-        threat_model_framework: framework || 'STRIDE',
+        threat_model_framework: validFramework,
         issue_url: issueUrl,
         authorization: [
           {
@@ -524,7 +527,7 @@ export class ThreatModelService implements OnDestroy {
     const body = {
       name,
       description,
-      threat_model_framework: framework || 'STRIDE',
+      threat_model_framework: validFramework,
       issue_url: issueUrl,
     };
 
@@ -577,7 +580,10 @@ export class ThreatModelService implements OnDestroy {
         modified_at: new Date().toISOString(),
         created_by: this.authService.userEmail || 'imported',
         owner: this.authService.userEmail || 'imported',
-        threat_model_framework: data.threat_model_framework || 'STRIDE', // Provide default if missing
+        threat_model_framework:
+          data.threat_model_framework && data.threat_model_framework.trim() !== ''
+            ? data.threat_model_framework
+            : 'STRIDE', // Provide default if missing or empty
         authorization: data.authorization || [], // Provide default if missing
       };
       // Add to both the list and cache the full model
@@ -658,7 +664,10 @@ export class ThreatModelService implements OnDestroy {
     const body = {
       name: data.name,
       description: data.description || '',
-      threat_model_framework: data.threat_model_framework || 'STRIDE',
+      threat_model_framework:
+        data.threat_model_framework && data.threat_model_framework.trim() !== ''
+          ? data.threat_model_framework
+          : 'STRIDE',
       issue_url: data.issue_url,
       // Include other relevant fields from the imported data, but exclude fields we've already set above
       ...Object.fromEntries(

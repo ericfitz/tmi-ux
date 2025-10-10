@@ -19,6 +19,41 @@ import { Diagram } from '../models/diagram.model';
  */
 export class SchemaValidator extends BaseValidator {
   /**
+   * Framework threat type mappings
+   * These should match the threat types defined in /assets/frameworks/*.json
+   */
+  private static readonly FRAMEWORK_THREAT_TYPES: Record<string, string[]> = {
+    STRIDE: [
+      'Spoofing',
+      'Tampering',
+      'Repudiation',
+      'Information Disclosure',
+      'Denial of Service',
+      'Elevation of Privilege',
+    ],
+    CIA: ['Confidentiality', 'Integrity', 'Availability'],
+    LINDDUN: [
+      'Linkability',
+      'Identifiability',
+      'Non-repudiation',
+      'Detectability',
+      'Disclosure of Information',
+      'Unawareness',
+      'Non-compliance',
+    ],
+    DIE: ['Distributed', 'Immutable', 'Ephemeral'],
+    PLOT4ai: [
+      'Privacy',
+      'Liability',
+      'Opacity',
+      'Technology',
+      'Fairness',
+      'Accountability',
+      'Interpretability',
+    ],
+  };
+
+  /**
    * Field validation rules based on the OpenAPI schema
    */
   private static readonly THREAT_MODEL_RULES: FieldValidationRule[] = [
@@ -29,9 +64,10 @@ export class SchemaValidator extends BaseValidator {
     { field: 'modified_at', required: true, type: 'date-time', maxLength: 24 },
     { field: 'owner', required: true, type: 'string' },
     { field: 'created_by', required: true, type: 'string', maxLength: 256 },
+    // Note: threat_model_framework is conditionally required (see validateThreatModel)
     {
       field: 'threat_model_framework',
-      required: true,
+      required: false,
       type: 'string',
       enum: ['CIA', 'STRIDE', 'LINDDUN', 'DIE', 'PLOT4ai'],
     },
@@ -121,14 +157,31 @@ export class SchemaValidator extends BaseValidator {
       return this.getResults().errors;
     }
 
+    // Check if there are any threats
+    const hasThreats = Array.isArray(threatModel.threats) && threatModel.threats.length > 0;
+
     // Validate top-level fields
     this.validateFields(threatModel, SchemaValidator.THREAT_MODEL_RULES, context);
+
+    // Conditional validation: framework is required if there are threats
+    if (hasThreats) {
+      if (!threatModel.threat_model_framework || threatModel.threat_model_framework.trim() === '') {
+        this.addError(
+          ValidationUtils.createError(
+            'MISSING_REQUIRED_FIELD',
+            "Field 'threat_model_framework' is required when threats are present",
+            ValidationUtils.buildPath(context.currentPath, 'threat_model_framework'),
+            'error',
+          ),
+        );
+      }
+    }
 
     // Validate nested arrays
     this.validateAuthorizationArray(threatModel.authorization, context);
     this.validateMetadataArray(threatModel.metadata, context);
     this.validateDocumentArray(threatModel.documents, context);
-    this.validateThreatArray(threatModel.threats, context);
+    this.validateThreatArray(threatModel.threats, context, threatModel.threat_model_framework);
     this.validateDiagramArray(threatModel.diagrams, context);
 
     return this.getResults().errors;
@@ -263,7 +316,11 @@ export class SchemaValidator extends BaseValidator {
   /**
    * Validate threats array
    */
-  private validateThreatArray(threats: Threat[] | undefined, context: ValidationContext): void {
+  private validateThreatArray(
+    threats: Threat[] | undefined,
+    context: ValidationContext,
+    framework?: string,
+  ): void {
     if (!threats) return;
 
     if (!Array.isArray(threats)) {
@@ -276,6 +333,12 @@ export class SchemaValidator extends BaseValidator {
       );
       return;
     }
+
+    // Get valid threat types for the framework
+    const validThreatTypes =
+      framework && SchemaValidator.FRAMEWORK_THREAT_TYPES[framework]
+        ? SchemaValidator.FRAMEWORK_THREAT_TYPES[framework]
+        : [];
 
     this.validateArray(
       threats,
@@ -303,6 +366,25 @@ export class SchemaValidator extends BaseValidator {
               'error',
             ),
           );
+        }
+
+        // Validate threat_type against framework
+        if (framework && item?.threat_type && validThreatTypes.length > 0) {
+          if (!validThreatTypes.includes(item.threat_type)) {
+            this.addError(
+              ValidationUtils.createError(
+                'INVALID_THREAT_TYPE',
+                `Threat type '${item.threat_type}' is not valid for framework '${framework}'. Valid types are: ${validThreatTypes.join(', ')}`,
+                ValidationUtils.buildPath(itemPath, 'threat_type'),
+                'error',
+                {
+                  framework,
+                  threatType: item.threat_type,
+                  validThreatTypes,
+                },
+              ),
+            );
+          }
         }
 
         return [];
