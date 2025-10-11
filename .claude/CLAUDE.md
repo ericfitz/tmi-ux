@@ -148,6 +148,9 @@ pnpm run version:set-patch    # Set next build to bump patch version
 
 # Internationalization
 pnpm run check-i18n      # Check for missing translation keys
+
+# Deployment
+pnpm run deploy:heroku   # Deploy to Heroku (builds container and releases)
 ```
 
 ### Run a Single Test
