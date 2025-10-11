@@ -6,6 +6,9 @@ import { LoggerService } from '../../services/logger.service';
 
 export interface UserPreferences {
   animations: boolean;
+  colorBlindMode: boolean;
+  pageSize: 'usLetter' | 'A4';
+  marginSize: 'narrow' | 'standard' | 'wide';
 }
 
 interface CheckboxChangeEvent {
@@ -30,13 +33,83 @@ interface CheckboxChangeEvent {
           >
         </mat-checkbox>
       </div>
+
+      <div class="preference-item">
+        <mat-checkbox
+          [(ngModel)]="preferences.colorBlindMode"
+          (change)="onColorBlindModeChange($event)"
+          tabindex="2"
+        >
+          <span [transloco]="'userPreferences.colorBlindMode'">Enable Color Blind Mode</span>
+        </mat-checkbox>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <h3 class="section-header" [transloco]="'userPreferences.reportPreferences'">
+        Report Preferences
+      </h3>
+
+      <div class="preference-item">
+        <label class="preference-label" [transloco]="'userPreferences.pageSize.title'"
+          >Preferred Page Size for Reports</label
+        >
+        <mat-radio-group
+          [(ngModel)]="preferences.pageSize"
+          (change)="onPageSizeChange()"
+          class="radio-group"
+        >
+          <mat-radio-button value="usLetter" tabindex="3">
+            <span [transloco]="'userPreferences.pageSize.usLetter'">US Letter</span>
+          </mat-radio-button>
+          <mat-radio-button value="A4" tabindex="4">
+            <span [transloco]="'userPreferences.pageSize.A4'">A4</span>
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <div class="preference-item">
+        <label class="preference-label" [transloco]="'userPreferences.marginSize.title'"
+          >Preferred Margin Size for Reports</label
+        >
+        <mat-radio-group
+          [(ngModel)]="preferences.marginSize"
+          (change)="onMarginSizeChange()"
+          class="radio-group"
+        >
+          <mat-radio-button value="narrow" tabindex="5">
+            <span [transloco]="'userPreferences.marginSize.narrow'">Narrow</span>
+          </mat-radio-button>
+          <mat-radio-button value="standard" tabindex="6">
+            <span [transloco]="'userPreferences.marginSize.standard'">Standard</span>
+          </mat-radio-button>
+          <mat-radio-button value="wide" tabindex="7">
+            <span [transloco]="'userPreferences.marginSize.wide'">Wide</span>
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="preference-item">
+        <button
+          mat-raised-button
+          color="warn"
+          (click)="onDeleteData()"
+          tabindex="8"
+          class="delete-button"
+        >
+          <mat-icon>delete_forever</mat-icon>
+          <span [transloco]="'userPreferences.deleteMyData.title'">Delete All My Data</span>
+        </button>
+      </div>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button
         mat-button
         (click)="close()"
         [transloco]="'common.close'"
-        tabindex="2"
+        tabindex="9"
         [attr.aria-label]="'common.close' | transloco"
       >
         Close
@@ -50,7 +123,55 @@ interface CheckboxChangeEvent {
       }
 
       mat-dialog-content {
-        min-width: 300px;
+        min-width: 400px;
+      }
+
+      .section-header {
+        margin: 20px 0 12px 0;
+        font-size: 16px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .preference-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-left: 8px;
+      }
+
+      mat-divider {
+        margin: 20px 0;
+      }
+
+      .delete-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .delete-button mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+      }
+
+      // Force warn color if Material theme isn't applying it
+      .delete-button.mat-warn {
+        background-color: #f44336 !important;
+        color: white !important;
+      }
+
+      .delete-button.mat-warn:hover {
+        background-color: #d32f2f !important;
       }
     `,
   ],
@@ -77,7 +198,12 @@ export class UserPreferencesDialogComponent {
     }
 
     // Default preferences
-    const defaultPrefs: UserPreferences = { animations: true };
+    const defaultPrefs: UserPreferences = {
+      animations: true,
+      colorBlindMode: false,
+      pageSize: 'usLetter',
+      marginSize: 'standard',
+    };
     this.savePreferences(defaultPrefs);
     return defaultPrefs;
   }
@@ -89,6 +215,24 @@ export class UserPreferencesDialogComponent {
   onAnimationPreferenceChange(event: CheckboxChangeEvent): void {
     this.preferences.animations = event.checked;
     this.savePreferences(this.preferences);
+  }
+
+  onColorBlindModeChange(event: CheckboxChangeEvent): void {
+    this.preferences.colorBlindMode = event.checked;
+    this.savePreferences(this.preferences);
+  }
+
+  onPageSizeChange(): void {
+    this.savePreferences(this.preferences);
+  }
+
+  onMarginSizeChange(): void {
+    this.savePreferences(this.preferences);
+  }
+
+  onDeleteData(): void {
+    // TODO: Implement delete data dialog
+    this.logger.info('Delete data button clicked');
   }
 
   close(): void {

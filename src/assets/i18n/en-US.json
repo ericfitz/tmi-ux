@@ -420,6 +420,7 @@
       "title": "Preferred Page Size for Reports",
       "usLetter": "US Letter"
     },
+    "reportPreferences": "Report Preferences",
     "title": "User Preferences"
   }
 }
