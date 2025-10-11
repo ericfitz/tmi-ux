@@ -1175,6 +1175,15 @@ export class AppDfdOrchestrator {
     const threatModelId = this._initParams.threatModelId;
     const data = this._getGraphData();
 
+    // If graph data is not available, skip the save to prevent overwriting with empty data
+    if (!data) {
+      this.logger.warn('Skipping autosave - graph data not available', {
+        diagramId,
+        historyIndex,
+      });
+      return;
+    }
+
     // Check if local provider without server connection (offline mode)
     if (this._isLocalProviderOffline()) {
       this.logger.debug('Saving to localStorage (local provider offline)', { diagramId });
@@ -1254,10 +1263,14 @@ export class AppDfdOrchestrator {
     return isLocalProvider && !isServerReachable;
   }
 
-  private _getGraphData(): any {
+  private _getGraphData(): { nodes: any[]; edges: any[] } | null {
     const graph = this.dfdInfrastructure.getGraph();
     if (!graph) {
-      return { nodes: [], edges: [] };
+      // Return null instead of empty arrays to prevent saving empty diagram data
+      // This prevents a race condition where auto-save could overwrite existing cells
+      // with an empty array when the graph is temporarily unavailable
+      this.logger.warn('Cannot get graph data - graph is not available');
+      return null;
     }
 
     const graphJson = graph.toJSON();

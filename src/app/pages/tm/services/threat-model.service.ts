@@ -1249,39 +1249,10 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Update a diagram in a threat model
-   */
-  updateDiagram(
-    threatModelId: string,
-    diagramId: string,
-    diagram: Partial<Diagram>,
-  ): Observable<Diagram> {
-    if (this._useMockData) {
-      // For mock mode, we'd need to update the diagram in the mock data service
-      // This is more complex as diagrams are stored separately from threat models
-      return of({ ...diagram, modified_at: new Date().toISOString() } as Diagram);
-    }
-
-    // Remove server-managed fields from diagram data before sending to API
-    const { created_at, modified_at, ...diagramData } = diagram as Diagram;
-
-    return this.apiService
-      .put<Diagram>(
-        `threat_models/${threatModelId}/diagrams/${diagramId}`,
-        diagramData as unknown as Record<string, unknown>,
-      )
-      .pipe(
-        catchError(error => {
-          this.logger.error(`Error updating diagram ID: ${diagramId}`, error);
-          throw error;
-        }),
-      );
-  }
-
-  /**
    * Patch diagram cells using JSON Patch operations
    * This method uses the PATCH endpoint specifically for diagram updates
    * instead of updating the entire threat model
+   * NOTE: This should ONLY be called from the DFD editor
    */
   patchDiagramCells(threatModelId: string, diagramId: string, cells: Cell[]): Observable<Diagram> {
     if (this._useMockData) {
@@ -1334,6 +1305,7 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Patch diagram cells and image data for a specific diagram
    * This method updates both cells and image data using JSON Patch operations
+   * NOTE: This should ONLY be called from the DFD editor
    */
   patchDiagramWithImage(
     threatModelId: string,
