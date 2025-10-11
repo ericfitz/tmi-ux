@@ -18,7 +18,7 @@ interface FontConfig {
  * Page size configurations in PDF points (1 point = 1/72 inch)
  */
 const PAGE_SIZES = {
-  LETTER: { width: 612, height: 792 }, // 8.5" × 11"
+  usLetter: { width: 612, height: 792 }, // 8.5" × 11"
   A4: { width: 595, height: 842 }, // 210mm × 297mm
 } as const;
 
@@ -29,9 +29,9 @@ type PageSize = keyof typeof PAGE_SIZES;
  * All margins are uniform (same for top, bottom, left, right)
  */
 const MARGINS = {
-  WIDE: 72, // 1.0 inch
-  NORMAL: 54, // 0.75 inch
-  NARROW: 36, // 0.5 inch
+  narrow: 36, // 0.5 inch
+  standard: 54, // 0.75 inch
+  wide: 72, // 1.0 inch
 } as const;
 
 type MarginSize = keyof typeof MARGINS;
@@ -49,9 +49,9 @@ const SCREEN_DPI = 72; // PDF points are 72 DPI
   providedIn: 'root',
 })
 export class ThreatModelReportService {
-  // PDF layout configuration (will be user-configurable in the future)
-  private pageSize: PageSize = 'LETTER';
-  private marginSize: MarginSize = 'NORMAL';
+  // PDF layout configuration - loaded from user preferences
+  private pageSize: PageSize = 'usLetter';
+  private marginSize: MarginSize = 'standard';
 
   private fontConfigs: Map<string, FontConfig> = new Map([
     [
@@ -135,6 +135,41 @@ export class ThreatModelReportService {
   ) {}
 
   /**
+   * Load user preferences for page size and margins from localStorage
+   */
+  private loadUserPreferences(): void {
+    try {
+      const stored = localStorage.getItem('tmi_user_preferences');
+      if (stored) {
+        const preferences = JSON.parse(stored) as {
+          pageSize?: PageSize;
+          marginSize?: MarginSize;
+        };
+
+        // Update page size if valid preference exists
+        if (preferences.pageSize && PAGE_SIZES[preferences.pageSize]) {
+          this.pageSize = preferences.pageSize;
+        }
+
+        // Update margin size if valid preference exists
+        if (preferences.marginSize && MARGINS[preferences.marginSize]) {
+          this.marginSize = preferences.marginSize;
+        }
+
+        this.logger.info('Loaded user preferences for report generation', {
+          pageSize: this.pageSize,
+          marginSize: this.marginSize,
+        });
+      }
+    } catch (error) {
+      this.logger.warn('Failed to load user preferences, using defaults', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      // Keep default values if loading fails
+    }
+  }
+
+  /**
    * Get the current page dimensions
    */
   private getPageDimensions(): { width: number; height: number } {
@@ -185,6 +220,9 @@ export class ThreatModelReportService {
    */
   async generateReport(threatModel: ThreatModel): Promise<void> {
     try {
+      // Load user preferences for page size and margins
+      this.loadUserPreferences();
+
       this.logger.info('Generating PDF report with pdf-lib', {
         threatModelId: threatModel.id,
         threatModelName: threatModel.name,
