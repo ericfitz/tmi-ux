@@ -38,6 +38,7 @@ interface CheckboxChangeEvent {
         <mat-checkbox
           [(ngModel)]="preferences.colorBlindMode"
           (change)="onColorBlindModeChange($event)"
+          [disabled]="true"
           tabindex="2"
         >
           <span [transloco]="'userPreferences.colorBlindMode'">Enable Color Blind Mode</span>
