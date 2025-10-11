@@ -63,18 +63,6 @@
           >
             <mat-icon>lock</mat-icon>
           </button>
-          <button
-            mat-icon-button
-            color="primary"
-            type="button"
-            [disabled]="threatModelForm.pristine || threatModelForm.invalid"
-            (click)="saveAllFields()"
-            [matTooltip]="'common.save' | transloco"
-            [attr.aria-label]="'common.save' | transloco"
-            tabindex="10"
-          >
-            <mat-icon>save</mat-icon>
-          </button>
         </div>
       </mat-card-header>
       <mat-card-content>

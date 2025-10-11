@@ -479,50 +479,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Manual save all fields (explicit save button)
-   */
-  saveAllFields(): void {
-    if (this.threatModelForm.invalid || !this.threatModel) {
-      this.logger.warn('Cannot save: form is invalid or threat model is missing');
-      return;
-    }
-
-    this.logger.info('Manual save all fields triggered');
-    this.performAutoSave();
-  }
-
-  saveThreatModel(): void {
-    if (this.threatModelForm.invalid || !this.threatModel) {
-      return;
-    }
-
-    // Get form values with proper typing
-    const formValues = this.threatModelForm.getRawValue() as ThreatModelFormValues;
-
-    // Use PATCH to update only the basic fields that changed
-    const updates = {
-      name: formValues.name,
-      description: formValues.description,
-      threat_model_framework: formValues.threat_model_framework,
-      issue_url: formValues.issue_url,
-    };
-
-    this._subscriptions.add(
-      this.threatModelService.patchThreatModel(this.threatModel.id, updates).subscribe(result => {
-        // Update only the basic fields from the result, preserve entities
-        if (this.threatModel) {
-          this.threatModel.name = result.name;
-          this.threatModel.description = result.description;
-          this.threatModel.threat_model_framework = result.threat_model_framework;
-          this.threatModel.issue_url = result.issue_url;
-          this.threatModel.modified_at = result.modified_at;
-        }
-        // Show success message or navigate back
-      }),
-    );
-  }
-
-  /**
    * Opens a dialog to create a new threat
    * If the user confirms, adds the threat to the threat model
    */
