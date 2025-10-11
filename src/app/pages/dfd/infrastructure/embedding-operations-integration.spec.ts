@@ -161,15 +161,14 @@ describe('Embedding Operations Integration Tests', () => {
     };
 
     // Create adapters for post-load validation tests
+    zOrderAdapter = new InfraX6ZOrderAdapter(loggerService, zOrderService);
+
     embeddingAdapter = new InfraX6EmbeddingAdapter(
       loggerService,
       embeddingService,
-      {} as any, // visualEffectsService
-      {} as any, // zOrderAdapter
+      zOrderAdapter,
       mockHistoryCoordinator as any,
     );
-
-    zOrderAdapter = new InfraX6ZOrderAdapter(loggerService, zOrderService);
 
     notificationService = {} as any;
 
@@ -253,14 +252,13 @@ describe('Embedding Operations Integration Tests', () => {
   // ==================== CATEGORY 4: Validation Error Notifications (P0) ====================
 
   describe('Validation Error Notifications', () => {
-    it('[P0] should reject text-box embedding with correct error message', () => {
+    it('[P0] should allow text-box embedding', () => {
       const process = createProcessNode(graph, 'p1', 100, 100);
       const textBox = createTextBoxNode(graph, 't1', 150, 150);
 
       const validation = embeddingService.validateEmbedding(process, textBox);
 
-      expect(validation.isValid).toBe(false);
-      expect(validation.reason).toContain('text-box');
+      expect(validation.isValid).toBe(true);
     });
 
     it('[P0] should reject embedding into text-box with correct error message', () => {
@@ -301,7 +299,7 @@ describe('Embedding Operations Integration Tests', () => {
       const textBox = createTextBoxNode(graph, 't1', 100, 100);
       const process = createProcessNode(graph, 'p1', 150, 150);
 
-      // Manually create invalid embedding (text-box embedded in process - invalid!)
+      // Manually create invalid embedding (process embedded in text-box - invalid!)
       process.setParent(textBox);
 
       // Validate and fix

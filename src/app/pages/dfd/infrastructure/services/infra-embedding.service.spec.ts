@@ -344,14 +344,13 @@ describe('InfraEmbeddingService', () => {
       expect(result.isValid).toBe(true);
     });
 
-    it('should not allow text-box nodes to be embedded', () => {
+    it('should allow text-box nodes to be embedded', () => {
       const parent = createMockNodeWithType('parent', 'process');
       const child = createMockNodeWithType('child', 'text-box');
 
       const result = service.validateEmbedding(parent, child);
 
-      expect(result.isValid).toBe(false);
-      expect(result.reason).toBe('text-box shapes cannot be embedded into other shapes');
+      expect(result.isValid).toBe(true);
     });
 
     it('should not allow embedding into text-box nodes', () => {

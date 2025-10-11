@@ -208,8 +208,8 @@ describe('InfraX6EmbeddingAdapter', () => {
       });
     });
 
-    it('should fail to embed when validation fails', () => {
-      // Create text-box node which cannot be embedded
+    it('should fail to embed when validation fails (embedding into text-box)', () => {
+      // Create text-box parent node which cannot contain other nodes
       const textBoxNode = graph.addNode({
         x: 100,
         y: 100,
@@ -221,14 +221,24 @@ describe('InfraX6EmbeddingAdapter', () => {
 
       (textBoxNode as any).getNodeTypeInfo = () => ({ type: 'text-box' });
 
-      const result = adapter.embedNode(graph, textBoxNode, parentNode);
+      const processNode = graph.addNode({
+        x: 110,
+        y: 110,
+        width: 50,
+        height: 50,
+        shape: 'process',
+      });
+
+      (processNode as any).getNodeTypeInfo = () => ({ type: 'process' });
+
+      const result = adapter.embedNode(graph, processNode, textBoxNode);
 
       expect(result).toBe(false);
-      expect(textBoxNode.getParent()).toBeNull();
+      expect(processNode.getParent()).toBeNull();
       expect(mockLogger.warn).toHaveBeenCalledWith('Embedding validation failed', {
-        childId: textBoxNode.id,
-        parentId: parentNode.id,
-        reason: 'text-box shapes cannot be embedded into other shapes',
+        childId: processNode.id,
+        parentId: textBoxNode.id,
+        reason: 'Other shapes cannot be embedded into text-box shapes',
       });
     });
 
@@ -535,7 +545,7 @@ describe('InfraX6EmbeddingAdapter', () => {
       textBoxNode.getAttrs = vi.fn().mockReturnValue({ body: { fill: 'transparent' } });
       textBoxNode.setAttrs = vi.fn();
 
-      // Text-box nodes cannot be embedded, but test the visual effect logic
+      // Text-box nodes can be embedded but maintain transparent fill
       const config = infraEmbeddingService.getEmbeddingConfiguration(textBoxNode);
       expect(config.shouldUpdateColor).toBe(false);
     });
@@ -774,13 +784,18 @@ describe('InfraX6EmbeddingAdapter', () => {
       expect(result2).toBe(true);
     });
 
-    it('should reject text-box embedding attempts', () => {
-      // Text-box cannot be embedded into anything
+    it('should allow text-box embedding into other nodes', () => {
+      // Text-box can now be embedded into regular nodes and security boundaries
+      textBoxNode.setParent = vi.fn();
+      textBoxNode.getParent = vi.fn().mockReturnValue(null);
+      textBoxNode.getAttrs = vi.fn().mockReturnValue({ body: { fill: 'transparent' } });
+      textBoxNode.setAttrs = vi.fn();
+
       const result1 = adapter.embedNode(graph, textBoxNode, securityBoundary);
-      expect(result1).toBe(false);
+      expect(result1).toBe(true);
 
       const result2 = adapter.embedNode(graph, textBoxNode, processNode);
-      expect(result2).toBe(false);
+      expect(result2).toBe(true);
     });
 
     it('should reject embedding into text-box', () => {

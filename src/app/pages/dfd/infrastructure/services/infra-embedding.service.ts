@@ -180,14 +180,6 @@ export class InfraEmbeddingService {
       };
     }
 
-    // text-box shapes cannot be embedded into other shapes
-    if (childType === 'text-box') {
-      return {
-        isValid: false,
-        reason: 'text-box shapes cannot be embedded into other shapes',
-      };
-    }
-
     // Other shapes cannot be embedded into text-box shapes
     if (parentType === 'text-box') {
       return {
@@ -242,6 +234,9 @@ export class InfraEmbeddingService {
     if (childType === 'security-boundary') {
       // Security boundaries should always stay behind, even when embedded
       childZIndex = 2; // Slightly higher than non-embedded security boundaries but still behind regular nodes
+    } else if (childType === 'text-box') {
+      // Text-boxes follow normal embedding rules but appear above other embedded nodes
+      childZIndex = 15; // Same as regular nodes when embedded
     } else {
       childZIndex = 15; // Regular nodes appear in front when embedded
     }
@@ -263,6 +258,8 @@ export class InfraEmbeddingService {
     // Reset to default z-index based on type
     if (nodeType === 'security-boundary') {
       return 1; // Security boundaries always stay at the back
+    } else if (nodeType === 'text-box') {
+      return 20; // Text-boxes appear above all other shapes
     } else {
       return 10; // Default for regular nodes
     }

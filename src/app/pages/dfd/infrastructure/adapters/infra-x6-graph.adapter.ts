@@ -1442,9 +1442,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
     // Map validation reason to translation key
     let translationKey: string;
-    if (reason.includes('text-box shapes cannot be embedded')) {
-      translationKey = 'editor.embedding.cannotEmbedTextBox';
-    } else if (reason.includes('cannot be embedded into text-box')) {
+    if (reason.includes('cannot be embedded into text-box')) {
       translationKey = 'editor.embedding.cannotEmbedIntoTextBox';
     } else if (reason.includes('Circular embedding')) {
       translationKey = 'editor.embedding.circularEmbeddingPrevented';

@@ -158,6 +158,8 @@ export class InfraX6EmbeddingAdapter {
 
           // Fix by unembedding the node
           node.removeFromParent();
+          // Ensure parent is fully cleared (X6 internal state cleanup)
+          (node as any).setParent(null);
           this.handleNodeUnembedded(graph, node);
           fixedCount++;
         }
@@ -749,23 +751,23 @@ export class InfraX6EmbeddingAdapter {
    * Update visual appearance for embedded nodes
    */
   private updateEmbeddingAppearance(node: Node, parent: Node): void {
-    // Calculate embedding depth
-    const depth = this.infraEmbeddingService.calculateEmbeddingDepth(node);
+    // Get embedding configuration which includes shouldUpdateColor flag
+    const config = this.infraEmbeddingService.getEmbeddingConfiguration(node);
 
-    // Calculate fill color based on depth
-    const fillColor =
-      depth === 0
-        ? this._getOriginalFillColorForShape(node.shape)
-        : this.infraEmbeddingService.calculateEmbeddingFillColor(depth);
+    // For text-box nodes, keep original fill color (transparent)
+    const fillColor = config.shouldUpdateColor
+      ? config.fillColor
+      : this._getOriginalFillColorForShape(node.shape);
 
     // Apply visual changes
-    this.applyEmbeddingVisualEffects(node, fillColor, depth);
+    this.applyEmbeddingVisualEffects(node, fillColor, config.depth);
 
     this.logger.info('Updated embedding appearance', {
       nodeId: node.id,
       parentId: parent.id,
-      depth,
+      depth: config.depth,
       fillColor,
+      shouldUpdateColor: config.shouldUpdateColor,
     });
   }
 
