@@ -401,9 +401,25 @@
     "title": "服务条款"
   },
   "userPreferences": {
-    "colorBlindMode": "色盲模式",
-    "deleteMyData": "删除我的所有数据",
-    "diagramAnimationEffects": "图表动画效果",
+    "colorBlindMode": "启用色盲模式",
+    "deleteMyData": {
+      "confirmation": "您确定要删除所有数据吗？",
+      "explanation": "确认此操作将永久删除您的身份提供者数据（用户ID、姓名、电子邮件）。您对不拥有的威胁模型对象的权限将被撤销。对于您拥有的威胁模型：如果存在其他所有者，所有权将转移给他们，您的权限将被撤销；如果不存在其他所有者，威胁模型及其所有相关图表、威胁数据、元数据和引用将被不可逆转地删除。",
+      "title": "删除我的所有数据",
+      "validation": "要确认您的删除请求，请准确输入您的电子邮件地址。"
+    },
+    "diagramAnimationEffects": "在图表编辑器中启用动画效果",
+    "marginSize": {
+      "narrow": "窄",
+      "standard": "标准",
+      "title": "报告的首选边距大小",
+      "wide": "宽"
+    },
+    "pageSize": {
+      "A4": "A4",
+      "title": "报告的首选页面大小",
+      "usLetter": "US Letter"
+    },
     "title": "用户偏好"
   }
 }

@@ -401,9 +401,25 @@
     "title": "Nutzungsbedingungen"
   },
   "userPreferences": {
-    "colorBlindMode": "Farbblindmodus",
-    "deleteMyData": "Alle meine Daten löschen",
-    "diagramAnimationEffects": "Diagramm-Animationseffekte",
+    "colorBlindMode": "Farbenblindmodus aktivieren",
+    "deleteMyData": {
+      "confirmation": "Sind Sie sicher, dass Sie alle Ihre Daten löschen möchten?",
+      "explanation": "Durch Bestätigung dieser Operation werden Ihre Identitätsanbieterdaten (Benutzer-ID, Name, E-Mail) dauerhaft gelöscht. Ihre Berechtigungen werden für Bedrohungsmodellobjekte widerrufen, die Sie nicht besitzen. Für Bedrohungsmodelle, die Sie besitzen: Wenn andere Eigentümer vorhanden sind, wird das Eigentum auf sie übertragen und Ihre Berechtigungen werden widerrufen; wenn keine anderen Eigentümer vorhanden sind, werden das Bedrohungsmodell und alle zugehörigen Diagramme, Bedrohungsdaten, Metadaten und Referenzen unwiderruflich gelöscht.",
+      "title": "Alle meine Daten löschen",
+      "validation": "Um Ihre Löschanfrage zu bestätigen, geben Sie Ihre E-Mail-Adresse genau so ein, wie sie erscheint."
+    },
+    "diagramAnimationEffects": "Animationseffekte im Diagramm-Editor aktivieren",
+    "marginSize": {
+      "narrow": "Schmal",
+      "standard": "Standard",
+      "title": "Bevorzugte Randgröße für Berichte",
+      "wide": "Breit"
+    },
+    "pageSize": {
+      "A4": "A4",
+      "title": "Bevorzugte Seitengröße für Berichte",
+      "usLetter": "US Letter"
+    },
     "title": "Benutzereinstellungen"
   }
 }

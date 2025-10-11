@@ -401,9 +401,25 @@
     "title": "Terms of Service"
   },
   "userPreferences": {
-    "colorBlindMode": "Color Blind Mode",
-    "deleteMyData": "Delete All My Data",
-    "diagramAnimationEffects": "Diagram Animation Effects",
+    "colorBlindMode": "Enable Color Blind Mode",
+    "deleteMyData": {
+      "confirmation": "Are you sure that you want to delete all your data?",
+      "explanation": "Confirming this operation will permanently delete your Identity Provider data (user ID, name, email). Your permissions will be revoked from threat model objects you don't own. For threat models you own: if other owners exist, ownership transfers to them and your permissions are revoked; if no other owners exist, the threat model and all associated diagrams, threat data, metadata, and references will be irrevocably deleted.",
+      "title": "Delete All My Data",
+      "validation": "To confirm your deletion request, type your email address exactly as it appears."
+    },
+    "diagramAnimationEffects": "Enable Animation Effects in Diagram Editor",
+    "marginSize": {
+      "narrow": "Narrow",
+      "standard": "Standard",
+      "title": "Preferred Margin Size for Reports",
+      "wide": "Wide"
+    },
+    "pageSize": {
+      "A4": "A4",
+      "title": "Preferred Page Size for Reports",
+      "usLetter": "US Letter"
+    },
     "title": "User Preferences"
   }
 }
