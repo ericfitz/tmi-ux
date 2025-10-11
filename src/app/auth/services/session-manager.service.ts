@@ -198,7 +198,10 @@ export class SessionManagerService {
         this.logger.info('Session extension successful', {
           newExpiry: newToken.expiresAt.toISOString(),
         });
-        // Timers will be restarted by the AuthService token update notification
+        // Close the warning dialog since session was extended
+        if (this.warningDialog) {
+          this.warningDialog.close('extend');
+        }
       },
       error: error => {
         this.logger.error('Session extension failed', error);

@@ -94,10 +94,17 @@ describe('SessionManagerService', () => {
     mockAuthService.getValidToken.mockReturnValue(of(mockToken));
     mockAuthService.isTestUser = false;
 
+    const mockDialogRef = {
+      afterClosed: vi.fn().mockReturnValue(of('extend')),
+      close: vi.fn(),
+    };
+    (service as any).warningDialog = mockDialogRef;
+
     // Call the private method using type assertion
     (service as any).handleExtendSession();
 
     expect(mockAuthService.getValidToken).toHaveBeenCalled();
+    expect(mockDialogRef.close).toHaveBeenCalledWith('extend');
   });
 
   it('should handle extend session for test users', () => {
