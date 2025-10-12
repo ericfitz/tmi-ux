@@ -34,6 +34,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { AuthService } from '../../../../auth/services/auth.service';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import {
   COMMON_IMPORTS,
@@ -57,6 +58,7 @@ import { AppStateService } from '../../application/services/app-state.service';
 // Persistence strategies
 import { InfraRestPersistenceStrategy } from '../../infrastructure/strategies/infra-rest-persistence.strategy';
 import { WebSocketPersistenceStrategy } from '../../infrastructure/strategies/infra-websocket-persistence.strategy';
+import { InfraWebsocketCollaborationAdapter } from '../../infrastructure/adapters/infra-websocket-collaboration.adapter';
 
 // Infrastructure adapters and services
 import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
@@ -219,6 +221,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private cellDataExtractionService: CellDataExtractionService,
     private dfdInfrastructure: AppDfdFacade,
     private frameworkService: FrameworkService,
+    private websocketCollaborationAdapter: InfraWebsocketCollaborationAdapter,
+    private authService: AuthService,
   ) {
     this.logger.info('DfdComponent v2 constructor called');
 
@@ -407,6 +411,21 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.logger.info(
                       'Successfully joined collaboration session, now loading diagram',
                     );
+
+                    // Initialize the WebSocket collaboration adapter now that we're connected
+                    if (this.threatModelId && this.dfdId && this.authService.userId) {
+                      this.websocketCollaborationAdapter.initialize({
+                        diagramId: this.dfdId,
+                        threatModelId: this.threatModelId,
+                        userId: this.authService.userId,
+                        threatModelPermission: this.threatModelPermission || 'reader',
+                      });
+                      this.logger.info('WebSocket collaboration adapter initialized', {
+                        diagramId: this.dfdId,
+                        threatModelId: this.threatModelId,
+                      });
+                    }
+
                     // Now that WebSocket is connected, load the diagram
                     if (this.dfdId) {
                       this.loadDiagramData(this.dfdId);
@@ -658,13 +677,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             'Diagram loaded successfully via AppDfdOrchestrator',
           );
 
-          // Clear history, selection, and clipboard after successful diagram load
+          // Clear selection and clipboard after successful diagram load
+          // Note: History is already cleared by AppDiagramLoadingService before re-enabling history recording
           const graphAdapter = this.dfdInfrastructure.graphAdapter;
           if (graphAdapter) {
-            // Clear history
-            graphAdapter.clearHistory();
-            this.logger.debug('Cleared history after diagram load');
-
             // Clear selection
             const graph = this.appDfdOrchestrator.getGraph;
             if (graph) {

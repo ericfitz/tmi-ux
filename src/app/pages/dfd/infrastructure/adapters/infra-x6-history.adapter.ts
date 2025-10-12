@@ -149,11 +149,22 @@ export class InfraX6HistoryAdapter {
 
   /**
    * Clear the history stack
+   * Note: This does NOT trigger autosave since it's an administrative operation, not a user edit
    */
   clearHistory(graph: Graph): void {
     if (graph && typeof graph.cleanHistory === 'function') {
+      // Temporarily disable history events to prevent triggering autosave
+      // when clearing history after diagram load
+      this.disable(graph);
+
       graph.cleanHistory();
       this.logger.info('History cleared');
+
+      // Re-enable history tracking
+      this.enable(graph);
+
+      // Emit state change (for undo/redo button states) but NOT historyModified$
+      // since clearing history is not a user edit that should trigger autosave
       this._emitHistoryStateChange(graph);
     } else {
       this.logger.warn('Clear history not available - history plugin may not be enabled');

@@ -115,6 +115,13 @@ export class AppDiagramLoadingService {
           infraX6GraphAdapter.updateAllEmbeddingAppearances();
           this.logger.debug('Updated embedding appearances after cell loading');
         }
+
+        // Clear history BEFORE re-enabling history recording to prevent spurious autosave
+        // This ensures no queued events will fire when we restore normal history recording
+        if (wasLoadingStateSuppressed) {
+          infraX6GraphAdapter.clearHistory();
+          this.logger.debug('Cleared history after diagram load (before restoring history recording)');
+        }
       } finally {
         // Restore diagram loading state if it was modified
         if (wasLoadingStateSuppressed) {
