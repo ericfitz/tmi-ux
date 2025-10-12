@@ -59,3 +59,5 @@ localization_dedup_plan.*
 # local copy of server docs
 docs-server
 docs-server/**
+thunder-tests
+thunder-tests/**
