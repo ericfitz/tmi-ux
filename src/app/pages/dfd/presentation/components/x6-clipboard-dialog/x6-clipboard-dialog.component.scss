@@ -1,14 +1,19 @@
-.clipboard-content {
-  min-width: 700px;
-  max-width: 90vw;
-}
-
 .full-width {
   width: 100%;
 }
 
-.clipboard-textarea {
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
+.json-textarea {
+  font-family: var(--font-family-monospace);
+  font-size: var(--font-size-xs);
   line-height: 1.4;
+  white-space: pre;
+  overflow: auto;
+}
+
+:host {
+  .mat-mdc-dialog-content {
+    max-height: 80vh;
+    overflow: auto;
+    padding-top: 20px;
+  }
 }
