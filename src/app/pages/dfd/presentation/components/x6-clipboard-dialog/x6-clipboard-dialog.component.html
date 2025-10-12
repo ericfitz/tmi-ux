@@ -1,0 +1,23 @@
+<h2 mat-dialog-title>X6 Clipboard Data</h2>
+
+<mat-dialog-content>
+  <div class="clipboard-content">
+    <mat-form-field class="full-width">
+      <textarea
+        matInput
+        [value]="clipboardJson"
+        readonly
+        rows="30"
+        class="clipboard-textarea"
+      ></textarea>
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCopyToClipboard()">
+    <mat-icon>content_copy</mat-icon>
+    Copy to Clipboard
+  </button>
+  <button mat-button (click)="onClose()" cdkFocusInitial>Close</button>
+</mat-dialog-actions>

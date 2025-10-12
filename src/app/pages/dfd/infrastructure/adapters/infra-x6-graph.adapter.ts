@@ -28,6 +28,8 @@ import { Export } from '@antv/x6-plugin-export';
 import { Snapline } from '@antv/x6-plugin-snapline';
 import { Transform } from '@antv/x6-plugin-transform';
 import { History } from '@antv/x6-plugin-history';
+import '@antv/x6-plugin-clipboard';
+import { Clipboard } from '@antv/x6-plugin-clipboard';
 
 import { IGraphAdapter } from '../interfaces/graph-adapter.interface';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
@@ -744,6 +746,76 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Cut selected cells to clipboard
+   */
+  cut(): void {
+    if (!this._graph) {
+      this.logger.warn('Cannot cut: Graph not initialized');
+      return;
+    }
+    const selectedCells = this._graph.getSelectedCells();
+    if (selectedCells.length === 0) {
+      this.logger.debug('No cells selected for cut operation');
+      return;
+    }
+    this._graph.cut(selectedCells);
+    this.logger.debug('Cut cells to clipboard', { count: selectedCells.length });
+  }
+
+  /**
+   * Copy selected cells to clipboard
+   */
+  copy(): void {
+    if (!this._graph) {
+      this.logger.warn('Cannot copy: Graph not initialized');
+      return;
+    }
+    const selectedCells = this._graph.getSelectedCells();
+    if (selectedCells.length === 0) {
+      this.logger.debug('No cells selected for copy operation');
+      return;
+    }
+    this._graph.copy(selectedCells);
+    this.logger.debug('Copied cells to clipboard', { count: selectedCells.length });
+  }
+
+  /**
+   * Paste cells from clipboard
+   */
+  paste(): void {
+    if (!this._graph) {
+      this.logger.warn('Cannot paste: Graph not initialized');
+      return;
+    }
+    if (!this._graph.isClipboardEmpty()) {
+      this._graph.paste();
+      this.logger.debug('Pasted cells from clipboard');
+    } else {
+      this.logger.debug('Clipboard is empty, nothing to paste');
+    }
+  }
+
+  /**
+   * Check if clipboard is empty
+   */
+  isClipboardEmpty(): boolean {
+    if (!this._graph) {
+      return true;
+    }
+    return this._graph.isClipboardEmpty();
+  }
+
+  /**
+   * Get clipboard cells (for debugging/display)
+   */
+  getClipboardCells(): Cell[] {
+    if (!this._graph) {
+      return [];
+    }
+    return this._graph.getCellsInClipboard();
+  }
+
+  /**
    * Check if undo is available - delegates to InfraX6HistoryAdapter
    */
   canUndo(): boolean {
@@ -1370,6 +1442,14 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
       // Enable export plugin for diagram export functionality
       this._graph.use(new Export());
+
+      // Enable clipboard plugin for cut/copy/paste operations
+      this._graph.use(
+        new Clipboard({
+          enabled: true,
+          useLocalStorage: false, // Use in-memory clipboard only
+        }),
+      );
     }
 
     // Setup selection event handlers

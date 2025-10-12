@@ -98,6 +98,10 @@ import {
   X6GraphDataDialogComponent,
   X6GraphDataDialogData,
 } from './x6-graph-data-dialog/x6-graph-data-dialog.component';
+import {
+  X6ClipboardDialogComponent,
+  X6ClipboardDialogData,
+} from './x6-clipboard-dialog/x6-clipboard-dialog.component';
 
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
@@ -717,6 +721,27 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('Opened X6 graph data dialog');
   }
 
+  showClipboard(): void {
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) {
+      this.logger.warn('Cannot show clipboard: Graph not available');
+      return;
+    }
+
+    // Open the X6 clipboard dialog
+    const dialogData: X6ClipboardDialogData = {
+      graph: graph,
+    };
+
+    this.dialog.open(X6ClipboardDialogComponent, {
+      width: '800px',
+      maxHeight: '90vh',
+      data: dialogData,
+    });
+
+    this.logger.info('Opened X6 clipboard dialog');
+  }
+
   onAddNode(nodeType: NodeType): void {
     if (this.isReadOnlyMode) return;
 
@@ -799,6 +824,45 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // History state will be updated automatically via observable
   }
 
+  onCut(): void {
+    if (!this.hasSelectedCells || this.isReadOnlyMode) return;
+
+    const graphAdapter = this.dfdInfrastructure.graphAdapter;
+    if (!graphAdapter) {
+      this.logger.warn('Cannot cut: Graph adapter not available');
+      return;
+    }
+
+    graphAdapter.cut();
+    this.logger.debug('Cut operation completed');
+  }
+
+  onCopy(): void {
+    if (!this.hasSelectedCells) return;
+
+    const graphAdapter = this.dfdInfrastructure.graphAdapter;
+    if (!graphAdapter) {
+      this.logger.warn('Cannot copy: Graph adapter not available');
+      return;
+    }
+
+    graphAdapter.copy();
+    this.logger.debug('Copy operation completed');
+  }
+
+  onPaste(): void {
+    if (this.isReadOnlyMode) return;
+
+    const graphAdapter = this.dfdInfrastructure.graphAdapter;
+    if (!graphAdapter) {
+      this.logger.warn('Cannot paste: Graph adapter not available');
+      return;
+    }
+
+    graphAdapter.paste();
+    this.logger.debug('Paste operation completed');
+  }
+
   // Template compatibility methods
   undo(): void {
     this.onUndo();
@@ -806,6 +870,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   redo(): void {
     this.onRedo();
+  }
+
+  cut(): void {
+    this.onCut();
+  }
+
+  copy(): void {
+    this.onCopy();
+  }
+
+  paste(): void {
+    this.onPaste();
   }
 
   onSelectAll(): void {

@@ -58,6 +58,9 @@ importers:
       '@antv/x6':
         specifier: ^2.18.1
         version: 2.18.1
+      '@antv/x6-plugin-clipboard':
+        specifier: ^2.1.6
+        version: 2.1.6(@antv/x6@2.18.1)
       '@antv/x6-plugin-export':
         specifier: ^2.1.6
         version: 2.1.6(@antv/x6@2.18.1)
@@ -569,6 +572,11 @@ packages:
 
   '@antv/x6-geometry@2.0.5':
     resolution: {integrity: sha512-MId6riEQkxphBpVeTcL4ZNXL4lScyvDEPLyIafvWMcWNTGK0jgkK7N20XSzqt8ltJb0mGUso5s56mrk8ysHu2A==}
+
+  '@antv/x6-plugin-clipboard@2.1.6':
+    resolution: {integrity: sha512-roZPLnZx6PK8MBvee0QMo90fz/TXeF0WNe4EGin2NBq5M1I5XTWrYvA6N2XVIiWAAI67gjQeEE8TpkL7f8QdqA==}
+    peerDependencies:
+      '@antv/x6': ^2.x
 
   '@antv/x6-plugin-export@2.1.6':
     resolution: {integrity: sha512-m0ukMmZhrFE5n7uCR43DVQBdiUfpjGN+vm1mc+6RTZdHK8pa6Mxr0RZztaxPy34YA4tli+bGY3ePslsNPfh6PQ==}
@@ -6818,6 +6826,10 @@ snapshots:
       utility-types: 3.11.0
 
   '@antv/x6-geometry@2.0.5': {}
+
+  '@antv/x6-plugin-clipboard@2.1.6(@antv/x6@2.18.1)':
+    dependencies:
+      '@antv/x6': 2.18.1
 
   '@antv/x6-plugin-export@2.1.6(@antv/x6@2.18.1)':
     dependencies:

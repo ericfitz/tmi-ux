@@ -92,6 +92,48 @@
       <button
         mat-icon-button
         color="basic"
+        (click)="cut()"
+        [disabled]="!hasSelectedCells || isReadOnlyMode"
+        [matTooltip]="'common.cut' | transloco"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >content_cut</mat-icon
+        >
+      </button>
+      <button
+        mat-icon-button
+        color="basic"
+        (click)="copy()"
+        [disabled]="!hasSelectedCells"
+        [matTooltip]="'common.copy' | transloco"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >content_copy</mat-icon
+        >
+      </button>
+      <button
+        mat-icon-button
+        color="basic"
+        (click)="paste()"
+        [disabled]="isReadOnlyMode"
+        [matTooltip]="'common.paste' | transloco"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >content_paste</mat-icon
+        >
+      </button>
+      <button
+        mat-icon-button
+        color="basic"
         (click)="deleteSelected()"
         [disabled]="!hasSelectedCells || isReadOnlyMode"
         [matTooltip]="'editor.toolbar.tooltips.deleteSelected' | transloco"
@@ -121,6 +163,14 @@
         *ngIf="!isProduction"
       >
         <mat-icon>history</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        (click)="showClipboard()"
+        [matTooltip]="'Show X6 Clipboard'"
+        *ngIf="!isProduction"
+      >
+        <mat-icon>assignment</mat-icon>
       </button>
       <button
         mat-icon-button
