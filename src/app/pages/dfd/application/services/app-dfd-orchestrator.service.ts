@@ -22,7 +22,9 @@ import { AppGraphOperationManager } from './app-graph-operation-manager.service'
 import { AppPersistenceCoordinator } from './app-persistence-coordinator.service';
 import { AppDiagramLoadingService } from './app-diagram-loading.service';
 import { AppExportService } from './app-export.service';
+import { AppStateService } from './app-state.service';
 import { AppDfdFacade } from '../facades/app-dfd.facade';
+import { InfraDfdWebsocketAdapter } from '../../infrastructure/adapters/infra-dfd-websocket.adapter';
 import { NodeType } from '../../domain/value-objects/node-info';
 import {
   GraphOperation,
@@ -107,6 +109,8 @@ export class AppDfdOrchestrator {
     private readonly appPersistenceCoordinator: AppPersistenceCoordinator,
     private readonly appDiagramLoadingService: AppDiagramLoadingService,
     private readonly appExportService: AppExportService,
+    private readonly appStateService: AppStateService,
+    private readonly infraWebsocketAdapter: InfraDfdWebsocketAdapter,
     private readonly dfdInfrastructure: AppDfdFacade,
   ) {
     this.logger.debug('AppDfdOrchestrator initialized (simplified autosave)');
@@ -1082,6 +1086,11 @@ export class AppDfdOrchestrator {
   private _performInitialization(params: DfdInitializationParams): Observable<boolean> {
     // Initialize the graph through the infrastructure facade instead of creating our own
     this.dfdInfrastructure.initializeGraph(params.containerElement);
+
+    // Initialize WebSocket message handlers for collaboration
+    this.logger.info('Initializing WebSocket message handlers');
+    this.infraWebsocketAdapter.initialize();
+    this.appStateService.initialize();
 
     // The graph is now properly initialized with history filtering
     // Continue with the rest of initialization
