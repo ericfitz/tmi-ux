@@ -675,7 +675,16 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Track users by email for efficient rendering
+   * Track users by userId for efficient rendering
+   * This ensures proper deduplication even when users have the same name or email
+   */
+  trackByUserId(_index: number, user: CollaborationUser): string {
+    return user.userId;
+  }
+
+  /**
+   * Track users by email for efficient rendering (deprecated)
+   * @deprecated Use trackByUserId instead for proper deduplication
    */
   trackByUserEmail(_index: number, user: CollaborationUser): string {
     return user.email;

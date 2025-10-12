@@ -23,8 +23,9 @@ import {
  * Represents a user in a collaboration session
  */
 export interface CollaborationUser {
+  userId: string; // Unique user identifier - PRIMARY IDENTIFIER for deduplication
   name: string; // Display name to show in UI
-  email: string; // Email address - primary identifier
+  email: string; // Email address
   permission: 'writer' | 'reader'; // Based on threat model permissions
   status: 'active' | 'idle' | 'disconnected';
   cursorPosition?: { x: number; y: number };
@@ -459,8 +460,10 @@ export class DfdCollaborationService implements OnDestroy {
 
     // Initialize with current user immediately to ensure UI shows at least one participant
     const currentUserEmail = this.getCurrentUserEmail();
+    const currentUserId = this._authService.userProfile?.id || '';
     const isCurrentUserPresenter = currentUserEmail === existingSession.presenter;
     const initialUser: CollaborationUser = {
+      userId: currentUserId,
       name: this._authService.userProfile?.name || '',
       email: currentUserEmail || '',
       permission: 'writer', // Will be updated from WebSocket messages
@@ -533,8 +536,10 @@ export class DfdCollaborationService implements OnDestroy {
 
           // Initialize with current user immediately to ensure UI shows at least one participant
           const currentUserEmail = this.getCurrentUserEmail();
+          const currentUserId = this._authService.userProfile?.id || '';
           const isCurrentUserPresenter = currentUserEmail === session.presenter;
           const initialUser: CollaborationUser = {
+            userId: currentUserId,
             name: this._authService.userProfile?.name || '',
             email: currentUserEmail || '',
             permission: 'writer',
@@ -618,8 +623,10 @@ export class DfdCollaborationService implements OnDestroy {
 
           // Initialize with current user immediately to ensure UI shows at least one participant
           const currentUserEmail = this.getCurrentUserEmail();
+          const currentUserId = this._authService.userProfile?.id || '';
           const isCurrentUserPresenter = currentUserEmail === session.presenter;
           const initialUser: CollaborationUser = {
+            userId: currentUserId,
             name: this._authService.userProfile?.name || '',
             email: currentUserEmail || '',
             permission: 'writer',
@@ -949,6 +956,7 @@ export class DfdCollaborationService implements OnDestroy {
       const isPresenter = participant.user.email === currentPresenter;
 
       this._logger.debug('Participant comparison', {
+        participantUserId: participant.user.user_id,
         participantEmail: participant.user.email,
         host,
         currentPresenter,
@@ -957,6 +965,7 @@ export class DfdCollaborationService implements OnDestroy {
       });
 
       return {
+        userId: participant.user.user_id,
         name: participant.user.name,
         email: participant.user.email,
         permission: participant.permissions === 'owner' ? 'writer' : participant.permissions, // Map owner to writer for UI
@@ -993,6 +1002,7 @@ export class DfdCollaborationService implements OnDestroy {
       host,
       currentPresenter,
       updatedUsers: updatedUsers.map(u => ({
+        userId: u.userId,
         name: u.name,
         email: u.email,
         permission: u.permission,
@@ -1012,14 +1022,18 @@ export class DfdCollaborationService implements OnDestroy {
     }
 
     const users = this._collaborationState$.value.users;
-    const currentUserEmail = this.getCurrentUserEmail();
-    const currentUser = users.find(user => user.email === currentUserEmail);
+    const currentUserId = this.getCurrentUserId();
+    const currentUser = users.find(user => user.userId === currentUserId);
 
     this._logger.debug('Getting current user permission', {
-      currentUserEmail,
-      users: users.map(u => ({ email: u.email, permission: u.permission })),
+      currentUserId,
+      users: users.map(u => ({ userId: u.userId, email: u.email, permission: u.permission })),
       currentUser: currentUser
-        ? { email: currentUser.email, permission: currentUser.permission }
+        ? {
+            userId: currentUser.userId,
+            email: currentUser.email,
+            permission: currentUser.permission,
+          }
         : null,
       isCollaborating: this._collaborationState$.value.isActive,
     });
@@ -1079,24 +1093,43 @@ export class DfdCollaborationService implements OnDestroy {
     // Check the users list directly without requiring isActive
     // This allows the host status to be determined even during session initialization
     const users = this._collaborationState$.value.users;
-    const currentUserEmail = this.getCurrentUserEmail();
+    const currentUserId = this.getCurrentUserId();
 
-    if (!currentUserEmail) {
+    if (!currentUserId) {
       return false;
     }
 
-    const currentUser = users.find(user => user.email === currentUserEmail);
+    const currentUser = users.find(user => user.userId === currentUserId);
     return currentUser?.isHost || false;
   }
 
   /**
-   * Check if a specific user is the current user
-   * @param userEmail The user email to check
+   * Check if a specific user is the current user (by userId)
+   * @param userId The user ID to check
    * @returns boolean indicating if this is the current user
    */
-  public isCurrentUser(userEmail: string): boolean {
+  public isCurrentUser(userId: string): boolean {
+    const currentUserId = this.getCurrentUserId();
+    return !!currentUserId && userId === currentUserId;
+  }
+
+  /**
+   * Check if a specific user is the current user (by email - deprecated, use userId)
+   * @param userEmail The user email to check
+   * @returns boolean indicating if this is the current user
+   * @deprecated Use isCurrentUser(userId) instead for proper deduplication
+   */
+  public isCurrentUserByEmail(userEmail: string): boolean {
     const currentUserEmail = this.getCurrentUserEmail();
     return !!currentUserEmail && userEmail === currentUserEmail;
+  }
+
+  /**
+   * Get the current user's ID
+   * @returns The current user's ID or null if not authenticated
+   */
+  public getCurrentUserId(): string | null {
+    return this._authService.userProfile?.id || null;
   }
 
   /**

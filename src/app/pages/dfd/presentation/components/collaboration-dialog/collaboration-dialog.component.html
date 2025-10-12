@@ -15,7 +15,7 @@
     <mat-divider></mat-divider>
     <h4 class="section-title">{{ 'collaboration.collaboratorsHeader' | transloco }}</h4>
     <div class="users-list">
-      <div *ngFor="let user of collaborationUsers; trackBy: trackByUserEmail" class="user-item">
+      <div *ngFor="let user of collaborationUsers; trackBy: trackByUserId" class="user-item">
         <!-- Column 1: User Type -->
         <div class="user-type-column">
           <mat-icon
@@ -102,7 +102,7 @@
             <!-- Hand Down State -->
             <button
               *ngIf="
-                isCurrentUser(user.email) &&
+                isCurrentUser(user.userId) &&
                 (!user.presenterRequestState || user.presenterRequestState === 'hand_down')
               "
               mat-icon-button
@@ -121,7 +121,7 @@
 
             <!-- Hand Raised State -->
             <mat-icon
-              *ngIf="isCurrentUser(user.email) && user.presenterRequestState === 'hand_raised'"
+              *ngIf="isCurrentUser(user.userId) && user.presenterRequestState === 'hand_raised'"
               fontSet="material-symbols-outlined"
               fontWeight="100"
               style="font-variation-settings: 'FILL' 0"
@@ -133,7 +133,7 @@
 
             <!-- Other users - show presenter request icon if they have pending request -->
             <mat-icon
-              *ngIf="!isCurrentUser(user.email) && hasPresenterRequest(user.email)"
+              *ngIf="!isCurrentUser(user.userId) && hasPresenterRequest(user.email)"
               fontSet="material-symbols-outlined"
               fontWeight="100"
               style="font-variation-settings: 'FILL' 0"
@@ -148,7 +148,7 @@
 
             <!-- Other users without presenter request - placeholder -->
             <div
-              *ngIf="!isCurrentUser(user.email) && !hasPresenterRequest(user.email)"
+              *ngIf="!isCurrentUser(user.userId) && !hasPresenterRequest(user.email)"
               class="presenter-placeholder"
             ></div>
           </ng-container>
