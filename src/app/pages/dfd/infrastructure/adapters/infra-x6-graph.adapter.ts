@@ -790,6 +790,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     if (!this._graph.isClipboardEmpty()) {
       this._graph.paste();
       this.logger.debug('Pasted cells from clipboard');
+
+      // Clear selection after paste
+      this._graph.unselect(this._graph.getSelectedCells());
     } else {
       this.logger.debug('Clipboard is empty, nothing to paste');
     }
@@ -803,6 +806,18 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       return true;
     }
     return this._graph.isClipboardEmpty();
+  }
+
+  /**
+   * Clear the clipboard
+   */
+  clearClipboard(): void {
+    if (!this._graph) {
+      this.logger.warn('Cannot clear clipboard: Graph not initialized');
+      return;
+    }
+    this._graph.cleanClipboard();
+    this.logger.debug('Clipboard cleared');
   }
 
   /**

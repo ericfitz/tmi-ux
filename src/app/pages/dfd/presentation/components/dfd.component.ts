@@ -657,6 +657,25 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             'DfdComponent',
             'Diagram loaded successfully via AppDfdOrchestrator',
           );
+
+          // Clear history, selection, and clipboard after successful diagram load
+          const graphAdapter = this.dfdInfrastructure.graphAdapter;
+          if (graphAdapter) {
+            // Clear history
+            graphAdapter.clearHistory();
+            this.logger.debug('Cleared history after diagram load');
+
+            // Clear selection
+            const graph = this.appDfdOrchestrator.getGraph;
+            if (graph) {
+              graph.unselect(graph.getSelectedCells());
+              this.logger.debug('Cleared selection after diagram load');
+            }
+
+            // Clear clipboard
+            graphAdapter.clearClipboard();
+            this.logger.debug('Cleared clipboard after diagram load');
+          }
         } else {
           this.logger.error('Failed to load diagram', { error: result.error });
         }
