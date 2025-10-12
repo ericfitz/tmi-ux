@@ -791,8 +791,8 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       this._graph.paste();
       this.logger.debug('Pasted cells from clipboard');
 
-      // Clear selection after paste
-      this._graph.unselect(this._graph.getSelectedCells());
+      // Clear selection styling from pasted cells using selection adapter
+      this._selectionAdapter.clearSelection(this._graph);
     } else {
       this.logger.debug('Clipboard is empty, nothing to paste');
     }
