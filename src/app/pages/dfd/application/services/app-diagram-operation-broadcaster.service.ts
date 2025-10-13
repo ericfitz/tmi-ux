@@ -256,9 +256,6 @@ export class AppDiagramOperationBroadcaster {
         );
 
         if (isPortVisibilityOnly) {
-          this.logger.debug('Skipping broadcast - port visibility change', {
-            propertyPath: args.options.propertyPath,
-          });
           return false;
         }
       }
