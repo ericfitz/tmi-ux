@@ -29,6 +29,7 @@ import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-
 import { AppDiagramOperationBroadcaster } from './app-diagram-operation-broadcaster.service';
 import { UiPresenterCoordinatorService } from '../../presentation/services/ui-presenter-coordinator.service';
 import { NodeType } from '../../domain/value-objects/node-info';
+import { DfdStateStore } from '../../state/dfd.state';
 import {
   GraphOperation,
   OperationContext,
@@ -118,6 +119,7 @@ export class AppDfdOrchestrator {
     private readonly appDiagramOperationBroadcaster: AppDiagramOperationBroadcaster,
     private readonly uiPresenterCoordinator: UiPresenterCoordinatorService,
     private readonly selectionAdapter: InfraX6SelectionAdapter,
+    private readonly dfdStateStore: DfdStateStore,
   ) {
     this.logger.debug('AppDfdOrchestrator initialized (simplified autosave)');
     this._setupEventIntegration();
@@ -344,6 +346,7 @@ export class AppDfdOrchestrator {
         if (result.success && result.data && result.data.cells) {
           this.logger.info('Diagram data loaded from persistence, loading cells into graph', {
             cellCount: result.data.cells.length,
+            updateVector: result.data.update_vector,
           });
 
           // Use AppDiagramLoadingService to properly load cells into the graph
@@ -360,6 +363,17 @@ export class AppDfdOrchestrator {
               source: 'orchestrator-load',
             },
           );
+
+          // Update the state store with the server's update vector to prevent resync loops
+          if (result.data.update_vector !== undefined && result.data.update_vector !== null) {
+            this.dfdStateStore.updateState(
+              { updateVector: result.data.update_vector },
+              'AppDfdOrchestrator.load',
+            );
+            this.logger.info('Updated local update vector after diagram load', {
+              updateVector: result.data.update_vector,
+            });
+          }
 
           this._updateState({
             loading: false,

@@ -124,6 +124,7 @@ export class InfraRestPersistenceStrategy {
           this.logger.debug('REST load completed successfully', {
             diagramId: operation.diagramId,
             cellCount: loadResult.diagram.cells?.length || 0,
+            updateVector: loadResult.diagram.update_vector,
           });
 
           // Return diagram cells in the expected format
@@ -135,6 +136,7 @@ export class InfraRestPersistenceStrategy {
               name: loadResult.diagram.name,
               threatModelId: loadResult.diagram.threatModelId,
               threatModelName: loadResult.diagram.threatModelName,
+              update_vector: loadResult.diagram.update_vector,
             },
             source: 'api' as const,
             timestamp: Date.now(),

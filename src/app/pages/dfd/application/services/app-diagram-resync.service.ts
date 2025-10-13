@@ -17,6 +17,7 @@ import { ThreatModelService } from '../../../tm/services/threat-model.service';
 import { AppStateService } from './app-state.service';
 import { AppDiagramLoadingService } from './app-diagram-loading.service';
 import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
+import { DfdStateStore } from '../../state/dfd.state';
 
 /**
  * Configuration for resynchronization behavior
@@ -65,6 +66,7 @@ export class AppDiagramResyncService implements OnDestroy {
     private threatModelService: ThreatModelService,
     private appStateService: AppStateService,
     private appDiagramLoadingService: AppDiagramLoadingService,
+    private dfdStateStore: DfdStateStore,
   ) {
     this._setupDebouncedResync();
     this.logger.info('AppDiagramResyncService initialized');
@@ -263,10 +265,12 @@ export class AppDiagramResyncService implements OnDestroy {
 
         const graph = this._currentGraph;
         const cells = diagram.cells || [];
+        const updateVector = diagram.update_vector;
 
         this.logger.info('Updating local diagram with server data', {
           cellCount: cells.length,
           diagramName: diagram.name,
+          updateVector,
         });
 
         // Set flag to prevent triggering outbound operations
@@ -286,6 +290,12 @@ export class AppDiagramResyncService implements OnDestroy {
               source: 'resync', // Mark source for logging
             },
           );
+
+          // Update the state store with the server's update vector to prevent resync loops
+          if (updateVector !== undefined && updateVector !== null) {
+            this.dfdStateStore.updateState({ updateVector }, 'AppDiagramResyncService.resync');
+            this.logger.info('Updated local update vector after resync', { updateVector });
+          }
 
           const result: ResyncResult = {
             success: true,

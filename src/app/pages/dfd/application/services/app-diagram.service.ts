@@ -25,6 +25,7 @@ export interface DiagramData {
   threatModelId?: string;
   threatModelName?: string;
   cells?: any[]; // Full diagram cells data for rendering
+  update_vector?: number; // Server-managed version counter
 }
 
 /**
@@ -91,6 +92,7 @@ export class AppDiagramService {
               threatModelId,
               threatModelName: threatModel?.name,
               cells: diagram.cells || [], // Use the diagram cells directly from the diagram endpoint
+              update_vector: diagram.update_vector,
             };
 
             this.logger.info('Successfully loaded diagram and threat model data', {
@@ -99,6 +101,7 @@ export class AppDiagramService {
               id: diagramId,
               threatModelId,
               cellCount: diagramData.cells?.length || 0,
+              updateVector: diagramData.update_vector,
             });
 
             return {
