@@ -26,8 +26,6 @@ import {
   CurrentPresenterMessage,
   PresenterCursorMessage,
   PresenterSelectionMessage,
-  PresenterRequestMessage,
-  PresenterDeniedMessage,
   ParticipantJoinedMessage,
   ParticipantLeftMessage,
   RemoveParticipantMessage,
@@ -148,8 +146,7 @@ export type WebSocketDomainEvent =
   | PresenterChangedEvent
   | PresenterCursorEvent
   | PresenterSelectionEvent
-  | PresenterRequestEvent
-  | PresenterDeniedEvent
+  // Note: PresenterRequestEvent and PresenterDeniedEvent removed - handled by DfdCollaborationService
   | PresenterUpdateEvent
   | ParticipantJoinedEvent
   | ParticipantLeftEvent
@@ -200,13 +197,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     filter((event): event is PresenterSelectionEvent => event.type === 'presenter-selection'),
   );
 
-  public readonly presenterRequests$ = this._domainEvents$.pipe(
-    filter((event): event is PresenterRequestEvent => event.type === 'presenter-request'),
-  );
-
-  public readonly presenterDenials$ = this._domainEvents$.pipe(
-    filter((event): event is PresenterDeniedEvent => event.type === 'presenter-denied'),
-  );
+  // Note: presenterRequests$ and presenterDenials$ removed - handled by DfdCollaborationService
 
   public readonly presenterUpdates$ = this._domainEvents$.pipe(
     filter((event): event is PresenterUpdateEvent => event.type === 'presenter-update'),
@@ -334,25 +325,8 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
         }),
     );
 
-    this._subscriptions.add(
-      this._webSocketAdapter
-        .getTMIMessagesOfType<PresenterRequestMessage>('presenter_request')
-        .pipe(takeUntil(this._destroy$))
-        .subscribe({
-          next: message => this._handlePresenterRequest(message),
-          error: error => this._logger.error('Error in presenter request subscription', error),
-        }),
-    );
-
-    this._subscriptions.add(
-      this._webSocketAdapter
-        .getTMIMessagesOfType<PresenterDeniedMessage>('presenter_denied')
-        .pipe(takeUntil(this._destroy$))
-        .subscribe({
-          next: message => this._handlePresenterDenied(message),
-          error: error => this._logger.error('Error in presenter denied subscription', error),
-        }),
-    );
+    // Note: presenter_request and presenter_denied messages are handled by DfdCollaborationService
+    // to avoid duplication and maintain proper separation of concerns
 
     // Subscribe to participant management messages
     this._subscriptions.add(
@@ -554,53 +528,9 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     });
   }
 
-  private _handlePresenterRequest(message: PresenterRequestMessage): void {
-    // Guard against malformed messages that don't conform to AsyncAPI spec
-    if (!message.user || !message.user.user_id || !message.user.email) {
-      this._logger.warn('Received malformed presenter_request message - missing user data', {
-        messageType: message.message_type,
-        user: message.user,
-      });
-      return;
-    }
-
-    this._logger.info('Presenter request received', {
-      userId: message.user.user_id,
-      userEmail: message.user.email,
-    });
-
-    this._domainEvents$.next({
-      type: 'presenter-request',
-      userId: message.user.user_id,
-    });
-  }
-
-  private _handlePresenterDenied(message: PresenterDeniedMessage): void {
-    // Guard against malformed messages that don't conform to AsyncAPI spec
-    if (!message.user || !message.user.user_id || !message.user.email || !message.target_user) {
-      this._logger.warn(
-        'Received malformed presenter_denied message - missing user or target_user data',
-        {
-          messageType: message.message_type,
-          user: message.user,
-          targetUser: message.target_user,
-        },
-      );
-      return;
-    }
-
-    this._logger.info('Presenter request denied', {
-      userId: message.user.user_id,
-      userEmail: message.user.email,
-      targetUser: message.target_user,
-    });
-
-    this._domainEvents$.next({
-      type: 'presenter-denied',
-      userId: message.user.user_id,
-      targetUser: message.target_user,
-    });
-  }
+  // Note: _handlePresenterRequest and _handlePresenterDenied removed
+  // These messages are now handled exclusively by DfdCollaborationService
+  // to avoid duplication and maintain proper separation of concerns
 
   // Participant management message handlers
 
