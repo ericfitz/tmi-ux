@@ -42,6 +42,7 @@
     "denyPresenterRequest": "Deny Presenter Request",
     "endCollaboration": "End Collaboration",
     "hostedBy": "Hosted by",
+    "isRequestingPresenterPrivileges": "is requesting presenter privileges",
     "joinSession": "Join Session",
     "justNow": "just now",
     "leaveSession": "Leave Session",

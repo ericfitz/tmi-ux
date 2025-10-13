@@ -42,6 +42,7 @@
     "denyPresenterRequest": "رفض طلب المقدم",
     "endCollaboration": "إنهاء التعاون",
     "hostedBy": "مستضاف من قبل",
+    "isRequestingPresenterPrivileges": "يطلب امتيازات المقدم",
     "joinSession": "الانضمام إلى الجلسة",
     "justNow": "الآن",
     "leaveSession": "مغادرة الجلسة",

@@ -42,6 +42,7 @@
     "denyPresenterRequest": "Präsentator-Anfrage ablehnen",
     "endCollaboration": "Zusammenarbeit beenden",
     "hostedBy": "Gehostet von",
+    "isRequestingPresenterPrivileges": "fordert Präsentatorrechte an",
     "joinSession": "Sitzung beitreten",
     "justNow": "gerade eben",
     "leaveSession": "Sitzung verlassen",

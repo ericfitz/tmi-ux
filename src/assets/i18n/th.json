@@ -42,6 +42,7 @@
     "denyPresenterRequest": "ปฏิเสธคำขอเป็นผู้นำเสนอ",
     "endCollaboration": "สิ้นสุดการทำงานร่วมกัน",
     "hostedBy": "โฮสต์โดย",
+    "isRequestingPresenterPrivileges": "กำลังขอสิทธิ์การนำเสนอ",
     "joinSession": "เข้าร่วมเซสชัน",
     "justNow": "เดี๋ยวนี้",
     "leaveSession": "ออกจากเซสชัน",

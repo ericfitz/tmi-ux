@@ -42,6 +42,7 @@
     "denyPresenterRequest": "拒绝主讲人请求",
     "endCollaboration": "结束协作",
     "hostedBy": "由以下主办",
+    "isRequestingPresenterPrivileges": "正在请求主讲人权限",
     "joinSession": "加入会话",
     "justNow": "刚刚",
     "leaveSession": "离开会话",

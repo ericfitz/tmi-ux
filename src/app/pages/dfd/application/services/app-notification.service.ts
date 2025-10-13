@@ -18,6 +18,10 @@ import {
   SessionEventType,
   PresenterEventType,
 } from '../../../../core/interfaces/collaboration-notification.interface';
+import {
+  PresenterRequestSnackbarComponent,
+  PresenterRequestSnackbarData,
+} from '../../presentation/components/presenter-request-snackbar/presenter-request-snackbar.component';
 
 /**
  * Notification types for consistent styling and behavior
@@ -608,6 +612,65 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    */
   private _dismissWebSocketNotifications(): void {
     this.dismissByPattern(/websocket/i);
+  }
+
+  /**
+   * Show presenter request notification with approve/deny actions
+   * @param userEmail The email of the user requesting presenter privileges
+   * @param displayName The display name of the user
+   * @returns Observable that emits 'approve' or 'deny' based on user action
+   */
+  showPresenterRequestReceived(
+    userEmail: string,
+    displayName: string,
+  ): Observable<'approve' | 'deny' | null> {
+    return new Observable(observer => {
+      const data: PresenterRequestSnackbarData = {
+        userEmail,
+        displayName,
+        message: '', // Message is built in component
+      };
+
+      const snackBarRef = this._snackBar.openFromComponent(PresenterRequestSnackbarComponent, {
+        data,
+        duration: 0, // Persistent until user acts
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['notification-info', 'presenter-request-notification'],
+      });
+
+      // Store reference for potential dismissal
+      const notificationKey = `presenter_request_${userEmail}_${Date.now()}`;
+      this._activeNotifications.set(notificationKey, snackBarRef as any);
+
+      // Handle approve action
+      snackBarRef.onAction().subscribe(() => {
+        this._logger.info('Presenter request approved via snackbar', { userEmail, displayName });
+        observer.next('approve');
+        observer.complete();
+      });
+
+      // Handle dismissal (deny or timeout)
+      snackBarRef.afterDismissed().subscribe(dismissal => {
+        this._activeNotifications.delete(notificationKey);
+
+        // If dismissed without action, treat as deny
+        if (!dismissal.dismissedByAction) {
+          this._logger.info('Presenter request denied via snackbar dismissal', {
+            userEmail,
+            displayName,
+          });
+          observer.next('deny');
+        }
+        observer.complete();
+      });
+
+      this._logger.debug('Presenter request notification shown', {
+        userEmail,
+        displayName,
+        notificationKey,
+      });
+    });
   }
 
   ngOnDestroy(): void {

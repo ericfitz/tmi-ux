@@ -1823,8 +1823,39 @@ export class DfdCollaborationService implements OnDestroy {
     // Add to pending requests list
     this.addPresenterRequest(message.user.email);
 
-    // Note: Notification for presenter request is handled by the participant list UI
-    // when the pending request is added to the list
+    // Update the user's presenterRequestState to 'hand_raised'
+    this.updateUserPresenterRequestState(message.user.email, 'hand_raised');
+
+    // Show notification with approve/deny actions (host only)
+    if (this.isCurrentUserHost()) {
+      this._notificationService
+        ?.showPresenterRequestReceived(message.user.email, message.user.displayName)
+        .subscribe(action => {
+          if (action === 'approve') {
+            this.approvePresenterRequest(message.user.email).subscribe({
+              next: () => {
+                this._logger.info('Presenter request approved from notification', {
+                  userEmail: message.user.email,
+                });
+              },
+              error: error => {
+                this._logger.error('Failed to approve presenter request from notification', error);
+              },
+            });
+          } else if (action === 'deny') {
+            this.denyPresenterRequest(message.user.email).subscribe({
+              next: () => {
+                this._logger.info('Presenter request denied from notification', {
+                  userEmail: message.user.email,
+                });
+              },
+              error: error => {
+                this._logger.error('Failed to deny presenter request from notification', error);
+              },
+            });
+          }
+        });
+    }
   }
 
   /**

@@ -53,6 +53,17 @@ export interface ICollaborationNotificationService {
    * @returns Observable that completes when notification is shown
    */
   showError(message: string): Observable<void>;
+
+  /**
+   * Show a presenter request notification with approve/deny actions
+   * @param userEmail The email of the user requesting presenter privileges
+   * @param displayName The display name of the user
+   * @returns Observable that emits 'approve' or 'deny' action, or completes without value if dismissed
+   */
+  showPresenterRequestReceived(
+    userEmail: string,
+    displayName: string,
+  ): Observable<'approve' | 'deny' | null>;
 }
 
 /**
