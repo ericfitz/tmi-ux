@@ -181,7 +181,7 @@ export class AuthService {
    * Check if we're using a local login provider
    * @returns True if using local authentication
    */
-  private get isUsingLocalProvider(): boolean {
+  get isUsingLocalProvider(): boolean {
     // Check if token exists and decode to get provider information
     const token = this.getStoredToken();
     if (!token) {
@@ -886,14 +886,32 @@ export class AuthService {
         throw new Error('Invalid JWT token format');
       }
 
-      // Create JWT token object
-      const expiresAt = new Date();
-      expiresAt.setSeconds(expiresAt.getSeconds() + (response.expires_in || 3600));
+      // Extract expiration from JWT exp claim (preferred) or fall back to expires_in
+      let expiresAt = this.extractExpirationFromToken(response.access_token);
+      let expiresIn = response.expires_in || 3600;
+
+      if (expiresAt) {
+        // Calculate expiresIn from exp claim for consistency
+        const now = new Date();
+        expiresIn = Math.floor((expiresAt.getTime() - now.getTime()) / 1000);
+        this.logger.debugComponent('Auth', 'Using exp claim from JWT', {
+          expClaim: expiresAt.toISOString(),
+          calculatedExpiresIn: expiresIn,
+          providedExpiresIn: response.expires_in,
+        });
+      } else {
+        // Fall back to expires_in from OAuth response
+        this.logger.warn('JWT missing exp claim, falling back to expires_in', {
+          expiresIn,
+        });
+        expiresAt = new Date();
+        expiresAt.setSeconds(expiresAt.getSeconds() + expiresIn);
+      }
 
       const token: JwtToken = {
         token: response.access_token,
         refreshToken: response.refresh_token,
-        expiresIn: response.expires_in || 3600,
+        expiresIn,
         expiresAt,
       };
 
@@ -1009,15 +1027,32 @@ export class AuthService {
             tokenType: tokenResponse.token_type,
           });
 
-          // Create JWT token object from the response
-          const expiresAt = new Date();
-          const expiresInSeconds = tokenResponse.expires_in || 3600; // Default to 1 hour if not provided
-          expiresAt.setSeconds(expiresAt.getSeconds() + expiresInSeconds);
+          // Extract expiration from JWT exp claim (preferred) or fall back to expires_in
+          let expiresAt = this.extractExpirationFromToken(tokenResponse.access_token);
+          let expiresIn = tokenResponse.expires_in || 3600;
+
+          if (expiresAt) {
+            // Calculate expiresIn from exp claim for consistency
+            const now = new Date();
+            expiresIn = Math.floor((expiresAt.getTime() - now.getTime()) / 1000);
+            this.logger.debugComponent('Auth', 'Using exp claim from JWT', {
+              expClaim: expiresAt.toISOString(),
+              calculatedExpiresIn: expiresIn,
+              providedExpiresIn: tokenResponse.expires_in,
+            });
+          } else {
+            // Fall back to expires_in from OAuth response
+            this.logger.warn('JWT missing exp claim, falling back to expires_in', {
+              expiresIn,
+            });
+            expiresAt = new Date();
+            expiresAt.setSeconds(expiresAt.getSeconds() + expiresIn);
+          }
 
           const token: JwtToken = {
             token: tokenResponse.access_token,
             refreshToken: tokenResponse.refresh_token,
-            expiresIn: expiresInSeconds,
+            expiresIn,
             expiresAt,
           };
 
@@ -1197,6 +1232,29 @@ export class AuthService {
       expiresIn: environment.authTokenExpiryMinutes * 60,
       expiresAt,
     };
+  }
+
+  /**
+   * Extract expiration date from JWT token's exp claim
+   * @param token JWT token string
+   * @returns Expiration date or null if exp claim is missing/invalid
+   */
+  private extractExpirationFromToken(token: string): Date | null {
+    try {
+      const payload = token.split('.')[1];
+      const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
+
+      if (decodedPayload.exp) {
+        // exp is in seconds since epoch, convert to milliseconds
+        return new Date(decodedPayload.exp * 1000);
+      }
+
+      this.logger.warn('JWT token missing exp claim');
+      return null;
+    } catch (error) {
+      this.logger.error('Error extracting expiration from JWT', error);
+      return null;
+    }
   }
 
   /**
@@ -1522,13 +1580,32 @@ export class AuthService {
       })
       .pipe(
         map(response => {
-          const expiresAt = new Date();
-          expiresAt.setSeconds(expiresAt.getSeconds() + response.expires_in);
+          // Extract expiration from JWT exp claim (preferred) or fall back to expires_in
+          let expiresAt = this.extractExpirationFromToken(response.access_token);
+          let expiresIn = response.expires_in;
+
+          if (expiresAt) {
+            // Calculate expiresIn from exp claim for consistency
+            const now = new Date();
+            expiresIn = Math.floor((expiresAt.getTime() - now.getTime()) / 1000);
+            this.logger.debugComponent('Auth', 'Using exp claim from refreshed JWT', {
+              expClaim: expiresAt.toISOString(),
+              calculatedExpiresIn: expiresIn,
+              providedExpiresIn: response.expires_in,
+            });
+          } else {
+            // Fall back to expires_in from refresh response
+            this.logger.warn('Refreshed JWT missing exp claim, falling back to expires_in', {
+              expiresIn,
+            });
+            expiresAt = new Date();
+            expiresAt.setSeconds(expiresAt.getSeconds() + expiresIn);
+          }
 
           const newToken = {
             token: response.access_token,
             refreshToken: response.refresh_token,
-            expiresIn: response.expires_in,
+            expiresIn,
             expiresAt,
           };
 
@@ -1690,55 +1767,6 @@ export class AuthService {
 
     this.logger.info(`Demo user ${email} logged in`);
     void this.router.navigate(['/tm']);
-  }
-
-  /**
-   * Silently extend the session for test users
-   * Creates a new token with extended expiration time
-   * @returns Observable that resolves to true if session was extended successfully
-   */
-  extendTestUserSession(): Observable<boolean> {
-    if (!this.isTestUser) {
-      this.logger.warn('Attempted to extend session for non-test user');
-      return of(false);
-    }
-
-    const currentProfile = this.userProfile;
-    if (!currentProfile) {
-      this.logger.error('No user profile found for session extension');
-      return of(false);
-    }
-
-    // Create a new token with extended expiration
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1); // Extend by 1 hour
-
-    const extendedToken: JwtToken = {
-      token: 'mock.jwt.token.extended',
-      expiresIn: 3600,
-      expiresAt,
-    };
-
-    // Store the extended token and wait for completion
-    // This ensures the token is persisted before returning success
-    return from(this.storeTokenEncrypted(extendedToken)).pipe(
-      map(() => {
-        // Update in-memory token AFTER storage succeeds
-        this.jwtTokenSubject.next(extendedToken);
-
-        // Notify SessionManager of new token
-        if (this.sessionManagerService) {
-          this.sessionManagerService.onTokenRefreshed();
-        }
-
-        this.logger.info(`Session extended for test user: ${currentProfile.email}`);
-        return true;
-      }),
-      catchError(error => {
-        this.logger.error('Error extending test user session - storage failed', error);
-        return of(false);
-      }),
-    );
   }
 
   /**

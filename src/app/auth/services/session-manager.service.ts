@@ -186,13 +186,13 @@ export class SessionManagerService {
   private handleExtendSession(): void {
     this.logger.info('User requested session extension');
 
-    // Check if this is a test user - if so, silently extend the session
-    if (this.authService.isTestUser) {
-      this.silentlyExtendTestUserSession();
+    // Check if this is a local provider - if so, silently extend the session
+    if (this.authService.isUsingLocalProvider) {
+      this.silentlyExtendLocalUserSession();
       return;
     }
 
-    // For OAuth users, attempt to refresh the token
+    // For all OAuth users (including test users with real OAuth), attempt to refresh the token
     this.authService.getValidToken().subscribe({
       next: newToken => {
         this.logger.info('Session extension successful', {
@@ -237,31 +237,32 @@ export class SessionManagerService {
   }
 
   /**
-   * Silently extend the session for test users
-   * Calls the AuthService to extend the test user session without showing any UI
+   * Silently extend the session for local provider users
+   * Creates a new token with extended expiration time
    */
-  private silentlyExtendTestUserSession(): void {
-    this.logger.debugComponent('SessionManager', 'Silently extending test user session');
+  private silentlyExtendLocalUserSession(): void {
+    this.logger.debugComponent('SessionManager', 'Silently extending local provider session');
 
-    this.authService.extendTestUserSession().subscribe({
-      next: success => {
-        if (success) {
-          this.logger.info('Test user session extended successfully');
-          // Close the warning dialog since session was extended
-          if (this.warningDialog) {
-            this.warningDialog.close('extend');
-          }
-        } else {
-          this.logger.error('Failed to extend test user session - logging out');
-          // Fall back to logout if extension fails
-          this.handleSessionTimeout();
-        }
-      },
-      error: error => {
-        this.logger.error('Error extending test user session', error);
-        // Fall back to logout if extension fails
-        this.handleSessionTimeout();
-      },
-    });
+    const currentProfile = this.authService.userProfile;
+    if (!currentProfile) {
+      this.logger.error('No user profile found for session extension');
+      this.handleSessionTimeout();
+      return;
+    }
+
+    // Create a new token with extended expiration using the local token creation method
+    const success = this.authService.createLocalTokenWithExpiry(currentProfile, 60); // 60 minutes
+
+    if (success) {
+      this.logger.info('Local provider session extended successfully');
+      // Close the warning dialog since session was extended
+      if (this.warningDialog) {
+        this.warningDialog.close('extend');
+      }
+    } else {
+      this.logger.error('Failed to extend local provider session - logging out');
+      // Fall back to logout if extension fails
+      this.handleSessionTimeout();
+    }
   }
 }

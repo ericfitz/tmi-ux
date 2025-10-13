@@ -21,11 +21,12 @@ describe('SessionManagerService', () => {
     mockAuthService = {
       getStoredToken: vi.fn(),
       getValidToken: vi.fn(),
-      extendTestUserSession: vi.fn(),
+      createLocalTokenWithExpiry: vi.fn(),
       logout: vi.fn(),
       setSessionManager: vi.fn(),
-      isTestUser: false,
+      isUsingLocalProvider: false,
       isAuthenticated: false,
+      userProfile: null,
     };
 
     mockLogger = {
@@ -107,18 +108,33 @@ describe('SessionManagerService', () => {
     expect(mockDialogRef.close).toHaveBeenCalledWith('extend');
   });
 
-  it('should handle extend session for test users', () => {
-    mockAuthService.isTestUser = true;
-    mockAuthService.extendTestUserSession.mockReturnValue(of(true));
+  it('should handle extend session for local provider users', () => {
+    mockAuthService.isUsingLocalProvider = true;
+    mockAuthService.userProfile = {
+      id: 'test-user-1',
+      email: 'test@example.com',
+      name: 'Test User',
+      providers: [{ provider: 'local', is_primary: true }],
+    };
+    mockAuthService.createLocalTokenWithExpiry.mockReturnValue(true);
+
+    const mockDialogRef = {
+      close: vi.fn(),
+    };
+    (service as any).warningDialog = mockDialogRef;
 
     // Call the private method
     (service as any).handleExtendSession();
 
-    expect(mockAuthService.extendTestUserSession).toHaveBeenCalled();
+    expect(mockAuthService.createLocalTokenWithExpiry).toHaveBeenCalledWith(
+      mockAuthService.userProfile,
+      60,
+    );
+    expect(mockDialogRef.close).toHaveBeenCalledWith('extend');
   });
 
   it('should logout if extend session fails', () => {
-    mockAuthService.isTestUser = false;
+    mockAuthService.isUsingLocalProvider = false;
     mockAuthService.getValidToken.mockReturnValue(
       throwError(() => new Error('Token refresh failed')),
     );
