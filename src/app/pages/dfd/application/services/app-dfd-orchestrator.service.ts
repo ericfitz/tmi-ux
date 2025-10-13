@@ -23,6 +23,7 @@ import { AppPersistenceCoordinator } from './app-persistence-coordinator.service
 import { AppDiagramLoadingService } from './app-diagram-loading.service';
 import { AppExportService } from './app-export.service';
 import { AppStateService } from './app-state.service';
+import { AppDiagramResyncService } from './app-diagram-resync.service';
 import { AppDfdFacade } from '../facades/app-dfd.facade';
 import { InfraDfdWebsocketAdapter } from '../../infrastructure/adapters/infra-dfd-websocket.adapter';
 import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
@@ -120,6 +121,7 @@ export class AppDfdOrchestrator {
     private readonly uiPresenterCoordinator: UiPresenterCoordinatorService,
     private readonly selectionAdapter: InfraX6SelectionAdapter,
     private readonly dfdStateStore: DfdStateStore,
+    private readonly appDiagramResyncService: AppDiagramResyncService,
   ) {
     this.logger.debug('AppDfdOrchestrator initialized (simplified autosave)');
     this._setupEventIntegration();
@@ -1146,6 +1148,15 @@ export class AppDfdOrchestrator {
     // Initialize collaboration broadcast services if in collaboration mode
     const graph = this.dfdInfrastructure.getGraph();
     if (graph) {
+      // Initialize diagram resync service with context
+      this.logger.info('Initializing diagram resync service');
+      this.appDiagramResyncService.initialize(
+        params.diagramId,
+        params.threatModelId,
+        graph,
+        this.dfdInfrastructure.graphAdapter,
+      );
+
       // Initialize diagram operation broadcaster to broadcast cell changes
       if (this.collaborationService.isCollaborating()) {
         this.logger.info('Initializing diagram operation broadcaster for collaboration');
@@ -1222,6 +1233,12 @@ export class AppDfdOrchestrator {
     this.dfdInfrastructure.historyModified$.subscribe(({ historyIndex, isUndo, isRedo }) => {
       this._markUnsavedChanges();
       this._triggerAutoSave(historyIndex, isUndo, isRedo);
+    });
+
+    // Subscribe to state correction events to trigger diagram resynchronization
+    this.appStateService.triggerResyncEvents$.subscribe(() => {
+      this.logger.info('State correction triggered - initiating diagram resynchronization');
+      this.appDiagramResyncService.triggerResync();
     });
   }
 
