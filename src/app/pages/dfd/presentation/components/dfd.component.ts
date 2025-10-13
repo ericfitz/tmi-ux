@@ -426,6 +426,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                       });
                     }
 
+                    // Note: Diagram operation broadcaster is initialized automatically
+                    // via the isCollaborating$ subscription in setupOrchestratorSubscriptions()
+
                     // Now that WebSocket is connected, load the diagram
                     if (this.dfdId) {
                       this.loadDiagramData(this.dfdId);
@@ -518,6 +521,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setupOrchestratorSubscriptions(): void {
+    // Subscribe to collaboration state changes to initialize broadcaster when collaboration starts
+    this._subscriptions.add(
+      this.collaborationService.isCollaborating$
+        .pipe(takeUntil(this._destroy$))
+        .subscribe(isCollaborating => {
+          if (isCollaborating) {
+            this.logger.info('Collaboration became active - initializing broadcaster');
+            this.appDfdOrchestrator.initializeCollaborationBroadcaster();
+          }
+        }),
+    );
+
     // Subscribe to auto-save events - now handled by orchestrator state
     this._subscriptions.add(
       this.appPersistenceCoordinator.saveStatus$

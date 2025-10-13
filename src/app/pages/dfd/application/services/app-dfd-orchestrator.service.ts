@@ -513,6 +513,33 @@ export class AppDfdOrchestrator {
    */
 
   /**
+   * Initialize the collaboration broadcaster after a collaboration session becomes active
+   * This must be called after joining/creating a collaboration session to enable
+   * broadcasting of diagram operations to other participants
+   */
+  initializeCollaborationBroadcaster(): void {
+    const graph = this.dfdInfrastructure.getGraph();
+    if (!graph) {
+      this.logger.warn('Cannot initialize broadcaster - graph not available');
+      return;
+    }
+
+    if (!this.collaborationService.isCollaborating()) {
+      this.logger.warn('Cannot initialize broadcaster - not in collaboration mode');
+      return;
+    }
+
+    // Check if already initialized to prevent duplicate initialization
+    if ((this.appDiagramOperationBroadcaster as any)._graph) {
+      this.logger.debug('Broadcaster already initialized, skipping');
+      return;
+    }
+
+    this.logger.info('Initializing diagram operation broadcaster for collaboration session');
+    this.appDiagramOperationBroadcaster.initializeListeners(graph);
+  }
+
+  /**
    * Selection management
    */
   selectAll(): void {
