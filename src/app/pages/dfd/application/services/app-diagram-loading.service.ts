@@ -120,7 +120,9 @@ export class AppDiagramLoadingService {
         // This ensures no queued events will fire when we restore normal history recording
         if (wasLoadingStateSuppressed) {
           infraX6GraphAdapter.clearHistory();
-          this.logger.debug('Cleared history after diagram load (before restoring history recording)');
+          this.logger.debug(
+            'Cleared history after diagram load (before restoring history recording)',
+          );
         }
       } finally {
         // Restore diagram loading state if it was modified

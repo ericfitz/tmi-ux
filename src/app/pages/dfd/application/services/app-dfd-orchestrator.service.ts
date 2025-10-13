@@ -25,6 +25,9 @@ import { AppExportService } from './app-export.service';
 import { AppStateService } from './app-state.service';
 import { AppDfdFacade } from '../facades/app-dfd.facade';
 import { InfraDfdWebsocketAdapter } from '../../infrastructure/adapters/infra-dfd-websocket.adapter';
+import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
+import { AppDiagramOperationBroadcaster } from './app-diagram-operation-broadcaster.service';
+import { UiPresenterCoordinatorService } from '../../presentation/services/ui-presenter-coordinator.service';
 import { NodeType } from '../../domain/value-objects/node-info';
 import {
   GraphOperation,
@@ -112,6 +115,9 @@ export class AppDfdOrchestrator {
     private readonly appStateService: AppStateService,
     private readonly infraWebsocketAdapter: InfraDfdWebsocketAdapter,
     private readonly dfdInfrastructure: AppDfdFacade,
+    private readonly appDiagramOperationBroadcaster: AppDiagramOperationBroadcaster,
+    private readonly uiPresenterCoordinator: UiPresenterCoordinatorService,
+    private readonly selectionAdapter: InfraX6SelectionAdapter,
   ) {
     this.logger.debug('AppDfdOrchestrator initialized (simplified autosave)');
     this._setupEventIntegration();
@@ -1057,6 +1063,10 @@ export class AppDfdOrchestrator {
   destroy(): Observable<boolean> {
     this.logger.debug('AppDfdOrchestrator: Destroying DFD system');
 
+    // Clean up collaboration broadcast services
+    this.appDiagramOperationBroadcaster.dispose();
+    // Note: uiPresenterCoordinator has its own ngOnDestroy lifecycle
+
     // Graph disposal is now handled by the infrastructure facade
     this.dfdInfrastructure.dispose();
 
@@ -1091,6 +1101,22 @@ export class AppDfdOrchestrator {
     this.logger.info('Initializing WebSocket message handlers');
     this.infraWebsocketAdapter.initialize();
     this.appStateService.initialize();
+
+    // Initialize collaboration broadcast services if in collaboration mode
+    const graph = this.dfdInfrastructure.getGraph();
+    if (graph) {
+      // Initialize diagram operation broadcaster to broadcast cell changes
+      if (this.collaborationService.isCollaborating()) {
+        this.logger.info('Initializing diagram operation broadcaster for collaboration');
+        this.appDiagramOperationBroadcaster.initializeListeners(graph);
+      }
+
+      // Initialize presenter coordinator to handle cursor/selection broadcasting and display
+      this.logger.info('Initializing presenter coordinator for collaboration');
+      this.uiPresenterCoordinator.initialize(params.containerElement, graph, this.selectionAdapter);
+    } else {
+      this.logger.warn('Graph not available, skipping collaboration broadcast initialization');
+    }
 
     // The graph is now properly initialized with history filtering
     // Continue with the rest of initialization
