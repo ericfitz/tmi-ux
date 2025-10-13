@@ -412,22 +412,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                       'Successfully joined collaboration session, now loading diagram',
                     );
 
-                    // Initialize the WebSocket collaboration adapter now that we're connected
-                    if (this.threatModelId && this.dfdId && this.authService.userId) {
-                      this.websocketCollaborationAdapter.initialize({
-                        diagramId: this.dfdId,
-                        threatModelId: this.threatModelId,
-                        userId: this.authService.userId,
-                        threatModelPermission: this.threatModelPermission || 'reader',
-                      });
-                      this.logger.info('WebSocket collaboration adapter initialized', {
-                        diagramId: this.dfdId,
-                        threatModelId: this.threatModelId,
-                      });
-                    }
-
-                    // Note: Diagram operation broadcaster is initialized automatically
-                    // via the isCollaborating$ subscription in setupOrchestratorSubscriptions()
+                    // Note: Collaboration services (broadcaster and WebSocket adapter) are
+                    // initialized automatically via the isCollaborating$ subscription
+                    // in setupOrchestratorSubscriptions()
 
                     // Now that WebSocket is connected, load the diagram
                     if (this.dfdId) {
@@ -521,14 +508,30 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setupOrchestratorSubscriptions(): void {
-    // Subscribe to collaboration state changes to initialize broadcaster when collaboration starts
+    // Subscribe to collaboration state changes to initialize services when collaboration starts
     this._subscriptions.add(
       this.collaborationService.isCollaborating$
         .pipe(takeUntil(this._destroy$))
         .subscribe(isCollaborating => {
           if (isCollaborating) {
-            this.logger.info('Collaboration became active - initializing broadcaster');
+            this.logger.info('Collaboration became active - initializing collaboration services');
+
+            // Initialize the diagram operation broadcaster
             this.appDfdOrchestrator.initializeCollaborationBroadcaster();
+
+            // Initialize the WebSocket collaboration adapter for cursor/selection broadcasting
+            if (this.threatModelId && this.dfdId && this.authService.userId) {
+              this.websocketCollaborationAdapter.initialize({
+                diagramId: this.dfdId,
+                threatModelId: this.threatModelId,
+                userId: this.authService.userId,
+                threatModelPermission: this.threatModelPermission || 'reader',
+              });
+              this.logger.info('WebSocket collaboration adapter initialized', {
+                diagramId: this.dfdId,
+                threatModelId: this.threatModelId,
+              });
+            }
           }
         }),
     );

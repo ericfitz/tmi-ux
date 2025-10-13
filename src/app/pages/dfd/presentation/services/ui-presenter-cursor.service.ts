@@ -165,12 +165,6 @@ export class UiPresenterCursorService implements OnDestroy {
       // Then convert from local coordinates to graph coordinates
       const graphCoords = this._graph.localToGraph(localCoords.x, localCoords.y);
 
-      this.logger.debug('Converting presenter cursor coordinates', {
-        pagePosition: { x: pageX, y: pageY },
-        localPosition: { x: localCoords.x, y: localCoords.y },
-        graphPosition: { x: graphCoords.x, y: graphCoords.y },
-      });
-
       return {
         x: graphCoords.x,
         y: graphCoords.y,

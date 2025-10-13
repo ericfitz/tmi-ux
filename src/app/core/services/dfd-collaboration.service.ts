@@ -17,6 +17,8 @@ import {
   SessionTerminatedMessage,
   ChangePresenterMessage,
   RemoveParticipantMessage,
+  PresenterRequestMessage,
+  PresenterDeniedMessage,
 } from '../types/websocket-message.types';
 
 /**
@@ -1622,6 +1624,24 @@ export class DfdCollaborationService implements OnDestroy {
       }),
     );
 
+    // Listen to presenter request events (for host/owner)
+    this._subscriptions.add(
+      this._webSocketAdapter
+        .getTMIMessagesOfType<PresenterRequestMessage>('presenter_request')
+        .subscribe(message => {
+          this._handlePresenterRequest(message);
+        }),
+    );
+
+    // Listen to presenter denied events (for participants)
+    this._subscriptions.add(
+      this._webSocketAdapter
+        .getTMIMessagesOfType<PresenterDeniedMessage>('presenter_denied')
+        .subscribe(message => {
+          this._handlePresenterDenied(message);
+        }),
+    );
+
     this._webSocketListenersSetup = true;
   }
 
@@ -1789,6 +1809,39 @@ export class DfdCollaborationService implements OnDestroy {
     }
 
     // Presenter info will be updated through participants_update WebSocket message
+  }
+
+  /**
+   * Handle presenter request event (host receives this when a participant requests presenter)
+   */
+  private _handlePresenterRequest(message: PresenterRequestMessage): void {
+    this._logger.info('Presenter request received', {
+      userEmail: message.user.email,
+      userId: message.user.user_id,
+      displayName: message.user.displayName,
+    });
+
+    // Add to pending requests list
+    this.addPresenterRequest(message.user.email);
+
+    // Note: Notification for presenter request is handled by the participant list UI
+    // when the pending request is added to the list
+  }
+
+  /**
+   * Handle presenter denied event (participant receives this when their request is denied)
+   */
+  private _handlePresenterDenied(message: PresenterDeniedMessage): void {
+    this._logger.info('Presenter request denied', {
+      userEmail: message.user.email,
+      targetUser: message.target_user,
+    });
+
+    // Only show notification if this is for the current user
+    const currentUserEmail = this.getCurrentUserEmail();
+    if (message.target_user === currentUserEmail) {
+      this._notificationService?.showPresenterEvent('requestDenied').subscribe();
+    }
   }
 
   // REST API refresh methods removed - participants now managed through WebSocket messages only
