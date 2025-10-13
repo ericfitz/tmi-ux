@@ -19,6 +19,7 @@ import {
   RemoveParticipantMessage,
   PresenterRequestMessage,
   PresenterDeniedMessage,
+  PresenterSelectionMessage,
 } from '../types/websocket-message.types';
 
 /**
@@ -1380,6 +1381,7 @@ export class DfdCollaborationService implements OnDestroy {
   /**
    * Toggle presenter mode on/off for the current presenter
    * Only the current presenter can toggle their own presenter mode
+   * When turning off presenter mode, sends an empty selection message to clear all participants' selections
    * @returns true if presenter mode is now active, false if deactivated
    */
   public togglePresenterMode(): boolean {
@@ -1397,6 +1399,31 @@ export class DfdCollaborationService implements OnDestroy {
 
     const newPresenterModeState = !currentState.isPresenterModeActive;
     this._updateState({ isPresenterModeActive: newPresenterModeState });
+
+    // When turning off presenter mode, clear all participants' selections
+    if (!newPresenterModeState) {
+      const userProfile = this._authService.userProfile;
+      if (userProfile) {
+        const clearSelectionMessage: PresenterSelectionMessage = {
+          message_type: 'presenter_selection',
+          user: {
+            user_id: userProfile.id,
+            email: userProfile.email,
+            displayName: userProfile.name,
+          },
+          selected_cells: [], // Empty array clears all participants' selections
+        };
+
+        this._webSocketAdapter.sendTMIMessage(clearSelectionMessage).subscribe({
+          next: () => {
+            this._logger.info('Sent clear selection message to all participants');
+          },
+          error: error => {
+            this._logger.error('Failed to send clear selection message', error);
+          },
+        });
+      }
+    }
 
     this._logger.info('Presenter mode toggled', {
       isActive: newPresenterModeState,
