@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { fromEvent, interval, Subscription, combineLatest } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { fromEvent, Subscription } from 'rxjs';
+import { filter, throttleTime } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
@@ -74,15 +74,15 @@ export class UiPresenterCursorService implements OnDestroy {
     // Create mouse move observable from the graph container
     const mouseMove$ = fromEvent<MouseEvent>(this._graphContainer, 'mousemove');
 
-    // Create interval observable for throttling
-    const throttleInterval$ = interval(PRESENTER_CURSOR_CONFIG.UPDATE_INTERVAL);
-
-    // Combine mouse movements with throttling interval
-    // Only emit when presenter mode is active
-    const throttledMouseMove$ = combineLatest([mouseMove$, throttleInterval$]).pipe(
+    // Throttle mouse movements to avoid excessive broadcasts
+    // Only emit when presenter mode is active and mouse event is valid
+    const throttledMouseMove$ = mouseMove$.pipe(
       filter(() => this._isTracking),
-      map(([event]) => event),
       filter(event => this._isValidMouseEvent(event)),
+      throttleTime(PRESENTER_CURSOR_CONFIG.UPDATE_INTERVAL, undefined, {
+        leading: true,
+        trailing: true,
+      }),
     );
 
     this._subscriptions.add(
@@ -128,7 +128,7 @@ export class UiPresenterCursorService implements OnDestroy {
     }
 
     try {
-      // Convert page coordinates directly to graph coordinates
+      // Convert client coordinates directly to graph coordinates
       // This automatically handles pan/zoom transformations
       const cursorPosition = this._convertToGraphCoordinates(event.clientX, event.clientY);
 
@@ -149,28 +149,26 @@ export class UiPresenterCursorService implements OnDestroy {
   }
 
   /**
-   * Convert page coordinates to X6 graph coordinates
-   * Uses X6's coordinate transformation to handle pan/zoom automatically
+   * Convert client coordinates to X6 graph coordinates
+   * Uses X6's clientToGraph method to handle all transformations automatically
    */
-  private _convertToGraphCoordinates(pageX: number, pageY: number): CursorPosition | null {
+  private _convertToGraphCoordinates(clientX: number, clientY: number): CursorPosition | null {
     if (!this._graph) {
       this.logger.warn('Cannot convert coordinates - graph not available');
       return null;
     }
 
     try {
-      // First convert from page coordinates to local coordinates
-      const localCoords = this._graph.pageToLocal(pageX, pageY);
-
-      // Then convert from local coordinates to graph coordinates
-      const graphCoords = this._graph.localToGraph(localCoords.x, localCoords.y);
+      // Use X6's clientToGraph for direct conversion
+      // This properly handles viewport position, pan, zoom, and rotation
+      const graphCoords = this._graph.clientToGraph(clientX, clientY);
 
       return {
         x: graphCoords.x,
         y: graphCoords.y,
       };
     } catch (error) {
-      this.logger.error('Error converting page coordinates to graph coordinates', error);
+      this.logger.error('Error converting client coordinates to graph coordinates', error);
       return null;
     }
   }

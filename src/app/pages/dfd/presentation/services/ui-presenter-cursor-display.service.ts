@@ -120,7 +120,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
   }
 
   /**
-   * Convert X6 graph coordinates to participant page coordinates
+   * Convert X6 graph coordinates to participant client coordinates
    * Uses X6's coordinate transformation to handle participant's pan/zoom state
    */
   private _convertToViewportCoordinates(graphPosition: CursorPosition): CursorPosition | null {
@@ -133,36 +133,37 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
       // First convert from graph coordinates to local coordinates
       const localCoords = this._graph.graphToLocal(graphPosition.x, graphPosition.y);
 
-      // Then convert from local coordinates to page coordinates
-      const pageCoords = this._graph.localToPage(localCoords.x, localCoords.y);
+      // Then convert from local coordinates to client coordinates
+      // Client coordinates are relative to the viewport (same as MouseEvent.clientX/Y)
+      const clientCoords = this._graph.localToClient(localCoords.x, localCoords.y);
 
       this.logger.debug('Converting participant cursor coordinates', {
         graphPosition: { x: graphPosition.x, y: graphPosition.y },
         localPosition: { x: localCoords.x, y: localCoords.y },
-        pagePosition: { x: pageCoords.x, y: pageCoords.y },
+        clientPosition: { x: clientCoords.x, y: clientCoords.y },
       });
 
-      // Check if the resulting page coordinates are within the participant's viewport
+      // Check if the resulting client coordinates are within the participant's viewport
       const isWithinViewport =
-        pageCoords.x >= 0 &&
-        pageCoords.x <= window.innerWidth &&
-        pageCoords.y >= 0 &&
-        pageCoords.y <= window.innerHeight;
+        clientCoords.x >= 0 &&
+        clientCoords.x <= window.innerWidth &&
+        clientCoords.y >= 0 &&
+        clientCoords.y <= window.innerHeight;
 
       if (!isWithinViewport) {
         this.logger.debug('Presenter cursor position outside participant viewport', {
-          pagePosition: { x: pageCoords.x, y: pageCoords.y },
+          clientPosition: { x: clientCoords.x, y: clientCoords.y },
           viewportSize: { width: window.innerWidth, height: window.innerHeight },
         });
         return null; // Return null to indicate cursor should be hidden
       }
 
       return {
-        x: pageCoords.x,
-        y: pageCoords.y,
+        x: clientCoords.x,
+        y: clientCoords.y,
       };
     } catch (error) {
-      this.logger.error('Error converting graph coordinates to page coordinates', error);
+      this.logger.error('Error converting graph coordinates to client coordinates', error);
       return null;
     }
   }
@@ -293,26 +294,26 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
     }
 
     try {
-      // Position is already in page coordinates from the conversion
-      const pageX = position.x;
-      const pageY = position.y;
+      // Position is already in client coordinates from the conversion
+      const clientX = position.x;
+      const clientY = position.y;
 
       this.logger.debug('Generating synthetic mouse event', {
-        pagePosition: { x: pageX, y: pageY },
+        clientPosition: { x: clientX, y: clientY },
         viewportSize: { width: window.innerWidth, height: window.innerHeight },
       });
 
-      // Create synthetic mousemove event with page coordinates
+      // Create synthetic mousemove event with client coordinates
       const syntheticEvent = new MouseEvent('mousemove', {
-        clientX: pageX,
-        clientY: pageY,
+        clientX: clientX,
+        clientY: clientY,
         bubbles: true,
         cancelable: true,
         view: window,
       });
 
       // Find the element at the cursor position
-      const elementAtPosition = document.elementFromPoint(pageX, pageY);
+      const elementAtPosition = document.elementFromPoint(clientX, clientY);
       const validElement =
         elementAtPosition && this._graphContainer.contains(elementAtPosition)
           ? elementAtPosition
@@ -333,8 +334,8 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
         this._graphContainer?.contains(this._lastHoveredElement)
       ) {
         const mouseOutEvent = new MouseEvent('mouseout', {
-          clientX: pageX,
-          clientY: pageY,
+          clientX: clientX,
+          clientY: clientY,
           bubbles: true,
           cancelable: true,
           view: window,
@@ -342,8 +343,8 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
         });
 
         const mouseLeaveEvent = new MouseEvent('mouseleave', {
-          clientX: pageX,
-          clientY: pageY,
+          clientX: clientX,
+          clientY: clientY,
           bubbles: false, // mouseleave doesn't bubble
           cancelable: true,
           view: window,
@@ -367,8 +368,8 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
         // Dispatch mouseover event if this is a new element
         if (this._lastHoveredElement !== validElement) {
           const mouseOverEvent = new MouseEvent('mouseover', {
-            clientX: pageX,
-            clientY: pageY,
+            clientX: clientX,
+            clientY: clientY,
             bubbles: true,
             cancelable: true,
             view: window,
@@ -376,8 +377,8 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
           });
 
           const mouseEnterEvent = new MouseEvent('mouseenter', {
-            clientX: pageX,
-            clientY: pageY,
+            clientX: clientX,
+            clientY: clientY,
             bubbles: false, // mouseenter doesn't bubble
             cancelable: true,
             view: window,
@@ -404,7 +405,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
       this._lastHoveredElement = validElement;
 
       this.logger.debug('Generated synthetic mouse events', {
-        pagePosition: { x: pageX, y: pageY },
+        clientPosition: { x: clientX, y: clientY },
         targetElement: validElement?.tagName || 'container',
         hoveredElementChanged: elementChanged,
       });
