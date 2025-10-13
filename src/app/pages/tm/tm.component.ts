@@ -139,9 +139,6 @@ export class TmComponent implements OnInit, OnDestroy {
       // Force change detection to re-evaluate date formatting
       this.cdr.detectChanges();
     });
-
-    // Note: Collaboration sessions are automatically loaded by CollaborationSessionService
-    // No manual loading needed as they are provided via reactive streams
   }
 
   ngOnDestroy(): void {

@@ -461,7 +461,6 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
         message = 'Presenter request sent to session owner';
         presetKey = 'presenterRequestSent';
         break;
-      // Note: 'requestApproved' removed since it's handled by 'assigned' event
       case 'requestDenied':
         message = 'Your presenter request was denied';
         presetKey = 'presenterRequestDenied';

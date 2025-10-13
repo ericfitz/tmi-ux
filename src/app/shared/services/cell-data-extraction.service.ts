@@ -228,6 +228,7 @@ export class CellDataExtractionService {
         // For stored cells from threat model data
         // Note: This handles the basic Cell interface from diagram.model.ts
         // The stored cells may not have the same label structure as X6 runtime cells
+        // TODO: We should ensure that stored cells have EXACTLY the same label structure as X6 runtime cells
 
         // Try multiple approaches to get a meaningful label from stored data
 

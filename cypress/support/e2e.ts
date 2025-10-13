@@ -11,14 +11,12 @@ import '@angular/compiler';
 // Import commands.js using ES2015 syntax:
 import './commands';
 
-// Note: Image snapshot plugin removed to avoid dependency issues
-
 // Suppress console warnings and errors that are not test-related
-Cypress.on('window:before:load', (win) => {
+Cypress.on('window:before:load', win => {
   // Suppress specific Node.js and Electron warnings
   const originalConsoleError = win.console.error;
   const originalConsoleWarn = win.console.warn;
-  
+
   win.console.error = (...args) => {
     const message = args.join(' ');
     // Filter out known non-critical errors
@@ -33,7 +31,7 @@ Cypress.on('window:before:load', (win) => {
     }
     originalConsoleError.apply(win.console, args);
   };
-  
+
   win.console.warn = (...args) => {
     const message = args.join(' ');
     // Filter out known non-critical warnings
@@ -51,10 +49,12 @@ Cypress.on('window:before:load', (win) => {
 // Configure Cypress to ignore uncaught exceptions that are not test-related
 Cypress.on('uncaught:exception', (err, runnable) => {
   // Return false to prevent Cypress from failing the test for these specific errors
-  if (err.message.includes('NODE_OPTIONs are not supported') ||
-      err.message.includes('DevTools listening') ||
-      err.message.includes('/dev/tty') ||
-      err.message.includes('ExperimentalWarning')) {
+  if (
+    err.message.includes('NODE_OPTIONs are not supported') ||
+    err.message.includes('DevTools listening') ||
+    err.message.includes('/dev/tty') ||
+    err.message.includes('ExperimentalWarning')
+  ) {
     return false;
   }
   // Let other exceptions fail the test

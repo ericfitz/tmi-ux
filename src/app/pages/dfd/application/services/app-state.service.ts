@@ -284,6 +284,7 @@ export class AppStateService implements OnDestroy {
     });
 
     // Note: update_vector tracking removed with simplified autosave
+    // TODO: we might want to add back update_vector tracking in the future
 
     // Update sync state to indicate we're out of sync
     this._updateSyncState({

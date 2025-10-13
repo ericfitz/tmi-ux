@@ -400,7 +400,6 @@ export class InfraX6EmbeddingAdapter {
                   node.removeFromParent();
                 }
 
-                // Note: No need to show notification here - the X6 validate callback already did
                 return;
               }
 

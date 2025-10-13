@@ -1599,7 +1599,6 @@ export class DfdCollaborationService implements OnDestroy {
       }),
     );
 
-    // Note: We no longer listen to individual user events here
     // All participant updates come through the participants_update message
     // which is handled by WebSocketService
 

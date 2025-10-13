@@ -267,8 +267,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (threatModel) {
       this.threatModelName = threatModel.name;
-
-      // Note: Permission handling moved to ngAfterViewInit to properly coordinate with orchestrator initialization
     } else {
       this.logger.warn('No threat model data available from route resolver');
     }

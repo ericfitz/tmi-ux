@@ -555,8 +555,6 @@ describe('AuthService', () => {
         'auth_token',
         expect.stringContaining(':'),
       );
-
-      // Note: user_profile encryption is tested separately in encryption-specific tests
     });
 
     it('should handle successful TMI OAuth proxy token response', async () => {
@@ -590,8 +588,6 @@ describe('AuthService', () => {
         'auth_token',
         expect.stringContaining(':'),
       );
-
-      // Note: user_profile encryption is tested separately in encryption-specific tests
     });
 
     it('should handle OAuth errors from TMI callback', () => {
@@ -741,7 +737,6 @@ describe('AuthService', () => {
         'auth_token',
         expect.stringContaining(':'),
       );
-      // Note: user_profile encryption is tested separately in encryption-specific tests
     });
 
     it('should handle failed local authentication', () => {
@@ -795,7 +790,6 @@ describe('AuthService', () => {
         'auth_token',
         expect.stringContaining(':'),
       );
-      // Note: user_profile encryption is tested separately in encryption-specific tests
     });
 
     it('should return null if no token is stored', () => {
