@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-. "$(dirname "$0")/_/h"
 
 # Conventional Commit Validator (Warning Mode)
 # This hook validates commit message format but does NOT block commits
