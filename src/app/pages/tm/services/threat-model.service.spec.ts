@@ -540,19 +540,22 @@ describe('ThreatModelService', () => {
         });
       }));
 
-      it('should update a diagram via API', waitForAsync(() => {
+      // Test removed: updateDiagram method no longer exists
+      // Diagrams are now updated via patchDiagramCells or patchDiagramWithImage
+      it.skip('should update a diagram via API', waitForAsync(() => {
         const diagramData = { name: 'Updated Diagram', type: 'DFD-2.0.0' };
         const diagramId = 'test-diagram-id';
         const expectedDiagram = { ...diagramData, id: diagramId };
         vi.spyOn(apiService, 'put').mockReturnValue(of(expectedDiagram));
 
-        service.updateDiagram(testThreatModel1.id, diagramId, diagramData).subscribe(result => {
-          expect(apiService.put).toHaveBeenCalledWith(
-            `threat_models/${testThreatModel1.id}/diagrams/${diagramId}`,
-            diagramData,
-          );
-          expect(result).toEqual(expectedDiagram);
-        });
+        // Method no longer exists - use patchDiagramCells or patchDiagramWithImage instead
+        // service.updateDiagram(testThreatModel1.id, diagramId, diagramData).subscribe(result => {
+        //   expect(apiService.put).toHaveBeenCalledWith(
+        //     `threat_models/${testThreatModel1.id}/diagrams/${diagramId}`,
+        //     diagramData,
+        //   );
+        //   expect(result).toEqual(expectedDiagram);
+        // });
       }));
 
       it('should delete a diagram via API', waitForAsync(() => {

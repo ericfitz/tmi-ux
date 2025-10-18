@@ -506,7 +506,14 @@ describe('AppDfdOrchestrator', () => {
         mockPersistenceCoordinator,
         mockDiagramLoadingService,
         mockExportService,
+        mockAppStateService,
+        mockInfraWebsocketAdapter,
         mockDfdFacade,
+        mockAppDiagramOperationBroadcaster,
+        mockUiPresenterCoordinator,
+        mockSelectionAdapter,
+        mockDfdStateStore,
+        mockAppDiagramResyncService,
       );
 
       return new Promise<void>((resolve, reject) => {
