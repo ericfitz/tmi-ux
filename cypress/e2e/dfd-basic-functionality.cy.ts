@@ -5,9 +5,46 @@ import { navigateToDfdDiagram } from '../support/dfd-test-helpers';
 /**
  * Basic DFD functionality test to verify:
  * 1. Navigation works
- * 2. Page loads without errors  
+ * 2. Page loads without errors
  * 3. Basic graph elements are present
  * 4. Node creation works
+ *
+ * TODO: Add integration tests from removed infra-x6-graph.adapter.spec.ts
+ * The following test cases need Cypress coverage (removed from vitest due to environment issues):
+ *
+ * Node Creation:
+ * - Create Actor node with correct positioning and styling
+ * - Create Process node with correct positioning and styling
+ * - Create Store node with correct positioning and styling
+ * - Create Security Boundary node with correct positioning and styling
+ * - Create Text Box node with correct positioning and styling
+ * - Verify node z-order for different node types
+ *
+ * Edge Creation:
+ * - Create edges between nodes with port connections
+ * - Validate magnet connections for port-based edges
+ * - Create edges with custom labels and styling
+ *
+ * Node Movement and Resizing:
+ * - Handle node movement correctly
+ * - Emit resize events when nodes are resized
+ *
+ * Graph Navigation:
+ * - Support pan and zoom operations
+ *
+ * Selection and Deletion:
+ * - Handle cell selection correctly
+ *
+ * Graph State Management:
+ * - Provide access to underlying X6 graph instance
+ * - Handle graph cleanup properly
+ * - Maintain graph state consistency
+ * - Handle multiple node additions correctly
+ *
+ * Graph Bounds and Viewport:
+ * - Calculate content area correctly
+ * - Support fit-to-content operations
+ * - Handle viewport transformations
  */
 
 describe('DFD Basic Functionality', () => {

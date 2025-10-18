@@ -53,7 +53,8 @@
       "Bash(./scripts/push-heroku.sh:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(claude mcp:*)"
+      "Bash(claude mcp:*)",
+      "Bash(git rm:*)"
     ]
   },
   "enableAllProjectMcpServers": false
