@@ -69,6 +69,13 @@ describe('AppDfdOrchestrator', () => {
   let mockExportService: any;
   let mockDfdFacade: any;
   let mockContainerElement: HTMLElement;
+  let mockAppStateService: any;
+  let mockInfraWebsocketAdapter: any;
+  let mockAppDiagramOperationBroadcaster: any;
+  let mockUiPresenterCoordinator: any;
+  let mockSelectionAdapter: any;
+  let mockDfdStateStore: any;
+  let mockAppDiagramResyncService: any;
 
   beforeEach(() => {
     // Create all required mocks
@@ -172,6 +179,7 @@ describe('AppDfdOrchestrator', () => {
     };
 
     const historyModifiedSubject = new Subject();
+    const triggerResyncSubject = new Subject();
 
     mockDfdFacade = {
       initializeGraph: vi.fn().mockReturnValue(of(true)),
@@ -186,6 +194,52 @@ describe('AppDfdOrchestrator', () => {
       destroy: vi.fn(),
       dispose: vi.fn(),
       historyModified$: historyModifiedSubject.asObservable(),
+    };
+
+    mockAppStateService = {
+      triggerResyncEvents$: triggerResyncSubject.asObservable(),
+      getState: vi.fn(),
+      setState: vi.fn(),
+      initialize: vi.fn(),
+    };
+
+    mockInfraWebsocketAdapter = {
+      connect: vi.fn(),
+      disconnect: vi.fn(),
+      send: vi.fn(),
+      onMessage: vi.fn(),
+      initialize: vi.fn(),
+    };
+
+    mockAppDiagramOperationBroadcaster = {
+      broadcast: vi.fn(),
+      onRemoteOperation: vi.fn(),
+      dispose: vi.fn(),
+    };
+
+    mockUiPresenterCoordinator = {
+      setPresenterMode: vi.fn(),
+      clearPresenterMode: vi.fn(),
+      initialize: vi.fn(),
+    };
+
+    mockSelectionAdapter = {
+      initializePlugins: vi.fn(),
+      selectAll: vi.fn(),
+      clearSelection: vi.fn(),
+      getSelectedCells: vi.fn().mockReturnValue([]),
+    };
+
+    mockDfdStateStore = {
+      getState: vi.fn(),
+      setState: vi.fn(),
+      reset: vi.fn(),
+    };
+
+    mockAppDiagramResyncService = {
+      triggerResync: vi.fn(),
+      resync: vi.fn(),
+      initialize: vi.fn(),
     };
 
     // Create mock container element
@@ -204,7 +258,14 @@ describe('AppDfdOrchestrator', () => {
       mockPersistenceCoordinator,
       mockDiagramLoadingService,
       mockExportService,
+      mockAppStateService,
+      mockInfraWebsocketAdapter,
       mockDfdFacade,
+      mockAppDiagramOperationBroadcaster,
+      mockUiPresenterCoordinator,
+      mockSelectionAdapter,
+      mockDfdStateStore,
+      mockAppDiagramResyncService,
     );
   });
 
@@ -243,9 +304,9 @@ describe('AppDfdOrchestrator', () => {
         diagramId: 'test-diagram',
         threatModelId: 'test-tm',
         containerElement: mockContainerElement,
-        collaborationEnabled: false,
         readOnly: false,
-        autoSaveMode: 'normal',
+        autoSaveMode: 'auto',
+        joinCollaboration: false,
       };
 
       // Mock successful load
