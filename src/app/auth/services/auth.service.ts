@@ -415,12 +415,10 @@ export class AuthService {
    * Check if server is configured based on environment
    */
   private isServerConfigured(): boolean {
-    // Consider server not configured if apiUrl is empty, localhost with default port, or example URL
+    // Consider server not configured only if apiUrl is empty or whitespace
+    // Any explicitly configured URL (including localhost) is considered a configured server
     const apiUrl = environment.apiUrl;
-    if (!apiUrl || apiUrl === 'http://localhost:8080/api') {
-      return false;
-    }
-    return true;
+    return !!(apiUrl && apiUrl.trim());
   }
 
   /**

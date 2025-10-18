@@ -10,6 +10,9 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { HttpLoggingInterceptor } from './http-logging.interceptor';
 
+// Test fixture URL - arbitrary value for testing interceptor logging behavior
+const TEST_API_URL = 'http://test.example.com/api/test';
+
 describe('HttpLoggingInterceptor', () => {
   let interceptor: HttpLoggingInterceptor;
   let loggerService: any;
@@ -36,7 +39,7 @@ describe('HttpLoggingInterceptor', () => {
 
   describe('Request Logging', () => {
     it('should log API requests with component debug logging', () => {
-      const mockRequest = new HttpRequest('GET', 'http://localhost:8080/api/test');
+      const mockRequest = new HttpRequest('GET', TEST_API_URL);
       const mockResponse = new HttpResponse({ status: 200, body: { success: true } });
 
       httpHandler.handle.mockReturnValue(of(mockResponse));
@@ -47,14 +50,14 @@ describe('HttpLoggingInterceptor', () => {
         'api',
         'GET request details:',
         expect.objectContaining({
-          url: 'http://localhost:8080/api/test',
+          url: TEST_API_URL,
           headers: expect.any(Object),
         }),
       );
     });
 
     it('should log API responses with component debug logging', () => {
-      const mockRequest = new HttpRequest('GET', 'http://localhost:8080/api/test');
+      const mockRequest = new HttpRequest('GET', TEST_API_URL);
       const mockResponse = new HttpResponse({
         status: 200,
         body: { success: true },
@@ -67,7 +70,7 @@ describe('HttpLoggingInterceptor', () => {
 
       expect(loggerService.debugComponent).toHaveBeenCalledWith(
         'api',
-        'GET response from http://localhost:8080/api/test:',
+        `GET response from ${TEST_API_URL}:`,
         expect.objectContaining({
           status: 200,
           statusText: 'OK',
@@ -78,11 +81,11 @@ describe('HttpLoggingInterceptor', () => {
 
   describe('Error Categorization', () => {
     it('should categorize 401 errors as "Auth error"', () => {
-      const mockRequest = new HttpRequest('GET', 'http://localhost:8080/api/test');
+      const mockRequest = new HttpRequest('GET', TEST_API_URL);
       const mockError = new HttpErrorResponse({
         status: 401,
         statusText: 'Unauthorized',
-        url: 'http://localhost:8080/api/test',
+        url: TEST_API_URL,
       });
 
       httpHandler.handle.mockReturnValue(throwError(() => mockError));
@@ -90,7 +93,7 @@ describe('HttpLoggingInterceptor', () => {
       interceptor.intercept(mockRequest, httpHandler).subscribe({
         error: () => {
           expect(loggerService.error).toHaveBeenCalledWith(
-            'Auth error: 401 Unauthorized for GET http://localhost:8080/api/test',
+            `Auth error: 401 Unauthorized for GET ${TEST_API_URL}`,
             mockError,
           );
         },
@@ -98,11 +101,11 @@ describe('HttpLoggingInterceptor', () => {
     });
 
     it('should categorize 403 errors as "Auth error"', () => {
-      const mockRequest = new HttpRequest('GET', 'http://localhost:8080/api/test');
+      const mockRequest = new HttpRequest('GET', TEST_API_URL);
       const mockError = new HttpErrorResponse({
         status: 403,
         statusText: 'Forbidden',
-        url: 'http://localhost:8080/api/test',
+        url: TEST_API_URL,
       });
 
       httpHandler.handle.mockReturnValue(throwError(() => mockError));
@@ -110,7 +113,7 @@ describe('HttpLoggingInterceptor', () => {
       interceptor.intercept(mockRequest, httpHandler).subscribe({
         error: () => {
           expect(loggerService.error).toHaveBeenCalledWith(
-            'Auth error: 403 Forbidden for GET http://localhost:8080/api/test',
+            `Auth error: 403 Forbidden for GET ${TEST_API_URL}`,
             mockError,
           );
         },
@@ -118,11 +121,11 @@ describe('HttpLoggingInterceptor', () => {
     });
 
     it('should categorize 400 errors as "Validation error"', () => {
-      const mockRequest = new HttpRequest('POST', 'http://localhost:8080/api/test', {});
+      const mockRequest = new HttpRequest('POST', TEST_API_URL, {});
       const mockError = new HttpErrorResponse({
         status: 400,
         statusText: 'Bad Request',
-        url: 'http://localhost:8080/api/test',
+        url: TEST_API_URL,
       });
 
       httpHandler.handle.mockReturnValue(throwError(() => mockError));
@@ -130,7 +133,7 @@ describe('HttpLoggingInterceptor', () => {
       interceptor.intercept(mockRequest, httpHandler).subscribe({
         error: () => {
           expect(loggerService.error).toHaveBeenCalledWith(
-            'Validation error: 400 Bad Request for POST http://localhost:8080/api/test',
+            `Validation error: 400 Bad Request for POST ${TEST_API_URL}`,
             mockError,
           );
         },
@@ -138,11 +141,11 @@ describe('HttpLoggingInterceptor', () => {
     });
 
     it('should categorize 422 errors as "Validation error"', () => {
-      const mockRequest = new HttpRequest('POST', 'http://localhost:8080/api/test', {});
+      const mockRequest = new HttpRequest('POST', TEST_API_URL, {});
       const mockError = new HttpErrorResponse({
         status: 422,
         statusText: 'Unprocessable Entity',
-        url: 'http://localhost:8080/api/test',
+        url: TEST_API_URL,
       });
 
       httpHandler.handle.mockReturnValue(throwError(() => mockError));
@@ -150,7 +153,7 @@ describe('HttpLoggingInterceptor', () => {
       interceptor.intercept(mockRequest, httpHandler).subscribe({
         error: () => {
           expect(loggerService.error).toHaveBeenCalledWith(
-            'Validation error: 422 Unprocessable Entity for POST http://localhost:8080/api/test',
+            `Validation error: 422 Unprocessable Entity for POST ${TEST_API_URL}`,
             mockError,
           );
         },
@@ -158,11 +161,11 @@ describe('HttpLoggingInterceptor', () => {
     });
 
     it('should categorize 404 errors as "Not found error"', () => {
-      const mockRequest = new HttpRequest('GET', 'http://localhost:8080/api/test');
+      const mockRequest = new HttpRequest('GET', TEST_API_URL);
       const mockError = new HttpErrorResponse({
         status: 404,
         statusText: 'Not Found',
-        url: 'http://localhost:8080/api/test',
+        url: TEST_API_URL,
       });
 
       httpHandler.handle.mockReturnValue(throwError(() => mockError));
@@ -170,7 +173,7 @@ describe('HttpLoggingInterceptor', () => {
       interceptor.intercept(mockRequest, httpHandler).subscribe({
         error: () => {
           expect(loggerService.error).toHaveBeenCalledWith(
-            'Not found error: 404 Not Found for GET http://localhost:8080/api/test',
+            `Not found error: 404 Not Found for GET ${TEST_API_URL}`,
             mockError,
           );
         },
@@ -178,11 +181,11 @@ describe('HttpLoggingInterceptor', () => {
     });
 
     it('should categorize 500+ errors as "Server error"', () => {
-      const mockRequest = new HttpRequest('GET', 'http://localhost:8080/api/test');
+      const mockRequest = new HttpRequest('GET', TEST_API_URL);
       const mockError = new HttpErrorResponse({
         status: 500,
         statusText: 'Internal Server Error',
-        url: 'http://localhost:8080/api/test',
+        url: TEST_API_URL,
       });
 
       httpHandler.handle.mockReturnValue(throwError(() => mockError));
@@ -190,7 +193,7 @@ describe('HttpLoggingInterceptor', () => {
       interceptor.intercept(mockRequest, httpHandler).subscribe({
         error: () => {
           expect(loggerService.error).toHaveBeenCalledWith(
-            'Server error: 500 Internal Server Error for GET http://localhost:8080/api/test',
+            `Server error: 500 Internal Server Error for GET ${TEST_API_URL}`,
             mockError,
           );
         },
@@ -198,11 +201,11 @@ describe('HttpLoggingInterceptor', () => {
     });
 
     it('should categorize other errors as "API error"', () => {
-      const mockRequest = new HttpRequest('GET', 'http://localhost:8080/api/test');
+      const mockRequest = new HttpRequest('GET', TEST_API_URL);
       const mockError = new HttpErrorResponse({
         status: 418,
         statusText: "I'm a teapot",
-        url: 'http://localhost:8080/api/test',
+        url: TEST_API_URL,
       });
 
       httpHandler.handle.mockReturnValue(throwError(() => mockError));
@@ -210,7 +213,7 @@ describe('HttpLoggingInterceptor', () => {
       interceptor.intercept(mockRequest, httpHandler).subscribe({
         error: () => {
           expect(loggerService.error).toHaveBeenCalledWith(
-            "API error: 418 I'm a teapot for GET http://localhost:8080/api/test",
+            `API error: 418 I'm a teapot for GET ${TEST_API_URL}`,
             mockError,
           );
         },
@@ -225,7 +228,7 @@ describe('HttpLoggingInterceptor', () => {
         'X-API-Key': 'secret123',
         'Content-Type': 'application/json',
       });
-      const mockRequest = new HttpRequest('GET', 'http://localhost:8080/api/test', null, {
+      const mockRequest = new HttpRequest('GET', TEST_API_URL, null, {
         headers,
       });
       const mockResponse = new HttpResponse({ status: 200 });

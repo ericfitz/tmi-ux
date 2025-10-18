@@ -11,7 +11,7 @@
  * - Integrates with environment configuration to detect server settings
  */
 
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, Injector } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, timer, Subscription, EMPTY } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
@@ -75,6 +75,7 @@ export class ServerConnectionService implements OnDestroy {
     status: ServerConnectionStatus.NOT_CONFIGURED,
   });
   private _healthCheckSubscription: Subscription | null = null;
+  private _authStateSubscription: Subscription | null = null;
   private readonly HEALTH_CHECK_INTERVAL = 30000; // 30 seconds
   private readonly MIN_BACKOFF_DELAY = 1000; // 1 second
   private readonly MAX_BACKOFF_DELAY = 30000; // 30 seconds
@@ -83,10 +84,13 @@ export class ServerConnectionService implements OnDestroy {
   private _baseRetryDelay = 1000;
   private _maxRetryInterval = 300000; // 5 minutes
   private _serverVersion: string | null = null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private _authService: any = null; // Lazy-loaded to avoid circular dependency
 
   constructor(
     private http: HttpClient,
     private logger: LoggerService,
+    private injector: Injector,
   ) {
     this.initializeConnectionMonitoring();
     this.initializeBrowserEventListeners();
@@ -132,6 +136,9 @@ export class ServerConnectionService implements OnDestroy {
     if (this._healthCheckSubscription) {
       this._healthCheckSubscription.unsubscribe();
     }
+    if (this._authStateSubscription) {
+      this._authStateSubscription.unsubscribe();
+    }
     this.stopMonitoring();
   }
 
@@ -147,8 +154,8 @@ export class ServerConnectionService implements OnDestroy {
       'Starting connection monitoring for save operations',
     );
 
-    if (!this.isServerConfigured()) {
-      this.logger.info('Server monitoring disabled - not configured');
+    if (!this.shouldConnectToServer()) {
+      this.logger.info('Server monitoring disabled - not configured or using local provider');
       return;
     }
   }
@@ -265,19 +272,126 @@ export class ServerConnectionService implements OnDestroy {
 
     this.logger.info(`Server configured at ${environment.apiUrl} - starting connection monitoring`);
 
-    // Start periodic health checks
-    this.startHealthChecks();
+    // Subscribe to auth state changes to stop monitoring when using local provider
+    this.subscribeToAuthStateChanges();
+
+    // Start periodic health checks if we should connect
+    if (this.shouldConnectToServer()) {
+      this.startHealthChecks();
+    } else {
+      this.logger.info('Skipping server monitoring - using local provider');
+    }
+  }
+
+  /**
+   * Subscribe to authentication state changes
+   * Stop monitoring when user logs in with local provider
+   * Resume monitoring when user logs out
+   */
+  private subscribeToAuthStateChanges(): void {
+    // Load AuthService asynchronously and subscribe to state changes
+    void this.getAuthService().then(authService => {
+      if (!authService) {
+        this.logger.debugComponent(
+          'ServerConnection',
+          'AuthService not available - skipping state subscription',
+        );
+        return;
+      }
+
+      // Subscribe to user profile changes to detect provider switches
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+      this._authStateSubscription = authService.userProfile$.subscribe((profile: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        const isUsingLocal = authService.isUsingLocalProvider;
+
+        this.logger.debugComponent('ServerConnection', 'Auth state changed', {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+          isAuthenticated: authService.isAuthenticated,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          isUsingLocalProvider: isUsingLocal,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+          userEmail: profile?.email,
+        });
+
+        // If using local provider, stop health checks
+        if (isUsingLocal) {
+          this.logger.info(
+            'User logged in with local provider - stopping server connection monitoring',
+          );
+          this.stopHealthChecks();
+        }
+        // If not using local provider and server is configured, start health checks
+        else if (this.isServerConfigured() && !this._healthCheckSubscription) {
+          this.logger.info('User logged out or using server provider - resuming server monitoring');
+          this.startHealthChecks();
+        }
+      });
+    });
+  }
+
+  /**
+   * Stop health check monitoring
+   */
+  private stopHealthChecks(): void {
+    if (this._healthCheckSubscription) {
+      this._healthCheckSubscription.unsubscribe();
+      this._healthCheckSubscription = null;
+    }
   }
 
   /**
    * Check if server is configured based on environment
    */
   private isServerConfigured(): boolean {
-    // Consider server not configured if apiUrl is empty, localhost with default port, or example URL
+    // Consider server not configured only if apiUrl is empty or whitespace
+    // Any explicitly configured URL (including localhost) is considered a configured server
     const apiUrl = environment.apiUrl;
-    if (!apiUrl || apiUrl === 'http://localhost:8080/api') {
+    return !!(apiUrl && apiUrl.trim());
+  }
+
+  /**
+   * Get AuthService lazily to avoid circular dependency
+   * Uses dynamic import to break circular reference at module level
+   * @returns AuthService instance or null if loading fails
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async getAuthService(): Promise<any> {
+    if (!this._authService) {
+      try {
+        // Dynamically import AuthService to avoid circular dependency at module level
+        const { AuthService } = await import('../../auth/services/auth.service');
+        this._authService = this.injector.get(AuthService);
+      } catch (error) {
+        this.logger.warn('Could not load AuthService', error);
+        return null;
+      }
+    }
+    return this._authService;
+  }
+
+  /**
+   * Check if we should connect to the server
+   * Returns false if:
+   * - Server is not configured (empty apiUrl)
+   * - User is authenticated with local provider
+   */
+  private shouldConnectToServer(): boolean {
+    // First check if server is configured
+    if (!this.isServerConfigured()) {
       return false;
     }
+
+    // Check if user is using local provider (synchronous check using cached authService)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (this._authService && this._authService.isUsingLocalProvider) {
+      this.logger.debugComponent(
+        'ServerConnection',
+        'Skipping server connection - user is using local provider',
+      );
+      return false;
+    }
+
     return true;
   }
 
@@ -320,6 +434,15 @@ export class ServerConnectionService implements OnDestroy {
    * Perform a single health check against the server
    */
   private performHealthCheck(): Observable<void> {
+    // Check if we should connect to server
+    if (!this.shouldConnectToServer()) {
+      this.logger.debugComponent(
+        'ServerConnection',
+        'Skipping health check - server not configured or using local provider',
+      );
+      return EMPTY;
+    }
+
     this.logger.debugComponent('ServerConnection', 'Performing HTTP health check');
 
     // Use the root API endpoint as defined in tmi-openapi.json
@@ -396,6 +519,18 @@ export class ServerConnectionService implements OnDestroy {
    * Perform a detailed health check for save operations (with skip-auth option)
    */
   private performDetailedHealthCheck(): Observable<DetailedConnectionStatus> {
+    // Check if we should connect to server
+    if (!this.shouldConnectToServer()) {
+      this.logger.debugComponent(
+        'ServerConnection',
+        'Skipping detailed health check - server not configured or using local provider',
+      );
+      return new Observable(subscriber => {
+        subscriber.next(this._detailedConnectionStatus$.value);
+        subscriber.complete();
+      });
+    }
+
     if (!navigator.onLine) {
       // Don't ping if browser is offline
       return new Observable(subscriber => {
@@ -477,7 +612,7 @@ export class ServerConnectionService implements OnDestroy {
    * Manually trigger a connection check
    */
   public checkConnection(): void {
-    if (this.isServerConfigured()) {
+    if (this.shouldConnectToServer()) {
       this.performHealthCheck().subscribe({
         next: () => {
           this.logger.debugComponent(
@@ -492,7 +627,7 @@ export class ServerConnectionService implements OnDestroy {
     } else {
       this.logger.debugComponent(
         'ServerConnection',
-        'Connection check skipped - server monitoring disabled',
+        'Connection check skipped - server not configured or using local provider',
       );
     }
   }
