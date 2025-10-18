@@ -133,6 +133,13 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
+   * Check if we should skip API calls (using local provider)
+   */
+  private get shouldSkipApiCalls(): boolean {
+    return this.authService.isUsingLocalProvider;
+  }
+
+  /**
    * Get threat model list items (lightweight data for dashboard)
    * Always fetches fresh data from API to minimize stale data issues
    */
@@ -153,6 +160,13 @@ export class ThreatModelService implements OnDestroy {
       return this._threatModelListSubject.asObservable();
     }
 
+    // Skip API calls when using local provider
+    if (this.shouldSkipApiCalls) {
+      this.logger.info('User logged in with local provider - skipping threat model list fetch');
+      this._threatModelListSubject.next([]);
+      return this._threatModelListSubject.asObservable();
+    }
+
     // For API mode, always fetch fresh data to ensure up-to-date information
     this.logger.debugComponent(
       'ThreatModelService',
@@ -168,9 +182,11 @@ export class ThreatModelService implements OnDestroy {
    * Force refresh the threat model list from the API
    */
   refreshThreatModelList(): void {
-    if (!this._useMockData) {
+    if (!this._useMockData && !this.shouldSkipApiCalls) {
       this.logger.debugComponent('ThreatModelService', 'Force refreshing threat model list');
       this.fetchThreatModelListFromAPI();
+    } else if (this.shouldSkipApiCalls) {
+      this.logger.info('User logged in with local provider - skipping threat model list refresh');
     }
   }
 

@@ -12,7 +12,7 @@
  * - Handles server connectivity states
  */
 
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, Injector, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subject, combineLatest, EMPTY, of, Subscription } from 'rxjs';
 import {
@@ -29,6 +29,7 @@ import { LoggerService } from './logger.service';
 import { MockDataService } from '../../mocks/mock-data.service';
 import { ServerConnectionService, ServerConnectionStatus } from './server-connection.service';
 import { WebSocketAdapter, MessageType } from './websocket.adapter';
+import { IAuthProvider } from '../interfaces/auth-provider.interface';
 
 /**
  * Interface for collaboration session data
@@ -79,6 +80,7 @@ export class CollaborationSessionService implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private _subscriberCount = 0;
   private _sessionPollingSubscription: Subscription | null = null;
+  private _authProvider: IAuthProvider | null = null; // Lazy-loaded to avoid circular dependency
 
   constructor(
     private http: HttpClient,
@@ -86,6 +88,7 @@ export class CollaborationSessionService implements OnDestroy {
     private mockDataService: MockDataService,
     private serverConnectionService: ServerConnectionService,
     private webSocketAdapter: WebSocketAdapter,
+    private injector: Injector,
   ) {
     this.initializeService();
   }
@@ -106,6 +109,11 @@ export class CollaborationSessionService implements OnDestroy {
       this.serverConnectionService.connectionStatus$,
     ]).pipe(
       map(([useMockData, serverStatus]) => {
+        // Don't show if using local provider
+        const authProvider = this.getAuthProvider();
+        if (authProvider && authProvider.isUsingLocalProvider) {
+          return false;
+        }
         // Show if using mock data OR server is connected
         return useMockData || serverStatus === ServerConnectionStatus.CONNECTED;
       }),
@@ -226,6 +234,14 @@ export class CollaborationSessionService implements OnDestroy {
    * Load collaboration sessions based on current state
    */
   private loadSessions(): Observable<CollaborationSession[]> {
+    // Skip API calls when using local provider
+    const authProvider = this.getAuthProvider();
+    if (authProvider && authProvider.isUsingLocalProvider) {
+      this.logger.info('User logged in with local provider - skipping collaboration session fetch');
+      this._sessions$.next([]);
+      return EMPTY;
+    }
+
     if (this.mockDataService.isUsingMockData) {
       return this.loadMockSessions();
     } else if (this.serverConnectionService.currentStatus === ServerConnectionStatus.CONNECTED) {
@@ -363,5 +379,28 @@ export class CollaborationSessionService implements OnDestroy {
     const currentSessions = this._sessions$.value;
     const updatedSessions = currentSessions.filter(s => s.id !== session.id);
     this._sessions$.next(updatedSessions);
+  }
+
+  /**
+   * Lazy-load AuthProvider to avoid circular dependency
+   * AuthService is in the auth module which depends on core services
+   * We use late binding via Injector to get it without static import
+   */
+  private getAuthProvider(): IAuthProvider | null {
+    if (!this._authProvider) {
+      try {
+        // Use dynamic import to load AuthService class without static import
+        // This breaks the circular dependency at module level
+        void import('../../auth/services/auth.service').then(module => {
+          this._authProvider = this.injector.get(module.AuthService) as IAuthProvider;
+        });
+        // Return null on first call - will be available on subsequent calls
+        return null;
+      } catch {
+        // AuthService not yet available, return null
+        return null;
+      }
+    }
+    return this._authProvider;
   }
 }
