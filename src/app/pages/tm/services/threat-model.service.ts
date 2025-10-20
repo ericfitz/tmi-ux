@@ -1451,6 +1451,33 @@ export class ThreatModelService implements OnDestroy {
       return of(newDiagram);
     }
 
+    // Skip API calls when using local provider - create in cache only
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - creating diagram in cache only (no API call)',
+      );
+
+      const newDiagram: Diagram = {
+        ...diagram,
+        id: uuidv4(),
+        created_at: new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+        metadata: [],
+        cells: [],
+      } as Diagram;
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        if (!threatModel.diagrams) {
+          threatModel.diagrams = [];
+        }
+        (threatModel.diagrams as unknown as string[]).push(newDiagram.id);
+        threatModel.modified_at = new Date().toISOString();
+        this._cachedThreatModels.set(threatModelId, { ...threatModel });
+      }
+      return of(newDiagram);
+    }
+
     // Remove id, created_at, and modified_at fields from diagram data before sending to API
     const { id, created_at, modified_at, ...diagramData } = diagram as Diagram;
 
