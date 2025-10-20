@@ -12,7 +12,7 @@
  * - Handles server connectivity states
  */
 
-import { Injectable, OnDestroy, Injector, Optional } from '@angular/core';
+import { Injectable, OnDestroy, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subject, combineLatest, EMPTY, of, Subscription } from 'rxjs';
 import {
