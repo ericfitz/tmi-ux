@@ -1590,7 +1590,7 @@ export class ThreatModelService implements OnDestroy {
         if (!threatModel.diagrams) {
           threatModel.diagrams = [];
         }
-        (threatModel.diagrams as unknown as string[]).push(newDiagram.id);
+        threatModel.diagrams.push(newDiagram);
         threatModel.modified_at = new Date().toISOString();
         this._cachedThreatModels.set(threatModelId, { ...threatModel });
       }
@@ -1617,7 +1617,7 @@ export class ThreatModelService implements OnDestroy {
         if (!threatModel.diagrams) {
           threatModel.diagrams = [];
         }
-        (threatModel.diagrams as unknown as string[]).push(newDiagram.id);
+        threatModel.diagrams.push(newDiagram);
         threatModel.modified_at = new Date().toISOString();
         this._cachedThreatModels.set(threatModelId, { ...threatModel });
       }
@@ -1790,10 +1790,8 @@ export class ThreatModelService implements OnDestroy {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.diagrams) {
         const initialLength = threatModel.diagrams.length;
-        const filteredDiagrams = (threatModel.diagrams as unknown as string[]).filter(
-          d => d !== diagramId,
-        );
-        threatModel.diagrams = filteredDiagrams as unknown as Diagram[];
+        const filteredDiagrams = threatModel.diagrams.filter(d => d.id !== diagramId);
+        threatModel.diagrams = filteredDiagrams;
         const wasDeleted = filteredDiagrams.length < initialLength;
         if (wasDeleted) {
           threatModel.modified_at = new Date().toISOString();
@@ -1813,10 +1811,8 @@ export class ThreatModelService implements OnDestroy {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.diagrams) {
         const initialLength = threatModel.diagrams.length;
-        const filteredDiagrams = (threatModel.diagrams as unknown as string[]).filter(
-          d => d !== diagramId,
-        );
-        threatModel.diagrams = filteredDiagrams as unknown as Diagram[];
+        const filteredDiagrams = threatModel.diagrams.filter(d => d.id !== diagramId);
+        threatModel.diagrams = filteredDiagrams;
         const wasDeleted = filteredDiagrams.length < initialLength;
         if (wasDeleted) {
           threatModel.modified_at = new Date().toISOString();
