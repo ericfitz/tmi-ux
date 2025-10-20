@@ -538,6 +538,51 @@ export class ThreatModelService implements OnDestroy {
       return of(newThreatModel);
     }
 
+    // Skip API calls when using local provider - create in-memory only
+    if (this.shouldSkipApiCalls) {
+      this.logger.info('User logged in with local provider - creating in-memory threat model');
+
+      const now = new Date().toISOString();
+      const currentUser = this.authService.userEmail || 'anonymous@example.com';
+
+      const newThreatModel: ThreatModel = {
+        id: uuidv4(),
+        name,
+        description: description || '',
+        created_at: now,
+        modified_at: now,
+        owner: currentUser,
+        created_by: currentUser,
+        threat_model_framework: validFramework,
+        issue_url: issueUrl,
+        authorization: [
+          {
+            subject: currentUser,
+            role: 'owner',
+          },
+        ],
+        metadata: [],
+        diagrams: [],
+        threats: [],
+        documents: [],
+        sourceCode: [],
+      };
+
+      // Add to both the list and cache the full model
+      const listItem = this.convertToListItem(newThreatModel);
+      this._threatModelList.push(listItem);
+      this._threatModelListSubject.next([...this._threatModelList]);
+      this._cachedThreatModels.set(newThreatModel.id, newThreatModel);
+
+      this.logger.debugComponent('ThreatModelService', 'Created in-memory threat model', {
+        id: newThreatModel.id,
+        name: newThreatModel.name,
+        totalInList: this._threatModelList.length,
+      });
+
+      return of(newThreatModel);
+    }
+
     // In a real implementation, this would call the API
     this.logger.debugComponent('ThreatModelService', 'Creating threat model via API');
     const body = {
