@@ -1004,6 +1004,35 @@ export class ThreatModelService implements OnDestroy {
       return of(wasDeleted);
     }
 
+    // Skip API calls when using local provider - delete from cache only
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - deleting threat model from cache only (no API call)',
+      );
+
+      const initialLength = this._threatModelList.length;
+      this._threatModelList = this._threatModelList.filter(tm => tm.id !== id);
+      const wasDeleted = this._threatModelList.length < initialLength;
+
+      if (wasDeleted) {
+        // Remove from cache
+        this._cachedThreatModels.delete(id);
+
+        // Notify all subscribers of the updated threat model list
+        this._threatModelListSubject.next([...this._threatModelList]);
+        this.logger.debugComponent(
+          'ThreatModelService',
+          'Updated threat model list after deletion',
+          {
+            remainingCount: this._threatModelList.length,
+            deletedId: id,
+          },
+        );
+      }
+
+      return of(wasDeleted);
+    }
+
     // In a real implementation, this would call the API
     this.logger.debugComponent(
       'ThreatModelService',
@@ -1057,6 +1086,32 @@ export class ThreatModelService implements OnDestroy {
       return of(newThreat);
     }
 
+    // Skip API calls when using local provider - create in cache only
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - creating threat in cache only (no API call)',
+      );
+
+      const newThreat: Threat = {
+        ...threat,
+        id: uuidv4(),
+        threat_model_id: threatModelId,
+        created_at: new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+      } as Threat;
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        if (!threatModel.threats) {
+          threatModel.threats = [];
+        }
+        threatModel.threats.push(newThreat);
+        threatModel.modified_at = new Date().toISOString();
+        this._cachedThreatModels.set(threatModelId, { ...threatModel });
+      }
+      return of(newThreat);
+    }
+
     // Remove id, created_at, and modified_at fields from threat data before sending to API
 
     const { id, created_at, modified_at, ...threatData } = threat as Threat;
@@ -1083,6 +1138,28 @@ export class ThreatModelService implements OnDestroy {
     threat: Partial<Threat>,
   ): Observable<Threat> {
     if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.threats) {
+        const index = threatModel.threats.findIndex(t => t.id === threatId);
+        if (index !== -1) {
+          threatModel.threats[index] = {
+            ...threatModel.threats[index],
+            ...threat,
+            modified_at: new Date().toISOString(),
+          };
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+          return of(threatModel.threats[index]);
+        }
+      }
+      return of(threat as Threat);
+    }
+
+    // Skip API calls when using local provider - update in cache only
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - updating threat in cache only (no API call)',
+      );
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.threats) {
         const index = threatModel.threats.findIndex(t => t.id === threatId);
@@ -1408,6 +1485,26 @@ export class ThreatModelService implements OnDestroy {
       const mockDiagram: Diagram = {
         id: diagramId,
         name: 'Mock Diagram',
+        type: 'DFD-1.0.0',
+        cells: cells,
+        metadata: [],
+        created_at: new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+      };
+
+      return of(mockDiagram);
+    }
+
+    // Skip API calls when using local provider - return mock diagram
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - patching diagram cells in memory only (no API call)',
+      );
+
+      // For local provider, simulate the patch operation (diagram is stored in localStorage via DFD service)
+      const mockDiagram: Diagram = {
+        id: diagramId,
+        name: 'Local Diagram',
         type: 'DFD-1.0.0',
         cells: cells,
         metadata: [],
