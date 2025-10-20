@@ -192,8 +192,8 @@ importers:
         specifier: 3.0.5
         version: 3.0.5
       jsdom:
-        specifier: ^27.0.0
-        version: 27.0.0(postcss@8.5.6)
+        specifier: ^27.0.1
+        version: 27.0.1(postcss@8.5.6)
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
@@ -217,7 +217,7 @@ importers:
         version: 7.1.7(@types/node@24.8.1)(jiti@1.21.7)(less@4.4.0)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.6)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/node@24.8.1)(@vitest/ui@3.2.4)(jiti@1.21.7)(jsdom@27.0.0(postcss@8.5.6))(less@4.4.0)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.6)
+        version: 3.2.4(@types/node@24.8.1)(@vitest/ui@3.2.4)(jiti@1.21.7)(jsdom@27.0.1(postcss@8.5.6))(less@4.4.0)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.6)
 
 packages:
 
@@ -596,8 +596,8 @@ packages:
   '@asamuzakjp/css-color@4.0.5':
     resolution: {integrity: sha512-lMrXidNhPGsDjytDy11Vwlb6OIGrT3CmLg3VWNFyWkLWtijKl7xjvForlh8vuj0SHGjgl4qZEQzUmYTeQA2JFQ==}
 
-  '@asamuzakjp/dom-selector@6.7.0':
-    resolution: {integrity: sha512-GrYRsKf8oVnPHsA+4dOAnPybrhT3cQ0xykXxjj2DaOni5xOlV1T8/Nqo+iNUO7wh9bs3jViIFsxJKFzDTU/ulQ==}
+  '@asamuzakjp/dom-selector@6.7.2':
+    resolution: {integrity: sha512-ccKogJI+0aiDhOahdjANIc9SDixSud1gbwdVrhn7kMopAtLXqsz9MKmQQtIl6Y5aC2IYq+j4dz/oedL2AVMmVQ==}
 
   '@asamuzakjp/nwsapi@2.3.9':
     resolution: {integrity: sha512-n8GuYSrI9bF7FFZ/SjhwevlHc8xaVlb/7HmHelnc/PZXBD2ZR49NnN9sMMuDdEGPeeRQ5d0hqlSlEpgCX3Wl0Q==}
@@ -4483,8 +4483,8 @@ packages:
   jsbn@0.1.1:
     resolution: {integrity: sha512-UVU9dibq2JcFWxQPA6KCqj5O42VOmAY3zQUfEKxU0KpTGXwNoCjkX1e13eHNvw/xPynt6pU0rZ1htjWTNTSXsg==}
 
-  jsdom@27.0.0:
-    resolution: {integrity: sha512-lIHeR1qlIRrIN5VMccd8tI2Sgw6ieYXSVktcSHaNe3Z5nE/tcPQYQWOq00wxMvYOsz+73eAkNenVvmPC6bba9A==}
+  jsdom@27.0.1:
+    resolution: {integrity: sha512-SNSQteBL1IlV2zqhwwolaG9CwhIhTvVHWg3kTss/cLE7H/X4644mtPQqYvCfsSrGQWt9hSZcgOXX8bOZaMN+kA==}
     engines: {node: '>=20'}
     peerDependencies:
       canvas: ^3.0.0
@@ -6837,7 +6837,7 @@ snapshots:
       less: 4.4.0
       lmdb: 3.4.2
       postcss: 8.5.6
-      vitest: 3.2.4(@types/node@24.8.1)(@vitest/ui@3.2.4)(jiti@1.21.7)(jsdom@27.0.0(postcss@8.5.6))(less@4.4.0)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.6)
+      vitest: 3.2.4(@types/node@24.8.1)(@vitest/ui@3.2.4)(jiti@1.21.7)(jsdom@27.0.1(postcss@8.5.6))(less@4.4.0)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.6)
     transitivePeerDependencies:
       - '@types/node'
       - chokidar
@@ -7005,7 +7005,7 @@ snapshots:
       '@csstools/css-tokenizer': 3.0.4
       lru-cache: 11.2.2
 
-  '@asamuzakjp/dom-selector@6.7.0':
+  '@asamuzakjp/dom-selector@6.7.2':
     dependencies:
       '@asamuzakjp/nwsapi': 2.3.9
       bidi-js: 1.0.3
@@ -8959,7 +8959,7 @@ snapshots:
       std-env: 3.10.0
       test-exclude: 7.0.1
       tinyrainbow: 2.0.0
-      vitest: 3.2.4(@types/node@24.8.1)(@vitest/ui@3.2.4)(jiti@1.21.7)(jsdom@27.0.0(postcss@8.5.6))(less@4.4.0)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.6)
+      vitest: 3.2.4(@types/node@24.8.1)(@vitest/ui@3.2.4)(jiti@1.21.7)(jsdom@27.0.1(postcss@8.5.6))(less@4.4.0)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.6)
     transitivePeerDependencies:
       - supports-color
 
@@ -9008,7 +9008,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 2.0.0
-      vitest: 3.2.4(@types/node@24.8.1)(@vitest/ui@3.2.4)(jiti@1.21.7)(jsdom@27.0.0(postcss@8.5.6))(less@4.4.0)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.6)
+      vitest: 3.2.4(@types/node@24.8.1)(@vitest/ui@3.2.4)(jiti@1.21.7)(jsdom@27.0.1(postcss@8.5.6))(less@4.4.0)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.6)
 
   '@vitest/utils@3.2.4':
     dependencies:
@@ -11161,9 +11161,9 @@ snapshots:
 
   jsbn@0.1.1: {}
 
-  jsdom@27.0.0(postcss@8.5.6):
+  jsdom@27.0.1(postcss@8.5.6):
     dependencies:
-      '@asamuzakjp/dom-selector': 6.7.0
+      '@asamuzakjp/dom-selector': 6.7.2
       cssstyle: 5.3.1(postcss@8.5.6)
       data-urls: 6.0.0
       decimal.js: 10.6.0
@@ -11171,7 +11171,7 @@ snapshots:
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6
       is-potential-custom-element-name: 1.0.1
-      parse5: 7.3.0
+      parse5: 8.0.0
       rrweb-cssom: 0.8.0
       saxes: 6.0.0
       symbol-tree: 3.2.4
@@ -13157,7 +13157,7 @@ snapshots:
       terser: 5.43.1
       tsx: 4.20.6
 
-  vitest@3.2.4(@types/node@24.8.1)(@vitest/ui@3.2.4)(jiti@1.21.7)(jsdom@27.0.0(postcss@8.5.6))(less@4.4.0)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.6):
+  vitest@3.2.4(@types/node@24.8.1)(@vitest/ui@3.2.4)(jiti@1.21.7)(jsdom@27.0.1(postcss@8.5.6))(less@4.4.0)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.6):
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.4
@@ -13185,7 +13185,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.8.1
       '@vitest/ui': 3.2.4(vitest@3.2.4)
-      jsdom: 27.0.0(postcss@8.5.6)
+      jsdom: 27.0.1(postcss@8.5.6)
     transitivePeerDependencies:
       - jiti
       - less
