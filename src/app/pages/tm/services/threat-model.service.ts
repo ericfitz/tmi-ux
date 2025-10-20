@@ -807,6 +807,26 @@ export class ThreatModelService implements OnDestroy {
       return of(this._cachedThreatModels.get(threatModel.id)!);
     }
 
+    // Skip API calls when using local provider - update cache only
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - updating threat model in cache only (no API call)',
+      );
+
+      // Update in cache
+      threatModel.modified_at = new Date().toISOString();
+      this._cachedThreatModels.set(threatModel.id, { ...threatModel });
+
+      // Update in list
+      const listIndex = this._threatModelList.findIndex(tm => tm.id === threatModel.id);
+      if (listIndex !== -1) {
+        this._threatModelList[listIndex] = this.convertToListItem(threatModel);
+        this._threatModelListSubject.next([...this._threatModelList]);
+      }
+
+      return of(this._cachedThreatModels.get(threatModel.id)!);
+    }
+
     // In a real implementation, this would call the API
     this.logger.debugComponent(
       'ThreatModelService',
@@ -847,6 +867,40 @@ export class ThreatModelService implements OnDestroy {
         'ThreatModelService',
         `Patching mock threat model with ID: ${threatModelId}`,
         updates,
+      );
+
+      const cachedModel = this._cachedThreatModels.get(threatModelId);
+      if (cachedModel) {
+        // Apply updates to cached model
+        const updatedModel = {
+          ...cachedModel,
+          ...updates,
+          modified_at: new Date().toISOString(),
+        };
+        this._cachedThreatModels.set(threatModelId, updatedModel);
+
+        // Update in list
+        const listIndex = this._threatModelList.findIndex(tm => tm.id === threatModelId);
+        if (listIndex !== -1) {
+          this._threatModelList[listIndex] = this.convertToListItem(updatedModel);
+          this._threatModelListSubject.next([...this._threatModelList]);
+        }
+
+        // Notify authorization service if authorization was updated
+        if (updates.authorization) {
+          this.authorizationService.updateAuthorization(updatedModel.authorization);
+        }
+
+        return of(updatedModel);
+      } else {
+        throw new Error(`Threat model with ID ${threatModelId} not found in cache`);
+      }
+    }
+
+    // Skip API calls when using local provider - update cache only
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - patching threat model in cache only (no API call)',
       );
 
       const cachedModel = this._cachedThreatModels.get(threatModelId);
