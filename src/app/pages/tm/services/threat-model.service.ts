@@ -1212,6 +1212,26 @@ export class ThreatModelService implements OnDestroy {
       return of(false);
     }
 
+    // Skip API calls when using local provider
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - deleting threat from cache only (no API call)',
+      );
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.threats) {
+        const initialLength = threatModel.threats.length;
+        threatModel.threats = threatModel.threats.filter(t => t.id !== threatId);
+        const wasDeleted = threatModel.threats.length < initialLength;
+        if (wasDeleted) {
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        }
+        return of(wasDeleted);
+      }
+      return of(false);
+    }
+
     return this.apiService.delete(`threat_models/${threatModelId}/threats/${threatId}`).pipe(
       map(() => true),
       catchError(error => {
@@ -1226,6 +1246,30 @@ export class ThreatModelService implements OnDestroy {
    */
   createDocument(threatModelId: string, document: Partial<TMDocument>): Observable<TMDocument> {
     if (this._useMockData) {
+      const newDocument: TMDocument = {
+        ...document,
+        id: uuidv4(),
+        metadata: [],
+      } as TMDocument;
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        if (!threatModel.documents) {
+          threatModel.documents = [];
+        }
+        threatModel.documents.push(newDocument);
+        threatModel.modified_at = new Date().toISOString();
+        this._cachedThreatModels.set(threatModelId, { ...threatModel });
+      }
+      return of(newDocument);
+    }
+
+    // Skip API calls when using local provider
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - creating document in cache only (no API call)',
+      );
+
       const newDocument: TMDocument = {
         ...document,
         id: uuidv4(),
@@ -1282,6 +1326,25 @@ export class ThreatModelService implements OnDestroy {
       return of(document as TMDocument);
     }
 
+    // Skip API calls when using local provider
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - updating document in cache only (no API call)',
+      );
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.documents) {
+        const index = threatModel.documents.findIndex(d => d.id === documentId);
+        if (index !== -1) {
+          threatModel.documents[index] = { ...threatModel.documents[index], ...document };
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+          return of(threatModel.documents[index]);
+        }
+      }
+      return of(document as TMDocument);
+    }
+
     return this.apiService
       .put<TMDocument>(
         `threat_models/${threatModelId}/documents/${documentId}`,
@@ -1314,6 +1377,26 @@ export class ThreatModelService implements OnDestroy {
       return of(false);
     }
 
+    // Skip API calls when using local provider
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - deleting document from cache only (no API call)',
+      );
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.documents) {
+        const initialLength = threatModel.documents.length;
+        threatModel.documents = threatModel.documents.filter(d => d.id !== documentId);
+        const wasDeleted = threatModel.documents.length < initialLength;
+        if (wasDeleted) {
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        }
+        return of(wasDeleted);
+      }
+      return of(false);
+    }
+
     return this.apiService.delete(`threat_models/${threatModelId}/documents/${documentId}`).pipe(
       map(() => true),
       catchError(error => {
@@ -1328,6 +1411,30 @@ export class ThreatModelService implements OnDestroy {
    */
   createSource(threatModelId: string, source: Partial<Source>): Observable<Source> {
     if (this._useMockData) {
+      const newSource: Source = {
+        ...source,
+        id: uuidv4(),
+        metadata: [],
+      } as Source;
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        if (!threatModel.sourceCode) {
+          threatModel.sourceCode = [];
+        }
+        threatModel.sourceCode.push(newSource);
+        threatModel.modified_at = new Date().toISOString();
+        this._cachedThreatModels.set(threatModelId, { ...threatModel });
+      }
+      return of(newSource);
+    }
+
+    // Skip API calls when using local provider
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - creating source in cache only (no API call)',
+      );
+
       const newSource: Source = {
         ...source,
         id: uuidv4(),
@@ -1384,6 +1491,25 @@ export class ThreatModelService implements OnDestroy {
       return of(source as Source);
     }
 
+    // Skip API calls when using local provider
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - updating source in cache only (no API call)',
+      );
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.sourceCode) {
+        const index = threatModel.sourceCode.findIndex(s => s.id === sourceId);
+        if (index !== -1) {
+          threatModel.sourceCode[index] = { ...threatModel.sourceCode[index], ...source };
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+          return of(threatModel.sourceCode[index]);
+        }
+      }
+      return of(source as Source);
+    }
+
     return this.apiService
       .put<Source>(
         `threat_models/${threatModelId}/sources/${sourceId}`,
@@ -1402,6 +1528,26 @@ export class ThreatModelService implements OnDestroy {
    */
   deleteSource(threatModelId: string, sourceId: string): Observable<boolean> {
     if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.sourceCode) {
+        const initialLength = threatModel.sourceCode.length;
+        threatModel.sourceCode = threatModel.sourceCode.filter(s => s.id !== sourceId);
+        const wasDeleted = threatModel.sourceCode.length < initialLength;
+        if (wasDeleted) {
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        }
+        return of(wasDeleted);
+      }
+      return of(false);
+    }
+
+    // Skip API calls when using local provider
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - deleting source from cache only (no API call)',
+      );
+
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.sourceCode) {
         const initialLength = threatModel.sourceCode.length;
@@ -1641,6 +1787,29 @@ export class ThreatModelService implements OnDestroy {
    */
   deleteDiagram(threatModelId: string, diagramId: string): Observable<boolean> {
     if (this._useMockData) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.diagrams) {
+        const initialLength = threatModel.diagrams.length;
+        const filteredDiagrams = (threatModel.diagrams as unknown as string[]).filter(
+          d => d !== diagramId,
+        );
+        threatModel.diagrams = filteredDiagrams as unknown as Diagram[];
+        const wasDeleted = filteredDiagrams.length < initialLength;
+        if (wasDeleted) {
+          threatModel.modified_at = new Date().toISOString();
+          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        }
+        return of(wasDeleted);
+      }
+      return of(false);
+    }
+
+    // Skip API calls when using local provider
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - deleting diagram from cache only (no API call)',
+      );
+
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.diagrams) {
         const initialLength = threatModel.diagrams.length;
