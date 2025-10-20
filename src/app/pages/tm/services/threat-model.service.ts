@@ -388,6 +388,15 @@ export class ThreatModelService implements OnDestroy {
       return of(this.mockDataService.getMockDiagramsForThreatModel(threatModelId));
     }
 
+    // Skip API calls when using local provider - return from cache
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - returning cached diagrams (no API call)',
+      );
+      const cachedModel = this._cachedThreatModels.get(threatModelId);
+      return of(cachedModel?.diagrams || []);
+    }
+
     // In a real implementation, this would call the API
     this.logger.debugComponent(
       'ThreatModelService',
@@ -446,6 +455,15 @@ export class ThreatModelService implements OnDestroy {
       );
     }
 
+    // Skip API calls when using local provider - return from cache
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - returning cached documents (no API call)',
+      );
+      const cachedModel = this._cachedThreatModels.get(threatModelId);
+      return of(cachedModel?.documents || []);
+    }
+
     this.logger.debugComponent(
       'ThreatModelService',
       `Fetching documents for threat model with ID: ${threatModelId} from API`,
@@ -474,6 +492,15 @@ export class ThreatModelService implements OnDestroy {
         this.mockDataService.getMockThreatModels().find(tm => tm.id === threatModelId)
           ?.sourceCode || [],
       );
+    }
+
+    // Skip API calls when using local provider - return from cache
+    if (this.shouldSkipApiCalls) {
+      this.logger.info(
+        'User logged in with local provider - returning cached source code (no API call)',
+      );
+      const cachedModel = this._cachedThreatModels.get(threatModelId);
+      return of(cachedModel?.sourceCode || []);
     }
 
     this.logger.debugComponent(
