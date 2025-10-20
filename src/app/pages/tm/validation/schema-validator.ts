@@ -75,7 +75,8 @@ export class SchemaValidator extends BaseValidator {
 
     // Optional fields
     { field: 'description', required: false, type: 'string', maxLength: 1024 },
-    { field: 'issue_url', required: false, type: 'url', maxLength: 1024 },
+    // Note: issue_url accepts any string per RFC 3986 (URI-reference)
+    { field: 'issue_url', required: false, type: 'string', maxLength: 1024 },
     { field: 'metadata', required: false, type: 'array' },
     { field: 'documents', required: false, type: 'array' },
     { field: 'sourceCode', required: false, type: 'array' },
@@ -96,7 +97,8 @@ export class SchemaValidator extends BaseValidator {
   private static readonly DOCUMENT_RULES: FieldValidationRule[] = [
     { field: 'id', required: true, type: 'uuid' },
     { field: 'name', required: true, type: 'string' },
-    { field: 'url', required: true, type: 'url' },
+    // Note: url accepts any string per RFC 3986 (URI-reference)
+    { field: 'url', required: true, type: 'string' },
     { field: 'description', required: false, type: 'string' },
     { field: 'metadata', required: false, type: 'array' },
   ];
@@ -123,7 +125,8 @@ export class SchemaValidator extends BaseValidator {
     { field: 'priority', required: false, type: 'string' },
     { field: 'mitigated', required: false, type: 'boolean' },
     { field: 'status', required: false, type: 'string' },
-    { field: 'issue_url', required: false, type: 'url' },
+    // Note: issue_url accepts any string per RFC 3986 (URI-reference)
+    { field: 'issue_url', required: false, type: 'string' },
     { field: 'metadata', required: false, type: 'array' },
   ];
 

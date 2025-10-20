@@ -10,6 +10,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 import { Source } from '../../models/threat-model.model';
+import { FormValidationService } from '../../../../shared/services/form-validation.service';
 
 /**
  * Interface for source code form values
@@ -65,7 +66,14 @@ export class SourceCodeEditorDialogComponent implements OnInit, OnDestroy {
       name: [data.sourceCode?.name || '', [Validators.required, Validators.maxLength(256)]],
       description: [data.sourceCode?.description || '', Validators.maxLength(1024)],
       type: [data.sourceCode?.type || 'git', Validators.required],
-      url: [data.sourceCode?.url || '', [Validators.required, Validators.maxLength(1024)]],
+      url: [
+        data.sourceCode?.url || '',
+        [
+          Validators.required,
+          Validators.maxLength(1024),
+          FormValidationService.validators.uriGuidance,
+        ],
+      ],
       refType: [data.sourceCode?.parameters?.refType || 'branch'],
       refValue: [data.sourceCode?.parameters?.refValue || '', Validators.maxLength(256)],
       subPath: [data.sourceCode?.parameters?.subPath || '', Validators.maxLength(256)],
@@ -81,10 +89,45 @@ export class SourceCodeEditorDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Get URI validation suggestion message (if any)
+   */
+  getUriSuggestion(): string | null {
+    const urlControl = this.sourceCodeForm.get('url');
+    if (!urlControl) return null;
+
+    const uriSuggestionError = urlControl.errors?.['uriSuggestion'] as
+      | { message?: string; severity?: string }
+      | undefined;
+    if (uriSuggestionError && typeof uriSuggestionError === 'object') {
+      return uriSuggestionError.message || null;
+    }
+    return null;
+  }
+
+  /**
    * Close the dialog with the source code data
    */
   onSubmit(): void {
-    if (this.sourceCodeForm.invalid) {
+    // Only check for blocking errors (required, maxLength)
+    // Allow submission even with URI suggestions
+    const nameControl = this.sourceCodeForm.get('name');
+    const descControl = this.sourceCodeForm.get('description');
+    const typeControl = this.sourceCodeForm.get('type');
+    const urlControl = this.sourceCodeForm.get('url');
+    const refValueControl = this.sourceCodeForm.get('refValue');
+    const subPathControl = this.sourceCodeForm.get('subPath');
+
+    const hasBlockingErrors =
+      nameControl?.hasError('required') ||
+      nameControl?.hasError('maxlength') ||
+      descControl?.hasError('maxlength') ||
+      typeControl?.hasError('required') ||
+      urlControl?.hasError('required') ||
+      urlControl?.hasError('maxlength') ||
+      refValueControl?.hasError('maxlength') ||
+      subPathControl?.hasError('maxlength');
+
+    if (hasBlockingErrors) {
       return;
     }
 

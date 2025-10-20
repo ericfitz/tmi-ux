@@ -33,6 +33,13 @@ mat-dialog-actions {
   padding: 8px 24px 20px;
 }
 
+// URI suggestion hint styling
+.uri-suggestion-hint {
+  color: #ff9800; // Orange color for warnings
+  font-size: 12px;
+  font-style: italic;
+}
+
 // Responsive adjustments
 @media (width <= 768px) {
   .dialog-form {

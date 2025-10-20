@@ -187,7 +187,8 @@ export class FormValidationService {
     },
 
     /**
-     * Validator for URL format
+     * Validator for URL format (strict - requires absolute URL with protocol)
+     * Note: This is stricter than RFC 3986 URI validation
      */
     url: (control: AbstractControl): ValidationErrors | null => {
       const value = control.value as unknown;
@@ -199,6 +200,86 @@ export class FormValidationService {
       } catch {
         return { url: true };
       }
+    },
+
+    /**
+     * Validator for RFC 3986 URI format (non-blocking guidance)
+     * Accepts both absolute URIs and relative references per RFC 3986
+     * Returns validation errors as suggestions, not blockers
+     * @returns Validation error object with 'uriSuggestion' key if URI looks suspicious
+     */
+    uriGuidance: (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value as unknown;
+      if (!value || typeof value !== 'string') return null;
+
+      const trimmedValue = value.trim();
+      if (trimmedValue === '') return null;
+
+      // Check for obviously invalid patterns
+      // Control characters (except tab, newline which shouldn't be in URIs anyway)
+      // eslint-disable-next-line no-control-regex
+      if (/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/.test(trimmedValue)) {
+        return {
+          uriSuggestion: {
+            message: 'URI contains invalid control characters',
+            severity: 'warning',
+          },
+        };
+      }
+
+      // Spaces (should be percent-encoded as %20)
+      if (trimmedValue.includes(' ')) {
+        return {
+          uriSuggestion: {
+            message: 'URI contains spaces (should be percent-encoded as %20)',
+            severity: 'warning',
+          },
+        };
+      }
+
+      // Check if it looks like an absolute URI (has a scheme)
+      const hasScheme = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmedValue);
+
+      if (hasScheme) {
+        // Try to validate as absolute URI
+        try {
+          new URL(trimmedValue);
+          return null; // Valid absolute URI
+        } catch {
+          return {
+            uriSuggestion: {
+              message: 'URI appears to have a scheme but is not a valid absolute URI',
+              severity: 'warning',
+            },
+          };
+        }
+      }
+
+      // For relative references, check for some common issues
+      // These are suggestions only - RFC 3986 is very permissive
+
+      // Very short values that don't look like paths (single word with no path separators)
+      if (trimmedValue.length < 4 && !/[/.]/.test(trimmedValue)) {
+        return {
+          uriSuggestion: {
+            message: 'Consider using an absolute URI (e.g., https://example.com) or a path',
+            severity: 'info',
+          },
+        };
+      }
+
+      // Contains angle brackets, quotes, or other characters that are commonly problematic
+      if (/[<>"{}|\\^`]/.test(trimmedValue)) {
+        return {
+          uriSuggestion: {
+            message: 'URI contains characters that may need to be percent-encoded',
+            severity: 'info',
+          },
+        };
+      }
+
+      // If we get here, it's a relative reference or a reasonable-looking string
+      return null;
     },
 
     /**
@@ -359,6 +440,11 @@ export class FormValidationService {
         case 'url':
           messages.push('Please enter a valid URL');
           break;
+        case 'uriSuggestion': {
+          const suggestion = errorValue as { message: string; severity: string };
+          messages.push(suggestion.message);
+          break;
+        }
         case 'email':
           messages.push('Please enter a valid email address');
           break;

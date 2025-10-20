@@ -9,6 +9,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
 import { Document } from '../../models/threat-model.model';
+import { FormValidationService } from '../../../../shared/services/form-validation.service';
 
 /**
  * Interface for document form values
@@ -57,7 +58,14 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
 
     this.documentForm = this.fb.group({
       name: [data.document?.name || '', [Validators.required, Validators.maxLength(256)]],
-      url: [data.document?.url || '', [Validators.required, Validators.maxLength(1024)]],
+      url: [
+        data.document?.url || '',
+        [
+          Validators.required,
+          Validators.maxLength(1024),
+          FormValidationService.validators.uriGuidance,
+        ],
+      ],
       description: [data.document?.description || '', Validators.maxLength(1024)],
     });
   }
@@ -71,10 +79,39 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Get URI validation suggestion message (if any)
+   */
+  getUriSuggestion(): string | null {
+    const urlControl = this.documentForm.get('url');
+    if (!urlControl) return null;
+
+    const uriSuggestionError = urlControl.errors?.['uriSuggestion'] as
+      | { message?: string; severity?: string }
+      | undefined;
+    if (uriSuggestionError && typeof uriSuggestionError === 'object') {
+      return uriSuggestionError.message || null;
+    }
+    return null;
+  }
+
+  /**
    * Close the dialog with the document data
    */
   onSubmit(): void {
-    if (this.documentForm.invalid) {
+    // Only check for blocking errors (required, maxLength)
+    // Allow submission even with URI suggestions
+    const nameControl = this.documentForm.get('name');
+    const urlControl = this.documentForm.get('url');
+    const descControl = this.documentForm.get('description');
+
+    const hasBlockingErrors =
+      nameControl?.hasError('required') ||
+      nameControl?.hasError('maxlength') ||
+      urlControl?.hasError('required') ||
+      urlControl?.hasError('maxlength') ||
+      descControl?.hasError('maxlength');
+
+    if (hasBlockingErrors) {
       return;
     }
 
