@@ -19,7 +19,7 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, Subscription, BehaviorSubject, throwError, timer } from 'rxjs';
+import { Observable, of, BehaviorSubject, throwError, timer } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { catchError, switchMap, map, tap, retryWhen, mergeMap, take } from 'rxjs/operators';
 
@@ -84,8 +84,6 @@ import { ThreatModelAuthorizationService } from './threat-model-authorization.se
 export class ThreatModelService implements OnDestroy {
   private _threatModelList: TMListItem[] = [];
   private _cachedThreatModels = new Map<string, ThreatModel>();
-  private _useMockData = false;
-  private _subscription: Subscription | null = null;
   private _threatModelListSubject = new BehaviorSubject<TMListItem[]>([]);
 
   constructor(
@@ -95,47 +93,14 @@ export class ThreatModelService implements OnDestroy {
     private authService: AuthService,
     private authorizationService: ThreatModelAuthorizationService,
   ) {
-    // Subscribe to the mock data toggle
-    this._subscription = this.mockDataService.useMockData$.subscribe(useMock => {
-      this._useMockData = useMock;
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `ThreatModelService using mock data: ${useMock}`,
-        {
-          useMock,
-          threatModelsCount: useMock ? this.mockDataService.getMockThreatModels().length : 0,
-        },
-      );
-
-      // Initialize threat model list based on the mock data setting
-      if (useMock) {
-        // Convert full mock models to list items
-        const mockModels = this.mockDataService.getMockThreatModels();
-        this._threatModelList = mockModels.map(tm => this.convertToListItem(tm));
-        this._threatModelListSubject.next(this._threatModelList);
-        this.logger.debugComponent(
-          'ThreatModelService',
-          'ThreatModelService loaded mock threat model list',
-          {
-            count: this._threatModelList.length,
-            models: this._threatModelList.map(tm => ({ id: tm.id, name: tm.name })),
-          },
-        );
-      } else {
-        this._threatModelList = []; // Will be populated from API when needed
-        this._threatModelListSubject.next(this._threatModelList);
-        this.logger.debugComponent(
-          'ThreatModelService',
-          'ThreatModelService using API mode (empty list)',
-        );
-      }
-    });
+    this.logger.debugComponent('ThreatModelService', 'ThreatModelService initialized');
   }
 
   /**
-   * Check if we should skip API calls (using local provider)
+   * Check if we're in offline mode (standalone with no server)
+   * In offline mode: local provider only, mock data, no API calls, no collaboration
    */
-  private get shouldSkipApiCalls(): boolean {
+  private get isOfflineMode(): boolean {
     return this.authService.isUsingLocalProvider;
   }
 
@@ -148,22 +113,19 @@ export class ThreatModelService implements OnDestroy {
       'ThreatModelService',
       'ThreatModelService.getThreatModelList called',
       {
-        useMockData: this._useMockData,
+        isOfflineMode: this.isOfflineMode,
         threatModelListCount: this._threatModelList.length,
         forceRefresh: forceRefresh,
         models: this._threatModelList.map(tm => ({ id: tm.id, name: tm.name })),
       },
     );
 
-    if (this._useMockData) {
-      this.logger.debugComponent('ThreatModelService', 'Returning reactive mock threat model list');
-      return this._threatModelListSubject.asObservable();
-    }
-
-    // Skip API calls when using local provider
-    if (this.shouldSkipApiCalls) {
-      this.logger.info('User logged in with local provider - skipping threat model list fetch');
-      this._threatModelListSubject.next([]);
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - returning mock threat model list');
+      // Load mock threat models from MockDataService
+      const mockModels = this.mockDataService.getMockThreatModels();
+      this._threatModelList = mockModels.map(tm => this.convertToListItem(tm));
+      this._threatModelListSubject.next(this._threatModelList);
       return this._threatModelListSubject.asObservable();
     }
 
@@ -182,11 +144,11 @@ export class ThreatModelService implements OnDestroy {
    * Force refresh the threat model list from the API
    */
   refreshThreatModelList(): void {
-    if (!this._useMockData && !this.shouldSkipApiCalls) {
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - skipping threat model list refresh');
+    } else {
       this.logger.debugComponent('ThreatModelService', 'Force refreshing threat model list');
       this.fetchThreatModelListFromAPI();
-    } else if (this.shouldSkipApiCalls) {
-      this.logger.info('User logged in with local provider - skipping threat model list refresh');
     }
   }
 
@@ -254,14 +216,25 @@ export class ThreatModelService implements OnDestroy {
     id: string,
     forceRefresh: boolean = false,
   ): Observable<ThreatModel | undefined> {
-    if (this._useMockData) {
+    // In offline mode, use cache or load from MockDataService
+    if (this.isOfflineMode) {
       this.logger.debugComponent(
         'ThreatModelService',
-        `Returning mock threat model with ID: ${id}`,
+        `Offline mode - returning threat model with ID: ${id}`,
       );
-      const threatModel = this.mockDataService.getMockThreatModels().find(tm => tm.id === id);
 
-      // Update authorization service with the mock threat model's authorization
+      // Check cache first
+      let threatModel = this._cachedThreatModels.get(id);
+
+      // If not in cache, load from MockDataService
+      if (!threatModel) {
+        threatModel = this.mockDataService.getMockThreatModels().find(tm => tm.id === id);
+        if (threatModel) {
+          this._cachedThreatModels.set(id, threatModel);
+        }
+      }
+
+      // Update authorization service with the threat model's authorization
       if (threatModel) {
         this.authorizationService.setAuthorization(threatModel.id, threatModel.authorization);
       }
@@ -324,7 +297,7 @@ export class ThreatModelService implements OnDestroy {
     | Pick<ThreatModel, 'id' | 'name' | 'description' | 'owner' | 'created_at' | 'modified_at'>
     | undefined
   > {
-    if (this._useMockData) {
+    if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel) {
         return of({
@@ -380,19 +353,8 @@ export class ThreatModelService implements OnDestroy {
    * Get diagrams for a threat model
    */
   getDiagramsForThreatModel(threatModelId: string): Observable<Diagram[]> {
-    if (this._useMockData) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Returning mock diagrams for threat model with ID: ${threatModelId}`,
-      );
-      return of(this.mockDataService.getMockDiagramsForThreatModel(threatModelId));
-    }
-
-    // Skip API calls when using local provider - return from cache
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - returning cached diagrams (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - returning diagrams from cache');
       const cachedModel = this._cachedThreatModels.get(threatModelId);
       return of(cachedModel?.diagrams || []);
     }
@@ -417,12 +379,11 @@ export class ThreatModelService implements OnDestroy {
    * Get a diagram by ID
    */
   getDiagramById(threatModelId: string, diagramId: string): Observable<Diagram | undefined> {
-    if (this._useMockData) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Returning mock diagram with ID: ${diagramId}`,
-      );
-      return of(this.mockDataService.getMockDiagramById(diagramId));
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - returning diagram from cache');
+      const cachedModel = this._cachedThreatModels.get(threatModelId);
+      const diagram = cachedModel?.diagrams?.find(d => d.id === diagramId);
+      return of(diagram);
     }
 
     // In a real implementation, this would call the API
@@ -444,22 +405,8 @@ export class ThreatModelService implements OnDestroy {
    * Get documents for a threat model
    */
   getDocumentsForThreatModel(threatModelId: string): Observable<TMDocument[]> {
-    if (this._useMockData) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Returning mock documents for threat model with ID: ${threatModelId}`,
-      );
-      return of(
-        this.mockDataService.getMockThreatModels().find(tm => tm.id === threatModelId)?.documents ||
-          [],
-      );
-    }
-
-    // Skip API calls when using local provider - return from cache
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - returning cached documents (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - returning documents from cache');
       const cachedModel = this._cachedThreatModels.get(threatModelId);
       return of(cachedModel?.documents || []);
     }
@@ -483,22 +430,8 @@ export class ThreatModelService implements OnDestroy {
    * Get source code references for a threat model
    */
   getSourceCodeForThreatModel(threatModelId: string): Observable<Source[]> {
-    if (this._useMockData) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Returning mock source code for threat model with ID: ${threatModelId}`,
-      );
-      return of(
-        this.mockDataService.getMockThreatModels().find(tm => tm.id === threatModelId)
-          ?.sourceCode || [],
-      );
-    }
-
-    // Skip API calls when using local provider - return from cache
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - returning cached source code (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - returning source code from cache');
       const cachedModel = this._cachedThreatModels.get(threatModelId);
       return of(cachedModel?.sourceCode || []);
     }
@@ -530,12 +463,13 @@ export class ThreatModelService implements OnDestroy {
     // Ensure framework is never empty - use STRIDE as default
     const validFramework = framework && framework.trim() !== '' ? framework : 'STRIDE';
 
-    if (this._useMockData) {
-      this.logger.debugComponent('ThreatModelService', 'Creating mock threat model');
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - creating threat model with mock data');
 
       const now = new Date().toISOString();
       const currentUser = this.authService.userEmail || 'anonymous@example.com';
 
+      // Use MockDataService to create threat model with proper mock data structure
       const newThreatModel = this.mockDataService.createThreatModel({
         id: uuidv4(),
         name,
@@ -557,45 +491,7 @@ export class ThreatModelService implements OnDestroy {
         threats: [],
       });
 
-      // Add to both the list and cache the full model
-      const listItem = this.convertToListItem(newThreatModel);
-      this._threatModelList.push(listItem);
-      this._threatModelListSubject.next([...this._threatModelList]);
-      this._cachedThreatModels.set(newThreatModel.id, newThreatModel);
-      return of(newThreatModel);
-    }
-
-    // Skip API calls when using local provider - create in-memory only
-    if (this.shouldSkipApiCalls) {
-      this.logger.info('User logged in with local provider - creating in-memory threat model');
-
-      const now = new Date().toISOString();
-      const currentUser = this.authService.userEmail || 'anonymous@example.com';
-
-      const newThreatModel: ThreatModel = {
-        id: uuidv4(),
-        name,
-        description: description || '',
-        created_at: now,
-        modified_at: now,
-        owner: currentUser,
-        created_by: currentUser,
-        threat_model_framework: validFramework,
-        issue_url: issueUrl,
-        authorization: [
-          {
-            subject: currentUser,
-            role: 'owner',
-          },
-        ],
-        metadata: [],
-        diagrams: [],
-        threats: [],
-        documents: [],
-        sourceCode: [],
-      };
-
-      // Add to both the list and cache the full model
+      // Add to both the list and cache
       const listItem = this.convertToListItem(newThreatModel);
       this._threatModelList.push(listItem);
       this._threatModelListSubject.next([...this._threatModelList]);
@@ -659,7 +555,7 @@ export class ThreatModelService implements OnDestroy {
   }> {
     this.logger.info('Importing threat model', { originalId: data.id, name: data.name });
 
-    if (this._useMockData) {
+    if (this.isOfflineMode) {
       // Generate a new ID to avoid conflicts
       const importedModel: ThreatModel = {
         ...data,
@@ -680,7 +576,7 @@ export class ThreatModelService implements OnDestroy {
       this._threatModelListSubject.next([...this._threatModelList]);
       this._cachedThreatModels.set(importedModel.id, importedModel);
 
-      this.logger.debugComponent('ThreatModelService', 'Imported threat model to mock data', {
+      this.logger.debugComponent('ThreatModelService', 'Imported threat model to offline cache', {
         newId: importedModel.id,
         name: importedModel.name,
         totalCount: this._threatModelList.length,
@@ -787,31 +683,8 @@ export class ThreatModelService implements OnDestroy {
    * Update a threat model
    */
   updateThreatModel(threatModel: ThreatModel): Observable<ThreatModel> {
-    if (this._useMockData) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Updating mock threat model with ID: ${threatModel.id}`,
-      );
-
-      // Update in cache
-      threatModel.modified_at = new Date().toISOString();
-      this._cachedThreatModels.set(threatModel.id, { ...threatModel });
-
-      // Update in list
-      const listIndex = this._threatModelList.findIndex(tm => tm.id === threatModel.id);
-      if (listIndex !== -1) {
-        this._threatModelList[listIndex] = this.convertToListItem(threatModel);
-        this._threatModelListSubject.next([...this._threatModelList]);
-      }
-
-      return of(this._cachedThreatModels.get(threatModel.id)!);
-    }
-
-    // Skip API calls when using local provider - update cache only
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - updating threat model in cache only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - updating threat model in cache only');
 
       // Update in cache
       threatModel.modified_at = new Date().toISOString();
@@ -862,46 +735,8 @@ export class ThreatModelService implements OnDestroy {
       >
     >,
   ): Observable<ThreatModel> {
-    if (this._useMockData) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Patching mock threat model with ID: ${threatModelId}`,
-        updates,
-      );
-
-      const cachedModel = this._cachedThreatModels.get(threatModelId);
-      if (cachedModel) {
-        // Apply updates to cached model
-        const updatedModel = {
-          ...cachedModel,
-          ...updates,
-          modified_at: new Date().toISOString(),
-        };
-        this._cachedThreatModels.set(threatModelId, updatedModel);
-
-        // Update in list
-        const listIndex = this._threatModelList.findIndex(tm => tm.id === threatModelId);
-        if (listIndex !== -1) {
-          this._threatModelList[listIndex] = this.convertToListItem(updatedModel);
-          this._threatModelListSubject.next([...this._threatModelList]);
-        }
-
-        // Notify authorization service if authorization was updated
-        if (updates.authorization) {
-          this.authorizationService.updateAuthorization(updatedModel.authorization);
-        }
-
-        return of(updatedModel);
-      } else {
-        throw new Error(`Threat model with ID ${threatModelId} not found in cache`);
-      }
-    }
-
-    // Skip API calls when using local provider - update cache only
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - patching threat model in cache only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - patching threat model in cache only');
 
       const cachedModel = this._cachedThreatModels.get(threatModelId);
       if (cachedModel) {
@@ -978,37 +813,8 @@ export class ThreatModelService implements OnDestroy {
    * Delete a threat model
    */
   deleteThreatModel(id: string): Observable<boolean> {
-    if (this._useMockData) {
-      this.logger.debugComponent('ThreatModelService', `Deleting mock threat model with ID: ${id}`);
-
-      const initialLength = this._threatModelList.length;
-      this._threatModelList = this._threatModelList.filter(tm => tm.id !== id);
-      const wasDeleted = this._threatModelList.length < initialLength;
-
-      if (wasDeleted) {
-        // Remove from cache
-        this._cachedThreatModels.delete(id);
-
-        // Notify all subscribers of the updated threat model list
-        this._threatModelListSubject.next([...this._threatModelList]);
-        this.logger.debugComponent(
-          'ThreatModelService',
-          'Updated threat model list after deletion',
-          {
-            remainingCount: this._threatModelList.length,
-            deletedId: id,
-          },
-        );
-      }
-
-      return of(wasDeleted);
-    }
-
-    // Skip API calls when using local provider - delete from cache only
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - deleting threat model from cache only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - deleting threat model from cache only');
 
       const initialLength = this._threatModelList.length;
       this._threatModelList = this._threatModelList.filter(tm => tm.id !== id);
@@ -1065,32 +871,8 @@ export class ThreatModelService implements OnDestroy {
    * Create a new threat in a threat model
    */
   createThreat(threatModelId: string, threat: Partial<Threat>): Observable<Threat> {
-    if (this._useMockData) {
-      const newThreat: Threat = {
-        ...threat,
-        id: uuidv4(),
-        threat_model_id: threatModelId,
-        created_at: new Date().toISOString(),
-        modified_at: new Date().toISOString(),
-      } as Threat;
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        if (!threatModel.threats) {
-          threatModel.threats = [];
-        }
-        threatModel.threats.push(newThreat);
-        threatModel.modified_at = new Date().toISOString();
-        this._cachedThreatModels.set(threatModelId, { ...threatModel });
-      }
-      return of(newThreat);
-    }
-
-    // Skip API calls when using local provider - create in cache only
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - creating threat in cache only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - creating threat in cache only');
 
       const newThreat: Threat = {
         ...threat,
@@ -1137,29 +919,8 @@ export class ThreatModelService implements OnDestroy {
     threatId: string,
     threat: Partial<Threat>,
   ): Observable<Threat> {
-    if (this._useMockData) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.threats) {
-        const index = threatModel.threats.findIndex(t => t.id === threatId);
-        if (index !== -1) {
-          threatModel.threats[index] = {
-            ...threatModel.threats[index],
-            ...threat,
-            modified_at: new Date().toISOString(),
-          };
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
-          return of(threatModel.threats[index]);
-        }
-      }
-      return of(threat as Threat);
-    }
-
-    // Skip API calls when using local provider - update in cache only
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - updating threat in cache only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - updating threat in cache only');
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.threats) {
         const index = threatModel.threats.findIndex(t => t.id === threatId);
@@ -1197,26 +958,8 @@ export class ThreatModelService implements OnDestroy {
    * Delete a threat from a threat model
    */
   deleteThreat(threatModelId: string, threatId: string): Observable<boolean> {
-    if (this._useMockData) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.threats) {
-        const initialLength = threatModel.threats.length;
-        threatModel.threats = threatModel.threats.filter(t => t.id !== threatId);
-        const wasDeleted = threatModel.threats.length < initialLength;
-        if (wasDeleted) {
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
-        }
-        return of(wasDeleted);
-      }
-      return of(false);
-    }
-
-    // Skip API calls when using local provider
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - deleting threat from cache only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - deleting threat from cache only');
 
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.threats) {
@@ -1245,30 +988,8 @@ export class ThreatModelService implements OnDestroy {
    * Create a new document in a threat model
    */
   createDocument(threatModelId: string, document: Partial<TMDocument>): Observable<TMDocument> {
-    if (this._useMockData) {
-      const newDocument: TMDocument = {
-        ...document,
-        id: uuidv4(),
-        metadata: [],
-      } as TMDocument;
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        if (!threatModel.documents) {
-          threatModel.documents = [];
-        }
-        threatModel.documents.push(newDocument);
-        threatModel.modified_at = new Date().toISOString();
-        this._cachedThreatModels.set(threatModelId, { ...threatModel });
-      }
-      return of(newDocument);
-    }
-
-    // Skip API calls when using local provider
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - creating document in cache only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - creating document in cache only');
 
       const newDocument: TMDocument = {
         ...document,
@@ -1312,25 +1033,8 @@ export class ThreatModelService implements OnDestroy {
     documentId: string,
     document: Partial<TMDocument>,
   ): Observable<TMDocument> {
-    if (this._useMockData) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.documents) {
-        const index = threatModel.documents.findIndex(d => d.id === documentId);
-        if (index !== -1) {
-          threatModel.documents[index] = { ...threatModel.documents[index], ...document };
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
-          return of(threatModel.documents[index]);
-        }
-      }
-      return of(document as TMDocument);
-    }
-
-    // Skip API calls when using local provider
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - updating document in cache only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - updating document in cache only');
 
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.documents) {
@@ -1362,26 +1066,8 @@ export class ThreatModelService implements OnDestroy {
    * Delete a document from a threat model
    */
   deleteDocument(threatModelId: string, documentId: string): Observable<boolean> {
-    if (this._useMockData) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.documents) {
-        const initialLength = threatModel.documents.length;
-        threatModel.documents = threatModel.documents.filter(d => d.id !== documentId);
-        const wasDeleted = threatModel.documents.length < initialLength;
-        if (wasDeleted) {
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
-        }
-        return of(wasDeleted);
-      }
-      return of(false);
-    }
-
-    // Skip API calls when using local provider
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - deleting document from cache only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - deleting document from cache only');
 
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.documents) {
@@ -1410,30 +1096,8 @@ export class ThreatModelService implements OnDestroy {
    * Create a new source in a threat model
    */
   createSource(threatModelId: string, source: Partial<Source>): Observable<Source> {
-    if (this._useMockData) {
-      const newSource: Source = {
-        ...source,
-        id: uuidv4(),
-        metadata: [],
-      } as Source;
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        if (!threatModel.sourceCode) {
-          threatModel.sourceCode = [];
-        }
-        threatModel.sourceCode.push(newSource);
-        threatModel.modified_at = new Date().toISOString();
-        this._cachedThreatModels.set(threatModelId, { ...threatModel });
-      }
-      return of(newSource);
-    }
-
-    // Skip API calls when using local provider
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - creating source in cache only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - creating source in cache only');
 
       const newSource: Source = {
         ...source,
@@ -1477,25 +1141,8 @@ export class ThreatModelService implements OnDestroy {
     sourceId: string,
     source: Partial<Source>,
   ): Observable<Source> {
-    if (this._useMockData) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.sourceCode) {
-        const index = threatModel.sourceCode.findIndex(s => s.id === sourceId);
-        if (index !== -1) {
-          threatModel.sourceCode[index] = { ...threatModel.sourceCode[index], ...source };
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
-          return of(threatModel.sourceCode[index]);
-        }
-      }
-      return of(source as Source);
-    }
-
-    // Skip API calls when using local provider
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - updating source in cache only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - updating source in cache only');
 
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.sourceCode) {
@@ -1527,26 +1174,8 @@ export class ThreatModelService implements OnDestroy {
    * Delete a source from a threat model
    */
   deleteSource(threatModelId: string, sourceId: string): Observable<boolean> {
-    if (this._useMockData) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.sourceCode) {
-        const initialLength = threatModel.sourceCode.length;
-        threatModel.sourceCode = threatModel.sourceCode.filter(s => s.id !== sourceId);
-        const wasDeleted = threatModel.sourceCode.length < initialLength;
-        if (wasDeleted) {
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
-        }
-        return of(wasDeleted);
-      }
-      return of(false);
-    }
-
-    // Skip API calls when using local provider
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - deleting source from cache only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - deleting source from cache only');
 
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.sourceCode) {
@@ -1575,33 +1204,8 @@ export class ThreatModelService implements OnDestroy {
    * Create a new diagram in a threat model
    */
   createDiagram(threatModelId: string, diagram: Partial<Diagram>): Observable<Diagram> {
-    if (this._useMockData) {
-      const newDiagram: Diagram = {
-        ...diagram,
-        id: uuidv4(),
-        created_at: new Date().toISOString(),
-        modified_at: new Date().toISOString(),
-        metadata: [],
-        cells: [],
-      } as Diagram;
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        if (!threatModel.diagrams) {
-          threatModel.diagrams = [];
-        }
-        threatModel.diagrams.push(newDiagram);
-        threatModel.modified_at = new Date().toISOString();
-        this._cachedThreatModels.set(threatModelId, { ...threatModel });
-      }
-      return of(newDiagram);
-    }
-
-    // Skip API calls when using local provider - create in cache only
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - creating diagram in cache only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - creating diagram in cache only');
 
       const newDiagram: Diagram = {
         ...diagram,
@@ -1647,32 +1251,8 @@ export class ThreatModelService implements OnDestroy {
    * NOTE: This should ONLY be called from the DFD editor
    */
   patchDiagramCells(threatModelId: string, diagramId: string, cells: Cell[]): Observable<Diagram> {
-    if (this._useMockData) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Patching mock diagram cells for diagram ID: ${diagramId}`,
-        { cellCount: cells.length },
-      );
-
-      // For mock mode, simulate the patch operation
-      const mockDiagram: Diagram = {
-        id: diagramId,
-        name: 'Mock Diagram',
-        type: 'DFD-1.0.0',
-        cells: cells,
-        metadata: [],
-        created_at: new Date().toISOString(),
-        modified_at: new Date().toISOString(),
-      };
-
-      return of(mockDiagram);
-    }
-
-    // Skip API calls when using local provider - return mock diagram
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - patching diagram cells in memory only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - patching diagram cells in memory only');
 
       // For local provider, simulate the patch operation (diagram is stored in localStorage via DFD service)
       const mockDiagram: Diagram = {
@@ -1725,17 +1305,13 @@ export class ThreatModelService implements OnDestroy {
     cells: Cell[],
     imageData: { svg?: string; update_vector?: number },
   ): Observable<Diagram> {
-    if (this._useMockData) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Patching mock diagram cells and image for diagram ID: ${diagramId}`,
-        { cellCount: cells.length, hasImageData: !!imageData.svg },
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - patching diagram with image in memory only');
 
-      // For mock mode, simulate the patch operation
+      // For offline mode, simulate the patch operation
       const mockDiagram: Diagram = {
         id: diagramId,
-        name: 'Mock Diagram',
+        name: 'Local Diagram',
         type: 'DFD-1.0.0',
         created_at: new Date().toISOString(),
         modified_at: new Date().toISOString(),
@@ -1786,27 +1362,8 @@ export class ThreatModelService implements OnDestroy {
    * Delete a diagram from a threat model
    */
   deleteDiagram(threatModelId: string, diagramId: string): Observable<boolean> {
-    if (this._useMockData) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.diagrams) {
-        const initialLength = threatModel.diagrams.length;
-        const filteredDiagrams = threatModel.diagrams.filter(d => d.id !== diagramId);
-        threatModel.diagrams = filteredDiagrams;
-        const wasDeleted = filteredDiagrams.length < initialLength;
-        if (wasDeleted) {
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
-        }
-        return of(wasDeleted);
-      }
-      return of(false);
-    }
-
-    // Skip API calls when using local provider
-    if (this.shouldSkipApiCalls) {
-      this.logger.info(
-        'User logged in with local provider - deleting diagram from cache only (no API call)',
-      );
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - deleting diagram from cache only');
 
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.diagrams) {
@@ -1836,7 +1393,7 @@ export class ThreatModelService implements OnDestroy {
    * Get metadata for a threat model
    */
   getThreatModelMetadata(threatModelId: string): Observable<Metadata[]> {
-    if (this._useMockData) {
+    if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       return of(threatModel?.metadata || []);
     }
@@ -1853,7 +1410,7 @@ export class ThreatModelService implements OnDestroy {
    * Update metadata for a threat model
    */
   updateThreatModelMetadata(threatModelId: string, metadata: Metadata[]): Observable<Metadata[]> {
-    if (this._useMockData) {
+    if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel) {
         threatModel.metadata = [...metadata];
@@ -1889,7 +1446,7 @@ export class ThreatModelService implements OnDestroy {
    * Get metadata for a diagram
    */
   getDiagramMetadata(threatModelId: string, diagramId: string): Observable<Metadata[]> {
-    if (this._useMockData) {
+    if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       const diagram = threatModel?.diagrams?.find(d => d.id === diagramId);
       return of(diagram?.metadata || []);
@@ -1913,7 +1470,7 @@ export class ThreatModelService implements OnDestroy {
     diagramId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    if (this._useMockData) {
+    if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel) {
         const diagram = threatModel.diagrams?.find(d => d.id === diagramId);
@@ -1952,7 +1509,7 @@ export class ThreatModelService implements OnDestroy {
    * Get metadata for a threat
    */
   getThreatMetadata(threatModelId: string, threatId: string): Observable<Metadata[]> {
-    if (this._useMockData) {
+    if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       const threat = threatModel?.threats?.find(t => t.id === threatId);
       return of(threat?.metadata || []);
@@ -1976,7 +1533,7 @@ export class ThreatModelService implements OnDestroy {
     threatId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    if (this._useMockData) {
+    if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel) {
         const threat = threatModel.threats?.find(t => t.id === threatId);
@@ -2015,7 +1572,7 @@ export class ThreatModelService implements OnDestroy {
    * Get metadata for a document
    */
   getDocumentMetadata(threatModelId: string, documentId: string): Observable<Metadata[]> {
-    if (this._useMockData) {
+    if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       const document = threatModel?.documents?.find(d => d.id === documentId);
       return of(document?.metadata || []);
@@ -2039,7 +1596,7 @@ export class ThreatModelService implements OnDestroy {
     documentId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    if (this._useMockData) {
+    if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel) {
         const document = threatModel.documents?.find(d => d.id === documentId);
@@ -2078,7 +1635,7 @@ export class ThreatModelService implements OnDestroy {
    * Get metadata for a source
    */
   getSourceMetadata(threatModelId: string, sourceId: string): Observable<Metadata[]> {
-    if (this._useMockData) {
+    if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       const source = threatModel?.sourceCode?.find(s => s.id === sourceId);
       return of(source?.metadata || []);
@@ -2102,7 +1659,7 @@ export class ThreatModelService implements OnDestroy {
     sourceId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    if (this._useMockData) {
+    if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel) {
         const source = threatModel.sourceCode?.find(s => s.id === sourceId);
@@ -2141,10 +1698,6 @@ export class ThreatModelService implements OnDestroy {
    * Clean up resources when the service is destroyed
    */
   ngOnDestroy(): void {
-    if (this._subscription) {
-      this._subscription.unsubscribe();
-      this._subscription = null;
-    }
     this._threatModelListSubject.complete();
     this._cachedThreatModels.clear();
   }
@@ -2202,11 +1755,11 @@ export class ThreatModelService implements OnDestroy {
       currentUser: this.authService.username,
       userEmail: this.authService.userEmail,
       isAuthenticated: !!this.authService.getStoredToken(),
-      useMockData: this._useMockData,
+      isOfflineMode: this.isOfflineMode,
     });
 
-    if (this._useMockData) {
-      // For mock data, simulate a collaboration session
+    if (this.isOfflineMode) {
+      // For offline mode, simulate a collaboration session
       const mockSession: CollaborationSession = {
         session_id: `session-${Date.now()}`,
         threat_model_id: threatModelId,
@@ -2285,8 +1838,8 @@ export class ThreatModelService implements OnDestroy {
   endDiagramCollaborationSession(threatModelId: string, diagramId: string): Observable<void> {
     this.logger.info('Ending diagram collaboration session', { threatModelId, diagramId });
 
-    if (this._useMockData) {
-      // For mock data, just simulate success
+    if (this.isOfflineMode) {
+      // For offline mode, just simulate success
       return of(undefined);
     }
 
@@ -2315,8 +1868,8 @@ export class ThreatModelService implements OnDestroy {
   ): Observable<CollaborationSession | null> {
     this.logger.info('Getting diagram collaboration session', { threatModelId, diagramId });
 
-    if (this._useMockData) {
-      // For mock data, return null (no active session)
+    if (this.isOfflineMode) {
+      // For offline mode, return null (no active session)
       return of(null);
     }
 
@@ -2359,8 +1912,8 @@ export class ThreatModelService implements OnDestroy {
       diagramId,
     });
 
-    if (this._useMockData) {
-      // For mock data, always simulate creating a new session
+    if (this.isOfflineMode) {
+      // For offline mode, always simulate creating a new session
       return this.startDiagramCollaborationSession(threatModelId, diagramId).pipe(
         map(session => ({ session, isNewSession: true })),
       );

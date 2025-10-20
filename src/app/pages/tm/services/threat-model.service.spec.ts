@@ -56,7 +56,6 @@ describe('ThreatModelService', () => {
     });
 
     // Create spy objects for the dependencies
-    const useMockDataSubject = new BehaviorSubject<boolean>(true);
     mockDataService = {
       getMockThreatModels: vi
         .fn()
@@ -70,10 +69,6 @@ describe('ThreatModelService', () => {
           description: 'Created for testing',
         }),
       ),
-      useMockData$: useMockDataSubject,
-      toggleMockData: vi.fn().mockImplementation((useMock: boolean) => {
-        useMockDataSubject.next(useMock);
-      }),
     } as unknown as MockDataService;
 
     loggerService = createMockLoggerService() as unknown as LoggerService;
@@ -86,10 +81,11 @@ describe('ThreatModelService', () => {
       delete: vi.fn().mockReturnValue(of(true)),
     } as unknown as ApiService;
 
-    // Create a mock for AuthService
+    // Create a mock for AuthService (default to offline mode enabled)
     authService = {
       userEmail: 'test.user@example.com',
       userProfile: { email: 'test.user@example.com', name: 'Test User' },
+      isUsingLocalProvider: true, // Enable offline mode by default for tests
     } as unknown as AuthService;
 
     // Create a mock for ThreatModelAuthorizationService
@@ -116,12 +112,10 @@ describe('ThreatModelService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('with mock data enabled', () => {
+  describe('with offline mode enabled', () => {
     beforeEach(() => {
-      // Ensure mock data is enabled
-      if (mockDataService.useMockData$ instanceof BehaviorSubject) {
-        mockDataService.useMockData$.next(true);
-      }
+      // Ensure offline mode is enabled
+      authService.isUsingLocalProvider = true;
     });
 
     it('should return mock threat model list', waitForAsync(() => {
@@ -186,12 +180,10 @@ describe('ThreatModelService', () => {
     }));
   });
 
-  describe('with mock data disabled', () => {
+  describe('with offline mode disabled', () => {
     beforeEach(() => {
-      // Disable mock data
-      if (mockDataService.useMockData$ instanceof BehaviorSubject) {
-        mockDataService.useMockData$.next(false);
-      }
+      // Disable offline mode
+      authService.isUsingLocalProvider = false;
     });
 
     it('should make API calls for diagrams when mock data is disabled', waitForAsync(() => {
@@ -233,8 +225,8 @@ describe('ThreatModelService', () => {
 
   describe('Metadata API Methods', () => {
     beforeEach(() => {
-      // Disable mock data for these tests
-      mockDataService.toggleMockData(false);
+      // Disable offline mode for these tests
+      authService.isUsingLocalProvider = false;
     });
 
     it('should get threat model metadata via API', waitForAsync(() => {
@@ -375,8 +367,8 @@ describe('ThreatModelService', () => {
 
   describe('Entity API Methods', () => {
     beforeEach(() => {
-      // Disable mock data for these tests
-      mockDataService.toggleMockData(false);
+      // Disable offline mode for these tests
+      authService.isUsingLocalProvider = false;
     });
 
     describe('Threat API Methods', () => {
