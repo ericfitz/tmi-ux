@@ -17,7 +17,7 @@ import { ApiService } from '../../../core/services/api.service';
 import { MockDataService } from '../../../mocks/mock-data.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ThreatModelAuthorizationService } from './threat-model-authorization.service';
-import { BehaviorSubject, of } from 'rxjs';
+import { of } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createMockLoggerService } from '../../../../testing/mocks';
 

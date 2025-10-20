@@ -884,12 +884,14 @@ export class ThreatModelService implements OnDestroy {
 
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel) {
-        if (!threatModel.threats) {
-          threatModel.threats = [];
-        }
-        threatModel.threats.push(newThreat);
-        threatModel.modified_at = new Date().toISOString();
-        this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        // Create a deep copy of the threats array to avoid mutating mock data
+        const updatedThreats = [...(threatModel.threats || []), newThreat];
+        const updatedThreatModel = {
+          ...threatModel,
+          threats: updatedThreats,
+          modified_at: new Date().toISOString(),
+        };
+        this._cachedThreatModels.set(threatModelId, updatedThreatModel);
       }
       return of(newThreat);
     }
@@ -925,14 +927,24 @@ export class ThreatModelService implements OnDestroy {
       if (threatModel && threatModel.threats) {
         const index = threatModel.threats.findIndex(t => t.id === threatId);
         if (index !== -1) {
-          threatModel.threats[index] = {
+          // Create a deep copy of the threats array to avoid mutating mock data
+          const updatedThreat = {
             ...threatModel.threats[index],
             ...threat,
             modified_at: new Date().toISOString(),
           };
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
-          return of(threatModel.threats[index]);
+          const updatedThreats = [
+            ...threatModel.threats.slice(0, index),
+            updatedThreat,
+            ...threatModel.threats.slice(index + 1),
+          ];
+          const updatedThreatModel = {
+            ...threatModel,
+            threats: updatedThreats,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
+          return of(updatedThreat);
         }
       }
       return of(threat as Threat);
@@ -964,11 +976,16 @@ export class ThreatModelService implements OnDestroy {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.threats) {
         const initialLength = threatModel.threats.length;
-        threatModel.threats = threatModel.threats.filter(t => t.id !== threatId);
-        const wasDeleted = threatModel.threats.length < initialLength;
+        // Create a deep copy of the threats array to avoid mutating mock data
+        const filteredThreats = threatModel.threats.filter(t => t.id !== threatId);
+        const wasDeleted = filteredThreats.length < initialLength;
         if (wasDeleted) {
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+          const updatedThreatModel = {
+            ...threatModel,
+            threats: filteredThreats,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
         }
         return of(wasDeleted);
       }
@@ -999,12 +1016,14 @@ export class ThreatModelService implements OnDestroy {
 
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel) {
-        if (!threatModel.documents) {
-          threatModel.documents = [];
-        }
-        threatModel.documents.push(newDocument);
-        threatModel.modified_at = new Date().toISOString();
-        this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        // Create a deep copy of the documents array to avoid mutating mock data
+        const updatedDocuments = [...(threatModel.documents || []), newDocument];
+        const updatedThreatModel = {
+          ...threatModel,
+          documents: updatedDocuments,
+          modified_at: new Date().toISOString(),
+        };
+        this._cachedThreatModels.set(threatModelId, updatedThreatModel);
       }
       return of(newDocument);
     }
@@ -1040,10 +1059,20 @@ export class ThreatModelService implements OnDestroy {
       if (threatModel && threatModel.documents) {
         const index = threatModel.documents.findIndex(d => d.id === documentId);
         if (index !== -1) {
-          threatModel.documents[index] = { ...threatModel.documents[index], ...document };
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
-          return of(threatModel.documents[index]);
+          // Create a deep copy of the documents array to avoid mutating mock data
+          const updatedDocument = { ...threatModel.documents[index], ...document };
+          const updatedDocuments = [
+            ...threatModel.documents.slice(0, index),
+            updatedDocument,
+            ...threatModel.documents.slice(index + 1),
+          ];
+          const updatedThreatModel = {
+            ...threatModel,
+            documents: updatedDocuments,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
+          return of(updatedDocument);
         }
       }
       return of(document as TMDocument);
@@ -1072,11 +1101,16 @@ export class ThreatModelService implements OnDestroy {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.documents) {
         const initialLength = threatModel.documents.length;
-        threatModel.documents = threatModel.documents.filter(d => d.id !== documentId);
-        const wasDeleted = threatModel.documents.length < initialLength;
+        // Create a deep copy of the documents array to avoid mutating mock data
+        const filteredDocuments = threatModel.documents.filter(d => d.id !== documentId);
+        const wasDeleted = filteredDocuments.length < initialLength;
         if (wasDeleted) {
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+          const updatedThreatModel = {
+            ...threatModel,
+            documents: filteredDocuments,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
         }
         return of(wasDeleted);
       }
@@ -1107,12 +1141,14 @@ export class ThreatModelService implements OnDestroy {
 
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel) {
-        if (!threatModel.sourceCode) {
-          threatModel.sourceCode = [];
-        }
-        threatModel.sourceCode.push(newSource);
-        threatModel.modified_at = new Date().toISOString();
-        this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        // Create a deep copy of the sourceCode array to avoid mutating mock data
+        const updatedSourceCode = [...(threatModel.sourceCode || []), newSource];
+        const updatedThreatModel = {
+          ...threatModel,
+          sourceCode: updatedSourceCode,
+          modified_at: new Date().toISOString(),
+        };
+        this._cachedThreatModels.set(threatModelId, updatedThreatModel);
       }
       return of(newSource);
     }
@@ -1148,10 +1184,20 @@ export class ThreatModelService implements OnDestroy {
       if (threatModel && threatModel.sourceCode) {
         const index = threatModel.sourceCode.findIndex(s => s.id === sourceId);
         if (index !== -1) {
-          threatModel.sourceCode[index] = { ...threatModel.sourceCode[index], ...source };
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
-          return of(threatModel.sourceCode[index]);
+          // Create a deep copy of the sourceCode array to avoid mutating mock data
+          const updatedSource = { ...threatModel.sourceCode[index], ...source };
+          const updatedSourceCode = [
+            ...threatModel.sourceCode.slice(0, index),
+            updatedSource,
+            ...threatModel.sourceCode.slice(index + 1),
+          ];
+          const updatedThreatModel = {
+            ...threatModel,
+            sourceCode: updatedSourceCode,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
+          return of(updatedSource);
         }
       }
       return of(source as Source);
@@ -1180,11 +1226,16 @@ export class ThreatModelService implements OnDestroy {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.sourceCode) {
         const initialLength = threatModel.sourceCode.length;
-        threatModel.sourceCode = threatModel.sourceCode.filter(s => s.id !== sourceId);
-        const wasDeleted = threatModel.sourceCode.length < initialLength;
+        // Create a deep copy of the sourceCode array to avoid mutating mock data
+        const filteredSourceCode = threatModel.sourceCode.filter(s => s.id !== sourceId);
+        const wasDeleted = filteredSourceCode.length < initialLength;
         if (wasDeleted) {
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+          const updatedThreatModel = {
+            ...threatModel,
+            sourceCode: filteredSourceCode,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
         }
         return of(wasDeleted);
       }
@@ -1218,12 +1269,14 @@ export class ThreatModelService implements OnDestroy {
 
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel) {
-        if (!threatModel.diagrams) {
-          threatModel.diagrams = [];
-        }
-        threatModel.diagrams.push(newDiagram);
-        threatModel.modified_at = new Date().toISOString();
-        this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        // Create a deep copy of the diagrams array to avoid mutating mock data
+        const updatedDiagrams = [...(threatModel.diagrams || []), newDiagram];
+        const updatedThreatModel = {
+          ...threatModel,
+          diagrams: updatedDiagrams,
+          modified_at: new Date().toISOString(),
+        };
+        this._cachedThreatModels.set(threatModelId, updatedThreatModel);
       }
       return of(newDiagram);
     }
@@ -1368,12 +1421,16 @@ export class ThreatModelService implements OnDestroy {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel && threatModel.diagrams) {
         const initialLength = threatModel.diagrams.length;
+        // Create a deep copy of the diagrams array to avoid mutating mock data
         const filteredDiagrams = threatModel.diagrams.filter(d => d.id !== diagramId);
-        threatModel.diagrams = filteredDiagrams;
         const wasDeleted = filteredDiagrams.length < initialLength;
         if (wasDeleted) {
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+          const updatedThreatModel = {
+            ...threatModel,
+            diagrams: filteredDiagrams,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
         }
         return of(wasDeleted);
       }
@@ -1413,9 +1470,12 @@ export class ThreatModelService implements OnDestroy {
     if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel) {
-        threatModel.metadata = [...metadata];
-        threatModel.modified_at = new Date().toISOString();
-        this._cachedThreatModels.set(threatModelId, { ...threatModel });
+        const updatedThreatModel = {
+          ...threatModel,
+          metadata: [...metadata],
+          modified_at: new Date().toISOString(),
+        };
+        this._cachedThreatModels.set(threatModelId, updatedThreatModel);
       }
       return of(metadata);
     }
@@ -1472,12 +1532,25 @@ export class ThreatModelService implements OnDestroy {
   ): Observable<Metadata[]> {
     if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        const diagram = threatModel.diagrams?.find(d => d.id === diagramId);
-        if (diagram) {
-          diagram.metadata = [...metadata];
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+      if (threatModel && threatModel.diagrams) {
+        const diagramIndex = threatModel.diagrams.findIndex(d => d.id === diagramId);
+        if (diagramIndex !== -1) {
+          // Create deep copies to avoid mutating mock data
+          const updatedDiagram = {
+            ...threatModel.diagrams[diagramIndex],
+            metadata: [...metadata],
+          };
+          const updatedDiagrams = [
+            ...threatModel.diagrams.slice(0, diagramIndex),
+            updatedDiagram,
+            ...threatModel.diagrams.slice(diagramIndex + 1),
+          ];
+          const updatedThreatModel = {
+            ...threatModel,
+            diagrams: updatedDiagrams,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
         }
       }
       return of(metadata);
@@ -1535,12 +1608,25 @@ export class ThreatModelService implements OnDestroy {
   ): Observable<Metadata[]> {
     if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        const threat = threatModel.threats?.find(t => t.id === threatId);
-        if (threat) {
-          threat.metadata = [...metadata];
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+      if (threatModel && threatModel.threats) {
+        const threatIndex = threatModel.threats.findIndex(t => t.id === threatId);
+        if (threatIndex !== -1) {
+          // Create deep copies to avoid mutating mock data
+          const updatedThreat = {
+            ...threatModel.threats[threatIndex],
+            metadata: [...metadata],
+          };
+          const updatedThreats = [
+            ...threatModel.threats.slice(0, threatIndex),
+            updatedThreat,
+            ...threatModel.threats.slice(threatIndex + 1),
+          ];
+          const updatedThreatModel = {
+            ...threatModel,
+            threats: updatedThreats,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
         }
       }
       return of(metadata);
@@ -1598,12 +1684,25 @@ export class ThreatModelService implements OnDestroy {
   ): Observable<Metadata[]> {
     if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        const document = threatModel.documents?.find(d => d.id === documentId);
-        if (document) {
-          document.metadata = [...metadata];
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+      if (threatModel && threatModel.documents) {
+        const documentIndex = threatModel.documents.findIndex(d => d.id === documentId);
+        if (documentIndex !== -1) {
+          // Create deep copies to avoid mutating mock data
+          const updatedDocument = {
+            ...threatModel.documents[documentIndex],
+            metadata: [...metadata],
+          };
+          const updatedDocuments = [
+            ...threatModel.documents.slice(0, documentIndex),
+            updatedDocument,
+            ...threatModel.documents.slice(documentIndex + 1),
+          ];
+          const updatedThreatModel = {
+            ...threatModel,
+            documents: updatedDocuments,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
         }
       }
       return of(metadata);
@@ -1661,12 +1760,25 @@ export class ThreatModelService implements OnDestroy {
   ): Observable<Metadata[]> {
     if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        const source = threatModel.sourceCode?.find(s => s.id === sourceId);
-        if (source) {
-          source.metadata = [...metadata];
-          threatModel.modified_at = new Date().toISOString();
-          this._cachedThreatModels.set(threatModelId, { ...threatModel });
+      if (threatModel && threatModel.sourceCode) {
+        const sourceIndex = threatModel.sourceCode.findIndex(s => s.id === sourceId);
+        if (sourceIndex !== -1) {
+          // Create deep copies to avoid mutating mock data
+          const updatedSource = {
+            ...threatModel.sourceCode[sourceIndex],
+            metadata: [...metadata],
+          };
+          const updatedSourceCode = [
+            ...threatModel.sourceCode.slice(0, sourceIndex),
+            updatedSource,
+            ...threatModel.sourceCode.slice(sourceIndex + 1),
+          ];
+          const updatedThreatModel = {
+            ...threatModel,
+            sourceCode: updatedSourceCode,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
         }
       }
       return of(metadata);
