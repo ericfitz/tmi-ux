@@ -98,7 +98,7 @@
     "@angular-eslint/template-parser": "^20.4.0",
     "@angular/cli": "^20.3.6",
     "@angular/compiler-cli": "^20.3.6",
-    "@eslint/js": "^9.37.0",
+    "@eslint/js": "^9.38.0",
     "@testing-library/angular": "^18.1.0",
     "@types/jsdom": "^27.0.0",
     "@types/node": "^24.8.1",
@@ -108,16 +108,16 @@
     "@vitest/ui": "^3.2.4",
     "angular-eslint": "^20.4.0",
     "cross-env": "^10.1.0",
-    "cypress": "^15.4.0",
-    "eslint": "^9.37.0",
+    "cypress": "^15.5.0",
+    "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.4",
-    "eslint-plugin-unused-imports": "^4.2.0",
+    "eslint-plugin-unused-imports": "^4.3.0",
     "glob": "^11.0.3",
     "globals": "^16.4.0",
     "http-proxy-middleware": "3.0.5",
-    "jsdom": "^27.0.0",
+    "jsdom": "^27.0.1",
     "prettier": "^3.6.2",
     "stylelint": "^16.25.0",
     "stylelint-config-standard-scss": "^16.0.0",
@@ -127,7 +127,7 @@
     "vite": "7.1.7",
     "vitest": "^3.2.4"
   },
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@10.18.3",
   "engines": {
     "node": ">=22.0.0 <23.0.0"
   },
@@ -161,7 +161,15 @@
       "allowedVersions": {}
     },
     "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "cypress",
+      "esbuild",
+      "lmdb",
+      "msgpackr-extract",
       "unrs-resolver"
-    ]
+    ],
+    "patchedDependencies": {
+      "@antv/x6-plugin-selection@2.2.2": "patches/@antv__x6-plugin-selection@2.2.2.patch"
+    }
   }
 }
