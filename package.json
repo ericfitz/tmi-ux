@@ -56,7 +56,7 @@
     "build:hosted-container": "ng build --configuration=hosted-container",
     "heroku-postbuild": "ng build --configuration=hosted-container",
     "deploy:heroku": "./scripts/push-heroku.sh",
-    "sync:docs-server": "cross-env cp $TMI_DIRECTORY/docs/ $TMI_UX_DIRECTORY/docs-server/"
+    "sync:docs-server": "cp -r $TMI_DIRECTORY/docs/* $TMI_UX_DIRECTORY/docs-server/"
   },
   "private": true,
   "dependencies": {
