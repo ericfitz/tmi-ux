@@ -298,7 +298,7 @@ describe('ThreatModel Validation Integration', () => {
         {
           id: '123e4567-e89b-12d3-a456-426614174001',
           name: 'Architecture Document',
-          url: 'https://example.com/docs/arch.pdf',
+          uri: 'https://example.com/docs/arch.pdf',
           description: 'System architecture documentation',
           metadata: [{ key: 'type', value: 'architecture' }],
         },

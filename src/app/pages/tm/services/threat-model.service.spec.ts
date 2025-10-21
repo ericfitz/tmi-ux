@@ -339,27 +339,27 @@ describe('ThreatModelService', () => {
         });
     }));
 
-    it('should get source metadata via API', waitForAsync(() => {
-      const mockMetadata = [{ key: 'source-key', value: 'source-value' }];
-      const sourceId = 'test-source-id';
+    it('should get repository metadata via API', waitForAsync(() => {
+      const mockMetadata = [{ key: 'repository-key', value: 'repository-value' }];
+      const repositoryId = 'test-repository-id';
       vi.spyOn(apiService, 'get').mockReturnValue(of(mockMetadata));
 
-      service.getSourceMetadata(testThreatModel1.id, sourceId).subscribe(metadata => {
+      service.getRepositoryMetadata(testThreatModel1.id, repositoryId).subscribe(metadata => {
         expect(apiService.get).toHaveBeenCalledWith(
-          `threat_models/${testThreatModel1.id}/sources/${sourceId}/metadata`,
+          `threat_models/${testThreatModel1.id}/repositories/${repositoryId}/metadata`,
         );
         expect(metadata).toEqual(mockMetadata);
       });
     }));
 
-    it('should update source metadata via API', waitForAsync(() => {
-      const metadata = [{ key: 'source-updated', value: 'source-updated-value' }];
-      const sourceId = 'test-source-id';
+    it('should update repository metadata via API', waitForAsync(() => {
+      const metadata = [{ key: 'repository-updated', value: 'repository-updated-value' }];
+      const repositoryId = 'test-repository-id';
       vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
 
-      service.updateSourceMetadata(testThreatModel1.id, sourceId, metadata).subscribe(result => {
+      service.updateRepositoryMetadata(testThreatModel1.id, repositoryId, metadata).subscribe(result => {
         expect(apiService.post).toHaveBeenCalledWith(
-          `threat_models/${testThreatModel1.id}/sources/${sourceId}/metadata/bulk`,
+          `threat_models/${testThreatModel1.id}/repositories/${repositoryId}/metadata/bulk`,
           metadata,
         );
         expect(result).toEqual(metadata);
