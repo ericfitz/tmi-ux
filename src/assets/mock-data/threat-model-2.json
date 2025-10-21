@@ -7,7 +7,7 @@
   "owner": "user@example.com",
   "created_by": "user@example.com",
   "threat_model_framework": "CIA",
-  "issue_url": "https://issues.example.com/browse/TM-124",
+  "issue_uri": "https://issues.example.com/browse/TM-124",
   "authorization": [
     {
       "subject": "user@example.com",
@@ -40,7 +40,7 @@
     {
       "id": "5ba7b810-9dad-11d1-beef-00c04fd430ca",
       "name": "Cloud Security Playbook",
-      "url": "https://docs.example.com/cloud-security-playbook.pdf",
+      "uri": "https://docs.example.com/cloud-security-playbook.pdf",
       "description": "Cloud security best practices and procedures",
       "metadata": [
         {
@@ -56,7 +56,7 @@
     {
       "id": "5ba7b810-9dad-11d1-beef-00c04fd430cb",
       "name": "Infrastructure as Code Templates",
-      "url": "https://github.com/example/infrastructure-templates",
+      "uri": "https://github.com/example/infrastructure-templates",
       "description": "Terraform templates for secure cloud infrastructure",
       "metadata": [
         {
@@ -70,13 +70,13 @@
       ]
     }
   ],
-  "sourceCode": [
+  "repositories": [
     {
       "id": "7ba7b810-1dad-11d1-8080-00c04fd430c9",
       "name": "Infrastructure Repository",
       "description": "Terraform infrastructure as code",
       "type": "git",
-      "url": "https://github.com/example/infrastructure-templates.git",
+      "uri": "https://github.com/example/infrastructure-templates.git",
       "parameters": {
         "refType": "tag",
         "refValue": "v2.1.0",
