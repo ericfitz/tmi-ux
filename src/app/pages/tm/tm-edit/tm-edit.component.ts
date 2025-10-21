@@ -342,8 +342,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // Load documents separately
     this.loadDocuments(id);
 
-    // Load source code separately
-    this.loadSourceCode(id);
+    // Load repositories separately
+    this.loadRepositories(id);
 
     // Re-enable auto-save after initial population is complete
     setTimeout(() => {
@@ -1578,11 +1578,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Opens the source code view (placeholder for future functionality)
+   * Opens the repository view (placeholder for future functionality)
    */
-  openSourceCodeView(): void {
-    // TODO: Implement source code view functionality
-    this.logger.info('Source code view clicked - functionality to be implemented');
+  openRepositoryView(): void {
+    // TODO: Implement repository view functionality
+    this.logger.info('Repository view clicked - functionality to be implemented');
   }
 
   /**
@@ -2319,7 +2319,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
   /**
    * Load repositories for the threat model using separate API call
    */
-  private loadSourceCode(threatModelId: string): void {
+  private loadRepositories(threatModelId: string): void {
     this._subscriptions.add(
       this.threatModelService
         .getRepositoriesForThreatModel(threatModelId)
