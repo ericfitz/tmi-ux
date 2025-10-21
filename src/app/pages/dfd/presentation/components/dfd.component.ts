@@ -1783,7 +1783,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             mitigated: threatData.mitigated,
             status: threatData.status,
             threat_type: threatData.threat_type,
-            issue_url: threatData.issue_url,
+            issue_uri: threatData.issue_uri,
             metadata: threatData.metadata || [],
           };
 

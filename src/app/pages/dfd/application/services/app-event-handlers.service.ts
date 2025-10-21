@@ -405,7 +405,7 @@ export class AppEventHandlersService {
                     priority?: string;
                     mitigated?: boolean;
                     status?: string;
-                    issue_url?: string;
+                    issue_uri?: string;
                     metadata?: { key: string; value: string }[];
                   }
 
@@ -424,7 +424,7 @@ export class AppEventHandlersService {
                     cell_id: formResult.cell_id || selectedCell?.id || '',
                     score: formResult.score || 10.0,
                     priority: formResult.priority || 'High',
-                    issue_url: formResult.issue_url || '',
+                    issue_uri: formResult.issue_uri || '',
                     mitigated: formResult.mitigated || false,
                     status: formResult.status || 'Open',
                     metadata: formResult.metadata || [],

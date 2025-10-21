@@ -330,7 +330,7 @@ export class FormValidationService {
       ],
       description: [FormValidationService.validators.maxLength(500)],
       threat_model_framework: [FormValidationService.validators.required],
-      issue_url: [FormValidationService.validators.url],
+      issue_uri: [FormValidationService.validators.url],
     };
   }
 
@@ -347,7 +347,7 @@ export class FormValidationService {
       severity: [FormValidationService.validators.required],
       threat_type: [FormValidationService.validators.required],
       score: [FormValidationService.validators.positiveNumber],
-      issue_url: [FormValidationService.validators.url],
+      issue_uri: [FormValidationService.validators.url],
     };
   }
 
@@ -360,21 +360,21 @@ export class FormValidationService {
         FormValidationService.validators.required,
         FormValidationService.validators.maxLength(100),
       ],
-      url: [FormValidationService.validators.required, FormValidationService.validators.url],
+      uri: [FormValidationService.validators.required, FormValidationService.validators.url],
       description: [FormValidationService.validators.maxLength(500)],
     };
   }
 
   /**
-   * Get validation rules for source code fields
+   * Get validation rules for repository fields
    */
-  getSourceCodeValidationRules(): Record<string, ValidatorFn[]> {
+  getRepositoryValidationRules(): Record<string, ValidatorFn[]> {
     return {
       name: [
         FormValidationService.validators.required,
         FormValidationService.validators.maxLength(100),
       ],
-      url: [FormValidationService.validators.required, FormValidationService.validators.url],
+      uri: [FormValidationService.validators.required, FormValidationService.validators.url],
       type: [FormValidationService.validators.required],
       description: [FormValidationService.validators.maxLength(500)],
     };

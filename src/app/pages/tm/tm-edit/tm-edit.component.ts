@@ -1206,8 +1206,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Deletes a source code repository reference from the threat model
-   * @param sourceCode The source code to delete
+   * Deletes a repository reference from the threat model
+   * @param repository The repository to delete
    * @param event The click event
    */
   deleteRepository(repository: Repository, event: Event): void {
