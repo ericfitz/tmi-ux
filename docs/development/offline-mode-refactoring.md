@@ -257,7 +257,7 @@ if (this.isOfflineMode) {
     owner: currentUser,
     created_by: currentUser,
     threat_model_framework: validFramework,
-    issue_url: issueUrl,
+    issue_uri: issueUri,
     authorization: [
       {
         subject: currentUser,

@@ -21,7 +21,7 @@ This document provides a comprehensive overview of how autosave functionality wo
 
 The autosave mechanism is implemented using a sophisticated debouncing strategy:
 
-1. **Form Change Detection**: Monitors form controls for `name`, `description`, `threat_model_framework`, and `issue_url` changes
+1. **Form Change Detection**: Monitors form controls for `name`, `description`, `threat_model_framework`, and `issue_uri` changes
 2. **Debouncing**: Changes trigger `autoSaveThreatModel()` which emits to `_autoSaveSubject`
 3. **1-Second Delay**: After 1 second of inactivity, `performAutoSave()` is called
 4. **Selective Updates**: Uses PATCH operations to update only changed basic fields, preserving child entities
