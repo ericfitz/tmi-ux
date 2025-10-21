@@ -70,11 +70,11 @@ interface ThreatModel {
   owner: string;
   created_by: string;
   threat_model_framework: string;
-  issue_url?: string;
+  issue_uri?: string;
   authorization: Authorization[];
   metadata?: Metadata[];
   documents?: Document[];
-  sourceCode?: Source[];
+  repositories?: Repository[];
   diagrams?: Diagram[];
   threats?: Threat[];
 }
@@ -82,8 +82,8 @@ interface ThreatModel {
 
 #### Child Entities
 - **Threat**: Individual security threats with severity, status, metadata
-- **Document**: Attached documentation with URLs and descriptions  
-- **Source**: Source code repository references with Git/SVN parameters
+- **Document**: Attached documentation with URIs and descriptions
+- **Repository**: Source code repository references with Git/SVN parameters
 - **Metadata**: Key-value pairs for extensible properties
 - **Authorization**: Role-based access control (owner/writer/reader)
 

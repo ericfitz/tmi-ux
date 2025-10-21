@@ -102,7 +102,7 @@ class LocalizationDeDuplicator:
             last_part = last_part[0].lower() + last_part[1:]
         
         # For keys with inconsistent casing, normalize to camelCase
-        # e.g., "ThreatID" -> "threatId", "SourceCode" -> "sourceCode"
+        # e.g., "ThreatID" -> "threatId", "Repository" -> "repository"
         if any(c.isupper() for c in last_part[1:]):
             # Convert to proper camelCase
             result = []
