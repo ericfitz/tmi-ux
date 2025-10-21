@@ -34,6 +34,7 @@
       "WebSearch",
       "WebFetch(domain:devblogs.microsoft.com)",
       "WebFetch(domain:angular.dev)",
+      "WebFetch(domain:github.com)",
       "Bash(gh pr list:*)",
       "Bash(gh auth:*)",
       "Bash(env)",
