@@ -28,9 +28,9 @@ import {
   DocumentEditorDialogData,
 } from '../components/document-editor-dialog/document-editor-dialog.component';
 import {
-  SourceCodeEditorDialogComponent,
-  SourceCodeEditorDialogData,
-} from '../components/source-code-editor-dialog/source-code-editor-dialog.component';
+  RepositoryEditorDialogComponent,
+  RepositoryEditorDialogData,
+} from '../components/repository-editor-dialog/repository-editor-dialog.component';
 import {
   PermissionsDialogComponent,
   PermissionsDialogData,
@@ -49,7 +49,7 @@ import {
   Authorization,
   Document,
   Metadata,
-  Source,
+  Repository,
   Threat,
   ThreatModel,
 } from '../models/threat-model.model';
@@ -64,22 +64,22 @@ interface ThreatModelFormValues {
   name: string;
   description: string;
   threat_model_framework: string;
-  issue_url?: string;
+  issue_uri?: string;
 }
 
 // Define document form result interface
 interface DocumentFormResult {
   name: string;
-  url: string;
+  uri: string;
   description?: string;
 }
 
-// Define source code form result interface
-interface SourceCodeFormResult {
+// Define repository form result interface
+interface RepositoryFormResult {
   name: string;
   description?: string;
   type: 'git' | 'svn' | 'mercurial' | 'other';
-  url: string;
+  uri: string;
   parameters?: {
     refType: 'branch' | 'tag' | 'commit';
     refValue: string;
@@ -110,8 +110,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
   private _diagrams: Diagram[] = [];
   currentLocale: string = 'en-US';
   currentDirection: 'ltr' | 'rtl' = 'ltr';
-  isEditingIssueUrl = false;
-  initialIssueUrlValue = '';
+  isEditingIssueUri = false;
+  initialIssueUriValue = '';
   frameworks: FrameworkModel[] = [];
 
   // Permission properties
@@ -163,7 +163,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       name: ['', [Validators.required, Validators.maxLength(100)]],
       description: ['', Validators.maxLength(500)],
       threat_model_framework: ['STRIDE', Validators.required],
-      issue_url: [''],
+      issue_uri: [''],
     });
   }
 
@@ -184,14 +184,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Enter edit mode for issue URL
+   * Enter edit mode for issue URI
    */
-  editIssueUrl(): void {
-    this.isEditingIssueUrl = true;
+  editIssueUri(): void {
+    this.isEditingIssueUri = true;
     // Focus the input field after the view updates
     setTimeout(() => {
       const input = document.querySelector(
-        'input[formControlName="issue_url"]',
+        'input[formControlName="issue_uri"]',
       ) as HTMLInputElement;
       if (input) {
         input.focus();
@@ -200,22 +200,22 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Check if we should show the hyperlink view for issue URL
+   * Check if we should show the hyperlink view for issue URI
    */
-  shouldShowIssueUrlHyperlink(): boolean {
+  shouldShowIssueUriHyperlink(): boolean {
     return (
-      !this.isEditingIssueUrl &&
-      !!this.initialIssueUrlValue &&
-      this.initialIssueUrlValue.trim() !== ''
+      !this.isEditingIssueUri &&
+      !!this.initialIssueUriValue &&
+      this.initialIssueUriValue.trim() !== ''
     );
   }
 
   /**
-   * Opens URL in new tab when clicked
+   * Opens URI in new tab when clicked
    */
-  openUrlInNewTab(url: string): void {
-    if (url && url.trim()) {
-      window.open(url, '_blank', 'noopener,noreferrer');
+  openUriInNewTab(uri: string): void {
+    if (uri && uri.trim()) {
+      window.open(uri, '_blank', 'noopener,noreferrer');
     }
   }
 
@@ -315,14 +315,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
       }),
     );
 
-    // Store the initial issue URL value
-    this.initialIssueUrlValue = threatModel.issue_url || '';
+    // Store the initial issue URI value
+    this.initialIssueUriValue = threatModel.issue_uri || '';
 
     this.threatModelForm.patchValue({
       name: threatModel.name,
       description: threatModel.description || '',
       threat_model_framework: threatModel.threat_model_framework || 'STRIDE',
-      issue_url: this.initialIssueUrlValue,
+      issue_uri: this.initialIssueUriValue,
     });
 
     // Store original form values for change comparison
@@ -330,7 +330,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       name: threatModel.name,
       description: threatModel.description || '',
       threat_model_framework: threatModel.threat_model_framework || 'STRIDE',
-      issue_url: this.initialIssueUrlValue,
+      issue_uri: this.initialIssueUriValue,
     };
 
     // Update framework control disabled state based on threats
@@ -416,7 +416,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       formValue.name !== this._originalFormValues.name ||
       formValue.description !== this._originalFormValues.description ||
       formValue.threat_model_framework !== this._originalFormValues.threat_model_framework ||
-      formValue.issue_url !== this._originalFormValues.issue_url
+      formValue.issue_uri !== this._originalFormValues.issue_uri
     );
   }
 
@@ -462,19 +462,19 @@ export class TmEditComponent implements OnInit, OnDestroy {
    */
   onFieldBlur(fieldName: string, event: Event): void {
     // Only handle UI-specific blur logic now - auto-save is handled by form valueChanges
-    if (fieldName === 'issue_url') {
-      this.onIssueUrlBlur(event);
+    if (fieldName === 'issue_uri') {
+      this.onIssueUriBlur(event);
     }
   }
 
   /**
-   * Issue URL blur handler for UI state management
+   * Issue URI blur handler for UI state management
    */
-  onIssueUrlBlur(_event: Event): void {
+  onIssueUriBlur(_event: Event): void {
     // Update the display value for consistency
-    const currentValue = (this.threatModelForm.get('issue_url')?.value as string) || '';
-    this.initialIssueUrlValue = currentValue;
-    this.isEditingIssueUrl = false;
+    const currentValue = (this.threatModelForm.get('issue_uri')?.value as string) || '';
+    this.initialIssueUriValue = currentValue;
+    this.isEditingIssueUri = false;
     // Auto-save is now handled by form valueChanges subscription
   }
 
@@ -622,7 +622,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
             priority?: string;
             mitigated?: boolean;
             status?: string;
-            issue_url?: string;
+            issue_uri?: string;
           }
           const formResult = result as ThreatFormResult;
 
@@ -639,7 +639,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
               priority: formResult.priority,
               mitigated: formResult.mitigated || false,
               status: formResult.status || 'Open',
-              issue_url: formResult.issue_url,
+              issue_uri: formResult.issue_uri,
               metadata: [],
             };
 
@@ -672,7 +672,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
               priority: formResult.priority,
               mitigated: formResult.mitigated,
               status: formResult.status,
-              issue_url: formResult.issue_url,
+              issue_uri: formResult.issue_uri,
             };
 
             this._subscriptions.add(
@@ -974,7 +974,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
           // Create a new document via API
           const newDocumentData: Partial<Document> = {
             name: result.name,
-            url: result.url,
+            uri: result.uri,
             description: result.description || undefined,
           };
 
@@ -1028,7 +1028,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
           // Update the document via API
           const updatedDocumentData: Partial<Document> = {
             name: result.name,
-            url: result.url,
+            uri: result.uri,
             description: result.description || undefined,
           };
 
@@ -1096,7 +1096,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * @returns Formatted tooltip text with URL and description
    */
   getDocumentTooltip(document: Document): string {
-    let tooltip = document.url;
+    let tooltip = document.uri;
     if (document.description) {
       tooltip += `\n\n${document.description}`;
     }
@@ -1107,38 +1107,38 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * Opens a dialog to create a new source code repository reference
    * If the user confirms, adds the new source code to the threat model
    */
-  addSourceCode(): void {
-    const dialogData: SourceCodeEditorDialogData = {
+  addRepository(): void {
+    const dialogData: RepositoryEditorDialogData = {
       mode: 'create',
     };
 
-    const dialogRef = this.dialog.open(SourceCodeEditorDialogComponent, {
+    const dialogRef = this.dialog.open(RepositoryEditorDialogComponent, {
       width: '700px',
       data: dialogData,
     });
 
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: SourceCodeFormResult | undefined) => {
+      dialogRef.afterClosed().subscribe((result: RepositoryFormResult | undefined) => {
         if (result && this.threatModel) {
-          // Create a new source code via API
-          const newSourceData: Partial<Source> = {
+          // Create a new repository via API
+          const newRepositoryData: Partial<Repository> = {
             name: result.name,
             description: result.description || undefined,
             type: result.type,
-            url: result.url,
+            uri: result.uri,
             parameters: result.parameters,
           };
 
           this._subscriptions.add(
             this.threatModelService
-              .createSource(this.threatModel.id, newSourceData)
-              .subscribe(newSource => {
-                // Add the new source to local state (check for duplicates first)
-                if (!this.threatModel?.sourceCode) {
-                  this.threatModel!.sourceCode = [];
+              .createRepository(this.threatModel.id, newRepositoryData)
+              .subscribe(newRepository => {
+                // Add the new repository to local state (check for duplicates first)
+                if (!this.threatModel?.repositories) {
+                  this.threatModel!.repositories = [];
                 }
-                if (!this.threatModel!.sourceCode.find(s => s.id === newSource.id)) {
-                  this.threatModel!.sourceCode.push(newSource);
+                if (!this.threatModel!.repositories.find(r => r.id === newRepository.id)) {
+                  this.threatModel!.repositories.push(newRepository);
                 }
               }),
           );
@@ -1148,12 +1148,12 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Opens a dialog to edit a source code repository reference
-   * If the user confirms, updates the source code in the threat model
-   * @param sourceCode The source code to edit
+   * Opens a dialog to edit a repository reference
+   * If the user confirms, updates the repository in the threat model
+   * @param repository The repository to edit
    * @param event The click event
    */
-  editSourceCode(sourceCode: Source, event: Event): void {
+  editRepository(repository: Repository, event: Event): void {
     // Prevent event propagation
     event.stopPropagation();
     // Remove focus from the button to restore non-focused state
@@ -1163,39 +1163,39 @@ export class TmEditComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const dialogData: SourceCodeEditorDialogData = {
-      sourceCode,
+    const dialogData: RepositoryEditorDialogData = {
+      repository,
       mode: 'edit',
     };
 
-    const dialogRef = this.dialog.open(SourceCodeEditorDialogComponent, {
+    const dialogRef = this.dialog.open(RepositoryEditorDialogComponent, {
       width: '700px',
       data: dialogData,
     });
 
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: SourceCodeFormResult | undefined) => {
+      dialogRef.afterClosed().subscribe((result: RepositoryFormResult | undefined) => {
         if (result && this.threatModel) {
-          // Update the source code via API
-          const updatedSourceData: Partial<Source> = {
+          // Update the repository via API
+          const updatedRepositoryData: Partial<Repository> = {
             name: result.name,
             description: result.description || undefined,
             type: result.type,
-            url: result.url,
+            uri: result.uri,
             parameters: result.parameters,
           };
 
           this._subscriptions.add(
             this.threatModelService
-              .updateSource(this.threatModel.id, sourceCode.id, updatedSourceData)
-              .subscribe(updatedSource => {
-                // Update the source in local state
-                if (this.threatModel && this.threatModel.sourceCode) {
-                  const index = this.threatModel.sourceCode.findIndex(
-                    sc => sc.id === sourceCode.id,
+              .updateRepository(this.threatModel.id, repository.id, updatedRepositoryData)
+              .subscribe(updatedRepository => {
+                // Update the repository in local state
+                if (this.threatModel && this.threatModel.repositories) {
+                  const index = this.threatModel.repositories.findIndex(
+                    r => r.id === repository.id,
                   );
                   if (index !== -1) {
-                    this.threatModel.sourceCode[index] = updatedSource;
+                    this.threatModel.repositories[index] = updatedRepository;
                   }
                 }
               }),
@@ -1210,34 +1210,34 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * @param sourceCode The source code to delete
    * @param event The click event
    */
-  deleteSourceCode(sourceCode: Source, event: Event): void {
+  deleteRepository(repository: Repository, event: Event): void {
     // Prevent event propagation
     event.stopPropagation();
     // Remove focus from the button to restore non-focused state
     (event.target as HTMLElement)?.blur();
 
-    if (!this.threatModel || !this.threatModel.sourceCode) {
+    if (!this.threatModel || !this.threatModel.repositories) {
       return;
     }
 
     // Confirm deletion
     const confirmMessage = this.transloco.translate('common.confirmDelete', {
-      item: this.transloco.translate('common.objectTypes.sourceCode').toLowerCase(),
-      name: sourceCode.name,
+      item: this.transloco.translate('common.objectTypes.repository').toLowerCase(),
+      name: repository.name,
     });
     const confirmDelete = window.confirm(confirmMessage);
 
     if (confirmDelete) {
-      // Delete the source code via API
+      // Delete the repository via API
       this._subscriptions.add(
         this.threatModelService
-          .deleteSource(this.threatModel.id, sourceCode.id)
+          .deleteRepository(this.threatModel.id, repository.id)
           .subscribe(success => {
-            if (success && this.threatModel && this.threatModel.sourceCode) {
-              // Remove the source from local state
-              const index = this.threatModel.sourceCode.findIndex(sc => sc.id === sourceCode.id);
+            if (success && this.threatModel && this.threatModel.repositories) {
+              // Remove the repository from local state
+              const index = this.threatModel.repositories.findIndex(r => r.id === repository.id);
               if (index !== -1) {
-                this.threatModel.sourceCode.splice(index, 1);
+                this.threatModel.repositories.splice(index, 1);
               }
             }
           }),
@@ -1246,37 +1246,37 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Generates tooltip text for source code list items
-   * @param sourceCode The source code to generate tooltip for
-   * @returns Formatted tooltip text with URL and description
+   * Generates tooltip text for repository list items
+   * @param repository The repository to generate tooltip for
+   * @returns Formatted tooltip text with URI and description
    */
-  getSourceCodeTooltip(sourceCode: Source): string {
-    let tooltip = sourceCode.url;
-    if (sourceCode.description) {
-      tooltip += `\n\n${sourceCode.description}`;
+  getRepositoryTooltip(repository: Repository): string {
+    let tooltip = repository.uri;
+    if (repository.description) {
+      tooltip += `\n\n${repository.description}`;
     }
-    if (sourceCode.parameters) {
-      tooltip += `\n\n${sourceCode.parameters.refType}: ${sourceCode.parameters.refValue}`;
-      if (sourceCode.parameters.subPath) {
-        tooltip += `\nPath: ${sourceCode.parameters.subPath}`;
+    if (repository.parameters) {
+      tooltip += `\n\n${repository.parameters.refType}: ${repository.parameters.refValue}`;
+      if (repository.parameters.subPath) {
+        tooltip += `\nPath: ${repository.parameters.subPath}`;
       }
     }
     return tooltip;
   }
 
   /**
-   * Opens the metadata dialog for a specific source code repository
+   * Opens the metadata dialog for a specific repository
    */
-  openSourceCodeMetadataDialog(sourceCode: Source, event: Event): void {
+  openRepositoryMetadataDialog(repository: Repository, event: Event): void {
     event.stopPropagation();
     // Remove focus from the button to restore non-focused state
     (event.target as HTMLElement)?.blur();
 
     const dialogData: MetadataDialogData = {
-      metadata: sourceCode.metadata || [],
+      metadata: repository.metadata || [],
       isReadOnly: false,
-      objectType: 'SourceCode',
-      objectName: `${this.transloco.translate('common.objectTypes.sourceCode')}: ${sourceCode.name} (${sourceCode.id})`,
+      objectType: 'Repository',
+      objectName: `${this.transloco.translate('common.objectTypes.repository')}: ${repository.name} (${repository.id})`,
     };
 
     const dialogRef = this.dialog.open(MetadataDialogComponent, {
@@ -1292,17 +1292,17 @@ export class TmEditComponent implements OnInit, OnDestroy {
         if (result && this.threatModel) {
           this._subscriptions.add(
             this.threatModelService
-              .updateSourceMetadata(this.threatModel.id, sourceCode.id, result)
+              .updateRepositoryMetadata(this.threatModel.id, repository.id, result)
               .subscribe(updatedMetadata => {
-                if (updatedMetadata && this.threatModel && this.threatModel.sourceCode) {
-                  const sourceCodeIndex = this.threatModel.sourceCode.findIndex(
-                    sc => sc.id === sourceCode.id,
+                if (updatedMetadata && this.threatModel && this.threatModel.repositories) {
+                  const repositoryIndex = this.threatModel.repositories.findIndex(
+                    r => r.id === repository.id,
                   );
-                  if (sourceCodeIndex !== -1) {
-                    this.threatModel.sourceCode[sourceCodeIndex].metadata = updatedMetadata;
+                  if (repositoryIndex !== -1) {
+                    this.threatModel.repositories[repositoryIndex].metadata = updatedMetadata;
                   }
-                  this.logger.info('Updated source code metadata via API', {
-                    sourceCodeId: sourceCode.id,
+                  this.logger.info('Updated repository metadata via API', {
+                    repositoryId: repository.id,
                     metadata: updatedMetadata,
                   });
                 }
@@ -2154,8 +2154,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this.threatModel.description = formValues.description;
     this.threatModel.threat_model_framework = formValues.threat_model_framework;
 
-    if (formValues.issue_url) {
-      this.threatModel.issue_url = formValues.issue_url;
+    if (formValues.issue_uri) {
+      this.threatModel.issue_uri = formValues.issue_uri;
     }
 
     // Update modified timestamp
@@ -2163,7 +2163,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     this.logger.debugComponent('TmEdit', 'Applied form changes to threat model', {
       threatModelId: this.threatModel.id,
-      updatedFields: ['name', 'description', 'threat_model_framework', 'issue_url', 'modified_at'],
+      updatedFields: ['name', 'description', 'threat_model_framework', 'issue_uri', 'modified_at'],
     });
   }
 
@@ -2224,8 +2224,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (formValues.threat_model_framework !== this._originalFormValues!.threat_model_framework) {
       updates.threat_model_framework = formValues.threat_model_framework;
     }
-    if (formValues.issue_url !== this._originalFormValues!.issue_url) {
-      updates.issue_url = formValues.issue_url;
+    if (formValues.issue_uri !== this._originalFormValues!.issue_uri) {
+      updates.issue_uri = formValues.issue_uri;
     }
 
     this.logger.debugComponent('TmEdit', 'Calling threatModelService.patchThreatModel', {
@@ -2317,15 +2317,17 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Load source code for the threat model using separate API call
+   * Load repositories for the threat model using separate API call
    */
   private loadSourceCode(threatModelId: string): void {
     this._subscriptions.add(
-      this.threatModelService.getSourceCodeForThreatModel(threatModelId).subscribe(sourceCode => {
-        if (this.threatModel) {
-          this.threatModel.sourceCode = sourceCode;
-        }
-      }),
+      this.threatModelService
+        .getRepositoriesForThreatModel(threatModelId)
+        .subscribe(repositories => {
+          if (this.threatModel) {
+            this.threatModel.repositories = repositories;
+          }
+        }),
     );
   }
 

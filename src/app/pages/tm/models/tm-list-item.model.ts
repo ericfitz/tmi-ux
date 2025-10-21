@@ -13,9 +13,9 @@ export interface TMListItem {
   owner: string;
   created_by: string;
   threat_model_framework: 'CIA' | 'STRIDE' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
-  issue_url?: string;
+  issue_uri?: string;
   document_count: number;
-  source_count: number;
+  repo_count: number;
   diagram_count: number;
   threat_count: number;
 }

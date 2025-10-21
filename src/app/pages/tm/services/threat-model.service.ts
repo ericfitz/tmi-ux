@@ -26,7 +26,7 @@ import { catchError, switchMap, map, tap, retryWhen, mergeMap, take } from 'rxjs
 import {
   ThreatModel,
   Document as TMDocument,
-  Source,
+  Repository,
   Metadata,
   Threat,
 } from '../models/threat-model.model';
@@ -427,23 +427,23 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Get source code references for a threat model
+   * Get repository references for a threat model
    */
-  getSourceCodeForThreatModel(threatModelId: string): Observable<Source[]> {
+  getRepositoriesForThreatModel(threatModelId: string): Observable<Repository[]> {
     if (this.isOfflineMode) {
-      this.logger.info('Offline mode - returning source code from cache');
+      this.logger.info('Offline mode - returning repositories from cache');
       const cachedModel = this._cachedThreatModels.get(threatModelId);
-      return of(cachedModel?.sourceCode || []);
+      return of(cachedModel?.repositories || []);
     }
 
     this.logger.debugComponent(
       'ThreatModelService',
-      `Fetching source code for threat model with ID: ${threatModelId} from API`,
+      `Fetching repositories for threat model with ID: ${threatModelId} from API`,
     );
-    return this.apiService.get<Source[]>(`threat_models/${threatModelId}/sources`).pipe(
+    return this.apiService.get<Repository[]>(`threat_models/${threatModelId}/repositories`).pipe(
       catchError(error => {
         this.logger.error(
-          `Error fetching source code for threat model with ID: ${threatModelId}`,
+          `Error fetching repositories for threat model with ID: ${threatModelId}`,
           error,
         );
         return of([]);
@@ -479,7 +479,7 @@ export class ThreatModelService implements OnDestroy {
         owner: currentUser,
         created_by: currentUser,
         threat_model_framework: validFramework,
-        issue_url: issueUrl,
+        issue_uri: issueUrl,
         authorization: [
           {
             subject: currentUser,
@@ -512,7 +512,7 @@ export class ThreatModelService implements OnDestroy {
       name,
       description,
       threat_model_framework: validFramework,
-      issue_url: issueUrl,
+      issue_uri: issueUrl,
     };
 
     return this.apiService.post<ThreatModel>('threat_models', body).pipe(
@@ -652,11 +652,11 @@ export class ThreatModelService implements OnDestroy {
         data.threat_model_framework && data.threat_model_framework.trim() !== ''
           ? data.threat_model_framework
           : 'STRIDE',
-      issue_url: data.issue_url,
+      issue_uri: data.issue_uri,
       // Include other relevant fields from the imported data, but exclude fields we've already set above
       ...Object.fromEntries(
         Object.entries(importData).filter(
-          ([key]) => !['name', 'description', 'threat_model_framework', 'issue_url'].includes(key),
+          ([key]) => !['name', 'description', 'threat_model_framework', 'issue_uri'].includes(key),
         ),
       ),
     };
@@ -731,7 +731,7 @@ export class ThreatModelService implements OnDestroy {
     updates: Partial<
       Pick<
         ThreatModel,
-        'name' | 'description' | 'threat_model_framework' | 'issue_url' | 'authorization' | 'owner'
+        'name' | 'description' | 'threat_model_framework' | 'issue_uri' | 'authorization' | 'owner'
       >
     >,
   ): Observable<ThreatModel> {
@@ -1127,112 +1127,115 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Create a new source in a threat model
+   * Create a new repository in a threat model
    */
-  createSource(threatModelId: string, source: Partial<Source>): Observable<Source> {
+  createRepository(threatModelId: string, repository: Partial<Repository>): Observable<Repository> {
     if (this.isOfflineMode) {
-      this.logger.info('Offline mode - creating source in cache only');
+      this.logger.info('Offline mode - creating repository in cache only');
 
-      const newSource: Source = {
-        ...source,
+      const newRepository: Repository = {
+        ...repository,
         id: uuidv4(),
         metadata: [],
-      } as Source;
+      } as Repository;
 
       const threatModel = this._cachedThreatModels.get(threatModelId);
       if (threatModel) {
-        // Create a deep copy of the sourceCode array to avoid mutating mock data
-        const updatedSourceCode = [...(threatModel.sourceCode || []), newSource];
+        // Create a deep copy of the repositories array to avoid mutating mock data
+        const updatedRepositories = [...(threatModel.repositories || []), newRepository];
         const updatedThreatModel = {
           ...threatModel,
-          sourceCode: updatedSourceCode,
+          repositories: updatedRepositories,
           modified_at: new Date().toISOString(),
         };
         this._cachedThreatModels.set(threatModelId, updatedThreatModel);
       }
-      return of(newSource);
+      return of(newRepository);
     }
 
-    // Remove id field from source data before sending to API (sources don't have timestamp fields)
-    const { id, ...sourceData } = source as Source;
+    // Remove id field from repository data before sending to API (repositories don't have timestamp fields)
+    const { id, ...repositoryData } = repository as Repository;
 
     return this.apiService
-      .post<Source>(
-        `threat_models/${threatModelId}/sources`,
-        sourceData as unknown as Record<string, unknown>,
+      .post<Repository>(
+        `threat_models/${threatModelId}/repositories`,
+        repositoryData as unknown as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
-          this.logger.error(`Error creating source in threat model ID: ${threatModelId}`, error);
+          this.logger.error(
+            `Error creating repository in threat model ID: ${threatModelId}`,
+            error,
+          );
           throw error;
         }),
       );
   }
 
   /**
-   * Update a source in a threat model
+   * Update a repository in a threat model
    */
-  updateSource(
+  updateRepository(
     threatModelId: string,
-    sourceId: string,
-    source: Partial<Source>,
-  ): Observable<Source> {
+    repositoryId: string,
+    repository: Partial<Repository>,
+  ): Observable<Repository> {
     if (this.isOfflineMode) {
-      this.logger.info('Offline mode - updating source in cache only');
+      this.logger.info('Offline mode - updating repository in cache only');
 
       const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.sourceCode) {
-        const index = threatModel.sourceCode.findIndex(s => s.id === sourceId);
+      if (threatModel && threatModel.repositories) {
+        const index = threatModel.repositories.findIndex(r => r.id === repositoryId);
         if (index !== -1) {
-          // Create a deep copy of the sourceCode array to avoid mutating mock data
-          const updatedSource = { ...threatModel.sourceCode[index], ...source };
-          const updatedSourceCode = [
-            ...threatModel.sourceCode.slice(0, index),
-            updatedSource,
-            ...threatModel.sourceCode.slice(index + 1),
+          // Create a deep copy of the repositories array to avoid mutating mock data
+          const updatedRepository = { ...threatModel.repositories[index], ...repository };
+          const updatedRepositories = [
+            ...threatModel.repositories.slice(0, index),
+            updatedRepository,
+            ...threatModel.repositories.slice(index + 1),
           ];
           const updatedThreatModel = {
             ...threatModel,
-            sourceCode: updatedSourceCode,
+            repositories: updatedRepositories,
             modified_at: new Date().toISOString(),
           };
           this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-          return of(updatedSource);
+          return of(updatedRepository);
         }
       }
-      return of(source as Source);
+      return of(repository as Repository);
     }
 
     return this.apiService
-      .put<Source>(
-        `threat_models/${threatModelId}/sources/${sourceId}`,
-        source as unknown as Record<string, unknown>,
+      .put<Repository>(
+        `threat_models/${threatModelId}/repositories/${repositoryId}`,
+        repository as unknown as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
-          this.logger.error(`Error updating source ID: ${sourceId}`, error);
+          this.logger.error(`Error updating repository ID: ${repositoryId}`, error);
           throw error;
         }),
       );
   }
 
   /**
-   * Delete a source from a threat model
+   * Delete a repository from a threat model
    */
-  deleteSource(threatModelId: string, sourceId: string): Observable<boolean> {
+  deleteRepository(threatModelId: string, repositoryId: string): Observable<boolean> {
     if (this.isOfflineMode) {
-      this.logger.info('Offline mode - deleting source from cache only');
+      this.logger.info('Offline mode - deleting repository from cache only');
 
       const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.sourceCode) {
-        const initialLength = threatModel.sourceCode.length;
-        // Create a deep copy of the sourceCode array to avoid mutating mock data
-        const filteredSourceCode = threatModel.sourceCode.filter(s => s.id !== sourceId);
-        const wasDeleted = filteredSourceCode.length < initialLength;
+      if (threatModel && threatModel.repositories) {
+        const initialLength = threatModel.repositories.length;
+        // Create a deep copy of the repositories array to avoid mutating mock data
+        const filteredRepositories = threatModel.repositories.filter(r => r.id !== repositoryId);
+        const wasDeleted = filteredRepositories.length < initialLength;
         if (wasDeleted) {
           const updatedThreatModel = {
             ...threatModel,
-            sourceCode: filteredSourceCode,
+            repositories: filteredRepositories,
             modified_at: new Date().toISOString(),
           };
           this._cachedThreatModels.set(threatModelId, updatedThreatModel);
@@ -1242,13 +1245,15 @@ export class ThreatModelService implements OnDestroy {
       return of(false);
     }
 
-    return this.apiService.delete(`threat_models/${threatModelId}/sources/${sourceId}`).pipe(
-      map(() => true),
-      catchError(error => {
-        this.logger.error(`Error deleting source ID: ${sourceId}`, error);
-        throw error;
-      }),
-    );
+    return this.apiService
+      .delete(`threat_models/${threatModelId}/repositories/${repositoryId}`)
+      .pipe(
+        map(() => true),
+        catchError(error => {
+          this.logger.error(`Error deleting repository ID: ${repositoryId}`, error);
+          throw error;
+        }),
+      );
   }
 
   /**
@@ -1731,51 +1736,51 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Get metadata for a source
+   * Get metadata for a repository
    */
-  getSourceMetadata(threatModelId: string, sourceId: string): Observable<Metadata[]> {
+  getRepositoryMetadata(threatModelId: string, repositoryId: string): Observable<Metadata[]> {
     if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
-      const source = threatModel?.sourceCode?.find(s => s.id === sourceId);
-      return of(source?.metadata || []);
+      const repository = threatModel?.repositories?.find(r => r.id === repositoryId);
+      return of(repository?.metadata || []);
     }
 
     return this.apiService
-      .get<Metadata[]>(`threat_models/${threatModelId}/sources/${sourceId}/metadata`)
+      .get<Metadata[]>(`threat_models/${threatModelId}/repositories/${repositoryId}/metadata`)
       .pipe(
         catchError(error => {
-          this.logger.error(`Error getting metadata for source ID: ${sourceId}`, error);
+          this.logger.error(`Error getting metadata for repository ID: ${repositoryId}`, error);
           throw error;
         }),
       );
   }
 
   /**
-   * Update metadata for a source
+   * Update metadata for a repository
    */
-  updateSourceMetadata(
+  updateRepositoryMetadata(
     threatModelId: string,
-    sourceId: string,
+    repositoryId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
     if (this.isOfflineMode) {
       const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.sourceCode) {
-        const sourceIndex = threatModel.sourceCode.findIndex(s => s.id === sourceId);
-        if (sourceIndex !== -1) {
+      if (threatModel && threatModel.repositories) {
+        const repositoryIndex = threatModel.repositories.findIndex(r => r.id === repositoryId);
+        if (repositoryIndex !== -1) {
           // Create deep copies to avoid mutating mock data
-          const updatedSource = {
-            ...threatModel.sourceCode[sourceIndex],
+          const updatedRepository = {
+            ...threatModel.repositories[repositoryIndex],
             metadata: [...metadata],
           };
-          const updatedSourceCode = [
-            ...threatModel.sourceCode.slice(0, sourceIndex),
-            updatedSource,
-            ...threatModel.sourceCode.slice(sourceIndex + 1),
+          const updatedRepositories = [
+            ...threatModel.repositories.slice(0, repositoryIndex),
+            updatedRepository,
+            ...threatModel.repositories.slice(repositoryIndex + 1),
           ];
           const updatedThreatModel = {
             ...threatModel,
-            sourceCode: updatedSourceCode,
+            repositories: updatedRepositories,
             modified_at: new Date().toISOString(),
           };
           this._cachedThreatModels.set(threatModelId, updatedThreatModel);
@@ -1788,8 +1793,8 @@ export class ThreatModelService implements OnDestroy {
     if (!metadata || metadata.length === 0) {
       this.logger.debugComponent(
         'ThreatModelService',
-        `Skipping metadata update for source ${sourceId} - no valid metadata to save`,
-        { threatModelId, sourceId, metadataCount: metadata?.length || 0 },
+        `Skipping metadata update for repository ${repositoryId} - no valid metadata to save`,
+        { threatModelId, repositoryId, metadataCount: metadata?.length || 0 },
       );
       return of([]);
     }
@@ -1797,10 +1802,10 @@ export class ThreatModelService implements OnDestroy {
     return this.apiService
       .post<
         Metadata[]
-      >(`threat_models/${threatModelId}/sources/${sourceId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/repositories/${repositoryId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
-          this.logger.error(`Error updating metadata for source ID: ${sourceId}`, error);
+          this.logger.error(`Error updating metadata for repository ID: ${repositoryId}`, error);
           throw error;
         }),
       );
@@ -1828,9 +1833,9 @@ export class ThreatModelService implements OnDestroy {
       created_by: threatModel.created_by,
       threat_model_framework:
         threatModel.threat_model_framework as TMListItem['threat_model_framework'],
-      issue_url: threatModel.issue_url,
+      issue_uri: threatModel.issue_uri,
       document_count: threatModel.documents?.length || 0,
-      source_count: threatModel.sourceCode?.length || 0,
+      repo_count: threatModel.repositories?.length || 0,
       diagram_count: threatModel.diagrams?.length || 0,
       threat_count: threatModel.threats?.length || 0,
     };

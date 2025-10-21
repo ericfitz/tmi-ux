@@ -58,12 +58,12 @@ mat-dialog-content {
 }
 
 // Issue URL container with form field and external edit button
-.issue-url-container {
+.issue-uri-container {
   display: flex;
   align-items: center; // Center both items
   gap: 8px;
 
-  .issue-url-field {
+  .issue-uri-field {
     flex: 1; // Take up remaining space
   }
 
@@ -74,7 +74,7 @@ mat-dialog-content {
 }
 
 // Specific styling for external edit button icons
-.issue-url-container .external-edit-button .mat-icon {
+.issue-uri-container .external-edit-button .mat-icon {
   font-size: var(--icon-size-lg);
   width: var(--icon-size-lg);
   height: var(--icon-size-lg);
@@ -82,7 +82,7 @@ mat-dialog-content {
 
 // Specific styling for view-only URL links
 /* stylelint-disable no-descending-specificity */
-.view-only-url .issue-url-link {
+.view-only-url .issue-uri-link {
   color: #1976d2;
   text-decoration: none;
   word-break: break-all;

@@ -3,7 +3,7 @@ import { PDFDocument, PDFPage, rgb, StandardFonts, PDFFont } from 'pdf-lib';
 import { TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '../../../core/services/logger.service';
 import { LanguageService } from '../../../i18n/language.service';
-import { ThreatModel, Threat, Document, Source } from '../models/threat-model.model';
+import { ThreatModel, Threat, Document, Repository } from '../models/threat-model.model';
 import * as fontkit from 'fontkit';
 
 interface FontConfig {
@@ -357,9 +357,9 @@ export class ThreatModelReportService {
       yPosition = result.yPosition;
     }
 
-    // Source Code Table
-    if (threatModel.sourceCode && threatModel.sourceCode.length > 0) {
-      const result = this.addSourceCodeSection(doc, page, threatModel.sourceCode, yPosition);
+    // Repository Table
+    if (threatModel.repositories && threatModel.repositories.length > 0) {
+      const result = this.addRepositoriesSection(doc, page, threatModel.repositories, yPosition);
       page = result.page;
       yPosition = result.yPosition;
     }
@@ -754,7 +754,7 @@ export class ThreatModelReportService {
 
       const rowData: string[] = [
         document.name || this.transloco.translate('common.noDataAvailable'),
-        document.url || this.transloco.translate('common.noDataAvailable'),
+        document.uri || this.transloco.translate('common.noDataAvailable'),
         document.description || this.transloco.translate('common.noDataAvailable'),
       ];
 
@@ -765,12 +765,12 @@ export class ThreatModelReportService {
   }
 
   /**
-   * Add source code section with table
+   * Add repositories section with table
    */
-  private addSourceCodeSection(
+  private addRepositoriesSection(
     doc: PDFDocument,
     page: PDFPage,
-    sources: Source[],
+    repositories: Repository[],
     yPosition: number,
   ): { page: PDFPage; yPosition: number } {
     const margin = this.getMargin();
@@ -784,7 +784,7 @@ export class ThreatModelReportService {
       yPosition = this.getStartingYPosition();
     }
 
-    const sectionTitle = this.transloco.translate('common.objectTypes.sourceCode');
+    const sectionTitle = this.transloco.translate('common.objectTypes.repositories');
 
     page.drawText(sectionTitle, {
       x: margin,
@@ -796,7 +796,7 @@ export class ThreatModelReportService {
 
     yPosition -= 30;
 
-    if (sources.length === 0) {
+    if (repositories.length === 0) {
       page.drawText(this.transloco.translate('common.noDataAvailable'), {
         x: margin,
         y: yPosition,
@@ -810,8 +810,8 @@ export class ThreatModelReportService {
     // Table headers
     const headers = [
       this.transloco.translate('threatModels.name'),
-      this.transloco.translate('threatModels.sourceCodeType'),
-      this.transloco.translate('threatModels.sourceCodeUrl'),
+      this.transloco.translate('threatModels.repositoryType'),
+      this.transloco.translate('threatModels.repositoryUri'),
       this.transloco.translate('common.description'),
     ];
 
@@ -819,17 +819,17 @@ export class ThreatModelReportService {
     yPosition -= 10;
 
     // Table rows
-    sources.forEach(source => {
+    repositories.forEach(repository => {
       if (yPosition < margin) {
         page = this.addNewPage(doc);
         yPosition = this.getStartingYPosition();
       }
 
       const rowData: string[] = [
-        source.name || this.transloco.translate('common.noDataAvailable'),
-        source.type || this.transloco.translate('common.noDataAvailable'),
-        source.url || this.transloco.translate('common.noDataAvailable'),
-        source.description || this.transloco.translate('common.noDataAvailable'),
+        repository.name || this.transloco.translate('common.noDataAvailable'),
+        repository.type || this.transloco.translate('common.noDataAvailable'),
+        repository.uri || this.transloco.translate('common.noDataAvailable'),
+        repository.description || this.transloco.translate('common.noDataAvailable'),
       ];
 
       yPosition = this.drawTableRow(page, rowData, yPosition, false);

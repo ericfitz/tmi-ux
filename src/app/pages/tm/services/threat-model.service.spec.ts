@@ -126,7 +126,7 @@ describe('ThreatModelService', () => {
         expect(threatModelList[0].document_count).toBeDefined();
         expect(threatModelList[0].diagram_count).toBeDefined();
         expect(threatModelList[0].threat_count).toBeDefined();
-        expect(threatModelList[0].source_count).toBeDefined();
+        expect(threatModelList[0].repo_count).toBeDefined();
       });
     }));
 
@@ -170,12 +170,12 @@ describe('ThreatModelService', () => {
       });
     }));
 
-    it('should return mock source code for a threat model', waitForAsync(() => {
-      service.getSourceCodeForThreatModel(testThreatModel1.id).subscribe(sourceCode => {
-        expect(sourceCode).toBeDefined();
-        expect(Array.isArray(sourceCode)).toBe(true);
-        // Should return the source code from the threat model
-        expect(sourceCode.length).toBe(testThreatModel1.sourceCode?.length || 0);
+    it('should return mock repositories for a threat model', waitForAsync(() => {
+      service.getRepositoriesForThreatModel(testThreatModel1.id).subscribe(repositories => {
+        expect(repositories).toBeDefined();
+        expect(Array.isArray(repositories)).toBe(true);
+        // Should return the repositories from the threat model
+        expect(repositories.length).toBe(testThreatModel1.repositories?.length || 0);
       });
     }));
   });
@@ -210,15 +210,17 @@ describe('ThreatModelService', () => {
       });
     }));
 
-    it('should make API calls for source code when mock data is disabled', waitForAsync(() => {
-      const mockSourceCode = [
-        { id: 'src1', name: 'Test Source', url: 'http://github.com/example' },
+    it('should make API calls for repositories when mock data is disabled', waitForAsync(() => {
+      const mockRepositories = [
+        { id: 'repo1', name: 'Test Repository', uri: 'http://github.com/example' },
       ];
-      vi.spyOn(apiService, 'get').mockReturnValue(of(mockSourceCode));
+      vi.spyOn(apiService, 'get').mockReturnValue(of(mockRepositories));
 
-      service.getSourceCodeForThreatModel(testThreatModel1.id).subscribe(sourceCode => {
-        expect(apiService.get).toHaveBeenCalledWith(`threat_models/${testThreatModel1.id}/sources`);
-        expect(sourceCode).toEqual(mockSourceCode);
+      service.getRepositoriesForThreatModel(testThreatModel1.id).subscribe(repositories => {
+        expect(apiService.get).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/repositories`,
+        );
+        expect(repositories).toEqual(mockRepositories);
       });
     }));
   });
@@ -470,47 +472,49 @@ describe('ThreatModelService', () => {
       }));
     });
 
-    describe('Source API Methods', () => {
-      it('should create a source via API', waitForAsync(() => {
-        const sourceData = {
-          name: 'Test Source',
-          url: 'http://github.com/test',
+    describe('Repository API Methods', () => {
+      it('should create a repository via API', waitForAsync(() => {
+        const repositoryData = {
+          name: 'Test Repository',
+          uri: 'http://github.com/test',
           type: 'git' as const,
         };
-        const expectedSource = { ...sourceData, id: 'new-source-id' };
-        vi.spyOn(apiService, 'post').mockReturnValue(of(expectedSource));
+        const expectedRepository = { ...repositoryData, id: 'new-repository-id' };
+        vi.spyOn(apiService, 'post').mockReturnValue(of(expectedRepository));
 
-        service.createSource(testThreatModel1.id, sourceData).subscribe(result => {
+        service.createRepository(testThreatModel1.id, repositoryData).subscribe(result => {
           expect(apiService.post).toHaveBeenCalledWith(
-            `threat_models/${testThreatModel1.id}/sources`,
-            sourceData,
+            `threat_models/${testThreatModel1.id}/repositories`,
+            repositoryData,
           );
-          expect(result).toEqual(expectedSource);
+          expect(result).toEqual(expectedRepository);
         });
       }));
 
-      it('should update a source via API', waitForAsync(() => {
-        const sourceData = { name: 'Updated Source', url: 'http://github.com/updated' };
-        const sourceId = 'test-source-id';
-        const expectedSource = { ...sourceData, id: sourceId };
-        vi.spyOn(apiService, 'put').mockReturnValue(of(expectedSource));
+      it('should update a repository via API', waitForAsync(() => {
+        const repositoryData = { name: 'Updated Repository', uri: 'http://github.com/updated' };
+        const repositoryId = 'test-repository-id';
+        const expectedRepository = { ...repositoryData, id: repositoryId };
+        vi.spyOn(apiService, 'put').mockReturnValue(of(expectedRepository));
 
-        service.updateSource(testThreatModel1.id, sourceId, sourceData).subscribe(result => {
-          expect(apiService.put).toHaveBeenCalledWith(
-            `threat_models/${testThreatModel1.id}/sources/${sourceId}`,
-            sourceData,
-          );
-          expect(result).toEqual(expectedSource);
-        });
+        service
+          .updateRepository(testThreatModel1.id, repositoryId, repositoryData)
+          .subscribe(result => {
+            expect(apiService.put).toHaveBeenCalledWith(
+              `threat_models/${testThreatModel1.id}/repositories/${repositoryId}`,
+              repositoryData,
+            );
+            expect(result).toEqual(expectedRepository);
+          });
       }));
 
-      it('should delete a source via API', waitForAsync(() => {
-        const sourceId = 'test-source-id';
+      it('should delete a repository via API', waitForAsync(() => {
+        const repositoryId = 'test-repository-id';
         vi.spyOn(apiService, 'delete').mockReturnValue(of({}));
 
-        service.deleteSource(testThreatModel1.id, sourceId).subscribe(result => {
+        service.deleteRepository(testThreatModel1.id, repositoryId).subscribe(result => {
           expect(apiService.delete).toHaveBeenCalledWith(
-            `threat_models/${testThreatModel1.id}/sources/${sourceId}`,
+            `threat_models/${testThreatModel1.id}/repositories/${repositoryId}`,
           );
           expect(result).toBe(true);
         });

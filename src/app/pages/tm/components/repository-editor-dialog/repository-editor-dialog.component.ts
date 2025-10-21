@@ -9,17 +9,17 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
-import { Source } from '../../models/threat-model.model';
+import { Repository } from '../../models/threat-model.model';
 import { FormValidationService } from '../../../../shared/services/form-validation.service';
 
 /**
- * Interface for source code form values
+ * Interface for repository form values
  */
-interface SourceCodeFormValues {
+interface RepositoryFormValues {
   name: string;
   description?: string;
   type: 'git' | 'svn' | 'mercurial' | 'other';
-  url: string;
+  uri: string;
   refType?: 'branch' | 'tag' | 'commit';
   refValue?: string;
   subPath?: string;
@@ -28,13 +28,13 @@ interface SourceCodeFormValues {
 /**
  * Interface for dialog data
  */
-export interface SourceCodeEditorDialogData {
-  sourceCode?: Source;
+export interface RepositoryEditorDialogData {
+  repository?: Repository;
   mode: 'create' | 'edit';
 }
 
 @Component({
-  selector: 'app-source-code-editor-dialog',
+  selector: 'app-repository-editor-dialog',
   standalone: true,
   imports: [
     CommonModule,
@@ -46,37 +46,37 @@ export interface SourceCodeEditorDialogData {
     ReactiveFormsModule,
     TranslocoModule,
   ],
-  templateUrl: './source-code-editor-dialog.component.html',
-  styleUrls: ['./source-code-editor-dialog.component.scss'],
+  templateUrl: './repository-editor-dialog.component.html',
+  styleUrls: ['./repository-editor-dialog.component.scss'],
 })
-export class SourceCodeEditorDialogComponent implements OnInit, OnDestroy {
-  sourceCodeForm: FormGroup;
+export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
+  repositoryForm: FormGroup;
   mode: 'create' | 'edit';
 
   private _subscriptions: Subscription = new Subscription();
 
   constructor(
-    private dialogRef: MatDialogRef<SourceCodeEditorDialogComponent>,
+    private dialogRef: MatDialogRef<RepositoryEditorDialogComponent>,
     private fb: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: SourceCodeEditorDialogData,
+    @Inject(MAT_DIALOG_DATA) public data: RepositoryEditorDialogData,
   ) {
     this.mode = data.mode;
 
-    this.sourceCodeForm = this.fb.group({
-      name: [data.sourceCode?.name || '', [Validators.required, Validators.maxLength(256)]],
-      description: [data.sourceCode?.description || '', Validators.maxLength(1024)],
-      type: [data.sourceCode?.type || 'git', Validators.required],
-      url: [
-        data.sourceCode?.url || '',
+    this.repositoryForm = this.fb.group({
+      name: [data.repository?.name || '', [Validators.required, Validators.maxLength(256)]],
+      description: [data.repository?.description || '', Validators.maxLength(1024)],
+      type: [data.repository?.type || 'git', Validators.required],
+      uri: [
+        data.repository?.uri || '',
         [
           Validators.required,
           Validators.maxLength(1024),
           FormValidationService.validators.uriGuidance,
         ],
       ],
-      refType: [data.sourceCode?.parameters?.refType || 'branch'],
-      refValue: [data.sourceCode?.parameters?.refValue || '', Validators.maxLength(256)],
-      subPath: [data.sourceCode?.parameters?.subPath || '', Validators.maxLength(256)],
+      refType: [data.repository?.parameters?.refType || 'branch'],
+      refValue: [data.repository?.parameters?.refValue || '', Validators.maxLength(256)],
+      subPath: [data.repository?.parameters?.subPath || '', Validators.maxLength(256)],
     });
   }
 
@@ -92,10 +92,10 @@ export class SourceCodeEditorDialogComponent implements OnInit, OnDestroy {
    * Get URI validation suggestion message (if any)
    */
   getUriSuggestion(): string | null {
-    const urlControl = this.sourceCodeForm.get('url');
-    if (!urlControl) return null;
+    const uriControl = this.repositoryForm.get('uri');
+    if (!uriControl) return null;
 
-    const uriSuggestionError = urlControl.errors?.['uriSuggestion'] as
+    const uriSuggestionError = uriControl.errors?.['uriSuggestion'] as
       | { message?: string; severity?: string }
       | undefined;
     if (uriSuggestionError && typeof uriSuggestionError === 'object') {
@@ -105,25 +105,25 @@ export class SourceCodeEditorDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Close the dialog with the source code data
+   * Close the dialog with the repository data
    */
   onSubmit(): void {
     // Only check for blocking errors (required, maxLength)
     // Allow submission even with URI suggestions
-    const nameControl = this.sourceCodeForm.get('name');
-    const descControl = this.sourceCodeForm.get('description');
-    const typeControl = this.sourceCodeForm.get('type');
-    const urlControl = this.sourceCodeForm.get('url');
-    const refValueControl = this.sourceCodeForm.get('refValue');
-    const subPathControl = this.sourceCodeForm.get('subPath');
+    const nameControl = this.repositoryForm.get('name');
+    const descControl = this.repositoryForm.get('description');
+    const typeControl = this.repositoryForm.get('type');
+    const uriControl = this.repositoryForm.get('uri');
+    const refValueControl = this.repositoryForm.get('refValue');
+    const subPathControl = this.repositoryForm.get('subPath');
 
     const hasBlockingErrors =
       nameControl?.hasError('required') ||
       nameControl?.hasError('maxlength') ||
       descControl?.hasError('maxlength') ||
       typeControl?.hasError('required') ||
-      urlControl?.hasError('required') ||
-      urlControl?.hasError('maxlength') ||
+      uriControl?.hasError('required') ||
+      uriControl?.hasError('maxlength') ||
       refValueControl?.hasError('maxlength') ||
       subPathControl?.hasError('maxlength');
 
@@ -131,14 +131,14 @@ export class SourceCodeEditorDialogComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const formValues = this.sourceCodeForm.getRawValue() as SourceCodeFormValues;
+    const formValues = this.repositoryForm.getRawValue() as RepositoryFormValues;
 
     // Build the result with proper structure
     const result = {
       name: formValues.name,
       description: formValues.description,
       type: formValues.type,
-      url: formValues.url,
+      uri: formValues.uri,
       parameters: formValues.refValue
         ? {
             refType: formValues.refType || 'branch',

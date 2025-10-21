@@ -11,17 +11,17 @@ export interface Authorization {
 export interface Document {
   id: string;
   name: string;
-  url: string;
+  uri: string;
   description?: string;
   metadata?: Metadata[];
 }
 
-export interface Source {
+export interface Repository {
   id: string;
   name: string;
   description?: string;
   type: 'git' | 'svn' | 'mercurial' | 'other';
-  url: string;
+  uri: string;
   parameters?: {
     refType: 'branch' | 'tag' | 'commit';
     refValue: string;
@@ -45,7 +45,7 @@ export interface Threat {
   mitigated?: boolean;
   status?: string;
   threat_type: string;
-  issue_url?: string;
+  issue_uri?: string;
   metadata?: Metadata[];
 }
 
@@ -58,11 +58,11 @@ export interface ThreatModel {
   owner: string;
   created_by: string;
   threat_model_framework: string;
-  issue_url?: string;
+  issue_uri?: string;
   authorization: Authorization[];
   metadata?: Metadata[];
   documents?: Document[];
-  sourceCode?: Source[];
+  repositories?: Repository[];
   diagrams?: import('./diagram.model').Diagram[];
   threats?: Threat[];
 }
@@ -78,7 +78,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
     owner: 'user@example.com',
     created_by: 'user@example.com',
     threat_model_framework: 'STRIDE',
-    issue_url: 'https://issues.example.com/browse/TM-123',
+    issue_uri: 'https://issues.example.com/browse/TM-123',
     authorization: [
       {
         subject: 'user@example.com',
@@ -99,7 +99,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
       {
         id: '3ba7b810-9dad-11d1-beef-00c04fd430c8',
         name: 'System Architecture Document',
-        url: 'https://docs.example.com/system-architecture.pdf',
+        uri: 'https://docs.example.com/system-architecture.pdf',
         description: 'Technical architecture documentation for the system',
         metadata: [
           {
@@ -115,7 +115,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
       {
         id: '4ba7b810-9dad-11d1-beef-00c04fd430c9',
         name: 'Security Requirements',
-        url: 'https://docs.example.com/security-requirements.docx',
+        uri: 'https://docs.example.com/security-requirements.docx',
         description: 'Security requirements and compliance documentation',
         metadata: [
           {
@@ -129,13 +129,13 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         ],
       },
     ],
-    sourceCode: [
+    repositories: [
       {
         id: '6ba7b810-1dad-11d1-8080-00c04fd430c8',
         name: 'GitHub Repo',
         description: 'Main application source code repository',
         type: 'git',
-        url: 'https://github.com/ericfitz/tmi-ux.git',
+        uri: 'https://github.com/ericfitz/tmi-ux.git',
         parameters: {
           refType: 'branch',
           refValue: 'main',
@@ -156,7 +156,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         name: 'API Repository',
         description: 'Backend API source code',
         type: 'git',
-        url: 'https://github.com/ericfitz/tmi-api.git',
+        uri: 'https://github.com/ericfitz/tmi-api.git',
         parameters: {
           refType: 'tag',
           refValue: 'v2.1.0',
@@ -190,7 +190,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         mitigated: false,
         status: 'Open',
         threat_type: 'Information Disclosure',
-        issue_url: 'https://issues.example.com/browse/SEC-456',
+        issue_uri: 'https://issues.example.com/browse/SEC-456',
         metadata: [],
       },
       {
@@ -208,7 +208,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         mitigated: false,
         status: 'Open',
         threat_type: 'Elevation of Privilege',
-        issue_url: 'https://issues.example.com/browse/SEC-457',
+        issue_uri: 'https://issues.example.com/browse/SEC-457',
         metadata: [],
       },
       {
@@ -226,7 +226,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         mitigated: false,
         status: 'In Progress',
         threat_type: 'Tampering',
-        issue_url: 'https://issues.example.com/browse/SEC-458',
+        issue_uri: 'https://issues.example.com/browse/SEC-458',
         metadata: [],
       },
       {
@@ -244,7 +244,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         mitigated: false,
         status: 'Open',
         threat_type: 'Denial of Service',
-        issue_url: 'https://issues.example.com/browse/SEC-459',
+        issue_uri: 'https://issues.example.com/browse/SEC-459',
         metadata: [],
       },
     ],
@@ -258,7 +258,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
     owner: 'user@example.com',
     created_by: 'user@example.com',
     threat_model_framework: 'CIA',
-    issue_url: 'https://issues.example.com/browse/TM-124',
+    issue_uri: 'https://issues.example.com/browse/TM-124',
     authorization: [
       {
         subject: 'user@example.com',
@@ -279,7 +279,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
       {
         id: '5ba7b810-9dad-11d1-beef-00c04fd430ca',
         name: 'Cloud Security Playbook',
-        url: 'https://docs.example.com/cloud-security-playbook.pdf',
+        uri: 'https://docs.example.com/cloud-security-playbook.pdf',
         description: 'Cloud security best practices and procedures',
         metadata: [
           {
@@ -293,7 +293,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         ],
       },
     ],
-    sourceCode: [],
+    repositories: [],
     diagrams: [], // Will be populated by actual Diagram objects
     threats: [
       {
@@ -311,7 +311,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         mitigated: false,
         status: 'Open',
         threat_type: 'Authentication Bypass',
-        issue_url: 'https://issues.example.com/browse/SEC-460',
+        issue_uri: 'https://issues.example.com/browse/SEC-460',
         metadata: [],
       },
       {
@@ -329,7 +329,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         mitigated: false,
         status: 'Open',
         threat_type: 'Information Disclosure',
-        issue_url: 'https://issues.example.com/browse/SEC-461',
+        issue_uri: 'https://issues.example.com/browse/SEC-461',
         metadata: [],
       },
     ],
@@ -343,7 +343,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
     owner: 'user@example.com',
     created_by: 'user@example.com',
     threat_model_framework: 'LINDDUN',
-    issue_url: 'https://issues.example.com/browse/TM-125',
+    issue_uri: 'https://issues.example.com/browse/TM-125',
     authorization: [
       {
         subject: 'user@example.com',
@@ -364,7 +364,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
       {
         id: '6ba7b810-9dad-11d1-beef-00c04fd430cb',
         name: 'Mobile Security Guidelines',
-        url: 'https://docs.example.com/mobile-security-guidelines.pdf',
+        uri: 'https://docs.example.com/mobile-security-guidelines.pdf',
         description: 'OWASP mobile security testing guide compliance',
         metadata: [
           {
@@ -380,7 +380,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
       {
         id: '7ba7b810-9dad-11d1-beef-00c04fd430cc',
         name: 'Privacy Impact Assessment',
-        url: 'https://docs.example.com/privacy-impact-assessment.docx',
+        uri: 'https://docs.example.com/privacy-impact-assessment.docx',
         description: 'GDPR and privacy compliance assessment for mobile app',
         metadata: [
           {
@@ -394,7 +394,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         ],
       },
     ],
-    sourceCode: [],
+    repositories: [],
     diagrams: [], // Will be populated by actual Diagram objects
     threats: [
       {
@@ -412,7 +412,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         mitigated: false,
         status: 'Open',
         threat_type: 'Information Disclosure',
-        issue_url: 'https://issues.example.com/browse/SEC-462',
+        issue_uri: 'https://issues.example.com/browse/SEC-462',
         metadata: [],
       },
       {
@@ -430,7 +430,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         mitigated: false,
         status: 'Open',
         threat_type: 'Information Disclosure',
-        issue_url: 'https://issues.example.com/browse/SEC-463',
+        issue_uri: 'https://issues.example.com/browse/SEC-463',
         metadata: [],
       },
       {
@@ -448,7 +448,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         mitigated: false,
         status: 'Open',
         threat_type: 'Authentication Bypass',
-        issue_url: 'https://issues.example.com/browse/SEC-464',
+        issue_uri: 'https://issues.example.com/browse/SEC-464',
         metadata: [],
       },
     ],

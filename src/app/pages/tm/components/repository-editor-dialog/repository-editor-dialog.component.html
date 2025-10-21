@@ -1,20 +1,20 @@
 <h2 mat-dialog-title>
   {{
     mode === 'create'
-      ? ('threatModels.createNewSourceCode' | transloco)
-      : ('threatModels.editSourceCode' | transloco)
+      ? ('threatModels.createNewRepository' | transloco)
+      : ('threatModels.editRepository' | transloco)
   }}
 </h2>
 <mat-dialog-content>
-  <form [formGroup]="sourceCodeForm" class="dialog-form">
+  <form [formGroup]="repositoryForm" class="dialog-form">
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>{{ 'threatModels.sourceCodeName' | transloco }}</mat-label>
+        <mat-label>{{ 'threatModels.repositoryName' | transloco }}</mat-label>
         <input matInput formControlName="name" tabindex="1" />
-        <mat-error *ngIf="sourceCodeForm.get('name')?.hasError('required')">
+        <mat-error *ngIf="repositoryForm.get('name')?.hasError('required')">
           {{ 'common.validation.required' | transloco }}
         </mat-error>
-        <mat-error *ngIf="sourceCodeForm.get('name')?.hasError('maxlength')">
+        <mat-error *ngIf="repositoryForm.get('name')?.hasError('maxlength')">
           {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
         </mat-error>
       </mat-form-field>
@@ -25,46 +25,46 @@
           matInput
           formControlName="description"
           rows="3"
-          placeholder="{{ 'threatModels.sourceCodeDescriptionPlaceholder' | transloco }}"
+          placeholder="{{ 'threatModels.repositoryDescriptionPlaceholder' | transloco }}"
           tabindex="2"
         ></textarea>
-        <mat-error *ngIf="sourceCodeForm.get('description')?.hasError('maxlength')">
+        <mat-error *ngIf="repositoryForm.get('description')?.hasError('maxlength')">
           {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
         </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>{{ 'threatModels.sourceCodeType' | transloco }}</mat-label>
+        <mat-label>{{ 'threatModels.repositoryType' | transloco }}</mat-label>
         <mat-select formControlName="type" tabindex="3">
           <mat-option value="git">Git</mat-option>
           <mat-option value="svn">SVN</mat-option>
           <mat-option value="mercurial">Mercurial</mat-option>
           <mat-option value="other">{{ 'common.other' | transloco }}</mat-option>
         </mat-select>
-        <mat-error *ngIf="sourceCodeForm.get('type')?.hasError('required')">
+        <mat-error *ngIf="repositoryForm.get('type')?.hasError('required')">
           {{ 'common.validation.required' | transloco }}
         </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>{{ 'threatModels.sourceCodeUrl' | transloco }}</mat-label>
-        <input matInput formControlName="url" type="url" tabindex="4" />
+        <mat-label>{{ 'threatModels.repositoryUri' | transloco }}</mat-label>
+        <input matInput formControlName="uri" type="url" tabindex="4" />
         <mat-hint *ngIf="getUriSuggestion()" class="uri-suggestion-hint">
           {{ getUriSuggestion() }}
         </mat-hint>
-        <mat-error *ngIf="sourceCodeForm.get('url')?.hasError('required')">
+        <mat-error *ngIf="repositoryForm.get('uri')?.hasError('required')">
           {{ 'common.validation.required' | transloco }}
         </mat-error>
-        <mat-error *ngIf="sourceCodeForm.get('url')?.hasError('maxlength')">
+        <mat-error *ngIf="repositoryForm.get('uri')?.hasError('maxlength')">
           {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
         </mat-error>
       </mat-form-field>
 
       <div class="parameters-section">
-        <h3>{{ 'threatModels.sourceCodeParameters' | transloco }}</h3>
+        <h3>{{ 'threatModels.repositoryParameters' | transloco }}</h3>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'threatModels.sourceCodeRefType' | transloco }}</mat-label>
+          <mat-label>{{ 'threatModels.repositoryRefType' | transloco }}</mat-label>
           <mat-select formControlName="refType" tabindex="5">
             <mat-option value="branch">{{ 'threatModels.branch' | transloco }}</mat-option>
             <mat-option value="tag">{{ 'threatModels.tag' | transloco }}</mat-option>
@@ -73,19 +73,19 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'threatModels.sourceCodeRefValue' | transloco }}</mat-label>
+          <mat-label>{{ 'threatModels.repositoryRefValue' | transloco }}</mat-label>
           <input matInput formControlName="refValue" tabindex="6" />
-          <mat-hint>{{ 'threatModels.sourceCodeRefValueHint' | transloco }}</mat-hint>
-          <mat-error *ngIf="sourceCodeForm.get('refValue')?.hasError('maxlength')">
+          <mat-hint>{{ 'threatModels.repositoryRefValueHint' | transloco }}</mat-hint>
+          <mat-error *ngIf="repositoryForm.get('refValue')?.hasError('maxlength')">
             {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
           </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'threatModels.sourceCodeSubPath' | transloco }}</mat-label>
+          <mat-label>{{ 'threatModels.repositorySubPath' | transloco }}</mat-label>
           <input matInput formControlName="subPath" tabindex="7" />
-          <mat-hint>{{ 'threatModels.sourceCodeSubPathHint' | transloco }}</mat-hint>
-          <mat-error *ngIf="sourceCodeForm.get('subPath')?.hasError('maxlength')">
+          <mat-hint>{{ 'threatModels.repositorySubPathHint' | transloco }}</mat-hint>
+          <mat-error *ngIf="repositoryForm.get('subPath')?.hasError('maxlength')">
             {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
           </mat-error>
         </mat-form-field>
@@ -105,7 +105,7 @@
   <button
     mat-raised-button
     color="primary"
-    [disabled]="sourceCodeForm.invalid"
+    [disabled]="repositoryForm.invalid"
     (click)="onSubmit()"
     tabindex="9"
     [attr.aria-label]="

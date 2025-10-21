@@ -44,16 +44,16 @@
 // Cards are now displayed in a single column via the content-container flex layout
 
 // Issue URL container with form field and hyperlink icon
-.issue-url-container {
+.issue-uri-container {
   display: flex;
   align-items: flex-start; // Align to top
   gap: 8px;
 
-  .issue-url-field {
+  .issue-uri-field {
     flex: 1; // Take up remaining space
   }
 
-  .issue-url-icon-button {
+  .issue-uri-icon-button {
     flex-shrink: 0;
     margin-top: 8px; // Keep button position aligned with form field
     color: #1976d2; // Blue hyperlink color like document/source code icons
@@ -89,7 +89,7 @@
 
 .diagrams-card,
 .documents-card,
-.source-code-card,
+.repository-card,
 .threats-card {
   width: 100%;
   min-width: 0; /* Allow cards to shrink and prevent overflow */
@@ -239,7 +239,7 @@ mat-card-header {
 }
 
 // Specific styling for external edit button icons
-.issue-url-container .external-edit-button .mat-icon {
+.issue-uri-container .external-edit-button .mat-icon {
   font-size: var(--icon-size-lg);
   width: var(--icon-size-lg);
   height: var(--icon-size-lg);
@@ -479,7 +479,7 @@ mat-card-header {
 }
 
 // Source code and document URL icon styles (higher specificity - must come before mat-icon)
-.source-code-content .source-code-url-icon mat-icon,
+.repository-content .repository-url-icon mat-icon,
 .document-content .document-url-icon mat-icon {
   font-size: 18px;
   width: 18px;
@@ -553,7 +553,7 @@ mat-card-header {
       }
     }
 
-    .threat-issue-url-icon {
+    .threat-issue-uri-icon {
       color: #1976d2;
       text-decoration: none;
       margin-left: 8px;
@@ -587,7 +587,7 @@ mat-card-header {
 }
 
 // Styling for source code and document list layout
-.source-code-content,
+.repository-content,
 .document-content {
   display: flex;
   align-items: center;
@@ -595,7 +595,7 @@ mat-card-header {
   width: 100%;
   overflow: hidden;
 
-  .source-code-name,
+  .repository-name,
   .document-name {
     font-weight: 500;
     color: rgb(0 0 0 / 87%);
@@ -611,7 +611,7 @@ mat-card-header {
     }
   }
 
-  .source-code-url-icon,
+  .repository-url-icon,
   .document-url-icon {
     color: #1976d2;
     text-decoration: none;
@@ -631,7 +631,7 @@ mat-card-header {
 }
 
 // Ensure action buttons in source code items have centered icons
-.source-code-actions {
+.repository-actions {
   display: flex;
   gap: 4px;
   align-items: center;
@@ -651,7 +651,7 @@ mat-card-header {
 }
 
 // Custom tooltip styling for source code and document descriptions
-::ng-deep .source-code-description-tooltip,
+::ng-deep .repository-description-tooltip,
 ::ng-deep .document-description-tooltip {
   max-width: 400px;
   white-space: pre-line;

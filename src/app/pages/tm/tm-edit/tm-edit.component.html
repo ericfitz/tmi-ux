@@ -166,32 +166,32 @@
               </mat-error>
             </mat-form-field>
 
-            <!-- Issue URL field with hyperlink icon -->
-            <div class="issue-url-container">
-              <mat-form-field appearance="outline" class="issue-url-field">
-                <mat-label [transloco]="'common.issueUrl'">Issue URL</mat-label>
+            <!-- Issue URI field with hyperlink icon -->
+            <div class="issue-uri-container">
+              <mat-form-field appearance="outline" class="issue-uri-field">
+                <mat-label [transloco]="'common.issueUri'">Issue URI</mat-label>
                 <input
                   matInput
-                  formControlName="issue_url"
+                  formControlName="issue_uri"
                   type="url"
                   tabindex="4"
                   placeholder="https://example.com/issue/123"
                 />
-                <mat-hint>{{ 'threatModels.issueUrlHint' | transloco }}</mat-hint>
-                <mat-error *ngIf="threatModelForm.get('issue_url')?.hasError('url')">
+                <mat-hint>{{ 'threatModels.issueUriHint' | transloco }}</mat-hint>
+                <mat-error *ngIf="threatModelForm.get('issue_uri')?.hasError('url')">
                   {{ 'common.validation.invalidUrl' | transloco }}
                 </mat-error>
               </mat-form-field>
               <button
                 mat-icon-button
                 type="button"
-                class="issue-url-icon-button"
-                [disabled]="!isValidUrl(threatModelForm.get('issue_url')?.value)"
-                (click)="openUrlInNewTab(threatModelForm.get('issue_url')?.value)"
+                class="issue-uri-icon-button"
+                [disabled]="!isValidUrl(threatModelForm.get('issue_uri')?.value)"
+                (click)="openUriInNewTab(threatModelForm.get('issue_uri')?.value)"
                 [matTooltip]="
-                  isValidUrl(threatModelForm.get('issue_url')?.value)
-                    ? threatModelForm.get('issue_url')?.value
-                    : 'Enter a valid URL to open'
+                  isValidUrl(threatModelForm.get('issue_uri')?.value)
+                    ? threatModelForm.get('issue_uri')?.value
+                    : 'Enter a valid URI to open'
                 "
                 matTooltipPosition="above"
                 tabindex="5"
@@ -320,13 +320,13 @@
                 {{ document.name }}
               </span>
               <a
-                *ngIf="document.url && document.url.trim() !== ''"
-                [href]="document.url"
+                *ngIf="document.uri && document.uri.trim() !== ''"
+                [href]="document.uri"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="document-url-icon"
                 (click)="$event.stopPropagation()"
-                [matTooltip]="document.url"
+                [matTooltip]="document.uri"
                 matTooltipPosition="above"
               >
                 <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
@@ -358,8 +358,8 @@
       </mat-card-content>
     </mat-card>
 
-    <!-- Source Code Card -->
-    <mat-card class="source-code-card">
+    <!-- Repositories Card -->
+    <mat-card class="repository-card">
       <mat-card-header>
         <mat-card-title [transloco]="'common.objectTypes.repositories'"
           >Repositories</mat-card-title
@@ -367,8 +367,8 @@
         <button
           mat-icon-button
           color="primary"
-          (click)="addSourceCode()"
-          [matTooltip]="'threatModels.tooltips.addSourceCode' | transloco"
+          (click)="addRepository()"
+          [matTooltip]="'threatModels.tooltips.addRepository' | transloco"
         >
           <mat-icon>add</mat-icon>
         </button>
@@ -376,38 +376,38 @@
       <mat-card-content>
         <mat-list>
           <mat-list-item
-            *ngFor="let sourceCode of threatModel.sourceCode"
-            class="source-code-item"
-            (click)="editSourceCode(sourceCode, $event)"
+            *ngFor="let repository of threatModel.repositories"
+            class="repository-item"
+            (click)="editRepository(repository, $event)"
           >
             <mat-icon matListItemIcon class="material-symbols-outlined">code</mat-icon>
-            <div matListItemTitle class="source-code-content">
+            <div matListItemTitle class="repository-content">
               <span
-                class="source-code-name"
-                [matTooltip]="sourceCode.description"
-                matTooltipClass="source-code-description-tooltip"
+                class="repository-name"
+                [matTooltip]="repository.description"
+                matTooltipClass="repository-description-tooltip"
                 matTooltipPosition="above"
               >
-                {{ sourceCode.name }}
+                {{ repository.name }}
               </span>
               <a
-                *ngIf="sourceCode.url && sourceCode.url.trim() !== ''"
-                [href]="sourceCode.url"
+                *ngIf="repository.uri && repository.uri.trim() !== ''"
+                [href]="repository.uri"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="source-code-url-icon"
+                class="repository-uri-icon"
                 (click)="$event.stopPropagation()"
-                [matTooltip]="sourceCode.url"
+                [matTooltip]="repository.uri"
                 matTooltipPosition="above"
               >
                 <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
               </a>
             </div>
-            <div matListItemMeta class="source-code-actions">
+            <div matListItemMeta class="repository-actions">
               <button
                 mat-icon-button
                 color="primary"
-                (click)="openSourceCodeMetadataDialog(sourceCode, $event)"
+                (click)="openRepositoryMetadataDialog(repository, $event)"
                 [matTooltip]="'common.manageMetadata' | transloco"
               >
                 <mat-icon>list</mat-icon>
@@ -415,16 +415,16 @@
               <button
                 mat-icon-button
                 color="warn"
-                (click)="deleteSourceCode(sourceCode, $event)"
-                [matTooltip]="'threatModels.tooltips.deleteSourceCode' | transloco"
+                (click)="deleteRepository(repository, $event)"
+                [matTooltip]="'threatModels.tooltips.deleteRepository' | transloco"
               >
                 <mat-icon>delete</mat-icon>
               </button>
             </div>
           </mat-list-item>
         </mat-list>
-        <div *ngIf="!threatModel.sourceCode?.length" class="no-items-message">
-          {{ 'threatModels.noSourceCode' | transloco }}
+        <div *ngIf="!threatModel.repositories?.length" class="no-items-message">
+          {{ 'threatModels.noRepositories' | transloco }}
         </div>
       </mat-card-content>
     </mat-card>
@@ -471,14 +471,14 @@
               </span>
               <a
                 *ngIf="
-                  threat.issue_url && threat.issue_url !== 'n/a' && threat.issue_url.trim() !== ''
+                  threat.issue_uri && threat.issue_uri !== 'n/a' && threat.issue_uri.trim() !== ''
                 "
-                [href]="threat.issue_url"
+                [href]="threat.issue_uri"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="threat-issue-url-icon"
+                class="threat-issue-uri-icon"
                 (click)="$event.stopPropagation()"
-                [matTooltip]="threat.issue_url"
+                [matTooltip]="threat.issue_uri"
                 matTooltipPosition="above"
               >
                 <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>

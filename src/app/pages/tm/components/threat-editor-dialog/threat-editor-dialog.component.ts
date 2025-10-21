@@ -31,7 +31,7 @@ interface ThreatFormValues {
   priority?: string;
   mitigated?: boolean;
   status?: string;
-  issue_url?: string;
+  issue_uri?: string;
 }
 
 /**
@@ -95,8 +95,8 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   isViewOnly: boolean = false;
   currentLocale: string = 'en-US';
   currentDirection: 'ltr' | 'rtl' = 'ltr';
-  isEditingIssueUrl = false;
-  initialIssueUrlValue = '';
+  isEditingIssueUri = false;
+  initialIssueUriValue = '';
 
   // Dropdown options
   diagramOptions: DiagramOption[] = [];
@@ -139,7 +139,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       priority: ['High'],
       mitigated: [false],
       status: ['Open'],
-      issue_url: [''],
+      issue_uri: [''],
     });
   }
 
@@ -161,14 +161,14 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   }
 
   /**
-   * Enter edit mode for issue URL
+   * Enter edit mode for issue URI
    */
-  editIssueUrl(): void {
-    this.isEditingIssueUrl = true;
+  editIssueUri(): void {
+    this.isEditingIssueUri = true;
     // Focus the input field after the view updates
     setTimeout(() => {
       const input = document.querySelector(
-        'input[formControlName="issue_url"]',
+        'input[formControlName="issue_uri"]',
       ) as HTMLInputElement;
       if (input) {
         input.focus();
@@ -177,29 +177,29 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   }
 
   /**
-   * Handle blur event on issue URL input
+   * Handle blur event on issue URI input
    */
-  onIssueUrlBlur(): void {
+  onIssueUriBlur(): void {
     // Update the initial value with the current form value
-    const currentValue = (this.threatForm.get('issue_url')?.value as string) || '';
-    this.initialIssueUrlValue = currentValue;
+    const currentValue = (this.threatForm.get('issue_uri')?.value as string) || '';
+    this.initialIssueUriValue = currentValue;
     // Exit edit mode when user clicks away from the input
-    this.isEditingIssueUrl = false;
+    this.isEditingIssueUri = false;
   }
 
   /**
-   * Check if we should show the hyperlink view for issue URL
+   * Check if we should show the hyperlink view for issue URI
    */
-  shouldShowIssueUrlHyperlink(): boolean {
-    return !this.isEditingIssueUrl && !!this.initialIssueUrlValue;
+  shouldShowIssueUriHyperlink(): boolean {
+    return !this.isEditingIssueUri && !!this.initialIssueUriValue;
   }
 
   /**
-   * Opens URL in new tab when clicked
+   * Opens URI in new tab when clicked
    */
-  openUrlInNewTab(url: string): void {
-    if (url && url.trim()) {
-      window.open(url, '_blank', 'noopener,noreferrer');
+  openUriInNewTab(uri: string): void {
+    if (uri && uri.trim()) {
+      window.open(uri, '_blank', 'noopener,noreferrer');
     }
   }
 
@@ -548,7 +548,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           priority: 'High',
           mitigated: false,
           status: 'Open',
-          issue_url: '',
+          issue_uri: '',
           metadata: [],
         } as unknown as Threat;
       }
@@ -576,13 +576,13 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       priority: 'High',
       mitigated: false,
       status: 'Open',
-      issue_url: '',
+      issue_uri: '',
     });
 
     // If editing or viewing, populate form with threat data
     if (this.data.threat) {
-      // Store the initial issue URL value
-      this.initialIssueUrlValue = this.data.threat.issue_url || '';
+      // Store the initial issue URI value
+      this.initialIssueUriValue = this.data.threat.issue_uri || '';
 
       // Debug log the threat data being used for form population
       this.logger.debug('Populating threat editor form with threat data', {
@@ -597,7 +597,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         priority: this.data.threat.priority,
         mitigated: this.data.threat.mitigated,
         status: this.data.threat.status,
-        issue_url: this.data.threat.issue_url,
+        issue_uri: this.data.threat.issue_uri,
       });
 
       this.threatForm.patchValue({
@@ -611,7 +611,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         priority: this.data.threat.priority || '',
         mitigated: this.data.threat.mitigated || false,
         status: this.data.threat.status || 'Open',
-        issue_url: this.initialIssueUrlValue,
+        issue_uri: this.initialIssueUriValue,
       });
 
       // Debug log the form values after patching
@@ -714,7 +714,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         'common.severity',
         'common.score',
         'common.priority',
-        'common.issueUrl',
+        'common.issueUri',
         'common.status',
         'common.mitigated',
         'common.diagramId',
@@ -853,7 +853,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       priority: formValues.priority || undefined,
       mitigated: formValues.mitigated,
       status: formValues.status || undefined,
-      issue_url: formValues.issue_url || undefined,
+      issue_uri: formValues.issue_uri || undefined,
       metadata: this.data.threat?.metadata || [],
     });
   }

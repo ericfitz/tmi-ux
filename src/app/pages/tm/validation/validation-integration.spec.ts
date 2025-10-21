@@ -285,7 +285,7 @@ describe('ThreatModel Validation Integration', () => {
       owner: 'owner@example.com',
       created_by: 'creator@example.com',
       threat_model_framework: 'STRIDE',
-      issue_url: 'https://example.com/issues/123',
+      issue_uri: 'https://example.com/issues/123',
       authorization: [
         { subject: 'owner@example.com', role: 'owner' },
         { subject: 'user@example.com', role: 'writer' },

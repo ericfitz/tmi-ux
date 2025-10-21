@@ -16,7 +16,7 @@ import { FormValidationService } from '../../../../shared/services/form-validati
  */
 interface DocumentFormValues {
   name: string;
-  url: string;
+  uri: string;
   description?: string;
 }
 
@@ -58,8 +58,8 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
 
     this.documentForm = this.fb.group({
       name: [data.document?.name || '', [Validators.required, Validators.maxLength(256)]],
-      url: [
-        data.document?.url || '',
+      uri: [
+        data.document?.uri || '',
         [
           Validators.required,
           Validators.maxLength(1024),
@@ -82,10 +82,10 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
    * Get URI validation suggestion message (if any)
    */
   getUriSuggestion(): string | null {
-    const urlControl = this.documentForm.get('url');
-    if (!urlControl) return null;
+    const uriControl = this.documentForm.get('uri');
+    if (!uriControl) return null;
 
-    const uriSuggestionError = urlControl.errors?.['uriSuggestion'] as
+    const uriSuggestionError = uriControl.errors?.['uriSuggestion'] as
       | { message?: string; severity?: string }
       | undefined;
     if (uriSuggestionError && typeof uriSuggestionError === 'object') {
@@ -101,14 +101,14 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     // Only check for blocking errors (required, maxLength)
     // Allow submission even with URI suggestions
     const nameControl = this.documentForm.get('name');
-    const urlControl = this.documentForm.get('url');
+    const uriControl = this.documentForm.get('uri');
     const descControl = this.documentForm.get('description');
 
     const hasBlockingErrors =
       nameControl?.hasError('required') ||
       nameControl?.hasError('maxlength') ||
-      urlControl?.hasError('required') ||
-      urlControl?.hasError('maxlength') ||
+      uriControl?.hasError('required') ||
+      uriControl?.hasError('maxlength') ||
       descControl?.hasError('maxlength');
 
     if (hasBlockingErrors) {

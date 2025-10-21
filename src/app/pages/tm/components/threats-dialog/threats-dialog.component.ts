@@ -29,7 +29,7 @@ interface ThreatUpdateResult {
   priority?: string;
   mitigated?: boolean;
   status?: string;
-  issue_url?: string;
+  issue_uri?: string;
   metadata?: Array<{ key: string; value: string }>;
 }
 
@@ -205,7 +205,7 @@ export class ThreatsDialogComponent implements OnInit {
           priority: result.priority,
           mitigated: result.mitigated,
           status: result.status,
-          issue_url: result.issue_url,
+          issue_uri: result.issue_uri,
           metadata: result.metadata || threat.metadata || [],
         };
 
