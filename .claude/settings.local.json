@@ -44,6 +44,8 @@
       "Bash(git restore:*)",
       "Bash(gh pr view:*)",
       "Bash(gh pr checkout:*)",
+      "Bash(gh pr comment:*)",
+      "Bash(gh pr close:*)",
       "Bash(git checkout:*)",
       "Read(//tmp/**)",
       "Bash(heroku:*)",
