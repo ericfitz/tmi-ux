@@ -357,13 +357,15 @@ describe('ThreatModelService', () => {
       const repositoryId = 'test-repository-id';
       vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
 
-      service.updateRepositoryMetadata(testThreatModel1.id, repositoryId, metadata).subscribe(result => {
-        expect(apiService.post).toHaveBeenCalledWith(
-          `threat_models/${testThreatModel1.id}/repositories/${repositoryId}/metadata/bulk`,
-          metadata,
-        );
-        expect(result).toEqual(metadata);
-      });
+      service
+        .updateRepositoryMetadata(testThreatModel1.id, repositoryId, metadata)
+        .subscribe(result => {
+          expect(apiService.post).toHaveBeenCalledWith(
+            `threat_models/${testThreatModel1.id}/repositories/${repositoryId}/metadata/bulk`,
+            metadata,
+          );
+          expect(result).toEqual(metadata);
+        });
     }));
   });
 
