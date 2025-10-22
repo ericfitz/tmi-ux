@@ -21,11 +21,6 @@ overrides:
   wrap-ansi@9.0.1: 9.0.0
   slice-ansi@7.1.1: 7.1.0
 
-patchedDependencies:
-  '@antv/x6-plugin-selection@2.2.2':
-    hash: 70ccba8225f4393b5dba1954c696fca35789128172678999db9e493918201719
-    path: patches/@antv__x6-plugin-selection@2.2.2.patch
-
 importers:
 
   .:
@@ -61,26 +56,26 @@ importers:
         specifier: ^20.3.6
         version: 20.3.6(@angular/common@20.3.6(@angular/core@20.3.6(@angular/compiler@20.3.6)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.3.6(@angular/compiler@20.3.6)(rxjs@7.8.2)(zone.js@0.15.1))(@angular/platform-browser@20.3.6(@angular/animations@20.3.6(@angular/core@20.3.6(@angular/compiler@20.3.6)(rxjs@7.8.2)(zone.js@0.15.1)))(@angular/common@20.3.6(@angular/core@20.3.6(@angular/compiler@20.3.6)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.3.6(@angular/compiler@20.3.6)(rxjs@7.8.2)(zone.js@0.15.1)))(rxjs@7.8.2)
       '@antv/x6':
-        specifier: ^2.19.0
-        version: 2.19.0
+        specifier: 2.18.1
+        version: 2.18.1
       '@antv/x6-plugin-clipboard':
         specifier: ^2.1.6
-        version: 2.1.6(@antv/x6@2.19.0)
+        version: 2.1.6(@antv/x6@2.18.1)
       '@antv/x6-plugin-export':
         specifier: ^2.1.6
-        version: 2.1.6(@antv/x6@2.19.0)
+        version: 2.1.6(@antv/x6@2.18.1)
       '@antv/x6-plugin-history':
         specifier: ^2.2.4
-        version: 2.2.4(@antv/x6@2.19.0)
+        version: 2.2.4(@antv/x6@2.18.1)
       '@antv/x6-plugin-selection':
         specifier: ^2.2.2
-        version: 2.2.2(patch_hash=70ccba8225f4393b5dba1954c696fca35789128172678999db9e493918201719)(@antv/x6@2.19.0)
+        version: 2.2.2(@antv/x6@2.18.1)
       '@antv/x6-plugin-snapline':
         specifier: ^2.1.7
-        version: 2.1.7(@antv/x6@2.19.0)
+        version: 2.1.7(@antv/x6@2.18.1)
       '@antv/x6-plugin-transform':
         specifier: ^2.1.8
-        version: 2.1.8(@antv/x6@2.19.0)
+        version: 2.1.8(@antv/x6@2.18.1)
       '@jsverse/transloco':
         specifier: ^8.1.0
         version: 8.1.0(@angular/core@20.3.6(@angular/compiler@20.3.6)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)(typescript@5.9.3)
@@ -559,6 +554,12 @@ packages:
       '@angular/platform-browser': 20.3.6
       rxjs: ^6.5.3 || ^7.4.0
 
+  '@antv/x6-common@2.0.17':
+    resolution: {integrity: sha512-37g7vmRkNdYzZPdwjaMSZEGv/MMH0S4r70/Jwoab1mioycmuIBN73iyziX8m56BvJSDucZ3J/6DU07otWqzS6A==}
+
+  '@antv/x6-geometry@2.0.5':
+    resolution: {integrity: sha512-MId6riEQkxphBpVeTcL4ZNXL4lScyvDEPLyIafvWMcWNTGK0jgkK7N20XSzqt8ltJb0mGUso5s56mrk8ysHu2A==}
+
   '@antv/x6-plugin-clipboard@2.1.6':
     resolution: {integrity: sha512-roZPLnZx6PK8MBvee0QMo90fz/TXeF0WNe4EGin2NBq5M1I5XTWrYvA6N2XVIiWAAI67gjQeEE8TpkL7f8QdqA==}
     peerDependencies:
@@ -589,9 +590,8 @@ packages:
     peerDependencies:
       '@antv/x6': ^2.x
 
-  '@antv/x6@2.19.0':
-    resolution: {integrity: sha512-AOkktrzLT87Zty2MxB/VFWE1E2PQUFSUsgMFkjopVIpAjpuUvBXI15vyMUw8tbhTdaJcvVTEpxkcFPz7ufHLgA==}
-    engines: {node: '>=20.0.0'}
+  '@antv/x6@2.18.1':
+    resolution: {integrity: sha512-FkWdbLOpN9J7dfJ+kiBxzowSx2N6syBily13NMVdMs+wqC6Eo5sLXWCZjQHateTFWgFw7ZGi2y9o3Pmdov1sXw==}
 
   '@asamuzakjp/css-color@4.0.5':
     resolution: {integrity: sha512-lMrXidNhPGsDjytDy11Vwlb6OIGrT3CmLg3VWNFyWkLWtijKl7xjvForlh8vuj0SHGjgl4qZEQzUmYTeQA2JFQ==}
@@ -3440,9 +3440,6 @@ packages:
   dom-accessibility-api@0.5.16:
     resolution: {integrity: sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==}
 
-  dom-align@1.12.4:
-    resolution: {integrity: sha512-R8LUSEay/68zE5c8/3BDxiTEvgb4xZTF0RKmAHfiEVN3klfIpXfi2/QCoiWPccVQ0J/ZGdz9OjzL4uJEP/MRAw==}
-
   dom-serializer@2.0.0:
     resolution: {integrity: sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==}
 
@@ -4861,9 +4858,6 @@ packages:
     resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
     engines: {node: '>=10'}
     hasBin: true
-
-  mousetrap@1.6.5:
-    resolution: {integrity: sha512-QNo4kEepaIBwiT8CDhP98umTetp+JNfQYBWvC1pc6/OAibuXtRcxZ58Qz8skvEHYvURne/7R8T5VoOI7rDsEUA==}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -6968,35 +6962,41 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@antv/x6-plugin-clipboard@2.1.6(@antv/x6@2.19.0)':
+  '@antv/x6-common@2.0.17':
     dependencies:
-      '@antv/x6': 2.19.0
-
-  '@antv/x6-plugin-export@2.1.6(@antv/x6@2.19.0)':
-    dependencies:
-      '@antv/x6': 2.19.0
-
-  '@antv/x6-plugin-history@2.2.4(@antv/x6@2.19.0)':
-    dependencies:
-      '@antv/x6': 2.19.0
-
-  '@antv/x6-plugin-selection@2.2.2(patch_hash=70ccba8225f4393b5dba1954c696fca35789128172678999db9e493918201719)(@antv/x6@2.19.0)':
-    dependencies:
-      '@antv/x6': 2.19.0
-
-  '@antv/x6-plugin-snapline@2.1.7(@antv/x6@2.19.0)':
-    dependencies:
-      '@antv/x6': 2.19.0
-
-  '@antv/x6-plugin-transform@2.1.8(@antv/x6@2.19.0)':
-    dependencies:
-      '@antv/x6': 2.19.0
-
-  '@antv/x6@2.19.0':
-    dependencies:
-      dom-align: 1.12.4
       lodash-es: 4.17.21
-      mousetrap: 1.6.5
+      utility-types: 3.11.0
+
+  '@antv/x6-geometry@2.0.5': {}
+
+  '@antv/x6-plugin-clipboard@2.1.6(@antv/x6@2.18.1)':
+    dependencies:
+      '@antv/x6': 2.18.1
+
+  '@antv/x6-plugin-export@2.1.6(@antv/x6@2.18.1)':
+    dependencies:
+      '@antv/x6': 2.18.1
+
+  '@antv/x6-plugin-history@2.2.4(@antv/x6@2.18.1)':
+    dependencies:
+      '@antv/x6': 2.18.1
+
+  '@antv/x6-plugin-selection@2.2.2(@antv/x6@2.18.1)':
+    dependencies:
+      '@antv/x6': 2.18.1
+
+  '@antv/x6-plugin-snapline@2.1.7(@antv/x6@2.18.1)':
+    dependencies:
+      '@antv/x6': 2.18.1
+
+  '@antv/x6-plugin-transform@2.1.8(@antv/x6@2.18.1)':
+    dependencies:
+      '@antv/x6': 2.18.1
+
+  '@antv/x6@2.18.1':
+    dependencies:
+      '@antv/x6-common': 2.0.17
+      '@antv/x6-geometry': 2.0.5
       utility-types: 3.11.0
 
   '@asamuzakjp/css-color@4.0.5':
@@ -9943,8 +9943,6 @@ snapshots:
 
   dom-accessibility-api@0.5.16: {}
 
-  dom-align@1.12.4: {}
-
   dom-serializer@2.0.0:
     dependencies:
       domelementtype: 2.3.0
@@ -11552,8 +11550,6 @@ snapshots:
   mkdirp@1.0.4: {}
 
   mkdirp@3.0.1: {}
-
-  mousetrap@1.6.5: {}
 
   mrmime@2.0.1: {}
 
