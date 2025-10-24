@@ -26,11 +26,25 @@ export class AboutComponent implements OnInit {
     { name: 'Angular Material', url: 'https://material.angular.io/' },
     { name: 'RxJS', url: 'https://rxjs.dev/' },
     { name: 'Transloco', url: 'https://github.com/jsverse/transloco' },
-    { name: 'Roboto', url: 'https://fonts.google.com/specimen/Roboto' },
-    { name: 'Roboto Condensed', url: 'https://fonts.google.com/specimen/Roboto+Condensed' },
-    { name: 'Roboto Mono', url: 'https://fonts.google.com/specimen/Roboto+Mono' },
-    { name: 'Noto Sans', url: 'https://fonts.google.com/noto/specimen/Noto+Sans' },
-    { name: 'Material Icons Outlined', url: 'https://fonts.google.com/icons' },
+  ];
+
+  fonts = [
+    {
+      name: 'Roboto Family (Roboto, Roboto Condensed, Roboto Mono)',
+      links: [
+        { name: 'Roboto', url: 'https://fonts.google.com/specimen/Roboto' },
+        { name: 'Roboto Condensed', url: 'https://fonts.google.com/specimen/Roboto+Condensed' },
+        { name: 'Roboto Mono', url: 'https://fonts.google.com/specimen/Roboto+Mono' },
+      ],
+    },
+    {
+      name: 'Noto Sans Family',
+      links: [{ name: 'Noto Sans', url: 'https://fonts.google.com/noto/specimen/Noto+Sans' }],
+    },
+    {
+      name: 'Material Icons Outlined',
+      links: [{ name: 'Material Icons Outlined', url: 'https://fonts.google.com/icons' }],
+    },
   ];
 
   constructor(

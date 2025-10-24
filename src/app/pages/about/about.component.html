@@ -101,32 +101,38 @@
     <ul class="opensource-list">
       <li *ngFor="let project of openSourceProjects">
         <a [href]="project.url" target="_blank" rel="noopener noreferrer">
-          <ng-container *ngIf="project.name === 'Roboto'">the Roboto font</ng-container>
-          <ng-container *ngIf="project.name === 'Roboto Condensed'"
-            >the Roboto Condensed font</ng-container
-          >
-          <ng-container *ngIf="project.name === 'Roboto Mono'">the Roboto Mono font</ng-container>
-          <ng-container *ngIf="project.name === 'Noto Sans'">the Noto Sans font</ng-container>
-          <ng-container *ngIf="project.name === 'Material Icons Outlined'"
-            >the Material Icons Outlined font</ng-container
-          >
-          <ng-container
-            *ngIf="
-              project.name !== 'Roboto' &&
-              project.name !== 'Roboto Condensed' &&
-              project.name !== 'Roboto Mono' &&
-              project.name !== 'Noto Sans' &&
-              project.name !== 'Material Icons Outlined'
-            "
-            >{{ project.name }}</ng-container
-          >
+          {{ project.name }}
         </a>
+      </li>
+      <li>
+        Fonts
+        <ul class="fonts-list">
+          <li *ngFor="let font of fonts">
+            <ng-container *ngIf="font.links.length === 1">
+              <a [href]="font.links[0].url" target="_blank" rel="noopener noreferrer">
+                {{ font.name }}
+              </a>
+            </ng-container>
+            <ng-container *ngIf="font.links.length > 1">
+              {{ font.name.split('(')[0].trim() }}
+              <span *ngFor="let link of font.links; let i = index">
+                <ng-container *ngIf="i > 0">, </ng-container>
+                <a [href]="link.url" target="_blank" rel="noopener noreferrer">
+                  {{ link.name }}
+                </a>
+              </span>
+            </ng-container>
+          </li>
+        </ul>
       </li>
     </ul>
 
     <p class="page-content">
       {{ 'about.opensource.paragraph2' | transloco
-      }}<a href="https://www.threatdragon.org" target="_blank" rel="noopener noreferrer"
+      }}<a
+        href="https://owasp.org/www-project-threat-dragon/"
+        target="_blank"
+        rel="noopener noreferrer"
         >OWASP Threat Dragon</a
       >.
     </p>
