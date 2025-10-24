@@ -30,7 +30,7 @@ export class AboutComponent implements OnInit {
 
   fonts = [
     {
-      name: 'Roboto Family (Roboto, Roboto Condensed, Roboto Mono)',
+      name: 'Roboto',
       links: [
         { name: 'Roboto', url: 'https://fonts.google.com/specimen/Roboto' },
         { name: 'Roboto Condensed', url: 'https://fonts.google.com/specimen/Roboto+Condensed' },
@@ -38,7 +38,7 @@ export class AboutComponent implements OnInit {
       ],
     },
     {
-      name: 'Noto Sans Family',
+      name: 'Noto Sans',
       links: [{ name: 'Noto Sans', url: 'https://fonts.google.com/noto/specimen/Noto+Sans' }],
     },
     {
