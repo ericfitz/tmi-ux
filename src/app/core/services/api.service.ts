@@ -119,6 +119,25 @@ export class ApiService {
   }
 
   /**
+   * Generic DELETE request with query parameters
+   * @param endpoint The API endpoint (without the base URL)
+   * @param params Optional query parameters
+   */
+  deleteWithParams<T>(
+    endpoint: string,
+    params?: Record<string, string | number | boolean>,
+  ): Observable<T> {
+    const url = `${this.apiUrl}/${endpoint}`;
+
+    // Request logging handled by JWT interceptor
+
+    return this.http.delete<T>(url, { params }).pipe(
+      // Response logging handled by JWT interceptor
+      catchError((error: HttpErrorResponse) => this.handleError(error, 'DELETE', endpoint)),
+    );
+  }
+
+  /**
    * Generic PATCH request with JSON Patch operations
    * @param endpoint The API endpoint (without the base URL)
    * @param operations Array of JSON Patch operations

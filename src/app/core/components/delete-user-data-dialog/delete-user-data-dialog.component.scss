@@ -1,0 +1,125 @@
+.delete-dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #d32f2f;
+  margin: 0;
+  padding: 20px 24px;
+
+  .warning-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    color: #d32f2f;
+  }
+}
+
+.delete-dialog-content {
+  min-width: 500px;
+  padding: 0 24px 20px;
+
+  .confirmation-question {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: rgb(0 0 0 / 87%);
+  }
+
+  .warning-box {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background-color: #fff3e0;
+    border-left: 4px solid #ff9800;
+    border-radius: 4px;
+    margin-bottom: 16px;
+
+    .warning-icon-small {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: #f57c00;
+      flex-shrink: 0;
+    }
+
+    .warning-text {
+      flex: 1;
+
+      p {
+        margin: 0 0 8px;
+        color: rgb(0 0 0 / 87%);
+        line-height: 1.5;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  .error-message {
+    color: #d32f2f;
+    font-size: 14px;
+    margin: 12px 0 0;
+    padding: 8px 12px;
+    background-color: #ffebee;
+    border-radius: 4px;
+    border-left: 4px solid #d32f2f;
+  }
+}
+
+.email-verification-section {
+  margin-top: 20px;
+
+  .verification-instruction {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: rgb(0 0 0 / 87%);
+  }
+
+  .email-input {
+    width: 100%;
+
+    .error-hint {
+      color: #d32f2f;
+    }
+
+    .success-hint {
+      color: #388e3c;
+    }
+  }
+}
+
+.processing {
+  .spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+
+    .processing-message {
+      margin-top: 20px;
+      font-size: 16px;
+      color: rgb(0 0 0 / 60%);
+    }
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  margin: 0;
+
+  button {
+    margin-left: 8px;
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    mat-icon {
+      margin-right: 4px;
+    }
+  }
+}

@@ -1,8 +1,13 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
 import { DIALOG_IMPORTS } from '@app/shared/imports';
 import { LoggerService } from '../../services/logger.service';
+import { AUTH_SERVICE, IAuthService } from '../../interfaces';
+import {
+  DeleteUserDataDialogComponent,
+  DeleteUserDataDialogData,
+} from '../delete-user-data-dialog/delete-user-data-dialog.component';
 
 export interface UserPreferences {
   animations: boolean;
@@ -183,7 +188,9 @@ export class UserPreferencesDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<UserPreferencesDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: unknown,
+    @Inject(AUTH_SERVICE) private authService: IAuthService,
     private logger: LoggerService,
+    private dialog: MatDialog,
   ) {
     this.preferences = this.loadPreferences();
   }
@@ -232,8 +239,25 @@ export class UserPreferencesDialogComponent {
   }
 
   onDeleteData(): void {
-    // TODO: Implement delete data dialog
     this.logger.info('Delete data button clicked');
+
+    const dialogData: DeleteUserDataDialogData = {
+      userEmail: this.authService.userEmail,
+    };
+
+    const deleteDialogRef = this.dialog.open(DeleteUserDataDialogComponent, {
+      width: '600px',
+      data: dialogData,
+      disableClose: true, // Prevent closing by clicking outside or ESC during processing
+    });
+
+    deleteDialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // User account was deleted, the dialog component handles logout
+        // Close this preferences dialog as well
+        this.dialogRef.close();
+      }
+    });
   }
 
   close(): void {

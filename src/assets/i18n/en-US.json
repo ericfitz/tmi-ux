@@ -409,7 +409,10 @@
     "colorBlindMode": "Enable Color Blind Mode",
     "deleteMyData": {
       "confirmation": "Are you sure that you want to delete all your data?",
+      "continue": "Continue",
+      "emailLabel": "Email Address",
       "explanation": "Confirming this operation will permanently delete your Identity Provider data (user ID, name, email). Your permissions will be revoked from threat model objects you don't own. For threat models you own: if other owners exist, ownership transfers to them and your permissions are revoked; if no other owners exist, the threat model and all associated diagrams, threat data, metadata, and references will be irrevocably deleted.",
+      "processing": "Deleting your account...",
       "title": "Delete All My Data",
       "validation": "To confirm your deletion request, type your email address exactly as it appears."
     },
