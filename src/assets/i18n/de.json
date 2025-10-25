@@ -206,6 +206,7 @@
     "privacy": "Datenschutzrichtlinie",
     "tos": "Nutzungsbedingungen"
   },
+  "getStarted": "Loslegen",
   "homeDescription": "Ein kollaboratives Tool zur Bedrohungsmodellierung, das Teams dabei hilft, Sicherheitsbedrohungen in ihren Systemen zu identifizieren, zu analysieren und zu dokumentieren. Erstellen, teilen und bearbeiten Sie gemeinsam Bedrohungsmodelle und Diagramme, um die Sicherheit Ihrer Anwendung zu verbessern.",
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
   "login": {
@@ -422,9 +423,21 @@
     "colorBlindMode": "Farbenblindmodus aktivieren",
     "deleteMyData": {
       "confirmation": "Sind Sie sicher, dass Sie alle Ihre Daten löschen möchten?",
-      "explanation": "Durch Bestätigung dieser Operation werden Ihre Identitätsanbieterdaten (Benutzer-ID, Name, E-Mail) dauerhaft gelöscht. Ihre Berechtigungen werden für Bedrohungsmodellobjekte widerrufen, die Sie nicht besitzen. Für Bedrohungsmodelle, die Sie besitzen: Wenn andere Eigentümer vorhanden sind, wird das Eigentum auf sie übertragen und Ihre Berechtigungen werden widerrufen; wenn keine anderen Eigentümer vorhanden sind, werden das Bedrohungsmodell und alle zugehörigen Diagramme, Bedrohungsdaten, Metadaten und Referenzen unwiderruflich gelöscht.",
+      "continue": "Weiter",
+      "emailDoesNotMatch": "E-Mail-Adresse stimmt nicht überein",
+      "emailLabel": "E-Mail-Adresse",
+      "emailMatches": "E-Mail-Adresse stimmt überein",
+      "explanation": {
+        "bullet1": "Ihre Identitätsanbieterdaten, einschließlich Benutzer-ID, Name und E-Mail.",
+        "bullet2": "Ihre Berechtigungen für alle Bedrohungsmodellobjekte, die Sie nicht besitzen.",
+        "bullet3": "Für Bedrohungsmodelle, die Sie besitzen:",
+        "bullet3a": "Wenn andere Eigentümer vorhanden sind, wird das Eigentum auf sie übertragen und Ihre Berechtigungen werden widerrufen.",
+        "bullet3b": "Wenn keine anderen Eigentümer vorhanden sind, werden das Bedrohungsmodell samt aller zugehörigen Diagramme, Bedrohungsdaten, Metadaten und Referenzen unwiderruflich gelöscht.",
+        "intro": "Durch Bestätigung dieser Operation werden die folgenden Daten dauerhaft gelöscht und zugehörige Berechtigungen widerrufen:"
+      },
+      "processing": "Ihr Konto wird gelöscht...",
       "title": "Alle meine Daten löschen",
-      "validation": "Um Ihre Löschanfrage zu bestätigen, geben Sie Ihre E-Mail-Adresse genau so ein, wie sie erscheint."
+      "validation": "Um Ihre Löschanfrage zu bestätigen, geben Sie Ihre E-Mail-Adresse genau so ein, wie sie hier erscheint:"
     },
     "diagramAnimationEffects": "Animationseffekte im Diagramm-Editor aktivieren",
     "marginSize": {

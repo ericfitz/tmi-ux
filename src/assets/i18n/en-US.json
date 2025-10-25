@@ -206,6 +206,7 @@
     "privacy": "Privacy Policy",
     "tos": "Terms of Service"
   },
+  "getStarted": "Get Started",
   "homeDescription": "A collaborative threat modeling tool designed to help teams identify, analyze, and document security threats in their systems. Create, share, and collaboratively edit threat models and diagrams to improve your application security.",
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
   "login": {
@@ -257,14 +258,14 @@
     "dataSecurityContent2": "While no system is entirely impervious to risks, The Operator continuously monitors and updates safeguards to mitigate threats and ensure the confidentiality, integrity, and availability of your data.",
     "dataSecurityTitle": "Data Security",
     "dataSharingContent1": "The Operator does not share your personal information with any third parties, except in the following limited circumstances:",
+    "dataSharingContent2": "Beyond these exceptions, The Operator does not sell, rent, or share your data with any other entities for marketing, advertising, or any other purpose.",
     "dataSharingList1": "Service Providers: Your data may be stored and processed on secure third-party cloud infrastructure (such as AWS, Google Cloud, or similar providers) solely to operate and maintain the application. These providers are contractually obligated to protect your data and use it only for the purposes The Operator specifies.",
     "dataSharingList2": "Legal Compliance: The Operator may disclose information if required by law, such as in response to a valid court order, subpoena, or government request.",
-    "dataSharingContent2": "Beyond these exceptions, The Operator does not sell, rent, or share your data with any other entities for marketing, advertising, or any other purpose.",
     "dataSharingTitle": "Data Sharing",
     "informationCollectionContent1": "When users authenticate via social login (using OAuth or OpenID Connect providers such as Sign in with Google, Login with GitHub, Microsoft Entra External ID, or others), the application collects the following information from the selected provider, solely to facilitate authentication and provide personalized services:",
+    "informationCollectionContent2": "No additional personal data is collected without explicit user consent. The Operator does not access or store sensitive information such as passwords, contacts, or other provider-specific data beyond what is necessary for authentication. All collected information is handled in accordance with the respective provider's API policies and The Operator's commitment to user privacy.",
     "informationCollectionList1": "Basic Profile Information: Full name, email address, and profile picture (if provided and available).",
     "informationCollectionList2": "Unique Identifier: A provider-specific user ID to manage account sessions securely.",
-    "informationCollectionContent2": "No additional personal data is collected without explicit user consent. The Operator does not access or store sensitive information such as passwords, contacts, or other provider-specific data beyond what is necessary for authentication. All collected information is handled in accordance with the respective provider's API policies and The Operator's commitment to user privacy.",
     "informationCollectionTitle": "Information Collection and Use",
     "intro1": {
       "part1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the Operator listed on the ",
@@ -423,11 +424,20 @@
     "deleteMyData": {
       "confirmation": "Are you sure that you want to delete all your data?",
       "continue": "Continue",
+      "emailDoesNotMatch": "Email address does not match",
       "emailLabel": "Email Address",
-      "explanation": "Confirming this operation will permanently delete your Identity Provider data (user ID, name, email). Your permissions will be revoked from threat model objects you don't own. For threat models you own: if other owners exist, ownership transfers to them and your permissions are revoked; if no other owners exist, the threat model and all associated diagrams, threat data, metadata, and references will be irrevocably deleted.",
+      "emailMatches": "Email address matches",
+      "explanation": {
+        "bullet1": "Your Identity Provider data, including user ID, name, and email.",
+        "bullet2": "Your permissions from all threat model objects that you do not own.",
+        "bullet3": "For threat models you own:",
+        "bullet3a": "If other owners exist, ownership will transfer to them, and your permissions will be revoked.",
+        "bullet3b": "If no other owners exist, the threat model along with all associated diagrams, threat data, metadata, and references will be irrevocably deleted.",
+        "intro": "Confirming this operation will permanently delete the following data and revoke associated permissions:"
+      },
       "processing": "Deleting your account...",
       "title": "Delete All My Data",
-      "validation": "To confirm your deletion request, type your email address exactly as it appears."
+      "validation": "To confirm your deletion request, type your email address exactly as it appears here:"
     },
     "diagramAnimationEffects": "Enable Animation Effects in Diagram Editor",
     "marginSize": {

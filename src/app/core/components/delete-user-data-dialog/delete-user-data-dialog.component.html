@@ -13,7 +13,18 @@
     <div class="warning-box">
       <mat-icon class="warning-icon-small">info</mat-icon>
       <div class="warning-text">
-        <p>{{ 'userPreferences.deleteMyData.explanation' | transloco }}</p>
+        <p>{{ 'userPreferences.deleteMyData.explanation.intro' | transloco }}</p>
+        <ul>
+          <li>{{ 'userPreferences.deleteMyData.explanation.bullet1' | transloco }}</li>
+          <li>{{ 'userPreferences.deleteMyData.explanation.bullet2' | transloco }}</li>
+          <li>
+            {{ 'userPreferences.deleteMyData.explanation.bullet3' | transloco }}
+            <ul>
+              <li>{{ 'userPreferences.deleteMyData.explanation.bullet3a' | transloco }}</li>
+              <li>{{ 'userPreferences.deleteMyData.explanation.bullet3b' | transloco }}</li>
+            </ul>
+          </li>
+        </ul>
       </div>
     </div>
 
@@ -25,13 +36,25 @@
     <div class="warning-box">
       <mat-icon class="warning-icon-small">info</mat-icon>
       <div class="warning-text">
-        <p>{{ 'userPreferences.deleteMyData.explanation' | transloco }}</p>
+        <p>{{ 'userPreferences.deleteMyData.explanation.intro' | transloco }}</p>
+        <ul>
+          <li>{{ 'userPreferences.deleteMyData.explanation.bullet1' | transloco }}</li>
+          <li>{{ 'userPreferences.deleteMyData.explanation.bullet2' | transloco }}</li>
+          <li>
+            {{ 'userPreferences.deleteMyData.explanation.bullet3' | transloco }}
+            <ul>
+              <li>{{ 'userPreferences.deleteMyData.explanation.bullet3a' | transloco }}</li>
+              <li>{{ 'userPreferences.deleteMyData.explanation.bullet3b' | transloco }}</li>
+            </ul>
+          </li>
+        </ul>
       </div>
     </div>
 
     <div class="email-verification-section">
       <p class="verification-instruction">
         {{ 'userPreferences.deleteMyData.validation' | transloco }}
+        <strong>{{ data.userEmail }}</strong>
       </p>
 
       <mat-form-field appearance="outline" class="email-input">
@@ -45,10 +68,12 @@
           tabindex="1"
           cdkFocusInitial
         />
-        <mat-hint *ngIf="emailInput && !isEmailValid" class="error-hint"
-          >Email does not match</mat-hint
-        >
-        <mat-hint *ngIf="isEmailValid" class="success-hint">Email matches</mat-hint>
+        <mat-hint *ngIf="emailInput && !isEmailValid" class="error-hint">{{
+          'userPreferences.deleteMyData.emailDoesNotMatch' | transloco
+        }}</mat-hint>
+        <mat-hint *ngIf="isEmailValid" class="success-hint">{{
+          'userPreferences.deleteMyData.emailMatches' | transloco
+        }}</mat-hint>
       </mat-form-field>
 
       <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>

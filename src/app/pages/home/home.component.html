@@ -20,7 +20,7 @@
   <div class="action-row" *ngIf="!isAuthenticated">
     <button mat-raised-button color="primary" routerLink="/login">
       <mat-icon>login</mat-icon>
-      <span>Get Started</span>
+      <span>{{ 'getStarted' | transloco }}</span>
     </button>
   </div>
 </div>
