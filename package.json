@@ -124,7 +124,7 @@
     "tsx": "^4.20.6",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.1",
-    "vite": "7.1.11",
+    "vite": "7.1.12",
     "vitest": "^3.2.4"
   },
   "packageManager": "pnpm@10.18.3",
@@ -137,7 +137,7 @@
   "pnpm": {
     "overrides": {
       "http-proxy-middleware": "3.0.5",
-      "vite": "7.1.7",
+      "vite": "7.1.12",
       "glob@<9.0.0": "^9.3.5",
       "rimraf@<4.0.0": "^4.4.1",
       "inflight@*": "^1.0.6",
