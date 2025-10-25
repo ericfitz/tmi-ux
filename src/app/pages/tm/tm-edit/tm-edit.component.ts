@@ -1376,21 +1376,21 @@ export class TmEditComponent implements OnInit, OnDestroy {
             this.threatModelService
               .createNote(this.threatModel.id, result as Partial<Note>)
               .subscribe(
-              createdNote => {
-                if (this.threatModel) {
-                  if (!this.threatModel.notes) {
-                    this.threatModel.notes = [];
+                createdNote => {
+                  if (this.threatModel) {
+                    if (!this.threatModel.notes) {
+                      this.threatModel.notes = [];
+                    }
+                    if (!this.threatModel.notes.find(n => n.id === createdNote.id)) {
+                      this.threatModel.notes.push(createdNote);
+                    }
+                    this.logger.info('Created note via API', { note: createdNote });
                   }
-                  if (!this.threatModel.notes.find(n => n.id === createdNote.id)) {
-                    this.threatModel.notes.push(createdNote);
-                  }
-                  this.logger.info('Created note via API', { note: createdNote });
-                }
-              },
-              error => {
-                this.logger.error('Failed to create note', error);
-              },
-            ),
+                },
+                error => {
+                  this.logger.error('Failed to create note', error);
+                },
+              ),
           );
         }
       }),
@@ -1449,19 +1449,19 @@ export class TmEditComponent implements OnInit, OnDestroy {
             this.threatModelService
               .updateNote(this.threatModel.id, note.id, result as Partial<Note>)
               .subscribe(
-              updatedNote => {
-                if (this.threatModel && this.threatModel.notes) {
-                  const index = this.threatModel.notes.findIndex(n => n.id === note.id);
-                  if (index !== -1) {
-                    this.threatModel.notes[index] = updatedNote;
+                updatedNote => {
+                  if (this.threatModel && this.threatModel.notes) {
+                    const index = this.threatModel.notes.findIndex(n => n.id === note.id);
+                    if (index !== -1) {
+                      this.threatModel.notes[index] = updatedNote;
+                    }
+                    this.logger.info('Updated note via API', { note: updatedNote });
                   }
-                  this.logger.info('Updated note via API', { note: updatedNote });
-                }
-              },
-              error => {
-                this.logger.error('Failed to update note', error);
-              },
-            ),
+                },
+                error => {
+                  this.logger.error('Failed to update note', error);
+                },
+              ),
           );
         }
       }),
