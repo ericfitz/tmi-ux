@@ -27,6 +27,7 @@ import {
   ThreatModel,
   Document as TMDocument,
   Repository,
+  Note,
   Metadata,
   Threat,
 } from '../models/threat-model.model';
@@ -449,6 +450,34 @@ export class ThreatModelService implements OnDestroy {
         return of([]);
       }),
     );
+  }
+
+  /**
+   * Get notes for a threat model
+   */
+  getNotesForThreatModel(threatModelId: string): Observable<Note[]> {
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - returning notes from cache');
+      const cachedModel = this._cachedThreatModels.get(threatModelId);
+      return of(cachedModel?.notes || []);
+    }
+
+    this.logger.debugComponent(
+      'ThreatModelService',
+      `Fetching notes for threat model with ID: ${threatModelId} from API`,
+    );
+    return this.apiService
+      .get<{ notes: Note[]; total_count: number }>(`threat_models/${threatModelId}/notes`)
+      .pipe(
+        map(response => response.notes),
+        catchError(error => {
+          this.logger.error(
+            `Error fetching notes for threat model with ID: ${threatModelId}`,
+            error,
+          );
+          return of([]);
+        }),
+      );
   }
 
   /**
@@ -1806,6 +1835,199 @@ export class ThreatModelService implements OnDestroy {
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for repository ID: ${repositoryId}`, error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Create a new note for a threat model
+   */
+  createNote(threatModelId: string, note: Partial<Note>): Observable<Note> {
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - creating note in cache only');
+
+      const newNote: Note = {
+        ...note,
+        id: uuidv4(),
+        metadata: [],
+      } as Note;
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        const updatedNotes = [...(threatModel.notes || []), newNote];
+        const updatedThreatModel = {
+          ...threatModel,
+          notes: updatedNotes,
+          modified_at: new Date().toISOString(),
+        };
+        this._cachedThreatModels.set(threatModelId, updatedThreatModel);
+      }
+      return of(newNote);
+    }
+
+    const { id, ...noteData } = note as Note;
+
+    return this.apiService
+      .post<Note>(
+        `threat_models/${threatModelId}/notes`,
+        noteData as unknown as Record<string, unknown>,
+      )
+      .pipe(
+        catchError(error => {
+          this.logger.error(`Error creating note for threat model ID: ${threatModelId}`, error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Update an existing note
+   */
+  updateNote(threatModelId: string, noteId: string, note: Partial<Note>): Observable<Note> {
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - updating note in cache only');
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.notes) {
+        const index = threatModel.notes.findIndex(n => n.id === noteId);
+        if (index !== -1) {
+          const updatedNote = { ...threatModel.notes[index], ...note };
+          const updatedNotes = [
+            ...threatModel.notes.slice(0, index),
+            updatedNote,
+            ...threatModel.notes.slice(index + 1),
+          ];
+          const updatedThreatModel = {
+            ...threatModel,
+            notes: updatedNotes,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
+          return of(updatedNote);
+        }
+      }
+      return of(note as Note);
+    }
+
+    const { id, ...noteData } = note as Note;
+
+    return this.apiService
+      .put<Note>(
+        `threat_models/${threatModelId}/notes/${noteId}`,
+        noteData as unknown as Record<string, unknown>,
+      )
+      .pipe(
+        catchError(error => {
+          this.logger.error(`Error updating note ID: ${noteId}`, error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Delete a note
+   */
+  deleteNote(threatModelId: string, noteId: string): Observable<boolean> {
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - deleting note from cache only');
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.notes) {
+        const initialLength = threatModel.notes.length;
+        const filteredNotes = threatModel.notes.filter(n => n.id !== noteId);
+        const wasDeleted = filteredNotes.length < initialLength;
+        if (wasDeleted) {
+          const updatedThreatModel = {
+            ...threatModel,
+            notes: filteredNotes,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
+        }
+        return of(wasDeleted);
+      }
+      return of(false);
+    }
+
+    return this.apiService.delete(`threat_models/${threatModelId}/notes/${noteId}`).pipe(
+      map(() => true),
+      catchError(error => {
+        this.logger.error(`Error deleting note ID: ${noteId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Get metadata for a note
+   */
+  getNoteMetadata(threatModelId: string, noteId: string): Observable<Metadata[]> {
+    if (this.isOfflineMode) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      const note = threatModel?.notes?.find(n => n.id === noteId);
+      return of(note?.metadata || []);
+    }
+
+    return this.apiService
+      .get<Metadata[]>(`threat_models/${threatModelId}/notes/${noteId}/metadata`)
+      .pipe(
+        catchError(error => {
+          this.logger.error(`Error getting metadata for note ID: ${noteId}`, error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Update metadata for a note
+   */
+  updateNoteMetadata(
+    threatModelId: string,
+    noteId: string,
+    metadata: Metadata[],
+  ): Observable<Metadata[]> {
+    if (this.isOfflineMode) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.notes) {
+        const noteIndex = threatModel.notes.findIndex(n => n.id === noteId);
+        if (noteIndex !== -1) {
+          const updatedNote = {
+            ...threatModel.notes[noteIndex],
+            metadata: [...metadata],
+          };
+          const updatedNotes = [
+            ...threatModel.notes.slice(0, noteIndex),
+            updatedNote,
+            ...threatModel.notes.slice(noteIndex + 1),
+          ];
+          const updatedThreatModel = {
+            ...threatModel,
+            notes: updatedNotes,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
+        }
+      }
+      return of(metadata);
+    }
+
+    if (!metadata || metadata.length === 0) {
+      this.logger.debugComponent(
+        'ThreatModelService',
+        `Skipping metadata update for note ${noteId} - no valid metadata to save`,
+        { threatModelId, noteId, metadataCount: metadata?.length || 0 },
+      );
+      return of([]);
+    }
+
+    return this.apiService
+      .post<
+        Metadata[]
+      >(`threat_models/${threatModelId}/notes/${noteId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      .pipe(
+        catchError(error => {
+          this.logger.error(`Error updating metadata for note ID: ${noteId}`, error);
           throw error;
         }),
       );

@@ -89,6 +89,7 @@
 
 .diagrams-card,
 .documents-card,
+.notes-card,
 .repository-card,
 .threats-card {
   width: 100%;
@@ -321,6 +322,7 @@ mat-card-header {
 
 .diagram-item,
 .document-item,
+.note-item,
 .clickable-item {
   cursor: pointer;
   transition: background-color 0.2s ease;

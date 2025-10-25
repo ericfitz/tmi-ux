@@ -289,6 +289,73 @@
       </mat-card-content>
     </mat-card>
 
+    <!-- Notes Card -->
+    <mat-card class="notes-card">
+      <mat-card-header>
+        <mat-card-title [transloco]="'common.objectTypes.notes'">Notes</mat-card-title>
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="addNote()"
+          [matTooltip]="'threatModels.tooltips.addNote' | transloco"
+          [attr.aria-label]="'threatModels.tooltips.addNote' | transloco"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item
+            *ngFor="let note of threatModel.notes"
+            class="note-item clickable"
+            (click)="editNote(note, $event)"
+          >
+            <mat-icon matListItemIcon class="material-symbols-outlined">article</mat-icon>
+            <div matListItemTitle class="note-content">
+              <span
+                class="note-name"
+                [matTooltip]="note.description"
+                matTooltipClass="note-description-tooltip"
+                matTooltipPosition="above"
+              >
+                {{ note.name }}
+              </span>
+            </div>
+            <div matListItemMeta class="action-buttons">
+              <button
+                mat-icon-button
+                (click)="openNoteMetadataDialog(note, $event)"
+                [matTooltip]="'common.manageMetadata' | transloco"
+                [attr.aria-label]="'common.manageMetadata' | transloco"
+              >
+                <mat-icon>list</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                (click)="editNote(note, $event)"
+                [matTooltip]="'common.edit' | transloco"
+                [attr.aria-label]="'common.edit' | transloco"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteNote(note, $event)"
+                [matTooltip]="'common.delete' | transloco"
+                [attr.aria-label]="'common.delete' | transloco"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-list-item>
+        </mat-list>
+        <div *ngIf="!threatModel.notes?.length" class="no-items-message">
+          {{ 'threatModels.noNotes' | transloco }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
     <!-- Documents Card -->
     <mat-card class="documents-card">
       <mat-card-header>

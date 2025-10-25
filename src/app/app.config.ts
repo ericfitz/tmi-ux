@@ -26,6 +26,7 @@ import {
   LOCALE_ID,
   importProvidersFrom,
   APP_INITIALIZER,
+  SecurityContext,
 } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
@@ -33,6 +34,8 @@ import { BidiModule } from '@angular/cdk/bidi';
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+import { provideMarkdown, MARKED_OPTIONS, MERMAID_OPTIONS, MarkedRenderer } from 'ngx-markdown';
+import type { MermaidConfig } from 'mermaid';
 
 import { routes } from './app.routes';
 import { TranslocoRootModule } from './i18n/transloco.module';
@@ -83,6 +86,28 @@ function initializeMaterialIcons(
   };
 }
 
+// Marked configuration with security
+function markedOptionsFactory() {
+  const renderer = new MarkedRenderer();
+
+  return {
+    renderer,
+    gfm: true, // GitHub Flavored Markdown
+    breaks: true, // Convert \n to <br>
+    pedantic: false,
+  };
+}
+
+// Mermaid configuration
+function mermaidOptionsFactory(): MermaidConfig {
+  return {
+    theme: 'default',
+    startOnLoad: false,
+    securityLevel: 'strict', // Prevent XSS in mermaid diagrams
+    maxTextSize: 50000,
+  };
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
     // Still provide LOCALE_ID for date and number formatting
@@ -106,6 +131,18 @@ export const appConfig: ApplicationConfig = {
     },
     // Add Transloco root module
     importProvidersFrom(TranslocoRootModule),
+    // Configure markdown with security and features
+    provideMarkdown({
+      sanitize: SecurityContext.HTML,
+    }),
+    {
+      provide: MARKED_OPTIONS,
+      useFactory: markedOptionsFactory,
+    },
+    {
+      provide: MERMAID_OPTIONS,
+      useFactory: mermaidOptionsFactory,
+    },
     // Register HTTP interceptors (order matters - first registered runs first)
     // 1. HttpLoggingInterceptor - logs all HTTP requests/responses and categorizes errors
     {

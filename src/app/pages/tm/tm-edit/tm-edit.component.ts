@@ -32,6 +32,10 @@ import {
   RepositoryEditorDialogData,
 } from '../components/repository-editor-dialog/repository-editor-dialog.component';
 import {
+  NoteEditorDialogComponent,
+  NoteEditorDialogData,
+} from '../components/note-editor-dialog/note-editor-dialog.component';
+import {
   PermissionsDialogComponent,
   PermissionsDialogData,
 } from '../components/permissions-dialog/permissions-dialog.component';
@@ -49,6 +53,7 @@ import {
   Authorization,
   Document,
   Metadata,
+  Note,
   Repository,
   Threat,
   ThreatModel,
@@ -344,6 +349,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     // Load repositories separately
     this.loadRepositories(id);
+
+    // Load notes separately
+    this.loadNotes(id);
 
     // Re-enable auto-save after initial population is complete
     setTimeout(() => {
@@ -1303,6 +1311,231 @@ export class TmEditComponent implements OnInit, OnDestroy {
                   }
                   this.logger.info('Updated repository metadata via API', {
                     repositoryId: repository.id,
+                    metadata: updatedMetadata,
+                  });
+                }
+              }),
+          );
+        }
+      }),
+    );
+  }
+
+  /**
+   * Opens the dialog to create a new note
+   */
+  addNote(): void {
+    if (!this.canEdit) {
+      this.logger.warn('User does not have permission to create notes');
+      return;
+    }
+
+    const dialogData: NoteEditorDialogData = {
+      mode: 'create',
+    };
+
+    const dialogRef = this.dialog.open(NoteEditorDialogComponent, {
+      width: '90vw',
+      maxWidth: '900px',
+      minWidth: '600px',
+      maxHeight: '90vh',
+      data: dialogData,
+    });
+
+    // Subscribe to save events from the dialog
+    const saveSubscription = dialogRef.componentInstance.saveEvent.subscribe(noteResult => {
+      if (!this.threatModel) {
+        return;
+      }
+      this._subscriptions.add(
+        this.threatModelService.createNote(this.threatModel.id, noteResult).subscribe(
+          createdNote => {
+            if (this.threatModel) {
+              if (!this.threatModel.notes) {
+                this.threatModel.notes = [];
+              }
+              if (!this.threatModel.notes.find(n => n.id === createdNote.id)) {
+                this.threatModel.notes.push(createdNote);
+              }
+              this.logger.info('Created note via API', { note: createdNote });
+            }
+          },
+          error => {
+            this.logger.error('Failed to create note', error);
+          },
+        ),
+      );
+    });
+
+    this._subscriptions.add(saveSubscription);
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe(result => {
+        if (result && this.threatModel) {
+          this._subscriptions.add(
+            this.threatModelService
+              .createNote(this.threatModel.id, result as Partial<Note>)
+              .subscribe(
+              createdNote => {
+                if (this.threatModel) {
+                  if (!this.threatModel.notes) {
+                    this.threatModel.notes = [];
+                  }
+                  if (!this.threatModel.notes.find(n => n.id === createdNote.id)) {
+                    this.threatModel.notes.push(createdNote);
+                  }
+                  this.logger.info('Created note via API', { note: createdNote });
+                }
+              },
+              error => {
+                this.logger.error('Failed to create note', error);
+              },
+            ),
+          );
+        }
+      }),
+    );
+  }
+
+  /**
+   * Opens the dialog to edit an existing note
+   */
+  editNote(note: Note, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+
+    const dialogData: NoteEditorDialogData = {
+      mode: 'edit',
+      note: { ...note },
+    };
+
+    const dialogRef = this.dialog.open(NoteEditorDialogComponent, {
+      width: '90vw',
+      maxWidth: '900px',
+      minWidth: '600px',
+      maxHeight: '90vh',
+      data: dialogData,
+    });
+
+    // Subscribe to save events from the dialog
+    const saveSubscription = dialogRef.componentInstance.saveEvent.subscribe(noteResult => {
+      if (!this.threatModel) {
+        return;
+      }
+      this._subscriptions.add(
+        this.threatModelService.updateNote(this.threatModel.id, note.id, noteResult).subscribe(
+          updatedNote => {
+            if (this.threatModel && this.threatModel.notes) {
+              const index = this.threatModel.notes.findIndex(n => n.id === note.id);
+              if (index !== -1) {
+                this.threatModel.notes[index] = updatedNote;
+              }
+              this.logger.info('Updated note via API', { note: updatedNote });
+            }
+          },
+          error => {
+            this.logger.error('Failed to update note', error);
+          },
+        ),
+      );
+    });
+
+    this._subscriptions.add(saveSubscription);
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe(result => {
+        if (result && this.threatModel) {
+          this._subscriptions.add(
+            this.threatModelService
+              .updateNote(this.threatModel.id, note.id, result as Partial<Note>)
+              .subscribe(
+              updatedNote => {
+                if (this.threatModel && this.threatModel.notes) {
+                  const index = this.threatModel.notes.findIndex(n => n.id === note.id);
+                  if (index !== -1) {
+                    this.threatModel.notes[index] = updatedNote;
+                  }
+                  this.logger.info('Updated note via API', { note: updatedNote });
+                }
+              },
+              error => {
+                this.logger.error('Failed to update note', error);
+              },
+            ),
+          );
+        }
+      }),
+    );
+  }
+
+  /**
+   * Deletes a note from the threat model
+   */
+  deleteNote(note: Note, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+
+    if (!this.threatModel || !this.threatModel.notes || !this.canEdit) {
+      this.logger.warn('User does not have permission to delete notes');
+      return;
+    }
+
+    const confirmMessage = this.transloco.translate('threatModels.confirmDeleteNote', {
+      name: note.name,
+    });
+    const confirmDelete = window.confirm(confirmMessage);
+
+    if (confirmDelete) {
+      this._subscriptions.add(
+        this.threatModelService.deleteNote(this.threatModel.id, note.id).subscribe(success => {
+          if (success && this.threatModel && this.threatModel.notes) {
+            const index = this.threatModel.notes.findIndex(n => n.id === note.id);
+            if (index !== -1) {
+              this.threatModel.notes.splice(index, 1);
+            }
+            this.logger.info('Deleted note', { noteId: note.id });
+          }
+        }),
+      );
+    }
+  }
+
+  /**
+   * Opens the metadata dialog for a specific note
+   */
+  openNoteMetadataDialog(note: Note, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+
+    const dialogData: MetadataDialogData = {
+      metadata: note.metadata || [],
+      isReadOnly: !this.canEdit,
+      objectType: 'Note',
+      objectName: `${this.transloco.translate('common.objectTypes.note')}: ${note.name} (${note.id})`,
+    };
+
+    const dialogRef = this.dialog.open(MetadataDialogComponent, {
+      width: '90vw',
+      maxWidth: '800px',
+      minWidth: '500px',
+      maxHeight: '80vh',
+      data: dialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
+        if (result && this.threatModel && this.canEdit) {
+          this._subscriptions.add(
+            this.threatModelService
+              .updateNoteMetadata(this.threatModel.id, note.id, result)
+              .subscribe(updatedMetadata => {
+                if (updatedMetadata && this.threatModel && this.threatModel.notes) {
+                  const noteIndex = this.threatModel.notes.findIndex(n => n.id === note.id);
+                  if (noteIndex !== -1) {
+                    this.threatModel.notes[noteIndex].metadata = updatedMetadata;
+                  }
+                  this.logger.info('Updated note metadata via API', {
+                    noteId: note.id,
                     metadata: updatedMetadata,
                   });
                 }
@@ -2328,6 +2561,28 @@ export class TmEditComponent implements OnInit, OnDestroy {
             this.threatModel.repositories = repositories;
           }
         }),
+    );
+  }
+
+  /**
+   * Load notes for the threat model - use notes already included in threat model data
+   */
+  private loadNotes(threatModelId: string): void {
+    // Use notes that are already loaded with the threat model instead of making separate API call
+    // This preserves metadata that might not be included in the separate notes endpoint
+    if (this.threatModel?.notes && Array.isArray(this.threatModel.notes)) {
+      // The threat model already contains the notes with metadata
+      // No additional action needed - notes are already available in threatModel.notes
+      return;
+    }
+
+    // Fallback to separate API call if notes not included in threat model
+    this._subscriptions.add(
+      this.threatModelService.getNotesForThreatModel(threatModelId).subscribe(notes => {
+        if (this.threatModel) {
+          this.threatModel.notes = notes;
+        }
+      }),
     );
   }
 

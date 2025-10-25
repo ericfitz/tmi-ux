@@ -1,0 +1,191 @@
+:host {
+  display: block;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.markdown-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background-color: #f5f5f5;
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: 4px 4px 0 0;
+  margin-bottom: -1px; // Merge with textarea border
+
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .toolbar-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .toolbar-divider {
+    width: 1px;
+    height: 24px;
+    background-color: rgb(0 0 0 / 12%);
+    margin: 0 8px;
+  }
+
+  button {
+    &.active {
+      background-color: rgb(63 81 181 / 12%);
+      color: #3f51b5;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .save-button {
+    margin-left: 8px;
+  }
+
+  .character-count {
+    font-size: 0.75rem;
+    color: rgb(0 0 0 / 60%);
+    font-family: 'Roboto Mono', monospace;
+  }
+}
+
+.markdown-editor-textarea {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+::ng-deep .markdown-editor-textarea {
+  font-family: 'Roboto Mono', monospace !important;
+}
+
+.markdown-preview-container {
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  min-height: 400px;
+}
+
+.markdown-preview {
+  font-family: Roboto, sans-serif;
+  padding: 16px;
+  min-height: 384px;
+  max-height: 600px;
+  overflow-y: auto;
+
+  // Style markdown content
+  ::ng-deep {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin-top: 24px;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    h1 {
+      font-size: 2em;
+    }
+
+    h2 {
+      font-size: 1.5em;
+    }
+
+    h3 {
+      font-size: 1.25em;
+    }
+
+    p {
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    code {
+      background-color: rgb(0 0 0 / 5%);
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.9em;
+    }
+
+    pre {
+      background-color: #f6f8fa;
+      padding: 16px;
+      border-radius: 6px;
+      overflow-x: auto;
+
+      code {
+        background-color: transparent;
+        padding: 0;
+      }
+    }
+
+    blockquote {
+      border-left: 4px solid #ddd;
+      padding-left: 16px;
+      margin-left: 0;
+      color: rgb(0 0 0 / 60%);
+    }
+
+    ul,
+    ol {
+      margin-bottom: 16px;
+      padding-left: 24px;
+    }
+
+    a {
+      color: #3f51b5;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 16px;
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f6f8fa;
+        font-weight: 500;
+      }
+    }
+
+    // Style mermaid diagrams
+    .mermaid {
+      text-align: center;
+      margin: 16px 0;
+    }
+  }
+}
+
+mat-dialog-content {
+  max-height: 80vh;
+  overflow-y: auto;
+}

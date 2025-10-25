@@ -1,0 +1,154 @@
+<h2 mat-dialog-title>{{ dialogTitle }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="noteForm">
+    <!-- Name field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'noteEditor.name' | transloco }}</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        [placeholder]="'noteEditor.namePlaceholder' | transloco"
+      />
+      <mat-error *ngIf="noteForm.get('name')?.hasError('required')">
+        {{ 'common.validation.required' | transloco }}
+      </mat-error>
+      <mat-error *ngIf="noteForm.get('name')?.hasError('maxlength')">
+        {{ 'common.validation.maxLength' | transloco: { max: maxNameLength } }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Description field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'noteEditor.description' | transloco }}</mat-label>
+      <input
+        matInput
+        formControlName="description"
+        [placeholder]="'noteEditor.descriptionPlaceholder' | transloco"
+      />
+      <mat-error *ngIf="noteForm.get('description')?.hasError('maxlength')">
+        {{ 'common.validation.maxLength' | transloco: { max: maxDescriptionLength } }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Markdown Editor Toolbar -->
+    <div class="markdown-toolbar">
+      <div class="toolbar-left">
+        <button
+          mat-icon-button
+          type="button"
+          [class.active]="!previewMode"
+          (click)="previewMode = false"
+          [matTooltip]="'noteEditor.editMode' | transloco"
+          [attr.aria-label]="'noteEditor.editMode' | transloco"
+        >
+          <mat-icon fontSet="material-symbols-outlined">edit_note</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          type="button"
+          [class.active]="previewMode"
+          (click)="togglePreview()"
+          [matTooltip]="'noteEditor.previewMode' | transloco"
+          [attr.aria-label]="'noteEditor.previewMode' | transloco"
+        >
+          <mat-icon fontSet="material-symbols-outlined">preview</mat-icon>
+        </button>
+        <span class="toolbar-divider"></span>
+        <button
+          mat-icon-button
+          type="button"
+          [disabled]="previewMode || !hasSelection"
+          (click)="onCut()"
+          [matTooltip]="'common.cut' | transloco"
+          [attr.aria-label]="'common.cut' | transloco"
+        >
+          <mat-icon fontSet="material-symbols-outlined">content_cut</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          type="button"
+          [disabled]="!previewMode && !hasSelection"
+          (click)="onCopy()"
+          [matTooltip]="'common.copy' | transloco"
+          [attr.aria-label]="'common.copy' | transloco"
+        >
+          <mat-icon fontSet="material-symbols-outlined">content_copy</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          type="button"
+          [disabled]="previewMode"
+          (click)="onPaste()"
+          [matTooltip]="'common.paste' | transloco"
+          [attr.aria-label]="'common.paste' | transloco"
+        >
+          <mat-icon fontSet="material-symbols-outlined">content_paste</mat-icon>
+        </button>
+        <span class="toolbar-divider"></span>
+        <button
+          mat-raised-button
+          type="button"
+          color="accent"
+          [disabled]="!hasUnsavedChanges()"
+          (click)="onSave()"
+          class="save-button"
+        >
+          <mat-icon fontSet="material-symbols-outlined">save</mat-icon>
+          {{ 'common.save' | transloco }}
+        </button>
+      </div>
+      <div class="toolbar-right">
+        <span class="character-count">
+          {{
+            'noteEditor.characterCount'
+              | transloco: { current: currentContentLength, max: maxContentLength }
+          }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Content field (Edit mode) -->
+    <mat-form-field appearance="outline" class="full-width" *ngIf="!previewMode">
+      <mat-label>{{ 'noteEditor.content' | transloco }}</mat-label>
+      <textarea
+        #contentTextarea
+        matInput
+        formControlName="content"
+        rows="20"
+        class="markdown-editor-textarea"
+        [placeholder]="'noteEditor.contentPlaceholder' | transloco"
+        (select)="onTextareaSelect($event)"
+        (keyup)="onTextareaSelect($event)"
+        (mouseup)="onTextareaSelect($event)"
+      ></textarea>
+      <mat-error *ngIf="noteForm.get('content')?.hasError('required')">
+        {{ 'common.validation.required' | transloco }}
+      </mat-error>
+      <mat-error *ngIf="noteForm.get('content')?.hasError('maxlength')">
+        {{ 'common.validation.maxLength' | transloco: { max: maxContentLength } }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Preview mode -->
+    <div class="markdown-preview-container" *ngIf="previewMode">
+      <div class="markdown-preview">
+        <markdown [data]="sanitizedContent" mermaid></markdown>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">
+    {{ 'common.cancel' | transloco }}
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="noteForm.invalid"
+    (click)="onSaveAndClose()"
+  >
+    {{ 'common.saveAndClose' | transloco }}
+  </button>
+</mat-dialog-actions>

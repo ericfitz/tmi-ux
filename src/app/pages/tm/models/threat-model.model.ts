@@ -30,6 +30,14 @@ export interface Repository {
   metadata?: Metadata[];
 }
 
+export interface Note {
+  id: string;
+  name: string;
+  content: string;
+  description?: string;
+  metadata?: Metadata[];
+}
+
 export interface Threat {
   id: string;
   threat_model_id: string;
@@ -64,6 +72,7 @@ export interface ThreatModel {
   documents?: Document[];
   repositories?: Repository[];
   diagrams?: import('./diagram.model').Diagram[];
+  notes?: Note[];
   threats?: Threat[];
 }
 
@@ -174,6 +183,93 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
       },
     ],
     diagrams: [], // Will be populated by actual Diagram objects
+    notes: [
+      {
+        id: '9ba7b810-9dad-11d1-beef-00c04fd430c8',
+        name: 'Security Considerations',
+        content: `# Security Architecture Overview
+
+## Authentication & Authorization
+
+This threat model covers a system using **OAuth 2.0** with JWT tokens for authentication.
+
+### Key Security Controls
+
+- Multi-factor authentication (MFA) required for all admin accounts
+- Role-based access control (RBAC) with principle of least privilege
+- Session timeout: 30 minutes of inactivity
+
+## Data Flow
+
+\`\`\`mermaid
+graph LR
+    A[Client] -->|HTTPS| B[API Gateway]
+    B --> C[Auth Service]
+    B --> D[Application Service]
+    D --> E[(Database)]
+\`\`\`
+
+## Encryption
+
+- **In Transit**: TLS 1.3 for all connections
+- **At Rest**: AES-256 encryption for sensitive data
+
+## Threat Categories
+
+1. **Spoofing**: Mitigated by strong authentication
+2. **Tampering**: Protected by integrity checks and signatures
+3. **Repudiation**: Audit logging enabled
+4. **Information Disclosure**: Encryption and access controls
+5. **Denial of Service**: Rate limiting and DDoS protection
+6. **Elevation of Privilege**: RBAC and input validation`,
+        description: 'High-level security architecture and control framework',
+        metadata: [
+          {
+            key: 'author',
+            value: 'Security Team',
+          },
+          {
+            key: 'last_reviewed',
+            value: '2025-01-15',
+          },
+        ],
+      },
+      {
+        id: 'aba7b810-9dad-11d1-beef-00c04fd430c9',
+        name: 'Meeting Notes - 2025-01-20',
+        content: `# Threat Modeling Session - January 20, 2025
+
+## Attendees
+- Alice (Security Engineer)
+- Bob (Software Architect)
+- Charlie (Product Manager)
+
+## Key Decisions
+
+### 1. Authentication Flow
+Decided to implement **passwordless authentication** using magic links for consumer accounts.
+
+### 2. Data Classification
+Established three tiers:
+- **Public**: No restrictions
+- **Internal**: Employee access only
+- **Confidential**: Requires approval + MFA
+
+### 3. API Security
+- All APIs require authentication
+- Rate limiting: 100 req/min per user
+- API keys rotated every 90 days
+
+## Action Items
+- [ ] Update authentication service by Q1 end
+- [ ] Implement data classification labels
+- [ ] Configure API gateway rate limits
+
+## Next Steps
+Schedule follow-up review in 2 weeks to assess progress.`,
+        description: 'Notes from threat modeling workshop',
+      },
+    ],
     threats: [
       {
         id: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',

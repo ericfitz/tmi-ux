@@ -107,6 +107,8 @@
       "diagram": "Diagram",
       "document": "Document",
       "documents": "Documents",
+      "note": "Note",
+      "notes": "Notes",
       "report": "Report",
       "repositories": "Repositories",
       "repository": "Repository",
@@ -127,6 +129,7 @@
       "writer": "Writer"
     },
     "save": "Save",
+    "saveAndClose": "Save & Close",
     "score": "Score",
     "sessionRoles": {
       "host": "Host",
@@ -146,6 +149,7 @@
     "threatId": "Threat ID",
     "threatName": "Threat Name",
     "threatType": "Threat Type",
+    "unsavedChangesWarning": "You have unsaved changes. Are you sure you want to close?",
     "validation": {
       "invalidUrl": "Please enter a valid URL",
       "maxLength": "Maximum length is {{max}} characters",
@@ -328,9 +332,11 @@
     "issueUriHint": "Enter a URL to track this threat model in an external system",
     "name": "Name",
     "newThreatModel": "New Threat Model",
+    "confirmDeleteNote": "Are you sure you want to delete the note '{{name}}'?",
     "noDiagrams": "No Diagrams Added Yet",
     "noDocuments": "No Documents Added Yet",
     "noItemsMessage": "You Don't Have Any Threat Models Yet.",
+    "noNotes": "No Notes Added Yet",
     "noPermissions": "No Permissions Defined",
     "noRepositories": "No Repository References Added Yet",
     "noThreats": "No Threats Defined Yet",
@@ -358,6 +364,7 @@
     "tooltips": {
       "addDiagram": "Add Diagram",
       "addDocument": "Add Document",
+      "addNote": "Add Note",
       "addRepository": "Add Repository Reference",
       "deleteDiagram": "Delete Diagram",
       "deleteDocument": "Delete Document",
@@ -453,5 +460,31 @@
     },
     "reportPreferences": "Report Preferences",
     "title": "User Preferences"
+  },
+  "noteEditor": {
+    "characterCount": "{{current}} / {{max}} characters",
+    "content": "Content",
+    "contentPlaceholder": "Enter note content in markdown format. Supports GitHub Flavored Markdown and Mermaid diagrams.",
+    "copiedToClipboard": "Copied to clipboard",
+    "description": "Description",
+    "descriptionPlaceholder": "Optional description",
+    "editMode": "Edit Mode",
+    "errors": {
+      "clipboardAccessDenied": "Clipboard access denied",
+      "contentTooLong": "Content exceeds maximum length",
+      "dataUrlsNotAllowed": "Data URLs are not allowed",
+      "eventHandlersNotAllowed": "Event handlers are not allowed",
+      "javascriptProtocolNotAllowed": "JavaScript protocol is not allowed",
+      "scriptTagsNotAllowed": "Script tags are not allowed"
+    },
+    "name": "Name",
+    "namePlaceholder": "Enter note name",
+    "previewMode": "Preview Mode",
+    "saveFailed": "Failed to save note",
+    "savedSuccessfully": "Note saved successfully",
+    "title": {
+      "create": "Create Note",
+      "edit": "Edit Note"
+    }
   }
 }
