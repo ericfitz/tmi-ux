@@ -126,7 +126,12 @@ export class DeleteUserDataDialogComponent implements OnDestroy {
         this.logger.error('Failed to delete account', error);
 
         // Check if it's a 400 error (expired or invalid challenge)
-        if (typeof error === 'object' && error !== null && 'status' in error && error.status === 400) {
+        if (
+          typeof error === 'object' &&
+          error !== null &&
+          'status' in error &&
+          error.status === 400
+        ) {
           this.errorMessage = 'The deletion request has expired. Please try again.';
         } else {
           this.errorMessage = 'Failed to delete account. Please try again or contact support.';
