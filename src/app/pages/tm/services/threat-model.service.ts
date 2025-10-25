@@ -2022,7 +2022,7 @@ export class ThreatModelService implements OnDestroy {
     }
 
     return this.apiService
-      .post<
+      .put<
         Metadata[]
       >(`threat_models/${threatModelId}/notes/${noteId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
       .pipe(
