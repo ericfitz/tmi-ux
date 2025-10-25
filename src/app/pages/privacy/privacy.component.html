@@ -9,6 +9,7 @@
       }}<strong>{{ 'privacy.lastUpdatedDate' | transloco | date: 'longDate' }}</strong>
     </p>
 
+    <h2 [transloco]="'privacy.introductionTitle'">Introduction</h2>
     <p class="page-content">
       {{ 'privacy.intro1.part1' | transloco }}
       <a [routerLink]="['/about']">{{ 'common.about' | transloco }}</a>
@@ -19,20 +20,74 @@
       information is handled.
     </p>
 
-    <h2 [transloco]="'privacy.dataTitle'">Data Collection and Storage</h2>
-    <p class="page-content" [transloco]="'privacy.dataContent'">
-      The web site uses OpenID Connect and OAuth to secure your data, storing only your user ID,
-      email, and name from the provider for login and display purposes.
+    <h2 [transloco]="'privacy.informationCollectionTitle'">Information Collection and Use</h2>
+    <p class="page-content" [transloco]="'privacy.informationCollectionContent1'">
+      When users authenticate via social login (using OAuth or OpenID Connect providers such as Sign
+      in with Google, Login with GitHub, Microsoft Entra External ID, or others), the application
+      collects the following information from the selected provider, solely to facilitate
+      authentication and provide personalized services:
     </p>
-    <p class="page-content" [transloco]="'privacy.dataContent2'">
-      Your threat models are safely stored and may be used to enhance our service.
+    <ul class="page-content">
+      <li [transloco]="'privacy.informationCollectionList1'">
+        Basic Profile Information: Full name, email address, and profile picture (if provided and
+        available).
+      </li>
+      <li [transloco]="'privacy.informationCollectionList2'">
+        Unique Identifier: A provider-specific user ID to manage account sessions securely.
+      </li>
+    </ul>
+    <p class="page-content" [transloco]="'privacy.informationCollectionContent2'">
+      No additional personal data is collected without explicit user consent. We do not access or
+      store sensitive information such as passwords, contacts, or other provider-specific data
+      beyond what is necessary for authentication. All collected information is handled in
+      accordance with the respective provider's API policies and our commitment to user privacy.
     </p>
-    <p class="page-content" [transloco]="'privacy.dataContent3'">
-      We keep logs only as long as needed for support and operations, then delete them
-      automatically.
+
+    <h2 [transloco]="'privacy.dataSharingTitle'">Data Sharing</h2>
+    <p class="page-content" [transloco]="'privacy.dataSharingContent1'">
+      We do not share your personal information with any third parties, except in the following
+      limited circumstances:
     </p>
-    <p class="page-content" [transloco]="'privacy.dataContent4'">
-      Your data stays private- we do not sell or share it with anyone, except as required by law.
+    <ul class="page-content">
+      <li [transloco]="'privacy.dataSharingList1'">
+        Service Providers: Your data may be stored and processed on secure third-party cloud
+        infrastructure (such as AWS, Google Cloud, or similar providers) solely to operate and
+        maintain the application. These providers are contractually obligated to protect your data
+        and use it only for the purposes we specify.
+      </li>
+      <li [transloco]="'privacy.dataSharingList2'">
+        Legal Compliance: We may disclose information if required by law, such as in response to a
+        valid court order, subpoena, or government request.
+      </li>
+    </ul>
+    <p class="page-content" [transloco]="'privacy.dataSharingContent2'">
+      Beyond these exceptions, we do not sell, rent, or share your data with any other entities for
+      marketing, advertising, or any other purpose.
+    </p>
+
+    <h2 [transloco]="'privacy.dataSecurityTitle'">Data Security</h2>
+    <p class="page-content" [transloco]="'privacy.dataSecurityContent1'">
+      The Operator implements industry-standard security measures to protect your personal data,
+      including encryption in transit and at rest, secure authentication protocols, and regular
+      security updates. Access to your information is restricted to authorized personnel on a
+      need-to-know basis.
+    </p>
+    <p class="page-content" [transloco]="'privacy.dataSecurityContent2'">
+      While no system is entirely impervious to risks, The Operator continuously monitors and
+      updates safeguards to mitigate threats and ensure the confidentiality, integrity, and
+      availability of your data.
+    </p>
+
+    <h2 [transloco]="'privacy.userRightsTitle'">User Rights</h2>
+    <p class="page-content" [transloco]="'privacy.userRightsContent1'">
+      You have full control over your personal data. At any time, you may access the "Delete All My
+      Data" feature in the User Preferences section of the application.
+    </p>
+    <p class="page-content" [transloco]="'privacy.userRightsContent2'">
+      This option enables immediate deletion of all data The Operator stores on your behalf,
+      including profile information and authentication records. Upon activation, your data will be
+      permanently removed from The Operator's systems and third-party providers, subject to any
+      legal retention obligations.
     </p>
 
     <h2 [transloco]="'privacy.complianceTitle'">Legal Compliance</h2>
