@@ -2,15 +2,18 @@
 # Uses hosted-container configuration (environment.hosted-container.ts)
 
 # Stage 1: Build the Angular application
-FROM cgr.dev/chainguard/node:latest-dev AS builder
+FROM node:22-alpine AS builder
 
 # Set working directory
 WORKDIR /app
 
+# Install pnpm globally
+RUN npm install -g pnpm@10.18.3
+
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
 
-# Install dependencies (pnpm is pre-installed in the -dev image)
+# Install dependencies
 RUN pnpm install --frozen-lockfile
 
 # Copy application source
@@ -20,7 +23,7 @@ COPY . .
 RUN pnpm run build:hosted-container
 
 # Stage 2: Production server
-FROM cgr.dev/chainguard/node:latest
+FROM node:22-alpine
 
 # Set working directory
 WORKDIR /app
@@ -29,7 +32,7 @@ WORKDIR /app
 RUN echo '{"name":"tmi-ux-server","version":"1.0.0","type":"module","dependencies":{"express":"^5.1.0","express-rate-limit":"^8.1.0"}}' > package.json
 
 # Install only runtime dependencies
-RUN npm install --omit=dev
+RUN npm install --omit=dev --production
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
