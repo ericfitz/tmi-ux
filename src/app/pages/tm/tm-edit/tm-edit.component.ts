@@ -2565,18 +2565,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Load notes for the threat model - use notes already included in threat model data
+   * Load notes for the threat model using separate API call
    */
   private loadNotes(threatModelId: string): void {
-    // Use notes that are already loaded with the threat model instead of making separate API call
-    // This preserves metadata that might not be included in the separate notes endpoint
-    if (this.threatModel?.notes && Array.isArray(this.threatModel.notes)) {
-      // The threat model already contains the notes with metadata
-      // No additional action needed - notes are already available in threatModel.notes
-      return;
-    }
-
-    // Fallback to separate API call if notes not included in threat model
     this._subscriptions.add(
       this.threatModelService.getNotesForThreatModel(threatModelId).subscribe(notes => {
         if (this.threatModel) {
