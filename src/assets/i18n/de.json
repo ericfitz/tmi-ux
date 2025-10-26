@@ -334,7 +334,7 @@
     "confirmDeleteNote": "Sind Sie sicher, dass Sie die Notiz '{{name}}' löschen möchten?",
     "createFirstButton": "Erstellen Sie Ihr erstes Bedrohungsmodell",
     "createNewDiagram": "Neues Diagramm erstellen",
-    "createNewDocument": "Neues Dokument erstellen",
+    "createNewDocument": "Dokumentreferenz hinzufügen",
     "createNewRepository": "Repository-Referenz hinzufügen",
     "createdBy": "Erstellt von:",
     "dashboard": "Dashboard",
@@ -353,7 +353,7 @@
     "documentName": "Dokumentname",
     "documentUrl": "Dokument-URL",
     "downloadButton": "Auf Desktop herunterladen",
-    "editDocument": "Dokument bearbeiten",
+    "editDocument": "Dokumentreferenz bearbeiten",
     "editRepository": "Repository-Referenz bearbeiten",
     "frameworkDisabledHint": "Framework kann nicht geändert werden, wenn Bedrohungen vorhanden sind",
     "idLabel": "ID:",
@@ -397,8 +397,13 @@
       "deleteDocument": "Dokument löschen",
       "deleteRepository": "Repository-Referenz löschen",
       "deleteThreat": "Bedrohung löschen",
+      "diagramsCardTitle": "Diagramme in TMI sind maschinenlesbare Darstellungen von Datenbewegungen und Prozessen innerhalb eines Systems, die sowohl manuelle als auch automatisierte Sicherheitsanalysen ermöglichen.",
+      "documentsCardTitle": "Dokumentreferenzen sind Links zu Dokumenten, die außerhalb von TMI gespeichert sind. Relevante Dokumente beschreiben das zu analysierende System und können sowohl von Sicherheitsanalysten als auch von automatisierten Analyseprozessen verwendet werden.",
       "editRepository": "Repository-Referenz bearbeiten",
-      "loadFromDesktop": "Vom Desktop laden"
+      "loadFromDesktop": "Vom Desktop laden",
+      "notesCardTitle": "Notizen sind Texte im Markdown-Format, die vollständig im Bedrohungsmodell enthalten sind und zur Erfassung von Notizen und Anmerkungen von Sicherheitsanalysten und automatisierten Analyseprozessen verwendet werden.",
+      "repositoriesCardTitle": "Repositories sind Links zu Quellcode-Repositories, in denen der Quellcode für das System verwaltet wird.",
+      "threatsCardTitle": "Bedrohungen sind potenzielle nachteilige Ereignisse oder Handlungen, die eine Schwachstelle oder Schwäche in einem System ausnutzen, um dessen Vertraulichkeit, Integrität, Verfügbarkeit oder andere Sicherheitsziele zu gefährden. In TMI enthalten Bedrohungsobjekte auch Informationen über Art und Höhe des mit der Bedrohung verbundenen Risikos sowie Informationen zur Verfolgung der zur Minderung der Bedrohung erforderlichen Arbeiten."
     },
     "yourThreatModels": "Ihre Bedrohungsmodelle"
   },

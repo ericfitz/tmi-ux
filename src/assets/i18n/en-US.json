@@ -334,7 +334,7 @@
     "confirmDeleteNote": "Are you sure you want to delete the note '{{name}}'?",
     "createFirstButton": "Create Your First Threat Model",
     "createNewDiagram": "Create New Diagram",
-    "createNewDocument": "Create New Document",
+    "createNewDocument": "Add Document Reference",
     "createNewRepository": "Add Repository Reference",
     "createdBy": "Created By:",
     "dashboard": "Dashboard",
@@ -353,7 +353,7 @@
     "documentName": "Document Name",
     "documentUrl": "Document URL",
     "downloadButton": "Download to Desktop",
-    "editDocument": "Edit Document",
+    "editDocument": "Edit Document Reference",
     "editRepository": "Edit Repository Reference",
     "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",
     "idLabel": "ID:",
@@ -397,8 +397,13 @@
       "deleteDocument": "Delete Document",
       "deleteRepository": "Delete Repository Reference",
       "deleteThreat": "Delete Threat",
+      "diagramsCardTitle": "Diagrams in TMI are machine-readable representations of data movement and processes within a system, enabling both manual and automated security analysis.",
+      "documentsCardTitle": "Document references are links to documents stored outside TMI. Relevant documents describe the system to be analyzed, and can be used by both security analysts and automated analysis processes.",
       "editRepository": "Edit Repository Reference",
-      "loadFromDesktop": "Load From Desktop"
+      "loadFromDesktop": "Load From Desktop",
+      "notesCardTitle": "Notes are markdown format text that is completely contained within the threat model, used to capture notes and annotation from security analysts and automated analysis processes.",
+      "repositoriesCardTitle": "Repositories are links to Source Code Repositories where source code for the system is managed.",
+      "threatsCardTitle": "Threats are potential adverse events or action that exploits a vulnerability or weakness in a system to compromise its confidentiality, integrity, availability, or other security objectives. In TMI, threat objects also contain information about the type and level of risk associated with the threat and information to track the work needed to mitigate the threat."
     },
     "yourThreatModels": "Your Threat Models"
   },

@@ -208,7 +208,11 @@
     <!-- Diagrams Card -->
     <mat-card class="diagrams-card">
       <mat-card-header>
-        <mat-card-title [transloco]="'threatModels.diagrams'">Diagrams</mat-card-title>
+        <mat-card-title
+          [transloco]="'threatModels.diagrams'"
+          [matTooltip]="'threatModels.tooltips.diagramsCardTitle' | transloco"
+          >Diagrams</mat-card-title
+        >
         <button
           mat-icon-button
           color="primary"
@@ -292,7 +296,11 @@
     <!-- Notes Card -->
     <mat-card class="notes-card">
       <mat-card-header>
-        <mat-card-title [transloco]="'common.objectTypes.notes'">Notes</mat-card-title>
+        <mat-card-title
+          [transloco]="'common.objectTypes.notes'"
+          [matTooltip]="'threatModels.tooltips.notesCardTitle' | transloco"
+          >Notes</mat-card-title
+        >
         <button
           mat-icon-button
           color="primary"
@@ -359,7 +367,11 @@
     <!-- Documents Card -->
     <mat-card class="documents-card">
       <mat-card-header>
-        <mat-card-title [transloco]="'common.objectTypes.documents'">Documents</mat-card-title>
+        <mat-card-title
+          [transloco]="'common.objectTypes.documents'"
+          [matTooltip]="'threatModels.tooltips.documentsCardTitle' | transloco"
+          >Documents</mat-card-title
+        >
         <button
           mat-icon-button
           color="primary"
@@ -428,7 +440,9 @@
     <!-- Repositories Card -->
     <mat-card class="repository-card">
       <mat-card-header>
-        <mat-card-title [transloco]="'common.objectTypes.repositories'"
+        <mat-card-title
+          [transloco]="'common.objectTypes.repositories'"
+          [matTooltip]="'threatModels.tooltips.repositoriesCardTitle' | transloco"
           >Repositories</mat-card-title
         >
         <button
@@ -499,7 +513,11 @@
     <!-- Threats Card -->
     <mat-card class="threats-card">
       <mat-card-header>
-        <mat-card-title [transloco]="'common.objectTypes.threats'">Threats</mat-card-title>
+        <mat-card-title
+          [transloco]="'common.objectTypes.threats'"
+          [matTooltip]="'threatModels.tooltips.threatsCardTitle' | transloco"
+          >Threats</mat-card-title
+        >
         <button
           mat-icon-button
           color="primary"
