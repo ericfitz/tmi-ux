@@ -236,6 +236,7 @@
   "navbar": {
     "appTitle": "TMI: Verbesserte Bedrohungsmodellierung",
     "copyUserEmail": "Benutzer-E-Mail in Zwischenablage kopieren",
+    "feedback": "Fehler melden, Funktion anfordern oder Feedback geben",
     "home": "Startseite",
     "logoutButton": "Abmelden",
     "serverStatus": {

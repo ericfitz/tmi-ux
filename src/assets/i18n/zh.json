@@ -236,6 +236,7 @@
   "navbar": {
     "appTitle": "TMI: 威胁建模改进",
     "copyUserEmail": "复制用户邮箱到剪贴板",
+    "feedback": "报告错误、请求功能或提供反馈",
     "home": "主页",
     "logoutButton": "退出登录",
     "serverStatus": {

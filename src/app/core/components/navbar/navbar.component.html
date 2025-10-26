@@ -34,6 +34,17 @@
 
     <!-- Right side: Server status, User info and logout button -->
     <div class="navbar-right">
+      <!-- Feedback button -->
+      <button
+        mat-icon-button
+        [matTooltip]="'navbar.feedback' | transloco"
+        matTooltipPosition="below"
+        (click)="openFeedbackUrl()"
+        class="feedback-button"
+      >
+        <mat-icon fontSet="material-symbols-outlined">feedback</mat-icon>
+      </button>
+
       <!-- WebSocket connection indicator -->
       <span
         *ngIf="showWebSocketStatus"

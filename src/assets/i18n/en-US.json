@@ -236,6 +236,7 @@
   "navbar": {
     "appTitle": "TMI: Threat Modeling Improved",
     "copyUserEmail": "Copy User Email to Clipboard",
+    "feedback": "Report a bug, request a feature or provide feedback",
     "home": "Home",
     "logoutButton": "Sign Out",
     "serverStatus": {

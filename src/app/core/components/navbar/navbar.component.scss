@@ -73,6 +73,20 @@
   color: var(--color-server-error);
 }
 
+// Feedback button styles
+.feedback-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .mat-icon {
+    color: #ff9800; // Orange color
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 // Connection status indicators alignment
 .navbar-right {
   > span {

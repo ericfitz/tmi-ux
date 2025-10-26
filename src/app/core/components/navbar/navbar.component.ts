@@ -377,4 +377,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
       window.open(environment.apiUrl, '_blank');
     }
   }
+
+  /**
+   * Open the feedback URL in a new browser window
+   */
+  openFeedbackUrl(): void {
+    window.open('https://github.com/ericfitz/tmi-ux/issues/new', '_blank');
+  }
 }
