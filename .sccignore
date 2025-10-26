@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+cypress/
+.angular/
+docs/
+docs-server/
+scripts/
+thunder-tests/
+src/testing/
+src/app/mocks/
+*.spec.ts
+*.json
+*.md
+*.yml
+*.yaml
