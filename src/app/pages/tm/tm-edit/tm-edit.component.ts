@@ -34,6 +34,7 @@ import {
 import {
   NoteEditorDialogComponent,
   NoteEditorDialogData,
+  NoteEditorResult,
 } from '../components/note-editor-dialog/note-editor-dialog.component';
 import {
   PermissionsDialogComponent,
@@ -1358,6 +1359,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
                 this.threatModel.notes.push(createdNote);
               }
               this.logger.info('Created note via API', { note: createdNote });
+              // Notify the dialog that the note was created
+              dialogRef.componentInstance.setCreatedNoteId(createdNote.id);
             }
           },
           error => {
@@ -1370,12 +1373,33 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(saveSubscription);
 
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe(result => {
+      dialogRef.afterClosed().subscribe((result: NoteEditorResult | undefined) => {
         if (result && this.threatModel) {
-          this._subscriptions.add(
-            this.threatModelService
-              .createNote(this.threatModel.id, result as Partial<Note>)
-              .subscribe(
+          // Check if the note was already created via the save button
+          if (result.wasCreated && result.noteId) {
+            // Note was already created, update it if there are changes
+            this._subscriptions.add(
+              this.threatModelService
+                .updateNote(this.threatModel.id, result.noteId, result.formValue)
+                .subscribe(
+                  updatedNote => {
+                    if (this.threatModel && this.threatModel.notes) {
+                      const index = this.threatModel.notes.findIndex(n => n.id === result.noteId);
+                      if (index !== -1) {
+                        this.threatModel.notes[index] = updatedNote;
+                      }
+                      this.logger.info('Updated note via API', { note: updatedNote });
+                    }
+                  },
+                  error => {
+                    this.logger.error('Failed to update note', error);
+                  },
+                ),
+            );
+          } else {
+            // Note was not created yet, create it now
+            this._subscriptions.add(
+              this.threatModelService.createNote(this.threatModel.id, result.formValue).subscribe(
                 createdNote => {
                   if (this.threatModel) {
                     if (!this.threatModel.notes) {
@@ -1391,7 +1415,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
                   this.logger.error('Failed to create note', error);
                 },
               ),
-          );
+            );
+          }
         }
       }),
     );
@@ -1443,15 +1468,15 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(saveSubscription);
 
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe(result => {
-        if (result && this.threatModel) {
+      dialogRef.afterClosed().subscribe((result: NoteEditorResult | undefined) => {
+        if (result && this.threatModel && result.noteId) {
           this._subscriptions.add(
             this.threatModelService
-              .updateNote(this.threatModel.id, note.id, result as Partial<Note>)
+              .updateNote(this.threatModel.id, result.noteId, result.formValue)
               .subscribe(
                 updatedNote => {
                   if (this.threatModel && this.threatModel.notes) {
-                    const index = this.threatModel.notes.findIndex(n => n.id === note.id);
+                    const index = this.threatModel.notes.findIndex(n => n.id === result.noteId);
                     if (index !== -1) {
                       this.threatModel.notes[index] = updatedNote;
                     }

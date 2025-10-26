@@ -26,6 +26,12 @@ export interface NoteEditorDialogData {
   note?: Note;
 }
 
+export interface NoteEditorResult {
+  formValue: NoteFormResult;
+  noteId?: string;
+  wasCreated?: boolean;
+}
+
 export interface NoteFormResult {
   name: string;
   content: string;
@@ -59,6 +65,7 @@ export class NoteEditorDialogComponent implements OnInit {
   mode: 'create' | 'edit';
   previewMode = false;
   private originalContent = '';
+  private createdNoteId?: string;
 
   readonly maxContentLength = 65536;
   readonly maxNameLength = 256;
@@ -234,8 +241,19 @@ export class NoteEditorDialogComponent implements OnInit {
       return;
     }
 
+    // If there are no unsaved changes, just close without triggering another save
+    if (!this.hasUnsavedChanges()) {
+      this.dialogRef.close();
+      return;
+    }
+
     const formValue = this.sanitizeFormValue(this.noteForm.value as NoteFormResult);
-    this.dialogRef.close(formValue);
+    const result: NoteEditorResult = {
+      formValue,
+      noteId: this.createdNoteId || this.data.note?.id,
+      wasCreated: !!this.createdNoteId,
+    };
+    this.dialogRef.close(result);
   }
 
   onCancel(): void {
@@ -246,6 +264,15 @@ export class NoteEditorDialogComponent implements OnInit {
       }
     }
     this.dialogRef.close();
+  }
+
+  /**
+   * Called by parent component when a note is created via the save button.
+   * Updates internal state to track that we're now editing an existing note.
+   */
+  setCreatedNoteId(noteId: string): void {
+    this.createdNoteId = noteId;
+    this.mode = 'edit';
   }
 
   private sanitizeFormValue(value: NoteFormResult): NoteFormResult {
