@@ -107,6 +107,8 @@
       "diagram": "Diagramm",
       "document": "Dokument",
       "documents": "Dokumente",
+      "note": "Notiz",
+      "notes": "Notizen",
       "report": "Bericht",
       "repositories": "Repositorys",
       "repository": "Repository",
@@ -127,6 +129,7 @@
       "writer": "Bearbeiter"
     },
     "save": "Speichern",
+    "saveAndClose": "Speichern & Schließen",
     "score": "Bewertung",
     "sessionRoles": {
       "host": "Gastgeber",
@@ -146,6 +149,7 @@
     "threatId": "Bedrohungs-ID",
     "threatName": "Bedrohungsname",
     "threatType": "Bedrohungstyp",
+    "unsavedChangesWarning": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie schließen möchten?",
     "validation": {
       "invalidUrl": "Bitte geben Sie eine gültige URL ein",
       "maxLength": "Maximale Länge ist {{max}} Zeichen",
@@ -240,6 +244,32 @@
       "serverConnectionError": "Server-Verbindungsfehler"
     }
   },
+  "noteEditor": {
+    "characterCount": "{{current}} / {{max}} Zeichen",
+    "content": "Inhalt",
+    "contentPlaceholder": "Geben Sie den Notizeninhalt im Markdown-Format ein. Unterstützt GitHub Flavored Markdown und Mermaid-Diagramme.",
+    "copiedToClipboard": "In die Zwischenablage kopiert",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Optionale Beschreibung",
+    "editMode": "Bearbeitungsmodus",
+    "errors": {
+      "clipboardAccessDenied": "Zugriff auf Zwischenablage verweigert",
+      "contentTooLong": "Inhalt überschreitet maximale Länge",
+      "dataUrlsNotAllowed": "Daten-URLs sind nicht erlaubt",
+      "eventHandlersNotAllowed": "Event-Handler sind nicht erlaubt",
+      "javascriptProtocolNotAllowed": "JavaScript-Protokoll ist nicht erlaubt",
+      "scriptTagsNotAllowed": "Script-Tags sind nicht erlaubt"
+    },
+    "name": "Name",
+    "namePlaceholder": "Notizname eingeben",
+    "previewMode": "Vorschaumodus",
+    "saveFailed": "Notiz konnte nicht gespeichert werden",
+    "savedSuccessfully": "Notiz erfolgreich gespeichert",
+    "title": {
+      "create": "Notiz erstellen",
+      "edit": "Notiz bearbeiten"
+    }
+  },
   "presenter": {
     "startPresenting": "Präsentation starten",
     "stopPresenting": "Präsentation beenden"
@@ -300,6 +330,7 @@
     "addPermission": "Berechtigung hinzufügen",
     "branch": "Branch",
     "commit": "Commit",
+    "confirmDeleteNote": "Sind Sie sicher, dass Sie die Notiz '{{name}}' löschen möchten?",
     "createFirstButton": "Erstellen Sie Ihr erstes Bedrohungsmodell",
     "createNewDiagram": "Neues Diagramm erstellen",
     "createNewDocument": "Neues Dokument erstellen",
@@ -331,6 +362,7 @@
     "noDiagrams": "Noch keine Diagramme hinzugefügt",
     "noDocuments": "Noch keine Dokumente hinzugefügt",
     "noItemsMessage": "Sie haben noch keine Bedrohungsmodelle.",
+    "noNotes": "Noch keine Notizen hinzugefügt",
     "noPermissions": "Keine Berechtigungen definiert",
     "noRepositories": "Noch keine Repository-Referenzen hinzugefügt",
     "noThreats": "Noch keine Bedrohungen definiert",
@@ -358,6 +390,7 @@
     "tooltips": {
       "addDiagram": "Diagramm hinzufügen",
       "addDocument": "Dokument hinzufügen",
+      "addNote": "Notiz hinzufügen",
       "addRepository": "Repository-Referenz hinzufügen",
       "deleteDiagram": "Diagramm löschen",
       "deleteDocument": "Dokument löschen",

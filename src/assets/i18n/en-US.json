@@ -244,6 +244,32 @@
       "serverConnectionError": "Server Connection Error"
     }
   },
+  "noteEditor": {
+    "characterCount": "{{current}} / {{max}} characters",
+    "content": "Content",
+    "contentPlaceholder": "Enter note content in markdown format. Supports GitHub Flavored Markdown and Mermaid diagrams.",
+    "copiedToClipboard": "Copied to clipboard",
+    "description": "Description",
+    "descriptionPlaceholder": "Optional description",
+    "editMode": "Edit Mode",
+    "errors": {
+      "clipboardAccessDenied": "Clipboard access denied",
+      "contentTooLong": "Content exceeds maximum length",
+      "dataUrlsNotAllowed": "Data URLs are not allowed",
+      "eventHandlersNotAllowed": "Event handlers are not allowed",
+      "javascriptProtocolNotAllowed": "JavaScript protocol is not allowed",
+      "scriptTagsNotAllowed": "Script tags are not allowed"
+    },
+    "name": "Name",
+    "namePlaceholder": "Enter note name",
+    "previewMode": "Preview Mode",
+    "saveFailed": "Failed to save note",
+    "savedSuccessfully": "Note saved successfully",
+    "title": {
+      "create": "Create Note",
+      "edit": "Edit Note"
+    }
+  },
   "presenter": {
     "startPresenting": "Start Presenting",
     "stopPresenting": "Stop Presenting"
@@ -304,6 +330,7 @@
     "addPermission": "Add Permission",
     "branch": "Branch",
     "commit": "Commit",
+    "confirmDeleteNote": "Are you sure you want to delete the note '{{name}}'?",
     "createFirstButton": "Create Your First Threat Model",
     "createNewDiagram": "Create New Diagram",
     "createNewDocument": "Create New Document",
@@ -332,7 +359,6 @@
     "issueUriHint": "Enter a URL to track this threat model in an external system",
     "name": "Name",
     "newThreatModel": "New Threat Model",
-    "confirmDeleteNote": "Are you sure you want to delete the note '{{name}}'?",
     "noDiagrams": "No Diagrams Added Yet",
     "noDocuments": "No Documents Added Yet",
     "noItemsMessage": "You Don't Have Any Threat Models Yet.",
@@ -460,31 +486,5 @@
     },
     "reportPreferences": "Report Preferences",
     "title": "User Preferences"
-  },
-  "noteEditor": {
-    "characterCount": "{{current}} / {{max}} characters",
-    "content": "Content",
-    "contentPlaceholder": "Enter note content in markdown format. Supports GitHub Flavored Markdown and Mermaid diagrams.",
-    "copiedToClipboard": "Copied to clipboard",
-    "description": "Description",
-    "descriptionPlaceholder": "Optional description",
-    "editMode": "Edit Mode",
-    "errors": {
-      "clipboardAccessDenied": "Clipboard access denied",
-      "contentTooLong": "Content exceeds maximum length",
-      "dataUrlsNotAllowed": "Data URLs are not allowed",
-      "eventHandlersNotAllowed": "Event handlers are not allowed",
-      "javascriptProtocolNotAllowed": "JavaScript protocol is not allowed",
-      "scriptTagsNotAllowed": "Script tags are not allowed"
-    },
-    "name": "Name",
-    "namePlaceholder": "Enter note name",
-    "previewMode": "Preview Mode",
-    "saveFailed": "Failed to save note",
-    "savedSuccessfully": "Note saved successfully",
-    "title": {
-      "create": "Create Note",
-      "edit": "Edit Note"
-    }
   }
 }

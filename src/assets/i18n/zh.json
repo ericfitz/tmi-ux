@@ -107,6 +107,8 @@
       "diagram": "图表",
       "document": "文档",
       "documents": "文档",
+      "note": "笔记",
+      "notes": "笔记",
       "report": "报告",
       "repositories": "代码仓库",
       "repository": "代码仓库",
@@ -127,6 +129,7 @@
       "writer": "编辑者"
     },
     "save": "保存",
+    "saveAndClose": "保存并关闭",
     "score": "评分",
     "sessionRoles": {
       "host": "主持人",
@@ -146,6 +149,7 @@
     "threatId": "威胁ID",
     "threatName": "威胁名称",
     "threatType": "威胁类型",
+    "unsavedChangesWarning": "您有未保存的更改。确定要关闭吗？",
     "validation": {
       "invalidUrl": "请输入有效的 URL",
       "maxLength": "最大长度为{{max}}个字符",
@@ -240,6 +244,32 @@
       "serverConnectionError": "服务器连接错误"
     }
   },
+  "noteEditor": {
+    "characterCount": "{{current}} / {{max}} 个字符",
+    "content": "内容",
+    "contentPlaceholder": "以 markdown 格式输入笔记内容。支持 GitHub Flavored Markdown 和 Mermaid 图表。",
+    "copiedToClipboard": "已复制到剪贴板",
+    "description": "描述",
+    "descriptionPlaceholder": "可选描述",
+    "editMode": "编辑模式",
+    "errors": {
+      "clipboardAccessDenied": "剪贴板访问被拒绝",
+      "contentTooLong": "内容超过最大长度",
+      "dataUrlsNotAllowed": "不允许使用 Data URLs",
+      "eventHandlersNotAllowed": "不允许使用事件处理程序",
+      "javascriptProtocolNotAllowed": "不允许使用 JavaScript 协议",
+      "scriptTagsNotAllowed": "不允许使用脚本标签"
+    },
+    "name": "名称",
+    "namePlaceholder": "输入笔记名称",
+    "previewMode": "预览模式",
+    "saveFailed": "保存笔记失败",
+    "savedSuccessfully": "笔记保存成功",
+    "title": {
+      "create": "创建笔记",
+      "edit": "编辑笔记"
+    }
+  },
   "presenter": {
     "startPresenting": "开始演示",
     "stopPresenting": "停止演示"
@@ -300,6 +330,7 @@
     "addPermission": "添加权限",
     "branch": "分支",
     "commit": "提交",
+    "confirmDeleteNote": "您确定要删除笔记 '{{name}}' 吗？",
     "createFirstButton": "创建您的第一个威胁模型",
     "createNewDiagram": "创建新图表",
     "createNewDocument": "创建新文档",
@@ -331,6 +362,7 @@
     "noDiagrams": "尚未添加图表",
     "noDocuments": "尚未添加文档",
     "noItemsMessage": "您还没有任何威胁模型。",
+    "noNotes": "尚未添加笔记",
     "noPermissions": "未定义权限",
     "noRepositories": "尚未添加仓库引用",
     "noThreats": "尚未定义威胁",
@@ -358,6 +390,7 @@
     "tooltips": {
       "addDiagram": "添加图表",
       "addDocument": "添加文档",
+      "addNote": "添加笔记",
       "addRepository": "添加仓库引用",
       "deleteDiagram": "删除图表",
       "deleteDocument": "删除文档",

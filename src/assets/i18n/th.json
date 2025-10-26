@@ -107,6 +107,8 @@
       "diagram": "แผนภาพ",
       "document": "เอกสาร",
       "documents": "เอกสาร",
+      "note": "หมายเหตุ",
+      "notes": "หมายเหตุ",
       "report": "รายงาน",
       "repositories": "ที่เก็บ",
       "repository": "ที่เก็บ",
@@ -127,6 +129,7 @@
       "writer": "ผู้เขียน"
     },
     "save": "บันทึก",
+    "saveAndClose": "บันทึกและปิด",
     "score": "คะแนน",
     "sessionRoles": {
       "host": "เจ้าภาพ",
@@ -146,6 +149,7 @@
     "threatId": "รหัสภัยคุกคาม",
     "threatName": "ชื่อภัยคุกคาม",
     "threatType": "ประเภทภัยคุกคาม",
+    "unsavedChangesWarning": "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก คุณแน่ใจหรือไม่ว่าต้องการปิด?",
     "validation": {
       "invalidUrl": "กรุณาใส่ URL ที่ถูกต้อง",
       "maxLength": "ความยาวสูงสุดคือ {{max}} ตัวอักษร",
@@ -240,6 +244,32 @@
       "serverConnectionError": "ข้อผิดพลาดการเชื่อมต่อเซิร์ฟเวอร์"
     }
   },
+  "noteEditor": {
+    "characterCount": "{{current}} / {{max}} ตัวอักษร",
+    "content": "เนื้อหา",
+    "contentPlaceholder": "ป้อนเนื้อหาหมายเหตุในรูปแบบ markdown รองรับ GitHub Flavored Markdown และแผนภาพ Mermaid",
+    "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
+    "description": "คำอธิบาย",
+    "descriptionPlaceholder": "คำอธิบายเพิ่มเติม (ถ้ามี)",
+    "editMode": "โหมดแก้ไข",
+    "errors": {
+      "clipboardAccessDenied": "ปฏิเสธการเข้าถึงคลิปบอร์ด",
+      "contentTooLong": "เนื้อหาเกินความยาวสูงสุด",
+      "dataUrlsNotAllowed": "ไม่อนุญาต Data URLs",
+      "eventHandlersNotAllowed": "ไม่อนุญาต Event handlers",
+      "javascriptProtocolNotAllowed": "ไม่อนุญาต JavaScript protocol",
+      "scriptTagsNotAllowed": "ไม่อนุญาต Script tags"
+    },
+    "name": "ชื่อ",
+    "namePlaceholder": "ป้อนชื่อหมายเหตุ",
+    "previewMode": "โหมดแสดงตัวอย่าง",
+    "saveFailed": "ไม่สามารถบันทึกหมายเหตุได้",
+    "savedSuccessfully": "บันทึกหมายเหตุสำเร็จ",
+    "title": {
+      "create": "สร้างหมายเหตุ",
+      "edit": "แก้ไขหมายเหตุ"
+    }
+  },
   "presenter": {
     "startPresenting": "เริ่มการนำเสนอ",
     "stopPresenting": "หยุดการนำเสนอ"
@@ -300,6 +330,7 @@
     "addPermission": "เพิ่มสิทธิ์การเข้าถึง",
     "branch": "Branch",
     "commit": "Commit",
+    "confirmDeleteNote": "คุณแน่ใจหรือไม่ว่าต้องการลบหมายเหตุ '{{name}}'?",
     "createFirstButton": "สร้างแบบจำลองภัยคุกคามแรกของคุณ",
     "createNewDiagram": "สร้างแผนภาพใหม่",
     "createNewDocument": "สร้างเอกสารใหม่",
@@ -331,6 +362,7 @@
     "noDiagrams": "ยังไม่มีการเพิ่มแผนภาพ",
     "noDocuments": "ยังไม่มีการเพิ่มเอกสาร",
     "noItemsMessage": "คุณยังไม่มีแบบจำลองภัยคุกคามใด ๆ",
+    "noNotes": "ยังไม่มีการเพิ่มหมายเหตุ",
     "noPermissions": "ไม่มีสิทธิ์การเข้าถึงที่กำหนดไว้",
     "noRepositories": "ยังไม่มีการอ้างอิงที่เก็บเพิ่ม",
     "noThreats": "ยังไม่มีการกำหนดภัยคุกคาม",
@@ -358,6 +390,7 @@
     "tooltips": {
       "addDiagram": "เพิ่มแผนภาพ",
       "addDocument": "เพิ่มเอกสาร",
+      "addNote": "เพิ่มหมายเหตุ",
       "addRepository": "เพิ่มการอ้างอิงที่เก็บ",
       "deleteDiagram": "ลบแผนภาพ",
       "deleteDocument": "ลบเอกสาร",

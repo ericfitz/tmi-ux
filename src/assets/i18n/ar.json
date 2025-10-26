@@ -107,6 +107,8 @@
       "diagram": "مخطط",
       "document": "وثيقة",
       "documents": "وثائق",
+      "note": "ملاحظة",
+      "notes": "ملاحظات",
       "report": "تقرير",
       "repositories": "مستودعات",
       "repository": "مستودع",
@@ -127,6 +129,7 @@
       "writer": "كاتب"
     },
     "save": "حفظ",
+    "saveAndClose": "حفظ وإغلاق",
     "score": "النتيجة",
     "sessionRoles": {
       "host": "مضيف",
@@ -146,6 +149,7 @@
     "threatId": "معرف التهديد",
     "threatName": "اسم التهديد",
     "threatType": "نوع التهديد",
+    "unsavedChangesWarning": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد الإغلاق؟",
     "validation": {
       "invalidUrl": "يرجى إدخال رابط صحيح",
       "maxLength": "الحد الأقصى للطول هو {{max}} حرف",
@@ -240,6 +244,32 @@
       "serverConnectionError": "خطأ في اتصال الخادم"
     }
   },
+  "noteEditor": {
+    "characterCount": "{{current}} / {{max}} حرف",
+    "content": "المحتوى",
+    "contentPlaceholder": "أدخل محتوى الملاحظة بتنسيق markdown. يدعم GitHub Flavored Markdown ومخططات Mermaid.",
+    "copiedToClipboard": "تم النسخ إلى الحافظة",
+    "description": "الوصف",
+    "descriptionPlaceholder": "وصف اختياري",
+    "editMode": "وضع التحرير",
+    "errors": {
+      "clipboardAccessDenied": "تم رفض الوصول إلى الحافظة",
+      "contentTooLong": "المحتوى يتجاوز الحد الأقصى للطول",
+      "dataUrlsNotAllowed": "عناوين URL للبيانات غير مسموح بها",
+      "eventHandlersNotAllowed": "معالجات الأحداث غير مسموح بها",
+      "javascriptProtocolNotAllowed": "بروتوكول JavaScript غير مسموح به",
+      "scriptTagsNotAllowed": "علامات السكريبت غير مسموح بها"
+    },
+    "name": "الاسم",
+    "namePlaceholder": "أدخل اسم الملاحظة",
+    "previewMode": "وضع المعاينة",
+    "saveFailed": "فشل حفظ الملاحظة",
+    "savedSuccessfully": "تم حفظ الملاحظة بنجاح",
+    "title": {
+      "create": "إنشاء ملاحظة",
+      "edit": "تحرير الملاحظة"
+    }
+  },
   "presenter": {
     "startPresenting": "بدء العرض",
     "stopPresenting": "إيقاف العرض"
@@ -300,6 +330,7 @@
     "addPermission": "إضافة إذن",
     "branch": "فرع",
     "commit": "التزام",
+    "confirmDeleteNote": "هل أنت متأكد أنك تريد حذف الملاحظة '{{name}}'؟",
     "createFirstButton": "أنشئ نموذج التهديد الأول",
     "createNewDiagram": "إنشاء مخطط جديد",
     "createNewDocument": "إنشاء وثيقة جديدة",
@@ -331,6 +362,7 @@
     "noDiagrams": "لم تتم إضافة أي مخططات بعد",
     "noDocuments": "لم تتم إضافة أي وثائق بعد",
     "noItemsMessage": "ليس لديك أي نماذج تهديدات حتى الآن.",
+    "noNotes": "لم تتم إضافة أي ملاحظات بعد",
     "noPermissions": "لم يتم تحديد أي أذونات",
     "noRepositories": "لم يتم إضافة أي مراجع مستودع بعد",
     "noThreats": "لم يتم تحديد أي تهديدات بعد",
@@ -358,6 +390,7 @@
     "tooltips": {
       "addDiagram": "إضافة مخطط",
       "addDocument": "إضافة وثيقة",
+      "addNote": "إضافة ملاحظة",
       "addRepository": "إضافة مرجع مستودع",
       "deleteDiagram": "حذف المخطط",
       "deleteDocument": "حذف الوثيقة",
