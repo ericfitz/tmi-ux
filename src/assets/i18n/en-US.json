@@ -215,6 +215,7 @@
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
   "login": {
     "chooseMethod": "Choose your sign in method:",
+    "explanation": "Sign in with your existing account from a trusted identity provider. This eliminates the need for a separate password, streamlining your experience while keeping you secure. We never store or manage passwords—your credentials stay with your provider and can't be compromised through us.",
     "loadingProviders": "Loading authentication providers...",
     "local": {
       "emailInvalid": "Please enter a valid email address",

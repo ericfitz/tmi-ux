@@ -215,6 +215,7 @@
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
   "login": {
     "chooseMethod": "Wählen Sie Ihre Anmeldemethode:",
+    "explanation": "Melden Sie sich mit Ihrem bestehenden Konto bei einem vertrauenswürdigen Identitätsanbieter an. Dies macht ein separates Passwort überflüssig, optimiert Ihr Erlebnis und sorgt für Ihre Sicherheit. Wir speichern oder verwalten niemals Passwörter – Ihre Anmeldedaten bleiben bei Ihrem Anbieter und können nicht über uns kompromittiert werden.",
     "loadingProviders": "Lade Authentifizierungsanbieter...",
     "local": {
       "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
