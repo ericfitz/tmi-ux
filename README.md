@@ -27,9 +27,11 @@ TMI (Threat Modeling Improved) is a server based threat modeling web application
 
 The associated back-end server, written in Go, is called [TMI](https://github.com/ericfitz/tmi).
 
-## Demo Videos
+## Try TMI for yourself or watch a demonstration video
 
-### NEW!
+[TMI Public Development Server](https://www.tmi.dev)
+
+### Demo Videos
 
 - [Demo 2025-09-09](https://youtu.be/QCmlf8YFQ84) Demonstration of collaborative presentation of a data flow diagram
 - [Demo 2025-08-05](https://youtu.be/dH9V-7fmbLI) Nearly feature complete; walkthrough of all basic functionality with voiceover
@@ -173,4 +175,5 @@ pnpm run build:prod
 All important commands for building, linting, testing, file validation, and a lot of utilities are exposed through `pnpm` scripts.
 
 Get a list of pnpm scripts with `pnpm run`.
+
 # test
