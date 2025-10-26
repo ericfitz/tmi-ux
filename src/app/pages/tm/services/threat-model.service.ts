@@ -466,18 +466,12 @@ export class ThreatModelService implements OnDestroy {
       'ThreatModelService',
       `Fetching notes for threat model with ID: ${threatModelId} from API`,
     );
-    return this.apiService
-      .get<{ notes: Note[]; total_count: number }>(`threat_models/${threatModelId}/notes`)
-      .pipe(
-        map(response => response.notes),
-        catchError(error => {
-          this.logger.error(
-            `Error fetching notes for threat model with ID: ${threatModelId}`,
-            error,
-          );
-          return of([]);
-        }),
-      );
+    return this.apiService.get<Note[]>(`threat_models/${threatModelId}/notes`).pipe(
+      catchError(error => {
+        this.logger.error(`Error fetching notes for threat model with ID: ${threatModelId}`, error);
+        return of([]);
+      }),
+    );
   }
 
   /**

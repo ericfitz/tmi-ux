@@ -34,7 +34,13 @@ import { BidiModule } from '@angular/cdk/bidi';
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { provideMarkdown, MARKED_OPTIONS, MERMAID_OPTIONS, MarkedRenderer } from 'ngx-markdown';
+import {
+  provideMarkdown,
+  MARKED_OPTIONS,
+  MERMAID_OPTIONS,
+  MarkedRenderer,
+  MarkedOptions,
+} from 'ngx-markdown';
 import type { MermaidConfig } from 'mermaid';
 
 import { routes } from './app.routes';
@@ -87,7 +93,7 @@ function initializeMaterialIcons(
 }
 
 // Marked configuration with security
-function markedOptionsFactory() {
+function markedOptionsFactory(): MarkedOptions {
   const renderer = new MarkedRenderer();
 
   return {

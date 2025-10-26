@@ -94,7 +94,7 @@ export class NoteEditorDialogComponent implements OnInit {
       ],
     });
 
-    this.originalContent = this.noteForm.get('content')?.value || '';
+    this.originalContent = (this.noteForm.get('content')?.value as string | undefined) || '';
 
     // Check clipboard permissions on init
     void this.checkClipboardPermissions();

@@ -2568,11 +2568,31 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * Load notes for the threat model using separate API call
    */
   private loadNotes(threatModelId: string): void {
+    // Initialize notes array to empty array to ensure it exists
+    if (this.threatModel) {
+      this.threatModel.notes = [];
+    }
+
     this._subscriptions.add(
-      this.threatModelService.getNotesForThreatModel(threatModelId).subscribe(notes => {
-        if (this.threatModel) {
-          this.threatModel.notes = notes;
-        }
+      this.threatModelService.getNotesForThreatModel(threatModelId).subscribe({
+        next: notes => {
+          this.logger.debug('Notes loaded from API', {
+            count: notes.length,
+            notes: notes.map(n => ({ id: n.id, name: n.name })),
+          });
+          if (this.threatModel) {
+            this.threatModel.notes = notes;
+            this.logger.debug('Notes assigned to threat model', {
+              assignedCount: this.threatModel.notes.length,
+            });
+          }
+        },
+        error: error => {
+          this.logger.error('Failed to load notes', error);
+          if (this.threatModel) {
+            this.threatModel.notes = [];
+          }
+        },
       }),
     );
   }
