@@ -20,6 +20,25 @@
  */
 
 /**
+ * Color blind color palette (Okabe-Ito)
+ *
+ * Sources:
+ * https://www.thedataschool.co.uk/miles-cumiskey/accessible-color-tableau/
+ * https://jfly.uni-koeln.de/html/manuals/pdf/color_blind.pdf
+ * https://davidmathlogic.com/colorblind/
+ *
+ * Black          rgb(0,0,0)
+ * Orange         rgb(230,159,0)
+ * Sky Blue       rgb(86,180,233)
+ * bluish Green   rgb(0,158,115)
+ * Yellow         rgb(240,228,66)
+ * Blue           rgb(0,114,178)
+ * Vermilion      rgb(213,94,0)
+ * reddish Purple rgb(204,121,167)
+ *
+ */
+
+/**
  * Default styling values used across all DFD components
  */
 export const DFD_STYLING = {
