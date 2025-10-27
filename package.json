@@ -79,7 +79,7 @@
     "@antv/x6-plugin-transform": "^2.1.8",
     "@jsverse/transloco": "^8.1.0",
     "clipboard": "^2.0.11",
-    "dompurify": "^3.2.6",
+    "dompurify": "^3.3.0",
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
     "fontkit": "^2.0.4",
