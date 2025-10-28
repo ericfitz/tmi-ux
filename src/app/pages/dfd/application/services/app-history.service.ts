@@ -617,9 +617,13 @@ export class AppHistoryService implements OnDestroy {
     const targetNodeId =
       typeof cell.target === 'object' && cell.target !== null ? (cell.target as any).cell : '';
     const sourcePortId =
-      typeof cell.source === 'object' && cell.source !== null ? (cell.source as any).port : undefined;
+      typeof cell.source === 'object' && cell.source !== null
+        ? (cell.source as any).port
+        : undefined;
     const targetPortId =
-      typeof cell.target === 'object' && cell.target !== null ? (cell.target as any).port : undefined;
+      typeof cell.target === 'object' && cell.target !== null
+        ? (cell.target as any).port
+        : undefined;
 
     // Use EdgeInfo.fromJSON to handle both new and legacy format
     const edgeInfo = EdgeInfo.fromJSON({
@@ -658,13 +662,9 @@ export class AppHistoryService implements OnDestroy {
       id: cell.id,
       labels: typeof cell.label === 'string' ? [{ attrs: { text: { text: cell.label } } }] : [],
       source:
-        typeof cell.source === 'object' && cell.source !== null
-          ? (cell.source as any)
-          : undefined,
+        typeof cell.source === 'object' && cell.source !== null ? (cell.source as any) : undefined,
       target:
-        typeof cell.target === 'object' && cell.target !== null
-          ? (cell.target as any)
-          : undefined,
+        typeof cell.target === 'object' && cell.target !== null ? (cell.target as any) : undefined,
       vertices: (cell as any).vertices,
       attrs: cell.attrs as Record<string, any>,
     };

@@ -37,6 +37,7 @@ import {
   GraphOperation,
   OperationContext,
   OperationResult,
+  OperationCompletedEvent,
   CreateNodeOperation,
   NodeData,
 } from '../../types/graph-operation.types';
@@ -1278,10 +1279,16 @@ export class AppDfdOrchestrator {
   }
 
   private _setupEventIntegration(): void {
-    // Simple history-based auto-save trigger
-    this.dfdInfrastructure.historyModified$.subscribe(({ historyIndex, isUndo, isRedo }) => {
+    // Subscribe to operation completion events for history recording
+    this.appGraphOperationManager.operationCompleted$.subscribe(event => {
+      this._handleOperationCompleted(event);
+    });
+
+    // Subscribe to history state changes for auto-save trigger
+    this.appHistoryService.historyStateChange$.subscribe(event => {
+      // History was just modified (new entry added)
       this._markUnsavedChanges();
-      this._triggerAutoSave(historyIndex, isUndo, isRedo);
+      this._triggerAutoSave(event.undoStackSize, false, false);
     });
 
     // Subscribe to state correction events to trigger diagram resynchronization
@@ -1289,6 +1296,144 @@ export class AppDfdOrchestrator {
       this.logger.info('State correction triggered - initiating diagram resynchronization');
       this.appDiagramResyncService.triggerResync();
     });
+  }
+
+  /**
+   * Handle operation completed event - record history for user interactions
+   */
+  private _handleOperationCompleted(event: OperationCompletedEvent): void {
+    const { operation, result, context } = event;
+
+    // Only record history for successful user interactions
+    if (!result.success) {
+      return;
+    }
+
+    // Check if this operation should be recorded in history
+    if (!this._shouldRecordInHistory(operation)) {
+      return;
+    }
+
+    // Get affected cells from the graph
+    const affectedCells = this._getCellsById(result.affectedCellIds || []);
+    if (affectedCells.length === 0) {
+      // No cells to record (might have been deleted)
+      return;
+    }
+
+    // Create and add history entry
+    const historyEntry = this._createHistoryEntry(operation, affectedCells, context);
+    this.appHistoryService.addHistoryEntry(historyEntry);
+  }
+
+  /**
+   * Check if operation should be recorded in history
+   */
+  private _shouldRecordInHistory(operation: GraphOperation): boolean {
+    // Only record user interactions
+    if (operation.source !== 'user-interaction') {
+      return false;
+    }
+
+    // Don't record during diagram loading or remote changes
+    const state = this.appStateService.getCurrentState();
+    if (state.isApplyingRemoteChange) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Get cells by their IDs from the graph
+   */
+  private _getCellsById(cellIds: string[]): any[] {
+    const graph = this.dfdInfrastructure.getGraph();
+    if (!graph) {
+      return [];
+    }
+
+    return cellIds
+      .map(id => {
+        const cell = graph.getCellById(id);
+        return cell ? cell.toJSON() : null;
+      })
+      .filter(cell => cell !== null);
+  }
+
+  /**
+   * Create a history entry from an operation
+   */
+  private _createHistoryEntry(
+    operation: GraphOperation,
+    currentCells: any[],
+    _context: OperationContext,
+  ): any {
+    const timestamp = Date.now();
+    const userId = this.authService.userId;
+
+    // Get previous cells from context (if available)
+    // For now, we'll use empty array - this will be enhanced in future
+    const previousCells: any[] = [];
+
+    // Generate description based on operation type
+    const description = this._generateOperationDescription(operation, currentCells.length);
+
+    // Map operation type to history operation type
+    const operationType = this._mapToHistoryOperationType(operation.type);
+
+    return {
+      id: `hist_${timestamp}_${Math.random().toString(36).substr(2, 9)}`,
+      timestamp,
+      operationType,
+      description,
+      cells: currentCells,
+      previousCells,
+      userId,
+      operationId: operation.id,
+      metadata: {
+        nodeIds: currentCells.filter(c => c.shape !== 'edge').map(c => c.id),
+        edgeIds: currentCells.filter(c => c.shape === 'edge').map(c => c.id),
+      },
+    };
+  }
+
+  /**
+   * Generate human-readable description for operation
+   */
+  private _generateOperationDescription(operation: GraphOperation, cellCount: number): string {
+    const typeMap: Record<string, string> = {
+      'create-node': cellCount > 1 ? `Add ${cellCount} Nodes` : 'Add Node',
+      'update-node': cellCount > 1 ? `Update ${cellCount} Nodes` : 'Update Node',
+      'delete-node': cellCount > 1 ? `Delete ${cellCount} Nodes` : 'Delete Node',
+      'move-node': cellCount > 1 ? `Move ${cellCount} Nodes` : 'Move Node',
+      'resize-node': 'Resize Node',
+      'create-edge': cellCount > 1 ? `Add ${cellCount} Edges` : 'Add Edge',
+      'update-edge': cellCount > 1 ? `Update ${cellCount} Edges` : 'Update Edge',
+      'delete-edge': cellCount > 1 ? `Delete ${cellCount} Edges` : 'Delete Edge',
+      'batch-operation': `Batch Operation (${cellCount} items)`,
+    };
+
+    return typeMap[operation.type] || `${operation.type} (${cellCount} items)`;
+  }
+
+  /**
+   * Map GraphOperation type to HistoryOperationType
+   */
+  private _mapToHistoryOperationType(opType: string): string {
+    const typeMap: Record<string, string> = {
+      'create-node': 'add-node',
+      'update-node': 'change-properties',
+      'delete-node': 'delete',
+      'move-node': 'move-node',
+      'resize-node': 'resize-node',
+      'create-edge': 'add-edge',
+      'update-edge': 'change-properties',
+      'delete-edge': 'delete',
+      'batch-operation': 'batch',
+    };
+
+    return typeMap[opType] || opType;
   }
 
   /**
