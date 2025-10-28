@@ -100,6 +100,13 @@ export interface StateCorrectionMessage {
   update_vector: number;
 }
 
+export interface DiagramStateSyncMessage {
+  message_type: 'diagram_state_sync';
+  diagram_id: string;
+  update_vector: number | null;
+  cells: Cell[];
+}
+
 export interface ResyncRequestMessage {
   message_type: 'resync_request';
   user: User;
@@ -182,6 +189,7 @@ export type TMIWebSocketMessage =
   | PresenterSelectionMessage
   | AuthorizationDeniedMessage
   | StateCorrectionMessage
+  | DiagramStateSyncMessage
   | ResyncRequestMessage
   | ResyncResponseMessage
   | UndoRequestMessage
@@ -204,6 +212,7 @@ export type TMIMessageType =
   | 'presenter_selection'
   | 'authorization_denied'
   | 'state_correction'
+  | 'diagram_state_sync'
   | 'resync_request'
   | 'resync_response'
   | 'undo_request'

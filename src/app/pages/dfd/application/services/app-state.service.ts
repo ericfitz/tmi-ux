@@ -23,6 +23,7 @@ import {
   InfraDfdWebsocketAdapter,
   WebSocketDomainEvent,
   StateCorrectionEvent,
+  DiagramStateSyncEvent,
   HistoryOperationEvent,
   ResyncRequestedEvent,
   ParticipantsUpdatedEvent,
@@ -98,11 +99,17 @@ export class AppStateService implements OnDestroy {
   private readonly _applyCorrectionEvent$ = new Subject<WSCell[]>();
   private readonly _requestResyncEvent$ = new Subject<{ method: string }>();
   private readonly _triggerResyncEvent$ = new Subject<void>();
+  private readonly _diagramStateSyncEvent$ = new Subject<{
+    diagram_id: string;
+    update_vector: number | null;
+    cells: WSCell[];
+  }>();
 
   public readonly applyOperationEvents$ = this._applyOperationEvent$.asObservable();
   public readonly applyCorrectionEvents$ = this._applyCorrectionEvent$.asObservable();
   public readonly requestResyncEvents$ = this._requestResyncEvent$.asObservable();
   public readonly triggerResyncEvents$ = this._triggerResyncEvent$.asObservable();
+  public readonly diagramStateSyncEvents$ = this._diagramStateSyncEvent$.asObservable();
 
   constructor(
     private _logger: LoggerService,
@@ -140,6 +147,12 @@ export class AppStateService implements OnDestroy {
       this._webSocketService.stateCorrections$
         .pipe(takeUntil(this._destroy$))
         .subscribe((event: any) => this._processStateCorrection(event)),
+    );
+
+    this._subscriptions.add(
+      this._webSocketService.diagramStateSyncs$
+        .pipe(takeUntil(this._destroy$))
+        .subscribe((event: any) => this._processDiagramStateSync(event)),
     );
 
     this._subscriptions.add(
@@ -305,6 +318,27 @@ export class AppStateService implements OnDestroy {
     this._triggerResyncEvent$.next();
 
     this._logger.debug('State correction processed - resync triggered');
+  }
+
+  /**
+   * Process initial diagram state sync from the server
+   * This message is sent immediately upon WebSocket connection
+   */
+  private _processDiagramStateSync(event: DiagramStateSyncEvent): void {
+    this._logger.info('Processing diagram state sync', {
+      diagramId: event.diagram_id,
+      serverUpdateVector: event.update_vector,
+      cellCount: event.cells.length,
+    });
+
+    // Emit the state sync event for the persistence layer to handle
+    this._diagramStateSyncEvent$.next({
+      diagram_id: event.diagram_id,
+      update_vector: event.update_vector,
+      cells: event.cells,
+    });
+
+    this._logger.debug('Diagram state sync event emitted for persistence layer');
   }
 
   /**

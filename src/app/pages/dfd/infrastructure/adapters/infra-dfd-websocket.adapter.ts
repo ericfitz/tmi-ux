@@ -21,6 +21,7 @@ import {
   DiagramOperationMessage,
   AuthorizationDeniedMessage,
   StateCorrectionMessage,
+  DiagramStateSyncMessage,
   HistoryOperationMessage,
   ResyncResponseMessage,
   CurrentPresenterMessage,
@@ -31,6 +32,7 @@ import {
   RemoveParticipantMessage,
   ParticipantsUpdateMessage,
   Participant,
+  Cell,
 } from '../../../../core/types/websocket-message.types';
 
 /**
@@ -50,6 +52,13 @@ export interface AuthorizationDeniedEvent {
 export interface StateCorrectionEvent {
   type: 'state-correction';
   update_vector: number;
+}
+
+export interface DiagramStateSyncEvent {
+  type: 'diagram-state-sync';
+  diagram_id: string;
+  update_vector: number | null;
+  cells: Cell[];
 }
 
 export interface HistoryOperationEvent {
@@ -141,6 +150,7 @@ export type WebSocketDomainEvent =
   | DiagramOperationEvent
   | AuthorizationDeniedEvent
   | StateCorrectionEvent
+  | DiagramStateSyncEvent
   | HistoryOperationEvent
   | ResyncRequestedEvent
   | PresenterChangedEvent
@@ -175,6 +185,10 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
 
   public readonly stateCorrections$ = this._domainEvents$.pipe(
     filter((event): event is StateCorrectionEvent => event.type === 'state-correction'),
+  );
+
+  public readonly diagramStateSyncs$ = this._domainEvents$.pipe(
+    filter((event): event is DiagramStateSyncEvent => event.type === 'diagram-state-sync'),
   );
 
   public readonly historyOperations$ = this._domainEvents$.pipe(
@@ -269,6 +283,17 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
         .subscribe({
           next: message => this._handleStateCorrection(message),
           error: error => this._logger.error('Error in state correction subscription', error),
+        }),
+    );
+
+    // Subscribe to diagram state sync messages
+    this._subscriptions.add(
+      this._webSocketAdapter
+        .getTMIMessagesOfType<DiagramStateSyncMessage>('diagram_state_sync')
+        .pipe(takeUntil(this._destroy$))
+        .subscribe({
+          next: message => this._handleDiagramStateSync(message),
+          error: error => this._logger.error('Error in diagram state sync subscription', error),
         }),
     );
 
@@ -445,6 +470,24 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
         currentUpdateVector,
       });
     }
+  }
+
+  private _handleDiagramStateSync(message: DiagramStateSyncMessage): void {
+    const currentUpdateVector = this._dfdStateStore.updateVector;
+
+    this._logger.info('Diagram state sync received', {
+      diagramId: message.diagram_id,
+      serverUpdateVector: message.update_vector,
+      currentUpdateVector,
+      cellCount: message.cells.length,
+    });
+
+    this._domainEvents$.next({
+      type: 'diagram-state-sync',
+      diagram_id: message.diagram_id,
+      update_vector: message.update_vector,
+      cells: message.cells,
+    });
   }
 
   private _handleHistoryOperation(message: HistoryOperationMessage): void {
