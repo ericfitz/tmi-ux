@@ -307,25 +307,9 @@ export class NoteEditorDialogComponent implements OnInit {
       return { valid: false, error: 'noteEditor.errors.contentTooLong' };
     }
 
-    // Check for script tags
-    if (/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi.test(content)) {
-      return { valid: false, error: 'noteEditor.errors.scriptTagsNotAllowed' };
-    }
-
-    // Check for event handlers
-    if (/on\w+\s*=/gi.test(content)) {
-      return { valid: false, error: 'noteEditor.errors.eventHandlersNotAllowed' };
-    }
-
-    // Check for javascript: protocol
-    if (/javascript:/gi.test(content)) {
-      return { valid: false, error: 'noteEditor.errors.javascriptProtocolNotAllowed' };
-    }
-
-    // Check for data: URLs
-    if (/data:text\/html/gi.test(content)) {
-      return { valid: false, error: 'noteEditor.errors.dataUrlsNotAllowed' };
-    }
+    // Note: We don't validate for specific HTML patterns here because DOMPurify
+    // handles all sanitization correctly, including edge cases that regex cannot catch.
+    // DOMPurify is configured to strip all HTML tags while preserving markdown text.
 
     return { valid: true };
   }
