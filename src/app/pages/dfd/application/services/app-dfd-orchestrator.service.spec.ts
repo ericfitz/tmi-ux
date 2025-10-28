@@ -76,6 +76,8 @@ describe('AppDfdOrchestrator', () => {
   let mockSelectionAdapter: any;
   let mockDfdStateStore: any;
   let mockAppDiagramResyncService: any;
+  let mockAppRemoteOperationHandler: any;
+  let mockAppHistoryService: any;
 
   beforeEach(() => {
     // Create all required mocks
@@ -242,6 +244,29 @@ describe('AppDfdOrchestrator', () => {
       initialize: vi.fn(),
     };
 
+    mockAppRemoteOperationHandler = {
+      initialize: vi.fn(),
+      getStats: vi.fn().mockReturnValue({
+        totalOperations: 0,
+        successfulOperations: 0,
+        failedOperations: 0,
+      }),
+      resetStats: vi.fn(),
+    };
+
+    mockAppHistoryService = {
+      initialize: vi.fn(),
+      addHistoryEntry: vi.fn(),
+      undo: vi.fn().mockReturnValue(of({ success: true })),
+      redo: vi.fn().mockReturnValue(of({ success: true })),
+      canUndo: vi.fn().mockReturnValue(false),
+      canRedo: vi.fn().mockReturnValue(false),
+      clear: vi.fn(),
+      getUndoStack: vi.fn().mockReturnValue([]),
+      getRedoStack: vi.fn().mockReturnValue([]),
+      historyStateChange$: new Subject(),
+    };
+
     // Create mock container element
     mockContainerElement = document.createElement('div');
     mockContainerElement.style.width = '800px';
@@ -262,6 +287,8 @@ describe('AppDfdOrchestrator', () => {
       mockInfraWebsocketAdapter,
       mockDfdFacade,
       mockAppDiagramOperationBroadcaster,
+      mockAppRemoteOperationHandler,
+      mockAppHistoryService,
       mockUiPresenterCoordinator,
       mockSelectionAdapter,
       mockDfdStateStore,
@@ -510,6 +537,8 @@ describe('AppDfdOrchestrator', () => {
         mockInfraWebsocketAdapter,
         mockDfdFacade,
         mockAppDiagramOperationBroadcaster,
+        mockAppRemoteOperationHandler,
+        mockAppHistoryService,
         mockUiPresenterCoordinator,
         mockSelectionAdapter,
         mockDfdStateStore,

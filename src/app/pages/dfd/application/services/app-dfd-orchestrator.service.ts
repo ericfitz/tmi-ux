@@ -39,6 +39,8 @@ import {
   OperationResult,
   OperationCompletedEvent,
   CreateNodeOperation,
+  UpdateNodeOperation,
+  UpdateEdgeOperation,
   NodeData,
 } from '../../types/graph-operation.types';
 
@@ -1379,8 +1381,8 @@ export class AppDfdOrchestrator {
     // Generate description based on operation type
     const description = this._generateOperationDescription(operation, currentCells.length);
 
-    // Map operation type to history operation type
-    const operationType = this._mapToHistoryOperationType(operation.type);
+    // Map operation type to history operation type (with operation for inference)
+    const operationType = this._mapToHistoryOperationType(operation.type, operation);
 
     return {
       id: `hist_${timestamp}_${Math.random().toString(36).substr(2, 9)}`,
@@ -1402,16 +1404,52 @@ export class AppDfdOrchestrator {
    * Generate human-readable description for operation
    */
   private _generateOperationDescription(operation: GraphOperation, cellCount: number): string {
+    // For node update operations, check what changed to provide specific description
+    if (operation.type === 'update-node') {
+      const updateOp = operation as UpdateNodeOperation;
+      const updates = updateOp.updates;
+
+      // Check what was updated to provide more specific description
+      if (updates.position && !updates.size) {
+        return cellCount > 1 ? `Move ${cellCount} Nodes` : 'Move Node';
+      }
+      if (updates.size && !updates.position) {
+        return 'Resize Node';
+      }
+      if (updates.label !== undefined) {
+        return 'Edit Label';
+      }
+      if (updates.properties) {
+        return cellCount > 1 ? `Update ${cellCount} Cells` : 'Update Properties';
+      }
+    }
+
+    // For edge update operations, check what changed
+    if (operation.type === 'update-edge') {
+      const updateOp = operation as UpdateEdgeOperation;
+      const updates = updateOp.updates;
+
+      if (updates.labels !== undefined) {
+        return 'Edit Label';
+      }
+      if (updates.vertices) {
+        return 'Adjust Edge Path';
+      }
+      if (updates.source || updates.target) {
+        return 'Reconnect Edge';
+      }
+    }
+
+    // Default descriptions
     const typeMap: Record<string, string> = {
       'create-node': cellCount > 1 ? `Add ${cellCount} Nodes` : 'Add Node',
       'update-node': cellCount > 1 ? `Update ${cellCount} Nodes` : 'Update Node',
       'delete-node': cellCount > 1 ? `Delete ${cellCount} Nodes` : 'Delete Node',
-      'move-node': cellCount > 1 ? `Move ${cellCount} Nodes` : 'Move Node',
-      'resize-node': 'Resize Node',
       'create-edge': cellCount > 1 ? `Add ${cellCount} Edges` : 'Add Edge',
       'update-edge': cellCount > 1 ? `Update ${cellCount} Edges` : 'Update Edge',
       'delete-edge': cellCount > 1 ? `Delete ${cellCount} Edges` : 'Delete Edge',
       'batch-operation': `Batch Operation (${cellCount} items)`,
+      'load-diagram': 'Load Diagram',
     };
 
     return typeMap[operation.type] || `${operation.type} (${cellCount} items)`;
@@ -1419,18 +1457,59 @@ export class AppDfdOrchestrator {
 
   /**
    * Map GraphOperation type to HistoryOperationType
+   * Provides detailed mapping including inference from update operations
    */
-  private _mapToHistoryOperationType(opType: string): string {
+  private _mapToHistoryOperationType(opType: string, operation?: GraphOperation): string {
+    // For node update operations, infer more specific history type from what changed
+    if (opType === 'update-node' && operation) {
+      const updateOp = operation as UpdateNodeOperation;
+      const updates = updateOp.updates;
+
+      // Infer specific operation types
+      if (updates.position && !updates.size) {
+        return 'move-node';
+      }
+      if (updates.size && !updates.position) {
+        return 'resize-node';
+      }
+      if (updates.label !== undefined) {
+        return 'change-label';
+      }
+      // Check for embedding operations in metadata
+      if (updates.properties && typeof updates.properties === 'object') {
+        const props = updates.properties;
+        if ('parent' in props) {
+          return props['parent'] ? 'embed-node' : 'unembed-node';
+        }
+      }
+    }
+
+    // For edge update operations, infer more specific history type
+    if (opType === 'update-edge' && operation) {
+      const updateOp = operation as UpdateEdgeOperation;
+      const updates = updateOp.updates;
+
+      if (updates.labels !== undefined) {
+        return 'change-label';
+      }
+      if (updates.vertices) {
+        return 'change-vertices';
+      }
+      if (updates.source || updates.target) {
+        return 'change-edge-endpoint';
+      }
+    }
+
+    // Base type mapping
     const typeMap: Record<string, string> = {
       'create-node': 'add-node',
       'update-node': 'change-properties',
       'delete-node': 'delete',
-      'move-node': 'move-node',
-      'resize-node': 'resize-node',
       'create-edge': 'add-edge',
       'update-edge': 'change-properties',
       'delete-edge': 'delete',
       'batch-operation': 'batch',
+      'load-diagram': 'batch', // Load is essentially a batch of adds
     };
 
     return typeMap[opType] || opType;
