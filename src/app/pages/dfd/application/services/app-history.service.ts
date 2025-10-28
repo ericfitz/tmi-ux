@@ -65,8 +65,6 @@ export class AppHistoryService implements OnDestroy {
     totalHistoryEntries: 0,
     undoCount: 0,
     redoCount: 0,
-    broadcastCount: 0,
-    autoSaveCount: 0,
   };
 
   constructor(
@@ -184,11 +182,6 @@ export class AppHistoryService implements OnDestroy {
       success: true,
       timestamp: Date.now(),
     });
-
-    // Trigger broadcast or auto-save if enabled
-    if (this._config.autoTriggerPersistence) {
-      this._triggerPersistence(entry);
-    }
   }
 
   /**
@@ -248,12 +241,6 @@ export class AppHistoryService implements OnDestroy {
           success: true,
           timestamp: Date.now(),
         });
-
-        // Note: Undo operations still trigger broadcast/save
-        // (they should be synchronized with collaborators or saved locally)
-        if (this._config.autoTriggerPersistence) {
-          this._triggerPersistence(entry);
-        }
       }),
       catchError(error => {
         this.logger.error('Undo operation failed', { error, entry });
@@ -338,11 +325,6 @@ export class AppHistoryService implements OnDestroy {
           success: true,
           timestamp: Date.now(),
         });
-
-        // Redo operations also trigger broadcast/save
-        if (this._config.autoTriggerPersistence) {
-          this._triggerPersistence(entry);
-        }
       }),
       catchError(error => {
         this.logger.error('Redo operation failed', { error, entry });
@@ -443,58 +425,6 @@ export class AppHistoryService implements OnDestroy {
       redoStackSize: this._historyState.redoStack.length,
       timestamp: Date.now(),
     });
-  }
-
-  /**
-   * Trigger broadcast or auto-save based on collaboration state
-   */
-  private _triggerPersistence(entry: HistoryEntry): void {
-    // Don't broadcast/save remote operations (they came from another user)
-    if (entry.operationType === 'remote-operation') {
-      this.logger.debug('Skipping persistence for remote operation', { entryId: entry.id });
-      return;
-    }
-
-    if (this.collaborationService.isCollaborating()) {
-      // Broadcast to other users
-      this._broadcastOperation(entry);
-    } else {
-      // Trigger auto-save
-      this._triggerAutoSave();
-    }
-  }
-
-  /**
-   * Broadcast operation to other users via WebSocket
-   */
-  private _broadcastOperation(entry: HistoryEntry): void {
-    this.logger.debug('Broadcasting operation', {
-      entryId: entry.id,
-      description: entry.description,
-    });
-
-    this._stats.broadcastCount++;
-
-    // The broadcaster will handle converting cells to operations and sending via WebSocket
-    // For now, we'll use the existing broadcaster's atomic operation functionality
-    // TODO: May need to enhance broadcaster to accept Cell[] directly
-  }
-
-  /**
-   * Trigger auto-save via persistence coordinator
-   */
-  private _triggerAutoSave(): void {
-    if (!this._diagramId || !this._threatModelId || !this._operationContext) {
-      this.logger.warn('Cannot trigger auto-save: missing diagram context');
-      return;
-    }
-
-    this.logger.debug('Triggering auto-save');
-    this._stats.autoSaveCount++;
-
-    // TODO: Implement auto-save trigger
-    // The persistence coordinator needs a method to trigger save
-    // For now, just log that we would save
   }
 
   /**

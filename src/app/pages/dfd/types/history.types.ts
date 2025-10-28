@@ -148,12 +148,6 @@ export interface HistoryConfig {
    * Default: true
    */
   enabled?: boolean;
-
-  /**
-   * Whether to automatically trigger broadcast/save when adding history
-   * Default: true
-   */
-  autoTriggerPersistence?: boolean;
 }
 
 /**
@@ -222,7 +216,6 @@ export interface HistoryOperationEvent {
 export const DEFAULT_HISTORY_CONFIG: Required<HistoryConfig> = {
   maxHistorySize: 50,
   enabled: true,
-  autoTriggerPersistence: true,
 };
 
 /**
