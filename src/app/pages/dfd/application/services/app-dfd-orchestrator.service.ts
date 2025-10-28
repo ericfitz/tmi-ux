@@ -1235,11 +1235,15 @@ export class AppDfdOrchestrator {
     );
 
     // Initialize history service for undo/redo operations
+    // Note: autoTriggerPersistence is disabled because the orchestrator handles save triggers
     this.logger.info('Initializing history service');
     this.appHistoryService.initialize(
       this._operationContext,
       params.diagramId,
       params.threatModelId,
+      {
+        autoTriggerPersistence: false, // Orchestrator handles persistence via historyStateChange$ subscription
+      },
     );
 
     // Note: Validation callbacks are now configured directly in graph options during creation
