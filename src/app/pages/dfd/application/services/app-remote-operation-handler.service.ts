@@ -1,0 +1,353 @@
+/**
+ * AppRemoteOperationHandler - Handles remote diagram operations from collaboration
+ *
+ * This service is responsible for:
+ * - Subscribing to remote operation events from WebSocket
+ * - Converting CellOperation (WebSocket format) to GraphOperation (internal format)
+ * - Routing operations through GraphOperationManager with proper source flag
+ * - Ensuring remote operations don't trigger history recording or re-broadcasting
+ */
+
+import { Injectable, OnDestroy } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Graph } from '@antv/x6';
+
+import { LoggerService } from '../../../../core/services/logger.service';
+import { AppStateService } from './app-state.service';
+import { AppGraphOperationManager } from './app-graph-operation-manager.service';
+import { AppGraphHistoryCoordinator } from './app-graph-history-coordinator.service';
+import { CellOperation, Cell as WSCell } from '../../../../core/types/websocket-message.types';
+import {
+  GraphOperation,
+  OperationContext,
+  CreateNodeOperation,
+  UpdateNodeOperation,
+  DeleteNodeOperation,
+  CreateEdgeOperation,
+  UpdateEdgeOperation,
+  DeleteEdgeOperation,
+  NodeData,
+} from '../../types/graph-operation.types';
+import { EdgeInfo } from '../../domain/value-objects/edge-info';
+
+@Injectable()
+export class AppRemoteOperationHandler implements OnDestroy {
+  private readonly _destroy$ = new Subject<void>();
+  private _subscriptions = new Subscription();
+  private _initialized = false;
+  private _graph: Graph | null = null;
+  private _operationContext: OperationContext | null = null;
+
+  // Statistics
+  private _stats = {
+    totalOperations: 0,
+    successfulOperations: 0,
+    failedOperations: 0,
+  };
+
+  constructor(
+    private readonly logger: LoggerService,
+    private readonly appStateService: AppStateService,
+    private readonly graphOperationManager: AppGraphOperationManager,
+    private readonly historyCoordinator: AppGraphHistoryCoordinator,
+  ) {
+    this.logger.debug('AppRemoteOperationHandler constructed');
+  }
+
+  /**
+   * Initialize the handler with graph and operation context
+   */
+  initialize(graph: Graph, operationContext: OperationContext): void {
+    if (this._initialized) {
+      this.logger.warn('AppRemoteOperationHandler already initialized');
+      return;
+    }
+
+    this._graph = graph;
+    this._operationContext = operationContext;
+
+    // Subscribe to remote operation events from AppStateService
+    this._subscriptions.add(
+      this.appStateService.applyOperationEvents$.pipe(takeUntil(this._destroy$)).subscribe({
+        next: event => {
+          this._handleRemoteOperation(event.operation, event.userId, event.operationId);
+        },
+        error: error => {
+          this.logger.error('Error in remote operation event stream', { error });
+        },
+      }),
+    );
+
+    this._initialized = true;
+    this.logger.info('AppRemoteOperationHandler initialized');
+  }
+
+  /**
+   * Get handler statistics
+   */
+  getStats() {
+    return { ...this._stats };
+  }
+
+  /**
+   * Reset statistics
+   */
+  resetStats(): void {
+    this._stats = {
+      totalOperations: 0,
+      successfulOperations: 0,
+      failedOperations: 0,
+    };
+  }
+
+  /**
+   * Cleanup
+   */
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
+    this._subscriptions.unsubscribe();
+    this.logger.debug('AppRemoteOperationHandler destroyed');
+  }
+
+  /**
+   * Handle a remote operation event
+   */
+  private _handleRemoteOperation(
+    cellOperation: CellOperation,
+    userId: string,
+    operationId: string,
+  ): void {
+    if (!this._graph || !this._operationContext) {
+      this.logger.error('Cannot handle remote operation - not initialized');
+      return;
+    }
+
+    this._stats.totalOperations++;
+
+    this.logger.debug('Handling remote operation', {
+      cellId: cellOperation.id,
+      operation: cellOperation.operation,
+      userId,
+      operationId,
+    });
+
+    try {
+      // Convert CellOperation to GraphOperation
+      const graphOperation = this._convertCellOperationToGraphOperation(
+        cellOperation,
+        userId,
+        operationId,
+      );
+
+      if (!graphOperation) {
+        this.logger.warn('Could not convert cell operation to graph operation', {
+          cellOperation,
+        });
+        this._stats.failedOperations++;
+        return;
+      }
+
+      // Execute the operation through the operation manager
+      // This will be wrapped in executeRemoteOperation by the operation state manager
+      this.graphOperationManager.execute(graphOperation, this._operationContext).subscribe({
+        next: result => {
+          if (result.success) {
+            this._stats.successfulOperations++;
+            this.logger.debug('Remote operation executed successfully', {
+              operationId,
+              affectedCells: result.affectedCellIds?.length || 0,
+            });
+          } else {
+            this._stats.failedOperations++;
+            this.logger.error('Remote operation execution failed', {
+              operationId,
+              error: result.error,
+            });
+          }
+        },
+        error: error => {
+          this._stats.failedOperations++;
+          this.logger.error('Error executing remote operation', {
+            operationId,
+            error,
+          });
+        },
+      });
+    } catch (error) {
+      this._stats.failedOperations++;
+      this.logger.error('Exception handling remote operation', {
+        cellOperation,
+        error,
+      });
+    }
+  }
+
+  /**
+   * Convert CellOperation (WebSocket format) to GraphOperation (internal format)
+   */
+  private _convertCellOperationToGraphOperation(
+    cellOp: CellOperation,
+    userId: string,
+    operationId: string,
+  ): GraphOperation | null {
+    const baseOperation = {
+      id: operationId,
+      source: 'remote-collaboration' as const,
+      priority: 'normal' as const,
+      timestamp: Date.now(),
+      userId,
+    };
+
+    // Determine if this is a node or edge based on cell data
+    if (!cellOp.data) {
+      // Deletion without data
+      if (cellOp.operation === 'remove') {
+        // We need to check the graph to determine if it's a node or edge
+        const cell = this._graph?.getCellById(cellOp.id);
+        if (cell?.isNode()) {
+          return {
+            ...baseOperation,
+            type: 'delete-node',
+            nodeId: cellOp.id,
+          } as DeleteNodeOperation;
+        } else if (cell?.isEdge()) {
+          return {
+            ...baseOperation,
+            type: 'delete-edge',
+            edgeId: cellOp.id,
+          } as DeleteEdgeOperation;
+        } else {
+          this.logger.warn('Cannot determine cell type for deletion', { cellId: cellOp.id });
+          return null;
+        }
+      }
+      this.logger.warn('Cell operation missing data', { cellOp });
+      return null;
+    }
+
+    const cellData = cellOp.data;
+    const isNode = cellData.shape !== 'edge';
+
+    if (isNode) {
+      return this._convertToCellNodeOperation(cellOp, cellData, baseOperation);
+    } else {
+      return this._convertToCellEdgeOperation(cellOp, cellData, baseOperation);
+    }
+  }
+
+  /**
+   * Convert cell operation to node operation
+   */
+  private _convertToCellNodeOperation(
+    cellOp: CellOperation,
+    cellData: WSCell,
+    baseOperation: Partial<GraphOperation>,
+  ): GraphOperation | null {
+    const nodeData: NodeData = {
+      id: cellData.id,
+      nodeType: cellData.shape,
+      position: cellData.position,
+      size: cellData.size,
+      label: typeof cellData.label === 'string' ? cellData.label : undefined,
+      style: cellData.attrs as Record<string, any>,
+      properties: cellData as Record<string, any>,
+    };
+
+    switch (cellOp.operation) {
+      case 'add':
+        return {
+          ...baseOperation,
+          type: 'create-node',
+          nodeData,
+        } as CreateNodeOperation;
+
+      case 'update':
+        return {
+          ...baseOperation,
+          type: 'update-node',
+          nodeId: cellData.id,
+          updates: nodeData,
+        } as UpdateNodeOperation;
+
+      case 'remove':
+        return {
+          ...baseOperation,
+          type: 'delete-node',
+          nodeId: cellData.id,
+          nodeData,
+        } as DeleteNodeOperation;
+
+      default:
+        this.logger.warn('Unknown cell operation type', { operation: cellOp.operation });
+        return null;
+    }
+  }
+
+  /**
+   * Convert cell operation to edge operation
+   */
+  private _convertToCellEdgeOperation(
+    cellOp: CellOperation,
+    cellData: WSCell,
+    baseOperation: Partial<GraphOperation>,
+  ): GraphOperation | null {
+    // Extract edge info from cell data
+    const edgeInfo: EdgeInfo = {
+      id: cellData.id,
+      label: typeof cellData.label === 'string' ? cellData.label : '',
+      sourceNodeId:
+        typeof cellData.source === 'object' && cellData.source !== null
+          ? (cellData.source as any).cell
+          : '',
+      targetNodeId:
+        typeof cellData.target === 'object' && cellData.target !== null
+          ? (cellData.target as any).cell
+          : '',
+      sourcePortId:
+        typeof cellData.source === 'object' && cellData.source !== null
+          ? (cellData.source as any).port
+          : undefined,
+      targetPortId:
+        typeof cellData.target === 'object' && cellData.target !== null
+          ? (cellData.target as any).port
+          : undefined,
+      vertices: (cellData as any).vertices || [],
+      style: cellData.attrs as Record<string, any>,
+    };
+
+    switch (cellOp.operation) {
+      case 'add':
+        return {
+          ...baseOperation,
+          type: 'create-edge',
+          edgeInfo,
+          sourceNodeId: edgeInfo.sourceNodeId,
+          targetNodeId: edgeInfo.targetNodeId,
+          sourcePortId: edgeInfo.sourcePortId,
+          targetPortId: edgeInfo.targetPortId,
+        } as CreateEdgeOperation;
+
+      case 'update':
+        return {
+          ...baseOperation,
+          type: 'update-edge',
+          edgeId: cellData.id,
+          updates: edgeInfo,
+        } as UpdateEdgeOperation;
+
+      case 'remove':
+        return {
+          ...baseOperation,
+          type: 'delete-edge',
+          edgeId: cellData.id,
+          edgeInfo,
+        } as DeleteEdgeOperation;
+
+      default:
+        this.logger.warn('Unknown cell operation type', { operation: cellOp.operation });
+        return null;
+    }
+  }
+}

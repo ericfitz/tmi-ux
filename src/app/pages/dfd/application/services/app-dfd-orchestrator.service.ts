@@ -28,6 +28,7 @@ import { AppDfdFacade } from '../facades/app-dfd.facade';
 import { InfraDfdWebsocketAdapter } from '../../infrastructure/adapters/infra-dfd-websocket.adapter';
 import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
 import { AppDiagramOperationBroadcaster } from './app-diagram-operation-broadcaster.service';
+import { AppRemoteOperationHandler } from './app-remote-operation-handler.service';
 import { UiPresenterCoordinatorService } from '../../presentation/services/ui-presenter-coordinator.service';
 import { NodeType } from '../../domain/value-objects/node-info';
 import { DfdStateStore } from '../../state/dfd.state';
@@ -118,6 +119,7 @@ export class AppDfdOrchestrator {
     private readonly infraWebsocketAdapter: InfraDfdWebsocketAdapter,
     private readonly dfdInfrastructure: AppDfdFacade,
     private readonly appDiagramOperationBroadcaster: AppDiagramOperationBroadcaster,
+    private readonly appRemoteOperationHandler: AppRemoteOperationHandler,
     private readonly uiPresenterCoordinator: UiPresenterCoordinatorService,
     private readonly selectionAdapter: InfraX6SelectionAdapter,
     private readonly dfdStateStore: DfdStateStore,
@@ -1189,6 +1191,13 @@ export class AppDfdOrchestrator {
       suppressHistory: false,
       suppressBroadcast: false,
     };
+
+    // Initialize remote operation handler to process operations from other users
+    this.logger.info('Initializing remote operation handler');
+    this.appRemoteOperationHandler.initialize(
+      this.dfdInfrastructure.getGraph(),
+      this._operationContext,
+    );
 
     // Note: Validation callbacks are now configured directly in graph options during creation
 
