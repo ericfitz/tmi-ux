@@ -27,6 +27,7 @@ import {
   ResyncRequestedEvent,
   ParticipantsUpdatedEvent,
 } from '../../infrastructure/adapters/infra-dfd-websocket.adapter';
+import { AppGraphHistoryCoordinator } from './app-graph-history-coordinator.service';
 
 /**
  * Represents the synchronization state of the diagram
@@ -108,8 +109,11 @@ export class AppStateService implements OnDestroy {
     private _webSocketService: InfraDfdWebsocketAdapter,
     private _collaborationService: DfdCollaborationService,
     private _threatModelService: ThreatModelService,
+    private _historyCoordinator: AppGraphHistoryCoordinator,
   ) {
     this._logger.info('AppStateService initialized');
+    // Set up bidirectional reference to avoid circular dependency
+    this._historyCoordinator.setAppStateService(this);
   }
 
   /**

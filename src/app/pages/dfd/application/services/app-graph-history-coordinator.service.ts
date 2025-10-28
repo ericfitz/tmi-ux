@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
+import type { AppStateService } from './app-state.service';
 
 /**
  * Interface for drag tracking data
@@ -39,8 +40,17 @@ export class AppGraphHistoryCoordinator {
   private readonly DRAG_COMPLETION_DELAY = 150; // ms to wait after drag stops before recording
   private _diagramLoadingState = false;
   private _currentOperationType: string | null = null;
+  private _appStateService?: AppStateService;
 
   constructor(private logger: LoggerService) {}
+
+  /**
+   * Set the AppStateService (called after construction to avoid circular dependency)
+   */
+  setAppStateService(appStateService: AppStateService): void {
+    this._appStateService = appStateService;
+  }
+
   /**
    * Observable for drag completion events
    */
@@ -104,9 +114,17 @@ export class AppGraphHistoryCoordinator {
   /**
    * Execute a remote operation with history suppressed
    * Remote operations from collaboration should not create local history entries
+   * Also sets isApplyingRemoteChange flag to prevent broadcasting these changes
    */
   executeRemoteOperation<T>(graph: Graph, operation: () => T): T {
     const historyPlugin = (graph as any).history;
+
+    // Set flag to prevent broadcasting remote operations (including diagram load)
+    const wasApplyingRemoteChange = this._appStateService?.getCurrentState().isApplyingRemoteChange;
+    if (this._appStateService && !wasApplyingRemoteChange) {
+      this._appStateService.setApplyingRemoteChange(true);
+    }
+
     if (
       historyPlugin &&
       typeof historyPlugin.disable === 'function' &&
@@ -119,10 +137,22 @@ export class AppGraphHistoryCoordinator {
       } finally {
         // Re-enable history after the operation
         historyPlugin.enable();
+
+        // Restore isApplyingRemoteChange flag
+        if (this._appStateService && !wasApplyingRemoteChange) {
+          this._appStateService.setApplyingRemoteChange(false);
+        }
       }
     } else {
       // No history plugin or already disabled, execute directly
-      return operation();
+      try {
+        return operation();
+      } finally {
+        // Restore isApplyingRemoteChange flag
+        if (this._appStateService && !wasApplyingRemoteChange) {
+          this._appStateService.setApplyingRemoteChange(false);
+        }
+      }
     }
   }
 
