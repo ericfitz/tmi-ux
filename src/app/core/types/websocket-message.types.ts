@@ -179,6 +179,25 @@ export interface SessionTerminatedMessage {
   timestamp: string;
 }
 
+export interface OperationRejectedMessage {
+  message_type: 'operation_rejected';
+  operation_id: string;
+  sequence_number?: number;
+  reason:
+    | 'validation_failed'
+    | 'conflict_detected'
+    | 'no_state_change'
+    | 'diagram_not_found'
+    | 'permission_denied'
+    | 'invalid_operation_type'
+    | 'empty_operation';
+  message: string;
+  details?: string;
+  affected_cells?: string[];
+  requires_resync: boolean;
+  timestamp: string;
+}
+
 export type TMIWebSocketMessage =
   | DiagramOperationMessage
   | PresenterRequestMessage
@@ -200,6 +219,7 @@ export type TMIWebSocketMessage =
   | ParticipantLeftMessage
   | RemoveParticipantMessage
   | SessionTerminatedMessage
+  | OperationRejectedMessage
   | ChunkedMessage;
 
 export type TMIMessageType =
@@ -223,6 +243,7 @@ export type TMIMessageType =
   | 'participant_left'
   | 'remove_participant'
   | 'session_terminated'
+  | 'operation_rejected'
   | 'chunked_message';
 
 /**

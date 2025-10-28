@@ -31,6 +31,7 @@ import {
   ParticipantLeftMessage,
   RemoveParticipantMessage,
   ParticipantsUpdateMessage,
+  OperationRejectedMessage,
   Participant,
   Cell,
 } from '../../../../core/types/websocket-message.types';
@@ -146,6 +147,18 @@ export interface ParticipantsUpdatedEvent {
   currentPresenter?: string | null;
 }
 
+export interface OperationRejectedEvent {
+  type: 'operation-rejected';
+  operation_id: string;
+  sequence_number?: number;
+  reason: string;
+  message: string;
+  details?: string;
+  affected_cells?: string[];
+  requires_resync: boolean;
+  timestamp: string;
+}
+
 export type WebSocketDomainEvent =
   | DiagramOperationEvent
   | AuthorizationDeniedEvent
@@ -161,7 +174,8 @@ export type WebSocketDomainEvent =
   | ParticipantJoinedEvent
   | ParticipantLeftEvent
   | ParticipantRemovedEvent
-  | ParticipantsUpdatedEvent;
+  | ParticipantsUpdatedEvent
+  | OperationRejectedEvent;
 
 @Injectable({
   providedIn: 'root',
@@ -231,6 +245,10 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
 
   public readonly participantsUpdated$ = this._domainEvents$.pipe(
     filter((event): event is ParticipantsUpdatedEvent => event.type === 'participants-updated'),
+  );
+
+  public readonly operationRejected$ = this._domainEvents$.pipe(
+    filter((event): event is OperationRejectedEvent => event.type === 'operation-rejected'),
   );
 
   // General event stream for components that want all events
@@ -391,6 +409,16 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
         .subscribe({
           next: message => this._handleParticipantsUpdate(message),
           error: error => this._logger.error('Error in participants update subscription', error),
+        }),
+    );
+
+    this._subscriptions.add(
+      this._webSocketAdapter
+        .getTMIMessagesOfType<OperationRejectedMessage>('operation_rejected')
+        .pipe(takeUntil(this._destroy$))
+        .subscribe({
+          next: message => this._handleOperationRejected(message),
+          error: error => this._logger.error('Error in operation rejected subscription', error),
         }),
     );
 
@@ -671,6 +699,27 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       participants: message.participants,
       host: message.host,
       currentPresenter: message.current_presenter,
+    });
+  }
+
+  private _handleOperationRejected(message: OperationRejectedMessage): void {
+    this._logger.warn('Operation rejected', {
+      operation_id: message.operation_id,
+      reason: message.reason,
+      message: message.message,
+      requires_resync: message.requires_resync,
+    });
+
+    this._domainEvents$.next({
+      type: 'operation-rejected',
+      operation_id: message.operation_id,
+      sequence_number: message.sequence_number,
+      reason: message.reason,
+      message: message.message,
+      details: message.details,
+      affected_cells: message.affected_cells,
+      requires_resync: message.requires_resync,
+      timestamp: message.timestamp,
     });
   }
 }

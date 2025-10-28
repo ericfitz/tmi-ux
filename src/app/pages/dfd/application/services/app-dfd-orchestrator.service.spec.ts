@@ -78,6 +78,7 @@ describe('AppDfdOrchestrator', () => {
   let mockAppDiagramResyncService: any;
   let mockAppRemoteOperationHandler: any;
   let mockAppHistoryService: any;
+  let mockAppOperationRejectionHandler: any;
 
   beforeEach(() => {
     // Create all required mocks
@@ -267,6 +268,11 @@ describe('AppDfdOrchestrator', () => {
       historyStateChange$: new Subject(),
     };
 
+    mockAppOperationRejectionHandler = {
+      initialize: vi.fn(),
+      ngOnDestroy: vi.fn(),
+    };
+
     // Create mock container element
     mockContainerElement = document.createElement('div');
     mockContainerElement.style.width = '800px';
@@ -293,6 +299,7 @@ describe('AppDfdOrchestrator', () => {
       mockSelectionAdapter,
       mockDfdStateStore,
       mockAppDiagramResyncService,
+      mockAppOperationRejectionHandler,
     );
   });
 
@@ -543,6 +550,7 @@ describe('AppDfdOrchestrator', () => {
         mockSelectionAdapter,
         mockDfdStateStore,
         mockAppDiagramResyncService,
+        mockAppOperationRejectionHandler,
       );
 
       return new Promise<void>((resolve, reject) => {

@@ -56,6 +56,7 @@ import { AppGraphOperationManager } from '../../application/services/app-graph-o
 import { AppPersistenceCoordinator } from '../../application/services/app-persistence-coordinator.service';
 import { AppDiagramResyncService } from '../../application/services/app-diagram-resync.service';
 import { AppStateService } from '../../application/services/app-state.service';
+import { AppOperationRejectionHandler } from '../../application/services/app-operation-rejection-handler.service';
 
 // Persistence strategies
 import { InfraRestPersistenceStrategy } from '../../infrastructure/strategies/infra-rest-persistence.strategy';
@@ -148,6 +149,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     AppPersistenceCoordinator, // Simplified persistence coordination service
     AppDiagramResyncService, // Diagram resync service (changed from root to component-scoped)
     AppStateService, // State service (changed from root to component-scoped)
+    AppOperationRejectionHandler, // Operation rejection handler service
     // Persistence strategies (changed from root to component-scoped)
     InfraRestPersistenceStrategy,
     WebSocketPersistenceStrategy,

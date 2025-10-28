@@ -385,6 +385,76 @@ export class AppHistoryService implements OnDestroy {
   }
 
   /**
+   * Find history entry by WebSocket operation_id
+   * Searches the undo stack from most recent to oldest
+   */
+  findEntryByOperationId(operationId: string): HistoryEntry | null {
+    // Search undo stack from most recent to oldest
+    for (let i = this._historyState.undoStack.length - 1; i >= 0; i--) {
+      if (this._historyState.undoStack[i].operationId === operationId) {
+        return this._historyState.undoStack[i];
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Undo all operations from the most recent back to and including the specified operation_id
+   * Returns number of operations undone
+   */
+  undoUntilOperationId(operationId: string): Observable<{ undoCount: number; success: boolean }> {
+    // First, scan to verify the operation exists
+    const targetEntry = this.findEntryByOperationId(operationId);
+    if (!targetEntry) {
+      return throwError(
+        () => new Error(`Cannot find history entry with operation_id: ${operationId}`),
+      );
+    }
+
+    // Count how many undos we need to perform
+    let undoCount = 0;
+    for (let i = this._historyState.undoStack.length - 1; i >= 0; i--) {
+      undoCount++;
+      if (this._historyState.undoStack[i].operationId === operationId) {
+        break;
+      }
+    }
+
+    this.logger.info(`Will undo ${undoCount} operations to reach operation_id: ${operationId}`);
+
+    // Perform the undos
+    return this._performMultipleUndos(undoCount);
+  }
+
+  /**
+   * Perform multiple undo operations sequentially
+   * @private
+   */
+  private _performMultipleUndos(
+    count: number,
+  ): Observable<{ undoCount: number; success: boolean }> {
+    if (count === 0) {
+      return of({ undoCount: 0, success: true });
+    }
+
+    const undoObservables: Observable<OperationResult>[] = [];
+    for (let i = 0; i < count; i++) {
+      undoObservables.push(this.undo());
+    }
+
+    return forkJoin(undoObservables).pipe(
+      map(results => ({
+        undoCount: results.length,
+        success: results.every(r => r.success),
+      })),
+      catchError(error => {
+        this.logger.error('Failed to undo operations', { error, attemptedCount: count });
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  /**
    * Update configuration
    */
   updateConfig(config: Partial<HistoryConfig>): void {

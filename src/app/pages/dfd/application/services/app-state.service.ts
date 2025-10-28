@@ -80,6 +80,9 @@ export class AppStateService implements OnDestroy {
     conflictCount: 0,
   });
 
+  // Operation blocking flag
+  private _operationsBlocked = false;
+
   // Public observables
   public readonly diagramState$ = this._diagramState$.asObservable();
   public readonly syncState$ = this._diagramState$.pipe(
@@ -182,6 +185,21 @@ export class AppStateService implements OnDestroy {
    */
   getCurrentState(): DfdDiagramState {
     return this._diagramState$.value;
+  }
+
+  /**
+   * Block or unblock user operations (used during rollback/resync)
+   */
+  setBlockOperations(blocked: boolean): void {
+    this._operationsBlocked = blocked;
+    this._logger.debug(`Operations ${blocked ? 'blocked' : 'unblocked'}`);
+  }
+
+  /**
+   * Check if operations are currently blocked
+   */
+  areOperationsBlocked(): boolean {
+    return this._operationsBlocked;
   }
 
   /**

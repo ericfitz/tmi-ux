@@ -30,6 +30,7 @@ import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-
 import { AppDiagramOperationBroadcaster } from './app-diagram-operation-broadcaster.service';
 import { AppRemoteOperationHandler } from './app-remote-operation-handler.service';
 import { AppHistoryService } from './app-history.service';
+import { AppOperationRejectionHandler } from './app-operation-rejection-handler.service';
 import { UiPresenterCoordinatorService } from '../../presentation/services/ui-presenter-coordinator.service';
 import { NodeType } from '../../domain/value-objects/node-info';
 import { DfdStateStore } from '../../state/dfd.state';
@@ -129,6 +130,7 @@ export class AppDfdOrchestrator {
     private readonly selectionAdapter: InfraX6SelectionAdapter,
     private readonly dfdStateStore: DfdStateStore,
     private readonly appDiagramResyncService: AppDiagramResyncService,
+    private readonly appOperationRejectionHandler: AppOperationRejectionHandler,
   ) {
     this.logger.debug('AppDfdOrchestrator initialized (simplified autosave)');
     this._setupEventIntegration();
@@ -1241,6 +1243,10 @@ export class AppDfdOrchestrator {
       params.diagramId,
       params.threatModelId,
     );
+
+    // Initialize operation rejection handler
+    this.logger.info('Initializing operation rejection handler');
+    this.appOperationRejectionHandler.initialize();
 
     // Note: Validation callbacks are now configured directly in graph options during creation
 
