@@ -13,6 +13,7 @@ This document provides a comprehensive overview of how autosave functionality wo
 ## 1. Autosave Mechanism
 
 ### Implementation Location
+
 - **Main Component**: `src/app/pages/tm/tm-edit/tm-edit.component.ts` (lines 202-212, 1767-1835)
 - **Service**: `src/app/pages/tm/services/threat-model.service.ts`
 - **Debounced Auto-save**: Uses RxJS `Subject` with `debounceTime(1000)` to prevent excessive API calls
@@ -32,17 +33,20 @@ The autosave mechanism is implemented using a sophisticated debouncing strategy:
 ```typescript
 // Form change detected
 nameControl.valueChanges.subscribe(newName => {
-  if (!this._isLoadingInitialData && newName && this.threatModel && newName !== this.threatModel.name) {
+  if (
+    !this._isLoadingInitialData &&
+    newName &&
+    this.threatModel &&
+    newName !== this.threatModel.name
+  ) {
     this.autoSaveThreatModel(); // Triggers debounced save
   }
 });
 
 // Debounced auto-save setup
-this._autoSaveSubject
-  .pipe(debounceTime(1000))
-  .subscribe(() => {
-    this.performAutoSave(); // Actual save operation
-  });
+this._autoSaveSubject.pipe(debounceTime(1000)).subscribe(() => {
+  this.performAutoSave(); // Actual save operation
+});
 ```
 
 ### Key Features
@@ -60,6 +64,7 @@ this._autoSaveSubject
 The application uses a rich domain model defined in `src/app/pages/tm/models/threat-model.model.ts`:
 
 #### ThreatModel (Root Aggregate)
+
 ```typescript
 interface ThreatModel {
   id: string;
@@ -81,6 +86,7 @@ interface ThreatModel {
 ```
 
 #### Child Entities
+
 - **Threat**: Individual security threats with severity, status, metadata
 - **Document**: Attached documentation with URIs and descriptions
 - **Repository**: Source code repository references with Git/SVN parameters
@@ -96,23 +102,23 @@ The `ThreatModelService` implements a sophisticated two-tier caching strategy:
 ```typescript
 class ThreatModelService {
   private _cachedThreatModels = new Map<string, ThreatModel>(); // Full models for editing
-  private _threatModelList: TMListItem[] = [];                  // Lightweight list items
+  private _threatModelList: TMListItem[] = []; // Lightweight list items
   private _threatModelListSubject = new BehaviorSubject<TMListItem[]>([]);
 }
 ```
 
 #### Cache Management Patterns
 
-1. **Two-Tier Caching**: 
+1. **Two-Tier Caching**:
    - **Lightweight `TMListItem[]`**: For dashboard/list views with essential fields only
    - **Full `ThreatModel` objects**: Cached only when needed for editing sessions
 
-2. **Cache Invalidation**: 
+2. **Cache Invalidation**:
    - `expireAllCachedModelsExcept()` keeps only the currently edited model
    - Prevents memory bloat in long-running sessions
    - Ensures cache consistency across user sessions
 
-3. **Reactive Updates**: 
+3. **Reactive Updates**:
    - `BehaviorSubject` provides real-time cache updates to components
    - All subscribers automatically receive cache changes
    - Enables real-time collaboration features
@@ -139,11 +145,13 @@ The application uses a layered approach to data storage:
 The application supports both development and production data sources:
 
 #### Mock Data Mode (Development)
+
 - Uses `MockDataService` with localStorage persistence for development
 - Changes applied to in-memory objects immediately
 - Simulates server behavior for testing and offline development
 
 #### API Mode (Production)
+
 - **Server-First Strategy**: All changes immediately sent to TMI backend
 - **Optimistic Updates**: UI updates immediately, server sync in background
 - **PATCH Operations**: Uses JSON Patch RFC 6902 for efficient partial updates
@@ -171,7 +179,7 @@ sequenceDiagram
 ```
 
 1. Form change detected → `autoSaveThreatModel()` called
-2. 1-second debounce → `performAutoSave()` executed  
+2. 1-second debounce → `performAutoSave()` executed
 3. PATCH request with only changed fields → `threatModelService.patchThreatModel()`
 4. Server response updates cached model
 5. UI reflects server-confirmed changes
@@ -248,18 +256,18 @@ The service uses consistent RESTful patterns:
 
 ```typescript
 // Basic CRUD operations
-GET    /threat_models           // List threat models
-GET    /threat_models/{id}      // Get specific threat model
-POST   /threat_models           // Create new threat model
-PUT    /threat_models/{id}      // Update entire threat model
-PATCH  /threat_models/{id}      // Partial update (auto-save)
-DELETE /threat_models/{id}      // Delete threat model
+GET / threat_models; // List threat models
+GET / threat_models / { id }; // Get specific threat model
+POST / threat_models; // Create new threat model
+PUT / threat_models / { id }; // Update entire threat model
+PATCH / threat_models / { id }; // Partial update (auto-save)
+DELETE / threat_models / { id }; // Delete threat model
 
 // Child entity operations
-GET    /threat_models/{id}/threats
-POST   /threat_models/{id}/threats
-PUT    /threat_models/{id}/threats/{threat_id}
-DELETE /threat_models/{id}/threats/{threat_id}
+GET / threat_models / { id } / threats;
+POST / threat_models / { id } / threats;
+PUT / threat_models / { id } / threats / { threat_id };
+DELETE / threat_models / { id } / threats / { threat_id };
 ```
 
 #### JSON Patch Operations
@@ -271,13 +279,13 @@ const operations = [
   {
     op: 'replace',
     path: '/name',
-    value: 'Updated Threat Model Name'
+    value: 'Updated Threat Model Name',
   },
   {
-    op: 'replace', 
+    op: 'replace',
     path: '/modified_at',
-    value: new Date().toISOString()
-  }
+    value: new Date().toISOString(),
+  },
 ];
 ```
 
@@ -318,7 +326,7 @@ autoSaveThreatModel()
         ▼
 _autoSaveSubject.next()
         │
-        ▼ 
+        ▼
 debounceTime(1000ms)
         │
         ▼
@@ -340,19 +348,23 @@ Update Cache & UI
 ## 5. Key Implementation Files
 
 ### Core Service Files
+
 - `src/app/pages/tm/services/threat-model.service.ts` - Main threat model operations and caching
 - `src/app/core/services/api.service.ts` - HTTP client wrapper with error handling
 - `src/app/mocks/mock-data.service.ts` - Development mock data management
 
-### Component Files  
+### Component Files
+
 - `src/app/pages/tm/tm-edit/tm-edit.component.ts` - Threat model editing with auto-save
 - `src/app/pages/tm/tm.component.ts` - Threat model dashboard and list management
 
 ### Model Files
+
 - `src/app/pages/tm/models/threat-model.model.ts` - Core data model definitions
 - `src/app/pages/tm/models/tm-list-item.model.ts` - Lightweight list view model
 
 ### Configuration Files
+
 - `src/environments/environment*.ts` - API endpoint configuration
 - `src/app/core/interceptors/jwt.interceptor.ts` - Authentication and logging
 

@@ -9,7 +9,7 @@ The DFD component implements a sophisticated change propagation system that hand
 - **Local user interactions** (drag, add, delete operations)
 - **Real-time collaborative editing** via WebSocket connections
 - **Automatic saving** of diagram state
-- **Undo/redo history management** 
+- **Undo/redo history management**
 - **Visual effects and styling** (selection, hover, creation highlights)
 - **State synchronization** across multiple stores
 
@@ -26,13 +26,15 @@ Based on analysis of the codebase, several architectural challenges have been id
 ## Documentation Structure
 
 ### Flow Diagrams
+
 - [User Actions Flow](./user-actions-flow.md) - How user interactions propagate through the system
 - [Collaborative Operations Flow](./collaborative-operations-flow.md) - WebSocket message handling and state sync
 - [Auto-save Decision Tree](./autosave-decision-tree.md) - When and how auto-saving is triggered
 - [History Management Flow](./history-management-flow.md) - What gets included/excluded from history
 - [Visual Effects Pipeline](./visual-effects-pipeline.md) - How styling and animations are applied
 
-### Analysis Documents  
+### Analysis Documents
+
 - [Change Propagation Matrix](./change-propagation-matrix.md) - Comprehensive mapping of operations to affected systems
 - [Decision Points Analysis](./decision-points-analysis.md) - Critical decision points and their logic
 - [State Synchronization](./state-synchronization.md) - How different stores coordinate
@@ -41,23 +43,27 @@ Based on analysis of the codebase, several architectural challenges have been id
 ## Key Components
 
 ### Core Services
+
 - **DfdFacadeService** - Unified interface for DFD operations
 - **DfdDiagramService** - Handles diagram loading and saving
 - **DfdStateService** - Manages collaborative state and remote operations
 - **GraphHistoryCoordinator** - Controls what gets added to undo/redo history
 
 ### X6 Integration Layer
+
 - **X6GraphAdapter** - Primary interface to X6 graph library
 - **DiagramOperationBroadcaster** - Captures X6 events for collaborative broadcasting
 - **X6EventHandlers** - Centralized X6 event management
 - **VisualEffectsService** - Manages visual styling without affecting history
 
 ### Collaborative Features
+
 - **WebSocketService** - Handles incoming collaborative messages
 - **CollaborativeOperationService** - Sends operations to other collaborators
 - **DfdCollaborationService** - Manages collaboration state and permissions
 
 ### State Management
+
 - **DfdStateStore** - Local component state (cells, selection, etc.)
 - **DfdStateService** - Collaborative state and conflict resolution
 
@@ -75,6 +81,7 @@ Each pattern has different rules for history inclusion, auto-save triggers, and 
 ## Usage Notes
 
 This documentation is intended for developers working on:
+
 - DFD component architecture and refactoring
 - Collaborative editing features
 - Auto-save and state management

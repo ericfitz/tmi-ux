@@ -12,7 +12,7 @@ Services that manage application-wide state or are used across multiple componen
 
 ```typescript
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   // Service implementation
@@ -20,6 +20,7 @@ export class AuthService {
 ```
 
 **Examples of services that should be root-provided:**
+
 - Authentication services (`AuthService`)
 - API services (`ApiService`, `ThreatModelService`)
 - Logging services (`LoggerService`)
@@ -33,7 +34,7 @@ Services that are tightly coupled to a specific component's lifecycle should be 
 ```typescript
 @Component({
   selector: 'app-example',
-  providers: [ComponentSpecificService]
+  providers: [ComponentSpecificService],
 })
 export class ExampleComponent {
   // Component implementation
@@ -41,6 +42,7 @@ export class ExampleComponent {
 ```
 
 **Examples of services that should be component-provided:**
+
 - Graph adapters (e.g., X6 adapters in DFD component)
 - Event handlers specific to a component
 - History managers for undo/redo within a component
@@ -102,22 +104,26 @@ export class CoreService {
 ## Service Categories and Provisioning Guidelines
 
 ### Core Services (Always Root-Provided)
+
 - **Location:** `src/app/core/services/`
 - **Provisioning:** `providedIn: 'root'`
 - **Examples:** `ApiService`, `LoggerService`, `AuthService`
 
 ### Feature Services (Context-Dependent)
+
 - **Location:** `src/app/pages/[feature]/services/`
-- **Provisioning:** 
+- **Provisioning:**
   - `providedIn: 'root'` if shared across components
   - Component providers if component-specific
 
 ### Infrastructure Adapters (Component-Provided)
+
 - **Location:** `src/app/pages/[feature]/infrastructure/adapters/`
 - **Provisioning:** Component providers array
 - **Examples:** X6 graph adapters, DOM manipulation services
 
 ### Shared UI Services (Root-Provided)
+
 - **Location:** `src/app/shared/services/`
 - **Provisioning:** `providedIn: 'root'`
 - **Examples:** `NotificationService`, `DialogService`

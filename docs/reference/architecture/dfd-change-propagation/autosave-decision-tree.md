@@ -13,27 +13,27 @@ flowchart TD
     A[User makes change to diagram] --> B{Is initial load in progress?}
     B -->|Yes| C[Skip auto-save - loading state]
     B -->|No| D{Is collaborating?}
-    
+
     D -->|Yes| E[Skip auto-save - WebSocket handles persistence]
     D -->|No| F{Is change semantic?}
-    
+
     F -->|No| G[Skip auto-save - visual change only]
     F -->|Yes| H{GraphHistoryCoordinator filter result?}
-    
+
     H -->|Exclude| I[Skip auto-save - filtered out]
     H -->|Include| J[Record in X6 history]
-    
+
     J --> K[X6 History Plugin fires 'change' event]
     K --> L[X6GraphAdapter.historyModified$ emits]
     L --> M[DfdComponent.autoSaveDiagram triggered]
-    
+
     M --> N{Required data available?}
     N -->|No| O[Log warning - cannot save]
     N -->|Yes| P[DfdDiagramService.saveDiagramChanges]
-    
+
     P --> Q[REST API call to save diagram]
     Q --> R[Database updated]
-    
+
     style E fill:#e1f5fe
     style G fill:#ffebee
     style I fill:#ffebee
@@ -49,16 +49,16 @@ flowchart TD
     A[History Modifications] --> B[X6GraphAdapter.historyModified$]
     C[Cell Metadata Changes] --> D[X6GraphAdapter.nodeInfoChanged$]
     E[Threat Changes] --> F[DfdEventHandlersService.threatChanged$]
-    
+
     B --> G[DfdComponent auto-save subscription]
     D --> G
     F --> G
-    
+
     G --> H[autoSaveDiagram method called]
     H --> I{Passes auto-save checks?}
     I -->|Yes| J[Trigger save]
     I -->|No| K[Skip save]
-    
+
     style G fill:#fff3e0
     style H fill:#e8f5e8
 ```
@@ -72,21 +72,21 @@ flowchart TD
     A[autoSaveDiagram called] --> B{X6GraphAdapter.isInitialized?}
     B -->|No| C[Skip - graph not ready]
     B -->|Yes| D{dfdId exists?}
-    
+
     D -->|No| E[Skip - no diagram ID]
     D -->|Yes| F{threatModelId exists?}
-    
+
     F -->|No| G[Skip - no threat model ID]
     F -->|Yes| H{_isInitialLoadInProgress?}
-    
+
     H -->|Yes| I[Skip - still loading]
     H -->|No| J{isCollaborating?}
-    
+
     J -->|Yes| K[Skip - collaboration mode]
     J -->|No| L[Proceed with save]
-    
+
     L --> M[DfdDiagramService.saveDiagramChanges]
-    
+
     style C fill:#ffebee
     style E fill:#ffebee
     style G fill:#ffebee
@@ -108,22 +108,22 @@ flowchart TD
     B -->|cell:change:*| D[Analyze attribute changes]
     B -->|cell:added| E[Include - semantic change]
     B -->|cell:removed| F[Include - semantic change]
-    
+
     D --> G{Extract attribute paths}
     G --> H[GraphHistoryCoordinator.shouldExcludeAttribute]
     H --> I{All attributes visual?}
-    
+
     I -->|Yes| J[Exclude - visual only]
     I -->|No| K[Include - has semantic changes]
-    
+
     E --> L[Add to history]
     F --> L
     K --> L
     L --> M[History modified event fired]
-    
+
     C --> N[No history entry]
     J --> N
-    
+
     style H fill:#fff3e0
     style I fill:#fff3e0
 ```
@@ -135,20 +135,20 @@ The system maintains a comprehensive list of visual-only attributes:
 ```mermaid
 flowchart TD
     A[Attribute path analysis] --> B{Check attribute patterns}
-    
+
     B --> C[Selection effects: body/filter, body/stroke, body/strokeWidth]
     B --> D[Shadow effects: shadowOffsetX, shadowBlur, shadowColor]
     B --> E[Port highlights: circle/stroke, circle/fill]
     B --> F[Tool attributes: tools/*]
-    
+
     C --> G{Path matches visual patterns?}
     D --> G
     E --> G
     F --> G
-    
+
     G -->|Yes| H[Exclude from history]
     G -->|No| I[Include in history]
-    
+
     style G fill:#fff3e0
 ```
 
@@ -161,14 +161,14 @@ flowchart TD
     A[Property path check] --> B{Path contains 'ports/items/'?}
     B -->|No| C[Not port-related]
     B -->|Yes| D{Path ends with '/attrs/circle/style/visibility'?}
-    
+
     D -->|No| E[Other port change - include]
     D -->|Yes| F[Port visibility - exclude]
-    
+
     C --> G[Apply normal attribute rules]
     E --> H[Include in history]
     F --> I[Exclude from history]
-    
+
     style D fill:#fff3e0
 ```
 
@@ -181,20 +181,20 @@ flowchart TD
     A[History Operations] --> B[Node Operations]
     A --> C[Edge Operations]
     A --> D[Compound Operations]
-    
+
     B --> E[NODE_CREATE]
     B --> F[NODE_DELETE]
     B --> G[NODE_MOVE]
     B --> H[NODE_RESIZE]
-    
+
     C --> I[EDGE_CREATE]
     C --> J[EDGE_DELETE]
     C --> K[EDGE_VERTICES_CHANGE]
-    
+
     D --> L[CELL_DELETION - batch delete]
     D --> M[GROUP_CREATION - multiple adds]
     D --> N[DIAGRAM_LOAD - initial state]
-    
+
     style B fill:#e3f2fd
     style C fill:#f3e5f5
     style D fill:#e8f5e8
@@ -213,7 +213,7 @@ flowchart TD
     E --> F[X6 Graph.batchUpdate ends]
     F --> G[History modified event fired once]
     G --> H[Single auto-save triggered]
-    
+
     style B fill:#e8f5e8
     style E fill:#e8f5e8
     style H fill:#e8f5e8
@@ -229,7 +229,7 @@ flowchart TD
     D --> E[Re-enable X6 history plugin]
     E --> F[No local history entry created]
     F --> G[No auto-save triggered]
-    
+
     style B fill:#f3e5f5
     style C fill:#f3e5f5
     style F fill:#f3e5f5
@@ -244,10 +244,10 @@ flowchart TD
     A[User joins collaboration] --> B[X6GraphAdapter.setHistoryEnabled(false)]
     B --> C[Local history disabled]
     C --> D[Server manages canonical history]
-    
+
     E[User leaves collaboration] --> F[X6GraphAdapter.setHistoryEnabled(true)]
     F --> G[Local history re-enabled]
-    
+
     style C fill:#e1f5fe
     style D fill:#e1f5fe
     style G fill:#e8f5e8
@@ -262,7 +262,7 @@ flowchart TD
     C --> D[Server processes undo]
     D --> E[Server broadcasts result to all clients]
     E --> F[Clients apply undo via remote operation]
-    
+
     style D fill:#e1f5fe
     style F fill:#f3e5f5
 ```
@@ -276,10 +276,10 @@ flowchart TD
     A[Rapid changes] --> B[X6 batchUpdate mechanism]
     B --> C[Single history entry for batch]
     C --> D[Single auto-save call]
-    
+
     E[History plugin debouncing] --> F[Prevents excessive events]
     F --> G[Improved performance]
-    
+
     style B fill:#e8f5e8
     style C fill:#e8f5e8
     style F fill:#e8f5e8
@@ -292,10 +292,10 @@ flowchart TD
     A[History size limits] --> B[X6 History plugin configuration]
     B --> C[Max history entries cap]
     C --> D[Automatic cleanup of old entries]
-    
+
     E[Visual effect cleanup] --> F[Temporary visual states removed]
     F --> G[No memory leaks from effects]
-    
+
     style C fill:#e8f5e8
     style F fill:#e8f5e8
 ```
@@ -310,10 +310,10 @@ flowchart TD
     B --> C{Save successful?}
     C -->|Yes| D[Log success]
     C -->|No| E[Log error]
-    
+
     E --> F[No retry - user must manually save]
     F --> G[History preserved for manual save]
-    
+
     style E fill:#ffebee
     style G fill:#fff3e0
 ```
@@ -327,7 +327,7 @@ flowchart TD
     C --> D[Log warning to user]
     D --> E[Disable undo/redo temporarily]
     E --> F[User must reload to restore history]
-    
+
     style A fill:#ffebee
     style E fill:#ffebee
 ```

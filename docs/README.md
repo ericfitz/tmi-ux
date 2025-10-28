@@ -7,6 +7,7 @@ Welcome to the TMI-UX documentation. This directory contains comprehensive docum
 ### Reference Documentation (`reference/`)
 
 #### Architecture (`reference/architecture/`)
+
 - **[overview.md](reference/architecture/overview.md)** - Complete architecture overview, principles, and patterns
 - **[validation.md](reference/architecture/validation.md)** - How to validate architecture compliance
 - **[violations.md](reference/architecture/violations.md)** - Known violations and resolution plans
@@ -17,30 +18,38 @@ Welcome to the TMI-UX documentation. This directory contains comprehensive docum
 - **[dfd-change-propagation/](reference/architecture/dfd-change-propagation/)** - DFD change propagation analysis
 
 #### Libraries (`reference/libraries/`)
+
 - **[x6-complete-guide.md](reference/libraries/x6-complete-guide.md)** - Comprehensive X6 graph library documentation
 
 #### Features (`reference/features/`)
+
 - **[collaborative-editing.md](reference/features/collaborative-editing.md)** - Real-time collaboration implementation
 - **[dfd-graph-interaction.md](reference/features/dfd-graph-interaction.md)** - DFD user interaction guide
 
 #### Security (`reference/security/`)
+
 - **[headers.md](reference/security/headers.md)** - HTTP security header implementation
 
 ### Developer Documentation (`developer/`)
 
 #### Setup (`developer/setup/`)
+
 - **[environment-configuration.md](developer/setup/environment-configuration.md)** - Environment setup and configuration
 - **[core-services.md](developer/setup/core-services.md)** - Core services overview
 - **[import-constants.md](developer/setup/import-constants.md)** - Import constant patterns
 
 #### Testing (`developer/testing/`)
+
 - **[testing-utilities.md](developer/testing/testing-utilities.md)** - Testing utilities and patterns
 
 #### Features (`developer/features/`)
+
 - **[validation-framework.md](developer/features/validation-framework.md)** - Validation framework usage
 
 ### AI Agent Documentation (`agent/`)
+
 Context and implementation guides for AI coding agents:
+
 - **[README.md](agent/README.md)** - Agent documentation index
 - **[collaboration-participant-list-ux-design.md](agent/collaboration-participant-list-ux-design.md)** - Collaboration UX design
 - **[dfd-integration-testing-approach.md](agent/dfd-integration-testing-approach.md)** - DFD integration testing strategy
@@ -50,6 +59,7 @@ Context and implementation guides for AI coding agents:
 - **[pdf-report-diagram-rendering-design.md](agent/pdf-report-diagram-rendering-design.md)** - PDF diagram rendering design
 
 ### Root-Level Documentation
+
 - **[README.md](README.md)** - Documentation index (this file)
 - **authentication-component-architecture.png** - Authentication component architecture diagram
 - **authentication-flow.png** - OAuth authentication flow diagram
@@ -58,22 +68,26 @@ Context and implementation guides for AI coding agents:
 ## 🗺️ Quick Navigation
 
 ### For New Developers
+
 1. Start with [/CLAUDE.md](../CLAUDE.md) - AI assistant guidance and project overview
 2. Read the [Architecture Guide](reference/architecture/overview.md)
 3. Review [Service Provisioning Standards](reference/architecture/service-provisioning.md)
 4. Check [Environment Configuration](developer/setup/environment-configuration.md)
 
 ### For Contributors
+
 1. Review [Architecture Validation](reference/architecture/validation.md) guidelines
 2. Check [Naming Conventions](reference/architecture/naming-conventions.md)
 3. Follow [Testing Utilities](developer/testing/testing-utilities.md) patterns
 
 ### For Architects
+
 1. Review [Architecture Guide](reference/architecture/overview.md)
 2. Examine [DFD Change Propagation](reference/architecture/dfd-change-propagation/) analysis
 3. Study [Session Management](reference/architecture/session-management.md) architecture
 
 ### For AI Agents
+
 1. Start with [Agent Documentation](agent/README.md)
 2. Review relevant implementation guides
 3. Check test plans and design documents
@@ -81,12 +95,14 @@ Context and implementation guides for AI coding agents:
 ## 📝 Documentation Guidelines
 
 ### When to Update Documentation
+
 - After making architectural decisions
 - When implementing new patterns
 - After completing major features
 - When deprecating existing approaches
 
 ### Documentation Standards
+
 1. Use clear, concise language
 2. Include code examples where helpful
 3. Update indexes when adding new docs
@@ -94,6 +110,7 @@ Context and implementation guides for AI coding agents:
 5. Use lowercase filenames (except README.md and special files)
 
 ### Documentation Organization
+
 - **reference/** - Technical reference and architecture documentation
 - **developer/** - Setup guides, testing, and feature implementation
 - **agent/** - AI agent context and implementation plans
@@ -101,6 +118,7 @@ Context and implementation guides for AI coding agents:
 ## 🔍 Finding Information
 
 ### By Topic
+
 - **Architecture**: Start with [overview.md](reference/architecture/overview.md)
 - **Services**: See [service-provisioning.md](reference/architecture/service-provisioning.md)
 - **Testing**: Check [testing-utilities.md](developer/testing/testing-utilities.md)
@@ -108,6 +126,7 @@ Context and implementation guides for AI coding agents:
 - **Collaboration**: See [collaborative-editing.md](reference/features/collaborative-editing.md)
 
 ### By Role
+
 - **Frontend Developer**: Focus on [overview.md](reference/architecture/overview.md) and [developer/](developer/)
 - **Backend Integration**: Review API docs in `/shared-api/docs/`
 - **DevOps**: Check [environment-configuration.md](developer/setup/environment-configuration.md)

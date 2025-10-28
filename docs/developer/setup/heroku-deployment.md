@@ -25,6 +25,7 @@ git push heroku main
 ```
 
 This triggers:
+
 1. Heroku installs dependencies using pnpm (via buildpack)
 2. Runs `heroku-postbuild` which builds Angular with `--configuration=hosted-container`
 3. Starts the Express server via `npm start`
@@ -34,11 +35,13 @@ This triggers:
 ### Verify Deployment
 
 Check the app status:
+
 ```bash
 heroku logs --tail --app tmi-ux
 ```
 
 Visit the app:
+
 ```bash
 heroku open --app tmi-ux
 ```
@@ -46,10 +49,12 @@ heroku open --app tmi-ux
 ## Buildpacks
 
 The app uses two buildpacks (in order):
+
 1. `heroku/nodejs` - Node.js support
 2. `https://github.com/unfold/heroku-buildpack-pnpm` - pnpm package manager
 
 View configured buildpacks:
+
 ```bash
 heroku buildpacks --app tmi-ux
 ```
@@ -78,17 +83,20 @@ To change the Heroku environment configuration:
 ### Build Failures
 
 Check build logs:
+
 ```bash
 heroku logs --tail --app tmi-ux
 ```
 
 Common issues:
+
 - **Missing buildpack**: Ensure pnpm buildpack is added
 - **Build timeout**: Check for large dependencies
 
 ### Runtime Errors
 
 Check application logs:
+
 ```bash
 heroku logs --tail --app tmi-ux
 ```
@@ -96,6 +104,7 @@ heroku logs --tail --app tmi-ux
 ### Server Won't Start
 
 The server uses `process.env.PORT` which Heroku sets automatically. If the server fails to start, check that:
+
 - `Procfile` contains: `web: npm start`
 - `server.js` uses: `const port = process.env.PORT || 8080`
 

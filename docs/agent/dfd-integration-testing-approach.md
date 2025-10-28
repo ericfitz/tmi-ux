@@ -116,6 +116,7 @@ The integration testing approach was successfully implemented for `EdgeService` 
 When testing Angular services with Vitest that use `@Injectable()` decorators:
 
 1. **Always import `@angular/compiler` at the top of test files**:
+
    ```typescript
    import '@angular/compiler';
 
@@ -133,15 +134,19 @@ When testing Angular services with Vitest that use `@Injectable()` decorators:
 ### Common Issues and Solutions
 
 #### Issue: "JIT compilation failed for injectable [class PlatformLocation]"
+
 **Solution**: Add `import '@angular/compiler';` at the top of the test file
 
 #### Issue: "ServiceName2 is not a constructor" or "No provider found for ServiceName2"
+
 **Cause**: Angular's JIT compiler compiles the service twice when using TestBed incorrectly
 **Solution**: Either:
+
 - Use direct instantiation: `new ServiceName(deps)`
 - Or properly initialize TestBed in `beforeAll()` with lazy imports
 
 #### Issue: "Cannot read properties of undefined (reading 'subscribe')"
+
 **Cause**: Missing mock dependencies or incomplete mock implementations
 **Solution**: Ensure all service dependencies are provided and all observable/subject properties are mocked
 

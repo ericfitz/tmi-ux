@@ -24,13 +24,13 @@ The TMI-UX DFD application uses a unified operation flow architecture where ALL 
 
 Every operation that modifies the graph has a `source` property that determines how it's processed:
 
-| Source | Description | Record History? | Broadcast? | Auto-Save? |
-|--------|-------------|----------------|------------|------------|
-| `user-interaction` | Direct user actions in the UI | ✅ Yes | ✅ If in collaboration session | ✅ If NOT in session |
-| `remote-collaboration` | Operations from other users via WebSocket | ❌ No | ❌ No (already broadcast) | ❌ No (handled by remote) |
-| `diagram-load` | Loading diagram from server/storage | ❌ No | ❌ No | ❌ No |
-| `undo-redo` | Undo/redo operations from history | ❌ No | ✅ If in session | ✅ If NOT in session |
-| `auto-correction` | System corrections (e.g., z-order fixes) | ❌ No | ⚠️ Maybe | ⚠️ Maybe |
+| Source                 | Description                               | Record History? | Broadcast?                     | Auto-Save?                |
+| ---------------------- | ----------------------------------------- | --------------- | ------------------------------ | ------------------------- |
+| `user-interaction`     | Direct user actions in the UI             | ✅ Yes          | ✅ If in collaboration session | ✅ If NOT in session      |
+| `remote-collaboration` | Operations from other users via WebSocket | ❌ No           | ❌ No (already broadcast)      | ❌ No (handled by remote) |
+| `diagram-load`         | Loading diagram from server/storage       | ❌ No           | ❌ No                          | ❌ No                     |
+| `undo-redo`            | Undo/redo operations from history         | ❌ No           | ✅ If in session               | ✅ If NOT in session      |
+| `auto-correction`      | System corrections (e.g., z-order fixes)  | ❌ No           | ⚠️ Maybe                       | ⚠️ Maybe                  |
 
 ---
 
@@ -295,6 +295,7 @@ undo(): Observable<OperationResult> {
 ## Service Responsibilities
 
 ### AppDfdOrchestrator
+
 **Role**: High-level coordination and public API
 
 - Provides public methods for all graph operations
@@ -306,6 +307,7 @@ undo(): Observable<OperationResult> {
 **Does NOT**: Directly modify graph, handle history, or manage persistence
 
 ### GraphOperationManager
+
 **Role**: Operation routing and lifecycle management
 
 - Routes operations to appropriate executors
@@ -316,6 +318,7 @@ undo(): Observable<OperationResult> {
 **Does NOT**: Know about history, broadcasting, or persistence
 
 ### Operation Executors
+
 **Role**: Execute specific operation types
 
 - Perform actual graph modifications via infrastructure services
@@ -325,6 +328,7 @@ undo(): Observable<OperationResult> {
 **Does NOT**: Record history, broadcast, or trigger persistence
 
 ### AppOperationStateManager
+
 **Role**: Manage operation state flags and coordination
 
 - Tracks `isApplyingRemoteChange`, `isDiagramLoading`, `isUndoRedoOperation`
@@ -335,17 +339,18 @@ undo(): Observable<OperationResult> {
 **Does NOT**: Modify graph or record history directly
 
 ### AppHistoryService
+
 **Role**: Custom undo/redo history management
 
 - Maintains undo and redo stacks
-- Adds history entries after user interactions
+- Adds history entries after user interactions (called by orchestrator)
 - Executes undo/redo by converting history to operations
-- **Coordinates** broadcast vs auto-save based on session state
-- Triggers appropriate persistence mechanism
+- Emits `historyStateChange$` events when stacks change
 
-**Depends on**: AppDiagramOperationBroadcaster, AppPersistenceCoordinator
+**Does NOT**: Trigger persistence directly (orchestrator handles this)
 
 ### AppRemoteOperationHandler
+
 **Role**: Handle operations from remote collaboration
 
 - Subscribes to WebSocket operation events
@@ -355,6 +360,7 @@ undo(): Observable<OperationResult> {
 **Does NOT**: Broadcast back (would create infinite loop)
 
 ### AppDiagramOperationBroadcaster
+
 **Role**: Broadcast operations to remote users
 
 - Listens to X6 graph events (for legacy compatibility)
@@ -362,17 +368,19 @@ undo(): Observable<OperationResult> {
 - Sends operations via WebSocket
 - **Only active during collaboration sessions**
 
-**Called by**: AppHistoryService (when recording history in collaboration mode)
+**Note**: Runs independently from the main operation pipeline for now
 
 ### AppPersistenceCoordinator
+
 **Role**: Save diagram to server or local storage
 
-- Handles REST API saves
+- Chooses between REST and WebSocket persistence strategies
+- Handles REST API saves (solo mode)
+- Handles WebSocket saves (collaboration mode via `diagram_state_sync`)
 - Provides local storage fallback
 - Manages save throttling and debouncing
-- **Active in both solo and collaboration modes**
 
-**Called by**: AppHistoryService (when recording history in solo mode), Auto-save timer
+**Called by**: AppDfdOrchestrator (when history changes trigger auto-save)
 
 ---
 
@@ -384,41 +392,55 @@ Managed by `AppOperationStateManager`:
 
 ```typescript
 interface OperationState {
-  isApplyingRemoteChange: boolean;  // Suppress history and broadcast
-  isDiagramLoading: boolean;        // Suppress history and broadcast
-  isUndoRedoOperation: boolean;     // Suppress history, allow broadcast/save
+  isApplyingRemoteChange: boolean; // Suppress history and broadcast
+  isDiagramLoading: boolean; // Suppress history and broadcast
+  isUndoRedoOperation: boolean; // Suppress history, allow broadcast/save
 }
 ```
 
 ### How Flags Affect Processing
 
 ```typescript
-// In AppHistoryService.addHistoryEntry()
-addHistoryEntry(entry: HistoryEntry): void {
-  // Check state before adding
-  const state = this.appStateService.getCurrentState();
+// In AppDfdOrchestrator._handleOperationCompleted()
+private _handleOperationCompleted(event: OperationCompletedEvent): void {
+  const { operation, result } = event;
 
-  if (state.isApplyingRemoteChange || state.isDiagramLoading) {
-    // Do NOT record history for remote changes or diagram loading
+  // Only record history for successful user interactions
+  if (!result.success || !this._shouldRecordInHistory(operation)) {
     return;
   }
 
+  // Create and add history entry
+  const historyEntry = this._createHistoryEntry(operation, affectedCells);
+  this.appHistoryService.addHistoryEntry(historyEntry);
+
+  // History service emits historyStateChange$ event
+  // which triggers auto-save via separate subscription
+}
+
+// In AppHistoryService.addHistoryEntry()
+addHistoryEntry(entry: HistoryEntry): void {
   // Add to undo stack
   this._undoStack.push(entry);
   this._redoStack = []; // Clear redo
 
-  // Trigger persistence based on session mode
-  if (this._isInCollaborationSession()) {
-    this._broadcastOperation(entry);
-  } else {
-    this._triggerAutoSave();
-  }
+  // Emit state change event
+  this._emitHistoryStateChange();
+
+  // Orchestrator subscribes to historyStateChange$ and triggers auto-save
 }
+
+// In AppDfdOrchestrator._setupEventIntegration()
+this.appHistoryService.historyStateChange$.subscribe(event => {
+  this._markUnsavedChanges();
+  this._triggerAutoSave(event.undoStackSize);
+});
 ```
 
 ### Flag Lifecycle Examples
 
 **User Action**:
+
 ```typescript
 // No flags set (default state)
 isApplyingRemoteChange = false
@@ -428,6 +450,7 @@ isDiagramLoading = false
 ```
 
 **Remote Operation**:
+
 ```typescript
 // Set by AppRemoteOperationHandler before executing
 isApplyingRemoteChange = true
@@ -436,6 +459,7 @@ isApplyingRemoteChange = true
 ```
 
 **Diagram Load**:
+
 ```typescript
 // Set by AppDiagramLoadingService
 isDiagramLoading = true
@@ -444,6 +468,7 @@ isDiagramLoading = true
 ```
 
 **Undo/Redo**:
+
 ```typescript
 // Set by AppHistoryService during undo/redo
 isUndoRedoOperation = true
@@ -459,22 +484,22 @@ History entries store complete cell state for reliable undo/redo:
 
 ```typescript
 interface HistoryEntry {
-  id: string;                    // Unique ID for this history entry
-  timestamp: number;             // When the change occurred
+  id: string; // Unique ID for this history entry
+  timestamp: number; // When the change occurred
   operationType: HistoryOperationType; // Type of operation
-  description: string;           // Human-readable description
+  description: string; // Human-readable description
 
   // Cell states (WebSocket Cell format)
-  cells: Cell[];                 // New cell states (for redo)
-  previousCells: Cell[];         // Previous cell states (for undo)
+  cells: Cell[]; // New cell states (for redo)
+  previousCells: Cell[]; // Previous cell states (for undo)
 
   // Additional metadata
-  userId?: string;               // User who made the change
-  operationId?: string;          // WebSocket operation ID
+  userId?: string; // User who made the change
+  operationId?: string; // WebSocket operation ID
   metadata?: {
-    nodeIds?: string[];          // IDs of affected nodes
-    edgeIds?: string[];          // IDs of affected edges
-    dragId?: string;             // For grouped move operations
+    nodeIds?: string[]; // IDs of affected nodes
+    edgeIds?: string[]; // IDs of affected edges
+    dragId?: string; // For grouped move operations
   };
 }
 ```
@@ -518,31 +543,37 @@ interface HistoryEntry {
 ## Benefits of Unified Architecture
 
 ### 1. Consistency
+
 - All operations follow same path
 - No "special cases" or divergent code paths
 - Easier to reason about system behavior
 
 ### 2. Testability
+
 - Single pipeline to test
 - Mock at clear boundaries
 - Operation executors are pure functions
 
 ### 3. Observability
+
 - All operations emit events
 - Easy to track operation flow
 - Debug with operation logs
 
 ### 4. Extensibility
+
 - Add new operation types easily
 - New sources integrate naturally
 - Executors can be composed
 
 ### 5. Collaboration Support
+
 - Remote operations integrate seamlessly
 - Conflict resolution at operation level
 - State synchronization is consistent
 
 ### 6. History Management
+
 - Graph-level operations (not X6 events)
 - Reliable undo/redo
 - Integrated with persistence
@@ -554,6 +585,7 @@ interface HistoryEntry {
 ### What Changed
 
 **Before (X6 History)**:
+
 ```
 User Action → X6 Graph → History Plugin → Auto-save
 Remote Op → ??? (BROKEN) → X6 Graph
@@ -561,6 +593,7 @@ Load → X6 Graph → Clear History
 ```
 
 **After (Unified Pipeline)**:
+
 ```
 All Sources → GraphOperation → Pipeline → History Service → Broadcast/Save
 ```

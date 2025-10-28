@@ -23,6 +23,7 @@ TMI-UX implements a multi-layered security approach:
 ### Dynamic CSP Implementation
 
 The application dynamically generates and injects a CSP meta tag that:
+
 - **Automatically includes your API URL** from environment configuration
 - Supports both HTTP and HTTPS API endpoints
 - XSS protection by restricting script sources
@@ -43,37 +44,42 @@ The application dynamically generates and injects a CSP meta tag that:
 ## Security Headers Explained
 
 ### Content-Security-Policy (CSP)
+
 **Purpose**: Prevents XSS attacks by controlling resource loading  
 **Status**: ✅ Implemented via dynamic injection  
 **Generated Value Example**:
+
 ```
-default-src 'self'; 
-script-src 'self' 'unsafe-inline' 'unsafe-eval'; 
-style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
-font-src 'self' https://fonts.gstatic.com data:; 
-img-src 'self' data: https: blob:; 
-connect-src 'self' http://localhost:8080 wss: ws: https:; 
-base-uri 'self'; 
-form-action 'self'; 
-object-src 'none'; 
-media-src 'self'; 
-worker-src 'self' blob:; 
+default-src 'self';
+script-src 'self' 'unsafe-inline' 'unsafe-eval';
+style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+font-src 'self' https://fonts.gstatic.com data:;
+img-src 'self' data: https: blob:;
+connect-src 'self' http://localhost:8080 wss: ws: https:;
+base-uri 'self';
+form-action 'self';
+object-src 'none';
+media-src 'self';
+worker-src 'self' blob:;
 manifest-src 'self'
 ```
 
 **Important CSP Limitations with Meta Tags**:
+
 - `frame-ancestors` directive is **ignored** in meta tags (use X-Frame-Options header instead)
 - `report-uri` and `report-to` directives are **ignored** in meta tags
 - `sandbox` directive is **ignored** in meta tags
 - These directives **must be set via HTTP headers** at the server/proxy level
 
 **Key Features**:
+
 - `connect-src` automatically includes your API URL from environment
 - Supports WebSocket protocols (`ws:` and `wss:`)
 - Allows HTTPS for OAuth callbacks
 - Upgrades insecure requests in production
 
 ### X-Frame-Options
+
 **Purpose**: Prevents clickjacking attacks  
 **Recommended**: `DENY` or `SAMEORIGIN`  
 **Status**: ⚠️ Requires deployment configuration
@@ -82,21 +88,25 @@ manifest-src 'self'
 Since the CSP `frame-ancestors` directive doesn't work in meta tags, the `X-Frame-Options` header is your primary defense against clickjacking attacks. This header **must** be set at the server level.
 
 ### X-Content-Type-Options
+
 **Purpose**: Prevents MIME type sniffing  
 **Recommended**: `nosniff`  
 **Status**: ⚠️ Requires deployment configuration
 
 ### Strict-Transport-Security (HSTS)
+
 **Purpose**: Forces HTTPS connections  
 **Recommended**: `max-age=31536000; includeSubDomains`  
 **Status**: ⚠️ Requires TLS and deployment configuration
 
 ### Referrer-Policy
+
 **Purpose**: Controls referrer information sent with requests  
 **Recommended**: `strict-origin-when-cross-origin`  
 **Status**: ⚠️ Requires deployment configuration
 
 ### Permissions-Policy
+
 **Purpose**: Controls browser features and APIs  
 **Recommended**: `camera=(), microphone=(), geolocation=()`  
 **Status**: ⚠️ Requires deployment configuration
@@ -108,6 +118,7 @@ Since the CSP `frame-ancestors` directive doesn't work in meta tags, the `X-Fram
 When running the application directly (e.g., `ng serve` or serving static files):
 
 **Security Features**:
+
 - ✅ Dynamic CSP with API URL auto-configuration
 - ✅ Same-origin policy (browser-enforced)
 - ✅ CORS (handled by Angular)
@@ -115,11 +126,13 @@ When running the application directly (e.g., `ng serve` or serving static files)
 - ❌ Additional security headers (not available)
 
 **When to Use**:
+
 - Development environments
 - Internal networks with controlled access
 - Testing and demos
 
 **Limitations**:
+
 - Cannot set HTTP response headers
 - No HSTS support
 - Limited defense-in-depth
@@ -129,11 +142,13 @@ When running the application directly (e.g., `ng serve` or serving static files)
 When running behind a reverse proxy on the same server:
 
 **Security Features**:
+
 - ✅ All headers can be configured
 - ✅ TLS termination at proxy
 - ✅ Full control over security policies
 
 **Configuration Required**:
+
 - Proxy server configuration
 - TLS certificates
 - Header directives
@@ -143,11 +158,13 @@ When running behind a reverse proxy on the same server:
 When running behind a cloud load balancer (AWS ALB, Azure Application Gateway, etc.):
 
 **Security Features**:
+
 - ✅ Headers configured at load balancer
 - ✅ TLS termination at load balancer
 - ✅ Geographic distribution
 
 **Considerations**:
+
 - WebSocket support configuration
 - Health check endpoints
 - Session affinity for real-time features
@@ -180,7 +197,7 @@ server {
     location / {
         root /var/www/tmi-ux;
         try_files $uri $uri/ /index.html;
-        
+
         # Additional security for static files
         add_header X-Frame-Options "DENY" always;
         add_header Cache-Control "public, max-age=3600";
@@ -224,7 +241,7 @@ server {
     Header always set X-XSS-Protection "0"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
-    
+
     # HSTS
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
 
@@ -236,7 +253,7 @@ server {
         Options -Indexes +FollowSymLinks
         AllowOverride None
         Require all granted
-        
+
         # Enable Angular routing
         FallbackResource /index.html
     </Directory>
@@ -296,8 +313,8 @@ services:
   tmi-ux:
     image: nginx:alpine
     ports:
-      - "443:443"
-      - "80:80"
+      - '443:443'
+      - '80:80'
     volumes:
       - ./dist/tmi-ux:/usr/share/nginx/html:ro
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
@@ -312,6 +329,7 @@ services:
 The dynamic CSP automatically adapts to your API configuration:
 
 ### Development
+
 ```typescript
 // environment.dev.ts
 export const environment = {
@@ -321,6 +339,7 @@ export const environment = {
 ```
 
 ### Production
+
 ```typescript
 // environment.prod.ts
 export const environment = {
@@ -330,7 +349,9 @@ export const environment = {
 ```
 
 ### Multiple API Endpoints
+
 If you need to connect to multiple APIs, you'll need to configure your proxy or use CORS:
+
 - For development: Configure Angular CLI proxy
 - For production: Use reverse proxy to route API calls through same origin
 
@@ -339,6 +360,7 @@ If you need to connect to multiple APIs, you'll need to configure your proxy or 
 ### 1. Manual Testing
 
 Open browser developer tools and check:
+
 - Network tab → Response headers
 - Console → CSP violations
 - Security tab (Chrome/Edge)
@@ -391,7 +413,8 @@ Refused to load the stylesheet 'https://example.com/style.css' because it violat
 #### 3. HSTS Issues
 
 **Symptom**: Certificate errors after enabling HSTS  
-**Solution**: 
+**Solution**:
+
 - Ensure valid TLS certificate
 - Clear browser HSTS cache if needed
 - Start with shorter max-age during testing
@@ -419,6 +442,7 @@ securityConfig.monitorSecurityViolations();
 ### 1. Progressive Enhancement
 
 Start with basic security and enhance gradually:
+
 1. CSP meta tag (immediate protection)
 2. Basic security headers
 3. HSTS (after TLS is stable)
@@ -434,8 +458,8 @@ export const environment = {
     enableHSTS: true,
     hstsMaxAge: 31536000,
     hstsIncludeSubDomains: true,
-    cspReportUri: 'https://api.example.com/csp-report'
-  }
+    cspReportUri: 'https://api.example.com/csp-report',
+  },
 };
 ```
 

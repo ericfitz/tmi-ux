@@ -7,11 +7,13 @@ The TMI-UX auto-save system uses a **zero-debouncing, history-based architecture
 ## Core Principles
 
 ### 1. Single Trigger Source
+
 - **Only source**: X6 history events (`history:change`, `history:undo`, `history:redo`)
 - **No operation-based triggers**: Graph operations no longer directly trigger saves
 - **Natural batching**: X6's `batchUpdate()` creates single history entry for multiple operations
 
 ### 2. Zero Debouncing
+
 - **Immediate execution**: Saves execute as soon as previous save completes
 - **No artificial delays**: No `setTimeout`, `debounceTime`, or time thresholds
 - **Queue management**: Prevents concurrent saves via `saveInProgress` flag
@@ -19,20 +21,22 @@ The TMI-UX auto-save system uses a **zero-debouncing, history-based architecture
 ### 3. Dual Version Tracking
 
 **Client-Side (History Index)**:
+
 ```typescript
 interface SaveTracking {
-  localHistoryIndex: number;        // Current: graph.history.commands.length
-  lastSavedHistoryIndex: number;    // Last index successfully saved
+  localHistoryIndex: number; // Current: graph.history.commands.length
+  lastSavedHistoryIndex: number; // Last index successfully saved
   saveInProgress: boolean;
-  pendingHistoryChanges: number;    // Queue depth
+  pendingHistoryChanges: number; // Queue depth
 }
 ```
 
 **Server-Side (Update Vector)**:
+
 ```typescript
 interface SaveTracking {
-  serverUpdateVector: number;        // Latest from server
-  lastSavedUpdateVector: number;     // Last saved version
+  serverUpdateVector: number; // Latest from server
+  lastSavedUpdateVector: number; // Last saved version
 }
 ```
 
@@ -87,6 +91,7 @@ return executeAutoSave(...);
 ### 3. Dual-Mode Persistence
 
 **REST Mode** (Solo editing):
+
 ```typescript
 // PATCH to /api/v1/threat-models/{id}/diagrams/{id}/cells
 // Response includes update_vector for idempotency
@@ -102,6 +107,7 @@ return executeAutoSave(...);
 ```
 
 **WebSocket Mode** (Collaboration):
+
 ```typescript
 // For undo/redo, send history-operation message
 {
@@ -132,6 +138,7 @@ if (pendingHistoryChanges > 0) {
 ## Key Interfaces
 
 ### AutoSaveContext
+
 ```typescript
 interface AutoSaveContext {
   diagramId: string;
@@ -139,21 +146,23 @@ interface AutoSaveContext {
   userId: string;
   userEmail: string;
   userName: string;
-  getDiagramData: () => any;  // Lazy evaluation
+  getDiagramData: () => any; // Lazy evaluation
   preferredStrategy: 'rest' | 'websocket';
 }
 ```
 
 ### AutoSavePolicy
+
 ```typescript
 interface AutoSavePolicy {
   readonly mode: 'auto' | 'manual';
-  readonly maxQueueDepth: number;     // Default: 100
-  readonly maxRetryAttempts: number;  // Default: 3
+  readonly maxQueueDepth: number; // Default: 100
+  readonly maxRetryAttempts: number; // Default: 3
 }
 ```
 
 **Removed from policy**:
+
 - ❌ `debounceMs`
 - ❌ `timeThresholdMs`
 - ❌ `changeThreshold`
@@ -179,6 +188,7 @@ const context = {
 ## Integration Points
 
 ### 1. History Adapter
+
 **File**: `infra-x6-history.adapter.ts`
 
 ```typescript
@@ -187,7 +197,7 @@ graph.on('history:change', () => {
   this._historyModified$.next({
     historyIndex,
     isUndo: false,
-    isRedo: false
+    isRedo: false,
   });
 });
 
@@ -196,12 +206,13 @@ graph.on('history:undo', () => {
   this._historyModified$.next({
     historyIndex,
     isUndo: true,
-    isRedo: false
+    isRedo: false,
   });
 });
 ```
 
 ### 2. Orchestrator
+
 **File**: `app-dfd-orchestrator.service.ts`
 
 ```typescript
@@ -235,6 +246,7 @@ private _triggerAutoSave(
 ```
 
 ### 3. State Service (Update Vector Tracking)
+
 **File**: `app-state.service.ts`
 
 ```typescript
@@ -251,28 +263,34 @@ private _processStateCorrection(event: StateCorrectionEvent): void {
 ## Advantages
 
 ### 1. No Missed Changes
+
 - **Problem**: Debouncing can miss rapid changes if data captured early
 - **Solution**: History index ensures every X6 command is accounted for
 
 ### 2. Immediate Feedback
+
 - **Problem**: 5+ second debounce delays cause "unsaved changes" anxiety
 - **Solution**: Save starts immediately (queue prevents concurrent saves)
 
 ### 3. Natural Batching
+
 - **Problem**: Need artificial change thresholds to avoid save spam
 - **Solution**: X6's batchUpdate() naturally groups operations
 
 ### 4. Collaboration-Friendly
+
 - **Problem**: Debounced saves conflict with real-time updates
 - **Solution**: History operations (undo/redo) sent as WebSocket messages
 
 ### 5. Idempotency
+
 - **Problem**: Network retries can duplicate saves
 - **Solution**: History index + server update_vector provide deduplication
 
 ## Migration Notes
 
 ### Removed Concepts
+
 - **Trigger events**: No more `AutoSaveTriggerEvent` with operation types
 - **Change analyzers**: No significance calculation needed
 - **Decision makers**: Simple queue depth check replaces complex logic
@@ -281,6 +299,7 @@ private _processStateCorrection(event: StateCorrectionEvent): void {
 ### API Changes
 
 **Old**:
+
 ```typescript
 trigger(event: AutoSaveTriggerEvent, context: AutoSaveContext)
 
@@ -294,6 +313,7 @@ configure({
 ```
 
 **New**:
+
 ```typescript
 trigger(
   historyIndex: number,
@@ -311,17 +331,20 @@ setPolicy({ mode, maxQueueDepth, maxRetryAttempts })
 ## Testing Strategy
 
 ### Unit Tests
+
 - **History index deduplication**: Save same index twice → second ignored
 - **Queue management**: Concurrent saves prevented, pending processed
 - **Update vector tracking**: Extracted from response, updated from WebSocket
 - **Undo/redo metadata**: Flags correctly set in save operation
 
 ### Integration Tests
+
 - **End-to-end flow**: Graph operation → history event → save → response
 - **Queue processing**: Multiple rapid changes → sequential saves
 - **Collaboration**: Undo in collaboration → WebSocket message sent
 
 ### Removed Tests
+
 - ❌ Fake timer tests
 - ❌ Debounce delay verification
 - ❌ Change threshold tests
@@ -330,32 +353,38 @@ setPolicy({ mode, maxQueueDepth, maxRetryAttempts })
 ## Performance Characteristics
 
 ### Typical Save Latency
+
 - **REST**: ~100-300ms (network RTT + DB write)
 - **WebSocket**: ~10-50ms (broadcast to peers)
 
 ### Queue Behavior
+
 - **Max depth**: 100 changes
 - **Processing**: Sequential, ~100-300ms per save
 - **Backpressure**: Rejects new triggers if queue > max depth
 
 ### Memory Usage
+
 - **Minimal**: No timer references, no buffered changes
 - **History stack**: Managed by X6 (configurable limit)
 
 ## Troubleshooting
 
 ### "Changes not being saved"
+
 1. Check `saveInProgress` flag
 2. Verify history index incrementing
 3. Confirm auto-save enabled
 4. Check queue depth not exceeded
 
 ### "Save spam"
+
 1. Verify operations use `batchUpdate()`
 2. Check for redundant history events
 3. Review history index deduplication
 
 ### "Stale data in saves"
+
 1. Confirm `getDiagramData()` callback used
 2. Verify graph state at callback execution time
 3. Check for race conditions in data serialization
@@ -363,6 +392,7 @@ setPolicy({ mode, maxQueueDepth, maxRetryAttempts })
 ## Future Enhancements
 
 ### Possible Improvements
+
 1. **Retry with exponential backoff**: Currently immediate retry
 2. **Offline queue persistence**: Save to IndexedDB when offline
 3. **Conflict resolution**: Merge strategies for concurrent edits

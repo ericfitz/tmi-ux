@@ -3,6 +3,7 @@
 This document consolidates all X6 graph library documentation, including integration patterns and API reference.
 
 ## Table of Contents
+
 1. [Overview](#overview)
 2. [Integration Architecture](#integration-architecture)
 3. [Custom Shapes](#custom-shapes)
@@ -17,6 +18,7 @@ This document consolidates all X6 graph library documentation, including integra
 AntV X6 is a graph editing engine that provides low-level capabilities for building graph editing applications. TMI-UX uses X6 version 2.x for its Data Flow Diagram (DFD) editor.
 
 ### Key Features Used
+
 - Custom node shapes for DFD elements
 - Manhattan routing for edges
 - Built-in history management (undo/redo)
@@ -43,6 +45,7 @@ AntV X6 is a graph editing engine that provides low-level capabilities for build
    - Orchestrates domain and infrastructure
 
 ### Initialization Flow
+
 ```typescript
 // 1. Create graph instance
 const graph = new Graph({
@@ -54,7 +57,9 @@ const graph = new Graph({
 });
 
 // 2. Register custom shapes
-Graph.registerNode('dfd-process', { /* shape config */ });
+Graph.registerNode('dfd-process', {
+  /* shape config */
+});
 
 // 3. Setup adapters
 this.selectionAdapter = new X6SelectionAdapter(graph);
@@ -64,6 +69,7 @@ this.historyManager = new X6HistoryManager(logger);
 ## Custom Shapes
 
 ### Shape Registration
+
 ```typescript
 Graph.registerNode('dfd-process', {
   inherit: 'rect',
@@ -74,23 +80,24 @@ Graph.registerNode('dfd-process', {
       rx: 30,
       ry: 30,
       fill: '#E3F2FD',
-      stroke: '#1976D2'
+      stroke: '#1976D2',
     },
     label: {
       textAnchor: 'middle',
-      textVerticalAnchor: 'middle'
-    }
+      textVerticalAnchor: 'middle',
+    },
   },
   ports: {
     groups: {
       in: { position: 'left' },
-      out: { position: 'right' }
-    }
-  }
+      out: { position: 'right' },
+    },
+  },
 });
 ```
 
 ### Available DFD Shapes
+
 - `dfd-process` - Rounded rectangle for processes
 - `dfd-external-entity` - Rectangle for external entities
 - `dfd-data-store` - Double-line rectangle for data stores
@@ -99,6 +106,7 @@ Graph.registerNode('dfd-process', {
 ## Edge Routing
 
 ### Manhattan Router Configuration
+
 ```typescript
 connecting: {
   router: {
@@ -114,6 +122,7 @@ connecting: {
 ```
 
 ### Custom Edge Styles
+
 ```typescript
 const edge = graph.addEdge({
   source: sourceId,
@@ -124,16 +133,17 @@ const edge = graph.addEdge({
       strokeWidth: 2,
       targetMarker: {
         name: 'block',
-        size: 8
-      }
-    }
-  }
+        size: 8,
+      },
+    },
+  },
 });
 ```
 
 ## Event Handling
 
 ### Node Events
+
 ```typescript
 graph.on('node:added', ({ node }) => {
   console.log('Node added:', node.id);
@@ -149,6 +159,7 @@ graph.on('node:removed', ({ node }) => {
 ```
 
 ### Edge Events
+
 ```typescript
 graph.on('edge:connected', ({ edge }) => {
   console.log('Edge connected:', edge.getSourceCellId(), '->', edge.getTargetCellId());
@@ -160,6 +171,7 @@ graph.on('edge:removed', ({ edge }) => {
 ```
 
 ### Selection Events
+
 ```typescript
 graph.on('selection:changed', ({ selected }) => {
   console.log('Selection changed:', selected);
@@ -169,30 +181,33 @@ graph.on('selection:changed', ({ selected }) => {
 ## Styling System
 
 ### Node Styling
+
 ```typescript
 node.setAttrs({
   body: {
     fill: isSelected ? '#BBDEFB' : '#E3F2FD',
     stroke: hasError ? '#F44336' : '#1976D2',
-    strokeWidth: isSelected ? 2 : 1
-  }
+    strokeWidth: isSelected ? 2 : 1,
+  },
 });
 ```
 
 ### Edge Styling
+
 ```typescript
 edge.setAttrs({
   line: {
     stroke: isHighlighted ? '#2196F3' : '#666',
-    strokeDasharray: isBidirectional ? '5 5' : null
-  }
+    strokeDasharray: isBidirectional ? '5 5' : null,
+  },
 });
 ```
 
 ### Z-Order Management
+
 ```typescript
-cell.toFront();  // Bring to front
-cell.toBack();   // Send to back
+cell.toFront(); // Bring to front
+cell.toBack(); // Send to back
 cell.setZIndex(10); // Set specific z-index
 ```
 
@@ -201,6 +216,7 @@ cell.setZIndex(10); // Set specific z-index
 ### Graph Methods
 
 #### Node Operations
+
 - `addNode(metadata)` - Create new node
 - `getCells()` - Get all cells
 - `getNodes()` - Get all nodes
@@ -208,24 +224,28 @@ cell.setZIndex(10); // Set specific z-index
 - `removeNode(node)` - Remove node
 
 #### Edge Operations
+
 - `addEdge(metadata)` - Create new edge
 - `getEdges()` - Get all edges
 - `getConnectedEdges(node)` - Get edges for node
 - `removeEdge(edge)` - Remove edge
 
 #### Selection
+
 - `select(cells)` - Select cells
 - `unselect(cells)` - Unselect cells
 - `getSelectedCells()` - Get selection
 - `cleanSelection()` - Clear selection
 
 #### History
+
 - `undo()` - Undo last operation
 - `redo()` - Redo operation
 - `canUndo()` - Check undo availability
 - `canRedo()` - Check redo availability
 
 #### View Operations
+
 - `centerContent()` - Center graph content
 - `fit()` - Fit content to viewport
 - `zoom(factor)` - Zoom in/out
@@ -234,18 +254,21 @@ cell.setZIndex(10); // Set specific z-index
 ### Cell Methods
 
 #### Common Methods
+
 - `getProp(key)` - Get property
 - `setProp(key, value)` - Set property
 - `setAttrs(attrs)` - Update attributes
 - `remove()` - Remove from graph
 
 #### Node-Specific
+
 - `getPortId(group)` - Get port ID
 - `getPorts()` - Get all ports
 - `setPosition(x, y)` - Move node
 - `resize(width, height)` - Resize node
 
 #### Edge-Specific
+
 - `getSourceNode()` - Get source node
 - `getTargetNode()` - Get target node
 - `setSource(source)` - Update source
@@ -254,27 +277,32 @@ cell.setZIndex(10); // Set specific z-index
 ## Best Practices
 
 ### 1. Performance
+
 - Use `graph.freeze()` for bulk operations
 - Batch updates with `graph.batchUpdate()`
 - Limit real-time validation during drag
 - Use virtual rendering for large graphs
 
 ### 2. State Management
+
 - Keep domain state separate from X6
 - Use events for state synchronization
 - Implement proper cleanup in destructors
 
 ### 3. Error Handling
+
 - Validate operations before execution
 - Handle edge connection failures
 - Provide user feedback for errors
 
 ### 4. Testing
+
 - Mock X6 dependencies in unit tests
 - Use real graph instances for integration
 - Test event sequences thoroughly
 
 ### 5. Accessibility
+
 - Add ARIA labels to nodes
 - Implement keyboard navigation
 - Provide screen reader descriptions
@@ -282,7 +310,9 @@ cell.setZIndex(10); // Set specific z-index
 ## Common Issues and Solutions
 
 ### Issue: Memory Leaks
+
 **Solution:** Always dispose graph and clean event listeners
+
 ```typescript
 ngOnDestroy() {
   this.graph.dispose();
@@ -291,17 +321,23 @@ ngOnDestroy() {
 ```
 
 ### Issue: Performance with Many Nodes
+
 **Solution:** Use async rendering and viewport culling
+
 ```typescript
-graph.use(new Scroller({
-  enabled: true,
-  pageVisible: true,
-  pageBreak: true
-}));
+graph.use(
+  new Scroller({
+    enabled: true,
+    pageVisible: true,
+    pageBreak: true,
+  }),
+);
 ```
 
 ### Issue: Z-Order Problems
+
 **Solution:** Explicitly manage z-indices
+
 ```typescript
 trustBoundaries.forEach(tb => tb.toBack());
 nodes.forEach(n => n.setZIndex(10));

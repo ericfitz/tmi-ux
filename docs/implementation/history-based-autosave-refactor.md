@@ -7,6 +7,7 @@
 ## Executive Summary
 
 Complete architectural refactor of the auto-save system to:
+
 - Remove ALL debouncing and artificial delays
 - Use X6 history events as the single source of truth
 - Track both client history index and server update_vector
@@ -16,15 +17,18 @@ Complete architectural refactor of the auto-save system to:
 ## Problem Statement
 
 ### Original Bug
+
 Edges were not being saved because auto-save captured diagram data immediately when triggered, but executed the save 5+ seconds later (debounce delay). Newly created edges hadn't fully established in the X6 graph when data was captured.
 
 ### Root Causes
+
 1. **Dual trigger paths**: Both operation-based and history-based triggers created confusion
 2. **Early data capture**: Data captured when save triggered, not when save executed
 3. **Artificial debouncing**: 5-second delays caused data loss window
 4. **No version tracking**: No way to verify what was saved vs what changed
 
 ### Solution Approach
+
 - Single trigger source: X6 history events only
 - Lazy data evaluation: Get fresh data when save executes
 - Zero debouncing: Immediate saves with queue management
@@ -34,6 +38,7 @@ Edges were not being saved because auto-save captured diagram data immediately w
 ## Architectural Changes
 
 ### Before
+
 ```
 User Action
   ↓
@@ -47,6 +52,7 @@ History Change → history:modified → Trigger Auto-Save (capture data)
 ```
 
 ### After
+
 ```
 User Action
   ↓
@@ -68,15 +74,23 @@ Update tracking (history index, update_vector)
 ## Implementation Phases
 
 ### Phase 1: History Event Enhancement
+
 **Files**: `infra-x6-history.adapter.ts`, `infra-x6-graph.adapter.ts`, `app-dfd.facade.ts`
 
 **Changes**:
+
 1. Update `_historyModified$` observable type from `void` to:
+
    ```typescript
-   { historyIndex: number; isUndo: boolean; isRedo: boolean }
+   {
+     historyIndex: number;
+     isUndo: boolean;
+     isRedo: boolean;
+   }
    ```
 
 2. Read history index from X6:
+
    ```typescript
    const historyIndex = (graph as any).history?.commands?.length || 0;
    ```
@@ -92,9 +106,11 @@ Update tracking (history index, update_vector)
 ---
 
 ### Phase 2: Auto-Save Manager Rewrite
+
 **File**: `app-auto-save-manager.service.ts`
 
 **Remove Completely**:
+
 - `debounceMs`, `timeThresholdMs`, `changeThreshold` from `AutoSavePolicy`
 - `_triggerEvent$` observable with `debounceTime()`
 - `_setupTriggerProcessing()` method
@@ -106,14 +122,15 @@ Update tracking (history index, update_vector)
 - `AutoSaveTriggerEvent` interface (replaced with direct trigger call)
 
 **Add New**:
+
 ```typescript
 interface SaveTracking {
-  localHistoryIndex: number;        // Current X6 history index
-  lastSavedHistoryIndex: number;    // Last index we saved
-  serverUpdateVector: number;        // Latest server version
-  lastSavedUpdateVector: number;    // Last saved server version
-  saveInProgress: boolean;           // Is a save running?
-  pendingHistoryChanges: number;     // Count of queued changes
+  localHistoryIndex: number; // Current X6 history index
+  lastSavedHistoryIndex: number; // Last index we saved
+  serverUpdateVector: number; // Latest server version
+  lastSavedUpdateVector: number; // Last saved server version
+  saveInProgress: boolean; // Is a save running?
+  pendingHistoryChanges: number; // Count of queued changes
 }
 
 const DEFAULT_POLICIES = {
@@ -123,6 +140,7 @@ const DEFAULT_POLICIES = {
 ```
 
 **New trigger() signature**:
+
 ```typescript
 trigger(
   historyIndex: number,
@@ -133,13 +151,15 @@ trigger(
 ```
 
 **Logic**:
+
 1. Update `localHistoryIndex`
 2. Check if already saved (index <= lastSavedHistoryIndex)
 3. Check queue depth (prevent overflow)
 4. If save in progress: mark pending, return
 5. Otherwise: execute immediately
 
-**New _executeAutoSave**:
+**New \_executeAutoSave**:
+
 - Set `saveInProgress = true`
 - Get fresh data via `getDiagramData()` callback
 - Add metadata: `clientHistoryIndex`, `serverUpdateVector`, `isUndo`, `isRedo`
@@ -148,14 +168,17 @@ trigger(
 - On error: Reset state, don't retry automatically
 
 **New method**:
+
 ```typescript
 updateServerUpdateVector(updateVector: number): void
 ```
+
 Called when receiving WebSocket state corrections to sync server version.
 
 **Why**: This is the core of the refactor. By removing debouncing and tracking exact indices, we eliminate timing issues and ensure nothing is missed. The queue mechanism prevents overlapping saves while maintaining immediate responsiveness.
 
 **Testing**:
+
 - Test immediate save execution
 - Test queue behavior when save in progress
 - Test recursive save processing
@@ -165,11 +188,13 @@ Called when receiving WebSocket state corrections to sync server version.
 ---
 
 ### Phase 3: WebSocket Strategy Enhancement
+
 **File**: `infra-websocket-persistence.strategy.ts`
 
 **Current**: Stub implementation that just returns success
 
 **New**:
+
 ```typescript
 save(operation: SaveOperation): Observable<SaveResult> {
   const isUndo = operation.metadata?.['isUndo'] === true;
@@ -220,27 +245,27 @@ save(operation: SaveOperation): Observable<SaveResult> {
 ---
 
 ### Phase 4: REST Strategy Update
+
 **File**: `infra-rest-persistence.strategy.ts`
 
 **Current**: Returns basic SaveResult
 
 **New**: Extract and return `update_vector` from server response
+
 ```typescript
-return this.threatModelService
-  .patchDiagramCells(threatModelId, operation.diagramId, cells)
-  .pipe(
-    map((response) => ({
-      success: true,
-      operationId: `save-${Date.now()}`,
-      diagramId: operation.diagramId,
-      timestamp: Date.now(),
-      metadata: {
-        update_vector: response.update_vector,  // CRITICAL: Pass to auto-save manager
-        cellsSaved: cells.length,
-      },
-    })),
-    // ... error handling
-  );
+return this.threatModelService.patchDiagramCells(threatModelId, operation.diagramId, cells).pipe(
+  map(response => ({
+    success: true,
+    operationId: `save-${Date.now()}`,
+    diagramId: operation.diagramId,
+    timestamp: Date.now(),
+    metadata: {
+      update_vector: response.update_vector, // CRITICAL: Pass to auto-save manager
+      cellsSaved: cells.length,
+    },
+  })),
+  // ... error handling
+);
 ```
 
 **Why**: The server's `update_vector` is needed for idempotency checking and conflict detection. By passing it through the save result, the auto-save manager can track it and use it for future operations.
@@ -250,15 +275,18 @@ return this.threatModelService
 ---
 
 ### Phase 5: Orchestrator Simplification
+
 **File**: `app-dfd-orchestrator.service.ts`
 
 **Remove**:
+
 - `operationCompleted$` subscription in `_setupEventIntegration()`
 - `_triggerAutoSave(operation: GraphOperation, result: OperationResult)` method
 - `_triggerAutoSaveForBatch(operations, results)` method
 - Calls to these methods in `executeOperation()` and `executeBatch()`
 
-**Update _setupEventIntegration()**:
+**Update \_setupEventIntegration()**:
+
 ```typescript
 private _setupEventIntegration(): void {
   // ONLY history-based trigger
@@ -279,7 +307,8 @@ private _setupEventIntegration(): void {
 }
 ```
 
-**New _triggerAutoSave() signature**:
+**New \_triggerAutoSave() signature**:
+
 ```typescript
 private _triggerAutoSave(historyIndex: number, isUndo: boolean, isRedo: boolean): void {
   if (!this._initParams || !this.dfdInfrastructure.getGraph()) {
@@ -301,11 +330,12 @@ private _triggerAutoSave(historyIndex: number, isUndo: boolean, isRedo: boolean)
 ```
 
 **Update executeOperation()**:
+
 ```typescript
 return this.appGraphOperationManager.execute(operation, this._operationContext).pipe(
   tap(result => {
     if (result.success) {
-      this._markUnsavedChanges();  // Keep dirty state tracking
+      this._markUnsavedChanges(); // Keep dirty state tracking
       // REMOVE: this._triggerAutoSave() - history will trigger it
     } else {
       this._totalErrors++;
@@ -318,7 +348,8 @@ return this.appGraphOperationManager.execute(operation, this._operationContext).
 
 **Update executeBatch()**: Same pattern - remove trigger call
 
-**Clean up _getGraphData()**:
+**Clean up \_getGraphData()**:
+
 ```typescript
 private _getGraphData(): any {
   const graph = this.dfdInfrastructure.getGraph();
@@ -351,6 +382,7 @@ private _getGraphData(): any {
 **Why**: Single trigger source eliminates confusion and redundancy. History events capture ALL changes (user and programmatic), so operation triggers are unnecessary. This massively simplifies the orchestrator.
 
 **Testing**:
+
 - Verify auto-save triggers only from history events
 - Verify operations still mark dirty state
 - Verify collaboration mode uses WebSocket strategy
@@ -358,9 +390,11 @@ private _getGraphData(): any {
 ---
 
 ### Phase 6: Collaboration Integration
+
 **File**: `app-state.service.ts` or WebSocket event handlers
 
 **Add**: When state correction received via WebSocket:
+
 ```typescript
 this.appAutoSaveManager.updateServerUpdateVector(event.update_vector);
 ```
@@ -374,9 +408,11 @@ this.appAutoSaveManager.updateServerUpdateVector(event.update_vector);
 ### Phase 7: Test Updates
 
 #### Orchestrator Tests
+
 **File**: `app-dfd-orchestrator.service.spec.ts`
 
 **Update tests**:
+
 ```typescript
 it('should trigger auto-save from history changes with index', () => {
   const historySubject = mockDfdInfrastructure.historyModified$ as Subject<any>;
@@ -414,9 +450,11 @@ it('should NOT trigger auto-save from operations', () => {
 **Why**: Auto-save no longer triggers from operations, only from history.
 
 #### Auto-Save Manager Tests
+
 **File**: `app-auto-save-manager.service.spec.ts`
 
 **Complete rewrite needed**:
+
 - Remove all debounce timer tests (`vi.advanceTimersByTime`)
 - Remove threshold tests (`changeThreshold`, `timeThresholdMs`)
 - Add history index tracking tests
@@ -426,6 +464,7 @@ it('should NOT trigger auto-save from operations', () => {
 - Add pending save queue processing tests
 
 **Key new tests**:
+
 ```typescript
 describe('History index tracking', () => {
   it('should track history index and skip already-saved changes', () => {
@@ -502,9 +541,11 @@ describe('Undo/Redo handling', () => {
 ---
 
 ### Phase 8: Documentation
+
 **File**: `docs/reference/architecture/dfd-change-propagation/autosave-decision-tree.md`
 
 **Complete rewrite** showing:
+
 1. Single history-based trigger path
 2. History index tracking diagram
 3. Server update_vector tracking diagram
@@ -513,11 +554,13 @@ describe('Undo/Redo handling', () => {
 6. Undo/redo special handling in collaboration mode
 
 **Remove**:
+
 - Multiple trigger sources diagram
 - Debouncing explanations
 - Threshold/policy mode explanations
 
 **Add**:
+
 - Queue depth management
 - Version tracking (client + server)
 - Idempotency via update_vector
@@ -529,6 +572,7 @@ describe('Undo/Redo handling', () => {
 ## Progress Tracking
 
 ### Phase Status
+
 - [ ] Phase 1: History Event Enhancement
 - [ ] Phase 2: Auto-Save Manager Rewrite
 - [ ] Phase 3: WebSocket Strategy Enhancement
@@ -539,6 +583,7 @@ describe('Undo/Redo handling', () => {
 - [ ] Phase 8: Documentation
 
 ### Files Modified
+
 - [ ] `src/app/pages/dfd/infrastructure/adapters/infra-x6-history.adapter.ts`
 - [ ] `src/app/pages/dfd/infrastructure/adapters/infra-x6-graph.adapter.ts`
 - [ ] `src/app/pages/dfd/application/facades/app-dfd.facade.ts`
@@ -552,6 +597,7 @@ describe('Undo/Redo handling', () => {
 - [ ] `docs/reference/architecture/dfd-change-propagation/autosave-decision-tree.md`
 
 ### Quality Gates
+
 - [ ] All files modified
 - [ ] `pnpm run lint:all` passes
 - [ ] `pnpm run build` succeeds
@@ -561,6 +607,7 @@ describe('Undo/Redo handling', () => {
 ## Manual Testing Checklist
 
 ### REST Mode (Not Collaborating)
+
 - [ ] Create node → save triggers immediately
 - [ ] Create edge → save triggers immediately, edge included in save
 - [ ] Modify label → save triggers immediately
@@ -570,6 +617,7 @@ describe('Undo/Redo handling', () => {
 - [ ] Check network tab: PATCH requests show update_vector in response
 
 ### WebSocket Mode (Collaborating)
+
 - [ ] Create node → no PATCH (handled by WebSocket events)
 - [ ] Create edge → no PATCH (handled by WebSocket events)
 - [ ] Undo operation → WebSocket message sent with operation_type: 'undo'
@@ -577,6 +625,7 @@ describe('Undo/Redo handling', () => {
 - [ ] Other user's changes → received and applied without triggering save
 
 ### Edge Cases
+
 - [ ] Network failure during save → error handled, no save loop
 - [ ] Multiple rapid saves → queued properly, no overlaps
 - [ ] History index decreases (undo) → handled gracefully
@@ -585,6 +634,7 @@ describe('Undo/Redo handling', () => {
 ## Risk Mitigation
 
 ### High-Risk Areas
+
 1. **Save queue logic**: Could create infinite loops or miss changes
    - Mitigation: Extensive testing, strict index comparison, queue depth limit
 
@@ -598,7 +648,9 @@ describe('Undo/Redo handling', () => {
    - Mitigation: Comprehensive unit tests, manual testing checklist
 
 ### Rollback Plan
+
 If critical issues discovered:
+
 1. Revert feature branch
 2. Cherry-pick just the lazy evaluation fix (already working)
 3. Return to debounced approach temporarily
@@ -607,6 +659,7 @@ If critical issues discovered:
 ## Success Criteria
 
 ✅ **Functional**:
+
 - All auto-saves execute immediately (no debouncing)
 - Nothing ever missed (history index tracking guarantees)
 - No duplicate saves (queue prevents overlaps)
@@ -614,6 +667,7 @@ If critical issues discovered:
 - Edges save correctly (original bug fixed)
 
 ✅ **Technical**:
+
 - Zero `setTimeout` in auto-save code
 - Zero `debounceTime` in auto-save code
 - Single trigger source (history only)
@@ -621,6 +675,7 @@ If critical issues discovered:
 - All tests pass
 
 ✅ **Performance**:
+
 - Save latency: <200ms (REST), <50ms (WebSocket)
 - Queue rarely >2 under normal usage
 - No UI blocking during save operations
@@ -646,7 +701,7 @@ If critical issues discovered:
 
 ## Implementation Log
 
-*Track progress, blockers, and decisions here as we work through each phase*
+_Track progress, blockers, and decisions here as we work through each phase_
 
 ### 2025-10-05
 
@@ -657,21 +712,27 @@ If critical issues discovered:
 ## Implementation Status
 
 ### ✅ Phase 1: History Event Enhancement (COMPLETED)
+
 **Files Modified**:
+
 - `src/app/pages/dfd/infrastructure/adapters/infra-x6-history.adapter.ts`
 - `src/app/pages/dfd/infrastructure/adapters/infra-x6-graph.adapter.ts`
 - `src/app/pages/dfd/application/facades/app-dfd.facade.ts`
 
 **Changes**:
+
 - Updated `historyModified$` observable type from `void` to `{historyIndex, isUndo, isRedo}`
 - Extract history index from `graph.history.commands.length`
 - Detect undo/redo from event types
 
 ### ✅ Phase 2: Auto-Save Manager Rewrite (COMPLETED)
+
 **Files Modified**:
+
 - `src/app/pages/dfd/application/services/app-auto-save-manager.service.ts` (600+ line complete rewrite)
 
 **Changes**:
+
 - Removed ALL debouncing logic (`debounceTime`, `setTimeout`, time thresholds)
 - New `trigger(historyIndex, context, isUndo, isRedo)` signature
 - Dual tracking: `SaveTracking` interface with client + server versions
@@ -682,6 +743,7 @@ If critical issues discovered:
 - Simplified policy: `'auto' | 'manual'` only
 
 **Removed**:
+
 - `AutoSaveTriggerEvent` interface
 - `_triggerEvent$` subject with debouncing
 - `_processTrigger()`, `_shouldTriggerSave()`, `_scheduleAutoSave()` methods
@@ -690,27 +752,36 @@ If critical issues discovered:
 - `configure()` method (replaced with `enable()`, `disable()`, `setPolicy()`)
 
 ### ✅ Phase 3: WebSocket Strategy Update (COMPLETED)
+
 **Files Modified**:
+
 - `src/app/pages/dfd/infrastructure/strategies/infra-websocket-persistence.strategy.ts`
 
 **Changes**:
+
 - Detect `isUndo`/`isRedo` from metadata
 - Send `HistoryOperationMessage` for undo/redo operations
 - Regular changes continue via cell-level WebSocket broadcasts
 
 ### ✅ Phase 4: REST Strategy Update (COMPLETED)
+
 **Files Modified**:
+
 - `src/app/pages/dfd/infrastructure/strategies/infra-rest-persistence.strategy.ts`
 
 **Changes**:
+
 - Extract `update_vector` from API response
 - Include in `SaveResult.metadata` for tracking
 
 ### ✅ Phase 5: Orchestrator Simplification (COMPLETED)
+
 **Files Modified**:
+
 - `src/app/pages/dfd/application/services/app-dfd-orchestrator.service.ts`
 
 **Changes**:
+
 - Removed operation-based auto-save triggers
 - Updated `_triggerAutoSave(historyIndex, isUndo, isRedo)` signature
 - Removed `_triggerAutoSaveFromHistory()` and `_triggerAutoSaveForBatch()` methods
@@ -719,19 +790,25 @@ If critical issues discovered:
 - Updated `DfdInitializationParams.autoSaveMode` to `'auto' | 'manual'`
 
 ### ✅ Phase 6: State Service Integration (COMPLETED)
+
 **Files Modified**:
+
 - `src/app/pages/dfd/application/services/app-state.service.ts`
 
 **Changes**:
+
 - Added `AppAutoSaveManager` dependency
 - Call `updateServerUpdateVector()` when state-correction WebSocket messages arrive
 - Ensures auto-save manager tracks latest server version for idempotency
 
 ### ✅ Phase 7: Test Updates (COMPLETED)
+
 **Files Modified**:
+
 - `src/app/pages/dfd/application/services/app-auto-save-manager.service.spec.ts` (complete rewrite)
 
 **Changes**:
+
 - Removed all debouncing tests (fake timers, debounce delays)
 - Added history index deduplication tests
 - Added queue management and concurrent save tests
@@ -741,6 +818,7 @@ If critical issues discovered:
 - Fixed mock responses to return Observables
 
 **Tests Removed**:
+
 - Fake timer tests (`vi.useFakeTimers`, `vi.advanceTimersByTime`)
 - Debounce delay verification
 - Change threshold tests
@@ -748,10 +826,13 @@ If critical issues discovered:
 - Tests for removed methods (`configure()`, `updateLocalHistoryIndex()`, `dispose()`)
 
 ### ✅ Phase 8: Documentation (COMPLETED)
+
 **Files Created**:
+
 - `docs/reference/architecture/history-based-autosave.md` (comprehensive architecture guide)
 
 **Content**:
+
 - Core principles (single trigger source, zero debouncing, dual tracking)
 - Architecture components and data flow
 - Key interfaces and API changes
@@ -763,23 +844,28 @@ If critical issues discovered:
 - Future enhancements
 
 ### ✅ Component Updates (COMPLETED)
+
 **Files Modified**:
+
 - `src/app/pages/dfd/presentation/components/dfd.component.ts`
 
 **Changes**:
+
 - Updated `configureAutoSave()` to use `enable()`, `disable()`, `setPolicyMode()`
 - Changed 'normal' mode to 'auto'
 - Removed `configure()` call
 
 ### ✅ Build & Lint (COMPLETED)
+
 - ✅ Lint passed with no errors
 - ✅ Build completed successfully
-- ⚠️  Some auto-save manager tests need runtime verification
-- ⚠️  Some orchestrator tests timeout (need investigation)
+- ⚠️ Some auto-save manager tests need runtime verification
+- ⚠️ Some orchestrator tests timeout (need investigation)
 
 ## Final Commit Summary
 
 **Commits**:
+
 1. `feat: implement lazy data evaluation for auto-save` - Initial fix
 2. `refactor: complete history-based auto-save architecture` - Phases 1-4
 3. `refactor: complete orchestrator simplification and state service integration` - Phases 5-6
@@ -789,6 +875,7 @@ If critical issues discovered:
 ## Verification Checklist
 
 ### Manual Testing
+
 - [ ] Create nodes → verify auto-save triggered
 - [ ] Create edges → verify edges saved correctly
 - [ ] Rapid operations → verify single save (batching)
@@ -798,6 +885,7 @@ If critical issues discovered:
 - [ ] Offline → verify queue depth limit
 
 ### Integration Testing
+
 - [ ] Solo editing mode → REST persistence
 - [ ] Collaboration mode → WebSocket undo/redo messages
 - [ ] State correction → update_vector updated
@@ -816,11 +904,13 @@ If critical issues discovered:
 ## Performance Metrics
 
 ### Baseline (Debouncing)
+
 - Save latency: 5000ms debounce + 100-300ms network
 - Missed changes: Occasional edges lost
 - User anxiety: "Did it save?" uncertainty
 
 ### After Refactor (History-Based)
+
 - Save latency: 0ms wait + 100-300ms network
 - Missed changes: Zero (guaranteed by history index)
 - User feedback: Immediate save indication
@@ -828,6 +918,7 @@ If critical issues discovered:
 ## Rollback Plan
 
 If issues discovered:
+
 1. Revert to `main` branch
 2. Original debouncing code intact
 3. No data migration needed (API unchanged)

@@ -22,12 +22,15 @@ Comprehensive architecture documentation for TMI-UX, covering architectural prin
 ## Quick Reference
 
 ### For New Developers
+
 Start with [overview.md](overview.md) to understand the overall architecture, then review [service-provisioning.md](service-provisioning.md) for service patterns.
 
 ### For Contributors
+
 Review [validation.md](validation.md) to ensure your changes comply with architecture standards, and check [naming-conventions.md](naming-conventions.md) for file organization.
 
 ### For Architects
+
 Study the complete [overview.md](overview.md), examine [dfd-change-propagation/](dfd-change-propagation/) for complex subsystem analysis, and monitor [violations.md](violations.md) for known issues.
 
 ## Related Documentation

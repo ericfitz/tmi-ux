@@ -31,9 +31,9 @@ pnpm run lint:all --fix
 2. **Domain Layer Purity**
    - Domain objects cannot depend on Angular, RxJS, or any framework
    - No dependencies on infrastructure, application, or service layers
-   - Violation examples: 
+   - Violation examples:
      - Domain service importing `@angular/core`
-     - Domain object importing `rxjs` 
+     - Domain object importing `rxjs`
      - Domain layer importing from `../infrastructure/*`
    - Solution: Keep domain objects as pure TypeScript classes with business logic only
 
@@ -52,6 +52,7 @@ pnpm run lint:all --fix
 #### Dependency Flow Validation
 
 1. **Check for Circular Dependencies**
+
    ```bash
    # Install madge if not already installed
    npm install -g madge
@@ -61,6 +62,7 @@ pnpm run lint:all --fix
    ```
 
 2. **Generate Dependency Graph**
+
    ```bash
    # Generate visual dependency graph
    madge --image graph.svg src/
@@ -75,6 +77,7 @@ pnpm run lint:all --fix
 #### Service Provisioning Audit
 
 1. **Find Duplicate Providers**
+
    ```bash
    # Search for services provided multiple times
    grep -r "providers.*Service" src/ | sort | uniq -c | sort -n
@@ -91,12 +94,14 @@ pnpm run lint:all --fix
 To ensure architecture rules are followed before committing:
 
 1. **Install Husky** (if not already installed)
+
    ```bash
    pnpm add -D husky
    npx husky init
    ```
 
 2. **Add Pre-commit Hook**
+
    ```bash
    echo "pnpm run lint:all" > .husky/pre-commit
    ```
@@ -109,13 +114,16 @@ To ensure architecture rules are followed before committing:
 ## Common Architecture Violations
 
 ### 1. Core Importing from Features
+
 **Violation:**
+
 ```typescript
 // In core/services/some.service.ts
 import { DfdService } from '../../pages/dfd/services/dfd.service';
 ```
 
 **Fix:**
+
 ```typescript
 // In core/interfaces/dfd-handler.interface.ts
 export interface DfdHandler {
@@ -129,7 +137,9 @@ constructor(@Optional() private dfdHandler?: DfdHandler) {}
 ```
 
 ### 2. Domain Depending on Framework
+
 **Violations:**
+
 ```typescript
 // In domain/services/domain-edge.service.ts
 import { Injectable } from '@angular/core';
@@ -143,6 +153,7 @@ export class DomainEdgeService {
 ```
 
 **Fix:**
+
 ```typescript
 // Move to application/services/app-edge.service.ts
 import { Injectable } from '@angular/core';
@@ -159,7 +170,7 @@ export class EdgeInfo {
   private constructor(
     public readonly id: string,
     public readonly sourceNodeId: string,
-    public readonly targetNodeId: string
+    public readonly targetNodeId: string,
   ) {}
 
   static create(data: EdgeData): EdgeInfo {
@@ -170,17 +181,20 @@ export class EdgeInfo {
 ```
 
 ### 3. Using NgModules
+
 **Violation:**
+
 ```typescript
 // In some.module.ts
 @NgModule({
   imports: [CommonModule, MaterialModule],
-  declarations: [SomeComponent]
+  declarations: [SomeComponent],
 })
 export class SomeModule {}
 ```
 
 **Fix:**
+
 ```typescript
 // In some.component.ts
 @Component({
@@ -206,24 +220,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-          
+
       - name: Install dependencies
         run: pnpm install
-        
+
       - name: Run ESLint architecture rules
         run: pnpm run lint:all
-        
+
       - name: Check circular dependencies
         run: npx madge --circular src/
-        
+
       - name: Generate dependency report
         run: npx madge --json src/ > dependency-report.json
-        
+
       - name: Upload dependency report
         uses: actions/upload-artifact@v3
         with:
@@ -244,6 +258,7 @@ jobs:
 7. **Duplicate service providers**: Should be minimized
 
 ### Automated Checks
+
 ```bash
 # Check for domain layer violations
 pnpm run lint:all | grep -i "domain.*should.*pure"
@@ -258,6 +273,7 @@ grep -r "@angular\|rxjs\|@antv" src/app/**/domain/ | grep -v ".spec.ts" | wc -l 
 ### Regular Architecture Reviews
 
 Schedule monthly architecture reviews to:
+
 - Review dependency graphs
 - Check for architecture drift
 - Update architecture rules as needed
@@ -268,6 +284,7 @@ Schedule monthly architecture reviews to:
 ### ESLint Not Catching Violations
 
 1. Ensure ESLint is configured correctly:
+
    ```bash
    pnpm run lint -- --debug
    ```
@@ -279,6 +296,7 @@ Schedule monthly architecture reviews to:
 ### False Positives
 
 If ESLint reports false architecture violations:
+
 1. Review the import path patterns in rules
 2. Consider adding exceptions for specific cases
 3. Document exceptions in ADRs
@@ -286,6 +304,7 @@ If ESLint reports false architecture violations:
 ### Performance Issues
 
 If linting is slow:
+
 1. Use `--cache` flag: `pnpm run lint -- --cache`
 2. Limit scope: `pnpm run lint src/app/core`
 3. Run in parallel with other checks

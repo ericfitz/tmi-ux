@@ -39,7 +39,9 @@ AI assistants should update this list when adding or removing files.
 ## Related Documentation
 
 ### Architecture Documentation
+
 See [../reference/architecture/](../reference/architecture/) for:
+
 - Architecture overview and principles
 - Service provisioning standards
 - Naming conventions
@@ -47,14 +49,18 @@ See [../reference/architecture/](../reference/architecture/) for:
 - DFD change propagation analysis
 
 ### Developer Documentation
+
 See [../developer/](../developer/) for:
+
 - Environment configuration
 - Testing utilities
 - Core services setup
 - Feature implementation guides
 
 ### Technical References
+
 See [../reference/](../reference/) for:
+
 - X6 complete guide
 - Collaborative editing implementation
 - Security headers
