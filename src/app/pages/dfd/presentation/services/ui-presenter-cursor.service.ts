@@ -26,6 +26,8 @@ export class UiPresenterCursorService implements OnDestroy {
   private _graphContainer: HTMLElement | null = null;
   private _graph: Graph | null = null;
   private _lastCursorPosition: CursorPosition | null = null;
+  private _intersectionObserver: IntersectionObserver | null = null;
+  private _isGraphVisible = true;
 
   constructor(
     private logger: LoggerService,
@@ -44,6 +46,9 @@ export class UiPresenterCursorService implements OnDestroy {
 
     // Set up mouse movement tracking
     this._setupMouseTracking();
+
+    // Setup IntersectionObserver to suppress broadcasts when graph not visible
+    this._setupIntersectionObserver();
 
     // Subscribe to presenter mode changes to start/stop tracking
     this._subscriptions.add(
@@ -124,6 +129,12 @@ export class UiPresenterCursorService implements OnDestroy {
    */
   private _handleMouseMove(event: MouseEvent): void {
     if (!this._graphContainer || !this._graph) {
+      return;
+    }
+
+    // Don't broadcast if graph is not visible
+    if (!this._isGraphVisible) {
+      this.logger.debug('Skipping cursor broadcast - graph not visible');
       return;
     }
 
@@ -262,10 +273,54 @@ export class UiPresenterCursorService implements OnDestroy {
   }
 
   /**
+   * Setup IntersectionObserver to detect when graph is visible
+   * Suppresses cursor broadcasts when graph is not in viewport
+   */
+  private _setupIntersectionObserver(): void {
+    if (!this._graphContainer) {
+      this.logger.warn('Cannot setup IntersectionObserver - no graph container');
+      return;
+    }
+
+    if (typeof IntersectionObserver === 'undefined') {
+      this.logger.warn('IntersectionObserver not available in this browser');
+      return;
+    }
+
+    this._intersectionObserver = new IntersectionObserver(
+      entries => {
+        for (const entry of entries) {
+          if (entry.target === this._graphContainer) {
+            this._isGraphVisible = entry.isIntersecting;
+
+            this.logger.debug('Presenter graph visibility changed', {
+              isVisible: this._isGraphVisible,
+              intersectionRatio: entry.intersectionRatio,
+            });
+          }
+        }
+      },
+      {
+        threshold: 0.1, // Trigger when at least 10% of graph is visible
+      },
+    );
+
+    this._intersectionObserver.observe(this._graphContainer);
+    this.logger.debug('IntersectionObserver initialized for presenter cursor tracking');
+  }
+
+  /**
    * Cleanup resources and stop tracking
    */
   ngOnDestroy(): void {
     this._stopTracking();
+
+    // Cleanup IntersectionObserver
+    if (this._intersectionObserver) {
+      this._intersectionObserver.disconnect();
+      this._intersectionObserver = null;
+    }
+
     this._subscriptions.unsubscribe();
     this._graphContainer = null;
     this._graph = null;

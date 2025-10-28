@@ -1,5 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, fromEvent, merge } from 'rxjs';
+import { debounceTime, filter } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
@@ -17,6 +18,7 @@ export interface CursorPosition {
  * Service responsible for displaying presenter cursor from received events
  * Handles incoming presenter cursor messages and applies custom cursor styling
  * Generates synthetic mouse events to trigger X6 hover effects
+ * Monitors viewport changes to recalculate cursor position when container moves
  */
 @Injectable({
   providedIn: 'root',
@@ -28,6 +30,12 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
   private _cursorTimeout: number | null = null;
   private _isShowingPresenterCursor = false;
   private _lastHoveredElement: Element | null = null;
+
+  // Viewport change tracking
+  private _lastGraphPosition: CursorPosition | null = null;
+  private _resizeObserver: ResizeObserver | null = null;
+  private _intersectionObserver: IntersectionObserver | null = null;
+  private _isGraphVisible = true;
 
   constructor(
     private logger: LoggerService,
@@ -43,6 +51,11 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
     this._graphContainer = graphContainer;
     this._graph = graph;
 
+    // Setup viewport change monitoring
+    this._setupViewportChangeHandling();
+    this._setupResizeObserver();
+    this._setupIntersectionObserver();
+
     this.logger.info('UiPresenterCursorDisplayService initialized');
   }
 
@@ -57,6 +70,15 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
       this.logger.debug('Skipping presenter cursor update - current user is presenter');
       return;
     }
+
+    // Don't process updates if graph is not visible
+    if (!this._isGraphVisible) {
+      this.logger.debug('Skipping presenter cursor update - graph not visible');
+      return;
+    }
+
+    // Store the graph position for viewport change recalculation
+    this._lastGraphPosition = { ...position };
 
     this.logger.debug('Handling presenter cursor update', {
       position: { x: position.x, y: position.y },
@@ -444,6 +466,154 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
   }
 
   /**
+   * Setup window resize and scroll event handlers
+   * Monitors viewport changes to recalculate cursor position
+   */
+  private _setupViewportChangeHandling(): void {
+    if (typeof window === 'undefined') {
+      this.logger.warn('Window not available - skipping viewport change handling');
+      return;
+    }
+
+    // Listen for window resize events
+    const resize$ = fromEvent(window, 'resize');
+
+    // Listen for scroll events (capture phase to catch all scrolls)
+    const scroll$ = fromEvent(window, 'scroll', { capture: true, passive: true });
+
+    // Combine and debounce viewport change events
+    const viewportChange$ = merge(resize$, scroll$).pipe(
+      debounceTime(150), // Responsive updates while avoiding excessive recalculation
+      filter(() => this._isShowingPresenterCursor && this._lastGraphPosition !== null),
+    );
+
+    this._subscriptions.add(
+      viewportChange$.subscribe(() => {
+        this._handleViewportChange();
+      }),
+    );
+
+    this.logger.debug('Viewport change handling initialized');
+  }
+
+  /**
+   * Setup ResizeObserver to monitor graph container size changes
+   * Detects layout shifts, sidebar collapses, etc.
+   */
+  private _setupResizeObserver(): void {
+    if (!this._graphContainer) {
+      this.logger.warn('Cannot setup ResizeObserver - no graph container');
+      return;
+    }
+
+    if (typeof ResizeObserver === 'undefined') {
+      this.logger.warn('ResizeObserver not available in this browser');
+      return;
+    }
+
+    this._resizeObserver = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        if (entry.target === this._graphContainer) {
+          this.logger.debug('Graph container resized', {
+            width: entry.contentRect.width,
+            height: entry.contentRect.height,
+          });
+
+          // Only recalculate if cursor is currently showing
+          if (this._isShowingPresenterCursor && this._lastGraphPosition) {
+            this._handleViewportChange();
+          }
+        }
+      }
+    });
+
+    this._resizeObserver.observe(this._graphContainer);
+    this.logger.debug('ResizeObserver initialized for graph container');
+  }
+
+  /**
+   * Setup IntersectionObserver to detect when graph is visible
+   * Pauses cursor updates when graph is not in viewport
+   */
+  private _setupIntersectionObserver(): void {
+    if (!this._graphContainer) {
+      this.logger.warn('Cannot setup IntersectionObserver - no graph container');
+      return;
+    }
+
+    if (typeof IntersectionObserver === 'undefined') {
+      this.logger.warn('IntersectionObserver not available in this browser');
+      return;
+    }
+
+    this._intersectionObserver = new IntersectionObserver(
+      entries => {
+        for (const entry of entries) {
+          if (entry.target === this._graphContainer) {
+            const wasVisible = this._isGraphVisible;
+            this._isGraphVisible = entry.isIntersecting;
+
+            this.logger.debug('Graph visibility changed', {
+              isVisible: this._isGraphVisible,
+              intersectionRatio: entry.intersectionRatio,
+            });
+
+            // If graph became invisible, hide cursor
+            if (wasVisible && !this._isGraphVisible) {
+              this._removePresenterCursor();
+            }
+            // If graph became visible and we have a stored position, recalculate
+            else if (!wasVisible && this._isGraphVisible && this._lastGraphPosition) {
+              this._handleViewportChange();
+            }
+          }
+        }
+      },
+      {
+        threshold: 0.1, // Trigger when at least 10% of graph is visible
+      },
+    );
+
+    this._intersectionObserver.observe(this._graphContainer);
+    this.logger.debug('IntersectionObserver initialized for graph container');
+  }
+
+  /**
+   * Handle viewport changes by recalculating cursor position
+   * Called when window resizes, scrolls, or container size changes
+   */
+  private _handleViewportChange(): void {
+    if (!this._lastGraphPosition) {
+      return;
+    }
+
+    this.logger.debug('Handling viewport change - recalculating cursor position', {
+      lastGraphPosition: this._lastGraphPosition,
+      isShowingCursor: this._isShowingPresenterCursor,
+    });
+
+    try {
+      // Recalculate viewport position from stored graph coordinates
+      const newViewportPosition = this._convertToViewportCoordinates(this._lastGraphPosition);
+
+      if (!newViewportPosition) {
+        // Cursor is now outside viewport - hide it
+        this.logger.debug('Cursor outside viewport after viewport change - hiding');
+        this._removePresenterCursor();
+      } else {
+        // Update cursor position with new coordinates
+        this._generateSyntheticMouseEvent(newViewportPosition);
+
+        this.logger.debug('Cursor position recalculated after viewport change', {
+          newViewportPosition,
+        });
+      }
+    } catch (error) {
+      this.logger.error('Error handling viewport change', error);
+    }
+  }
+
+  /**
    * Cleanup resources
    */
   ngOnDestroy(): void {
@@ -452,11 +622,23 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
       this._cursorTimeout = null;
     }
 
+    // Cleanup observers
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+      this._resizeObserver = null;
+    }
+
+    if (this._intersectionObserver) {
+      this._intersectionObserver.disconnect();
+      this._intersectionObserver = null;
+    }
+
     this._removePresenterCursor();
     this._clearLastHoveredElement();
     this._subscriptions.unsubscribe();
     this._graphContainer = null;
     this._graph = null;
+    this._lastGraphPosition = null;
 
     this.logger.info('UiPresenterCursorDisplayService destroyed');
   }
