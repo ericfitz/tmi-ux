@@ -82,9 +82,10 @@ export class X6HistoryDialogComponent {
       }
 
       // Extract available history data
+      const graphWithHistory = graph as any;
       const historyData: any = {
-        canUndo: graph.canUndo ? graph.canUndo() : false,
-        canRedo: graph.canRedo ? graph.canRedo() : false,
+        canUndo: graphWithHistory.canUndo ? graphWithHistory.canUndo() : false,
+        canRedo: graphWithHistory.canRedo ? graphWithHistory.canRedo() : false,
         enabled:
           (historyPlugin as any).enabled !== undefined ? (historyPlugin as any).enabled : true,
       };

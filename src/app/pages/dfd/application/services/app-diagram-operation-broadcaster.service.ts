@@ -4,7 +4,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraWebsocketCollaborationAdapter } from '../../infrastructure/adapters/infra-websocket-collaboration.adapter';
 import { AppStateService } from './app-state.service';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
-import { AppGraphHistoryCoordinator } from './app-graph-history-coordinator.service';
+import { AppOperationStateManager } from './app-operation-state-manager.service';
 import { CellOperation } from '../../../../core/types/websocket-message.types';
 
 /**
@@ -28,7 +28,7 @@ export class AppDiagramOperationBroadcaster {
     private collaborativeOperationService: InfraWebsocketCollaborationAdapter,
     private appStateService: AppStateService,
     private collaborationService: DfdCollaborationService,
-    private historyCoordinator: AppGraphHistoryCoordinator,
+    private historyCoordinator: AppOperationStateManager,
     private logger: LoggerService,
   ) {}
 

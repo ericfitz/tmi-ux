@@ -36,7 +36,7 @@ import { InfraX6EmbeddingAdapter } from '../infrastructure/adapters/infra-x6-emb
 import { InfraX6EventLoggerAdapter } from '../../../../core/services/logger.service';
 import { AppEdgeService } from '../application/services/app-edge.service';
 import { AppEventHandlersService } from '../application/services/app-event-handlers.service';
-import { AppGraphHistoryCoordinator } from '../application/services/app-graph-history-coordinator.service';
+import { AppOperationStateManager } from '../application/services/app-operation-state-manager.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeInfo } from '../domain/value-objects/node-info';
 import { DiagramNode } from '../domain/value-objects/diagram-node';
@@ -125,7 +125,7 @@ describe('DFD Integration - Selection Styling (CRITICAL)', () => {
   let x6EventLogger: InfraX6EventLoggerAdapter;
   let appEdgeService: AppEdgeService;
   let eventHandlersService: AppEventHandlersService;
-  let historyCoordinator: AppGraphHistoryCoordinator;
+  let historyCoordinator: AppOperationStateManager;
 
   beforeEach(() => {
     // Create real DOM container
@@ -156,7 +156,7 @@ describe('DFD Integration - Selection Styling (CRITICAL)', () => {
     appEdgeService = new AppEdgeService(mockLogger as unknown as LoggerService);
     eventHandlersService = new AppEventHandlersService(mockLogger as unknown as LoggerService);
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
-    historyCoordinator = new AppGraphHistoryCoordinator(mockLogger as unknown as LoggerService);
+    historyCoordinator = new AppOperationStateManager(mockLogger as unknown as LoggerService);
 
     // Initialize selection adapter first (required by InfraX6GraphAdapter)
     selectionAdapter = new InfraX6SelectionAdapter(

@@ -1,5 +1,5 @@
 import { Graph, Node, Cell } from '@antv/x6';
-import { History } from '@antv/x6-plugin-history';
+// Note: History plugin import removed - we now use AppHistoryService
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from '../../../core/services/logger.service';
@@ -144,10 +144,11 @@ export class DfdStateStore {
 
   /**
    * Get the history plugin from the graph
+   * @deprecated X6 History plugin has been removed - use AppHistoryService instead
    */
-  getHistory(): History | null {
-    const { graph } = this._state.value;
-    return graph ? (graph.getPlugin<History>('history') ?? null) : null;
+  getHistory(): null {
+    this.logger.warn('getHistory() is deprecated - X6 History plugin has been removed');
+    return null;
   }
 
   /**

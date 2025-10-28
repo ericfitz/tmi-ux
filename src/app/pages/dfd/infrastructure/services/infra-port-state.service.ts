@@ -24,7 +24,7 @@ import { Node, Edge, Graph } from '@antv/x6';
 import { PortConnectionState } from '../../utils/x6-cell-extensions';
 import { InfraEdgeQueryService } from './infra-edge-query.service';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
+import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
 
 /**
  * Service responsible for managing port visibility state and connection tracking.
@@ -35,7 +35,7 @@ import { AppGraphHistoryCoordinator } from '../../application/services/app-graph
 })
 export class InfraPortStateService {
   private readonly _portStates = new Map<string, PortConnectionState>();
-  private _historyCoordinator: AppGraphHistoryCoordinator | null = null;
+  private _historyCoordinator: AppOperationStateManager | null = null;
 
   constructor(
     private readonly _edgeQueryService: InfraEdgeQueryService,
@@ -45,7 +45,7 @@ export class InfraPortStateService {
   /**
    * Set the history coordinator for proper history suppression during port operations
    */
-  setHistoryCoordinator(historyCoordinator: AppGraphHistoryCoordinator): void {
+  setHistoryCoordinator(historyCoordinator: AppOperationStateManager): void {
     this._historyCoordinator = historyCoordinator;
   }
 

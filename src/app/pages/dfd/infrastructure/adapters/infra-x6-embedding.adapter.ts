@@ -24,7 +24,7 @@ import { Graph, Node, Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraEmbeddingService } from '../services/infra-embedding.service';
 import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
-import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
+import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
 
 /**
  * X6 Embedding Adapter
@@ -37,7 +37,7 @@ export class InfraX6EmbeddingAdapter {
     private logger: LoggerService,
     private infraEmbeddingService: InfraEmbeddingService,
     private infraX6ZOrderAdapter: InfraX6ZOrderAdapter,
-    private historyCoordinator: AppGraphHistoryCoordinator,
+    private historyCoordinator: AppOperationStateManager,
   ) {}
 
   /**

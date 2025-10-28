@@ -28,12 +28,17 @@ interface DragCompletionEvent {
 }
 
 /**
- * AppGraphHistoryCoordinator service - manages what gets included in X6 history
- * Provides proper filtering for visual effects, port visibility, and other non-semantic changes
- * Includes sophisticated drag completion tracking to ensure only final states are recorded
+ * AppOperationStateManager service - manages operation state and drag tracking
+ *
+ * Formerly AppGraphHistoryCoordinator. Now focused on:
+ * - Managing operation state flags (isApplyingRemoteChange, isDiagramLoading)
+ * - Drag completion tracking to coordinate with history recording
+ * - Providing utilities for executing operations with suppressed state
+ *
+ * Note: X6 history management has been moved to AppHistoryService
  */
 @Injectable()
-export class AppGraphHistoryCoordinator {
+export class AppOperationStateManager {
   private readonly _dragCompletions$ = new Subject<DragCompletionEvent>();
   private readonly _activeDrags = new Map<string, DragTrackingData>();
   private readonly _dragDebounceMap = new Map<string, number>();

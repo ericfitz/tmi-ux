@@ -11,7 +11,7 @@ import { Graph, Node, Edge } from '@antv/x6';
 import { JSDOM } from 'jsdom';
 import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
 import { ZOrderService } from '../services/infra-z-order.service';
-import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
+import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
 import { registerCustomShapes } from './infra-x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 
@@ -95,7 +95,7 @@ describe('InfraX6ZOrderAdapter', () => {
   let adapter: InfraX6ZOrderAdapter;
   let mockLogger: MockLoggerService;
   let zOrderService: ZOrderService;
-  let historyCoordinator: AppGraphHistoryCoordinator;
+  let historyCoordinator: AppOperationStateManager;
   let graph: Graph;
   let container: HTMLElement;
 
@@ -126,7 +126,7 @@ describe('InfraX6ZOrderAdapter', () => {
     // Create mock logger and real services
     mockLogger = createTypedMockLoggerService();
     zOrderService = new ZOrderService(mockLogger as any);
-    historyCoordinator = new AppGraphHistoryCoordinator(mockLogger as any);
+    historyCoordinator = new AppOperationStateManager(mockLogger as any);
     adapter = new InfraX6ZOrderAdapter(mockLogger as any, zOrderService, historyCoordinator);
   });
 

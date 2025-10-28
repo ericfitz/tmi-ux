@@ -16,7 +16,7 @@ import { Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { AppStateService } from './app-state.service';
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
-import { AppGraphHistoryCoordinator } from './app-graph-history-coordinator.service';
+import { AppOperationStateManager } from './app-operation-state-manager.service';
 import { CellOperation, Cell as WSCell } from '../../../../core/types/websocket-message.types';
 import {
   GraphOperation,
@@ -50,7 +50,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
     private readonly logger: LoggerService,
     private readonly appStateService: AppStateService,
     private readonly graphOperationManager: AppGraphOperationManager,
-    private readonly historyCoordinator: AppGraphHistoryCoordinator,
+    private readonly historyCoordinator: AppOperationStateManager,
   ) {
     this.logger.debug('AppRemoteOperationHandler constructed');
   }
@@ -293,29 +293,37 @@ export class AppRemoteOperationHandler implements OnDestroy {
     cellData: WSCell,
     baseOperation: Partial<GraphOperation>,
   ): GraphOperation | null {
-    // Extract edge info from cell data
-    const edgeInfo: EdgeInfo = {
+    // Extract source and target node IDs for legacy field support
+    const sourceNodeId =
+      typeof cellData.source === 'object' && cellData.source !== null
+        ? (cellData.source as any).cell
+        : '';
+    const targetNodeId =
+      typeof cellData.target === 'object' && cellData.target !== null
+        ? (cellData.target as any).cell
+        : '';
+    const sourcePortId =
+      typeof cellData.source === 'object' && cellData.source !== null
+        ? (cellData.source as any).port
+        : undefined;
+    const targetPortId =
+      typeof cellData.target === 'object' && cellData.target !== null
+        ? (cellData.target as any).port
+        : undefined;
+
+    // Use EdgeInfo.fromJSON to handle both new and legacy format
+    const edgeInfo = EdgeInfo.fromJSON({
       id: cellData.id,
-      label: typeof cellData.label === 'string' ? cellData.label : '',
-      sourceNodeId:
-        typeof cellData.source === 'object' && cellData.source !== null
-          ? (cellData.source as any).cell
-          : '',
-      targetNodeId:
-        typeof cellData.target === 'object' && cellData.target !== null
-          ? (cellData.target as any).cell
-          : '',
-      sourcePortId:
-        typeof cellData.source === 'object' && cellData.source !== null
-          ? (cellData.source as any).port
-          : undefined,
-      targetPortId:
-        typeof cellData.target === 'object' && cellData.target !== null
-          ? (cellData.target as any).port
-          : undefined,
+      label: typeof cellData.label === 'string' ? cellData.label : undefined,
+      source: cellData.source as any,
+      target: cellData.target as any,
+      sourceNodeId,
+      targetNodeId,
+      sourcePortId,
+      targetPortId,
       vertices: (cellData as any).vertices || [],
-      style: cellData.attrs as Record<string, any>,
-    };
+      attrs: cellData.attrs as Record<string, any>,
+    });
 
     switch (cellOp.operation) {
       case 'add':
@@ -323,10 +331,10 @@ export class AppRemoteOperationHandler implements OnDestroy {
           ...baseOperation,
           type: 'create-edge',
           edgeInfo,
-          sourceNodeId: edgeInfo.sourceNodeId,
-          targetNodeId: edgeInfo.targetNodeId,
-          sourcePortId: edgeInfo.sourcePortId,
-          targetPortId: edgeInfo.targetPortId,
+          sourceNodeId,
+          targetNodeId,
+          sourcePortId,
+          targetPortId,
         } as CreateEdgeOperation;
 
       case 'update':

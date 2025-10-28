@@ -71,7 +71,7 @@ export class InfraX6HistoryAdapter {
       this._emitHistoryStateChange(graph);
     });
 
-    graph.on('history:change', args => {
+    graph.on('history:change', (args: any) => {
       const historyIndex = (graph as any).history?.commands?.length || 0;
       this.logger.info('History change event fired', {
         historyIndex,
@@ -89,13 +89,15 @@ export class InfraX6HistoryAdapter {
 
   /**
    * Undo the last action using X6 history plugin
+   * NOTE: X6 History plugin has been removed - this method is deprecated
    */
   undo(graph: Graph): void {
-    if (graph && typeof graph.undo === 'function') {
+    const graphWithHistory = graph as any;
+    if (graph && typeof graphWithHistory.undo === 'function') {
       // Temporarily disable history to prevent undo operations from being recorded
       this.disable(graph);
 
-      graph.undo();
+      graphWithHistory.undo();
       this.logger.info('Undo action performed');
 
       // Re-enable history after undo is complete
@@ -109,13 +111,15 @@ export class InfraX6HistoryAdapter {
 
   /**
    * Redo the last undone action using X6 history plugin
+   * NOTE: X6 History plugin has been removed - this method is deprecated
    */
   redo(graph: Graph): void {
-    if (graph && typeof graph.redo === 'function') {
+    const graphWithHistory = graph as any;
+    if (graph && typeof graphWithHistory.redo === 'function') {
       // Temporarily disable history to prevent redo operations from being recorded
       this.disable(graph);
 
-      graph.redo();
+      graphWithHistory.redo();
       this.logger.info('Redo action performed');
 
       // Re-enable history after redo is complete
@@ -129,35 +133,41 @@ export class InfraX6HistoryAdapter {
 
   /**
    * Check if undo is available
+   * NOTE: X6 History plugin has been removed - this method is deprecated
    */
   canUndo(graph: Graph): boolean {
-    if (graph && typeof graph.canUndo === 'function') {
-      return graph.canUndo();
+    const graphWithHistory = graph as any;
+    if (graph && typeof graphWithHistory.canUndo === 'function') {
+      return graphWithHistory.canUndo();
     }
     return false;
   }
 
   /**
    * Check if redo is available
+   * NOTE: X6 History plugin has been removed - this method is deprecated
    */
   canRedo(graph: Graph): boolean {
-    if (graph && typeof graph.canRedo === 'function') {
-      return graph.canRedo();
+    const graphWithHistory = graph as any;
+    if (graph && typeof graphWithHistory.canRedo === 'function') {
+      return graphWithHistory.canRedo();
     }
     return false;
   }
 
   /**
    * Clear the history stack
+   * NOTE: X6 History plugin has been removed - this method is deprecated
    * Note: This does NOT trigger autosave since it's an administrative operation, not a user edit
    */
   clearHistory(graph: Graph): void {
-    if (graph && typeof graph.cleanHistory === 'function') {
+    const graphWithHistory = graph as any;
+    if (graph && typeof graphWithHistory.cleanHistory === 'function') {
       // Temporarily disable history events to prevent triggering autosave
       // when clearing history after diagram load
       this.disable(graph);
 
-      graph.cleanHistory();
+      graphWithHistory.cleanHistory();
       this.logger.info('History cleared');
 
       // Re-enable history tracking

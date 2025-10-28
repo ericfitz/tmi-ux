@@ -35,7 +35,7 @@ import { InfraVisualEffectsService } from './infra-visual-effects.service';
 import { InfraEdgeService } from './infra-edge.service';
 import { InfraPortStateService } from './infra-port-state.service';
 import { getX6ShapeForNodeType } from '../adapters/infra-x6-shape-definitions';
-import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
+import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
 import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service';
 import { DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 
@@ -57,7 +57,7 @@ export class InfraNodeService {
     private infraVisualEffectsService: InfraVisualEffectsService,
     private infraEdgeService: InfraEdgeService,
     private infraPortStateService: InfraPortStateService,
-    private historyCoordinator: AppGraphHistoryCoordinator,
+    private historyCoordinator: AppOperationStateManager,
     private x6CoreOps: InfraX6CoreOperationsService,
   ) {}
 

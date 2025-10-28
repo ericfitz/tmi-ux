@@ -3,9 +3,9 @@ import { Graph, Node, Edge, Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { ZOrderService } from '../services/infra-z-order.service';
 import {
-  AppGraphHistoryCoordinator,
+  AppOperationStateManager,
   HISTORY_OPERATION_TYPES,
-} from '../../application/services/app-graph-history-coordinator.service';
+} from '../../application/services/app-operation-state-manager.service';
 
 /**
  * X6 Z-Order Adapter
@@ -19,7 +19,7 @@ export class InfraX6ZOrderAdapter {
   constructor(
     private logger: LoggerService,
     private zOrderService: ZOrderService,
-    private historyCoordinator: AppGraphHistoryCoordinator,
+    private historyCoordinator: AppOperationStateManager,
   ) {}
 
   /**

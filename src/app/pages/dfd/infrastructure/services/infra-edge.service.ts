@@ -5,7 +5,7 @@ import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { DFD_STYLING } from '../../constants/styling-constants';
 import { InfraPortStateService } from './infra-port-state.service';
 import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service';
-import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
+import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
 
 /**
  * Consolidated Edge Service
@@ -24,7 +24,7 @@ export class InfraEdgeService {
     private readonly _logger: LoggerService,
     private readonly _portStateManager: InfraPortStateService,
     private readonly _x6CoreOps: InfraX6CoreOperationsService,
-    private readonly _historyCoordinator: AppGraphHistoryCoordinator,
+    private readonly _historyCoordinator: AppOperationStateManager,
   ) {}
 
   /**

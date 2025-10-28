@@ -29,6 +29,7 @@ import { InfraDfdWebsocketAdapter } from '../../infrastructure/adapters/infra-df
 import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
 import { AppDiagramOperationBroadcaster } from './app-diagram-operation-broadcaster.service';
 import { AppRemoteOperationHandler } from './app-remote-operation-handler.service';
+import { AppHistoryService } from './app-history.service';
 import { UiPresenterCoordinatorService } from '../../presentation/services/ui-presenter-coordinator.service';
 import { NodeType } from '../../domain/value-objects/node-info';
 import { DfdStateStore } from '../../state/dfd.state';
@@ -120,6 +121,7 @@ export class AppDfdOrchestrator {
     private readonly dfdInfrastructure: AppDfdFacade,
     private readonly appDiagramOperationBroadcaster: AppDiagramOperationBroadcaster,
     private readonly appRemoteOperationHandler: AppRemoteOperationHandler,
+    private readonly appHistoryService: AppHistoryService,
     private readonly uiPresenterCoordinator: UiPresenterCoordinatorService,
     private readonly selectionAdapter: InfraX6SelectionAdapter,
     private readonly dfdStateStore: DfdStateStore,
@@ -257,6 +259,36 @@ export class AppDfdOrchestrator {
         return throwError(() => error);
       }),
     );
+  }
+
+  /**
+   * Undo the last operation
+   */
+  undo(): Observable<OperationResult> {
+    this.logger.debug('AppDfdOrchestrator: Undo requested');
+    return this.appHistoryService.undo();
+  }
+
+  /**
+   * Redo the last undone operation
+   */
+  redo(): Observable<OperationResult> {
+    this.logger.debug('AppDfdOrchestrator: Redo requested');
+    return this.appHistoryService.redo();
+  }
+
+  /**
+   * Check if undo is available
+   */
+  canUndo(): boolean {
+    return this.appHistoryService.canUndo();
+  }
+
+  /**
+   * Check if redo is available
+   */
+  canRedo(): boolean {
+    return this.appHistoryService.canRedo();
   }
 
   /**
@@ -1197,6 +1229,14 @@ export class AppDfdOrchestrator {
     this.appRemoteOperationHandler.initialize(
       this.dfdInfrastructure.getGraph(),
       this._operationContext,
+    );
+
+    // Initialize history service for undo/redo operations
+    this.logger.info('Initializing history service');
+    this.appHistoryService.initialize(
+      this._operationContext,
+      params.diagramId,
+      params.threatModelId,
     );
 
     // Note: Validation callbacks are now configured directly in graph options during creation

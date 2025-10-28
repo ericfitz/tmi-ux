@@ -29,9 +29,9 @@ import { InfraVisualEffectsService } from '../../infrastructure/services/infra-v
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import {
-  AppGraphHistoryCoordinator,
+  AppOperationStateManager,
   HISTORY_OPERATION_TYPES,
-} from './app-graph-history-coordinator.service';
+} from './app-operation-state-manager.service';
 import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
@@ -78,7 +78,7 @@ export class AppEdgeService {
     private infraX6HistoryAdapter: InfraX6HistoryAdapter,
     private infraVisualEffectsService: InfraVisualEffectsService,
     private infraEdgeService: InfraEdgeService,
-    private historyCoordinator: AppGraphHistoryCoordinator,
+    private historyCoordinator: AppOperationStateManager,
   ) {}
 
   // ========================================

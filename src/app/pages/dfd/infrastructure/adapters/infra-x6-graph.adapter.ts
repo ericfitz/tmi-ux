@@ -27,7 +27,6 @@ import '@antv/x6-plugin-export';
 import { Export } from '@antv/x6-plugin-export';
 import { Snapline } from '@antv/x6-plugin-snapline';
 import { Transform } from '@antv/x6-plugin-transform';
-import { History } from '@antv/x6-plugin-history';
 import '@antv/x6-plugin-clipboard';
 import { Clipboard } from '@antv/x6-plugin-clipboard';
 
@@ -51,9 +50,9 @@ import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
 import { InfraX6EventLoggerAdapter } from './infra-x6-event-logger.adapter';
 import { AppEdgeService } from '../../application/services/app-edge.service';
 import {
-  AppGraphHistoryCoordinator,
+  AppOperationStateManager,
   HISTORY_OPERATION_TYPES,
-} from '../../application/services/app-graph-history-coordinator.service';
+} from '../../application/services/app-operation-state-manager.service';
 import { AppDiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
 import { AppNotificationService } from '../../application/services/app-notification.service';
@@ -133,7 +132,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     private readonly _selectionAdapter: InfraX6SelectionAdapter,
     private readonly _x6EventLogger: InfraX6EventLoggerAdapter,
     private readonly _edgeService: AppEdgeService,
-    private readonly _historyCoordinator: AppGraphHistoryCoordinator,
+    private readonly _historyCoordinator: AppOperationStateManager,
     private readonly _diagramOperationBroadcaster: AppDiagramOperationBroadcaster,
     private readonly _x6CoreOps: InfraX6CoreOperationsService,
     private readonly _injector: Injector,
@@ -839,15 +838,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Clear the history stack - delegates to InfraX6HistoryAdapter
-   */
-  clearHistory(): void {
-    this._historyManager.clearHistory(this._graph!);
-  }
-
-  /**
    * Enable or disable history tracking based on collaboration state
    * When in collaboration, history is managed by the server
+   * Note: This method is deprecated as we now use AppHistoryService
    */
   setHistoryEnabled(enabled: boolean): void {
     if (!this._graph) {
@@ -1419,18 +1412,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         }),
       );
 
-      // Enable history plugin with centralized filtering via AppGraphHistoryCoordinator
-      // History is always enabled - filtering happens via beforeAddCommand
-      this._graph.use(
-        new History({
-          stackSize: 10,
-          enabled: true, // Always enabled - filtering handled by AppGraphHistoryCoordinator
-          beforeAddCommand: (event: string, args: any) => {
-            // Delegate filtering to the centralized history coordinator
-            return this._shouldIncludeInHistory(event, args);
-          },
-        }),
-      );
+      // Note: X6 History plugin has been removed - we now use AppHistoryService for undo/redo
+      // This provides better control over history entries and integrates with our
+      // custom operation system and collaboration features
 
       // Enable transform plugin for resizing
       this._graph.use(
@@ -2092,144 +2076,19 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     return {};
   }
 
+  // Note: _shouldIncludeInHistory and _shouldIncludeInHistoryInternal methods removed
+  // These were part of the X6 History plugin integration which has been replaced
+  // by AppHistoryService. History filtering now happens at the operation level.
+
   /**
-   * Centralized history filtering logic using AppGraphHistoryCoordinator
+   * Unused method - keeping signature for backward compatibility
+   * History filtering now handled by AppHistoryService
+   * @deprecated Use AppHistoryService instead
    */
-  private _shouldIncludeInHistory(event: string, args: any): boolean {
-    const result = this._shouldIncludeInHistoryInternal(event, args);
-
-    // Log when events are being included to help debug unwanted history entries
-    // Exclude position changes from logging as they're very noisy during drags
-    if (result && args.key !== 'position') {
-      this.logger.info('INCLUDING event in history', {
-        event,
-        cellId: args.cell?.id,
-        key: args.key,
-        options: args.options,
-      });
-    }
-
-    return result;
-  }
-
-  private _shouldIncludeInHistoryInternal(event: string, args: any): boolean {
-    // Priority 1: Exclude during diagram loading
-    if (this._historyCoordinator.isDiagramLoading()) {
-      this.logger.debugComponent('X6Graph', 'Excluding event during diagram loading', {
-        event,
-        cellId: args.cell?.id,
-      });
-      return false;
-    }
-
-    // Priority 2: Exclude based on current operation type
-    const currentOperationType = this._historyCoordinator.getCurrentOperationType();
-    if (
-      currentOperationType &&
-      this._historyCoordinator.shouldExcludeOperationType(currentOperationType)
-    ) {
-      this.logger.debugComponent('X6Graph', 'Excluding event for excluded operation type', {
-        event,
-        operationType: currentOperationType,
-      });
-      return false;
-    }
-
-    // Priority 3: If any cell involved is currently being dragged, exclude from history
-    // This prevents interim drag states from cluttering history
-    if (args.cell && this._historyCoordinator.isDragInProgress(args.cell.id)) {
-      this.logger.debugComponent('X6Graph', 'Excluding event during drag operation', {
-        event,
-        cellId: args.cell.id,
-      });
-      return false;
-    }
-
-    // Also check for multi-cell operations where some cells might be dragging
-    if (args.added && Array.isArray(args.added)) {
-      const anyDragging = args.added.some(
-        (cell: any) => cell.id && this._historyCoordinator.isDragInProgress(cell.id),
-      );
-      if (anyDragging) {
-        this.logger.debugComponent('X6Graph', 'Excluding multi-cell event during drag');
-        return false;
-      }
-    }
-
-    // Priority 4: Completely exclude tools from history
-    if (event === 'cell:change:tools') {
-      // this.logger.debugComponent('X6Graph', 'Excluding tools event');
-      return false;
-    }
-
-    // Handle cell:change:* events (which is what X6 actually fires)
-    if (event === 'cell:change:*' && args.key) {
-      // Handle different types of changes based on the key
-
-      // Exclude tool changes
-      if (args.key === 'tools') {
-        // this.logger.debugComponent('X6Graph', 'Excluding tools key change');
-        return false;
-      }
-
-      // Exclude zIndex changes (usually for visual layering)
-      if (args.key === 'zIndex') {
-        // this.logger.debugComponent('X6Graph', 'Excluding zIndex change');
-        return false;
-      }
-
-      // Handle attribute changes
-      if (args.key === 'attrs' && args.current && args.previous) {
-        // Instead of checking all current attributes, check what actually changed
-        const actualChanges = this._findActualAttributeChanges(args.current, args.previous);
-
-        // Check if all actual changes are visual-only
-        const isOnlyVisualAttributes = actualChanges.every(changePath => {
-          const isExcluded = this._historyCoordinator.shouldExcludeAttribute(changePath);
-          // this.logger.debugComponent('X6Graph', `Checking ${changePath}: excluded=${isExcluded}`);
-          return isExcluded;
-        });
-
-        if (isOnlyVisualAttributes) {
-          // this.logger.debugComponent('X6Graph', 'Excluding visual-only attribute changes');
-          return false; // Don't add to history
-        }
-
-        // Only log when we have non-visual changes
-        this.logger.debugComponent('X6Graph', 'Actual attribute changes detected:', actualChanges);
-        // this.logger.debugComponent('X6Graph', 'Including attribute changes - not all visual');
-      }
-
-      // Handle port changes - check if they're only visibility changes
-      if (args.key === 'ports' && args.options && args.options.propertyPath) {
-        const isPortVisibilityOnly = this._historyCoordinator.shouldExcludeAttribute(
-          undefined,
-          args.options.propertyPath,
-        );
-
-        if (isPortVisibilityOnly) {
-          /* this.logger.debugComponent(
-            'X6Graph',
-            'Excluding port visibility change:',
-            args.options.propertyPath,
-          ); */
-          return false; // Don't add to history
-        }
-        /* this.logger.debugComponent(
-          'X6Graph',
-          'Including port change - not visibility only:',
-          args.options.propertyPath,
-        ); */
-      }
-
-      // For other cell:change:* events, allow them unless they're specifically excluded
-      // this.logger.debugComponent('X6Graph', 'Including cell:change:* event with key:', args.key);
-      return true;
-    }
-
-    // Allow all other changes (position, size, labels, structure)
-    // this.logger.debugComponent('X6Graph', 'Including other event type:', event);
-    return true;
+  private _shouldIncludeInHistoryInternal(_event: string, _args: any): boolean {
+    // Method deprecated - X6 History plugin has been removed
+    // History is now managed by AppHistoryService
+    return true; // No-op for backward compatibility
   }
 
   /**

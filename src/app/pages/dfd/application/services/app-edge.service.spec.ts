@@ -15,7 +15,7 @@ import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-o
 import { InfraX6HistoryAdapter } from '../../infrastructure/adapters/infra-x6-history.adapter';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
-import { AppGraphHistoryCoordinator } from './app-graph-history-coordinator.service';
+import { AppOperationStateManager } from './app-operation-state-manager.service';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { registerCustomShapes } from '../../infrastructure/adapters/infra-x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
@@ -31,7 +31,7 @@ interface MockX6HistoryManager {
   executeCommand?: ReturnType<typeof vi.fn>;
 }
 
-interface MockAppGraphHistoryCoordinator {
+interface MockAppOperationStateManager {
   executeVisualEffect: ReturnType<typeof vi.fn>;
 }
 
@@ -53,7 +53,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
   let mockX6HistoryManager: MockX6HistoryManager;
   let mockVisualEffectsService: MockVisualEffectsService;
   let mockEdgeService: MockEdgeService;
-  let mockGraphHistoryCoordinator: MockAppGraphHistoryCoordinator;
+  let mockGraphHistoryCoordinator: MockAppOperationStateManager;
 
   beforeEach(() => {
     // Initialize X6 cell extensions and register DFD shapes
@@ -103,7 +103,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
       mockX6HistoryManager as unknown as InfraX6HistoryAdapter,
       mockVisualEffectsService as unknown as InfraVisualEffectsService,
       mockEdgeService as unknown as InfraEdgeService,
-      mockGraphHistoryCoordinator as unknown as AppGraphHistoryCoordinator,
+      mockGraphHistoryCoordinator as unknown as AppOperationStateManager,
     );
   });
 

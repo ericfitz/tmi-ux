@@ -4,7 +4,7 @@ import { map, catchError, timeout, switchMap } from 'rxjs/operators';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { ThreatModelService } from '../../../tm/services/threat-model.service';
-import { AppGraphHistoryCoordinator } from './app-graph-history-coordinator.service';
+import { AppOperationStateManager } from './app-operation-state-manager.service';
 import { InfraPortStateService } from '../../infrastructure/services/infra-port-state.service';
 import { getX6ShapeForNodeType } from '../../infrastructure/adapters/infra-x6-shape-definitions';
 import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
@@ -46,7 +46,7 @@ export class AppDiagramService {
   constructor(
     private logger: LoggerService,
     private threatModelService: ThreatModelService,
-    private historyCoordinator: AppGraphHistoryCoordinator,
+    private historyCoordinator: AppOperationStateManager,
     private portStateManager: InfraPortStateService,
     private infraNodeService: InfraNodeService,
     private infraEdgeService: InfraEdgeService,

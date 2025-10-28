@@ -7,9 +7,9 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { SelectionService } from '../services/infra-selection.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS, NodeType } from '../../constants/styling-constants';
 import {
-  AppGraphHistoryCoordinator,
+  AppOperationStateManager,
   HISTORY_OPERATION_TYPES,
-} from '../../application/services/app-graph-history-coordinator.service';
+} from '../../application/services/app-operation-state-manager.service';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
 import { InfraEdgeService } from '../services/infra-edge.service';
 
@@ -34,7 +34,7 @@ export class InfraX6SelectionAdapter {
   constructor(
     private logger: LoggerService,
     private selectionService: SelectionService,
-    private historyCoordinator: AppGraphHistoryCoordinator,
+    private historyCoordinator: AppOperationStateManager,
     private x6CoreOps: InfraX6CoreOperationsService,
     private infraEdgeService: InfraEdgeService,
   ) {}

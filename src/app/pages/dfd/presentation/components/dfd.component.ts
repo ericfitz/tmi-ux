@@ -46,11 +46,12 @@ import {
 import { AppDfdOrchestrator } from '../../application/services/app-dfd-orchestrator.service';
 import { AppDfdFacade } from '../../application/facades/app-dfd.facade';
 import { AppEdgeService } from '../../application/services/app-edge.service';
-import { AppGraphHistoryCoordinator } from '../../application/services/app-graph-history-coordinator.service';
+import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
 import { AppDiagramService } from '../../application/services/app-diagram.service';
 import { AppDiagramLoadingService } from '../../application/services/app-diagram-loading.service';
 import { AppDiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
 import { AppRemoteOperationHandler } from '../../application/services/app-remote-operation-handler.service';
+import { AppHistoryService } from '../../application/services/app-history.service';
 import { AppGraphOperationManager } from '../../application/services/app-graph-operation-manager.service';
 import { AppPersistenceCoordinator } from '../../application/services/app-persistence-coordinator.service';
 import { AppDiagramResyncService } from '../../application/services/app-diagram-resync.service';
@@ -137,11 +138,12 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     AppDfdOrchestrator, // Main coordination service
     AppDfdFacade, // Facade encapsulates all infrastructure dependencies
     AppEdgeService, // Application edge service
-    AppGraphHistoryCoordinator, // History coordination service
+    AppOperationStateManager, // Operation state management service
     AppDiagramService, // Diagram data management service
     AppDiagramLoadingService, // Diagram loading service
     AppDiagramOperationBroadcaster, // Operation broadcaster service
     AppRemoteOperationHandler, // Remote operation handler service
+    AppHistoryService, // Custom history service for undo/redo
     AppGraphOperationManager, // Operation manager service
     AppPersistenceCoordinator, // Simplified persistence coordination service
     AppDiagramResyncService, // Diagram resync service (changed from root to component-scoped)
