@@ -103,6 +103,8 @@
     "noMetadata": "لا توجد بيانات وصفية متاحة",
     "noThreats": "لا توجد تهديدات متاحة",
     "objectTypes": {
+      "asset": "أصل",
+      "assets": "أصول",
       "cell": "خلية",
       "diagram": "مخطط",
       "document": "وثيقة",

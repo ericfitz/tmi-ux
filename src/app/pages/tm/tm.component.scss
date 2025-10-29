@@ -140,7 +140,8 @@ mat-card-content {
   color: rgb(0 0 0 / 60%);
 
   .stats-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 16px;
   }
 }
@@ -149,6 +150,7 @@ mat-card-content {
   display: flex;
   align-items: center;
   gap: 4px;
+  min-width: 0;
 
   mat-icon {
     font-size: 16px;

@@ -103,6 +103,8 @@
     "noMetadata": "ไม่มีข้อมูลเมตา",
     "noThreats": "ไม่มีภัยคุกคาม",
     "objectTypes": {
+      "asset": "สินทรัพย์",
+      "assets": "สินทรัพย์",
       "cell": "เซลล์",
       "diagram": "แผนภาพ",
       "document": "เอกสาร",

@@ -103,6 +103,8 @@
     "noMetadata": "无可用元数据",
     "noThreats": "无可用威胁",
     "objectTypes": {
+      "asset": "资产",
+      "assets": "资产",
       "cell": "单元格",
       "diagram": "图表",
       "document": "文档",
