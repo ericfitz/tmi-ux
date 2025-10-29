@@ -38,6 +38,17 @@ export interface Note {
   metadata?: Metadata[];
 }
 
+export interface Asset {
+  id: string;
+  name: string;
+  description?: string;
+  type: 'data' | 'hardware' | 'software' | 'infrastructure' | 'service' | 'personnel';
+  criticality?: string;
+  classification?: string[];
+  sensitivity?: string[];
+  metadata?: Metadata[];
+}
+
 export interface Threat {
   id: string;
   threat_model_id: string;
@@ -73,6 +84,7 @@ export interface ThreatModel {
   repositories?: Repository[];
   diagrams?: import('./diagram.model').Diagram[];
   notes?: Note[];
+  assets?: Asset[];
   threats?: Threat[];
 }
 
@@ -183,6 +195,38 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
       },
     ],
     diagrams: [], // Will be populated by actual Diagram objects
+    assets: [
+      {
+        id: 'aba7b810-9dad-11d1-beef-00c04fd430d1',
+        name: 'Customer Database',
+        description: 'Primary database containing customer information',
+        type: 'data',
+        criticality: 'high',
+        classification: ['confidential', 'regulated'],
+        sensitivity: ['pii', 'financial'],
+        metadata: [
+          {
+            key: 'data_retention',
+            value: '7_years',
+          },
+        ],
+      },
+      {
+        id: 'aba7b810-9dad-11d1-beef-00c04fd430d2',
+        name: 'API Gateway',
+        description: 'Main entry point for all API requests',
+        type: 'infrastructure',
+        criticality: 'critical',
+        classification: ['production'],
+        sensitivity: ['public-facing'],
+        metadata: [
+          {
+            key: 'availability_requirement',
+            value: '99.99%',
+          },
+        ],
+      },
+    ],
     notes: [
       {
         id: '9ba7b810-9dad-11d1-beef-00c04fd430c8',

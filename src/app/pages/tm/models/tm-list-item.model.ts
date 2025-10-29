@@ -18,4 +18,6 @@ export interface TMListItem {
   repo_count: number;
   diagram_count: number;
   threat_count: number;
+  asset_count: number;
+  note_count: number;
 }

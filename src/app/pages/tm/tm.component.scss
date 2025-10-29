@@ -134,9 +134,15 @@ mat-card-content {
 
 .threat-model-stats {
   display: flex;
-  gap: 16px;
+  flex-direction: column;
+  gap: 8px;
   font-size: 0.85rem;
   color: rgb(0 0 0 / 60%);
+
+  .stats-row {
+    display: flex;
+    gap: 16px;
+  }
 }
 
 .stat {

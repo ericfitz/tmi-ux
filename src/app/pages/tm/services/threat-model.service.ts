@@ -2054,6 +2054,8 @@ export class ThreatModelService implements OnDestroy {
       repo_count: threatModel.repositories?.length || 0,
       diagram_count: threatModel.diagrams?.length || 0,
       threat_count: threatModel.threats?.length || 0,
+      asset_count: threatModel.assets?.length || 0,
+      note_count: threatModel.notes?.length || 0,
     };
   }
 

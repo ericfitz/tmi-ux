@@ -103,6 +103,8 @@
     "noMetadata": "No Metadata Available",
     "noThreats": "No Threats Available",
     "objectTypes": {
+      "asset": "Asset",
+      "assets": "Assets",
       "cell": "Cell",
       "diagram": "Diagram",
       "document": "Document",

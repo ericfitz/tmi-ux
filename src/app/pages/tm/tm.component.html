@@ -51,29 +51,48 @@
               {{ threatModel.description }}
             </p>
             <div class="threat-model-stats">
-              <span class="stat">
-                <mat-icon>account_tree</mat-icon>
-                {{ threatModel.diagram_count }}
-                {{ 'threatModels.diagramsCount' | transloco }}
-              </span>
-              <span class="stat">
-                <mat-icon
-                  fontSet="material-symbols-outlined"
-                  fontWeight="100"
-                  style="font-variation-settings: 'FILL' 0"
-                  class="skull-icon"
-                  >skull</mat-icon
-                >
-                {{ threatModel.threat_count }} {{ 'common.objectTypes.threats' | transloco }}
-              </span>
-              <span class="stat">
-                <mat-icon>description</mat-icon>
-                {{ threatModel.document_count }} {{ 'common.objectTypes.documents' | transloco }}
-              </span>
-              <span class="stat">
-                <mat-icon>code</mat-icon>
-                {{ threatModel.repo_count }} {{ 'threatModels.sourcesCount' | transloco }}
-              </span>
+              <div class="stats-row">
+                <span class="stat">
+                  <mat-icon
+                    fontSet="material-symbols-outlined"
+                    fontWeight="100"
+                    style="font-variation-settings: 'FILL' 0"
+                    >diamond</mat-icon
+                  >
+                  {{ threatModel.asset_count }} {{ 'common.objectTypes.assets' | transloco }}
+                </span>
+                <span class="stat">
+                  <mat-icon
+                    fontSet="material-symbols-outlined"
+                    fontWeight="100"
+                    style="font-variation-settings: 'FILL' 0"
+                    class="skull-icon"
+                    >skull</mat-icon
+                  >
+                  {{ threatModel.threat_count }} {{ 'common.objectTypes.threats' | transloco }}
+                </span>
+              </div>
+              <div class="stats-row">
+                <span class="stat">
+                  <mat-icon>account_tree</mat-icon>
+                  {{ threatModel.diagram_count }}
+                  {{ 'threatModels.diagramsCount' | transloco }}
+                </span>
+                <span class="stat">
+                  <mat-icon>note</mat-icon>
+                  {{ threatModel.note_count }} {{ 'common.objectTypes.notes' | transloco }}
+                </span>
+              </div>
+              <div class="stats-row">
+                <span class="stat">
+                  <mat-icon>description</mat-icon>
+                  {{ threatModel.document_count }} {{ 'common.objectTypes.documents' | transloco }}
+                </span>
+                <span class="stat">
+                  <mat-icon>code</mat-icon>
+                  {{ threatModel.repo_count }} {{ 'threatModels.sourcesCount' | transloco }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
