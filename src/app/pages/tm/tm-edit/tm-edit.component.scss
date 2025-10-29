@@ -56,19 +56,49 @@
   .issue-uri-icon-button {
     flex-shrink: 0;
     margin-top: 8px; // Keep button position aligned with form field
-    color: #1976d2; // Blue hyperlink color like document/source code icons
+    color: var(--color-primary);
     display: flex;
     align-items: center;
     justify-content: center;
 
+    mat-icon {
+      font-size: var(--icon-size-md);
+      width: var(--icon-size-md);
+      height: var(--icon-size-md);
+    }
+
     &:hover {
-      color: #1565c0; // Darker blue on hover
+      color: var(--color-primary-dark);
     }
 
     &:disabled {
       opacity: 0.4;
       color: inherit; // Keep default disabled color when disabled
     }
+  }
+}
+
+// Shared external link icon styling
+.external-link-icon {
+  color: var(--color-primary);
+  text-decoration: none;
+  margin-left: 8px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+
+  mat-icon {
+    font-size: var(--icon-size-md);
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
+  }
+
+  &:hover {
+    color: var(--color-primary-dark);
+  }
+
+  &:visited {
+    color: #7b1fa2;
   }
 }
 
@@ -79,7 +109,7 @@
   white-space: nowrap;
 
   &:hover {
-    color: #1565c0 !important;
+    color: var(--color-primary-dark) !important;
   }
 
   &:visited {
@@ -482,13 +512,7 @@ mat-card-header {
   }
 }
 
-// Source code and document URL icon styles (higher specificity - must come before mat-icon)
-.repository-content .repository-url-icon mat-icon,
-.document-content .document-url-icon mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-}
+// Removed: Now using shared .external-link-icon class
 
 // Styling for the new threat list layout
 .threat-list-item {
@@ -511,7 +535,7 @@ mat-card-header {
       margin-left: 8px;
 
       &:hover {
-        color: #1976d2;
+        color: var(--color-primary);
       }
     }
 
@@ -557,28 +581,7 @@ mat-card-header {
       }
     }
 
-    .threat-issue-uri-icon {
-      color: #1976d2;
-      text-decoration: none;
-      margin-left: 8px;
-      flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-
-      mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-      }
-
-      &:hover {
-        color: #1565c0;
-      }
-
-      &:visited {
-        color: #7b1fa2;
-      }
-    }
+    // Removed: Now using shared .external-link-icon class
   }
 }
 
@@ -611,27 +614,11 @@ mat-card-header {
     white-space: nowrap;
 
     &:hover {
-      color: #1976d2;
+      color: var(--color-primary);
     }
   }
 
-  .repository-url-icon,
-  .document-url-icon {
-    color: #1976d2;
-    text-decoration: none;
-    margin-left: 8px;
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-
-    &:hover {
-      color: #1565c0;
-    }
-
-    &:visited {
-      color: #7b1fa2;
-    }
-  }
+  // Removed: Now using shared .external-link-icon class
 }
 
 // Ensure action buttons in source code items have centered icons
