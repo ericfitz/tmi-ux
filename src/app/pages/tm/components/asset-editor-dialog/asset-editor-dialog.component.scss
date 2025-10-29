@@ -1,0 +1,44 @@
+.asset-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 500px;
+  padding: 16px 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.chip-input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .chip-label {
+    font-size: 12px;
+    color: rgb(0 0 0 / 60%);
+  }
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  mat-chip-grid {
+    min-height: 40px;
+  }
+
+  mat-chip-row {
+    font-size: 14px;
+  }
+}
+
+mat-dialog-content {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  margin: 0;
+}

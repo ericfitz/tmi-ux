@@ -100,6 +100,7 @@
     "metadataKey": "Key",
     "metadataValue": "Value",
     "mitigated": "Mitigated",
+    "none": "None",
     "noMetadata": "No Metadata Available",
     "noThreats": "No Threats Available",
     "objectTypes": {
@@ -248,6 +249,27 @@
       "serverConnectionError": "Server Connection Error"
     }
   },
+  "assetEditor": {
+    "chipPlaceholder": "Enter value and press Enter",
+    "classification": "Classification",
+    "criticality": "Criticality",
+    "description": "Description",
+    "name": "Asset Name",
+    "sensitivity": "Sensitivity",
+    "title": {
+      "create": "Create Asset",
+      "edit": "Edit Asset"
+    },
+    "type": "Asset Type",
+    "types": {
+      "data": "Data",
+      "hardware": "Hardware",
+      "infrastructure": "Infrastructure",
+      "personnel": "Personnel",
+      "service": "Service",
+      "software": "Software"
+    }
+  },
   "noteEditor": {
     "characterCount": "{{current}} / {{max}} characters",
     "content": "Content",
@@ -363,6 +385,7 @@
     "issueUriHint": "Enter a URL to track this threat model in an external system",
     "name": "Name",
     "newThreatModel": "New Threat Model",
+    "noAssets": "No Assets Added Yet",
     "noDiagrams": "No Diagrams Added Yet",
     "noDocuments": "No Documents Added Yet",
     "noItemsMessage": "You Don't Have Any Threat Models Yet.",
@@ -392,10 +415,13 @@
     "threatModelFramework": "Threat Model Framework",
     "threatModelPrefix": "Threat Model:",
     "tooltips": {
+      "addAsset": "Add Asset",
       "addDiagram": "Add Diagram",
       "addDocument": "Add Document",
       "addNote": "Add Note",
       "addRepository": "Add Repository Reference",
+      "assetsCardTitle": "Assets are valuable resources within the system that require protection, such as data, hardware, software, infrastructure, services, or personnel.",
+      "deleteAsset": "Delete Asset",
       "deleteDiagram": "Delete Diagram",
       "deleteDocument": "Delete Document",
       "deleteRepository": "Delete Repository Reference",

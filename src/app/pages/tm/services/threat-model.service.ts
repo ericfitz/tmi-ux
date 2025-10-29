@@ -28,6 +28,7 @@ import {
   Document as TMDocument,
   Repository,
   Note,
+  Asset,
   Metadata,
   Threat,
 } from '../models/threat-model.model';
@@ -2022,6 +2023,224 @@ export class ThreatModelService implements OnDestroy {
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for note ID: ${noteId}`, error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Get assets for a threat model
+   */
+  getAssetsForThreatModel(threatModelId: string): Observable<Asset[]> {
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - returning assets from cache');
+      const cachedModel = this._cachedThreatModels.get(threatModelId);
+      return of(cachedModel?.assets || []);
+    }
+
+    this.logger.debugComponent(
+      'ThreatModelService',
+      `Fetching assets for threat model with ID: ${threatModelId} from API`,
+    );
+    return this.apiService.get<Asset[]>(`threat_models/${threatModelId}/assets`).pipe(
+      catchError(error => {
+        this.logger.error(
+          `Error fetching assets for threat model with ID: ${threatModelId}`,
+          error,
+        );
+        return of([]);
+      }),
+    );
+  }
+
+  /**
+   * Create a new asset for a threat model
+   */
+  createAsset(threatModelId: string, asset: Partial<Asset>): Observable<Asset> {
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - creating asset in cache only');
+
+      const newAsset: Asset = {
+        ...asset,
+        id: uuidv4(),
+        metadata: [],
+      } as Asset;
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel) {
+        const updatedAssets = [...(threatModel.assets || []), newAsset];
+        const updatedThreatModel = {
+          ...threatModel,
+          assets: updatedAssets,
+          modified_at: new Date().toISOString(),
+        };
+        this._cachedThreatModels.set(threatModelId, updatedThreatModel);
+      }
+      return of(newAsset);
+    }
+
+    const { id, ...assetData } = asset as Asset;
+
+    return this.apiService
+      .post<Asset>(
+        `threat_models/${threatModelId}/assets`,
+        assetData as unknown as Record<string, unknown>,
+      )
+      .pipe(
+        catchError(error => {
+          this.logger.error(`Error creating asset for threat model ID: ${threatModelId}`, error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Update an existing asset
+   */
+  updateAsset(threatModelId: string, assetId: string, asset: Partial<Asset>): Observable<Asset> {
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - updating asset in cache only');
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.assets) {
+        const index = threatModel.assets.findIndex(a => a.id === assetId);
+        if (index !== -1) {
+          const updatedAsset = { ...threatModel.assets[index], ...asset };
+          const updatedAssets = [
+            ...threatModel.assets.slice(0, index),
+            updatedAsset,
+            ...threatModel.assets.slice(index + 1),
+          ];
+          const updatedThreatModel = {
+            ...threatModel,
+            assets: updatedAssets,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
+          return of(updatedAsset);
+        }
+      }
+      return of(asset as Asset);
+    }
+
+    const { id, ...assetData } = asset as Asset;
+
+    return this.apiService
+      .put<Asset>(
+        `threat_models/${threatModelId}/assets/${assetId}`,
+        assetData as unknown as Record<string, unknown>,
+      )
+      .pipe(
+        catchError(error => {
+          this.logger.error(`Error updating asset ID: ${assetId}`, error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Delete an asset
+   */
+  deleteAsset(threatModelId: string, assetId: string): Observable<boolean> {
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - deleting asset from cache only');
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.assets) {
+        const initialLength = threatModel.assets.length;
+        const filteredAssets = threatModel.assets.filter(a => a.id !== assetId);
+        const wasDeleted = filteredAssets.length < initialLength;
+        if (wasDeleted) {
+          const updatedThreatModel = {
+            ...threatModel,
+            assets: filteredAssets,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
+        }
+        return of(wasDeleted);
+      }
+      return of(false);
+    }
+
+    return this.apiService.delete(`threat_models/${threatModelId}/assets/${assetId}`).pipe(
+      map(() => true),
+      catchError(error => {
+        this.logger.error(`Error deleting asset ID: ${assetId}`, error);
+        throw error;
+      }),
+    );
+  }
+
+  /**
+   * Get metadata for an asset
+   */
+  getAssetMetadata(threatModelId: string, assetId: string): Observable<Metadata[]> {
+    if (this.isOfflineMode) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      const asset = threatModel?.assets?.find(a => a.id === assetId);
+      return of(asset?.metadata || []);
+    }
+
+    return this.apiService
+      .get<Metadata[]>(`threat_models/${threatModelId}/assets/${assetId}/metadata`)
+      .pipe(
+        catchError(error => {
+          this.logger.error(`Error fetching metadata for asset ID: ${assetId}`, error);
+          return of([]);
+        }),
+      );
+  }
+
+  /**
+   * Update metadata for an asset
+   */
+  updateAssetMetadata(
+    threatModelId: string,
+    assetId: string,
+    metadata: Metadata[],
+  ): Observable<Metadata[]> {
+    if (this.isOfflineMode) {
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.assets) {
+        const assetIndex = threatModel.assets.findIndex(a => a.id === assetId);
+        if (assetIndex !== -1) {
+          const updatedAsset = {
+            ...threatModel.assets[assetIndex],
+            metadata,
+          };
+          const updatedAssets = [
+            ...threatModel.assets.slice(0, assetIndex),
+            updatedAsset,
+            ...threatModel.assets.slice(assetIndex + 1),
+          ];
+          const updatedThreatModel = {
+            ...threatModel,
+            assets: updatedAssets,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
+        }
+      }
+      return of(metadata);
+    }
+
+    if (!metadata || metadata.length === 0) {
+      this.logger.debugComponent(
+        'ThreatModelService',
+        `Skipping metadata update for asset ${assetId} - no valid metadata to save`,
+        { threatModelId, assetId, metadataCount: metadata?.length || 0 },
+      );
+      return of([]);
+    }
+
+    return this.apiService
+      .put<
+        Metadata[]
+      >(`threat_models/${threatModelId}/assets/${assetId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      .pipe(
+        catchError(error => {
+          this.logger.error(`Error updating metadata for asset ID: ${assetId}`, error);
           throw error;
         }),
       );

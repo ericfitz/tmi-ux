@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
+import { MatChipsModule } from '@angular/material/chips';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThreatModelAuthorizationService } from '../services/threat-model-authorization.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -37,6 +38,10 @@ import {
   NoteEditorResult,
 } from '../components/note-editor-dialog/note-editor-dialog.component';
 import {
+  AssetEditorDialogComponent,
+  AssetEditorDialogData,
+} from '../components/asset-editor-dialog/asset-editor-dialog.component';
+import {
   PermissionsDialogComponent,
   PermissionsDialogData,
 } from '../components/permissions-dialog/permissions-dialog.component';
@@ -52,6 +57,7 @@ import {
 import { Diagram, DIAGRAMS_BY_ID } from '../models/diagram.model';
 import {
   Authorization,
+  Asset,
   Document,
   Metadata,
   Note,
@@ -104,6 +110,7 @@ interface RepositoryFormResult {
     ...FEEDBACK_MATERIAL_IMPORTS,
     MatListModule,
     MatGridListModule,
+    MatChipsModule,
     TranslocoModule,
   ],
   templateUrl: './tm-edit.component.html',
@@ -344,6 +351,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     // Load diagrams separately
     this.loadDiagrams(id);
+
+    // Load assets separately
+    this.loadAssets(id);
 
     // Load documents separately
     this.loadDocuments(id);
@@ -2586,6 +2596,227 @@ export class TmEditComponent implements OnInit, OnDestroy {
             this.threatModel.repositories = repositories;
           }
         }),
+    );
+  }
+
+  /**
+   * Get the appropriate Material icon for an asset type
+   * @param type The asset type
+   * @returns The Material icon name to use
+   */
+  getAssetTypeIcon(type?: string): string {
+    if (!type) {
+      return 'diamond'; // Default icon
+    }
+
+    const iconMap: Record<string, string> = {
+      data: 'database',
+      software: 'deployed_code',
+      hardware: 'host',
+      infrastructure: 'factory',
+      service: 'cloud_circle',
+      personnel: 'person',
+    };
+
+    return iconMap[type] || 'diamond';
+  }
+
+  /**
+   * Load assets for the threat model using separate API call
+   */
+  private loadAssets(threatModelId: string): void {
+    // Initialize assets array to empty array to ensure it exists
+    if (this.threatModel) {
+      this.threatModel.assets = [];
+    }
+
+    this._subscriptions.add(
+      this.threatModelService.getAssetsForThreatModel(threatModelId).subscribe({
+        next: assets => {
+          this.logger.debug('Assets loaded from API', {
+            count: assets.length,
+            assets: assets.map(a => ({ id: a.id, name: a.name })),
+          });
+          if (this.threatModel) {
+            this.threatModel.assets = assets;
+            this.logger.debug('Assets assigned to threat model', {
+              assignedCount: this.threatModel.assets.length,
+            });
+          }
+        },
+        error: error => {
+          this.logger.error('Failed to load assets', error);
+          if (this.threatModel) {
+            this.threatModel.assets = [];
+          }
+        },
+      }),
+    );
+  }
+
+  /**
+   * Opens the dialog to create a new asset
+   */
+  addAsset(): void {
+    if (!this.canEdit) {
+      this.logger.warn('User does not have permission to create assets');
+      return;
+    }
+
+    const dialogData: AssetEditorDialogData = {
+      mode: 'create',
+    };
+
+    const dialogRef = this.dialog.open(AssetEditorDialogComponent, {
+      width: '600px',
+      maxHeight: '90vh',
+      data: dialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: Partial<Asset> | undefined) => {
+        if (result && this.threatModel) {
+          this._subscriptions.add(
+            this.threatModelService.createAsset(this.threatModel.id, result).subscribe(
+              createdAsset => {
+                if (this.threatModel) {
+                  if (!this.threatModel.assets) {
+                    this.threatModel.assets = [];
+                  }
+                  if (!this.threatModel.assets.find(a => a.id === createdAsset.id)) {
+                    this.threatModel.assets.push(createdAsset);
+                  }
+                  this.logger.info('Created asset via API', { asset: createdAsset });
+                }
+              },
+              error => {
+                this.logger.error('Failed to create asset', error);
+              },
+            ),
+          );
+        }
+      }),
+    );
+  }
+
+  /**
+   * Opens the dialog to edit an existing asset
+   */
+  editAsset(asset: Asset, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+
+    const dialogData: AssetEditorDialogData = {
+      mode: 'edit',
+      asset: { ...asset },
+    };
+
+    const dialogRef = this.dialog.open(AssetEditorDialogComponent, {
+      width: '600px',
+      maxHeight: '90vh',
+      data: dialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: Partial<Asset> | undefined) => {
+        if (result && this.threatModel) {
+          this._subscriptions.add(
+            this.threatModelService.updateAsset(this.threatModel.id, asset.id, result).subscribe(
+              updatedAsset => {
+                if (this.threatModel && this.threatModel.assets) {
+                  const index = this.threatModel.assets.findIndex(a => a.id === asset.id);
+                  if (index !== -1) {
+                    this.threatModel.assets[index] = updatedAsset;
+                  }
+                  this.logger.info('Updated asset via API', { asset: updatedAsset });
+                }
+              },
+              error => {
+                this.logger.error('Failed to update asset', error);
+              },
+            ),
+          );
+        }
+      }),
+    );
+  }
+
+  /**
+   * Deletes an asset from the threat model
+   */
+  deleteAsset(asset: Asset, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+
+    if (!this.threatModel || !this.threatModel.assets || !this.canEdit) {
+      this.logger.warn('User does not have permission to delete assets');
+      return;
+    }
+
+    const confirmMessage = this.transloco.translate('common.confirmDelete', {
+      item: this.transloco.translate('common.objectTypes.asset').toLowerCase(),
+      name: asset.name,
+    });
+    const confirmDelete = window.confirm(confirmMessage);
+
+    if (confirmDelete) {
+      this._subscriptions.add(
+        this.threatModelService.deleteAsset(this.threatModel.id, asset.id).subscribe(success => {
+          if (success && this.threatModel && this.threatModel.assets) {
+            const index = this.threatModel.assets.findIndex(a => a.id === asset.id);
+            if (index !== -1) {
+              this.threatModel.assets.splice(index, 1);
+            }
+            this.logger.info('Deleted asset', { assetId: asset.id });
+          }
+        }),
+      );
+    }
+  }
+
+  /**
+   * Opens the metadata dialog for a specific asset
+   */
+  openAssetMetadataDialog(asset: Asset, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+
+    const dialogData: MetadataDialogData = {
+      metadata: asset.metadata || [],
+      isReadOnly: !this.canEdit,
+      objectType: 'Asset',
+      objectName: `${this.transloco.translate('common.objectTypes.asset')}: ${asset.name} (${asset.id})`,
+    };
+
+    const dialogRef = this.dialog.open(MetadataDialogComponent, {
+      width: '90vw',
+      maxWidth: '800px',
+      minWidth: '500px',
+      maxHeight: '80vh',
+      data: dialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
+        if (result && this.threatModel && this.canEdit) {
+          this._subscriptions.add(
+            this.threatModelService
+              .updateAssetMetadata(this.threatModel.id, asset.id, result)
+              .subscribe(updatedMetadata => {
+                if (updatedMetadata && this.threatModel && this.threatModel.assets) {
+                  const assetIndex = this.threatModel.assets.findIndex(a => a.id === asset.id);
+                  if (assetIndex !== -1) {
+                    this.threatModel.assets[assetIndex].metadata = updatedMetadata;
+                  }
+                  this.logger.info('Updated asset metadata via API', {
+                    assetId: asset.id,
+                    metadata: updatedMetadata,
+                  });
+                }
+              }),
+          );
+        }
+      }),
     );
   }
 

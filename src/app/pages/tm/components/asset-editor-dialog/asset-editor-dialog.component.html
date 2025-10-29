@@ -1,0 +1,107 @@
+<h2 mat-dialog-title>
+  {{
+    mode === 'create'
+      ? ('assetEditor.title.create' | transloco)
+      : ('assetEditor.title.edit' | transloco)
+  }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="assetForm" class="asset-form">
+    <!-- Asset Name -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label [transloco]="'assetEditor.name'">Asset Name</mat-label>
+      <input matInput formControlName="name" required />
+      <mat-error *ngIf="assetForm.get('name')?.hasError('required')">
+        {{ 'common.validation.required' | transloco }}
+      </mat-error>
+      <mat-error *ngIf="assetForm.get('name')?.hasError('maxlength')">
+        {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label [transloco]="'assetEditor.description'">Description</mat-label>
+      <textarea matInput formControlName="description" rows="3"></textarea>
+      <mat-error *ngIf="assetForm.get('description')?.hasError('maxlength')">
+        {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Asset Type -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label [transloco]="'assetEditor.type'">Asset Type</mat-label>
+      <mat-select formControlName="type">
+        <mat-option [value]="">{{ 'common.none' | transloco }}</mat-option>
+        <mat-option *ngFor="let type of assetTypes" [value]="type">
+          {{ 'assetEditor.types.' + type | transloco }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Criticality -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label [transloco]="'assetEditor.criticality'">Criticality</mat-label>
+      <input matInput formControlName="criticality" />
+      <mat-error *ngIf="assetForm.get('criticality')?.hasError('maxlength')">
+        {{ 'common.validation.maxLength' | transloco: { max: 64 } }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Classification -->
+    <div class="chip-input-section">
+      <mat-label class="chip-label">{{ 'assetEditor.classification' | transloco }}</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-chip-grid #classificationChipGrid>
+          <mat-chip-row
+            *ngFor="let classification of assetForm.get('classification')?.value"
+            (removed)="removeClassification(classification)"
+          >
+            {{ classification }}
+            <button matChipRemove [attr.aria-label]="'Remove ' + classification">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+        </mat-chip-grid>
+        <input
+          placeholder="{{ 'assetEditor.chipPlaceholder' | transloco }}"
+          [matChipInputFor]="classificationChipGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          (matChipInputTokenEnd)="addClassification($event)"
+        />
+      </mat-form-field>
+    </div>
+
+    <!-- Sensitivity -->
+    <div class="chip-input-section">
+      <mat-label class="chip-label">{{ 'assetEditor.sensitivity' | transloco }}</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-chip-grid #sensitivityChipGrid>
+          <mat-chip-row
+            *ngFor="let sensitivity of assetForm.get('sensitivity')?.value"
+            (removed)="removeSensitivity(sensitivity)"
+          >
+            {{ sensitivity }}
+            <button matChipRemove [attr.aria-label]="'Remove ' + sensitivity">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+        </mat-chip-grid>
+        <input
+          placeholder="{{ 'assetEditor.chipPlaceholder' | transloco }}"
+          [matChipInputFor]="sensitivityChipGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          (matChipInputTokenEnd)="addSensitivity($event)"
+        />
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">{{ 'common.cancel' | transloco }}</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="assetForm.invalid">
+    {{ mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco) }}
+  </button>
+</mat-dialog-actions>

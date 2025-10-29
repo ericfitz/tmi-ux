@@ -205,6 +205,191 @@
       </mat-card-content>
     </mat-card>
 
+    <!-- Assets Card -->
+    <mat-card class="assets-card">
+      <mat-card-header>
+        <mat-card-title
+          [transloco]="'common.objectTypes.assets'"
+          [matTooltip]="'threatModels.tooltips.assetsCardTitle' | transloco"
+          >Assets</mat-card-title
+        >
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="addAsset()"
+          [matTooltip]="'threatModels.tooltips.addAsset' | transloco"
+          [attr.aria-label]="'threatModels.tooltips.addAsset' | transloco"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item
+            *ngFor="let asset of threatModel.assets"
+            class="asset-item clickable"
+            (click)="editAsset(asset, $event)"
+          >
+            <mat-icon
+              matListItemIcon
+              class="material-symbols-outlined"
+              [matTooltip]="asset.type ? ('assetEditor.types.' + asset.type | transloco) : ''"
+              matTooltipPosition="above"
+            >
+              {{ getAssetTypeIcon(asset.type) }}
+            </mat-icon>
+            <div matListItemTitle class="asset-content">
+              <div class="asset-name-row">
+                <span
+                  class="asset-name"
+                  [matTooltip]="asset.description"
+                  matTooltipClass="asset-description-tooltip"
+                  matTooltipPosition="above"
+                >
+                  {{ asset.name }}
+                </span>
+                <div class="asset-chips-container">
+                  <mat-chip-set
+                    *ngIf="asset.classification && asset.classification.length > 0"
+                    class="asset-chips classification-chips"
+                  >
+                    <mat-chip *ngFor="let item of asset.classification" disabled>
+                      {{ item }}
+                    </mat-chip>
+                  </mat-chip-set>
+                  <mat-chip-set
+                    *ngIf="asset.sensitivity && asset.sensitivity.length > 0"
+                    class="asset-chips sensitivity-chips"
+                  >
+                    <mat-chip *ngFor="let item of asset.sensitivity" disabled>
+                      {{ item }}
+                    </mat-chip>
+                  </mat-chip-set>
+                </div>
+              </div>
+            </div>
+            <div matListItemMeta class="asset-actions">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="openAssetMetadataDialog(asset, $event)"
+                [matTooltip]="'common.manageMetadata' | transloco"
+                [attr.aria-label]="'common.manageMetadata' | transloco"
+              >
+                <mat-icon>list</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="editAsset(asset, $event)"
+                [matTooltip]="'common.edit' | transloco"
+                [attr.aria-label]="'common.edit' | transloco"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteAsset(asset, $event)"
+                [matTooltip]="'common.delete' | transloco"
+                [attr.aria-label]="'common.delete' | transloco"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-list-item>
+        </mat-list>
+        <div *ngIf="!threatModel.assets?.length" class="no-items-message">
+          {{ 'threatModels.noAssets' | transloco }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Threats Card -->
+    <mat-card class="threats-card">
+      <mat-card-header>
+        <mat-card-title
+          [transloco]="'common.objectTypes.threats'"
+          [matTooltip]="'threatModels.tooltips.threatsCardTitle' | transloco"
+          >Threats</mat-card-title
+        >
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="openThreatEditor()"
+          [matTooltip]="'common.addThreat' | transloco"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item
+            *ngFor="let threat of threatModel.threats"
+            (click)="openThreatEditor(threat)"
+            class="clickable-item threat-list-item"
+          >
+            <mat-icon
+              matListItemIcon
+              fontSet="material-symbols-outlined"
+              fontWeight="100"
+              style="font-variation-settings: 'FILL' 0"
+              [matTooltip]="threat.threat_type"
+              >skull</mat-icon
+            >
+            <div matListItemTitle class="threat-content">
+              <span class="threat-severity" [ngClass]="'severity-' + threat.severity.toLowerCase()">
+                {{ threat.severity }}
+              </span>
+              <span
+                class="threat-name"
+                [matTooltip]="threat.description"
+                matTooltipClass="threat-description-tooltip"
+                matTooltipPosition="above"
+              >
+                {{ threat.name }}
+              </span>
+              <a
+                *ngIf="
+                  threat.issue_uri && threat.issue_uri !== 'n/a' && threat.issue_uri.trim() !== ''
+                "
+                [href]="threat.issue_uri"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="threat-issue-uri-icon"
+                (click)="$event.stopPropagation()"
+                [matTooltip]="threat.issue_uri"
+                matTooltipPosition="above"
+              >
+                <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
+              </a>
+            </div>
+            <div matListItemMeta>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="openThreatMetadataDialog(threat, $event)"
+                [matTooltip]="'common.manageMetadata' | transloco"
+              >
+                <mat-icon>list</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteThreat(threat, $event)"
+                [matTooltip]="'threatModels.tooltips.deleteThreat' | transloco"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-list-item>
+        </mat-list>
+        <div *ngIf="!threatModel.threats?.length" class="no-items-message">
+          {{ 'threatModels.noThreats' | transloco }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
     <!-- Diagrams Card -->
     <mat-card class="diagrams-card">
       <mat-card-header>
@@ -506,91 +691,6 @@
         </mat-list>
         <div *ngIf="!threatModel.repositories?.length" class="no-items-message">
           {{ 'threatModels.noRepositories' | transloco }}
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Threats Card -->
-    <mat-card class="threats-card">
-      <mat-card-header>
-        <mat-card-title
-          [transloco]="'common.objectTypes.threats'"
-          [matTooltip]="'threatModels.tooltips.threatsCardTitle' | transloco"
-          >Threats</mat-card-title
-        >
-        <button
-          mat-icon-button
-          color="primary"
-          (click)="openThreatEditor()"
-          [matTooltip]="'common.addThreat' | transloco"
-        >
-          <mat-icon>add</mat-icon>
-        </button>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-list>
-          <mat-list-item
-            *ngFor="let threat of threatModel.threats"
-            (click)="openThreatEditor(threat)"
-            class="clickable-item threat-list-item"
-          >
-            <mat-icon
-              matListItemIcon
-              fontSet="material-symbols-outlined"
-              fontWeight="100"
-              style="font-variation-settings: 'FILL' 0"
-              [matTooltip]="threat.threat_type"
-              >skull</mat-icon
-            >
-            <div matListItemTitle class="threat-content">
-              <span class="threat-severity" [ngClass]="'severity-' + threat.severity.toLowerCase()">
-                {{ threat.severity }}
-              </span>
-              <span
-                class="threat-name"
-                [matTooltip]="threat.description"
-                matTooltipClass="threat-description-tooltip"
-                matTooltipPosition="above"
-              >
-                {{ threat.name }}
-              </span>
-              <a
-                *ngIf="
-                  threat.issue_uri && threat.issue_uri !== 'n/a' && threat.issue_uri.trim() !== ''
-                "
-                [href]="threat.issue_uri"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="threat-issue-uri-icon"
-                (click)="$event.stopPropagation()"
-                [matTooltip]="threat.issue_uri"
-                matTooltipPosition="above"
-              >
-                <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
-              </a>
-            </div>
-            <div matListItemMeta>
-              <button
-                mat-icon-button
-                color="primary"
-                (click)="openThreatMetadataDialog(threat, $event)"
-                [matTooltip]="'common.manageMetadata' | transloco"
-              >
-                <mat-icon>list</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="deleteThreat(threat, $event)"
-                [matTooltip]="'threatModels.tooltips.deleteThreat' | transloco"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
-          </mat-list-item>
-        </mat-list>
-        <div *ngIf="!threatModel.threats?.length" class="no-items-message">
-          {{ 'threatModels.noThreats' | transloco }}
         </div>
       </mat-card-content>
     </mat-card>

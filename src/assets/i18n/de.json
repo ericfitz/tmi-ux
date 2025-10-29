@@ -157,7 +157,8 @@
       "maxLength": "Maximale Länge ist {{max}} Zeichen",
       "required": "Dieses Feld ist erforderlich"
     },
-    "viewThreat": "Bedrohung anzeigen"
+    "viewThreat": "Bedrohung anzeigen",
+    "none": "Keine"
   },
   "contextMenu": {
     "addInverseConnection": "Umgekehrte Verbindung hinzufügen",
@@ -406,9 +407,13 @@
       "loadFromDesktop": "Vom Desktop laden",
       "notesCardTitle": "Notizen sind Texte im Markdown-Format, die vollständig im Bedrohungsmodell enthalten sind und zur Erfassung von Notizen und Anmerkungen von Sicherheitsanalysten und automatisierten Analyseprozessen verwendet werden.",
       "repositoriesCardTitle": "Repositories sind Links zu Quellcode-Repositories, in denen der Quellcode für das System verwaltet wird.",
-      "threatsCardTitle": "Bedrohungen sind potenzielle nachteilige Ereignisse oder Handlungen, die eine Schwachstelle oder Schwäche in einem System ausnutzen, um dessen Vertraulichkeit, Integrität, Verfügbarkeit oder andere Sicherheitsziele zu gefährden. In TMI enthalten Bedrohungsobjekte auch Informationen über Art und Höhe des mit der Bedrohung verbundenen Risikos sowie Informationen zur Verfolgung der zur Minderung der Bedrohung erforderlichen Arbeiten."
+      "threatsCardTitle": "Bedrohungen sind potenzielle nachteilige Ereignisse oder Handlungen, die eine Schwachstelle oder Schwäche in einem System ausnutzen, um dessen Vertraulichkeit, Integrität, Verfügbarkeit oder andere Sicherheitsziele zu gefährden. In TMI enthalten Bedrohungsobjekte auch Informationen über Art und Höhe des mit der Bedrohung verbundenen Risikos sowie Informationen zur Verfolgung der zur Minderung der Bedrohung erforderlichen Arbeiten.",
+      "addAsset": "Asset hinzufügen",
+      "assetsCardTitle": "Assets sind wertvolle Ressourcen innerhalb des Systems, die Schutz benötigen, wie Daten, Hardware, Software, Infrastruktur, Dienste oder Personal.",
+      "deleteAsset": "Asset löschen"
     },
-    "yourThreatModels": "Ihre Bedrohungsmodelle"
+    "yourThreatModels": "Ihre Bedrohungsmodelle",
+    "noAssets": "Noch keine Assets hinzugefügt"
   },
   "tos": {
     "contactInfo": {
@@ -495,5 +500,26 @@
     },
     "reportPreferences": "Berichtseinstellungen",
     "title": "Benutzereinstellungen"
+  },
+  "assetEditor": {
+    "chipPlaceholder": "Wert eingeben und Enter drücken",
+    "classification": "Klassifizierung",
+    "criticality": "Kritikalität",
+    "description": "Beschreibung",
+    "name": "Asset-Name",
+    "sensitivity": "Sensibilität",
+    "title": {
+      "create": "Asset erstellen",
+      "edit": "Asset bearbeiten"
+    },
+    "type": "Asset-Typ",
+    "types": {
+      "data": "Daten",
+      "hardware": "Hardware",
+      "infrastructure": "Infrastruktur",
+      "personnel": "Personal",
+      "service": "Dienst",
+      "software": "Software"
+    }
   }
 }

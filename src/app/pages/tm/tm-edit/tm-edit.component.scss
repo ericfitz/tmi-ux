@@ -87,6 +87,7 @@
   }
 }
 
+.assets-card,
 .diagrams-card,
 .documents-card,
 .notes-card,
@@ -320,6 +321,7 @@ mat-card-header {
   font-family: var(--font-family-primary);
 }
 
+.asset-item,
 .diagram-item,
 .document-item,
 .note-item,
@@ -712,6 +714,76 @@ mat-card-header {
     to {
       opacity: 1;
       transform: translate(-50%, -50%) scale(1);
+    }
+  }
+}
+
+// Asset-specific styles
+.asset-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.asset-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+  min-width: 0;
+}
+
+.asset-name {
+  font-weight: 500;
+  color: rgb(0 0 0 / 87%);
+  flex-shrink: 0;
+}
+
+.asset-chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.asset-chips {
+  display: inline-flex;
+
+  mat-chip {
+    height: 24px;
+    font-size: 12px;
+    padding: 0 10px;
+    min-height: 24px;
+  }
+}
+
+.classification-chips mat-chip {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.sensitivity-chips mat-chip {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.asset-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      vertical-align: middle;
     }
   }
 }
