@@ -84,23 +84,23 @@ $role-host-color: #ffc107; // Gold color for session host
   --color-warning-dark: #{$warning-color-dark};
   --color-info: #{$info-color};
 
-  // Text Colors
-  --color-text-primary: #{$text-primary};
-  --color-text-secondary: #{$text-secondary};
+  // Text Colors (use theme variables which are set in material-theme.scss)
+  --color-text-primary: var(--theme-text-primary, #{$text-primary});
+  --color-text-secondary: var(--theme-text-secondary, #{$text-secondary});
   --color-text-tertiary: #{$text-tertiary};
   --color-text-muted: #{$text-muted};
-  --color-text-disabled: #{$text-disabled};
+  --color-text-disabled: var(--theme-text-disabled, #{$text-disabled});
 
-  // Background Colors
-  --color-background-light: #{$background-light};
-  --color-background-lighter: #{$background-lighter};
+  // Background Colors (use theme variables)
+  --color-background-light: var(--theme-surface, #{$background-light});
+  --color-background-lighter: var(--theme-surface, #{$background-lighter});
   --color-background-error: #{$background-error};
-  --color-background-white: #{$background-white};
+  --color-background-white: var(--theme-card, #{$background-white});
 
-  // Border Colors
-  --color-border: #{$border-color};
-  --color-border-light: #{$border-light};
-  --color-border-material: #{$border-material};
+  // Border Colors (use theme variables)
+  --color-border: var(--theme-divider, #{$border-color});
+  --color-border-light: var(--theme-divider, #{$border-light});
+  --color-border-material: var(--theme-divider, #{$border-material});
 
   // OAuth Provider Colors
   --color-test: #{$test-color};
@@ -128,30 +128,90 @@ $role-host-color: #ffc107; // Gold color for session host
   --color-server-not-configured: #{$text-tertiary};
   --color-server-error: #{$error-color};
   --color-server-connected: #{$success-color};
+
+  // Additional Color Categories
+  // Severity Colors (for threat levels)
+  --color-severity-critical: #d32f2f;
+  --color-severity-high: #f57c00;
+  --color-severity-medium: #fbc02d;
+  --color-severity-low: #689f38;
+  --color-severity-none: #9e9e9e;
+
+  // Link Colors
+  --color-link-visited: #7b1fa2;
+
+  // Hover States (use theme variables)
+  --color-hover-background: var(--theme-hover, rgb(0 0 0 / 4%));
+
+  // Overlays
+  --color-overlay-light: rgb(255 255 255 / 90%);
+  --color-overlay-dark: rgb(0 0 0 / 20%);
+
+  // Shadows (adapt based on theme)
+  --color-shadow-light: rgb(0 0 0 / 10%);
+  --color-shadow-medium: rgb(0 0 0 / 20%);
+  --color-shadow-strong: rgb(0 0 0 / 24%);
+}
+
+// =============================================================================
+// COLORBLIND THEME (Okabe-Ito Palette)
+// =============================================================================
+
+.colorblind-theme {
+  // Okabe-Ito Color Constants
+  // Based on research by Okabe & Ito for universal color design
+  // These colors are distinguishable for all types of color blindness
+
+  // Primary Brand Color - Okabe-Ito Blue
+  --color-primary: #0072b2; // rgb(0, 114, 178)
+  --color-primary-dark: #005fa2;
+  --color-primary-light: #4db2d4;
+
+  // Status Colors - Okabe-Ito Palette
+  --color-success: #009e73; // Bluish Green rgb(0, 158, 115)
+  --color-success-dark: #007a59;
+  --color-error: #d55e00; // Vermilion rgb(213, 94, 0)
+  --color-error-dark: #bc4c00;
+  --color-error-darker: #af4300;
+  --color-warning: #e69f00; // Orange rgb(230, 159, 0)
+  --color-warning-dark: #cc8c00;
+  --color-info: #56b4e9; // Sky Blue rgb(86, 180, 233)
+
+  // Severity Colors (for threat levels) - Okabe-Ito Palette
+  --color-severity-critical: #d55e00; // Vermilion (high alert)
+  --color-severity-high: #e69f00; // Orange (warning)
+  --color-severity-medium: #f0e442; // Yellow rgb(240, 228, 66)
+  --color-severity-low: #009e73; // Bluish Green (safe)
+  --color-severity-none: #999; // Neutral gray
+
+  // Link Colors
+  --color-link-visited: #cc79a7; // Reddish Purple rgb(204, 121, 167)
+
+  // Theme Colors (used in about/tos/privacy pages)
+  --color-theme-cyan: #56b4e9; // Sky Blue (more distinguishable)
+  --color-theme-teal: #009e73; // Bluish Green
+
+  // Role-based Colors - Okabe-Ito Palette
+  --color-role-owner: #e69f00; // Orange
+  --color-role-writer: #009e73; // Bluish Green (distinct from red/orange)
+  --color-role-reader: #d55e00; // Vermilion (distinct from green)
+  --color-role-presenter: #0072b2; // Blue
+  --color-role-host: #f0e442; // Yellow (highly visible)
+
+  // Server Status Colors
+  --color-server-not-configured: #{$text-tertiary};
+  --color-server-error: #d55e00; // Vermilion
+  --color-server-connected: #009e73; // Bluish Green
+
+  // Note: Background, text, border, hover, overlay, and shadow colors
+  // remain the same as they are not reliant on color distinction
 }
 
 // =============================================================================
 // DARK THEME OVERRIDES
 // =============================================================================
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    // Adjust colors for dark theme
-    --color-success-dark: #2e7d32;
-    --color-error-dark: #c62828;
-    --color-warning-dark: #e65100;
-    --color-info: #1565c0;
-
-    // Background adjustments for dark theme
-    --color-background-light: #2a2a2a;
-    --color-background-lighter: #1e1e1e;
-
-    // Text adjustments for dark theme
-    --color-text-primary: #fff;
-    --color-text-secondary: #e0e0e0;
-    --color-text-tertiary: #bdbdbd;
-  }
-}
+// Dark theme is now handled via classes in material-theme.scss
+// The --theme-* variables are set there and used here
 
 // =============================================================================
 // UTILITY MIXINS

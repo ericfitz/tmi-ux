@@ -1,0 +1,299 @@
+/**
+ * Component Overrides
+ *
+ * Theme-aware component styling that adapts to light/dark and colorblind modes
+ * Uses CSS variables from material-theme.scss for proper theming
+ */
+
+// =============================================================================
+// MATERIAL COMPONENT THEMING
+// =============================================================================
+
+// Navbar uses theme-aware surface color
+mat-toolbar,
+.mat-toolbar,
+.mat-mdc-toolbar {
+  background-color: var(--theme-surface);
+  color: var(--theme-text-primary);
+}
+
+// =============================================================================
+// BUTTON STYLING
+// =============================================================================
+
+// Increase border radius for all buttons (design preference)
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-stroked-button,
+.mat-mdc-flat-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-outlined-button,
+.mat-mdc-icon-button,
+.mat-mdc-fab,
+.mat-mdc-mini-fab {
+  border-radius: 8px;
+
+  .mdc-button,
+  .mdc-fab {
+    border-radius: 8px;
+  }
+}
+
+// =============================================================================
+// FORM FIELD STYLING
+// =============================================================================
+
+// Increase border radius for form fields
+.mat-mdc-form-field,
+.mat-mdc-text-field-wrapper,
+.mat-mdc-form-field-flex,
+.mdc-text-field {
+  border-radius: 8px;
+}
+
+.mat-mdc-form-field-infix {
+  border-radius: 8px;
+}
+
+// =============================================================================
+// CARD STYLING
+// =============================================================================
+
+// Cards with theme-aware colors and enhanced visibility
+mat-card,
+.mat-mdc-card {
+  background-color: var(--theme-card);
+  border: 1px solid var(--theme-divider);
+  box-shadow:
+    0 2px 4px rgb(0 0 0 / 8%),
+    0 1px 2px rgb(0 0 0 / 6%);
+  border-radius: 12px;
+}
+
+// =============================================================================
+// LIST ITEM STYLING
+// =============================================================================
+
+// Ensure list items use theme-aware text colors
+mat-list-item,
+.mat-mdc-list-item,
+.mdc-list-item {
+  color: var(--theme-text-primary);
+
+  // Nested elements inherit color
+  * {
+    color: inherit;
+  }
+}
+
+// Specific Material list item classes
+.mat-mdc-list-item-title,
+.mat-mdc-list-item-line,
+.mdc-list-item__primary-text,
+.mdc-list-item__secondary-text,
+.mat-line {
+  color: var(--theme-text-primary);
+}
+
+.mat-mdc-list-item-unscoped-content {
+  color: var(--theme-text-secondary);
+}
+
+// =============================================================================
+// BODY AND APP BACKGROUND
+// =============================================================================
+
+body {
+  background-color: var(--theme-background);
+  color: var(--theme-text-primary);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+// =============================================================================
+// DIALOG STYLING
+// =============================================================================
+
+.mat-mdc-dialog-container {
+  background-color: var(--theme-card);
+  color: var(--theme-text-primary);
+}
+
+// =============================================================================
+// MENU STYLING
+// =============================================================================
+
+.mat-mdc-menu-panel {
+  background-color: var(--theme-card);
+
+  .mat-mdc-menu-item {
+    color: var(--theme-text-primary);
+
+    &:hover {
+      background-color: var(--theme-hover);
+    }
+  }
+}
+
+// =============================================================================
+// TOOLTIP STYLING
+// =============================================================================
+
+.mat-mdc-tooltip {
+  background-color: var(--theme-surface);
+  color: var(--theme-text-primary);
+}
+
+// =============================================================================
+// SNACKBAR STYLING
+// =============================================================================
+
+.mat-mdc-snack-bar-container {
+  background-color: var(--theme-surface);
+  color: var(--theme-text-primary);
+
+  .mdc-snackbar__surface {
+    background-color: var(--theme-surface);
+  }
+
+  .mat-mdc-snack-bar-label {
+    color: var(--theme-text-primary);
+  }
+}
+
+// =============================================================================
+// TABLE STYLING
+// =============================================================================
+
+.mat-mdc-table {
+  background-color: var(--theme-card);
+
+  .mat-mdc-header-cell {
+    color: var(--theme-text-primary);
+    border-bottom-color: var(--theme-divider);
+  }
+
+  .mat-mdc-cell {
+    color: var(--theme-text-primary);
+    border-bottom-color: var(--theme-divider);
+  }
+
+  .mat-mdc-row:hover {
+    background-color: var(--theme-hover);
+  }
+}
+
+// =============================================================================
+// SELECT DROPDOWN STYLING
+// =============================================================================
+
+.mat-mdc-select-panel {
+  background-color: var(--theme-card);
+
+  .mat-mdc-option {
+    color: var(--theme-text-primary);
+
+    &:hover {
+      background-color: var(--theme-hover);
+    }
+
+    &.mat-mdc-option-active {
+      background-color: var(--theme-selected);
+    }
+  }
+}
+
+// =============================================================================
+// EXPANSION PANEL STYLING
+// =============================================================================
+
+.mat-expansion-panel {
+  background-color: var(--theme-card);
+  color: var(--theme-text-primary);
+
+  .mat-expansion-panel-header {
+    color: var(--theme-text-primary);
+
+    &:hover {
+      background-color: var(--theme-hover);
+    }
+  }
+}
+
+// =============================================================================
+// TAB GROUP STYLING
+// =============================================================================
+
+.mat-mdc-tab-group {
+  .mat-mdc-tab {
+    color: var(--theme-text-secondary);
+
+    &.mat-mdc-tab-label-active {
+      color: var(--theme-text-primary);
+    }
+  }
+
+  .mat-mdc-tab-body-content {
+    background-color: var(--theme-background);
+  }
+}
+
+// =============================================================================
+// PROGRESS INDICATORS
+// =============================================================================
+
+.mat-mdc-progress-bar,
+.mat-mdc-progress-spinner {
+  // These use the primary color from the theme automatically
+}
+
+// =============================================================================
+// CHECKBOX AND RADIO STYLING
+// =============================================================================
+
+.mat-mdc-checkbox,
+.mat-mdc-radio-button {
+  .mdc-form-field {
+    color: var(--theme-text-primary);
+  }
+}
+
+// =============================================================================
+// SLIDE TOGGLE STYLING
+// =============================================================================
+
+.mat-mdc-slide-toggle {
+  .mdc-form-field {
+    color: var(--theme-text-primary);
+  }
+}
+
+// =============================================================================
+// DARK THEME ADJUSTMENTS
+// =============================================================================
+
+// Dark mode specific adjustments
+.dark-theme {
+  // Card styling adjustments
+  mat-card,
+  .mat-mdc-card {
+    // Dark theme cards get slightly elevated surface color
+    background-color: var(--theme-surface);
+    border-color: var(--theme-divider);
+    box-shadow:
+      0 2px 4px rgb(0 0 0 / 20%),
+      0 1px 2px rgb(0 0 0 / 14%);
+  }
+
+  // Logo inversion for better visibility
+  // Navbar logo
+  .tmi-logo,
+  // Home page logo
+  .tmi-home-logo,
+  // About page logo
+  .logo-row .logo {
+    // Invert colors and adjust brightness for optimal visibility
+    filter: invert(1) brightness(0.9);
+  }
+}

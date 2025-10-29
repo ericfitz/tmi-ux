@@ -4,8 +4,8 @@
 @use 'styles/colors';
 @use 'styles/typography';
 @use 'styles/fonts';
-
-// Note: The pre-built azure-blue theme is included via angular.json
+@use 'styles/material-theme';
+@use 'styles/component-overrides';
 
 // Material Symbols settings for filled icons
 .material-symbols-outlined {

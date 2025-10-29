@@ -1,47 +1,58 @@
 /**
  * Custom Color Palette
  *
- * Custom Material Design color palette for TMI-UX
- * Primary: Amber (#ffc107) - for main UI elements
+ * Custom Material Design color palettes for TMI-UX
+ *
+ * DEFAULT THEME:
+ * Primary: Blue (#1976d2) - for main UI elements
  * Accent: Blue Grey (#607d8b) - for complementary elements
+ *
+ * COLORBLIND THEME (Okabe-Ito Palette):
+ * Based on the Okabe-Ito color-blind safe palette
+ * Primary: Blue (#0072B2) - universally distinguishable
+ * Accent: Orange (#E69F00) - distinct from blue for deuteranopia
+ * Warn: Vermilion (#D55E00) - warm alert color, distinct from blue/green
+ *
+ * Reference: Okabe, M. and Ito, K. (2008). Color Universal Design (CUD)
+ * https://jfly.uni-koeln.de/color/
  */
 
 // =============================================================================
-// PRIMARY PALETTE (Amber)
+// PRIMARY PALETTE (Blue)
 // =============================================================================
 $tmi-primary-palette: (
-  50: #fff8e1,
-  100: #ffecb3,
+  50: #e3f2fd,
+  100: #bbdefb,
   // Light primary color
-  200: #ffe082,
-  300: #ffd54f,
-  400: #ffca28,
-  500: #ffc107,
+  200: #90caf9,
+  300: #64b5f6,
+  400: #42a5f5,
+  500: #1976d2,
   // Primary color
-  600: #ffb300,
-  700: #ffa000,
+  600: #1e88e5,
+  700: #1565c0,
   // Dark primary color
-  800: #ff8f00,
-  900: #ff6f00,
-  A100: #ffe57f,
-  A200: #ffd740,
-  A400: #ffc400,
-  A700: #ffab00,
+  800: #0d47a1,
+  900: #0d3c7a,
+  A100: #82b1ff,
+  A200: #448aff,
+  A400: #2979ff,
+  A700: #2962ff,
   contrast: (
     50: #212121,
     100: #212121,
     200: #212121,
     300: #212121,
     400: #212121,
-    500: #212121,
-    600: #212121,
-    700: #212121,
-    800: #212121,
-    900: #212121,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
     A100: #212121,
-    A200: #212121,
-    A400: #212121,
-    A700: #212121,
+    A200: white,
+    A400: white,
+    A700: white,
   ),
 );
 
@@ -113,6 +124,127 @@ $tmi-warn-palette: (
     900: white,
     A100: #212121,
     A200: white,
+    A400: white,
+    A700: white,
+  ),
+);
+
+// =============================================================================
+// COLORBLIND-FRIENDLY PALETTES (Okabe-Ito)
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// COLORBLIND PRIMARY PALETTE (Blue - #0072B2)
+// Based on Okabe-Ito Blue: rgb(0, 114, 178)
+// Universally distinguishable across all types of color blindness
+// -----------------------------------------------------------------------------
+$colorblind-primary-palette: (
+  50: #e0f2f7,
+  100: #b3deec,
+  200: #80c8e0,
+  300: #4db2d4,
+  400: #26a1cb,
+  500: #0072b2,
+  // Main: Okabe-Ito Blue
+  600: #006aab,
+  700: #005fa2,
+  800: #005599,
+  900: #004289,
+  A100: #b3d9ff,
+  A200: #80c0ff,
+  A400: #4da7ff,
+  A700: #338eff,
+  contrast: (
+    50: #212121,
+    100: #212121,
+    200: #212121,
+    300: #212121,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: #212121,
+    A200: #212121,
+    A400: white,
+    A700: white,
+  ),
+);
+
+// -----------------------------------------------------------------------------
+// COLORBLIND ACCENT PALETTE (Orange - #E69F00)
+// Based on Okabe-Ito Orange: rgb(230, 159, 0)
+// Highly distinct from blue for all forms of color blindness
+// -----------------------------------------------------------------------------
+$colorblind-accent-palette: (
+  50: #fef5e0,
+  100: #fce6b3,
+  200: #fad680,
+  300: #f8c64d,
+  400: #f7b926,
+  500: #e69f00,
+  // Main: Okabe-Ito Orange
+  600: #d99700,
+  700: #cc8c00,
+  800: #bf8200,
+  900: #ac7000,
+  A100: #fff4cc,
+  A200: #ffe699,
+  A400: #ffd866,
+  A700: #ffce4d,
+  contrast: (
+    50: #212121,
+    100: #212121,
+    200: #212121,
+    300: #212121,
+    400: #212121,
+    500: #212121,
+    600: #212121,
+    700: #212121,
+    800: white,
+    900: white,
+    A100: #212121,
+    A200: #212121,
+    A400: #212121,
+    A700: #212121,
+  ),
+);
+
+// -----------------------------------------------------------------------------
+// COLORBLIND WARN PALETTE (Vermilion - #D55E00)
+// Based on Okabe-Ito Vermilion: rgb(213, 94, 0)
+// Warm alert color that stands out from blue and green
+// -----------------------------------------------------------------------------
+$colorblind-warn-palette: (
+  50: #fbe9e0,
+  100: #f5c8b3,
+  200: #eea380,
+  300: #e77e4d,
+  400: #e26226,
+  500: #d55e00,
+  // Main: Okabe-Ito Vermilion
+  600: #c95600,
+  700: #bc4c00,
+  800: #af4300,
+  900: #9c3300,
+  A100: #ffccb3,
+  A200: #ffa980,
+  A400: #ff864d,
+  A700: #ff7333,
+  contrast: (
+    50: #212121,
+    100: #212121,
+    200: #212121,
+    300: #212121,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: #212121,
+    A200: #212121,
     A400: white,
     A700: white,
   ),

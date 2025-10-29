@@ -52,6 +52,7 @@ import { DialogDirectionService } from './core/services/dialog-direction.service
 import { AUTH_SERVICE, THREAT_MODEL_SERVICE } from './core/interfaces';
 import { AuthService } from './auth/services/auth.service';
 import { ThreatModelService } from './pages/tm/services/threat-model.service';
+import { ThemeService } from './core/services/theme.service';
 
 // We still need LOCALE_ID for date formatting with Angular's pipes
 function getBasicLocale(): string {
@@ -89,6 +90,13 @@ function initializeMaterialIcons(
     // Register the Material Symbols Outlined font set
     iconRegistry.registerFontClassAlias('material-symbols-outlined', 'material-symbols-outlined');
     iconRegistry.setDefaultFontSetClass('material-symbols-outlined');
+  };
+}
+
+// Theme initialization function
+function initializeTheme(_themeService: ThemeService): () => void {
+  return () => {
+    // Theme service automatically loads and applies saved theme preference in constructor
   };
 }
 
@@ -181,6 +189,13 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: initializeMaterialIcons,
       deps: [MatIconRegistry, DomSanitizer],
+      multi: true,
+    },
+    // Initialize theme service
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeTheme,
+      deps: [ThemeService],
       multi: true,
     },
     // Provide services with interface tokens to satisfy DI requirements

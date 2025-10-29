@@ -1,11 +1,14 @@
 /**
- * Custom Material Theme with Roboto Condensed Typography
+ * Custom Material Theme with Light/Dark Support
  *
  * This file defines the Angular Material theme and typography configuration
- * to use our self-hosted Roboto Condensed font throughout all Material components.
+ * supporting both light and dark color schemes with normal and colorblind palettes.
  *
- * Note: Angular Material v20+ uses Material 3 design components but retains
- * the M2 theming API (m2-define-*) for backward compatibility.
+ * Theme combinations:
+ * 1. Light + Normal (default)
+ * 2. Light + Colorblind
+ * 3. Dark + Normal
+ * 4. Dark + Colorblind
  */
 
 @use '@angular/material' as mat;
@@ -41,32 +44,141 @@ $custom-typography: mat.m2-define-typography-config(
 @include mat.all-component-typographies($custom-typography);
 
 // =============================================================================
-// THEME CONFIGURATION
+// PALETTE DEFINITIONS
 // =============================================================================
 
-// Define the primary, accent, and warn palettes using custom colors
-$primary-palette: mat.m2-define-palette(palette.$tmi-primary-palette, 500, 100, 700);
-$accent-palette: mat.m2-define-palette(palette.$tmi-accent-palette, 500);
-$warn-palette: mat.m2-define-palette(palette.$tmi-warn-palette);
+// Normal palettes
+$normal-primary-palette: mat.m2-define-palette(palette.$tmi-primary-palette, 500, 100, 700);
+$normal-accent-palette: mat.m2-define-palette(palette.$tmi-accent-palette, 500);
+$normal-warn-palette: mat.m2-define-palette(palette.$tmi-warn-palette);
 
-// Create the theme object (combines all palette definitions)
-$custom-theme: mat.m2-define-light-theme(
+// Colorblind-friendly palettes (Okabe-Ito)
+$colorblind-primary-palette: mat.m2-define-palette(
+  palette.$colorblind-primary-palette,
+  500,
+  100,
+  700
+);
+$colorblind-accent-palette: mat.m2-define-palette(palette.$colorblind-accent-palette, 500);
+$colorblind-warn-palette: mat.m2-define-palette(palette.$colorblind-warn-palette);
+
+// =============================================================================
+// THEME DEFINITIONS
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// LIGHT THEMES
+// -----------------------------------------------------------------------------
+
+// Light theme with normal palette
+$light-normal-theme: mat.m2-define-light-theme(
   (
     color: (
-      primary: $primary-palette,
-      accent: $accent-palette,
-      warn: $warn-palette,
+      primary: $normal-primary-palette,
+      accent: $normal-accent-palette,
+      warn: $normal-warn-palette,
     ),
     typography: $custom-typography,
-    density: 0,
+    density: -1,
   )
 );
 
-// Apply the theme to all Material components
-@include mat.all-component-themes($custom-theme);
+// Light theme with colorblind palette
+$light-colorblind-theme: mat.m2-define-light-theme(
+  (
+    color: (
+      primary: $colorblind-primary-palette,
+      accent: $colorblind-accent-palette,
+      warn: $colorblind-warn-palette,
+    ),
+    typography: $custom-typography,
+    density: -1,
+  )
+);
+
+// -----------------------------------------------------------------------------
+// DARK THEMES
+// -----------------------------------------------------------------------------
+
+// Dark theme with normal palette
+$dark-normal-theme: mat.m2-define-dark-theme(
+  (
+    color: (
+      primary: $normal-primary-palette,
+      accent: $normal-accent-palette,
+      warn: $normal-warn-palette,
+    ),
+    typography: $custom-typography,
+    density: -1,
+  )
+);
+
+// Dark theme with colorblind palette
+$dark-colorblind-theme: mat.m2-define-dark-theme(
+  (
+    color: (
+      primary: $colorblind-primary-palette,
+      accent: $colorblind-accent-palette,
+      warn: $colorblind-warn-palette,
+    ),
+    typography: $custom-typography,
+    density: -1,
+  )
+);
 
 // =============================================================================
-// ADDITIONAL TYPOGRAPHY OVERRIDES
+// APPLY THEMES
+// =============================================================================
+
+// Default theme: Light + Normal (no class needed)
+@include mat.all-component-themes($light-normal-theme);
+
+// Light + Colorblind (colorblind-palette class)
+.colorblind-palette {
+  @include mat.all-component-colors($light-colorblind-theme);
+}
+
+// Dark + Normal (dark-theme class)
+.dark-theme {
+  @include mat.all-component-colors($dark-normal-theme);
+
+  // Dark theme CSS variables
+  --theme-background: #303030;
+  --theme-surface: #424242;
+  --theme-card: #424242;
+  --theme-text-primary: #fff;
+  --theme-text-secondary: rgb(255 255 255 / 70%);
+  --theme-text-disabled: rgb(255 255 255 / 50%);
+  --theme-divider: rgb(255 255 255 / 12%);
+  --theme-hover: rgb(255 255 255 / 4%);
+  --theme-selected: rgb(255 255 255 / 8%);
+}
+
+// Dark + Colorblind (both classes)
+.dark-theme.colorblind-palette {
+  @include mat.all-component-colors($dark-colorblind-theme);
+}
+
+// =============================================================================
+// CUSTOM THEME VARIABLES
+// =============================================================================
+
+// Define CSS variables that adapt to theme
+:root {
+  // Default light theme colors
+  --theme-background: #fff;
+  --theme-surface: #f5f5f5;
+  --theme-card: #fff;
+  --theme-text-primary: #212121;
+  --theme-text-secondary: #757575;
+  --theme-text-disabled: rgb(0 0 0 / 38%);
+  --theme-divider: rgb(0 0 0 / 12%);
+  --theme-hover: rgb(0 0 0 / 4%);
+  --theme-selected: rgb(0 0 0 / 8%);
+}
+
+// =============================================================================
+// TYPOGRAPHY OVERRIDES
 // =============================================================================
 
 // Ensure all Material components use Roboto Condensed
