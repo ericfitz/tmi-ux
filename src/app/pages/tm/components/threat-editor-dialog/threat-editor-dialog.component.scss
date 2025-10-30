@@ -269,18 +269,18 @@ mat-dialog-content {
 
 // Make all form fields more compact
 ::ng-deep .mat-mdc-form-field-infix {
-  min-height: 36px !important;
-  padding-top: 8px !important;
-  padding-bottom: 6px !important;
+  min-height: 36px;
+  padding-top: 8px;
+  padding-bottom: 6px;
 }
 
 ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  height: 12px !important;
+  height: 12px;
 }
 
 ::ng-deep .mat-mdc-text-field-wrapper {
-  padding-left: 8px !important;
-  padding-right: 8px !important;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 .table-field {
@@ -321,7 +321,7 @@ mat-dialog-content {
 }
 
 .actions-column {
-  padding: 0 2px !important;
+  padding: 0 2px;
   width: 40px;
   min-width: 40px;
   max-width: 40px;

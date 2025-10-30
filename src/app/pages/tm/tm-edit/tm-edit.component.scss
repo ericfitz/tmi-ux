@@ -372,7 +372,6 @@ mat-card-header {
   &.mat-mdc-list-item {
     min-height: 128px !important;
     height: auto !important;
-    padding: 16px 0 !important;
   }
 
   ::ng-deep {
@@ -380,24 +379,20 @@ mat-card-header {
     .mat-mdc-list-item {
       min-height: 128px !important;
       height: auto !important;
-      padding: 16px 0 !important;
     }
 
     .mdc-list-item__content {
       display: flex !important;
       align-items: center !important;
       min-height: 96px !important;
-      padding: 0 !important;
     }
 
     .mat-mdc-list-item-meta {
       align-self: center !important;
-      margin-left: auto !important;
     }
 
     .mdc-list-item__start {
       align-self: center !important;
-      margin-right: 16px !important;
     }
 
     // Target specific Material Design classes that might override height
