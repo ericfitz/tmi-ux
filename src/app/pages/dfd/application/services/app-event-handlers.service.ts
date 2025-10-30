@@ -7,16 +7,16 @@ import { take } from 'rxjs/operators';
 import { Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
-import { ThreatModelService } from '../../tm/services/threat-model.service';
+import { ThreatModelService } from '../../../tm/services/threat-model.service';
 import { FrameworkService } from '../../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../../shared/services/cell-data-extraction.service';
-import { Threat } from '../../tm/models/threat-model.model';
+import { Threat } from '../../../tm/models/threat-model.model';
 import {
   ThreatEditorDialogComponent,
   ThreatEditorDialogData,
   DiagramOption,
   CellOption,
-} from '../../tm/components/threat-editor-dialog/threat-editor-dialog.component';
+} from '../../../tm/components/threat-editor-dialog/threat-editor-dialog.component';
 import {
   CellPropertiesDialogComponent,
   CellPropertiesDialogData,
@@ -138,6 +138,12 @@ export class AppEventHandlersService {
     isInitialized: boolean,
     infraX6GraphAdapter: any,
   ): void {
+    // Don't handle keyboard shortcuts if any Material Dialog is open
+    // This prevents delete/backspace from affecting the graph while typing in dialogs
+    if (this.dialog.openDialogs.length > 0) {
+      return;
+    }
+
     // Only handle keys if the graph container has focus or if no input elements are focused
     const activeElement = document.activeElement;
     const isInputFocused =
