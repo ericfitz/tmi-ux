@@ -1,0 +1,145 @@
+/**
+ * Material 3 Tonal Palettes
+ *
+ * These palettes were generated using @material/material-color-utilities
+ * from our custom brand colors and Okabe-Ito colorblind-friendly palette.
+ *
+ * M3 palettes use specific tone values (0-100) that represent luminance levels
+ * in the HCT (Hue, Chroma, Tone) color space.
+ *
+ * Generation command: node scripts/generate-m3-palettes.js
+ */
+
+// =============================================================================
+// COLORBLIND-FRIENDLY PALETTES (Okabe-Ito)
+// =============================================================================
+
+// Primary: #0072B2 (Okabe-Ito Blue)
+// Universally distinguishable across all types of color blindness
+$colorblind-primary-m3: (
+  0: #000,
+  10: #001d33,
+  20: #003353,
+  25: #003e64,
+  30: #004a76,
+  35: #005688,
+  40: #00639b,
+  50: #1d7cbd,
+  60: #4396d9,
+  70: #62b1f5,
+  80: #97cbff,
+  90: #cee5ff,
+  95: #e8f2ff,
+  98: #f7f9ff,
+  99: #fcfcff,
+  100: #fff,
+);
+
+// Tertiary: #E69F00 (Okabe-Ito Orange)
+// Highly distinct from blue for all forms of color blindness
+$colorblind-tertiary-m3: (
+  0: #000,
+  10: #281800,
+  20: #432c00,
+  25: #523600,
+  30: #614000,
+  35: #704b00,
+  40: #7f5600,
+  50: #a06d00,
+  60: #c18500,
+  70: #e49d00,
+  80: #ffba40,
+  90: #ffddae,
+  95: #ffeeda,
+  98: #fff8f3,
+  99: #fffbff,
+  100: #fff,
+);
+
+// Error: #D55E00 (Okabe-Ito Vermilion)
+// Warm alert color that stands out from blue and green
+$colorblind-error-m3: (
+  0: #000,
+  10: #310,
+  20: #542100,
+  25: #662900,
+  30: #783200,
+  35: #8a3b00,
+  40: #9d4400,
+  50: #c45600,
+  60: #e96c17,
+  70: #ff8d4a,
+  80: #ffb690,
+  90: #ffdbca,
+  95: #ffede6,
+  98: #fff8f6,
+  99: #fffbff,
+  100: #fff,
+);
+
+// =============================================================================
+// REGULAR PALETTES
+// =============================================================================
+
+// Primary: #1976d2 (Blue)
+// Main brand color for UI elements
+$tmi-primary-m3: (
+  0: #000,
+  10: #001c3a,
+  20: #00315f,
+  25: #003c72,
+  30: #004786,
+  35: #00539a,
+  40: #005faf,
+  50: #1d78d4,
+  60: #4492f0,
+  70: #72adff,
+  80: #a5c8ff,
+  90: #d4e3ff,
+  95: #ebf1ff,
+  98: #f9f9ff,
+  99: #fdfcff,
+  100: #fff,
+);
+
+// Tertiary: #607d8b (Blue Grey)
+// Complementary color for secondary UI elements
+$tmi-tertiary-m3: (
+  0: #000,
+  10: #001f2a,
+  20: #163440,
+  25: #223f4c,
+  30: #2e4b57,
+  35: #3a5663,
+  40: #466270,
+  50: #5e7b89,
+  60: #7895a3,
+  70: #92b0bf,
+  80: #adcbda,
+  90: #c9e7f7,
+  95: #e0f4ff,
+  98: #f4faff,
+  99: #fafcff,
+  100: #fff,
+);
+
+// Error: #f44336 (Red)
+// Alert and error states
+$tmi-error-m3: (
+  0: #000,
+  10: #410001,
+  20: #690002,
+  25: #7e0004,
+  30: #930005,
+  35: #a90107,
+  40: #bb1614,
+  50: #e0342a,
+  60: #ff5545,
+  70: #ff8a7b,
+  80: #ffb4a9,
+  90: #ffdad5,
+  95: #ffedea,
+  98: #fff8f7,
+  99: #fffbff,
+  100: #fff,
+);

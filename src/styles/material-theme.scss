@@ -10,13 +10,14 @@
  * 3. Dark + Normal
  * 4. Dark + Colorblind
  *
- * Note: M3 uses built-in palettes since custom palette generation requires
- * specific M3 tonal values (0, 10, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 95, 98, 99, 100).
- * Our custom M2 palettes are preserved in custom-palette.scss for future M3 palette generation.
+ * Custom M3 palettes are generated from our brand colors using Material Color Utilities.
+ * See m3-palettes.scss for the generated tonal palettes.
  */
 
 @use '@angular/material' as mat;
 @use 'sass:map';
+@use 'm3-palettes-generated' as regular;
+@use 'm3-palettes-colorblind-generated' as colorblind;
 
 // Include Material core styles (only once in the app)
 @include mat.core;
@@ -27,14 +28,14 @@
 
 // -----------------------------------------------------------------------------
 // LIGHT THEME WITH NORMAL PALETTE
-// Using mat.$blue-palette (closest to our #1976d2 primary)
+// Using custom M3 palettes generated from our brand colors (#1976d2, #607d8b)
 // -----------------------------------------------------------------------------
 $light-normal-theme: mat.define-theme(
   (
     color: (
       theme-type: light,
-      primary: mat.$blue-palette,
-      tertiary: mat.$cyan-palette,
+      primary: regular.$primary-palette,
+      tertiary: regular.$tertiary-palette,
     ),
     typography: (
       plain-family: 'Roboto Condensed',
@@ -51,15 +52,14 @@ $light-normal-theme: mat.define-theme(
 
 // -----------------------------------------------------------------------------
 // LIGHT THEME WITH COLORBLIND PALETTE
-// Using mat.$azure-palette for colorblind-friendly blue
-// and mat.$orange-palette for distinct accent
+// Using Okabe-Ito colorblind-friendly palettes (#0072B2, #E69F00)
 // -----------------------------------------------------------------------------
 $light-colorblind-theme: mat.define-theme(
   (
     color: (
       theme-type: light,
-      primary: mat.$azure-palette,
-      tertiary: mat.$orange-palette,
+      primary: colorblind.$primary-palette,
+      tertiary: colorblind.$tertiary-palette,
     ),
     typography: (
       plain-family: 'Roboto Condensed',
@@ -81,8 +81,8 @@ $dark-normal-theme: mat.define-theme(
   (
     color: (
       theme-type: dark,
-      primary: mat.$blue-palette,
-      tertiary: mat.$cyan-palette,
+      primary: regular.$primary-palette,
+      tertiary: regular.$tertiary-palette,
     ),
     typography: (
       plain-family: 'Roboto Condensed',
@@ -104,8 +104,8 @@ $dark-colorblind-theme: mat.define-theme(
   (
     color: (
       theme-type: dark,
-      primary: mat.$azure-palette,
-      tertiary: mat.$orange-palette,
+      primary: colorblind.$primary-palette,
+      tertiary: colorblind.$tertiary-palette,
     ),
     typography: (
       plain-family: 'Roboto Condensed',
