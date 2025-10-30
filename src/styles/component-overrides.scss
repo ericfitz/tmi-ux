@@ -74,8 +74,17 @@ mat-card,
 // LIST ITEM STYLING
 // =============================================================================
 
-// List item theming is handled via mixins in material-theme.scss
-// This ensures proper integration with Material's theme system without !important
+// List items use theme-aware text colors
+.mat-mdc-list-item,
+.mat-mdc-list-option {
+  .mdc-list-item__primary-text {
+    color: var(--theme-text-primary);
+  }
+
+  .mdc-list-item__secondary-text {
+    color: var(--theme-text-secondary);
+  }
+}
 
 // =============================================================================
 // BODY AND APP BACKGROUND
@@ -96,6 +105,14 @@ body {
 .mat-mdc-dialog-container {
   background-color: var(--theme-card);
   color: var(--theme-text-primary);
+
+  .mat-mdc-dialog-content {
+    color: var(--theme-text-primary);
+  }
+
+  .mat-mdc-dialog-title {
+    color: var(--theme-text-primary);
+  }
 }
 
 // =============================================================================
