@@ -12,21 +12,28 @@
     <mat-form-field appearance="outline" class="full-width">
       <mat-label [transloco]="'assetEditor.name'">Asset Name</mat-label>
       <input matInput formControlName="name" required />
-      <mat-error *ngIf="assetForm.get('name')?.hasError('required')">
-        {{ 'common.validation.required' | transloco }}
-      </mat-error>
-      <mat-error *ngIf="assetForm.get('name')?.hasError('maxlength')">
-        {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
-      </mat-error>
+      @if (assetForm.get('name')?.hasError('required')) {
+        <mat-error>
+          {{ 'common.validation.required' | transloco }}
+        </mat-error>
+      }
+
+      @if (assetForm.get('name')?.hasError('maxlength')) {
+        <mat-error>
+          {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
+        </mat-error>
+      }
     </mat-form-field>
 
     <!-- Description -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label [transloco]="'assetEditor.description'">Description</mat-label>
       <textarea matInput formControlName="description" rows="3"></textarea>
-      <mat-error *ngIf="assetForm.get('description')?.hasError('maxlength')">
-        {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
-      </mat-error>
+      @if (assetForm.get('description')?.hasError('maxlength')) {
+        <mat-error>
+          {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
+        </mat-error>
+      }
     </mat-form-field>
 
     <!-- Asset Type -->
@@ -44,9 +51,11 @@
     <mat-form-field appearance="outline" class="full-width">
       <mat-label [transloco]="'assetEditor.criticality'">Criticality</mat-label>
       <input matInput formControlName="criticality" />
-      <mat-error *ngIf="assetForm.get('criticality')?.hasError('maxlength')">
-        {{ 'common.validation.maxLength' | transloco: { max: 64 } }}
-      </mat-error>
+      @if (assetForm.get('criticality')?.hasError('maxlength')) {
+        <mat-error>
+          {{ 'common.validation.maxLength' | transloco: { max: 64 } }}
+        </mat-error>
+      }
     </mat-form-field>
 
     <!-- Classification -->

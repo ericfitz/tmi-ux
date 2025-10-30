@@ -26,9 +26,11 @@
   </div>
 
   <div class="threat-models-list">
-    <div *ngIf="isLoadingThreatModels" class="loading-container">
-      <div class="spinner"></div>
-    </div>
+    @if (isLoadingThreatModels) {
+      <div class="loading-container">
+        <div class="spinner"></div>
+      </div>
+    }
 
     <mat-card
       *ngFor="let threatModel of threatModels"
@@ -47,9 +49,12 @@
                 'common.lastModifiedDate' | transloco: { date: formatDate(threatModel.modified_at) }
               }}
             </p>
-            <p class="threat-model-description" *ngIf="threatModel.description">
-              {{ threatModel.description }}
-            </p>
+            @if (threatModel.description) {
+              <p class="threat-model-description">
+                {{ threatModel.description }}
+              </p>
+            }
+
             <div class="threat-model-stats">
               <div class="stats-row">
                 <span class="stat">
@@ -108,78 +113,83 @@
       </mat-card-content>
     </mat-card>
 
-    <div *ngIf="!isLoadingThreatModels && threatModels.length === 0" class="no-threat-models">
-      <mat-icon class="empty-icon">sentiment_dissatisfied</mat-icon>
-      <p [transloco]="'threatModels.noItemsMessage'">You don't have any threat models yet.</p>
-      <button mat-raised-button color="primary" (click)="createThreatModel()">
-        <span [transloco]="'threatModels.createFirstButton'">Create your first threat model</span>
-      </button>
-    </div>
+    @if (!isLoadingThreatModels && threatModels.length === 0) {
+      <div class="no-threat-models">
+        <mat-icon class="empty-icon">sentiment_dissatisfied</mat-icon>
+        <p [transloco]="'threatModels.noItemsMessage'">You don't have any threat models yet.</p>
+        <button mat-raised-button color="primary" (click)="createThreatModel()">
+          <span [transloco]="'threatModels.createFirstButton'">Create your first threat model</span>
+        </button>
+      </div>
+    }
   </div>
 </div>
 
-<div class="collaboration-sessions-container" *ngIf="shouldShowCollaboration$ | async">
-  <div class="header-row">
-    <h2 class="section-title" [transloco]="'collaboration.availableCollaborationSessions'">
-      Available Collaboration Sessions
-    </h2>
-    <div class="header-actions"></div>
-  </div>
-
-  <div class="collaboration-sessions-list">
-    <div *ngIf="isLoadingCollaborationSessions" class="loading-container">
-      <div class="spinner"></div>
+@if (shouldShowCollaboration$ | async) {
+  <div class="collaboration-sessions-container">
+    <div class="header-row">
+      <h2 class="section-title" [transloco]="'collaboration.availableCollaborationSessions'">
+        Available Collaboration Sessions
+      </h2>
+      <div class="header-actions"></div>
     </div>
 
-    <mat-card
-      *ngFor="let session of collaborationSessions$ | async"
-      class="collaboration-session-card"
-      (click)="openCollaborationSession(session.diagramId)"
-    >
-      <mat-card-content>
-        <div class="collaboration-session-info">
-          <mat-icon class="collaboration-session-icon">groups</mat-icon>
-          <div class="collaboration-session-details">
-            <h3 class="collaboration-session-title">
-              {{ session.threatModelName }}
-            </h3>
-            <p class="collaboration-session-diagram">
-              <mat-icon>account_tree</mat-icon> {{ session.diagramName }}
-            </p>
-            <p class="collaboration-session-host">
-              <mat-icon>person</mat-icon> {{ 'collaboration.hostedBy' | transloco }}
-              {{ session.host }}
-            </p>
-            <p class="collaboration-session-time">
-              <mat-icon>schedule</mat-icon>
-              <span class="session-text">
-                {{ 'collaboration.sessionStarted' | transloco }}
-                {{ formatSessionTime(session.startedAt) }}
-              </span>
-            </p>
-            <p class="collaboration-session-users">
-              <mat-icon>group</mat-icon>
-              <span class="session-text">
-                {{ 'collaboration.activeUsers' | transloco: { count: session.activeUsers } }}
-              </span>
-            </p>
-          </div>
+    <div class="collaboration-sessions-list">
+      @if (isLoadingCollaborationSessions) {
+        <div class="loading-container">
+          <div class="spinner"></div>
         </div>
-        <mat-icon
-          class="join-icon"
-          [matTooltip]="'collaboration.joinSession' | transloco"
-          matTooltipPosition="left"
-          >login</mat-icon
-        >
-      </mat-card-content>
-    </mat-card>
+      }
 
-    <div
-      *ngIf="!isLoadingCollaborationSessions && (collaborationSessions$ | async)?.length === 0"
-      class="no-collaboration-sessions"
-    >
-      <mat-icon class="empty-icon">groups_off</mat-icon>
-      <p>{{ 'collaboration.noActiveSessions' | transloco }}</p>
+      <mat-card
+        *ngFor="let session of collaborationSessions$ | async"
+        class="collaboration-session-card"
+        (click)="openCollaborationSession(session.diagramId)"
+      >
+        <mat-card-content>
+          <div class="collaboration-session-info">
+            <mat-icon class="collaboration-session-icon">groups</mat-icon>
+            <div class="collaboration-session-details">
+              <h3 class="collaboration-session-title">
+                {{ session.threatModelName }}
+              </h3>
+              <p class="collaboration-session-diagram">
+                <mat-icon>account_tree</mat-icon> {{ session.diagramName }}
+              </p>
+              <p class="collaboration-session-host">
+                <mat-icon>person</mat-icon> {{ 'collaboration.hostedBy' | transloco }}
+                {{ session.host }}
+              </p>
+              <p class="collaboration-session-time">
+                <mat-icon>schedule</mat-icon>
+                <span class="session-text">
+                  {{ 'collaboration.sessionStarted' | transloco }}
+                  {{ formatSessionTime(session.startedAt) }}
+                </span>
+              </p>
+              <p class="collaboration-session-users">
+                <mat-icon>group</mat-icon>
+                <span class="session-text">
+                  {{ 'collaboration.activeUsers' | transloco: { count: session.activeUsers } }}
+                </span>
+              </p>
+            </div>
+          </div>
+          <mat-icon
+            class="join-icon"
+            [matTooltip]="'collaboration.joinSession' | transloco"
+            matTooltipPosition="left"
+            >login</mat-icon
+          >
+        </mat-card-content>
+      </mat-card>
+
+      @if (!isLoadingCollaborationSessions && (collaborationSessions$ | async)?.length === 0) {
+        <div class="no-collaboration-sessions">
+          <mat-icon class="empty-icon">groups_off</mat-icon>
+          <p>{{ 'collaboration.noActiveSessions' | transloco }}</p>
+        </div>
+      }
     </div>
   </div>
-</div>
+}

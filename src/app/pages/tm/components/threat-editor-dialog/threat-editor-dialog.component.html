@@ -5,47 +5,54 @@
   <!-- Force translation update -->
   <div style="display: none">{{ 'common.threatName' | transloco }}</div>
   <!-- Threat ID and timestamps section -->
-  <div class="info-section-vertical" *ngIf="data.threat" [dir]="currentDirection">
-    <div class="info-field">
-      <span class="info-label">{{ 'common.threatId' | transloco }}:</span>
-      <span class="info-value">{{ data.threat.id }}</span>
-      <button
-        mat-icon-button
-        class="copy-button"
-        (click)="copyToClipboard(data.threat.id)"
-        matTooltip="{{ 'common.copyToClipboard' | transloco }}"
-        [attr.aria-label]="'common.copyToClipboard' | transloco"
-      >
-        <mat-icon>content_copy</mat-icon>
-      </button>
-    </div>
-    <div class="info-field dates-row">
-      <div class="date-field">
-        <span class="info-label">{{ 'common.created' | transloco }}:</span>
-        <span class="info-value">{{
-          data.threat.created_at | date: 'short' : undefined : currentLocale
-        }}</span>
+  @if (data.threat) {
+    <div class="info-section-vertical" [dir]="currentDirection">
+      <div class="info-field">
+        <span class="info-label">{{ 'common.threatId' | transloco }}:</span>
+        <span class="info-value">{{ data.threat.id }}</span>
+        <button
+          mat-icon-button
+          class="copy-button"
+          (click)="copyToClipboard(data.threat.id)"
+          matTooltip="{{ 'common.copyToClipboard' | transloco }}"
+          [attr.aria-label]="'common.copyToClipboard' | transloco"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
       </div>
-      <div class="date-field">
-        <span class="info-label">{{ 'common.lastModified' | transloco }}:</span>
-        <span class="info-value">{{
-          data.threat.modified_at | date: 'short' : undefined : currentLocale
-        }}</span>
+      <div class="info-field dates-row">
+        <div class="date-field">
+          <span class="info-label">{{ 'common.created' | transloco }}:</span>
+          <span class="info-value">{{
+            data.threat.created_at | date: 'short' : undefined : currentLocale
+          }}</span>
+        </div>
+        <div class="date-field">
+          <span class="info-label">{{ 'common.lastModified' | transloco }}:</span>
+          <span class="info-value">{{
+            data.threat.modified_at | date: 'short' : undefined : currentLocale
+          }}</span>
+        </div>
       </div>
     </div>
-  </div>
+  }
 
   <form [formGroup]="threatForm" class="dialog-form" [dir]="currentDirection">
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'common.threatName' | transloco }}</mat-label>
         <input matInput formControlName="name" tabindex="1" />
-        <mat-error *ngIf="threatForm.get('name')?.hasError('required')">
-          {{ 'common.validation.required' | transloco }}
-        </mat-error>
-        <mat-error *ngIf="threatForm.get('name')?.hasError('maxlength')">
-          {{ 'common.validation.maxLength' | transloco: { max: 100 } }}
-        </mat-error>
+        @if (threatForm.get('name')?.hasError('required')) {
+          <mat-error>
+            {{ 'common.validation.required' | transloco }}
+          </mat-error>
+        }
+
+        @if (threatForm.get('name')?.hasError('maxlength')) {
+          <mat-error>
+            {{ 'common.validation.maxLength' | transloco: { max: 100 } }}
+          </mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -59,9 +66,11 @@
           tabindex="2"
           placeholder="{{ 'common.threatDescriptionPlaceholder' | transloco }}"
         ></textarea>
-        <mat-error *ngIf="threatForm.get('description')?.hasError('maxlength')">
-          {{ 'common.validation.maxLength' | transloco: { max: 500 } }}
-        </mat-error>
+        @if (threatForm.get('description')?.hasError('maxlength')) {
+          <mat-error>
+            {{ 'common.validation.maxLength' | transloco: { max: 500 } }}
+          </mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -74,9 +83,11 @@
             {{ threatType }}
           </mat-option>
         </mat-select>
-        <mat-error *ngIf="threatForm.get('threat_type')?.hasError('required')">
-          {{ 'common.validation.required' | transloco }}
-        </mat-error>
+        @if (threatForm.get('threat_type')?.hasError('required')) {
+          <mat-error>
+            {{ 'common.validation.required' | transloco }}
+          </mat-error>
+        }
       </mat-form-field>
     </div>
 
@@ -93,9 +104,11 @@
           <mat-option value="High">{{ 'common.severityHigh' | transloco }}</mat-option>
           <mat-option value="Critical">{{ 'common.severityCritical' | transloco }}</mat-option>
         </mat-select>
-        <mat-error *ngIf="threatForm.get('severity')?.hasError('required')">
-          {{ 'common.validation.required' | transloco }}
-        </mat-error>
+        @if (threatForm.get('severity')?.hasError('required')) {
+          <mat-error>
+            {{ 'common.validation.required' | transloco }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <!-- Score field -->
@@ -122,59 +135,65 @@
     <!-- Issue URI field - on its own row -->
     <div class="form-field-row">
       <!-- Edit mode: Toggle between form input and hyperlink display -->
-      <div *ngIf="!isViewOnly" class="issue-uri-container">
-        <mat-form-field appearance="outline" class="issue-uri-field" floatLabel="always">
-          <mat-label>{{ 'common.issueUri' | transloco }}</mat-label>
+      @if (!isViewOnly) {
+        <div class="issue-uri-container">
+          <mat-form-field appearance="outline" class="issue-uri-field" floatLabel="always">
+            <mat-label>{{ 'common.issueUri' | transloco }}</mat-label>
 
-          <!-- Use ng-container with if-else to ensure exactly one control is always present -->
-          <ng-container *ngIf="shouldShowIssueUriHyperlink(); else inputMode">
-            <input
-              matInput
-              readonly
-              [value]="initialIssueUriValue"
-              class="uri-view-content"
-              (click)="openUriInNewTab(initialIssueUriValue)"
-              style="cursor: pointer; color: #1976d2; text-decoration: underline"
-            />
-          </ng-container>
+            <!-- Use ng-container with if-else to ensure exactly one control is always present -->
+            @if (shouldShowIssueUriHyperlink()) {
+              <ng-container>
+                <input
+                  matInput
+                  readonly
+                  [value]="initialIssueUriValue"
+                  class="uri-view-content"
+                  (click)="openUriInNewTab(initialIssueUriValue)"
+                  style="cursor: pointer; color: #1976d2; text-decoration: underline"
+                />
+              </ng-container>
 
-          <ng-template #inputMode>
-            <input
-              matInput
-              formControlName="issue_uri"
-              type="url"
-              tabindex="7"
-              (blur)="onIssueUriBlur()"
-            />
-          </ng-template>
-        </mat-form-field>
+            } @else {
+              <input
+                matInput
+                formControlName="issue_uri"
+                type="url"
+                tabindex="7"
+                (blur)="onIssueUriBlur()"
+              />
+            }
+          </mat-form-field>
 
-        <!-- Edit button outside the form field -->
-        <button
-          mat-icon-button
-          class="external-edit-button"
-          (click)="editIssueUri()"
-          [matTooltip]="'common.edit' | transloco"
-          [attr.aria-label]="'common.edit' | transloco"
-          *ngIf="shouldShowIssueUriHyperlink()"
-          tabindex="8"
-        >
-          <mat-icon>edit</mat-icon>
-        </button>
-      </div>
+          <!-- Edit button outside the form field -->
+          @if (shouldShowIssueUriHyperlink()) {
+            <button
+              mat-icon-button
+              class="external-edit-button"
+              (click)="editIssueUri()"
+              [matTooltip]="'common.edit' | transloco"
+              [attr.aria-label]="'common.edit' | transloco"
+              tabindex="8"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          }
+        </div>
+      }
 
       <!-- View-only mode: Show only hyperlink if URI exists -->
-      <div *ngIf="isViewOnly && data.threat?.issue_uri" class="view-only-uri">
-        <span class="uri-label">{{ 'common.issueUri' | transloco }}:</span>
-        <a
-          [href]="data.threat?.issue_uri"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="issue-uri-link"
-        >
-          {{ data.threat?.issue_uri }}
-        </a>
-      </div>
+      @if (isViewOnly && data.threat?.issue_uri) {
+        <div class="view-only-uri">
+          <span class="uri-label">{{ 'common.issueUri' | transloco }}:</span>
+          <a
+            [href]="data.threat?.issue_uri"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="issue-uri-link"
+          >
+            {{ data.threat?.issue_uri }}
+          </a>
+        </div>
+      }
     </div>
 
     <!-- Status and Mitigated row -->
@@ -231,25 +250,28 @@
   >
     {{ 'common.cancel' | transloco }}
   </button>
-  <button
-    mat-raised-button
-    color="primary"
-    [disabled]="threatForm.invalid"
-    (click)="onSubmit()"
-    *ngIf="!isViewOnly"
-    tabindex="14"
-    [attr.aria-label]="'common.save' | transloco"
-  >
-    {{ 'common.save' | transloco }}
-  </button>
-  <button
-    mat-raised-button
-    color="primary"
-    (click)="onCancel()"
-    *ngIf="isViewOnly"
-    tabindex="13"
-    [attr.aria-label]="'common.close' | transloco"
-  >
-    {{ 'common.close' | transloco }}
-  </button>
+  @if (!isViewOnly) {
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="threatForm.invalid"
+      (click)="onSubmit()"
+      tabindex="14"
+      [attr.aria-label]="'common.save' | transloco"
+    >
+      {{ 'common.save' | transloco }}
+    </button>
+  }
+
+  @if (isViewOnly) {
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onCancel()"
+      tabindex="13"
+      [attr.aria-label]="'common.close' | transloco"
+    >
+      {{ 'common.close' | transloco }}
+    </button>
+  }
 </mat-dialog-actions>

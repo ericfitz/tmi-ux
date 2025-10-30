@@ -10,12 +10,17 @@
         formControlName="name"
         [placeholder]="'noteEditor.namePlaceholder' | transloco"
       />
-      <mat-error *ngIf="noteForm.get('name')?.hasError('required')">
-        {{ 'common.validation.required' | transloco }}
-      </mat-error>
-      <mat-error *ngIf="noteForm.get('name')?.hasError('maxlength')">
-        {{ 'common.validation.maxLength' | transloco: { max: maxNameLength } }}
-      </mat-error>
+      @if (noteForm.get('name')?.hasError('required')) {
+        <mat-error>
+          {{ 'common.validation.required' | transloco }}
+        </mat-error>
+      }
+
+      @if (noteForm.get('name')?.hasError('maxlength')) {
+        <mat-error>
+          {{ 'common.validation.maxLength' | transloco: { max: maxNameLength } }}
+        </mat-error>
+      }
     </mat-form-field>
 
     <!-- Description field -->
@@ -26,9 +31,11 @@
         formControlName="description"
         [placeholder]="'noteEditor.descriptionPlaceholder' | transloco"
       />
-      <mat-error *ngIf="noteForm.get('description')?.hasError('maxlength')">
-        {{ 'common.validation.maxLength' | transloco: { max: maxDescriptionLength } }}
-      </mat-error>
+      @if (noteForm.get('description')?.hasError('maxlength')) {
+        <mat-error>
+          {{ 'common.validation.maxLength' | transloco: { max: maxDescriptionLength } }}
+        </mat-error>
+      }
     </mat-form-field>
 
     <!-- Markdown Editor Toolbar -->
@@ -109,33 +116,42 @@
     </div>
 
     <!-- Content field (Edit mode) -->
-    <mat-form-field appearance="outline" class="full-width" *ngIf="!previewMode">
-      <mat-label>{{ 'noteEditor.content' | transloco }}</mat-label>
-      <textarea
-        #contentTextarea
-        matInput
-        formControlName="content"
-        rows="20"
-        class="markdown-editor-textarea"
-        [placeholder]="'noteEditor.contentPlaceholder' | transloco"
-        (select)="onTextareaSelect($event)"
-        (keyup)="onTextareaSelect($event)"
-        (mouseup)="onTextareaSelect($event)"
-      ></textarea>
-      <mat-error *ngIf="noteForm.get('content')?.hasError('required')">
-        {{ 'common.validation.required' | transloco }}
-      </mat-error>
-      <mat-error *ngIf="noteForm.get('content')?.hasError('maxlength')">
-        {{ 'common.validation.maxLength' | transloco: { max: maxContentLength } }}
-      </mat-error>
-    </mat-form-field>
+    @if (!previewMode) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'noteEditor.content' | transloco }}</mat-label>
+        <textarea
+          #contentTextarea
+          matInput
+          formControlName="content"
+          rows="20"
+          class="markdown-editor-textarea"
+          [placeholder]="'noteEditor.contentPlaceholder' | transloco"
+          (select)="onTextareaSelect($event)"
+          (keyup)="onTextareaSelect($event)"
+          (mouseup)="onTextareaSelect($event)"
+        ></textarea>
+        @if (noteForm.get('content')?.hasError('required')) {
+          <mat-error>
+            {{ 'common.validation.required' | transloco }}
+          </mat-error>
+        }
+
+        @if (noteForm.get('content')?.hasError('maxlength')) {
+          <mat-error>
+            {{ 'common.validation.maxLength' | transloco: { max: maxContentLength } }}
+          </mat-error>
+        }
+      </mat-form-field>
+    }
 
     <!-- Preview mode -->
-    <div class="markdown-preview-container" *ngIf="previewMode">
-      <div class="markdown-preview">
-        <markdown [data]="sanitizedContent"></markdown>
+    @if (previewMode) {
+      <div class="markdown-preview-container">
+        <div class="markdown-preview">
+          <markdown [data]="sanitizedContent"></markdown>
+        </div>
       </div>
-    </div>
+    }
   </form>
 </mat-dialog-content>
 

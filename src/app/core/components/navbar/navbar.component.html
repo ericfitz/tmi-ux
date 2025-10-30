@@ -46,17 +46,18 @@
       </button>
 
       <!-- WebSocket connection indicator -->
-      <span
-        *ngIf="showWebSocketStatus"
-        [matTooltip]="getWebSocketStatusTooltip()"
-        matTooltipPosition="below"
-        matTooltipClass="multiline-tooltip"
-        style="display: inline-block"
-      >
-        <button mat-icon-button [class]="getWebSocketStatusIconClass()" disabled>
-          <mat-icon fontSet="material-symbols-outlined">{{ getWebSocketStatusIcon() }}</mat-icon>
-        </button>
-      </span>
+      @if (showWebSocketStatus) {
+        <span
+          [matTooltip]="getWebSocketStatusTooltip()"
+          matTooltipPosition="below"
+          matTooltipClass="multiline-tooltip"
+          style="display: inline-block"
+        >
+          <button mat-icon-button [class]="getWebSocketStatusIconClass()" disabled>
+            <mat-icon fontSet="material-symbols-outlined">{{ getWebSocketStatusIcon() }}</mat-icon>
+          </button>
+        </span>
+      }
 
       <!-- Server connection indicator -->
       <span
@@ -76,47 +77,51 @@
       </span>
 
       <!-- User info and logout when authenticated -->
-      <ng-container *ngIf="isAuthenticated">
-        <button
-          mat-button
-          (click)="openUserPreferences()"
-          (contextmenu)="openUserProfileContextMenu($event)"
-          class="user-profile-button"
-          [matTooltip]="userEmail"
-          matTooltipPosition="below"
-          #userProfileButton
-        >
-          <mat-icon>person</mat-icon>
-          <span>{{ username }}</span>
-        </button>
-
-        <!-- Hidden positioned trigger for context menu -->
-        <div
-          style="visibility: hidden; position: fixed"
-          [style.left]="contextMenuPosition.x"
-          [style.top]="contextMenuPosition.y"
-        >
+      @if (isAuthenticated) {
+        <ng-container>
           <button
-            mat-icon-button
-            [matMenuTriggerFor]="userProfileContextMenu"
-            #userProfileMenuTrigger="matMenuTrigger"
-          ></button>
-        </div>
-
-        <!-- Context menu for user profile button -->
-        <mat-menu #userProfileContextMenu="matMenu">
-          <button mat-menu-item (click)="copyUserEmailToClipboard()" *ngIf="isDevelopmentMode">
-            <mat-icon>content_copy</mat-icon>
-            <span [transloco]="'navbar.copyUserEmail'">Copy User Email to Clipboard</span>
+            mat-button
+            (click)="openUserPreferences()"
+            (contextmenu)="openUserProfileContextMenu($event)"
+            class="user-profile-button"
+            [matTooltip]="userEmail"
+            matTooltipPosition="below"
+            #userProfileButton
+          >
+            <mat-icon>person</mat-icon>
+            <span>{{ username }}</span>
           </button>
-        </mat-menu>
-        <button mat-button (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          <span [transloco]="'navbar.logoutButton'">Logout</span>
-        </button>
 
-        <!-- No additional navigation buttons needed as home button will navigate to threat models when authenticated -->
-      </ng-container>
+          <!-- Hidden positioned trigger for context menu -->
+          <div
+            style="visibility: hidden; position: fixed"
+            [style.left]="contextMenuPosition.x"
+            [style.top]="contextMenuPosition.y"
+          >
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="userProfileContextMenu"
+              #userProfileMenuTrigger="matMenuTrigger"
+            ></button>
+          </div>
+
+          <!-- Context menu for user profile button -->
+          <mat-menu #userProfileContextMenu="matMenu">
+            @if (isDevelopmentMode) {
+              <button mat-menu-item (click)="copyUserEmailToClipboard()">
+                <mat-icon>content_copy</mat-icon>
+                <span [transloco]="'navbar.copyUserEmail'">Copy User Email to Clipboard</span>
+              </button>
+            }
+          </mat-menu>
+          <button mat-button (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span [transloco]="'navbar.logoutButton'">Logout</span>
+          </button>
+
+          <!-- No additional navigation buttons needed as home button will navigate to threat models when authenticated -->
+        </ng-container>
+      }
     </div>
   </div>
 </mat-toolbar>

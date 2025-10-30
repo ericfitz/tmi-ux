@@ -5,9 +5,12 @@
     </mat-card-header>
     <mat-card-content>
       <p>{{ 'auth.unauthorized.noPermission' | transloco }}</p>
-      <p *ngIf="requiredRole">
-        {{ 'auth.unauthorized.requiredRole' | transloco: { role: requiredRole } }}
-      </p>
+      @if (requiredRole) {
+        <p>
+          {{ 'auth.unauthorized.requiredRole' | transloco: { role: requiredRole } }}
+        </p>
+      }
+
       <p>
         {{
           statusCode === 401

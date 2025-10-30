@@ -108,18 +108,25 @@
         {{ 'common.fonts' | transloco }}
         <ul class="fonts-list">
           <li *ngFor="let font of fonts">
-            <ng-container *ngIf="font.links.length === 1">
-              <a [href]="font.links[0].url" target="_blank" rel="noopener noreferrer">{{
-                font.name
-              }}</a>
-            </ng-container>
-            <ng-container *ngIf="font.links.length > 1">
-              {{ font.name }}:
-              <ng-container *ngFor="let link of font.links; let i = index">
-                <ng-container *ngIf="i > 0">, </ng-container
-                ><a [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.name }}</a>
+            @if (font.links.length === 1) {
+              <ng-container>
+                <a [href]="font.links[0].url" target="_blank" rel="noopener noreferrer">{{
+                  font.name
+                }}</a>
               </ng-container>
-            </ng-container>
+            }
+
+            @if (font.links.length > 1) {
+              <ng-container>
+                {{ font.name }}:
+                <ng-container *ngFor="let link of font.links; let i = index">
+                  @if (i > 0) {
+                    <ng-container>, </ng-container>
+                  }
+                  <a [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.name }}</a>
+                </ng-container>
+              </ng-container>
+            }
           </li>
         </ul>
       </li>

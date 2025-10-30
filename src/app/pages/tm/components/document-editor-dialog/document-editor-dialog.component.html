@@ -11,26 +11,39 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.documentName' | transloco }}</mat-label>
         <input matInput formControlName="name" tabindex="1" />
-        <mat-error *ngIf="documentForm.get('name')?.hasError('required')">
-          {{ 'common.validation.required' | transloco }}
-        </mat-error>
-        <mat-error *ngIf="documentForm.get('name')?.hasError('maxlength')">
-          {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
-        </mat-error>
+        @if (documentForm.get('name')?.hasError('required')) {
+          <mat-error>
+            {{ 'common.validation.required' | transloco }}
+          </mat-error>
+        }
+
+        @if (documentForm.get('name')?.hasError('maxlength')) {
+          <mat-error>
+            {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.documentUrl' | transloco }}</mat-label>
         <input matInput formControlName="uri" type="url" tabindex="2" />
-        <mat-hint *ngIf="getUriSuggestion()" class="uri-suggestion-hint">
-          {{ getUriSuggestion() }}
-        </mat-hint>
-        <mat-error *ngIf="documentForm.get('uri')?.hasError('required')">
-          {{ 'common.validation.required' | transloco }}
-        </mat-error>
-        <mat-error *ngIf="documentForm.get('uri')?.hasError('maxlength')">
-          {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
-        </mat-error>
+        @if (getUriSuggestion()) {
+          <mat-hint class="uri-suggestion-hint">
+            {{ getUriSuggestion() }}
+          </mat-hint>
+        }
+
+        @if (documentForm.get('uri')?.hasError('required')) {
+          <mat-error>
+            {{ 'common.validation.required' | transloco }}
+          </mat-error>
+        }
+
+        @if (documentForm.get('uri')?.hasError('maxlength')) {
+          <mat-error>
+            {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
@@ -42,9 +55,11 @@
           placeholder="{{ 'threatModels.documentDescriptionPlaceholder' | transloco }}"
           tabindex="3"
         ></textarea>
-        <mat-error *ngIf="documentForm.get('description')?.hasError('maxlength')">
-          {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
-        </mat-error>
+        @if (documentForm.get('description')?.hasError('maxlength')) {
+          <mat-error>
+            {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
+          </mat-error>
+        }
       </mat-form-field>
     </div>
   </form>

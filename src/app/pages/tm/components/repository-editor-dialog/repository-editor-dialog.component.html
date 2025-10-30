@@ -11,12 +11,17 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.repositoryName' | transloco }}</mat-label>
         <input matInput formControlName="name" tabindex="1" />
-        <mat-error *ngIf="repositoryForm.get('name')?.hasError('required')">
-          {{ 'common.validation.required' | transloco }}
-        </mat-error>
-        <mat-error *ngIf="repositoryForm.get('name')?.hasError('maxlength')">
-          {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
-        </mat-error>
+        @if (repositoryForm.get('name')?.hasError('required')) {
+          <mat-error>
+            {{ 'common.validation.required' | transloco }}
+          </mat-error>
+        }
+
+        @if (repositoryForm.get('name')?.hasError('maxlength')) {
+          <mat-error>
+            {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
@@ -28,9 +33,11 @@
           placeholder="{{ 'threatModels.repositoryDescriptionPlaceholder' | transloco }}"
           tabindex="2"
         ></textarea>
-        <mat-error *ngIf="repositoryForm.get('description')?.hasError('maxlength')">
-          {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
-        </mat-error>
+        @if (repositoryForm.get('description')?.hasError('maxlength')) {
+          <mat-error>
+            {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
@@ -41,23 +48,33 @@
           <mat-option value="mercurial">Mercurial</mat-option>
           <mat-option value="other">{{ 'common.other' | transloco }}</mat-option>
         </mat-select>
-        <mat-error *ngIf="repositoryForm.get('type')?.hasError('required')">
-          {{ 'common.validation.required' | transloco }}
-        </mat-error>
+        @if (repositoryForm.get('type')?.hasError('required')) {
+          <mat-error>
+            {{ 'common.validation.required' | transloco }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.repositoryUri' | transloco }}</mat-label>
         <input matInput formControlName="uri" type="url" tabindex="4" />
-        <mat-hint *ngIf="getUriSuggestion()" class="uri-suggestion-hint">
-          {{ getUriSuggestion() }}
-        </mat-hint>
-        <mat-error *ngIf="repositoryForm.get('uri')?.hasError('required')">
-          {{ 'common.validation.required' | transloco }}
-        </mat-error>
-        <mat-error *ngIf="repositoryForm.get('uri')?.hasError('maxlength')">
-          {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
-        </mat-error>
+        @if (getUriSuggestion()) {
+          <mat-hint class="uri-suggestion-hint">
+            {{ getUriSuggestion() }}
+          </mat-hint>
+        }
+
+        @if (repositoryForm.get('uri')?.hasError('required')) {
+          <mat-error>
+            {{ 'common.validation.required' | transloco }}
+          </mat-error>
+        }
+
+        @if (repositoryForm.get('uri')?.hasError('maxlength')) {
+          <mat-error>
+            {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
+          </mat-error>
+        }
       </mat-form-field>
 
       <div class="parameters-section">
@@ -76,18 +93,22 @@
           <mat-label>{{ 'threatModels.repositoryRefValue' | transloco }}</mat-label>
           <input matInput formControlName="refValue" tabindex="6" />
           <mat-hint>{{ 'threatModels.repositoryRefValueHint' | transloco }}</mat-hint>
-          <mat-error *ngIf="repositoryForm.get('refValue')?.hasError('maxlength')">
-            {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
-          </mat-error>
+          @if (repositoryForm.get('refValue')?.hasError('maxlength')) {
+            <mat-error>
+              {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
+            </mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'threatModels.repositorySubPath' | transloco }}</mat-label>
           <input matInput formControlName="subPath" tabindex="7" />
           <mat-hint>{{ 'threatModels.repositorySubPathHint' | transloco }}</mat-hint>
-          <mat-error *ngIf="repositoryForm.get('subPath')?.hasError('maxlength')">
-            {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
-          </mat-error>
+          @if (repositoryForm.get('subPath')?.hasError('maxlength')) {
+            <mat-error>
+              {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
+            </mat-error>
+          }
         </mat-form-field>
       </div>
     </div>

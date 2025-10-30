@@ -2,9 +2,11 @@
   <h2 mat-dialog-title>
     {{ 'common.manageMetadata' | transloco }}
   </h2>
-  <div *ngIf="data.objectName" class="dialog-subtitle">
-    {{ data.objectName }}
-  </div>
+  @if (data.objectName) {
+    <div class="dialog-subtitle">
+      {{ data.objectName }}
+    </div>
+  }
 
   <mat-dialog-content class="dialog-content">
     <div class="table-container">
@@ -72,9 +74,11 @@
       </table>
     </div>
 
-    <div *ngIf="!dataSource.data.length" class="no-items-message">
-      {{ 'common.noMetadata' | transloco }}
-    </div>
+    @if (!dataSource.data.length) {
+      <div class="no-items-message">
+        {{ 'common.noMetadata' | transloco }}
+      </div>
+    }
   </mat-dialog-content>
 
   <mat-dialog-actions align="end" class="dialog-actions">

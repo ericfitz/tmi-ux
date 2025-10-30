@@ -3,16 +3,20 @@
     <div class="title-container">
       <h1 class="page-title">
         {{ 'editor.pageTitle' | transloco }}
-        <span *ngIf="isReadOnlyMode" class="read-only-indicator">(Read Only)</span>
+        @if (isReadOnlyMode) {
+          <span class="read-only-indicator">(Read Only)</span>
+        }
       </h1>
       <div class="subtitle diagram-name">
         <span class="label">{{ 'common.objectTypes.diagram' | transloco }}:</span>
         <span class="value">{{ diagramName }}</span>
       </div>
-      <div class="subtitle threat-model-name" *ngIf="threatModelName">
-        <span class="label">{{ 'common.objectTypes.threatModel' | transloco }}:</span>
-        <span class="value">{{ threatModelName }}</span>
-      </div>
+      @if (threatModelName) {
+        <div class="subtitle threat-model-name">
+          <span class="label">{{ 'common.objectTypes.threatModel' | transloco }}:</span>
+          <span class="value">{{ threatModelName }}</span>
+        </div>
+      }
     </div>
     <div class="collaboration-controls">
       <app-dfd-collaboration></app-dfd-collaboration>
@@ -148,30 +152,24 @@
     </div>
 
     <div class="toolbar-group">
-      <button
-        mat-icon-button
-        (click)="showGraphData()"
-        [matTooltip]="'Show Graph Data'"
-        *ngIf="!isProduction"
-      >
-        <mat-icon>data_object</mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        (click)="showHistory()"
-        [matTooltip]="'Show X6 History'"
-        *ngIf="!isProduction"
-      >
-        <mat-icon>history</mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        (click)="showClipboard()"
-        [matTooltip]="'Show X6 Clipboard'"
-        *ngIf="!isProduction"
-      >
-        <mat-icon>assignment</mat-icon>
-      </button>
+      @if (!isProduction) {
+        <button mat-icon-button (click)="showGraphData()" [matTooltip]="'Show Graph Data'">
+          <mat-icon>data_object</mat-icon>
+        </button>
+      }
+
+      @if (!isProduction) {
+        <button mat-icon-button (click)="showHistory()" [matTooltip]="'Show X6 History'">
+          <mat-icon>history</mat-icon>
+        </button>
+      }
+
+      @if (!isProduction) {
+        <button mat-icon-button (click)="showClipboard()" [matTooltip]="'Show X6 Clipboard'">
+          <mat-icon>assignment</mat-icon>
+        </button>
+      }
+
       <button
         mat-icon-button
         (click)="undo()"
@@ -317,15 +315,17 @@
         <mat-icon>vertical_align_bottom</mat-icon>
         <span>{{ 'contextMenu.moveToBack' | transloco }}</span>
       </button>
-      <button
-        mat-menu-item
-        (click)="addInverseConnection()"
-        *ngIf="isRightClickedCellEdge()"
-        [disabled]="isReadOnlyMode || !isSystemInitialized"
-      >
-        <mat-icon>swap_horiz</mat-icon>
-        <span>{{ 'contextMenu.addInverseConnection' | transloco }}</span>
-      </button>
+      @if (isRightClickedCellEdge()) {
+        <button
+          mat-menu-item
+          (click)="addInverseConnection()"
+          [disabled]="isReadOnlyMode || !isSystemInitialized"
+        >
+          <mat-icon>swap_horiz</mat-icon>
+          <span>{{ 'contextMenu.addInverseConnection' | transloco }}</span>
+        </button>
+      }
+
       <mat-divider></mat-divider>
       <button
         mat-menu-item

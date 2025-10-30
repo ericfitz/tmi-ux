@@ -17,10 +17,12 @@
     </p>
   </div>
 
-  <div class="action-row" *ngIf="!isAuthenticated">
-    <button mat-raised-button color="primary" routerLink="/login">
-      <mat-icon>login</mat-icon>
-      <span>{{ 'getStarted' | transloco }}</span>
-    </button>
-  </div>
+  @if (!isAuthenticated) {
+    <div class="action-row">
+      <button mat-raised-button color="primary" routerLink="/login">
+        <mat-icon>login</mat-icon>
+        <span>{{ 'getStarted' | transloco }}</span>
+      </button>
+    </div>
+  }
 </div>

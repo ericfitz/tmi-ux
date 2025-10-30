@@ -10,9 +10,11 @@
     }}
   </p>
 
-  <div class="countdown-display" *ngIf="!isExtending">
-    <span class="countdown-time">{{ timeRemaining }}</span>
-  </div>
+  @if (!isExtending) {
+    <div class="countdown-display">
+      <span class="countdown-time">{{ timeRemaining }}</span>
+    </div>
+  }
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="session-expiry-actions">

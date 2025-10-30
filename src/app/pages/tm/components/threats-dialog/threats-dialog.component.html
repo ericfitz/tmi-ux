@@ -1,8 +1,10 @@
 <div class="threats-dialog">
   <h2 mat-dialog-title>{{ 'common.manageThreats' | transloco }}</h2>
-  <div *ngIf="data.objectName" class="dialog-subtitle">
-    {{ data.objectName }}
-  </div>
+  @if (data.objectName) {
+    <div class="dialog-subtitle">
+      {{ data.objectName }}
+    </div>
+  }
 
   <mat-dialog-content class="dialog-content">
     <div class="table-container">
@@ -27,9 +29,11 @@
           <td mat-cell *matCellDef="let threat">
             <div class="threat-info">
               <div class="threat-name">{{ threat.name }}</div>
-              <div class="threat-description" *ngIf="threat.description">
-                {{ threat.description }}
-              </div>
+              @if (threat.description) {
+                <div class="threat-description">
+                  {{ threat.description }}
+                </div>
+              }
             </div>
           </td>
         </ng-container>
@@ -65,9 +69,11 @@
       </table>
     </div>
 
-    <div *ngIf="!dataSource.data.length" class="no-items-message">
-      {{ 'common.noThreats' | transloco }}
-    </div>
+    @if (!dataSource.data.length) {
+      <div class="no-items-message">
+        {{ 'common.noThreats' | transloco }}
+      </div>
+    }
   </mat-dialog-content>
 
   <mat-dialog-actions align="end" class="dialog-actions">

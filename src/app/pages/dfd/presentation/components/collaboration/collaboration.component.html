@@ -1,77 +1,81 @@
 <div class="collaboration-container">
   <!-- Start/Stop Presenter button (shown for current presenter) -->
-  <button
-    *ngIf="isCurrentUserPresenter() && isCollaborating"
-    mat-icon-button
-    [class.presenter-mode-active]="isPresenterModeActive$ | async"
-    (click)="togglePresenterMode()"
-    [matTooltip]="
-      (isPresenterModeActive$ | async)
-        ? ('presenter.stopPresenting' | transloco)
-        : ('presenter.startPresenting' | transloco)
-    "
-  >
-    <mat-icon
-      fontSet="material-symbols-outlined"
-      fontWeight="100"
-      style="font-variation-settings: 'FILL' 0"
-      >podium</mat-icon
+  @if (isCurrentUserPresenter() && isCollaborating) {
+    <button
+      mat-icon-button
+      [class.presenter-mode-active]="isPresenterModeActive$ | async"
+      (click)="togglePresenterMode()"
+      [matTooltip]="
+        (isPresenterModeActive$ | async)
+          ? ('presenter.stopPresenting' | transloco)
+          : ('presenter.startPresenting' | transloco)
+      "
     >
-  </button>
+      <mat-icon
+        fontSet="material-symbols-outlined"
+        fontWeight="100"
+        style="font-variation-settings: 'FILL' 0"
+        >podium</mat-icon
+      >
+    </button>
+  }
 
   <!-- Request Presenter button (shown for non-presenters during active sessions) -->
-  <button
-    *ngIf="isCollaborating && !isCurrentUserPresenter() && !isCurrentUserHost()"
-    mat-icon-button
-    [disabled]="!isContextReady"
-    [matTooltip]="'collaboration.requestPresenter' | transloco"
-    (click)="requestPresenterPrivileges()"
-  >
-    <mat-icon
-      fontSet="material-symbols-outlined"
-      fontWeight="100"
-      style="font-variation-settings: 'FILL' 0"
+  @if (isCollaborating && !isCurrentUserPresenter() && !isCurrentUserHost()) {
+    <button
+      mat-icon-button
+      [disabled]="!isContextReady"
+      [matTooltip]="'collaboration.requestPresenter' | transloco"
+      (click)="requestPresenterPrivileges()"
     >
-      person_raised_hand
-    </mat-icon>
-  </button>
+      <mat-icon
+        fontSet="material-symbols-outlined"
+        fontWeight="100"
+        style="font-variation-settings: 'FILL' 0"
+      >
+        person_raised_hand
+      </mat-icon>
+    </button>
+  }
 
   <!-- Manage Participants button (shown during active sessions) -->
-  <button
-    *ngIf="isCollaborating"
-    #manageParticipantsButton
-    mat-icon-button
-    [disabled]="!isContextReady"
-    [matBadge]="collaborationUsers.length || null"
-    matBadgeColor="accent"
-    [matTooltip]="'collaboration.manageParticipants' | transloco"
-    (click)="openParticipantsDialog($event)"
-  >
-    <mat-icon
-      fontSet="material-symbols-outlined"
-      fontWeight="100"
-      style="font-variation-settings: 'FILL' 0"
+  @if (isCollaborating) {
+    <button
+      #manageParticipantsButton
+      mat-icon-button
+      [disabled]="!isContextReady"
+      [matBadge]="collaborationUsers.length || null"
+      matBadgeColor="accent"
+      [matTooltip]="'collaboration.manageParticipants' | transloco"
+      (click)="openParticipantsDialog($event)"
     >
-      group
-    </mat-icon>
-  </button>
+      <mat-icon
+        fontSet="material-symbols-outlined"
+        fontWeight="100"
+        style="font-variation-settings: 'FILL' 0"
+      >
+        group
+      </mat-icon>
+    </button>
+  }
 
   <!-- Copy Link button (shown during active sessions) -->
-  <button
-    *ngIf="isCollaborating"
-    mat-icon-button
-    [disabled]="!isContextReady"
-    [matTooltip]="'collaboration.copyLink' | transloco"
-    (click)="copyCollaborationLink()"
-  >
-    <mat-icon
-      fontSet="material-symbols-outlined"
-      fontWeight="100"
-      style="font-variation-settings: 'FILL' 0"
+  @if (isCollaborating) {
+    <button
+      mat-icon-button
+      [disabled]="!isContextReady"
+      [matTooltip]="'collaboration.copyLink' | transloco"
+      (click)="copyCollaborationLink()"
     >
-      link
-    </mat-icon>
-  </button>
+      <mat-icon
+        fontSet="material-symbols-outlined"
+        fontWeight="100"
+        style="font-variation-settings: 'FILL' 0"
+      >
+        link
+      </mat-icon>
+    </button>
+  }
 
   <!-- Main collaboration button -->
   <button

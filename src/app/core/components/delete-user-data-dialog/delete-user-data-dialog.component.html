@@ -5,140 +5,163 @@
 
 <mat-dialog-content>
   <!-- Stage 1: Explanation and Initial Confirmation -->
-  <div *ngIf="currentStage === DeleteStage.EXPLANATION" class="delete-dialog-content">
-    <p class="confirmation-question">
-      {{ 'userPreferences.deleteMyData.confirmation' | transloco }}
-    </p>
-
-    <div class="warning-box">
-      <mat-icon class="warning-icon-small">info</mat-icon>
-      <div class="warning-text">
-        <p>{{ 'userPreferences.deleteMyData.explanation.intro' | transloco }}</p>
-        <ul>
-          <li>{{ 'userPreferences.deleteMyData.explanation.bullet1' | transloco }}</li>
-          <li>{{ 'userPreferences.deleteMyData.explanation.bullet2' | transloco }}</li>
-          <li>
-            {{ 'userPreferences.deleteMyData.explanation.bullet3' | transloco }}
-            <ul>
-              <li>{{ 'userPreferences.deleteMyData.explanation.bullet3a' | transloco }}</li>
-              <li>{{ 'userPreferences.deleteMyData.explanation.bullet3b' | transloco }}</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
-  </div>
-
-  <!-- Stage 2: Email Verification -->
-  <div *ngIf="currentStage === DeleteStage.EMAIL_VERIFICATION" class="delete-dialog-content">
-    <div class="warning-box">
-      <mat-icon class="warning-icon-small">info</mat-icon>
-      <div class="warning-text">
-        <p>{{ 'userPreferences.deleteMyData.explanation.intro' | transloco }}</p>
-        <ul>
-          <li>{{ 'userPreferences.deleteMyData.explanation.bullet1' | transloco }}</li>
-          <li>{{ 'userPreferences.deleteMyData.explanation.bullet2' | transloco }}</li>
-          <li>
-            {{ 'userPreferences.deleteMyData.explanation.bullet3' | transloco }}
-            <ul>
-              <li>{{ 'userPreferences.deleteMyData.explanation.bullet3a' | transloco }}</li>
-              <li>{{ 'userPreferences.deleteMyData.explanation.bullet3b' | transloco }}</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="email-verification-section">
-      <p class="verification-instruction">
-        {{ 'userPreferences.deleteMyData.validation' | transloco }}
-        <strong>{{ data.userEmail }}</strong>
+  @if (currentStage === DeleteStage.EXPLANATION) {
+    <div class="delete-dialog-content">
+      <p class="confirmation-question">
+        {{ 'userPreferences.deleteMyData.confirmation' | transloco }}
       </p>
 
-      <mat-form-field appearance="outline" class="email-input">
-        <mat-label>{{ 'userPreferences.deleteMyData.emailLabel' | transloco }}</mat-label>
-        <input
-          matInput
-          type="email"
-          [(ngModel)]="emailInput"
-          [placeholder]="data.userEmail"
-          autocomplete="off"
-          tabindex="1"
-          cdkFocusInitial
-        />
-        <mat-hint *ngIf="emailInput && !isEmailValid" class="error-hint">{{
-          'userPreferences.deleteMyData.emailDoesNotMatch' | transloco
-        }}</mat-hint>
-        <mat-hint *ngIf="isEmailValid" class="success-hint">{{
-          'userPreferences.deleteMyData.emailMatches' | transloco
-        }}</mat-hint>
-      </mat-form-field>
+      <div class="warning-box">
+        <mat-icon class="warning-icon-small">info</mat-icon>
+        <div class="warning-text">
+          <p>{{ 'userPreferences.deleteMyData.explanation.intro' | transloco }}</p>
+          <ul>
+            <li>{{ 'userPreferences.deleteMyData.explanation.bullet1' | transloco }}</li>
+            <li>{{ 'userPreferences.deleteMyData.explanation.bullet2' | transloco }}</li>
+            <li>
+              {{ 'userPreferences.deleteMyData.explanation.bullet3' | transloco }}
+              <ul>
+                <li>{{ 'userPreferences.deleteMyData.explanation.bullet3a' | transloco }}</li>
+                <li>{{ 'userPreferences.deleteMyData.explanation.bullet3b' | transloco }}</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
 
-      <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+      @if (errorMessage) {
+        <p class="error-message">{{ errorMessage }}</p>
+      }
     </div>
-  </div>
+  }
+
+  <!-- Stage 2: Email Verification -->
+  @if (currentStage === DeleteStage.EMAIL_VERIFICATION) {
+    <div class="delete-dialog-content">
+      <div class="warning-box">
+        <mat-icon class="warning-icon-small">info</mat-icon>
+        <div class="warning-text">
+          <p>{{ 'userPreferences.deleteMyData.explanation.intro' | transloco }}</p>
+          <ul>
+            <li>{{ 'userPreferences.deleteMyData.explanation.bullet1' | transloco }}</li>
+            <li>{{ 'userPreferences.deleteMyData.explanation.bullet2' | transloco }}</li>
+            <li>
+              {{ 'userPreferences.deleteMyData.explanation.bullet3' | transloco }}
+              <ul>
+                <li>{{ 'userPreferences.deleteMyData.explanation.bullet3a' | transloco }}</li>
+                <li>{{ 'userPreferences.deleteMyData.explanation.bullet3b' | transloco }}</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="email-verification-section">
+        <p class="verification-instruction">
+          {{ 'userPreferences.deleteMyData.validation' | transloco }}
+          <strong>{{ data.userEmail }}</strong>
+        </p>
+
+        <mat-form-field appearance="outline" class="email-input">
+          <mat-label>{{ 'userPreferences.deleteMyData.emailLabel' | transloco }}</mat-label>
+          <input
+            matInput
+            type="email"
+            [(ngModel)]="emailInput"
+            [placeholder]="data.userEmail"
+            autocomplete="off"
+            tabindex="1"
+            cdkFocusInitial
+          />
+          @if (emailInput && !isEmailValid) {
+            <mat-hint class="error-hint">{{
+              'userPreferences.deleteMyData.emailDoesNotMatch' | transloco
+            }}</mat-hint>
+          }
+
+          @if (isEmailValid) {
+            <mat-hint class="success-hint">{{
+              'userPreferences.deleteMyData.emailMatches' | transloco
+            }}</mat-hint>
+          }
+        </mat-form-field>
+
+        @if (errorMessage) {
+          <p class="error-message">{{ errorMessage }}</p>
+        }
+      </div>
+    </div>
+  }
 
   <!-- Stage 3: Processing -->
-  <div *ngIf="currentStage === DeleteStage.PROCESSING" class="delete-dialog-content processing">
-    <div class="spinner-container">
-      <mat-spinner diameter="48"></mat-spinner>
-      <p class="processing-message">{{ 'userPreferences.deleteMyData.processing' | transloco }}</p>
-    </div>
+  @if (currentStage === DeleteStage.PROCESSING) {
+    <div class="delete-dialog-content processing">
+      <div class="spinner-container">
+        <mat-spinner diameter="48"></mat-spinner>
+        <p class="processing-message">
+          {{ 'userPreferences.deleteMyData.processing' | transloco }}
+        </p>
+      </div>
 
-    <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
-  </div>
+      @if (errorMessage) {
+        <p class="error-message">{{ errorMessage }}</p>
+      }
+    </div>
+  }
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <!-- Explanation Stage Buttons -->
-  <ng-container *ngIf="currentStage === DeleteStage.EXPLANATION">
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="onCancel()"
-      cdkFocusInitial
-      tabindex="2"
-      [attr.aria-label]="'common.cancel' | transloco"
-    >
-      {{ 'common.cancel' | transloco }}
-    </button>
-    <button
-      mat-button
-      color="warn"
-      (click)="onContinue()"
-      tabindex="3"
-      [attr.aria-label]="'userPreferences.deleteMyData.continue' | transloco"
-    >
-      <mat-icon>arrow_forward</mat-icon>
-      {{ 'userPreferences.deleteMyData.continue' | transloco }}
-    </button>
-  </ng-container>
+  @if (currentStage === DeleteStage.EXPLANATION) {
+    <ng-container>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onCancel()"
+        cdkFocusInitial
+        tabindex="2"
+        [attr.aria-label]="'common.cancel' | transloco"
+      >
+        {{ 'common.cancel' | transloco }}
+      </button>
+      <button
+        mat-button
+        color="warn"
+        (click)="onContinue()"
+        tabindex="3"
+        [attr.aria-label]="'userPreferences.deleteMyData.continue' | transloco"
+      >
+        <mat-icon>arrow_forward</mat-icon>
+        {{ 'userPreferences.deleteMyData.continue' | transloco }}
+      </button>
+    </ng-container>
+  }
 
   <!-- Email Verification Stage Buttons -->
-  <ng-container *ngIf="currentStage === DeleteStage.EMAIL_VERIFICATION">
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="onCancel()"
-      tabindex="2"
-      [attr.aria-label]="'common.cancel' | transloco"
-    >
-      {{ 'common.cancel' | transloco }}
-    </button>
-    <button
-      mat-button
-      color="warn"
-      (click)="onConfirmDelete()"
-      [disabled]="!isEmailValid"
-      tabindex="3"
-      [attr.aria-label]="'userPreferences.deleteMyData.title' | transloco"
-    >
-      <mat-icon>delete_forever</mat-icon>
-      {{ 'userPreferences.deleteMyData.title' | transloco }}
-    </button>
-  </ng-container>
+  @if (currentStage === DeleteStage.EMAIL_VERIFICATION) {
+    <ng-container>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onCancel()"
+        tabindex="2"
+        [attr.aria-label]="'common.cancel' | transloco"
+      >
+        {{ 'common.cancel' | transloco }}
+      </button>
+      <button
+        mat-button
+        color="warn"
+        (click)="onConfirmDelete()"
+        [disabled]="!isEmailValid"
+        tabindex="3"
+        [attr.aria-label]="'userPreferences.deleteMyData.title' | transloco"
+      >
+        <mat-icon>delete_forever</mat-icon>
+        {{ 'userPreferences.deleteMyData.title' | transloco }}
+      </button>
+    </ng-container>
+  }
 
   <!-- Processing Stage - No Buttons -->
 </mat-dialog-actions>

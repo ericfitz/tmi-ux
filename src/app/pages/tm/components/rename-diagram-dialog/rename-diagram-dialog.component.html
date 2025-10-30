@@ -6,12 +6,17 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'threatModels.diagramName' | transloco }}</mat-label>
         <input matInput formControlName="name" tabindex="1" />
-        <mat-error *ngIf="diagramForm.get('name')?.hasError('required')">
-          {{ 'common.validation.required' | transloco }}
-        </mat-error>
-        <mat-error *ngIf="diagramForm.get('name')?.hasError('maxlength')">
-          {{ 'common.validation.maxLength' | transloco: { max: 100 } }}
-        </mat-error>
+        @if (diagramForm.get('name')?.hasError('required')) {
+          <mat-error>
+            {{ 'common.validation.required' | transloco }}
+          </mat-error>
+        }
+
+        @if (diagramForm.get('name')?.hasError('maxlength')) {
+          <mat-error>
+            {{ 'common.validation.maxLength' | transloco: { max: 100 } }}
+          </mat-error>
+        }
       </mat-form-field>
     </div>
   </form>
