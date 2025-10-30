@@ -1,188 +1,145 @@
 /**
- * Custom Material Theme with Light/Dark Support
+ * Material 3 Theme Configuration
  *
- * This file defines the Angular Material theme and typography configuration
- * supporting both light and dark color schemes with normal and colorblind palettes.
+ * This file defines the Angular Material 3 theme with typography and color
+ * configuration supporting both light/dark color schemes with normal and colorblind palettes.
  *
  * Theme combinations:
  * 1. Light + Normal (default)
  * 2. Light + Colorblind
  * 3. Dark + Normal
  * 4. Dark + Colorblind
+ *
+ * Note: M3 uses built-in palettes since custom palette generation requires
+ * specific M3 tonal values (0, 10, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 95, 98, 99, 100).
+ * Our custom M2 palettes are preserved in custom-palette.scss for future M3 palette generation.
  */
 
 @use '@angular/material' as mat;
 @use 'sass:map';
-@use 'custom-palette' as palette;
 
 // Include Material core styles (only once in the app)
 @include mat.core;
-
-// =============================================================================
-// TYPOGRAPHY CONFIGURATION
-// =============================================================================
-
-// Define custom typography using Roboto Condensed for all Material components
-$custom-typography: mat.m2-define-typography-config(
-  $font-family: 'Roboto Condensed, arial, sans-serif',
-  $headline-1: mat.m2-define-typography-level(96px, 96px, 300),
-  $headline-2: mat.m2-define-typography-level(60px, 60px, 300),
-  $headline-3: mat.m2-define-typography-level(48px, 50px, 400),
-  $headline-4: mat.m2-define-typography-level(34px, 40px, 400),
-  $headline-5: mat.m2-define-typography-level(24px, 32px, 400),
-  $headline-6: mat.m2-define-typography-level(20px, 32px, 500),
-  $subtitle-1: mat.m2-define-typography-level(16px, 28px, 400),
-  $subtitle-2: mat.m2-define-typography-level(14px, 24px, 500),
-  $body-1: mat.m2-define-typography-level(16px, 24px, 400),
-  $body-2: mat.m2-define-typography-level(14px, 20px, 400),
-  $caption: mat.m2-define-typography-level(12px, 20px, 400),
-  $button: mat.m2-define-typography-level(14px, 14px, 500),
-  $overline: mat.m2-define-typography-level(12px, 32px, 400),
-);
-
-// Apply typography to all Material components
-@include mat.typography-hierarchy($custom-typography);
-@include mat.all-component-typographies($custom-typography);
-
-// =============================================================================
-// PALETTE DEFINITIONS
-// =============================================================================
-
-// Normal palettes
-$normal-primary-palette: mat.m2-define-palette(palette.$tmi-primary-palette, 500, 100, 700);
-$normal-accent-palette: mat.m2-define-palette(palette.$tmi-accent-palette, 500);
-$normal-warn-palette: mat.m2-define-palette(palette.$tmi-warn-palette);
-
-// Colorblind-friendly palettes (Okabe-Ito)
-$colorblind-primary-palette: mat.m2-define-palette(
-  palette.$colorblind-primary-palette,
-  500,
-  100,
-  700
-);
-$colorblind-accent-palette: mat.m2-define-palette(palette.$colorblind-accent-palette, 500);
-$colorblind-warn-palette: mat.m2-define-palette(palette.$colorblind-warn-palette);
 
 // =============================================================================
 // THEME DEFINITIONS
 // =============================================================================
 
 // -----------------------------------------------------------------------------
-// LIGHT THEMES
+// LIGHT THEME WITH NORMAL PALETTE
+// Using mat.$blue-palette (closest to our #1976d2 primary)
 // -----------------------------------------------------------------------------
-
-// Light theme with normal palette
-$light-normal-theme: mat.m2-define-light-theme(
+$light-normal-theme: mat.define-theme(
   (
     color: (
-      primary: $normal-primary-palette,
-      accent: $normal-accent-palette,
-      warn: $normal-warn-palette,
+      theme-type: light,
+      primary: mat.$blue-palette,
+      tertiary: mat.$cyan-palette,
     ),
-    typography: $custom-typography,
-    density: -2,
-  )
-);
-
-// Light theme with colorblind palette
-$light-colorblind-theme: mat.m2-define-light-theme(
-  (
-    color: (
-      primary: $colorblind-primary-palette,
-      accent: $colorblind-accent-palette,
-      warn: $colorblind-warn-palette,
+    typography: (
+      plain-family: 'Roboto Condensed',
+      brand-family: 'Roboto Condensed',
+      bold-weight: 700,
+      medium-weight: 500,
+      regular-weight: 400,
     ),
-    typography: $custom-typography,
-    density: -2,
+    density: (
+      scale: -2,
+    ),
   )
 );
 
 // -----------------------------------------------------------------------------
-// DARK THEMES
+// LIGHT THEME WITH COLORBLIND PALETTE
+// Using mat.$azure-palette for colorblind-friendly blue
+// and mat.$orange-palette for distinct accent
 // -----------------------------------------------------------------------------
-
-// Dark theme with normal palette
-$dark-normal-theme: mat.m2-define-dark-theme(
+$light-colorblind-theme: mat.define-theme(
   (
     color: (
-      primary: $normal-primary-palette,
-      accent: $normal-accent-palette,
-      warn: $normal-warn-palette,
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$orange-palette,
     ),
-    typography: $custom-typography,
-    density: -2,
+    typography: (
+      plain-family: 'Roboto Condensed',
+      brand-family: 'Roboto Condensed',
+      bold-weight: 700,
+      medium-weight: 500,
+      regular-weight: 400,
+    ),
+    density: (
+      scale: -2,
+    ),
   )
 );
 
-// Dark theme with colorblind palette
-$dark-colorblind-theme: mat.m2-define-dark-theme(
+// -----------------------------------------------------------------------------
+// DARK THEME WITH NORMAL PALETTE
+// -----------------------------------------------------------------------------
+$dark-normal-theme: mat.define-theme(
   (
     color: (
-      primary: $colorblind-primary-palette,
-      accent: $colorblind-accent-palette,
-      warn: $colorblind-warn-palette,
+      theme-type: dark,
+      primary: mat.$blue-palette,
+      tertiary: mat.$cyan-palette,
     ),
-    typography: $custom-typography,
-    density: -2,
+    typography: (
+      plain-family: 'Roboto Condensed',
+      brand-family: 'Roboto Condensed',
+      bold-weight: 700,
+      medium-weight: 500,
+      regular-weight: 400,
+    ),
+    density: (
+      scale: -2,
+    ),
   )
 );
 
-// =============================================================================
-// CUSTOM COMPONENT THEME MIXINS
-// =============================================================================
-
-// Mixin to apply theme-aware colors to list items
-@mixin list-item-theme($theme) {
-  $color-config: mat.m2-get-color-config($theme);
-  $foreground: map.get($color-config, foreground);
-  $text: mat.m2-get-color-from-palette($foreground, text);
-  $secondary-text: mat.m2-get-color-from-palette($foreground, secondary-text);
-
-  mat-list-item,
-  .mat-mdc-list-item,
-  .mdc-list-item {
-    color: $text;
-
-    .mdc-list-item__content {
-      color: inherit;
-    }
-  }
-
-  .mat-mdc-list-item-title,
-  .mat-mdc-list-item-line,
-  .mdc-list-item__primary-text,
-  .mdc-list-item__secondary-text,
-  .mat-line,
-  [matListItemTitle],
-  [matListItemLine] {
-    color: $text;
-  }
-
-  .mat-mdc-list-item-unscoped-content {
-    color: $secondary-text;
-  }
-}
+// -----------------------------------------------------------------------------
+// DARK THEME WITH COLORBLIND PALETTE
+// -----------------------------------------------------------------------------
+$dark-colorblind-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$azure-palette,
+      tertiary: mat.$orange-palette,
+    ),
+    typography: (
+      plain-family: 'Roboto Condensed',
+      brand-family: 'Roboto Condensed',
+      bold-weight: 700,
+      medium-weight: 500,
+      regular-weight: 400,
+    ),
+    density: (
+      scale: -2,
+    ),
+  )
+);
 
 // =============================================================================
 // APPLY THEMES
 // =============================================================================
 
 // Default theme: Light + Normal (no class needed)
-@include mat.all-component-themes($light-normal-theme);
-@include list-item-theme($light-normal-theme);
+// Apply all Material 3 component styles (color, typography, density)
+html {
+  @include mat.all-component-themes($light-normal-theme);
+}
 
 // Light + Colorblind (colorblind-palette class)
 .colorblind-palette {
   @include mat.all-component-colors($light-colorblind-theme);
-  @include list-item-theme($light-colorblind-theme);
 }
 
 // Dark + Normal (dark-theme class)
 .dark-theme {
   @include mat.all-component-colors($dark-normal-theme);
-  @include list-item-theme($dark-normal-theme);
 
-  // Dark theme CSS variables
+  // Dark theme custom CSS variables for application-specific styling
   --theme-background: #303030;
   --theme-surface: #424242;
   --theme-card: #424242;
@@ -204,14 +161,13 @@ $dark-colorblind-theme: mat.m2-define-dark-theme(
 // Dark + Colorblind (both classes)
 .dark-theme.colorblind-palette {
   @include mat.all-component-colors($dark-colorblind-theme);
-  @include list-item-theme($dark-colorblind-theme);
 }
 
 // =============================================================================
 // CUSTOM THEME VARIABLES
 // =============================================================================
 
-// Define CSS variables that adapt to theme
+// Define CSS variables that adapt to theme for application-specific styling
 :root {
   // Default light theme colors
   --theme-background: #fff;
@@ -223,60 +179,4 @@ $dark-colorblind-theme: mat.m2-define-dark-theme(
   --theme-divider: rgb(0 0 0 / 12%);
   --theme-hover: rgb(0 0 0 / 4%);
   --theme-selected: rgb(0 0 0 / 8%);
-}
-
-// =============================================================================
-// TYPOGRAPHY OVERRIDES
-// =============================================================================
-
-// Ensure all Material components use Roboto Condensed
-.mat-typography {
-  font-family: 'Roboto Condensed', arial, sans-serif;
-}
-
-// Form field labels
-.mat-mdc-form-field {
-  font-family: 'Roboto Condensed', arial, sans-serif;
-}
-
-// Buttons
-.mat-mdc-button,
-.mat-mdc-raised-button,
-.mat-mdc-stroked-button,
-.mat-mdc-flat-button,
-.mat-mdc-icon-button,
-.mat-mdc-fab,
-.mat-mdc-mini-fab {
-  font-family: 'Roboto Condensed', arial, sans-serif;
-}
-
-// Tooltips
-.mat-mdc-tooltip {
-  font-family: 'Roboto Condensed', arial, sans-serif;
-}
-
-// Dialogs
-.mat-mdc-dialog-title,
-.mat-mdc-dialog-content {
-  font-family: 'Roboto Condensed', arial, sans-serif;
-}
-
-// Snackbars
-.mat-mdc-snack-bar-container {
-  font-family: 'Roboto Condensed', arial, sans-serif;
-}
-
-// Menu
-.mat-mdc-menu-item {
-  font-family: 'Roboto Condensed', arial, sans-serif;
-}
-
-// Tabs
-.mat-mdc-tab {
-  font-family: 'Roboto Condensed', arial, sans-serif;
-}
-
-// Toolbar
-.mat-toolbar {
-  font-family: 'Roboto Condensed', arial, sans-serif;
 }
