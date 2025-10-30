@@ -744,30 +744,32 @@ mat-card-header {
 
     // Override disabled state styling for better visibility
     &.mat-mdc-chip-disabled {
-      opacity: 1;
+      opacity: 1 !important;
     }
   }
 }
 
 .classification-chips mat-chip {
-  background-color: var(--color-info) !important;
+  // Use rgba for background to get transparency without affecting text
+  background-color: rgb(33 150 243 / 85%) !important; // var(--color-info) with 85% opacity
   color: white !important;
-  opacity: 0.85 !important;
 
-  // Ensure text is readable in disabled state
+  // Full opacity white text for maximum contrast and readability
   .mdc-evolution-chip__text-label {
     color: white !important;
+    opacity: 1 !important;
   }
 }
 
 .sensitivity-chips mat-chip {
-  background-color: var(--color-warning) !important;
+  // Use rgba for background to get transparency without affecting text
+  background-color: rgb(255 152 0 / 85%) !important; // var(--color-warning) with 85% opacity
   color: white !important;
-  opacity: 0.85 !important;
 
-  // Ensure text is readable in disabled state
+  // Full opacity white text for maximum contrast and readability
   .mdc-evolution-chip__text-label {
     color: white !important;
+    opacity: 1 !important;
   }
 }
 
