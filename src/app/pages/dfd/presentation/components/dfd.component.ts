@@ -1631,33 +1631,48 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        // Determine if cell is a node or edge and use the appropriate operation type
+        const isEdge = cell.isEdge();
+
         // Update cell metadata through orchestrator
-        this.appDfdOrchestrator
-          .executeOperation({
-            id: `update-metadata-${Date.now()}`,
-            type: 'update-node',
-            source: 'user-interaction' as const,
-            priority: 'high' as const,
-            timestamp: Date.now(),
-            nodeId: cell.id,
-            updates: {
-              properties: { metadata: result },
-            },
-          } as any)
-          .subscribe({
-            next: operationResult => {
-              if (operationResult.success) {
-                this.logger.debug('Cell metadata updated successfully');
-              } else {
-                this.logger.error('Failed to update cell metadata', {
-                  error: operationResult.error,
-                });
-              }
-            },
-            error: error => {
-              this.logger.error('Error updating cell metadata', { error });
-            },
-          });
+        const operation = isEdge
+          ? {
+              id: `update-metadata-${Date.now()}`,
+              type: 'update-edge' as const,
+              source: 'user-interaction' as const,
+              priority: 'high' as const,
+              timestamp: Date.now(),
+              edgeId: cell.id,
+              updates: {
+                properties: { metadata: result },
+              },
+            }
+          : {
+              id: `update-metadata-${Date.now()}`,
+              type: 'update-node' as const,
+              source: 'user-interaction' as const,
+              priority: 'high' as const,
+              timestamp: Date.now(),
+              nodeId: cell.id,
+              updates: {
+                properties: { metadata: result },
+              },
+            };
+
+        this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+          next: operationResult => {
+            if (operationResult.success) {
+              this.logger.debug('Cell metadata updated successfully');
+            } else {
+              this.logger.error('Failed to update cell metadata', {
+                error: operationResult.error,
+              });
+            }
+          },
+          error: error => {
+            this.logger.error('Error updating cell metadata', { error });
+          },
+        });
       }
     });
   }
