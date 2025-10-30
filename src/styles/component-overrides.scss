@@ -75,14 +75,22 @@ mat-card,
 // =============================================================================
 
 // List items use theme-aware text colors
+// Using !important to override Material's default styles and component-specific styles
 .mat-mdc-list-item,
 .mat-mdc-list-option {
+  color: var(--theme-text-primary) !important;
+
   .mdc-list-item__primary-text {
-    color: var(--theme-text-primary);
+    color: var(--theme-text-primary) !important;
+
+    // Ensure nested elements also inherit the correct color
+    & > * {
+      color: var(--theme-text-primary) !important;
+    }
   }
 
   .mdc-list-item__secondary-text {
-    color: var(--theme-text-secondary);
+    color: var(--theme-text-secondary) !important;
   }
 }
 
@@ -279,5 +287,15 @@ body {
     box-shadow:
       0 4px 8px rgb(0 0 0 / 24%),
       0 2px 4px rgb(0 0 0 / 16%);
+  }
+
+  // Override any elements using --color-text-primary to ensure they use the dark theme value
+  // This handles component-specific styles that reference --color-text-primary
+  .asset-name,
+  .diagram-name,
+  .document-name,
+  .note-title,
+  .threat-content {
+    color: var(--theme-text-primary) !important;
   }
 }
