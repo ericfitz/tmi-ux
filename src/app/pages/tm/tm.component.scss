@@ -28,7 +28,7 @@
   }
 
   button[mat-icon-button] {
-    color: #555;
+    color: var(--theme-text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -41,7 +41,7 @@
     }
 
     &:disabled {
-      color: #ccc;
+      color: var(--theme-text-disabled);
     }
   }
 }
@@ -118,13 +118,13 @@ mat-card-content {
 .threat-model-date {
   margin: 0 0 8px;
   font-size: 0.85rem;
-  color: rgb(0 0 0 / 60%);
+  color: var(--theme-text-secondary);
 }
 
 .threat-model-description {
   margin: 0 0 12px;
   font-size: 0.9rem;
-  color: rgb(0 0 0 / 80%);
+  color: var(--theme-text-primary);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -137,7 +137,7 @@ mat-card-content {
   flex-direction: column;
   gap: 8px;
   font-size: 0.85rem;
-  color: rgb(0 0 0 / 60%);
+  color: var(--theme-text-secondary);
 
   .stats-row {
     display: grid;
@@ -182,7 +182,7 @@ button.delete-button {
   grid-column: 1 / -1;
   text-align: center;
   padding: 40px 0;
-  color: rgb(0 0 0 / 60%);
+  color: var(--theme-text-secondary);
 
   .empty-icon {
     font-size: 48px;
@@ -206,7 +206,7 @@ button.delete-button {
   align-items: center;
   margin: 4px 0;
   font-size: 0.9rem;
-  color: rgb(0 0 0 / 70%);
+  color: var(--theme-text-primary);
 
   mat-icon {
     font-size: 16px;

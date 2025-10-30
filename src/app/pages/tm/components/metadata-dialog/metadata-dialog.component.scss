@@ -63,14 +63,14 @@
   .no-items-message {
     text-align: center;
     padding: 40px 20px;
-    color: rgb(0 0 0 / 60%);
+    color: var(--theme-text-secondary);
     font-style: italic;
   }
 
   .dialog-actions {
     padding: 16px 24px;
     gap: 8px;
-    border-top: 1px solid rgb(0 0 0 / 12%);
+    border-top: 1px solid var(--theme-divider);
     margin-top: 16px;
 
     button {

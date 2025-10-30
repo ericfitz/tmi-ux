@@ -224,7 +224,7 @@ export class UserPreferencesDialogComponent {
           prefs['themeMode'] = prefs['darkMode'] ? 'dark' : 'light';
           delete prefs['darkMode'];
         }
-        return prefs as UserPreferences;
+        return prefs as unknown as UserPreferences;
       } catch (e) {
         this.logger.error('Error parsing user preferences:', e);
       }

@@ -12,6 +12,7 @@
  */
 
 @use '@angular/material' as mat;
+@use 'sass:map';
 @use 'custom-palette' as palette;
 
 // Include Material core styles (only once in the app)
@@ -79,7 +80,7 @@ $light-normal-theme: mat.m2-define-light-theme(
       warn: $normal-warn-palette,
     ),
     typography: $custom-typography,
-    density: -1,
+    density: -2,
   )
 );
 
@@ -92,7 +93,7 @@ $light-colorblind-theme: mat.m2-define-light-theme(
       warn: $colorblind-warn-palette,
     ),
     typography: $custom-typography,
-    density: -1,
+    density: -2,
   )
 );
 
@@ -109,7 +110,7 @@ $dark-normal-theme: mat.m2-define-dark-theme(
       warn: $normal-warn-palette,
     ),
     typography: $custom-typography,
-    density: -1,
+    density: -2,
   )
 );
 
@@ -122,9 +123,45 @@ $dark-colorblind-theme: mat.m2-define-dark-theme(
       warn: $colorblind-warn-palette,
     ),
     typography: $custom-typography,
-    density: -1,
+    density: -2,
   )
 );
+
+// =============================================================================
+// CUSTOM COMPONENT THEME MIXINS
+// =============================================================================
+
+// Mixin to apply theme-aware colors to list items
+@mixin list-item-theme($theme) {
+  $color-config: mat.m2-get-color-config($theme);
+  $foreground: map.get($color-config, foreground);
+  $text: mat.m2-get-color-from-palette($foreground, text);
+  $secondary-text: mat.m2-get-color-from-palette($foreground, secondary-text);
+
+  mat-list-item,
+  .mat-mdc-list-item,
+  .mdc-list-item {
+    color: $text;
+
+    .mdc-list-item__content {
+      color: inherit;
+    }
+  }
+
+  .mat-mdc-list-item-title,
+  .mat-mdc-list-item-line,
+  .mdc-list-item__primary-text,
+  .mdc-list-item__secondary-text,
+  .mat-line,
+  [matListItemTitle],
+  [matListItemLine] {
+    color: $text;
+  }
+
+  .mat-mdc-list-item-unscoped-content {
+    color: $secondary-text;
+  }
+}
 
 // =============================================================================
 // APPLY THEMES
@@ -132,15 +169,18 @@ $dark-colorblind-theme: mat.m2-define-dark-theme(
 
 // Default theme: Light + Normal (no class needed)
 @include mat.all-component-themes($light-normal-theme);
+@include list-item-theme($light-normal-theme);
 
 // Light + Colorblind (colorblind-palette class)
 .colorblind-palette {
   @include mat.all-component-colors($light-colorblind-theme);
+  @include list-item-theme($light-colorblind-theme);
 }
 
 // Dark + Normal (dark-theme class)
 .dark-theme {
   @include mat.all-component-colors($dark-normal-theme);
+  @include list-item-theme($dark-normal-theme);
 
   // Dark theme CSS variables
   --theme-background: #303030;
@@ -152,11 +192,19 @@ $dark-colorblind-theme: mat.m2-define-dark-theme(
   --theme-divider: rgb(255 255 255 / 12%);
   --theme-hover: rgb(255 255 255 / 4%);
   --theme-selected: rgb(255 255 255 / 8%);
+
+  // Logo colors (dark theme)
+  // Elephant uses lighter gray for contrast on dark backgrounds
+  --logo-elephant-color: #b0b0b0;
+
+  // Text uses white for maximum contrast on dark backgrounds
+  --logo-text-color: #fff;
 }
 
 // Dark + Colorblind (both classes)
 .dark-theme.colorblind-palette {
   @include mat.all-component-colors($dark-colorblind-theme);
+  @include list-item-theme($dark-colorblind-theme);
 }
 
 // =============================================================================

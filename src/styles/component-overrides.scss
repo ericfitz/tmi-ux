@@ -65,39 +65,17 @@ mat-card,
   background-color: var(--theme-card);
   border: 1px solid var(--theme-divider);
   box-shadow:
-    0 2px 4px rgb(0 0 0 / 8%),
-    0 1px 2px rgb(0 0 0 / 6%);
-  border-radius: 12px;
+    0 4px 8px rgb(0 0 0 / 12%),
+    0 2px 4px rgb(0 0 0 / 8%);
+  border-radius: 20px;
 }
 
 // =============================================================================
 // LIST ITEM STYLING
 // =============================================================================
 
-// Ensure list items use theme-aware text colors
-mat-list-item,
-.mat-mdc-list-item,
-.mdc-list-item {
-  color: var(--theme-text-primary);
-
-  // Nested elements inherit color
-  * {
-    color: inherit;
-  }
-}
-
-// Specific Material list item classes
-.mat-mdc-list-item-title,
-.mat-mdc-list-item-line,
-.mdc-list-item__primary-text,
-.mdc-list-item__secondary-text,
-.mat-line {
-  color: var(--theme-text-primary);
-}
-
-.mat-mdc-list-item-unscoped-content {
-  color: var(--theme-text-secondary);
-}
+// List item theming is handled via mixins in material-theme.scss
+// This ensures proper integration with Material's theme system without !important
 
 // =============================================================================
 // BODY AND APP BACKGROUND
@@ -282,18 +260,7 @@ body {
     background-color: var(--theme-surface);
     border-color: var(--theme-divider);
     box-shadow:
-      0 2px 4px rgb(0 0 0 / 20%),
-      0 1px 2px rgb(0 0 0 / 14%);
-  }
-
-  // Logo inversion for better visibility
-  // Navbar logo
-  .tmi-logo,
-  // Home page logo
-  .tmi-home-logo,
-  // About page logo
-  .logo-row .logo {
-    // Invert colors and adjust brightness for optimal visibility
-    filter: invert(1) brightness(0.9);
+      0 4px 8px rgb(0 0 0 / 24%),
+      0 2px 4px rgb(0 0 0 / 16%);
   }
 }

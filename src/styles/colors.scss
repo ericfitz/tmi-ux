@@ -124,6 +124,13 @@ $role-host-color: #ffc107; // Gold color for session host
   --color-role-presenter: #{$role-presenter-color};
   --color-role-host: #{$role-host-color};
 
+  // Logo Colors (light theme)
+  // Elephant uses medium gray for good contrast on light backgrounds
+  --logo-elephant-color: #5a5a5b;
+
+  // Text uses black for maximum contrast on light backgrounds
+  --logo-text-color: #000;
+
   // Server Status Colors
   --color-server-not-configured: #{$text-tertiary};
   --color-server-error: #{$error-color};

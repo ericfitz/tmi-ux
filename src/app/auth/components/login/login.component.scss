@@ -20,7 +20,7 @@
   font-size: 14px !important;
   line-height: 1.6 !important;
   font-weight: 400 !important;
-  color: #333 !important;
+  color: var(--theme-text-primary) !important;
   background-color: transparent !important;
   border: none !important;
   text-align: left !important;
@@ -41,8 +41,8 @@
   text-transform: none;
   font-size: 14px;
   background-color: white !important;
-  color: #333 !important;
-  border: 1px solid #333 !important;
+  color: #000 !important;
+  border: 1px solid #ccc !important;
   width: 100%;
   max-width: 320px;
 
@@ -88,8 +88,8 @@
   text-transform: none;
   font-size: 16px;
   background-color: white !important;
-  color: #333 !important;
-  border: 1px solid #333 !important;
+  color: #000 !important;
+  border: 1px solid #ccc !important;
 
   &:hover:not(:disabled) {
     background-color: #f5f5f5 !important;
@@ -123,21 +123,16 @@
 }
 
 // Test provider specific styles - placed after base styles to maintain specificity order
-.provider-button[data-provider='test'] {
+.provider-button[data-provider='test'],
+.single-provider-button[data-provider='test'] {
   background-color: colors.$test-color !important;
   color: white !important;
-  border: 1px solid #333 !important;
+  border: 1px solid colors.$test-color-hover !important;
 
   &:hover:not(:disabled) {
     background-color: colors.$test-color-hover !important;
   }
 
-  .provider-logo {
-    filter: brightness(0) invert(1);
-  }
-}
-
-.single-provider-button[data-provider='test'] {
   .provider-logo {
     filter: brightness(0) invert(1);
   }
