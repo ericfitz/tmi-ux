@@ -8,8 +8,8 @@ import { Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
 import { ThreatModelService } from '../../../tm/services/threat-model.service';
-import { FrameworkService } from '../../../shared/services/framework.service';
-import { CellDataExtractionService } from '../../../shared/services/cell-data-extraction.service';
+import { FrameworkService } from '../../../../shared/services/framework.service';
+import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { Threat } from '../../../tm/models/threat-model.model';
 import {
   ThreatEditorDialogComponent,
