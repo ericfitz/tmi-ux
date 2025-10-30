@@ -741,19 +741,34 @@ mat-card-header {
     font-size: 12px;
     padding: 0 10px;
     min-height: 24px;
+
+    // Override disabled state styling for better visibility
+    &.mat-mdc-chip-disabled {
+      opacity: 1;
+    }
   }
 }
 
 .classification-chips mat-chip {
-  background-color: var(--color-info);
-  color: white;
-  opacity: 0.15;
+  background-color: var(--color-info) !important;
+  color: white !important;
+  opacity: 0.85 !important;
+
+  // Ensure text is readable in disabled state
+  .mdc-evolution-chip__text-label {
+    color: white !important;
+  }
 }
 
 .sensitivity-chips mat-chip {
-  background-color: var(--color-warning);
-  color: white;
-  opacity: 0.15;
+  background-color: var(--color-warning) !important;
+  color: white !important;
+  opacity: 0.85 !important;
+
+  // Ensure text is readable in disabled state
+  .mdc-evolution-chip__text-label {
+    color: white !important;
+  }
 }
 
 .asset-actions {
