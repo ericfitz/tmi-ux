@@ -298,4 +298,31 @@ body {
   .threat-content {
     color: var(--theme-text-primary) !important;
   }
+
+  // Dialog-specific text color overrides for components with hardcoded dark colors
+  .dialog-subtitle,
+  .metadata-item,
+  .info-section,
+  .threat-info,
+  .note-metadata,
+  .collaboration-info,
+  .session-info,
+  .user-info,
+  .threat-title,
+  .threat-description,
+  .threat-mitigation,
+  .section-label,
+  .field-label,
+  .data-label {
+    color: var(--theme-text-primary) !important;
+  }
+
+  // Specific overrides for secondary/muted text in dialogs
+  .dialog-hint,
+  .field-hint,
+  .metadata-label,
+  .timestamp,
+  .count-label {
+    color: var(--theme-text-secondary) !important;
+  }
 }
