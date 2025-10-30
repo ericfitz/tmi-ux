@@ -23,6 +23,27 @@
     "webApplicationSourceCode": "Webanwendungs-Quellcode: ",
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
   },
+  "assetEditor": {
+    "chipPlaceholder": "Wert eingeben und Enter drücken",
+    "classification": "Klassifizierung",
+    "criticality": "Kritikalität",
+    "description": "Beschreibung",
+    "name": "Asset-Name",
+    "sensitivity": "Sensibilität",
+    "title": {
+      "create": "Asset erstellen",
+      "edit": "Asset bearbeiten"
+    },
+    "type": "Asset-Typ",
+    "types": {
+      "data": "Daten",
+      "hardware": "Hardware",
+      "infrastructure": "Infrastruktur",
+      "personnel": "Personal",
+      "service": "Dienst",
+      "software": "Software"
+    }
+  },
   "auth": {
     "unauthorized": {
       "401": "401 Nicht autorisiert",
@@ -102,6 +123,7 @@
     "mitigated": "Gemildert",
     "noMetadata": "Keine Metadaten verfügbar",
     "noThreats": "Keine Bedrohungen verfügbar",
+    "none": "Keine",
     "objectTypes": {
       "asset": "Asset",
       "assets": "Assets",
@@ -157,8 +179,7 @@
       "maxLength": "Maximale Länge ist {{max}} Zeichen",
       "required": "Dieses Feld ist erforderlich"
     },
-    "viewThreat": "Bedrohung anzeigen",
-    "none": "Keine"
+    "viewThreat": "Bedrohung anzeigen"
   },
   "contextMenu": {
     "addInverseConnection": "Umgekehrte Verbindung hinzufügen",
@@ -364,6 +385,7 @@
     "issueUriHint": "Geben Sie eine URL ein, um dieses Bedrohungsmodell in einem externen System zu verfolgen",
     "name": "Name",
     "newThreatModel": "Neues Bedrohungsmodell",
+    "noAssets": "Noch keine Assets hinzugefügt",
     "noDiagrams": "Noch keine Diagramme hinzugefügt",
     "noDocuments": "Noch keine Dokumente hinzugefügt",
     "noItemsMessage": "Sie haben noch keine Bedrohungsmodelle.",
@@ -393,10 +415,13 @@
     "threatModelFramework": "Bedrohungsmodell-Framework",
     "threatModelPrefix": "Bedrohungsmodell:",
     "tooltips": {
+      "addAsset": "Asset hinzufügen",
       "addDiagram": "Diagramm hinzufügen",
       "addDocument": "Dokument hinzufügen",
       "addNote": "Notiz hinzufügen",
       "addRepository": "Repository-Referenz hinzufügen",
+      "assetsCardTitle": "Assets sind wertvolle Ressourcen innerhalb des Systems, die Schutz benötigen, wie Daten, Hardware, Software, Infrastruktur, Dienste oder Personal.",
+      "deleteAsset": "Asset löschen",
       "deleteDiagram": "Diagramm löschen",
       "deleteDocument": "Dokument löschen",
       "deleteRepository": "Repository-Referenz löschen",
@@ -407,13 +432,9 @@
       "loadFromDesktop": "Vom Desktop laden",
       "notesCardTitle": "Notizen sind Texte im Markdown-Format, die vollständig im Bedrohungsmodell enthalten sind und zur Erfassung von Notizen und Anmerkungen von Sicherheitsanalysten und automatisierten Analyseprozessen verwendet werden.",
       "repositoriesCardTitle": "Repositories sind Links zu Quellcode-Repositories, in denen der Quellcode für das System verwaltet wird.",
-      "threatsCardTitle": "Bedrohungen sind potenzielle nachteilige Ereignisse oder Handlungen, die eine Schwachstelle oder Schwäche in einem System ausnutzen, um dessen Vertraulichkeit, Integrität, Verfügbarkeit oder andere Sicherheitsziele zu gefährden. In TMI enthalten Bedrohungsobjekte auch Informationen über Art und Höhe des mit der Bedrohung verbundenen Risikos sowie Informationen zur Verfolgung der zur Minderung der Bedrohung erforderlichen Arbeiten.",
-      "addAsset": "Asset hinzufügen",
-      "assetsCardTitle": "Assets sind wertvolle Ressourcen innerhalb des Systems, die Schutz benötigen, wie Daten, Hardware, Software, Infrastruktur, Dienste oder Personal.",
-      "deleteAsset": "Asset löschen"
+      "threatsCardTitle": "Bedrohungen sind potenzielle nachteilige Ereignisse oder Handlungen, die eine Schwachstelle oder Schwäche in einem System ausnutzen, um dessen Vertraulichkeit, Integrität, Verfügbarkeit oder andere Sicherheitsziele zu gefährden. In TMI enthalten Bedrohungsobjekte auch Informationen über Art und Höhe des mit der Bedrohung verbundenen Risikos sowie Informationen zur Verfolgung der zur Minderung der Bedrohung erforderlichen Arbeiten."
     },
-    "yourThreatModels": "Ihre Bedrohungsmodelle",
-    "noAssets": "Noch keine Assets hinzugefügt"
+    "yourThreatModels": "Ihre Bedrohungsmodelle"
   },
   "tos": {
     "contactInfo": {
@@ -487,6 +508,7 @@
       "validation": "Um Ihre Löschanfrage zu bestätigen, geben Sie Ihre E-Mail-Adresse genau so ein, wie sie hier erscheint:"
     },
     "diagramAnimationEffects": "Animationseffekte im Diagramm-Editor aktivieren",
+    "displayPreferences": "Anzeigeeinstellungen",
     "marginSize": {
       "narrow": "Schmal",
       "standard": "Standard",
@@ -499,27 +521,12 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Berichtseinstellungen",
-    "title": "Benutzereinstellungen"
-  },
-  "assetEditor": {
-    "chipPlaceholder": "Wert eingeben und Enter drücken",
-    "classification": "Klassifizierung",
-    "criticality": "Kritikalität",
-    "description": "Beschreibung",
-    "name": "Asset-Name",
-    "sensitivity": "Sensibilität",
-    "title": {
-      "create": "Asset erstellen",
-      "edit": "Asset bearbeiten"
+    "theme": "Design",
+    "themeMode": {
+      "automatic": "Automatisch (System)",
+      "dark": "Dunkel",
+      "light": "Hell"
     },
-    "type": "Asset-Typ",
-    "types": {
-      "data": "Daten",
-      "hardware": "Hardware",
-      "infrastructure": "Infrastruktur",
-      "personnel": "Personal",
-      "service": "Dienst",
-      "software": "Software"
-    }
+    "title": "Benutzereinstellungen"
   }
 }

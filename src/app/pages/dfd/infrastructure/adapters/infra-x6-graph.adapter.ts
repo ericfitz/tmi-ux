@@ -1784,7 +1784,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       max-height: 120px;
       padding: 4px 8px;
       border: 2px solid #007bff;
-      border-radius: 4px;
+      border-radius: 8px;
       background: #fff;
       font-family: ${DFD_STYLING.TEXT_FONT_FAMILY};
       font-size: ${DFD_STYLING.DEFAULT_FONT_SIZE}px;

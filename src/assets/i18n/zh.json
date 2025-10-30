@@ -23,6 +23,27 @@
     "webApplicationSourceCode": "Web应用程序源代码：",
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
   },
+  "assetEditor": {
+    "chipPlaceholder": "输入值并按 Enter",
+    "classification": "分类",
+    "criticality": "关键性",
+    "description": "描述",
+    "name": "资产名称",
+    "sensitivity": "敏感性",
+    "title": {
+      "create": "创建资产",
+      "edit": "编辑资产"
+    },
+    "type": "资产类型",
+    "types": {
+      "data": "数据",
+      "hardware": "硬件",
+      "infrastructure": "基础设施",
+      "personnel": "人员",
+      "service": "服务",
+      "software": "软件"
+    }
+  },
   "auth": {
     "unauthorized": {
       "401": "401 未授权",
@@ -102,6 +123,7 @@
     "mitigated": "已缓解",
     "noMetadata": "无可用元数据",
     "noThreats": "无可用威胁",
+    "none": "无",
     "objectTypes": {
       "asset": "资产",
       "assets": "资产",
@@ -157,8 +179,7 @@
       "maxLength": "最大长度为{{max}}个字符",
       "required": "此字段为必填项"
     },
-    "viewThreat": "查看威胁",
-    "none": "无"
+    "viewThreat": "查看威胁"
   },
   "contextMenu": {
     "addInverseConnection": "添加反向连接",
@@ -364,6 +385,7 @@
     "issueUriHint": "输入URL以在外部系统中跟踪此威胁模型",
     "name": "名称",
     "newThreatModel": "新威胁模型",
+    "noAssets": "尚未添加资产",
     "noDiagrams": "尚未添加图表",
     "noDocuments": "尚未添加文档",
     "noItemsMessage": "您还没有任何威胁模型。",
@@ -393,10 +415,13 @@
     "threatModelFramework": "威胁模型框架",
     "threatModelPrefix": "威胁模型:",
     "tooltips": {
+      "addAsset": "添加资产",
       "addDiagram": "添加图表",
       "addDocument": "添加文档",
       "addNote": "添加笔记",
       "addRepository": "添加仓库引用",
+      "assetsCardTitle": "资产是系统内需要保护的宝贵资源，例如数据、硬件、软件、基础设施、服务或人员。",
+      "deleteAsset": "删除资产",
       "deleteDiagram": "删除图表",
       "deleteDocument": "删除文档",
       "deleteRepository": "删除仓库引用",
@@ -407,13 +432,9 @@
       "loadFromDesktop": "从桌面加载",
       "notesCardTitle": "笔记是完全包含在威胁模型中的markdown格式文本，用于捕获来自安全分析师和自动化分析流程的笔记和注释。",
       "repositoriesCardTitle": "代码仓库是指向源代码仓库的链接，这些仓库管理着系统的源代码。",
-      "threatsCardTitle": "威胁是潜在的不利事件或行动，它利用系统中的漏洞或弱点来破坏其机密性、完整性、可用性或其他安全目标。在TMI中，威胁对象还包含有关与威胁相关的风险类型和级别的信息，以及跟踪缓解威胁所需工作的信息。",
-      "addAsset": "添加资产",
-      "assetsCardTitle": "资产是系统内需要保护的宝贵资源，例如数据、硬件、软件、基础设施、服务或人员。",
-      "deleteAsset": "删除资产"
+      "threatsCardTitle": "威胁是潜在的不利事件或行动，它利用系统中的漏洞或弱点来破坏其机密性、完整性、可用性或其他安全目标。在TMI中，威胁对象还包含有关与威胁相关的风险类型和级别的信息，以及跟踪缓解威胁所需工作的信息。"
     },
-    "yourThreatModels": "您的威胁模型",
-    "noAssets": "尚未添加资产"
+    "yourThreatModels": "您的威胁模型"
   },
   "tos": {
     "contactInfo": {
@@ -487,6 +508,7 @@
       "validation": "要确认您的删除请求，请准确输入此处显示的电子邮件地址："
     },
     "diagramAnimationEffects": "在图表编辑器中启用动画效果",
+    "displayPreferences": "显示偏好设置",
     "marginSize": {
       "narrow": "窄",
       "standard": "标准",
@@ -499,27 +521,12 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "报告首选项",
-    "title": "用户偏好"
-  },
-  "assetEditor": {
-    "chipPlaceholder": "输入值并按 Enter",
-    "classification": "分类",
-    "criticality": "关键性",
-    "description": "描述",
-    "name": "资产名称",
-    "sensitivity": "敏感性",
-    "title": {
-      "create": "创建资产",
-      "edit": "编辑资产"
+    "theme": "主题",
+    "themeMode": {
+      "automatic": "自动（系统）",
+      "dark": "深色",
+      "light": "浅色"
     },
-    "type": "资产类型",
-    "types": {
-      "data": "数据",
-      "hardware": "硬件",
-      "infrastructure": "基础设施",
-      "personnel": "人员",
-      "service": "服务",
-      "software": "软件"
-    }
+    "title": "用户偏好"
   }
 }

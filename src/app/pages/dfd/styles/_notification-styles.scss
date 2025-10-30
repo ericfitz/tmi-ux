@@ -127,7 +127,7 @@
 .notification-warning .mat-mdc-snack-bar-container .mdc-snackbar__surface,
 .notification-error .mat-mdc-snack-bar-container .mdc-snackbar__surface {
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%) !important;
-  border-radius: 4px !important;
+  border-radius: 8px !important;
   transition: all 0.3s ease-in-out !important;
 }
 
@@ -138,7 +138,7 @@
   font-weight: 500 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
-  border-radius: 2px !important;
+  border-radius: 8px !important;
   padding: 0 12px !important;
   min-width: 64px !important;
 }

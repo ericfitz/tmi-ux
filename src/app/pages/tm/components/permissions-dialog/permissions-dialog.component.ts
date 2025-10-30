@@ -179,7 +179,7 @@ export interface PermissionsDialogData {
 
       .info-section {
         background-color: #f5f5f5;
-        border-radius: 4px;
+        border-radius: 8px;
         padding: 8px 12px;
         margin-bottom: 12px;
         font-family: var(--font-family-primary);
