@@ -5,6 +5,8 @@ export interface Metadata {
 
 export interface Authorization {
   subject: string;
+  subject_type: 'user' | 'group';
+  idp?: string;
   role: 'reader' | 'writer' | 'owner';
 }
 
@@ -103,6 +105,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
     authorization: [
       {
         subject: 'user@example.com',
+        subject_type: 'user',
         role: 'owner',
       },
     ],
@@ -402,6 +405,7 @@ Schedule follow-up review in 2 weeks to assess progress.`,
     authorization: [
       {
         subject: 'user@example.com',
+        subject_type: 'user',
         role: 'owner',
       },
     ],
@@ -487,6 +491,7 @@ Schedule follow-up review in 2 weeks to assess progress.`,
     authorization: [
       {
         subject: 'user@example.com',
+        subject_type: 'user',
         role: 'owner',
       },
     ],

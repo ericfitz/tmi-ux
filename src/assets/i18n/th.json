@@ -168,6 +168,10 @@
     "severityNone": "ไม่มี",
     "severityUnknown": "ไม่ทราบ",
     "status": "สถานะ",
+    "subjectTypes": {
+      "group": "กลุ่ม",
+      "user": "ผู้ใช้"
+    },
     "threatDescription": "คำอธิบายภัยคุกคาม",
     "threatDescriptionPlaceholder": "อธิบายภัยคุกคามโดยละเอียด",
     "threatId": "รหัสภัยคุกคาม",
@@ -394,7 +398,10 @@
     "noRepositories": "ยังไม่มีการเพิ่มที่เก็บ",
     "noThreats": "ยังไม่มีการเพิ่มภัยคุกคาม",
     "pageTitle": "แบบจำลองภัยคุกคาม",
+    "permissionsIdp": "ผู้ให้บริการข้อมูลประจำตัว",
     "permissionsRole": "บทบาท",
+    "permissionsSubject": "หัวข้อ",
+    "permissionsSubjectType": "ประเภท",
     "permissionsTooltip": "จัดการสิทธิ์การเข้าถึง",
     "permissionsUser": "ผู้ใช้",
     "rename": "เปลี่ยนชื่อ",

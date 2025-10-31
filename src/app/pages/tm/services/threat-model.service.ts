@@ -507,6 +507,7 @@ export class ThreatModelService implements OnDestroy {
         authorization: [
           {
             subject: currentUser,
+            subject_type: 'user',
             role: 'owner',
           },
         ],

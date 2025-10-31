@@ -168,6 +168,10 @@
     "severityNone": "None",
     "severityUnknown": "Unknown",
     "status": "Status",
+    "subjectTypes": {
+      "group": "Group",
+      "user": "User"
+    },
     "threatDescription": "Threat Description",
     "threatDescriptionPlaceholder": "Describe the Threat in Detail",
     "threatId": "Threat ID",
@@ -394,7 +398,10 @@
     "noRepositories": "No Repositories Added Yet",
     "noThreats": "No Threats Added Yet",
     "pageTitle": "Threat Models",
+    "permissionsIdp": "Identity Provider",
     "permissionsRole": "Role",
+    "permissionsSubject": "Subject",
+    "permissionsSubjectType": "Type",
     "permissionsTooltip": "Manage Permissions",
     "permissionsUser": "User",
     "rename": "Rename",

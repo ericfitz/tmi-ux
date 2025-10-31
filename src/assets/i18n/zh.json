@@ -168,6 +168,10 @@
     "severityNone": "无",
     "severityUnknown": "未知",
     "status": "状态",
+    "subjectTypes": {
+      "group": "组",
+      "user": "用户"
+    },
     "threatDescription": "威胁描述",
     "threatDescriptionPlaceholder": "详细描述威胁",
     "threatId": "威胁ID",
@@ -394,7 +398,10 @@
     "noRepositories": "尚未添加仓库",
     "noThreats": "尚未添加威胁",
     "pageTitle": "威胁模型",
+    "permissionsIdp": "身份提供者",
     "permissionsRole": "角色",
+    "permissionsSubject": "主体",
+    "permissionsSubjectType": "类型",
     "permissionsTooltip": "管理权限",
     "permissionsUser": "用户",
     "rename": "重命名",

@@ -44,10 +44,46 @@ export interface PermissionsDialogData {
               #permissionsSort="matSort"
               class="permissions-table"
             >
+              <!-- IDP Column -->
+              <ng-container matColumnDef="idp">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  {{ 'threatModels.permissionsIdp' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let auth">
+                  <span>{{ auth.idp || '' }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Subject Type Column -->
+              <ng-container matColumnDef="subject_type">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  {{ 'threatModels.permissionsSubjectType' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let auth; let i = index">
+                  <mat-form-field class="table-field" *ngIf="!data.isReadOnly">
+                    <mat-select
+                      [value]="auth.subject_type"
+                      (selectionChange)="updatePermissionSubjectType(i, $event)"
+                      [attr.tabindex]="i * 6 + 1"
+                    >
+                      <mat-option value="user">{{
+                        'common.subjectTypes.user' | transloco
+                      }}</mat-option>
+                      <mat-option value="group">{{
+                        'common.subjectTypes.group' | transloco
+                      }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <span *ngIf="data.isReadOnly">{{
+                    'common.subjectTypes.' + auth.subject_type | transloco
+                  }}</span>
+                </td>
+              </ng-container>
+
               <!-- Subject Column -->
               <ng-container matColumnDef="subject">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  {{ 'threatModels.permissionsUser' | transloco }}
+                  {{ 'threatModels.permissionsSubject' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
                   <mat-form-field class="table-field" *ngIf="!data.isReadOnly">
@@ -56,7 +92,7 @@ export interface PermissionsDialogData {
                       [value]="auth.subject"
                       (blur)="updatePermissionSubject(i, $event)"
                       placeholder="User Email"
-                      [attr.tabindex]="i * 4 + 1"
+                      [attr.tabindex]="i * 6 + 2"
                     />
                   </mat-form-field>
                   <span *ngIf="data.isReadOnly">{{ auth.subject }}</span>
@@ -73,7 +109,7 @@ export interface PermissionsDialogData {
                     <mat-select
                       [value]="auth.role"
                       (selectionChange)="updatePermissionRole(i, $event)"
-                      [attr.tabindex]="i * 4 + 2"
+                      [attr.tabindex]="i * 6 + 3"
                     >
                       <mat-option value="owner">{{ 'common.roles.owner' | transloco }}</mat-option>
                       <mat-option value="writer">{{
@@ -99,7 +135,7 @@ export interface PermissionsDialogData {
                       (click)="setAsOwner(i)"
                       [matTooltip]="'threatModels.setAsOwner' | transloco"
                       [disabled]="auth.subject === data.owner"
-                      [attr.tabindex]="i * 4 + 3"
+                      [attr.tabindex]="i * 6 + 4"
                       [attr.aria-label]="'threatModels.setAsOwner' | transloco"
                     >
                       <mat-icon fontSet="material-symbols-outlined">lock_person</mat-icon>
@@ -109,7 +145,7 @@ export interface PermissionsDialogData {
                       color="warn"
                       (click)="deletePermission(i)"
                       [matTooltip]="'common.delete' | transloco"
-                      [attr.tabindex]="i * 4 + 4"
+                      [attr.tabindex]="i * 6 + 5"
                       [attr.aria-label]="'common.delete' | transloco"
                     >
                       <mat-icon>delete</mat-icon>
@@ -236,6 +272,24 @@ export interface PermissionsDialogData {
         font-size: var(--font-size-base);
       }
 
+      /* IDP column */
+      .mat-column-idp {
+        width: 140px;
+        max-width: 140px;
+      }
+
+      /* Subject type column */
+      .mat-column-subject_type {
+        width: 100px;
+        max-width: 100px;
+      }
+
+      /* Subject column takes remaining space */
+      .mat-column-subject {
+        flex: 1;
+        min-width: 200px;
+      }
+
       /* Make role column narrower */
       .mat-column-role {
         width: 120px;
@@ -247,12 +301,6 @@ export interface PermissionsDialogData {
         width: 140px;
         max-width: 140px;
         text-align: center;
-      }
-
-      /* Subject column takes remaining space */
-      .mat-column-subject {
-        flex: 1;
-        min-width: 200px;
       }
 
       .mat-mdc-cell,
@@ -331,11 +379,25 @@ export interface PermissionsDialogData {
         }
 
         .permissions-table {
-          min-width: 320px;
+          min-width: 500px;
         }
 
         .table-field {
           min-width: 80px;
+        }
+
+        .mat-column-idp {
+          width: 120px;
+          max-width: 120px;
+        }
+
+        .mat-column-subject_type {
+          width: 90px;
+          max-width: 90px;
+        }
+
+        .mat-column-subject {
+          min-width: 150px;
         }
 
         .mat-column-role {
@@ -346,10 +408,6 @@ export interface PermissionsDialogData {
         .mat-column-actions {
           width: 120px;
           max-width: 120px;
-        }
-
-        .mat-column-subject {
-          min-width: 150px;
         }
       }
     `,
@@ -372,8 +430,8 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.permissionsDataSource.data = [...this.data.permissions];
     this.displayedColumns = this.data.isReadOnly
-      ? ['subject', 'role']
-      : ['subject', 'role', 'actions'];
+      ? ['idp', 'subject_type', 'subject', 'role']
+      : ['idp', 'subject_type', 'subject', 'role', 'actions'];
   }
 
   ngOnDestroy(): void {
@@ -396,6 +454,18 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Updates the subject type of a permission
+   * @param index The index of the permission to update
+   * @param event The selection change event containing the new subject type value
+   */
+  updatePermissionSubjectType(index: number, event: { value: 'user' | 'group' }): void {
+    if (index >= 0 && index < this.permissionsDataSource.data.length) {
+      this.permissionsDataSource.data[index].subject_type = event.value;
+      this.permissionsTable.renderRows();
+    }
+  }
+
+  /**
    * Updates the role of a permission
    * @param index The index of the permission to update
    * @param event The selection change event containing the new role value
@@ -413,6 +483,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   addPermission(): void {
     this.permissionsDataSource.data.push({
       subject: '',
+      subject_type: 'user',
       role: 'reader',
     });
     this.permissionsTable.renderRows();
@@ -473,7 +544,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @returns The tabindex value after all table rows
    */
   getAddPermissionButtonTabIndex(): number {
-    return this.permissionsDataSource.data.length * 4 + 1;
+    return this.permissionsDataSource.data.length * 6 + 1;
   }
 
   /**
@@ -481,7 +552,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @returns The tabindex value after the add button
    */
   getCloseButtonTabIndex(): number {
-    return this.permissionsDataSource.data.length * 4 + 2;
+    return this.permissionsDataSource.data.length * 6 + 2;
   }
 
   /**
@@ -489,6 +560,6 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @returns The tabindex value after the close button
    */
   getSaveButtonTabIndex(): number {
-    return this.permissionsDataSource.data.length * 4 + 3;
+    return this.permissionsDataSource.data.length * 6 + 3;
   }
 }

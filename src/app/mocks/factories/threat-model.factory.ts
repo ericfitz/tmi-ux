@@ -16,7 +16,7 @@ export function createMockThreatModel(overrides?: Partial<ThreatModel>): ThreatM
     owner: 'user@example.com',
     created_by: 'user@example.com',
     threat_model_framework: 'STRIDE',
-    authorization: [{ subject: 'user@example.com', role: 'owner' }],
+    authorization: [{ subject: 'user@example.com', subject_type: 'user', role: 'owner' }],
     metadata: [],
     diagrams: [],
     threats: [],

@@ -168,6 +168,10 @@
     "severityNone": "لا شيء",
     "severityUnknown": "غير معروف",
     "status": "الحالة",
+    "subjectTypes": {
+      "group": "مجموعة",
+      "user": "مستخدم"
+    },
     "threatDescription": "وصف التهديد",
     "threatDescriptionPlaceholder": "وصف التهديد بالتفصيل",
     "threatId": "معرف التهديد",
@@ -394,7 +398,10 @@
     "noRepositories": "لم تتم إضافة أي مستودعات بعد",
     "noThreats": "لم تتم إضافة أي تهديدات بعد",
     "pageTitle": "نماذج التهديدات",
+    "permissionsIdp": "مزود الهوية",
     "permissionsRole": "الدور",
+    "permissionsSubject": "الموضوع",
+    "permissionsSubjectType": "النوع",
     "permissionsTooltip": "إدارة الأذونات",
     "permissionsUser": "المستخدم",
     "rename": "إعادة تسمية",

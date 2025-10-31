@@ -168,6 +168,10 @@
     "severityNone": "Keine",
     "severityUnknown": "Unbekannt",
     "status": "Status",
+    "subjectTypes": {
+      "group": "Gruppe",
+      "user": "Benutzer"
+    },
     "threatDescription": "Bedrohungsbeschreibung",
     "threatDescriptionPlaceholder": "Beschreiben Sie die Bedrohung im Detail",
     "threatId": "Bedrohungs-ID",
@@ -394,7 +398,10 @@
     "noRepositories": "Noch keine Repositories hinzugefügt",
     "noThreats": "Noch keine Bedrohungen hinzugefügt",
     "pageTitle": "Bedrohungsmodelle",
+    "permissionsIdp": "Identitätsanbieter",
     "permissionsRole": "Rolle",
+    "permissionsSubject": "Subjekt",
+    "permissionsSubjectType": "Typ",
     "permissionsTooltip": "Berechtigungen verwalten",
     "permissionsUser": "Benutzer",
     "rename": "Umbenennen",
