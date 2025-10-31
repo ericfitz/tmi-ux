@@ -12,6 +12,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, of, throwError } from 'rxjs';
 import { map, catchError, tap, switchMap, filter } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
 import '@antv/x6-plugin-export';
 
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -131,6 +132,7 @@ export class AppDfdOrchestrator {
     private readonly dfdStateStore: DfdStateStore,
     private readonly appDiagramResyncService: AppDiagramResyncService,
     private readonly appOperationRejectionHandler: AppOperationRejectionHandler,
+    private readonly dialog: MatDialog,
   ) {
     this.logger.debug('AppDfdOrchestrator initialized (simplified autosave)');
     this._setupEventIntegration();
@@ -739,6 +741,13 @@ export class AppDfdOrchestrator {
 
       case 'delete':
       case 'backspace': {
+        // Don't handle delete/backspace if any Material Dialog is open
+        // This prevents delete/backspace from affecting the graph while typing in dialogs
+        if (this.dialog.openDialogs.length > 0) {
+          this.logger.debug('Ignoring delete/backspace key - dialog is open');
+          return false; // Let the dialog handle the key event
+        }
+
         // Delete selected cells
         if (this._state$.value.readOnly) {
           this.logger.debug('Cannot delete cells in read-only mode');
