@@ -183,6 +183,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Collaborative editing state
   isReadOnlyMode = false;
+  isCollaborating = false;
 
   // Route parameters
   threatModelId: string | null = null;
@@ -517,6 +518,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.collaborationService.isCollaborating$
         .pipe(takeUntil(this._destroy$))
         .subscribe(isCollaborating => {
+          this.isCollaborating = isCollaborating;
+          this.cdr.detectChanges(); // Update UI when collaboration state changes
+
           if (isCollaborating) {
             this.logger.info('Collaboration became active - initializing collaboration services');
 
@@ -1216,8 +1220,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   closeDiagram(): void {
     this.logger.info('Closing diagram');
 
-    // Save any pending changes before closing (with SVG thumbnail for better diagram previews)
-    if (this.appDfdOrchestrator.getState().hasUnsavedChanges && !this.isReadOnlyMode) {
+    // Always save with SVG thumbnail before closing (for better diagram previews)
+    // Save even if no unsaved changes to ensure thumbnail is up-to-date
+    if (!this.isReadOnlyMode) {
       this.logger.info('Saving diagram with SVG thumbnail before closing');
 
       // Capture SVG thumbnail then save

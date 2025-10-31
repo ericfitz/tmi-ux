@@ -267,6 +267,20 @@
         </button>
       </mat-menu>
 
+      <button
+        mat-icon-button
+        (click)="onSaveManually()"
+        [disabled]="isReadOnlyMode || isCollaborating || !isSystemInitialized"
+        [matTooltip]="'common.save' | transloco"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >save</mat-icon
+        >
+      </button>
+
       <button mat-icon-button (click)="closeDiagram()" [matTooltip]="'common.close' | transloco">
         <mat-icon
           fontSet="material-symbols-outlined"
