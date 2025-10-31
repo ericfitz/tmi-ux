@@ -964,18 +964,39 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.appDfdOrchestrator.saveManually().subscribe({
-      next: result => {
-        if (result.success) {
-          this.logger.info('Manual save completed successfully');
-        } else {
-          this.logger.error('Manual save failed', { error: result.error });
-        }
-      },
-      error: error => {
-        this.logger.error('Error during manual save', { error });
-      },
-    });
+    // Generate thumbnail SVG before saving
+    this._captureDiagramSvgThumbnail()
+      .then(base64Svg => {
+        const imageData = {
+          svg: base64Svg || undefined,
+        };
+
+        // Save with thumbnail
+        this.appDfdOrchestrator.saveManuallyWithImage(imageData).subscribe({
+          next: () => {
+            this.logger.info('Manual save with thumbnail completed successfully');
+          },
+          error: error => {
+            this.logger.error('Error during manual save with thumbnail', { error });
+          },
+        });
+      })
+      .catch(error => {
+        this.logger.error('Error capturing SVG thumbnail, saving without image', error);
+        // Fall back to save without thumbnail
+        this.appDfdOrchestrator.saveManually().subscribe({
+          next: result => {
+            if (result.success) {
+              this.logger.info('Manual save completed successfully (without thumbnail)');
+            } else {
+              this.logger.error('Manual save failed', { error: result.error });
+            }
+          },
+          error: saveError => {
+            this.logger.error('Error during manual save', { error: saveError });
+          },
+        });
+      });
   }
 
   onExport(format: ExportFormat): void {
@@ -1681,7 +1702,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
-    // Delegate to orchestrator for centralized keyboard handling
+    // Handle Ctrl+S/Cmd+S for manual save with thumbnail
+    if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+      event.preventDefault(); // Prevent browser save dialog
+      this.onSaveManually();
+      return;
+    }
+
+    // Delegate other keyboard events to orchestrator for centralized keyboard handling
     this.appDfdOrchestrator.onKeyDown(event);
   }
 
