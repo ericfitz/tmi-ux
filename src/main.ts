@@ -30,7 +30,7 @@ import 'prismjs/components/prism-yaml';
 import 'prismjs/components/prism-markdown';
 import 'prismjs/components/prism-sql';
 
-// Mermaid is loaded via angular.json scripts array for diagram rendering
+// Mermaid is imported and configured in app.config.ts for diagram rendering
 
 // Import locale data for date/number localization
 import { registerLocaleData } from '@angular/common';

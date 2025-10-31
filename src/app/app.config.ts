@@ -41,6 +41,7 @@ import {
   MarkedRenderer,
   MarkedOptions,
 } from 'ngx-markdown';
+import mermaid from 'mermaid';
 import type { MermaidConfig } from 'mermaid';
 import DOMPurify from 'dompurify';
 
@@ -197,12 +198,17 @@ function markedOptionsFactory(): MarkedOptions {
 
 // Mermaid configuration
 function mermaidOptionsFactory(): MermaidConfig {
-  return {
+  const config: MermaidConfig = {
     theme: 'default',
     startOnLoad: false,
     securityLevel: 'strict', // Prevent XSS in mermaid diagrams
     maxTextSize: 50000,
   };
+
+  // Initialize mermaid with the config
+  mermaid.initialize(config);
+
+  return config;
 }
 
 export const appConfig: ApplicationConfig = {
