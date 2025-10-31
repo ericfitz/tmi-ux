@@ -31,7 +31,7 @@ export interface MetadataDialogData {
       .dialog-subtitle {
         font-size: 14px;
         font-weight: 400;
-        color: rgba(0, 0, 0, 0.6);
+        color: var(--color-text-secondary);
         margin: -12px 24px 4px 24px;
         padding: 0;
         line-height: 1.4;
@@ -188,19 +188,19 @@ export interface MetadataDialogData {
         height: 34px !important;
         padding: 1px 4px !important;
         vertical-align: middle !important;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+        border-bottom: 1px solid var(--theme-divider) !important;
       }
 
       .mat-mdc-header-cell {
         height: 32px !important;
         padding: 2px 4px !important;
         vertical-align: middle !important;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+        border-bottom: 1px solid var(--theme-divider) !important;
       }
 
       .no-items-message {
         text-align: center;
-        color: rgba(0, 0, 0, 0.6);
+        color: var(--color-text-secondary);
         padding: 16px;
         font-style: italic;
       }

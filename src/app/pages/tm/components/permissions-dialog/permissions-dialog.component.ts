@@ -304,7 +304,7 @@ export interface PermissionsDialogData {
 
       .no-items-message {
         text-align: center;
-        color: rgba(0, 0, 0, 0.6);
+        color: var(--color-text-secondary);
         padding: 32px;
         font-style: italic;
       }
