@@ -205,6 +205,11 @@ function mermaidOptionsFactory(): MermaidConfig {
     maxTextSize: 50000,
   };
 
+  // Expose mermaid globally for ngx-markdown (it checks for window.mermaid)
+  if (typeof window !== 'undefined') {
+    (window as unknown as { mermaid: typeof mermaid }).mermaid = mermaid;
+  }
+
   // Initialize mermaid with the config
   mermaid.initialize(config);
 
