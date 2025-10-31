@@ -340,7 +340,7 @@ mat-card-header {
 }
 
 .mat-mdc-row:hover {
-  background-color: var(--color-hover-background);
+  background-color: var(--theme-hover);
 }
 
 .no-items-message {
@@ -362,7 +362,7 @@ mat-card-header {
   overflow: hidden; /* Prevent content overflow */
 
   &:hover {
-    background-color: var(--color-hover-background);
+    background-color: var(--theme-hover);
   }
 }
 
@@ -427,7 +427,7 @@ mat-card-header {
       height: 64px; // 2x larger vertically (32px -> 64px)
       border-radius: 8px;
       border: 1px solid var(--color-border-material);
-      background-color: white;
+      background-color: var(--color-background-white);
       display: block;
 
       // Use background-image approach for better SVG scaling control
@@ -547,12 +547,12 @@ mat-card-header {
 
       &.severity-critical {
         background-color: var(--color-severity-critical);
-        color: white;
+        color: var(--color-background-white);
       }
 
       &.severity-high {
         background-color: var(--color-severity-high);
-        color: white;
+        color: var(--color-background-white);
       }
 
       &.severity-medium {
@@ -562,17 +562,17 @@ mat-card-header {
 
       &.severity-low {
         background-color: var(--color-severity-low);
-        color: white;
+        color: var(--color-background-white);
       }
 
       &.severity-none {
         background-color: var(--color-severity-none);
-        color: white;
+        color: var(--color-background-white);
       }
 
       &.severity-unknown {
         background-color: var(--color-severity-none);
-        color: white;
+        color: var(--color-background-white);
       }
     }
 
@@ -666,7 +666,7 @@ mat-card-header {
   transform: translate(-50%, -50%); // Center on viewport
   width: 640px;
   height: 400px;
-  background-color: white;
+  background-color: var(--color-background-white);
   border: 2px solid var(--color-overlay-dark);
   border-radius: 8px;
   box-shadow: 0 8px 32px var(--color-shadow-strong);
@@ -750,25 +750,27 @@ mat-card-header {
 }
 
 .classification-chips mat-chip {
-  // Use rgba for background to get transparency without affecting text
-  background-color: rgb(33 150 243 / 85%) !important; // var(--color-info) with 85% opacity
-  color: white !important;
+  // Use CSS variable with opacity
+  background-color: var(--color-info) !important;
+  opacity: 0.85;
+  color: var(--color-background-white) !important;
 
   // Full opacity white text for maximum contrast and readability
   .mdc-evolution-chip__text-label {
-    color: white !important;
+    color: var(--color-background-white) !important;
     opacity: 1 !important;
   }
 }
 
 .sensitivity-chips mat-chip {
-  // Use rgba for background to get transparency without affecting text
-  background-color: rgb(255 152 0 / 85%) !important; // var(--color-warning) with 85% opacity
-  color: white !important;
+  // Use CSS variable with opacity
+  background-color: var(--color-warning) !important;
+  opacity: 0.85;
+  color: var(--color-background-white) !important;
 
   // Full opacity white text for maximum contrast and readability
   .mdc-evolution-chip__text-label {
-    color: white !important;
+    color: var(--color-background-white) !important;
     opacity: 1 !important;
   }
 }

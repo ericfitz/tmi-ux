@@ -83,17 +83,17 @@ mat-dialog-content {
 // Specific styling for view-only URL links
 /* stylelint-disable no-descending-specificity */
 .view-only-url .issue-uri-link {
-  color: #1976d2;
+  color: var(--color-primary);
   text-decoration: none;
   word-break: break-all;
 
   &:hover {
     text-decoration: underline;
-    color: #1565c0;
+    color: var(--color-primary-dark);
   }
 
   &:visited {
-    color: #7b1fa2;
+    color: var(--color-link-visited);
   }
 }
 /* stylelint-enable no-descending-specificity */
@@ -105,11 +105,11 @@ mat-dialog-content {
   white-space: nowrap;
 
   &:hover {
-    color: #1565c0 !important;
+    color: var(--color-primary-dark) !important;
   }
 
   &:visited {
-    color: #7b1fa2 !important;
+    color: var(--color-link-visited) !important;
   }
 }
 
@@ -256,7 +256,7 @@ mat-dialog-content {
 .table-container {
   width: 100%;
   overflow-x: visible;
-  border: 1px solid rgb(0 0 0 / 12%);
+  border: 1px solid var(--color-border-material);
   border-radius: 8px;
 }
 
@@ -340,7 +340,7 @@ mat-dialog-content {
 
 .mat-mdc-header-cell {
   font-weight: var(--font-weight-medium);
-  color: rgb(0 0 0 / 70%);
+  color: var(--color-text-secondary);
   text-align: left;
   font-family: var(--font-family-primary);
   padding: 0 4px;
@@ -354,11 +354,11 @@ mat-dialog-content {
 }
 
 .mat-mdc-row:hover {
-  background-color: rgb(0 0 0 / 4%);
+  background-color: var(--theme-hover);
 }
 
 .no-items-message {
-  color: rgb(0 0 0 / 60%);
+  color: var(--color-text-muted);
   font-style: italic;
   padding: 12px 0;
   text-align: center;
@@ -367,7 +367,7 @@ mat-dialog-content {
 
 // Keep the original metadata grid styles for view-only mode
 .metadata-grid {
-  border: 1px solid rgb(0 0 0 / 12%);
+  border: 1px solid var(--color-border-material);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -389,7 +389,7 @@ mat-dialog-content {
 
 .metadata-key-header {
   flex: 1;
-  border-inline-end: 1px solid rgb(0 0 0 / 12%); // Use logical property for RTL support
+  border-inline-end: 1px solid var(--color-border-material); // Use logical property for RTL support
 }
 
 .metadata-value-header {
@@ -398,7 +398,7 @@ mat-dialog-content {
 
 .metadata-row {
   display: flex;
-  border-bottom: 1px solid rgb(0 0 0 / 12%);
+  border-bottom: 1px solid var(--color-border-material);
 
   &:last-child {
     border-bottom: none;
