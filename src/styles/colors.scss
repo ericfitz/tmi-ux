@@ -74,15 +74,16 @@ $role-host-color: #ffc107; // Gold color for session host
   --color-primary-dark: #{$primary-color-dark};
   --color-primary-light: #{$primary-color-light};
 
-  // Status Colors
-  --color-success: #{$success-color};
-  --color-success-dark: #{$success-color-dark};
-  --color-error: #{$error-color};
-  --color-error-dark: #{$error-color-dark};
-  --color-error-darker: #{$error-color-darker};
-  --color-warning: #{$warning-color};
-  --color-warning-dark: #{$warning-color-dark};
-  --color-info: #{$info-color};
+  // Status Colors - Using Material palette-aligned colors
+  // For normal palette: use green for success (distinct from error/warning)
+  --color-success: #4caf50; // Green for success states
+  --color-success-dark: #388e3c;
+  --color-error: #f44336; // Error from Material palette
+  --color-error-dark: #d32f2f;
+  --color-error-darker: #c62828;
+  --color-warning: #ff9800; // Distinct orange for warnings
+  --color-warning-dark: #f57c00;
+  --color-info: #1976d2; // Primary blue for info
 
   // Text Colors (use theme variables which are set in material-theme.scss)
   --color-text-primary: var(--theme-text-primary, #{$text-primary});
@@ -131,10 +132,10 @@ $role-host-color: #ffc107; // Gold color for session host
   // Text uses black for maximum contrast on light backgrounds
   --logo-text-color: #000;
 
-  // Server Status Colors
-  --color-server-not-configured: #{$text-tertiary};
-  --color-server-error: #{$error-color};
-  --color-server-connected: #{$success-color};
+  // Server Status Colors - Using palette-aligned colors
+  --color-server-not-configured: #666; // Neutral grey
+  --color-server-error: #f44336; // Material error color
+  --color-server-connected: #4caf50; // Green for connected status
 
   // Additional Color Categories
   // Severity Colors (for threat levels)
@@ -161,10 +162,10 @@ $role-host-color: #ffc107; // Gold color for session host
 }
 
 // =============================================================================
-// COLORBLIND THEME (Okabe-Ito Palette)
+// COLORBLIND PALETTE (Okabe-Ito Palette)
 // =============================================================================
 
-.colorblind-theme {
+.colorblind-palette {
   // Okabe-Ito Color Constants
   // Based on research by Okabe & Ito for universal color design
   // These colors are distinguishable for all types of color blindness
