@@ -169,7 +169,6 @@ export type WebSocketDomainEvent =
   | PresenterChangedEvent
   | PresenterCursorEvent
   | PresenterSelectionEvent
-  // Note: PresenterRequestEvent and PresenterDeniedEvent removed - handled by DfdCollaborationService
   | PresenterUpdateEvent
   | ParticipantJoinedEvent
   | ParticipantLeftEvent
@@ -224,8 +223,6 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   public readonly presenterSelections$ = this._domainEvents$.pipe(
     filter((event): event is PresenterSelectionEvent => event.type === 'presenter-selection'),
   );
-
-  // Note: presenterRequests$ and presenterDenials$ removed - handled by DfdCollaborationService
 
   public readonly presenterUpdates$ = this._domainEvents$.pipe(
     filter((event): event is PresenterUpdateEvent => event.type === 'presenter-update'),
@@ -598,12 +595,6 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       selectedCells: message.selected_cells,
     });
   }
-
-  // Note: _handlePresenterRequest and _handlePresenterDenied removed
-  // These messages are now handled exclusively by DfdCollaborationService
-  // to avoid duplication and maintain proper separation of concerns
-
-  // Participant management message handlers
 
   private _handleParticipantJoined(message: ParticipantJoinedMessage): void {
     this._logger.info('Participant joined event received', {

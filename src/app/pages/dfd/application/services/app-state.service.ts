@@ -318,10 +318,6 @@ export class AppStateService implements OnDestroy {
       serverUpdateVector: event.update_vector,
     });
 
-    // Note: update_vector tracking removed with simplified autosave
-    // TODO: we might want to add back update_vector tracking in the future
-
-    // Update sync state to indicate we're out of sync
     this._updateSyncState({
       isSynced: false,
       isResyncing: true,

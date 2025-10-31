@@ -46,6 +46,7 @@ import {
   UpdateEdgeOperation,
   NodeData,
 } from '../../types/graph-operation.types';
+import { normalizeCells } from '../../utils/cell-normalization.util';
 
 // Simple interfaces that match what the tests expect
 export interface DfdInitializationParams {
@@ -673,10 +674,9 @@ export class AppDfdOrchestrator {
   }
 
   get historyChanged$(): Observable<{ canUndo: boolean; canRedo: boolean }> {
-    return combineLatest([
-      this.appHistoryService.canUndo$,
-      this.appHistoryService.canRedo$,
-    ]).pipe(map(([canUndo, canRedo]) => ({ canUndo, canRedo })));
+    return combineLatest([this.appHistoryService.canUndo$, this.appHistoryService.canRedo$]).pipe(
+      map(([canUndo, canRedo]) => ({ canUndo, canRedo })),
+    );
   }
 
   get operationCompleted$(): Observable<any> {
@@ -1384,12 +1384,14 @@ export class AppDfdOrchestrator {
       return [];
     }
 
-    return cellIds
+    const cells = cellIds
       .map(id => {
         const cell = graph.getCellById(id);
         return cell ? cell.toJSON() : null;
       })
       .filter(cell => cell !== null);
+
+    return normalizeCells(cells);
   }
 
   /**
@@ -1749,9 +1751,6 @@ export class AppDfdOrchestrator {
   private _getGraphData(): { nodes: any[]; edges: any[] } | null {
     const graph = this.dfdInfrastructure.getGraph();
     if (!graph) {
-      // Return null instead of empty arrays to prevent saving empty diagram data
-      // This prevents a race condition where auto-save could overwrite existing cells
-      // with an empty array when the graph is temporarily unavailable
       this.logger.warn('Cannot get graph data - graph is not available');
       return null;
     }
@@ -1759,14 +1758,16 @@ export class AppDfdOrchestrator {
     const graphJson = graph.toJSON();
     const cells = graphJson.cells || [];
 
-    const nodes = cells
+    const normalizedCells = normalizeCells(cells);
+
+    const nodes = normalizedCells
       .filter((cell: any) => cell.shape !== 'edge')
       .map((cell: any) => ({
         ...cell,
         type: 'node',
       }));
 
-    const edges = cells
+    const edges = normalizedCells
       .filter((cell: any) => cell.shape === 'edge')
       .map((cell: any) => ({
         ...cell,

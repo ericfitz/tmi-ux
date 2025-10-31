@@ -1,5 +1,4 @@
 import { Graph, Node, Cell } from '@antv/x6';
-// Note: History plugin import removed - we now use AppHistoryService
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from '../../../core/services/logger.service';

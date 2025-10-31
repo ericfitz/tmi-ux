@@ -462,8 +462,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Setup selection events (crucial for port visibility and visual effects)
     this._setupSelectionEvents();
 
-    // Note: X6 history plugin integration removed - history managed by AppHistoryService
-
     // Initialize X6 event logging (if service is available)
     if (this._x6EventLogger) {
       this._x6EventLogger.initializeEventLogging(this._graph);
@@ -1356,10 +1354,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         }),
       );
 
-      // Note: X6 History plugin has been removed - we now use AppHistoryService for undo/redo
-      // This provides better control over history entries and integrates with our
-      // custom operation system and collaboration features
-
       // Enable transform plugin for resizing
       this._graph.use(
         new Transform({
@@ -1391,8 +1385,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
     // Setup selection event handlers
     this._setupSelectionEvents();
-
-    // Note: X6 history plugin integration removed - history managed by AppHistoryService
   }
 
   /**
@@ -1410,8 +1402,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
     // Initialize selection plugins
     this._selectionAdapter.initializePlugins(this._graph);
-
-    // Note: History controller setup removed - X6 history plugin integration deprecated
 
     // Set up port state manager for coordinated hover effects
     this._selectionAdapter.setPortStateManager(this._portStateManager);
@@ -1878,7 +1868,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     return portKeys.length === 0 || portKeys.every(key => key === 'attrs');
   }
 
-
   /**
    * Schedule initial resize to ensure graph fits container properly
    */
@@ -1980,19 +1969,11 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     return {};
   }
 
-  // Note: _shouldIncludeInHistory and _shouldIncludeInHistoryInternal methods removed
-  // These were part of the X6 History plugin integration which has been replaced
-  // by AppHistoryService. History filtering now happens at the operation level.
-
   /**
-   * Unused method - keeping signature for backward compatibility
-   * History filtering now handled by AppHistoryService
    * @deprecated Use AppHistoryService instead
    */
   private _shouldIncludeInHistoryInternal(_event: string, _args: any): boolean {
-    // Method deprecated - X6 History plugin has been removed
-    // History is now managed by AppHistoryService
-    return true; // No-op for backward compatibility
+    return true;
   }
 
   /**

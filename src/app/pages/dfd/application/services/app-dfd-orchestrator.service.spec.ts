@@ -952,10 +952,6 @@ describe('AppDfdOrchestrator', () => {
     });
   });
 
-  // Collaboration Management tests removed
-  // Collaboration is now managed entirely by DfdCollaborationService
-  // Tests for collaboration should be added to DfdCollaborationService spec file
-
   describe('Selection Management', () => {
     beforeEach(async () => {
       const initParams: DfdInitializationParams = {

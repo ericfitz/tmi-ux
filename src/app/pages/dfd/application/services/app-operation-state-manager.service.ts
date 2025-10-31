@@ -136,8 +136,6 @@ export class AppOperationStateManager {
     operation: () => T,
     _transactionName: string = 'atomic-operation',
   ): T {
-    // Execute operation directly - batch operations handle atomic history entries
-    // X6 history plugin integration has been removed
     return operation();
   }
 

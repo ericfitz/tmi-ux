@@ -254,12 +254,19 @@ describe('NodeOperationExecutor', () => {
       };
 
       mockNode = {
+        id: 'existing-node-id',
+        shape: 'process',
         isNode: vi.fn().mockReturnValue(true),
         setPosition: vi.fn(),
         setSize: vi.fn(),
         setAttrByPath: vi.fn(),
         getData: vi.fn().mockReturnValue({ existing: 'data' }),
         setData: vi.fn(),
+        getAttrs: vi.fn().mockReturnValue({}),
+        getPosition: vi.fn().mockReturnValue({ x: 100, y: 100 }),
+        getSize: vi.fn().mockReturnValue({ width: 100, height: 60 }),
+        getAttrByPath: vi.fn().mockReturnValue('Old Label'),
+        getZIndex: vi.fn().mockReturnValue(1),
       };
     });
 
@@ -401,12 +408,35 @@ describe('NodeOperationExecutor', () => {
         getPosition: vi.fn().mockReturnValue({ x: 100, y: 100 }),
         getSize: vi.fn().mockReturnValue({ width: 120, height: 60 }),
         getAttrs: vi.fn().mockReturnValue({ label: { text: 'Test Node' } }),
+        getAttrByPath: vi.fn().mockReturnValue('Test Node'),
+        getZIndex: vi.fn().mockReturnValue(1),
         getData: vi.fn().mockReturnValue({ nodeType: 'process' }),
         id: 'node-to-delete',
         shape: 'rect',
       };
 
-      mockConnectedEdges = [{ id: 'edge-1' }, { id: 'edge-2' }];
+      mockConnectedEdges = [
+        {
+          id: 'edge-1',
+          shape: 'edge',
+          getAttrs: vi.fn().mockReturnValue({}),
+          getSource: vi.fn().mockReturnValue({ cell: 'source-1' }),
+          getTarget: vi.fn().mockReturnValue({ cell: 'target-1' }),
+          getVertices: vi.fn().mockReturnValue([]),
+          getAttrByPath: vi.fn().mockReturnValue('Edge 1'),
+          getZIndex: vi.fn().mockReturnValue(1),
+        },
+        {
+          id: 'edge-2',
+          shape: 'edge',
+          getAttrs: vi.fn().mockReturnValue({}),
+          getSource: vi.fn().mockReturnValue({ cell: 'source-2' }),
+          getTarget: vi.fn().mockReturnValue({ cell: 'target-2' }),
+          getVertices: vi.fn().mockReturnValue([]),
+          getAttrByPath: vi.fn().mockReturnValue('Edge 2'),
+          getZIndex: vi.fn().mockReturnValue(1),
+        },
+      ];
     });
 
     it('should delete node successfully', () => {

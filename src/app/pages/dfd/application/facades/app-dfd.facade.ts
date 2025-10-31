@@ -301,8 +301,7 @@ export class AppDfdFacade {
   // ========================================
   // History Operations
   // ========================================
-  // Note: X6 history plugin methods (undo/redo/canUndo/canRedo) have been removed.
-  // History is now managed by AppHistoryService via the orchestrator.
+
   // ========================================
   // Visual Operations
   // ========================================

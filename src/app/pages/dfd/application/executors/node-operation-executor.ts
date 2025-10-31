@@ -25,6 +25,7 @@ import {
   NodeData,
 } from '../../types/graph-operation.types';
 import { Cell } from '../../../../core/types/websocket-message.types';
+import { normalizeCell } from '../../utils/cell-normalization.util';
 
 export class NodeOperationExecutor implements OperationExecutor {
   readonly priority = 100; // Standard priority for node operations
@@ -469,7 +470,6 @@ export class NodeOperationExecutor implements OperationExecutor {
 
   /**
    * Capture the current state of a node for history tracking
-   * Excludes visual effect attributes (text/filter, body/filter, line/filter)
    */
   private _captureCellState(graph: Graph, nodeId: string): Cell | null {
     const node = graph.getCellById(nodeId);
@@ -480,28 +480,17 @@ export class NodeOperationExecutor implements OperationExecutor {
     const typedNode = node;
     const attrs = typedNode.getAttrs();
 
-    // Clone attrs and remove filter attributes
-    const filteredAttrs: Record<string, unknown> = {};
-    Object.keys(attrs).forEach(key => {
-      if (
-        key !== 'text/filter' &&
-        key !== 'body/filter' &&
-        key !== 'line/filter' &&
-        !key.endsWith('/filter')
-      ) {
-        filteredAttrs[key] = attrs[key];
-      }
-    });
-
-    return {
+    const cellData: Cell = {
       id: typedNode.id,
       shape: typedNode.shape,
       position: typedNode.getPosition(),
       size: typedNode.getSize(),
-      attrs: filteredAttrs,
+      attrs: attrs,
       label: typedNode.getAttrByPath('label/text'),
       zIndex: typedNode.getZIndex(),
     };
+
+    return normalizeCell(cellData);
   }
 
   /**
