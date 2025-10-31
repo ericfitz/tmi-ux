@@ -5,6 +5,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+import { Graph } from '@antv/x6';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DFD_STYLING } from '../../constants/styling-constants';
@@ -17,6 +18,7 @@ import {
   UpdateEdgeOperation,
   DeleteEdgeOperation,
 } from '../../types/graph-operation.types';
+import { Cell } from '../../../../core/types/websocket-message.types';
 
 @Injectable()
 export class EdgeOperationExecutor extends BaseOperationExecutor {
@@ -153,6 +155,9 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
         // _edge.addCssClass(edgeInfo.style.cssClass);
       }
 
+      // Capture current state for history
+      const currentState = this._captureEdgeState(graph, edgeId);
+
       this.logger.debug('Edge created successfully', {
         edgeId,
         edgeType: (edgeInfo as any).edgeType,
@@ -160,15 +165,19 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
         targetNodeId,
       });
 
-      return of(
-        this.createSuccessResult(operation, [edgeId], {
-          edgeId,
-          edgeType: (edgeInfo as any).edgeType,
-          sourceNodeId,
-          targetNodeId,
-          hasLabel: !!(edgeInfo as any).label,
-        }),
-      );
+      const result = this.createSuccessResult(operation, [edgeId], {
+        edgeId,
+        edgeType: (edgeInfo as any).edgeType,
+        sourceNodeId,
+        targetNodeId,
+        hasLabel: !!(edgeInfo as any).label,
+      });
+
+      return of({
+        ...result,
+        previousState: [],
+        currentState: currentState ? [currentState] : [],
+      });
     } catch (error) {
       const errorMessage = `Failed to create edge: ${String(error)}`;
       this.logger.error(errorMessage, { operationId: operation.id, error });
@@ -189,6 +198,9 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
         const error = `Edge not found: ${edgeId}`;
         return of(this.createFailureResult(operation, error));
       }
+
+      // Capture previous state before any changes
+      const previousState = this._captureEdgeState(graph, edgeId);
 
       // Apply updates
       const changedProperties: string[] = [];
@@ -289,18 +301,25 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
         changedProperties.push('properties');
       }
 
+      // Capture current state after all changes
+      const currentState = this._captureEdgeState(graph, edgeId);
+
       this.logger.debug('Edge updated successfully', {
         edgeId,
         changedProperties,
       });
 
-      return of(
-        this.createSuccessResult(operation, [edgeId], {
-          edgeId,
-          changedProperties,
-          updates,
-        }),
-      );
+      const result = this.createSuccessResult(operation, [edgeId], {
+        edgeId,
+        changedProperties,
+        updates,
+      });
+
+      return of({
+        ...result,
+        previousState: previousState ? [previousState] : [],
+        currentState: currentState ? [currentState] : [],
+      });
     } catch (error) {
       const errorMessage = `Failed to update edge: ${String(error)}`;
       this.logger.error(errorMessage, {
@@ -327,6 +346,9 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
         return of(this.createSuccessResult(operation, []));
       }
 
+      // Capture previous state before deletion
+      const previousState = this._captureEdgeState(graph, edgeId);
+
       // Store edge data for undo/metadata
       const edgeData = {
         id: edgeId,
@@ -343,16 +365,20 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
 
       this.logger.debug('Edge deleted successfully', { edgeId });
 
-      return of(
-        this.createSuccessResult(operation, [edgeId], {
-          edgeId,
-          deletedEdgeData: edgeData,
-          sourceNodeId:
-            typeof edgeData.source === 'object' ? (edgeData.source as any).cell : edgeData.source,
-          targetNodeId:
-            typeof edgeData.target === 'object' ? (edgeData.target as any).cell : edgeData.target,
-        }),
-      );
+      const result = this.createSuccessResult(operation, [edgeId], {
+        edgeId,
+        deletedEdgeData: edgeData,
+        sourceNodeId:
+          typeof edgeData.source === 'object' ? (edgeData.source as any).cell : edgeData.source,
+        targetNodeId:
+          typeof edgeData.target === 'object' ? (edgeData.target as any).cell : edgeData.target,
+      });
+
+      return of({
+        ...result,
+        previousState: previousState ? [previousState] : [],
+        currentState: [],
+      });
     } catch (error) {
       const errorMessage = `Failed to delete edge: ${String(error)}`;
       this.logger.error(errorMessage, {
@@ -362,5 +388,45 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       });
       return of(this.createFailureResult(operation, errorMessage, [operation.edgeId]));
     }
+  }
+
+  /**
+   * Capture the current state of an edge for history tracking
+   * Excludes visual effect attributes (text/filter, body/filter, line/filter)
+   */
+  private _captureEdgeState(graph: Graph, edgeId: string): Cell | null {
+    const edge = this.getEdge(graph, edgeId);
+    if (!edge) {
+      return null;
+    }
+
+    const typedEdge = edge;
+    const attrs = typedEdge.getAttrs();
+
+    // Clone attrs and remove filter attributes
+    const filteredAttrs: Record<string, unknown> = {};
+    Object.keys(attrs).forEach(key => {
+      if (
+        key !== 'text/filter' &&
+        key !== 'body/filter' &&
+        key !== 'line/filter' &&
+        !key.endsWith('/filter')
+      ) {
+        filteredAttrs[key] = attrs[key];
+      }
+    });
+
+    return {
+      id: typedEdge.id,
+      shape: typedEdge.shape,
+      source: typedEdge.getSource(),
+      target: typedEdge.getTarget(),
+      vertices: typedEdge.getVertices?.() || [],
+      attrs: filteredAttrs,
+      label: typedEdge.getLabels?.()?.[0]
+        ? (typedEdge.getLabels()[0] as any).attrs?.label?.text
+        : undefined,
+      zIndex: typedEdge.getZIndex(),
+    };
   }
 }

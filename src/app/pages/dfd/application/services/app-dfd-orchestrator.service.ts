@@ -10,7 +10,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Observable, Subject, BehaviorSubject, of, throwError } from 'rxjs';
+import { Observable, Subject, BehaviorSubject, of, throwError, combineLatest } from 'rxjs';
 import { map, catchError, tap, switchMap, filter } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import '@antv/x6-plugin-export';
@@ -32,6 +32,7 @@ import { AppDiagramOperationBroadcaster } from './app-diagram-operation-broadcas
 import { AppRemoteOperationHandler } from './app-remote-operation-handler.service';
 import { AppHistoryService } from './app-history.service';
 import { AppOperationRejectionHandler } from './app-operation-rejection-handler.service';
+import { AppOperationStateManager } from './app-operation-state-manager.service';
 import { UiPresenterCoordinatorService } from '../../presentation/services/ui-presenter-coordinator.service';
 import { NodeType } from '../../domain/value-objects/node-info';
 import { DfdStateStore } from '../../state/dfd.state';
@@ -127,6 +128,7 @@ export class AppDfdOrchestrator {
     private readonly appDiagramOperationBroadcaster: AppDiagramOperationBroadcaster,
     private readonly appRemoteOperationHandler: AppRemoteOperationHandler,
     private readonly appHistoryService: AppHistoryService,
+    private readonly appOperationStateManager: AppOperationStateManager,
     private readonly uiPresenterCoordinator: UiPresenterCoordinatorService,
     private readonly selectionAdapter: InfraX6SelectionAdapter,
     private readonly dfdStateStore: DfdStateStore,
@@ -671,7 +673,10 @@ export class AppDfdOrchestrator {
   }
 
   get historyChanged$(): Observable<{ canUndo: boolean; canRedo: boolean }> {
-    return this.dfdInfrastructure.historyChanged$;
+    return combineLatest([
+      this.appHistoryService.canUndo$,
+      this.appHistoryService.canRedo$,
+    ]).pipe(map(([canUndo, canRedo]) => ({ canUndo, canRedo })));
   }
 
   get operationCompleted$(): Observable<any> {
@@ -1306,6 +1311,11 @@ export class AppDfdOrchestrator {
       this._triggerAutoSave(event.undoStackSize, false, false);
     });
 
+    // Subscribe to drag completion events for history recording
+    this.appOperationStateManager.dragCompletions$.subscribe(dragCompletion => {
+      this._handleDragCompletion(dragCompletion);
+    });
+
     // Subscribe to state correction events to trigger diagram resynchronization
     this.appStateService.triggerResyncEvents$.subscribe(() => {
       this.logger.info('State correction triggered - initiating diagram resynchronization');
@@ -1325,34 +1335,40 @@ export class AppDfdOrchestrator {
     }
 
     // Check if this operation should be recorded in history
-    if (!this._shouldRecordInHistory(operation)) {
+    if (!this._shouldRecordInHistory(operation, result)) {
       return;
     }
 
-    // Get affected cells from the graph
-    const affectedCells = this._getCellsById(result.affectedCellIds || []);
-    if (affectedCells.length === 0) {
-      // No cells to record (might have been deleted)
+    // Use state snapshots from the operation result
+    if (!result.previousState || !result.currentState) {
+      this.logger.debug('Skipping history entry - no state snapshots', {
+        operationId: operation.id,
+        operationType: operation.type,
+      });
       return;
     }
 
     // Create and add history entry
-    const historyEntry = this._createHistoryEntry(operation, affectedCells, context);
+    const historyEntry = this._createHistoryEntry(operation, result, context);
     this.appHistoryService.addHistoryEntry(historyEntry);
   }
 
   /**
    * Check if operation should be recorded in history
    */
-  private _shouldRecordInHistory(operation: GraphOperation): boolean {
-    // Only record user interactions
-    if (operation.source !== 'user-interaction') {
+  private _shouldRecordInHistory(operation: GraphOperation, result: OperationResult): boolean {
+    // Record user-interaction AND remote-collaboration operations
+    if (!['user-interaction', 'remote-collaboration'].includes(operation.source)) {
       return false;
     }
 
-    // Don't record during diagram loading or remote changes
-    const state = this.appStateService.getCurrentState();
-    if (state.isApplyingRemoteChange) {
+    // Skip visual effects
+    if (operation.metadata?.['isVisualEffect']) {
+      return false;
+    }
+
+    // Skip if no state captured
+    if (!result.previousState || !result.currentState) {
       return false;
     }
 
@@ -1381,15 +1397,15 @@ export class AppDfdOrchestrator {
    */
   private _createHistoryEntry(
     operation: GraphOperation,
-    currentCells: any[],
+    result: OperationResult,
     _context: OperationContext,
   ): any {
     const timestamp = Date.now();
     const userId = this.authService.userId;
 
-    // Get previous cells from context (if available)
-    // For now, we'll use empty array - this will be enhanced in future
-    const previousCells: any[] = [];
+    // Use state snapshots from the operation result
+    const currentCells = result.currentState || [];
+    const previousCells = result.previousState || [];
 
     // Generate description based on operation type
     const description = this._generateOperationDescription(operation, currentCells.length);
@@ -1407,10 +1423,98 @@ export class AppDfdOrchestrator {
       userId,
       operationId: operation.id,
       metadata: {
+        affectedCellCount: result.affectedCellIds.length,
+        affectedCellIds: result.affectedCellIds,
         nodeIds: currentCells.filter(c => c.shape !== 'edge').map(c => c.id),
         edgeIds: currentCells.filter(c => c.shape === 'edge').map(c => c.id),
       },
     };
+  }
+
+  /**
+   * Handle drag completion events - record final drag state in history
+   */
+  private _handleDragCompletion(dragCompletion: any): void {
+    const graph = this.dfdInfrastructure.getGraph();
+    if (!graph) {
+      return;
+    }
+
+    const { cellId, dragType, initialState } = dragCompletion;
+
+    // Capture current state from graph
+    const cell = graph.getCellById(cellId);
+    if (!cell) {
+      return;
+    }
+
+    // Build previousState from initial drag state
+    const previousCells = [
+      {
+        id: cellId,
+        shape: cell.shape,
+        ...(dragType === 'move' && initialState.position
+          ? { position: initialState.position }
+          : {}),
+        ...(dragType === 'resize' && initialState.size ? { size: initialState.size } : {}),
+        ...(dragType === 'vertex' && initialState.vertices
+          ? { vertices: initialState.vertices }
+          : {}),
+      },
+    ];
+
+    // Build currentState from final drag state or current graph state
+    const currentCells = [
+      {
+        id: cellId,
+        shape: cell.shape,
+        ...(dragType === 'move' || dragType === 'resize'
+          ? {
+              position: cell.isNode?.() ? cell.getPosition() : undefined,
+              size: cell.isNode?.() ? cell.getSize() : undefined,
+            }
+          : {}),
+        ...(dragType === 'vertex'
+          ? {
+              source: cell.isEdge?.() ? cell.getSource() : undefined,
+              target: cell.isEdge?.() ? cell.getTarget() : undefined,
+              vertices: cell.isEdge?.() ? cell.getVertices?.() || [] : undefined,
+            }
+          : {}),
+      },
+    ];
+
+    // Create description
+    const description =
+      dragType === 'move'
+        ? 'Move Cell'
+        : dragType === 'resize'
+          ? 'Resize Cell'
+          : 'Adjust Edge Vertices';
+
+    // Create history entry
+    const timestamp = Date.now();
+    const historyEntry = {
+      id: `hist_${timestamp}_${Math.random().toString(36).substr(2, 9)}`,
+      timestamp,
+      operationType:
+        dragType === 'move'
+          ? ('move-node' as const)
+          : dragType === 'resize'
+            ? ('resize-node' as const)
+            : ('change-vertices' as const),
+      description,
+      cells: currentCells,
+      previousCells,
+      userId: this.authService.userId,
+      metadata: {
+        dragType,
+        dragDuration: dragCompletion.duration || 0,
+        affectedCellIds: [cellId],
+      },
+    };
+
+    this.appHistoryService.addHistoryEntry(historyEntry);
   }
 
   /**

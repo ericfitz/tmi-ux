@@ -94,69 +94,35 @@ export class AppOperationStateManager {
   /**
    * Execute a visual effect with history suppressed
    * Visual effects should never appear in undo/redo history
+   *
+   * Note: X6 history plugin integration removed. Visual effects are now excluded
+   * from history by the operation metadata flag (isVisualEffect).
    */
   executeVisualEffect(graph: Graph, operation: () => void): void {
-    const historyPlugin = (graph as any).history;
-    if (
-      historyPlugin &&
-      typeof historyPlugin.disable === 'function' &&
-      typeof historyPlugin.enable === 'function'
-    ) {
-      // Temporarily disable history for visual effects
-      historyPlugin.disable();
-      try {
-        operation();
-      } finally {
-        // Re-enable history after the operation
-        historyPlugin.enable();
-      }
-    } else {
-      // No history plugin or already disabled, execute directly
-      operation();
-    }
+    // Execute the operation directly - visual effects are filtered by metadata
+    operation();
   }
 
   /**
-   * Execute a remote operation with history suppressed
-   * Remote operations from collaboration should not create local history entries
-   * Also sets isApplyingRemoteChange flag to prevent broadcasting these changes
+   * Execute a remote operation with isApplyingRemoteChange flag set
+   * Sets isApplyingRemoteChange flag to prevent broadcasting these changes
+   *
+   * Note: X6 history plugin integration removed. Remote operations are now recorded
+   * in history (per user feedback) and filtered by the operation source if needed.
    */
   executeRemoteOperation<T>(graph: Graph, operation: () => T): T {
-    const historyPlugin = (graph as any).history;
-
     // Set flag to prevent broadcasting remote operations (including diagram load)
     const wasApplyingRemoteChange = this._appStateService?.getCurrentState().isApplyingRemoteChange;
     if (this._appStateService && !wasApplyingRemoteChange) {
       this._appStateService.setApplyingRemoteChange(true);
     }
 
-    if (
-      historyPlugin &&
-      typeof historyPlugin.disable === 'function' &&
-      typeof historyPlugin.enable === 'function'
-    ) {
-      // Temporarily disable history for remote operations
-      historyPlugin.disable();
-      try {
-        return operation();
-      } finally {
-        // Re-enable history after the operation
-        historyPlugin.enable();
-
-        // Restore isApplyingRemoteChange flag
-        if (this._appStateService && !wasApplyingRemoteChange) {
-          this._appStateService.setApplyingRemoteChange(false);
-        }
-      }
-    } else {
-      // No history plugin or already disabled, execute directly
-      try {
-        return operation();
-      } finally {
-        // Restore isApplyingRemoteChange flag
-        if (this._appStateService && !wasApplyingRemoteChange) {
-          this._appStateService.setApplyingRemoteChange(false);
-        }
+    try {
+      return operation();
+    } finally {
+      // Restore isApplyingRemoteChange flag
+      if (this._appStateService && !wasApplyingRemoteChange) {
+        this._appStateService.setApplyingRemoteChange(false);
       }
     }
   }
@@ -168,108 +134,11 @@ export class AppOperationStateManager {
   executeAtomicTransaction<T>(
     graph: Graph,
     operation: () => T,
-    transactionName: string = 'atomic-operation',
+    _transactionName: string = 'atomic-operation',
   ): T {
-    const historyPlugin = (graph as any).history;
-    if (
-      historyPlugin &&
-      typeof historyPlugin.disable === 'function' &&
-      typeof historyPlugin.enable === 'function'
-    ) {
-      // Get initial graph state before operations
-      const initialState = this._captureGraphState(graph);
-
-      // Temporarily disable history for the compound operations
-      historyPlugin.disable();
-      let result: T;
-
-      try {
-        // Execute all operations without individual history entries
-        result = operation();
-      } finally {
-        // Re-enable history after all operations complete
-        historyPlugin.enable();
-      }
-
-      // Get final graph state after operations
-      const finalState = this._captureGraphState(graph);
-
-      // Manually add a single combined history entry
-      this._addCombinedHistoryEntry(graph, initialState, finalState, transactionName);
-
-      return result;
-    } else {
-      // No history plugin available, execute directly
-      return operation();
-    }
-  }
-
-  /**
-   * Capture the current state of the graph for history comparison
-   */
-  private _captureGraphState(graph: Graph): any {
-    return {
-      cells: graph.getCells().map(cell => ({
-        id: cell.id,
-        type: cell.isNode() ? 'node' : 'edge',
-        data: cell.toJSON(),
-      })),
-      timestamp: Date.now(),
-    };
-  }
-
-  /**
-   * Add a combined history entry representing the net change of a transaction
-   */
-  private _addCombinedHistoryEntry(
-    graph: Graph,
-    initialState: any,
-    finalState: any,
-    transactionName: string,
-  ): void {
-    try {
-      // Create a synthetic history command that represents the entire transaction
-      const historyPlugin = (graph as any).history;
-      if (historyPlugin && typeof historyPlugin.addCommand === 'function') {
-        const command = {
-          id: `${transactionName}-${Date.now()}`,
-          undo: () => {
-            // Restore to initial state
-            this._restoreGraphState(graph, initialState);
-          },
-          redo: () => {
-            // Restore to final state
-            this._restoreGraphState(graph, finalState);
-          },
-        };
-
-        historyPlugin.addCommand(command);
-        this.logger.debug(`Added atomic transaction to history: ${transactionName}`);
-      }
-    } catch (error) {
-      this.logger.warn('Failed to add combined history entry', { error, transactionName });
-    }
-  }
-
-  /**
-   * Restore graph to a specific state
-   */
-  private _restoreGraphState(graph: Graph, state: any): void {
-    try {
-      // Clear current graph
-      graph.clearCells();
-
-      // Restore cells from state
-      state.cells.forEach((cellState: any) => {
-        if (cellState.type === 'node') {
-          graph.addNode(cellState.data);
-        } else {
-          graph.addEdge(cellState.data);
-        }
-      });
-    } catch (error) {
-      this.logger.warn('Failed to restore graph state', { error });
-    }
+    // Execute operation directly - batch operations handle atomic history entries
+    // X6 history plugin integration has been removed
+    return operation();
   }
 
   /**

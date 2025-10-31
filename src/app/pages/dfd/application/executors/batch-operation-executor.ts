@@ -131,6 +131,10 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
       result.affectedCellIds.forEach(id => allAffectedCellIds.add(id));
     });
 
+    // Collect all state snapshots from individual operations for history
+    const allPreviousStates = individualResults.flatMap(r => r.previousState || []);
+    const allCurrentStates = individualResults.flatMap(r => r.currentState || []);
+
     const success = failedResults.length === 0;
     const metadata = {
       individualResults,
@@ -152,7 +156,17 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
         affectedCellsCount: allAffectedCellIds.size,
       });
 
-      return this.createSuccessResult(batchOperation, Array.from(allAffectedCellIds), metadata);
+      const result = this.createSuccessResult(
+        batchOperation,
+        Array.from(allAffectedCellIds),
+        metadata,
+      );
+
+      return {
+        ...result,
+        previousState: allPreviousStates,
+        currentState: allCurrentStates,
+      };
     } else {
       const error = `Batch operation partially failed: ${failedResults.length}/${batchOperation.operations.length} operations failed`;
 
@@ -171,6 +185,8 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
         timestamp: Date.now(),
         error,
         metadata,
+        previousState: allPreviousStates,
+        currentState: allCurrentStates,
       };
     }
   }

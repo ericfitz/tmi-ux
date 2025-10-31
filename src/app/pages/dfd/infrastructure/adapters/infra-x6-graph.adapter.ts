@@ -462,15 +462,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Setup selection events (crucial for port visibility and visual effects)
     this._setupSelectionEvents();
 
-    // Setup history event handlers
-    this._historyManager.setupHistoryEvents(this._graph);
-
-    // Subscribe to history state changes from history manager
-    this._historyManager.historyChanged$
-      .pipe(takeUntil(this._destroy$))
-      .subscribe(({ canUndo, canRedo }) => {
-        this._historyChanged$.next({ canUndo, canRedo });
-      });
+    // Note: X6 history plugin integration removed - history managed by AppHistoryService
 
     // Initialize X6 event logging (if service is available)
     if (this._x6EventLogger) {
@@ -725,20 +717,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * Undo the last action using X6 history plugin - delegates to InfraX6HistoryAdapter
-   */
-  undo(): void {
-    this._historyManager.undo(this._graph!);
-  }
-
-  /**
-   * Redo the last undone action using X6 history plugin - delegates to InfraX6HistoryAdapter
-   */
-  redo(): void {
-    this._historyManager.redo(this._graph!);
-  }
-
-  /**
    * Cut selected cells to clipboard
    */
   cut(): void {
@@ -821,40 +799,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       return [];
     }
     return this._graph.getCellsInClipboard();
-  }
-
-  /**
-   * Check if undo is available - delegates to InfraX6HistoryAdapter
-   */
-  canUndo(): boolean {
-    return this._historyManager.canUndo(this._graph!);
-  }
-
-  /**
-   * Check if redo is available - delegates to InfraX6HistoryAdapter
-   */
-  canRedo(): boolean {
-    return this._historyManager.canRedo(this._graph!);
-  }
-
-  /**
-   * Enable or disable history tracking based on collaboration state
-   * When in collaboration, history is managed by the server
-   * Note: This method is deprecated as we now use AppHistoryService
-   */
-  setHistoryEnabled(enabled: boolean): void {
-    if (!this._graph) {
-      this.logger.warn('Cannot set history enabled state - graph not initialized');
-      return;
-    }
-
-    if (enabled) {
-      this._historyManager.enable(this._graph);
-      this.logger.info('History tracking enabled (solo editing mode)');
-    } else {
-      this._historyManager.disable(this._graph);
-      this.logger.info('History tracking disabled (collaborative mode - server manages history)');
-    }
   }
 
   /**
@@ -1448,15 +1392,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Setup selection event handlers
     this._setupSelectionEvents();
 
-    // Setup history event handlers
-    this._historyManager.setupHistoryEvents(this._graph);
-
-    // Subscribe to history state changes from history manager
-    this._historyManager.historyChanged$
-      .pipe(takeUntil(this._destroy$))
-      .subscribe(({ canUndo, canRedo }) => {
-        this._historyChanged$.next({ canUndo, canRedo });
-      });
+    // Note: X6 history plugin integration removed - history managed by AppHistoryService
   }
 
   /**
@@ -1475,15 +1411,10 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Initialize selection plugins
     this._selectionAdapter.initializePlugins(this._graph);
 
-    // Setup history controller for selection adapter
-    this._selectionAdapter.setHistoryController({
-      disable: () => this._historyManager.disable(this._graph!),
-      enable: () => this._historyManager.enable(this._graph!),
-    });
+    // Note: History controller setup removed - X6 history plugin integration deprecated
 
     // Set up port state manager for coordinated hover effects
     this._selectionAdapter.setPortStateManager(this._portStateManager);
-    this._historyManager.setPortStateManager(this._portStateManager);
 
     // Set up history coordinator for port state manager to suppress port visibility from history
     this._portStateManager.setHistoryCoordinator(this._historyCoordinator);
@@ -1656,13 +1587,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
           newSourcePortId: sourcePortId,
         });
 
-        // Update port visibility for old and new source nodes using port manager (with history disabled)
-        this._historyManager.disable(this._graph!);
-        try {
-          this._portStateManager.onConnectionChange(this._graph!);
-        } finally {
-          this._historyManager.enable(this._graph!);
-        }
+        // Update port visibility for old and new source nodes using port manager
+        // Port visibility changes are excluded from history by the operation metadata
+        this._portStateManager.onConnectionChange(this._graph!);
       }
     };
 
@@ -1677,13 +1604,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
           newTargetPortId: targetPortId,
         });
 
-        // Update port visibility for old and new target nodes using port manager (with history disabled)
-        this._historyManager.disable(this._graph!);
-        try {
-          this._portStateManager.onConnectionChange(this._graph!);
-        } finally {
-          this._historyManager.enable(this._graph!);
-        }
+        // Update port visibility for old and new target nodes using port manager
+        // Port visibility changes are excluded from history by the operation metadata
+        this._portStateManager.onConnectionChange(this._graph!);
       }
     };
 
@@ -1955,25 +1878,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     return portKeys.length === 0 || portKeys.every(key => key === 'attrs');
   }
 
-  /**
-   * Emit history state change event
-   */
-  private _emitHistoryStateChange(): void {
-    const canUndo = this.canUndo();
-    const canRedo = this.canRedo();
-
-    // Only emit and log if the state has actually changed
-    if (canUndo !== this._previousCanUndo || canRedo !== this._previousCanRedo) {
-      this._historyChanged$.next({ canUndo, canRedo });
-      this.logger.debugComponent('X6Graph', 'History state changed', { canUndo, canRedo });
-    } else {
-      this.logger.debugComponent('X6Graph', 'History state changed', { canUndo, canRedo });
-
-      // Update previous state tracking
-      this._previousCanUndo = canUndo;
-      this._previousCanRedo = canRedo;
-    }
-  }
 
   /**
    * Schedule initial resize to ensure graph fits container properly

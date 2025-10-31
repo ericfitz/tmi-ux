@@ -31,7 +31,7 @@ export class InfraX6KeyboardAdapter {
   /**
    * Setup shift key handling for temporary snap to grid disable and cursor changes
    */
-  setupKeyboardHandling(graph: Graph): void {
+  setupKeyboardHandling(graph: Graph, orchestrator?: any): void {
     this._graph = graph;
     this._graphContainer = graph.container;
 
@@ -54,6 +54,28 @@ export class InfraX6KeyboardAdapter {
 
     // Handle window blur to reset state if user switches windows while dragging
     window.addEventListener('blur', this._handleWindowBlur);
+
+    // Setup undo/redo keyboard shortcuts if orchestrator is provided
+    if (orchestrator) {
+      const handleUndoRedo = (event: KeyboardEvent): void => {
+        // Cmd+Z (Mac) or Ctrl+Z (Windows/Linux) for undo
+        if ((event.metaKey || event.ctrlKey) && event.key === 'z' && !event.shiftKey) {
+          event.preventDefault();
+          orchestrator.undo().subscribe();
+        }
+        // Cmd+Shift+Z (Mac) or Ctrl+Y (Windows/Linux) for redo
+        else if (
+          ((event.metaKey || event.ctrlKey) && event.key === 'z' && event.shiftKey) ||
+          (event.ctrlKey && event.key === 'y')
+        ) {
+          event.preventDefault();
+          orchestrator.redo().subscribe();
+        }
+      };
+
+      document.addEventListener('keydown', handleUndoRedo);
+      this.logger.info('Undo/redo keyboard shortcuts initialized (Cmd+Z/Cmd+Shift+Z)');
+    }
 
     // Set initial cursor state (default when not pressing shift)
     this._updateCursor();

@@ -9,6 +9,7 @@
  */
 
 import { Observable, of, throwError } from 'rxjs';
+import { Graph } from '@antv/x6';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
@@ -23,6 +24,7 @@ import {
   DeleteNodeOperation,
   NodeData,
 } from '../../types/graph-operation.types';
+import { Cell } from '../../../../core/types/websocket-message.types';
 
 export class NodeOperationExecutor implements OperationExecutor {
   readonly priority = 100; // Standard priority for node operations
@@ -101,6 +103,9 @@ export class NodeOperationExecutor implements OperationExecutor {
         // addedNode.addCssClass(finalNodeData.style['cssClass']);
       }
 
+      // Capture current state for history
+      const currentState = this._captureCellState(graph, actualNodeId);
+
       this.logger.debug('Node created successfully', {
         nodeId: actualNodeId,
         nodeType: finalNodeData.nodeType,
@@ -112,6 +117,8 @@ export class NodeOperationExecutor implements OperationExecutor {
         operationType: 'create-node',
         affectedCellIds: [actualNodeId],
         timestamp: Date.now(),
+        previousState: [], // No previous state for create operation
+        currentState: currentState ? [currentState] : [],
         metadata: {
           nodeId: actualNodeId,
           nodeType: finalNodeData.nodeType,
@@ -154,6 +161,9 @@ export class NodeOperationExecutor implements OperationExecutor {
           error: `Node not found: ${nodeId}`,
         });
       }
+
+      // Capture previous state before any changes
+      const previousState = this._captureCellState(graph, nodeId);
 
       const changedProperties: string[] = [];
 
@@ -207,6 +217,9 @@ export class NodeOperationExecutor implements OperationExecutor {
         changedProperties.push('properties');
       }
 
+      // Capture current state after all changes
+      const currentState = this._captureCellState(graph, nodeId);
+
       this.logger.debug('Node updated successfully', {
         nodeId,
         changedProperties,
@@ -218,6 +231,8 @@ export class NodeOperationExecutor implements OperationExecutor {
         operationType: 'update-node',
         affectedCellIds: [nodeId],
         timestamp: Date.now(),
+        previousState: previousState ? [previousState] : [],
+        currentState: currentState ? [currentState] : [],
         metadata: {
           nodeId,
           changedProperties,
@@ -264,6 +279,9 @@ export class NodeOperationExecutor implements OperationExecutor {
         });
       }
 
+      // Capture previous state (node + connected edges) before deletion
+      const previousState = this._captureCascadedState(graph, nodeId);
+
       // Get connected edges before deletion
       const connectedEdges = graph.getConnectedEdges(node) || [];
       const connectedEdgeIds = connectedEdges.map(edge => edge.id);
@@ -295,6 +313,8 @@ export class NodeOperationExecutor implements OperationExecutor {
         operationType: 'delete-node',
         affectedCellIds: [nodeId, ...connectedEdgeIds],
         timestamp: Date.now(),
+        previousState, // State before deletion (node + edges)
+        currentState: [], // No current state after deletion
         metadata: {
           nodeId,
           connectedEdgesCount: connectedEdgeIds.length,
@@ -445,5 +465,88 @@ export class NodeOperationExecutor implements OperationExecutor {
     }
 
     return null; // No validation errors
+  }
+
+  /**
+   * Capture the current state of a node for history tracking
+   * Excludes visual effect attributes (text/filter, body/filter, line/filter)
+   */
+  private _captureCellState(graph: Graph, nodeId: string): Cell | null {
+    const node = graph.getCellById(nodeId);
+    if (!node || !node.isNode?.()) {
+      return null;
+    }
+
+    const typedNode = node;
+    const attrs = typedNode.getAttrs();
+
+    // Clone attrs and remove filter attributes
+    const filteredAttrs: Record<string, unknown> = {};
+    Object.keys(attrs).forEach(key => {
+      if (
+        key !== 'text/filter' &&
+        key !== 'body/filter' &&
+        key !== 'line/filter' &&
+        !key.endsWith('/filter')
+      ) {
+        filteredAttrs[key] = attrs[key];
+      }
+    });
+
+    return {
+      id: typedNode.id,
+      shape: typedNode.shape,
+      position: typedNode.getPosition(),
+      size: typedNode.getSize(),
+      attrs: filteredAttrs,
+      label: typedNode.getAttrByPath('label/text'),
+      zIndex: typedNode.getZIndex(),
+    };
+  }
+
+  /**
+   * Capture state for multiple nodes and their connected edges
+   */
+  private _captureCascadedState(graph: Graph, nodeId: string): Cell[] {
+    const states: Cell[] = [];
+
+    // Capture the node itself
+    const nodeState = this._captureCellState(graph, nodeId);
+    if (nodeState) {
+      states.push(nodeState);
+    }
+
+    // Capture connected edges
+    const node = graph.getCellById(nodeId);
+    if (node && node.isNode?.()) {
+      const connectedEdges = graph.getConnectedEdges(node) || [];
+      connectedEdges.forEach(edge => {
+        const edgeAttrs = edge.getAttrs();
+        const filteredAttrs: Record<string, unknown> = {};
+        Object.keys(edgeAttrs).forEach(key => {
+          if (
+            key !== 'text/filter' &&
+            key !== 'body/filter' &&
+            key !== 'line/filter' &&
+            !key.endsWith('/filter')
+          ) {
+            filteredAttrs[key] = edgeAttrs[key];
+          }
+        });
+
+        states.push({
+          id: edge.id,
+          shape: edge.shape,
+          source: edge.getSource(),
+          target: edge.getTarget(),
+          vertices: edge.getVertices?.() || [],
+          attrs: filteredAttrs,
+          label: edge.getAttrByPath('label/text'),
+          zIndex: edge.getZIndex(),
+        });
+      });
+    }
+
+    return states;
   }
 }

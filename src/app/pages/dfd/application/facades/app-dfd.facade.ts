@@ -219,13 +219,6 @@ export class AppDfdFacade {
   }
 
   /**
-   * Enable or disable history tracking
-   */
-  setHistoryEnabled(enabled: boolean): void {
-    this.infraX6GraphAdapter.setHistoryEnabled(enabled);
-  }
-
-  /**
    * Delete selected cells from the graph
    * Uses proper service layers for correct port visibility updates and history tracking
    */
@@ -308,59 +301,8 @@ export class AppDfdFacade {
   // ========================================
   // History Operations
   // ========================================
-
-  /**
-   * Check if undo is available
-   */
-  canUndo(): boolean {
-    const graph = this.infraX6GraphAdapter.getGraph();
-    const history = (graph as any).history;
-    return history && typeof history.canUndo === 'function' ? history.canUndo() : false;
-  }
-
-  /**
-   * Check if redo is available
-   */
-  canRedo(): boolean {
-    const graph = this.infraX6GraphAdapter.getGraph();
-    const history = (graph as any).history;
-    return history && typeof history.canRedo === 'function' ? history.canRedo() : false;
-  }
-
-  /**
-   * Perform undo operation
-   */
-  undo(): void {
-    const graph = this.infraX6GraphAdapter.getGraph();
-    const history = (graph as any).history;
-    if (history && typeof history.undo === 'function') {
-      history.undo();
-    }
-  }
-
-  /**
-   * Perform redo operation
-   */
-  redo(): void {
-    const graph = this.infraX6GraphAdapter.getGraph();
-    const history = (graph as any).history;
-    if (history && typeof history.redo === 'function') {
-      history.redo();
-    }
-  }
-
-  /**
-   * Get observable for history modifications (for auto-save)
-   * Emits the history index and whether the change was from undo/redo
-   */
-  get historyModified$(): Observable<{
-    historyIndex: number;
-    isUndo: boolean;
-    isRedo: boolean;
-  }> {
-    return this.infraX6GraphAdapter.historyModified$;
-  }
-
+  // Note: X6 history plugin methods (undo/redo/canUndo/canRedo) have been removed.
+  // History is now managed by AppHistoryService via the orchestrator.
   // ========================================
   // Visual Operations
   // ========================================
@@ -414,13 +356,6 @@ export class AppDfdFacade {
    */
   get selectionChanged$(): Observable<{ selected: string[]; deselected: string[] }> {
     return this.infraX6GraphAdapter.selectionChanged$;
-  }
-
-  /**
-   * Observable that emits when history state changes (undo/redo availability)
-   */
-  get historyChanged$(): Observable<{ canUndo: boolean; canRedo: boolean }> {
-    return this.infraX6GraphAdapter.historyChanged$;
   }
 
   /**

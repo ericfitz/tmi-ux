@@ -15,6 +15,7 @@ import { InfraNodeConfigurationService } from '../../infrastructure/services/inf
 import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-graph.adapter';
 import { AppDiagramService } from './app-diagram.service';
 import { AppOperationStateManager } from './app-operation-state-manager.service';
+import { AppHistoryService } from './app-history.service';
 
 /**
  * Options for cell loading operations
@@ -37,6 +38,7 @@ export class AppDiagramLoadingService {
     private infraNodeConfigurationService: InfraNodeConfigurationService,
     private diagramService: AppDiagramService,
     private historyCoordinator: AppOperationStateManager,
+    private historyService: AppHistoryService,
   ) {
     this.logger.info('AppDiagramLoadingService initialized');
   }
@@ -116,8 +118,9 @@ export class AppDiagramLoadingService {
           this.logger.debug('Updated embedding appearances after cell loading');
         }
 
-        // NOTE: X6 History plugin has been removed - clearHistory() is no longer needed
-        // History is now managed by AppHistoryService which is not recording during load
+        // Clear custom history service after diagram load
+        this.historyService.clear();
+        this.logger.debug('Cleared AppHistoryService history after diagram load');
       } finally {
         // Restore diagram loading state if it was modified
         if (wasLoadingStateSuppressed) {

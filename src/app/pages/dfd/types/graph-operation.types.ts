@@ -165,6 +165,8 @@ export interface OperationResult {
   readonly warnings?: string[];
   readonly metadata?: Record<string, any>;
   readonly undoOperation?: GraphOperation;
+  readonly previousState?: import('../../../core/types/websocket-message.types').Cell[]; // State before operation
+  readonly currentState?: import('../../../core/types/websocket-message.types').Cell[]; // State after operation
 }
 
 /**
