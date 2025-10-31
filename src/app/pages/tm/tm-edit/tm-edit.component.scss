@@ -202,7 +202,7 @@ mat-card-header {
 
 // Info section styles
 .info-section {
-  background-color: var(--color-background-lighter);
+  // Remove background color to inherit card background for consistency
   border-radius: 8px;
   padding: 8px 12px;
   margin-bottom: 12px;

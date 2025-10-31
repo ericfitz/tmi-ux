@@ -116,14 +116,15 @@ mat-dialog-content {
 // View-only URL display (for readonly mode)
 .view-only-url {
   padding: 8px 12px;
-  background-color: #f5f5f5;
+
+  // Remove background color to maintain consistency
   border-radius: 8px;
-  border-left: 3px solid #1976d2;
+  border-left: 3px solid var(--color-primary);
   font-size: 14px;
 
   .url-label {
     font-weight: 500;
-    color: rgb(0 0 0 / 70%);
+    color: var(--color-text-secondary);
     margin-right: 8px;
   }
 }
@@ -153,7 +154,7 @@ mat-dialog-content {
 
 // Info section styles
 .info-section {
-  background-color: #f5f5f5;
+  // Remove background color to maintain consistency with dialog background
   border-radius: 8px;
   padding: 8px 12px;
   margin-bottom: 8px;
@@ -164,7 +165,7 @@ mat-dialog-content {
 
 // Vertical info section for threat ID and timestamps
 .info-section-vertical {
-  background-color: #f5f5f5;
+  // Remove background color to maintain consistency with dialog background
   border-radius: 8px;
   padding: 6px 12px;
   margin-bottom: 4px;
@@ -210,11 +211,11 @@ mat-dialog-content {
 .info-label {
   font-weight: 500;
   min-width: 120px;
-  color: rgb(0 0 0 / 70%);
+  color: var(--color-text-secondary);
 }
 
 .info-value {
-  color: rgb(0 0 0 / 87%);
+  color: var(--color-text-primary);
   flex: 1;
 }
 
@@ -373,9 +374,10 @@ mat-dialog-content {
 
 .metadata-grid .metadata-header {
   display: flex;
-  background-color: #f5f5f5;
+
+  // Remove background color to maintain consistency
   font-weight: 500;
-  border-bottom: 1px solid rgb(0 0 0 / 12%);
+  border-bottom: 1px solid var(--color-border-material);
   margin-bottom: 0;
 }
 
@@ -411,8 +413,8 @@ mat-dialog-content {
 
 .metadata-key {
   flex: 1;
-  border-inline-end: 1px solid rgb(0 0 0 / 12%); // Use logical property for RTL support
-  background-color: #fafafa;
+  border-inline-end: 1px solid var(--color-border-material); // Use logical property for RTL support
+  // Remove background color to maintain consistency
   font-weight: 500;
 }
 
