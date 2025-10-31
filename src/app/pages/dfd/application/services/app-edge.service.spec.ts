@@ -333,6 +333,62 @@ describe('AppEdgeService - Comprehensive Tests', () => {
         await service.addInverseConnection(invalidEdge, graph, 'test-diagram').toPromise();
       }).rejects.toThrow('Cannot create inverse connection: edge missing source or target');
     });
+
+    it('should copy metadata from original edge to inverse edge', async () => {
+      const sourceNode = graph.addNode({
+        id: 'source-node-metadata',
+        shape: 'process',
+        x: 100,
+        y: 100,
+      });
+
+      const targetNode = graph.addNode({
+        id: 'target-node-metadata',
+        shape: 'store',
+        x: 300,
+        y: 100,
+      });
+
+      const originalEdge = graph.addEdge({
+        id: 'original-edge-metadata',
+        source: { cell: sourceNode.id, port: 'right' },
+        target: { cell: targetNode.id, port: 'left' },
+      });
+
+      // Add metadata to the original edge
+      const metadata = {
+        category: 'authentication',
+        protocol: 'HTTPS',
+        dataClassification: 'sensitive',
+      };
+      originalEdge.setData(metadata);
+
+      // Mock the edge service to return a mock edge
+      const mockInverseEdge = { id: 'inverse-edge-metadata-mock' };
+      mockEdgeService.createEdge.mockReturnValue(mockInverseEdge);
+
+      const result = await service
+        .addInverseConnection(originalEdge, graph, 'test-diagram')
+        .toPromise();
+
+      expect(result).toBeUndefined(); // void return type
+
+      // Verify that createEdge was called with the metadata in customData
+      expect(mockEdgeService.createEdge).toHaveBeenCalledWith(
+        graph,
+        expect.objectContaining({
+          data: expect.objectContaining({
+            category: 'authentication',
+            protocol: 'HTTPS',
+            dataClassification: 'sensitive',
+          }),
+        }),
+        expect.objectContaining({
+          ensureVisualRendering: true,
+          updatePortVisibility: true,
+        }),
+      );
+    });
   });
 
   describe('Edge Creation', () => {

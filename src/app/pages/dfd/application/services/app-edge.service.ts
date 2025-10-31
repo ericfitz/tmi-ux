@@ -213,9 +213,10 @@ export class AppEdgeService {
       originalTargetPort: targetPortId,
     });
 
-    // Get the original edge's vertices and label
+    // Get the original edge's vertices, label, and metadata
     const originalVertices = edge.getVertices();
     const originalLabel = (edge as any).getLabel() || this.getLocalizedFlowLabel();
+    const originalMetadata = edge.getData() || {};
 
     // Process label for inverse edge
     const inverseLabel = this._processLabelForInverse(originalLabel);
@@ -243,7 +244,7 @@ export class AppEdgeService {
             edge,
           );
 
-          // Step 3: Create inverse EdgeInfo domain object (without label initially)
+          // Step 3: Create inverse EdgeInfo domain object (without label initially, but with metadata)
           const inverseEdgeInfo = EdgeInfo.create({
             id: inverseEdgeId,
             sourceNodeId: targetNodeId, // Swap source and target for inverse
@@ -253,6 +254,7 @@ export class AppEdgeService {
             vertices: inverseVertices,
             connector: DFD_STYLING.EDGES.CONNECTOR as any,
             router: DFD_STYLING.EDGES.ROUTER as any,
+            customData: originalMetadata, // Copy metadata from original edge
           });
 
           // Step 4: Create the inverse edge via InfraEdgeService (suppress history since we're in atomic operation)
@@ -279,7 +281,7 @@ export class AppEdgeService {
       });
 
       this.logger.info(
-        'Inverse edge created successfully with atomic operation (edge creation, vertex processing, and label setting)',
+        'Inverse edge created successfully with atomic operation (edge creation, vertex processing, label setting, and metadata copying)',
         {
           originalEdgeId: edge.id,
           inverseEdgeId,
@@ -294,6 +296,8 @@ export class AppEdgeService {
               : 'N/A (mock)',
           originalLabel,
           inverseLabel,
+          metadataCopied: Object.keys(originalMetadata).length > 0,
+          metadataKeys: Object.keys(originalMetadata),
           atomicOperationUsed: true,
         },
       );
