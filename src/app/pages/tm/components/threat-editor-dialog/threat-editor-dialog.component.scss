@@ -211,11 +211,11 @@ mat-dialog-content {
 .info-label {
   font-weight: 500;
   min-width: 120px;
-  color: var(--color-text-secondary);
+  color: var(--theme-text-secondary, var(--color-text-secondary));
 }
 
 .info-value {
-  color: var(--color-text-primary);
+  color: var(--theme-text-primary, var(--color-text-primary));
   flex: 1;
 }
 
