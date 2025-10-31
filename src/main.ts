@@ -17,6 +17,21 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
 
+// Import Prism for syntax highlighting in markdown code blocks
+import 'prismjs';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-scss';
+import 'prismjs/components/prism-json';
+import 'prismjs/components/prism-bash';
+import 'prismjs/components/prism-python';
+import 'prismjs/components/prism-yaml';
+import 'prismjs/components/prism-markdown';
+import 'prismjs/components/prism-sql';
+
+// Mermaid is loaded via angular.json scripts array for diagram rendering
+
 // Import locale data for date/number localization
 import { registerLocaleData } from '@angular/common';
 import localeAr from '@angular/common/locales/ar';

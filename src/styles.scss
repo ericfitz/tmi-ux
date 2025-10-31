@@ -7,6 +7,9 @@
 @use 'styles/material-theme';
 @use 'styles/component-overrides';
 
+// Import Prism.js theme for syntax highlighting
+@import 'prismjs/themes/prism.css';
+
 // Material Symbols settings for filled icons
 .material-symbols-outlined {
   font-variation-settings:

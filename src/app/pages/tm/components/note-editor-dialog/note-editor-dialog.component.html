@@ -147,8 +147,8 @@
     <!-- Preview mode -->
     @if (previewMode) {
       <div class="markdown-preview-container">
-        <div class="markdown-preview">
-          <markdown [data]="sanitizedContent"></markdown>
+        <div #markdownPreview class="markdown-preview">
+          <markdown [data]="markdownContent" mermaid></markdown>
         </div>
       </div>
     }

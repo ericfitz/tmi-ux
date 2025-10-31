@@ -6,6 +6,7 @@ import {
   EventEmitter,
   ViewChild,
   ElementRef,
+  AfterViewChecked,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -18,7 +19,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import DOMPurify from 'dompurify';
 import { Note } from '../../models/threat-model.model';
 
 export interface NoteEditorDialogData {
@@ -57,15 +57,17 @@ export interface NoteFormResult {
   templateUrl: './note-editor-dialog.component.html',
   styleUrls: ['./note-editor-dialog.component.scss'],
 })
-export class NoteEditorDialogComponent implements OnInit {
+export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
   @Output() saveEvent = new EventEmitter<NoteFormResult>();
   @ViewChild('contentTextarea') contentTextarea!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('markdownPreview') markdownPreview?: ElementRef<HTMLDivElement>;
 
   noteForm!: FormGroup;
   mode: 'create' | 'edit';
   previewMode = false;
   private originalContent = '';
   private createdNoteId?: string;
+  private taskListCheckboxesInitialized = false;
 
   readonly maxContentLength = 65536;
   readonly maxNameLength = 256;
@@ -107,6 +109,16 @@ export class NoteEditorDialogComponent implements OnInit {
     void this.checkClipboardPermissions();
   }
 
+  ngAfterViewChecked(): void {
+    // Initialize task list checkboxes after markdown is rendered
+    if (this.previewMode && !this.taskListCheckboxesInitialized) {
+      this.initializeTaskListCheckboxes();
+      this.taskListCheckboxesInitialized = true;
+    } else if (!this.previewMode) {
+      this.taskListCheckboxesInitialized = false;
+    }
+  }
+
   get dialogTitle(): string {
     return this.translocoService.translate(`noteEditor.title.${this.mode}`);
   }
@@ -116,8 +128,8 @@ export class NoteEditorDialogComponent implements OnInit {
     return value?.length ?? 0;
   }
 
-  get sanitizedContent(): string {
-    // For preview, return the raw markdown - ngx-markdown will handle rendering and sanitization
+  get markdownContent(): string {
+    // Return the raw markdown content - ngx-markdown and DOMPurify will handle rendering and sanitization
     const content = (this.noteForm.get('content')?.value as string | undefined) || '';
     return content;
   }
@@ -168,8 +180,8 @@ export class NoteEditorDialogComponent implements OnInit {
 
   async onCopy(): Promise<void> {
     if (this.previewMode) {
-      // Copy the entire sanitized content in preview mode
-      const content = this.sanitizedContent;
+      // Copy the entire markdown content in preview mode
+      const content = this.markdownContent;
       try {
         await navigator.clipboard.writeText(content);
         this.showMessage('noteEditor.copiedToClipboard');
@@ -230,7 +242,7 @@ export class NoteEditorDialogComponent implements OnInit {
       return;
     }
 
-    const formValue = this.sanitizeFormValue(this.noteForm.value as NoteFormResult);
+    const formValue = this.getFormValue(this.noteForm.value as NoteFormResult);
     this.originalContent = formValue.content;
     this.saveEvent.emit(formValue);
     this.showMessage('noteEditor.savedSuccessfully');
@@ -247,7 +259,7 @@ export class NoteEditorDialogComponent implements OnInit {
       return;
     }
 
-    const formValue = this.sanitizeFormValue(this.noteForm.value as NoteFormResult);
+    const formValue = this.getFormValue(this.noteForm.value as NoteFormResult);
     const result: NoteEditorResult = {
       formValue,
       noteId: this.createdNoteId || this.data.note?.id,
@@ -275,43 +287,12 @@ export class NoteEditorDialogComponent implements OnInit {
     this.mode = 'edit';
   }
 
-  private sanitizeFormValue(value: NoteFormResult): NoteFormResult {
+  private getFormValue(value: NoteFormResult): NoteFormResult {
     return {
       name: value.name.trim(),
-      content: this.sanitizeContent(value.content),
+      content: value.content.trim(),
       description: value.description?.trim(),
     };
-  }
-
-  private sanitizeContent(content: string): string {
-    // First, validate for dangerous patterns
-    const validation = this.validateContent(content);
-    if (!validation.valid) {
-      this.showMessage(validation.error || 'Invalid content', true);
-      throw new Error(validation.error);
-    }
-
-    // Strip any HTML tags while preserving markdown syntax
-    // We use DOMPurify to remove HTML but keep the text content (which includes markdown syntax)
-    const sanitized = DOMPurify.sanitize(content, {
-      ALLOWED_TAGS: [], // No HTML tags allowed
-      ALLOWED_ATTR: [],
-      KEEP_CONTENT: true, // Keep text content, strip tags
-    });
-
-    return sanitized;
-  }
-
-  private validateContent(content: string): { valid: boolean; error?: string } {
-    if (content.length > this.maxContentLength) {
-      return { valid: false, error: 'noteEditor.errors.contentTooLong' };
-    }
-
-    // Note: We don't validate for specific HTML patterns here because DOMPurify
-    // handles all sanitization correctly, including edge cases that regex cannot catch.
-    // DOMPurify is configured to strip all HTML tags while preserving markdown text.
-
-    return { valid: true };
   }
 
   private showMessage(key: string, isError = false): void {
@@ -330,5 +311,59 @@ export class NoteEditorDialogComponent implements OnInit {
       // Clipboard access might be denied, that's okay
       this.clipboardHasContent = false;
     }
+  }
+
+  /**
+   * Initialize event listeners for task list checkboxes to make them interactive
+   */
+  private initializeTaskListCheckboxes(): void {
+    if (!this.markdownPreview) {
+      return;
+    }
+
+    const checkboxes =
+      this.markdownPreview.nativeElement.querySelectorAll('input[type="checkbox"]');
+
+    checkboxes.forEach((checkbox, index) => {
+      const htmlCheckbox = checkbox as HTMLInputElement;
+      // Remove any existing listeners
+      htmlCheckbox.onclick = null;
+
+      // Add click listener to update markdown content
+      htmlCheckbox.onclick = (event): void => {
+        event.preventDefault();
+        this.toggleTaskListItem(index, !htmlCheckbox.checked);
+      };
+    });
+  }
+
+  /**
+   * Toggle a task list item in the markdown content
+   */
+  private toggleTaskListItem(index: number, checked: boolean): void {
+    const content = this.markdownContent;
+    const lines = content.split('\n');
+    let taskListIndex = -1;
+
+    // Find the task list item by index
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      // Match task list items: - [ ] or - [x] or - [X]
+      if (/^(\s*)-\s\[([ xX])\]/.test(line)) {
+        taskListIndex++;
+        if (taskListIndex === index) {
+          // Toggle the checkbox
+          lines[i] = line.replace(/^(\s*)-\s\[([ xX])\]/, `$1- [${checked ? 'x' : ' '}]`);
+          break;
+        }
+      }
+    }
+
+    // Update the form content
+    const newContent = lines.join('\n');
+    this.noteForm.get('content')?.setValue(newContent);
+
+    // Reset initialization flag to re-initialize checkboxes after re-render
+    this.taskListCheckboxesInitialized = false;
   }
 }

@@ -42,6 +42,7 @@ import {
   MarkedOptions,
 } from 'ngx-markdown';
 import type { MermaidConfig } from 'mermaid';
+import DOMPurify from 'dompurify';
 
 import { routes } from './app.routes';
 import { TranslocoRootModule } from './i18n/transloco.module';
@@ -100,9 +101,91 @@ function initializeTheme(_themeService: ThemeService): () => void {
   };
 }
 
-// Marked configuration with security
+// Marked configuration with security and syntax highlighting
 function markedOptionsFactory(): MarkedOptions {
   const renderer = new MarkedRenderer();
+
+  // Override the renderer's html method to sanitize output
+  const originalHtml = renderer.html.bind(renderer);
+  renderer.html = (args): string => {
+    const html = originalHtml(args);
+    return DOMPurify.sanitize(html, {
+      // Allow all standard markdown HTML elements
+      ALLOWED_TAGS: [
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'h5',
+        'h6',
+        'p',
+        'br',
+        'strong',
+        'em',
+        'del',
+        'a',
+        'img',
+        'code',
+        'pre',
+        'ul',
+        'ol',
+        'li',
+        'blockquote',
+        'table',
+        'thead',
+        'tbody',
+        'tr',
+        'th',
+        'td',
+        'hr',
+        'input',
+        'span',
+        'div',
+        'svg',
+        'path',
+        'g',
+        'rect',
+        'circle',
+        'line',
+        'polygon',
+        'text',
+        'tspan',
+      ],
+      ALLOWED_ATTR: [
+        'href',
+        'src',
+        'alt',
+        'title',
+        'class',
+        'id',
+        'type',
+        'checked',
+        'disabled',
+        'data-line',
+        'data-sourcepos',
+        'style',
+        'viewBox',
+        'xmlns',
+        'width',
+        'height',
+        'fill',
+        'stroke',
+        'stroke-width',
+        'd',
+        'x',
+        'y',
+        'x1',
+        'y1',
+        'x2',
+        'y2',
+        'points',
+        'transform',
+      ],
+      ALLOWED_URI_REGEXP:
+        /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp|data):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
+      KEEP_CONTENT: true,
+    });
+  };
 
   return {
     renderer,
@@ -145,9 +228,10 @@ export const appConfig: ApplicationConfig = {
     },
     // Add Transloco root module
     importProvidersFrom(TranslocoRootModule),
-    // Configure markdown with security and features
+    // Configure markdown with DOMPurify sanitization (handled in markedOptionsFactory)
+    // Mermaid rendering is enabled via MERMAID_OPTIONS provider below
     provideMarkdown({
-      sanitize: SecurityContext.HTML,
+      sanitize: SecurityContext.NONE, // We handle sanitization via DOMPurify in the renderer
     }),
     {
       provide: MARKED_OPTIONS,
