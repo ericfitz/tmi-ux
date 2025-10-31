@@ -7,8 +7,11 @@
 @use 'styles/material-theme';
 @use 'styles/component-overrides';
 
-// Import Prism.js theme for syntax highlighting
+// Import Prism.js themes for syntax highlighting
+// Light theme (default)
 @import 'prismjs/themes/prism.css';
+
+// Dark theme - will be applied via CSS overrides based on .dark-theme class
 
 // Material Symbols settings for filled icons
 .material-symbols-outlined {

@@ -105,6 +105,10 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
 
     this.originalContent = (this.noteForm.get('content')?.value as string | undefined) || '';
 
+    // Start in preview mode if there is existing content, otherwise start in edit mode
+    const hasExistingContent = this.originalContent.trim().length > 0;
+    this.previewMode = hasExistingContent;
+
     // Check clipboard permissions on init
     void this.checkClipboardPermissions();
   }
