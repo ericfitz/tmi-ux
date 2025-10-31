@@ -1624,8 +1624,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       data: {
         threatModelId: this.threatModelId,
         cellId: cell.id,
-        currentMetadata: cell.getData()?.metadata || {},
-        metadata: [], // Required by MetadataDialogData interface
+        // Get metadata from the data.metadata field (where it's stored as an array)
+        metadata: cell.getData()?.metadata || [],
       } as MetadataDialogData,
     });
 

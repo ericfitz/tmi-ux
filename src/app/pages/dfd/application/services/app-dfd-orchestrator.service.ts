@@ -704,8 +704,6 @@ export class AppDfdOrchestrator {
   }
 
   handleKeyboardShortcut(shortcut: string): boolean {
-    this.logger.debug('Keyboard shortcut handled', { shortcut });
-
     switch (shortcut) {
       case 'ctrl+s':
         // Trigger manual save
