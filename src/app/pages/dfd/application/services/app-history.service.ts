@@ -561,12 +561,18 @@ export class AppHistoryService implements OnDestroy {
     cell: Cell,
     baseOperation: Partial<GraphOperation>,
   ): CreateNodeOperation {
+    // Extract label from X6 native attrs structure
+    const label =
+      cell.attrs && typeof cell.attrs === 'object' && 'text' in cell.attrs
+        ? (cell.attrs as any).text?.text
+        : undefined;
+
     const nodeData: NodeData = {
       id: cell.id,
       nodeType: cell.shape,
       position: cell.position,
       size: cell.size,
-      label: typeof cell.label === 'string' ? cell.label : undefined,
+      label: typeof label === 'string' ? label : undefined,
       style: cell.attrs as Record<string, any>,
       properties: cell as Record<string, any>,
     };
@@ -586,12 +592,18 @@ export class AppHistoryService implements OnDestroy {
     previousCell: Cell,
     baseOperation: Partial<GraphOperation>,
   ): UpdateNodeOperation {
+    // Extract label from X6 native attrs structure
+    const label =
+      cell.attrs && typeof cell.attrs === 'object' && 'text' in cell.attrs
+        ? (cell.attrs as any).text?.text
+        : undefined;
+
     const nodeData: Partial<NodeData> = {
       id: cell.id,
       nodeType: cell.shape,
       position: cell.position,
       size: cell.size,
-      label: typeof cell.label === 'string' ? cell.label : undefined,
+      label: typeof label === 'string' ? label : undefined,
       style: cell.attrs as Record<string, any>,
       properties: cell as Record<string, any>,
     };
@@ -628,7 +640,6 @@ export class AppHistoryService implements OnDestroy {
     // Use EdgeInfo.fromJSON to handle both new and legacy format
     const edgeInfo = EdgeInfo.fromJSON({
       id: cell.id,
-      label: typeof cell.label === 'string' ? cell.label : undefined,
       source: cell.source as any,
       target: cell.target as any,
       sourceNodeId,
@@ -660,7 +671,6 @@ export class AppHistoryService implements OnDestroy {
   ): UpdateEdgeOperation {
     const edgeInfo: Partial<EdgeInfo> = {
       id: cell.id,
-      labels: typeof cell.label === 'string' ? [{ attrs: { text: { text: cell.label } } }] : [],
       source:
         typeof cell.source === 'object' && cell.source !== null ? (cell.source as any) : undefined,
       target:

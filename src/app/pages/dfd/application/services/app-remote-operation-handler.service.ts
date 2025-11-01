@@ -245,12 +245,18 @@ export class AppRemoteOperationHandler implements OnDestroy {
     cellData: WSCell,
     baseOperation: Partial<GraphOperation>,
   ): GraphOperation | null {
+    // Extract label from X6 native attrs structure
+    const label =
+      cellData.attrs && typeof cellData.attrs === 'object' && 'text' in cellData.attrs
+        ? (cellData.attrs as any).text?.text
+        : undefined;
+
     const nodeData: NodeData = {
       id: cellData.id,
       nodeType: cellData.shape,
       position: cellData.position,
       size: cellData.size,
-      label: typeof cellData.label === 'string' ? cellData.label : undefined,
+      label: typeof label === 'string' ? label : undefined,
       style: cellData.attrs as Record<string, any>,
       properties: cellData as Record<string, any>,
     };
@@ -314,7 +320,6 @@ export class AppRemoteOperationHandler implements OnDestroy {
     // Use EdgeInfo.fromJSON to handle both new and legacy format
     const edgeInfo = EdgeInfo.fromJSON({
       id: cellData.id,
-      label: typeof cellData.label === 'string' ? cellData.label : undefined,
       source: cellData.source as any,
       target: cellData.target as any,
       sourceNodeId,

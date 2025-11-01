@@ -161,15 +161,6 @@ export class InfraEdgeService {
       edge.setLabels(updates.labels);
     }
 
-    if (updates.label !== undefined) {
-      // Use X6 cell extensions for unified label handling
-      if ((edge as any).setLabel) {
-        (edge as any).setLabel(updates.label);
-      } else {
-        this._logger.warn('Edge does not support setLabel method', { edgeId: edge.id });
-      }
-    }
-
     if (updates.attrs !== undefined) {
       const attrs = ensureVisualRendering
         ? this._ensureEdgeAttrs(updates.attrs as any)

@@ -596,6 +596,11 @@ export class AppDiagramService {
       // For now, keep as-is
     }
 
+    // Build attrs with label if present
+    const attrs = nodeConfig.attrs || {
+      text: { text: nodeConfig.label || '' },
+    };
+
     return NodeInfo.fromJSON({
       id: nodeConfig.id,
       shape: nodeConfig.shape as NodeType,
@@ -603,7 +608,7 @@ export class AppDiagramService {
       y: nodeConfig.y,
       width: nodeConfig.width,
       height: nodeConfig.height,
-      label: nodeConfig.label || '',
+      attrs,
       data: hybridData,
       parent: nodeConfig.parent,
       markup: nodeConfig.markup,
