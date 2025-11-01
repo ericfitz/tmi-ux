@@ -61,7 +61,9 @@
                 }
               </span>
               <span class="status-updated">
-                {{ 'threatModels.statusLastUpdated' | transloco }}:
+                <span class="status-updated-label"
+                  >{{ 'threatModels.statusLastUpdated' | transloco }}:</span
+                >
                 {{ threatModel.status_updated ? formatDate(threatModel.status_updated) : '—' }}
               </span>
             </div>

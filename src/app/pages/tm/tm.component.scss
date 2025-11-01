@@ -156,6 +156,10 @@ mat-card-content {
   .status-updated {
     color: var(--theme-text-secondary);
     white-space: nowrap;
+
+    .status-updated-label {
+      margin-right: 6px;
+    }
   }
 }
 

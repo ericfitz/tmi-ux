@@ -67,10 +67,10 @@
           </div>
         </mat-card-header>
         <mat-card-content>
-          <!-- Threat Model timestamps section -->
-          @if (threatModel && !isNewThreatModel) {
-            <div class="info-section" [dir]="currentDirection">
-              <!-- First row: Last Modified, Created By, Created -->
+          <!-- Threat Model metadata section -->
+          <div class="info-section" [dir]="currentDirection">
+            <!-- First row: Last Modified, Created By, Created (only for existing models) -->
+            @if (threatModel && !isNewThreatModel) {
               <div class="info-row info-row-three-col">
                 <div class="info-field">
                   <span class="info-label">{{ 'common.lastModified' | transloco }}:</span>
@@ -89,30 +89,32 @@
                   }}</span>
                 </div>
               </div>
+            }
 
-              <!-- Second row: Status chips and Status Last Updated -->
-              <div class="info-row info-row-status">
-                <div class="info-field status-field">
-                  <span class="info-label">{{ 'threatModels.status' | transloco }}:</span>
-                  <div class="status-chips-container">
-                    <mat-chip-grid #statusChipGrid>
-                      @for (status of threatModelForm.get('status')?.value; track status) {
-                        <mat-chip-row (removed)="removeStatus(status)">
-                          {{ status }}
-                          <button matChipRemove [attr.aria-label]="'Remove ' + status">
-                            <mat-icon>cancel</mat-icon>
-                          </button>
-                        </mat-chip-row>
-                      }
-                    </mat-chip-grid>
-                    <input
-                      placeholder="{{ 'threatModels.statusChipPlaceholder' | transloco }}"
-                      [matChipInputFor]="statusChipGrid"
-                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                      (matChipInputTokenEnd)="addStatus($event)"
-                    />
-                  </div>
+            <!-- Status row: Status chips and Status Last Updated (always visible) -->
+            <div class="info-row info-row-status">
+              <div class="info-field status-field">
+                <span class="info-label">{{ 'threatModels.status' | transloco }}:</span>
+                <div class="status-chips-container">
+                  <mat-chip-grid #statusChipGrid>
+                    @for (status of threatModelForm.get('status')?.value; track status) {
+                      <mat-chip-row (removed)="removeStatus(status)">
+                        {{ status }}
+                        <button matChipRemove [attr.aria-label]="'Remove ' + status">
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      </mat-chip-row>
+                    }
+                  </mat-chip-grid>
+                  <input
+                    placeholder="{{ 'threatModels.statusChipPlaceholder' | transloco }}"
+                    [matChipInputFor]="statusChipGrid"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="addStatus($event)"
+                  />
                 </div>
+              </div>
+              @if (threatModel && !isNewThreatModel) {
                 <div class="info-field status-updated-field">
                   <span class="info-label"
                     >{{ 'threatModels.statusLastUpdated' | transloco }}:</span
@@ -123,9 +125,9 @@
                       : '—'
                   }}</span>
                 </div>
-              </div>
+              }
             </div>
-          }
+          </div>
 
           <form [formGroup]="threatModelForm" class="threat-model-form">
             <mat-form-field appearance="outline" class="full-width">
