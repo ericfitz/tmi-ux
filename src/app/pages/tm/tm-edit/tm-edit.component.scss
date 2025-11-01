@@ -248,8 +248,10 @@ mat-card-header {
 .info-row-status {
   .info-field:first-child {
     width: 66.67%;
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
+    gap: 8px;
+    padding-right: 16px;
   }
 
   .info-field:last-child {
@@ -261,8 +263,7 @@ mat-card-header {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-top: 4px;
-  width: 100%;
+  flex: 1;
   min-width: 0;
 
   mat-chip-grid {
@@ -281,7 +282,6 @@ mat-card-header {
     font-family: var(--font-family-primary);
     outline: none;
     box-sizing: border-box;
-    flex: 1;
 
     &:focus {
       border-color: var(--theme-primary);
