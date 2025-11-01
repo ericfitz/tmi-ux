@@ -55,7 +55,7 @@
                   <span class="status-label-and-chips">
                     <span class="status-label">{{ 'threatModels.status' | transloco }}</span>
                     @for (status of threatModel.status; track status) {
-                      <mat-chip class="status-chip">{{ status }}</mat-chip>
+                      <span class="status-chip">{{ status }}</span>
                     }
                   </span>
                 }

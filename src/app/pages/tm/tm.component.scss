@@ -142,9 +142,14 @@ mat-card-content {
     }
 
     .status-chip {
+      display: inline-block;
       font-size: 0.75rem;
       min-height: 24px;
-      padding: 4px 8px;
+      padding: 4px 12px;
+      background-color: var(--theme-primary);
+      color: var(--theme-primary-contrast);
+      border-radius: 16px;
+      line-height: 1.4;
     }
   }
 
