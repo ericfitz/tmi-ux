@@ -169,10 +169,23 @@ describe('InfraEdgeService - X6 Integration Tests', () => {
     });
 
     it('should update edge label', () => {
-      service.updateEdge(edge, { label: 'Updated Flow' });
+      // After X6 normalization, labels are set via the labels array property
+      service.updateEdge(edge, {
+        labels: [
+          {
+            attrs: {
+              text: {
+                text: 'Updated Flow',
+              },
+            },
+          },
+        ],
+      });
 
-      // Use standardized getLabel method
-      expect((edge as any).getLabel()).toBe('Updated Flow');
+      // Verify label was updated using X6 native getLabels()
+      const labels = edge.getLabels();
+      expect(labels).toHaveLength(1);
+      expect(labels[0].attrs?.text?.text).toBe('Updated Flow');
     });
 
     it('should update edge vertices', () => {

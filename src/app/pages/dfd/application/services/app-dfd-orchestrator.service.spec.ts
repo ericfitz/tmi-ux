@@ -79,6 +79,8 @@ describe('AppDfdOrchestrator', () => {
   let mockAppRemoteOperationHandler: any;
   let mockAppHistoryService: any;
   let mockAppOperationRejectionHandler: any;
+  let mockAppOperationStateManager: any;
+  let mockMatDialog: any;
 
   beforeEach(() => {
     // Create all required mocks
@@ -273,6 +275,20 @@ describe('AppDfdOrchestrator', () => {
       ngOnDestroy: vi.fn(),
     };
 
+    mockAppOperationStateManager = {
+      dragCompletions$: new Subject(),
+      setAppStateService: vi.fn(),
+      executeAtomicOperation: vi.fn((graph: any, operation: () => any) => operation()),
+      executeCompoundOperation: vi.fn((graph: any, operation: () => any) => operation()),
+      executeFinalizeDragOperation: vi.fn((graph: any, operation: () => any) => operation()),
+      executeVisualEffect: vi.fn((graph: any, operation: () => any) => operation()),
+    };
+
+    mockMatDialog = {
+      open: vi.fn(),
+      closeAll: vi.fn(),
+    };
+
     // Create mock container element
     mockContainerElement = document.createElement('div');
     mockContainerElement.style.width = '800px';
@@ -295,11 +311,13 @@ describe('AppDfdOrchestrator', () => {
       mockAppDiagramOperationBroadcaster,
       mockAppRemoteOperationHandler,
       mockAppHistoryService,
+      mockAppOperationStateManager,
       mockUiPresenterCoordinator,
       mockSelectionAdapter,
       mockDfdStateStore,
       mockAppDiagramResyncService,
       mockAppOperationRejectionHandler,
+      mockMatDialog,
     );
   });
 
@@ -546,11 +564,13 @@ describe('AppDfdOrchestrator', () => {
         mockAppDiagramOperationBroadcaster,
         mockAppRemoteOperationHandler,
         mockAppHistoryService,
+        mockAppOperationStateManager,
         mockUiPresenterCoordinator,
         mockSelectionAdapter,
         mockDfdStateStore,
         mockAppDiagramResyncService,
         mockAppOperationRejectionHandler,
+        mockMatDialog,
       );
 
       return new Promise<void>((resolve, reject) => {
@@ -643,6 +663,8 @@ describe('AppDfdOrchestrator', () => {
         diagramId: 'test-diagram',
         threatModelId: 'test-tm',
         containerElement: mockContainerElement,
+        readOnly: false,
+        autoSaveMode: 'auto',
       };
 
       mockPersistenceCoordinator.load.mockReturnValue(
@@ -721,7 +743,7 @@ describe('AppDfdOrchestrator', () => {
           next: (result: OperationResult) => {
             expect(result.success).toBe(true);
             expect(result.affectedCellIds).toHaveLength(0);
-            expect(result.metadata?.message).toContain('No cells selected');
+            expect(result.metadata?.['message']).toContain('No cells selected');
             resolve();
           },
           error: reject,
@@ -736,6 +758,8 @@ describe('AppDfdOrchestrator', () => {
         diagramId: 'test-diagram',
         threatModelId: 'test-tm',
         containerElement: mockContainerElement,
+        readOnly: false,
+        autoSaveMode: 'auto',
       };
 
       mockPersistenceCoordinator.load.mockReturnValue(
@@ -847,6 +871,8 @@ describe('AppDfdOrchestrator', () => {
         diagramId: 'test-diagram',
         threatModelId: 'test-tm',
         containerElement: mockContainerElement,
+        readOnly: false,
+        autoSaveMode: 'auto',
       };
 
       mockPersistenceCoordinator.load.mockReturnValue(
@@ -958,6 +984,8 @@ describe('AppDfdOrchestrator', () => {
         diagramId: 'test-diagram',
         threatModelId: 'test-tm',
         containerElement: mockContainerElement,
+        readOnly: false,
+        autoSaveMode: 'auto',
       };
 
       mockPersistenceCoordinator.load.mockReturnValue(
@@ -1058,6 +1086,8 @@ describe('AppDfdOrchestrator', () => {
         diagramId: 'test-diagram',
         threatModelId: 'test-tm',
         containerElement: mockContainerElement,
+        readOnly: false,
+        autoSaveMode: 'auto',
       };
 
       mockPersistenceCoordinator.load.mockReturnValue(
@@ -1127,6 +1157,8 @@ describe('AppDfdOrchestrator', () => {
         diagramId: 'test-diagram',
         threatModelId: 'test-tm',
         containerElement: mockContainerElement,
+        readOnly: false,
+        autoSaveMode: 'auto',
       };
 
       mockPersistenceCoordinator.load.mockReturnValue(
