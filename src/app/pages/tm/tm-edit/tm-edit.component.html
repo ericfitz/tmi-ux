@@ -67,34 +67,11 @@
           </div>
         </mat-card-header>
         <mat-card-content>
-          <!-- Threat Model ID and timestamps section -->
+          <!-- Threat Model timestamps section -->
           @if (threatModel && !isNewThreatModel) {
             <div class="info-section" [dir]="currentDirection">
-              <!-- First row: ID and Created By -->
-              <div class="info-row">
-                <div class="info-field">
-                  <span class="info-label">{{ 'threatModels.idLabel' | transloco }}</span>
-                  <span class="info-value"
-                    >{{ threatModel.id }}
-                    <button
-                      mat-icon-button
-                      class="copy-button"
-                      (click)="copyToClipboard(threatModel.id)"
-                      matTooltip="{{ 'common.copyToClipboard' | transloco }}"
-                      [attr.aria-label]="'common.copyToClipboard' | transloco"
-                    >
-                      <mat-icon>content_copy</mat-icon>
-                    </button>
-                  </span>
-                </div>
-                <div class="info-field">
-                  <span class="info-label">{{ 'threatModels.createdBy' | transloco }}</span>
-                  <span class="info-value">{{ threatModel.created_by }}</span>
-                </div>
-              </div>
-
-              <!-- Second row: Last Modified and Created (reversed order) -->
-              <div class="info-row">
+              <!-- First row: Last Modified, Created By, Created -->
+              <div class="info-row info-row-three-col">
                 <div class="info-field">
                   <span class="info-label">{{ 'common.lastModified' | transloco }}:</span>
                   <span class="info-value">{{
@@ -102,11 +79,50 @@
                   }}</span>
                 </div>
                 <div class="info-field">
-                  <span class="info-label">{{ 'common.created' | transloco }}:</span>
+                  <span class="info-label">{{ 'threatModels.createdBy' | transloco }}</span>
+                  <span class="info-value">{{ threatModel.created_by }}</span>
+                </div>
+                <div class="info-field">
+                  <span class="info-label">{{ 'threatModels.created' | transloco }}</span>
                   <span class="info-value">{{
                     threatModel.created_at | date: 'short' : undefined : currentLocale
                   }}</span>
                 </div>
+              </div>
+
+              <!-- Second row: Status chips and Status Last Updated -->
+              <div class="info-row info-row-status">
+                <div class="info-field status-field">
+                  <span class="info-label">{{ 'threatModels.status' | transloco }}</span>
+                  <div class="status-chips-container">
+                    <mat-chip-grid #statusChipGrid>
+                      @for (status of threatModelForm.get('status')?.value; track status) {
+                        <mat-chip-row (removed)="removeStatus(status)">
+                          {{ status }}
+                          <button matChipRemove [attr.aria-label]="'Remove ' + status">
+                            <mat-icon>cancel</mat-icon>
+                          </button>
+                        </mat-chip-row>
+                      }
+                    </mat-chip-grid>
+                    <input
+                      placeholder="{{ 'threatModels.statusChipPlaceholder' | transloco }}"
+                      [matChipInputFor]="statusChipGrid"
+                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                      (matChipInputTokenEnd)="addStatus($event)"
+                    />
+                  </div>
+                </div>
+                @if (threatModel.status_updated) {
+                  <div class="info-field status-updated-field">
+                    <span class="info-label">{{
+                      'threatModels.statusLastUpdated' | transloco
+                    }}</span>
+                    <span class="info-value">{{
+                      threatModel.status_updated | date: 'short' : undefined : currentLocale
+                    }}</span>
+                  </div>
+                }
               </div>
             </div>
           }

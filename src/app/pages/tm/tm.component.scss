@@ -121,6 +121,39 @@ mat-card-content {
   color: var(--theme-text-secondary);
 }
 
+.threat-model-status-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  .status-label-and-chips {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+
+    .status-label {
+      font-weight: 500;
+      color: var(--theme-text-secondary);
+    }
+
+    .status-chip {
+      font-size: 0.75rem;
+      min-height: 24px;
+      padding: 4px 8px;
+    }
+  }
+
+  .status-updated {
+    color: var(--theme-text-secondary);
+    white-space: nowrap;
+  }
+}
+
 .threat-model-description {
   margin: 0 0 12px;
   font-size: 0.9rem;

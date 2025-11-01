@@ -237,6 +237,64 @@ mat-card-header {
   }
 }
 
+.info-row-three-col {
+  .info-field {
+    width: 33.33%;
+    margin-bottom: 0;
+  }
+}
+
+.info-row-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+
+  .status-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: auto;
+
+    .info-label {
+      min-width: auto;
+    }
+
+    .status-chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+
+      mat-chip-grid {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      input {
+        min-width: 120px;
+        border: none;
+        outline: none;
+        padding: 4px 8px;
+        font-size: 14px;
+        font-family: var(--font-family-primary);
+      }
+    }
+  }
+
+  .status-updated-field {
+    width: auto;
+    min-width: 200px;
+    margin-bottom: 0;
+    text-align: right;
+
+    .info-label {
+      min-width: auto;
+    }
+  }
+}
+
 .info-label {
   font-weight: 500;
   min-width: 120px;

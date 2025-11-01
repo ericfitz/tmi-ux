@@ -88,6 +88,8 @@ export interface ThreatModel {
   created_by: string;
   threat_model_framework: string;
   issue_uri?: string;
+  status?: string[];
+  status_updated?: string;
   authorization: Authorization[];
   metadata?: Metadata[];
   documents?: Document[];
@@ -110,6 +112,8 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
     created_by: 'user@example.com',
     threat_model_framework: 'STRIDE',
     issue_uri: 'https://issues.example.com/browse/TM-123',
+    status: ['In progress', 'Review'],
+    status_updated: new Date(Date.now() - 1 * 86400000).toISOString(), // 1 day ago
     authorization: [
       {
         subject: 'user@example.com',

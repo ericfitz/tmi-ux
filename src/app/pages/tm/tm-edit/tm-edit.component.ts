@@ -4,6 +4,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThreatModelAuthorizationService } from '../services/threat-model-authorization.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -77,6 +79,7 @@ interface ThreatModelFormValues {
   description: string;
   threat_model_framework: string;
   issue_uri?: string;
+  status?: string[];
 }
 
 // Define document form result interface
@@ -139,6 +142,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
   hoveredDiagramId: string | null = null;
   private hoverTimeout: ReturnType<typeof setTimeout> | null = null;
 
+  // Chip input configuration for status field
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+
   get diagrams(): Diagram[] {
     return this._diagrams;
   }
@@ -177,6 +183,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       description: ['', Validators.maxLength(500)],
       threat_model_framework: ['STRIDE', Validators.required],
       issue_uri: [''],
+      status: [[]],
     });
   }
 
@@ -194,6 +201,42 @@ export class TmEditComponent implements OnInit, OnDestroy {
       .catch(err => {
         this.logger.error('Could not copy text: ', err);
       });
+  }
+
+  /**
+   * Add a status value to the status array
+   * @param event Chip input event
+   */
+  addStatus(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value) {
+      const currentStatus = this.threatModelForm.get('status')?.value as string[];
+      if (!currentStatus.includes(value)) {
+        this.threatModelForm.patchValue({
+          status: [...currentStatus, value],
+        });
+        this.threatModelForm.markAsDirty();
+      }
+    }
+
+    event.chipInput.clear();
+  }
+
+  /**
+   * Remove a status value from the status array
+   * @param status Status value to remove
+   */
+  removeStatus(status: string): void {
+    const currentStatus = this.threatModelForm.get('status')?.value as string[];
+    const index = currentStatus.indexOf(status);
+
+    if (index >= 0) {
+      const updated = [...currentStatus];
+      updated.splice(index, 1);
+      this.threatModelForm.patchValue({ status: updated });
+      this.threatModelForm.markAsDirty();
+    }
   }
 
   /**
@@ -336,6 +379,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       description: threatModel.description || '',
       threat_model_framework: threatModel.threat_model_framework || 'STRIDE',
       issue_uri: this.initialIssueUriValue,
+      status: threatModel.status || [],
     });
 
     // Store original form values for change comparison
@@ -344,6 +388,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       description: threatModel.description || '',
       threat_model_framework: threatModel.threat_model_framework || 'STRIDE',
       issue_uri: this.initialIssueUriValue,
+      status: threatModel.status || [],
     };
 
     // Update framework control disabled state based on threats
@@ -2495,6 +2540,13 @@ export class TmEditComponent implements OnInit, OnDestroy {
     if (formValues.issue_uri !== this._originalFormValues!.issue_uri) {
       updates.issue_uri = formValues.issue_uri;
     }
+    // Compare status arrays
+    const statusChanged =
+      JSON.stringify(formValues.status || []) !==
+      JSON.stringify(this._originalFormValues!.status || []);
+    if (statusChanged) {
+      updates.status = formValues.status;
+    }
 
     this.logger.debugComponent('TmEdit', 'Calling threatModelService.patchThreatModel', {
       threatModelId: this.threatModel.id,
@@ -2513,6 +2565,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
               )[key];
             });
             this.threatModel.modified_at = result.modified_at;
+            // Update status_updated if the server returned it (only when status was changed)
+            if (result.status_updated) {
+              this.threatModel.status_updated = result.status_updated;
+            }
 
             // Update original form values after successful save
             this.updateOriginalFormValues(formValues);
