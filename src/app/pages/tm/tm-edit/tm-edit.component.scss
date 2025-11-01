@@ -214,6 +214,7 @@ mat-card-header {
   margin-bottom: 6px;
   font-size: 14px;
   align-items: center;
+  min-width: 0;
 
   &:last-child {
     margin-bottom: 0;
@@ -247,6 +248,8 @@ mat-card-header {
 .info-row-status {
   .info-field:first-child {
     width: 66.67%;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .info-field:last-child {
@@ -259,6 +262,8 @@ mat-card-header {
   flex-direction: column;
   gap: 4px;
   margin-top: 4px;
+  width: 100%;
+  min-width: 0;
 
   mat-chip-grid {
     width: 100%;
@@ -266,17 +271,25 @@ mat-card-header {
 
   input {
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
     border: 1px solid var(--theme-divider);
     border-radius: 4px;
-    padding: 4px 8px;
-    height: 32px;
+    padding: 6px 8px;
+    height: 28px;
     font-size: 14px;
     font-family: var(--font-family-primary);
     outline: none;
     box-sizing: border-box;
+    flex: 1;
 
     &:focus {
       border-color: var(--theme-primary);
+    }
+
+    &::placeholder {
+      color: var(--theme-text-secondary);
+      opacity: 0.7;
     }
   }
 }
