@@ -121,14 +121,12 @@ mat-card-content {
   color: var(--theme-text-secondary);
 }
 
-.threat-model-status-line {
+.threat-model-status-section {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   margin: 0 0 8px;
   font-size: 0.85rem;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 4px;
 
   .status-label-and-chips {
     display: flex;
@@ -151,11 +149,14 @@ mat-card-content {
       border-radius: 16px;
       line-height: 1.4;
     }
+
+    .status-empty {
+      color: var(--theme-text-secondary);
+    }
   }
 
   .status-updated {
     color: var(--theme-text-secondary);
-    white-space: nowrap;
 
     .status-updated-label {
       margin-right: 6px;

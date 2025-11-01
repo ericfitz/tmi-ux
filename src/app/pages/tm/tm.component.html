@@ -49,8 +49,8 @@
                 'common.lastModifiedDate' | transloco: { date: formatDate(threatModel.modified_at) }
               }}
             </p>
-            <div class="threat-model-status-line">
-              <span class="status-label-and-chips">
+            <div class="threat-model-status-section">
+              <div class="status-label-and-chips">
                 <span class="status-label">{{ 'threatModels.status' | transloco }}:</span>
                 @if (threatModel.status && threatModel.status.length > 0) {
                   @for (status of threatModel.status; track status) {
@@ -59,13 +59,13 @@
                 } @else {
                   <span class="status-empty">—</span>
                 }
-              </span>
-              <span class="status-updated">
+              </div>
+              <div class="status-updated">
                 <span class="status-updated-label"
                   >{{ 'threatModels.statusLastUpdated' | transloco }}:</span
                 >
                 {{ threatModel.status_updated ? formatDate(threatModel.status_updated) : '—' }}
-              </span>
+              </div>
             </div>
             @if (threatModel.description) {
               <p class="threat-model-description">

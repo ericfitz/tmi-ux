@@ -92,8 +92,8 @@
             }
 
             <!-- Status row: Status chips and Status Last Updated (always visible) -->
-            <div class="info-row info-row-status">
-              <div class="info-field status-field">
+            <div class="info-row">
+              <div class="info-field">
                 <span class="info-label">{{ 'threatModels.status' | transloco }}:</span>
                 <div class="status-chips-container">
                   <mat-chip-grid #statusChipGrid>
@@ -115,7 +115,7 @@
                 </div>
               </div>
               @if (threatModel && !isNewThreatModel) {
-                <div class="info-field status-updated-field">
+                <div class="info-field">
                   <span class="info-label"
                     >{{ 'threatModels.statusLastUpdated' | transloco }}:</span
                   >
