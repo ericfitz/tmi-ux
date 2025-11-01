@@ -44,6 +44,11 @@
             <h3 class="threat-model-title">
               {{ threatModel.name }}
             </h3>
+            @if (threatModel.description) {
+              <p class="threat-model-description">
+                {{ threatModel.description }}
+              </p>
+            }
             <p class="threat-model-date">
               {{
                 'common.lastModifiedDate' | transloco: { date: formatDate(threatModel.modified_at) }
@@ -60,18 +65,13 @@
                   <span class="status-empty">—</span>
                 }
               </div>
-              <div class="status-updated">
-                <span class="status-updated-label"
-                  >{{ 'threatModels.statusLastUpdated' | transloco }}:</span
-                >
-                {{ threatModel.status_updated ? formatDate(threatModel.status_updated) : '—' }}
-              </div>
             </div>
-            @if (threatModel.description) {
-              <p class="threat-model-description">
-                {{ threatModel.description }}
-              </p>
-            }
+            <div class="status-updated-row">
+              <span class="status-updated-label"
+                >{{ 'threatModels.statusLastUpdated' | transloco }}:</span
+              >
+              {{ threatModel.status_updated ? formatDate(threatModel.status_updated) : '—' }}
+            </div>
 
             <div class="threat-model-stats">
               <div class="stats-row">
