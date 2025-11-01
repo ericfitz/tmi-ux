@@ -3,7 +3,7 @@
   {{ 'common.deleteConfirm' | transloco }}
 </h2>
 
-<mat-dialog-content>
+<mat-dialog-content appScrollIndicator>
   <div class="delete-dialog-content">
     <p class="threat-model-name">
       {{ 'threatModels.deleteConfirmationMessage' | transloco: { name: data.name } }}

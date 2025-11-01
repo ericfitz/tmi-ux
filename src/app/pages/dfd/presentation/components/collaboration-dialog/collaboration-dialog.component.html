@@ -9,7 +9,7 @@
   <span>{{ 'collaboration.title' | transloco }}</span>
 </h2>
 
-<mat-dialog-content>
+<mat-dialog-content appScrollIndicator>
   <!-- Users list (visible when collaborating) -->
   @if (isCollaborating && collaborationUsers.length > 0) {
     <div class="users-section">

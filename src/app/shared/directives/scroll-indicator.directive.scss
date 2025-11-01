@@ -1,0 +1,53 @@
+/**
+ * Scroll Indicator Styles
+ *
+ * Provides a visual indicator at the bottom of scrollable content
+ * with a subtle pulse animation to hint at more content below.
+ */
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  font-size: 20px;
+  color: rgb(0 0 0 / 50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 100;
+  text-shadow: 0 0 4px rgb(255 255 255 / 80%);
+
+  &.visible {
+    opacity: 1;
+    animation: pulse 2s ease-in-out infinite;
+  }
+}
+
+/**
+ * Subtle pulse animation - gentle vertical bounce
+ */
+@keyframes pulse {
+  0% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(4px);
+  }
+
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/**
+ * Dark theme support
+ */
+@media (prefers-color-scheme: dark) {
+  .scroll-indicator {
+    color: rgb(255 255 255 / 60%);
+    text-shadow: 0 0 4px rgb(0 0 0 / 80%);
+  }
+}

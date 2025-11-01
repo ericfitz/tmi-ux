@@ -3,7 +3,7 @@
   {{ 'sessionExpiry.title' | transloco }}
 </h2>
 
-<mat-dialog-content class="session-expiry-content">
+<mat-dialog-content class="session-expiry-content" appScrollIndicator>
   <p class="expiry-message">
     {{
       isExtending ? ('sessionExpiry.extending' | transloco) : ('sessionExpiry.message' | transloco)

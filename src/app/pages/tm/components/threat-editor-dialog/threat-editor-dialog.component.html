@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>
   {{ dialogTitle | transloco }}
 </h2>
-<mat-dialog-content [dir]="currentDirection">
+<mat-dialog-content [dir]="currentDirection" appScrollIndicator>
   <!-- Force translation update -->
   <div style="display: none">{{ 'common.threatName' | transloco }}</div>
   <!-- Threat ID and timestamps section -->

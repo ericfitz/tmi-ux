@@ -6,6 +6,7 @@
 @use 'styles/fonts';
 @use 'styles/material-theme';
 @use 'styles/component-overrides';
+@use 'app/shared/directives/scroll-indicator.directive';
 
 // Import Prism.js themes for syntax highlighting
 // Light theme (default)

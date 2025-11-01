@@ -3,7 +3,7 @@
   {{ 'userPreferences.deleteMyData.title' | transloco }}
 </h2>
 
-<mat-dialog-content>
+<mat-dialog-content appScrollIndicator>
   <!-- Stage 1: Explanation and Initial Confirmation -->
   @if (currentStage === DeleteStage.EXPLANATION) {
     <div class="delete-dialog-content">

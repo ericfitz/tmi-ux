@@ -25,7 +25,7 @@ export interface PermissionsDialogData {
         {{ 'common.permissions' | transloco }}
       </h2>
 
-      <mat-dialog-content>
+      <mat-dialog-content appScrollIndicator>
         <div class="permissions-content">
           <!-- Owner Display -->
           <div class="info-section">

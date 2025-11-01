@@ -41,6 +41,12 @@ import { MatListModule } from '@angular/material/list';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatGridListModule } from '@angular/material/grid-list';
 
+// Shared directives
+import { ScrollIndicatorDirective } from './directives/scroll-indicator.directive';
+
+// Export directive for direct use
+export { ScrollIndicatorDirective };
+
 /**
  * Common Angular imports used by most components
  */
@@ -133,4 +139,5 @@ export const DIALOG_IMPORTS = [
   ...CORE_MATERIAL_IMPORTS,
   ...FORM_MATERIAL_IMPORTS,
   MatDialogModule,
+  ScrollIndicatorDirective,
 ] as const;
