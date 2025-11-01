@@ -756,7 +756,13 @@ export class ThreatModelService implements OnDestroy {
     updates: Partial<
       Pick<
         ThreatModel,
-        'name' | 'description' | 'threat_model_framework' | 'issue_uri' | 'authorization' | 'owner'
+        | 'name'
+        | 'description'
+        | 'threat_model_framework'
+        | 'issue_uri'
+        | 'authorization'
+        | 'owner'
+        | 'status'
       >
     >,
   ): Observable<ThreatModel> {
@@ -2270,6 +2276,8 @@ export class ThreatModelService implements OnDestroy {
       threat_model_framework:
         threatModel.threat_model_framework as TMListItem['threat_model_framework'],
       issue_uri: threatModel.issue_uri,
+      status: threatModel.status,
+      status_updated: threatModel.status_updated,
       document_count: threatModel.documents?.length || 0,
       repo_count: threatModel.repositories?.length || 0,
       diagram_count: threatModel.diagrams?.length || 0,
