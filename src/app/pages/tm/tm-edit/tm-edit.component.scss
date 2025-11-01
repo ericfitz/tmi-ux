@@ -225,7 +225,7 @@ mat-card-header {
 
 .info-row {
   display: flex;
-  justify-content: space-between;
+  gap: 16px;
   margin-bottom: 8px;
 
   &:last-child {
