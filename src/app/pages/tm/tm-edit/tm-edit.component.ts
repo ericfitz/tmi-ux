@@ -480,11 +480,17 @@ export class TmEditComponent implements OnInit, OnDestroy {
   private hasFormChanged(formValue: ThreatModelFormValues): boolean {
     if (!this._originalFormValues) return false;
 
+    // Compare status arrays
+    const statusChanged =
+      JSON.stringify(formValue.status || []) !==
+      JSON.stringify(this._originalFormValues.status || []);
+
     return (
       formValue.name !== this._originalFormValues.name ||
       formValue.description !== this._originalFormValues.description ||
       formValue.threat_model_framework !== this._originalFormValues.threat_model_framework ||
-      formValue.issue_uri !== this._originalFormValues.issue_uri
+      formValue.issue_uri !== this._originalFormValues.issue_uri ||
+      statusChanged
     );
   }
 
