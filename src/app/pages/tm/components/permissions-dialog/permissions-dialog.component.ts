@@ -5,7 +5,12 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
-import { DIALOG_IMPORTS, DATA_MATERIAL_IMPORTS, FORM_MATERIAL_IMPORTS } from '@app/shared/imports';
+import {
+  DIALOG_IMPORTS,
+  DATA_MATERIAL_IMPORTS,
+  FORM_MATERIAL_IMPORTS,
+  ScrollIndicatorDirective,
+} from '@app/shared/imports';
 import { Authorization } from '../../models/threat-model.model';
 
 export interface PermissionsDialogData {
@@ -18,7 +23,13 @@ export interface PermissionsDialogData {
 @Component({
   selector: 'app-permissions-dialog',
   standalone: true,
-  imports: [...DIALOG_IMPORTS, ...DATA_MATERIAL_IMPORTS, ...FORM_MATERIAL_IMPORTS, TranslocoModule],
+  imports: [
+    ...DIALOG_IMPORTS,
+    ...DATA_MATERIAL_IMPORTS,
+    ...FORM_MATERIAL_IMPORTS,
+    TranslocoModule,
+    ScrollIndicatorDirective,
+  ],
   template: `
     <div class="permissions-dialog">
       <h2 mat-dialog-title>

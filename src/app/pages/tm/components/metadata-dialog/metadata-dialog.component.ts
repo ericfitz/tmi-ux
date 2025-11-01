@@ -5,7 +5,7 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 
-import { DIALOG_IMPORTS, DATA_MATERIAL_IMPORTS } from '@app/shared/imports';
+import { DIALOG_IMPORTS, DATA_MATERIAL_IMPORTS, ScrollIndicatorDirective } from '@app/shared/imports';
 import { Metadata } from '../../models/threat-model.model';
 
 export interface MetadataDialogData {
@@ -18,7 +18,7 @@ export interface MetadataDialogData {
 @Component({
   selector: 'app-metadata-dialog',
   standalone: true,
-  imports: [...DIALOG_IMPORTS, ...DATA_MATERIAL_IMPORTS, TranslocoModule],
+  imports: [...DIALOG_IMPORTS, ...DATA_MATERIAL_IMPORTS, TranslocoModule, ScrollIndicatorDirective],
   templateUrl: './metadata-dialog.component.html',
   styles: [
     `
