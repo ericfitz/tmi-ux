@@ -5,6 +5,15 @@
  * with a subtle pulse animation to hint at more content below.
  */
 
+/**
+ * Ensure mat-dialog-content with the directive has proper overflow styling
+ */
+mat-dialog-content[appScrollIndicator] {
+  max-height: 70vh;
+  overflow-y: auto;
+  position: relative;
+}
+
 .scroll-indicator {
   position: absolute;
   bottom: 0;
