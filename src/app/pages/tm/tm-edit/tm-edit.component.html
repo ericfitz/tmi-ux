@@ -93,7 +93,7 @@
               <!-- Second row: Status chips and Status Last Updated -->
               <div class="info-row info-row-status">
                 <div class="info-field status-field">
-                  <span class="info-label">{{ 'threatModels.status' | transloco }}</span>
+                  <span class="info-label">{{ 'threatModels.status' | transloco }}:</span>
                   <div class="status-chips-container">
                     <mat-chip-grid #statusChipGrid>
                       @for (status of threatModelForm.get('status')?.value; track status) {
@@ -114,7 +114,9 @@
                   </div>
                 </div>
                 <div class="info-field status-updated-field">
-                  <span class="info-label">{{ 'threatModels.statusLastUpdated' | transloco }}</span>
+                  <span class="info-label"
+                    >{{ 'threatModels.statusLastUpdated' | transloco }}:</span
+                  >
                   <span class="info-value">{{
                     threatModel.status_updated
                       ? (threatModel.status_updated | date: 'short' : undefined : currentLocale)

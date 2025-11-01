@@ -50,20 +50,20 @@
               }}
             </p>
             <div class="threat-model-status-line">
-              @if (threatModel.status && threatModel.status.length > 0) {
-                <span class="status-label-and-chips">
-                  <span class="status-label">{{ 'threatModels.status' | transloco }}</span>
+              <span class="status-label-and-chips">
+                <span class="status-label">{{ 'threatModels.status' | transloco }}:</span>
+                @if (threatModel.status && threatModel.status.length > 0) {
                   @for (status of threatModel.status; track status) {
                     <span class="status-chip">{{ status }}</span>
                   }
-                </span>
-              }
-              @if (threatModel.status_updated) {
-                <span class="status-updated">
-                  {{ 'threatModels.statusLastUpdated' | transloco }}
-                  {{ formatDate(threatModel.status_updated) }}
-                </span>
-              }
+                } @else {
+                  <span class="status-empty">—</span>
+                }
+              </span>
+              <span class="status-updated">
+                {{ 'threatModels.statusLastUpdated' | transloco }}:
+                {{ threatModel.status_updated ? formatDate(threatModel.status_updated) : '—' }}
+              </span>
             </div>
             @if (threatModel.description) {
               <p class="threat-model-description">
