@@ -15,8 +15,9 @@ export interface CursorPosition {
 }
 
 /**
- * Cell in X6 native toJSON format
+ * Cell in X6 native format matching OpenAPI schema exactly
  * Matches X6's serialization format with position and size objects
+ * No convenience properties - use attrs.text.text for labels
  */
 export interface Cell {
   id: string;
@@ -30,7 +31,6 @@ export interface Cell {
     height: number;
   };
   attrs?: Record<string, unknown>;
-  label?: string;
   source?: unknown; // For edges - X6 source format
   target?: unknown; // For edges - X6 target format
   [key: string]: unknown;

@@ -129,7 +129,7 @@ describe('EdgeInfo', () => {
   });
 
   describe('Static Factory Methods', () => {
-    it('should create EdgeInfo from JSON with legacy format', () => {
+    it('should create EdgeInfo from JSON with legacy node ID format', () => {
       // Arrange
       const json = {
         id: 'edge-1',
@@ -137,7 +137,7 @@ describe('EdgeInfo', () => {
         targetNodeId: 'target',
         sourcePortId: 'out-port',
         targetPortId: 'in-port',
-        label: 'Data Flow',
+        attrs: { text: { text: 'Data Flow' } },
         vertices: [
           { x: 150, y: 150 },
           { x: 200, y: 200 },
@@ -732,14 +732,19 @@ describe('EdgeInfo', () => {
       expect(updatedEdgeInfo.attrs?.text?.text).toBe('Updated Label');
     });
 
-    it('should handle style convenience property', () => {
+    it('should handle X6 native attrs for edge styling', () => {
       // Arrange
-      const style = {
-        stroke: '#ff0000',
-        strokeWidth: 3,
-        strokeDasharray: '10 5',
-        fontSize: 14,
-        fontColor: '#333333',
+      const attrs = {
+        line: {
+          stroke: '#ff0000',
+          strokeWidth: 3,
+          strokeDasharray: '10 5',
+        },
+        text: {
+          text: 'Test Edge',
+          fontSize: 14,
+          fill: '#333333',
+        },
       };
 
       // Act
@@ -747,8 +752,7 @@ describe('EdgeInfo', () => {
         id: 'test-edge',
         source: { cell: 'source-node' },
         target: { cell: 'target-node' },
-        label: 'Test Edge',
-        style,
+        attrs,
       });
 
       // Assert
@@ -757,15 +761,16 @@ describe('EdgeInfo', () => {
       expect(edgeInfo.attrs?.line?.strokeDasharray).toBe('10 5');
       expect(edgeInfo.attrs?.text?.fontSize).toBe(14);
       expect(edgeInfo.attrs?.text?.fill).toBe('#333333');
+      expect(edgeInfo.attrs?.text?.text).toBe('Test Edge');
     });
 
-    it('should handle label convenience property', () => {
+    it('should handle X6 native attrs for edge text', () => {
       // Act
       const edgeInfo = EdgeInfo.fromJSON({
         id: 'test-edge',
         source: { cell: 'source-node' },
         target: { cell: 'target-node' },
-        label: 'Simple Label',
+        attrs: { text: { text: 'Simple Label' } },
       });
 
       // Assert

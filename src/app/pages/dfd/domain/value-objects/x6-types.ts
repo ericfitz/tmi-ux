@@ -7,24 +7,29 @@
  *
  * ## X6 Compatibility
  *
- * The TMI application is fully compatible with AntV X6 graph library
+ * The TMI application uses X6's native format with zero transformation overhead.
+ * All cell data matches X6's toJSON() format exactly, enabling direct persistence
+ * and minimal conversion between the graph library and the API.
  *
  * ### Integration Notes
  *
- * 1. **Progressive Enhancement**: X6 properties are optional and additive
+ * 1. **X6 Native Format**: All cells use X6's native toJSON() format
  * 2. **Type Safety**: Full TypeScript support for all X6 properties
  * 3. **Validation**: OpenAPI schema validation for all X6 configurations
- * 4. **Convenience Properties**: Simplified APIs alongside native X6 properties
+ * 4. **Zero Transformation**: Direct serialization/deserialization with X6
  *
  * ## Usage Examples
  *
  * ```typescript
- * // Custom node with markup
+ * // Custom node with markup and attrs (X6 native)
  * const nodeInfo = NodeInfo.fromJSON({
  *   id: 'custom-node',
  *   shape: 'process',
  *   x: 100, y: 100, width: 120, height: 60,
- *   label: 'Custom Process',
+ *   attrs: {
+ *     text: { text: 'Custom Process' },
+ *     body: { fill: '#ff0000' }
+ *   },
  *   markup: [
  *     { tagName: 'rect', selector: 'body', attrs: { fill: '#ff0000' } },
  *     { tagName: 'text', selector: 'label', attrs: { fontSize: 14 } }
@@ -32,14 +37,14 @@
  *   tools: [{ name: 'boundary', args: { distance: 10 } }]
  * });
  *
- * // Edge with manhattan routing and rounded connectors
+ * // Edge with manhattan routing and labels (X6 native)
  * const edgeInfo = EdgeInfo.fromJSON({
  *   id: 'routed-edge',
  *   source: { cell: 'node1', port: 'out' },
  *   target: { cell: 'node2', port: 'in' },
  *   router: { name: 'manhattan', args: { padding: 20 } },
  *   connector: { name: 'rounded', args: { radius: 5 } },
- *   label: 'Data Flow'
+ *   labels: [{ attrs: { text: { text: 'Data Flow' } } }]
  * });
  * ```
  *

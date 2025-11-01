@@ -47,7 +47,7 @@ export class EdgeInfo {
   }
 
   /**
-   * Creates EdgeInfo from a plain object
+   * Creates EdgeInfo from a plain object in X6 native format
    */
   static fromJSON(data: {
     id: string;
@@ -58,7 +58,6 @@ export class EdgeInfo {
     targetNodeId?: string; // Legacy field
     sourcePortId?: string; // Legacy field
     targetPortId?: string; // Legacy field
-    label?: string;
     attrs?: EdgeAttrs;
     labels?: EdgeLabel[];
     vertices?: Point[] | Array<{ x: number; y: number }>;
@@ -71,13 +70,6 @@ export class EdgeInfo {
     router?: EdgeRouter;
     connector?: EdgeConnector;
     defaultLabel?: EdgeLabel;
-    style?: {
-      stroke?: string;
-      strokeWidth?: number;
-      strokeDasharray?: string;
-      fontSize?: number;
-      fontColor?: string;
-    };
   }): EdgeInfo {
     // Handle source terminal (new vs legacy format)
     let source: EdgeTerminal;
@@ -105,34 +97,7 @@ export class EdgeInfo {
       throw new Error('Target information is required');
     }
 
-    // Handle attrs and style convenience property
-    let attrs: EdgeAttrs = data.attrs || {};
-    if (data.label && !attrs.text?.text) {
-      attrs = {
-        ...attrs,
-        text: { ...attrs.text, text: data.label },
-      };
-    }
-
-    // Apply style convenience properties if provided
-    if (data.style) {
-      attrs = {
-        ...attrs,
-        line: {
-          ...attrs.line,
-          ...(data.style.stroke && { stroke: data.style.stroke }),
-          ...(data.style.strokeWidth !== undefined && { strokeWidth: data.style.strokeWidth }),
-          ...(data.style.strokeDasharray && { strokeDasharray: data.style.strokeDasharray }),
-        },
-        text: {
-          ...attrs.text,
-          ...(data.style.fontSize !== undefined && { fontSize: data.style.fontSize }),
-          ...(data.style.fontColor && { fill: data.style.fontColor }),
-        },
-      };
-    }
-
-    // Handle labels
+    const attrs: EdgeAttrs = data.attrs || {};
     const labels: EdgeLabel[] = data.labels || [];
 
     // Handle vertices
@@ -519,13 +484,8 @@ export class EdgeInfo {
     visible?: boolean;
     metadata?: Metadata[] | Record<string, string>;
     customData?: Record<string, any>;
-    label?: string; // Convenience property that updates attrs.text.text
   }): EdgeInfo {
-    // Handle label convenience property
-    let newAttrs = updates.attrs ? { ...this.attrs, ...updates.attrs } : this.attrs;
-    if (updates.label !== undefined) {
-      newAttrs = { ...newAttrs, text: { ...newAttrs.text, text: updates.label } };
-    }
+    const newAttrs = updates.attrs ? { ...this.attrs, ...updates.attrs } : this.attrs;
 
     // Handle hybrid data updates
     let newData = this.data;

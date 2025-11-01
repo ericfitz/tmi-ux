@@ -209,7 +209,7 @@ describe('NodeInfo', () => {
         type: 'process' as NodeType,
         position: { x: 150, y: 200 },
         size: { width: 140, height: 80 },
-        label: 'My Process',
+        attrs: { text: { text: 'My Process' } },
         zIndex: 3,
         visible: true,
         metadata: { category: 'business', priority: 'high' },
@@ -586,7 +586,7 @@ describe('NodeInfo', () => {
         y: 100,
         width: 120,
         height: 60,
-        label: 'Test Process',
+        attrs: { text: { text: 'Test Process' } },
         markup,
       });
 
@@ -610,7 +610,7 @@ describe('NodeInfo', () => {
         y: 100,
         width: 120,
         height: 60,
-        label: 'Test Process',
+        attrs: { text: { text: 'Test Process' } },
         tools,
       });
 
@@ -628,7 +628,7 @@ describe('NodeInfo', () => {
         y: 100,
         width: 120,
         height: 60,
-        label: 'Test Process',
+        attrs: { text: { text: 'Test Process' } },
       });
 
       // Assert
@@ -649,7 +649,7 @@ describe('NodeInfo', () => {
         y: 100,
         width: 120,
         height: 60,
-        label: 'Test Process',
+        attrs: { text: { text: 'Test Process' } },
         markup,
         tools,
       });
@@ -663,14 +663,19 @@ describe('NodeInfo', () => {
       expect(updatedNodeInfo.attrs?.text?.text).toBe('Updated Label');
     });
 
-    it('should handle style convenience property', () => {
+    it('should handle X6 native attrs for styling', () => {
       // Arrange
-      const style = {
-        fill: '#ff0000',
-        stroke: '#000000',
-        strokeWidth: 3,
-        fontSize: 16,
-        fontColor: '#333333',
+      const attrs = {
+        body: {
+          fill: '#ff0000',
+          stroke: '#000000',
+          strokeWidth: 3,
+        },
+        text: {
+          text: 'Test Process',
+          fontSize: 16,
+          fill: '#333333',
+        },
       };
 
       // Act
@@ -681,8 +686,7 @@ describe('NodeInfo', () => {
         y: 100,
         width: 120,
         height: 60,
-        label: 'Test Process',
-        style,
+        attrs,
       });
 
       // Assert
@@ -691,6 +695,7 @@ describe('NodeInfo', () => {
       expect(nodeInfo.attrs?.body?.strokeWidth).toBe(3);
       expect(nodeInfo.attrs?.text?.fontSize).toBe(16);
       expect(nodeInfo.attrs?.text?.fill).toBe('#333333');
+      expect(nodeInfo.attrs?.text?.text).toBe('Test Process');
     });
 
     it('should handle position convenience property', () => {
@@ -701,7 +706,7 @@ describe('NodeInfo', () => {
         position: { x: 150, y: 200 },
         width: 120,
         height: 60,
-        label: 'Test Process',
+        attrs: { text: { text: 'Test Process' } },
       });
 
       // Assert
@@ -717,7 +722,7 @@ describe('NodeInfo', () => {
         x: 100,
         y: 100,
         size: { width: 200, height: 100 },
-        label: 'Test Process',
+        attrs: { text: { text: 'Test Process' } },
       });
 
       // Assert
@@ -737,7 +742,7 @@ describe('NodeInfo', () => {
           y: 100,
           width: 120,
           height: 60,
-          label: 'Test Process',
+          attrs: { text: { text: 'Test Process' } },
           markup: [{ tagName: '', selector: 'body' }], // Invalid: empty tagName
         });
       }).toThrow('Markup element at index 0 must have a valid tagName');
@@ -753,7 +758,7 @@ describe('NodeInfo', () => {
           y: 100,
           width: 120,
           height: 60,
-          label: 'Test Process',
+          attrs: { text: { text: 'Test Process' } },
           tools: [{ name: '', args: {} }], // Invalid: empty name
         });
       }).toThrow('Tool at index 0 must have a valid name');
@@ -768,7 +773,7 @@ describe('NodeInfo', () => {
         y: 100,
         width: 120,
         height: 60,
-        label: 'Test Process',
+        attrs: { text: { text: 'Test Process' } },
         markup: [{ tagName: 'rect', selector: 'body', attrs: { fill: '#fff' } }],
         tools: [{ name: 'boundary', args: { distance: 10 } }],
       });

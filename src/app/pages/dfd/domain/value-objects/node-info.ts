@@ -74,7 +74,7 @@ export class NodeInfo {
   }
 
   /**
-   * Creates NodeInfo from a plain object
+   * Creates NodeInfo from a plain object in X6 native format
    */
   static fromJSON(data: {
     id: string;
@@ -86,7 +86,6 @@ export class NodeInfo {
     width?: number;
     height?: number;
     size?: { width: number; height: number }; // Legacy field
-    label?: string; // Legacy field
     attrs?: NodeAttrs;
     ports?: PortConfiguration;
     zIndex?: number;
@@ -97,13 +96,6 @@ export class NodeInfo {
     metadata?: Record<string, string>; // Legacy field
     markup?: MarkupElement[];
     tools?: CellTool[];
-    style?: {
-      fill?: string;
-      stroke?: string;
-      strokeWidth?: number;
-      fontSize?: number;
-      fontColor?: string;
-    };
   }): NodeInfo {
     const shape = data.shape || data.type || 'process';
     const x = data.x ?? data.position?.x ?? 0;
@@ -111,32 +103,7 @@ export class NodeInfo {
     const width = data.width ?? data.size?.width ?? 120;
     const height = data.height ?? data.size?.height ?? 60;
 
-    // Handle legacy label parameter and style convenience property
-    let attrs = data.attrs;
-    if (!attrs && data.label) {
-      attrs = createDefaultNodeAttrs(shape, data.label);
-    } else if (!attrs) {
-      attrs = createDefaultNodeAttrs(shape);
-    }
-
-    // Apply style convenience properties if provided
-    if (data.style && attrs) {
-      attrs = {
-        ...attrs,
-        body: {
-          ...attrs.body,
-          ...(data.style.fill && { fill: data.style.fill }),
-          ...(data.style.stroke && { stroke: data.style.stroke }),
-          ...(data.style.strokeWidth !== undefined && { strokeWidth: data.style.strokeWidth }),
-        },
-        text: {
-          ...attrs.text,
-          ...(data.style.fontSize !== undefined && { fontSize: data.style.fontSize }),
-          ...(data.style.fontColor && { fill: data.style.fontColor }),
-        },
-      };
-    }
-
+    const attrs = data.attrs || createDefaultNodeAttrs(shape);
     const ports = data.ports || createDefaultPortConfiguration(shape);
 
     // Handle hybrid data format or legacy metadata
