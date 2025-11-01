@@ -68,7 +68,6 @@ import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-grap
 import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
 import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
 import { InfraX6EmbeddingAdapter } from '../../infrastructure/adapters/infra-x6-embedding.adapter';
-import { InfraX6HistoryAdapter } from '../../infrastructure/adapters/infra-x6-history.adapter';
 import { InfraX6KeyboardAdapter } from '../../infrastructure/adapters/infra-x6-keyboard.adapter';
 import { InfraX6EventLoggerAdapter } from '../../infrastructure/adapters/infra-x6-event-logger.adapter';
 import { InfraEdgeQueryService } from '../../infrastructure/services/infra-edge-query.service';
@@ -159,7 +158,6 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     InfraX6ZOrderAdapter,
     InfraX6SelectionAdapter,
     InfraX6EmbeddingAdapter,
-    InfraX6HistoryAdapter,
     InfraX6KeyboardAdapter,
     InfraX6EventLoggerAdapter,
     InfraEdgeQueryService,

@@ -45,7 +45,6 @@ import { InfraVisualEffectsService } from '../services/infra-visual-effects.serv
 import { InfraX6KeyboardAdapter } from './infra-x6-keyboard.adapter';
 import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
 import { InfraX6EmbeddingAdapter } from './infra-x6-embedding.adapter';
-import { InfraX6HistoryAdapter } from './infra-x6-history.adapter';
 import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
 import { InfraX6EventLoggerAdapter } from './infra-x6-event-logger.adapter';
 import { AppEdgeService } from '../../application/services/app-edge.service';
@@ -128,7 +127,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     private readonly _keyboardHandler: InfraX6KeyboardAdapter,
     private readonly _zOrderAdapter: InfraX6ZOrderAdapter,
     private readonly _embeddingAdapter: InfraX6EmbeddingAdapter,
-    private readonly _historyManager: InfraX6HistoryAdapter,
     private readonly _selectionAdapter: InfraX6SelectionAdapter,
     private readonly _x6EventLogger: InfraX6EventLoggerAdapter,
     private readonly _edgeService: AppEdgeService,
@@ -245,18 +243,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    */
   get historyChanged$(): Observable<{ canUndo: boolean; canRedo: boolean }> {
     return this._historyChanged$.asObservable();
-  }
-
-  /**
-   * Observable for when history is actually modified (for auto-save)
-   * Emits the history index and whether the change was from undo/redo
-   */
-  get historyModified$(): Observable<{
-    historyIndex: number;
-    isUndo: boolean;
-    isRedo: boolean;
-  }> {
-    return this._historyManager.historyModified$;
   }
 
   /**
@@ -491,13 +477,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       throw new Error('Graph not initialized. Call initialize() first.');
     }
     return this._graph;
-  }
-
-  /**
-   * Get the X6 History Manager for direct access to history operations
-   */
-  getHistoryManager(): InfraX6HistoryAdapter {
-    return this._historyManager;
   }
 
   /**
@@ -853,11 +832,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Clean up X6 event logger (if service is available)
     if (this._x6EventLogger) {
       this._x6EventLogger.dispose();
-    }
-
-    // Clean up history manager
-    if (this._historyManager) {
-      this._historyManager.dispose();
     }
 
     // Clean up history coordinator

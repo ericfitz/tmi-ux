@@ -24,7 +24,6 @@ import { Graph, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
-import { InfraX6HistoryAdapter } from '../../infrastructure/adapters/infra-x6-history.adapter';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
@@ -75,7 +74,6 @@ export class AppEdgeService {
     private logger: LoggerService,
     private transloco: TranslocoService,
     private infraX6ZOrderAdapter: InfraX6ZOrderAdapter,
-    private infraX6HistoryAdapter: InfraX6HistoryAdapter,
     private infraVisualEffectsService: InfraVisualEffectsService,
     private infraEdgeService: InfraEdgeService,
     private historyCoordinator: AppOperationStateManager,

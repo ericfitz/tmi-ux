@@ -12,7 +12,6 @@ import { Graph, Node, Edge } from '@antv/x6';
 import { AppEdgeService, ConnectionValidationArgs, MagnetValidationArgs } from './app-edge.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
-import { InfraX6HistoryAdapter } from '../../infrastructure/adapters/infra-x6-history.adapter';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
 import { AppOperationStateManager } from './app-operation-state-manager.service';
@@ -25,10 +24,6 @@ import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 
 interface MockX6ZOrderAdapter {
   setEdgeZOrderFromConnectedNodes: ReturnType<typeof vi.fn>;
-}
-
-interface MockX6HistoryManager {
-  executeCommand?: ReturnType<typeof vi.fn>;
 }
 
 interface MockAppOperationStateManager {
@@ -50,7 +45,6 @@ describe('AppEdgeService - Comprehensive Tests', () => {
   let mockLogger: MockLoggerService;
   let mockTransloco: any;
   let mockX6ZOrderAdapter: MockX6ZOrderAdapter;
-  let mockX6HistoryManager: MockX6HistoryManager;
   let mockVisualEffectsService: MockVisualEffectsService;
   let mockEdgeService: MockEdgeService;
   let mockGraphHistoryCoordinator: MockAppOperationStateManager;
@@ -79,8 +73,6 @@ describe('AppEdgeService - Comprehensive Tests', () => {
       setEdgeZOrderFromConnectedNodes: vi.fn(),
     };
 
-    mockX6HistoryManager = {};
-
     mockVisualEffectsService = {
       applyCreationHighlight: vi.fn(),
     };
@@ -100,7 +92,6 @@ describe('AppEdgeService - Comprehensive Tests', () => {
       mockLogger as unknown as LoggerService,
       mockTransloco,
       mockX6ZOrderAdapter as unknown as InfraX6ZOrderAdapter,
-      mockX6HistoryManager as unknown as InfraX6HistoryAdapter,
       mockVisualEffectsService as unknown as InfraVisualEffectsService,
       mockEdgeService as unknown as InfraEdgeService,
       mockGraphHistoryCoordinator as unknown as AppOperationStateManager,
