@@ -15,6 +15,8 @@ export interface Document {
   name: string;
   uri: string;
   description?: string;
+  created_at: string;
+  modified_at: string;
   metadata?: Metadata[];
 }
 
@@ -29,6 +31,8 @@ export interface Repository {
     refValue: string;
     subPath?: string;
   };
+  created_at: string;
+  modified_at: string;
   metadata?: Metadata[];
 }
 
@@ -37,6 +41,8 @@ export interface Note {
   name: string;
   content: string;
   description?: string;
+  created_at: string;
+  modified_at: string;
   metadata?: Metadata[];
 }
 
@@ -48,6 +54,8 @@ export interface Asset {
   criticality?: string;
   classification?: string[];
   sensitivity?: string[];
+  created_at: string;
+  modified_at: string;
   metadata?: Metadata[];
 }
 
@@ -125,6 +133,8 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         name: 'System Architecture Document',
         uri: 'https://docs.example.com/system-architecture.pdf',
         description: 'Technical architecture documentation for the system',
+        created_at: new Date(Date.now() - 30 * 86400000).toISOString(),
+        modified_at: new Date(Date.now() - 10 * 86400000).toISOString(),
         metadata: [
           {
             key: 'document_type',
@@ -141,6 +151,8 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         name: 'Security Requirements',
         uri: 'https://docs.example.com/security-requirements.docx',
         description: 'Security requirements and compliance documentation',
+        created_at: new Date(Date.now() - 45 * 86400000).toISOString(),
+        modified_at: new Date(Date.now() - 15 * 86400000).toISOString(),
         metadata: [
           {
             key: 'document_type',
@@ -164,6 +176,8 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
           refType: 'branch',
           refValue: 'main',
         },
+        created_at: new Date(Date.now() - 60 * 86400000).toISOString(),
+        modified_at: new Date(Date.now() - 5 * 86400000).toISOString(),
         metadata: [
           {
             key: 'environment',
@@ -185,6 +199,8 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
           refType: 'tag',
           refValue: 'v2.1.0',
         },
+        created_at: new Date(Date.now() - 90 * 86400000).toISOString(),
+        modified_at: new Date(Date.now() - 20 * 86400000).toISOString(),
         metadata: [
           {
             key: 'language',
@@ -207,6 +223,8 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         criticality: 'high',
         classification: ['confidential', 'regulated'],
         sensitivity: ['pii', 'financial'],
+        created_at: new Date(Date.now() - 100 * 86400000).toISOString(),
+        modified_at: new Date(Date.now() - 3 * 86400000).toISOString(),
         metadata: [
           {
             key: 'data_retention',
@@ -222,6 +240,8 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         criticality: 'critical',
         classification: ['production'],
         sensitivity: ['public-facing'],
+        created_at: new Date(Date.now() - 120 * 86400000).toISOString(),
+        modified_at: new Date(Date.now() - 1 * 86400000).toISOString(),
         metadata: [
           {
             key: 'availability_requirement',
@@ -270,6 +290,8 @@ graph LR
 5. **Denial of Service**: Rate limiting and DDoS protection
 6. **Elevation of Privilege**: RBAC and input validation`,
         description: 'High-level security architecture and control framework',
+        created_at: new Date(Date.now() - 20 * 86400000).toISOString(),
+        modified_at: new Date(Date.now() - 8 * 86400000).toISOString(),
         metadata: [
           {
             key: 'author',
@@ -315,6 +337,8 @@ Established three tiers:
 ## Next Steps
 Schedule follow-up review in 2 weeks to assess progress.`,
         description: 'Notes from threat modeling workshop',
+        created_at: new Date(Date.now() - 12 * 86400000).toISOString(),
+        modified_at: new Date(Date.now() - 12 * 86400000).toISOString(),
       },
     ],
     threats: [
@@ -425,6 +449,8 @@ Schedule follow-up review in 2 weeks to assess progress.`,
         name: 'Cloud Security Playbook',
         uri: 'https://docs.example.com/cloud-security-playbook.pdf',
         description: 'Cloud security best practices and procedures',
+        created_at: new Date(Date.now() - 40 * 86400000).toISOString(),
+        modified_at: new Date(Date.now() - 12 * 86400000).toISOString(),
         metadata: [
           {
             key: 'document_type',
@@ -511,6 +537,8 @@ Schedule follow-up review in 2 weeks to assess progress.`,
         name: 'Mobile Security Guidelines',
         uri: 'https://docs.example.com/mobile-security-guidelines.pdf',
         description: 'OWASP mobile security testing guide compliance',
+        created_at: new Date(Date.now() - 25 * 86400000).toISOString(),
+        modified_at: new Date(Date.now() - 6 * 86400000).toISOString(),
         metadata: [
           {
             key: 'document_type',
@@ -527,6 +555,8 @@ Schedule follow-up review in 2 weeks to assess progress.`,
         name: 'Privacy Impact Assessment',
         uri: 'https://docs.example.com/privacy-impact-assessment.docx',
         description: 'GDPR and privacy compliance assessment for mobile app',
+        created_at: new Date(Date.now() - 35 * 86400000).toISOString(),
+        modified_at: new Date(Date.now() - 4 * 86400000).toISOString(),
         metadata: [
           {
             key: 'document_type',
