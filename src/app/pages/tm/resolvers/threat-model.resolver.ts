@@ -52,12 +52,10 @@ export const threatModelResolver: ResolveFn<ThreatModel | null> = (
   });
 
   // Load threat model with forced refresh to ensure fresh authorization data
+  // Note: ThreatModelService.getThreatModelById() already calls setAuthorization internally
   return threatModelService.getThreatModelById(threatModelId, forceRefresh).pipe(
     tap(threatModel => {
       if (threatModel) {
-        // Set authorization in the authorization service
-        authorizationService.setAuthorization(threatModel.id, threatModel.authorization);
-
         // Log current user permission
         const userPermission = authorizationService.getCurrentUserPermission();
         logger.info('User permission determined', {
