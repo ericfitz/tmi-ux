@@ -588,6 +588,30 @@ mat-card-header {
   line-height: 1.4;
 }
 
+// Styling for note list layout
+.note-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  overflow: hidden;
+
+  .note-name {
+    font-weight: 500;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    flex: 1; /* Take up available space */
+    min-width: 0; /* Allow flexbox to shrink if needed */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:hover {
+      color: var(--color-primary);
+    }
+  }
+}
+
 // Styling for source code and document list layout
 .repository-content,
 .document-content {
@@ -636,7 +660,8 @@ mat-card-header {
   }
 }
 
-// Custom tooltip styling for source code and document descriptions
+// Custom tooltip styling for note, source code and document descriptions
+::ng-deep .note-description-tooltip,
 ::ng-deep .repository-description-tooltip,
 ::ng-deep .document-description-tooltip {
   max-width: 400px;
