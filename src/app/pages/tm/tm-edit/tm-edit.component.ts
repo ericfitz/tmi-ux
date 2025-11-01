@@ -217,6 +217,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
           status: [...currentStatus, value],
         });
         this.threatModelForm.markAsDirty();
+        // Trigger auto-save for status changes
+        this._autoSaveSubject.next();
       }
     }
 
@@ -236,6 +238,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
       updated.splice(index, 1);
       this.threatModelForm.patchValue({ status: updated });
       this.threatModelForm.markAsDirty();
+      // Trigger auto-save for status changes
+      this._autoSaveSubject.next();
     }
   }
 
