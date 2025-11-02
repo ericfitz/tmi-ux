@@ -68,6 +68,7 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
   private originalContent = '';
   private createdNoteId?: string;
   private taskListCheckboxesInitialized = false;
+  private anchorClickHandler?: (event: Event) => void;
 
   readonly maxContentLength = 65536;
   readonly maxNameLength = 256;
@@ -114,9 +115,10 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
-    // Initialize task list checkboxes after markdown is rendered
+    // Initialize task list checkboxes and anchor links after markdown is rendered
     if (this.previewMode && !this.taskListCheckboxesInitialized) {
       this.initializeTaskListCheckboxes();
+      this.initializeAnchorLinks();
       this.taskListCheckboxesInitialized = true;
     } else if (!this.previewMode) {
       this.taskListCheckboxesInitialized = false;
@@ -369,5 +371,60 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
 
     // Reset initialization flag to re-initialize checkboxes after re-render
     this.taskListCheckboxesInitialized = false;
+  }
+
+  /**
+   * Initialize event listeners for anchor links to handle internal navigation
+   */
+  private initializeAnchorLinks(): void {
+    if (!this.markdownPreview) {
+      return;
+    }
+
+    // Remove existing handler if present
+    if (this.anchorClickHandler) {
+      this.markdownPreview.nativeElement.removeEventListener(
+        'click',
+        this.anchorClickHandler,
+        true,
+      );
+    }
+
+    // Create delegated event handler for all anchor clicks
+    this.anchorClickHandler = (event: Event): void => {
+      const target = event.target as HTMLElement;
+
+      // Find the closest anchor element (in case user clicked on child element)
+      const anchor = target.closest('a');
+
+      if (anchor) {
+        const href = anchor.getAttribute('href');
+
+        if (href && href.startsWith('#')) {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+
+          const targetId = href.substring(1);
+
+          if (!targetId) {
+            return;
+          }
+
+          // Find the target element within the preview
+          const targetElement = this.markdownPreview?.nativeElement.querySelector(
+            `#${CSS.escape(targetId)}`,
+          );
+
+          if (targetElement) {
+            // Scroll to the target element with smooth behavior
+            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      }
+    };
+
+    // Add click listener to the preview container (event delegation)
+    this.markdownPreview.nativeElement.addEventListener('click', this.anchorClickHandler, true);
   }
 }
