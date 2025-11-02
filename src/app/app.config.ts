@@ -106,6 +106,22 @@ function initializeTheme(_themeService: ThemeService): () => void {
 function markedOptionsFactory(): MarkedOptions {
   const renderer = new MarkedRenderer();
 
+  // Override the renderer's heading method to add IDs
+  renderer.heading = function (args): string {
+    const text = this.parser.parseInline(args.tokens);
+    const level = args.depth;
+    // Generate ID from heading text (lowercase, replace spaces with hyphens)
+    const id = text
+      .toLowerCase()
+      .replace(/<[^>]*>/g, '') // Remove HTML tags
+      .replace(/[^\w\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+      .trim();
+
+    return `<h${level} id="${id}">${text}</h${level}>`;
+  };
+
   // Override the renderer's link method to open external links in new tab
   renderer.link = function (token): string {
     const href = token.href;
