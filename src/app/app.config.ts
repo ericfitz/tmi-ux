@@ -106,6 +106,28 @@ function initializeTheme(_themeService: ThemeService): () => void {
 function markedOptionsFactory(): MarkedOptions {
   const renderer = new MarkedRenderer();
 
+  // Override the renderer's link method to open external links in new tab
+  renderer.link = function (token): string {
+    const href = token.href;
+    const title = token.title;
+    const text = this.parser.parseInline(token.tokens);
+
+    // Check if this is an external link (starts with http:// or https://)
+    const isExternal = href && /^https?:\/\//i.test(href);
+
+    // Build the anchor tag with proper attributes
+    let html = '<a href="' + href + '"';
+    if (title) {
+      html += ' title="' + title + '"';
+    }
+    if (isExternal) {
+      html += ' target="_blank" rel="noopener noreferrer"';
+    }
+    html += '>' + text + '</a>';
+
+    return html;
+  };
+
   // Override the renderer's html method to sanitize output
   const originalHtml = renderer.html.bind(renderer);
   renderer.html = (args): string => {
@@ -181,6 +203,8 @@ function markedOptionsFactory(): MarkedOptions {
         'y2',
         'points',
         'transform',
+        'target',
+        'rel',
       ],
       ALLOWED_URI_REGEXP:
         /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp|data):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
