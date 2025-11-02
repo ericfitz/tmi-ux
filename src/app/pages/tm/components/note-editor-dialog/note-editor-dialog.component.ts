@@ -66,6 +66,8 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
   mode: 'create' | 'edit';
   previewMode = false;
   private originalContent = '';
+  private originalName = '';
+  private originalDescription = '';
   private createdNoteId?: string;
   private taskListCheckboxesInitialized = false;
   private anchorClickHandler?: (event: Event) => void;
@@ -104,7 +106,10 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
       ],
     });
 
+    this.originalName = (this.noteForm.get('name')?.value as string | undefined) || '';
     this.originalContent = (this.noteForm.get('content')?.value as string | undefined) || '';
+    this.originalDescription =
+      (this.noteForm.get('description')?.value as string | undefined) || '';
 
     // Start in preview mode if there is existing content, otherwise start in edit mode
     const hasExistingContent = this.originalContent.trim().length > 0;
@@ -141,8 +146,20 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
   }
 
   hasUnsavedChanges(): boolean {
+    if (!this.noteForm.valid) {
+      return false;
+    }
+
+    const currentName = (this.noteForm.get('name')?.value as string | undefined) || '';
     const currentContent = (this.noteForm.get('content')?.value as string | undefined) || '';
-    return currentContent !== this.originalContent && this.noteForm.valid;
+    const currentDescription =
+      (this.noteForm.get('description')?.value as string | undefined) || '';
+
+    return (
+      currentName !== this.originalName ||
+      currentContent !== this.originalContent ||
+      currentDescription !== this.originalDescription
+    );
   }
 
   togglePreview(): void {
@@ -249,7 +266,9 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
     }
 
     const formValue = this.getFormValue(this.noteForm.value as NoteFormResult);
+    this.originalName = formValue.name;
     this.originalContent = formValue.content;
+    this.originalDescription = formValue.description || '';
     this.saveEvent.emit(formValue);
     this.showMessage('noteEditor.savedSuccessfully');
   }
