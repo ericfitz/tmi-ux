@@ -691,6 +691,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
             description: string;
             severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
             threat_type: string;
+            asset_id?: string;
             diagram_id?: string;
             cell_id?: string;
             score?: number;
@@ -708,6 +709,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
               description: formResult.description,
               severity: formResult.severity || 'High',
               threat_type: formResult.threat_type || 'Information Disclosure',
+              asset_id: formResult.asset_id,
               diagram_id: formResult.diagram_id,
               cell_id: formResult.cell_id,
               score: formResult.score,
@@ -741,6 +743,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
               description: formResult.description,
               severity: formResult.severity || threat.severity,
               threat_type: formResult.threat_type || threat.threat_type,
+              asset_id: formResult.asset_id,
               diagram_id: formResult.diagram_id,
               cell_id: formResult.cell_id,
               score: formResult.score,
