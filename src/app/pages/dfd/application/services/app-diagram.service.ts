@@ -15,6 +15,7 @@ import { DFD_STYLING } from '../../constants/styling-constants';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
 import { InfraWebsocketCollaborationAdapter } from '../../infrastructure/adapters/infra-websocket-collaboration.adapter';
 import { CellOperation } from '../../../../core/types/websocket-message.types';
+import { normalizeCellsFormat } from '../../utils/cell-format-normalization.util';
 
 /**
  * Interface for diagram data
@@ -161,9 +162,17 @@ export class AppDiagramService {
     });
 
     try {
+      // Normalize cells from nested format (position/size objects) to flat format (x,y,width,height)
+      // This ensures backward compatibility with old exports while using X6 native format
+      const normalizedCells = normalizeCellsFormat(cells);
+
+      this.logger.debugComponent('DfdDiagram', 'Normalized cells to X6 flat format', {
+        cellCount: normalizedCells.length,
+      });
+
       // Deduplicate cells by ID before processing
       const seenIds = new Set<string>();
-      const deduplicatedCells = cells.filter(cell => {
+      const deduplicatedCells = normalizedCells.filter(cell => {
         if (seenIds.has(cell.id)) {
           this.logger.warn('Duplicate cell ID detected in server data, skipping duplicate', {
             cellId: cell.id,
@@ -194,7 +203,7 @@ export class AppDiagramService {
           convertedCells.push(convertedCell);
 
           // Separate nodes and edges for proper ordering
-          if (cell.shape === 'edge' || cell.edge === true) {
+          if (cell.shape === 'edge' || cell['edge'] === true) {
             edges.push(convertedCell);
           } else {
             nodes.push(convertedCell);

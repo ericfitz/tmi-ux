@@ -210,48 +210,78 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
 
   /**
    * Validate node cell properties
+   * Accepts both X6 native flat format (x, y, width, height) and nested format (position, size)
    */
   private validateNodeCell(cell: Cell, cellPath: string): ValidationError[] {
     const errors: ValidationError[] = [];
 
-    // Validate position object (required for nodes per OpenAPI spec)
-    if (!cell.position || typeof cell.position !== 'object') {
+    // Check for position in either flat or nested format
+    const hasNestedPosition = cell.position && typeof cell.position === 'object';
+    const hasFlatPosition = typeof cell['x'] === 'number' && typeof cell['y'] === 'number';
+
+    if (!hasNestedPosition && !hasFlatPosition) {
       errors.push(
         ValidationUtils.createError(
           'MISSING_POSITION',
-          'Node must have a position object',
-          ValidationUtils.buildPath(cellPath, 'position'),
+          'Node must have position (either x,y properties or position object with x,y)',
+          cellPath,
         ),
       );
-    } else {
+    }
+
+    // Validate nested position format if present
+    if (hasNestedPosition) {
       const position = cell.position as { x?: unknown; y?: unknown };
       if (typeof position.x !== 'number' || typeof position.y !== 'number') {
         errors.push(
           ValidationUtils.createError(
             'INVALID_POSITION',
-            'Node position must have numeric x and y coordinates',
+            'Node position object must have numeric x and y coordinates',
             ValidationUtils.buildPath(cellPath, 'position'),
           ),
         );
       }
     }
 
-    // Validate size object (required for nodes per OpenAPI spec)
-    if (!cell.size || typeof cell.size !== 'object') {
+    // Validate flat position format if present
+    if (hasFlatPosition && !hasNestedPosition) {
+      // Position values are already validated by type check above
+      // Just ensure they are finite numbers
+      const x = cell['x'] as number;
+      const y = cell['y'] as number;
+      if (!isFinite(x) || !isFinite(y)) {
+        errors.push(
+          ValidationUtils.createError(
+            'INVALID_POSITION',
+            'Node x,y coordinates must be finite numbers',
+            cellPath,
+          ),
+        );
+      }
+    }
+
+    // Check for size in either flat or nested format
+    const hasNestedSize = cell.size && typeof cell.size === 'object';
+    const hasFlatSize = typeof cell['width'] === 'number' && typeof cell['height'] === 'number';
+
+    if (!hasNestedSize && !hasFlatSize) {
       errors.push(
         ValidationUtils.createError(
           'MISSING_SIZE',
-          'Node must have a size object',
-          ValidationUtils.buildPath(cellPath, 'size'),
+          'Node must have size (either width,height properties or size object with width,height)',
+          cellPath,
         ),
       );
-    } else {
+    }
+
+    // Validate nested size format if present
+    if (hasNestedSize) {
       const size = cell.size as { width?: unknown; height?: unknown };
       if (typeof size.width !== 'number' || typeof size.height !== 'number') {
         errors.push(
           ValidationUtils.createError(
             'INVALID_SIZE',
-            'Node size must have numeric width and height',
+            'Node size object must have numeric width and height',
             ValidationUtils.buildPath(cellPath, 'size'),
           ),
         );
@@ -268,13 +298,53 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
           );
         }
 
-        // Also warn if dimensions are not positive
+        // Warn if dimensions are not positive
         if (size.width <= 0 || size.height <= 0) {
           errors.push(
             ValidationUtils.createError(
               'INVALID_DIMENSIONS',
               'Node dimensions must be positive numbers',
               ValidationUtils.buildPath(cellPath, 'size'),
+              'warning',
+            ),
+          );
+        }
+      }
+    }
+
+    // Validate flat size format if present
+    if (hasFlatSize && !hasNestedSize) {
+      const width = cell['width'] as number;
+      const height = cell['height'] as number;
+
+      if (!isFinite(width) || !isFinite(height)) {
+        errors.push(
+          ValidationUtils.createError(
+            'INVALID_SIZE',
+            'Node width,height must be finite numbers',
+            cellPath,
+          ),
+        );
+      } else {
+        // Validate minimum dimensions per OpenAPI spec (width >= 40, height >= 30)
+        if (width < 40 || height < 30) {
+          errors.push(
+            ValidationUtils.createError(
+              'INVALID_DIMENSIONS',
+              `Node dimensions must meet minimum requirements (width >= 40, height >= 30). Got width=${width}, height=${height}`,
+              cellPath,
+              'error',
+            ),
+          );
+        }
+
+        // Warn if dimensions are not positive
+        if (width <= 0 || height <= 0) {
+          errors.push(
+            ValidationUtils.createError(
+              'INVALID_DIMENSIONS',
+              'Node dimensions must be positive numbers',
+              cellPath,
               'warning',
             ),
           );

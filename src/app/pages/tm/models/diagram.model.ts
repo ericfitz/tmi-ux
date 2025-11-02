@@ -10,12 +10,24 @@ export interface DiagramImage {
 
 /**
  * Cell interface for diagram graph data
- * Aligned with OpenAPI spec which uses shape discriminator and position/size objects
+ * Supports both X6 native flat format and legacy nested format
+ *
+ * The API accepts both formats for backward compatibility:
+ * - Flat format (X6 native): x, y, width, height as direct properties
+ * - Nested format (legacy): position {x,y} and size {width,height} objects
+ *
+ * The API always returns flat format, and X6's toJSON() produces flat format.
+ * The application normalizes all cells to flat format on import.
  */
 export interface Cell {
   id: string;
   shape: string;
-  // Node properties (when shape is actor, process, store, security-boundary, text-box)
+  // Node properties - X6 native flat format (preferred)
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  // Node properties - legacy nested format (backward compatibility)
   position?: { x: number; y: number };
   size?: { width: number; height: number };
   // Edge properties (when shape is edge)
@@ -27,7 +39,7 @@ export interface Cell {
   visible?: boolean;
   attrs?: Record<string, unknown>;
   data?: Record<string, unknown>;
-  // Legacy properties for backward compatibility - DEPRECATED, will be removed
+  // Old legacy properties - DEPRECATED, will be removed
   value?: string;
   geometry?: {
     x: number;
@@ -36,10 +48,6 @@ export interface Cell {
     height: number;
   };
   style?: string;
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
 }
 
 /**
