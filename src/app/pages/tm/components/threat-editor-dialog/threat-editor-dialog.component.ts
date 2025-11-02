@@ -929,8 +929,14 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         formValues.asset_id && formValues.asset_id !== this.NOT_ASSOCIATED_VALUE
           ? formValues.asset_id
           : undefined,
-      diagram_id: formValues.diagram_id || undefined,
-      cell_id: formValues.cell_id || undefined,
+      diagram_id:
+        formValues.diagram_id && formValues.diagram_id !== this.NOT_ASSOCIATED_VALUE
+          ? formValues.diagram_id
+          : undefined,
+      cell_id:
+        formValues.cell_id && formValues.cell_id !== this.NOT_ASSOCIATED_VALUE
+          ? formValues.cell_id
+          : undefined,
       score: formValues.score || undefined,
       priority: formValues.priority || undefined,
       mitigated: formValues.mitigated,

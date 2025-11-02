@@ -709,16 +709,30 @@ export class TmEditComponent implements OnInit, OnDestroy {
               description: formResult.description,
               severity: formResult.severity || 'High',
               threat_type: formResult.threat_type || 'Information Disclosure',
-              asset_id: formResult.asset_id,
-              diagram_id: formResult.diagram_id,
-              cell_id: formResult.cell_id,
-              score: formResult.score,
-              priority: formResult.priority,
               mitigated: formResult.mitigated || false,
               status: formResult.status || 'Open',
-              issue_uri: formResult.issue_uri,
               metadata: [],
             };
+
+            // Only include optional fields if they have values
+            if (formResult.asset_id !== undefined) {
+              newThreatData.asset_id = formResult.asset_id;
+            }
+            if (formResult.diagram_id !== undefined) {
+              newThreatData.diagram_id = formResult.diagram_id;
+            }
+            if (formResult.cell_id !== undefined) {
+              newThreatData.cell_id = formResult.cell_id;
+            }
+            if (formResult.score !== undefined) {
+              newThreatData.score = formResult.score;
+            }
+            if (formResult.priority !== undefined) {
+              newThreatData.priority = formResult.priority;
+            }
+            if (formResult.issue_uri !== undefined) {
+              newThreatData.issue_uri = formResult.issue_uri;
+            }
 
             this._subscriptions.add(
               this.threatModelService
@@ -743,15 +757,33 @@ export class TmEditComponent implements OnInit, OnDestroy {
               description: formResult.description,
               severity: formResult.severity || threat.severity,
               threat_type: formResult.threat_type || threat.threat_type,
-              asset_id: formResult.asset_id,
-              diagram_id: formResult.diagram_id,
-              cell_id: formResult.cell_id,
-              score: formResult.score,
-              priority: formResult.priority,
-              mitigated: formResult.mitigated,
-              status: formResult.status,
-              issue_uri: formResult.issue_uri,
             };
+
+            // Only include optional fields if they have values
+            if (formResult.asset_id !== undefined) {
+              updatedThreatData.asset_id = formResult.asset_id;
+            }
+            if (formResult.diagram_id !== undefined) {
+              updatedThreatData.diagram_id = formResult.diagram_id;
+            }
+            if (formResult.cell_id !== undefined) {
+              updatedThreatData.cell_id = formResult.cell_id;
+            }
+            if (formResult.score !== undefined) {
+              updatedThreatData.score = formResult.score;
+            }
+            if (formResult.priority !== undefined) {
+              updatedThreatData.priority = formResult.priority;
+            }
+            if (formResult.mitigated !== undefined) {
+              updatedThreatData.mitigated = formResult.mitigated;
+            }
+            if (formResult.status !== undefined) {
+              updatedThreatData.status = formResult.status;
+            }
+            if (formResult.issue_uri !== undefined) {
+              updatedThreatData.issue_uri = formResult.issue_uri;
+            }
 
             this._subscriptions.add(
               this.threatModelService
