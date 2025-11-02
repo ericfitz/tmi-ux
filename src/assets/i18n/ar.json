@@ -403,6 +403,7 @@
     "permissionsRole": "الدور",
     "permissionsSubject": "الموضوع",
     "permissionsSubjectType": "النوع",
+    "permissionsSubjectPlaceholder": "الموضوع (معرف المستخدم، عنوان البريد الإلكتروني للمستخدم، أو اسم المجموعة)",
     "permissionsTooltip": "إدارة الأذونات",
     "permissionsUser": "المستخدم",
     "rename": "إعادة تسمية",

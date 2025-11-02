@@ -403,6 +403,7 @@
     "permissionsRole": "角色",
     "permissionsSubject": "主体",
     "permissionsSubjectType": "类型",
+    "permissionsSubjectPlaceholder": "主体（用户 ID、用户电子邮件地址或组名称）",
     "permissionsTooltip": "管理权限",
     "permissionsUser": "用户",
     "rename": "重命名",

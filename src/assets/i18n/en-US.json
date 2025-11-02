@@ -403,6 +403,7 @@
     "permissionsRole": "Role",
     "permissionsSubject": "Subject",
     "permissionsSubjectType": "Type",
+    "permissionsSubjectPlaceholder": "Subject (User ID, User Email Address, or Group Name)",
     "permissionsTooltip": "Manage Permissions",
     "permissionsUser": "User",
     "rename": "Rename",

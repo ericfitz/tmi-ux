@@ -403,6 +403,7 @@
     "permissionsRole": "บทบาท",
     "permissionsSubject": "หัวข้อ",
     "permissionsSubjectType": "ประเภท",
+    "permissionsSubjectPlaceholder": "หัวข้อ (รหัสผู้ใช้, ที่อยู่อีเมลผู้ใช้, หรือชื่อกลุ่ม)",
     "permissionsTooltip": "จัดการสิทธิ์การเข้าถึง",
     "permissionsUser": "ผู้ใช้",
     "rename": "เปลี่ยนชื่อ",

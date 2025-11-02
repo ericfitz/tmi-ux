@@ -71,23 +71,25 @@ export interface PermissionsDialogData {
                   {{ 'threatModels.permissionsSubjectType' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
-                  <mat-form-field class="table-field" *ngIf="!data.isReadOnly">
-                    <mat-select
-                      [value]="auth.subject_type"
-                      (selectionChange)="updatePermissionSubjectType(i, $event)"
-                      [attr.tabindex]="i * 6 + 1"
-                    >
-                      <mat-option value="user">{{
-                        'common.subjectTypes.user' | transloco
-                      }}</mat-option>
-                      <mat-option value="group">{{
-                        'common.subjectTypes.group' | transloco
-                      }}</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                  <span *ngIf="data.isReadOnly">{{
-                    'common.subjectTypes.' + auth.subject_type | transloco
-                  }}</span>
+                  @if (!data.isReadOnly) {
+                    <mat-form-field class="table-field">
+                      <mat-select
+                        [value]="auth.subject_type"
+                        (selectionChange)="updatePermissionSubjectType(i, $event)"
+                        [attr.tabindex]="i * 6 + 1"
+                      >
+                        <mat-option value="user">{{
+                          'common.subjectTypes.user' | transloco
+                        }}</mat-option>
+                        <mat-option value="group">{{
+                          'common.subjectTypes.group' | transloco
+                        }}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  }
+                  @if (data.isReadOnly) {
+                    <span>{{ 'common.subjectTypes.' + auth.subject_type | transloco }}</span>
+                  }
                 </td>
               </ng-container>
 
@@ -97,16 +99,20 @@ export interface PermissionsDialogData {
                   {{ 'threatModels.permissionsSubject' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
-                  <mat-form-field class="table-field" *ngIf="!data.isReadOnly">
-                    <input
-                      matInput
-                      [value]="auth.subject"
-                      (blur)="updatePermissionSubject(i, $event)"
-                      placeholder="User Email"
-                      [attr.tabindex]="i * 6 + 2"
-                    />
-                  </mat-form-field>
-                  <span *ngIf="data.isReadOnly">{{ auth.subject }}</span>
+                  @if (!data.isReadOnly) {
+                    <mat-form-field class="table-field">
+                      <input
+                        matInput
+                        [value]="auth.subject"
+                        (blur)="updatePermissionSubject(i, $event)"
+                        [placeholder]="'threatModels.permissionsSubjectPlaceholder' | transloco"
+                        [attr.tabindex]="i * 6 + 2"
+                      />
+                    </mat-form-field>
+                  }
+                  @if (data.isReadOnly) {
+                    <span>{{ auth.subject }}</span>
+                  }
                 </td>
               </ng-container>
 
@@ -116,78 +122,89 @@ export interface PermissionsDialogData {
                   {{ 'threatModels.permissionsRole' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
-                  <mat-form-field class="table-field" *ngIf="!data.isReadOnly">
-                    <mat-select
-                      [value]="auth.role"
-                      (selectionChange)="updatePermissionRole(i, $event)"
-                      [attr.tabindex]="i * 6 + 3"
-                    >
-                      <mat-option value="owner">{{ 'common.roles.owner' | transloco }}</mat-option>
-                      <mat-option value="writer">{{
-                        'common.roles.writer' | transloco
-                      }}</mat-option>
-                      <mat-option value="reader">{{
-                        'common.roles.reader' | transloco
-                      }}</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                  <span *ngIf="data.isReadOnly">{{ 'common.roles.' + auth.role | transloco }}</span>
+                  @if (!data.isReadOnly) {
+                    <mat-form-field class="table-field">
+                      <mat-select
+                        [value]="auth.role"
+                        (selectionChange)="updatePermissionRole(i, $event)"
+                        [attr.tabindex]="i * 6 + 3"
+                      >
+                        <mat-option value="owner">{{
+                          'common.roles.owner' | transloco
+                        }}</mat-option>
+                        <mat-option value="writer">{{
+                          'common.roles.writer' | transloco
+                        }}</mat-option>
+                        <mat-option value="reader">{{
+                          'common.roles.reader' | transloco
+                        }}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  }
+                  @if (data.isReadOnly) {
+                    <span>{{ 'common.roles.' + auth.role | transloco }}</span>
+                  }
                 </td>
               </ng-container>
 
               <!-- Actions Column -->
-              <ng-container matColumnDef="actions" *ngIf="!data.isReadOnly">
-                <th mat-header-cell *matHeaderCellDef>{{ 'common.actions' | transloco }}</th>
-                <td mat-cell *matCellDef="let auth; let i = index" class="actions-cell">
-                  <div class="actions-container">
-                    <button
-                      mat-icon-button
-                      color="primary"
-                      (click)="setAsOwner(i)"
-                      [matTooltip]="'threatModels.setAsOwner' | transloco"
-                      [disabled]="auth.subject === data.owner"
-                      [attr.tabindex]="i * 6 + 4"
-                      [attr.aria-label]="'threatModels.setAsOwner' | transloco"
-                    >
-                      <mat-icon fontSet="material-symbols-outlined">lock_person</mat-icon>
-                    </button>
-                    <button
-                      mat-icon-button
-                      color="warn"
-                      (click)="deletePermission(i)"
-                      [matTooltip]="'common.delete' | transloco"
-                      [attr.tabindex]="i * 6 + 5"
-                      [attr.aria-label]="'common.delete' | transloco"
-                    >
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </div>
-                </td>
-              </ng-container>
+              @if (!data.isReadOnly) {
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'common.actions' | transloco }}</th>
+                  <td mat-cell *matCellDef="let auth; let i = index" class="actions-cell">
+                    <div class="actions-container">
+                      <button
+                        mat-icon-button
+                        color="primary"
+                        (click)="setAsOwner(i)"
+                        [matTooltip]="'threatModels.setAsOwner' | transloco"
+                        [disabled]="auth.subject === data.owner"
+                        [attr.tabindex]="i * 6 + 4"
+                        [attr.aria-label]="'threatModels.setAsOwner' | transloco"
+                      >
+                        <mat-icon fontSet="material-symbols-outlined">lock_person</mat-icon>
+                      </button>
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        (click)="deletePermission(i)"
+                        [matTooltip]="'common.delete' | transloco"
+                        [attr.tabindex]="i * 6 + 5"
+                        [attr.aria-label]="'common.delete' | transloco"
+                      >
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </td>
+                </ng-container>
+              }
 
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
             </table>
           </div>
 
-          <div *ngIf="!permissionsDataSource.data.length" class="no-items-message">
-            {{ 'threatModels.noPermissions' | transloco }}
-          </div>
+          @if (!permissionsDataSource.data.length) {
+            <div class="no-items-message">
+              {{ 'threatModels.noPermissions' | transloco }}
+            </div>
+          }
         </div>
       </mat-dialog-content>
 
       <mat-dialog-actions align="end">
-        <button
-          mat-button
-          color="primary"
-          (click)="addPermission()"
-          *ngIf="!data.isReadOnly"
-          [attr.tabindex]="getAddPermissionButtonTabIndex()"
-          [attr.aria-label]="'threatModels.addPermission' | transloco"
-        >
-          <mat-icon>add</mat-icon>
-          <span [transloco]="'threatModels.addPermission'">Add Permission</span>
-        </button>
+        @if (!data.isReadOnly) {
+          <button
+            mat-button
+            color="primary"
+            (click)="addPermission()"
+            [attr.tabindex]="getAddPermissionButtonTabIndex()"
+            [attr.aria-label]="'threatModels.addPermission' | transloco"
+          >
+            <mat-icon>add</mat-icon>
+            <span [transloco]="'threatModels.addPermission'">Add Permission</span>
+          </button>
+        }
         <button
           mat-button
           (click)="close()"
@@ -196,16 +213,17 @@ export interface PermissionsDialogData {
         >
           <span [transloco]="'common.cancel'">Close</span>
         </button>
-        <button
-          mat-raised-button
-          color="primary"
-          (click)="save()"
-          *ngIf="!data.isReadOnly"
-          [attr.tabindex]="getSaveButtonTabIndex()"
-          [attr.aria-label]="'common.save' | transloco"
-        >
-          <span [transloco]="'common.save'">Save</span>
-        </button>
+        @if (!data.isReadOnly) {
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="save()"
+            [attr.tabindex]="getSaveButtonTabIndex()"
+            [attr.aria-label]="'common.save' | transloco"
+          >
+            <span [transloco]="'common.save'">Save</span>
+          </button>
+        }
       </mat-dialog-actions>
     </div>
   `,

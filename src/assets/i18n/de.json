@@ -403,6 +403,7 @@
     "permissionsRole": "Rolle",
     "permissionsSubject": "Subjekt",
     "permissionsSubjectType": "Typ",
+    "permissionsSubjectPlaceholder": "Subjekt (Benutzer-ID, E-Mail-Adresse oder Gruppenname)",
     "permissionsTooltip": "Berechtigungen verwalten",
     "permissionsUser": "Benutzer",
     "rename": "Umbenennen",
