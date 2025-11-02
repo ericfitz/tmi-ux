@@ -56,6 +56,20 @@
       </mat-form-field>
     </div>
 
+    <!-- Asset field -->
+    <div class="form-field-row">
+      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+        <mat-label>{{ 'common.assetId' | transloco }}</mat-label>
+        <mat-select formControlName="asset_id" tabindex="2">
+          <mat-option *ngFor="let asset of assetOptions" [value]="asset.id">
+            {{
+              asset.id === NOT_ASSOCIATED_VALUE ? asset.name : asset.name + ' (' + asset.type + ')'
+            }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'common.threatDescription' | transloco }}</mat-label>
@@ -63,7 +77,7 @@
           matInput
           formControlName="description"
           rows="3"
-          tabindex="2"
+          tabindex="3"
           placeholder="{{ 'common.threatDescriptionPlaceholder' | transloco }}"
         ></textarea>
         @if (threatForm.get('description')?.hasError('maxlength')) {
@@ -78,7 +92,7 @@
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'common.threatType' | transloco }}</mat-label>
-        <mat-select formControlName="threat_type" tabindex="3">
+        <mat-select formControlName="threat_type" tabindex="4">
           <mat-option *ngFor="let threatType of threatTypeOptions" [value]="threatType">
             {{ threatType }}
           </mat-option>
@@ -96,7 +110,7 @@
       <!-- Severity field -->
       <mat-form-field appearance="outline" floatLabel="always">
         <mat-label>{{ 'common.severity' | transloco }}</mat-label>
-        <mat-select formControlName="severity" tabindex="4">
+        <mat-select formControlName="severity" tabindex="5">
           <mat-option value="Unknown">{{ 'common.severityUnknown' | transloco }}</mat-option>
           <mat-option value="None">{{ 'common.severityNone' | transloco }}</mat-option>
           <mat-option value="Low">{{ 'common.severityLow' | transloco }}</mat-option>
@@ -121,14 +135,14 @@
           min="0"
           max="10"
           step="0.1"
-          tabindex="5"
+          tabindex="6"
         />
       </mat-form-field>
 
       <!-- Priority field -->
       <mat-form-field appearance="outline" floatLabel="always">
         <mat-label>{{ 'common.priority' | transloco }}</mat-label>
-        <input matInput formControlName="priority" tabindex="6" />
+        <input matInput formControlName="priority" tabindex="7" />
       </mat-form-field>
     </div>
 
@@ -157,7 +171,7 @@
                 matInput
                 formControlName="issue_uri"
                 type="url"
-                tabindex="7"
+                tabindex="8"
                 (blur)="onIssueUriBlur()"
               />
             }
@@ -171,7 +185,7 @@
               (click)="editIssueUri()"
               [matTooltip]="'common.edit' | transloco"
               [attr.aria-label]="'common.edit' | transloco"
-              tabindex="8"
+              tabindex="9"
             >
               <mat-icon>edit</mat-icon>
             </button>
@@ -200,12 +214,12 @@
       <!-- Status field -->
       <mat-form-field appearance="outline" floatLabel="always">
         <mat-label>{{ 'common.status' | transloco }}</mat-label>
-        <input matInput formControlName="status" tabindex="9" />
+        <input matInput formControlName="status" tabindex="10" />
       </mat-form-field>
 
       <!-- Mitigated field -->
       <div class="checkbox-field">
-        <mat-checkbox formControlName="mitigated" tabindex="10">
+        <mat-checkbox formControlName="mitigated" tabindex="11">
           {{ 'common.mitigated' | transloco }}
         </mat-checkbox>
       </div>
@@ -215,7 +229,7 @@
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'common.diagramId' | transloco }}</mat-label>
-        <mat-select formControlName="diagram_id" tabindex="11">
+        <mat-select formControlName="diagram_id" tabindex="12">
           <mat-option *ngFor="let diagram of diagramOptions" [value]="diagram.id">
             {{
               diagram.id === NOT_ASSOCIATED_VALUE
@@ -231,7 +245,7 @@
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'common.cellId' | transloco }}</mat-label>
-        <mat-select formControlName="cell_id" tabindex="12">
+        <mat-select formControlName="cell_id" tabindex="13">
           <mat-option *ngFor="let cell of cellOptions" [value]="cell.id">
             {{ cell.id === NOT_ASSOCIATED_VALUE ? cell.label : cell.id + ' (' + cell.label + ')' }}
           </mat-option>
@@ -244,7 +258,7 @@
   <button
     mat-button
     (click)="onCancel()"
-    tabindex="13"
+    tabindex="14"
     [attr.aria-label]="'common.cancel' | transloco"
   >
     {{ 'common.cancel' | transloco }}
@@ -255,7 +269,7 @@
       color="primary"
       [disabled]="threatForm.invalid"
       (click)="onSubmit()"
-      tabindex="14"
+      tabindex="15"
       [attr.aria-label]="'common.save' | transloco"
     >
       {{ 'common.save' | transloco }}

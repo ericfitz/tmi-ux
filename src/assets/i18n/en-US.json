@@ -94,6 +94,7 @@
     "actions": "Actions",
     "addMetadata": "Add Metadata",
     "addThreat": "Add Threat",
+    "assetId": "Asset",
     "cancel": "Cancel",
     "cellId": "Cell ID",
     "close": "Close",
@@ -353,6 +354,7 @@
   },
   "threatEditor": {
     "createNewThreat": "Create New Threat",
+    "notAssociatedWithAsset": "Not associated with an asset",
     "notAssociatedWithCell": "Not Associated With a Cell",
     "notAssociatedWithDiagram": "Not Associated With a Diagram"
   },

@@ -94,6 +94,7 @@
     "actions": "الإجراءات",
     "addMetadata": "إضافة بيانات وصفية",
     "addThreat": "إضافة تهديد",
+    "assetId": "الأصول",
     "cancel": "إلغاء",
     "cellId": "معرف الخلية",
     "close": "إغلاق",
@@ -353,6 +354,7 @@
   },
   "threatEditor": {
     "createNewThreat": "إنشاء تهديد جديد",
+    "notAssociatedWithAsset": "غير مرتبط بأصل",
     "notAssociatedWithCell": "غير مرتبط بخلية",
     "notAssociatedWithDiagram": "غير مرتبط بمخطط"
   },

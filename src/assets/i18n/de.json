@@ -94,6 +94,7 @@
     "actions": "Aktionen",
     "addMetadata": "Metadaten hinzufügen",
     "addThreat": "Bedrohung hinzufügen",
+    "assetId": "Vermögenswert",
     "cancel": "Abbrechen",
     "cellId": "Zellen-ID",
     "close": "Schließen",
@@ -353,6 +354,7 @@
   },
   "threatEditor": {
     "createNewThreat": "Neue Bedrohung erstellen",
+    "notAssociatedWithAsset": "Nicht mit einem Vermögenswert verknüpft",
     "notAssociatedWithCell": "Nicht mit einer Zelle verknüpft",
     "notAssociatedWithDiagram": "Nicht mit einem Diagramm verknüpft"
   },

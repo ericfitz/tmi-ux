@@ -94,6 +94,7 @@
     "actions": "操作",
     "addMetadata": "添加元数据",
     "addThreat": "添加威胁",
+    "assetId": "资产",
     "cancel": "取消",
     "cellId": "单元格ID",
     "close": "关闭",
@@ -353,6 +354,7 @@
   },
   "threatEditor": {
     "createNewThreat": "创建新威胁",
+    "notAssociatedWithAsset": "未关联资产",
     "notAssociatedWithCell": "未关联单元格",
     "notAssociatedWithDiagram": "未关联图表"
   },

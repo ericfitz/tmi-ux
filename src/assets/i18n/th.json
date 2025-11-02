@@ -94,6 +94,7 @@
     "actions": "การกระทำ",
     "addMetadata": "เพิ่มข้อมูลเมตา",
     "addThreat": "เพิ่มภัยคุกคาม",
+    "assetId": "สินทรัพย์",
     "cancel": "ยกเลิก",
     "cellId": "รหัสเซลล์",
     "close": "ปิด",
@@ -353,6 +354,7 @@
   },
   "threatEditor": {
     "createNewThreat": "สร้างภัยคุกคามใหม่",
+    "notAssociatedWithAsset": "ไม่เชื่อมโยงกับสินทรัพย์",
     "notAssociatedWithCell": "ไม่เชื่อมโยงกับเซลล์",
     "notAssociatedWithDiagram": "ไม่เชื่อมโยงกับแผนภาพ"
   },

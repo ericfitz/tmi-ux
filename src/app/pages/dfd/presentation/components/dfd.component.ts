@@ -1102,6 +1102,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                   cellId: cellId,
                   diagrams: cellData.diagrams,
                   cells: cellData.cells,
+                  assets:
+                    threatModel.assets?.map(a => ({ id: a.id, name: a.name, type: a.type })) || [],
                   framework: framework || undefined,
                   shapeType: shapeType,
                 };

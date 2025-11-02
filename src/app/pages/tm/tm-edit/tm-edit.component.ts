@@ -670,6 +670,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       cellId: threat?.cell_id,
       diagrams: cellData.diagrams,
       cells: cellData.cells,
+      assets: this.threatModel.assets?.map(a => ({ id: a.id, name: a.name, type: a.type })) || [],
       framework,
       shapeType,
     };

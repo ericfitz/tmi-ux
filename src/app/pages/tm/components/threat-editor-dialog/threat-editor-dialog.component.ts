@@ -25,6 +25,7 @@ interface ThreatFormValues {
   description: string;
   severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
   threat_type: string;
+  asset_id?: string;
   diagram_id?: string;
   cell_id?: string;
   score?: number;
@@ -55,6 +56,15 @@ export interface CellOption {
 }
 
 /**
+ * Interface for asset dropdown options
+ */
+export interface AssetOption {
+  id: string;
+  name: string;
+  type: string;
+}
+
+/**
  * Dialog data interface
  */
 export interface ThreatEditorDialogData {
@@ -65,6 +75,7 @@ export interface ThreatEditorDialogData {
   cellId?: string;
   diagrams?: DiagramOption[];
   cells?: CellOption[];
+  assets?: AssetOption[];
   framework?: FrameworkModel;
   shapeType?: string;
 }
@@ -101,6 +112,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   // Dropdown options
   diagramOptions: DiagramOption[] = [];
   cellOptions: CellOption[] = []; // Currently displayed cell options
+  assetOptions: AssetOption[] = [];
   threatTypeOptions: string[] = [];
 
   // Complete cell data (all cells from all diagrams) for filtering
@@ -130,6 +142,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   ) {
     this.threatForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
+      asset_id: [''],
       description: ['', Validators.maxLength(500)],
       severity: ['High', Validators.required],
       threat_type: ['', Validators.required],
@@ -317,6 +330,51 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   }
 
   /**
+   * Initialize asset options for the dropdown
+   */
+  private initializeAssetOptions(): void {
+    // Initialize with "Not associated" option
+    this.assetOptions = [
+      {
+        id: this.NOT_ASSOCIATED_VALUE,
+        name: this.translocoService.translate('threatEditor.notAssociatedWithAsset'),
+        type: '',
+      },
+    ];
+
+    // If there's a current asset ID, find it and add as second option
+    let currentAssetOption: AssetOption | null = null;
+    const currentAssetId = this.data.threat?.asset_id;
+
+    if (currentAssetId) {
+      // Look for current asset in provided assets
+      if (this.data.assets && this.data.assets.length > 0) {
+        currentAssetOption = this.data.assets.find(asset => asset.id === currentAssetId) || null;
+      }
+
+      // If found, add current asset as second option
+      if (currentAssetOption) {
+        this.assetOptions.push(currentAssetOption);
+      }
+    }
+
+    // Add remaining assets from input (excluding the current one already added), sorted alphabetically by name
+    if (this.data.assets && this.data.assets.length > 0) {
+      const remainingAssets = this.data.assets
+        .filter(asset => asset.id !== currentAssetId)
+        .sort((a, b) => a.name.localeCompare(b.name));
+      this.assetOptions = [...this.assetOptions, ...remainingAssets];
+    }
+
+    this.logger.debug('Asset options initialized:', {
+      currentAssetId: currentAssetId,
+      optionsCount: this.assetOptions.length,
+      firstOption: this.assetOptions[0]?.name,
+      secondOption: this.assetOptions[1]?.name,
+    });
+  }
+
+  /**
    * Filters cell options based on the currently selected diagram.
    * This method is called initially and whenever the diagram selection changes.
    */
@@ -479,6 +537,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
               // Initialize dropdown options after translations are loaded
               this.initializeDiagramOptions();
               this.initializeCellOptions();
+              this.initializeAssetOptions();
               this.initializeThreatTypeOptions();
 
               // Force change detection to update the translations
@@ -499,12 +558,14 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
               // Initialize dropdown options with English translations
               this.initializeDiagramOptions();
               this.initializeCellOptions();
+              this.initializeAssetOptions();
             },
           });
         } else {
           // Initialize dropdown options with English translations
           this.initializeDiagramOptions();
           this.initializeCellOptions();
+          this.initializeAssetOptions();
           this.initializeThreatTypeOptions();
 
           // Force change detection to update the translations
@@ -521,6 +582,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         // Initialize dropdown options even if translations failed
         this.initializeDiagramOptions();
         this.initializeCellOptions();
+        this.initializeAssetOptions();
         this.initializeThreatTypeOptions();
       },
     });
@@ -567,6 +629,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
 
     this.threatForm.patchValue({
       name: '',
+      asset_id: this.NOT_ASSOCIATED_VALUE,
       description: '',
       severity: 'High',
       threat_type: defaultThreatType,
@@ -600,8 +663,20 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         issue_uri: this.data.threat.issue_uri,
       });
 
+      // Determine asset_id value: use threat's asset_id if it exists in assets list, otherwise blank
+      let assetIdValue = this.NOT_ASSOCIATED_VALUE;
+      if (this.data.threat.asset_id) {
+        const assetExists = this.data.assets?.some(
+          asset => asset.id === this.data.threat!.asset_id,
+        );
+        if (assetExists) {
+          assetIdValue = this.data.threat.asset_id;
+        }
+      }
+
       this.threatForm.patchValue({
         name: this.data.threat.name,
+        asset_id: assetIdValue,
         description: this.data.threat.description || '',
         severity: this.data.threat.severity || 'High',
         threat_type: this.data.threat.threat_type || '',
@@ -641,6 +716,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         // Reinitialize dropdown options when language changes
         this.initializeDiagramOptions();
         this.initializeCellOptions();
+        this.initializeAssetOptions();
         this.initializeThreatTypeOptions();
       });
 
@@ -709,6 +785,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       // Manually trigger translation update for all keys
       const keys = [
         'common.threatName',
+        'common.assetId',
         'common.threatDescription',
         'common.threatType',
         'common.severity',
@@ -719,6 +796,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         'common.mitigated',
         'common.diagramId',
         'common.cellId',
+        'threatEditor.notAssociatedWithAsset',
         'threatEditor.notAssociatedWithDiagram',
         'threatEditor.notAssociatedWithCell',
         'common.cancel',
@@ -847,6 +925,10 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       description: formValues.description,
       severity: formValues.severity,
       threat_type: formValues.threat_type,
+      asset_id:
+        formValues.asset_id && formValues.asset_id !== this.NOT_ASSOCIATED_VALUE
+          ? formValues.asset_id
+          : undefined,
       diagram_id: formValues.diagram_id || undefined,
       cell_id: formValues.cell_id || undefined,
       score: formValues.score || undefined,

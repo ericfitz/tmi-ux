@@ -74,6 +74,7 @@ export interface Threat {
   mitigated?: boolean;
   status?: string;
   threat_type: string;
+  asset_id?: string;
   issue_uri?: string;
   metadata?: Metadata[];
 }
