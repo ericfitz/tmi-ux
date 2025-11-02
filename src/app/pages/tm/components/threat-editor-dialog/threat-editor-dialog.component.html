@@ -4,22 +4,9 @@
 <mat-dialog-content [dir]="currentDirection" appScrollIndicator>
   <!-- Force translation update -->
   <div style="display: none">{{ 'common.threatName' | transloco }}</div>
-  <!-- Threat ID and timestamps section -->
+  <!-- Timestamps section -->
   @if (data.threat) {
     <div class="info-section-vertical" [dir]="currentDirection">
-      <div class="info-field">
-        <span class="info-label">{{ 'common.threatId' | transloco }}:</span>
-        <span class="info-value">{{ data.threat.id }}</span>
-        <button
-          mat-icon-button
-          class="copy-button"
-          (click)="copyToClipboard(data.threat.id)"
-          matTooltip="{{ 'common.copyToClipboard' | transloco }}"
-          [attr.aria-label]="'common.copyToClipboard' | transloco"
-        >
-          <mat-icon>content_copy</mat-icon>
-        </button>
-      </div>
       <div class="info-field dates-row">
         <div class="date-field">
           <span class="info-label">{{ 'common.created' | transloco }}:</span>
@@ -234,7 +221,7 @@
             {{
               diagram.id === NOT_ASSOCIATED_VALUE
                 ? diagram.name
-                : diagram.id + ' (' + diagram.name + ')'
+                : diagram.name + ' (' + diagram.id + ')'
             }}
           </mat-option>
         </mat-select>
@@ -247,7 +234,7 @@
         <mat-label>{{ 'common.cellId' | transloco }}</mat-label>
         <mat-select formControlName="cell_id" tabindex="13">
           <mat-option *ngFor="let cell of cellOptions" [value]="cell.id">
-            {{ cell.id === NOT_ASSOCIATED_VALUE ? cell.label : cell.id + ' (' + cell.label + ')' }}
+            {{ cell.id === NOT_ASSOCIATED_VALUE ? cell.label : cell.label + ' (' + cell.id + ')' }}
           </mat-option>
         </mat-select>
       </mat-form-field>
