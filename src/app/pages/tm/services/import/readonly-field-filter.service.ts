@@ -45,9 +45,15 @@ export class ReadonlyFieldFilterService {
 
   /**
    * Fields that should be stripped before POST (create) but allowed in PUT (update)
-   * cells is not part of CreateDiagramRequest but is part of the full Diagram schema
+   * CreateDiagramRequest only accepts 'name' and 'type' fields
    */
-  private readonly _diagramCreateOnlyFields = ['cells', 'created_at', 'modified_at', 'metadata'] as const;
+  private readonly _diagramCreateOnlyFields = [
+    'cells',
+    'description',
+    'created_at',
+    'modified_at',
+    'metadata',
+  ] as const;
 
   /**
    * Read-only fields on Note that should be stripped before POST/PUT
