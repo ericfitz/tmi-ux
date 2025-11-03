@@ -632,29 +632,8 @@ describe('AppDfdOrchestrator', () => {
       });
     });
 
-    it.skip('should trigger auto-save on successful operations', () => {
-      mockGraphOperationManager.execute.mockReturnValue(of(mockResult));
-      mockAutoSaveManager.trigger.mockReturnValue(of(true));
-
-      return new Promise<void>((resolve, reject) => {
-        // Add a timeout to fail the test if it hangs
-        const timeout = setTimeout(() => {
-          reject(new Error('Test timed out waiting for executeOperation'));
-        }, 1000);
-
-        service.executeOperation(createNodeOperation).subscribe({
-          next: () => {
-            clearTimeout(timeout);
-            expect(mockAutoSaveManager.trigger).toHaveBeenCalled();
-            resolve();
-          },
-          error: (err: Error) => {
-            clearTimeout(timeout);
-            reject(err);
-          },
-        });
-      });
-    });
+    // Test removed: Obsolete after history-based auto-save refactor
+    // Auto-save is now triggered through a different mechanism
   });
 
   describe('High-Level User Actions', () => {
