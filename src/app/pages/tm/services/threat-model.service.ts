@@ -573,19 +573,22 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Import a threat model from external JSON data
-   * In API mode, checks for existing model and handles conflicts
-   * @param data Validated threat model data from desktop file
-   * @param conflictResolution Optional resolution for conflicts ('discard' | 'overwrite')
+   * Import a threat model from external JSON data.
+   * Always creates a new threat model with a server-assigned ID.
+   * The original ID from the exported file is preserved in the ID translation map
+   * for reference mapping of nested objects (threats, diagrams, etc.).
+   *
+   * @param data Validated threat model data from exported JSON file
    */
   importThreatModel(
     data: Partial<ThreatModel> & { id: string; name: string },
-    conflictResolution?: 'discard' | 'overwrite',
   ): Observable<{
     model: ThreatModel;
-    conflict?: { existingModel: ThreatModel; action: 'prompt' | 'resolved' };
   }> {
-    this.logger.info('Importing threat model', { originalId: data.id, name: data.name });
+    this.logger.info('Importing threat model as new instance', {
+      originalId: data.id,
+      name: data.name,
+    });
 
     if (this.isOfflineMode) {
       // Generate a new ID to avoid conflicts
@@ -615,50 +618,11 @@ export class ThreatModelService implements OnDestroy {
       });
       return of({ model: importedModel });
     } else {
-      // For API mode, check if threat model already exists
-      this.logger.debugComponent('ThreatModelService', 'Checking for existing threat model in API');
+      // For API mode, always create a new threat model
+      this.logger.debugComponent('ThreatModelService', 'Creating new threat model via API');
 
-      return this.getThreatModelById(data.id).pipe(
-        switchMap(existingModel => {
-          if (existingModel) {
-            this.logger.debugComponent('ThreatModelService', 'Found existing threat model', {
-              id: existingModel.id,
-              name: existingModel.name,
-            });
-
-            // Handle conflict resolution
-            if (conflictResolution === 'discard') {
-              this.logger.info('Discarding loaded threat model due to conflict');
-              return of({
-                model: existingModel,
-                conflict: { existingModel, action: 'resolved' as const },
-              });
-            } else if (conflictResolution === 'overwrite') {
-              this.logger.info('Overwriting existing threat model');
-              return this.updateExistingThreatModel(data).pipe(
-                map(updatedModel => ({
-                  model: updatedModel,
-                  conflict: { existingModel, action: 'resolved' as const },
-                })),
-              );
-            } else {
-              // No resolution provided - return conflict for user prompt
-              return of({
-                model: existingModel,
-                conflict: { existingModel, action: 'prompt' as const },
-              });
-            }
-          } else {
-            // No existing model found - create new one
-            this.logger.debugComponent(
-              'ThreatModelService',
-              'No existing threat model found, creating new one',
-            );
-            return this.createNewThreatModelFromImport(data).pipe(
-              map(newModel => ({ model: newModel })),
-            );
-          }
-        }),
+      return this.createNewThreatModelFromImport(data).pipe(
+        map(newModel => ({ model: newModel })),
         catchError(error => {
           this.logger.error('Failed to import threat model via API', error);
           throw error;
@@ -756,18 +720,6 @@ export class ThreatModelService implements OnDestroy {
           return summary.threatModel;
         }),
       );
-  }
-
-  /**
-   * Update existing threat model with imported data
-   */
-  private updateExistingThreatModel(
-    data: Partial<ThreatModel> & { id: string; name: string },
-  ): Observable<ThreatModel> {
-    // Remove server-managed fields from imported data before sending to API
-    const { filtered } = this.fieldFilter.filterThreatModel(data as Record<string, unknown>);
-
-    return this.apiService.put<ThreatModel>(`threat_models/${data.id}`, filtered);
   }
 
   /**

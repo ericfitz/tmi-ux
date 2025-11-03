@@ -473,37 +473,13 @@ export class TmComponent implements OnInit, OnDestroy {
         this.logger.warn('Threat model has validation warnings', validationResult.warnings);
       }
 
-      // Attempt to import the threat model
+      // Import the threat model (always creates a new instance)
       const result = await this.threatModelService
         .importThreatModel(data as Partial<ThreatModel> & { id: string; name: string })
         .toPromise();
 
-      if (result?.conflict?.action === 'prompt') {
-        // Handle conflict - ask user what to do
-        const resolution = this.showConflictDialog(
-          data as Partial<ThreatModel> & { id: string; name: string },
-          result.conflict.existingModel,
-        );
-
-        if (resolution === 'cancel') {
-          this.logger.info('User cancelled import due to conflict');
-          return;
-        }
-
-        // Re-import with user's resolution
-        const resolvedResult = await this.threatModelService
-          .importThreatModel(
-            data as Partial<ThreatModel> & { id: string; name: string },
-            resolution,
-          )
-          .toPromise();
-
-        if (resolvedResult) {
-          this.navigateToImportedModel(resolvedResult.model, resolution === 'overwrite');
-        }
-      } else if (result) {
-        // No conflict or already resolved
-        this.navigateToImportedModel(result.model, !!result.conflict);
+      if (result) {
+        this.navigateToImportedModel(result.model);
       }
     } catch (error) {
       this.logger.error('Failed to import threat model', error);
@@ -515,11 +491,10 @@ export class TmComponent implements OnInit, OnDestroy {
     }
   }
 
-  private navigateToImportedModel(model: ThreatModel, wasConflict: boolean): void {
-    const action = wasConflict ? 'updated' : 'imported';
-    this.logger.info(`Threat model ${action} successfully`, { id: model.id });
+  private navigateToImportedModel(model: ThreatModel): void {
+    this.logger.info('Threat model imported successfully', { id: model.id });
 
-    this.snackBar.open(`Threat model "${model.name}" ${action} successfully`, 'Close', {
+    this.snackBar.open(`Threat model "${model.name}" imported successfully`, 'Close', {
       duration: 3000,
     });
 
@@ -527,23 +502,6 @@ export class TmComponent implements OnInit, OnDestroy {
     void this.router.navigate(['/tm', model.id]);
   }
 
-  private showConflictDialog(
-    loadedModel: Partial<ThreatModel> & { id: string; name: string },
-    existingModel: ThreatModel,
-  ): 'discard' | 'overwrite' | 'cancel' {
-    // For now, use a simple browser confirm dialog
-    // TODO: Replace with a proper Angular Material dialog
-    const message =
-      `A threat model with the same ID already exists:\n\n` +
-      `Existing: "${existingModel.name}" (last modified: ${existingModel.modified_at})\n` +
-      `Loaded: "${loadedModel.name}"\n\n` +
-      `Choose:\n` +
-      `OK = Overwrite existing model with loaded data\n` +
-      `Cancel = Keep existing model, discard loaded data`;
-
-    const userChoice = confirm(message);
-    return userChoice ? 'overwrite' : 'discard';
-  }
 
   private showError(message: string): void {
     this.snackBar.open(message, 'Close', {
