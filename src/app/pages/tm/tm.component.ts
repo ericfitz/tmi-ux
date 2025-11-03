@@ -78,6 +78,7 @@ export class TmComponent implements OnInit, OnDestroy {
   // Loading state
   isLoadingThreatModels = true;
   isLoadingCollaborationSessions = true;
+  isImporting = false;
 
   private subscription: Subscription | null = null;
   private languageSubscription: Subscription | null = null;
@@ -445,6 +446,7 @@ export class TmComponent implements OnInit, OnDestroy {
    * Import a threat model from parsed JSON data
    */
   private async importThreatModel(data: Record<string, unknown>): Promise<void> {
+    this.isImporting = true;
     try {
       // Basic validation - check if it has expected threat model structure
       if (typeof data['id'] !== 'string' || typeof data['name'] !== 'string') {
@@ -508,6 +510,8 @@ export class TmComponent implements OnInit, OnDestroy {
       this.showError(
         `Failed to import threat model: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
+    } finally {
+      this.isImporting = false;
     }
   }
 

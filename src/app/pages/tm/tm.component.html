@@ -211,3 +211,13 @@
     </div>
   </div>
 }
+
+<!-- Import overlay spinner -->
+@if (isImporting) {
+  <div class="import-overlay">
+    <div class="import-spinner-container">
+      <div class="spinner"></div>
+      <p class="import-message">{{ 'threatModels.importing' | transloco }}</p>
+    </div>
+  </div>
+}

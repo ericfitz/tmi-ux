@@ -79,6 +79,11 @@ function isHttpErrorResponse(error: unknown): error is HttpErrorResponse {
 }
 import { AuthService } from '../../../auth/services/auth.service';
 import { ThreatModelAuthorizationService } from './threat-model-authorization.service';
+import {
+  ImportOrchestratorService,
+  type ImportSummary,
+} from './import/import-orchestrator.service';
+import { ReadonlyFieldFilterService } from './import/readonly-field-filter.service';
 
 @Injectable({
   providedIn: 'root',
@@ -94,6 +99,8 @@ export class ThreatModelService implements OnDestroy {
     private mockDataService: MockDataService,
     private authService: AuthService,
     private authorizationService: ThreatModelAuthorizationService,
+    private importOrchestrator: ImportOrchestratorService,
+    private fieldFilter: ReadonlyFieldFilterService,
   ) {
     this.logger.debugComponent('ThreatModelService', 'ThreatModelService initialized');
   }
@@ -661,32 +668,92 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Create a new threat model from imported data
+   * Create a new threat model from imported data.
+   * Uses the import orchestrator to handle nested objects and ID translation.
    */
   private createNewThreatModelFromImport(
     data: Partial<ThreatModel> & { id: string; name: string },
   ): Observable<ThreatModel> {
-    // Remove the original ID and server-managed timestamps, let the server assign new ones
+    this.logger.info('Starting orchestrated import of threat model with nested objects');
 
-    const { id, created_at, modified_at, ...importData } = data;
+    // Use orchestrator to handle the complete import
+    return this.importOrchestrator
+      .orchestrateImport(data as Record<string, unknown>, {
+        // Threat Model creation
+        createThreatModel: tmData => {
+          const { filtered } = this.fieldFilter.filterThreatModel(tmData);
+          // Ensure required fields have defaults
+          const body = {
+            ...filtered,
+            name: tmData['name'] || 'Untitled',
+            description: (tmData['description'] as string) || '',
+            threat_model_framework:
+              tmData['threat_model_framework'] &&
+              typeof tmData['threat_model_framework'] === 'string' &&
+              (tmData['threat_model_framework'] as string).trim() !== ''
+                ? tmData['threat_model_framework']
+                : 'STRIDE',
+          };
+          return this.apiService.post<ThreatModel>('threat_models', body);
+        },
 
-    const body = {
-      name: data.name,
-      description: data.description || '',
-      threat_model_framework:
-        data.threat_model_framework && data.threat_model_framework.trim() !== ''
-          ? data.threat_model_framework
-          : 'STRIDE',
-      issue_uri: data.issue_uri,
-      // Include other relevant fields from the imported data, but exclude fields we've already set above
-      ...Object.fromEntries(
-        Object.entries(importData).filter(
-          ([key]) => !['name', 'description', 'threat_model_framework', 'issue_uri'].includes(key),
-        ),
-      ),
-    };
+        // Asset operations
+        createAsset: (tmId, asset) => this.createAsset(tmId, asset as Partial<Asset>),
 
-    return this.apiService.post<ThreatModel>('threat_models', body);
+        // Note operations
+        createNote: (tmId, note) => this.createNote(tmId, note as Partial<Note>),
+
+        // Document operations
+        createDocument: (tmId, document) =>
+          this.createDocument(tmId, document as Partial<TMDocument>),
+
+        // Repository operations
+        createRepository: (tmId, repository) =>
+          this.createRepository(tmId, repository as Partial<Repository>),
+
+        // Diagram operations
+        createDiagram: (tmId, diagram) => this.createDiagram(tmId, diagram as Partial<Diagram>),
+
+        // Threat operations
+        createThreat: (tmId, threat) => this.createThreat(tmId, threat as Partial<Threat>),
+
+        // Metadata operations
+        updateThreatModelMetadata: (tmId, metadata) =>
+          this.updateThreatModelMetadata(tmId, metadata),
+        updateAssetMetadata: (tmId, assetId, metadata) =>
+          this.updateAssetMetadata(tmId, assetId, metadata),
+        updateNoteMetadata: (tmId, noteId, metadata) =>
+          this.updateNoteMetadata(tmId, noteId, metadata),
+        updateDiagramMetadata: (tmId, diagramId, metadata) =>
+          this.updateDiagramMetadata(tmId, diagramId, metadata),
+        updateThreatMetadata: (tmId, threatId, metadata) =>
+          this.updateThreatMetadata(tmId, threatId, metadata),
+        updateDocumentMetadata: (tmId, documentId, metadata) =>
+          this.updateDocumentMetadata(tmId, documentId, metadata),
+        updateRepositoryMetadata: (tmId, repositoryId, metadata) =>
+          this.updateRepositoryMetadata(tmId, repositoryId, metadata),
+      })
+      .pipe(
+        map((summary: ImportSummary) => {
+          if (!summary.success || !summary.threatModel) {
+            throw new Error(`Import failed: ${summary.errors.join(', ') || 'Unknown error'}`);
+          }
+
+          // Log import summary
+          this.logger.info('Import completed', {
+            threatModelId: summary.threatModel.id,
+            counts: summary.counts,
+            errors: summary.errors,
+          });
+
+          // Warn about any errors
+          if (summary.errors.length > 0) {
+            this.logger.warn('Import completed with warnings', summary.errors);
+          }
+
+          return summary.threatModel;
+        }),
+      );
   }
 
   /**
@@ -696,12 +763,9 @@ export class ThreatModelService implements OnDestroy {
     data: Partial<ThreatModel> & { id: string; name: string },
   ): Observable<ThreatModel> {
     // Remove server-managed fields from imported data before sending to API
-    const { id, created_at, modified_at, ...updateData } = data;
+    const { filtered } = this.fieldFilter.filterThreatModel(data as Record<string, unknown>);
 
-    return this.apiService.put<ThreatModel>(
-      `threat_models/${data.id}`,
-      updateData as unknown as Record<string, unknown>,
-    );
+    return this.apiService.put<ThreatModel>(`threat_models/${data.id}`, filtered);
   }
 
   /**

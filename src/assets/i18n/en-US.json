@@ -389,6 +389,7 @@
     "editRepository": "Edit Repository Reference",
     "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",
     "idLabel": "ID:",
+    "importing": "Importing threat model...",
     "issueUriHint": "Enter a URL to track this threat model in an external system",
     "name": "Name",
     "newThreatModel": "New Threat Model",
