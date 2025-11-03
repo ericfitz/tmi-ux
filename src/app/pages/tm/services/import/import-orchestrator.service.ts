@@ -51,7 +51,11 @@ export interface ImportDependencies {
   createAsset: (tmId: string, asset: Record<string, unknown>) => Observable<Asset>;
   createNote: (tmId: string, note: Record<string, unknown>) => Observable<Note>;
   createDiagram: (tmId: string, diagram: Record<string, unknown>) => Observable<Diagram>;
-  updateDiagram: (tmId: string, diagramId: string, diagram: Record<string, unknown>) => Observable<Diagram>;
+  updateDiagram: (
+    tmId: string,
+    diagramId: string,
+    diagram: Record<string, unknown>,
+  ) => Observable<Diagram>;
   createThreat: (tmId: string, threat: Record<string, unknown>) => Observable<Threat>;
   createDocument: (tmId: string, document: Record<string, unknown>) => Observable<TMDocument>;
   createRepository: (tmId: string, repository: Record<string, unknown>) => Observable<Repository>;
@@ -333,7 +337,7 @@ export class ImportOrchestratorService {
     deps: ImportDependencies,
     summary: ImportSummary,
   ): Observable<void> {
-    const notes = (importedData["notes"] as Record<string, unknown>[]) || [];
+    const notes = (importedData['notes'] as Record<string, unknown>[]) || [];
     if (notes.length === 0) {
       return of(undefined);
     }
@@ -366,7 +370,7 @@ export class ImportOrchestratorService {
     threatModelId: string,
     deps: ImportDependencies,
   ): Observable<ImportResult<Note>> {
-    const originalId = note["id"] as string | undefined;
+    const originalId = note['id'] as string | undefined;
     const { filtered, metadata } = this._fieldFilter.filterNote(note);
     const rewritten = this._referenceRewriter.rewriteNoteReferences(filtered);
 
@@ -410,7 +414,7 @@ export class ImportOrchestratorService {
     deps: ImportDependencies,
     summary: ImportSummary,
   ): Observable<void> {
-    const documents = (importedData["documents"] as Record<string, unknown>[]) || [];
+    const documents = (importedData['documents'] as Record<string, unknown>[]) || [];
     if (documents.length === 0) {
       return of(undefined);
     }
@@ -443,7 +447,7 @@ export class ImportOrchestratorService {
     threatModelId: string,
     deps: ImportDependencies,
   ): Observable<ImportResult<TMDocument>> {
-    const originalId = document["id"] as string | undefined;
+    const originalId = document['id'] as string | undefined;
     const { filtered, metadata } = this._fieldFilter.filterDocument(document);
     const rewritten = this._referenceRewriter.rewriteDocumentReferences(filtered);
 
@@ -487,7 +491,7 @@ export class ImportOrchestratorService {
     deps: ImportDependencies,
     summary: ImportSummary,
   ): Observable<void> {
-    const repositories = (importedData["repositories"] as Record<string, unknown>[]) || [];
+    const repositories = (importedData['repositories'] as Record<string, unknown>[]) || [];
     if (repositories.length === 0) {
       return of(undefined);
     }
@@ -522,7 +526,7 @@ export class ImportOrchestratorService {
     threatModelId: string,
     deps: ImportDependencies,
   ): Observable<ImportResult<Repository>> {
-    const originalId = repository["id"] as string | undefined;
+    const originalId = repository['id'] as string | undefined;
     const { filtered, metadata } = this._fieldFilter.filterRepository(repository);
     const rewritten = this._referenceRewriter.rewriteRepositoryReferences(filtered);
 
@@ -566,7 +570,7 @@ export class ImportOrchestratorService {
     deps: ImportDependencies,
     summary: ImportSummary,
   ): Observable<void> {
-    const diagrams = (importedData["diagrams"] as Record<string, unknown>[]) || [];
+    const diagrams = (importedData['diagrams'] as Record<string, unknown>[]) || [];
     if (diagrams.length === 0) {
       return of(undefined);
     }
@@ -599,7 +603,7 @@ export class ImportOrchestratorService {
     threatModelId: string,
     deps: ImportDependencies,
   ): Observable<ImportResult<Diagram>> {
-    const originalId = diagram["id"] as string | undefined;
+    const originalId = diagram['id'] as string | undefined;
     const { filtered, metadata, cells } = this._fieldFilter.filterDiagram(diagram);
     const rewritten = this._referenceRewriter.rewriteDiagramReferences(filtered);
 
@@ -613,12 +617,15 @@ export class ImportOrchestratorService {
         // Update diagram with cells if present
         // Cells must be added via PUT after creation since CreateDiagramRequest doesn't accept them
         if (cells && cells.length > 0) {
+          // Filter cells to match API schema (remove edge 'shape' field, normalize label positions)
+          const filteredCells = this._fieldFilter.filterCells(cells);
+
           const diagramUpdate: Record<string, unknown> = {
             name: created.name,
             type: created.type,
             created_at: created.created_at,
             modified_at: created.modified_at,
-            cells: cells,
+            cells: filteredCells,
           };
 
           if (created.description) {
@@ -680,7 +687,7 @@ export class ImportOrchestratorService {
     deps: ImportDependencies,
     summary: ImportSummary,
   ): Observable<void> {
-    const threats = (importedData["threats"] as Record<string, unknown>[]) || [];
+    const threats = (importedData['threats'] as Record<string, unknown>[]) || [];
     if (threats.length === 0) {
       return of(undefined);
     }
@@ -713,7 +720,7 @@ export class ImportOrchestratorService {
     threatModelId: string,
     deps: ImportDependencies,
   ): Observable<ImportResult<Threat>> {
-    const originalId = threat["id"] as string | undefined;
+    const originalId = threat['id'] as string | undefined;
     const { filtered, metadata } = this._fieldFilter.filterThreat(threat);
     // Rewrite references (diagram_id, asset_id) - cell_id is preserved
     const rewritten = this._referenceRewriter.rewriteThreatReferences(filtered);

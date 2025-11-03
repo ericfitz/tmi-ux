@@ -502,7 +502,6 @@ export class TmComponent implements OnInit, OnDestroy {
     void this.router.navigate(['/tm', model.id]);
   }
 
-
   private showError(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 5000,

@@ -20,30 +20,30 @@ export class ReferenceRewriterService {
     const rewritten = { ...threat };
 
     // Rewrite diagram_id if present
-    if (typeof rewritten["diagram_id"] === 'string' && rewritten["diagram_id"]) {
-      const newDiagramId = this._idTranslation.getDiagramId(rewritten["diagram_id"]);
+    if (typeof rewritten['diagram_id'] === 'string' && rewritten['diagram_id']) {
+      const newDiagramId = this._idTranslation.getDiagramId(rewritten['diagram_id']);
       if (newDiagramId) {
-        rewritten["diagram_id"] = newDiagramId;
+        rewritten['diagram_id'] = newDiagramId;
       } else {
         // Diagram ID not found in translation map - clear the reference
         console.warn(
-          `Threat references unknown diagram_id: ${rewritten["diagram_id"]}. Reference will be cleared.`,
+          `Threat references unknown diagram_id: ${rewritten['diagram_id']}. Reference will be cleared.`,
         );
-        delete rewritten["diagram_id"];
+        delete rewritten['diagram_id'];
       }
     }
 
     // Rewrite asset_id if present
-    if (typeof rewritten["asset_id"] === 'string' && rewritten["asset_id"]) {
-      const newAssetId = this._idTranslation.getAssetId(rewritten["asset_id"]);
+    if (typeof rewritten['asset_id'] === 'string' && rewritten['asset_id']) {
+      const newAssetId = this._idTranslation.getAssetId(rewritten['asset_id']);
       if (newAssetId) {
-        rewritten["asset_id"] = newAssetId;
+        rewritten['asset_id'] = newAssetId;
       } else {
         // Asset ID not found in translation map - clear the reference
         console.warn(
-          `Threat references unknown asset_id: ${rewritten["asset_id"]}. Reference will be cleared.`,
+          `Threat references unknown asset_id: ${rewritten['asset_id']}. Reference will be cleared.`,
         );
-        delete rewritten["asset_id"];
+        delete rewritten['asset_id'];
       }
     }
 

@@ -102,7 +102,7 @@ export class ReadonlyFieldFilterService {
     filtered: Record<string, unknown>;
     metadata: Metadata[] | undefined;
   } {
-    const metadata = data["metadata"] as Metadata[] | undefined;
+    const metadata = data['metadata'] as Metadata[] | undefined;
     const filtered = this._filterFields(data, this._threatModelReadOnlyFields);
     return { filtered, metadata };
   }
@@ -115,7 +115,7 @@ export class ReadonlyFieldFilterService {
     filtered: Record<string, unknown>;
     metadata: Metadata[] | undefined;
   } {
-    const metadata = data["metadata"] as Metadata[] | undefined;
+    const metadata = data['metadata'] as Metadata[] | undefined;
     const filtered = this._filterFields(data, this._threatReadOnlyFields);
     return { filtered, metadata };
   }
@@ -131,14 +131,11 @@ export class ReadonlyFieldFilterService {
     metadata: Metadata[] | undefined;
     cells: unknown[] | undefined;
   } {
-    const metadata = data["metadata"] as Metadata[] | undefined;
-    const cells = data["cells"] as unknown[] | undefined;
+    const metadata = data['metadata'] as Metadata[] | undefined;
+    const cells = data['cells'] as unknown[] | undefined;
 
     // Combine both readonly and create-only fields for filtering
-    const allFieldsToFilter = [
-      ...this._diagramReadOnlyFields,
-      ...this._diagramCreateOnlyFields,
-    ];
+    const allFieldsToFilter = [...this._diagramReadOnlyFields, ...this._diagramCreateOnlyFields];
     const filtered = this._filterFields(data, allFieldsToFilter);
 
     return { filtered, metadata, cells };
@@ -152,7 +149,7 @@ export class ReadonlyFieldFilterService {
     filtered: Record<string, unknown>;
     metadata: Metadata[] | undefined;
   } {
-    const metadata = data["metadata"] as Metadata[] | undefined;
+    const metadata = data['metadata'] as Metadata[] | undefined;
     const filtered = this._filterFields(data, this._noteReadOnlyFields);
     return { filtered, metadata };
   }
@@ -165,7 +162,7 @@ export class ReadonlyFieldFilterService {
     filtered: Record<string, unknown>;
     metadata: Metadata[] | undefined;
   } {
-    const metadata = data["metadata"] as Metadata[] | undefined;
+    const metadata = data['metadata'] as Metadata[] | undefined;
     const filtered = this._filterFields(data, this._assetReadOnlyFields);
     return { filtered, metadata };
   }
@@ -178,7 +175,7 @@ export class ReadonlyFieldFilterService {
     filtered: Record<string, unknown>;
     metadata: Metadata[] | undefined;
   } {
-    const metadata = data["metadata"] as Metadata[] | undefined;
+    const metadata = data['metadata'] as Metadata[] | undefined;
     const filtered = this._filterFields(data, this._documentReadOnlyFields);
     return { filtered, metadata };
   }
@@ -191,9 +188,66 @@ export class ReadonlyFieldFilterService {
     filtered: Record<string, unknown>;
     metadata: Metadata[] | undefined;
   } {
-    const metadata = data["metadata"] as Metadata[] | undefined;
+    const metadata = data['metadata'] as Metadata[] | undefined;
     const filtered = this._filterFields(data, this._repositoryReadOnlyFields);
     return { filtered, metadata };
+  }
+
+  /**
+   * Filters cell-specific fields to match API schema requirements.
+   * Handles differences between nodes and edges:
+   * - Edges: Removes 'shape' field (type='edge' is sufficient), normalizes label positions
+   * - Nodes: Keeps 'shape' field (required for node type discrimination)
+   *
+   * @param cell The cell object to filter
+   * @returns Filtered cell object ready for API submission
+   */
+  filterCell(cell: Record<string, unknown>): Record<string, unknown> {
+    const filtered = { ...cell };
+
+    // Determine if this is an edge based on type or shape
+    const isEdge = filtered['type'] === 'edge' || filtered['shape'] === 'edge';
+
+    if (isEdge) {
+      // For edges, remove the 'shape' field entirely
+      // The API uses 'type' for discrimination and doesn't expect 'shape' for edges
+      delete filtered['shape'];
+
+      // Normalize edge label positions from X6 format to API format
+      // X6 uses {distance, offset, angle} but API expects a simple number 0-1
+      if (Array.isArray(filtered['labels'])) {
+        filtered['labels'] = (filtered['labels'] as Array<Record<string, unknown>>).map(label => {
+          const normalizedLabel = { ...label };
+          if (
+            typeof label['position'] === 'object' &&
+            label['position'] !== null &&
+            'distance' in label['position']
+          ) {
+            // Extract the distance value as the position (0-1 range)
+            const posObj = label['position'] as Record<string, unknown>;
+            normalizedLabel['position'] = posObj['distance'];
+          }
+          return normalizedLabel;
+        });
+      }
+    }
+
+    return filtered;
+  }
+
+  /**
+   * Filters an array of cells, applying cell-specific filtering to each.
+   *
+   * @param cells Array of cells to filter
+   * @returns Array of filtered cells
+   */
+  filterCells(cells: unknown[]): unknown[] {
+    return cells.map(cell => {
+      if (typeof cell === 'object' && cell !== null) {
+        return this.filterCell(cell as Record<string, unknown>);
+      }
+      return cell;
+    });
   }
 
   /**

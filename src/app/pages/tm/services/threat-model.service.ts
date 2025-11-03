@@ -580,9 +580,7 @@ export class ThreatModelService implements OnDestroy {
    *
    * @param data Validated threat model data from exported JSON file
    */
-  importThreatModel(
-    data: Partial<ThreatModel> & { id: string; name: string },
-  ): Observable<{
+  importThreatModel(data: Partial<ThreatModel> & { id: string; name: string }): Observable<{
     model: ThreatModel;
   }> {
     this.logger.info('Importing threat model as new instance', {
@@ -654,7 +652,7 @@ export class ThreatModelService implements OnDestroy {
             threat_model_framework:
               tmData['threat_model_framework'] &&
               typeof tmData['threat_model_framework'] === 'string' &&
-              (tmData['threat_model_framework']).trim() !== ''
+              tmData['threat_model_framework'].trim() !== ''
                 ? tmData['threat_model_framework']
                 : 'STRIDE',
           };
