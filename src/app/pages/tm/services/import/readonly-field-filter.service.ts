@@ -44,6 +44,12 @@ export class ReadonlyFieldFilterService {
   private readonly _diagramReadOnlyFields = ['id', 'update_vector'] as const;
 
   /**
+   * Fields that should be stripped before POST (create) but allowed in PUT (update)
+   * cells is not part of CreateDiagramRequest but is part of the full Diagram schema
+   */
+  private readonly _diagramCreateOnlyFields = ['cells', 'created_at', 'modified_at', 'metadata'] as const;
+
+  /**
    * Read-only fields on Note that should be stripped before POST/PUT
    * Note: metadata is NOT read-only despite what the schema says - it's managed via separate endpoints
    */
@@ -108,17 +114,27 @@ export class ReadonlyFieldFilterService {
   }
 
   /**
-   * Filters read-only fields from a Diagram object.
-   * Also extracts metadata for separate handling.
-   * Note: Preserves cells array as cell IDs are client-managed.
+   * Filters read-only fields from a Diagram object for CREATE operations.
+   * Extracts metadata and cells for separate handling.
+   * CreateDiagramRequest only accepts 'name' and 'type' fields.
+   * Cells must be added via a subsequent PUT/PATCH operation.
    */
   filterDiagram(data: Record<string, unknown>): {
     filtered: Record<string, unknown>;
     metadata: Metadata[] | undefined;
+    cells: unknown[] | undefined;
   } {
     const metadata = data["metadata"] as Metadata[] | undefined;
-    const filtered = this._filterFields(data, this._diagramReadOnlyFields);
-    return { filtered, metadata };
+    const cells = data["cells"] as unknown[] | undefined;
+
+    // Combine both readonly and create-only fields for filtering
+    const allFieldsToFilter = [
+      ...this._diagramReadOnlyFields,
+      ...this._diagramCreateOnlyFields,
+    ];
+    const filtered = this._filterFields(data, allFieldsToFilter);
+
+    return { filtered, metadata, cells };
   }
 
   /**

@@ -51,6 +51,7 @@ export interface ImportDependencies {
   createAsset: (tmId: string, asset: Record<string, unknown>) => Observable<Asset>;
   createNote: (tmId: string, note: Record<string, unknown>) => Observable<Note>;
   createDiagram: (tmId: string, diagram: Record<string, unknown>) => Observable<Diagram>;
+  updateDiagram: (tmId: string, diagramId: string, diagram: Record<string, unknown>) => Observable<Diagram>;
   createThreat: (tmId: string, threat: Record<string, unknown>) => Observable<Threat>;
   createDocument: (tmId: string, document: Record<string, unknown>) => Observable<TMDocument>;
   createRepository: (tmId: string, repository: Record<string, unknown>) => Observable<Repository>;
@@ -148,7 +149,7 @@ export class ImportOrchestratorService {
 
         // Store original TM ID if present
         if (typeof importedData['id'] === 'string') {
-          this._idTranslation.setThreatModelId(importedData['id'] as string, threatModelId);
+          this._idTranslation.setThreatModelId(importedData['id'], threatModelId);
         }
 
         // Step 2-7: Create nested objects in dependency order
@@ -599,7 +600,7 @@ export class ImportOrchestratorService {
     deps: ImportDependencies,
   ): Observable<ImportResult<Diagram>> {
     const originalId = diagram["id"] as string | undefined;
-    const { filtered, metadata } = this._fieldFilter.filterDiagram(diagram);
+    const { filtered, metadata, cells } = this._fieldFilter.filterDiagram(diagram);
     const rewritten = this._referenceRewriter.rewriteDiagramReferences(filtered);
 
     return deps.createDiagram(threatModelId, rewritten).pipe(
@@ -609,7 +610,42 @@ export class ImportOrchestratorService {
           this._idTranslation.setDiagramId(originalId, created.id);
         }
 
-        // Update metadata if present
+        // Update diagram with cells if present
+        // Cells must be added via PUT after creation since CreateDiagramRequest doesn't accept them
+        if (cells && cells.length > 0) {
+          const diagramUpdate: Record<string, unknown> = {
+            name: created.name,
+            type: created.type,
+            cells: cells,
+          };
+
+          if (created.description) {
+            diagramUpdate['description'] = created.description;
+          }
+
+          return deps.updateDiagram(threatModelId, created.id, diagramUpdate).pipe(
+            switchMap(updatedDiagram => {
+              // Update metadata if present
+              if (metadata && metadata.length > 0) {
+                return deps.updateDiagramMetadata(threatModelId, created.id, metadata).pipe(
+                  map(() => ({ success: true, data: updatedDiagram, originalId })),
+                  catchError(error => {
+                    this._logger.warn(`Failed to update diagram metadata for ${created.id}`, error);
+                    return of({ success: true, data: updatedDiagram, originalId });
+                  }),
+                );
+              }
+              return of({ success: true, data: updatedDiagram, originalId });
+            }),
+            catchError(error => {
+              this._logger.warn(`Failed to update diagram cells for ${created.id}`, error);
+              // Still consider it a success since diagram was created, just without cells
+              return of({ success: true, data: created, originalId });
+            }),
+          );
+        }
+
+        // No cells to add, just update metadata if present
         if (metadata && metadata.length > 0) {
           return deps.updateDiagramMetadata(threatModelId, created.id, metadata).pipe(
             map(() => ({ success: true, data: created, originalId })),

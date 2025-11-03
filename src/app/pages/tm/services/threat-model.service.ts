@@ -690,7 +690,7 @@ export class ThreatModelService implements OnDestroy {
             threat_model_framework:
               tmData['threat_model_framework'] &&
               typeof tmData['threat_model_framework'] === 'string' &&
-              (tmData['threat_model_framework'] as string).trim() !== ''
+              (tmData['threat_model_framework']).trim() !== ''
                 ? tmData['threat_model_framework']
                 : 'STRIDE',
           };
@@ -713,6 +713,8 @@ export class ThreatModelService implements OnDestroy {
 
         // Diagram operations
         createDiagram: (tmId, diagram) => this.createDiagram(tmId, diagram as Partial<Diagram>),
+        updateDiagram: (tmId, diagramId, diagram) =>
+          this.updateDiagram(tmId, diagramId, diagram as Partial<Diagram>),
 
         // Threat operations
         createThreat: (tmId, threat) => this.createThreat(tmId, threat as Partial<Threat>),
@@ -1392,6 +1394,61 @@ export class ThreatModelService implements OnDestroy {
       .pipe(
         catchError(error => {
           this.logger.error(`Error creating diagram in threat model ID: ${threatModelId}`, error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Update a diagram using PUT (full replacement).
+   * Used during import to add cells after initial diagram creation.
+   */
+  updateDiagram(
+    threatModelId: string,
+    diagramId: string,
+    diagram: Partial<Diagram>,
+  ): Observable<Diagram> {
+    if (this.isOfflineMode) {
+      this.logger.info('Offline mode - updating diagram in cache only');
+
+      const threatModel = this._cachedThreatModels.get(threatModelId);
+      if (threatModel && threatModel.diagrams) {
+        const diagramIndex = threatModel.diagrams.findIndex(d => d.id === diagramId);
+        if (diagramIndex !== -1) {
+          const updatedDiagram: Diagram = {
+            ...threatModel.diagrams[diagramIndex],
+            ...diagram,
+            id: diagramId,
+            modified_at: new Date().toISOString(),
+          } as Diagram;
+
+          const updatedDiagrams = [...threatModel.diagrams];
+          updatedDiagrams[diagramIndex] = updatedDiagram;
+
+          const updatedThreatModel = {
+            ...threatModel,
+            diagrams: updatedDiagrams,
+            modified_at: new Date().toISOString(),
+          };
+          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
+
+          return of(updatedDiagram);
+        }
+      }
+      return throwError(() => new Error(`Diagram ${diagramId} not found in offline cache`));
+    }
+
+    return this.apiService
+      .put<Diagram>(
+        `threat_models/${threatModelId}/diagrams/${diagramId}`,
+        diagram as unknown as Record<string, unknown>,
+      )
+      .pipe(
+        catchError(error => {
+          this.logger.error(
+            `Error updating diagram ${diagramId} in threat model ID: ${threatModelId}`,
+            error,
+          );
           throw error;
         }),
       );

@@ -60,6 +60,7 @@ export interface Diagram {
   type: string;
   created_at: string;
   modified_at: string;
+  description?: string; // Optional diagram description
   metadata?: Metadata[];
   update_vector?: number; // Server-managed version counter
   image?: DiagramImage; // Image data with version information
