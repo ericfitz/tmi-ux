@@ -617,7 +617,7 @@ export class ImportOrchestratorService {
         // Update diagram with cells if present
         // Cells must be added via PUT after creation since CreateDiagramRequest doesn't accept them
         if (cells && cells.length > 0) {
-          // Filter cells to match API schema (ensure edge 'shape' field, normalize label positions)
+          // Filter cells to match API schema (ensure edge 'shape' field is present)
           const filteredCells = this._fieldFilter.filterCells(cells);
 
           const diagramUpdate: Record<string, unknown> = {

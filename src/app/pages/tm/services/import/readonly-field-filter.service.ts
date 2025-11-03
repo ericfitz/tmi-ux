@@ -196,7 +196,7 @@ export class ReadonlyFieldFilterService {
   /**
    * Filters cell-specific fields to match API schema requirements.
    * Handles differences between nodes and edges:
-   * - Edges: Ensures 'shape' field is set to 'edge', normalizes label positions
+   * - Edges: Ensures 'shape' field is set to 'edge'
    * - Nodes: Keeps 'shape' field as-is (required for node type discrimination)
    *
    * @param cell The cell object to filter
@@ -212,24 +212,6 @@ export class ReadonlyFieldFilterService {
       // Ensure edges have shape='edge' for discriminator validation
       // The discriminator requires this field to route to Edge schema
       filtered['shape'] = 'edge';
-
-      // Normalize edge label positions from X6 format to API format
-      // X6 uses {distance, offset, angle} but API expects a simple number 0-1
-      if (Array.isArray(filtered['labels'])) {
-        filtered['labels'] = (filtered['labels'] as Array<Record<string, unknown>>).map(label => {
-          const normalizedLabel = { ...label };
-          if (
-            typeof label['position'] === 'object' &&
-            label['position'] !== null &&
-            'distance' in label['position']
-          ) {
-            // Extract the distance value as the position (0-1 range)
-            const posObj = label['position'] as Record<string, unknown>;
-            normalizedLabel['position'] = posObj['distance'];
-          }
-          return normalizedLabel;
-        });
-      }
     }
 
     return filtered;
