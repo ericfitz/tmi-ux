@@ -25,6 +25,7 @@
       "Bash(npm:*)",
       "Bash(npx:*)",
       "Bash(pgrep:*)",
+      "Bash(pip3:*)",
       "Bash(pkill:*)",
       "Bash(pnpm:*)",
       "Bash(python3:*)",
