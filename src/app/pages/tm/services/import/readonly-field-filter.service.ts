@@ -196,8 +196,8 @@ export class ReadonlyFieldFilterService {
   /**
    * Filters cell-specific fields to match API schema requirements.
    * Handles differences between nodes and edges:
-   * - Edges: Removes 'shape' field (type='edge' is sufficient), normalizes label positions
-   * - Nodes: Keeps 'shape' field (required for node type discrimination)
+   * - Edges: Ensures 'shape' field is set to 'edge', normalizes label positions
+   * - Nodes: Keeps 'shape' field as-is (required for node type discrimination)
    *
    * @param cell The cell object to filter
    * @returns Filtered cell object ready for API submission
@@ -209,9 +209,9 @@ export class ReadonlyFieldFilterService {
     const isEdge = filtered['type'] === 'edge' || filtered['shape'] === 'edge';
 
     if (isEdge) {
-      // For edges, remove the 'shape' field entirely
-      // The API uses 'type' for discrimination and doesn't expect 'shape' for edges
-      delete filtered['shape'];
+      // Ensure edges have shape='edge' for discriminator validation
+      // The discriminator requires this field to route to Edge schema
+      filtered['shape'] = 'edge';
 
       // Normalize edge label positions from X6 format to API format
       // X6 uses {distance, offset, angle} but API expects a simple number 0-1
