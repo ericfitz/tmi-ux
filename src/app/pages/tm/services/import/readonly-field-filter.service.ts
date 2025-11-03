@@ -50,6 +50,7 @@ export class ReadonlyFieldFilterService {
   private readonly _diagramCreateOnlyFields = [
     'cells',
     'description',
+    'image',
     'created_at',
     'modified_at',
     'metadata',
