@@ -623,8 +623,6 @@ export class ImportOrchestratorService {
           const diagramUpdate: Record<string, unknown> = {
             name: created.name,
             type: created.type,
-            created_at: created.created_at,
-            modified_at: created.modified_at,
             cells: filteredCells,
           };
 
