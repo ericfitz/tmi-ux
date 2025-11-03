@@ -15,6 +15,14 @@
 
 .page-title {
   margin: 0;
+
+  .title-prefix {
+    color: var(--theme-primary);
+  }
+
+  .title-name {
+    color: #0097a7; // Cyan 700 - matches DFD diagram/threat model names
+  }
 }
 
 .header-actions {

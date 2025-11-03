@@ -1,11 +1,13 @@
 <div class="tm-edit-container">
   <div class="header-row">
     <h1 class="page-title">
-      {{
-        isNewThreatModel
-          ? ('threatModels.newThreatModel' | transloco)
-          : ('threatModels.threatModelPrefix' | transloco) + ' ' + threatModel?.name
-      }}
+      @if (isNewThreatModel) {
+        {{ 'threatModels.newThreatModel' | transloco }}
+      } @else {
+        <span class="title-prefix">{{ 'threatModels.threatModelPrefix' | transloco }}</span>
+        {{ ' ' }}
+        <span class="title-name">{{ threatModel?.name }}</span>
+      }
     </h1>
     <div class="header-actions">
       <button
