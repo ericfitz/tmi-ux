@@ -93,8 +93,8 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0
       express-rate-limit:
-        specifier: ^8.1.0
-        version: 8.1.0(express@5.1.0)
+        specifier: ^8.2.1
+        version: 8.2.1(express@5.1.0)
       fontkit:
         specifier: ^2.0.4
         version: 2.0.4
@@ -3931,8 +3931,8 @@ packages:
     peerDependencies:
       express: '>= 4.11'
 
-  express-rate-limit@8.1.0:
-    resolution: {integrity: sha512-4nLnATuKupnmwqiJc27b4dCFmB/T60ExgmtDD7waf4LdrbJ8CPZzZRHYErDYNhoz+ql8fUdYwM/opf90PoPAQA==}
+  express-rate-limit@8.2.1:
+    resolution: {integrity: sha512-PCZEIEIxqwhzw4KF0n7QF4QqruVTcF73O5kFKUnGOyjbCCgizBBiFaYpd/fnBLUMPw/BWw9OsiN7GgrNYr7j6g==}
     engines: {node: '>= 16'}
     peerDependencies:
       express: '>= 4.11'
@@ -10932,7 +10932,7 @@ snapshots:
     dependencies:
       express: 5.1.0
 
-  express-rate-limit@8.1.0(express@5.1.0):
+  express-rate-limit@8.2.1(express@5.1.0):
     dependencies:
       express: 5.1.0
       ip-address: 10.0.1
