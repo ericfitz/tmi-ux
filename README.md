@@ -4,6 +4,10 @@
 
 Angular-based user interface for the TMI application.
 
+Try it yourself at [https://www.tmi.dev](https://www.tmi.dev)\
+API Server available at [https://github.com/ericfitz/tmi](https://github.com/ericfitz/tmi)\
+API clients available at [https://github.com/ericfitz/tmi-clients](https://github.com/ericfitz/tmi-clients)
+
 ## Overview & Benefits
 
 TMI (Threat Modeling Improved) is a server based threat modeling web application.
@@ -22,24 +26,10 @@ TMI (Threat Modeling Improved) is a server based threat modeling web application
 - OAuth authentication with configurable OAuth providers
 - Supports multiple threat model frameworks (STRIDE, CIA, etc.)
 - Supports integration with issue tracking systems
+- Take notes manually or with automation using markdown, including Mermaid graph support
 - Apache licensed for customizability
-- LLM & agentic functionality will be a separate component under a different license
 
 The associated back-end server, written in Go, is called [TMI](https://github.com/ericfitz/tmi).
-
-## Try TMI for yourself or watch a demonstration video
-
-[TMI Public Development Server](https://www.tmi.dev)
-
-### Demo Videos
-
-- [Demo 2025-09-09](https://youtu.be/QCmlf8YFQ84) Demonstration of collaborative presentation of a data flow diagram
-- [Demo 2025-08-05](https://youtu.be/dH9V-7fmbLI) Nearly feature complete; walkthrough of all basic functionality with voiceover
-
-### Older
-
-- [Demo 2025-05-20](https://youtu.be/quOBYdKNx2E) Early build, shows detailed threat editing
-- [Demo 2025-05-16](https://youtu.be/ikTxE0xJL1w) Early build, shows localization, basic functionality
 
 ## Documentation
 
@@ -48,33 +38,6 @@ Comprehensive documentation is organized as follows:
 ### 📚 Main Documentation Hub
 
 - **[/docs](docs/)** - Central documentation directory with guides, standards, and decision records
-
-### 🛠️ Developer Resources
-
-- **[CLAUDE.md](CLAUDE.md)** - AI assistant instructions and comprehensive project overview
-- **[/docs/agent](docs/agent/)** - AI agent context and implementation guides
-- **[Architecture Guide](docs/reference/architecture/overview.md)** - Complete architecture overview and patterns
-- **[Service Provisioning Standards](docs/reference/architecture/service-provisioning.md)** - Where and how to provide services
-- **[Architecture Validation](docs/reference/architecture/validation.md)** - How to validate architecture compliance
-
-## Shared Resources
-
-This repository includes shared resources from the TMI backend repository via git subtree:
-
-- **Location**: `shared-api/` directory
-- **Source**: Subtree from the [TMI repository](https://github.com/ericfitz/tmi)
-- **Contents**:
-  - **API Specifications**: OpenAPI 3.0 REST API spec and AsyncAPI WebSocket spec
-  - **Documentation**: Client integration guides, OAuth setup, authorization patterns
-  - **SDK Examples**: Reference implementations (Python SDK)
-
-### Key Shared Files
-
-- `shared-api/api-specs/tmi-openapi.json` - OpenAPI 3.0 REST API specification
-- `shared-api/api-specs/tmi-asyncapi.yaml` - AsyncAPI WebSocket specification
-- `shared-api/docs/AUTHORIZATION.md` - Authorization and RBAC documentation
-- `shared-api/docs/CLIENT_INTEGRATION_GUIDE.md` - Complete client integration guide
-- `shared-api/docs/CLIENT_OAUTH_INTEGRATION.md` - OAuth setup and configuration
 
 ## Development (this is how you can play with it now)
 
