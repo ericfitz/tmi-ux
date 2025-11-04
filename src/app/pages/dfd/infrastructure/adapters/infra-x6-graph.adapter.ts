@@ -2000,6 +2000,8 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
   /**
    * Set graph to read-only mode for users without edit permissions
+   * Uses graph.updateInteracting() to block local user gestures while allowing
+   * programmatic updates from remote collaborators
    */
   setReadOnlyMode(readOnly: boolean): void {
     const graph = this.getGraph();
@@ -2015,12 +2017,22 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       // Disable keyboard handling
       this._keyboardHandler.cleanup();
 
-      // Make all cells non-interactive
+      // Disable user interactions via global interacting config
+      // This blocks UI gestures but allows programmatic API calls (used by remote updates)
+      (graph as any).updateInteracting({
+        nodeMovable: false,
+        edgeMovable: false,
+        edgeLabelMovable: false,
+        arrowheadMovable: false,
+        vertexMovable: false,
+        vertexAddable: false,
+        vertexDeletable: false,
+        magnetConnectable: false, // Disable edge creation
+      });
+
+      // Remove all editing tools from cells
       graph.getCells().forEach(cell => {
-        cell.prop('movable', false);
-        cell.prop('resizable', false);
-        cell.prop('rotatable', false);
-        cell.removeTool('*'); // Remove all editing tools
+        cell.removeTool('*');
       });
 
       this.logger.info('Graph set to read-only mode');
@@ -2031,11 +2043,16 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       // Re-enable keyboard handling
       this._keyboardHandler.setupKeyboardHandling(graph);
 
-      // Make cells interactive again
-      graph.getCells().forEach(cell => {
-        cell.prop('movable', true);
-        cell.prop('resizable', true);
-        cell.prop('rotatable', true);
+      // Restore default interactions
+      (graph as any).updateInteracting({
+        nodeMovable: true,
+        edgeMovable: true,
+        edgeLabelMovable: true,
+        arrowheadMovable: true,
+        vertexMovable: true,
+        vertexAddable: true,
+        vertexDeletable: true,
+        magnetConnectable: true,
       });
 
       this.logger.info('Graph set to edit mode');

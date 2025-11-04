@@ -59,6 +59,7 @@ export interface DfdDiagramState {
   isApplyingRemoteChange: boolean;
   lastOperationId: string | null;
   conflictCount: number;
+  readOnly: boolean;
 }
 
 @Injectable()
@@ -78,6 +79,7 @@ export class AppStateService implements OnDestroy {
     isApplyingRemoteChange: false,
     lastOperationId: null,
     conflictCount: 0,
+    readOnly: false,
   });
 
   // Operation blocking flag
@@ -224,6 +226,14 @@ export class AppStateService implements OnDestroy {
    */
   setApplyingRemoteChange(isApplying: boolean): void {
     this._updateState({ isApplyingRemoteChange: isApplying });
+  }
+
+  /**
+   * Set whether the diagram is in read-only mode
+   */
+  setReadOnly(readOnly: boolean): void {
+    this._updateState({ readOnly });
+    this._logger.debug('Read-only mode state updated', { readOnly });
   }
 
   /**

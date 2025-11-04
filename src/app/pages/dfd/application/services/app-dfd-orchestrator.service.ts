@@ -645,6 +645,10 @@ export class AppDfdOrchestrator {
    */
   setReadOnlyMode(readOnly: boolean): void {
     this._updateState({ readOnly });
+    // Propagate to app state service for broadcaster and other services
+    this.appStateService.setReadOnly(readOnly);
+    // Propagate to graph adapter
+    this.dfdInfrastructure.setReadOnlyMode(readOnly);
     this.logger.debug('Read-only mode changed', { readOnly });
   }
 

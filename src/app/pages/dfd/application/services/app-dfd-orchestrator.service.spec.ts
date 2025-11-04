@@ -198,6 +198,7 @@ describe('AppDfdOrchestrator', () => {
       handleResize: vi.fn(),
       destroy: vi.fn(),
       dispose: vi.fn(),
+      setReadOnlyMode: vi.fn(),
       historyModified$: historyModifiedSubject.asObservable(),
     };
 
@@ -206,6 +207,11 @@ describe('AppDfdOrchestrator', () => {
       getState: vi.fn(),
       setState: vi.fn(),
       initialize: vi.fn(),
+      setReadOnly: vi.fn(),
+      getCurrentState: vi.fn().mockReturnValue({
+        isApplyingRemoteChange: false,
+        readOnly: false,
+      }),
     };
 
     mockInfraWebsocketAdapter = {

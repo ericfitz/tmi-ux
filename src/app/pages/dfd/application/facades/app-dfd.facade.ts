@@ -409,6 +409,13 @@ export class AppDfdFacade {
   }
 
   /**
+   * Set read-only mode for the graph
+   */
+  setReadOnlyMode(readOnly: boolean): void {
+    this.infraX6GraphAdapter.setReadOnlyMode(readOnly);
+  }
+
+  /**
    * Dispose of facade resources
    */
   dispose(): void {

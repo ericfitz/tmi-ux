@@ -213,9 +213,21 @@ export class AppDiagramOperationBroadcaster {
    * Determine if a change should be broadcast based on existing history filtering
    */
   private _shouldBroadcastChange(event: string, args: any): boolean {
+    const state = this.appStateService.getCurrentState();
+
     // Skip if applying remote changes (prevents echo)
-    if (this.appStateService.getCurrentState().isApplyingRemoteChange) {
+    if (state.isApplyingRemoteChange) {
       this.logger.debug('Skipping broadcast - applying remote change');
+      return false;
+    }
+
+    // Block broadcasts in read-only mode (prevents local changes from being persisted)
+    if (state.readOnly) {
+      this.logger.warn('Blocked local change broadcast in read-only mode', {
+        event,
+        cellId: args.cell?.id,
+        changeKey: args.key,
+      });
       return false;
     }
 
