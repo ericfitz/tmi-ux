@@ -1,9 +1,20 @@
 <h2 mat-dialog-title>
   {{
-    mode === 'create'
-      ? ('threatModels.createNewRepository' | transloco)
-      : ('threatModels.editRepository' | transloco)
+    isReadOnly
+      ? ('threatModels.viewRepository' | transloco)
+      : mode === 'create'
+        ? ('threatModels.createNewRepository' | transloco)
+        : ('threatModels.editRepository' | transloco)
   }}
+  @if (isReadOnly) {
+    <mat-icon
+      class="read-only-indicator"
+      color="warn"
+      [matTooltip]="'common.readOnlyTooltip' | transloco"
+      [attr.aria-label]="'common.readOnly' | transloco"
+      >edit_off</mat-icon
+    >
+  }
 </h2>
 <mat-dialog-content appScrollIndicator>
   <form [formGroup]="repositoryForm" class="dialog-form">
@@ -119,20 +130,22 @@
     mat-button
     (click)="onCancel()"
     tabindex="8"
-    [attr.aria-label]="'common.cancel' | transloco"
+    [attr.aria-label]="isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco)"
   >
-    {{ 'common.cancel' | transloco }}
+    {{ isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco) }}
   </button>
-  <button
-    mat-raised-button
-    color="primary"
-    [disabled]="repositoryForm.invalid"
-    (click)="onSubmit()"
-    tabindex="9"
-    [attr.aria-label]="
-      mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco)
-    "
-  >
-    {{ mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco) }}
-  </button>
+  @if (!isReadOnly) {
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="repositoryForm.invalid"
+      (click)="onSubmit()"
+      tabindex="9"
+      [attr.aria-label]="
+        mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco)
+      "
+    >
+      {{ mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco) }}
+    </button>
+  }
 </mat-dialog-actions>

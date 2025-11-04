@@ -8,6 +8,15 @@
         {{ ' ' }}
         <span class="title-name">{{ threatModel?.name }}</span>
       }
+      @if (!canEdit && !isNewThreatModel) {
+        <mat-icon
+          class="read-only-indicator"
+          color="warn"
+          [matTooltip]="'common.readOnlyTooltip' | transloco"
+          [attr.aria-label]="'common.readOnly' | transloco"
+          >edit_off</mat-icon
+        >
+      }
     </h1>
     <div class="header-actions">
       <button
@@ -100,20 +109,27 @@
                 <div class="status-chips-container">
                   <mat-chip-grid #statusChipGrid>
                     @for (status of threatModelForm.get('status')?.value; track status) {
-                      <mat-chip-row (removed)="removeStatus(status)">
+                      <mat-chip-row
+                        (removed)="canEdit ? removeStatus(status) : null"
+                        [removable]="canEdit"
+                      >
                         {{ status }}
-                        <button matChipRemove [attr.aria-label]="'Remove ' + status">
-                          <mat-icon>cancel</mat-icon>
-                        </button>
+                        @if (canEdit) {
+                          <button matChipRemove [attr.aria-label]="'Remove ' + status">
+                            <mat-icon>cancel</mat-icon>
+                          </button>
+                        }
                       </mat-chip-row>
                     }
                   </mat-chip-grid>
-                  <input
-                    placeholder="{{ 'threatModels.statusChipPlaceholder' | transloco }}"
-                    [matChipInputFor]="statusChipGrid"
-                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                    (matChipInputTokenEnd)="addStatus($event)"
-                  />
+                  @if (canEdit) {
+                    <input
+                      placeholder="{{ 'threatModels.statusChipPlaceholder' | transloco }}"
+                      [matChipInputFor]="statusChipGrid"
+                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                      (matChipInputTokenEnd)="addStatus($event)"
+                    />
+                  }
                 </div>
               </div>
               @if (threatModel && !isNewThreatModel) {
@@ -248,15 +264,17 @@
             [matTooltip]="'threatModels.tooltips.assetsCardTitle' | transloco"
             >Assets</mat-card-title
           >
-          <button
-            mat-icon-button
-            color="primary"
-            (click)="addAsset()"
-            [matTooltip]="'threatModels.tooltips.addAsset' | transloco"
-            [attr.aria-label]="'threatModels.tooltips.addAsset' | transloco"
-          >
-            <mat-icon>add</mat-icon>
-          </button>
+          @if (canEdit) {
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="addAsset()"
+              [matTooltip]="'threatModels.tooltips.addAsset' | transloco"
+              [attr.aria-label]="'threatModels.tooltips.addAsset' | transloco"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+          }
         </mat-card-header>
         <mat-card-content>
           <mat-list>
@@ -307,8 +325,16 @@
                   mat-icon-button
                   color="primary"
                   (click)="openAssetMetadataDialog(asset, $event)"
-                  [matTooltip]="'common.manageMetadata' | transloco"
-                  [attr.aria-label]="'common.manageMetadata' | transloco"
+                  [matTooltip]="
+                    canEdit
+                      ? ('common.manageMetadata' | transloco)
+                      : ('common.viewMetadata' | transloco)
+                  "
+                  [attr.aria-label]="
+                    canEdit
+                      ? ('common.manageMetadata' | transloco)
+                      : ('common.viewMetadata' | transloco)
+                  "
                 >
                   <mat-icon>list</mat-icon>
                 </button>
@@ -316,20 +342,24 @@
                   mat-icon-button
                   color="primary"
                   (click)="editAsset(asset, $event)"
-                  [matTooltip]="'common.edit' | transloco"
-                  [attr.aria-label]="'common.edit' | transloco"
+                  [matTooltip]="canEdit ? ('common.edit' | transloco) : ('common.view' | transloco)"
+                  [attr.aria-label]="
+                    canEdit ? ('common.edit' | transloco) : ('common.view' | transloco)
+                  "
                 >
-                  <mat-icon>edit</mat-icon>
+                  <mat-icon>{{ canEdit ? 'edit' : 'visibility' }}</mat-icon>
                 </button>
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deleteAsset(asset, $event)"
-                  [matTooltip]="'common.delete' | transloco"
-                  [attr.aria-label]="'common.delete' | transloco"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
+                @if (canEdit) {
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteAsset(asset, $event)"
+                    [matTooltip]="'common.delete' | transloco"
+                    [attr.aria-label]="'common.delete' | transloco"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                }
               </div>
             </mat-list-item>
           </mat-list>
@@ -349,14 +379,16 @@
             [matTooltip]="'threatModels.tooltips.threatsCardTitle' | transloco"
             >Threats</mat-card-title
           >
-          <button
-            mat-icon-button
-            color="primary"
-            (click)="openThreatEditor()"
-            [matTooltip]="'common.addThreat' | transloco"
-          >
-            <mat-icon>add</mat-icon>
-          </button>
+          @if (canEdit) {
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="openThreatEditor()"
+              [matTooltip]="'common.addThreat' | transloco"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+          }
         </mat-card-header>
         <mat-card-content>
           <mat-list>
@@ -409,18 +441,24 @@
                   mat-icon-button
                   color="primary"
                   (click)="openThreatMetadataDialog(threat, $event)"
-                  [matTooltip]="'common.manageMetadata' | transloco"
+                  [matTooltip]="
+                    canEdit
+                      ? ('common.manageMetadata' | transloco)
+                      : ('common.viewMetadata' | transloco)
+                  "
                 >
                   <mat-icon>list</mat-icon>
                 </button>
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deleteThreat(threat, $event)"
-                  [matTooltip]="'threatModels.tooltips.deleteThreat' | transloco"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
+                @if (canEdit) {
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteThreat(threat, $event)"
+                    [matTooltip]="'threatModels.tooltips.deleteThreat' | transloco"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                }
               </div>
             </mat-list-item>
           </mat-list>
@@ -440,14 +478,16 @@
             [matTooltip]="'threatModels.tooltips.diagramsCardTitle' | transloco"
             >Diagrams</mat-card-title
           >
-          <button
-            mat-icon-button
-            color="primary"
-            (click)="addDiagram()"
-            [matTooltip]="'threatModels.tooltips.addDiagram' | transloco"
-          >
-            <mat-icon>add</mat-icon>
-          </button>
+          @if (canEdit) {
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="addDiagram()"
+              [matTooltip]="'threatModels.tooltips.addDiagram' | transloco"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+          }
         </mat-card-header>
         <mat-card-content>
           <mat-list>
@@ -497,26 +537,32 @@
                   mat-icon-button
                   color="primary"
                   (click)="openDiagramMetadataDialog(diagram, $event)"
-                  [matTooltip]="'common.manageMetadata' | transloco"
+                  [matTooltip]="
+                    canEdit
+                      ? ('common.manageMetadata' | transloco)
+                      : ('common.viewMetadata' | transloco)
+                  "
                 >
                   <mat-icon>list</mat-icon>
                 </button>
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="renameDiagram(diagram, $event)"
-                  [matTooltip]="'threatModels.renameDiagram' | transloco"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deleteDiagram(diagram, $event)"
-                  [matTooltip]="'threatModels.tooltips.deleteDiagram' | transloco"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
+                @if (canEdit) {
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="renameDiagram(diagram, $event)"
+                    [matTooltip]="'threatModels.renameDiagram' | transloco"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteDiagram(diagram, $event)"
+                    [matTooltip]="'threatModels.tooltips.deleteDiagram' | transloco"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                }
               </div>
             </mat-list-item>
           </mat-list>
@@ -536,15 +582,17 @@
             [matTooltip]="'threatModels.tooltips.notesCardTitle' | transloco"
             >Notes</mat-card-title
           >
-          <button
-            mat-icon-button
-            color="primary"
-            (click)="addNote()"
-            [matTooltip]="'threatModels.tooltips.addNote' | transloco"
-            [attr.aria-label]="'threatModels.tooltips.addNote' | transloco"
-          >
-            <mat-icon>add</mat-icon>
-          </button>
+          @if (canEdit) {
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="addNote()"
+              [matTooltip]="'threatModels.tooltips.addNote' | transloco"
+              [attr.aria-label]="'threatModels.tooltips.addNote' | transloco"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+          }
         </mat-card-header>
         <mat-card-content>
           <mat-list>
@@ -568,28 +616,40 @@
                 <button
                   mat-icon-button
                   (click)="openNoteMetadataDialog(note, $event)"
-                  [matTooltip]="'common.manageMetadata' | transloco"
-                  [attr.aria-label]="'common.manageMetadata' | transloco"
+                  [matTooltip]="
+                    canEdit
+                      ? ('common.manageMetadata' | transloco)
+                      : ('common.viewMetadata' | transloco)
+                  "
+                  [attr.aria-label]="
+                    canEdit
+                      ? ('common.manageMetadata' | transloco)
+                      : ('common.viewMetadata' | transloco)
+                  "
                 >
                   <mat-icon>list</mat-icon>
                 </button>
                 <button
                   mat-icon-button
                   (click)="editNote(note, $event)"
-                  [matTooltip]="'common.edit' | transloco"
-                  [attr.aria-label]="'common.edit' | transloco"
+                  [matTooltip]="canEdit ? ('common.edit' | transloco) : ('common.view' | transloco)"
+                  [attr.aria-label]="
+                    canEdit ? ('common.edit' | transloco) : ('common.view' | transloco)
+                  "
                 >
-                  <mat-icon>edit</mat-icon>
+                  <mat-icon>{{ canEdit ? 'edit' : 'visibility' }}</mat-icon>
                 </button>
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deleteNote(note, $event)"
-                  [matTooltip]="'common.delete' | transloco"
-                  [attr.aria-label]="'common.delete' | transloco"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
+                @if (canEdit) {
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteNote(note, $event)"
+                    [matTooltip]="'common.delete' | transloco"
+                    [attr.aria-label]="'common.delete' | transloco"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                }
               </div>
             </mat-list-item>
           </mat-list>
@@ -609,14 +669,16 @@
             [matTooltip]="'threatModels.tooltips.documentsCardTitle' | transloco"
             >Documents</mat-card-title
           >
-          <button
-            mat-icon-button
-            color="primary"
-            (click)="addDocument()"
-            [matTooltip]="'threatModels.tooltips.addDocument' | transloco"
-          >
-            <mat-icon>add</mat-icon>
-          </button>
+          @if (canEdit) {
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="addDocument()"
+              [matTooltip]="'threatModels.tooltips.addDocument' | transloco"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+          }
         </mat-card-header>
         <mat-card-content>
           <mat-list>
@@ -654,18 +716,24 @@
                   mat-icon-button
                   color="primary"
                   (click)="openDocumentMetadataDialog(document, $event)"
-                  [matTooltip]="'common.manageMetadata' | transloco"
+                  [matTooltip]="
+                    canEdit
+                      ? ('common.manageMetadata' | transloco)
+                      : ('common.viewMetadata' | transloco)
+                  "
                 >
                   <mat-icon>list</mat-icon>
                 </button>
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deleteDocument(document, $event)"
-                  [matTooltip]="'threatModels.tooltips.deleteDocument' | transloco"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
+                @if (canEdit) {
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteDocument(document, $event)"
+                    [matTooltip]="'threatModels.tooltips.deleteDocument' | transloco"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                }
               </div>
             </mat-list-item>
           </mat-list>
@@ -685,14 +753,16 @@
             [matTooltip]="'threatModels.tooltips.repositoriesCardTitle' | transloco"
             >Repositories</mat-card-title
           >
-          <button
-            mat-icon-button
-            color="primary"
-            (click)="addRepository()"
-            [matTooltip]="'threatModels.tooltips.addRepository' | transloco"
-          >
-            <mat-icon>add</mat-icon>
-          </button>
+          @if (canEdit) {
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="addRepository()"
+              [matTooltip]="'threatModels.tooltips.addRepository' | transloco"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+          }
         </mat-card-header>
         <mat-card-content>
           <mat-list>
@@ -730,18 +800,24 @@
                   mat-icon-button
                   color="primary"
                   (click)="openRepositoryMetadataDialog(repository, $event)"
-                  [matTooltip]="'common.manageMetadata' | transloco"
+                  [matTooltip]="
+                    canEdit
+                      ? ('common.manageMetadata' | transloco)
+                      : ('common.viewMetadata' | transloco)
+                  "
                 >
                   <mat-icon>list</mat-icon>
                 </button>
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deleteRepository(repository, $event)"
-                  [matTooltip]="'threatModels.tooltips.deleteRepository' | transloco"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
+                @if (canEdit) {
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteRepository(repository, $event)"
+                    [matTooltip]="'threatModels.tooltips.deleteRepository' | transloco"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                }
               </div>
             </mat-list-item>
           </mat-list>

@@ -32,7 +32,8 @@
     "sensitivity": "الحساسية",
     "title": {
       "create": "إنشاء أصل",
-      "edit": "تحرير الأصل"
+      "edit": "تحرير الأصل",
+      "view": "عرض الأصل"
     },
     "type": "نوع الأصل",
     "types": {
@@ -147,6 +148,8 @@
     "paste": "لصق",
     "permissions": "الأذونات",
     "priority": "الأولوية",
+    "readOnly": "للقراءة فقط",
+    "readOnlyTooltip": "لديك صلاحيات قراءة فقط لنموذج التهديد هذا. اتصل بالمالك لطلب صلاحيات التحرير.",
     "refresh": "تحديث",
     "roles": {
       "owner": "مالك",
@@ -184,6 +187,8 @@
       "maxLength": "الحد الأقصى للطول هو {{max}} حرف",
       "required": "هذا الحقل مطلوب"
     },
+    "view": "عرض",
+    "viewMetadata": "عرض البيانات الوصفية",
     "viewThreat": "عرض التهديد"
   },
   "contextMenu": {
@@ -298,7 +303,8 @@
     "savedSuccessfully": "تم حفظ الملاحظة بنجاح",
     "title": {
       "create": "إنشاء ملاحظة",
-      "edit": "تحرير الملاحظة"
+      "edit": "تحرير الملاحظة",
+      "view": "عرض الملاحظة"
     }
   },
   "presenter": {
@@ -354,9 +360,11 @@
   },
   "threatEditor": {
     "createNewThreat": "إنشاء تهديد جديد",
+    "editThreat": "تحرير التهديد",
     "notAssociatedWithAsset": "غير مرتبط بأصل",
     "notAssociatedWithCell": "غير مرتبط بخلية",
-    "notAssociatedWithDiagram": "غير مرتبط بمخطط"
+    "notAssociatedWithDiagram": "غير مرتبط بمخطط",
+    "viewThreat": "عرض التهديد"
   },
   "threatModels": {
     "addPermission": "إضافة إذن",
@@ -382,6 +390,13 @@
     "diagrams": "المخططات",
     "diagramsCount": "مخططات",
     "documentDescriptionPlaceholder": "اوصف الغرض أو محتوى الوثيقة",
+    "documentEditor": {
+      "title": {
+        "create": "إنشاء مرجع الوثيقة",
+        "edit": "تحرير مرجع الوثيقة",
+        "view": "عرض مرجع الوثيقة"
+      }
+    },
     "documentName": "اسم الوثيقة",
     "documentUrl": "رابط الوثيقة",
     "downloadButton": "تنزيل إلى سطح المكتب",
@@ -412,6 +427,13 @@
     "rename": "إعادة تسمية",
     "renameDiagram": "إعادة تسمية المخطط",
     "repositoryDescriptionPlaceholder": "وصف المستودع أو الغرض منه",
+    "repositoryEditor": {
+      "title": {
+        "create": "إنشاء مرجع المستودع",
+        "edit": "تحرير مرجع المستودع",
+        "view": "عرض مرجع المستودع"
+      }
+    },
     "repositoryName": "اسم المستودع",
     "repositoryParameters": "معاملات المستودع",
     "repositoryRefType": "نوع المرجع",

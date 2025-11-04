@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
@@ -33,6 +34,7 @@ interface AssetFormValues {
 export interface AssetEditorDialogData {
   asset?: Asset;
   mode: 'create' | 'edit';
+  isReadOnly?: boolean;
 }
 
 @Component({
@@ -47,6 +49,7 @@ export interface AssetEditorDialogData {
     MatSelectModule,
     MatChipsModule,
     MatIconModule,
+    MatTooltipModule,
     ReactiveFormsModule,
     TranslocoModule,
   ],
@@ -56,6 +59,7 @@ export interface AssetEditorDialogData {
 export class AssetEditorDialogComponent implements OnInit, OnDestroy {
   assetForm: FormGroup;
   mode: 'create' | 'edit';
+  isReadOnly: boolean;
 
   // Chip input configuration
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
@@ -72,6 +76,7 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: AssetEditorDialogData,
   ) {
     this.mode = data.mode;
+    this.isReadOnly = data.isReadOnly || false;
 
     this.assetForm = this.fb.group({
       name: [data.asset?.name || '', [Validators.required, Validators.maxLength(256)]],
@@ -81,6 +86,10 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
       classification: [data.asset?.classification || []],
       sensitivity: [data.asset?.sensitivity || []],
     });
+
+    if (this.isReadOnly) {
+      this.assetForm.disable();
+    }
   }
 
   ngOnInit(): void {

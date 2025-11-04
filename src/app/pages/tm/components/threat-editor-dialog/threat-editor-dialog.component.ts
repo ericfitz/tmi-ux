@@ -71,6 +71,7 @@ export interface ThreatEditorDialogData {
   threat?: Threat;
   threatModelId: string;
   mode: 'create' | 'edit' | 'view';
+  isReadOnly?: boolean;
   diagramId?: string;
   cellId?: string;
   diagrams?: DiagramOption[];
@@ -486,8 +487,8 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   }
 
   ngOnInit(): void {
-    // Set dialog mode
-    this.isViewOnly = this.data.mode === 'view';
+    // Set dialog mode - use isReadOnly if provided, otherwise check mode
+    this.isViewOnly = this.data.isReadOnly || this.data.mode === 'view';
 
     // Log initialization context
     const openedFrom = new Error().stack?.includes('dfd.component') ? 'DFD Editor' : 'TM Edit';

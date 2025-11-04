@@ -32,7 +32,8 @@
     "sensitivity": "ความอ่อนไหว",
     "title": {
       "create": "สร้างสินทรัพย์",
-      "edit": "แก้ไขสินทรัพย์"
+      "edit": "แก้ไขสินทรัพย์",
+      "view": "ดูสินทรัพย์"
     },
     "type": "ประเภทสินทรัพย์",
     "types": {
@@ -147,6 +148,8 @@
     "paste": "วาง",
     "permissions": "สิทธิ์การเข้าถึง",
     "priority": "ความสำคัญ",
+    "readOnly": "อ่านอย่างเดียว",
+    "readOnlyTooltip": "คุณมีสิทธิ์เข้าถึงแบบอ่านอย่างเดียวสำหรับแบบจำลองภัยคุกคามนี้ ติดต่อเจ้าของเพื่อขอสิทธิ์การแก้ไข",
     "refresh": "รีเฟรช",
     "roles": {
       "owner": "เจ้าของ",
@@ -184,6 +187,8 @@
       "maxLength": "ความยาวสูงสุดคือ {{max}} ตัวอักษร",
       "required": "ฟิลด์นี้จำเป็น"
     },
+    "view": "ดู",
+    "viewMetadata": "ดูข้อมูลเมตา",
     "viewThreat": "ดูภัยคุกคาม"
   },
   "contextMenu": {
@@ -298,7 +303,8 @@
     "savedSuccessfully": "บันทึกหมายเหตุสำเร็จ",
     "title": {
       "create": "สร้างหมายเหตุ",
-      "edit": "แก้ไขหมายเหตุ"
+      "edit": "แก้ไขหมายเหตุ",
+      "view": "ดูหมายเหตุ"
     }
   },
   "presenter": {
@@ -354,9 +360,11 @@
   },
   "threatEditor": {
     "createNewThreat": "สร้างภัยคุกคามใหม่",
+    "editThreat": "แก้ไขภัยคุกคาม",
     "notAssociatedWithAsset": "ไม่เชื่อมโยงกับสินทรัพย์",
     "notAssociatedWithCell": "ไม่เชื่อมโยงกับเซลล์",
-    "notAssociatedWithDiagram": "ไม่เชื่อมโยงกับแผนภาพ"
+    "notAssociatedWithDiagram": "ไม่เชื่อมโยงกับแผนภาพ",
+    "viewThreat": "ดูภัยคุกคาม"
   },
   "threatModels": {
     "addPermission": "เพิ่มสิทธิ์การเข้าถึง",
@@ -382,6 +390,13 @@
     "diagrams": "แผนภาพ",
     "diagramsCount": "แผนภาพ",
     "documentDescriptionPlaceholder": "อธิบายวัตถุประสงค์หรือเนื้อหาของเอกสาร",
+    "documentEditor": {
+      "title": {
+        "create": "สร้างการอ้างอิงเอกสาร",
+        "edit": "แก้ไขการอ้างอิงเอกสาร",
+        "view": "ดูการอ้างอิงเอกสาร"
+      }
+    },
     "documentName": "ชื่อเอกสาร",
     "documentUrl": "URL เอกสาร",
     "downloadButton": "ดาวน์โหลดไปยังเดสก์ทอป",
@@ -412,6 +427,13 @@
     "rename": "เปลี่ยนชื่อ",
     "renameDiagram": "เปลี่ยนชื่อแผนภาพ",
     "repositoryDescriptionPlaceholder": "อธิบายที่เก็บหรือวัตถุประสงค์",
+    "repositoryEditor": {
+      "title": {
+        "create": "สร้างการอ้างอิงที่เก็บ",
+        "edit": "แก้ไขการอ้างอิงที่เก็บ",
+        "view": "ดูการอ้างอิงที่เก็บ"
+      }
+    },
     "repositoryName": "ชื่อที่เก็บ",
     "repositoryParameters": "พารามิเตอร์ที่เก็บ",
     "repositoryRefType": "ประเภทอ้างอิง",

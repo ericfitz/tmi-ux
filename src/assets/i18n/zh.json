@@ -32,7 +32,8 @@
     "sensitivity": "敏感性",
     "title": {
       "create": "创建资产",
-      "edit": "编辑资产"
+      "edit": "编辑资产",
+      "view": "查看资产"
     },
     "type": "资产类型",
     "types": {
@@ -147,6 +148,8 @@
     "paste": "粘贴",
     "permissions": "权限",
     "priority": "优先级",
+    "readOnly": "只读",
+    "readOnlyTooltip": "您对此威胁模型具有只读访问权限。请联系所有者请求编辑权限。",
     "refresh": "刷新",
     "roles": {
       "owner": "所有者",
@@ -184,6 +187,8 @@
       "maxLength": "最大长度为{{max}}个字符",
       "required": "此字段为必填项"
     },
+    "view": "查看",
+    "viewMetadata": "查看元数据",
     "viewThreat": "查看威胁"
   },
   "contextMenu": {
@@ -298,7 +303,8 @@
     "savedSuccessfully": "笔记保存成功",
     "title": {
       "create": "创建笔记",
-      "edit": "编辑笔记"
+      "edit": "编辑笔记",
+      "view": "查看笔记"
     }
   },
   "presenter": {
@@ -354,9 +360,11 @@
   },
   "threatEditor": {
     "createNewThreat": "创建新威胁",
+    "editThreat": "编辑威胁",
     "notAssociatedWithAsset": "未关联资产",
     "notAssociatedWithCell": "未关联单元格",
-    "notAssociatedWithDiagram": "未关联图表"
+    "notAssociatedWithDiagram": "未关联图表",
+    "viewThreat": "查看威胁"
   },
   "threatModels": {
     "addPermission": "添加权限",
@@ -382,6 +390,13 @@
     "diagrams": "图表",
     "diagramsCount": "图表",
     "documentDescriptionPlaceholder": "描述文档的目的或内容",
+    "documentEditor": {
+      "title": {
+        "create": "创建文档引用",
+        "edit": "编辑文档引用",
+        "view": "查看文档引用"
+      }
+    },
     "documentName": "文档名称",
     "documentUrl": "文档链接",
     "downloadButton": "下载到桌面",
@@ -412,6 +427,13 @@
     "rename": "重命名",
     "renameDiagram": "重命名图表",
     "repositoryDescriptionPlaceholder": "描述仓库或其用途",
+    "repositoryEditor": {
+      "title": {
+        "create": "创建仓库引用",
+        "edit": "编辑仓库引用",
+        "view": "查看仓库引用"
+      }
+    },
     "repositoryName": "仓库名称",
     "repositoryParameters": "存储库参数",
     "repositoryRefType": "引用类型",

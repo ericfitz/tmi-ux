@@ -5,6 +5,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
@@ -31,6 +33,7 @@ interface RepositoryFormValues {
 export interface RepositoryEditorDialogData {
   repository?: Repository;
   mode: 'create' | 'edit';
+  isReadOnly?: boolean;
 }
 
 @Component({
@@ -43,6 +46,8 @@ export interface RepositoryEditorDialogData {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatIconModule,
+    MatTooltipModule,
     ReactiveFormsModule,
     TranslocoModule,
   ],
@@ -52,6 +57,7 @@ export interface RepositoryEditorDialogData {
 export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
   repositoryForm: FormGroup;
   mode: 'create' | 'edit';
+  isReadOnly: boolean;
 
   private _subscriptions: Subscription = new Subscription();
 
@@ -61,6 +67,7 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: RepositoryEditorDialogData,
   ) {
     this.mode = data.mode;
+    this.isReadOnly = data.isReadOnly || false;
 
     this.repositoryForm = this.fb.group({
       name: [data.repository?.name || '', [Validators.required, Validators.maxLength(256)]],
@@ -78,6 +85,10 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
       refValue: [data.repository?.parameters?.refValue || '', Validators.maxLength(256)],
       subPath: [data.repository?.parameters?.subPath || '', Validators.maxLength(256)],
     });
+
+    if (this.isReadOnly) {
+      this.repositoryForm.disable();
+    }
   }
 
   ngOnInit(): void {

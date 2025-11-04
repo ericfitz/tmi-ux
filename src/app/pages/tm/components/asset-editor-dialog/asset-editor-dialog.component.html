@@ -1,9 +1,20 @@
 <h2 mat-dialog-title>
   {{
-    mode === 'create'
-      ? ('assetEditor.title.create' | transloco)
-      : ('assetEditor.title.edit' | transloco)
+    isReadOnly
+      ? ('assetEditor.title.view' | transloco)
+      : mode === 'create'
+        ? ('assetEditor.title.create' | transloco)
+        : ('assetEditor.title.edit' | transloco)
   }}
+  @if (isReadOnly) {
+    <mat-icon
+      class="read-only-indicator"
+      color="warn"
+      [matTooltip]="'common.readOnlyTooltip' | transloco"
+      [attr.aria-label]="'common.readOnly' | transloco"
+      >edit_off</mat-icon
+    >
+  }
 </h2>
 
 <mat-dialog-content appScrollIndicator>
@@ -65,20 +76,25 @@
         <mat-chip-grid #classificationChipGrid>
           <mat-chip-row
             *ngFor="let classification of assetForm.get('classification')?.value"
-            (removed)="removeClassification(classification)"
+            (removed)="!isReadOnly ? removeClassification(classification) : null"
+            [removable]="!isReadOnly"
           >
             {{ classification }}
-            <button matChipRemove [attr.aria-label]="'Remove ' + classification">
-              <mat-icon>cancel</mat-icon>
-            </button>
+            @if (!isReadOnly) {
+              <button matChipRemove [attr.aria-label]="'Remove ' + classification">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            }
           </mat-chip-row>
         </mat-chip-grid>
-        <input
-          placeholder="{{ 'assetEditor.chipPlaceholder' | transloco }}"
-          [matChipInputFor]="classificationChipGrid"
-          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-          (matChipInputTokenEnd)="addClassification($event)"
-        />
+        @if (!isReadOnly) {
+          <input
+            placeholder="{{ 'assetEditor.chipPlaceholder' | transloco }}"
+            [matChipInputFor]="classificationChipGrid"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            (matChipInputTokenEnd)="addClassification($event)"
+          />
+        }
       </mat-form-field>
     </div>
 
@@ -89,28 +105,37 @@
         <mat-chip-grid #sensitivityChipGrid>
           <mat-chip-row
             *ngFor="let sensitivity of assetForm.get('sensitivity')?.value"
-            (removed)="removeSensitivity(sensitivity)"
+            (removed)="!isReadOnly ? removeSensitivity(sensitivity) : null"
+            [removable]="!isReadOnly"
           >
             {{ sensitivity }}
-            <button matChipRemove [attr.aria-label]="'Remove ' + sensitivity">
-              <mat-icon>cancel</mat-icon>
-            </button>
+            @if (!isReadOnly) {
+              <button matChipRemove [attr.aria-label]="'Remove ' + sensitivity">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            }
           </mat-chip-row>
         </mat-chip-grid>
-        <input
-          placeholder="{{ 'assetEditor.chipPlaceholder' | transloco }}"
-          [matChipInputFor]="sensitivityChipGrid"
-          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-          (matChipInputTokenEnd)="addSensitivity($event)"
-        />
+        @if (!isReadOnly) {
+          <input
+            placeholder="{{ 'assetEditor.chipPlaceholder' | transloco }}"
+            [matChipInputFor]="sensitivityChipGrid"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            (matChipInputTokenEnd)="addSensitivity($event)"
+          />
+        }
       </mat-form-field>
     </div>
   </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">{{ 'common.cancel' | transloco }}</button>
-  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="assetForm.invalid">
-    {{ mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco) }}
+  <button mat-button (click)="onCancel()">
+    {{ isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco) }}
   </button>
+  @if (!isReadOnly) {
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="assetForm.invalid">
+      {{ mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco) }}
+    </button>
+  }
 </mat-dialog-actions>

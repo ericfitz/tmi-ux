@@ -32,7 +32,8 @@
     "sensitivity": "Sensibilität",
     "title": {
       "create": "Asset erstellen",
-      "edit": "Asset bearbeiten"
+      "edit": "Asset bearbeiten",
+      "view": "Asset anzeigen"
     },
     "type": "Asset-Typ",
     "types": {
@@ -147,6 +148,8 @@
     "paste": "Einfügen",
     "permissions": "Berechtigungen",
     "priority": "Priorität",
+    "readOnly": "Schreibgeschützt",
+    "readOnlyTooltip": "Sie haben schreibgeschützten Zugriff auf dieses Bedrohungsmodell. Kontaktieren Sie den Eigentümer, um Bearbeitungsrechte anzufordern.",
     "refresh": "Aktualisieren",
     "roles": {
       "owner": "Eigentümer",
@@ -184,6 +187,8 @@
       "maxLength": "Maximale Länge ist {{max}} Zeichen",
       "required": "Dieses Feld ist erforderlich"
     },
+    "view": "Ansicht",
+    "viewMetadata": "Metadaten anzeigen",
     "viewThreat": "Bedrohung anzeigen"
   },
   "contextMenu": {
@@ -298,7 +303,8 @@
     "savedSuccessfully": "Notiz erfolgreich gespeichert",
     "title": {
       "create": "Notiz erstellen",
-      "edit": "Notiz bearbeiten"
+      "edit": "Notiz bearbeiten",
+      "view": "Notiz anzeigen"
     }
   },
   "presenter": {
@@ -354,9 +360,11 @@
   },
   "threatEditor": {
     "createNewThreat": "Neue Bedrohung erstellen",
+    "editThreat": "Bedrohung bearbeiten",
     "notAssociatedWithAsset": "Nicht mit einem Vermögenswert verknüpft",
     "notAssociatedWithCell": "Nicht mit einer Zelle verknüpft",
-    "notAssociatedWithDiagram": "Nicht mit einem Diagramm verknüpft"
+    "notAssociatedWithDiagram": "Nicht mit einem Diagramm verknüpft",
+    "viewThreat": "Bedrohung anzeigen"
   },
   "threatModels": {
     "addPermission": "Berechtigung hinzufügen",
@@ -382,6 +390,13 @@
     "diagrams": "Diagramme",
     "diagramsCount": "Diagramme",
     "documentDescriptionPlaceholder": "Beschreiben Sie den Zweck oder Inhalt des Dokuments",
+    "documentEditor": {
+      "title": {
+        "create": "Dokumentreferenz erstellen",
+        "edit": "Dokumentreferenz bearbeiten",
+        "view": "Dokumentreferenz anzeigen"
+      }
+    },
     "documentName": "Dokumentname",
     "documentUrl": "Dokument-URL",
     "downloadButton": "Auf Desktop herunterladen",
@@ -412,6 +427,13 @@
     "rename": "Umbenennen",
     "renameDiagram": "Diagramm umbenennen",
     "repositoryDescriptionPlaceholder": "Beschreiben Sie das Repository oder seinen Zweck",
+    "repositoryEditor": {
+      "title": {
+        "create": "Repository-Referenz erstellen",
+        "edit": "Repository-Referenz bearbeiten",
+        "view": "Repository-Referenz anzeigen"
+      }
+    },
     "repositoryName": "Repository-Name",
     "repositoryParameters": "Repository-Parameter",
     "repositoryRefType": "Referenz-Typ",

@@ -1,6 +1,17 @@
 <div class="metadata-dialog">
   <h2 mat-dialog-title>
-    {{ 'common.manageMetadata' | transloco }}
+    {{
+      data.isReadOnly ? ('common.viewMetadata' | transloco) : ('common.manageMetadata' | transloco)
+    }}
+    @if (data.isReadOnly) {
+      <mat-icon
+        class="read-only-indicator"
+        color="warn"
+        [matTooltip]="'common.readOnlyTooltip' | transloco"
+        [attr.aria-label]="'common.readOnly' | transloco"
+        >edit_off</mat-icon
+      >
+    }
   </h2>
   @if (data.objectName) {
     <div class="dialog-subtitle">

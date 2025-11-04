@@ -33,7 +33,20 @@ export interface PermissionsDialogData {
   template: `
     <div class="permissions-dialog">
       <h2 mat-dialog-title>
-        {{ 'common.permissions' | transloco }}
+        {{
+          data.isReadOnly
+            ? ('common.viewPermissions' | transloco)
+            : ('common.permissions' | transloco)
+        }}
+        @if (data.isReadOnly) {
+          <mat-icon
+            class="read-only-indicator"
+            color="warn"
+            [matTooltip]="'common.readOnlyTooltip' | transloco"
+            [attr.aria-label]="'common.readOnly' | transloco"
+            >edit_off</mat-icon
+          >
+        }
       </h2>
 
       <mat-dialog-content appScrollIndicator>

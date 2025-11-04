@@ -208,6 +208,12 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * @param event Chip input event
    */
   addStatus(event: MatChipInputEvent): void {
+    if (!this.canEdit) {
+      this.logger.warn('Cannot add status - insufficient permissions');
+      event.chipInput.clear();
+      return;
+    }
+
     const value = (event.value || '').trim();
 
     if (value) {
@@ -230,6 +236,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * @param status Status value to remove
    */
   removeStatus(status: string): void {
+    if (!this.canEdit) {
+      this.logger.warn('Cannot remove status - insufficient permissions');
+      return;
+    }
+
     const currentStatus = this.threatModelForm.get('status')?.value as string[];
     const index = currentStatus.indexOf(status);
 
@@ -666,6 +677,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       threat,
       threatModelId: this.threatModel.id,
       mode: dialogMode,
+      isReadOnly: !this.canEdit,
       diagramId: threat?.diagram_id,
       cellId: threat?.cell_id,
       diagrams: cellData.diagrams,
@@ -813,6 +825,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // Remove focus from the button to restore non-focused state
     (event.target as HTMLElement)?.blur();
 
+    if (!this.canEdit) {
+      this.logger.warn('Cannot delete threat - insufficient permissions');
+      return;
+    }
+
     if (!this.threatModel || !this.threatModel.threats) {
       return;
     }
@@ -928,6 +945,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       data: {
         id: diagram.id,
         name: diagram.name,
+        isReadOnly: !this.canEdit,
       },
     });
 
@@ -1071,6 +1089,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }
     const dialogData: DocumentEditorDialogData = {
       mode: 'create',
+      isReadOnly: !this.canEdit,
     };
 
     const dialogRef = this.dialog.open(DocumentEditorDialogComponent, {
@@ -1125,6 +1144,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     const dialogData: DocumentEditorDialogData = {
       document,
       mode: 'edit',
+      isReadOnly: !this.canEdit,
     };
 
     const dialogRef = this.dialog.open(DocumentEditorDialogComponent, {
@@ -1170,6 +1190,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     // Remove focus from the button to restore non-focused state
     (event.target as HTMLElement)?.blur();
+
+    if (!this.canEdit) {
+      this.logger.warn('Cannot delete document - insufficient permissions');
+      return;
+    }
 
     if (!this.threatModel || !this.threatModel.documents) {
       return;
@@ -1218,8 +1243,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * If the user confirms, adds the new source code to the threat model
    */
   addRepository(): void {
+    if (!this.canEdit) {
+      this.logger.warn('Cannot add repository - insufficient permissions');
+      return;
+    }
+
     const dialogData: RepositoryEditorDialogData = {
       mode: 'create',
+      isReadOnly: !this.canEdit,
     };
 
     const dialogRef = this.dialog.open(RepositoryEditorDialogComponent, {
@@ -1276,6 +1307,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     const dialogData: RepositoryEditorDialogData = {
       repository,
       mode: 'edit',
+      isReadOnly: !this.canEdit,
     };
 
     const dialogRef = this.dialog.open(RepositoryEditorDialogComponent, {
@@ -1325,6 +1357,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     // Remove focus from the button to restore non-focused state
     (event.target as HTMLElement)?.blur();
+
+    if (!this.canEdit) {
+      this.logger.warn('Cannot delete repository - insufficient permissions');
+      return;
+    }
 
     if (!this.threatModel || !this.threatModel.repositories) {
       return;
@@ -1384,7 +1421,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     const dialogData: MetadataDialogData = {
       metadata: repository.metadata || [],
-      isReadOnly: false,
+      isReadOnly: !this.canEdit,
       objectType: 'Repository',
       objectName: `${this.transloco.translate('common.objectTypes.repository')}: ${repository.name} (${repository.id})`,
     };
@@ -1434,6 +1471,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     const dialogData: NoteEditorDialogData = {
       mode: 'create',
+      isReadOnly: !this.canEdit,
     };
 
     const dialogRef = this.dialog.open(NoteEditorDialogComponent, {
@@ -1533,6 +1571,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     const dialogData: NoteEditorDialogData = {
       mode: 'edit',
       note: { ...note },
+      isReadOnly: !this.canEdit,
     };
 
     const dialogRef = this.dialog.open(NoteEditorDialogComponent, {
@@ -1682,7 +1721,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     const dialogData: MetadataDialogData = {
       metadata: document.metadata || [],
-      isReadOnly: false,
+      isReadOnly: !this.canEdit,
       objectType: 'Document',
       objectName: `${this.transloco.translate('common.objectTypes.document')}: ${document.name} (${document.id})`,
     };
@@ -1744,7 +1783,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     const dialogData: PermissionsDialogData = {
       permissions: this.threatModel.authorization || [],
       owner: this.threatModel.owner,
-      isReadOnly: false, // You can add logic here to determine if user has edit permissions
+      isReadOnly: !this.canManagePermissions, // Only owners can modify permissions
       onOwnerChange: (newOwner: string) => {
         if (this.threatModel) {
           this.threatModel.owner = newOwner;
@@ -1808,7 +1847,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     const dialogData: MetadataDialogData = {
       metadata: this.threatModel.metadata || [],
-      isReadOnly: false, // You can add logic here to determine if user has edit permissions
+      isReadOnly: !this.canEdit, // You can add logic here to determine if user has edit permissions
       objectType: 'ThreatModel',
       objectName: `${this.transloco.translate('common.objectTypes.threatModel')}: ${this.threatModel.name} (${this.threatModel.id})`,
     };
@@ -1849,7 +1888,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     const dialogData: MetadataDialogData = {
       metadata: diagram.metadata || [],
-      isReadOnly: false,
+      isReadOnly: !this.canEdit,
       objectType: 'Diagram',
       objectName: `${this.transloco.translate('common.objectTypes.diagram')}: ${diagram.name} (${diagram.id})`,
     };
@@ -1897,7 +1936,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     const dialogData: MetadataDialogData = {
       metadata: threat.metadata || [],
-      isReadOnly: false,
+      isReadOnly: !this.canEdit,
       objectType: 'Threat',
       objectName: `${this.transloco.translate('common.objectTypes.threat')}: ${threat.name} (${threat.id})`,
     };
@@ -2767,6 +2806,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     const dialogData: AssetEditorDialogData = {
       mode: 'create',
+      isReadOnly: !this.canEdit,
     };
 
     const dialogRef = this.dialog.open(AssetEditorDialogComponent, {
@@ -2811,6 +2851,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     const dialogData: AssetEditorDialogData = {
       mode: 'edit',
       asset: { ...asset },
+      isReadOnly: !this.canEdit,
     };
 
     const dialogRef = this.dialog.open(AssetEditorDialogComponent, {

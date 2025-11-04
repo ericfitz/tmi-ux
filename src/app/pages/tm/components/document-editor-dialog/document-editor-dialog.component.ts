@@ -4,6 +4,8 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
@@ -26,6 +28,7 @@ interface DocumentFormValues {
 export interface DocumentEditorDialogData {
   document?: Document;
   mode: 'create' | 'edit';
+  isReadOnly?: boolean;
 }
 
 @Component({
@@ -37,6 +40,8 @@ export interface DocumentEditorDialogData {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatIconModule,
+    MatTooltipModule,
     ReactiveFormsModule,
     TranslocoModule,
   ],
@@ -46,6 +51,7 @@ export interface DocumentEditorDialogData {
 export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
   documentForm: FormGroup;
   mode: 'create' | 'edit';
+  isReadOnly: boolean;
 
   private _subscriptions: Subscription = new Subscription();
 
@@ -55,6 +61,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: DocumentEditorDialogData,
   ) {
     this.mode = data.mode;
+    this.isReadOnly = data.isReadOnly || false;
 
     this.documentForm = this.fb.group({
       name: [data.document?.name || '', [Validators.required, Validators.maxLength(256)]],
@@ -68,6 +75,10 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
       ],
       description: [data.document?.description || '', Validators.maxLength(1024)],
     });
+
+    if (this.isReadOnly) {
+      this.documentForm.disable();
+    }
   }
 
   ngOnInit(): void {

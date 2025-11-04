@@ -32,7 +32,8 @@
     "sensitivity": "Sensitivity",
     "title": {
       "create": "Create Asset",
-      "edit": "Edit Asset"
+      "edit": "Edit Asset",
+      "view": "View Asset"
     },
     "type": "Asset Type",
     "types": {
@@ -117,6 +118,7 @@
     "lastModified": "Last Modified",
     "lastModifiedDate": "Last Modified: {{date}}",
     "manageMetadata": "Manage Metadata",
+    "viewMetadata": "View Metadata",
     "manageThreats": "Manage Threats",
     "metadata": "Metadata",
     "metadataKey": "Key",
@@ -146,7 +148,10 @@
     "other": "Other",
     "paste": "Paste",
     "permissions": "Permissions",
+    "viewPermissions": "View Permissions",
     "priority": "Priority",
+    "readOnly": "Read-Only",
+    "readOnlyTooltip": "You have read-only access to this threat model. Contact the owner to request edit permissions.",
     "refresh": "Refresh",
     "roles": {
       "owner": "Owner",
@@ -184,6 +189,8 @@
       "maxLength": "Maximum length is {{max}} characters",
       "required": "This field is required"
     },
+    "view": "View",
+    "viewMetadata": "View Metadata",
     "viewThreat": "View Threat"
   },
   "contextMenu": {
@@ -298,7 +305,8 @@
     "savedSuccessfully": "Note saved successfully",
     "title": {
       "create": "Create Note",
-      "edit": "Edit Note"
+      "edit": "Edit Note",
+      "view": "View Note"
     }
   },
   "presenter": {
@@ -354,9 +362,11 @@
   },
   "threatEditor": {
     "createNewThreat": "Create New Threat",
+    "editThreat": "Edit Threat",
     "notAssociatedWithAsset": "Not associated with an asset",
     "notAssociatedWithCell": "Not Associated With a Cell",
-    "notAssociatedWithDiagram": "Not Associated With a Diagram"
+    "notAssociatedWithDiagram": "Not Associated With a Diagram",
+    "viewThreat": "View Threat"
   },
   "threatModels": {
     "addPermission": "Add Permission",
@@ -382,11 +392,20 @@
     "diagrams": "Diagrams",
     "diagramsCount": "Diagrams",
     "documentDescriptionPlaceholder": "Describe the Document's Purpose or Content",
+    "documentEditor": {
+      "title": {
+        "create": "Create Document Reference",
+        "edit": "Edit Document Reference",
+        "view": "View Document Reference"
+      }
+    },
     "documentName": "Document Name",
     "documentUrl": "Document URL",
     "downloadButton": "Download to Desktop",
     "editDocument": "Edit Document Reference",
+    "viewDocument": "View Document Reference",
     "editRepository": "Edit Repository Reference",
+    "viewRepository": "View Repository Reference",
     "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",
     "idLabel": "ID:",
     "importing": "Importing threat model...",
@@ -411,7 +430,15 @@
     "permissionsUser": "User",
     "rename": "Rename",
     "renameDiagram": "Rename Diagram",
+    "viewDiagramName": "View Diagram Name",
     "repositoryDescriptionPlaceholder": "Describe the repository or its purpose",
+    "repositoryEditor": {
+      "title": {
+        "create": "Create Repository Reference",
+        "edit": "Edit Repository Reference",
+        "view": "View Repository Reference"
+      }
+    },
     "repositoryName": "Repository Name",
     "repositoryParameters": "Repository Parameters",
     "repositoryRefType": "Reference Type",

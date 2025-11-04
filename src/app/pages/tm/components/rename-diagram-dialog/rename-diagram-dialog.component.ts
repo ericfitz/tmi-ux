@@ -4,6 +4,8 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -13,6 +15,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 export interface RenameDiagramDialogData {
   id: string;
   name: string;
+  isReadOnly?: boolean;
 }
 
 /**
@@ -31,6 +34,8 @@ interface DiagramFormValues {
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatIconModule,
+    MatTooltipModule,
     ReactiveFormsModule,
     TranslocoModule,
   ],
@@ -40,6 +45,7 @@ interface DiagramFormValues {
 export class RenameDiagramDialogComponent {
   diagramForm: FormGroup;
   diagramId: string;
+  isReadOnly: boolean;
 
   constructor(
     private dialogRef: MatDialogRef<RenameDiagramDialogComponent>,
@@ -47,9 +53,15 @@ export class RenameDiagramDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: RenameDiagramDialogData,
   ) {
     this.diagramId = data.id;
+    this.isReadOnly = data.isReadOnly || false;
+
     this.diagramForm = this.fb.group({
       name: [data.name, [Validators.required, Validators.maxLength(100)]],
     });
+
+    if (this.isReadOnly) {
+      this.diagramForm.disable();
+    }
   }
 
   /**

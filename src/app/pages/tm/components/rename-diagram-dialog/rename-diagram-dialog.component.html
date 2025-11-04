@@ -1,4 +1,19 @@
-<h2 mat-dialog-title>{{ 'threatModels.renameDiagram' | transloco }}</h2>
+<h2 mat-dialog-title>
+  {{
+    isReadOnly
+      ? ('threatModels.viewDiagramName' | transloco)
+      : ('threatModels.renameDiagram' | transloco)
+  }}
+  @if (isReadOnly) {
+    <mat-icon
+      class="read-only-indicator"
+      color="warn"
+      [matTooltip]="'common.readOnlyTooltip' | transloco"
+      [attr.aria-label]="'common.readOnly' | transloco"
+      >edit_off</mat-icon
+    >
+  }
+</h2>
 <div class="dialog-subtitle">{{ 'threatModels.idLabel' | transloco }} {{ diagramId }}</div>
 <mat-dialog-content appScrollIndicator>
   <form [formGroup]="diagramForm" class="dialog-form">
@@ -26,18 +41,20 @@
     mat-button
     (click)="onCancel()"
     tabindex="2"
-    [attr.aria-label]="'common.cancel' | transloco"
+    [attr.aria-label]="isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco)"
   >
-    {{ 'common.cancel' | transloco }}
+    {{ isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco) }}
   </button>
-  <button
-    mat-raised-button
-    color="primary"
-    [disabled]="diagramForm.invalid"
-    (click)="onSubmit()"
-    tabindex="3"
-    [attr.aria-label]="'threatModels.rename' | transloco"
-  >
-    {{ 'threatModels.rename' | transloco }}
-  </button>
+  @if (!isReadOnly) {
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="diagramForm.invalid"
+      (click)="onSubmit()"
+      tabindex="3"
+      [attr.aria-label]="'threatModels.rename' | transloco"
+    >
+      {{ 'threatModels.rename' | transloco }}
+    </button>
+  }
 </mat-dialog-actions>

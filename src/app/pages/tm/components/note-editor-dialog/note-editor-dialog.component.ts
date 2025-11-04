@@ -24,6 +24,7 @@ import { Note } from '../../models/threat-model.model';
 export interface NoteEditorDialogData {
   mode: 'create' | 'edit';
   note?: Note;
+  isReadOnly?: boolean;
 }
 
 export interface NoteEditorResult {
@@ -64,6 +65,7 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
 
   noteForm!: FormGroup;
   mode: 'create' | 'edit';
+  isReadOnly: boolean = false;
   previewMode = false;
   private originalContent = '';
   private originalName = '';
@@ -88,6 +90,7 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
     @Inject(MAT_DIALOG_DATA) public data: NoteEditorDialogData,
   ) {
     this.mode = data.mode;
+    this.isReadOnly = data.isReadOnly || false;
   }
 
   ngOnInit(): void {
@@ -112,8 +115,13 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
       (this.noteForm.get('description')?.value as string | undefined) || '';
 
     // Start in preview mode if there is existing content, otherwise start in edit mode
+    // Always use preview mode when read-only
     const hasExistingContent = this.originalContent.trim().length > 0;
-    this.previewMode = hasExistingContent;
+    this.previewMode = this.isReadOnly || hasExistingContent;
+
+    if (this.isReadOnly) {
+      this.noteForm.disable();
+    }
 
     // Check clipboard permissions on init
     void this.checkClipboardPermissions();
@@ -131,7 +139,8 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
   }
 
   get dialogTitle(): string {
-    return this.translocoService.translate(`noteEditor.title.${this.mode}`);
+    const key = this.isReadOnly ? 'view' : this.mode;
+    return this.translocoService.translate(`noteEditor.title.${key}`);
   }
 
   get currentContentLength(): number {
