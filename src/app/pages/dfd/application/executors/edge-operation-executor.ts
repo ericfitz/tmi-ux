@@ -19,6 +19,7 @@ import {
   DeleteEdgeOperation,
 } from '../../types/graph-operation.types';
 import { Cell } from '../../../../core/types/websocket-message.types';
+import { normalizeCell } from '../../utils/cell-normalization.util';
 
 @Injectable()
 export class EdgeOperationExecutor extends BaseOperationExecutor {
@@ -392,7 +393,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
 
   /**
    * Capture the current state of an edge for history tracking
-   * Excludes visual effect attributes (text/filter, body/filter, line/filter)
+   * Uses normalizeCell to ensure consistency with persistence filtering
    */
   private _captureEdgeState(graph: Graph, edgeId: string): Cell | null {
     const edge = this.getEdge(graph, edgeId);
@@ -401,32 +402,19 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
     }
 
     const typedEdge = edge;
-    const attrs = typedEdge.getAttrs();
-
-    // Clone attrs and remove filter attributes
-    const filteredAttrs: Record<string, unknown> = {};
-    Object.keys(attrs).forEach(key => {
-      if (
-        key !== 'text/filter' &&
-        key !== 'body/filter' &&
-        key !== 'line/filter' &&
-        !key.endsWith('/filter')
-      ) {
-        filteredAttrs[key] = attrs[key];
-      }
-    });
-
-    return {
+    const cellData: Cell = {
       id: typedEdge.id,
       shape: typedEdge.shape,
       source: typedEdge.getSource(),
       target: typedEdge.getTarget(),
       vertices: typedEdge.getVertices?.() || [],
-      attrs: filteredAttrs,
+      attrs: typedEdge.getAttrs(),
       label: typedEdge.getLabels?.()?.[0]
         ? (typedEdge.getLabels()[0] as any).attrs?.label?.text
         : undefined,
       zIndex: typedEdge.getZIndex(),
     };
+
+    return normalizeCell(cellData);
   }
 }

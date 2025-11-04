@@ -495,6 +495,7 @@ export class NodeOperationExecutor implements OperationExecutor {
 
   /**
    * Capture state for multiple nodes and their connected edges
+   * Uses normalizeCell to ensure consistency with persistence filtering
    */
   private _captureCascadedState(graph: Graph, nodeId: string): Cell[] {
     const states: Cell[] = [];
@@ -510,29 +511,18 @@ export class NodeOperationExecutor implements OperationExecutor {
     if (node && node.isNode?.()) {
       const connectedEdges = graph.getConnectedEdges(node) || [];
       connectedEdges.forEach(edge => {
-        const edgeAttrs = edge.getAttrs();
-        const filteredAttrs: Record<string, unknown> = {};
-        Object.keys(edgeAttrs).forEach(key => {
-          if (
-            key !== 'text/filter' &&
-            key !== 'body/filter' &&
-            key !== 'line/filter' &&
-            !key.endsWith('/filter')
-          ) {
-            filteredAttrs[key] = edgeAttrs[key];
-          }
-        });
-
-        states.push({
+        const edgeCellData: Cell = {
           id: edge.id,
           shape: edge.shape,
           source: edge.getSource(),
           target: edge.getTarget(),
           vertices: edge.getVertices?.() || [],
-          attrs: filteredAttrs,
+          attrs: edge.getAttrs(),
           label: edge.getAttrByPath('label/text'),
           zIndex: edge.getZIndex(),
-        });
+        };
+
+        states.push(normalizeCell(edgeCellData));
       });
     }
 

@@ -3,6 +3,7 @@
  *
  * Normalizes cell data before saving to ensure consistency:
  * - Removes visual effect filters (text/filter, body/filter, line/filter, etc.)
+ * - Removes the tools property (runtime UI-only state)
  * - Rounds position and size coordinates to integers
  * - For edges: keeps only the first label
  */
@@ -25,6 +26,9 @@ export function normalizeCell(cell: Cell): Cell {
     });
     normalized.attrs = filteredAttrs;
   }
+
+  // Remove tools property (runtime UI-only state)
+  delete normalized['tools'];
 
   // Round position coordinates to nearest integer
   if (normalized.position) {
