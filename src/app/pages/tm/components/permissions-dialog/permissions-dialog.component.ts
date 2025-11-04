@@ -256,7 +256,7 @@ export interface PermissionsDialogData {
       }
 
       .info-section {
-        background-color: #f5f5f5;
+        background-color: var(--color-background-light);
         border-radius: 8px;
         padding: 8px 12px;
         margin-bottom: 12px;
@@ -277,11 +277,11 @@ export interface PermissionsDialogData {
       .info-label {
         font-weight: var(--font-weight-medium);
         min-width: 120px;
-        color: rgb(0 0 0 / 70%);
+        color: var(--color-text-secondary);
       }
 
       .info-value {
-        color: rgb(0 0 0 / 87%);
+        color: var(--color-text-primary);
       }
 
       .table-container {
