@@ -118,7 +118,6 @@
     "lastModified": "Last Modified",
     "lastModifiedDate": "Last Modified: {{date}}",
     "manageMetadata": "Manage Metadata",
-    "viewMetadata": "View Metadata",
     "manageThreats": "Manage Threats",
     "metadata": "Metadata",
     "metadataKey": "Key",
@@ -148,7 +147,6 @@
     "other": "Other",
     "paste": "Paste",
     "permissions": "Permissions",
-    "viewPermissions": "View Permissions",
     "priority": "Priority",
     "readOnly": "Read-Only",
     "readOnlyTooltip": "You have read-only access to this threat model. Contact the owner to request edit permissions.",
@@ -191,6 +189,7 @@
     },
     "view": "View",
     "viewMetadata": "View Metadata",
+    "viewPermissions": "View Permissions",
     "viewThreat": "View Threat"
   },
   "contextMenu": {
@@ -403,9 +402,7 @@
     "documentUrl": "Document URL",
     "downloadButton": "Download to Desktop",
     "editDocument": "Edit Document Reference",
-    "viewDocument": "View Document Reference",
     "editRepository": "Edit Repository Reference",
-    "viewRepository": "View Repository Reference",
     "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",
     "idLabel": "ID:",
     "importing": "Importing threat model...",
@@ -430,7 +427,6 @@
     "permissionsUser": "User",
     "rename": "Rename",
     "renameDiagram": "Rename Diagram",
-    "viewDiagramName": "View Diagram Name",
     "repositoryDescriptionPlaceholder": "Describe the repository or its purpose",
     "repositoryEditor": {
       "title": {
@@ -476,6 +472,9 @@
       "repositoriesCardTitle": "Repositories are links to Source Code Repositories where source code for the system is managed.",
       "threatsCardTitle": "Threats are potential adverse events or action that exploits a vulnerability or weakness in a system to compromise its confidentiality, integrity, availability, or other security objectives. In TMI, threat objects also contain information about the type and level of risk associated with the threat and information to track the work needed to mitigate the threat."
     },
+    "viewDiagramName": "View Diagram Name",
+    "viewDocument": "View Document Reference",
+    "viewRepository": "View Repository Reference",
     "yourThreatModels": "Your Threat Models"
   },
   "tos": {
