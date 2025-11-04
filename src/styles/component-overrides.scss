@@ -273,6 +273,22 @@ body {
 }
 
 // =============================================================================
+// READ-ONLY INDICATOR STYLING
+// =============================================================================
+
+// Shared styling for read-only indicator icons across all components
+.read-only-indicator {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin-left: 8px;
+  color: var(--color-warning) !important;
+  font-size: 24px !important;
+  width: 24px;
+  height: 24px;
+}
+
+// =============================================================================
 // DARK THEME ADJUSTMENTS
 // =============================================================================
 

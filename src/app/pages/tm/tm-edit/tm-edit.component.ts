@@ -1770,10 +1770,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * Opens the permissions dialog to manage threat model permissions
    */
   openPermissionsDialog(): void {
-    if (!this.threatModel || !this.canManagePermissions) {
-      if (!this.canManagePermissions) {
-        this.logger.warn('Cannot manage permissions - owner access required');
-      }
+    if (!this.threatModel) {
       return;
     }
 
