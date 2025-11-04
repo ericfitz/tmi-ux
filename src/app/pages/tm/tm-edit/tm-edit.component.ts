@@ -2198,11 +2198,12 @@ export class TmEditComponent implements OnInit, OnDestroy {
   /**
    * Update the framework control's disabled state based on whether threats exist
    * The framework cannot be changed once threats are defined to maintain data consistency
+   * Also respects read-only mode permissions
    */
   private updateFrameworkControlState(): void {
     const frameworkControl = this.threatModelForm.get('threat_model_framework');
     if (frameworkControl) {
-      if (this.hasThreats()) {
+      if (this.hasThreats() || !this.canEdit) {
         frameworkControl.disable();
       } else {
         frameworkControl.enable();
