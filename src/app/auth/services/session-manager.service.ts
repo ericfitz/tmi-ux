@@ -181,7 +181,7 @@ export class SessionManagerService {
 
   /**
    * Handle user requesting session extension
-   * Attempts to refresh the token and restart timers
+   * Forces a token refresh to extend the session and restart timers
    */
   private handleExtendSession(): void {
     this.logger.info('User requested session extension');
@@ -192,12 +192,18 @@ export class SessionManagerService {
       return;
     }
 
-    // For all OAuth users (including test users with real OAuth), attempt to refresh the token
-    this.authService.getValidToken().subscribe({
+    // For all OAuth users, force a token refresh to get a new token with extended expiry
+    // Note: We call refreshToken() directly instead of getValidToken() because getValidToken()
+    // will return the existing token if it's still valid (doesn't expire within 1 minute).
+    // Since the warning appears 5 minutes before expiry, the token would still be considered
+    // "valid" and wouldn't be refreshed, leaving the user with an expiring token.
+    this.authService.refreshToken().subscribe({
       next: newToken => {
         this.logger.info('Session extension successful', {
           newExpiry: newToken.expiresAt.toISOString(),
         });
+        // Store the new token - this will trigger onTokenRefreshed() and restart timers
+        this.authService.storeToken(newToken);
         // Close the warning dialog since session was extended
         if (this.warningDialog) {
           this.warningDialog.close('extend');

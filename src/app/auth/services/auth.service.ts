@@ -1292,7 +1292,7 @@ export class AuthService {
    * Store JWT token in local storage and notify SessionManager
    * @param token JWT token
    */
-  private storeToken(token: JwtToken): void {
+  storeToken(token: JwtToken): void {
     this.logger.debugComponent('Auth', 'Storing JWT token', {
       tokenLength: token.token?.length,
       tokenPrefix: token.token?.substring(0, 20) + '...',

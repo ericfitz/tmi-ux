@@ -21,6 +21,8 @@ describe('SessionManagerService', () => {
     mockAuthService = {
       getStoredToken: vi.fn(),
       getValidToken: vi.fn(),
+      refreshToken: vi.fn(),
+      storeToken: vi.fn(),
       createLocalTokenWithExpiry: vi.fn(),
       logout: vi.fn(),
       setSessionManager: vi.fn(),
@@ -92,7 +94,7 @@ describe('SessionManagerService', () => {
       expiresAt: new Date(Date.now() + 600000),
       expiresIn: 600,
     };
-    mockAuthService.getValidToken.mockReturnValue(of(mockToken));
+    mockAuthService.refreshToken.mockReturnValue(of(mockToken));
     mockAuthService.isTestUser = false;
 
     const mockDialogRef = {
@@ -104,7 +106,8 @@ describe('SessionManagerService', () => {
     // Call the private method using type assertion
     (service as any).handleExtendSession();
 
-    expect(mockAuthService.getValidToken).toHaveBeenCalled();
+    expect(mockAuthService.refreshToken).toHaveBeenCalled();
+    expect(mockAuthService.storeToken).toHaveBeenCalledWith(mockToken);
     expect(mockDialogRef.close).toHaveBeenCalledWith('extend');
   });
 
@@ -135,7 +138,7 @@ describe('SessionManagerService', () => {
 
   it('should logout if extend session fails', () => {
     mockAuthService.isUsingLocalProvider = false;
-    mockAuthService.getValidToken.mockReturnValue(
+    mockAuthService.refreshToken.mockReturnValue(
       throwError(() => new Error('Token refresh failed')),
     );
 
