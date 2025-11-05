@@ -274,6 +274,17 @@ export class ThreatModelService implements OnDestroy {
       { forceRefresh },
     );
     return this.apiService.get<ThreatModel>(`threat_models/${id}`).pipe(
+      map(threatModel => {
+        if (threatModel) {
+          // Migrate legacy field values in all threats
+          if (threatModel.threats) {
+            threatModel.threats = threatModel.threats.map(threat =>
+              this.migrateLegacyThreatFieldValues(threat),
+            );
+          }
+        }
+        return threatModel;
+      }),
       tap(threatModel => {
         if (threatModel) {
           // Cache the full model and expire all other cached models
@@ -915,9 +926,74 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
+   * Migrate legacy string field values from API to numeric keys for frontend
+   * The backend returns string values like 'critical', 'high', 'low', etc.
+   * The frontend uses numeric keys: Critical=0, High=1, Medium=2, Low=3, Informational=4, Unknown=5
+   */
+  private migrateLegacyThreatFieldValues(threat: Threat): Threat {
+    const migratedThreat = { ...threat };
+
+    // Severity: string to numeric key
+    if (migratedThreat.severity && !/^\d+$/.test(migratedThreat.severity)) {
+      const severityMap: Record<string, string> = {
+        critical: '0',
+        high: '1',
+        medium: '2',
+        low: '3',
+        informational: '4',
+        info: '4',
+        unknown: '5',
+        none: '5',
+      };
+      const key = migratedThreat.severity.toLowerCase();
+      if (severityMap[key]) {
+        migratedThreat.severity = severityMap[key];
+      }
+    }
+
+    // Priority: string to numeric key
+    if (migratedThreat.priority && !/^\d+$/.test(migratedThreat.priority)) {
+      const priorityMap: Record<string, string> = {
+        immediate: '0',
+        high: '1',
+        medium: '2',
+        low: '3',
+        deferred: '4',
+      };
+      const key = migratedThreat.priority.toLowerCase();
+      if (priorityMap[key]) {
+        migratedThreat.priority = priorityMap[key];
+      }
+    }
+
+    // Status: string to numeric key
+    if (migratedThreat.status && !/^\d+$/.test(migratedThreat.status)) {
+      const statusMap: Record<string, string> = {
+        open: '0',
+        confirmed: '1',
+        'mitigation planned': '2',
+        'mitigation in progress': '3',
+        'verification pending': '4',
+        resolved: '5',
+        accepted: '6',
+        'false positive': '7',
+        deferred: '8',
+        closed: '9',
+      };
+      const key = migratedThreat.status.toLowerCase();
+      if (statusMap[key]) {
+        migratedThreat.status = statusMap[key];
+      }
+    }
+
+    return migratedThreat;
+  }
+
+  /**
    * Convert numeric field keys back to legacy string values for API compatibility
    * The frontend uses numeric keys (0-5 for severity, etc.) but the backend expects
    * the old string values ('low', 'medium', 'high', etc.)
+   * Mapping: Critical=0, High=1, Medium=2, Low=3, Informational=4, Unknown=5
    */
   private convertToLegacyFieldValues(threat: Partial<Threat>): Partial<Threat> {
     const converted = { ...threat };
@@ -925,12 +1001,12 @@ export class ThreatModelService implements OnDestroy {
     // Severity: numeric key to lowercase string
     if (converted.severity) {
       const severityMap: Record<string, string> = {
-        '0': 'none',
-        '1': 'low',
-        '2': 'low',
-        '3': 'medium',
-        '4': 'high',
-        '5': 'critical',
+        '0': 'critical',
+        '1': 'high',
+        '2': 'medium',
+        '3': 'low',
+        '4': 'informational',
+        '5': 'unknown',
       };
       converted.severity = severityMap[converted.severity] || converted.severity;
     }
@@ -938,11 +1014,11 @@ export class ThreatModelService implements OnDestroy {
     // Priority: numeric key to lowercase string
     if (converted.priority) {
       const priorityMap: Record<string, string> = {
-        '1': 'low',
-        '2': 'low',
-        '3': 'medium',
-        '4': 'high',
-        '5': 'critical',
+        '0': 'immediate',
+        '1': 'high',
+        '2': 'medium',
+        '3': 'low',
+        '4': 'deferred',
       };
       converted.priority = priorityMap[converted.priority] || converted.priority;
     }
@@ -958,7 +1034,7 @@ export class ThreatModelService implements OnDestroy {
         '5': 'resolved',
         '6': 'accepted',
         '7': 'false positive',
-        '8': 'duplicate',
+        '8': 'deferred',
         '9': 'closed',
       };
       converted.status = statusMap[converted.status] || converted.status;

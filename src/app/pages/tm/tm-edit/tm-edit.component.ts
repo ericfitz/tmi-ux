@@ -261,20 +261,25 @@ export class TmEditComponent implements OnInit, OnDestroy {
   /**
    * Hardcoded mapping from old string values to new numeric keys
    * Used for migrating legacy data
+   * Mapping: Critical=0, High=1, Medium=2, Low=3, Informational=4, Unknown=5
    */
   private readonly severityMap: Record<string, string> = {
-    Critical: '5',
-    High: '4',
-    Medium: '3',
-    Low: '2',
-    Info: '1',
-    None: '0',
-    critical: '5',
-    high: '4',
-    medium: '3',
-    low: '2',
-    info: '1',
-    none: '0',
+    Critical: '0',
+    High: '1',
+    Medium: '2',
+    Low: '3',
+    Informational: '4',
+    Info: '4',
+    Unknown: '5',
+    None: '5',
+    critical: '0',
+    high: '1',
+    medium: '2',
+    low: '3',
+    informational: '4',
+    info: '4',
+    unknown: '5',
+    none: '5',
   };
 
   private readonly statusMap: Record<string, string> = {
@@ -286,7 +291,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     Resolved: '5',
     Accepted: '6',
     'False Positive': '7',
-    Duplicate: '8',
+    Deferred: '8',
     Closed: '9',
     // Lowercase variants
     open: '0',
@@ -297,21 +302,26 @@ export class TmEditComponent implements OnInit, OnDestroy {
     resolved: '5',
     accepted: '6',
     'false positive': '7',
-    duplicate: '8',
+    deferred: '8',
     closed: '9',
   };
 
   private readonly priorityMap: Record<string, string> = {
-    Critical: '5',
-    High: '4',
-    Medium: '3',
-    Low: '2',
-    Info: '1',
-    critical: '5',
-    high: '4',
-    medium: '3',
-    low: '2',
-    info: '1',
+    'Immediate (P0)': '0',
+    'High (P1)': '1',
+    'Medium (P2)': '2',
+    'Low (P3)': '3',
+    'Deferred (P4)': '4',
+    Immediate: '0',
+    High: '1',
+    Medium: '2',
+    Low: '3',
+    Deferred: '4',
+    immediate: '0',
+    high: '1',
+    medium: '2',
+    low: '3',
+    deferred: '4',
   };
 
   /**

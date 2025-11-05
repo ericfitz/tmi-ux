@@ -627,7 +627,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           description: '',
           created_at: new Date().toISOString(),
           modified_at: new Date().toISOString(),
-          severity: '4', // High (using numeric key)
+          severity: '1', // High (using numeric key: Critical=0, High=1, Medium=2, Low=3, Info=4, Unknown=5)
           threat_type:
             this.threatTypeOptions.length > 0
               ? this.threatTypeOptions[0]
@@ -635,7 +635,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           diagram_id: this.data.diagramId || '',
           cell_id: this.data.cellId || '',
           score: 10.0,
-          priority: '4', // High (using numeric key)
+          priority: '1', // High (using numeric key: Immediate=0, High=1, Medium=2, Low=3, Deferred=4)
           mitigated: false,
           status: '0', // Open (using numeric key)
           issue_uri: '',
