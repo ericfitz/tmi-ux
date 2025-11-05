@@ -245,7 +245,11 @@ export class ThreatModelService implements OnDestroy {
 
       // Update authorization service with the threat model's authorization
       if (threatModel) {
-        this.authorizationService.setAuthorization(threatModel.id, threatModel.authorization);
+        this.authorizationService.setAuthorization(
+          threatModel.id,
+          threatModel.authorization,
+          threatModel.owner,
+        );
       }
 
       return of(threatModel);
@@ -261,7 +265,11 @@ export class ThreatModelService implements OnDestroy {
 
       // Update authorization service with the cached threat model's authorization
       if (cachedModel) {
-        this.authorizationService.setAuthorization(cachedModel.id, cachedModel.authorization);
+        this.authorizationService.setAuthorization(
+          cachedModel.id,
+          cachedModel.authorization,
+          cachedModel.owner,
+        );
       }
 
       return of(cachedModel);
@@ -297,7 +305,11 @@ export class ThreatModelService implements OnDestroy {
           );
 
           // Update authorization service with the loaded threat model's authorization
-          this.authorizationService.setAuthorization(threatModel.id, threatModel.authorization);
+          this.authorizationService.setAuthorization(
+            threatModel.id,
+            threatModel.authorization,
+            threatModel.owner,
+          );
         }
       }),
       catchError(error => {

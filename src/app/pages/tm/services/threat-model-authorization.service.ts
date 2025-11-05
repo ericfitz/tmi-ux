@@ -16,6 +16,9 @@ export class ThreatModelAuthorizationService implements OnDestroy {
   // Current threat model authorization state
   private _authorizationSubject = new BehaviorSubject<Authorization[] | null>(null);
 
+  // Current threat model owner
+  private _currentOwner: string | null = null;
+
   // Current threat model ID being tracked
   private _currentThreatModelId: string | null = null;
 
@@ -78,16 +81,19 @@ export class ThreatModelAuthorizationService implements OnDestroy {
    * Set authorization data for a threat model
    * @param threatModelId The threat model ID
    * @param authorization The authorization data
+   * @param owner The owner of the threat model (optional for backward compatibility)
    */
-  setAuthorization(threatModelId: string, authorization: Authorization[]): void {
+  setAuthorization(threatModelId: string, authorization: Authorization[], owner?: string): void {
     this.logger.debug('setAuthorization called', {
       threatModelId,
+      owner,
       authorizationCount: authorization.length,
       previousThreatModelId: this._currentThreatModelId,
       stackTrace: new Error().stack?.split('\n').slice(1, 4).join('\n'),
     });
 
     this._currentThreatModelId = threatModelId;
+    this._currentOwner = owner || null;
     this._authorizationSubject.next(authorization);
   }
 
@@ -121,30 +127,128 @@ export class ThreatModelAuthorizationService implements OnDestroy {
     });
 
     this._currentThreatModelId = null;
+    this._currentOwner = null;
     this._authorizationSubject.next(null);
     this.logger.debug('Authorization cleared');
   }
 
   /**
    * Calculate current user's permission based on authorization data
+   * Implements the authorization logic described in docs-server/reference/architecture/AUTHORIZATION.md
    * @param authorizations The authorization data
    * @returns The user's permission level or null
    */
   private calculateUserPermission(
     authorizations: Authorization[] | null,
   ): 'reader' | 'writer' | 'owner' | null {
-    if (!authorizations || authorizations.length === 0) {
-      return null;
-    }
-
+    const currentUserId = this.authService.userId;
     const currentUserEmail = this.authService.userEmail;
-    if (!currentUserEmail) {
+    const currentUserGroups = this.authService.userGroups;
+
+    if (!currentUserId || !currentUserEmail) {
       this.logger.warn('Cannot calculate user permission - no authenticated user');
       return null;
     }
 
-    const userAuth = authorizations.find(auth => auth.subject === currentUserEmail);
-    return userAuth?.role || null;
+    // Step 1: Check if user is the owner (owner field takes absolute precedence)
+    if (this._currentOwner) {
+      if (this._currentOwner === currentUserId || this._currentOwner === currentUserEmail) {
+        this.logger.debug('User matches owner field', {
+          owner: this._currentOwner,
+          userId: currentUserId,
+          userEmail: currentUserEmail,
+        });
+        return 'owner';
+      }
+    }
+
+    // Step 2: If not owner, check authorization list
+    // No authorizations means no access
+    if (!authorizations || authorizations.length === 0) {
+      this.logger.debug('No authorization entries found', {
+        userId: currentUserId,
+        userEmail: currentUserEmail,
+      });
+      return null;
+    }
+
+    // Track the highest permission found (owner > writer > reader)
+    let highestPermission: 'reader' | 'writer' | 'owner' | null = null;
+
+    // Helper to update highest permission
+    const updatePermission = (newRole: 'reader' | 'writer' | 'owner'): boolean => {
+      const roleRank = { reader: 1, writer: 2, owner: 3 };
+      const currentRank = highestPermission ? roleRank[highestPermission] : 0;
+      const newRank = roleRank[newRole];
+
+      if (newRank > currentRank) {
+        highestPermission = newRole;
+        this.logger.debug('Updated highest permission', {
+          from: highestPermission || 'none',
+          to: newRole,
+        });
+      }
+
+      // Return true if we've reached owner (can short-circuit)
+      return newRole === 'owner';
+    };
+
+    // Step 3: Loop through authorization entries
+    for (const auth of authorizations) {
+      // Step 3A: Check user-type authorizations
+      if (auth.subject_type === 'user') {
+        if (auth.subject === currentUserId || auth.subject === currentUserEmail) {
+          this.logger.debug('User matches authorization entry', {
+            subject: auth.subject,
+            role: auth.role,
+            userId: currentUserId,
+            userEmail: currentUserEmail,
+          });
+          // Update permission and short-circuit if owner
+          if (updatePermission(auth.role)) {
+            return 'owner';
+          }
+        }
+      }
+      // Step 3B & 3C: Check group-type authorizations
+      else if (auth.subject_type === 'group') {
+        // Step 3B: Check for "everyone" pseudo-group (case-insensitive)
+        if (auth.subject.toLowerCase() === 'everyone') {
+          this.logger.debug('User matches "everyone" group', {
+            role: auth.role,
+          });
+          updatePermission(auth.role);
+          // Note: "everyone" typically won't have owner role, but handle it anyway
+          if (auth.role === 'owner') {
+            return 'owner';
+          }
+        }
+        // Step 3C: Check actual group memberships
+        else if (currentUserGroups.includes(auth.subject)) {
+          this.logger.debug('User is member of group', {
+            group: auth.subject,
+            role: auth.role,
+            userGroups: currentUserGroups,
+          });
+          // Update permission and short-circuit if owner
+          if (updatePermission(auth.role)) {
+            return 'owner';
+          }
+        }
+      }
+    }
+
+    // Return the highest permission found
+    this.logger.debug('User permission determined', {
+      threatModelId: this._currentThreatModelId,
+      permission: highestPermission,
+      userId: currentUserId,
+      userEmail: currentUserEmail,
+      userGroups: currentUserGroups,
+      owner: this._currentOwner,
+    });
+
+    return highestPermission;
   }
 
   /**

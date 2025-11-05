@@ -56,6 +56,7 @@ interface JwtPayload {
   provider?: string;
   aud?: string;
   iss?: string;
+  groups?: string[];
   providers?: Array<{
     provider: string;
     is_primary: boolean;
@@ -165,6 +166,26 @@ export class AuthService {
    */
   get userId(): string {
     return this.userProfile?.id || '';
+  }
+
+  /**
+   * Get current user groups from JWT token
+   * @returns Array of group names the user belongs to, or empty array if not available
+   */
+  get userGroups(): string[] {
+    const token = this.getStoredToken();
+    if (!token) {
+      return [];
+    }
+
+    try {
+      const payload = token.token.split('.')[1];
+      const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
+      return decodedPayload.groups || [];
+    } catch (error) {
+      this.logger.warn('Could not decode token to get groups', error);
+      return [];
+    }
   }
 
   /**
