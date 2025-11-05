@@ -72,6 +72,11 @@ import { ThreatModelReportService } from '../services/threat-model-report.servic
 import { FrameworkService } from '../../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../../shared/models/framework.model';
+import {
+  FieldOption,
+  getFieldOptions,
+  getFieldLabel,
+} from '../../../shared/utils/field-value-helpers';
 
 // Define form value interface
 interface ThreatModelFormValues {
@@ -79,7 +84,7 @@ interface ThreatModelFormValues {
   description: string;
   threat_model_framework: string;
   issue_uri?: string;
-  status?: string[];
+  status?: string | null;
 }
 
 // Define document form result interface
@@ -145,6 +150,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
   // Chip input configuration for status field
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
+  // Status dropdown options
+  statusOptions: FieldOption[] = [];
+
   get diagrams(): Diagram[] {
     return this._diagrams;
   }
@@ -183,7 +191,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       description: ['', Validators.maxLength(500)],
       threat_model_framework: ['STRIDE', Validators.required],
       issue_uri: [''],
-      status: [[]],
+      status: [null],
     });
   }
 
@@ -255,6 +263,18 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Gets the severity label for display
+   * @param severity The threat severity (numeric key as string)
+   * @returns Localized severity label
+   */
+  getSeverityLabel(severity: string | null): string {
+    if (!severity) {
+      return this.transloco.translate('common.none');
+    }
+    return getFieldLabel(severity, 'threatEditor.threatSeverity', this.transloco);
+  }
+
+  /**
    * Enter edit mode for issue URI
    */
   editIssueUri(): void {
@@ -304,6 +324,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Initialize status dropdown options
+    this.statusOptions = getFieldOptions('threatModels.status', this.transloco);
+
     // Disable auto-save during initial data loading
     this._isLoadingInitialData = true;
 
@@ -394,7 +417,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       description: threatModel.description || '',
       threat_model_framework: threatModel.threat_model_framework || 'STRIDE',
       issue_uri: this.initialIssueUriValue,
-      status: threatModel.status || [],
+      status: threatModel.status || null,
     });
 
     // Store original form values for change comparison
@@ -403,7 +426,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       description: threatModel.description || '',
       threat_model_framework: threatModel.threat_model_framework || 'STRIDE',
       issue_uri: this.initialIssueUriValue,
-      status: threatModel.status || [],
+      status: threatModel.status || null,
     };
 
     // Update framework control disabled state based on threats

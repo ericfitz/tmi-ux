@@ -102,35 +102,32 @@
               </div>
             }
 
-            <!-- Status row: Status chips and Status Last Updated (always visible) -->
+            <!-- Status row: Status dropdown and Status Last Updated (always visible) -->
             <div class="info-row info-row-status">
               <div class="info-field">
                 <span class="info-label">{{ 'common.status' | transloco }}:</span>
-                <div class="status-chips-container">
-                  <mat-chip-grid #statusChipGrid>
-                    @for (status of threatModelForm.get('status')?.value; track status) {
-                      <mat-chip-row
-                        (removed)="canEdit ? removeStatus(status) : null"
-                        [removable]="canEdit"
-                      >
-                        {{ status }}
-                        @if (canEdit) {
-                          <button matChipRemove [attr.aria-label]="'Remove ' + status">
-                            <mat-icon>cancel</mat-icon>
-                          </button>
-                        }
-                      </mat-chip-row>
+                @if (canEdit) {
+                  <mat-form-field appearance="outline" class="status-dropdown">
+                    <mat-select formControlName="status">
+                      <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+                      @for (option of statusOptions; track option.key) {
+                        <mat-option [value]="option.key" [matTooltip]="option.tooltip">
+                          {{ option.label }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                } @else {
+                  @if (threatModelForm.get('status')?.value; as statusValue) {
+                    @for (opt of statusOptions; track opt.key) {
+                      @if (opt.key === statusValue) {
+                        <span class="info-value">{{ opt.label }}</span>
+                      }
                     }
-                  </mat-chip-grid>
-                  @if (canEdit) {
-                    <input
-                      placeholder="{{ 'threatModels.statusChipPlaceholder' | transloco }}"
-                      [matChipInputFor]="statusChipGrid"
-                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                      (matChipInputTokenEnd)="addStatus($event)"
-                    />
+                  } @else {
+                    <span class="info-value">—</span>
                   }
-                </div>
+                }
               </div>
               @if (threatModel && !isNewThreatModel) {
                 <div class="info-field">
@@ -408,9 +405,9 @@
               <div matListItemTitle class="threat-content">
                 <span
                   class="threat-severity"
-                  [ngClass]="'severity-' + threat.severity.toLowerCase()"
+                  [ngClass]="'severity-' + (threat.severity || 'unknown')"
                 >
-                  {{ threat.severity }}
+                  {{ getSeverityLabel(threat.severity) }}
                 </span>
                 <span
                   class="threat-name"

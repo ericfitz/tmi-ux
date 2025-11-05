@@ -16,6 +16,11 @@ import { LanguageService } from '../../../../i18n/language.service';
 import { Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
 import { FrameworkModel } from '../../../../shared/models/framework.model';
+import {
+  FieldOption,
+  getFieldOptions,
+  migrateFieldValue,
+} from '../../../../shared/utils/field-value-helpers';
 
 /**
  * Interface for threat form values
@@ -23,15 +28,15 @@ import { FrameworkModel } from '../../../../shared/models/framework.model';
 interface ThreatFormValues {
   name: string;
   description: string;
-  severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
+  severity: string | null;
   threat_type: string;
   asset_id?: string;
   diagram_id?: string;
   cell_id?: string;
   score?: number;
-  priority?: string;
+  priority?: string | null;
   mitigated?: boolean;
-  status?: string;
+  status?: string | null;
   issue_uri?: string;
 }
 
@@ -115,6 +120,9 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
   cellOptions: CellOption[] = []; // Currently displayed cell options
   assetOptions: AssetOption[] = [];
   threatTypeOptions: string[] = [];
+  severityOptions: FieldOption[] = [];
+  statusOptions: FieldOption[] = [];
+  priorityOptions: FieldOption[] = [];
 
   // Complete cell data (all cells from all diagrams) for filtering
   private allCellOptions: CellOption[] = [];
@@ -145,14 +153,14 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       name: ['', [Validators.required, Validators.maxLength(100)]],
       asset_id: [''],
       description: ['', Validators.maxLength(500)],
-      severity: ['High', Validators.required],
+      severity: [null],
       threat_type: ['', Validators.required],
       diagram_id: [''],
       cell_id: [''],
       score: [null],
-      priority: ['High'],
+      priority: [null],
       mitigated: [false],
-      status: ['Open'],
+      status: [null],
       issue_uri: [''],
     });
   }
@@ -308,6 +316,21 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       ];
       this.logger.warn('No framework provided, using default STRIDE threat types');
     }
+  }
+
+  /**
+   * Initialize field options for severity, status, and priority dropdowns
+   */
+  private initializeFieldOptions(): void {
+    this.severityOptions = getFieldOptions('threatEditor.threatSeverity', this.translocoService);
+    this.statusOptions = getFieldOptions('threatEditor.threatStatus', this.translocoService);
+    this.priorityOptions = getFieldOptions('threatEditor.threatPriority', this.translocoService);
+
+    this.logger.debug('Field options initialized', {
+      severityCount: this.severityOptions.length,
+      statusCount: this.statusOptions.length,
+      priorityCount: this.priorityOptions.length,
+    });
   }
 
   /**
@@ -540,6 +563,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
               this.initializeCellOptions();
               this.initializeAssetOptions();
               this.initializeThreatTypeOptions();
+              this.initializeFieldOptions();
 
               // Force change detection to update the translations
               setTimeout(() => {
@@ -560,6 +584,8 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
               this.initializeDiagramOptions();
               this.initializeCellOptions();
               this.initializeAssetOptions();
+              this.initializeThreatTypeOptions();
+              this.initializeFieldOptions();
             },
           });
         } else {
@@ -568,6 +594,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           this.initializeCellOptions();
           this.initializeAssetOptions();
           this.initializeThreatTypeOptions();
+          this.initializeFieldOptions();
 
           // Force change detection to update the translations
           setTimeout(() => {
@@ -632,14 +659,14 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       name: '',
       asset_id: this.NOT_ASSOCIATED_VALUE,
       description: '',
-      severity: 'High',
+      severity: null,
       threat_type: defaultThreatType,
       diagram_id: this.data.diagramId || this.NOT_ASSOCIATED_VALUE,
       cell_id: this.data.cellId || this.NOT_ASSOCIATED_VALUE,
-      score: 10.0,
-      priority: 'High',
+      score: null,
+      priority: null,
       mitigated: false,
-      status: 'Open',
+      status: null,
       issue_uri: '',
     });
 
@@ -675,18 +702,44 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         }
       }
 
+      // Migrate old string values to numeric keys
+      const migratedSeverity = migrateFieldValue(
+        this.data.threat.severity,
+        'threatEditor.threatSeverity',
+        this.translocoService,
+      );
+      const migratedStatus = migrateFieldValue(
+        this.data.threat.status,
+        'threatEditor.threatStatus',
+        this.translocoService,
+      );
+      const migratedPriority = migrateFieldValue(
+        this.data.threat.priority,
+        'threatEditor.threatPriority',
+        this.translocoService,
+      );
+
+      this.logger.debug('Migrated field values', {
+        originalSeverity: this.data.threat.severity,
+        migratedSeverity,
+        originalStatus: this.data.threat.status,
+        migratedStatus,
+        originalPriority: this.data.threat.priority,
+        migratedPriority,
+      });
+
       this.threatForm.patchValue({
         name: this.data.threat.name,
         asset_id: assetIdValue,
         description: this.data.threat.description || '',
-        severity: this.data.threat.severity || 'High',
+        severity: migratedSeverity,
         threat_type: this.data.threat.threat_type || '',
         diagram_id: this.data.threat.diagram_id || this.NOT_ASSOCIATED_VALUE,
         cell_id: this.data.threat.cell_id || this.NOT_ASSOCIATED_VALUE,
         score: this.data.threat.score || null,
-        priority: this.data.threat.priority || '',
+        priority: migratedPriority,
         mitigated: this.data.threat.mitigated || false,
-        status: this.data.threat.status || 'Open',
+        status: migratedStatus,
         issue_uri: this.initialIssueUriValue,
       });
 

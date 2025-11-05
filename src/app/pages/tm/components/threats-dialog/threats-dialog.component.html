@@ -16,7 +16,7 @@
           </th>
           <td mat-cell *matCellDef="let threat">
             <span class="severity-badge" [ngClass]="getSeverityClass(threat.severity)">
-              {{ 'common.severity' + threat.severity | transloco }}
+              {{ getSeverityLabel(threat.severity) }}
             </span>
           </td>
         </ng-container>

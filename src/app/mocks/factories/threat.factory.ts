@@ -2,9 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { Threat } from '../../pages/tm/models/threat-model.model';
 
 /**
- * Severity levels for threats
+ * Severity numeric keys (0=Critical, 1=High, 2=Medium, 3=Low, 4=Informational, 5=Unknown)
  */
-export type ThreatSeverity = 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
+export type ThreatSeverityKey = '0' | '1' | '2' | '3' | '4' | '5';
 
 /**
  * Common threat types based on STRIDE model
@@ -31,11 +31,11 @@ export function createMockThreat(overrides?: Partial<Threat>): Threat {
     description: 'Auto-generated mock threat',
     created_at: new Date().toISOString(),
     modified_at: new Date().toISOString(),
-    severity: 'Medium',
+    severity: '2', // Medium
     score: 5.0,
-    priority: 'Medium',
+    priority: '2', // Medium (P2)
     mitigated: false,
-    status: 'Open',
+    status: '0', // Open
     threat_type: 'Information Disclosure',
     metadata: [],
   };
@@ -68,7 +68,8 @@ export function createMockThreats(
     'Authentication Bypass',
   ];
 
-  const severities: ThreatSeverity[] = ['Low', 'Medium', 'High', 'Critical'];
+  // Severity keys: 0=Critical, 1=High, 2=Medium, 3=Low
+  const severities: ThreatSeverityKey[] = ['3', '2', '1', '0'];
 
   for (let i = 0; i < count; i++) {
     const severity = severities[Math.floor(Math.random() * severities.length)];
@@ -94,20 +95,20 @@ export function createMockThreats(
 
 /**
  * Gets a numeric score based on the severity level
- * @param severity The severity level
+ * @param severity The severity key (0=Critical, 1=High, 2=Medium, 3=Low, 4=Informational, 5=Unknown)
  * @returns A numeric score between 0 and 10
  */
-function getScoreForSeverity(severity: ThreatSeverity): number {
+function getScoreForSeverity(severity: string | null): number {
   switch (severity) {
-    case 'Critical':
+    case '0': // Critical
       return 9.0 + Math.random();
-    case 'High':
+    case '1': // High
       return 7.0 + Math.random() * 2;
-    case 'Medium':
+    case '2': // Medium
       return 4.0 + Math.random() * 3;
-    case 'Low':
+    case '3': // Low
       return 1.0 + Math.random() * 3;
-    case 'None':
+    case '4': // Informational
       return Math.random();
     default:
       return 5.0;

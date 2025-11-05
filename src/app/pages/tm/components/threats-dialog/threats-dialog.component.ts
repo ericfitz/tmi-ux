@@ -2,7 +2,7 @@ import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { take } from 'rxjs';
 
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -17,18 +17,19 @@ import {
 import { ThreatModelService } from '../../services/threat-model.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
 import { FrameworkModel } from '../../../../shared/models/framework.model';
+import { getFieldLabel } from '../../../../shared/utils/field-value-helpers';
 
 interface ThreatUpdateResult {
   name: string;
   description: string;
-  severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
+  severity: string | null;
   threat_type: string;
   diagram_id?: string;
   cell_id?: string;
   score?: number;
-  priority?: string;
+  priority?: string | null;
   mitigated?: boolean;
-  status?: string;
+  status?: string | null;
   issue_uri?: string;
   metadata?: Array<{ key: string; value: string }>;
 }
@@ -66,6 +67,7 @@ export class ThreatsDialogComponent implements OnInit {
     private dialog: MatDialog,
     private threatModelService: ThreatModelService,
     private frameworkService: FrameworkService,
+    private translocoService: TranslocoService,
   ) {}
 
   ngOnInit(): void {
@@ -76,20 +78,40 @@ export class ThreatsDialogComponent implements OnInit {
   }
 
   /**
+   * Gets the severity label for display
+   * @param severity The threat severity (numeric key as string)
+   * @returns Localized severity label
+   */
+  getSeverityLabel(severity: string | null): string {
+    if (!severity) {
+      return this.translocoService.translate('common.none');
+    }
+    return getFieldLabel(severity, 'threatEditor.threatSeverity', this.translocoService);
+  }
+
+  /**
    * Gets the severity color class for display
-   * @param severity The threat severity
+   * @param severity The threat severity (numeric key as string)
    * @returns CSS class name for the severity
    */
-  getSeverityClass(severity: string): string {
-    switch (severity.toLowerCase()) {
-      case 'critical':
+  getSeverityClass(severity: string | null): string {
+    if (!severity) {
+      return 'severity-unknown';
+    }
+    // Map numeric keys to CSS classes: 0=Critical, 1=High, 2=Medium, 3=Low, 4=Informational, 5=Unknown
+    switch (severity) {
+      case '0':
         return 'severity-critical';
-      case 'high':
+      case '1':
         return 'severity-high';
-      case 'medium':
+      case '2':
         return 'severity-medium';
-      case 'low':
+      case '3':
         return 'severity-low';
+      case '4':
+        return 'severity-informational';
+      case '5':
+        return 'severity-unknown';
       default:
         return 'severity-unknown';
     }

@@ -98,18 +98,13 @@
       <mat-form-field appearance="outline" floatLabel="always">
         <mat-label>{{ 'common.severity' | transloco }}</mat-label>
         <mat-select formControlName="severity" tabindex="5">
-          <mat-option value="Unknown">{{ 'common.severityUnknown' | transloco }}</mat-option>
-          <mat-option value="None">{{ 'common.none' | transloco }}</mat-option>
-          <mat-option value="Low">{{ 'common.severityLow' | transloco }}</mat-option>
-          <mat-option value="Medium">{{ 'common.severityMedium' | transloco }}</mat-option>
-          <mat-option value="High">{{ 'common.severityHigh' | transloco }}</mat-option>
-          <mat-option value="Critical">{{ 'common.severityCritical' | transloco }}</mat-option>
+          <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+          @for (option of severityOptions; track option.key) {
+            <mat-option [value]="option.key" [matTooltip]="option.tooltip">
+              {{ option.label }}
+            </mat-option>
+          }
         </mat-select>
-        @if (threatForm.get('severity')?.hasError('required')) {
-          <mat-error>
-            {{ 'common.validation.required' | transloco }}
-          </mat-error>
-        }
       </mat-form-field>
 
       <!-- Score field -->
@@ -129,7 +124,14 @@
       <!-- Priority field -->
       <mat-form-field appearance="outline" floatLabel="always">
         <mat-label>{{ 'common.priority' | transloco }}</mat-label>
-        <input matInput formControlName="priority" tabindex="7" />
+        <mat-select formControlName="priority" tabindex="7">
+          <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+          @for (option of priorityOptions; track option.key) {
+            <mat-option [value]="option.key" [matTooltip]="option.tooltip">
+              {{ option.label }}
+            </mat-option>
+          }
+        </mat-select>
       </mat-form-field>
     </div>
 
@@ -201,7 +203,14 @@
       <!-- Status field -->
       <mat-form-field appearance="outline" floatLabel="always">
         <mat-label>{{ 'common.status' | transloco }}</mat-label>
-        <input matInput formControlName="status" tabindex="10" />
+        <mat-select formControlName="status" tabindex="10">
+          <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+          @for (option of statusOptions; track option.key) {
+            <mat-option [value]="option.key" [matTooltip]="option.tooltip">
+              {{ option.label }}
+            </mat-option>
+          }
+        </mat-select>
       </mat-form-field>
 
       <!-- Mitigated field -->

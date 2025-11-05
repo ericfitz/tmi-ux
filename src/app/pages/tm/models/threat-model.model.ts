@@ -51,9 +51,9 @@ export interface Asset {
   name: string;
   description?: string;
   type: 'data' | 'hardware' | 'software' | 'infrastructure' | 'service' | 'personnel';
-  criticality?: string;
-  classification?: string[];
-  sensitivity?: string[];
+  criticality?: string | null;
+  classification?: string[] | null;
+  sensitivity?: string[] | null;
   created_at: string;
   modified_at: string;
   metadata?: Metadata[];
@@ -68,11 +68,11 @@ export interface Threat {
   modified_at: string;
   diagram_id?: string;
   cell_id?: string;
-  severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
+  severity: string | null;
   score?: number;
-  priority?: string;
+  priority?: string | null;
   mitigated?: boolean;
-  status?: string;
+  status?: string | null;
   threat_type: string;
   asset_id?: string;
   issue_uri?: string;
@@ -89,7 +89,7 @@ export interface ThreatModel {
   created_by: string;
   threat_model_framework: string;
   issue_uri?: string;
-  status?: string[];
+  status?: string | null;
   status_updated?: string;
   authorization: Authorization[];
   metadata?: Metadata[];
@@ -113,7 +113,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
     created_by: 'user@example.com',
     threat_model_framework: 'STRIDE',
     issue_uri: 'https://issues.example.com/browse/TM-123',
-    status: ['In progress', 'Review'],
+    status: '1', // In Progress
     status_updated: new Date(Date.now() - 1 * 86400000).toISOString(), // 1 day ago
     authorization: [
       {
