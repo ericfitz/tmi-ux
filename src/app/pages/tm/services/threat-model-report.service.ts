@@ -737,7 +737,7 @@ export class ThreatModelReportService {
 
     // Table headers
     const headers = [
-      this.transloco.translate('threatModels.name'),
+      this.transloco.translate('common.name'),
       this.transloco.translate('threatModels.documentUrl'),
       this.transloco.translate('common.description'),
     ];
@@ -809,7 +809,7 @@ export class ThreatModelReportService {
 
     // Table headers
     const headers = [
-      this.transloco.translate('threatModels.name'),
+      this.transloco.translate('common.name'),
       this.transloco.translate('threatModels.repositoryType'),
       this.transloco.translate('threatModels.repositoryUri'),
       this.transloco.translate('common.description'),
@@ -883,7 +883,7 @@ export class ThreatModelReportService {
 
     // Table headers
     const headers = [
-      this.transloco.translate('threatModels.name'),
+      this.transloco.translate('common.name'),
       this.transloco.translate('common.severity'),
       this.transloco.translate('common.status'),
       this.transloco.translate('common.priority'),

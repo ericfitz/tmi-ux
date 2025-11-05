@@ -38,7 +38,7 @@
 
     <!-- Description -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label [transloco]="'assetEditor.description'">Description</mat-label>
+      <mat-label [transloco]="'common.description'">Description</mat-label>
       <textarea matInput formControlName="description" rows="3"></textarea>
       @if (assetForm.get('description')?.hasError('maxlength')) {
         <mat-error>

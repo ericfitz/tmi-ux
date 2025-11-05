@@ -27,7 +27,6 @@
     "chipPlaceholder": "Wert eingeben und Enter drücken",
     "classification": "Klassifizierung",
     "criticality": "Kritikalität",
-    "description": "Beschreibung",
     "name": "Asset-Name",
     "sensitivity": "Sensibilität",
     "title": {
@@ -95,7 +94,6 @@
     "actions": "Aktionen",
     "addMetadata": "Metadaten hinzufügen",
     "addThreat": "Bedrohung hinzufügen",
-    "assetId": "Vermögenswert",
     "cancel": "Abbrechen",
     "cellId": "Zellen-ID",
     "close": "Schließen",
@@ -112,17 +110,20 @@
     "done": "Fertig",
     "edit": "Bearbeiten",
     "editThreat": "Bedrohung bearbeiten",
+    "emailLabel": "E-Mail-Adresse",
     "fonts": "Schriftarten",
     "issueUri": "Problem-URL",
     "language": "{{language}}",
     "lastModified": "Zuletzt geändert",
     "lastModifiedDate": "Zuletzt geändert: {{date}}",
+    "lastUpdated": "Zuletzt aktualisiert: ",
     "manageMetadata": "Metadaten verwalten",
     "manageThreats": "Bedrohungen verwalten",
     "metadata": "Metadaten",
     "metadataKey": "Schlüssel",
     "metadataValue": "Wert",
     "mitigated": "Gemildert",
+    "name": null,
     "noMetadata": "Keine Metadaten verfügbar",
     "noThreats": "Keine Bedrohungen verfügbar",
     "none": "Keine",
@@ -169,7 +170,6 @@
     "severityHigh": "Hoch",
     "severityLow": "Niedrig",
     "severityMedium": "Mittel",
-    "severityNone": "Keine",
     "severityUnknown": "Unbekannt",
     "status": "Status",
     "subjectTypes": {
@@ -240,10 +240,7 @@
   "errors": {
     "validationError": "Validierungsfehler"
   },
-  "footer": {
-    "privacy": "Datenschutzrichtlinie",
-    "tos": "Nutzungsbedingungen"
-  },
+  "footer": {},
   "getStarted": "Loslegen",
   "homeDescription": "Ein kollaboratives Tool zur Bedrohungsmodellierung, das Teams dabei hilft, Sicherheitsbedrohungen in ihren Systemen zu identifizieren, zu analysieren und zu dokumentieren. Erstellen, teilen und bearbeiten Sie gemeinsam Bedrohungsmodelle und Diagramme, um die Sicherheit Ihrer Anwendung zu verbessern.",
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
@@ -253,7 +250,6 @@
     "loadingProviders": "Lade Authentifizierungsanbieter...",
     "local": {
       "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
-      "emailLabel": "E-Mail-Adresse",
       "emailRequired": "E-Mail-Adresse ist erforderlich",
       "loginButton": "Anmelden",
       "subtitle": "Geben Sie Ihre E-Mail-Adresse zum Testen ein",
@@ -285,7 +281,6 @@
     "content": "Inhalt",
     "contentPlaceholder": "Geben Sie den Notizeninhalt im Markdown-Format ein. Unterstützt GitHub Flavored Markdown und Mermaid-Diagramme.",
     "copiedToClipboard": "In die Zwischenablage kopiert",
-    "description": "Beschreibung",
     "descriptionPlaceholder": "Optionale Beschreibung",
     "editMode": "Bearbeitungsmodus",
     "errors": {
@@ -296,7 +291,6 @@
       "javascriptProtocolNotAllowed": "JavaScript-Protokoll ist nicht erlaubt",
       "scriptTagsNotAllowed": "Script-Tags sind nicht erlaubt"
     },
-    "name": "Name",
     "namePlaceholder": "Notizname eingeben",
     "previewMode": "Vorschaumodus",
     "saveFailed": "Notiz konnte nicht gespeichert werden",
@@ -340,7 +334,6 @@
     },
     "intro2": "Der Betreiber verpflichtet sich zum Schutz Ihrer Privatsphäre. Diese Datenschutzrichtlinie erläutert, wie mit Ihren Informationen umgegangen wird.",
     "introductionTitle": "Einführung",
-    "lastUpdated": "Zuletzt aktualisiert: ",
     "lastUpdatedDate": "2025-10-24",
     "title": "Datenschutzrichtlinie",
     "userRightsContent1": "Sie haben die volle Kontrolle über Ihre personenbezogenen Daten. Sie können jederzeit auf die Funktion \"Alle meine Daten löschen\" im Abschnitt Benutzereinstellungen der Anwendung zugreifen.",
@@ -360,11 +353,9 @@
   },
   "threatEditor": {
     "createNewThreat": "Neue Bedrohung erstellen",
-    "editThreat": "Bedrohung bearbeiten",
     "notAssociatedWithAsset": "Nicht mit einem Vermögenswert verknüpft",
     "notAssociatedWithCell": "Nicht mit einer Zelle verknüpft",
-    "notAssociatedWithDiagram": "Nicht mit einem Diagramm verknüpft",
-    "viewThreat": "Bedrohung anzeigen"
+    "notAssociatedWithDiagram": "Nicht mit einem Diagramm verknüpft"
   },
   "threatModels": {
     "addPermission": "Berechtigung hinzufügen",
@@ -388,7 +379,6 @@
     "diagramPreview": "Diagrammvorschau",
     "diagramType": "Diagrammtyp",
     "diagrams": "Diagramme",
-    "diagramsCount": "Diagramme",
     "documentDescriptionPlaceholder": "Beschreiben Sie den Zweck oder Inhalt des Dokuments",
     "documentEditor": {
       "title": {
@@ -400,13 +390,10 @@
     "documentName": "Dokumentname",
     "documentUrl": "Dokument-URL",
     "downloadButton": "Auf Desktop herunterladen",
-    "editDocument": "Dokumentreferenz bearbeiten",
-    "editRepository": "Repository-Referenz bearbeiten",
     "frameworkDisabledHint": "Framework kann nicht geändert werden, wenn Bedrohungen vorhanden sind",
     "idLabel": "ID:",
     "importing": "Bedrohungsmodell wird importiert...",
     "issueUriHint": "Geben Sie eine URL ein, um dieses Bedrohungsmodell in einem externen System zu verfolgen",
-    "name": "Name",
     "newThreatModel": "Neues Bedrohungsmodell",
     "noAssets": "Noch keine Assets hinzugefügt",
     "noDiagrams": "Noch keine Diagramme hinzugefügt",
@@ -423,7 +410,6 @@
     "permissionsSubjectPlaceholder": "Subjekt (Benutzer-ID, E-Mail-Adresse oder Gruppenname)",
     "permissionsSubjectType": "Typ",
     "permissionsTooltip": "Berechtigungen verwalten",
-    "permissionsUser": "Benutzer",
     "rename": "Umbenennen",
     "renameDiagram": "Diagramm umbenennen",
     "repositoryDescriptionPlaceholder": "Beschreiben Sie das Repository oder seinen Zweck",
@@ -445,7 +431,6 @@
     "repositoryUri": "Repository-URL",
     "setAsOwner": "Als Besitzer festlegen",
     "sourcesCount": "Repos",
-    "status": "Status",
     "statusChipPlaceholder": "Status eingeben und Enter drücken",
     "statusLastUpdated": "Status zuletzt aktualisiert",
     "tag": "Tag",
@@ -456,7 +441,6 @@
       "addDiagram": "Diagramm hinzufügen",
       "addDocument": "Dokument hinzufügen",
       "addNote": "Notiz hinzufügen",
-      "addRepository": "Repository-Referenz hinzufügen",
       "assetsCardTitle": "Assets sind wertvolle Ressourcen innerhalb des Systems, die Schutz benötigen, wie Daten, Hardware, Software, Infrastruktur, Dienste oder Personal.",
       "deleteAsset": "Asset löschen",
       "deleteDiagram": "Diagramm löschen",
@@ -465,7 +449,6 @@
       "deleteThreat": "Bedrohung löschen",
       "diagramsCardTitle": "Diagramme in TMI sind maschinenlesbare Darstellungen von Datenbewegungen und Prozessen innerhalb eines Systems, die sowohl manuelle als auch automatisierte Sicherheitsanalysen ermöglichen.",
       "documentsCardTitle": "Dokumentreferenzen sind Links zu Dokumenten, die außerhalb von TMI gespeichert sind. Relevante Dokumente beschreiben das zu analysierende System und können sowohl von Sicherheitsanalysten als auch von automatisierten Analyseprozessen verwendet werden.",
-      "editRepository": "Repository-Referenz bearbeiten",
       "loadFromDesktop": "Vom Desktop laden",
       "notesCardTitle": "Notizen sind Texte im Markdown-Format, die vollständig im Bedrohungsmodell enthalten sind und zur Erfassung von Notizen und Anmerkungen von Sicherheitsanalysten und automatisierten Analyseprozessen verwendet werden.",
       "repositoriesCardTitle": "Repositories sind Links zu Quellcode-Repositories, in denen der Quellcode für das System verwaltet wird.",
@@ -482,7 +465,6 @@
       "part1": "Willkommen bei unserer Instanz von TMI. Diese Nutzungsbedingungen (\"Bedingungen\") regeln Ihren Zugriff auf und die Nutzung dieser Website, die eine Instanz einer Open-Source-Webanwendung ist, die vom auf der ",
       "part2": "-Seite dieser Website aufgeführten Betreiber (\"Der Betreiber\") zur Verfügung gestellt wird."
     },
-    "lastUpdated": "Zuletzt aktualisiert: ",
     "lastUpdatedDate": "2025-10-10",
     "section1": {
       "content": "Durch den Zugriff auf und die Nutzung dieser Website akzeptieren Sie die Bedingungen und Bestimmungen dieser Vereinbarung und erklären sich damit einverstanden. Wenn Sie mit diesen Bedingungen nicht einverstanden sind, nutzen Sie diese Website bitte nicht.",
@@ -530,7 +512,6 @@
       "confirmation": "Sind Sie sicher, dass Sie alle Ihre Daten löschen möchten?",
       "continue": "Weiter",
       "emailDoesNotMatch": "E-Mail-Adresse stimmt nicht überein",
-      "emailLabel": "E-Mail-Adresse",
       "emailMatches": "E-Mail-Adresse stimmt überein",
       "explanation": {
         "bullet1": "Ihre Identitätsanbieterdaten, einschließlich Benutzer-ID, Name und E-Mail.",

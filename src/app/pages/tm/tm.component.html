@@ -56,7 +56,7 @@
             </p>
             <div class="threat-model-status-section">
               <div class="status-label-and-chips">
-                <span class="status-label">{{ 'threatModels.status' | transloco }}:</span>
+                <span class="status-label">{{ 'common.status' | transloco }}:</span>
                 @if (threatModel.status && threatModel.status.length > 0) {
                   @for (status of threatModel.status; track status) {
                     <span class="status-chip">{{ status }}</span>
@@ -99,7 +99,7 @@
                 <span class="stat">
                   <mat-icon>account_tree</mat-icon>
                   {{ threatModel.diagram_count }}
-                  {{ 'threatModels.diagramsCount' | transloco }}
+                  {{ 'threatModels.diagrams' | transloco }}
                 </span>
                 <span class="stat">
                   <mat-icon>note</mat-icon>

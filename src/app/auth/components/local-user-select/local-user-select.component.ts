@@ -43,12 +43,12 @@ import { LoggerService } from '../../../core/services/logger.service';
             class="login-form"
           >
             <mat-form-field appearance="outline" class="email-field">
-              <mat-label>{{ 'login.local.emailLabel' | transloco }}</mat-label>
+              <mat-label>{{ 'common.emailLabel' | transloco }}</mat-label>
               <input
                 matInput
                 type="email"
                 formControlName="email"
-                [placeholder]="'login.local.emailLabel' | transloco"
+                [placeholder]="'common.emailLabel' | transloco"
                 autocomplete="email"
               />
               <mat-error *ngIf="loginForm.get('email')?.hasError('required')">

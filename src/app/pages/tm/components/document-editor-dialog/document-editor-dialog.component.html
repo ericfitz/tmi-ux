@@ -1,10 +1,10 @@
 <h2 mat-dialog-title>
   {{
     isReadOnly
-      ? ('threatModels.viewDocument' | transloco)
+      ? ('threatModels.documentEditor.title.view' | transloco)
       : mode === 'create'
-        ? ('threatModels.createNewDocument' | transloco)
-        : ('threatModels.editDocument' | transloco)
+        ? ('threatModels.documentEditor.title.create' | transloco)
+        : ('threatModels.documentEditor.title.edit' | transloco)
   }}
   @if (isReadOnly) {
     <mat-icon

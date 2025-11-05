@@ -105,7 +105,7 @@
             <!-- Status row: Status chips and Status Last Updated (always visible) -->
             <div class="info-row info-row-status">
               <div class="info-field">
-                <span class="info-label">{{ 'threatModels.status' | transloco }}:</span>
+                <span class="info-label">{{ 'common.status' | transloco }}:</span>
                 <div class="status-chips-container">
                   <mat-chip-grid #statusChipGrid>
                     @for (status of threatModelForm.get('status')?.value; track status) {
@@ -149,7 +149,7 @@
 
           <form [formGroup]="threatModelForm" class="threat-model-form">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label [transloco]="'threatModels.name'">Name</mat-label>
+              <mat-label [transloco]="'common.name'">Name</mat-label>
               <input
                 matInput
                 formControlName="name"
@@ -758,7 +758,7 @@
               mat-icon-button
               color="primary"
               (click)="addRepository()"
-              [matTooltip]="'threatModels.tooltips.addRepository' | transloco"
+              [matTooltip]="'threatModels.createNewRepository' | transloco"
             >
               <mat-icon>add</mat-icon>
             </button>

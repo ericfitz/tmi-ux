@@ -786,7 +786,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       // Manually trigger translation update for all keys
       const keys = [
         'common.threatName',
-        'common.assetId',
+        'common.objectTypes.asset',
         'common.threatDescription',
         'common.threatType',
         'common.severity',

@@ -27,7 +27,6 @@
     "chipPlaceholder": "Enter value and press Enter",
     "classification": "Classification",
     "criticality": "Criticality",
-    "description": "Description",
     "name": "Asset Name",
     "sensitivity": "Sensitivity",
     "title": {
@@ -95,7 +94,6 @@
     "actions": "Actions",
     "addMetadata": "Add Metadata",
     "addThreat": "Add Threat",
-    "assetId": "Asset",
     "cancel": "Cancel",
     "cellId": "Cell ID",
     "close": "Close",
@@ -112,17 +110,20 @@
     "done": "Done",
     "edit": "Edit",
     "editThreat": "Edit Threat",
+    "emailLabel": "Email Address",
     "fonts": "Fonts",
     "issueUri": "Issue URL",
     "language": "{{language}}",
     "lastModified": "Last Modified",
     "lastModifiedDate": "Last Modified: {{date}}",
+    "lastUpdated": "Last updated: ",
     "manageMetadata": "Manage Metadata",
     "manageThreats": "Manage Threats",
     "metadata": "Metadata",
     "metadataKey": "Key",
     "metadataValue": "Value",
     "mitigated": "Mitigated",
+    "name": "Name",
     "noMetadata": "No Metadata Available",
     "noThreats": "No Threats Available",
     "none": "None",
@@ -169,7 +170,6 @@
     "severityHigh": "High",
     "severityLow": "Low",
     "severityMedium": "Medium",
-    "severityNone": "None",
     "severityUnknown": "Unknown",
     "status": "Status",
     "subjectTypes": {
@@ -241,10 +241,7 @@
   "errors": {
     "validationError": "Validation Error"
   },
-  "footer": {
-    "privacy": "Privacy Policy",
-    "tos": "Terms of Service"
-  },
+  "footer": {},
   "getStarted": "Get Started",
   "homeDescription": "A collaborative threat modeling tool designed to help teams identify, analyze, and document security threats in their systems. Create, share, and collaboratively edit threat models and diagrams to improve your application security.",
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
@@ -254,7 +251,6 @@
     "loadingProviders": "Loading authentication providers...",
     "local": {
       "emailInvalid": "Please enter a valid email address",
-      "emailLabel": "Email Address",
       "emailRequired": "Email address is required",
       "loginButton": "Sign in",
       "subtitle": "Enter your email address for testing",
@@ -286,7 +282,6 @@
     "content": "Content",
     "contentPlaceholder": "Enter note content in markdown format. Supports GitHub Flavored Markdown and Mermaid diagrams.",
     "copiedToClipboard": "Copied to clipboard",
-    "description": "Description",
     "descriptionPlaceholder": "Optional description",
     "editMode": "Edit Mode",
     "errors": {
@@ -297,7 +292,6 @@
       "javascriptProtocolNotAllowed": "JavaScript protocol is not allowed",
       "scriptTagsNotAllowed": "Script tags are not allowed"
     },
-    "name": "Name",
     "namePlaceholder": "Enter note name",
     "previewMode": "Preview Mode",
     "saveFailed": "Failed to save note",
@@ -341,7 +335,6 @@
     },
     "intro2": "The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.",
     "introductionTitle": "Introduction",
-    "lastUpdated": "Last updated: ",
     "lastUpdatedDate": "2025-10-24",
     "title": "Privacy Policy",
     "userRightsContent1": "You have full control over your personal data. At any time, you may access the \"Delete All My Data\" feature in the User Preferences section of the application.",
@@ -361,11 +354,9 @@
   },
   "threatEditor": {
     "createNewThreat": "Create New Threat",
-    "editThreat": "Edit Threat",
     "notAssociatedWithAsset": "Not associated with an asset",
     "notAssociatedWithCell": "Not Associated With a Cell",
-    "notAssociatedWithDiagram": "Not Associated With a Diagram",
-    "viewThreat": "View Threat"
+    "notAssociatedWithDiagram": "Not Associated With a Diagram"
   },
   "threatModels": {
     "addPermission": "Add Permission",
@@ -389,7 +380,6 @@
     "diagramPreview": "Diagram Preview",
     "diagramType": "Diagram Type",
     "diagrams": "Diagrams",
-    "diagramsCount": "Diagrams",
     "documentDescriptionPlaceholder": "Describe the Document's Purpose or Content",
     "documentEditor": {
       "title": {
@@ -401,13 +391,10 @@
     "documentName": "Document Name",
     "documentUrl": "Document URL",
     "downloadButton": "Download to Desktop",
-    "editDocument": "Edit Document Reference",
-    "editRepository": "Edit Repository Reference",
     "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",
     "idLabel": "ID:",
     "importing": "Importing threat model...",
     "issueUriHint": "Enter a URL to track this threat model in an external system",
-    "name": "Name",
     "newThreatModel": "New Threat Model",
     "noAssets": "No Assets Added Yet",
     "noDiagrams": "No Diagrams Added Yet",
@@ -424,7 +411,6 @@
     "permissionsSubjectPlaceholder": "Subject (User ID, User Email Address, or Group Name)",
     "permissionsSubjectType": "Type",
     "permissionsTooltip": "Manage Permissions",
-    "permissionsUser": "User",
     "rename": "Rename",
     "renameDiagram": "Rename Diagram",
     "repositoryDescriptionPlaceholder": "Describe the repository or its purpose",
@@ -446,7 +432,6 @@
     "repositoryUri": "Repository URL",
     "setAsOwner": "Set as Owner",
     "sourcesCount": "Repos",
-    "status": "Status",
     "statusChipPlaceholder": "Enter status and press Enter",
     "statusLastUpdated": "Status Last Updated",
     "tag": "Tag",
@@ -457,7 +442,6 @@
       "addDiagram": "Add Diagram",
       "addDocument": "Add Document",
       "addNote": "Add Note",
-      "addRepository": "Add Repository Reference",
       "assetsCardTitle": "Assets are valuable resources within the system that require protection, such as data, hardware, software, infrastructure, services, or personnel.",
       "deleteAsset": "Delete Asset",
       "deleteDiagram": "Delete Diagram",
@@ -466,15 +450,12 @@
       "deleteThreat": "Delete Threat",
       "diagramsCardTitle": "Diagrams in TMI are machine-readable representations of data movement and processes within a system, enabling both manual and automated security analysis.",
       "documentsCardTitle": "Document references are links to documents stored outside TMI. Relevant documents describe the system to be analyzed, and can be used by both security analysts and automated analysis processes.",
-      "editRepository": "Edit Repository Reference",
       "loadFromDesktop": "Load From Desktop",
       "notesCardTitle": "Notes are markdown format text that is completely contained within the threat model, used to capture notes and annotation from security analysts and automated analysis processes.",
       "repositoriesCardTitle": "Repositories are links to Source Code Repositories where source code for the system is managed.",
       "threatsCardTitle": "Threats are potential adverse events or action that exploits a vulnerability or weakness in a system to compromise its confidentiality, integrity, availability, or other security objectives. In TMI, threat objects also contain information about the type and level of risk associated with the threat and information to track the work needed to mitigate the threat."
     },
     "viewDiagramName": "View Diagram Name",
-    "viewDocument": "View Document Reference",
-    "viewRepository": "View Repository Reference",
     "yourThreatModels": "Your Threat Models"
   },
   "tos": {
@@ -486,7 +467,6 @@
       "part1": "Welcome to our instance of TMI. These Terms of Use (\"Terms\") govern your access to and use of this website, which is made available by the Operator listed on the ",
       "part2": " page of this web site (\"The Operator\")."
     },
-    "lastUpdated": "Last updated: ",
     "lastUpdatedDate": "2025-10-10",
     "section1": {
       "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.",
@@ -534,7 +514,6 @@
       "confirmation": "Are you sure that you want to delete all your data?",
       "continue": "Continue",
       "emailDoesNotMatch": "Email address does not match",
-      "emailLabel": "Email Address",
       "emailMatches": "Email address matches",
       "explanation": {
         "bullet1": "Your Identity Provider data, including user ID, name, and email.",

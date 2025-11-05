@@ -46,7 +46,7 @@
     <!-- Asset field -->
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-        <mat-label>{{ 'common.assetId' | transloco }}</mat-label>
+        <mat-label>{{ 'common.objectTypes.asset' | transloco }}</mat-label>
         <mat-select formControlName="asset_id" tabindex="2">
           <mat-option *ngFor="let asset of assetOptions" [value]="asset.id">
             {{
@@ -99,7 +99,7 @@
         <mat-label>{{ 'common.severity' | transloco }}</mat-label>
         <mat-select formControlName="severity" tabindex="5">
           <mat-option value="Unknown">{{ 'common.severityUnknown' | transloco }}</mat-option>
-          <mat-option value="None">{{ 'common.severityNone' | transloco }}</mat-option>
+          <mat-option value="None">{{ 'common.none' | transloco }}</mat-option>
           <mat-option value="Low">{{ 'common.severityLow' | transloco }}</mat-option>
           <mat-option value="Medium">{{ 'common.severityMedium' | transloco }}</mat-option>
           <mat-option value="High">{{ 'common.severityHigh' | transloco }}</mat-option>
