@@ -519,7 +519,7 @@
       "repositoriesCardTitle": "Repositories are links to Source Code Repositories where source code for the system is managed.",
       "threatsCardTitle": "Threats are potential adverse events or action that exploits a vulnerability or weakness in a system to compromise its confidentiality, integrity, availability, or other security objectives. In TMI, threat objects also contain information about the type and level of risk associated with the threat and information to track the work needed to mitigate the threat."
     },
-    "viewDiagramName": "View Diagram Name",
+    "viewDiagramName": "View Diagram Properties",
     "yourThreatModels": "Your Threat Models"
   },
   "tos": {

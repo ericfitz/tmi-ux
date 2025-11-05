@@ -184,6 +184,7 @@
     },
     "view": "查看",
     "viewMetadata": "查看元数据",
+    "viewPermissions": "查看权限",
     "viewThreat": "查看威胁"
   },
   "contextMenu": {
@@ -518,6 +519,7 @@
       "repositoriesCardTitle": "代码仓库是指向源代码仓库的链接，这些仓库管理着系统的源代码。",
       "threatsCardTitle": "威胁是潜在的不利事件或行动，它利用系统中的漏洞或弱点来破坏其机密性、完整性、可用性或其他安全目标。在TMI中，威胁对象还包含有关与威胁相关的风险类型和级别的信息，以及跟踪缓解威胁所需工作的信息。"
     },
+    "viewDiagramName": "查看图表属性",
     "yourThreatModels": "您的威胁模型"
   },
   "tos": {
