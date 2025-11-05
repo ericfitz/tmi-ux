@@ -72,11 +72,7 @@ import { ThreatModelReportService } from '../services/threat-model-report.servic
 import { FrameworkService } from '../../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../../shared/models/framework.model';
-import {
-  FieldOption,
-  getFieldOptions,
-  getFieldLabel,
-} from '../../../shared/utils/field-value-helpers';
+import { FieldOption, getFieldOptions } from '../../../shared/utils/field-value-helpers';
 
 // Define form value interface
 interface ThreatModelFormValues {
@@ -263,15 +259,112 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Gets the severity label for display
-   * @param severity The threat severity (numeric key as string)
-   * @returns Localized severity label
+   * Hardcoded mapping from old string values to new numeric keys
+   * Used for migrating legacy data
    */
-  getSeverityLabel(severity: string | null): string {
-    if (!severity) {
-      return this.transloco.translate('common.none');
+  private readonly severityMap: Record<string, string> = {
+    Critical: '5',
+    High: '4',
+    Medium: '3',
+    Low: '2',
+    Info: '1',
+    None: '0',
+    critical: '5',
+    high: '4',
+    medium: '3',
+    low: '2',
+    info: '1',
+    none: '0',
+  };
+
+  private readonly statusMap: Record<string, string> = {
+    Open: '0',
+    Confirmed: '1',
+    'Mitigation Planned': '2',
+    'Mitigation In Progress': '3',
+    'Verification Pending': '4',
+    Resolved: '5',
+    Accepted: '6',
+    'False Positive': '7',
+    Duplicate: '8',
+    Closed: '9',
+    // Lowercase variants
+    open: '0',
+    confirmed: '1',
+    'mitigation planned': '2',
+    'mitigation in progress': '3',
+    'verification pending': '4',
+    resolved: '5',
+    accepted: '6',
+    'false positive': '7',
+    duplicate: '8',
+    closed: '9',
+  };
+
+  private readonly priorityMap: Record<string, string> = {
+    Critical: '5',
+    High: '4',
+    Medium: '3',
+    Low: '2',
+    Info: '1',
+    critical: '5',
+    high: '4',
+    medium: '3',
+    low: '2',
+    info: '1',
+  };
+
+  /**
+   * Migrates old field values to new numeric keys for a single threat
+   * @param threat The threat to migrate
+   * @returns Migrated threat
+   */
+  private migrateThreatFieldValues(threat: Threat): Threat {
+    const migratedThreat = { ...threat };
+
+    // Migrate severity
+    if (
+      migratedThreat.severity &&
+      !/^\d+$/.test(migratedThreat.severity) &&
+      this.severityMap[migratedThreat.severity]
+    ) {
+      migratedThreat.severity = this.severityMap[migratedThreat.severity];
     }
-    return getFieldLabel(severity, 'threatEditor.threatSeverity', this.transloco);
+
+    // Migrate status
+    if (
+      migratedThreat.status &&
+      !/^\d+$/.test(migratedThreat.status) &&
+      this.statusMap[migratedThreat.status]
+    ) {
+      migratedThreat.status = this.statusMap[migratedThreat.status];
+    }
+
+    // Migrate priority
+    if (
+      migratedThreat.priority &&
+      !/^\d+$/.test(migratedThreat.priority) &&
+      this.priorityMap[migratedThreat.priority]
+    ) {
+      migratedThreat.priority = this.priorityMap[migratedThreat.priority];
+    }
+
+    return migratedThreat;
+  }
+
+  /**
+   * Migrates old severity values in all threats to new numeric keys
+   * This ensures that old string values like "High" are converted to "4"
+   * Uses a hardcoded mapping for immediate conversion without waiting for translations
+   */
+  private migrateThreatSeverityValues(): void {
+    if (!this.threatModel?.threats) {
+      return;
+    }
+
+    this.threatModel.threats = this.threatModel.threats.map(threat =>
+      this.migrateThreatFieldValues(threat),
+    );
   }
 
   /**
@@ -394,6 +487,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // Set up the threat model data
     this.threatModel = threatModel;
     this.isNewThreatModel = false; // Resolved threat models are not new
+
+    // Migrate old severity values to new numeric keys
+    this.migrateThreatSeverityValues();
 
     // Subscribe to authorization changes
     this._subscriptions.add(
@@ -628,7 +724,9 @@ export class TmEditComponent implements OnInit, OnDestroy {
               this.logger.warn('Threat not found in refreshed data, using original threat', {
                 threatId: threat.id,
               });
-              this.openThreatEditorWithData(threat, shapeType, mode);
+              // Migrate before opening dialog
+              const migratedThreat = this.migrateThreatFieldValues(threat);
+              this.openThreatEditorWithData(migratedThreat, shapeType, mode);
             } else {
               this.logger.debug('Using refreshed threat data for editor', {
                 threatId: updatedThreat.id,
@@ -638,12 +736,16 @@ export class TmEditComponent implements OnInit, OnDestroy {
                   updatedThreat.score
                 ),
               });
-              this.openThreatEditorWithData(updatedThreat, shapeType, mode);
+              // Migrate before opening dialog
+              const migratedThreat = this.migrateThreatFieldValues(updatedThreat);
+              this.openThreatEditorWithData(migratedThreat, shapeType, mode);
             }
           },
           error: error => {
             this.logger.error('Failed to refresh threat model data, using cached threat', error);
-            this.openThreatEditorWithData(threat, shapeType, mode);
+            // Migrate before opening dialog
+            const migratedThreat = this.migrateThreatFieldValues(threat);
+            this.openThreatEditorWithData(migratedThreat, shapeType, mode);
           },
         }),
       );

@@ -103,7 +103,7 @@
             }
 
             <!-- Status row: Status dropdown and Status Last Updated (always visible) -->
-            <div class="info-row info-row-status">
+            <div class="info-row info-row-status" [formGroup]="threatModelForm">
               <div class="info-field">
                 <span class="info-label">{{ 'common.status' | transloco }}:</span>
                 @if (canEdit) {
@@ -403,12 +403,15 @@
                 >skull</mat-icon
               >
               <div matListItemTitle class="threat-content">
-                <span
-                  class="threat-severity"
-                  [ngClass]="'severity-' + (threat.severity || 'unknown')"
-                >
-                  {{ getSeverityLabel(threat.severity) }}
-                </span>
+                @if (threat.severity) {
+                  <span class="threat-severity" [ngClass]="'severity-' + threat.severity">
+                    {{ 'threatEditor.threatSeverity.' + threat.severity | transloco }}
+                  </span>
+                } @else {
+                  <span class="threat-severity severity-unknown">
+                    {{ 'common.none' | transloco }}
+                  </span>
+                }
                 <span
                   class="threat-name"
                   [matTooltip]="threat.description"

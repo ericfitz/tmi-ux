@@ -266,6 +266,40 @@ mat-card-header {
   }
 }
 
+// Status dropdown styling for vertical alignment with info fields
+.status-dropdown {
+  // Reduce bottom margin to align better with adjacent fields, but keep some space
+  margin-bottom: 0;
+  margin-top: -4px; // Slight upward adjustment to align with text baseline
+
+  ::ng-deep {
+    // Reduce the form field height while maintaining readable padding
+    .mat-mdc-form-field-infix {
+      padding-top: 8px;
+      padding-bottom: 8px;
+      min-height: auto;
+    }
+
+    // Hide the subscript wrapper (error/hint space)
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+
+    // Adjust select trigger for better alignment
+    .mat-mdc-select-trigger {
+      height: 36px;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+    }
+
+    // Ensure the select value text aligns properly
+    .mat-mdc-select-value {
+      line-height: normal;
+    }
+  }
+}
+
 .status-chips-container {
   display: flex;
   flex-direction: column;
