@@ -990,60 +990,6 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Convert numeric field keys back to legacy string values for API compatibility
-   * The frontend uses numeric keys (0-5 for severity, etc.) but the backend expects
-   * the old string values ('low', 'medium', 'high', etc.)
-   * Mapping: Critical=0, High=1, Medium=2, Low=3, Informational=4, Unknown=5
-   */
-  private convertToLegacyFieldValues(threat: Partial<Threat>): Partial<Threat> {
-    const converted = { ...threat };
-
-    // Severity: numeric key to lowercase string
-    if (converted.severity) {
-      const severityMap: Record<string, string> = {
-        '0': 'critical',
-        '1': 'high',
-        '2': 'medium',
-        '3': 'low',
-        '4': 'informational',
-        '5': 'unknown',
-      };
-      converted.severity = severityMap[converted.severity] || converted.severity;
-    }
-
-    // Priority: numeric key to lowercase string
-    if (converted.priority) {
-      const priorityMap: Record<string, string> = {
-        '0': 'immediate',
-        '1': 'high',
-        '2': 'medium',
-        '3': 'low',
-        '4': 'deferred',
-      };
-      converted.priority = priorityMap[converted.priority] || converted.priority;
-    }
-
-    // Status: numeric key to lowercase string
-    if (converted.status) {
-      const statusMap: Record<string, string> = {
-        '0': 'open',
-        '1': 'confirmed',
-        '2': 'mitigation planned',
-        '3': 'mitigation in progress',
-        '4': 'verification pending',
-        '5': 'resolved',
-        '6': 'accepted',
-        '7': 'false positive',
-        '8': 'deferred',
-        '9': 'closed',
-      };
-      converted.status = statusMap[converted.status] || converted.status;
-    }
-
-    return converted;
-  }
-
-  /**
    * Create a new threat in a threat model
    */
   createThreat(threatModelId: string, threat: Partial<Threat>): Observable<Threat> {
@@ -1075,13 +1021,10 @@ export class ThreatModelService implements OnDestroy {
     // Remove id, created_at, and modified_at fields from threat data before sending to API
     const { id, created_at, modified_at, ...threatData } = threat as Threat;
 
-    // Convert numeric field keys to legacy string values for API
-    const convertedThreatData = this.convertToLegacyFieldValues(threatData);
-
     return this.apiService
       .post<Threat>(
         `threat_models/${threatModelId}/threats`,
-        convertedThreatData as unknown as Record<string, unknown>,
+        threatData as unknown as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -1131,13 +1074,10 @@ export class ThreatModelService implements OnDestroy {
     // Remove server-managed fields from threat data before sending to API
     const { created_at, modified_at, ...threatData } = threat as Threat;
 
-    // Convert numeric field keys to legacy string values for API
-    const convertedThreatData = this.convertToLegacyFieldValues(threatData);
-
     return this.apiService
       .put<Threat>(
         `threat_models/${threatModelId}/threats/${threatId}`,
-        convertedThreatData as unknown as Record<string, unknown>,
+        threatData as unknown as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
