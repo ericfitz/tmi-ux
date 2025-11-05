@@ -127,50 +127,38 @@ mat-card-content {
 }
 
 .threat-model-date {
+  display: flex;
   margin: 0 0 4px;
   font-size: 0.85rem;
   color: var(--theme-text-secondary);
-}
 
-.threat-model-status-section {
-  margin: 0 0 4px;
-  font-size: 0.85rem;
-
-  .status-label-and-chips {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-
-    .status-label {
-      color: var(--theme-text-secondary);
-    }
-
-    .status-chip {
-      display: inline-flex;
-      align-items: center;
-      font-size: 0.75rem;
-      height: 24px;
-      padding: 0 12px;
-      background-color: var(--theme-primary);
-      color: var(--theme-primary-contrast);
-      border-radius: 16px;
-      line-height: 1;
-    }
-
-    .status-empty {
-      color: var(--theme-text-secondary);
-    }
+  .date-label {
+    min-width: 140px;
+    flex-shrink: 0;
   }
 }
 
-.status-updated-row {
+.threat-model-status {
+  display: flex;
+  margin: 0 0 4px;
+  font-size: 0.85rem;
+  color: var(--theme-text-secondary);
+
+  .status-label {
+    min-width: 140px;
+    flex-shrink: 0;
+  }
+}
+
+.threat-model-status-updated {
+  display: flex;
   margin: 0 0 12px;
   font-size: 0.85rem;
   color: var(--theme-text-secondary);
 
-  .status-updated-label {
-    margin-right: 6px;
+  .status-label {
+    min-width: 140px;
+    flex-shrink: 0;
   }
 }
 

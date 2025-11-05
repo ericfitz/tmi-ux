@@ -53,6 +53,7 @@ import {
   DeleteThreatModelDialogComponent,
   DeleteThreatModelDialogData,
 } from './components/delete-threat-model-dialog/delete-threat-model-dialog.component';
+import { getFieldOptions, FieldOption } from '@app/shared/utils/field-value-helpers';
 
 @Component({
   selector: 'app-tm',
@@ -80,6 +81,9 @@ export class TmComponent implements OnInit, OnDestroy {
   isLoadingCollaborationSessions = true;
   isImporting = false;
 
+  // Status dropdown options
+  statusOptions: FieldOption[] = [];
+
   private subscription: Subscription | null = null;
   private languageSubscription: Subscription | null = null;
   private collaborationSessionsSubscription: Subscription | null = null;
@@ -102,6 +106,9 @@ export class TmComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.logger.debugComponent('TM', 'TmComponent.ngOnInit called');
+
+    // Initialize status dropdown options
+    this.statusOptions = getFieldOptions('threatModels.status', this.transloco);
 
     // Clear SVG caches when initializing dashboard to ensure fresh start
     this.svgCacheService.clearAllCaches();
@@ -170,6 +177,14 @@ export class TmComponent implements OnInit, OnDestroy {
     // When opening a threat model for editing, the service will automatically
     // expire all other cached models and cache only the one being opened
     void this.router.navigate(['/tm', id]);
+  }
+
+  /**
+   * Get the localized label for a status value
+   */
+  getStatusLabel(statusValue: string): string {
+    const option = this.statusOptions.find(opt => opt.key === statusValue);
+    return option?.label || statusValue;
   }
 
   /**
