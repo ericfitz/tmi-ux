@@ -15,26 +15,21 @@ export interface CursorPosition {
 }
 
 /**
- * Cell in X6 native flat format matching the API schema
+ * Cell in X6 v2 native nested format matching the API schema
  *
  * The API accepts both formats for backward compatibility:
- * - Flat format (X6 native): x, y, width, height as direct properties
- * - Nested format (legacy): position {x,y} and size {width,height} objects
+ * - Nested format (X6 v2): position {x,y} and size {width,height} objects
+ * - Flat format (X6 v1 legacy): x, y, width, height as direct properties
  *
- * However, the API always returns flat format, and X6's toJSON() produces flat format.
- * The application normalizes all cells to flat format on import for consistency.
+ * The API prefers nested format, and X6 v2's toJSON() produces nested format.
+ * The application normalizes all cells to nested format on import for consistency.
  *
  * No convenience properties - use attrs.text.text for labels
  */
 export interface Cell {
   id: string;
   shape: string;
-  // Flat format properties (X6 native toJSON format)
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
-  // Legacy nested format (accepted for backward compatibility, normalized to flat on import)
+  // X6 v2 native nested format properties
   position?: {
     x: number;
     y: number;
@@ -43,6 +38,11 @@ export interface Cell {
     width: number;
     height: number;
   };
+  // X6 v1 legacy flat format (accepted for backward compatibility, normalized to nested on import)
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
   attrs?: Record<string, unknown>;
   source?: unknown; // For edges - X6 source format
   target?: unknown; // For edges - X6 target format

@@ -10,26 +10,26 @@ export interface DiagramImage {
 
 /**
  * Cell interface for diagram graph data
- * Supports both X6 native flat format and legacy nested format
+ * Supports both X6 v2 native nested format and X6 v1 legacy flat format
  *
  * The API accepts both formats for backward compatibility:
- * - Flat format (X6 native): x, y, width, height as direct properties
- * - Nested format (legacy): position {x,y} and size {width,height} objects
+ * - Nested format (X6 v2 native): position {x,y} and size {width,height} objects
+ * - Flat format (X6 v1 legacy): x, y, width, height as direct properties
  *
- * The API always returns flat format, and X6's toJSON() produces flat format.
- * The application normalizes all cells to flat format on import.
+ * The API prefers nested format, and X6 v2's toJSON() produces nested format.
+ * The application normalizes all cells to nested format on import.
  */
 export interface Cell {
   id: string;
   shape: string;
-  // Node properties - X6 native flat format (preferred)
+  // Node properties - X6 v2 native nested format (preferred)
+  position?: { x: number; y: number };
+  size?: { width: number; height: number };
+  // Node properties - X6 v1 legacy flat format (backward compatibility)
   x?: number;
   y?: number;
   width?: number;
   height?: number;
-  // Node properties - legacy nested format (backward compatibility)
-  position?: { x: number; y: number };
-  size?: { width: number; height: number };
   // Edge properties (when shape is edge)
   source?: { cell: string; port?: string } | string;
   target?: { cell: string; port?: string } | string;

@@ -202,7 +202,7 @@ describe('NodeInfo', () => {
       expect(nodeInfo.getMetadataAsRecord()).toEqual({ category: 'business', priority: 'high' });
     });
 
-    it('should create NodeInfo from JSON (legacy format with position/size)', () => {
+    it('should create NodeInfo from JSON (X6 v2 native format with position/size)', () => {
       // Arrange
       const json = {
         id: 'node-1',

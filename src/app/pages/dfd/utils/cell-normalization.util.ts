@@ -6,12 +6,16 @@
  * - Removes the tools property (runtime UI-only state)
  * - Rounds position and size coordinates to integers
  * - For edges: keeps only the first label
+ *
+ * This utility expects cells in X6 v2 native nested format (position/size objects).
+ * Use cell-format-normalization.util.ts to convert legacy flat format before using this.
  */
 
 import { Cell } from '../../../core/types/websocket-message.types';
 
 /**
  * Normalizes a single cell for persistence
+ * Expects cell in X6 v2 nested format with position {x, y} and size {width, height}
  */
 export function normalizeCell(cell: Cell): Cell {
   const normalized: Cell = { ...cell };

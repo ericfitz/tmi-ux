@@ -74,18 +74,19 @@ export class NodeInfo {
   }
 
   /**
-   * Creates NodeInfo from a plain object in X6 native format
+   * Creates NodeInfo from a plain object in X6 v2 native nested format
+   * Also accepts X6 v1 legacy flat format for backward compatibility
    */
   static fromJSON(data: {
     id: string;
     shape?: NodeType;
     type?: NodeType; // Legacy field
-    x?: number;
-    y?: number;
-    position?: { x: number; y: number }; // Legacy field
-    width?: number;
-    height?: number;
-    size?: { width: number; height: number }; // Legacy field
+    position?: { x: number; y: number }; // X6 v2 native nested format
+    size?: { width: number; height: number }; // X6 v2 native nested format
+    x?: number; // X6 v1 legacy flat format
+    y?: number; // X6 v1 legacy flat format
+    width?: number; // X6 v1 legacy flat format
+    height?: number; // X6 v1 legacy flat format
     attrs?: NodeAttrs;
     ports?: PortConfiguration;
     zIndex?: number;
@@ -98,10 +99,11 @@ export class NodeInfo {
     tools?: CellTool[];
   }): NodeInfo {
     const shape = data.shape || data.type || 'process';
-    const x = data.x ?? data.position?.x ?? 0;
-    const y = data.y ?? data.position?.y ?? 0;
-    const width = data.width ?? data.size?.width ?? 120;
-    const height = data.height ?? data.size?.height ?? 60;
+    // Prioritize X6 v2 nested format, fall back to X6 v1 flat format
+    const x = data.position?.x ?? data.x ?? 0;
+    const y = data.position?.y ?? data.y ?? 0;
+    const width = data.size?.width ?? data.width ?? 120;
+    const height = data.size?.height ?? data.height ?? 60;
 
     const attrs = data.attrs || createDefaultNodeAttrs(shape);
     const ports = data.ports || createDefaultPortConfiguration(shape);
@@ -592,7 +594,7 @@ export class NodeInfo {
   }
 
   /**
-   * Converts to OpenAPI-compliant JSON format
+   * Converts to X6 v2 native nested format for API serialization
    */
   toJSON(): {
     id: string;

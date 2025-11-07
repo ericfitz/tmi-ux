@@ -162,11 +162,11 @@ export class AppDiagramService {
     });
 
     try {
-      // Normalize cells from nested format (position/size objects) to flat format (x,y,width,height)
-      // This ensures backward compatibility with old exports while using X6 native format
+      // Normalize cells from flat format (X6 v1 legacy) to nested format (X6 v2 native)
+      // This ensures backward compatibility with old exports while using X6 v2 native format
       const normalizedCells = normalizeCellsFormat(cells);
 
-      this.logger.debugComponent('DfdDiagram', 'Normalized cells to X6 flat format', {
+      this.logger.debugComponent('DfdDiagram', 'Normalized cells to X6 v2 nested format', {
         cellCount: normalizedCells.length,
       });
 
