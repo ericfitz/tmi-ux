@@ -55,7 +55,9 @@
             </p>
             <p class="threat-model-status">
               <span class="status-label">{{ 'common.status' | transloco }}:</span>
-              {{ threatModel.status ? getStatusLabel(threatModel.status) : '—' }}
+              {{
+                threatModel.status ? ('threatModels.status.' + threatModel.status | transloco) : '—'
+              }}
             </p>
             <p class="threat-model-status-updated">
               <span class="status-label">{{ 'threatModels.statusLastUpdated' | transloco }}:</span>

@@ -206,8 +206,11 @@
         <mat-select formControlName="status" tabindex="10">
           <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
           @for (option of statusOptions; track option.key) {
-            <mat-option [value]="option.key" [matTooltip]="option.tooltip">
-              {{ option.label }}
+            <mat-option
+              [value]="option.key"
+              [matTooltip]="'threatEditor.threatStatus.' + option.key + '.description' | transloco"
+            >
+              {{ 'threatEditor.threatStatus.' + option.key | transloco }}
             </mat-option>
           }
         </mat-select>

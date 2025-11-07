@@ -474,6 +474,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
       this.languageService.currentLanguage$.subscribe(language => {
         this.currentLocale = language.code;
         this.currentDirection = language.rtl ? 'rtl' : 'ltr';
+        // Refresh status dropdown options for new language
+        this.statusOptions = getFieldOptions('threatModels.status', this.transloco);
       }),
     );
 

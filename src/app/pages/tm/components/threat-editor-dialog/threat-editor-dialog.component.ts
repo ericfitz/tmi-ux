@@ -778,6 +778,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         this.initializeCellOptions();
         this.initializeAssetOptions();
         this.initializeThreatTypeOptions();
+        this.initializeFieldOptions();
       });
 
     // Also subscribe to direction changes

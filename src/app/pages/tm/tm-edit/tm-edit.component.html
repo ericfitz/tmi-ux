@@ -111,19 +111,22 @@
                     <mat-select formControlName="status">
                       <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
                       @for (option of statusOptions; track option.key) {
-                        <mat-option [value]="option.key" [matTooltip]="option.tooltip">
-                          {{ option.label }}
+                        <mat-option
+                          [value]="option.key"
+                          [matTooltip]="
+                            'threatModels.status.' + option.key + '.tooltip' | transloco
+                          "
+                        >
+                          {{ 'threatModels.status.' + option.key | transloco }}
                         </mat-option>
                       }
                     </mat-select>
                   </mat-form-field>
                 } @else {
                   @if (threatModelForm.get('status')?.value; as statusValue) {
-                    @for (opt of statusOptions; track opt.key) {
-                      @if (opt.key === statusValue) {
-                        <span class="info-value">{{ opt.label }}</span>
-                      }
-                    }
+                    <span class="info-value">{{
+                      'threatModels.status.' + statusValue | transloco
+                    }}</span>
                   } @else {
                     <span class="info-value">—</span>
                   }
