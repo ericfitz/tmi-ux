@@ -193,7 +193,15 @@
     "moveBackward": "向后移动",
     "moveForward": "向前移动",
     "moveToBack": "移到最后",
-    "moveToFront": "移到最前"
+    "moveToFront": "移到最前",
+    "selectDataAsset": "选择数据资产"
+  },
+  "dataAssetDialog": {
+    "selectAsset": "数据资产",
+    "title": {
+      "select": "选择数据资产",
+      "view": "查看数据资产"
+    }
   },
   "editor": {
     "diagramPrefix": "图表:",

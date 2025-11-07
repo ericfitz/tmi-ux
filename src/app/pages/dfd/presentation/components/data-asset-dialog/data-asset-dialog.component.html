@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>
+  {{ dialogTitle }}
+</h2>
+
+<mat-dialog-content>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ 'dataAssetDialog.selectAsset' | transloco }}</mat-label>
+    <mat-select [formControl]="assetControl" tabindex="1">
+      <mat-option *ngFor="let asset of assetOptions" [value]="asset.id">
+        {{ asset.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @if (!data.isReadOnly) {
+    <button
+      mat-button
+      (click)="onCancel()"
+      tabindex="2"
+      [attr.aria-label]="'common.cancel' | transloco"
+    >
+      {{ 'common.cancel' | transloco }}
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSave()"
+      tabindex="3"
+      [attr.aria-label]="'common.save' | transloco"
+    >
+      {{ 'common.save' | transloco }}
+    </button>
+  }
+
+  @if (data.isReadOnly) {
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onCancel()"
+      tabindex="2"
+      [attr.aria-label]="'common.close' | transloco"
+    >
+      {{ 'common.close' | transloco }}
+    </button>
+  }
+</mat-dialog-actions>

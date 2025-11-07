@@ -193,7 +193,15 @@
     "moveBackward": "تحريك للخلف",
     "moveForward": "تحريك للأمام",
     "moveToBack": "نقل إلى الخلف",
-    "moveToFront": "نقل إلى المقدمة"
+    "moveToFront": "نقل إلى المقدمة",
+    "selectDataAsset": "تحديد أصل البيانات"
+  },
+  "dataAssetDialog": {
+    "selectAsset": "أصل البيانات",
+    "title": {
+      "select": "تحديد أصل البيانات",
+      "view": "عرض أصل البيانات"
+    }
   },
   "editor": {
     "diagramPrefix": "مخطط:",

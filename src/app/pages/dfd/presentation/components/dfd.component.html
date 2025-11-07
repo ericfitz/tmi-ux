@@ -343,6 +343,10 @@
           <mat-icon>swap_horiz</mat-icon>
           <span>{{ 'contextMenu.addInverseConnection' | transloco }}</span>
         </button>
+        <button mat-menu-item (click)="selectDataAsset()" [disabled]="!threatModelId">
+          <mat-icon>storage</mat-icon>
+          <span>{{ 'contextMenu.selectDataAsset' | transloco }}</span>
+        </button>
       }
 
       <mat-divider></mat-divider>

@@ -195,7 +195,15 @@
     "moveBackward": "Move Backward",
     "moveForward": "Move Forward",
     "moveToBack": "Move to Back",
-    "moveToFront": "Move to Front"
+    "moveToFront": "Move to Front",
+    "selectDataAsset": "Select Data Asset"
+  },
+  "dataAssetDialog": {
+    "selectAsset": "Data Asset",
+    "title": {
+      "select": "Select Data Asset",
+      "view": "View Data Asset"
+    }
   },
   "editor": {
     "diagramPrefix": "Diagram:",

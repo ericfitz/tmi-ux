@@ -1,0 +1,18 @@
+/**
+ * Styles for the Data Asset Dialog Component
+ */
+
+.full-width {
+  width: 100%;
+}
+
+:host ::ng-deep .mat-mdc-dialog-content {
+  min-height: 100px;
+  padding-top: 12px !important;
+  padding-bottom: 8px !important;
+}
+
+:host ::ng-deep mat-form-field {
+  margin-top: 8px;
+  margin-bottom: 0;
+}

@@ -193,7 +193,15 @@
     "moveBackward": "Nach hinten bewegen",
     "moveForward": "Nach vorne bewegen",
     "moveToBack": "In den Hintergrund",
-    "moveToFront": "In den Vordergrund"
+    "moveToFront": "In den Vordergrund",
+    "selectDataAsset": "Daten-Asset auswählen"
+  },
+  "dataAssetDialog": {
+    "selectAsset": "Daten-Asset",
+    "title": {
+      "select": "Daten-Asset auswählen",
+      "view": "Daten-Asset anzeigen"
+    }
   },
   "editor": {
     "diagramPrefix": "Diagramm:",

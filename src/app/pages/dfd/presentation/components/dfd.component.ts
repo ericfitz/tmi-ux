@@ -106,6 +106,10 @@ import {
   X6ClipboardDialogComponent,
   X6ClipboardDialogData,
 } from './x6-clipboard-dialog/x6-clipboard-dialog.component';
+import {
+  DataAssetDialogComponent,
+  DataAssetDialogData,
+} from './data-asset-dialog/data-asset-dialog.component';
 
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
@@ -1450,6 +1454,102 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       },
     });
+  }
+
+  /**
+   * Open the data asset selection dialog for the right-clicked edge
+   */
+  selectDataAsset(): void {
+    const edge = this._rightClickedCell;
+    if (!edge || !edge.isEdge()) {
+      this.logger.info('Select data asset requires an edge');
+      return;
+    }
+
+    if (!this.threatModelId) {
+      this.logger.warn('Cannot open data asset dialog: No threat model ID available');
+      return;
+    }
+
+    // Get current data asset ID from cell data
+    const cellData = edge.getData() || {};
+    const currentDataAssetId = cellData.dataAssetId;
+
+    // Load threat model to get assets
+    this._subscriptions.add(
+      this.threatModelService.getThreatModelById(this.threatModelId).subscribe({
+        next: threatModel => {
+          if (!threatModel) {
+            this.logger.error('Threat model not found', { id: this.threatModelId });
+            return;
+          }
+
+          const assets = threatModel.assets || [];
+
+          // Determine if dialog should be read-only based on authorization
+          const isReadOnly = this.isReadOnlyMode;
+
+          const dialogData: DataAssetDialogData = {
+            cellId: edge.id,
+            currentDataAssetId: currentDataAssetId,
+            assets: assets,
+            isReadOnly: isReadOnly,
+          };
+
+          const dialogRef = this.dialog.open(DataAssetDialogComponent, {
+            width: '500px',
+            data: dialogData,
+          });
+
+          dialogRef.afterClosed().subscribe(result => {
+            if (result !== undefined) {
+              this._updateCellDataAsset(edge.id, result);
+            }
+          });
+        },
+        error: error => {
+          this.logger.error('Failed to load threat model for data asset dialog', error);
+        },
+      }),
+    );
+  }
+
+  /**
+   * Update the data asset ID for a cell
+   * @param cellId The ID of the cell to update
+   * @param dataAssetId The new data asset ID (null to remove)
+   */
+  private _updateCellDataAsset(cellId: string, dataAssetId: string | null): void {
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) {
+      this.logger.error('Cannot update cell data asset: graph not available');
+      return;
+    }
+
+    const cell = graph.getCellById(cellId);
+    if (!cell) {
+      this.logger.error('Cannot update cell data asset: cell not found', { cellId });
+      return;
+    }
+
+    const currentData = cell.getData() || {};
+    const updatedData = { ...currentData };
+
+    // If dataAssetId is null, delete the property; otherwise set it
+    if (dataAssetId === null) {
+      delete updatedData.dataAssetId;
+    } else {
+      updatedData.dataAssetId = dataAssetId;
+    }
+
+    cell.setData(updatedData);
+
+    this.logger.info('Updated cell data asset', {
+      cellId,
+      dataAssetId: dataAssetId || 'none',
+    });
+
+    // The existing auto-save mechanism will handle persistence
   }
 
   isRightClickedCellEdge(): boolean {
