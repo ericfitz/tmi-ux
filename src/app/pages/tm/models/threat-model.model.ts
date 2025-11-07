@@ -53,7 +53,7 @@ export interface Asset {
   type: 'data' | 'hardware' | 'software' | 'infrastructure' | 'service' | 'personnel';
   criticality?: string | null;
   classification?: string[] | null;
-  sensitivity?: string[] | null;
+  sensitivity?: string | null;
   created_at: string;
   modified_at: string;
   metadata?: Metadata[];
@@ -73,6 +73,7 @@ export interface Threat {
   priority?: string | null;
   mitigated?: boolean;
   status?: string | null;
+  mitigation?: string;
   threat_type: string;
   asset_id?: string;
   issue_uri?: string;
@@ -227,7 +228,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         type: 'data',
         criticality: 'high',
         classification: ['confidential', 'regulated'],
-        sensitivity: ['pii', 'financial'],
+        sensitivity: 'pii, financial',
         created_at: new Date(Date.now() - 100 * 86400000).toISOString(),
         modified_at: new Date(Date.now() - 3 * 86400000).toISOString(),
         metadata: [
@@ -244,7 +245,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
         type: 'infrastructure',
         criticality: 'critical',
         classification: ['production'],
-        sensitivity: ['public-facing'],
+        sensitivity: 'public-facing',
         created_at: new Date(Date.now() - 120 * 86400000).toISOString(),
         modified_at: new Date(Date.now() - 1 * 86400000).toISOString(),
         metadata: [

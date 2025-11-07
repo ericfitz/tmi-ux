@@ -42,11 +42,24 @@
 }
 
 mat-dialog-content {
-  max-height: 70vh;
-  overflow-y: auto;
+  max-height: calc(100vh - 220px);
+  overflow: hidden auto;
+
+  // Responsive max-height for different screen sizes
+  @media (height <= 900px) {
+    max-height: calc(100vh - 200px);
+  }
+
+  @media (height <= 768px) {
+    max-height: calc(100vh - 170px);
+  }
 }
 
 mat-dialog-actions {
+  position: sticky;
+  bottom: 0;
+  background: var(--theme-background, #fff);
+  border-top: 1px solid var(--theme-divider, rgb(0 0 0 / 12%));
   padding: 16px 24px;
   margin: 0;
 }

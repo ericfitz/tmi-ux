@@ -5,6 +5,25 @@
 mat-dialog-content {
   min-width: 300px;
   padding-top: 6px;
+  max-height: calc(100vh - 200px);
+  overflow: hidden auto;
+
+  // Responsive max-height for different screen sizes
+  @media (height <= 900px) {
+    max-height: calc(100vh - 180px);
+  }
+
+  @media (height <= 768px) {
+    max-height: calc(100vh - 150px);
+  }
+}
+
+mat-dialog-actions {
+  position: sticky;
+  bottom: 0;
+  background: var(--theme-background, #fff);
+  border-top: 1px solid var(--theme-divider, rgb(0 0 0 / 12%));
+  margin-top: 8px;
 }
 
 .mat-mdc-form-field {

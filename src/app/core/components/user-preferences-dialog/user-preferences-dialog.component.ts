@@ -154,6 +154,29 @@ interface CheckboxChangeEvent {
 
       mat-dialog-content {
         min-width: 400px;
+        max-height: calc(100vh - 250px);
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      @media (max-height: 900px) {
+        mat-dialog-content {
+          max-height: calc(100vh - 220px);
+        }
+      }
+
+      @media (max-height: 768px) {
+        mat-dialog-content {
+          max-height: calc(100vh - 190px);
+        }
+      }
+
+      mat-dialog-actions {
+        position: sticky;
+        bottom: 0;
+        background: var(--theme-background, #fff);
+        border-top: 1px solid var(--theme-divider, rgba(0, 0, 0, 0.12));
+        margin-top: 8px;
       }
 
       .section-header {

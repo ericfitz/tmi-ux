@@ -17,7 +17,7 @@
   }
 </h2>
 
-<mat-dialog-content appScrollIndicator>
+<mat-dialog-content>
   <form [formGroup]="assetForm" class="asset-form">
     <!-- Asset Name -->
     <mat-form-field appearance="outline" class="full-width">
@@ -99,33 +99,15 @@
     </div>
 
     <!-- Sensitivity -->
-    <div class="chip-input-section">
-      <mat-label class="chip-label">{{ 'assetEditor.sensitivity' | transloco }}</mat-label>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-chip-grid #sensitivityChipGrid>
-          <mat-chip-row
-            *ngFor="let sensitivity of assetForm.get('sensitivity')?.value"
-            (removed)="!isReadOnly ? removeSensitivity(sensitivity) : null"
-            [removable]="!isReadOnly"
-          >
-            {{ sensitivity }}
-            @if (!isReadOnly) {
-              <button matChipRemove [attr.aria-label]="'Remove ' + sensitivity">
-                <mat-icon>cancel</mat-icon>
-              </button>
-            }
-          </mat-chip-row>
-        </mat-chip-grid>
-        @if (!isReadOnly) {
-          <input
-            placeholder="{{ 'assetEditor.chipPlaceholder' | transloco }}"
-            [matChipInputFor]="sensitivityChipGrid"
-            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-            (matChipInputTokenEnd)="addSensitivity($event)"
-          />
-        }
-      </mat-form-field>
-    </div>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label [transloco]="'assetEditor.sensitivity'">Sensitivity</mat-label>
+      <input matInput formControlName="sensitivity" />
+      @if (assetForm.get('sensitivity')?.hasError('maxlength')) {
+        <mat-error>
+          {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
+        </mat-error>
+      }
+    </mat-form-field>
   </form>
 </mat-dialog-content>
 

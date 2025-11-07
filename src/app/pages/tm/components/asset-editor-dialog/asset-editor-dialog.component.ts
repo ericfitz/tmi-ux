@@ -25,7 +25,7 @@ interface AssetFormValues {
   type?: 'data' | 'hardware' | 'software' | 'infrastructure' | 'service' | 'personnel';
   criticality?: string;
   classification?: string[];
-  sensitivity?: string[];
+  sensitivity?: string;
 }
 
 /**
@@ -84,7 +84,7 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
       type: [data.asset?.type || ''],
       criticality: [data.asset?.criticality || '', Validators.maxLength(64)],
       classification: [data.asset?.classification || []],
-      sensitivity: [data.asset?.sensitivity || []],
+      sensitivity: [data.asset?.sensitivity || '', Validators.maxLength(256)],
     });
 
     if (this.isReadOnly) {
@@ -133,38 +133,6 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Add a sensitivity chip
-   */
-  addSensitivity(event: MatChipInputEvent): void {
-    const value = (event.value || '').trim();
-
-    if (value) {
-      const currentSensitivity = this.assetForm.get('sensitivity')?.value as string[];
-      if (!currentSensitivity.includes(value)) {
-        this.assetForm.patchValue({
-          sensitivity: [...currentSensitivity, value],
-        });
-      }
-    }
-
-    event.chipInput.clear();
-  }
-
-  /**
-   * Remove a sensitivity chip
-   */
-  removeSensitivity(sensitivity: string): void {
-    const currentSensitivity = this.assetForm.get('sensitivity')?.value as string[];
-    const index = currentSensitivity.indexOf(sensitivity);
-
-    if (index >= 0) {
-      const updated = [...currentSensitivity];
-      updated.splice(index, 1);
-      this.assetForm.patchValue({ sensitivity: updated });
-    }
-  }
-
-  /**
    * Close the dialog with the asset data
    */
   onSubmit(): void {
@@ -195,8 +163,8 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
       result.classification = formValues.classification;
     }
 
-    if (formValues.sensitivity && formValues.sensitivity.length > 0) {
-      result.sensitivity = formValues.sensitivity;
+    if (formValues.sensitivity?.trim()) {
+      result.sensitivity = formValues.sensitivity.trim();
     }
 
     this.dialogRef.close(result);

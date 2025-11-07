@@ -37,6 +37,7 @@ interface ThreatFormValues {
   priority?: string | null;
   mitigated?: boolean;
   status?: string | null;
+  mitigation?: string;
   issue_uri?: string;
 }
 
@@ -161,6 +162,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       priority: [null],
       mitigated: [false],
       status: [null],
+      mitigation: ['', Validators.maxLength(1024)],
       issue_uri: [''],
     });
   }
@@ -638,6 +640,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           priority: '1', // High (using numeric key: Immediate=0, High=1, Medium=2, Low=3, Deferred=4)
           mitigated: false,
           status: '0', // Open (using numeric key)
+          mitigation: '',
           issue_uri: '',
           metadata: [],
         } as unknown as Threat;
@@ -667,6 +670,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       priority: null,
       mitigated: false,
       status: null,
+      mitigation: '',
       issue_uri: '',
     });
 
@@ -688,6 +692,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         priority: this.data.threat.priority,
         mitigated: this.data.threat.mitigated,
         status: this.data.threat.status,
+        mitigation: this.data.threat.mitigation,
         issue_uri: this.data.threat.issue_uri,
       });
 
@@ -740,6 +745,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         priority: migratedPriority,
         mitigated: this.data.threat.mitigated || false,
         status: migratedStatus,
+        mitigation: this.data.threat.mitigation || '',
         issue_uri: this.initialIssueUriValue,
       });
 
@@ -995,6 +1001,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       priority: formValues.priority || undefined,
       mitigated: formValues.mitigated,
       status: formValues.status || undefined,
+      mitigation: formValues.mitigation || undefined,
       issue_uri: formValues.issue_uri || undefined,
       metadata: this.data.threat?.metadata || [],
     });

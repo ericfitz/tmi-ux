@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>
   {{ dialogTitle | transloco }}
 </h2>
-<mat-dialog-content [dir]="currentDirection" appScrollIndicator>
+<mat-dialog-content [dir]="currentDirection">
   <!-- Force translation update -->
   <div style="display: none">{{ 'common.threatName' | transloco }}</div>
   <!-- Timestamps section -->
@@ -221,11 +221,30 @@
       </div>
     </div>
 
+    <!-- Mitigation field - on its own row -->
+    <div class="form-field-container">
+      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+        <mat-label>{{ 'common.mitigation' | transloco }}</mat-label>
+        <textarea
+          matInput
+          formControlName="mitigation"
+          rows="3"
+          tabindex="12"
+          placeholder="{{ 'common.mitigationPlaceholder' | transloco }}"
+        ></textarea>
+        @if (threatForm.get('mitigation')?.hasError('maxlength')) {
+          <mat-error>
+            {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
+          </mat-error>
+        }
+      </mat-form-field>
+    </div>
+
     <!-- Diagram ID field - on its own row -->
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'common.diagramId' | transloco }}</mat-label>
-        <mat-select formControlName="diagram_id" tabindex="12">
+        <mat-select formControlName="diagram_id" tabindex="13">
           <mat-option *ngFor="let diagram of diagramOptions" [value]="diagram.id">
             {{
               diagram.id === NOT_ASSOCIATED_VALUE
@@ -241,7 +260,7 @@
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'common.cellId' | transloco }}</mat-label>
-        <mat-select formControlName="cell_id" tabindex="13">
+        <mat-select formControlName="cell_id" tabindex="14">
           <mat-option *ngFor="let cell of cellOptions" [value]="cell.id">
             {{ cell.id === NOT_ASSOCIATED_VALUE ? cell.label : cell.label + ' (' + cell.id + ')' }}
           </mat-option>
@@ -254,7 +273,7 @@
   <button
     mat-button
     (click)="onCancel()"
-    tabindex="14"
+    tabindex="15"
     [attr.aria-label]="'common.cancel' | transloco"
   >
     {{ 'common.cancel' | transloco }}
@@ -265,7 +284,7 @@
       color="primary"
       [disabled]="threatForm.invalid"
       (click)="onSubmit()"
-      tabindex="15"
+      tabindex="16"
       [attr.aria-label]="'common.save' | transloco"
     >
       {{ 'common.save' | transloco }}
@@ -277,7 +296,7 @@
       mat-raised-button
       color="primary"
       (click)="onCancel()"
-      tabindex="13"
+      tabindex="15"
       [attr.aria-label]="'common.close' | transloco"
     >
       {{ 'common.close' | transloco }}

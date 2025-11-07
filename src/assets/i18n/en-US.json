@@ -123,6 +123,8 @@
     "metadataKey": "Key",
     "metadataValue": "Value",
     "mitigated": "Mitigated",
+    "mitigation": "Mitigation",
+    "mitigationPlaceholder": "Describe recommended or planned mitigation(s) for this threat",
     "name": "Name",
     "noMetadata": "No Metadata Available",
     "noThreats": "No Threats Available",
