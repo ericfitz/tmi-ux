@@ -239,7 +239,8 @@
         "export": "Exportieren...",
         "redo": "Wiederholen",
         "share": "Teilen",
-        "undo": "Rückgängig"
+        "undo": "Rückgängig",
+        "zoomToFit": "An Bildschirmgröße anpassen"
       }
     }
   },

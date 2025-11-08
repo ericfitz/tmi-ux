@@ -122,6 +122,12 @@ export class AppDiagramLoadingService {
         infraX6GraphAdapter.recalculateZOrder();
         this.logger.debug('Recalculated z-order after diagram load');
 
+        // Center and fit diagram to viewport after initial load
+        if (cells.length > 0) {
+          graph.zoomToFit({ padding: 20 });
+          this.logger.debug('Centered and fitted diagram to viewport');
+        }
+
         // Clear custom history service after diagram load
         this.historyService.clear();
         this.logger.debug('Cleared AppHistoryService history after diagram load');

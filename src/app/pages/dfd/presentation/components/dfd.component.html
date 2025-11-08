@@ -194,6 +194,20 @@
 
       <button
         mat-icon-button
+        (click)="zoomToFit()"
+        [disabled]="!isSystemInitialized"
+        [matTooltip]="'editor.toolbar.tooltips.zoomToFit' | transloco"
+      >
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          fontWeight="100"
+          style="font-variation-settings: 'FILL' 0"
+          >fit_screen</mat-icon
+        >
+      </button>
+
+      <button
+        mat-icon-button
         color="primary"
         [disabled]="!hasExactlyOneSelectedCell"
         (click)="manageMetadata()"

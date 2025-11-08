@@ -963,6 +963,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.appDfdOrchestrator.clearSelection();
   }
 
+  zoomToFit(): void {
+    this.appDfdOrchestrator.zoomToFit();
+  }
+
   onSaveManually(): void {
     if (this.isReadOnlyMode) return;
 

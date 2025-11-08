@@ -641,6 +641,18 @@ export class AppDfdOrchestrator {
   }
 
   /**
+   * Viewport management
+   */
+  zoomToFit(): void {
+    const graph = this.getGraph;
+    if (graph) {
+      graph.zoomToFit({ padding: 20 });
+      graph.centerContent();
+      this.logger.debug('Zoomed to fit and centered content');
+    }
+  }
+
+  /**
    * State management
    */
   setReadOnlyMode(readOnly: boolean): void {

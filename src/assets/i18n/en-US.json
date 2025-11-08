@@ -239,7 +239,8 @@
         "export": "Export...",
         "redo": "Redo",
         "share": "Share",
-        "undo": "Undo"
+        "undo": "Undo",
+        "zoomToFit": "Zoom to Fit"
       }
     }
   },
