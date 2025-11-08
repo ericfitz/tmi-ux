@@ -520,6 +520,9 @@ export class InfraX6EmbeddingAdapter {
 
         // Update connected edges z-order
         this.infraX6ZOrderAdapter.updateConnectedEdgesZOrder(graph, node, node.getZIndex() ?? 15);
+
+        // Recalculate z-order for all cells to fix cascading violations
+        this.infraX6ZOrderAdapter.recalculateZOrder(graph);
       });
     } catch (error) {
       this.logger.error('Error handling node embedded event', {
@@ -573,6 +576,9 @@ export class InfraX6EmbeddingAdapter {
         // CRITICAL FIX: Recalculate z-indexes for all descendants
         // This handles nested security boundaries and deep embedding hierarchies
         this.recalculateAllDescendantsZIndex(graph, node);
+
+        // Recalculate z-order for all cells to fix cascading violations
+        this.infraX6ZOrderAdapter.recalculateZOrder(graph);
       });
     } catch (error) {
       this.logger.error('Error handling node unembedded event', {

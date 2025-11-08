@@ -118,6 +118,10 @@ export class AppDiagramLoadingService {
           this.logger.debug('Updated embedding appearances after cell loading');
         }
 
+        // Recalculate z-order for all cells to fix any violations after loading
+        infraX6GraphAdapter.recalculateZOrder();
+        this.logger.debug('Recalculated z-order after diagram load');
+
         // Clear custom history service after diagram load
         this.historyService.clear();
         this.logger.debug('Cleared AppHistoryService history after diagram load');

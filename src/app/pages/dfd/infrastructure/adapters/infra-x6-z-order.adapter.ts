@@ -762,4 +762,29 @@ export class InfraX6ZOrderAdapter {
       });
     }
   }
+
+  /**
+   * Recalculate z-order for all cells in the graph
+   * Uses iterative algorithm to fix all z-index violations
+   * Does NOT record changes in history (treated as visual effect)
+   *
+   * @param graph The X6 graph instance
+   */
+  recalculateZOrder(graph: Graph): void {
+    // Temporarily disable history recording
+    const historyEnabled = (graph as any).isHistoryEnabled ? (graph as any).isHistoryEnabled() : false;
+    if (historyEnabled) {
+      (graph as any).disableHistory();
+    }
+
+    try {
+      const cells = graph.getCells();
+      this.zOrderService.recalculateZOrder(cells);
+    } finally {
+      // Re-enable history if it was enabled before
+      if (historyEnabled && (graph as any).enableHistory) {
+        (graph as any).enableHistory();
+      }
+    }
+  }
 }

@@ -793,6 +793,20 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Recalculate z-order for all cells in the graph
+   * Uses iterative algorithm to fix cascading z-index violations
+   */
+  recalculateZOrder(): void {
+    if (!this._graph) {
+      this.logger.warn('Cannot recalculate z-order - graph not initialized');
+      return;
+    }
+
+    this._zOrderAdapter.recalculateZOrder(this._graph);
+    this.logger.debugComponent('X6Graph', 'Recalculated z-order for all cells in graph');
+  }
+
+  /**
    * Debug method to manually inspect edge rendering
    * Call this from browser console: adapter.debugEdgeRendering()
    */
@@ -1116,6 +1130,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
             // Update port visibility after connection
             this._portStateManager.hideUnconnectedPorts(this._graph!);
             this._portStateManager.ensureConnectedPortsVisible(this._graph!, edge);
+
+            // Recalculate z-order for all cells to fix cascading violations
+            this._zOrderAdapter.recalculateZOrder(this._graph!);
           });
         }, 50); // Small delay to ensure connection is fully established
       } else {
@@ -1141,6 +1158,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       this._isConnecting = false;
       this._historyCoordinator.executeVisualEffect(this._graph!, () => {
         this._portStateManager.hideUnconnectedPorts(this._graph!);
+
+        // Recalculate z-order for all cells to fix cascading violations
+        this._zOrderAdapter.recalculateZOrder(this._graph!);
       });
     });
 
@@ -1554,6 +1574,11 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         // Update port visibility for old and new source nodes using port manager
         // Port visibility changes are excluded from history by the operation metadata
         this._portStateManager.onConnectionChange(this._graph!);
+
+        // Recalculate z-order for all cells to fix cascading violations
+        this._historyCoordinator.executeVisualEffect(this._graph!, () => {
+          this._zOrderAdapter.recalculateZOrder(this._graph!);
+        });
       }
     };
 
@@ -1571,6 +1596,11 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         // Update port visibility for old and new target nodes using port manager
         // Port visibility changes are excluded from history by the operation metadata
         this._portStateManager.onConnectionChange(this._graph!);
+
+        // Recalculate z-order for all cells to fix cascading violations
+        this._historyCoordinator.executeVisualEffect(this._graph!, () => {
+          this._zOrderAdapter.recalculateZOrder(this._graph!);
+        });
       }
     };
 

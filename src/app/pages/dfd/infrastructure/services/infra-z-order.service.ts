@@ -630,4 +630,116 @@ export class ZOrderService {
     // For non-security-boundary nodes, use regular unembedding logic
     return this.getDefaultZIndex(nodeType);
   }
+
+  /**
+   * Recalculate z-order for all cells in the graph using iterative algorithm
+   * Iterates until all z-index violations are fixed or max iterations reached
+   *
+   * Rules:
+   * - Child nodes must have z-index > parent z-index (by at least 3)
+   * - Edges must have z-index >= max(source z-index, target z-index)
+   *
+   * @param cells All cells in the graph (nodes and edges)
+   * @returns Number of iterations performed
+   */
+  recalculateZOrder(cells: Cell[]): number {
+    const maxIterations = cells.filter(c => c.isNode()).length;
+    let iteration = 0;
+    let changed = true;
+
+    this.logger.info('Starting z-order recalculation', {
+      totalCells: cells.length,
+      maxIterations,
+    });
+
+    while (changed && iteration < maxIterations) {
+      changed = false;
+      iteration++;
+
+      // Sort cells by current z-index (ascending)
+      const sortedCells = [...cells].sort((a, b) => {
+        const aZ = a.getZIndex() ?? 1;
+        const bZ = b.getZIndex() ?? 1;
+        return aZ - bZ;
+      });
+
+      // Iterate through each cell and check for violations
+      for (const cell of sortedCells) {
+        if (cell.isNode()) {
+          const node = cell;
+          const parent = node.getParent();
+
+          if (parent && parent.isNode()) {
+            const nodeZIndex = node.getZIndex() ?? 1;
+            const parentZIndex = parent.getZIndex() ?? 1;
+
+            // Violation: child z-index must be > parent z-index
+            if (nodeZIndex <= parentZIndex) {
+              const newZIndex = parentZIndex + 3;
+              node.setZIndex(newZIndex);
+              changed = true;
+
+              this.logger.debug('Adjusted node z-index (parent violation)', {
+                nodeId: node.id,
+                oldZIndex: nodeZIndex,
+                newZIndex,
+                parentZIndex,
+                iteration,
+              });
+            }
+          }
+        } else if (cell.isEdge()) {
+          const edge = cell;
+          const sourceId = edge.getSourceCellId();
+          const targetId = edge.getTargetCellId();
+
+          if (sourceId && targetId) {
+            // Find source and target nodes in cells array
+            const sourceNode = cells.find(c => c.id === sourceId && c.isNode()) as Node | undefined;
+            const targetNode = cells.find(c => c.id === targetId && c.isNode()) as Node | undefined;
+
+            if (sourceNode && targetNode) {
+              const edgeZIndex = edge.getZIndex() ?? 1;
+              const sourceZIndex = sourceNode.getZIndex() ?? 1;
+              const targetZIndex = targetNode.getZIndex() ?? 1;
+              const requiredZIndex = Math.max(sourceZIndex, targetZIndex);
+
+              // Violation: edge z-index must be >= max(source, target)
+              if (edgeZIndex < requiredZIndex) {
+                edge.setZIndex(requiredZIndex);
+                changed = true;
+
+                this.logger.debug('Adjusted edge z-index', {
+                  edgeId: edge.id,
+                  oldZIndex: edgeZIndex,
+                  newZIndex: requiredZIndex,
+                  sourceZIndex,
+                  targetZIndex,
+                  iteration,
+                });
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Log results
+    if (changed) {
+      // Failed to converge
+      this.logger.error('Z-order recalculation failed to converge', {
+        iterations: iteration,
+        maxIterations,
+        cellCount: cells.length,
+      });
+    } else {
+      // Success
+      this.logger.info('Z-order recalculation completed', {
+        iterations: iteration,
+        cellCount: cells.length,
+      });
+    }
+
+    return iteration;
+  }
 }

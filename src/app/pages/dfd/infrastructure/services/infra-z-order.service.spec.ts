@@ -485,4 +485,191 @@ describe('ZOrderService', () => {
       expect(result).toBe(1); // Reset to default security boundary z-index
     });
   });
+
+  describe('recalculateZOrder', () => {
+    it('should fix parent-child z-index violations', () => {
+      // Create mock cells
+      const parent = {
+        id: 'parent',
+        getZIndex: vi.fn().mockReturnValue(10),
+        setZIndex: vi.fn(),
+        isNode: vi.fn().mockReturnValue(true),
+        isEdge: vi.fn().mockReturnValue(false),
+        getParent: vi.fn().mockReturnValue(null),
+      };
+
+      const child = {
+        id: 'child',
+        getZIndex: vi.fn().mockReturnValue(5), // Violation: child < parent
+        setZIndex: vi.fn(),
+        isNode: vi.fn().mockReturnValue(true),
+        isEdge: vi.fn().mockReturnValue(false),
+        getParent: vi.fn().mockReturnValue(parent),
+      };
+
+      const cells = [parent, child];
+
+      // Act
+      const iterations = service.recalculateZOrder(cells as any);
+
+      // Assert
+      expect(child.setZIndex).toHaveBeenCalledWith(13); // parent (10) + 3
+      expect(iterations).toBeGreaterThan(0);
+    });
+
+    it('should fix edge z-index violations', () => {
+      // Create mock cells
+      const sourceNode = {
+        id: 'source',
+        getZIndex: vi.fn().mockReturnValue(10),
+        setZIndex: vi.fn(),
+        isNode: vi.fn().mockReturnValue(true),
+        isEdge: vi.fn().mockReturnValue(false),
+        getParent: vi.fn().mockReturnValue(null),
+      };
+
+      const targetNode = {
+        id: 'target',
+        getZIndex: vi.fn().mockReturnValue(15),
+        setZIndex: vi.fn(),
+        isNode: vi.fn().mockReturnValue(true),
+        isEdge: vi.fn().mockReturnValue(false),
+        getParent: vi.fn().mockReturnValue(null),
+      };
+
+      const edge = {
+        id: 'edge',
+        getZIndex: vi.fn().mockReturnValue(5), // Violation: edge < max(source, target)
+        setZIndex: vi.fn(),
+        isNode: vi.fn().mockReturnValue(false),
+        isEdge: vi.fn().mockReturnValue(true),
+        getSourceCellId: vi.fn().mockReturnValue('source'),
+        getTargetCellId: vi.fn().mockReturnValue('target'),
+      };
+
+      const cells = [sourceNode, targetNode, edge];
+
+      // Act
+      const iterations = service.recalculateZOrder(cells as any);
+
+      // Assert
+      expect(edge.setZIndex).toHaveBeenCalledWith(15); // max(10, 15)
+      expect(iterations).toBeGreaterThan(0);
+    });
+
+    it('should converge with no violations', () => {
+      // Create mock cells with correct z-order
+      const parent = {
+        id: 'parent',
+        getZIndex: vi.fn().mockReturnValue(10),
+        setZIndex: vi.fn(),
+        isNode: vi.fn().mockReturnValue(true),
+        isEdge: vi.fn().mockReturnValue(false),
+        getParent: vi.fn().mockReturnValue(null),
+      };
+
+      const child = {
+        id: 'child',
+        getZIndex: vi.fn().mockReturnValue(20), // Correct: child > parent
+        setZIndex: vi.fn(),
+        isNode: vi.fn().mockReturnValue(true),
+        isEdge: vi.fn().mockReturnValue(false),
+        getParent: vi.fn().mockReturnValue(parent),
+      };
+
+      const cells = [parent, child];
+
+      // Act
+      const iterations = service.recalculateZOrder(cells as any);
+
+      // Assert
+      expect(child.setZIndex).not.toHaveBeenCalled();
+      expect(iterations).toBe(1); // Should complete in one iteration
+    });
+
+    it('should handle deep nesting', () => {
+      // Create mock cells with 3 levels of nesting
+      const grandparent = {
+        id: 'grandparent',
+        getZIndex: vi.fn().mockReturnValue(10),
+        setZIndex: vi.fn(),
+        isNode: vi.fn().mockReturnValue(true),
+        isEdge: vi.fn().mockReturnValue(false),
+        getParent: vi.fn().mockReturnValue(null),
+      };
+
+      const parent = {
+        id: 'parent',
+        getZIndex: vi.fn().mockReturnValue(5), // Violation
+        setZIndex: vi.fn(),
+        isNode: vi.fn().mockReturnValue(true),
+        isEdge: vi.fn().mockReturnValue(false),
+        getParent: vi.fn().mockReturnValue(grandparent),
+      };
+
+      const child = {
+        id: 'child',
+        getZIndex: vi.fn().mockReturnValue(3), // Violation
+        setZIndex: vi.fn(),
+        isNode: vi.fn().mockReturnValue(true),
+        isEdge: vi.fn().mockReturnValue(false),
+        getParent: vi.fn().mockReturnValue(parent),
+      };
+
+      // Update parent.getZIndex to return the new value after setZIndex
+      parent.setZIndex.mockImplementation((z: number) => {
+        parent.getZIndex.mockReturnValue(z);
+      });
+
+      child.setZIndex.mockImplementation((z: number) => {
+        child.getZIndex.mockReturnValue(z);
+      });
+
+      const cells = [grandparent, parent, child];
+
+      // Act
+      const iterations = service.recalculateZOrder(cells as any);
+
+      // Assert
+      expect(parent.setZIndex).toHaveBeenCalled();
+      expect(child.setZIndex).toHaveBeenCalled();
+      expect(iterations).toBeGreaterThan(1); // Should take multiple iterations
+    });
+
+    it('should log error if convergence fails', () => {
+      // Create a scenario where convergence never happens
+      const parent = {
+        id: 'parent',
+        getZIndex: vi.fn().mockReturnValue(10),
+        setZIndex: vi.fn(),
+        isNode: vi.fn().mockReturnValue(true),
+        isEdge: vi.fn().mockReturnValue(false),
+        getParent: vi.fn().mockReturnValue(null),
+      };
+
+      const child = {
+        id: 'child',
+        getZIndex: vi.fn().mockReturnValue(5), // Always returns violation
+        setZIndex: vi.fn(), // But setZIndex doesn't fix it
+        isNode: vi.fn().mockReturnValue(true),
+        isEdge: vi.fn().mockReturnValue(false),
+        getParent: vi.fn().mockReturnValue(parent),
+      };
+
+      const cells = [parent, child];
+
+      // Act
+      service.recalculateZOrder(cells as any);
+
+      // Assert
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Z-order recalculation failed to converge',
+        expect.objectContaining({
+          iterations: 2, // max iterations = 2 nodes (parent + child)
+          maxIterations: 2,
+          cellCount: 2,
+        }),
+      );
+    });
+  });
 });

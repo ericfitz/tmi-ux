@@ -980,4 +980,87 @@ describe('InfraX6ZOrderAdapter', () => {
       }).not.toThrow();
     });
   });
+
+  describe('recalculateZOrder', () => {
+    it('should call service recalculateZOrder with graph cells', () => {
+      // Add history methods to graph
+      (graph as any).isHistoryEnabled = vi.fn().mockReturnValue(false);
+
+      const parent = graph.addNode({ id: 'parent', x: 0, y: 0, width: 100, height: 100 });
+      const child = graph.addNode({ id: 'child', x: 10, y: 10, width: 50, height: 50 });
+      child.setParent(parent);
+
+      // Set up violation
+      parent.setZIndex(10);
+      child.setZIndex(5); // Violation: child < parent
+
+      const recalculateZOrderSpy = vi.spyOn(zOrderService, 'recalculateZOrder');
+
+      adapter.recalculateZOrder(graph);
+
+      expect(recalculateZOrderSpy).toHaveBeenCalled();
+      const callArgs = recalculateZOrderSpy.mock.calls[0][0];
+      expect(callArgs.length).toBeGreaterThan(0); // Should have cells
+    });
+
+    it('should disable and re-enable history during recalculation', () => {
+      // Add history methods to graph
+      const disableHistorySpy = vi.fn();
+      const enableHistorySpy = vi.fn();
+      const isHistoryEnabledSpy = vi.fn().mockReturnValue(true);
+
+      (graph as any).disableHistory = disableHistorySpy;
+      (graph as any).enableHistory = enableHistorySpy;
+      (graph as any).isHistoryEnabled = isHistoryEnabledSpy;
+
+      graph.addNode({ id: 'node1', x: 0, y: 0, width: 100, height: 100 });
+
+      adapter.recalculateZOrder(graph);
+
+      expect(isHistoryEnabledSpy).toHaveBeenCalled();
+      expect(disableHistorySpy).toHaveBeenCalled();
+      expect(enableHistorySpy).toHaveBeenCalled();
+    });
+
+    it('should re-enable history even if recalculation throws error', () => {
+      // Add history methods to graph
+      const enableHistorySpy = vi.fn();
+      const isHistoryEnabledSpy = vi.fn().mockReturnValue(true);
+
+      (graph as any).disableHistory = vi.fn();
+      (graph as any).enableHistory = enableHistorySpy;
+      (graph as any).isHistoryEnabled = isHistoryEnabledSpy;
+
+      vi.spyOn(zOrderService, 'recalculateZOrder').mockImplementation(() => {
+        throw new Error('Test error');
+      });
+
+      graph.addNode({ id: 'node1', x: 0, y: 0, width: 100, height: 100 });
+
+      expect(() => {
+        adapter.recalculateZOrder(graph);
+      }).toThrow('Test error');
+
+      expect(enableHistorySpy).toHaveBeenCalled();
+    });
+
+    it('should not modify history state if history was disabled', () => {
+      // Add history methods to graph
+      const disableHistorySpy = vi.fn();
+      const enableHistorySpy = vi.fn();
+      const isHistoryEnabledSpy = vi.fn().mockReturnValue(false);
+
+      (graph as any).disableHistory = disableHistorySpy;
+      (graph as any).enableHistory = enableHistorySpy;
+      (graph as any).isHistoryEnabled = isHistoryEnabledSpy;
+
+      graph.addNode({ id: 'node1', x: 0, y: 0, width: 100, height: 100 });
+
+      adapter.recalculateZOrder(graph);
+
+      expect(isHistoryEnabledSpy).toHaveBeenCalled();
+      expect(disableHistorySpy).not.toHaveBeenCalled();
+      expect(enableHistorySpy).not.toHaveBeenCalled();
+    });
+  });
 });
