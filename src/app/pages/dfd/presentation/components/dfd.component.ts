@@ -621,6 +621,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.appDfdOrchestrator.historyChanged$
         .pipe(takeUntil(this._destroy$))
         .subscribe(({ canUndo, canRedo }) => {
+          this.canUndo = canUndo;
+          this.canRedo = canRedo;
           this.logger.debug('History state changed', { canUndo, canRedo });
           this.cdr.detectChanges();
         }),

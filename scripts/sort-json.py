@@ -117,6 +117,7 @@ def rename_and_save_json(data, original_path, auto_yes, dry_run=False):
     try:
         with open(original_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
+            f.write("\n")  # Add trailing newline
         print(f"Saved sorted JSON to {original_path}")
         return True
     except OSError as e:

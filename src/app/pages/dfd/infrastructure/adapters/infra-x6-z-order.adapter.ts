@@ -772,7 +772,9 @@ export class InfraX6ZOrderAdapter {
    */
   recalculateZOrder(graph: Graph): void {
     // Temporarily disable history recording
-    const historyEnabled = (graph as any).isHistoryEnabled ? (graph as any).isHistoryEnabled() : false;
+    const historyEnabled = (graph as any).isHistoryEnabled
+      ? (graph as any).isHistoryEnabled()
+      : false;
     if (historyEnabled) {
       (graph as any).disableHistory();
     }
