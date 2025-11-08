@@ -15,7 +15,7 @@ import { DFD_STYLING } from '../../constants/styling-constants';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
 import { InfraWebsocketCollaborationAdapter } from '../../infrastructure/adapters/infra-websocket-collaboration.adapter';
 import { CellOperation } from '../../../../core/types/websocket-message.types';
-import { normalizeCellsFormat } from '../../utils/cell-format-normalization.util';
+import { normalizeCellsFormatAndValidateRelationships } from '../../utils/cell-format-normalization.util';
 
 /**
  * Interface for diagram data
@@ -148,13 +148,14 @@ export class AppDiagramService {
 
   /**
    * Load multiple diagram cells with proper history suppression and port visibility management
+   * @returns Object indicating whether relationship fixes were applied
    */
   loadDiagramCellsBatch(
     cells: any[],
     graph: Graph,
     diagramId: string,
     infraNodeConfigurationService: any,
-  ): void {
+  ): { relationshipFixesApplied: boolean } {
     this.logger.info('Loading diagram cells in batch with history suppression', {
       cellCount: cells.length,
       diagramId,
@@ -163,11 +164,14 @@ export class AppDiagramService {
 
     try {
       // Normalize cells from flat format (X6 v1 legacy) to nested format (X6 v2 native)
+      // and validate parent-child relationships
       // This ensures backward compatibility with old exports while using X6 v2 native format
-      const normalizedCells = normalizeCellsFormat(cells);
+      const { cells: normalizedCells, validationResult } =
+        normalizeCellsFormatAndValidateRelationships(cells, this.logger);
 
       this.logger.debugComponent('DfdDiagram', 'Normalized cells to X6 v2 nested format', {
         cellCount: normalizedCells.length,
+        relationshipIssuesFixed: validationResult.fixCount,
       });
 
       // Deduplicate cells by ID before processing
@@ -378,6 +382,9 @@ export class AppDiagramService {
           finalCellCount: graph.getCells().length,
         },
       );
+
+      // Return validation result
+      return { relationshipFixesApplied: validationResult.hadIssues };
     } catch (error) {
       this.logger.error('Error in batch loading diagram cells', error);
       throw error;

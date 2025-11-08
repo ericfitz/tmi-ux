@@ -9,6 +9,11 @@
  */
 
 import { Cell } from '../../../core/types/websocket-message.types';
+import { LoggerService } from '../../../core/services/logger.service';
+import {
+  validateAndFixParentChildRelationships,
+  ValidationResult,
+} from './cell-relationship-validation.util';
 
 /**
  * Normalizes a single cell from flat format to nested format
@@ -74,4 +79,28 @@ export function normalizeCellsFormat(cells: Cell[]): Cell[] {
     return [];
   }
   return cells.map(cell => normalizeCellFormat(cell));
+}
+
+/**
+ * Normalize cells and validate parent-child relationships
+ * This is the recommended function to use when loading cells from external sources
+ *
+ * @param cells - Array of cells in either flat (X6 v1) or nested (X6 v2) format
+ * @param logger - Logger service for reporting validation issues
+ * @returns Object containing normalized cells and validation result
+ */
+export function normalizeCellsFormatAndValidateRelationships(
+  cells: Cell[],
+  logger: LoggerService,
+): { cells: Cell[]; validationResult: ValidationResult } {
+  // First normalize the format
+  const normalizedCells = normalizeCellsFormat(cells);
+
+  // Then validate and fix parent-child relationships
+  const validationResult = validateAndFixParentChildRelationships(normalizedCells, logger);
+
+  return {
+    cells: validationResult.cells,
+    validationResult,
+  };
 }
