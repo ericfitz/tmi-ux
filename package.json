@@ -146,11 +146,11 @@
     "overrides": {
       "http-proxy-middleware": "3.0.5",
       "vite": "7.1.12",
-      "tar": "^7.5.2",
+      "tar": "^7.4.3",
       "glob@<9.0.0": "^9.3.5",
       "rimraf@<4.0.0": "^4.4.1",
       "inflight@*": "^1.0.6",
-      "esbuild@<0.25.0": "^0.25.4",
+      "esbuild@<0.25.0": "^0.25.9",
       "happy-dom@<15.10.2": "^15.10.2",
       "brace-expansion@>=1.0.0 <=1.1.11": ">=1.1.12",
       "brace-expansion@>=2.0.0 <=2.0.1": ">=2.0.2",
@@ -177,5 +177,10 @@
       "msgpackr-extract",
       "unrs-resolver"
     ]
+  },
+  "comments": {
+    "dependencies": {
+      "@antv/x6": "Pinned to v2.x - v3.x has breaking changes that require significant refactoring"
+    }
   }
 }
