@@ -34,6 +34,10 @@ class LocalizationDeDuplicator:
     
     def should_skip_key(self, key: str) -> bool:
         """Check if a key should be skipped based on policy settings."""
+        # Skip enum value patterns (these are not duplicates)
+        if key.startswith('threatEditor.threatStatus.') or key.startswith('threatModels.status.'):
+            return True
+
         if self.skip_policy:
             top_section = key.split('.')[0]
             return top_section in ['privacy', 'tos']
