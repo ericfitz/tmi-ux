@@ -21,8 +21,9 @@
 #   - noteEditor.name → common.name
 #   - common.assetId → common.objectTypes.asset
 #   - common.severityNone → common.none
-#   - threatModels.status → common.status
+#   - threatModels.status.* → SKIPPED (enum values, not duplicates)
 #   - threatModels.permissionsUser → common.subjectTypes.user
+#   - threatEditor.threatStatus.* → SKIPPED (enum values, not duplicates)
 #   - threatEditor.editThreat → common.editThreat (already existed)
 #   - threatEditor.viewThreat → common.viewThreat (already existed)
 #   - footer.privacy → privacy.title
@@ -95,8 +96,8 @@ for lang_file in "${I18N_DIR}"/*.json; do
     # Delete common.severityNone (will use common.none)
     del(.common.severityNone) |
 
-    # Delete threatModels.status (will use common.status)
-    del(.threatModels.status) |
+    # Skip threatModels.status.* (these are enum values, not duplicates of common.status)
+    # del(.threatModels.status) |
 
     # Delete threatModels.permissionsUser (will use common.subjectTypes.user)
     del(.threatModels.permissionsUser) |
