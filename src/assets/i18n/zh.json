@@ -195,8 +195,7 @@
     "moveBackward": "向后移动",
     "moveForward": "向前移动",
     "moveToBack": "移到最后",
-    "moveToFront": "移到最前",
-    "selectDataAsset": "选择数据资产"
+    "moveToFront": "移到最前"
   },
   "dataAssetDialog": {
     "selectAsset": "数据资产",

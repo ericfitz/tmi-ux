@@ -195,8 +195,7 @@
     "moveBackward": "Move Backward",
     "moveForward": "Move Forward",
     "moveToBack": "Move to Back",
-    "moveToFront": "Move to Front",
-    "selectDataAsset": "Select Data Asset"
+    "moveToFront": "Move to Front"
   },
   "dataAssetDialog": {
     "selectAsset": "Data Asset",

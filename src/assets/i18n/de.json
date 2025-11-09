@@ -195,8 +195,7 @@
     "moveBackward": "Nach hinten bewegen",
     "moveForward": "Nach vorne bewegen",
     "moveToBack": "In den Hintergrund",
-    "moveToFront": "In den Vordergrund",
-    "selectDataAsset": "Daten-Asset auswählen"
+    "moveToFront": "In den Vordergrund"
   },
   "dataAssetDialog": {
     "selectAsset": "Daten-Asset",

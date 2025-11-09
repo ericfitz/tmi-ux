@@ -195,8 +195,7 @@
     "moveBackward": "เลื่อนไปข้างหลัง",
     "moveForward": "เลื่อนไปข้างหน้า",
     "moveToBack": "เลื่อนไปด้านหลัง",
-    "moveToFront": "เลื่อนไปด้านหน้า",
-    "selectDataAsset": "เลือกทรัพย์สินข้อมูล"
+    "moveToFront": "เลื่อนไปด้านหน้า"
   },
   "dataAssetDialog": {
     "selectAsset": "ทรัพย์สินข้อมูล",

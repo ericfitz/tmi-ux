@@ -195,8 +195,7 @@
     "moveBackward": "تحريك للخلف",
     "moveForward": "تحريك للأمام",
     "moveToBack": "نقل إلى الخلف",
-    "moveToFront": "نقل إلى المقدمة",
-    "selectDataAsset": "تحديد أصل البيانات"
+    "moveToFront": "نقل إلى المقدمة"
   },
   "dataAssetDialog": {
     "selectAsset": "أصل البيانات",
