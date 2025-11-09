@@ -1,7 +1,12 @@
+#!/usr/bin/env -S uv run
 # /// script
 # requires-python = ">=3.8"
 # dependencies = []
 # ///
+
+"""
+Tool to sort JSON files and optionally compare keys between JSON files.
+"""
 
 import json
 import os
