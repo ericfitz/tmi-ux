@@ -1191,24 +1191,23 @@ export class DfdCollaborationService implements OnDestroy {
     const requestMessage: PresenterRequestMessage = {
       message_type: 'presenter_request',
     };
-    return this._webSocketAdapter.sendTMIMessage(requestMessage)
-      .pipe(
-        map(() => {
-          // Show request sent notification
-          this._notificationService?.showPresenterEvent('requestSent').subscribe();
-          return true;
-        }),
-        catchError((error: unknown) => {
-          this._logger.error('Failed to send presenter request', error);
-          // Revert state on error
-          this.updateUserPresenterRequestState(currentUserEmail, 'hand_down');
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          this._notificationService
-            ?.showOperationError('send presenter request', errorMessage)
-            .subscribe();
-          return throwError(() => error);
-        }),
-      );
+    return this._webSocketAdapter.sendTMIMessage(requestMessage).pipe(
+      map(() => {
+        // Show request sent notification
+        this._notificationService?.showPresenterEvent('requestSent').subscribe();
+        return true;
+      }),
+      catchError((error: unknown) => {
+        this._logger.error('Failed to send presenter request', error);
+        // Revert state on error
+        this.updateUserPresenterRequestState(currentUserEmail, 'hand_down');
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        this._notificationService
+          ?.showOperationError('send presenter request', errorMessage)
+          .subscribe();
+        return throwError(() => error);
+      }),
+    );
   }
 
   /**
@@ -1264,22 +1263,21 @@ export class DfdCollaborationService implements OnDestroy {
         displayName: userProfile.name,
       },
     };
-    return this._webSocketAdapter.sendTMIMessage(denyMessage)
-      .pipe(
-        map(() => {
-          // Show denial notification (for owner)
-          this._notificationService?.showPresenterEvent('requestDenied').subscribe();
-          return true;
-        }),
-        catchError((error: unknown) => {
-          this._logger.error('Failed to send presenter denial', error);
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          this._notificationService
-            ?.showOperationError('deny presenter request', errorMessage)
-            .subscribe();
-          return throwError(() => error);
-        }),
-      );
+    return this._webSocketAdapter.sendTMIMessage(denyMessage).pipe(
+      map(() => {
+        // Show denial notification (for owner)
+        this._notificationService?.showPresenterEvent('requestDenied').subscribe();
+        return true;
+      }),
+      catchError((error: unknown) => {
+        this._logger.error('Failed to send presenter denial', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        this._notificationService
+          ?.showOperationError('deny presenter request', errorMessage)
+          .subscribe();
+        return throwError(() => error);
+      }),
+    );
   }
 
   /**
