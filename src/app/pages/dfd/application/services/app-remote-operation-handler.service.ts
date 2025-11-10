@@ -67,7 +67,19 @@ export class AppRemoteOperationHandler implements OnDestroy {
     this._graph = graph;
     this._operationContext = operationContext;
 
-    // Subscribe to remote operation events from AppStateService
+    // Subscribe to batched remote operation events from AppStateService
+    this._subscriptions.add(
+      this.appStateService.applyBatchedOperationsEvents$.pipe(takeUntil(this._destroy$)).subscribe({
+        next: event => {
+          this._handleBatchedRemoteOperations(event.operations, event.userId, event.operationId);
+        },
+        error: error => {
+          this.logger.error('Error in batched remote operation event stream', { error });
+        },
+      }),
+    );
+
+    // Keep legacy individual operation subscription for compatibility
     this._subscriptions.add(
       this.appStateService.applyOperationEvents$.pipe(takeUntil(this._destroy$)).subscribe({
         next: event => {
@@ -109,6 +121,31 @@ export class AppRemoteOperationHandler implements OnDestroy {
     this._destroy$.complete();
     this._subscriptions.unsubscribe();
     this.logger.debug('AppRemoteOperationHandler destroyed');
+  }
+
+  /**
+   * Handle batched remote operations (from a single diagram_operation message)
+   */
+  private _handleBatchedRemoteOperations(
+    cellOperations: CellOperation[],
+    userId: string,
+    operationId: string,
+  ): void {
+    if (!this._graph || !this._operationContext) {
+      this.logger.error('Cannot handle batched remote operations - not initialized');
+      return;
+    }
+
+    this.logger.info('Handling batched remote operations', {
+      operationCount: cellOperations.length,
+      userId,
+      operationId,
+    });
+
+    // Process each cell operation in the batch sequentially
+    for (const cellOperation of cellOperations) {
+      this._handleRemoteOperation(cellOperation, userId, `${operationId}-${cellOperation.id}`);
+    }
   }
 
   /**

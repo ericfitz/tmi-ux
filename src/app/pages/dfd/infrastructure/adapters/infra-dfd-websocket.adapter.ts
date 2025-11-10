@@ -34,7 +34,6 @@ import {
   OperationRejectedMessage,
   Participant,
   Cell,
-  User,
 } from '../../../../core/types/websocket-message.types';
 
 /**

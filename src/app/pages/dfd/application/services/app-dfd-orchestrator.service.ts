@@ -1373,8 +1373,9 @@ export class AppDfdOrchestrator {
    * Check if operation should be recorded in history
    */
   private _shouldRecordInHistory(operation: GraphOperation, result: OperationResult): boolean {
-    // Record user-interaction AND remote-collaboration operations
-    if (!['user-interaction', 'remote-collaboration'].includes(operation.source)) {
+    // Only record user-interaction operations in history
+    // Remote operations are already in the remote user's history and shouldn't be in local undo/redo
+    if (operation.source !== 'user-interaction') {
       return false;
     }
 

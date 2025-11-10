@@ -16,12 +16,10 @@ import { environment } from '../../../environments/environment';
 import {
   SessionTerminatedMessage,
   ChangePresenterMessage,
-  RemoveParticipantMessage,
   RemoveParticipantMessageWithInitiator,
   PresenterRequestMessage,
   PresenterRequestMessageWithUser,
   PresenterDeniedMessage,
-  PresenterSelectionMessage,
   PresenterSelectionMessageWithUser,
 } from '../types/websocket-message.types';
 

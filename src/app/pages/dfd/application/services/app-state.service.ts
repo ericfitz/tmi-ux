@@ -101,6 +101,11 @@ export class AppStateService implements OnDestroy {
     userId: string;
     operationId: string;
   }>();
+  private readonly _applyBatchedOperationsEvent$ = new Subject<{
+    operations: CellOperation[];
+    userId: string;
+    operationId: string;
+  }>();
   private readonly _applyCorrectionEvent$ = new Subject<WSCell[]>();
   private readonly _requestResyncEvent$ = new Subject<{ method: string }>();
   private readonly _triggerResyncEvent$ = new Subject<void>();
@@ -111,6 +116,7 @@ export class AppStateService implements OnDestroy {
   }>();
 
   public readonly applyOperationEvents$ = this._applyOperationEvent$.asObservable();
+  public readonly applyBatchedOperationsEvents$ = this._applyBatchedOperationsEvent$.asObservable();
   public readonly applyCorrectionEvents$ = this._applyCorrectionEvent$.asObservable();
   public readonly requestResyncEvents$ = this._requestResyncEvent$.asObservable();
   public readonly triggerResyncEvents$ = this._triggerResyncEvent$.asObservable();
@@ -288,6 +294,7 @@ export class AppStateService implements OnDestroy {
       userEmail: message.initiating_user.email,
       operationId: message.operation_id,
       operationType: message.operation?.type,
+      cellCount: message.operation?.cells?.length || 0,
     });
 
     // Update state
@@ -304,14 +311,12 @@ export class AppStateService implements OnDestroy {
       ],
     });
 
-    // Emit events for each cell operation in the patch
-    if (message.operation && message.operation.cells) {
-      message.operation.cells.forEach(cellOp => {
-        this._applyOperationEvent$.next({
-          operation: cellOp,
-          userId: userId,
-          operationId: message.operation_id,
-        });
+    // Emit batched operation event to preserve semantic grouping
+    if (message.operation && message.operation.cells && message.operation.cells.length > 0) {
+      this._applyBatchedOperationsEvent$.next({
+        operations: message.operation.cells,
+        userId: userId,
+        operationId: message.operation_id,
       });
     }
 
