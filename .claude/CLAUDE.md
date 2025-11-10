@@ -181,13 +181,23 @@ For comprehensive architecture documentation, see:
 
 The application follows clean architecture principles with:
 
-- **Standalone Components** - All components use Angular's standalone API
+- **Standalone Components** - All components use Angular's standalone API (no NgModules)
 - **Domain-Driven Design** - Clear separation of domain, application, and infrastructure layers
-- **Reactive Programming** - RxJS for state management
+- **Reactive Programming** - RxJS for state management with `takeUntil(destroy$)` pattern
 - **Type Safety** - Strict TypeScript with comprehensive type definitions
-- **Import Constants** - Reusable import sets in `src/app/shared/imports.ts`
+- **Import Constants** - Reusable import sets in `src/app/shared/imports.ts` (COMMON_IMPORTS, MATERIAL_IMPORTS, etc.)
 
-Key modules include Authentication (`/auth`), Threat Modeling (`/pages/tm`), Data Flow Diagrams (`/pages/dfd`), and Core Services (`/core`).
+**Key Modules:**
+
+- **Authentication** (`/auth`) - OAuth/JWT with local provider support
+- **Threat Modeling** (`/pages/tm`) - List, edit, and diagram management
+- **Data Flow Diagrams** (`/pages/dfd`) - Sophisticated layered architecture:
+  - **Domain**: Value objects and events
+  - **Application**: Services, executors, validators, state managers
+  - **Infrastructure**: X6 graph adapter, WebSocket/REST persistence strategies
+  - **Presentation**: DfdComponent with sub-components
+  - Uses **AntV X6** graphing library for diagram rendering
+- **Core Services** (`/core`) - 18 singleton services including ApiService, AuthService, LoggerService, WebSocketService, SecurityConfigService, ThemeService, etc.
 
 ### Environment Configuration
 
@@ -204,17 +214,23 @@ Use the appropriate development command to run against different backends.
 #### Unit Testing (Vitest)
 
 - All services and utilities should have unit tests
-- Uses Vitest (NOT Jasmine) with AnalogJS plugin
+- **IMPORTANT**: Uses **Vitest** framework (NOT Jasmine or Jest)
+- Configuration: `vitest.config.ts` with AnalogJS Angular plugin
+- Test environment: jsdom
+- Global setup: `src/test-setup.ts` (compiler + Zone.js configuration)
 - Mock services available in `src/app/mocks/`
-- Test utilities in `src/testing/`
+- Test utilities, helpers, and page objects in `src/testing/`
 - Component tests focus on user interactions and service integration
+- Run specific tests: `pnpm test -- src/path/to/file.spec.ts`
+- Focus tests in code with `describe.only()` and `it.only()`
 
 #### Integration Testing (Cypress)
 
 - DFD module has comprehensive integration tests
-- Tests real X6 graph operations without mocking
+- Tests real AntV X6 graph operations without mocking
 - Focuses on styling persistence and state management
 - Visual regression testing for graph components
+- Run with: `pnpm run test:e2e`
 
 #### Test Organization
 
@@ -305,22 +321,91 @@ pnpm run build:staging   # Staging build
 - Builds (`build:prod`, `build:staging`) no longer bump versions - they just build the current version
 - For releases, ensure your last commit uses conventional format to trigger the appropriate version bump
 
+## Common Patterns
+
+### Component Pattern
+
+```typescript
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { COMMON_IMPORTS } from '@app/shared/imports';
+
+@Component({
+  selector: 'app-my-component',
+  standalone: true,
+  imports: [...COMMON_IMPORTS],
+  templateUrl: './my-component.html',
+  styleUrl: './my-component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class MyComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
+  constructor(private myService: MyService) {}
+
+  ngOnInit(): void {
+    this.myService.data$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        // Handle data
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+}
+```
+
+### Service Pattern
+
+```typescript
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class MyService {
+  private dataSubject$ = new BehaviorSubject<Data | null>(null);
+  public data$: Observable<Data | null> = this.dataSubject$.asObservable();
+
+  constructor(
+    private apiService: ApiService,
+    private logger: LoggerService
+  ) {}
+
+  public fetchData(): Observable<Data> {
+    return this.apiService.get<Data>('/endpoint').pipe(
+      tap(data => this.dataSubject$.next(data)),
+      catchError(error => {
+        this.logger.error('Failed to fetch data', error);
+        throw error;
+      })
+    );
+  }
+}
+```
+
 ## Code Style Guidelines
 
 - **Indentation**: 2 spaces
 - **Quotes**: Single quotes for TypeScript
 - **Line Length**: Max 100 characters
 - **TypeScript**: Strict mode enabled, prefer `unknown` over `any`
-- **Components**: app-prefix selectors, SCSS styles, OnPush change detection
+- **Components**: app-prefix selectors, SCSS styles, OnPush change detection (default)
 - **Import Order**: Angular core → Angular modules → Third-party → Project modules
+- **Import Constants**: Use shared imports from `@app/shared/imports.ts` instead of importing common dependencies individually (COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, FORM_MATERIAL_IMPORTS, etc.)
 - **Naming Conventions**:
   - Observables: Use `$` suffix
   - Private members: Use `_` prefix
-- **Error Handling**: Use `catchError` with `LoggerService` (no `console.log`)
+- **Error Handling**: Use `catchError` with `LoggerService` (never use `console.log`)
 - **Type Annotations**: Explicit function return types required
 - **Documentation**: JSDoc style comments
 - **Services**: Provided in root, constructor-based DI
-- **Subscriptions**: Initialize as null, unsubscribe in `ngOnDestroy`
+- **Subscriptions**: Always unsubscribe using `takeUntil(destroy$)` pattern where `destroy$` is a `Subject<void>()` completed in `ngOnDestroy()`
 
 ## Additional Resources
 
