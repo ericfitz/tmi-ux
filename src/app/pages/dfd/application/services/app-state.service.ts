@@ -280,8 +280,11 @@ export class AppStateService implements OnDestroy {
       return;
     }
 
+    // Extract user ID with fallback (User fields are optional per schema)
+    const userId = message.initiating_user.user_id || message.initiating_user.email || 'unknown';
+
     this._logger.info('Processing remote diagram operation', {
-      userId: message.initiating_user.user_id,
+      userId: userId,
       userEmail: message.initiating_user.email,
       operationId: message.operation_id,
       operationType: message.operation?.type,
@@ -294,7 +297,7 @@ export class AppStateService implements OnDestroy {
         ...this.getCurrentState().pendingRemoteOperations,
         {
           operationId: message.operation_id,
-          userId: message.initiating_user.user_id,
+          userId: userId,
           operation: message.operation,
           timestamp: Date.now(),
         },
@@ -306,7 +309,7 @@ export class AppStateService implements OnDestroy {
       message.operation.cells.forEach(cellOp => {
         this._applyOperationEvent$.next({
           operation: cellOp,
-          userId: message.initiating_user.user_id,
+          userId: userId,
           operationId: message.operation_id,
         });
       });

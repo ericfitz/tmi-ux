@@ -3,10 +3,14 @@
  * Based on tmi-asyncapi.yaml specification
  */
 
+/**
+ * User information from JWT claims
+ * Requires at least one of user_id or email (anyOf)
+ */
 export interface User {
-  user_id: string;
-  email: string;
-  displayName: string;
+  user_id?: string;
+  email?: string;
+  displayName?: string;
 }
 
 export interface CursorPosition {
@@ -70,36 +74,64 @@ export interface DiagramOperationMessage {
 
 export interface PresenterRequestMessage {
   message_type: 'presenter_request';
+}
+
+/**
+ * Extended version of PresenterRequestMessage with server-added user field
+ * NOTE: The AsyncAPI schema does not include a user field (clients send without it),
+ * but the server includes it when broadcasting the request to the host.
+ * This is a gap between the schema and implementation.
+ */
+export interface PresenterRequestMessageWithUser extends PresenterRequestMessage {
   user: User;
 }
 
 export interface PresenterDeniedMessage {
   message_type: 'presenter_denied';
-  user: User;
-  target_user: string;
+  current_presenter: User;
 }
 
 export interface ChangePresenterMessage {
   message_type: 'change_presenter';
-  user: User;
-  new_presenter: string;
+  initiating_user: User;
+  new_presenter: User;
 }
 
 export interface CurrentPresenterMessage {
   message_type: 'current_presenter';
-  current_presenter: string;
+  current_presenter: User;
 }
 
 export interface PresenterCursorMessage {
   message_type: 'presenter_cursor';
-  user: User;
   cursor_position: CursorPosition;
+}
+
+/**
+ * Extended version of PresenterCursorMessage with server-added user field
+ * NOTE: The AsyncAPI schema does not include a user field, but the actual
+ * server implementation includes it when broadcasting to clients.
+ * This is a gap between the schema and implementation.
+ * @deprecated Use collaboration state to track current presenter instead
+ */
+export interface PresenterCursorMessageWithUser extends PresenterCursorMessage {
+  user: User;
 }
 
 export interface PresenterSelectionMessage {
   message_type: 'presenter_selection';
-  user: User;
   selected_cells: string[];
+}
+
+/**
+ * Extended version of PresenterSelectionMessage with server-added user field
+ * NOTE: The AsyncAPI schema does not include a user field, but the actual
+ * server implementation includes it when broadcasting to clients.
+ * This is a gap between the schema and implementation.
+ * @deprecated Use collaboration state to track current presenter instead
+ */
+export interface PresenterSelectionMessageWithUser extends PresenterSelectionMessage {
+  user: User;
 }
 
 export interface AuthorizationDeniedMessage {
@@ -122,26 +154,23 @@ export interface DiagramStateSyncMessage {
 
 export interface ResyncRequestMessage {
   message_type: 'resync_request';
-  user: User;
 }
 
 export interface ResyncResponseMessage {
   message_type: 'resync_response';
-  user: User;
-  target_user: string;
   method: 'rest_api';
   diagram_id: string;
-  threat_model_id: string;
+  threat_model_id?: string;
 }
 
 export interface UndoRequestMessage {
   message_type: 'undo_request';
-  user: User;
+  initiating_user: User;
 }
 
 export interface RedoRequestMessage {
   message_type: 'redo_request';
-  user: User;
+  initiating_user: User;
 }
 
 export interface HistoryOperationMessage {
@@ -169,20 +198,29 @@ export interface ParticipantsUpdateMessage {
 
 export interface ParticipantJoinedMessage {
   message_type: 'participant_joined';
-  user: User;
+  joined_user: User;
   timestamp: string;
 }
 
 export interface ParticipantLeftMessage {
   message_type: 'participant_left';
-  user: User;
+  departed_user: User;
   timestamp: string;
 }
 
 export interface RemoveParticipantMessage {
   message_type: 'remove_participant';
-  user: User;
   removed_user: User;
+}
+
+/**
+ * Extended version of RemoveParticipantMessage with server-added initiating user field
+ * NOTE: The AsyncAPI schema only includes removed_user, but the actual
+ * server implementation may include the initiating user (host) as well.
+ * This is a gap between the schema and implementation.
+ */
+export interface RemoveParticipantMessageWithInitiator extends RemoveParticipantMessage {
+  user: User;
 }
 
 export interface SessionTerminatedMessage {

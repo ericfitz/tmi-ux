@@ -34,6 +34,7 @@ import {
   OperationRejectedMessage,
   Participant,
   Cell,
+  User,
 } from '../../../../core/types/websocket-message.types';
 
 /**
@@ -435,8 +436,11 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   // Message handlers that transform WebSocket messages to domain events
 
   private _handleDiagramOperation(message: DiagramOperationMessage): void {
+    // Extract user ID with fallback (User fields are optional per schema)
+    const userId = message.initiating_user.user_id || message.initiating_user.email || 'unknown';
+
     this._logger.debug('Received diagram operation', {
-      userId: message.initiating_user.user_id,
+      userId: userId,
       userEmail: message.initiating_user.email,
       operationId: message.operation_id,
       operationType: message.operation?.type,
@@ -544,116 +548,114 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       presenter: message.current_presenter,
     });
 
+    // Extract user_id from User object (schema returns User, not string)
+    const presenterUserId = message.current_presenter?.user_id || null;
+
     this._domainEvents$.next({
       type: 'presenter-changed',
-      presenterEmail: message.current_presenter || null,
+      presenterEmail: presenterUserId,
     });
   }
 
   private _handlePresenterCursor(message: PresenterCursorMessage): void {
-    // Guard against malformed messages that don't conform to AsyncAPI spec
-    if (!message.user || !message.user.user_id || !message.user.email) {
-      this._logger.warn('Received malformed presenter_cursor message - missing user data', {
-        messageType: message.message_type,
-        user: message.user,
-      });
-      return;
-    }
-
+    // Per AsyncAPI spec, presenter_cursor does not include user field
+    // The presenter is tracked separately via current_presenter message
     this._logger.debug('Presenter cursor update', {
-      userId: message.user.user_id,
-      userEmail: message.user.email,
       position: message.cursor_position,
     });
 
+    // Use empty string for userId since spec doesn't include it
+    // The presenter tracking is handled by current_presenter message
     this._domainEvents$.next({
       type: 'presenter-cursor',
-      userId: message.user.user_id,
+      userId: '', // Schema doesn't include user field
       position: message.cursor_position,
     });
   }
 
   private _handlePresenterSelection(message: PresenterSelectionMessage): void {
-    // Guard against malformed messages that don't conform to AsyncAPI spec
-    if (!message.user || !message.user.user_id || !message.user.email) {
-      this._logger.warn('Received malformed presenter_selection message - missing user data', {
-        messageType: message.message_type,
-        user: message.user,
-      });
-      return;
-    }
-
+    // Per AsyncAPI spec, presenter_selection does not include user field
+    // The presenter is tracked separately via current_presenter message
     this._logger.debug('Presenter selection update', {
-      userId: message.user.user_id,
-      userEmail: message.user.email,
       cellCount: message.selected_cells.length,
     });
 
+    // Use empty string for userId since spec doesn't include it
+    // The presenter tracking is handled by current_presenter message
     this._domainEvents$.next({
       type: 'presenter-selection',
-      userId: message.user.user_id,
+      userId: '', // Schema doesn't include user field
       selectedCells: message.selected_cells,
     });
   }
 
   private _handleParticipantJoined(message: ParticipantJoinedMessage): void {
     this._logger.info('Participant joined event received', {
-      user: message.user,
+      user: message.joined_user,
       timestamp: message.timestamp,
     });
 
     // Validate message format
-    if (!message || !message.user) {
+    if (!message || !message.joined_user) {
       this._logger.warn('Invalid participant joined message received', message);
       return;
     }
 
     // Show notification with both display name and email
-    const userIdentifier = message.user.displayName
-      ? `${message.user.displayName} (${message.user.email})`
-      : message.user.email;
+    const userIdentifier = message.joined_user.displayName
+      ? `${message.joined_user.displayName} (${message.joined_user.email})`
+      : message.joined_user.email || message.joined_user.user_id || 'Unknown user';
     this._notificationService?.showSessionEvent('userJoined', userIdentifier).subscribe();
 
+    // Create domain event with required fields (User fields are optional per schema)
     this._domainEvents$.next({
       type: 'participant-joined',
-      user: message.user,
+      user: {
+        user_id: message.joined_user.user_id || message.joined_user.email || 'unknown',
+        email: message.joined_user.email || message.joined_user.user_id || 'unknown',
+        displayName: message.joined_user.displayName || 'Unknown User',
+      },
       timestamp: message.timestamp,
     });
   }
 
   private _handleParticipantLeft(message: ParticipantLeftMessage): void {
     this._logger.info('Participant left event received', {
-      user: message.user,
+      user: message.departed_user,
       timestamp: message.timestamp,
     });
 
     // Validate message format
-    if (!message || !message.user) {
+    if (!message || !message.departed_user) {
       this._logger.warn('Invalid participant left message received', message);
       return;
     }
 
     // Show notification with both display name and email
-    const userIdentifier = message.user.displayName
-      ? `${message.user.displayName} (${message.user.email})`
-      : message.user.email;
+    const userIdentifier = message.departed_user.displayName
+      ? `${message.departed_user.displayName} (${message.departed_user.email})`
+      : message.departed_user.email || message.departed_user.user_id || 'Unknown user';
     this._notificationService?.showSessionEvent('userLeft', userIdentifier).subscribe();
 
+    // Create domain event with required fields (User fields are optional per schema)
     this._domainEvents$.next({
       type: 'participant-left',
-      user: message.user,
+      user: {
+        user_id: message.departed_user.user_id || message.departed_user.email || 'unknown',
+        email: message.departed_user.email || message.departed_user.user_id || 'unknown',
+        displayName: message.departed_user.displayName || 'Unknown User',
+      },
       timestamp: message.timestamp,
     });
   }
 
   private _handleRemoveParticipant(message: RemoveParticipantMessage): void {
     this._logger.info('Remove participant request received', {
-      user: message.user,
       removedUser: message.removed_user,
     });
 
     // Validate message format
-    if (!message || !message.user || !message.removed_user) {
+    if (!message || !message.removed_user) {
       this._logger.warn('Invalid remove participant message received', message);
       return;
     }
@@ -661,14 +663,24 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     // Show notification if current user is being removed
     // Note: We need collaboration service to check current user - will add this later
     this._logger.info('Participant being removed by host', {
-      host: message.user.email,
       removedUser: message.removed_user.email || message.removed_user.user_id,
     });
 
+    // Note: Schema does not include initiating_user in this message
+    // The domain event type expects removingUser, but we don't have that info from schema-compliant messages
+    // Create domain event with required fields (User fields are optional per schema)
     this._domainEvents$.next({
       type: 'participant-removed',
-      removedUser: message.removed_user,
-      removingUser: message.user,
+      removedUser: {
+        user_id: message.removed_user.user_id || message.removed_user.email || 'unknown',
+        email: message.removed_user.email || message.removed_user.user_id || 'unknown',
+        displayName: message.removed_user.displayName || 'Unknown User',
+      },
+      removingUser: {
+        user_id: 'system',
+        email: 'system@host',
+        displayName: 'System',
+      },
     });
   }
 

@@ -236,7 +236,7 @@ export class InfraWebsocketCollaborationAdapter {
 
     const message: UndoRequestMessage = {
       message_type: 'undo_request',
-      user: {
+      initiating_user: {
         user_id: userProfile.id,
         email: userProfile.email,
         displayName: userProfile.name,
@@ -266,7 +266,7 @@ export class InfraWebsocketCollaborationAdapter {
 
     const message: RedoRequestMessage = {
       message_type: 'redo_request',
-      user: {
+      initiating_user: {
         user_id: userProfile.id,
         email: userProfile.email,
         displayName: userProfile.name,
@@ -292,11 +292,6 @@ export class InfraWebsocketCollaborationAdapter {
 
     const message: ResyncRequestMessage = {
       message_type: 'resync_request',
-      user: {
-        user_id: userProfile.id,
-        email: userProfile.email,
-        displayName: userProfile.name,
-      },
     };
 
     this.logger.info('Requesting diagram resync');
@@ -323,11 +318,6 @@ export class InfraWebsocketCollaborationAdapter {
 
     const message: PresenterCursorMessage = {
       message_type: 'presenter_cursor',
-      user: {
-        user_id: userProfile.id,
-        email: userProfile.email,
-        displayName: userProfile.name,
-      },
       cursor_position: position,
     };
 
@@ -354,11 +344,6 @@ export class InfraWebsocketCollaborationAdapter {
 
     const message: PresenterSelectionMessage = {
       message_type: 'presenter_selection',
-      user: {
-        user_id: userProfile.id,
-        email: userProfile.email,
-        displayName: userProfile.name,
-      },
       selected_cells: selectedCellIds,
     };
 
