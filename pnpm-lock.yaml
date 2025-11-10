@@ -163,8 +163,8 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0
       '@testing-library/angular':
-        specifier: ^18.1.0
-        version: 18.1.0(3ac39ba085ff33b647bd2bd0643e19cd)
+        specifier: ^18.1.1
+        version: 18.1.1(3ac39ba085ff33b647bd2bd0643e19cd)
       '@types/jsdom':
         specifier: ^27.0.0
         version: 27.0.0
@@ -2333,8 +2333,8 @@ packages:
   '@swc/helpers@0.5.17':
     resolution: {integrity: sha512-5IKx/Y13RsYd+sauPb2x+U/xZikHjolzfuDgTAl/Tdf3Q8rslRvC19NKDLgAJQ6wsqADk10ntlv08nPFw/gO/A==}
 
-  '@testing-library/angular@18.1.0':
-    resolution: {integrity: sha512-m9HK+XWqI3Ch/Bw5y4Ql/6oVTtPHo+qS22nd/XvHnxPbFyn+TvhMOSmpCrwNUFVmFzgA9VilbepbvKeLhEe45w==}
+  '@testing-library/angular@18.1.1':
+    resolution: {integrity: sha512-LbA+W+VeOf7TC7/ZfHLiOLlLyD2cVG3mBdkJapviC2Fd4Bw/Utcaso4bh+5B0cx/fyKyuPgS+L6FnaKGdP9HBA==}
     peerDependencies:
       '@angular/common': '>= 20.0.0'
       '@angular/core': '>= 20.0.0'
@@ -9080,7 +9080,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@testing-library/angular@18.1.0(3ac39ba085ff33b647bd2bd0643e19cd)':
+  '@testing-library/angular@18.1.1(3ac39ba085ff33b647bd2bd0643e19cd)':
     dependencies:
       '@angular/common': 20.3.7(@angular/core@20.3.7(@angular/compiler@20.3.7)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@angular/core': 20.3.7(@angular/compiler@20.3.7)(rxjs@7.8.2)(zone.js@0.15.1)
