@@ -19,7 +19,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeType } from '../../domain/value-objects/node-info';
@@ -36,7 +36,13 @@ import { InfraX6CoreOperationsService } from '../../infrastructure/services/infr
 import { AppOperationStateManager } from '../services/app-operation-state-manager.service';
 import { InfraEmbeddingService } from '../../infrastructure/services/infra-embedding.service';
 import { AppGraphOperationManager } from '../services/app-graph-operation-manager.service';
-import { CreateNodeOperation, OperationContext, NodeData } from '../../types/graph-operation.types';
+import {
+  CreateNodeOperation,
+  DeleteNodeOperation,
+  DeleteEdgeOperation,
+  OperationContext,
+  NodeData,
+} from '../../types/graph-operation.types';
 
 /**
  * Facade for DFD infrastructure services
@@ -453,8 +459,8 @@ export class AppDfdFacade {
   }
 
   /**
-   * Delete selected cells from the graph
-   * Uses proper service layers for correct port visibility updates and history tracking
+   * Delete selected cells from the graph via GraphOperations for history tracking
+   * Creates DeleteNodeOperation or DeleteEdgeOperation for each cell
    */
   deleteSelectedCells(): Observable<{ success: boolean; deletedCount: number }> {
     try {
@@ -462,41 +468,125 @@ export class AppDfdFacade {
       const selectedCells = graph.getSelectedCells();
 
       if (selectedCells.length === 0) {
-        return new Observable(observer => {
-          observer.next({ success: true, deletedCount: 0 });
-          observer.complete();
-        });
+        return of({ success: true, deletedCount: 0 });
       }
 
-      const deletedCount = selectedCells.length;
+      this.logger.debug('Deleting selected cells via GraphOperations', {
+        cellCount: selectedCells.length,
+      });
 
-      // Delete each selected cell using proper service layers
+      // Create delete operations for each cell
+      const deleteOperations: Observable<any>[] = [];
+
       selectedCells.forEach((cell: any) => {
         if (cell.isNode()) {
-          // For nodes, use infraNodeService for proper cleanup (handles edges, embeddings, etc.)
-          this.infraNodeService.removeNode(graph, cell.id);
+          deleteOperations.push(this._createDeleteNodeOperation(cell, graph));
         } else if (cell.isEdge()) {
-          // For edges, use appEdgeService which delegates to InfraEdgeService
-          // This ensures proper port visibility updates
-          this.appEdgeService.removeEdgeFromRemoteOperation(graph, cell.id, {});
+          deleteOperations.push(this._createDeleteEdgeOperation(cell, graph));
         }
       });
 
-      this.logger.debug('Deleted selected cells via facade', {
-        deletedCount,
-      });
+      // Execute all delete operations in parallel
+      return forkJoin(deleteOperations).pipe(
+        map(results => {
+          const successCount = results.filter(r => r.success).length;
+          const allSuccess = successCount === results.length;
 
-      return new Observable(observer => {
-        observer.next({ success: true, deletedCount });
-        observer.complete();
-      });
+          this.logger.debug('Delete operations completed', {
+            total: results.length,
+            successful: successCount,
+          });
+
+          return {
+            success: allSuccess,
+            deletedCount: successCount,
+          };
+        }),
+      );
     } catch (error) {
       this.logger.error('Error deleting selected cells via facade', { error });
-      return new Observable(observer => {
-        observer.next({ success: false, deletedCount: 0 });
-        observer.complete();
-      });
+      return of({ success: false, deletedCount: 0 });
     }
+  }
+
+  /**
+   * Create and execute a DeleteNodeOperation
+   */
+  private _createDeleteNodeOperation(node: any, graph: any): Observable<any> {
+    const nodeId = node.id;
+
+    this.logger.debug('Creating DeleteNodeOperation', { nodeId });
+
+    const operation: DeleteNodeOperation = {
+      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: 'delete-node',
+      source: 'user-interaction',
+      timestamp: Date.now(),
+      priority: 'normal',
+      nodeId,
+    };
+
+    const context: OperationContext = {
+      graph,
+      diagramId: '', // Will be set by caller if needed
+      threatModelId: '',
+      userId: '',
+      isCollaborating: false,
+      permissions: [],
+    };
+
+    return this.graphOperationManager.execute(operation, context).pipe(
+      tap(result => {
+        if (!result.success) {
+          this.logger.error('Failed to delete node', {
+            nodeId,
+            error: result.error,
+          });
+        } else {
+          this.logger.debug('Node deleted successfully', { nodeId });
+        }
+      }),
+    );
+  }
+
+  /**
+   * Create and execute a DeleteEdgeOperation
+   */
+  private _createDeleteEdgeOperation(edge: any, graph: any): Observable<any> {
+    const edgeId = edge.id;
+
+    this.logger.debug('Creating DeleteEdgeOperation', { edgeId });
+
+    const operation: DeleteEdgeOperation = {
+      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: 'delete-edge',
+      source: 'user-interaction',
+      timestamp: Date.now(),
+      priority: 'normal',
+      edgeId,
+    };
+
+    const context: OperationContext = {
+      graph,
+      diagramId: '', // Will be set by caller if needed
+      threatModelId: '',
+      userId: '',
+      isCollaborating: false,
+      permissions: [],
+    };
+
+    return this.graphOperationManager.execute(operation, context).pipe(
+      tap(result => {
+        if (!result.success) {
+          this.logger.error('Failed to delete edge', {
+            edgeId,
+            error: result.error,
+          });
+        } else {
+          this.logger.debug('Edge deleted successfully', { edgeId });
+        }
+      }),
+    );
   }
 
   // ========================================

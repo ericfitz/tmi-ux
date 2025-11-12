@@ -87,26 +87,29 @@ For explicit user actions (delete, cut, paste):
   - Skips operation if size hasn't actually changed
 - **Testing**: Build ✅ | Lint ✅
 
-### 5. ⏳ Node Deletion (NOT STARTED)
-- **Status**: Not started
+### 5. ✅ Node Deletion (COMPLETED - 2025-11-12)
+- **Status**: Implemented and tested
 - **Pattern**: Direct Operation
-- **Target Files**:
-  - `src/app/pages/dfd/infrastructure/adapters/infra-x6-graph.adapter.ts` - `_handleCellDeletion()` method (~line 1458-1501)
-- **Implementation Plan**:
-  1. Before atomic deletion, check if node or edge
-  2. Create `DeleteNodeOperation` or `DeleteEdgeOperation`
-  3. Capture full cell state before deletion
-  4. Execute operation which performs the deletion
-- **Estimated Effort**: 2-3 hours
-- **Dependencies**: None
+- **Files Modified**:
+  - `src/app/pages/dfd/application/facades/app-dfd.facade.ts` - Rewrote `deleteSelectedCells()` to create GraphOperations
+- **Implementation**:
+  - Modified `deleteSelectedCells()` to create `DeleteNodeOperation` for each node
+  - Added `_createDeleteNodeOperation()` helper method
+  - Uses `forkJoin` to execute multiple deletions in parallel
+  - NodeOperationExecutor already handles deletion with proper state capture
+- **Testing**: Build ✅ | Lint ✅
 
-### 6. ⏳ Edge Deletion (NOT STARTED)
-- **Status**: Not started
+### 6. ✅ Edge Deletion (COMPLETED - 2025-11-12)
+- **Status**: Implemented and tested
 - **Pattern**: Direct Operation (shared with node deletion)
-- **Target Files**: Same as node deletion
-- **Implementation Plan**: Same as node deletion, just different operation type
-- **Estimated Effort**: 1 hour (shares code with node deletion)
-- **Dependencies**: Should be done with node deletion
+- **Files Modified**:
+  - Same as node deletion (shared `deleteSelectedCells()` method)
+  - `src/app/pages/dfd/application/facades/app-dfd.facade.ts` - Added `_createDeleteEdgeOperation()` helper method
+- **Implementation**:
+  - Modified `deleteSelectedCells()` to create `DeleteEdgeOperation` for each edge
+  - EdgeOperationExecutor already handles deletion with proper state capture
+  - Properly handles port visibility updates after deletion
+- **Testing**: Build ✅ | Lint ✅
 
 ### 7. ⏳ Node Label Editing (NOT STARTED)
 - **Status**: Not started
@@ -232,15 +235,15 @@ For explicit user actions (delete, cut, paste):
 
 ## Progress Summary
 
-**Completed**: 4/16 operations (25%)
+**Completed**: 6/16 operations (37.5%)
 - ✅ Edge Creation
 - ✅ Node Creation
 - ✅ Node Movement
 - ✅ Node Resizing
+- ✅ Node Deletion
+- ✅ Edge Deletion
 
-**Phase 1 (P0) Remaining**: 5/9 operations
-- Node Deletion
-- Edge Deletion
+**Phase 1 (P0) Remaining**: 3/9 operations
 - Node Label Editing
 - Edge Label Editing
 - Edge Vertices Drag
@@ -249,7 +252,7 @@ For explicit user actions (delete, cut, paste):
 **Phase 2 (P1)**: 5 operations not started
 **Phase 3 (P2)**: 1 operation not started (1 already working)
 
-**Total Estimated Effort Remaining**: ~22-30 hours (2.75-3.75 days)
+**Total Estimated Effort Remaining**: ~16-22 hours (2-2.75 days)
 
 ---
 
@@ -342,24 +345,29 @@ For explicit user actions (delete, cut, paste):
 - **Node Creation**: Implemented retroactive pattern for node creation history tracking
 - **Node Movement**: Implemented drag completion pattern for node movement history tracking
 - **Node Resizing**: Implemented drag completion pattern for node resizing history tracking
-- **Build Status**: ✅ Successful (all 4 implementations)
+- **Node Deletion**: Implemented direct operation pattern for node deletion history tracking
+- **Edge Deletion**: Implemented direct operation pattern for edge deletion history tracking
+- **Build Status**: ✅ Successful (all 6 implementations)
 - **Test Status**: ✅ Lint passing, Build passing
-- **Progress**: 4/16 operations complete (25%)
+- **Progress**: 6/16 operations complete (37.5%)
 
 ---
 
 ## Next Steps
 
 ### Immediate (Next Session)
-1. Implement node deletion history tracking (P0 #5)
-2. Implement edge deletion history tracking (P0 #6)
-3. Run full test suite to verify no regressions
-4. Manual testing of node movement/resizing undo/redo
+1. Implement node label editing history tracking (P0 #7)
+2. Implement edge label editing history tracking (P0 #8)
+3. Implement edge vertices drag history tracking (P0 #9)
+4. Implement edge reconnection history tracking (P0 #10)
+5. Run full test suite to verify no regressions
+6. Manual testing of all implemented operations
 
 ### Short Term (This Week)
 1. Complete remaining P0 operations (#7-10)
 2. Update all affected test files
 3. Comprehensive manual testing of all P0 operations
+4. Test undo/redo functionality for each operation type
 
 ### Medium Term (Next Sprint)
 1. Implement P1 operations (cut, paste, embedding, z-order)
