@@ -19,6 +19,7 @@
 
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { tap, map } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 import { Graph, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -31,6 +32,8 @@ import {
   AppOperationStateManager,
   HISTORY_OPERATION_TYPES,
 } from './app-operation-state-manager.service';
+import { AppGraphOperationManager } from './app-graph-operation-manager.service';
+import { CreateEdgeOperation, OperationContext } from '../../types/graph-operation.types';
 import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
@@ -77,6 +80,7 @@ export class AppEdgeService {
     private infraVisualEffectsService: InfraVisualEffectsService,
     private infraEdgeService: InfraEdgeService,
     private historyCoordinator: AppOperationStateManager,
+    private graphOperationManager: AppGraphOperationManager,
   ) {}
 
   // ========================================
@@ -85,7 +89,7 @@ export class AppEdgeService {
 
   /**
    * Handle edge added events from the graph adapter
-   * Validates the edge - auto-save will be triggered by X6 history changes
+   * Validates the edge and records it in history via GraphOperation
    */
   handleEdgeAdded(
     edge: Edge,
@@ -130,20 +134,83 @@ export class AppEdgeService {
       throw new Error('Edge references non-existent nodes');
     }
 
-    // Label is now set during edge creation in the createEdge callback
-    // Log the label for verification
+    // Get edge properties for the operation
+    const sourcePortId = edge.getSourcePortId();
+    const targetPortId = edge.getTargetPortId();
     const currentLabel = this.getEdgeLabel(edge);
-    this.logger.info('Edge validated successfully', {
+
+    this.logger.info('Edge validated successfully, creating GraphOperation for history', {
       edgeId: edge.id,
       sourceNodeId,
       targetNodeId,
+      sourcePortId,
+      targetPortId,
       label: currentLabel,
     });
 
-    // Note: X6 history plugin automatically tracks this edge addition,
-    // and the auto-save manager will be notified via history change events
+    // Create EdgeInfo from the existing edge for the operation using fromJSON
+    const edgeData = edge.getData();
+    const edgeInfo = EdgeInfo.fromJSON({
+      id: edge.id,
+      sourceNodeId,
+      targetNodeId,
+      sourcePortId,
+      targetPortId,
+      attrs: edge.getAttrs(),
+      labels: edge.getLabels?.() as any || [],
+      vertices: edge.getVertices?.() || [],
+      zIndex: edge.getZIndex(),
+      data: edgeData ? { ...edgeData, _metadata: (edgeData)._metadata || [] } : { _metadata: [] },
+      connector: DFD_STYLING.EDGES.CONNECTOR as any,
+      router: DFD_STYLING.EDGES.ROUTER as any,
+    });
 
-    return of(void 0);
+    // Create a CreateEdgeOperation to record in history
+    const operation: CreateEdgeOperation = {
+      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: 'create-edge',
+      source: 'user-interaction',
+      timestamp: Date.now(),
+      priority: 'normal', // Add required priority field
+      edgeInfo,
+      sourceNodeId,
+      targetNodeId,
+      sourcePortId,
+      targetPortId,
+      metadata: {
+        retroactive: true, // Flag to indicate edge already exists
+      },
+    };
+
+    // Create minimal operation context with required fields
+    // Note: threatModelId and userId will be populated by the orchestrator if needed
+    const context: OperationContext = {
+      graph,
+      diagramId,
+      threatModelId: '', // Will be populated by persistence layer if needed
+      userId: '', // Will be populated by auth service if needed
+      isCollaborating: false,
+      permissions: [],
+    };
+
+    // Execute the operation to record in history
+    // The executor will detect the edge already exists and just capture state
+    return this.graphOperationManager.execute(operation, context).pipe(
+      tap(result => {
+        if (!result.success) {
+          this.logger.error('Failed to record edge creation in history', {
+            edgeId: edge.id,
+            error: result.error,
+          });
+        } else {
+          this.logger.debug('Edge creation recorded in history', {
+            edgeId: edge.id,
+          });
+        }
+      }),
+      // Map to void to match return type
+      map(() => undefined),
+    );
   }
 
   /**

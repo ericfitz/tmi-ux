@@ -20,6 +20,7 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { tap, map } from 'rxjs/operators';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeType } from '../../domain/value-objects/node-info';
 
@@ -30,10 +31,12 @@ import { InfraNodeService } from '../../infrastructure/services/infra-node.servi
 import { AppEdgeService } from '../services/app-edge.service';
 import { AppExportService } from '../services/app-export.service';
 import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
-import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
+import { InfraVisualEffectsService} from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraX6CoreOperationsService } from '../../infrastructure/services/infra-x6-core-operations.service';
 import { AppOperationStateManager } from '../services/app-operation-state-manager.service';
 import { InfraEmbeddingService } from '../../infrastructure/services/infra-embedding.service';
+import { AppGraphOperationManager } from '../services/app-graph-operation-manager.service';
+import { CreateNodeOperation, OperationContext, NodeData } from '../../types/graph-operation.types';
 
 /**
  * Facade for DFD infrastructure services
@@ -53,6 +56,7 @@ export class AppDfdFacade {
     private readonly infraX6CoreOperationsService: InfraX6CoreOperationsService,
     private readonly historyCoordinator: AppOperationStateManager,
     private readonly infraEmbeddingService: InfraEmbeddingService,
+    private readonly graphOperationManager: AppGraphOperationManager,
   ) {
     this.logger.debug('AppDfdFacade initialized');
   }
@@ -102,6 +106,85 @@ export class AppDfdFacade {
   createNodeAtPosition(nodeType: NodeType, position: { x: number; y: number }): Observable<void> {
     // Use the InfraNodeService's createNode method directly
     return (this.infraNodeService as any).createNode(nodeType, position);
+  }
+
+  /**
+   * Handle node added to the graph (validation and history tracking)
+   * Similar pattern to edge creation - creates retroactive GraphOperation
+   */
+  handleNodeAdded(node: any, diagramId: string, isInitialized: boolean): Observable<void> {
+    if (!isInitialized) {
+      this.logger.warn('Cannot handle node added: Graph is not initialized');
+      throw new Error('Graph is not initialized');
+    }
+
+    const graph = this.infraX6GraphAdapter.getGraph();
+    const nodeId = node.id;
+
+    this.logger.info('Node validated successfully, creating GraphOperation for history', {
+      nodeId,
+      shape: node.shape,
+      position: node.getPosition(),
+    });
+
+    // Create NodeData from the existing node for the operation
+    const position = node.getPosition();
+    const size = node.getSize();
+    const nodeData: NodeData = {
+      id: nodeId,
+      nodeType: node.shape as string,
+      position: { x: position.x, y: position.y },
+      size: { width: size.width, height: size.height },
+      label: node.getAttrByPath('label/text') || '',
+      style: node.getAttrs(),
+      properties: {
+        zIndex: node.getZIndex(),
+        metadata: node.getData()?._metadata || [],
+        parent: node.getParent()?.id,
+      },
+    };
+
+    // Create a CreateNodeOperation to record in history
+    const operation: CreateNodeOperation = {
+      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: 'create-node',
+      source: 'user-interaction',
+      timestamp: Date.now(),
+      priority: 'normal',
+      nodeData,
+      metadata: {
+        retroactive: true, // Flag to indicate node already exists
+      },
+    };
+
+    // Create minimal operation context with required fields
+    const context: OperationContext = {
+      graph,
+      diagramId,
+      threatModelId: '', // Will be populated by persistence layer if needed
+      userId: '', // Will be populated by auth service if needed
+      isCollaborating: false,
+      permissions: [],
+    };
+
+    // Execute the operation to record in history
+    // The executor will detect the node already exists and just capture state
+    return this.graphOperationManager.execute(operation, context).pipe(
+      tap(result => {
+        if (!result.success) {
+          this.logger.error('Failed to record node creation in history', {
+            nodeId,
+            error: result.error,
+          });
+        } else {
+          this.logger.debug('Node creation recorded in history', {
+            nodeId,
+          });
+        }
+      }),
+      // Map to void to match return type
+      map(() => undefined),
+    );
   }
 
   // ========================================

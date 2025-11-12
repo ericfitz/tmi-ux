@@ -9,6 +9,7 @@
 import '@angular/compiler';
 
 import { Graph, Node, Edge } from '@antv/x6';
+import { of } from 'rxjs';
 import { AppEdgeService, ConnectionValidationArgs, MagnetValidationArgs } from './app-edge.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
@@ -87,6 +88,11 @@ describe('AppEdgeService - Comprehensive Tests', () => {
       removeEdge: vi.fn(),
     };
 
+    // Create mock GraphOperationManager
+    const mockGraphOperationManager = {
+      execute: vi.fn().mockReturnValue(of({ success: true, affectedCellIds: [] })),
+    };
+
     // Create service instance
     service = new AppEdgeService(
       mockLogger as unknown as LoggerService,
@@ -95,6 +101,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
       mockVisualEffectsService as unknown as InfraVisualEffectsService,
       mockEdgeService as unknown as InfraEdgeService,
       mockGraphHistoryCoordinator as unknown as AppOperationStateManager,
+      mockGraphOperationManager as any,
     );
   });
 

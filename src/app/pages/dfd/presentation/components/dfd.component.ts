@@ -648,6 +648,34 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setupContextMenuHandlers();
   }
 
+  private handleNodeAdded(node: any): void {
+    this.logger.info('DFD Component: handleNodeAdded called', {
+      nodeId: node?.id,
+      hasNode: !!node,
+      hasDfdId: !!this.dfdId,
+      isSystemInitialized: this.isSystemInitialized,
+    });
+
+    if (!node || !this.dfdId) {
+      this.logger.warn('Cannot handle node added - missing node or diagram ID', {
+        hasNode: !!node,
+        hasDfdId: !!this.dfdId,
+      });
+      return;
+    }
+
+    this.logger.debug('Handling node added', { nodeId: node.id });
+
+    this.dfdInfrastructure.handleNodeAdded(node, this.dfdId, this.isSystemInitialized).subscribe({
+      next: () => {
+        this.logger.debug('Node added successfully', { nodeId: node.id });
+      },
+      error: error => {
+        this.logger.error('Error handling node added', { error, nodeId: node.id });
+      },
+    });
+  }
+
   private handleEdgeAdded(edge: any): void {
     this.logger.info('DFD Component: handleEdgeAdded called', {
       edgeId: edge?.id,
@@ -1608,9 +1636,20 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       'Setting up edge and history observable subscriptions',
     );
 
-    // Subscribe to edge added events from the graph adapter
+    // Subscribe to node and edge added events from the graph adapter
     const graphAdapter = this.dfdInfrastructure.graphAdapter;
     if (graphAdapter) {
+      // Subscribe to node added events for history tracking
+      this._subscriptions.add(
+        graphAdapter.nodeAdded$.pipe(takeUntil(this._destroy$)).subscribe(node => {
+          this.logger.info('DFD Component: nodeAdded$ observable fired', {
+            nodeId: node.id,
+          });
+          this.handleNodeAdded(node);
+        }),
+      );
+
+      // Subscribe to edge added events for history tracking
       this._subscriptions.add(
         graphAdapter.edgeAdded$.pipe(takeUntil(this._destroy$)).subscribe(edge => {
           this.logger.info('DFD Component: edgeAdded$ observable fired', {

@@ -87,6 +87,41 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       // Generate edge ID if not provided
       const edgeId = edgeInfo.id || this.generateCellId();
 
+      // Check if this is a retroactive operation (edge already exists)
+      const existingEdge = this.getEdge(graph, edgeId);
+      const isRetroactive = operation.metadata?.['retroactive'] === true;
+
+      if (existingEdge && isRetroactive) {
+        // Edge already exists (created by X6 drag-connect), just capture state for history
+        this.logger.debug('Retroactive edge creation - edge already exists, capturing state', {
+          edgeId,
+        });
+
+        const currentState = this._captureEdgeState(graph, edgeId);
+
+        const result = this.createSuccessResult(operation, [edgeId], {
+          edgeId,
+          edgeType: (edgeInfo as any).edgeType,
+          sourceNodeId,
+          targetNodeId,
+          hasLabel: !!(edgeInfo as any).label,
+          retroactive: true,
+        });
+
+        return of({
+          ...result,
+          previousState: [],
+          currentState: currentState ? [currentState] : [],
+        });
+      }
+
+      // Normal edge creation (not retroactive)
+      if (existingEdge) {
+        const error = `Edge already exists: ${edgeId}`;
+        this.logger.warn(error);
+        return of(this.createFailureResult(operation, error));
+      }
+
       // Create edge configuration
       const edgeConfig = {
         id: edgeId,

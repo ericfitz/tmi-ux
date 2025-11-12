@@ -86,6 +86,48 @@ export class NodeOperationExecutor implements OperationExecutor {
       // Generate node ID if not provided
       const nodeId = nodeData.id || this._generateNodeId();
 
+      // Check if this is a retroactive operation (node already exists)
+      const existingNode = graph.getCellById(nodeId);
+      const isRetroactive = operation.metadata?.['retroactive'] === true;
+
+      if (existingNode && isRetroactive) {
+        // Node already exists (created by X6 or user interaction), just capture state for history
+        this.logger.debug('Retroactive node creation - node already exists, capturing state', {
+          nodeId,
+        });
+
+        const currentState = this._captureCellState(graph, nodeId);
+
+        return of({
+          success: true,
+          operationType: 'create-node',
+          affectedCellIds: [nodeId],
+          timestamp: Date.now(),
+          previousState: [], // No previous state for create
+          currentState: currentState ? [currentState] : [],
+          metadata: {
+            nodeId,
+            nodeType: nodeData.nodeType,
+            position: nodeData.position,
+            size: nodeData.size,
+            retroactive: true,
+          },
+        });
+      }
+
+      // Normal node creation (not retroactive)
+      if (existingNode) {
+        const error = `Node already exists: ${nodeId}`;
+        this.logger.warn(error);
+        return of({
+          success: false,
+          operationType: 'create-node',
+          affectedCellIds: [],
+          timestamp: Date.now(),
+          error,
+        });
+      }
+
       // Apply default values for missing properties
       const finalNodeData = this._applyNodeDefaults(nodeData);
 
