@@ -676,6 +676,39 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  private handleDragCompletion(completion: any): void {
+    this.logger.info('DFD Component: handleDragCompletion called', {
+      cellId: completion?.cellId,
+      dragType: completion?.dragType,
+      hasDfdId: !!this.dfdId,
+    });
+
+    if (!completion || !this.dfdId) {
+      this.logger.warn('Cannot handle drag completion - missing completion data or diagram ID', {
+        hasCompletion: !!completion,
+        hasDfdId: !!this.dfdId,
+      });
+      return;
+    }
+
+    this.logger.debug('Handling drag completion', {
+      cellId: completion.cellId,
+      dragType: completion.dragType,
+    });
+
+    this.dfdInfrastructure.handleDragCompletion(completion, this.dfdId).subscribe({
+      next: () => {
+        this.logger.debug('Drag completion recorded successfully', {
+          cellId: completion.cellId,
+          dragType: completion.dragType,
+        });
+      },
+      error: error => {
+        this.logger.error('Error handling drag completion', { error, completion });
+      },
+    });
+  }
+
   private handleEdgeAdded(edge: any): void {
     this.logger.info('DFD Component: handleEdgeAdded called', {
       edgeId: edge?.id,
@@ -1656,6 +1689,17 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             edgeId: edge.id,
           });
           this.handleEdgeAdded(edge);
+        }),
+      );
+
+      // Subscribe to drag completion events for history tracking (movement, resizing)
+      this._subscriptions.add(
+        this.dfdInfrastructure.dragCompletions$.pipe(takeUntil(this._destroy$)).subscribe(completion => {
+          this.logger.info('DFD Component: dragCompletion$ observable fired', {
+            cellId: completion.cellId,
+            dragType: completion.dragType,
+          });
+          this.handleDragCompletion(completion);
         }),
       );
 

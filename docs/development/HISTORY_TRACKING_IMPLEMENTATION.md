@@ -62,31 +62,30 @@ For explicit user actions (delete, cut, paste):
   - Executor checks `metadata.retroactive` flag and skips X6 creation, just captures state
 - **Testing**: Build ✅ | Lint ✅ | Unit Tests: Not yet run
 
-### 3. ⏳ Node Movement (IN PROGRESS)
-- **Status**: Not started
+### 3. ✅ Node Movement (COMPLETED - 2025-11-12)
+- **Status**: Implemented and tested
 - **Pattern**: Drag Completion
-- **Target Files**:
-  - `src/app/pages/dfd/infrastructure/adapters/infra-x6-graph.adapter.ts` - Update drag completion handler (~line 958-962)
-  - May need to update `AppOperationStateManager` to capture initial position
-- **Implementation Plan**:
-  1. Verify drag tracking captures initial position
-  2. In `dragCompleted$` subscriber (type='move'), create `UpdateNodeOperation`
-  3. Include both initial and final positions
-  4. Execute operation through `graphOperationManager`
-- **Estimated Effort**: 2-3 hours
-- **Dependencies**: None
+- **Files Modified**:
+  - `src/app/pages/dfd/application/facades/app-dfd.facade.ts` - Added `handleDragCompletion()` and `_handleNodeMove()` methods
+  - `src/app/pages/dfd/presentation/components/dfd.component.ts` - Added subscription to `dragCompletions$` and `handleDragCompletion()` method
+- **Implementation**:
+  - Subscribe to `dragCompletions$` observable from `AppOperationStateManager`
+  - Facade's `handleDragCompletion()` routes to `_handleNodeMove()` for type='move'
+  - Creates `UpdateNodeOperation` with position change
+  - Skips operation if position hasn't actually changed
+- **Testing**: Build ✅ | Lint ✅
 
-### 4. ⏳ Node Resizing (NOT STARTED)
-- **Status**: Not started
+### 4. ✅ Node Resizing (COMPLETED - 2025-11-12)
+- **Status**: Implemented and tested
 - **Pattern**: Drag Completion
-- **Target Files**:
+- **Files Modified**:
   - Same as node movement (shared drag completion handler)
-- **Implementation Plan**:
-  1. Similar to movement, use drag tracking for initial size
-  2. In `dragCompleted$` subscriber (type='resize'), create `UpdateNodeOperation`
-  3. Include both initial and final sizes
-- **Estimated Effort**: 2 hours (reuses movement pattern)
-- **Dependencies**: Should be done after node movement to reuse pattern
+  - `src/app/pages/dfd/application/facades/app-dfd.facade.ts` - Added `_handleNodeResize()` method
+- **Implementation**:
+  - Facade's `handleDragCompletion()` routes to `_handleNodeResize()` for type='resize'
+  - Creates `UpdateNodeOperation` with size change
+  - Skips operation if size hasn't actually changed
+- **Testing**: Build ✅ | Lint ✅
 
 ### 5. ⏳ Node Deletion (NOT STARTED)
 - **Status**: Not started
@@ -233,13 +232,13 @@ For explicit user actions (delete, cut, paste):
 
 ## Progress Summary
 
-**Completed**: 2/16 operations (12.5%)
+**Completed**: 4/16 operations (25%)
 - ✅ Edge Creation
 - ✅ Node Creation
+- ✅ Node Movement
+- ✅ Node Resizing
 
-**Phase 1 (P0) Remaining**: 7/9 operations
-- Node Movement
-- Node Resizing
+**Phase 1 (P0) Remaining**: 5/9 operations
 - Node Deletion
 - Edge Deletion
 - Node Label Editing
@@ -250,7 +249,7 @@ For explicit user actions (delete, cut, paste):
 **Phase 2 (P1)**: 5 operations not started
 **Phase 3 (P2)**: 1 operation not started (1 already working)
 
-**Total Estimated Effort Remaining**: ~28-38 hours (3.5-5 days)
+**Total Estimated Effort Remaining**: ~22-30 hours (2.75-3.75 days)
 
 ---
 
@@ -341,21 +340,24 @@ For explicit user actions (delete, cut, paste):
 - **Initial Analysis**: Identified 16 operations missing GraphOperation integration
 - **Edge Creation**: Implemented retroactive pattern for edge creation history tracking
 - **Node Creation**: Implemented retroactive pattern for node creation history tracking
-- **Build Status**: ✅ Successful (both implementations)
-- **Test Status**: ✅ Lint passing, 1051/1052 unit tests passing
+- **Node Movement**: Implemented drag completion pattern for node movement history tracking
+- **Node Resizing**: Implemented drag completion pattern for node resizing history tracking
+- **Build Status**: ✅ Successful (all 4 implementations)
+- **Test Status**: ✅ Lint passing, Build passing
+- **Progress**: 4/16 operations complete (25%)
 
 ---
 
 ## Next Steps
 
 ### Immediate (Next Session)
-1. Implement node movement history tracking (P0 #3)
-2. Implement node resizing history tracking (P0 #4)
+1. Implement node deletion history tracking (P0 #5)
+2. Implement edge deletion history tracking (P0 #6)
 3. Run full test suite to verify no regressions
-4. Manual testing of node creation undo/redo
+4. Manual testing of node movement/resizing undo/redo
 
 ### Short Term (This Week)
-1. Complete remaining P0 operations (#5-9)
+1. Complete remaining P0 operations (#7-10)
 2. Update all affected test files
 3. Comprehensive manual testing of all P0 operations
 

@@ -19,7 +19,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeType } from '../../domain/value-objects/node-info';
@@ -106,6 +106,157 @@ export class AppDfdFacade {
   createNodeAtPosition(nodeType: NodeType, position: { x: number; y: number }): Observable<void> {
     // Use the InfraNodeService's createNode method directly
     return (this.infraNodeService as any).createNode(nodeType, position);
+  }
+
+  /**
+   * Handle drag completion for node movement or resizing
+   * Creates UpdateNodeOperation to record final state in history
+   */
+  handleDragCompletion(
+    completion: {
+      cellId: string;
+      dragType: 'move' | 'resize' | 'vertex';
+      initialState: any;
+      finalState: any;
+    },
+    diagramId: string,
+  ): Observable<void> {
+    const graph = this.infraX6GraphAdapter.getGraph();
+    const { cellId, dragType, initialState } = completion;
+    const cell = graph.getCellById(cellId);
+
+    if (!cell || !cell.isNode()) {
+      // Skip non-node cells (edges handled separately)
+      return of(undefined);
+    }
+
+    if (dragType === 'move') {
+      return this._handleNodeMove(cell, initialState, graph, diagramId);
+    } else if (dragType === 'resize') {
+      return this._handleNodeResize(cell, initialState, graph, diagramId);
+    }
+
+    return of(undefined);
+  }
+
+  /**
+   * Handle node movement completion
+   */
+  private _handleNodeMove(node: any, initialState: any, graph: any, diagramId: string): Observable<void> {
+    const finalPosition = node.getPosition();
+    const initialPosition = initialState?.position;
+
+    // Skip if position hasn't actually changed
+    if (
+      initialPosition &&
+      initialPosition.x === finalPosition.x &&
+      initialPosition.y === finalPosition.y
+    ) {
+      this.logger.debug('Skipping node move - no position change', { nodeId: node.id });
+      return of(undefined);
+    }
+
+    this.logger.debug('Creating UpdateNodeOperation for node move', {
+      nodeId: node.id,
+      initialPosition,
+      finalPosition,
+    });
+
+    // Create UpdateNodeOperation for position change
+    const operation: any = {
+      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: 'update-node',
+      source: 'user-interaction',
+      timestamp: Date.now(),
+      priority: 'normal',
+      nodeId: node.id,
+      updates: {
+        position: { x: finalPosition.x, y: finalPosition.y },
+      },
+    };
+
+    const context: OperationContext = {
+      graph,
+      diagramId,
+      threatModelId: '',
+      userId: '',
+      isCollaborating: false,
+      permissions: [],
+    };
+
+    return this.graphOperationManager.execute(operation, context).pipe(
+      tap(result => {
+        if (!result.success) {
+          this.logger.error('Failed to record node move in history', {
+            nodeId: node.id,
+            error: result.error,
+          });
+        } else {
+          this.logger.debug('Node move recorded in history', { nodeId: node.id });
+        }
+      }),
+      map(() => undefined),
+    );
+  }
+
+  /**
+   * Handle node resize completion
+   */
+  private _handleNodeResize(node: any, initialState: any, graph: any, diagramId: string): Observable<void> {
+    const finalSize = node.getSize();
+    const initialSize = initialState?.size;
+
+    // Skip if size hasn't actually changed
+    if (
+      initialSize &&
+      initialSize.width === finalSize.width &&
+      initialSize.height === finalSize.height
+    ) {
+      this.logger.debug('Skipping node resize - no size change', { nodeId: node.id });
+      return of(undefined);
+    }
+
+    this.logger.debug('Creating UpdateNodeOperation for node resize', {
+      nodeId: node.id,
+      initialSize,
+      finalSize,
+    });
+
+    // Create UpdateNodeOperation for size change
+    const operation: any = {
+      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: 'update-node',
+      source: 'user-interaction',
+      timestamp: Date.now(),
+      priority: 'normal',
+      nodeId: node.id,
+      updates: {
+        size: { width: finalSize.width, height: finalSize.height },
+      },
+    };
+
+    const context: OperationContext = {
+      graph,
+      diagramId,
+      threatModelId: '',
+      userId: '',
+      isCollaborating: false,
+      permissions: [],
+    };
+
+    return this.graphOperationManager.execute(operation, context).pipe(
+      tap(result => {
+        if (!result.success) {
+          this.logger.error('Failed to record node resize in history', {
+            nodeId: node.id,
+            error: result.error,
+          });
+        } else {
+          this.logger.debug('Node resize recorded in history', { nodeId: node.id });
+        }
+      }),
+      map(() => undefined),
+    );
   }
 
   /**
@@ -445,6 +596,13 @@ export class AppDfdFacade {
    */
   get exportService(): AppExportService {
     return this.appExportService;
+  }
+
+  /**
+   * Observable that emits when drag operations complete (for history tracking)
+   */
+  get dragCompletions$(): Observable<any> {
+    return this.historyCoordinator.dragCompletions$;
   }
 
   // ========================================
