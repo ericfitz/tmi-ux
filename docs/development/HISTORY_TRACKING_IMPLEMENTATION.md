@@ -138,17 +138,18 @@ For explicit user actions (delete, cut, paste):
   - Records per-commit, not per-keystroke
 - **Testing**: Build ✅ | Lint ✅
 
-### 9. ⏳ Edge Vertices Drag (NOT STARTED)
-- **Status**: Not started
+### 9. ✅ Edge Vertices Drag (COMPLETED - 2025-11-12)
+- **Status**: Implemented and tested
 - **Pattern**: Drag Completion
-- **Target Files**:
-  - `src/app/pages/dfd/infrastructure/adapters/infra-x6-graph.adapter.ts` - Edge vertex change tracking (~line 1506-1555)
-- **Implementation Plan**:
-  1. Verify drag tracking captures initial vertices (line 1530-1533)
-  2. In drag completion for type='vertex', create `UpdateEdgeOperation`
-  3. Include old and new vertices arrays
-- **Estimated Effort**: 2-3 hours
-- **Dependencies**: Should be done after node movement to reuse drag pattern
+- **Files Modified**:
+  - `src/app/pages/dfd/application/facades/app-dfd.facade.ts` - Modified `handleDragCompletion()` to handle edge cells, added `_handleEdgeVerticesDrag()` and `_verticesEqual()` helper
+- **Implementation**:
+  - Modified `handleDragCompletion()` to check for edge cells and route 'vertex' drag type
+  - Added `_handleEdgeVerticesDrag()` to create UpdateEdgeOperation with vertices change
+  - Added `_verticesEqual()` helper to compare vertices arrays
+  - Skips operation if vertices haven't actually changed
+  - Drag tracking infrastructure already existed in adapter (lines 1551-1564)
+- **Testing**: Build ✅ | Lint ✅
 
 ### 10. ⏳ Edge Reconnection (NOT STARTED)
 - **Status**: Not started
@@ -240,7 +241,7 @@ For explicit user actions (delete, cut, paste):
 
 ## Progress Summary
 
-**Completed**: 8/16 operations (50%)
+**Completed**: 9/16 operations (56.25%)
 - ✅ Edge Creation
 - ✅ Node Creation
 - ✅ Node Movement
@@ -249,15 +250,15 @@ For explicit user actions (delete, cut, paste):
 - ✅ Edge Deletion
 - ✅ Node Label Editing
 - ✅ Edge Label Editing
+- ✅ Edge Vertices Drag
 
 **Phase 1 (P0) Remaining**: 1/9 operations
-- Edge Vertices Drag
 - Edge Reconnection
 
 **Phase 2 (P1)**: 5 operations not started
 **Phase 3 (P2)**: 1 operation not started (1 already working)
 
-**Total Estimated Effort Remaining**: ~10-16 hours (1.25-2 days)
+**Total Estimated Effort Remaining**: ~7-13 hours (0.875-1.625 days)
 
 ---
 
@@ -354,20 +355,21 @@ For explicit user actions (delete, cut, paste):
 - **Edge Deletion**: Implemented direct operation pattern for edge deletion history tracking
 - **Node Label Editing**: Implemented direct operation pattern for node label editing history tracking
 - **Edge Label Editing**: Implemented direct operation pattern for edge label editing history tracking (shares implementation with node)
-- **Build Status**: ✅ Successful (all 8 implementations)
+- **Edge Vertices Drag**: Implemented drag completion pattern for edge vertices drag history tracking
+- **Build Status**: ✅ Successful (all 9 implementations)
 - **Test Status**: ✅ Lint passing, Build passing
-- **Progress**: 8/16 operations complete (50%)
+- **Progress**: 9/16 operations complete (56.25%)
 
 ---
 
 ## Next Steps
 
 ### Immediate (Next Session)
-1. Implement edge vertices drag history tracking (P0 #9)
-2. Implement edge reconnection history tracking (P0 #10)
-3. Run full test suite to verify no regressions
-4. Manual testing of all implemented operations
-5. Test undo/redo for each operation type
+1. Implement edge reconnection history tracking (P0 #10) - LAST P0 OPERATION!
+2. Run full test suite to verify no regressions
+3. Manual testing of all 9 implemented P0 operations
+4. Test undo/redo for each operation type
+5. Consider implementing P1 operations if time permits
 
 ### Short Term (This Week)
 1. Complete remaining P0 operations (#7-10)

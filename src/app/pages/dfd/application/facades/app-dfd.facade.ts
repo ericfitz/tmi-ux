@@ -115,8 +115,8 @@ export class AppDfdFacade {
   }
 
   /**
-   * Handle drag completion for node movement or resizing
-   * Creates UpdateNodeOperation to record final state in history
+   * Handle drag completion for node movement, resizing, or edge vertices
+   * Creates UpdateNodeOperation or UpdateEdgeOperation to record final state in history
    */
   handleDragCompletion(
     completion: {
@@ -131,15 +131,25 @@ export class AppDfdFacade {
     const { cellId, dragType, initialState } = completion;
     const cell = graph.getCellById(cellId);
 
-    if (!cell || !cell.isNode()) {
-      // Skip non-node cells (edges handled separately)
+    if (!cell) {
+      this.logger.warn('Drag completion for non-existent cell', { cellId });
       return of(undefined);
     }
 
-    if (dragType === 'move') {
-      return this._handleNodeMove(cell, initialState, graph, diagramId);
-    } else if (dragType === 'resize') {
-      return this._handleNodeResize(cell, initialState, graph, diagramId);
+    // Handle node operations
+    if (cell.isNode()) {
+      if (dragType === 'move') {
+        return this._handleNodeMove(cell, initialState, graph, diagramId);
+      } else if (dragType === 'resize') {
+        return this._handleNodeResize(cell, initialState, graph, diagramId);
+      }
+    }
+
+    // Handle edge operations
+    if (cell.isEdge()) {
+      if (dragType === 'vertex') {
+        return this._handleEdgeVerticesDrag(cell, initialState, graph, diagramId);
+      }
     }
 
     return of(undefined);
@@ -263,6 +273,75 @@ export class AppDfdFacade {
       }),
       map(() => undefined),
     );
+  }
+
+  /**
+   * Handle edge vertices drag completion
+   */
+  private _handleEdgeVerticesDrag(edge: any, initialState: any, graph: any, diagramId: string): Observable<void> {
+    const finalVertices = edge.getVertices();
+    const initialVertices = initialState?.vertices;
+
+    // Skip if vertices haven't actually changed
+    if (initialVertices && this._verticesEqual(initialVertices, finalVertices)) {
+      this.logger.debug('Skipping edge vertices drag - no vertices change', { edgeId: edge.id });
+      return of(undefined);
+    }
+
+    this.logger.debug('Creating UpdateEdgeOperation for vertices drag', {
+      edgeId: edge.id,
+      initialVertices,
+      finalVertices,
+    });
+
+    // Create UpdateEdgeOperation for vertices change
+    const operation: any = {
+      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: 'update-edge',
+      source: 'user-interaction',
+      timestamp: Date.now(),
+      priority: 'normal',
+      edgeId: edge.id,
+      updates: {
+        vertices: finalVertices,
+      },
+    };
+
+    const context: OperationContext = {
+      graph,
+      diagramId,
+      threatModelId: '',
+      userId: '',
+      isCollaborating: false,
+      permissions: [],
+    };
+
+    return this.graphOperationManager.execute(operation, context).pipe(
+      tap(result => {
+        if (!result.success) {
+          this.logger.error('Failed to record edge vertices drag in history', {
+            edgeId: edge.id,
+            error: result.error,
+          });
+        } else {
+          this.logger.debug('Edge vertices drag recorded in history', { edgeId: edge.id });
+        }
+      }),
+      map(() => undefined),
+    );
+  }
+
+  /**
+   * Helper to compare vertices arrays for equality
+   */
+  private _verticesEqual(v1: Array<{ x: number; y: number }>, v2: Array<{ x: number; y: number }>): boolean {
+    if (!v1 || !v2 || v1.length !== v2.length) {
+      return false;
+    }
+    return v1.every((vertex, index) => {
+      const v2Vertex = v2[index];
+      return vertex.x === v2Vertex.x && vertex.y === v2Vertex.y;
+    });
   }
 
   /**
