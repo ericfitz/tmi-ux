@@ -141,7 +141,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
 
       expect(result).toBeUndefined(); // void return type
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Edge validated successfully',
+        'Edge validated successfully, creating GraphOperation for history',
         expect.objectContaining({
           edgeId: 'test-edge',
           sourceNodeId: sourceNode.id,
