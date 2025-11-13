@@ -125,6 +125,11 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     newNodeId: string | undefined;
     newPortId: string | undefined;
   }>();
+  private readonly _nodeParentChanged$ = new Subject<{
+    nodeId: string;
+    oldParentId: string | null;
+    newParentId: string | null;
+  }>();
   private readonly _historyChanged$ = new Subject<{ canUndo: boolean; canRedo: boolean }>();
 
   // Private properties to track previous undo/redo states
@@ -141,6 +146,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       targetPortId: string | undefined;
     }
   >();
+
+  // Track node parent relationships for embedding/unembedding history
+  private readonly _nodeParents = new Map<string, string | null>();
 
   constructor(
     private logger: LoggerService,
@@ -287,6 +295,17 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     newPortId: string | undefined;
   }> {
     return this._edgeReconnected$.asObservable();
+  }
+
+  /**
+   * Observable for node parent changes (embedding/unembedding for history tracking)
+   */
+  get nodeParentChanged$(): Observable<{
+    nodeId: string;
+    oldParentId: string | null;
+    newParentId: string | null;
+  }> {
+    return this._nodeParentChanged$.asObservable();
   }
 
   /**
@@ -1029,11 +1048,60 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Node events
     this._graph.on('node:added', ({ node }: { node: Node }) => {
       this._nodeAdded$.next(node);
+      // Initialize parent tracking for this node
+      const parent = node.getParent();
+      this._nodeParents.set(node.id, parent?.id ?? null);
     });
 
     this._graph.on('node:removed', ({ node }: { node: Node }) => {
       this._nodeRemoved$.next({ nodeId: node.id, node });
+      // Clean up parent tracking when node is removed
+      this._nodeParents.delete(node.id);
     });
+
+    // Node parent changes (embedding/unembedding)
+    this._graph.on(
+      'node:change:parent',
+      ({
+        node,
+        current,
+        previous,
+      }: {
+        node: Node;
+        current?: Node | null;
+        previous?: Node | null;
+      }) => {
+        const nodeId = node.id;
+        const oldParentId = previous?.id ?? null;
+        const newParentId = current?.id ?? null;
+
+        // Get stored parent state for comparison
+        const storedParentId = this._nodeParents.get(nodeId);
+
+        // Initialize parent tracking for this node if not already tracked
+        if (storedParentId === undefined) {
+          this._nodeParents.set(nodeId, oldParentId);
+        }
+
+        // Only emit if parent actually changed
+        if (oldParentId !== newParentId) {
+          this.logger.debug('Node parent changed', {
+            nodeId,
+            oldParentId,
+            newParentId,
+          });
+
+          this._nodeParentChanged$.next({
+            nodeId,
+            oldParentId,
+            newParentId,
+          });
+
+          // Update stored parent state
+          this._nodeParents.set(nodeId, newParentId);
+        }
+      },
+    );
 
     // Node position changes
     this._graph.on(

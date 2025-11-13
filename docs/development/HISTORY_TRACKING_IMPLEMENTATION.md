@@ -201,22 +201,28 @@ For explicit user actions (delete, cut, paste):
 - **Testing**: Build ✅ | Lint ✅
 - **Note**: Each pasted cell creates individual history entry, allowing granular undo
 
-### 13. ⏳ Node Embedding (NOT STARTED)
-- **Status**: Not started
+### 13. ✅ Node Embedding (COMPLETED - 2025-11-13)
+- **Status**: Implemented and tested
 - **Pattern**: Event Handler
-- **Target Files**:
-  - `src/app/pages/dfd/infrastructure/adapters/infra-x6-embedding.adapter.ts` - Event handlers (~line 240-285)
-- **Implementation Plan**:
-  1. In `node:embedded` handler, create `UpdateNodeOperation`
-  2. Capture parent change
-  3. Execute operation
-- **Estimated Effort**: 2-3 hours
+- **Files Modified**:
+  - `src/app/pages/dfd/infrastructure/adapters/infra-x6-graph.adapter.ts` - Added `_nodeParentChanged$` subject, `_nodeParents` Map, `node:change:parent` event handler
+  - `src/app/pages/dfd/application/facades/app-dfd.facade.ts` - Added `nodeParentChanged$` getter and `handleNodeParentChange()` method
+  - `src/app/pages/dfd/presentation/components/dfd.component.ts` - Added subscription and `handleNodeParentChange()` method
+- **Implementation**:
+  - Added `_nodeParents` Map to track current parent for each node
+  - Initialize parent tracking when nodes are added
+  - Listen to X6's `node:change:parent` event
+  - Emit custom event with old/new parent IDs
+  - Create UpdateNodeOperation with parent change
+  - Handles both embedding (null → parentId) and unembedding (parentId → null) in one handler
+- **Testing**: Build ✅ | Lint ✅
+- **Note**: Single implementation handles both embedding and unembedding via parent change tracking
 
-### 14. ⏳ Node Unembedding (NOT STARTED)
-- **Status**: Not started
+### 14. ✅ Node Unembedding (COMPLETED - 2025-11-13)
+- **Status**: Implemented (combined with embedding)
 - **Pattern**: Event Handler (shared with embedding)
-- **Target Files**: Same as embedding
-- **Estimated Effort**: 1-2 hours
+- **Implementation**: Same handler as embedding - when newParentId is null, it's an unembedding operation
+- **Testing**: Build ✅ | Lint ✅
 
 ### 15. ⏳ Z-Order Changes (NOT STARTED)
 - **Status**: Not started
@@ -250,7 +256,7 @@ For explicit user actions (delete, cut, paste):
 
 ## Progress Summary
 
-**Completed**: 12/16 operations (75%)
+**Completed**: 14/16 operations (87.5%)
 - ✅ Edge Creation
 - ✅ Node Creation
 - ✅ Node Movement
@@ -263,19 +269,21 @@ For explicit user actions (delete, cut, paste):
 - ✅ Edge Reconnection
 - ✅ Cut Operations
 - ✅ Paste Operations
+- ✅ Node Embedding
+- ✅ Node Unembedding
 
 **Phase 1 (P0)**: 10/10 operations complete (100%) ✅
 
-**Phase 2 (P1)**: 2/5 operations complete (40%)
+**Phase 2 (P1)**: 4/5 operations complete (80%)
 - ✅ Cut Operations
 - ✅ Paste Operations
-- ⏳ Node Embedding (not started)
-- ⏳ Node Unembedding (not started)
+- ✅ Node Embedding
+- ✅ Node Unembedding
 - ⏳ Z-Order Changes (not started)
 
 **Phase 3 (P2)**: 1 operation not started (1 already working)
 
-**Total Estimated Effort Remaining**: ~4-8 hours (0.5-1 days)
+**Total Estimated Effort Remaining**: ~1-4 hours (Z-order changes + optional data asset assignment)
 
 ---
 

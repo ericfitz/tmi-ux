@@ -867,6 +867,13 @@ export class AppDfdFacade {
   }
 
   /**
+   * Observable that emits when node parent changes (embedding/unembedding for history tracking)
+   */
+  get nodeParentChanged$(): Observable<any> {
+    return this.infraX6GraphAdapter.nodeParentChanged$;
+  }
+
+  /**
    * Handle cell label change (creates UpdateNodeOperation or UpdateEdgeOperation)
    */
   handleLabelChange(
@@ -1129,6 +1136,66 @@ export class AppDfdFacade {
         } else {
           this.logger.debug('Edge target reconnection recorded in history', {
             edgeId: reconnection.edgeId,
+          });
+        }
+      }),
+      map(() => undefined),
+    );
+  }
+
+  /**
+   * Handle node parent change (embedding/unembedding)
+   * Creates UpdateNodeOperation with parent change
+   */
+  handleNodeParentChange(
+    change: {
+      nodeId: string;
+      oldParentId: string | null;
+      newParentId: string | null;
+    },
+    diagramId: string,
+  ): Observable<void> {
+    const graph = this.infraX6GraphAdapter.getGraph();
+
+    this.logger.debug('Creating UpdateNodeOperation for parent change', {
+      nodeId: change.nodeId,
+      oldParentId: change.oldParentId,
+      newParentId: change.newParentId,
+    });
+
+    const operation: any = {
+      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: 'update-node',
+      source: 'user-interaction',
+      timestamp: Date.now(),
+      priority: 'normal',
+      nodeId: change.nodeId,
+      updates: {
+        parent: change.newParentId,
+      },
+    };
+
+    const context: OperationContext = {
+      graph,
+      diagramId,
+      threatModelId: '',
+      userId: '',
+      isCollaborating: false,
+      permissions: [],
+    };
+
+    return this.graphOperationManager.execute(operation, context).pipe(
+      tap(result => {
+        if (!result.success) {
+          this.logger.error('Failed to record node parent change in history', {
+            nodeId: change.nodeId,
+            error: result.error,
+          });
+        } else {
+          this.logger.debug('Node parent change recorded in history', {
+            nodeId: change.nodeId,
+            oldParentId: change.oldParentId,
+            newParentId: change.newParentId,
           });
         }
       }),

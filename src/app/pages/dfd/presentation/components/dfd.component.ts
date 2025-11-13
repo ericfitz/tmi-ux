@@ -807,6 +807,42 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  private handleNodeParentChange(change: any): void {
+    this.logger.info('DFD Component: handleNodeParentChange called', {
+      nodeId: change?.nodeId,
+      oldParentId: change?.oldParentId,
+      newParentId: change?.newParentId,
+      hasDfdId: !!this.dfdId,
+    });
+
+    if (!change || !this.dfdId) {
+      this.logger.warn('Cannot handle node parent change - missing change data or diagram ID', {
+        hasChange: !!change,
+        hasDfdId: !!this.dfdId,
+      });
+      return;
+    }
+
+    this.logger.debug('Handling node parent change', {
+      nodeId: change.nodeId,
+      oldParentId: change.oldParentId,
+      newParentId: change.newParentId,
+    });
+
+    this.dfdInfrastructure.handleNodeParentChange(change, this.dfdId).subscribe({
+      next: () => {
+        this.logger.debug('Node parent change recorded successfully', {
+          nodeId: change.nodeId,
+          oldParentId: change.oldParentId,
+          newParentId: change.newParentId,
+        });
+      },
+      error: error => {
+        this.logger.error('Error handling node parent change', { error, change });
+      },
+    });
+  }
+
   private handleEdgeVerticesChanged(edge: any): void {
     if (!edge || !this.dfdId) {
       this.logger.warn('Cannot handle edge vertices changed - missing edge or diagram ID');
@@ -1785,6 +1821,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             changeType: reconnection.changeType,
           });
           this.handleEdgeReconnection(reconnection);
+        }),
+      );
+
+      // Subscribe to node parent change events for history tracking (embedding/unembedding)
+      this._subscriptions.add(
+        this.dfdInfrastructure.nodeParentChanged$.pipe(takeUntil(this._destroy$)).subscribe(change => {
+          this.logger.info('DFD Component: nodeParentChanged$ observable fired', {
+            nodeId: change.nodeId,
+            oldParentId: change.oldParentId,
+            newParentId: change.newParentId,
+          });
+          this.handleNodeParentChange(change);
         }),
       );
 
