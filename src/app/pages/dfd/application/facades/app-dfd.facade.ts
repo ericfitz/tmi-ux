@@ -782,6 +782,13 @@ export class AppDfdFacade {
   }
 
   /**
+   * Observable that emits when edges are reconnected (for history tracking)
+   */
+  get edgeReconnected$(): Observable<any> {
+    return this.infraX6GraphAdapter.edgeReconnected$;
+  }
+
+  /**
    * Handle cell label change (creates UpdateNodeOperation or UpdateEdgeOperation)
    */
   handleLabelChange(
@@ -896,6 +903,155 @@ export class AppDfdFacade {
           });
         } else {
           this.logger.debug('Edge label change recorded in history', { edgeId: change.cellId });
+        }
+      }),
+      map(() => undefined),
+    );
+  }
+
+  /**
+   * Handle edge reconnection (creates UpdateEdgeOperation for source or target changes)
+   */
+  handleEdgeReconnection(
+    reconnection: {
+      edgeId: string;
+      changeType: 'source' | 'target';
+      oldNodeId: string | undefined;
+      oldPortId: string | undefined;
+      newNodeId: string | undefined;
+      newPortId: string | undefined;
+    },
+    diagramId: string,
+  ): Observable<void> {
+    const graph = this.infraX6GraphAdapter.getGraph();
+
+    if (reconnection.changeType === 'source') {
+      return this._handleEdgeReconnectionSource(reconnection, graph, diagramId);
+    } else {
+      return this._handleEdgeReconnectionTarget(reconnection, graph, diagramId);
+    }
+  }
+
+  /**
+   * Handle edge source reconnection
+   */
+  private _handleEdgeReconnectionSource(
+    reconnection: {
+      edgeId: string;
+      oldNodeId: string | undefined;
+      oldPortId: string | undefined;
+      newNodeId: string | undefined;
+      newPortId: string | undefined;
+    },
+    graph: any,
+    diagramId: string,
+  ): Observable<void> {
+    this.logger.debug('Creating UpdateEdgeOperation for source reconnection', {
+      edgeId: reconnection.edgeId,
+      oldNodeId: reconnection.oldNodeId,
+      oldPortId: reconnection.oldPortId,
+      newNodeId: reconnection.newNodeId,
+      newPortId: reconnection.newPortId,
+    });
+
+    const operation: any = {
+      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: 'update-edge',
+      source: 'user-interaction',
+      timestamp: Date.now(),
+      priority: 'normal',
+      edgeId: reconnection.edgeId,
+      updates: {
+        source: {
+          cell: reconnection.newNodeId,
+          port: reconnection.newPortId,
+        },
+      },
+    };
+
+    const context: OperationContext = {
+      graph,
+      diagramId,
+      threatModelId: '',
+      userId: '',
+      isCollaborating: false,
+      permissions: [],
+    };
+
+    return this.graphOperationManager.execute(operation, context).pipe(
+      tap(result => {
+        if (!result.success) {
+          this.logger.error('Failed to record edge source reconnection in history', {
+            edgeId: reconnection.edgeId,
+            error: result.error,
+          });
+        } else {
+          this.logger.debug('Edge source reconnection recorded in history', {
+            edgeId: reconnection.edgeId,
+          });
+        }
+      }),
+      map(() => undefined),
+    );
+  }
+
+  /**
+   * Handle edge target reconnection
+   */
+  private _handleEdgeReconnectionTarget(
+    reconnection: {
+      edgeId: string;
+      oldNodeId: string | undefined;
+      oldPortId: string | undefined;
+      newNodeId: string | undefined;
+      newPortId: string | undefined;
+    },
+    graph: any,
+    diagramId: string,
+  ): Observable<void> {
+    this.logger.debug('Creating UpdateEdgeOperation for target reconnection', {
+      edgeId: reconnection.edgeId,
+      oldNodeId: reconnection.oldNodeId,
+      oldPortId: reconnection.oldPortId,
+      newNodeId: reconnection.newNodeId,
+      newPortId: reconnection.newPortId,
+    });
+
+    const operation: any = {
+      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: 'update-edge',
+      source: 'user-interaction',
+      timestamp: Date.now(),
+      priority: 'normal',
+      edgeId: reconnection.edgeId,
+      updates: {
+        target: {
+          cell: reconnection.newNodeId,
+          port: reconnection.newPortId,
+        },
+      },
+    };
+
+    const context: OperationContext = {
+      graph,
+      diagramId,
+      threatModelId: '',
+      userId: '',
+      isCollaborating: false,
+      permissions: [],
+    };
+
+    return this.graphOperationManager.execute(operation, context).pipe(
+      tap(result => {
+        if (!result.success) {
+          this.logger.error('Failed to record edge target reconnection in history', {
+            edgeId: reconnection.edgeId,
+            error: result.error,
+          });
+        } else {
+          this.logger.debug('Edge target reconnection recorded in history', {
+            edgeId: reconnection.edgeId,
+          });
         }
       }),
       map(() => undefined),

@@ -117,11 +117,30 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     oldLabel: string;
     newLabel: string;
   }>();
+  private readonly _edgeReconnected$ = new Subject<{
+    edgeId: string;
+    changeType: 'source' | 'target';
+    oldNodeId: string | undefined;
+    oldPortId: string | undefined;
+    newNodeId: string | undefined;
+    newPortId: string | undefined;
+  }>();
   private readonly _historyChanged$ = new Subject<{ canUndo: boolean; canRedo: boolean }>();
 
   // Private properties to track previous undo/redo states
   private _previousCanUndo = false;
   private _previousCanRedo = false;
+
+  // Track edge connections for reconnection history
+  private readonly _edgeConnections = new Map<
+    string,
+    {
+      sourceNodeId: string | undefined;
+      sourcePortId: string | undefined;
+      targetNodeId: string | undefined;
+      targetPortId: string | undefined;
+    }
+  >();
 
   constructor(
     private logger: LoggerService,
@@ -254,6 +273,20 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     newLabel: string;
   }> {
     return this._cellLabelChanged$.asObservable();
+  }
+
+  /**
+   * Observable for edge reconnection events (for history tracking)
+   */
+  get edgeReconnected$(): Observable<{
+    edgeId: string;
+    changeType: 'source' | 'target';
+    oldNodeId: string | undefined;
+    oldPortId: string | undefined;
+    newNodeId: string | undefined;
+    newPortId: string | undefined;
+  }> {
+    return this._edgeReconnected$.asObservable();
   }
 
   /**
@@ -1154,6 +1187,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
           this.logger.debugComponent('X6Graph', 'Emitting edge added event');
           this._edgeAdded$.next(edge);
 
+          // Set up connection change tracking for reconnection history
+          this._setupEdgeConnectionChangeTracking(edge);
+
           // Then set edge z-order and update port visibility (all excluded from history as visual effects)
           this._historyCoordinator.executeVisualEffect(this._graph!, () => {
             // Set edge z-order to the higher of source or target node z-orders
@@ -1588,20 +1624,54 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
   /**
    * Set up tracking for source/target connection changes on an edge
+   * Also stores initial connection state for history tracking
    */
   private _setupEdgeConnectionChangeTracking(edge: Edge): void {
     if (!this._graph) return;
 
+    // Store initial connection state
+    this._edgeConnections.set(edge.id, {
+      sourceNodeId: edge.getSourceCellId(),
+      sourcePortId: edge.getSourcePortId(),
+      targetNodeId: edge.getTargetCellId(),
+      targetPortId: edge.getTargetPortId(),
+    });
+
     // Listen for source changes on this specific edge
     const sourceChangeHandler = ({ edge: changedEdge }: { edge: Edge }): void => {
       if (changedEdge.id === edge.id) {
-        const sourceId = changedEdge.getSourceCellId();
-        const sourcePortId = changedEdge.getSourcePortId();
+        const newSourceId = changedEdge.getSourceCellId();
+        const newSourcePortId = changedEdge.getSourcePortId();
+
+        // Get old connection state
+        const oldConnection = this._edgeConnections.get(edge.id);
+
         this.logger.info('[DFD] Edge source changed', {
           edgeId: edge.id,
-          newSourceId: sourceId,
-          newSourcePortId: sourcePortId,
+          oldSourceId: oldConnection?.sourceNodeId,
+          oldSourcePortId: oldConnection?.sourcePortId,
+          newSourceId,
+          newSourcePortId,
         });
+
+        // Emit reconnection event for history tracking
+        if (oldConnection) {
+          this._edgeReconnected$.next({
+            edgeId: edge.id,
+            changeType: 'source',
+            oldNodeId: oldConnection.sourceNodeId,
+            oldPortId: oldConnection.sourcePortId,
+            newNodeId: newSourceId,
+            newPortId: newSourcePortId,
+          });
+
+          // Update stored connection state
+          this._edgeConnections.set(edge.id, {
+            ...oldConnection,
+            sourceNodeId: newSourceId,
+            sourcePortId: newSourcePortId,
+          });
+        }
 
         // Update port visibility for old and new source nodes using port manager
         // Port visibility changes are excluded from history by the operation metadata
@@ -1617,13 +1687,38 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Listen for target changes on this specific edge
     const targetChangeHandler = ({ edge: changedEdge }: { edge: Edge }): void => {
       if (changedEdge.id === edge.id) {
-        const targetId = changedEdge.getTargetCellId();
-        const targetPortId = changedEdge.getTargetPortId();
+        const newTargetId = changedEdge.getTargetCellId();
+        const newTargetPortId = changedEdge.getTargetPortId();
+
+        // Get old connection state
+        const oldConnection = this._edgeConnections.get(edge.id);
+
         this.logger.info('[DFD] Edge target changed', {
           edgeId: edge.id,
-          newTargetId: targetId,
-          newTargetPortId: targetPortId,
+          oldTargetId: oldConnection?.targetNodeId,
+          oldTargetPortId: oldConnection?.targetPortId,
+          newTargetId,
+          newTargetPortId,
         });
+
+        // Emit reconnection event for history tracking
+        if (oldConnection) {
+          this._edgeReconnected$.next({
+            edgeId: edge.id,
+            changeType: 'target',
+            oldNodeId: oldConnection.targetNodeId,
+            oldPortId: oldConnection.targetPortId,
+            newNodeId: newTargetId,
+            newPortId: newTargetPortId,
+          });
+
+          // Update stored connection state
+          this._edgeConnections.set(edge.id, {
+            ...oldConnection,
+            targetNodeId: newTargetId,
+            targetPortId: newTargetPortId,
+          });
+        }
 
         // Update port visibility for old and new target nodes using port manager
         // Port visibility changes are excluded from history by the operation metadata

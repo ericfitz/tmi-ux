@@ -772,6 +772,41 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  private handleEdgeReconnection(reconnection: any): void {
+    this.logger.info('DFD Component: handleEdgeReconnection called', {
+      edgeId: reconnection?.edgeId,
+      changeType: reconnection?.changeType,
+      hasDfdId: !!this.dfdId,
+    });
+
+    if (!reconnection || !this.dfdId) {
+      this.logger.warn('Cannot handle edge reconnection - missing reconnection data or diagram ID', {
+        hasReconnection: !!reconnection,
+        hasDfdId: !!this.dfdId,
+      });
+      return;
+    }
+
+    this.logger.debug('Handling edge reconnection', {
+      edgeId: reconnection.edgeId,
+      changeType: reconnection.changeType,
+      oldNodeId: reconnection.oldNodeId,
+      newNodeId: reconnection.newNodeId,
+    });
+
+    this.dfdInfrastructure.handleEdgeReconnection(reconnection, this.dfdId).subscribe({
+      next: () => {
+        this.logger.debug('Edge reconnection recorded successfully', {
+          edgeId: reconnection.edgeId,
+          changeType: reconnection.changeType,
+        });
+      },
+      error: error => {
+        this.logger.error('Error handling edge reconnection', { error, reconnection });
+      },
+    });
+  }
+
   private handleEdgeVerticesChanged(edge: any): void {
     if (!edge || !this.dfdId) {
       this.logger.warn('Cannot handle edge vertices changed - missing edge or diagram ID');
@@ -1746,6 +1781,17 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             cellType: change.cellType,
           });
           this.handleLabelChange(change);
+        }),
+      );
+
+      // Subscribe to edge reconnection events for history tracking
+      this._subscriptions.add(
+        this.dfdInfrastructure.edgeReconnected$.pipe(takeUntil(this._destroy$)).subscribe(reconnection => {
+          this.logger.info('DFD Component: edgeReconnected$ observable fired', {
+            edgeId: reconnection.edgeId,
+            changeType: reconnection.changeType,
+          });
+          this.handleEdgeReconnection(reconnection);
         }),
       );
 

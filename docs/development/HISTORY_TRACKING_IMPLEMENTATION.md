@@ -151,18 +151,21 @@ For explicit user actions (delete, cut, paste):
   - Drag tracking infrastructure already existed in adapter (lines 1551-1564)
 - **Testing**: Build ✅ | Lint ✅
 
-### 10. ⏳ Edge Reconnection (NOT STARTED)
-- **Status**: Not started
+### 10. ✅ Edge Reconnection (COMPLETED - 2025-11-13)
+- **Status**: Implemented and tested
 - **Pattern**: Event Handler
-- **Target Files**:
-  - `src/app/pages/dfd/infrastructure/adapters/infra-x6-graph.adapter.ts` - `_setupEdgeConnectionChangeTracking()` (~line 1558-1612)
-- **Implementation Plan**:
-  1. Need to capture previous source/target before change
-  2. In `edge:change:source` and `edge:change:target` handlers, create `UpdateEdgeOperation`
-  3. Include old and new connection info
-  4. May need to add tracking to capture "before" state
-- **Estimated Effort**: 3-4 hours (needs state tracking addition)
-- **Dependencies**: None
+- **Files Modified**:
+  - `src/app/pages/dfd/infrastructure/adapters/infra-x6-graph.adapter.ts` - Added `_edgeReconnected$` subject, `_edgeConnections` Map for state tracking, modified `_setupEdgeConnectionChangeTracking()` to capture old/new connection values
+  - `src/app/pages/dfd/application/facades/app-dfd.facade.ts` - Added `edgeReconnected$` getter, `handleEdgeReconnection()`, `_handleEdgeReconnectionSource()`, and `_handleEdgeReconnectionTarget()` methods
+  - `src/app/pages/dfd/presentation/components/dfd.component.ts` - Added subscription to `edgeReconnected$`, added `handleEdgeReconnection()` method
+- **Implementation**:
+  - Added `_edgeConnections` Map to track current source/target for each edge
+  - Modified `_setupEdgeConnectionChangeTracking()` to store initial state when edge is created
+  - On `edge:change:source` or `edge:change:target` events, retrieve old values from Map, emit event with old/new node/port IDs, update Map
+  - Facade routes to separate handlers for source vs target reconnection
+  - Each handler creates UpdateEdgeOperation with appropriate source or target updates
+  - Component subscribes to observable and calls facade handler
+- **Testing**: Build ✅ | Lint ✅
 
 ---
 
@@ -241,7 +244,7 @@ For explicit user actions (delete, cut, paste):
 
 ## Progress Summary
 
-**Completed**: 9/16 operations (56.25%)
+**Completed**: 10/16 operations (62.5%)
 - ✅ Edge Creation
 - ✅ Node Creation
 - ✅ Node Movement
@@ -251,9 +254,9 @@ For explicit user actions (delete, cut, paste):
 - ✅ Node Label Editing
 - ✅ Edge Label Editing
 - ✅ Edge Vertices Drag
+- ✅ Edge Reconnection
 
-**Phase 1 (P0) Remaining**: 1/9 operations
-- Edge Reconnection
+**Phase 1 (P0)**: 10/10 operations complete (100%) ✅
 
 **Phase 2 (P1)**: 5 operations not started
 **Phase 3 (P2)**: 1 operation not started (1 already working)
