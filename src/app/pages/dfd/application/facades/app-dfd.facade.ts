@@ -669,6 +669,84 @@ export class AppDfdFacade {
   }
 
   // ========================================
+  // Clipboard Operations
+  // ========================================
+
+  /**
+   * Cut selected cells to clipboard with history tracking
+   * Copies cells to clipboard then deletes them via GraphOperations
+   */
+  cut(): Observable<{ success: boolean; cutCount: number }> {
+    try {
+      const graph = this.infraX6GraphAdapter.getGraph();
+      const selectedCells = graph.getSelectedCells();
+
+      if (selectedCells.length === 0) {
+        return of({ success: true, cutCount: 0 });
+      }
+
+      this.logger.debug('Cutting cells to clipboard with history tracking', {
+        cellCount: selectedCells.length,
+      });
+
+      // First, copy to clipboard using X6's clipboard
+      graph.cut(selectedCells);
+
+      // Then delete the cells via GraphOperations for history tracking
+      return this.deleteSelectedCells().pipe(
+        map(result => ({
+          success: result.success,
+          cutCount: result.deletedCount,
+        })),
+        tap(result => {
+          if (result.success) {
+            this.logger.debug('Cut operation completed successfully', {
+              cutCount: result.cutCount,
+            });
+          } else {
+            this.logger.error('Cut operation failed', { result });
+          }
+        }),
+      );
+    } catch (error) {
+      this.logger.error('Error during cut operation', { error });
+      return of({ success: false, cutCount: 0 });
+    }
+  }
+
+  /**
+   * Copy selected cells to clipboard
+   * Does not modify the diagram, so no history tracking needed
+   */
+  copy(): void {
+    const graph = this.infraX6GraphAdapter.getGraph();
+    const selectedCells = graph.getSelectedCells();
+
+    if (selectedCells.length === 0) {
+      this.logger.debug('No cells selected for copy operation');
+      return;
+    }
+
+    graph.copy(selectedCells);
+    this.logger.debug('Copied cells to clipboard', { count: selectedCells.length });
+  }
+
+  /**
+   * Paste cells from clipboard
+   * Note: Pasted cells are created by X6, then captured by retroactive handlers
+   */
+  paste(): void {
+    const graph = this.infraX6GraphAdapter.getGraph();
+
+    if (!graph.isClipboardEmpty()) {
+      graph.paste();
+      this.logger.debug('Paste operation initiated - cells will be captured retroactively');
+    } else {
+      this.logger.debug('Clipboard is empty, cannot paste');
+    }
+  }
+
+  // ========================================
   // Graph State Operations
   // ========================================
 

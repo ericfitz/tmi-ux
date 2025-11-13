@@ -1029,40 +1029,33 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   onCut(): void {
     if (!this.hasSelectedCells || this.isReadOnlyMode) return;
 
-    const graphAdapter = this.dfdInfrastructure.graphAdapter;
-    if (!graphAdapter) {
-      this.logger.warn('Cannot cut: Graph adapter not available');
-      return;
-    }
-
-    graphAdapter.cut();
-    this.logger.debug('Cut operation completed');
+    this.logger.debug('Cut operation initiated');
+    this.dfdInfrastructure.cut().subscribe({
+      next: result => {
+        if (result.success) {
+          this.logger.info('Cut operation completed', { cutCount: result.cutCount });
+        } else {
+          this.logger.error('Cut operation failed');
+        }
+      },
+      error: error => {
+        this.logger.error('Error during cut operation', { error });
+      },
+    });
   }
 
   onCopy(): void {
     if (!this.hasSelectedCells) return;
 
-    const graphAdapter = this.dfdInfrastructure.graphAdapter;
-    if (!graphAdapter) {
-      this.logger.warn('Cannot copy: Graph adapter not available');
-      return;
-    }
-
-    graphAdapter.copy();
-    this.logger.debug('Copy operation completed');
+    this.logger.debug('Copy operation initiated');
+    this.dfdInfrastructure.copy();
   }
 
   onPaste(): void {
     if (this.isReadOnlyMode) return;
 
-    const graphAdapter = this.dfdInfrastructure.graphAdapter;
-    if (!graphAdapter) {
-      this.logger.warn('Cannot paste: Graph adapter not available');
-      return;
-    }
-
-    graphAdapter.paste();
-    this.logger.debug('Paste operation completed');
+    this.logger.debug('Paste operation initiated');
+    this.dfdInfrastructure.paste();
   }
 
   // Template compatibility methods

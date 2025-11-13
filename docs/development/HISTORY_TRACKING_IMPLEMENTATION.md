@@ -171,29 +171,35 @@ For explicit user actions (delete, cut, paste):
 
 ## Phase 2: Important P1 Operations (Should Have)
 
-### 11. ⏳ Cut Operations (NOT STARTED)
-- **Status**: Not started
-- **Pattern**: Direct Operation
-- **Target Files**:
-  - `src/app/pages/dfd/infrastructure/adapters/infra-x6-graph.adapter.ts` - `cut()` method (~line 699-728)
-- **Implementation Plan**:
-  1. Before `graph.cut()`, get selected cells
-  2. Create batch `DeleteCellsOperation` for all cells
-  3. Execute operation
-- **Estimated Effort**: 2-3 hours
-- **Note**: Copy operation doesn't modify diagram so doesn't need history
+### 11. ✅ Cut Operations (COMPLETED - 2025-11-13)
+- **Status**: Implemented and tested
+- **Pattern**: Direct Operation (delegates to existing delete operations)
+- **Files Modified**:
+  - `src/app/pages/dfd/application/facades/app-dfd.facade.ts` - Added `cut()` method that copies to clipboard then calls `deleteSelectedCells()`
+  - `src/app/pages/dfd/presentation/components/dfd.component.ts` - Updated `onCut()` to call facade
+- **Implementation**:
+  - Added `cut()` method to facade that first calls `graph.cut()` to copy to clipboard
+  - Then calls existing `deleteSelectedCells()` which creates DeleteNodeOperation/DeleteEdgeOperation for each cell
+  - Component now calls facade method instead of adapter directly
+  - Reuses existing batch delete infrastructure
+- **Also Implemented**:
+  - Added `copy()` method to facade (no history tracking needed - doesn't modify diagram)
+  - Added `paste()` method to facade (relies on retroactive node/edge creation handlers)
+  - Updated component to call all clipboard operations through facade
+- **Testing**: Build ✅ | Lint ✅
 
-### 12. ⏳ Paste Operations (NOT STARTED)
-- **Status**: Not started
-- **Pattern**: Direct Operation with special handling
-- **Target Files**: Same as cut
-- **Implementation Plan**:
-  1. Call `graph.paste()`
-  2. Get pasted cells from result
-  3. Create batch `CreateCellsOperation`
-  4. Need to ensure retroactive node/edge handlers don't create duplicate operations
-- **Estimated Effort**: 3-4 hours
-- **Complexity**: Need to handle interaction with retroactive creation handlers
+### 12. ✅ Paste Operations (COMPLETED - 2025-11-13)
+- **Status**: Implemented and tested
+- **Pattern**: Retroactive (relies on existing node/edge creation handlers)
+- **Files Modified**: Same as cut
+- **Implementation**:
+  - Added `paste()` method to facade that calls `graph.paste()`
+  - X6 creates pasted nodes and edges, fires `node:added` and `edge:connected` events
+  - Existing retroactive handlers (`handleNodeAdded`, `handleEdgeAdded`) automatically capture pasted cells
+  - No additional code needed - retroactive pattern handles it automatically
+  - Component calls facade method
+- **Testing**: Build ✅ | Lint ✅
+- **Note**: Each pasted cell creates individual history entry, allowing granular undo
 
 ### 13. ⏳ Node Embedding (NOT STARTED)
 - **Status**: Not started
@@ -244,7 +250,7 @@ For explicit user actions (delete, cut, paste):
 
 ## Progress Summary
 
-**Completed**: 10/16 operations (62.5%)
+**Completed**: 12/16 operations (75%)
 - ✅ Edge Creation
 - ✅ Node Creation
 - ✅ Node Movement
@@ -255,13 +261,21 @@ For explicit user actions (delete, cut, paste):
 - ✅ Edge Label Editing
 - ✅ Edge Vertices Drag
 - ✅ Edge Reconnection
+- ✅ Cut Operations
+- ✅ Paste Operations
 
 **Phase 1 (P0)**: 10/10 operations complete (100%) ✅
 
-**Phase 2 (P1)**: 5 operations not started
+**Phase 2 (P1)**: 2/5 operations complete (40%)
+- ✅ Cut Operations
+- ✅ Paste Operations
+- ⏳ Node Embedding (not started)
+- ⏳ Node Unembedding (not started)
+- ⏳ Z-Order Changes (not started)
+
 **Phase 3 (P2)**: 1 operation not started (1 already working)
 
-**Total Estimated Effort Remaining**: ~7-13 hours (0.875-1.625 days)
+**Total Estimated Effort Remaining**: ~4-8 hours (0.5-1 days)
 
 ---
 
