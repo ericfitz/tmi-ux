@@ -111,27 +111,32 @@ For explicit user actions (delete, cut, paste):
   - Properly handles port visibility updates after deletion
 - **Testing**: Build ✅ | Lint ✅
 
-### 7. ⏳ Node Label Editing (NOT STARTED)
-- **Status**: Not started
+### 7. ✅ Node Label Editing (COMPLETED - 2025-11-12)
+- **Status**: Implemented and tested
 - **Pattern**: Direct Operation
-- **Target Files**:
-  - `src/app/pages/dfd/infrastructure/adapters/infra-x6-graph.adapter.ts` - `setCellLabel()` method (~line 916) and `_addLabelEditor()` (~line 1617-1767)
-- **Implementation Plan**:
-  1. Capture old label before change
-  2. Create `UpdateNodeOperation` with label change
-  3. Execute operation which updates label
-  4. Decision needed: Record each keystroke or only final commit?
-- **Estimated Effort**: 2-3 hours
-- **Dependencies**: None
-- **Open Question**: Should this be undoable per-keystroke or per-commit?
+- **Files Modified**:
+  - `src/app/pages/dfd/infrastructure/adapters/infra-x6-graph.adapter.ts` - Added `_cellLabelChanged$` subject and modified `setCellLabel()` to emit events
+  - `src/app/pages/dfd/application/facades/app-dfd.facade.ts` - Added `handleLabelChange()` and `_handleNodeLabelChange()` methods
+  - `src/app/pages/dfd/presentation/components/dfd.component.ts` - Added subscription and `handleLabelChange()` method
+- **Implementation**:
+  - `setCellLabel()` captures old label, applies change, emits event with old/new values
+  - Component subscribes to `cellLabelChanged$` observable
+  - Facade creates `UpdateNodeOperation` with label change
+  - Records per-commit (when user presses Enter or clicks away), not per-keystroke
+- **Testing**: Build ✅ | Lint ✅
 
-### 8. ⏳ Edge Label Editing (NOT STARTED)
-- **Status**: Not started
+### 8. ✅ Edge Label Editing (COMPLETED - 2025-11-12)
+- **Status**: Implemented and tested
 - **Pattern**: Direct Operation (shared with node label)
-- **Target Files**: Same as node label editing
-- **Implementation Plan**: Same as node label, create `UpdateEdgeOperation` instead
-- **Estimated Effort**: 1 hour (shares code with node label)
-- **Dependencies**: Should be done with node label editing
+- **Files Modified**:
+  - Same infrastructure as node label (shared `cellLabelChanged$` observable)
+  - `src/app/pages/dfd/application/facades/app-dfd.facade.ts` - Added `_handleEdgeLabelChange()` method
+- **Implementation**:
+  - Shares `setCellLabel()` and observable from node implementation
+  - Facade routes to `_handleEdgeLabelChange()` for edge cells
+  - Creates `UpdateEdgeOperation` with label change
+  - Records per-commit, not per-keystroke
+- **Testing**: Build ✅ | Lint ✅
 
 ### 9. ⏳ Edge Vertices Drag (NOT STARTED)
 - **Status**: Not started
@@ -235,24 +240,24 @@ For explicit user actions (delete, cut, paste):
 
 ## Progress Summary
 
-**Completed**: 6/16 operations (37.5%)
+**Completed**: 8/16 operations (50%)
 - ✅ Edge Creation
 - ✅ Node Creation
 - ✅ Node Movement
 - ✅ Node Resizing
 - ✅ Node Deletion
 - ✅ Edge Deletion
+- ✅ Node Label Editing
+- ✅ Edge Label Editing
 
-**Phase 1 (P0) Remaining**: 3/9 operations
-- Node Label Editing
-- Edge Label Editing
+**Phase 1 (P0) Remaining**: 1/9 operations
 - Edge Vertices Drag
 - Edge Reconnection
 
 **Phase 2 (P1)**: 5 operations not started
 **Phase 3 (P2)**: 1 operation not started (1 already working)
 
-**Total Estimated Effort Remaining**: ~16-22 hours (2-2.75 days)
+**Total Estimated Effort Remaining**: ~10-16 hours (1.25-2 days)
 
 ---
 
@@ -347,21 +352,22 @@ For explicit user actions (delete, cut, paste):
 - **Node Resizing**: Implemented drag completion pattern for node resizing history tracking
 - **Node Deletion**: Implemented direct operation pattern for node deletion history tracking
 - **Edge Deletion**: Implemented direct operation pattern for edge deletion history tracking
-- **Build Status**: ✅ Successful (all 6 implementations)
+- **Node Label Editing**: Implemented direct operation pattern for node label editing history tracking
+- **Edge Label Editing**: Implemented direct operation pattern for edge label editing history tracking (shares implementation with node)
+- **Build Status**: ✅ Successful (all 8 implementations)
 - **Test Status**: ✅ Lint passing, Build passing
-- **Progress**: 6/16 operations complete (37.5%)
+- **Progress**: 8/16 operations complete (50%)
 
 ---
 
 ## Next Steps
 
 ### Immediate (Next Session)
-1. Implement node label editing history tracking (P0 #7)
-2. Implement edge label editing history tracking (P0 #8)
-3. Implement edge vertices drag history tracking (P0 #9)
-4. Implement edge reconnection history tracking (P0 #10)
-5. Run full test suite to verify no regressions
-6. Manual testing of all implemented operations
+1. Implement edge vertices drag history tracking (P0 #9)
+2. Implement edge reconnection history tracking (P0 #10)
+3. Run full test suite to verify no regressions
+4. Manual testing of all implemented operations
+5. Test undo/redo for each operation type
 
 ### Short Term (This Week)
 1. Complete remaining P0 operations (#7-10)

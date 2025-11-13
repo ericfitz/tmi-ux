@@ -111,6 +111,12 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     edgeId: string;
     vertices: Array<{ x: number; y: number }>;
   }>();
+  private readonly _cellLabelChanged$ = new Subject<{
+    cellId: string;
+    cellType: 'node' | 'edge';
+    oldLabel: string;
+    newLabel: string;
+  }>();
   private readonly _historyChanged$ = new Subject<{ canUndo: boolean; canRedo: boolean }>();
 
   // Private properties to track previous undo/redo states
@@ -236,6 +242,18 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     vertices: Array<{ x: number; y: number }>;
   }> {
     return this._edgeVerticesChanged$.asObservable();
+  }
+
+  /**
+   * Observable for cell label changes (for history tracking)
+   */
+  get cellLabelChanged$(): Observable<{
+    cellId: string;
+    cellType: 'node' | 'edge';
+    oldLabel: string;
+    newLabel: string;
+  }> {
+    return this._cellLabelChanged$.asObservable();
   }
 
   /**
@@ -911,6 +929,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       return;
     }
 
+    // Capture old label before changing
+    const oldLabel = this.getCellLabel(cell);
+
     // Batch all label changes into a single history command
     // This ensures multiple attribute changes are grouped as one undoable operation
     this._graph.batchUpdate(() => {
@@ -922,8 +943,19 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
           cellId: cell.id,
           cellType: cell.isNode() ? 'node' : 'edge',
         });
+        return;
       }
     });
+
+    // Emit label change event for history tracking (only if actually changed)
+    if (oldLabel !== text) {
+      this._cellLabelChanged$.next({
+        cellId: cell.id,
+        cellType: cell.isNode() ? 'node' : 'edge',
+        oldLabel,
+        newLabel: text,
+      });
+    }
   }
 
   /**

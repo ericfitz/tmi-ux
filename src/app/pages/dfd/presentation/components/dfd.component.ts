@@ -737,6 +737,41 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  private handleLabelChange(change: any): void {
+    this.logger.info('DFD Component: handleLabelChange called', {
+      cellId: change?.cellId,
+      cellType: change?.cellType,
+      hasDfdId: !!this.dfdId,
+    });
+
+    if (!change || !this.dfdId) {
+      this.logger.warn('Cannot handle label change - missing change data or diagram ID', {
+        hasChange: !!change,
+        hasDfdId: !!this.dfdId,
+      });
+      return;
+    }
+
+    this.logger.debug('Handling label change', {
+      cellId: change.cellId,
+      cellType: change.cellType,
+      oldLabel: change.oldLabel,
+      newLabel: change.newLabel,
+    });
+
+    this.dfdInfrastructure.handleLabelChange(change, this.dfdId).subscribe({
+      next: () => {
+        this.logger.debug('Label change recorded successfully', {
+          cellId: change.cellId,
+          cellType: change.cellType,
+        });
+      },
+      error: error => {
+        this.logger.error('Error handling label change', { error, change });
+      },
+    });
+  }
+
   private handleEdgeVerticesChanged(edge: any): void {
     if (!edge || !this.dfdId) {
       this.logger.warn('Cannot handle edge vertices changed - missing edge or diagram ID');
@@ -1700,6 +1735,17 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             dragType: completion.dragType,
           });
           this.handleDragCompletion(completion);
+        }),
+      );
+
+      // Subscribe to cell label change events for history tracking
+      this._subscriptions.add(
+        this.dfdInfrastructure.cellLabelChanged$.pipe(takeUntil(this._destroy$)).subscribe(change => {
+          this.logger.info('DFD Component: cellLabelChanged$ observable fired', {
+            cellId: change.cellId,
+            cellType: change.cellType,
+          });
+          this.handleLabelChange(change);
         }),
       );
 

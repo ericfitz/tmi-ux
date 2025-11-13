@@ -695,6 +695,134 @@ export class AppDfdFacade {
     return this.historyCoordinator.dragCompletions$;
   }
 
+  /**
+   * Observable that emits when cell labels change (for history tracking)
+   */
+  get cellLabelChanged$(): Observable<any> {
+    return this.infraX6GraphAdapter.cellLabelChanged$;
+  }
+
+  /**
+   * Handle cell label change (creates UpdateNodeOperation or UpdateEdgeOperation)
+   */
+  handleLabelChange(
+    change: {
+      cellId: string;
+      cellType: 'node' | 'edge';
+      oldLabel: string;
+      newLabel: string;
+    },
+    diagramId: string,
+  ): Observable<void> {
+    const graph = this.infraX6GraphAdapter.getGraph();
+
+    if (change.cellType === 'node') {
+      return this._handleNodeLabelChange(change, graph, diagramId);
+    } else {
+      return this._handleEdgeLabelChange(change, graph, diagramId);
+    }
+  }
+
+  /**
+   * Handle node label change
+   */
+  private _handleNodeLabelChange(
+    change: { cellId: string; oldLabel: string; newLabel: string },
+    graph: any,
+    diagramId: string,
+  ): Observable<void> {
+    this.logger.debug('Creating UpdateNodeOperation for label change', {
+      nodeId: change.cellId,
+      oldLabel: change.oldLabel,
+      newLabel: change.newLabel,
+    });
+
+    const operation: any = {
+      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: 'update-node',
+      source: 'user-interaction',
+      timestamp: Date.now(),
+      priority: 'normal',
+      nodeId: change.cellId,
+      updates: {
+        label: change.newLabel,
+      },
+    };
+
+    const context: OperationContext = {
+      graph,
+      diagramId,
+      threatModelId: '',
+      userId: '',
+      isCollaborating: false,
+      permissions: [],
+    };
+
+    return this.graphOperationManager.execute(operation, context).pipe(
+      tap(result => {
+        if (!result.success) {
+          this.logger.error('Failed to record node label change in history', {
+            nodeId: change.cellId,
+            error: result.error,
+          });
+        } else {
+          this.logger.debug('Node label change recorded in history', { nodeId: change.cellId });
+        }
+      }),
+      map(() => undefined),
+    );
+  }
+
+  /**
+   * Handle edge label change
+   */
+  private _handleEdgeLabelChange(
+    change: { cellId: string; oldLabel: string; newLabel: string },
+    graph: any,
+    diagramId: string,
+  ): Observable<void> {
+    this.logger.debug('Creating UpdateEdgeOperation for label change', {
+      edgeId: change.cellId,
+      oldLabel: change.oldLabel,
+      newLabel: change.newLabel,
+    });
+
+    const operation: any = {
+      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: 'update-edge',
+      source: 'user-interaction',
+      timestamp: Date.now(),
+      priority: 'normal',
+      edgeId: change.cellId,
+      updates: {
+        label: change.newLabel,
+      },
+    };
+
+    const context: OperationContext = {
+      graph,
+      diagramId,
+      threatModelId: '',
+      userId: '',
+      isCollaborating: false,
+      permissions: [],
+    };
+
+    return this.graphOperationManager.execute(operation, context).pipe(
+      tap(result => {
+        if (!result.success) {
+          this.logger.error('Failed to record edge label change in history', {
+            edgeId: change.cellId,
+            error: result.error,
+          });
+        } else {
+          this.logger.debug('Edge label change recorded in history', { edgeId: change.cellId });
+        }
+      }),
+      map(() => undefined),
+    );
+  }
+
   // ========================================
   // Utility Operations
   // ========================================
