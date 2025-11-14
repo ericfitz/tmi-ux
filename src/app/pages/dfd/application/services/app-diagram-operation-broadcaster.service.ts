@@ -236,6 +236,25 @@ export class AppDiagramOperationBroadcaster {
       return false;
     }
 
+    // Skip intermediate drag events - only broadcast final state after drag completes
+    // This prevents flooding collaborators with position/size updates during drag operations
+    if (event === 'cell:change:*' && args.cell?.id && args.key) {
+      const cellId = args.cell.id;
+      const isDragging = this.historyCoordinator.isDragInProgress(cellId);
+
+      // Check if this is a position, size, or vertices change during an active drag
+      if (
+        isDragging &&
+        (args.key === 'position' || args.key === 'size' || args.key === 'vertices')
+      ) {
+        this.logger.debug('Skipping broadcast - intermediate drag event', {
+          cellId,
+          changeKey: args.key,
+        });
+        return false;
+      }
+    }
+
     // Use same filtering logic as X6 history
     // Exclude tool changes completely
     if (event === 'cell:change:tools') {

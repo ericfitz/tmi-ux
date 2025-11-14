@@ -1482,7 +1482,7 @@ export class AppDfdOrchestrator {
   }
 
   /**
-   * Handle drag completion events - record final drag state in history
+   * Handle drag completion events - record final drag state in history and broadcast to collaborators
    */
   private _handleDragCompletion(dragCompletion: any): void {
     const graph = this.dfdInfrastructure.getGraph();
@@ -1498,7 +1498,35 @@ export class AppDfdOrchestrator {
       return;
     }
 
-    // Build previousState from initial drag state
+    // Get current state (X6 has already updated the cell during drag)
+    const currentPosition = cell.isNode?.() ? cell.getPosition() : undefined;
+    const currentSize = cell.isNode?.() ? cell.getSize() : undefined;
+    const currentVertices = cell.isEdge?.() ? cell.getVertices?.() || [] : undefined;
+
+    // Check if anything actually changed (prevent no-op history entries)
+    let hasChanged = false;
+    if (dragType === 'move' && initialState.position && currentPosition) {
+      hasChanged =
+        Math.abs(initialState.position.x - currentPosition.x) > 0.01 ||
+        Math.abs(initialState.position.y - currentPosition.y) > 0.01;
+    } else if (dragType === 'resize' && initialState.size && currentSize) {
+      hasChanged =
+        Math.abs(initialState.size.width - currentSize.width) > 0.01 ||
+        Math.abs(initialState.size.height - currentSize.height) > 0.01;
+    } else if (dragType === 'vertex' && initialState.vertices && currentVertices) {
+      // Check if vertices changed
+      hasChanged = JSON.stringify(initialState.vertices) !== JSON.stringify(currentVertices);
+    }
+
+    if (!hasChanged) {
+      this.logger.debug('Skipping drag completion - no actual change detected', {
+        cellId,
+        dragType,
+      });
+      return;
+    }
+
+    // Build previousState from initial drag state (minimal, semantic data only)
     const previousCells = [
       {
         id: cellId,
@@ -1513,22 +1541,22 @@ export class AppDfdOrchestrator {
       },
     ];
 
-    // Build currentState from final drag state or current graph state
+    // Build currentState from final drag state (minimal, semantic data only - no visual effects)
     const currentCells = [
       {
         id: cellId,
         shape: cell.shape,
         ...(dragType === 'move' || dragType === 'resize'
           ? {
-              position: cell.isNode?.() ? cell.getPosition() : undefined,
-              size: cell.isNode?.() ? cell.getSize() : undefined,
+              position: currentPosition,
+              size: currentSize,
             }
           : {}),
         ...(dragType === 'vertex'
           ? {
               source: cell.isEdge?.() ? cell.getSource() : undefined,
               target: cell.isEdge?.() ? cell.getTarget() : undefined,
-              vertices: cell.isEdge?.() ? cell.getVertices?.() || [] : undefined,
+              vertices: currentVertices,
             }
           : {}),
       },
@@ -1564,7 +1592,53 @@ export class AppDfdOrchestrator {
       },
     };
 
+    // Record in local history
     this.appHistoryService.addHistoryEntry(historyEntry);
+
+    // Broadcast final state to collaborators if in collaboration mode
+    if (this.collaborationService.isCollaborating()) {
+      this._broadcastDragCompletion(cell, dragType, currentCells[0]);
+    }
+  }
+
+  /**
+   * Broadcast drag completion to collaborators
+   * Since X6 already updated the graph, we just need to broadcast the final state
+   */
+  private _broadcastDragCompletion(cell: any, dragType: string, finalState: any): void {
+    // Build the update data based on drag type
+    const updateData: any = {
+      id: cell.id,
+      shape: cell.shape,
+    };
+
+    // Add position/size/vertices changes based on drag type
+    if (dragType === 'move' && finalState.position) {
+      updateData.x = finalState.position.x;
+      updateData.y = finalState.position.y;
+    }
+    if (dragType === 'resize' && finalState.size) {
+      updateData.width = finalState.size.width;
+      updateData.height = finalState.size.height;
+    }
+    if (dragType === 'vertex' && finalState.vertices) {
+      updateData.vertices = finalState.vertices;
+    }
+
+    // Create a CellOperation conforming to the type
+    const cellOperation = {
+      operation: 'update' as const,
+      id: cell.id,
+      data: updateData,
+    };
+
+    // Send via the broadcaster's private method
+    this.appDiagramOperationBroadcaster['_sendSingleOperation'](cellOperation);
+
+    this.logger.debug('Broadcasted drag completion to collaborators', {
+      cellId: cell.id,
+      dragType,
+    });
   }
 
   /**
