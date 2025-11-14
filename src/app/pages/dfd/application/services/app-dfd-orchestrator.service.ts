@@ -283,6 +283,8 @@ export class AppDfdOrchestrator {
           this.dfdInfrastructure.graphAdapter?.clearAllVisualEffects();
           // Update embedding appearances to reflect new state
           this.dfdInfrastructure.graphAdapter?.updateAllEmbeddingAppearances();
+          // Update port visibility based on new connection state
+          this.dfdInfrastructure.graphAdapter?.updateAllPortVisibility();
           this.logger.debug('AppDfdOrchestrator: Post-undo cleanup completed');
         }
       }),
@@ -301,6 +303,8 @@ export class AppDfdOrchestrator {
           this.dfdInfrastructure.graphAdapter?.clearAllVisualEffects();
           // Update embedding appearances to reflect new state
           this.dfdInfrastructure.graphAdapter?.updateAllEmbeddingAppearances();
+          // Update port visibility based on new connection state
+          this.dfdInfrastructure.graphAdapter?.updateAllPortVisibility();
           this.logger.debug('AppDfdOrchestrator: Post-redo cleanup completed');
         }
       }),

@@ -415,6 +415,16 @@ export class NodeOperationExecutor implements OperationExecutor {
    * Build X6 node configuration
    */
   private _buildNodeConfig(nodeId: string, nodeData: NodeData): any {
+    // Check if style contains full X6 attrs (from history/undo-redo)
+    // If it has nested objects with body/label/text, it's likely the full attrs structure
+    const hasFullAttrs =
+      nodeData.style &&
+      (nodeData.style['body'] || nodeData.style['label'] || nodeData.style['text']);
+
+    // Check if properties contains full cell.data (from history/undo-redo)
+    // Properties from history will have the full data structure stored
+    const hasFullData = nodeData.properties && nodeData.properties['data'];
+
     const config = {
       id: nodeId,
       shape: this._getShapeForNodeType(nodeData.nodeType),
@@ -422,22 +432,28 @@ export class NodeOperationExecutor implements OperationExecutor {
       y: nodeData.position!.y,
       width: nodeData.size!.width,
       height: nodeData.size!.height,
-      attrs: {
-        body: {
-          fill: nodeData.style!['fill'],
-          stroke: nodeData.style!['stroke'],
-          strokeWidth: nodeData.style!['strokeWidth'],
-        },
-        label: {
-          text: nodeData.label,
-          fontSize: nodeData.style!['fontSize'],
-          fill: nodeData.style!['textColor'],
-        },
-      },
-      data: {
-        nodeType: nodeData.nodeType,
-        ...nodeData.properties,
-      },
+      // Use full attrs if available (from history), otherwise build from individual properties
+      attrs: hasFullAttrs
+        ? nodeData.style
+        : {
+            body: {
+              fill: nodeData.style!['fill'],
+              stroke: nodeData.style!['stroke'],
+              strokeWidth: nodeData.style!['strokeWidth'],
+            },
+            label: {
+              text: nodeData.label,
+              fontSize: nodeData.style!['fontSize'],
+              fill: nodeData.style!['textColor'],
+            },
+          },
+      // Use full data if available (from history), otherwise build from nodeType and properties
+      data: hasFullData
+        ? nodeData.properties['data']
+        : {
+            nodeType: nodeData.nodeType,
+            ...nodeData.properties,
+          },
     };
 
     return config;

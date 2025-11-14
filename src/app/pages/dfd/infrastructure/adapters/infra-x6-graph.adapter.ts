@@ -877,6 +877,21 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Update port visibility for all nodes based on connection state
+   * Hides unconnected ports, ensures connected ports are visible
+   * Should be called after undo/redo or other operations that affect edges
+   */
+  updateAllPortVisibility(): void {
+    if (!this._graph) {
+      this.logger.warn('Cannot update port visibility - graph not initialized');
+      return;
+    }
+
+    this._portStateManager.hideUnconnectedPorts(this._graph);
+    this.logger.debugComponent('X6Graph', 'Updated port visibility for all nodes');
+  }
+
+  /**
    * Recalculate z-order for all cells in the graph
    * Uses iterative algorithm to fix cascading z-index violations
    */
