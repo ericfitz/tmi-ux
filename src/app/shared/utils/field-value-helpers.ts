@@ -180,5 +180,10 @@ function getTooltipSuffixForFieldType(keyPrefix: FieldType): string {
  * Helper to get nested property from object using dot notation
  */
 function getNestedProperty(obj: unknown, path: string): unknown {
-  return path.split('.').reduce((current: any, prop) => current?.[prop], obj);
+  return path.split('.').reduce((current: unknown, prop) => {
+    if (current && typeof current === 'object' && prop in current) {
+      return (current as Record<string, unknown>)[prop];
+    }
+    return undefined;
+  }, obj);
 }

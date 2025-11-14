@@ -157,10 +157,10 @@ export class AppEdgeService {
       sourcePortId,
       targetPortId,
       attrs: edge.getAttrs(),
-      labels: edge.getLabels?.() as any || [],
+      labels: (edge.getLabels?.() as any) || [],
       vertices: edge.getVertices?.() || [],
       zIndex: edge.getZIndex(),
-      data: edgeData ? { ...edgeData, _metadata: (edgeData)._metadata || [] } : { _metadata: [] },
+      data: edgeData ? { ...edgeData, _metadata: edgeData._metadata || [] } : { _metadata: [] },
       connector: DFD_STYLING.EDGES.CONNECTOR as any,
       router: DFD_STYLING.EDGES.ROUTER as any,
     });

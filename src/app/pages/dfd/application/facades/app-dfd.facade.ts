@@ -31,7 +31,7 @@ import { InfraNodeService } from '../../infrastructure/services/infra-node.servi
 import { AppEdgeService } from '../services/app-edge.service';
 import { AppExportService } from '../services/app-export.service';
 import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
-import { InfraVisualEffectsService} from '../../infrastructure/services/infra-visual-effects.service';
+import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraX6CoreOperationsService } from '../../infrastructure/services/infra-x6-core-operations.service';
 import { AppOperationStateManager } from '../services/app-operation-state-manager.service';
 import { InfraEmbeddingService } from '../../infrastructure/services/infra-embedding.service';
@@ -158,7 +158,12 @@ export class AppDfdFacade {
   /**
    * Handle node movement completion
    */
-  private _handleNodeMove(node: any, initialState: any, graph: any, diagramId: string): Observable<void> {
+  private _handleNodeMove(
+    node: any,
+    initialState: any,
+    graph: any,
+    diagramId: string,
+  ): Observable<void> {
     const finalPosition = node.getPosition();
     const initialPosition = initialState?.position;
 
@@ -218,7 +223,12 @@ export class AppDfdFacade {
   /**
    * Handle node resize completion
    */
-  private _handleNodeResize(node: any, initialState: any, graph: any, diagramId: string): Observable<void> {
+  private _handleNodeResize(
+    node: any,
+    initialState: any,
+    graph: any,
+    diagramId: string,
+  ): Observable<void> {
     const finalSize = node.getSize();
     const initialSize = initialState?.size;
 
@@ -278,7 +288,12 @@ export class AppDfdFacade {
   /**
    * Handle edge vertices drag completion
    */
-  private _handleEdgeVerticesDrag(edge: any, initialState: any, graph: any, diagramId: string): Observable<void> {
+  private _handleEdgeVerticesDrag(
+    edge: any,
+    initialState: any,
+    graph: any,
+    diagramId: string,
+  ): Observable<void> {
     const finalVertices = edge.getVertices();
     const initialVertices = initialState?.vertices;
 
@@ -334,7 +349,10 @@ export class AppDfdFacade {
   /**
    * Helper to compare vertices arrays for equality
    */
-  private _verticesEqual(v1: Array<{ x: number; y: number }>, v2: Array<{ x: number; y: number }>): boolean {
+  private _verticesEqual(
+    v1: Array<{ x: number; y: number }>,
+    v2: Array<{ x: number; y: number }>,
+  ): boolean {
     if (!v1 || !v2 || v1.length !== v2.length) {
       return false;
     }

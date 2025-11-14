@@ -780,10 +780,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     if (!reconnection || !this.dfdId) {
-      this.logger.warn('Cannot handle edge reconnection - missing reconnection data or diagram ID', {
-        hasReconnection: !!reconnection,
-        hasDfdId: !!this.dfdId,
-      });
+      this.logger.warn(
+        'Cannot handle edge reconnection - missing reconnection data or diagram ID',
+        {
+          hasReconnection: !!reconnection,
+          hasDfdId: !!this.dfdId,
+        },
+      );
       return;
     }
 
@@ -1793,47 +1796,55 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Subscribe to drag completion events for history tracking (movement, resizing)
       this._subscriptions.add(
-        this.dfdInfrastructure.dragCompletions$.pipe(takeUntil(this._destroy$)).subscribe(completion => {
-          this.logger.info('DFD Component: dragCompletion$ observable fired', {
-            cellId: completion.cellId,
-            dragType: completion.dragType,
-          });
-          this.handleDragCompletion(completion);
-        }),
+        this.dfdInfrastructure.dragCompletions$
+          .pipe(takeUntil(this._destroy$))
+          .subscribe(completion => {
+            this.logger.info('DFD Component: dragCompletion$ observable fired', {
+              cellId: completion.cellId,
+              dragType: completion.dragType,
+            });
+            this.handleDragCompletion(completion);
+          }),
       );
 
       // Subscribe to cell label change events for history tracking
       this._subscriptions.add(
-        this.dfdInfrastructure.cellLabelChanged$.pipe(takeUntil(this._destroy$)).subscribe(change => {
-          this.logger.info('DFD Component: cellLabelChanged$ observable fired', {
-            cellId: change.cellId,
-            cellType: change.cellType,
-          });
-          this.handleLabelChange(change);
-        }),
+        this.dfdInfrastructure.cellLabelChanged$
+          .pipe(takeUntil(this._destroy$))
+          .subscribe(change => {
+            this.logger.info('DFD Component: cellLabelChanged$ observable fired', {
+              cellId: change.cellId,
+              cellType: change.cellType,
+            });
+            this.handleLabelChange(change);
+          }),
       );
 
       // Subscribe to edge reconnection events for history tracking
       this._subscriptions.add(
-        this.dfdInfrastructure.edgeReconnected$.pipe(takeUntil(this._destroy$)).subscribe(reconnection => {
-          this.logger.info('DFD Component: edgeReconnected$ observable fired', {
-            edgeId: reconnection.edgeId,
-            changeType: reconnection.changeType,
-          });
-          this.handleEdgeReconnection(reconnection);
-        }),
+        this.dfdInfrastructure.edgeReconnected$
+          .pipe(takeUntil(this._destroy$))
+          .subscribe(reconnection => {
+            this.logger.info('DFD Component: edgeReconnected$ observable fired', {
+              edgeId: reconnection.edgeId,
+              changeType: reconnection.changeType,
+            });
+            this.handleEdgeReconnection(reconnection);
+          }),
       );
 
       // Subscribe to node parent change events for history tracking (embedding/unembedding)
       this._subscriptions.add(
-        this.dfdInfrastructure.nodeParentChanged$.pipe(takeUntil(this._destroy$)).subscribe(change => {
-          this.logger.info('DFD Component: nodeParentChanged$ observable fired', {
-            nodeId: change.nodeId,
-            oldParentId: change.oldParentId,
-            newParentId: change.newParentId,
-          });
-          this.handleNodeParentChange(change);
-        }),
+        this.dfdInfrastructure.nodeParentChanged$
+          .pipe(takeUntil(this._destroy$))
+          .subscribe(change => {
+            this.logger.info('DFD Component: nodeParentChanged$ observable fired', {
+              nodeId: change.nodeId,
+              oldParentId: change.oldParentId,
+              newParentId: change.newParentId,
+            });
+            this.handleNodeParentChange(change);
+          }),
       );
 
       // Subscribe to custom history state changes for reactive undo/redo button states
