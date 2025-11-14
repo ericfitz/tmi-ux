@@ -444,9 +444,8 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       target: typedEdge.getTarget(),
       vertices: typedEdge.getVertices?.() || [],
       attrs: typedEdge.getAttrs(),
-      label: typedEdge.getLabels?.()?.[0]
-        ? (typedEdge.getLabels()[0] as any).attrs?.label?.text
-        : undefined,
+      labels: typedEdge.getLabels?.() || [],
+      data: typedEdge.getData(),
       zIndex: typedEdge.getZIndex(),
     };
 

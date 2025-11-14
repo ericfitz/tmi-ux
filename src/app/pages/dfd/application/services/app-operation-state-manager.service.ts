@@ -393,12 +393,12 @@ export class AppOperationStateManager {
       'wrap/filter', // Edge wrap filter effects
 
       // Stroke effects for selection/hover
-      'body/stroke',
-      'body/strokeWidth',
-      'body/strokeDasharray',
-      'line/stroke', // Edge stroke changes
-      'line/strokeWidth', // Edge stroke width
-      'line/strokeDasharray', // Edge dash patterns
+      // 'body/stroke',
+      // 'body/strokeWidth',
+      // 'body/strokeDasharray',
+      // 'line/stroke', // Edge stroke changes
+      // 'line/strokeWidth', // Edge stroke width
+      // 'line/strokeDasharray', // Edge dash patterns
 
       // Shadow and glow effects
       'body/dropShadow',
@@ -429,9 +429,9 @@ export class AppOperationStateManager {
       'transform/scale',
 
       // Opacity and visibility changes (may be visual effects)
-      'body/opacity',
-      'line/opacity',
-      'text/opacity',
+      // 'body/opacity',
+      // 'line/opacity',
+      // 'text/opacity',
 
       // Z-index changes (handled separately but included here for completeness)
       'zIndex',

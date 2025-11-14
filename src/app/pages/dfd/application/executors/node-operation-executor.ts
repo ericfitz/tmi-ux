@@ -544,7 +544,9 @@ export class NodeOperationExecutor implements OperationExecutor {
       position: typedNode.getPosition(),
       size: typedNode.getSize(),
       attrs: attrs,
-      label: typedNode.getAttrByPath('label/text'),
+      ports: (typedNode as any).getPorts?.(),
+      data: typedNode.getData(),
+      visible: typedNode.isVisible?.(),
       zIndex: typedNode.getZIndex(),
     };
 
