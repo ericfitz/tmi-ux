@@ -21,11 +21,19 @@ export function normalizeCell(cell: Cell): Cell {
   const normalized: Cell = { ...cell };
 
   // Remove all filter attributes from attrs
+  // X6 stores attrs as nested objects: { body: { filter: "...", fill: "#fff" } }
+  // We need to remove the 'filter' property from each nested object
   if (normalized.attrs) {
     const filteredAttrs: Record<string, unknown> = {};
     Object.keys(normalized.attrs).forEach(key => {
-      if (!key.endsWith('/filter')) {
-        filteredAttrs[key] = normalized.attrs![key];
+      const value = normalized.attrs![key];
+      // If value is an object (not null, not array), remove 'filter' property
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        const { filter, ...rest } = value as Record<string, unknown>;
+        filteredAttrs[key] = rest;
+      } else {
+        // Preserve non-object values as-is
+        filteredAttrs[key] = value;
       }
     });
     normalized.attrs = filteredAttrs;
