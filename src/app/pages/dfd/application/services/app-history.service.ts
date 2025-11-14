@@ -512,6 +512,7 @@ export class AppHistoryService implements OnDestroy {
 
   /**
    * Convert Cell[] to GraphOperation[]
+   * Handles additions, updates, and deletions by comparing cells and previousCells
    */
   private _convertCellsToOperations(
     cells: Cell[],
@@ -520,12 +521,25 @@ export class AppHistoryService implements OnDestroy {
   ): GraphOperation[] {
     const operations: GraphOperation[] = [];
 
+    // Handle additions and updates (cells in target state)
     cells.forEach(cell => {
       const previousCell = previousCells.find(c => c.id === cell.id);
       const operation = this._convertCellToOperation(cell, previousCell, source);
 
       if (operation) {
         operations.push(operation);
+      }
+    });
+
+    // Handle deletions (cells in previous state but not in target state)
+    previousCells.forEach(previousCell => {
+      const cell = cells.find(c => c.id === previousCell.id);
+      if (!cell) {
+        // This cell needs to be deleted
+        const deleteOperation = this._createDeleteOperation(previousCell, source);
+        if (deleteOperation) {
+          operations.push(deleteOperation);
+        }
       }
     });
 
@@ -698,6 +712,37 @@ export class AppHistoryService implements OnDestroy {
       edgeId: cell.id,
       updates: edgeInfo,
     } as UpdateEdgeOperation;
+  }
+
+  /**
+   * Create delete operation from cell
+   */
+  private _createDeleteOperation(
+    cell: Cell,
+    source: 'user-interaction' | 'undo-redo',
+  ): GraphOperation {
+    const baseOperation = {
+      id: uuidv4(),
+      source,
+      priority: 'normal' as const,
+      timestamp: Date.now(),
+    };
+
+    const isNode = cell.shape !== 'edge';
+
+    if (isNode) {
+      return {
+        ...baseOperation,
+        type: 'delete-node',
+        nodeId: cell.id,
+      } as GraphOperation;
+    } else {
+      return {
+        ...baseOperation,
+        type: 'delete-edge',
+        edgeId: cell.id,
+      } as GraphOperation;
+    }
   }
 
   /**
