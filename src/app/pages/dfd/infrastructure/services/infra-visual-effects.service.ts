@@ -48,6 +48,18 @@ export class InfraVisualEffectsService {
       return;
     }
 
+    // Check user preference for animations
+    if (!this.areAnimationsEnabled()) {
+      this.logger.debugComponent(
+        'DFD',
+        '[VisualEffects] Skipping creation highlight - animations disabled by user',
+        {
+          cellId: cell.id,
+        },
+      );
+      return;
+    }
+
     // Don't apply if cell already has an active effect or is selected
     if (this.activeEffects.has(cell.id) || this.isCellSelected(cell)) {
       this.logger.debugComponent(
@@ -481,6 +493,25 @@ export class InfraVisualEffectsService {
       }
     }
     return false;
+  }
+
+  /**
+   * Check if animations are enabled in user preferences
+   * @returns true if animations are enabled or preference not set, false otherwise
+   */
+  private areAnimationsEnabled(): boolean {
+    try {
+      const stored = localStorage.getItem('tmi_user_preferences');
+      if (stored) {
+        const prefs = JSON.parse(stored) as { animations?: boolean };
+        // Return the preference value, defaulting to true if not set
+        return prefs.animations !== false;
+      }
+    } catch (error) {
+      this.logger.warn('[VisualEffects] Error reading user preferences', { error });
+    }
+    // Default to enabled if preference not found or error reading
+    return true;
   }
 
   /**

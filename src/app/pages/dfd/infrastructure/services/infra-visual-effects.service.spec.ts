@@ -155,6 +155,72 @@ describe('InfraVisualEffectsService', () => {
       // Restore Date.now
       Date.now = originalDateNow;
     });
+
+    it('should skip creation highlight when animations are disabled in user preferences', () => {
+      const mockNode = createMockNode('node1');
+      // Set user preference to disable animations
+      localStorage.setItem('tmi_user_preferences', JSON.stringify({ animations: false }));
+
+      service.applyCreationHighlight(mockNode as unknown as Node);
+
+      // Should not apply any effects
+      expect(service.hasActiveEffects(mockNode as unknown as Node)).toBe(false);
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+        'DFD',
+        '[VisualEffects] Skipping creation highlight - animations disabled by user',
+        { cellId: 'node1' },
+      );
+      expect(mockNode.attr).not.toHaveBeenCalled();
+
+      // Clean up
+      localStorage.removeItem('tmi_user_preferences');
+    });
+
+    it('should apply creation highlight when animations are enabled in user preferences', () => {
+      const mockNode = createMockNode('node1');
+      // Set user preference to enable animations
+      localStorage.setItem('tmi_user_preferences', JSON.stringify({ animations: true }));
+
+      service.applyCreationHighlight(mockNode as unknown as Node);
+
+      // Should apply effects
+      expect(service.hasActiveEffects(mockNode as unknown as Node)).toBe(true);
+      expect(mockNode.attr).toHaveBeenCalled();
+
+      // Clean up
+      localStorage.removeItem('tmi_user_preferences');
+    });
+
+    it('should default to enabled when user preferences are not set', () => {
+      const mockNode = createMockNode('node1');
+      // Ensure no preferences are set
+      localStorage.removeItem('tmi_user_preferences');
+
+      service.applyCreationHighlight(mockNode as unknown as Node);
+
+      // Should apply effects (default behavior)
+      expect(service.hasActiveEffects(mockNode as unknown as Node)).toBe(true);
+      expect(mockNode.attr).toHaveBeenCalled();
+    });
+
+    it('should default to enabled when localStorage contains invalid JSON', () => {
+      const mockNode = createMockNode('node1');
+      // Set invalid JSON in localStorage
+      localStorage.setItem('tmi_user_preferences', 'invalid json');
+
+      service.applyCreationHighlight(mockNode as unknown as Node);
+
+      // Should apply effects (default behavior on error)
+      expect(service.hasActiveEffects(mockNode as unknown as Node)).toBe(true);
+      expect(mockNode.attr).toHaveBeenCalled();
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        '[VisualEffects] Error reading user preferences',
+        expect.objectContaining({ error: expect.any(Error) }),
+      );
+
+      // Clean up
+      localStorage.removeItem('tmi_user_preferences');
+    });
   });
 
   describe('fade animation', () => {
