@@ -75,6 +75,7 @@ export class InfraX6SelectionAdapter {
       showNodeSelectionBox: false,
       showEdgeSelectionBox: false,
       pointerEvents: 'none',
+      strict: false, // Allow partial overlap - this enables edge selection in rubberband
     });
 
     // Configure transform plugin

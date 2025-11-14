@@ -153,6 +153,22 @@ export class AppHistoryService implements OnDestroy {
   }
 
   /**
+   * Clear all history (undo and redo stacks)
+   * This resets the history state without triggering auto-save
+   */
+  clearHistory(): void {
+    this.logger.info('Clearing history', {
+      undoStackSize: this._historyState.undoStack.length,
+      redoStackSize: this._historyState.redoStack.length,
+    });
+
+    this._historyState = createEmptyHistoryState(this._config.maxHistorySize);
+    this._emitHistoryStateChange();
+
+    this.logger.debug('History cleared');
+  }
+
+  /**
    * Add a new history entry
    * This also triggers broadcast or auto-save based on session state
    */

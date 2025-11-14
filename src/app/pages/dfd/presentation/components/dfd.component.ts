@@ -892,6 +892,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Open the history dialog with custom history data
     const dialogData: HistoryDialogData = {
       historyState: historyState,
+      historyService: this.appDfdOrchestrator.getHistoryService(),
     };
 
     this.dialog.open(HistoryDialogComponent, {

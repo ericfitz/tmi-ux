@@ -200,6 +200,16 @@ export class ClipboardDialogComponent {
   }
 
   /**
+   * Clear the X6 graph clipboard
+   */
+  onClearClipboard(): void {
+    if (this.data.graph.cleanClipboard) {
+      this.data.graph.cleanClipboard();
+    }
+    this._dialogRef.close();
+  }
+
+  /**
    * Fallback method to copy text to clipboard for older browsers
    */
   private _fallbackCopyToClipboard(text: string): void {

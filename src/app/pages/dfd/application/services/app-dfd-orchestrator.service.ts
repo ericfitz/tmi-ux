@@ -333,6 +333,13 @@ export class AppDfdOrchestrator {
   }
 
   /**
+   * Get the history service instance
+   */
+  getHistoryService(): AppHistoryService {
+    return this.appHistoryService;
+  }
+
+  /**
    * Manually save the diagram
    */
   save(): Observable<boolean> {

@@ -215,8 +215,17 @@
 <div mat-dialog-actions align="end">
   <button
     mat-button
-    (click)="onCopyToClipboard()"
+    (click)="onClearHistory()"
     tabindex="1"
+    [attr.aria-label]="'debugDialogs.historyDialog.clearHistory' | transloco"
+  >
+    <mat-icon>delete_sweep</mat-icon>
+    {{ 'debugDialogs.historyDialog.clearHistory' | transloco }}
+  </button>
+  <button
+    mat-button
+    (click)="onCopyToClipboard()"
+    tabindex="2"
     [attr.aria-label]="'debugDialogs.historyDialog.copyFullJson' | transloco"
   >
     <mat-icon>content_copy</mat-icon>
@@ -225,7 +234,7 @@
   <button
     mat-button
     (click)="onClose()"
-    tabindex="2"
+    tabindex="3"
     [attr.aria-label]="'common.close' | transloco"
   >
     {{ 'common.close' | transloco }}

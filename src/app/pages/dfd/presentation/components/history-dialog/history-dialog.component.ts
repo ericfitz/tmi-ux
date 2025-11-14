@@ -21,12 +21,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
 import { HistoryState, HistoryEntry } from '../../../types/history.types';
+import { AppHistoryService } from '../../../application/services/app-history.service';
 
 /**
  * Data interface for the history dialog
  */
 export interface HistoryDialogData {
   historyState: Readonly<HistoryState>;
+  historyService: AppHistoryService;
 }
 
 /**
@@ -292,6 +294,14 @@ export class HistoryDialogComponent {
       // Fallback for older browsers
       this._fallbackCopyToClipboard(this.historyJson);
     }
+  }
+
+  /**
+   * Clear all history (undo and redo stacks)
+   */
+  onClearHistory(): void {
+    this.data.historyService.clearHistory();
+    this._dialogRef.close();
   }
 
   /**
