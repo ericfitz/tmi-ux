@@ -204,6 +204,48 @@
       "view": "View Data Asset"
     }
   },
+  "debugDialogs": {
+    "clipboardDialog": {
+      "affectedCells": "Affected Cells",
+      "cellCount": "Cell Count",
+      "cellIds": "Cell IDs",
+      "cells": "Cells",
+      "clipboardJson": "Clipboard JSON",
+      "copyFullJson": "Copy Full JSON",
+      "copyToClipboard": "Copy to Clipboard",
+      "isEmpty": "Is Empty",
+      "title": "Clipboard Data"
+    },
+    "graphDataDialog": {
+      "copyToClipboard": "Copy to Clipboard",
+      "graphJson": "Graph JSON",
+      "title": "Graph Data"
+    },
+    "historyDialog": {
+      "affectedCells": "Affected Cells",
+      "canRedo": "Can Redo",
+      "canUndo": "Can Undo",
+      "cellIds": "Cell IDs",
+      "cells": "Cells",
+      "copyFullJson": "Copy Full JSON",
+      "currentIndex": "Current Index",
+      "id": "ID",
+      "maxStackSize": "Max Stack Size",
+      "metadata": "Metadata",
+      "noRedoEntries": "No redo entries",
+      "noUndoEntries": "No undo entries",
+      "operationId": "Operation ID",
+      "previousCells": "Previous Cells",
+      "redoStack": "Redo Stack",
+      "redoStackSize": "Redo Stack Size",
+      "summary": "Summary",
+      "timestamp": "Timestamp",
+      "title": "History",
+      "undoStack": "Undo Stack",
+      "undoStackSize": "Undo Stack Size",
+      "userId": "User ID"
+    }
+  },
   "editor": {
     "diagramPrefix": "Diagram:",
     "embedding": {

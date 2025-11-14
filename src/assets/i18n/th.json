@@ -204,6 +204,48 @@
       "view": "ดูทรัพย์สินข้อมูล"
     }
   },
+  "debugDialogs": {
+    "clipboardDialog": {
+      "affectedCells": "เซลล์ที่ได้รับผลกระทบ",
+      "cellCount": "จำนวนเซลล์",
+      "cellIds": "ID ของเซลล์",
+      "cells": "เซลล์",
+      "clipboardJson": "คลิปบอร์ด JSON",
+      "copyFullJson": "คัดลอก JSON ทั้งหมด",
+      "copyToClipboard": "คัดลอกไปยังคลิปบอร์ด",
+      "isEmpty": "ว่างเปล่า",
+      "title": "ข้อมูลคลิปบอร์ด"
+    },
+    "graphDataDialog": {
+      "copyToClipboard": "คัดลอกไปยังคลิปบอร์ด",
+      "graphJson": "กราฟ JSON",
+      "title": "ข้อมูลกราฟ"
+    },
+    "historyDialog": {
+      "affectedCells": "เซลล์ที่ได้รับผลกระทบ",
+      "canRedo": "สามารถทำซ้ำได้",
+      "canUndo": "สามารถเลิกทำได้",
+      "cellIds": "ID ของเซลล์",
+      "cells": "เซลล์",
+      "copyFullJson": "คัดลอก JSON ทั้งหมด",
+      "currentIndex": "ดัชนีปัจจุบัน",
+      "id": "ID",
+      "maxStackSize": "ขนาดสแต็กสูงสุด",
+      "metadata": "ข้อมูลเมตา",
+      "noRedoEntries": "ไม่มีรายการทำซ้ำ",
+      "noUndoEntries": "ไม่มีรายการเลิกทำ",
+      "operationId": "ID การดำเนินการ",
+      "previousCells": "เซลล์ก่อนหน้า",
+      "redoStack": "สแต็กทำซ้ำ",
+      "redoStackSize": "ขนาดสแต็กทำซ้ำ",
+      "summary": "สรุป",
+      "timestamp": "ประทับเวลา",
+      "title": "ประวัติ",
+      "undoStack": "สแต็กเลิกทำ",
+      "undoStackSize": "ขนาดสแต็กเลิกทำ",
+      "userId": "ID ผู้ใช้"
+    }
+  },
   "editor": {
     "diagramPrefix": "แผนภาพ:",
     "embedding": {

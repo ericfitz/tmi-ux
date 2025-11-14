@@ -204,6 +204,48 @@
       "view": "查看数据资产"
     }
   },
+  "debugDialogs": {
+    "clipboardDialog": {
+      "affectedCells": "受影响的单元格",
+      "cellCount": "单元格数量",
+      "cellIds": "单元格ID",
+      "cells": "单元格",
+      "clipboardJson": "剪贴板 JSON",
+      "copyFullJson": "复制完整 JSON",
+      "copyToClipboard": "复制到剪贴板",
+      "isEmpty": "为空",
+      "title": "剪贴板数据"
+    },
+    "graphDataDialog": {
+      "copyToClipboard": "复制到剪贴板",
+      "graphJson": "图形 JSON",
+      "title": "图形数据"
+    },
+    "historyDialog": {
+      "affectedCells": "受影响的单元格",
+      "canRedo": "可以重做",
+      "canUndo": "可以撤销",
+      "cellIds": "单元格ID",
+      "cells": "单元格",
+      "copyFullJson": "复制完整 JSON",
+      "currentIndex": "当前索引",
+      "id": "ID",
+      "maxStackSize": "最大堆栈大小",
+      "metadata": "元数据",
+      "noRedoEntries": "没有重做条目",
+      "noUndoEntries": "没有撤销条目",
+      "operationId": "操作ID",
+      "previousCells": "之前的单元格",
+      "redoStack": "重做堆栈",
+      "redoStackSize": "重做堆栈大小",
+      "summary": "摘要",
+      "timestamp": "时间戳",
+      "title": "历史记录",
+      "undoStack": "撤销堆栈",
+      "undoStackSize": "撤销堆栈大小",
+      "userId": "用户ID"
+    }
+  },
   "editor": {
     "diagramPrefix": "图表:",
     "embedding": {

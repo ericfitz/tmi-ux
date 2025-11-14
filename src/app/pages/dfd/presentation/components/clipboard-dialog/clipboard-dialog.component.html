@@ -1,0 +1,35 @@
+<h1 mat-dialog-title>{{ 'debugDialogs.clipboardDialog.title' | transloco }}</h1>
+
+<div mat-dialog-content appScrollIndicator>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ 'debugDialogs.clipboardDialog.clipboardJson' | transloco }}</mat-label>
+    <textarea
+      matInput
+      readonly
+      [value]="clipboardJson"
+      rows="15"
+      class="json-textarea"
+      #jsonTextarea
+    ></textarea>
+  </mat-form-field>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button
+    mat-button
+    (click)="onCopyToClipboard()"
+    tabindex="1"
+    [attr.aria-label]="'debugDialogs.clipboardDialog.copyToClipboard' | transloco"
+  >
+    <mat-icon>content_copy</mat-icon>
+    {{ 'debugDialogs.clipboardDialog.copyToClipboard' | transloco }}
+  </button>
+  <button
+    mat-button
+    (click)="onClose()"
+    tabindex="2"
+    [attr.aria-label]="'common.close' | transloco"
+  >
+    {{ 'common.close' | transloco }}
+  </button>
+</div>

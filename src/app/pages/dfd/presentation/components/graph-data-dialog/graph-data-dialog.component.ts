@@ -1,16 +1,17 @@
 /**
- * X6 Clipboard Dialog Component
+ * Graph Data Dialog Component
  *
- * This component provides a dialog for viewing the X6 clipboard data in JSON format.
- * It's primarily used for development and debugging purposes to inspect clipboard state.
+ * This component provides a dialog for viewing the graph data in JSON format.
+ * It's primarily used for development and debugging purposes to inspect graph state.
  *
  * Key functionality:
- * - Displays complete X6 clipboard serialization as formatted JSON
- * - Provides read-only view of clipboard structure for debugging
- * - Shows cells currently in the clipboard
+ * - Displays complete graph serialization as formatted JSON
+ * - Provides read-only view of graph structure for debugging
+ * - Shows nodes, edges, and graph configuration
  * - Uses Material Design dialog with syntax highlighting
- * - Supports copying clipboard data for external analysis
- * - Helps developers understand X6 clipboard structure and state
+ * - Supports copying graph data for external analysis
+ * - Helps developers understand graph structure and state
+ * - Configurable to allow easy modification of what data is included
  */
 
 import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
@@ -20,21 +21,22 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslocoModule } from '@jsverse/transloco';
 import { Graph } from '@antv/x6';
 
 /**
- * Data interface for the X6 clipboard dialog
+ * Data interface for the graph data dialog
  */
-export interface X6ClipboardDialogData {
+export interface GraphDataDialogData {
   graph: Graph;
 }
 
 /**
- * Dialog component for displaying X6 clipboard data as JSON
+ * Dialog component for displaying graph data as JSON
  * This is a development-only component for debugging purposes
  */
 @Component({
-  selector: 'app-x6-clipboard-dialog',
+  selector: 'app-graph-data-dialog',
   standalone: true,
   imports: [
     CommonModule,
@@ -43,61 +45,59 @@ export interface X6ClipboardDialogData {
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    TranslocoModule,
   ],
-  templateUrl: './x6-clipboard-dialog.component.html',
-  styleUrls: ['./x6-clipboard-dialog.component.scss'],
+  templateUrl: './graph-data-dialog.component.html',
+  styleUrls: ['./graph-data-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class X6ClipboardDialogComponent {
+export class GraphDataDialogComponent {
   /**
-   * Serialized JSON representation of the X6 clipboard
+   * Serialized JSON representation of the graph
    */
-  readonly clipboardJson: string;
+  readonly graphJson: string;
 
   constructor(
-    private _dialogRef: MatDialogRef<X6ClipboardDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: X6ClipboardDialogData,
+    private _dialogRef: MatDialogRef<GraphDataDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: GraphDataDialogData,
   ) {
-    // Extract clipboard data
-    const clipboardData = this._extractClipboardData(data.graph);
+    // Extract graph data
+    const graphData = this._extractGraphData(data.graph);
 
-    // Serialize the clipboard to JSON with proper formatting and circular reference handling
-    this.clipboardJson = this._safeStringify(clipboardData, 2);
+    // Serialize the graph to JSON with proper formatting and circular reference handling
+    this.graphJson = this._safeStringify(graphData, 2);
   }
 
   /**
-   * Extract clipboard data from the X6 graph
+   * Extract graph data from the graph
+   * This method can be easily modified to include/exclude specific data
    */
-  private _extractClipboardData(graph: Graph): any {
+  private _extractGraphData(graph: Graph): any {
     try {
-      const clipboardData: any = {
-        isEmpty: graph.isClipboardEmpty ? graph.isClipboardEmpty() : true,
-        cellCount: 0,
-        cells: [],
-      };
-
-      // Try to get cells from clipboard if available
-      if (graph.getCellsInClipboard) {
-        const cells = graph.getCellsInClipboard();
-        clipboardData.cellCount = cells.length;
-        clipboardData.cells = cells.map((cell: any) => ({
-          id: cell.id,
-          shape: cell.shape,
-          type: cell.isNode?.() ? 'node' : cell.isEdge?.() ? 'edge' : 'unknown',
-          data: cell.getData ? cell.getData() : {},
-          position: cell.getPosition ? cell.getPosition() : null,
-          size: cell.getSize ? cell.getSize() : null,
-          source: cell.getSource ? cell.getSource() : null,
-          target: cell.getTarget ? cell.getTarget() : null,
-        }));
-      }
-
-      return clipboardData;
+      // Use the graph's serialization method
+      // This can be easily modified later to include/exclude specific data
+      return this._getGraphSerialization(graph);
     } catch (error) {
       return {
-        error: 'Failed to extract clipboard data',
+        error: 'Failed to extract graph data',
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,
+      };
+    }
+  }
+
+  /**
+   * Get the graph serialization using the graph's toJSON method
+   * This method can be modified to customize what data is included
+   */
+  private _getGraphSerialization(graph: Graph): any {
+    try {
+      // The graph provides a toJSON method that serializes the graph
+      return graph.toJSON();
+    } catch (error) {
+      return {
+        error: 'Failed to serialize graph',
+        message: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -182,18 +182,18 @@ export class X6ClipboardDialogComponent {
    */
   onCopyToClipboard(): void {
     try {
-      navigator.clipboard.writeText(this.clipboardJson).then(
+      navigator.clipboard.writeText(this.graphJson).then(
         () => {
           // Success - could add a toast notification here if needed
         },
         (_error: unknown) => {
           // Fallback for older browsers
-          this._fallbackCopyToClipboard(this.clipboardJson);
+          this._fallbackCopyToClipboard(this.graphJson);
         },
       );
     } catch {
       // Fallback for older browsers
-      this._fallbackCopyToClipboard(this.clipboardJson);
+      this._fallbackCopyToClipboard(this.graphJson);
     }
   }
 

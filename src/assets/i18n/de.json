@@ -204,6 +204,48 @@
       "view": "Daten-Asset anzeigen"
     }
   },
+  "debugDialogs": {
+    "clipboardDialog": {
+      "affectedCells": "Betroffene Zellen",
+      "cellCount": "Zellenanzahl",
+      "cellIds": "Zellen-IDs",
+      "cells": "Zellen",
+      "clipboardJson": "Zwischenablage JSON",
+      "copyFullJson": "Vollständiges JSON kopieren",
+      "copyToClipboard": "In Zwischenablage kopieren",
+      "isEmpty": "Ist leer",
+      "title": "Zwischenablage-Daten"
+    },
+    "graphDataDialog": {
+      "copyToClipboard": "In Zwischenablage kopieren",
+      "graphJson": "Diagramm JSON",
+      "title": "Diagramm-Daten"
+    },
+    "historyDialog": {
+      "affectedCells": "Betroffene Zellen",
+      "canRedo": "Kann wiederholen",
+      "canUndo": "Kann rückgängig machen",
+      "cellIds": "Zellen-IDs",
+      "cells": "Zellen",
+      "copyFullJson": "Vollständiges JSON kopieren",
+      "currentIndex": "Aktueller Index",
+      "id": "ID",
+      "maxStackSize": "Maximale Stapelgröße",
+      "metadata": "Metadaten",
+      "noRedoEntries": "Keine Wiederholungseinträge",
+      "noUndoEntries": "Keine Rückgängig-Einträge",
+      "operationId": "Vorgangs-ID",
+      "previousCells": "Vorherige Zellen",
+      "redoStack": "Wiederholungsstapel",
+      "redoStackSize": "Größe des Wiederholungsstapels",
+      "summary": "Zusammenfassung",
+      "timestamp": "Zeitstempel",
+      "title": "Verlauf",
+      "undoStack": "Rückgängig-Stapel",
+      "undoStackSize": "Größe des Rückgängig-Stapels",
+      "userId": "Benutzer-ID"
+    }
+  },
   "editor": {
     "diagramPrefix": "Diagramm:",
     "embedding": {

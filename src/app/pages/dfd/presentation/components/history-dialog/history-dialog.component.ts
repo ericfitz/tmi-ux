@@ -19,6 +19,7 @@ import { CommonModule } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslocoModule } from '@jsverse/transloco';
 import { HistoryState, HistoryEntry } from '../../../types/history.types';
 
 /**
@@ -54,7 +55,7 @@ interface ProcessedHistoryEntry {
 @Component({
   selector: 'app-history-dialog',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, TranslocoModule],
   templateUrl: './history-dialog.component.html',
   styleUrls: ['./history-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

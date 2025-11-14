@@ -204,6 +204,48 @@
       "view": "عرض أصل البيانات"
     }
   },
+  "debugDialogs": {
+    "clipboardDialog": {
+      "affectedCells": "الخلايا المتأثرة",
+      "cellCount": "عدد الخلايا",
+      "cellIds": "معرفات الخلايا",
+      "cells": "خلايا",
+      "clipboardJson": "بيانات الحافظة JSON",
+      "copyFullJson": "نسخ JSON كامل",
+      "copyToClipboard": "نسخ إلى الحافظة",
+      "isEmpty": "فارغ",
+      "title": "بيانات الحافظة"
+    },
+    "graphDataDialog": {
+      "copyToClipboard": "نسخ إلى الحافظة",
+      "graphJson": "بيانات الرسم البياني JSON",
+      "title": "بيانات الرسم البياني"
+    },
+    "historyDialog": {
+      "affectedCells": "الخلايا المتأثرة",
+      "canRedo": "يمكن الإعادة",
+      "canUndo": "يمكن التراجع",
+      "cellIds": "معرفات الخلايا",
+      "cells": "خلايا",
+      "copyFullJson": "نسخ JSON كامل",
+      "currentIndex": "الفهرس الحالي",
+      "id": "المعرف",
+      "maxStackSize": "الحد الأقصى لحجم المكدس",
+      "metadata": "بيانات وصفية",
+      "noRedoEntries": "لا توجد إدخالات للإعادة",
+      "noUndoEntries": "لا توجد إدخالات للتراجع",
+      "operationId": "معرف العملية",
+      "previousCells": "الخلايا السابقة",
+      "redoStack": "مكدس الإعادة",
+      "redoStackSize": "حجم مكدس الإعادة",
+      "summary": "ملخص",
+      "timestamp": "الطابع الزمني",
+      "title": "السجل",
+      "undoStack": "مكدس التراجع",
+      "undoStackSize": "حجم مكدس التراجع",
+      "userId": "معرف المستخدم"
+    }
+  },
   "editor": {
     "diagramPrefix": "مخطط:",
     "embedding": {

@@ -1,36 +1,36 @@
-<h1 mat-dialog-title>History</h1>
+<h1 mat-dialog-title>{{ 'debugDialogs.historyDialog.title' | transloco }}</h1>
 
 <div mat-dialog-content appScrollIndicator class="history-content">
   <!-- Summary Section -->
   <details class="history-section" open>
     <summary class="history-section-header">
       <mat-icon class="expand-icon">expand_more</mat-icon>
-      <strong>Summary</strong>
+      <strong>{{ 'debugDialogs.historyDialog.summary' | transloco }}</strong>
     </summary>
     <div class="history-section-content">
       <div class="summary-grid">
         <div class="summary-item">
-          <span class="label">Can Undo:</span>
+          <span class="label">{{ 'debugDialogs.historyDialog.canUndo' | transloco }}:</span>
           <span class="value">{{ summary.canUndo }}</span>
         </div>
         <div class="summary-item">
-          <span class="label">Can Redo:</span>
+          <span class="label">{{ 'debugDialogs.historyDialog.canRedo' | transloco }}:</span>
           <span class="value">{{ summary.canRedo }}</span>
         </div>
         <div class="summary-item">
-          <span class="label">Undo Stack Size:</span>
+          <span class="label">{{ 'debugDialogs.historyDialog.undoStackSize' | transloco }}:</span>
           <span class="value">{{ summary.undoStackSize }}</span>
         </div>
         <div class="summary-item">
-          <span class="label">Redo Stack Size:</span>
+          <span class="label">{{ 'debugDialogs.historyDialog.redoStackSize' | transloco }}:</span>
           <span class="value">{{ summary.redoStackSize }}</span>
         </div>
         <div class="summary-item">
-          <span class="label">Max Stack Size:</span>
+          <span class="label">{{ 'debugDialogs.historyDialog.maxStackSize' | transloco }}:</span>
           <span class="value">{{ summary.maxStackSize }}</span>
         </div>
         <div class="summary-item">
-          <span class="label">Current Index:</span>
+          <span class="label">{{ 'debugDialogs.historyDialog.currentIndex' | transloco }}:</span>
           <span class="value">{{ summary.currentIndex }}</span>
         </div>
       </div>
@@ -41,12 +41,12 @@
   <details class="history-section" [attr.open]="undoStack.length > 0 ? true : null">
     <summary class="history-section-header">
       <mat-icon class="expand-icon">expand_more</mat-icon>
-      <strong>Undo Stack</strong>
+      <strong>{{ 'debugDialogs.historyDialog.undoStack' | transloco }}</strong>
       <span class="count-badge">({{ undoStack.length }})</span>
     </summary>
     <div class="history-section-content">
       @if (undoStack.length === 0) {
-        <div class="empty-state">No undo entries</div>
+        <div class="empty-state">{{ 'debugDialogs.historyDialog.noUndoEntries' | transloco }}</div>
       } @else {
         @for (entry of undoStack; track entry.id) {
           <details class="history-entry">
@@ -59,32 +59,36 @@
             </summary>
             <div class="history-entry-content">
               <div class="entry-detail">
-                <span class="label">ID:</span>
+                <span class="label">{{ 'debugDialogs.historyDialog.id' | transloco }}:</span>
                 <code class="value">{{ entry.id }}</code>
               </div>
               <div class="entry-detail">
-                <span class="label">Timestamp:</span>
+                <span class="label">{{ 'debugDialogs.historyDialog.timestamp' | transloco }}:</span>
                 <span class="value">{{ entry.timestamp }}</span>
               </div>
               <div class="entry-detail">
-                <span class="label">Affected Cells:</span>
+                <span class="label"
+                  >{{ 'debugDialogs.historyDialog.affectedCells' | transloco }}:</span
+                >
                 <span class="value">{{ entry.affectedCellCount }}</span>
               </div>
               @if (entry.affectedCellIds.length > 0) {
                 <div class="entry-detail">
-                  <span class="label">Cell IDs:</span>
+                  <span class="label">{{ 'debugDialogs.historyDialog.cellIds' | transloco }}:</span>
                   <code class="value">{{ entry.affectedCellIds.join(', ') }}</code>
                 </div>
               }
               @if (entry.userId) {
                 <div class="entry-detail">
-                  <span class="label">User ID:</span>
+                  <span class="label">{{ 'debugDialogs.historyDialog.userId' | transloco }}:</span>
                   <code class="value">{{ entry.userId }}</code>
                 </div>
               }
               @if (entry.operationId) {
                 <div class="entry-detail">
-                  <span class="label">Operation ID:</span>
+                  <span class="label"
+                    >{{ 'debugDialogs.historyDialog.operationId' | transloco }}:</span
+                  >
                   <code class="value">{{ entry.operationId }}</code>
                 </div>
               }
@@ -92,7 +96,7 @@
                 <details class="nested-detail">
                   <summary class="nested-summary">
                     <mat-icon class="expand-icon">chevron_right</mat-icon>
-                    Metadata
+                    {{ 'debugDialogs.historyDialog.metadata' | transloco }}
                   </summary>
                   <pre class="json-content">{{ entry.metadata | json }}</pre>
                 </details>
@@ -100,14 +104,16 @@
               <details class="nested-detail">
                 <summary class="nested-summary">
                   <mat-icon class="expand-icon">chevron_right</mat-icon>
-                  Cells ({{ entry.affectedCellCount }})
+                  {{ 'debugDialogs.historyDialog.cells' | transloco }} ({{
+                    entry.affectedCellCount
+                  }})
                 </summary>
                 <pre class="json-content">{{ entry.cellsJson }}</pre>
               </details>
               <details class="nested-detail">
                 <summary class="nested-summary">
                   <mat-icon class="expand-icon">chevron_right</mat-icon>
-                  Previous Cells
+                  {{ 'debugDialogs.historyDialog.previousCells' | transloco }}
                 </summary>
                 <pre class="json-content">{{ entry.previousCellsJson }}</pre>
               </details>
@@ -122,12 +128,12 @@
   <details class="history-section">
     <summary class="history-section-header">
       <mat-icon class="expand-icon">expand_more</mat-icon>
-      <strong>Redo Stack</strong>
+      <strong>{{ 'debugDialogs.historyDialog.redoStack' | transloco }}</strong>
       <span class="count-badge">({{ redoStack.length }})</span>
     </summary>
     <div class="history-section-content">
       @if (redoStack.length === 0) {
-        <div class="empty-state">No redo entries</div>
+        <div class="empty-state">{{ 'debugDialogs.historyDialog.noRedoEntries' | transloco }}</div>
       } @else {
         @for (entry of redoStack; track entry.id) {
           <details class="history-entry">
@@ -140,32 +146,36 @@
             </summary>
             <div class="history-entry-content">
               <div class="entry-detail">
-                <span class="label">ID:</span>
+                <span class="label">{{ 'debugDialogs.historyDialog.id' | transloco }}:</span>
                 <code class="value">{{ entry.id }}</code>
               </div>
               <div class="entry-detail">
-                <span class="label">Timestamp:</span>
+                <span class="label">{{ 'debugDialogs.historyDialog.timestamp' | transloco }}:</span>
                 <span class="value">{{ entry.timestamp }}</span>
               </div>
               <div class="entry-detail">
-                <span class="label">Affected Cells:</span>
+                <span class="label"
+                  >{{ 'debugDialogs.historyDialog.affectedCells' | transloco }}:</span
+                >
                 <span class="value">{{ entry.affectedCellCount }}</span>
               </div>
               @if (entry.affectedCellIds.length > 0) {
                 <div class="entry-detail">
-                  <span class="label">Cell IDs:</span>
+                  <span class="label">{{ 'debugDialogs.historyDialog.cellIds' | transloco }}:</span>
                   <code class="value">{{ entry.affectedCellIds.join(', ') }}</code>
                 </div>
               }
               @if (entry.userId) {
                 <div class="entry-detail">
-                  <span class="label">User ID:</span>
+                  <span class="label">{{ 'debugDialogs.historyDialog.userId' | transloco }}:</span>
                   <code class="value">{{ entry.userId }}</code>
                 </div>
               }
               @if (entry.operationId) {
                 <div class="entry-detail">
-                  <span class="label">Operation ID:</span>
+                  <span class="label"
+                    >{{ 'debugDialogs.historyDialog.operationId' | transloco }}:</span
+                  >
                   <code class="value">{{ entry.operationId }}</code>
                 </div>
               }
@@ -173,7 +183,7 @@
                 <details class="nested-detail">
                   <summary class="nested-summary">
                     <mat-icon class="expand-icon">chevron_right</mat-icon>
-                    Metadata
+                    {{ 'debugDialogs.historyDialog.metadata' | transloco }}
                   </summary>
                   <pre class="json-content">{{ entry.metadata | json }}</pre>
                 </details>
@@ -181,14 +191,16 @@
               <details class="nested-detail">
                 <summary class="nested-summary">
                   <mat-icon class="expand-icon">chevron_right</mat-icon>
-                  Cells ({{ entry.affectedCellCount }})
+                  {{ 'debugDialogs.historyDialog.cells' | transloco }} ({{
+                    entry.affectedCellCount
+                  }})
                 </summary>
                 <pre class="json-content">{{ entry.cellsJson }}</pre>
               </details>
               <details class="nested-detail">
                 <summary class="nested-summary">
                   <mat-icon class="expand-icon">chevron_right</mat-icon>
-                  Previous Cells
+                  {{ 'debugDialogs.historyDialog.previousCells' | transloco }}
                 </summary>
                 <pre class="json-content">{{ entry.previousCellsJson }}</pre>
               </details>
@@ -201,9 +213,21 @@
 </div>
 
 <div mat-dialog-actions align="end">
-  <button mat-button (click)="onCopyToClipboard()" tabindex="1" aria-label="Copy full JSON to clipboard">
+  <button
+    mat-button
+    (click)="onCopyToClipboard()"
+    tabindex="1"
+    [attr.aria-label]="'debugDialogs.historyDialog.copyFullJson' | transloco"
+  >
     <mat-icon>content_copy</mat-icon>
-    Copy Full JSON
+    {{ 'debugDialogs.historyDialog.copyFullJson' | transloco }}
   </button>
-  <button mat-button (click)="onClose()" tabindex="2" aria-label="Close">Close</button>
+  <button
+    mat-button
+    (click)="onClose()"
+    tabindex="2"
+    [attr.aria-label]="'common.close' | transloco"
+  >
+    {{ 'common.close' | transloco }}
+  </button>
 </div>

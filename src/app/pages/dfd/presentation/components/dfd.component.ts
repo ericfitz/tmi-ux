@@ -99,13 +99,13 @@ import {
   HistoryDialogData,
 } from './history-dialog/history-dialog.component';
 import {
-  X6GraphDataDialogComponent,
-  X6GraphDataDialogData,
-} from './x6-graph-data-dialog/x6-graph-data-dialog.component';
+  GraphDataDialogComponent,
+  GraphDataDialogData,
+} from './graph-data-dialog/graph-data-dialog.component';
 import {
-  X6ClipboardDialogComponent,
-  X6ClipboardDialogData,
-} from './x6-clipboard-dialog/x6-clipboard-dialog.component';
+  ClipboardDialogComponent,
+  ClipboardDialogData,
+} from './clipboard-dialog/clipboard-dialog.component';
 import {
   DataAssetDialogComponent,
   DataAssetDialogData,
@@ -943,18 +943,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // Open the X6 graph data dialog
-    const dialogData: X6GraphDataDialogData = {
+    // Open the graph data dialog
+    const dialogData: GraphDataDialogData = {
       graph: graph,
     };
 
-    this.dialog.open(X6GraphDataDialogComponent, {
+    this.dialog.open(GraphDataDialogComponent, {
       width: '800px',
       maxHeight: '90vh',
       data: dialogData,
     });
 
-    this.logger.info('Opened X6 graph data dialog');
+    this.logger.info('Opened graph data dialog');
   }
 
   showClipboard(): void {
@@ -964,18 +964,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // Open the X6 clipboard dialog
-    const dialogData: X6ClipboardDialogData = {
+    // Open the clipboard dialog
+    const dialogData: ClipboardDialogData = {
       graph: graph,
     };
 
-    this.dialog.open(X6ClipboardDialogComponent, {
+    this.dialog.open(ClipboardDialogComponent, {
       width: '800px',
       maxHeight: '90vh',
       data: dialogData,
     });
 
-    this.logger.info('Opened X6 clipboard dialog');
+    this.logger.info('Opened clipboard dialog');
   }
 
   onAddNode(nodeType: NodeType): void {
