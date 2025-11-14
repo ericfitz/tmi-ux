@@ -276,7 +276,17 @@ export class AppDfdOrchestrator {
    */
   undo(): Observable<OperationResult> {
     this.logger.debug('AppDfdOrchestrator: Undo requested');
-    return this.appHistoryService.undo();
+    return this.appHistoryService.undo().pipe(
+      tap(result => {
+        if (result.success) {
+          // Clear visual effects after undo
+          this.dfdInfrastructure.graphAdapter?.clearAllVisualEffects();
+          // Update embedding appearances to reflect new state
+          this.dfdInfrastructure.graphAdapter?.updateAllEmbeddingAppearances();
+          this.logger.debug('AppDfdOrchestrator: Post-undo cleanup completed');
+        }
+      }),
+    );
   }
 
   /**
@@ -284,7 +294,17 @@ export class AppDfdOrchestrator {
    */
   redo(): Observable<OperationResult> {
     this.logger.debug('AppDfdOrchestrator: Redo requested');
-    return this.appHistoryService.redo();
+    return this.appHistoryService.redo().pipe(
+      tap(result => {
+        if (result.success) {
+          // Clear visual effects after redo
+          this.dfdInfrastructure.graphAdapter?.clearAllVisualEffects();
+          // Update embedding appearances to reflect new state
+          this.dfdInfrastructure.graphAdapter?.updateAllEmbeddingAppearances();
+          this.logger.debug('AppDfdOrchestrator: Post-redo cleanup completed');
+        }
+      }),
+    );
   }
 
   /**

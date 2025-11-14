@@ -863,6 +863,20 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Clear all active visual effects (highlights, temporary styling)
+   * Should be called after undo/redo or other state-changing operations
+   */
+  clearAllVisualEffects(): void {
+    if (!this._graph) {
+      this.logger.warn('Cannot clear visual effects - graph not initialized');
+      return;
+    }
+
+    this._visualEffectsService.clearAllActiveEffects();
+    this.logger.debugComponent('X6Graph', 'Cleared all active visual effects');
+  }
+
+  /**
    * Recalculate z-order for all cells in the graph
    * Uses iterative algorithm to fix cascading z-index violations
    */
