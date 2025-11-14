@@ -1134,7 +1134,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
     // Node position changes
     this._graph.on(
-      'node:moved',
+      'node:change:position',
       ({
         node,
         current,
@@ -1144,7 +1144,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         current?: { x: number; y: number };
         previous?: { x: number; y: number };
       }) => {
-        this.logger.debugComponent('X6Graph', 'node:moved event fired', {
+        this.logger.debugComponent('X6Graph', 'node:change:position event fired', {
           nodeId: node.id,
           current: current,
           previous: previous,
