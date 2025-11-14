@@ -915,15 +915,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showHistory(): void {
-    const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) {
-      this.logger.warn('Cannot show history: Graph not available');
+    // Get custom history state from orchestrator
+    const historyState = this.appDfdOrchestrator.getHistoryState();
+    if (!historyState) {
+      this.logger.warn('Cannot show history: History state not available');
       return;
     }
 
-    // Open the X6 history dialog
+    // Open the history dialog with custom history data
     const dialogData: X6HistoryDialogData = {
-      graph: graph,
+      historyState: historyState,
     };
 
     this.dialog.open(X6HistoryDialogComponent, {
@@ -932,7 +933,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       data: dialogData,
     });
 
-    this.logger.info('Opened X6 history dialog');
+    this.logger.info('Opened custom history dialog');
   }
 
   showGraphData(): void {
@@ -1847,35 +1848,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           }),
       );
 
-      // Subscribe to custom history state changes for reactive undo/redo button states
-      // Get history service from orchestrator
-      const historyService = (this.appDfdOrchestrator as any).appHistoryService;
-      if (historyService) {
-        this._subscriptions.add(
-          historyService.historyStateChange$
-            .pipe(takeUntil(this._destroy$))
-            .subscribe((event: any) => {
-              const oldCanUndo = this.canUndo;
-              const oldCanRedo = this.canRedo;
-
-              this.canUndo = event.canUndo;
-              this.canRedo = event.canRedo;
-
-              // Only trigger change detection if state actually changed
-              if (oldCanUndo !== this.canUndo || oldCanRedo !== this.canRedo) {
-                this.logger.debugComponent('DFD', 'History state updated from custom history', {
-                  canUndo: event.canUndo,
-                  canRedo: event.canRedo,
-                });
-                this.cdr.detectChanges();
-              }
-            }),
-        );
-      }
-
-      // Set initial history state from orchestrator
-      this.setInitialHistoryState();
-
       this.logger.debugComponent(
         'DfdComponent',
         'Edge and history observable subscriptions set up successfully',
@@ -1883,21 +1855,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.logger.warn('Graph adapter not available for edge and history subscriptions');
     }
-  }
-
-  private setInitialHistoryState(): void {
-    // Get initial state from custom history service
-    const canUndo = this.appDfdOrchestrator.canUndo();
-    const canRedo = this.appDfdOrchestrator.canRedo();
-
-    this.canUndo = canUndo;
-    this.canRedo = canRedo;
-
-    this.logger.debugComponent('DFD', 'Initial history state set from custom history', {
-      canUndo,
-      canRedo,
-    });
-    this.cdr.detectChanges();
   }
 
   // Context Menu Methods

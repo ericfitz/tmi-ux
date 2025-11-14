@@ -1,17 +1,17 @@
 /**
  * X6 History Dialog Component
  *
- * This component provides a dialog for viewing the X6 graph history in JSON format.
- * It's primarily used for development and debugging purposes to inspect graph history state.
+ * This component provides a dialog for viewing the custom history system in JSON format.
+ * It's primarily used for development and debugging purposes to inspect history state.
  *
  * Key functionality:
- * - Displays complete X6 graph history object as formatted JSON
- * - Provides read-only view of history stack for debugging
- * - Shows undo/redo stack state and available operations
- * - Includes history metadata and operation details
+ * - Displays complete custom history state as formatted JSON
+ * - Provides read-only view of undo/redo stacks for debugging
+ * - Shows history entries with operation details
+ * - Includes operation metadata and affected cells
  * - Uses Material Design dialog with syntax highlighting
  * - Supports copying history data for external analysis
- * - Helps developers understand X6 history structure and state
+ * - Helps developers understand custom history structure and state
  */
 
 import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
@@ -21,17 +21,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { Graph } from '@antv/x6';
+import { HistoryState } from '../../../types/history.types';
 
 /**
- * Data interface for the X6 history dialog
+ * Data interface for the history dialog
  */
 export interface X6HistoryDialogData {
-  graph: Graph;
+  historyState: Readonly<HistoryState>;
 }
 
 /**
- * Dialog component for displaying X6 history as JSON
+ * Dialog component for displaying custom history as JSON
  * This is a development-only component for debugging purposes
  */
 @Component({
@@ -51,7 +51,7 @@ export interface X6HistoryDialogData {
 })
 export class X6HistoryDialogComponent {
   /**
-   * Serialized JSON representation of the X6 history
+   * Serialized JSON representation of the custom history
    */
   readonly historyJson: string;
 
@@ -59,100 +59,61 @@ export class X6HistoryDialogComponent {
     private _dialogRef: MatDialogRef<X6HistoryDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: X6HistoryDialogData,
   ) {
-    // Extract history data from the graph
-    const historyData = this._extractHistoryData(data.graph);
+    // Extract history data from the state
+    const historyData = this._extractHistoryData(data.historyState);
 
     // Serialize the history to JSON with proper formatting and circular reference handling
     this.historyJson = this._safeStringify(historyData, 2);
   }
 
   /**
-   * Extract history data from the X6 graph
+   * Extract history data from the custom history state
    */
-  private _extractHistoryData(graph: Graph): any {
+  private _extractHistoryData(historyState: Readonly<HistoryState>): any {
     try {
-      // Use the same method as the existing codebase to get the history plugin
-      const historyPlugin = graph.getPlugin('history');
-
-      if (!historyPlugin) {
-        return {
-          error: 'History plugin not available',
-          message: 'The X6 history plugin is not enabled for this graph',
-        };
-      }
-
-      // Extract available history data
-      const graphWithHistory = graph as any;
+      // Extract history state information
       const historyData: any = {
-        canUndo: graphWithHistory.canUndo ? graphWithHistory.canUndo() : false,
-        canRedo: graphWithHistory.canRedo ? graphWithHistory.canRedo() : false,
-        enabled:
-          (historyPlugin as any).enabled !== undefined ? (historyPlugin as any).enabled : true,
+        summary: {
+          canUndo: historyState.undoStack.length > 0,
+          canRedo: historyState.redoStack.length > 0,
+          undoStackSize: historyState.undoStack.length,
+          redoStackSize: historyState.redoStack.length,
+          maxStackSize: historyState.maxStackSize,
+          currentIndex: historyState.currentIndex,
+        },
+        undoStack: historyState.undoStack.map((entry, index) => ({
+          index,
+          id: entry.id,
+          timestamp: entry.timestamp,
+          timestampFormatted: new Date(entry.timestamp).toLocaleString(),
+          operationType: entry.operationType,
+          description: entry.description,
+          affectedCellCount: entry.cells.length,
+          affectedCellIds: entry.metadata?.affectedCellIds || [],
+          userId: entry.userId,
+          operationId: entry.operationId,
+          metadata: entry.metadata,
+          // Include full cells for detailed inspection
+          cells: entry.cells,
+          previousCells: entry.previousCells,
+        })),
+        redoStack: historyState.redoStack.map((entry, index) => ({
+          index,
+          id: entry.id,
+          timestamp: entry.timestamp,
+          timestampFormatted: new Date(entry.timestamp).toLocaleString(),
+          operationType: entry.operationType,
+          description: entry.description,
+          affectedCellCount: entry.cells.length,
+          affectedCellIds: entry.metadata?.affectedCellIds || [],
+          userId: entry.userId,
+          operationId: entry.operationId,
+          metadata: entry.metadata,
+          // Include full cells for detailed inspection
+          cells: entry.cells,
+          previousCells: entry.previousCells,
+        })),
       };
-
-      // Try to extract undo/redo stacks if available
-      if ((historyPlugin as any).undoStack) {
-        historyData.undoStack = (historyPlugin as any).undoStack;
-      }
-
-      if ((historyPlugin as any).redoStack) {
-        historyData.redoStack = (historyPlugin as any).redoStack;
-      }
-
-      // Add other history properties if available
-      if ((historyPlugin as any).index !== undefined) {
-        historyData.index = (historyPlugin as any).index;
-      }
-
-      if ((historyPlugin as any).maxSize !== undefined) {
-        historyData.maxSize = (historyPlugin as any).maxSize;
-      }
-
-      // Include selected history plugin properties for debugging (avoid complex nested objects)
-      const safeProperties = [
-        'enabled',
-        'index',
-        'maxSize',
-        'ignoreChange',
-        'beforeAddCommand',
-        'afterAddCommand',
-      ];
-      historyData.pluginProperties = {};
-      safeProperties.forEach(prop => {
-        if ((historyPlugin as any)[prop] !== undefined) {
-          historyData.pluginProperties[prop] = (historyPlugin as any)[prop];
-        }
-      });
-
-      // Add method names for debugging
-      historyData.availableMethods = Object.keys(historyPlugin as any).filter(
-        key => typeof (historyPlugin as any)[key] === 'function',
-      );
-
-      // Add summary information about stacks
-      if ((historyPlugin as any).undoStack) {
-        historyData.undoStackLength = (historyPlugin as any).undoStack.length;
-        historyData.undoStackSummary = (historyPlugin as any).undoStack.map(
-          (item: any, index: number) => ({
-            index,
-            type: item?.constructor?.name || 'unknown',
-            hasData: !!item?.data,
-            hasOptions: !!item?.options,
-          }),
-        );
-      }
-
-      if ((historyPlugin as any).redoStack) {
-        historyData.redoStackLength = (historyPlugin as any).redoStack.length;
-        historyData.redoStackSummary = (historyPlugin as any).redoStack.map(
-          (item: any, index: number) => ({
-            index,
-            type: item?.constructor?.name || 'unknown',
-            hasData: !!item?.data,
-            hasOptions: !!item?.options,
-          }),
-        );
-      }
 
       return historyData;
     } catch (error) {

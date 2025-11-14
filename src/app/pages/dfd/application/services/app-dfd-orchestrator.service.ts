@@ -302,6 +302,13 @@ export class AppDfdOrchestrator {
   }
 
   /**
+   * Get the current history state
+   */
+  getHistoryState(): Readonly<import('../../types/history.types').HistoryState> {
+    return this.appHistoryService.getHistoryState();
+  }
+
+  /**
    * Manually save the diagram
    */
   save(): Observable<boolean> {

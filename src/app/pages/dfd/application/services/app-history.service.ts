@@ -138,6 +138,19 @@ export class AppHistoryService implements OnDestroy {
   }
 
   /**
+   * Get the current history state (read-only)
+   * Returns a copy to prevent external mutation
+   */
+  getHistoryState(): Readonly<HistoryState> {
+    return {
+      undoStack: [...this._historyState.undoStack],
+      redoStack: [...this._historyState.redoStack],
+      maxStackSize: this._historyState.maxStackSize,
+      currentIndex: this._historyState.currentIndex,
+    };
+  }
+
+  /**
    * Add a new history entry
    * This also triggers broadcast or auto-save based on session state
    */
