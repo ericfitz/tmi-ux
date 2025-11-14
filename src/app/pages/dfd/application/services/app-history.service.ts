@@ -11,7 +11,7 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, throwError, of, forkJoin } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { map, catchError, tap, finalize } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -19,6 +19,7 @@ import { DfdCollaborationService } from '../../../../core/services/dfd-collabora
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
 import { AppDiagramOperationBroadcaster } from './app-diagram-operation-broadcaster.service';
 import { AppPersistenceCoordinator } from './app-persistence-coordinator.service';
+import { AppStateService } from './app-state.service';
 import {
   HistoryEntry,
   HistoryState,
@@ -73,6 +74,7 @@ export class AppHistoryService implements OnDestroy {
     private readonly graphOperationManager: AppGraphOperationManager,
     private readonly diagramOperationBroadcaster: AppDiagramOperationBroadcaster,
     private readonly persistenceCoordinator: AppPersistenceCoordinator,
+    private readonly appStateService: AppStateService,
   ) {
     this._config = { ...DEFAULT_HISTORY_CONFIG };
     this._historyState = createEmptyHistoryState(this._config.maxHistorySize);
@@ -223,6 +225,9 @@ export class AppHistoryService implements OnDestroy {
 
     this._stats.undoCount++;
 
+    // Set flag to prevent retroactive history recording during undo
+    this.appStateService.setApplyingUndoRedo(true);
+
     // Convert previous cells to operations
     const operations = this._convertCellsToOperations(
       entry.previousCells,
@@ -272,6 +277,10 @@ export class AppHistoryService implements OnDestroy {
 
         return throwError(() => error);
       }),
+      finalize(() => {
+        // Clear the flag whether success or failure
+        this.appStateService.setApplyingUndoRedo(false);
+      }),
       map(() => ({
         success: true,
         operationType: 'batch-operation' as const,
@@ -306,6 +315,9 @@ export class AppHistoryService implements OnDestroy {
     });
 
     this._stats.redoCount++;
+
+    // Set flag to prevent retroactive history recording during redo
+    this.appStateService.setApplyingUndoRedo(true);
 
     // Convert cells to operations
     const operations = this._convertCellsToOperations(
@@ -355,6 +367,10 @@ export class AppHistoryService implements OnDestroy {
         });
 
         return throwError(() => error);
+      }),
+      finalize(() => {
+        // Clear the flag whether success or failure
+        this.appStateService.setApplyingUndoRedo(false);
       }),
       map(() => ({
         success: true,

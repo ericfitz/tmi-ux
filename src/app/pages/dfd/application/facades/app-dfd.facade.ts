@@ -30,6 +30,7 @@ import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-o
 import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
 import { AppEdgeService } from '../services/app-edge.service';
 import { AppExportService } from '../services/app-export.service';
+import { AppStateService } from '../services/app-state.service';
 import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraX6CoreOperationsService } from '../../infrastructure/services/infra-x6-core-operations.service';
@@ -63,6 +64,7 @@ export class AppDfdFacade {
     private readonly historyCoordinator: AppOperationStateManager,
     private readonly infraEmbeddingService: InfraEmbeddingService,
     private readonly graphOperationManager: AppGraphOperationManager,
+    private readonly appStateService: AppStateService,
   ) {
     this.logger.debug('AppDfdFacade initialized');
   }
@@ -370,6 +372,13 @@ export class AppDfdFacade {
     if (!isInitialized) {
       this.logger.warn('Cannot handle node added: Graph is not initialized');
       throw new Error('Graph is not initialized');
+    }
+
+    // Skip if we're applying undo/redo - the operation is already in history
+    const state = this.appStateService.getCurrentState();
+    if (state.isApplyingUndoRedo) {
+      this.logger.debug('Skipping handleNodeAdded - applying undo/redo', { nodeId: node.id });
+      return of(undefined);
     }
 
     const graph = this.infraX6GraphAdapter.getGraph();

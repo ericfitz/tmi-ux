@@ -57,6 +57,7 @@ export interface DfdDiagramState {
   syncState: SyncState;
   pendingRemoteOperations: PendingRemoteOperation[];
   isApplyingRemoteChange: boolean;
+  isApplyingUndoRedo: boolean;
   lastOperationId: string | null;
   conflictCount: number;
   readOnly: boolean;
@@ -77,6 +78,7 @@ export class AppStateService implements OnDestroy {
     },
     pendingRemoteOperations: [],
     isApplyingRemoteChange: false,
+    isApplyingUndoRedo: false,
     lastOperationId: null,
     conflictCount: 0,
     readOnly: false,
@@ -232,6 +234,13 @@ export class AppStateService implements OnDestroy {
    */
   setApplyingRemoteChange(isApplying: boolean): void {
     this._updateState({ isApplyingRemoteChange: isApplying });
+  }
+
+  /**
+   * Set whether we're applying an undo/redo operation
+   */
+  setApplyingUndoRedo(isApplying: boolean): void {
+    this._updateState({ isApplyingUndoRedo: isApplying });
   }
 
   /**
