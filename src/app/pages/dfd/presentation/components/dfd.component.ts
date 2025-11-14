@@ -95,9 +95,9 @@ import {
   CellPropertiesDialogData,
 } from './cell-properties-dialog/cell-properties-dialog.component';
 import {
-  X6HistoryDialogComponent,
-  X6HistoryDialogData,
-} from './x6-history-dialog/x6-history-dialog.component';
+  HistoryDialogComponent,
+  HistoryDialogData,
+} from './history-dialog/history-dialog.component';
 import {
   X6GraphDataDialogComponent,
   X6GraphDataDialogData,
@@ -923,17 +923,17 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Open the history dialog with custom history data
-    const dialogData: X6HistoryDialogData = {
+    const dialogData: HistoryDialogData = {
       historyState: historyState,
     };
 
-    this.dialog.open(X6HistoryDialogComponent, {
+    this.dialog.open(HistoryDialogComponent, {
       width: '800px',
       maxHeight: '90vh',
       data: dialogData,
     });
 
-    this.logger.info('Opened custom history dialog');
+    this.logger.info('Opened history dialog');
   }
 
   showGraphData(): void {

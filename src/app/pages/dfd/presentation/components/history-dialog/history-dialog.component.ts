@@ -1,5 +1,5 @@
 /**
- * X6 History Dialog Component
+ * History Dialog Component
  *
  * This component provides a dialog for viewing the custom history system in JSON format.
  * It's primarily used for development and debugging purposes to inspect history state.
@@ -26,7 +26,7 @@ import { HistoryState } from '../../../types/history.types';
 /**
  * Data interface for the history dialog
  */
-export interface X6HistoryDialogData {
+export interface HistoryDialogData {
   historyState: Readonly<HistoryState>;
 }
 
@@ -35,7 +35,7 @@ export interface X6HistoryDialogData {
  * This is a development-only component for debugging purposes
  */
 @Component({
-  selector: 'app-x6-history-dialog',
+  selector: 'app-history-dialog',
   standalone: true,
   imports: [
     CommonModule,
@@ -45,19 +45,19 @@ export interface X6HistoryDialogData {
     MatInputModule,
     MatIconModule,
   ],
-  templateUrl: './x6-history-dialog.component.html',
-  styleUrls: ['./x6-history-dialog.component.scss'],
+  templateUrl: './history-dialog.component.html',
+  styleUrls: ['./history-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class X6HistoryDialogComponent {
+export class HistoryDialogComponent {
   /**
    * Serialized JSON representation of the custom history
    */
   readonly historyJson: string;
 
   constructor(
-    private _dialogRef: MatDialogRef<X6HistoryDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: X6HistoryDialogData,
+    private _dialogRef: MatDialogRef<HistoryDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: HistoryDialogData,
   ) {
     // Extract history data from the state
     const historyData = this._extractHistoryData(data.historyState);
