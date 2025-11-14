@@ -764,7 +764,35 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   }
 
   /**
+   * Remove visual properties from a cell (filters, tools)
+   * Modifies the cell in-place to remove visual interaction properties
+   */
+  private _removeVisualProperties(cell: Cell): void {
+    // Remove tools property (runtime UI controls)
+    cell.removeProp('tools');
+
+    // Get current attrs
+    const attrs = cell.getAttrs();
+    if (!attrs) {
+      return;
+    }
+
+    // Remove filter properties from nested attrs
+    Object.keys(attrs).forEach(key => {
+      const value = attrs[key];
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        const attrObj = value as Record<string, unknown>;
+        if ('filter' in attrObj) {
+          // Remove the filter property using cell.removeAttrByPath
+          cell.removeAttrByPath(`${key}/filter`);
+        }
+      }
+    });
+  }
+
+  /**
    * Cut selected cells to clipboard
+   * Normalizes cells to remove visual properties before cutting
    */
   cut(): void {
     if (!this._graph) {
@@ -776,12 +804,22 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       this.logger.debug('No cells selected for cut operation');
       return;
     }
-    this._graph.cut(selectedCells);
-    this.logger.debug('Cut cells to clipboard', { count: selectedCells.length });
+
+    // Clone cells and remove visual properties from clones
+    const cleanedCells = selectedCells.map(cell => {
+      const clone = cell.clone();
+      this._removeVisualProperties(clone);
+      return clone;
+    });
+
+    // Cut using the cleaned clones
+    this._graph.cut(cleanedCells);
+    this.logger.debug('Cut cells to clipboard', { count: cleanedCells.length });
   }
 
   /**
    * Copy selected cells to clipboard
+   * Normalizes cells to remove visual properties before copying
    */
   copy(): void {
     if (!this._graph) {
@@ -793,8 +831,17 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       this.logger.debug('No cells selected for copy operation');
       return;
     }
-    this._graph.copy(selectedCells);
-    this.logger.debug('Copied cells to clipboard', { count: selectedCells.length });
+
+    // Clone cells and remove visual properties from clones
+    const cleanedCells = selectedCells.map(cell => {
+      const clone = cell.clone();
+      this._removeVisualProperties(clone);
+      return clone;
+    });
+
+    // Copy using the cleaned clones
+    this._graph.copy(cleanedCells);
+    this.logger.debug('Copied cells to clipboard', { count: cleanedCells.length });
   }
 
   /**
