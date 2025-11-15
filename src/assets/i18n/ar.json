@@ -206,34 +206,29 @@
   },
   "debugDialogs": {
     "clipboardDialog": {
-      "affectedCells": "الخلايا المتأثرة",
       "cellCount": "عدد الخلايا",
-      "cellIds": "معرفات الخلايا",
-      "cells": "خلايا",
       "clearClipboard": "مسح الحافظة",
       "clipboardJson": "بيانات الحافظة JSON",
-      "copyFullJson": "نسخ JSON كامل",
-      "copyToClipboard": "نسخ إلى الحافظة",
       "isEmpty": "فارغ",
       "title": "بيانات الحافظة"
     },
+    "common": {
+      "affectedCells": "الخلايا المتأثرة",
+      "cellIds": "معرفات الخلايا",
+      "cells": "خلايا",
+      "copyFullJson": "نسخ JSON كامل"
+    },
     "graphDataDialog": {
-      "copyToClipboard": "نسخ إلى الحافظة",
       "graphJson": "بيانات الرسم البياني JSON",
       "title": "بيانات الرسم البياني"
     },
     "historyDialog": {
-      "affectedCells": "الخلايا المتأثرة",
       "canRedo": "يمكن الإعادة",
       "canUndo": "يمكن التراجع",
-      "cellIds": "معرفات الخلايا",
-      "cells": "خلايا",
       "clearHistory": "مسح السجل",
-      "copyFullJson": "نسخ JSON كامل",
       "currentIndex": "الفهرس الحالي",
       "id": "المعرف",
       "maxStackSize": "الحد الأقصى لحجم المكدس",
-      "metadata": "بيانات وصفية",
       "noRedoEntries": "لا توجد إدخالات للإعادة",
       "noUndoEntries": "لا توجد إدخالات للتراجع",
       "operationId": "معرف العملية",
@@ -257,6 +252,11 @@
       "securityBoundaryRestriction": "Security boundaries can only be embedded into other security boundaries"
     },
     "flowLabel": "تدفق",
+    "helpDialog": {
+      "panLabel": "اضغط مع الاستمرار على Shift واسحب للتحريك",
+      "title": "مساعدة محرر المخطط",
+      "zoomLabel": "اضغط مع الاستمرار على Shift واستخدم عجلة الماوس للتكبير"
+    },
     "nodeLabels": {
       "actor": "ممثل",
       "node": "عقدة",
@@ -264,11 +264,6 @@
       "securityBoundary": "حدود أمنية",
       "store": "مخزن البيانات",
       "textbox": "نص"
-    },
-    "helpDialog": {
-      "panLabel": "اضغط مع الاستمرار على Shift واسحب للتحريك",
-      "title": "مساعدة محرر المخطط",
-      "zoomLabel": "اضغط مع الاستمرار على Shift واستخدم عجلة الماوس للتكبير"
     },
     "pageTitle": "محرر مخطط تدفق البيانات",
     "toolbar": {

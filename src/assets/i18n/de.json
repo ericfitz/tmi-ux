@@ -206,34 +206,29 @@
   },
   "debugDialogs": {
     "clipboardDialog": {
-      "affectedCells": "Betroffene Zellen",
       "cellCount": "Zellenanzahl",
-      "cellIds": "Zellen-IDs",
-      "cells": "Zellen",
       "clearClipboard": "Zwischenablage leeren",
       "clipboardJson": "Zwischenablage JSON",
-      "copyFullJson": "Vollständiges JSON kopieren",
-      "copyToClipboard": "In Zwischenablage kopieren",
       "isEmpty": "Ist leer",
       "title": "Zwischenablage-Daten"
     },
+    "common": {
+      "affectedCells": "Betroffene Zellen",
+      "cellIds": "Zellen-IDs",
+      "cells": "Zellen",
+      "copyFullJson": "Vollständiges JSON kopieren"
+    },
     "graphDataDialog": {
-      "copyToClipboard": "In Zwischenablage kopieren",
       "graphJson": "Diagramm JSON",
       "title": "Diagramm-Daten"
     },
     "historyDialog": {
-      "affectedCells": "Betroffene Zellen",
       "canRedo": "Kann wiederholen",
       "canUndo": "Kann rückgängig machen",
-      "cellIds": "Zellen-IDs",
-      "cells": "Zellen",
       "clearHistory": "Verlauf löschen",
-      "copyFullJson": "Vollständiges JSON kopieren",
       "currentIndex": "Aktueller Index",
       "id": "ID",
       "maxStackSize": "Maximale Stapelgröße",
-      "metadata": "Metadaten",
       "noRedoEntries": "Keine Wiederholungseinträge",
       "noUndoEntries": "Keine Rückgängig-Einträge",
       "operationId": "Vorgangs-ID",
@@ -257,6 +252,11 @@
       "securityBoundaryRestriction": "Security boundaries can only be embedded into other security boundaries"
     },
     "flowLabel": "Datenfluss",
+    "helpDialog": {
+      "panLabel": "Halten Sie Umschalt gedrückt und ziehen Sie zum Verschieben",
+      "title": "Diagramm-Editor Hilfe",
+      "zoomLabel": "Halten Sie Umschalt gedrückt und verwenden Sie das Mausrad zum Zoomen"
+    },
     "nodeLabels": {
       "actor": "Akteur",
       "node": "Knoten",
@@ -264,11 +264,6 @@
       "securityBoundary": "Sicherheitsgrenze",
       "store": "Datenspeicher",
       "textbox": "Text"
-    },
-    "helpDialog": {
-      "panLabel": "Halten Sie Umschalt gedrückt und ziehen Sie zum Verschieben",
-      "title": "Diagramm-Editor Hilfe",
-      "zoomLabel": "Halten Sie Umschalt gedrückt und verwenden Sie das Mausrad zum Zoomen"
     },
     "pageTitle": "Datenflussdiagramm-Editor",
     "toolbar": {

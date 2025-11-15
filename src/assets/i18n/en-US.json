@@ -206,34 +206,29 @@
   },
   "debugDialogs": {
     "clipboardDialog": {
-      "affectedCells": "Affected Cells",
       "cellCount": "Cell Count",
-      "cellIds": "Cell IDs",
-      "cells": "Cells",
       "clearClipboard": "Clear Clipboard",
       "clipboardJson": "Clipboard JSON",
-      "copyFullJson": "Copy Full JSON",
-      "copyToClipboard": "Copy to Clipboard",
       "isEmpty": "Is Empty",
       "title": "Clipboard Data"
     },
+    "common": {
+      "affectedCells": "Affected Cells",
+      "cellIds": "Cell IDs",
+      "cells": "Cells",
+      "copyFullJson": "Copy Full JSON"
+    },
     "graphDataDialog": {
-      "copyToClipboard": "Copy to Clipboard",
       "graphJson": "Graph JSON",
       "title": "Graph Data"
     },
     "historyDialog": {
-      "affectedCells": "Affected Cells",
       "canRedo": "Can Redo",
       "canUndo": "Can Undo",
-      "cellIds": "Cell IDs",
-      "cells": "Cells",
       "clearHistory": "Clear History",
-      "copyFullJson": "Copy Full JSON",
       "currentIndex": "Current Index",
       "id": "ID",
       "maxStackSize": "Max Stack Size",
-      "metadata": "Metadata",
       "noRedoEntries": "No redo entries",
       "noUndoEntries": "No undo entries",
       "operationId": "Operation ID",
@@ -257,6 +252,11 @@
       "securityBoundaryRestriction": "Security boundaries can only be embedded into other security boundaries"
     },
     "flowLabel": "Flow",
+    "helpDialog": {
+      "panLabel": "Hold Shift and drag to pan",
+      "title": "Diagram Editor Help",
+      "zoomLabel": "Hold Shift and use the mouse wheel to zoom"
+    },
     "nodeLabels": {
       "actor": "Actor",
       "node": "Node",
@@ -264,11 +264,6 @@
       "securityBoundary": "Security Boundary",
       "store": "Data Store",
       "textbox": "Text"
-    },
-    "helpDialog": {
-      "panLabel": "Hold Shift and drag to pan",
-      "title": "Diagram Editor Help",
-      "zoomLabel": "Hold Shift and use the mouse wheel to zoom"
     },
     "pageTitle": "Data Flow Diagram Editor",
     "toolbar": {

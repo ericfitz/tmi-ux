@@ -206,34 +206,29 @@
   },
   "debugDialogs": {
     "clipboardDialog": {
-      "affectedCells": "เซลล์ที่ได้รับผลกระทบ",
       "cellCount": "จำนวนเซลล์",
-      "cellIds": "ID ของเซลล์",
-      "cells": "เซลล์",
       "clearClipboard": "ล้างคลิปบอร์ด",
       "clipboardJson": "คลิปบอร์ด JSON",
-      "copyFullJson": "คัดลอก JSON ทั้งหมด",
-      "copyToClipboard": "คัดลอกไปยังคลิปบอร์ด",
       "isEmpty": "ว่างเปล่า",
       "title": "ข้อมูลคลิปบอร์ด"
     },
+    "common": {
+      "affectedCells": "เซลล์ที่ได้รับผลกระทบ",
+      "cellIds": "ID ของเซลล์",
+      "cells": "เซลล์",
+      "copyFullJson": "คัดลอก JSON ทั้งหมด"
+    },
     "graphDataDialog": {
-      "copyToClipboard": "คัดลอกไปยังคลิปบอร์ด",
       "graphJson": "กราฟ JSON",
       "title": "ข้อมูลกราฟ"
     },
     "historyDialog": {
-      "affectedCells": "เซลล์ที่ได้รับผลกระทบ",
       "canRedo": "สามารถทำซ้ำได้",
       "canUndo": "สามารถเลิกทำได้",
-      "cellIds": "ID ของเซลล์",
-      "cells": "เซลล์",
       "clearHistory": "ล้างประวัติ",
-      "copyFullJson": "คัดลอก JSON ทั้งหมด",
       "currentIndex": "ดัชนีปัจจุบัน",
       "id": "ID",
       "maxStackSize": "ขนาดสแต็กสูงสุด",
-      "metadata": "ข้อมูลเมตา",
       "noRedoEntries": "ไม่มีรายการทำซ้ำ",
       "noUndoEntries": "ไม่มีรายการเลิกทำ",
       "operationId": "ID การดำเนินการ",
@@ -257,6 +252,11 @@
       "securityBoundaryRestriction": "Security boundaries can only be embedded into other security boundaries"
     },
     "flowLabel": "การไหล",
+    "helpDialog": {
+      "panLabel": "กดค้าง Shift และลากเพื่อเลื่อน",
+      "title": "ความช่วยเหลือโปรแกรมแก้ไขแผนภาพ",
+      "zoomLabel": "กดค้าง Shift และใช้ลูกกลิ้งเมาส์เพื่อซูม"
+    },
     "nodeLabels": {
       "actor": "ผู้กระทำ",
       "node": "โหนด",
@@ -264,11 +264,6 @@
       "securityBoundary": "ขอบเขตความปลอดภัย",
       "store": "ที่เก็บข้อมูล",
       "textbox": "ข้อความ"
-    },
-    "helpDialog": {
-      "panLabel": "กดค้าง Shift และลากเพื่อเลื่อน",
-      "title": "ความช่วยเหลือโปรแกรมแก้ไขแผนภาพ",
-      "zoomLabel": "กดค้าง Shift และใช้ลูกกลิ้งเมาส์เพื่อซูม"
     },
     "pageTitle": "โปรแกรมแก้ไขแผนภาพการไหลของข้อมูล",
     "toolbar": {

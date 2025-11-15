@@ -206,34 +206,29 @@
   },
   "debugDialogs": {
     "clipboardDialog": {
-      "affectedCells": "受影响的单元格",
       "cellCount": "单元格数量",
-      "cellIds": "单元格ID",
-      "cells": "单元格",
       "clearClipboard": "清空剪贴板",
       "clipboardJson": "剪贴板 JSON",
-      "copyFullJson": "复制完整 JSON",
-      "copyToClipboard": "复制到剪贴板",
       "isEmpty": "为空",
       "title": "剪贴板数据"
     },
+    "common": {
+      "affectedCells": "受影响的单元格",
+      "cellIds": "单元格ID",
+      "cells": "单元格",
+      "copyFullJson": "复制完整 JSON"
+    },
     "graphDataDialog": {
-      "copyToClipboard": "复制到剪贴板",
       "graphJson": "图形 JSON",
       "title": "图形数据"
     },
     "historyDialog": {
-      "affectedCells": "受影响的单元格",
       "canRedo": "可以重做",
       "canUndo": "可以撤销",
-      "cellIds": "单元格ID",
-      "cells": "单元格",
       "clearHistory": "清空历史记录",
-      "copyFullJson": "复制完整 JSON",
       "currentIndex": "当前索引",
       "id": "ID",
       "maxStackSize": "最大堆栈大小",
-      "metadata": "元数据",
       "noRedoEntries": "没有重做条目",
       "noUndoEntries": "没有撤销条目",
       "operationId": "操作ID",
@@ -257,6 +252,11 @@
       "securityBoundaryRestriction": "Security boundaries can only be embedded into other security boundaries"
     },
     "flowLabel": "数据流",
+    "helpDialog": {
+      "panLabel": "按住 Shift 并拖动以平移",
+      "title": "图表编辑器帮助",
+      "zoomLabel": "按住 Shift 并使用鼠标滚轮缩放"
+    },
     "nodeLabels": {
       "actor": "外部实体",
       "node": "节点",
@@ -264,11 +264,6 @@
       "securityBoundary": "信任边界",
       "store": "数据存储",
       "textbox": "文本框"
-    },
-    "helpDialog": {
-      "panLabel": "按住 Shift 并拖动以平移",
-      "title": "图表编辑器帮助",
-      "zoomLabel": "按住 Shift 并使用鼠标滚轮缩放"
     },
     "pageTitle": "数据流图编辑器",
     "toolbar": {

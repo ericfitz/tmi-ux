@@ -8,6 +8,7 @@
  * It's kept for backward compatibility but may be removed in the future.
  */
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface IAuthProvider {
   // Interface kept for backward compatibility - may be removed in future versions
 }

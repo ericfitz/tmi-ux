@@ -67,14 +67,12 @@
                 <span class="value">{{ entry.timestamp }}</span>
               </div>
               <div class="entry-detail">
-                <span class="label"
-                  >{{ 'debugDialogs.historyDialog.affectedCells' | transloco }}:</span
-                >
+                <span class="label">{{ 'debugDialogs.common.affectedCells' | transloco }}:</span>
                 <span class="value">{{ entry.affectedCellCount }}</span>
               </div>
               @if (entry.affectedCellIds.length > 0) {
                 <div class="entry-detail">
-                  <span class="label">{{ 'debugDialogs.historyDialog.cellIds' | transloco }}:</span>
+                  <span class="label">{{ 'debugDialogs.common.cellIds' | transloco }}:</span>
                   <code class="value">{{ entry.affectedCellIds.join(', ') }}</code>
                 </div>
               }
@@ -96,7 +94,7 @@
                 <details class="nested-detail">
                   <summary class="nested-summary">
                     <mat-icon class="expand-icon">chevron_right</mat-icon>
-                    {{ 'debugDialogs.historyDialog.metadata' | transloco }}
+                    {{ 'common.metadata' | transloco }}
                   </summary>
                   <pre class="json-content">{{ entry.metadata | json }}</pre>
                 </details>
@@ -104,9 +102,7 @@
               <details class="nested-detail">
                 <summary class="nested-summary">
                   <mat-icon class="expand-icon">chevron_right</mat-icon>
-                  {{ 'debugDialogs.historyDialog.cells' | transloco }} ({{
-                    entry.affectedCellCount
-                  }})
+                  {{ 'debugDialogs.common.cells' | transloco }} ({{ entry.affectedCellCount }})
                 </summary>
                 <pre class="json-content">{{ entry.cellsJson }}</pre>
               </details>
@@ -154,14 +150,12 @@
                 <span class="value">{{ entry.timestamp }}</span>
               </div>
               <div class="entry-detail">
-                <span class="label"
-                  >{{ 'debugDialogs.historyDialog.affectedCells' | transloco }}:</span
-                >
+                <span class="label">{{ 'debugDialogs.common.affectedCells' | transloco }}:</span>
                 <span class="value">{{ entry.affectedCellCount }}</span>
               </div>
               @if (entry.affectedCellIds.length > 0) {
                 <div class="entry-detail">
-                  <span class="label">{{ 'debugDialogs.historyDialog.cellIds' | transloco }}:</span>
+                  <span class="label">{{ 'debugDialogs.common.cellIds' | transloco }}:</span>
                   <code class="value">{{ entry.affectedCellIds.join(', ') }}</code>
                 </div>
               }
@@ -183,7 +177,7 @@
                 <details class="nested-detail">
                   <summary class="nested-summary">
                     <mat-icon class="expand-icon">chevron_right</mat-icon>
-                    {{ 'debugDialogs.historyDialog.metadata' | transloco }}
+                    {{ 'common.metadata' | transloco }}
                   </summary>
                   <pre class="json-content">{{ entry.metadata | json }}</pre>
                 </details>
@@ -191,9 +185,7 @@
               <details class="nested-detail">
                 <summary class="nested-summary">
                   <mat-icon class="expand-icon">chevron_right</mat-icon>
-                  {{ 'debugDialogs.historyDialog.cells' | transloco }} ({{
-                    entry.affectedCellCount
-                  }})
+                  {{ 'debugDialogs.common.cells' | transloco }} ({{ entry.affectedCellCount }})
                 </summary>
                 <pre class="json-content">{{ entry.cellsJson }}</pre>
               </details>
@@ -229,7 +221,7 @@
     [attr.aria-label]="'debugDialogs.historyDialog.copyFullJson' | transloco"
   >
     <mat-icon>content_copy</mat-icon>
-    {{ 'debugDialogs.historyDialog.copyFullJson' | transloco }}
+    {{ 'debugDialogs.common.copyFullJson' | transloco }}
   </button>
   <button
     mat-button
