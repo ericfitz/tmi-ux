@@ -265,6 +265,11 @@
       "store": "数据存储",
       "textbox": "文本框"
     },
+    "helpDialog": {
+      "panLabel": "按住 Shift 并拖动以平移",
+      "title": "图表编辑器帮助",
+      "zoomLabel": "按住 Shift 并使用鼠标滚轮缩放"
+    },
     "pageTitle": "数据流图编辑器",
     "toolbar": {
       "exportMenu": {
@@ -280,6 +285,7 @@
         "addTextbox": "添加文本框",
         "deleteSelected": "删除所选",
         "export": "导出...",
+        "help": "帮助",
         "redo": "重做",
         "share": "分享",
         "undo": "撤销",

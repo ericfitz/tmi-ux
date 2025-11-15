@@ -110,6 +110,7 @@ import {
   DataAssetDialogComponent,
   DataAssetDialogData,
 } from './data-asset-dialog/data-asset-dialog.component';
+import { HelpDialogComponent } from './help-dialog/help-dialog.component';
 
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
@@ -923,6 +924,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.logger.info('Opened graph data dialog');
+  }
+
+  showHelp(): void {
+    this.dialog.open(HelpDialogComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      maxHeight: '90vh',
+    });
+
+    this.logger.info('Opened help dialog');
   }
 
   showClipboard(): void {

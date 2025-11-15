@@ -265,6 +265,11 @@
       "store": "Datenspeicher",
       "textbox": "Text"
     },
+    "helpDialog": {
+      "panLabel": "Halten Sie Umschalt gedrückt und ziehen Sie zum Verschieben",
+      "title": "Diagramm-Editor Hilfe",
+      "zoomLabel": "Halten Sie Umschalt gedrückt und verwenden Sie das Mausrad zum Zoomen"
+    },
     "pageTitle": "Datenflussdiagramm-Editor",
     "toolbar": {
       "exportMenu": {
@@ -280,6 +285,7 @@
         "addTextbox": "Textfeld hinzufügen",
         "deleteSelected": "Ausgewählte löschen",
         "export": "Exportieren...",
+        "help": "Hilfe",
         "redo": "Wiederholen",
         "share": "Teilen",
         "undo": "Rückgängig",

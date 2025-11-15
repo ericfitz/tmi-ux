@@ -1,0 +1,80 @@
+<h1 mat-dialog-title>{{ 'editor.helpDialog.title' | transloco }}</h1>
+
+<div mat-dialog-content class="help-content">
+  <div class="animations-container">
+    <!-- Pan Column -->
+    <div class="animation-column">
+      <div class="animation-row">
+        <div class="pan-container">
+          <!-- Shift and Add symbols (animated visibility) -->
+          <div class="symbols symbols-animated">
+            <mat-icon
+              class="symbol shift-symbol"
+              fontSet="material-symbols-outlined"
+              [style.font-variation-settings]="'\'FILL\' 0, \'wght\' 400, \'GRAD\' 0, \'opsz\' 24'"
+              >shift</mat-icon
+            >
+            <mat-icon class="symbol add-symbol">add</mat-icon>
+          </div>
+
+          <!-- Mouse (animates position for panning) -->
+          <div class="mouse-wrapper">
+            <div class="mouse-icon">
+              <div class="left-button-fill"></div>
+            </div>
+          </div>
+
+          <!-- Size indicator rectangle and square -->
+          <div class="size-indicator">
+            <div class="pan-square"></div>
+          </div>
+        </div>
+      </div>
+      <div class="label-row">
+        <div class="animation-label">{{ 'editor.helpDialog.panLabel' | transloco }}</div>
+      </div>
+    </div>
+
+    <!-- Zoom Column -->
+    <div class="animation-column">
+      <div class="animation-row">
+        <div class="zoom-container">
+          <!-- Shift and Add symbols (animated visibility) -->
+          <div class="symbols symbols-animated">
+            <mat-icon
+              class="symbol shift-symbol"
+              fontSet="material-symbols-outlined"
+              [style.font-variation-settings]="'\'FILL\' 0, \'wght\' 400, \'GRAD\' 0, \'opsz\' 24'"
+              >shift</mat-icon
+            >
+            <mat-icon class="symbol add-symbol">add</mat-icon>
+          </div>
+
+          <!-- Mouse with scroll wheel -->
+          <div class="scroll-icon mouse">
+            <span class="wheel"></span>
+          </div>
+
+          <!-- Size indicator rectangle and square -->
+          <div class="size-indicator">
+            <div class="size-square"></div>
+          </div>
+        </div>
+      </div>
+      <div class="label-row">
+        <div class="animation-label">{{ 'editor.helpDialog.zoomLabel' | transloco }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button
+    mat-button
+    (click)="onClose()"
+    tabindex="1"
+    [attr.aria-label]="'common.close' | transloco"
+  >
+    {{ 'common.close' | transloco }}
+  </button>
+</div>

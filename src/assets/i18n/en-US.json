@@ -265,6 +265,11 @@
       "store": "Data Store",
       "textbox": "Text"
     },
+    "helpDialog": {
+      "panLabel": "Hold Shift and drag to pan",
+      "title": "Diagram Editor Help",
+      "zoomLabel": "Hold Shift and use the mouse wheel to zoom"
+    },
     "pageTitle": "Data Flow Diagram Editor",
     "toolbar": {
       "exportMenu": {
@@ -280,6 +285,7 @@
         "addTextbox": "Add Text Box",
         "deleteSelected": "Delete Selected",
         "export": "Export...",
+        "help": "Help",
         "redo": "Redo",
         "share": "Share",
         "undo": "Undo",
