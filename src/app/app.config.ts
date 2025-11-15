@@ -91,6 +91,8 @@ function initializeMaterialIcons(
 ): () => void {
   return () => {
     // Register the Material Symbols Outlined font set
+    // The alias 'material-symbols-outlined' maps to the CSS class 'material-symbols-outlined'
+    // which applies font-family: 'Material Symbols Outlined' via SCSS
     iconRegistry.registerFontClassAlias('material-symbols-outlined', 'material-symbols-outlined');
     iconRegistry.setDefaultFontSetClass('material-symbols-outlined');
   };

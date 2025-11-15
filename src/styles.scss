@@ -14,10 +14,10 @@
 
 // Dark theme - will be applied via CSS overrides based on .dark-theme class
 
-// Material Symbols settings for filled icons
+// Material Symbols settings for outlined icons
 .material-symbols-outlined {
   font-variation-settings:
-    'FILL' 1,
+    'FILL' 0,
     'wght' 400,
     'GRAD' 0,
     'opsz' 24;
