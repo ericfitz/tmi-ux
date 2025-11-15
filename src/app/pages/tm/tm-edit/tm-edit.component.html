@@ -57,6 +57,17 @@
         <mat-card-header>
           <mat-card-title [transloco]="'threatModels.details'">Threat Model Details</mat-card-title>
           <div class="header-actions">
+            @if (canEdit) {
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="onDetailsAddonsClick()"
+                [matTooltip]="'common.addons' | transloco"
+                [attr.aria-label]="'common.addons' | transloco"
+              >
+                <mat-icon>extension</mat-icon>
+              </button>
+            }
             <button
               mat-icon-button
               color="primary"
@@ -265,15 +276,26 @@
             >Assets</mat-card-title
           >
           @if (canEdit) {
-            <button
-              mat-icon-button
-              color="primary"
-              (click)="addAsset()"
-              [matTooltip]="'threatModels.tooltips.addAsset' | transloco"
-              [attr.aria-label]="'threatModels.tooltips.addAsset' | transloco"
-            >
-              <mat-icon>add</mat-icon>
-            </button>
+            <div class="header-actions">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="onAssetsAddonsClick()"
+                [matTooltip]="'common.addons' | transloco"
+                [attr.aria-label]="'common.addons' | transloco"
+              >
+                <mat-icon>extension</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="addAsset()"
+                [matTooltip]="'threatModels.tooltips.addAsset' | transloco"
+                [attr.aria-label]="'threatModels.tooltips.addAsset' | transloco"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
           }
         </mat-card-header>
         <mat-card-content>
@@ -380,14 +402,25 @@
             >Threats</mat-card-title
           >
           @if (canEdit) {
-            <button
-              mat-icon-button
-              color="primary"
-              (click)="openThreatEditor()"
-              [matTooltip]="'common.addThreat' | transloco"
-            >
-              <mat-icon>add</mat-icon>
-            </button>
+            <div class="header-actions">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="onThreatsAddonsClick()"
+                [matTooltip]="'common.addons' | transloco"
+                [attr.aria-label]="'common.addons' | transloco"
+              >
+                <mat-icon>extension</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="openThreatEditor()"
+                [matTooltip]="'common.addThreat' | transloco"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
           }
         </mat-card-header>
         <mat-card-content>
@@ -482,14 +515,25 @@
             >Diagrams</mat-card-title
           >
           @if (canEdit) {
-            <button
-              mat-icon-button
-              color="primary"
-              (click)="addDiagram()"
-              [matTooltip]="'threatModels.tooltips.addDiagram' | transloco"
-            >
-              <mat-icon>add</mat-icon>
-            </button>
+            <div class="header-actions">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="onDiagramsAddonsClick()"
+                [matTooltip]="'common.addons' | transloco"
+                [attr.aria-label]="'common.addons' | transloco"
+              >
+                <mat-icon>extension</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="addDiagram()"
+                [matTooltip]="'threatModels.tooltips.addDiagram' | transloco"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
           }
         </mat-card-header>
         <mat-card-content>
@@ -586,15 +630,26 @@
             >Notes</mat-card-title
           >
           @if (canEdit) {
-            <button
-              mat-icon-button
-              color="primary"
-              (click)="addNote()"
-              [matTooltip]="'threatModels.tooltips.addNote' | transloco"
-              [attr.aria-label]="'threatModels.tooltips.addNote' | transloco"
-            >
-              <mat-icon>add</mat-icon>
-            </button>
+            <div class="header-actions">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="onNotesAddonsClick()"
+                [matTooltip]="'common.addons' | transloco"
+                [attr.aria-label]="'common.addons' | transloco"
+              >
+                <mat-icon>extension</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="addNote()"
+                [matTooltip]="'threatModels.tooltips.addNote' | transloco"
+                [attr.aria-label]="'threatModels.tooltips.addNote' | transloco"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
           }
         </mat-card-header>
         <mat-card-content>
@@ -673,14 +728,25 @@
             >Documents</mat-card-title
           >
           @if (canEdit) {
-            <button
-              mat-icon-button
-              color="primary"
-              (click)="addDocument()"
-              [matTooltip]="'threatModels.tooltips.addDocument' | transloco"
-            >
-              <mat-icon>add</mat-icon>
-            </button>
+            <div class="header-actions">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="onDocumentsAddonsClick()"
+                [matTooltip]="'common.addons' | transloco"
+                [attr.aria-label]="'common.addons' | transloco"
+              >
+                <mat-icon>extension</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="addDocument()"
+                [matTooltip]="'threatModels.tooltips.addDocument' | transloco"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
           }
         </mat-card-header>
         <mat-card-content>
@@ -757,14 +823,25 @@
             >Repositories</mat-card-title
           >
           @if (canEdit) {
-            <button
-              mat-icon-button
-              color="primary"
-              (click)="addRepository()"
-              [matTooltip]="'threatModels.createNewRepository' | transloco"
-            >
-              <mat-icon>add</mat-icon>
-            </button>
+            <div class="header-actions">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="onRepositoriesAddonsClick()"
+                [matTooltip]="'common.addons' | transloco"
+                [attr.aria-label]="'common.addons' | transloco"
+              >
+                <mat-icon>extension</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="addRepository()"
+                [matTooltip]="'threatModels.createNewRepository' | transloco"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
           }
         </mat-card-header>
         <mat-card-content>

@@ -2977,6 +2977,55 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Handles addons button click for details card
+   */
+  onDetailsAddonsClick(): void {
+    // Placeholder for future addons functionality
+  }
+
+  /**
+   * Handles addons button click for assets card
+   */
+  onAssetsAddonsClick(): void {
+    // Placeholder for future addons functionality
+  }
+
+  /**
+   * Handles addons button click for threats card
+   */
+  onThreatsAddonsClick(): void {
+    // Placeholder for future addons functionality
+  }
+
+  /**
+   * Handles addons button click for diagrams card
+   */
+  onDiagramsAddonsClick(): void {
+    // Placeholder for future addons functionality
+  }
+
+  /**
+   * Handles addons button click for notes card
+   */
+  onNotesAddonsClick(): void {
+    // Placeholder for future addons functionality
+  }
+
+  /**
+   * Handles addons button click for documents card
+   */
+  onDocumentsAddonsClick(): void {
+    // Placeholder for future addons functionality
+  }
+
+  /**
+   * Handles addons button click for repositories card
+   */
+  onRepositoriesAddonsClick(): void {
+    // Placeholder for future addons functionality
+  }
+
+  /**
    * Opens the dialog to edit an existing asset
    */
   editAsset(asset: Asset, event: Event): void {
