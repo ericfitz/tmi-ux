@@ -497,6 +497,9 @@ export class AppDfdOrchestrator {
         if (graph.toSVG) {
           return new Observable<Blob>(observer => {
             try {
+              // Clear selection before export to avoid highlighting selected cells
+              this.clearSelection();
+
               // Prepare export with proper viewBox calculation
               const exportPrep = this.appExportService.prepareImageExport(graph);
               if (!exportPrep) {
@@ -530,6 +533,9 @@ export class AppDfdOrchestrator {
         if (graph.toPNG) {
           return new Observable<Blob>(observer => {
             try {
+              // Clear selection before export to avoid highlighting selected cells
+              this.clearSelection();
+
               graph.toPNG(
                 (dataUri: string) => {
                   try {
@@ -553,6 +559,9 @@ export class AppDfdOrchestrator {
         if (graph.toJPEG) {
           return new Observable<Blob>(observer => {
             try {
+              // Clear selection before export to avoid highlighting selected cells
+              this.clearSelection();
+
               graph.toJPEG(
                 (dataUri: string) => {
                   try {

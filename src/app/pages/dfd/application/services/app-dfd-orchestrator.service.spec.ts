@@ -876,6 +876,8 @@ describe('AppDfdOrchestrator', () => {
 
     it('should export diagram as PNG', () => {
       const mockGraph = {
+        getSelectedCells: vi.fn(() => []),
+        unselect: vi.fn(),
         toPNG: vi.fn((callback: (dataUri: string) => void) => {
           // Simulate X6's callback-based API with a base64 data URI
           callback(
@@ -904,6 +906,8 @@ describe('AppDfdOrchestrator', () => {
 
     it('should export diagram as SVG', () => {
       const mockGraph = {
+        getSelectedCells: vi.fn(() => []),
+        unselect: vi.fn(),
         toSVG: vi.fn((callback: (svgString: string) => void) => {
           // Simulate X6's callback-based API
           callback('<svg>test</svg>');

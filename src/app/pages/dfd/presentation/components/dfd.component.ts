@@ -1447,6 +1447,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         return; // prepareImageExport handles logging
       }
 
+      // Clear selection before capturing thumbnail to avoid highlighting selected cells
+      this.appDfdOrchestrator.clearSelection();
+
       // Cast graph to access export methods added by the X6 export plugin
       const exportGraph = graph as {
         toSVG: (

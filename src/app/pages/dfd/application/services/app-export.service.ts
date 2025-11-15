@@ -113,6 +113,12 @@ export class AppExportService {
         padding: 20,
       });
 
+      // Clear selection before export to avoid highlighting selected cells in the exported image
+      const selectedCells = graph.getSelectedCells();
+      selectedCells.forEach((cell: any) => {
+        graph.unselect(cell);
+      });
+
       // Cast graph to access export methods added by the plugin
       const exportGraph = graph as {
         toSVG: (
