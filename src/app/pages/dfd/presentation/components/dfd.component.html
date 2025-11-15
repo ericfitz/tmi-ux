@@ -388,12 +388,21 @@
           isReadOnlyMode
         "
       >
-        <mat-icon
-          fontSet="material-symbols-outlined"
-          fontWeight="100"
-          style="font-variation-settings: 'FILL' 0"
-          >skull</mat-icon
-        >
+        <span class="menu-icon-container">
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            fontWeight="100"
+            style="font-variation-settings: 'FILL' 0"
+            >skull</mat-icon
+          >
+          <mat-icon
+            class="menu-overlay-icon"
+            fontSet="material-symbols-outlined"
+            fontWeight="100"
+            style="font-variation-settings: 'FILL' 0"
+            >add</mat-icon
+          >
+        </span>
         <span>{{ 'common.addThreat' | transloco }}</span>
       </button>
       <mat-divider></mat-divider>
