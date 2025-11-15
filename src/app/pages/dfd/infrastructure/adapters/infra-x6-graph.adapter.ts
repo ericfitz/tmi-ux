@@ -350,8 +350,8 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       mousewheel: {
         enabled: true,
         modifiers: ['shift'], // Zoom with Shift + Wheel
-        factor: 1.1,
-        maxScale: 3,
+        factor: DFD_STYLING.VIEWPORT.ZOOM_FACTOR,
+        maxScale: DFD_STYLING.VIEWPORT.MAX_MANUAL_ZOOM,
         minScale: 0.2,
       },
       // Configure highlighting for various interactions

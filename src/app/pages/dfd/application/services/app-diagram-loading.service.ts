@@ -16,6 +16,7 @@ import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-grap
 import { AppDiagramService } from './app-diagram.service';
 import { AppOperationStateManager } from './app-operation-state-manager.service';
 import { AppHistoryService } from './app-history.service';
+import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
  * Options for cell loading operations
@@ -124,7 +125,7 @@ export class AppDiagramLoadingService {
 
         // Center and fit diagram to viewport after initial load
         if (cells.length > 0) {
-          graph.zoomToFit({ padding: 20 });
+          graph.zoomToFit({ padding: 20, maxScale: DFD_STYLING.VIEWPORT.MAX_ZOOM });
           this.logger.debug('Centered and fitted diagram to viewport');
         }
 

@@ -281,7 +281,8 @@ export const DFD_STYLING = {
   // Zoom and pan constraints
   VIEWPORT: {
     MIN_ZOOM: 0.5,
-    MAX_ZOOM: 1.5,
+    MAX_ZOOM: 1.25, // Maximum zoom for automatic zoom-to-fit (125%)
+    MAX_MANUAL_ZOOM: 3.0, // Maximum zoom for manual zoom (Shift+Wheel) (300%)
     ZOOM_FACTOR: 1.1,
   },
 

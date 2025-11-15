@@ -47,6 +47,7 @@ import {
   NodeData,
 } from '../../types/graph-operation.types';
 import { normalizeCells } from '../../utils/cell-normalization.util';
+import { DFD_STYLING } from '../../constants/styling-constants';
 
 // Simple interfaces that match what the tests expect
 export interface DfdInitializationParams {
@@ -684,7 +685,7 @@ export class AppDfdOrchestrator {
   zoomToFit(): void {
     const graph = this.getGraph;
     if (graph) {
-      graph.zoomToFit({ padding: 20 });
+      graph.zoomToFit({ padding: 20, maxScale: DFD_STYLING.VIEWPORT.MAX_ZOOM });
       graph.centerContent();
       this.logger.debug('Zoomed to fit and centered content');
     }
