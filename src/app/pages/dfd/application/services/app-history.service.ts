@@ -707,6 +707,7 @@ export class AppHistoryService implements OnDestroy {
       targetPortId,
       vertices: (cell as any).vertices || [],
       attrs: cell.attrs as Record<string, any>,
+      labels: (cell as any).labels || [],
     });
 
     return {
@@ -736,6 +737,7 @@ export class AppHistoryService implements OnDestroy {
         typeof cell.target === 'object' && cell.target !== null ? (cell.target as any) : undefined,
       vertices: (cell as any).vertices,
       attrs: cell.attrs as Record<string, any>,
+      labels: (cell as any).labels || [],
     };
 
     return {
