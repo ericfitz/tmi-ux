@@ -212,7 +212,7 @@ mat-card-header {
 .info-section {
   // Remove background color to inherit card background for consistency
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 8px 0; // Remove left/right padding to align with form fields below
   margin-bottom: 12px;
   font-family: var(--font-family-primary);
 }
@@ -266,38 +266,13 @@ mat-card-header {
   }
 }
 
-// Status dropdown styling for vertical alignment with info fields
+// Status dropdown styling - uses standard Material form field dimensions
+// Top margin to vertically center-align with "Status Last Updated" label
 .status-dropdown {
-  // Reduce bottom margin to align better with adjacent fields, but keep some space
-  margin-bottom: 0;
-  margin-top: -4px; // Slight upward adjustment to align with text baseline
-
-  ::ng-deep {
-    // Reduce the form field height while maintaining readable padding
-    .mat-mdc-form-field-infix {
-      padding-top: 8px;
-      padding-bottom: 8px;
-      min-height: auto;
-    }
-
-    // Hide the subscript wrapper (error/hint space)
-    .mat-mdc-form-field-subscript-wrapper {
-      display: none;
-    }
-
-    // Adjust select trigger for better alignment
-    .mat-mdc-select-trigger {
-      height: 36px;
-      min-height: 36px;
-      display: flex;
-      align-items: center;
-    }
-
-    // Ensure the select value text aligns properly
-    .mat-mdc-select-value {
-      line-height: normal;
-    }
-  }
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 8px;
 }
 
 .status-chips-container {

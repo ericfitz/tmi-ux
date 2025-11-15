@@ -116,9 +116,9 @@
             <!-- Status row: Status dropdown and Status Last Updated (always visible) -->
             <div class="info-row info-row-status" [formGroup]="threatModelForm">
               <div class="info-field">
-                <span class="info-label">{{ 'common.status' | transloco }}:</span>
                 @if (canEdit) {
                   <mat-form-field appearance="outline" class="status-dropdown">
+                    <mat-label>{{ 'common.status' | transloco }}</mat-label>
                     <mat-select formControlName="status">
                       <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
                       @for (option of statusOptions; track option.key) {
@@ -134,6 +134,7 @@
                     </mat-select>
                   </mat-form-field>
                 } @else {
+                  <span class="info-label">{{ 'common.status' | transloco }}:</span>
                   @if (threatModelForm.get('status')?.value; as statusValue) {
                     <span class="info-value">{{
                       'threatModels.status.' + statusValue | transloco
