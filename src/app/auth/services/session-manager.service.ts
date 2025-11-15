@@ -235,5 +235,4 @@ export class SessionManagerService {
     // Log out the user (this will clear auth data and redirect to home)
     this.authService.logout();
   }
-
 }

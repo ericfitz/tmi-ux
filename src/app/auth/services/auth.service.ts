@@ -193,7 +193,6 @@ export class AuthService {
     return /^user[1-3]@example\.com$/.test(email) || email === 'demo.user@example.com';
   }
 
-
   /**
    * Check if the current JWT token is valid and not expired
    * @param token Optional token to check, otherwise retrieves from storage
@@ -497,7 +496,6 @@ export class AuthService {
     }
   }
 
-
   /**
    * Generate a state string for CSRF protection and return URL preservation
    * @param returnUrl Optional URL to return to after authentication
@@ -706,7 +704,6 @@ export class AuthService {
     });
     return of(false);
   }
-
 
   /**
    * Handle TMI OAuth proxy token response
@@ -975,7 +972,6 @@ export class AuthService {
       retryable: error !== 'access_denied',
     });
   }
-
 
   /**
    * Extract expiration date from JWT token's exp claim
@@ -1405,8 +1401,7 @@ export class AuthService {
     // Determine if we should call server logout endpoint
     const isConnectedToServer =
       this.serverConnectionService.currentStatus === ServerConnectionStatus.CONNECTED;
-    const shouldCallServerLogout =
-      this.isAuthenticated && isConnectedToServer && !this.isTestUser;
+    const shouldCallServerLogout = this.isAuthenticated && isConnectedToServer && !this.isTestUser;
 
     if (shouldCallServerLogout) {
       this.logger.debugComponent('Auth', 'Calling server logout endpoint', {
