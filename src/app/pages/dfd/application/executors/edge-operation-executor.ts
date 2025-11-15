@@ -123,18 +123,43 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       }
 
       // Create edge configuration
-      // Extract label text from either legacy label property or labels array
-      let labelText = '';
-      if ((edgeInfo as any).label) {
-        labelText = (edgeInfo as any).label;
-      } else if (edgeInfo.labels && edgeInfo.labels.length > 0) {
-        // Extract text from X6 native label format
-        const firstLabel = edgeInfo.labels[0];
-        if (firstLabel.attrs) {
-          // Try both 'text' (X6 native) and 'label' (our format) selectors
-          labelText =
-            (firstLabel.attrs as any).text?.text || (firstLabel.attrs as any).label?.text || '';
-        }
+      // Use labels from edgeInfo if available (preserves complete structure from history)
+      // Otherwise create new label from legacy label property
+      let labels: any[] = [];
+      if (edgeInfo.labels && edgeInfo.labels.length > 0) {
+        // Use labels directly from edgeInfo to preserve all styling and structure
+        labels = edgeInfo.labels;
+      } else if ((edgeInfo as any).label) {
+        // Legacy: create new label from simple label string
+        labels = [
+          {
+            markup: [
+              {
+                tagName: 'rect',
+                selector: 'body',
+              },
+              {
+                tagName: 'text',
+                selector: 'label',
+              },
+            ],
+            attrs: {
+              label: {
+                text: (edgeInfo as any).label,
+                fontSize: (edgeInfo as any).style?.fontSize || DFD_STYLING.DEFAULT_FONT_SIZE,
+                fill: (edgeInfo as any).style?.textColor || DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
+              },
+              body: {
+                fill:
+                  (edgeInfo as any).style?.labelBackground || DFD_STYLING.EDGES.LABEL_BACKGROUND,
+                stroke: (edgeInfo as any).style?.labelBorder || DFD_STYLING.EDGES.LABEL_BORDER,
+                strokeWidth: DFD_STYLING.EDGES.LABEL_BORDER_WIDTH,
+                rx: 3,
+                ry: 3,
+              },
+            },
+          },
+        ];
       }
 
       const edgeConfig = {
@@ -155,41 +180,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
             strokeDasharray: (edgeInfo as any).style?.strokeDasharray || undefined,
           },
         },
-        labels:
-          labelText || edgeInfo.labels
-            ? [
-                {
-                  markup: [
-                    {
-                      tagName: 'rect',
-                      selector: 'body',
-                    },
-                    {
-                      tagName: 'text',
-                      selector: 'label',
-                    },
-                  ],
-                  attrs: {
-                    label: {
-                      text: labelText,
-                      fontSize: (edgeInfo as any).style?.fontSize || DFD_STYLING.DEFAULT_FONT_SIZE,
-                      fill:
-                        (edgeInfo as any).style?.textColor || DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
-                    },
-                    body: {
-                      fill:
-                        (edgeInfo as any).style?.labelBackground ||
-                        DFD_STYLING.EDGES.LABEL_BACKGROUND,
-                      stroke:
-                        (edgeInfo as any).style?.labelBorder || DFD_STYLING.EDGES.LABEL_BORDER,
-                      strokeWidth: DFD_STYLING.EDGES.LABEL_BORDER_WIDTH,
-                      rx: 3,
-                      ry: 3,
-                    },
-                  },
-                },
-              ]
-            : [],
+        labels,
         data: {
           ...(edgeInfo as any).properties,
           edgeType: (edgeInfo as any).edgeType || 'data-flow',
