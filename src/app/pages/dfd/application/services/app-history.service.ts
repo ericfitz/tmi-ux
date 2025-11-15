@@ -626,14 +626,24 @@ export class AppHistoryService implements OnDestroy {
         ? (cell.attrs as any).text?.text
         : undefined;
 
+    // Clean attrs by removing visual-only properties (filter, tools)
+    const cleanedAttrs = this._cleanVisualProperties(cell.attrs as Record<string, any>);
+
     const nodeData: NodeData = {
       id: cell.id,
       nodeType: cell.shape,
       position: cell.position,
       size: cell.size,
       label: typeof label === 'string' ? label : undefined,
-      style: cell.attrs as Record<string, any>,
-      properties: cell as Record<string, any>,
+      style: cleanedAttrs,
+      properties: {
+        ...(cell as Record<string, any>),
+        // Include additional X6 properties that may not be in our explicit fields
+        ports: (cell as any).ports,
+        data: (cell as any).data,
+        visible: (cell as any).visible,
+        zIndex: (cell as any).zIndex,
+      },
     };
 
     return {
@@ -657,14 +667,24 @@ export class AppHistoryService implements OnDestroy {
         ? (cell.attrs as any).text?.text
         : undefined;
 
+    // Clean attrs by removing visual-only properties (filter, tools)
+    const cleanedAttrs = this._cleanVisualProperties(cell.attrs as Record<string, any>);
+
     const nodeData: Partial<NodeData> = {
       id: cell.id,
       nodeType: cell.shape,
       position: cell.position,
       size: cell.size,
       label: typeof label === 'string' ? label : undefined,
-      style: cell.attrs as Record<string, any>,
-      properties: cell as Record<string, any>,
+      style: cleanedAttrs,
+      properties: {
+        ...(cell as Record<string, any>),
+        // Include additional X6 properties that may not be in our explicit fields
+        ports: (cell as any).ports,
+        data: (cell as any).data,
+        visible: (cell as any).visible,
+        zIndex: (cell as any).zIndex,
+      },
     };
 
     return {
@@ -696,6 +716,9 @@ export class AppHistoryService implements OnDestroy {
         ? (cell.target as any).port
         : undefined;
 
+    // Clean attrs by removing visual-only properties (filter, tools)
+    const cleanedAttrs = this._cleanVisualProperties(cell.attrs as Record<string, any>);
+
     // Use EdgeInfo.fromJSON to handle both new and legacy format
     const edgeInfo = EdgeInfo.fromJSON({
       id: cell.id,
@@ -706,8 +729,13 @@ export class AppHistoryService implements OnDestroy {
       sourcePortId,
       targetPortId,
       vertices: (cell as any).vertices || [],
-      attrs: cell.attrs as Record<string, any>,
+      attrs: cleanedAttrs,
       labels: (cell as any).labels || [],
+      // Include additional X6 properties
+      connector: (cell as any).connector,
+      router: (cell as any).router,
+      zIndex: (cell as any).zIndex,
+      data: (cell as any).data,
     });
 
     return {
@@ -729,6 +757,9 @@ export class AppHistoryService implements OnDestroy {
     previousCell: Cell,
     baseOperation: Partial<GraphOperation>,
   ): UpdateEdgeOperation {
+    // Clean attrs by removing visual-only properties (filter, tools)
+    const cleanedAttrs = this._cleanVisualProperties(cell.attrs as Record<string, any>);
+
     const edgeInfo: Partial<EdgeInfo> = {
       id: cell.id,
       source:
@@ -736,8 +767,13 @@ export class AppHistoryService implements OnDestroy {
       target:
         typeof cell.target === 'object' && cell.target !== null ? (cell.target as any) : undefined,
       vertices: (cell as any).vertices,
-      attrs: cell.attrs as Record<string, any>,
+      attrs: cleanedAttrs,
       labels: (cell as any).labels || [],
+      // Include additional X6 properties
+      connector: (cell as any).connector,
+      router: (cell as any).router,
+      zIndex: (cell as any).zIndex,
+      data: (cell as any).data,
     };
 
     return {
@@ -825,5 +861,35 @@ export class AppHistoryService implements OnDestroy {
         };
       }),
     );
+  }
+
+  /**
+   * Remove visual-only properties from attrs that shouldn't be persisted in history
+   * These include: filter effects (selection glow), tools (interactive elements)
+   */
+  private _cleanVisualProperties(attrs: Record<string, any> | undefined): Record<string, any> {
+    if (!attrs) {
+      return {};
+    }
+
+    const cleaned: Record<string, any> = {};
+
+    for (const [key, value] of Object.entries(attrs)) {
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        // Clean nested objects (like 'text', 'line', 'body', etc.)
+        const cleanedNested: Record<string, any> = {};
+        for (const [nestedKey, nestedValue] of Object.entries(value)) {
+          // Skip 'filter' property which contains visual effects like drop-shadow for selection
+          if (nestedKey !== 'filter') {
+            cleanedNested[nestedKey] = nestedValue;
+          }
+        }
+        cleaned[key] = cleanedNested;
+      } else {
+        cleaned[key] = value;
+      }
+    }
+
+    return cleaned;
   }
 }
