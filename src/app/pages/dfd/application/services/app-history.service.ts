@@ -41,6 +41,7 @@ import {
   NodeData,
 } from '../../types/graph-operation.types';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
+import { normalizeCell } from '../../utils/cell-normalization.util';
 
 @Injectable()
 export class AppHistoryService implements OnDestroy {
@@ -620,29 +621,31 @@ export class AppHistoryService implements OnDestroy {
     cell: Cell,
     baseOperation: Partial<GraphOperation>,
   ): CreateNodeOperation {
+    // Normalize cell to remove visual-only properties (filter effects, tools)
+    const normalizedCell = normalizeCell(cell);
+
     // Extract label from X6 native attrs structure
     const label =
-      cell.attrs && typeof cell.attrs === 'object' && 'text' in cell.attrs
-        ? (cell.attrs as any).text?.text
+      normalizedCell.attrs &&
+      typeof normalizedCell.attrs === 'object' &&
+      'text' in normalizedCell.attrs
+        ? (normalizedCell.attrs as any).text?.text
         : undefined;
 
-    // Clean attrs by removing visual-only properties (filter, tools)
-    const cleanedAttrs = this._cleanVisualProperties(cell.attrs as Record<string, any>);
-
     const nodeData: NodeData = {
-      id: cell.id,
-      nodeType: cell.shape,
-      position: cell.position,
-      size: cell.size,
+      id: normalizedCell.id,
+      nodeType: normalizedCell.shape,
+      position: normalizedCell.position,
+      size: normalizedCell.size,
       label: typeof label === 'string' ? label : undefined,
-      style: cleanedAttrs,
+      style: normalizedCell.attrs as Record<string, any>,
       properties: {
-        ...(cell as Record<string, any>),
+        ...(normalizedCell as Record<string, any>),
         // Include additional X6 properties that may not be in our explicit fields
-        ports: (cell as any).ports,
-        data: (cell as any).data,
-        visible: (cell as any).visible,
-        zIndex: (cell as any).zIndex,
+        ports: (normalizedCell as any).ports,
+        data: (normalizedCell as any).data,
+        visible: (normalizedCell as any).visible,
+        zIndex: (normalizedCell as any).zIndex,
       },
     };
 
@@ -661,36 +664,38 @@ export class AppHistoryService implements OnDestroy {
     previousCell: Cell,
     baseOperation: Partial<GraphOperation>,
   ): UpdateNodeOperation {
+    // Normalize cell to remove visual-only properties (filter effects, tools)
+    const normalizedCell = normalizeCell(cell);
+
     // Extract label from X6 native attrs structure
     const label =
-      cell.attrs && typeof cell.attrs === 'object' && 'text' in cell.attrs
-        ? (cell.attrs as any).text?.text
+      normalizedCell.attrs &&
+      typeof normalizedCell.attrs === 'object' &&
+      'text' in normalizedCell.attrs
+        ? (normalizedCell.attrs as any).text?.text
         : undefined;
 
-    // Clean attrs by removing visual-only properties (filter, tools)
-    const cleanedAttrs = this._cleanVisualProperties(cell.attrs as Record<string, any>);
-
     const nodeData: Partial<NodeData> = {
-      id: cell.id,
-      nodeType: cell.shape,
-      position: cell.position,
-      size: cell.size,
+      id: normalizedCell.id,
+      nodeType: normalizedCell.shape,
+      position: normalizedCell.position,
+      size: normalizedCell.size,
       label: typeof label === 'string' ? label : undefined,
-      style: cleanedAttrs,
+      style: normalizedCell.attrs as Record<string, any>,
       properties: {
-        ...(cell as Record<string, any>),
+        ...(normalizedCell as Record<string, any>),
         // Include additional X6 properties that may not be in our explicit fields
-        ports: (cell as any).ports,
-        data: (cell as any).data,
-        visible: (cell as any).visible,
-        zIndex: (cell as any).zIndex,
+        ports: (normalizedCell as any).ports,
+        data: (normalizedCell as any).data,
+        visible: (normalizedCell as any).visible,
+        zIndex: (normalizedCell as any).zIndex,
       },
     };
 
     return {
       ...baseOperation,
       type: 'update-node',
-      nodeId: cell.id,
+      nodeId: normalizedCell.id,
       updates: nodeData,
     } as UpdateNodeOperation;
   }
@@ -702,40 +707,44 @@ export class AppHistoryService implements OnDestroy {
     cell: Cell,
     baseOperation: Partial<GraphOperation>,
   ): CreateEdgeOperation {
+    // Normalize cell to remove visual-only properties (filter effects, tools)
+    const normalizedCell = normalizeCell(cell);
+
     // Extract source and target node IDs for legacy field support
     const sourceNodeId =
-      typeof cell.source === 'object' && cell.source !== null ? (cell.source as any).cell : '';
+      typeof normalizedCell.source === 'object' && normalizedCell.source !== null
+        ? (normalizedCell.source as any).cell
+        : '';
     const targetNodeId =
-      typeof cell.target === 'object' && cell.target !== null ? (cell.target as any).cell : '';
+      typeof normalizedCell.target === 'object' && normalizedCell.target !== null
+        ? (normalizedCell.target as any).cell
+        : '';
     const sourcePortId =
-      typeof cell.source === 'object' && cell.source !== null
-        ? (cell.source as any).port
+      typeof normalizedCell.source === 'object' && normalizedCell.source !== null
+        ? (normalizedCell.source as any).port
         : undefined;
     const targetPortId =
-      typeof cell.target === 'object' && cell.target !== null
-        ? (cell.target as any).port
+      typeof normalizedCell.target === 'object' && normalizedCell.target !== null
+        ? (normalizedCell.target as any).port
         : undefined;
-
-    // Clean attrs by removing visual-only properties (filter, tools)
-    const cleanedAttrs = this._cleanVisualProperties(cell.attrs as Record<string, any>);
 
     // Use EdgeInfo.fromJSON to handle both new and legacy format
     const edgeInfo = EdgeInfo.fromJSON({
-      id: cell.id,
-      source: cell.source as any,
-      target: cell.target as any,
+      id: normalizedCell.id,
+      source: normalizedCell.source as any,
+      target: normalizedCell.target as any,
       sourceNodeId,
       targetNodeId,
       sourcePortId,
       targetPortId,
-      vertices: (cell as any).vertices || [],
-      attrs: cleanedAttrs,
-      labels: (cell as any).labels || [],
+      vertices: (normalizedCell as any).vertices || [],
+      attrs: normalizedCell.attrs as Record<string, any>,
+      labels: (normalizedCell as any).labels || [],
       // Include additional X6 properties
-      connector: (cell as any).connector,
-      router: (cell as any).router,
-      zIndex: (cell as any).zIndex,
-      data: (cell as any).data,
+      connector: (normalizedCell as any).connector,
+      router: (normalizedCell as any).router,
+      zIndex: (normalizedCell as any).zIndex,
+      data: (normalizedCell as any).data,
     });
 
     return {
@@ -757,29 +766,33 @@ export class AppHistoryService implements OnDestroy {
     previousCell: Cell,
     baseOperation: Partial<GraphOperation>,
   ): UpdateEdgeOperation {
-    // Clean attrs by removing visual-only properties (filter, tools)
-    const cleanedAttrs = this._cleanVisualProperties(cell.attrs as Record<string, any>);
+    // Normalize cell to remove visual-only properties (filter effects, tools)
+    const normalizedCell = normalizeCell(cell);
 
     const edgeInfo: Partial<EdgeInfo> = {
-      id: cell.id,
+      id: normalizedCell.id,
       source:
-        typeof cell.source === 'object' && cell.source !== null ? (cell.source as any) : undefined,
+        typeof normalizedCell.source === 'object' && normalizedCell.source !== null
+          ? (normalizedCell.source as any)
+          : undefined,
       target:
-        typeof cell.target === 'object' && cell.target !== null ? (cell.target as any) : undefined,
-      vertices: (cell as any).vertices,
-      attrs: cleanedAttrs,
-      labels: (cell as any).labels || [],
+        typeof normalizedCell.target === 'object' && normalizedCell.target !== null
+          ? (normalizedCell.target as any)
+          : undefined,
+      vertices: (normalizedCell as any).vertices,
+      attrs: normalizedCell.attrs as Record<string, any>,
+      labels: (normalizedCell as any).labels || [],
       // Include additional X6 properties
-      connector: (cell as any).connector,
-      router: (cell as any).router,
-      zIndex: (cell as any).zIndex,
-      data: (cell as any).data,
+      connector: (normalizedCell as any).connector,
+      router: (normalizedCell as any).router,
+      zIndex: (normalizedCell as any).zIndex,
+      data: (normalizedCell as any).data,
     };
 
     return {
       ...baseOperation,
       type: 'update-edge',
-      edgeId: cell.id,
+      edgeId: normalizedCell.id,
       updates: edgeInfo,
     } as UpdateEdgeOperation;
   }
@@ -861,35 +874,5 @@ export class AppHistoryService implements OnDestroy {
         };
       }),
     );
-  }
-
-  /**
-   * Remove visual-only properties from attrs that shouldn't be persisted in history
-   * These include: filter effects (selection glow), tools (interactive elements)
-   */
-  private _cleanVisualProperties(attrs: Record<string, any> | undefined): Record<string, any> {
-    if (!attrs) {
-      return {};
-    }
-
-    const cleaned: Record<string, any> = {};
-
-    for (const [key, value] of Object.entries(attrs)) {
-      if (value && typeof value === 'object' && !Array.isArray(value)) {
-        // Clean nested objects (like 'text', 'line', 'body', etc.)
-        const cleanedNested: Record<string, any> = {};
-        for (const [nestedKey, nestedValue] of Object.entries(value)) {
-          // Skip 'filter' property which contains visual effects like drop-shadow for selection
-          if (nestedKey !== 'filter') {
-            cleanedNested[nestedKey] = nestedValue;
-          }
-        }
-        cleaned[key] = cleanedNested;
-      } else {
-        cleaned[key] = value;
-      }
-    }
-
-    return cleaned;
   }
 }
