@@ -123,6 +123,20 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       }
 
       // Create edge configuration
+      // Extract label text from either legacy label property or labels array
+      let labelText = '';
+      if ((edgeInfo as any).label) {
+        labelText = (edgeInfo as any).label;
+      } else if (edgeInfo.labels && edgeInfo.labels.length > 0) {
+        // Extract text from X6 native label format
+        const firstLabel = edgeInfo.labels[0];
+        if (firstLabel.attrs) {
+          // Try both 'text' (X6 native) and 'label' (our format) selectors
+          labelText =
+            (firstLabel.attrs as any).text?.text || (firstLabel.attrs as any).label?.text || '';
+        }
+      }
+
       const edgeConfig = {
         id: edgeId,
         shape: edgeInfo.shape || 'edge',
@@ -142,7 +156,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
           },
         },
         labels:
-          (edgeInfo as any).label || edgeInfo.labels
+          labelText || edgeInfo.labels
             ? [
                 {
                   markup: [
@@ -157,7 +171,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
                   ],
                   attrs: {
                     label: {
-                      text: (edgeInfo as any).label || '',
+                      text: labelText,
                       fontSize: (edgeInfo as any).style?.fontSize || DFD_STYLING.DEFAULT_FONT_SIZE,
                       fill:
                         (edgeInfo as any).style?.textColor || DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
