@@ -107,10 +107,10 @@ export class ThreatModelService implements OnDestroy {
 
   /**
    * Check if we're in offline mode (standalone with no server)
-   * In offline mode: local provider only, mock data, no API calls, no collaboration
+   * Note: Offline mode has been removed - always connected to server now
    */
   private get isOfflineMode(): boolean {
-    return this.authService.isUsingLocalProvider;
+    return false;
   }
 
   /**

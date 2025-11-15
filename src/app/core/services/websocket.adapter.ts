@@ -30,6 +30,7 @@ import {
   TMIMessageType,
   ChunkedMessage,
 } from '../types/websocket-message.types';
+import type { IAuthService } from '../interfaces/auth.interface';
 
 /**
  * WebSocket connection states
@@ -132,10 +133,20 @@ export class WebSocketAdapter {
   private readonly _tmiMessages$ = new Subject<TMIWebSocketMessage>();
   private _tmiMessageHandlerSetup = false;
 
+  // Auth service for token refresh on WebSocket activity
+  private _authService: IAuthService | null = null;
+
   constructor(
     private logger: LoggerService,
     private _chunkingService: MessageChunkingService,
   ) {}
+
+  /**
+   * Set the auth service (called by app initialization to avoid circular dependency)
+   */
+  setAuthService(authService: IAuthService): void {
+    this._authService = authService;
+  }
 
   // State management
   private readonly _connectionState$ = new BehaviorSubject<WebSocketState>(
@@ -598,6 +609,18 @@ export class WebSocketAdapter {
               message: messageData.message,
               fullBody: this._redactSensitiveData(messageData),
             });
+
+            // Check if token needs refresh on WebSocket activity
+            if (this._authService) {
+              this._authService.getValidToken().subscribe({
+                next: () => {
+                  // Token refreshed if needed
+                },
+                error: (err: unknown) => {
+                  this.logger.error('Token refresh failed on WebSocket activity', err);
+                },
+              });
+            }
 
             // Emit the message
             this._tmiMessages$.next(message);

@@ -55,6 +55,7 @@ import { AUTH_SERVICE, THREAT_MODEL_SERVICE } from './core/interfaces';
 import { AuthService } from './auth/services/auth.service';
 import { ThreatModelService } from './pages/tm/services/threat-model.service';
 import { ThemeService } from './core/services/theme.service';
+import { WebSocketAdapter } from './core/services/websocket.adapter';
 
 // We still need LOCALE_ID for date formatting with Angular's pipes
 function getBasicLocale(): string {
@@ -99,6 +100,17 @@ function initializeMaterialIcons(
 function initializeTheme(_themeService: ThemeService): () => void {
   return () => {
     // Theme service automatically loads and applies saved theme preference in constructor
+  };
+}
+
+// WebSocket-Auth integration initialization function
+function initializeWebSocketAuth(
+  websocketAdapter: WebSocketAdapter,
+  authService: AuthService,
+): () => void {
+  return () => {
+    // Wire up WebSocketAdapter with AuthService for activity-based token refresh
+    websocketAdapter.setAuthService(authService);
   };
 }
 
@@ -331,6 +343,13 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: initializeTheme,
       deps: [ThemeService],
+      multi: true,
+    },
+    // Initialize WebSocket-Auth integration for activity-based token refresh
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeWebSocketAuth,
+      deps: [WebSocketAdapter, AuthService],
       multi: true,
     },
     // Provide services with interface tokens to satisfy DI requirements

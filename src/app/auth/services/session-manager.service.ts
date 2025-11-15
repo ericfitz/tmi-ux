@@ -186,13 +186,7 @@ export class SessionManagerService {
   private handleExtendSession(): void {
     this.logger.info('User requested session extension');
 
-    // Check if this is a local provider - if so, silently extend the session
-    if (this.authService.isUsingLocalProvider) {
-      this.silentlyExtendLocalUserSession();
-      return;
-    }
-
-    // For all OAuth users, force a token refresh to get a new token with extended expiry
+    // Force a token refresh to get a new token with extended expiry
     // Note: We call refreshToken() directly instead of getValidToken() because getValidToken()
     // will return the existing token if it's still valid (doesn't expire within 1 minute).
     // Since the warning appears 5 minutes before expiry, the token would still be considered
@@ -242,33 +236,4 @@ export class SessionManagerService {
     this.authService.logout();
   }
 
-  /**
-   * Silently extend the session for local provider users
-   * Creates a new token with extended expiration time
-   */
-  private silentlyExtendLocalUserSession(): void {
-    this.logger.debugComponent('SessionManager', 'Silently extending local provider session');
-
-    const currentProfile = this.authService.userProfile;
-    if (!currentProfile) {
-      this.logger.error('No user profile found for session extension');
-      this.handleSessionTimeout();
-      return;
-    }
-
-    // Create a new token with extended expiration using the local token creation method
-    const success = this.authService.createLocalTokenWithExpiry(currentProfile, 60); // 60 minutes
-
-    if (success) {
-      this.logger.info('Local provider session extended successfully');
-      // Close the warning dialog since session was extended
-      if (this.warningDialog) {
-        this.warningDialog.close('extend');
-      }
-    } else {
-      this.logger.error('Failed to extend local provider session - logging out');
-      // Fall back to logout if extension fails
-      this.handleSessionTimeout();
-    }
-  }
 }

@@ -109,11 +109,6 @@ export class CollaborationSessionService implements OnDestroy {
       this.serverConnectionService.connectionStatus$,
     ]).pipe(
       map(([useMockData, serverStatus]) => {
-        // Don't show if using local provider
-        const authProvider = this.getAuthProvider();
-        if (authProvider && authProvider.isUsingLocalProvider) {
-          return false;
-        }
         // Show if using mock data OR server is connected
         return useMockData || serverStatus === ServerConnectionStatus.CONNECTED;
       }),
@@ -234,14 +229,6 @@ export class CollaborationSessionService implements OnDestroy {
    * Load collaboration sessions based on current state
    */
   private loadSessions(): Observable<CollaborationSession[]> {
-    // Skip API calls when using local provider
-    const authProvider = this.getAuthProvider();
-    if (authProvider && authProvider.isUsingLocalProvider) {
-      this.logger.info('User logged in with local provider - skipping collaboration session fetch');
-      this._sessions$.next([]);
-      return EMPTY;
-    }
-
     if (this.mockDataService.isUsingMockData) {
       return this.loadMockSessions();
     } else if (this.serverConnectionService.currentStatus === ServerConnectionStatus.CONNECTED) {
@@ -392,7 +379,7 @@ export class CollaborationSessionService implements OnDestroy {
         // Use dynamic import to load AuthService class without static import
         // This breaks the circular dependency at module level
         void import('../../auth/services/auth.service').then(module => {
-          this._authProvider = this.injector.get(module.AuthService) as IAuthProvider;
+          this._authProvider = this.injector.get(module.AuthService);
         });
         // Return null on first call - will be available on subsequent calls
         return null;

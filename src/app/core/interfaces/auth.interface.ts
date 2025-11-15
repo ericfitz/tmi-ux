@@ -1,9 +1,13 @@
+import { Observable } from 'rxjs';
+
 /**
  * JWT token structure
  */
 export interface IJwtToken {
   token: string;
   refreshToken?: string;
+  expiresAt: Date;
+  expiresIn: number;
 }
 
 /**
@@ -34,6 +38,11 @@ export interface IAuthService {
    * Get the stored JWT token
    */
   getStoredToken(): IJwtToken | null;
+
+  /**
+   * Get a valid access token, refreshing if necessary
+   */
+  getValidToken(): Observable<IJwtToken>;
 
   /**
    * Log out the current user

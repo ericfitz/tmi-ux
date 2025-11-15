@@ -141,7 +141,7 @@ export interface Environment {
 
   /**
    * Default authentication provider to use
-   * If not specified, will use 'local' if available, otherwise first provider from TMI server
+   * If not specified, will use 'google' or first provider from TMI server
    */
   defaultAuthProvider?: string;
 

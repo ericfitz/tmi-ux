@@ -5,13 +5,11 @@
  * It manages OAuth flows, JWT token storage, user profiles, and session management.
  *
  * Key functionality:
- * - Supports multiple OAuth providers (Google, GitHub, etc.) configured via environment
- * - Provides local development authentication for testing
+ * - Supports multiple OAuth providers (Google, GitHub, etc.) configured via TMI server
  * - Manages JWT token storage and validation with automatic expiration checking
  * - Handles OAuth callback processing with CSRF protection via state parameter
  * - Provides reactive authentication state through observables
  * - Supports role-based access control (placeholder implementation)
- * - Includes session extension for test users during development
  * - Manages user profile data and provides convenient access methods
  * - Handles authentication errors with retry capabilities
  * - Provides backward compatibility for legacy components
@@ -24,7 +22,6 @@ import {
   BehaviorSubject,
   Observable,
   catchError,
-  from,
   map,
   of,
   throwError,
@@ -45,7 +42,6 @@ import {
   OAuthProviderInfo,
   ProvidersResponse,
 } from '../models/auth.models';
-import { LocalOAuthProviderService } from './local-oauth-provider.service';
 
 interface JwtPayload {
   sub?: string;
@@ -95,7 +91,7 @@ export class AuthService {
   private providersCacheTime = 0;
 
   private get defaultProvider(): string {
-    return environment.defaultAuthProvider || 'local';
+    return environment.defaultAuthProvider || 'google';
   }
 
   // SessionManager instance (injected via forwardRef to avoid circular dependency)
@@ -108,7 +104,6 @@ export class AuthService {
     private router: Router,
     private http: HttpClient,
     private logger: LoggerService,
-    private localProvider: LocalOAuthProviderService,
     private serverConnectionService: ServerConnectionService,
   ) {
     this.logger.info('Auth Service initialized');
@@ -198,26 +193,6 @@ export class AuthService {
     return /^user[1-3]@example\.com$/.test(email) || email === 'demo.user@example.com';
   }
 
-  /**
-   * Check if we're using a local login provider
-   * @returns True if using local authentication
-   */
-  get isUsingLocalProvider(): boolean {
-    // Check if token exists and decode to get provider information
-    const token = this.getStoredToken();
-    if (!token) {
-      return false;
-    }
-
-    try {
-      const payload = token.token.split('.')[1];
-      const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
-      return decodedPayload.provider === 'local';
-    } catch (error) {
-      this.logger.warn('Could not decode token to check provider', error);
-      return false;
-    }
-  }
 
   /**
    * Check if the current JWT token is valid and not expired
@@ -236,7 +211,7 @@ export class AuthService {
   }
 
   /**
-   * Check if token needs refreshing (expires within 1 minute)
+   * Check if token needs refreshing (expires within 15 minutes)
    * @param token Optional token to check, otherwise retrieves from storage
    * @returns True if token should be refreshed
    */
@@ -247,8 +222,8 @@ export class AuthService {
     }
 
     const now = new Date();
-    const oneMinuteFromNow = new Date(now.getTime() + 60000); // 1 minute buffer
-    return tokenToCheck.expiresAt <= oneMinuteFromNow;
+    const fifteenMinutesFromNow = new Date(now.getTime() + 15 * 60 * 1000); // 15 minute buffer
+    return tokenToCheck.expiresAt <= fifteenMinutesFromNow;
   }
 
   /**
@@ -384,7 +359,6 @@ export class AuthService {
   /**
    * Get available authentication providers from TMI server
    * Uses caching to avoid repeated API calls
-   * Falls back to local provider only when server is not available
    */
   getAvailableProviders(): Observable<OAuthProviderInfo[]> {
     // Check cache first
@@ -398,18 +372,17 @@ export class AuthService {
     const isServerConfigured = this.isServerConfigured();
 
     if (!isServerConfigured || serverStatus !== ServerConnectionStatus.CONNECTED) {
-      this.logger.debugComponent('Auth', 'Server not available, using local provider only', {
+      this.logger.error('Server not available - cannot fetch providers', {
         isServerConfigured,
         serverStatus,
       });
-      return this.getLocalProviderOnly();
+      return throwError(() => new Error('Server not available'));
     }
 
     this.logger.debugComponent('Auth', 'Fetching OAuth providers from TMI server');
 
     return this.http.get<ProvidersResponse>(`${environment.apiUrl}/oauth2/providers`).pipe(
       map(response => {
-        // When server is connected, only return server providers (no local provider)
         const providers = [...response.providers];
 
         // Cache the results
@@ -425,9 +398,9 @@ export class AuthService {
         );
         return providers;
       }),
-      catchError(error => {
+      catchError((error: HttpErrorResponse) => {
         this.logger.error('Failed to fetch OAuth providers', error);
-        return this.getLocalProviderOnly();
+        return throwError(() => error as Error);
       }),
     );
   }
@@ -443,35 +416,8 @@ export class AuthService {
   }
 
   /**
-   * Get local provider only when server is unavailable
-   */
-  private getLocalProviderOnly(): Observable<OAuthProviderInfo[]> {
-    const fallbackProviders: OAuthProviderInfo[] = [];
-    if (environment.oauth?.local?.enabled !== false) {
-      fallbackProviders.push({
-        id: 'local',
-        name: 'Local Development',
-        icon: environment.oauth?.local?.icon || 'computer',
-        auth_url: this.localProvider.buildAuthUrl(''),
-        redirect_uri: `${window.location.origin}/oauth2/callback`,
-        client_id: 'local-development',
-      });
-    }
-
-    // Cache the results
-    this.cachedProviders = fallbackProviders;
-    this.providersCacheTime = Date.now();
-
-    this.logger.debugComponent('Auth', 'Using local provider only (server unavailable)', {
-      providers: fallbackProviders.map(p => ({ id: p.id, name: p.name })),
-    });
-
-    return of(fallbackProviders);
-  }
-
-  /**
    * Initiate login with specified provider (or default if none specified)
-   * Now uses TMI OAuth proxy pattern
+   * Uses TMI OAuth proxy pattern
    * @param providerId Optional provider ID to use
    * @param returnUrl Optional URL to return to after authentication
    */
@@ -490,15 +436,10 @@ export class AuthService {
           return;
         }
 
-        if (selectedProviderId === 'local') {
-          this.logger.info('Initiating local provider login', { returnUrl });
-          this.initiateLocalLogin(returnUrl);
-        } else {
-          this.logger.info(`Initiating TMI OAuth login for provider: ${selectedProviderId}`, {
-            returnUrl,
-          });
-          this.initiateTMIOAuthLogin(provider, returnUrl);
-        }
+        this.logger.info(`Initiating TMI OAuth login for provider: ${selectedProviderId}`, {
+          returnUrl,
+        });
+        this.initiateTMIOAuthLogin(provider, returnUrl);
       },
       error: error => {
         this.handleAuthError({
@@ -556,47 +497,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Initiate local provider login
-   * @param returnUrl Optional URL to return to after authentication
-   */
-  private initiateLocalLogin(returnUrl?: string): void {
-    try {
-      this.logger.info('Initiating local provider login', { returnUrl });
-      this.logger.debugComponent('Auth', 'AuthService.initiateLocalLogin called', { returnUrl });
-
-      const state = this.generateRandomState(returnUrl);
-      localStorage.setItem('oauth_state', state);
-      localStorage.setItem('oauth_provider', 'local');
-
-      // Store debug info that will survive page reload
-      localStorage.setItem(
-        'local_auth_debug',
-        JSON.stringify({
-          timestamp: new Date().toISOString(),
-          state: state,
-          provider: 'local',
-          action: 'initiating_local_login',
-        }),
-      );
-
-      this.logger.debugComponent('Auth', 'Initiating local OAuth', {
-        providerId: 'local',
-        generatedState: state,
-      });
-
-      const authUrl = this.localProvider.buildAuthUrl(state);
-      this.logger.debugComponent('Auth', 'Local auth URL', authUrl);
-      window.location.href = authUrl;
-    } catch (error) {
-      this.handleAuthError({
-        code: 'local_auth_error',
-        message: 'Failed to initialize local authentication',
-        retryable: true,
-      });
-      this.logger.error('Error initializing local authentication', error);
-    }
-  }
 
   /**
    * Generate a state string for CSRF protection and return URL preservation
@@ -787,11 +687,6 @@ export class AuthService {
     localStorage.removeItem('oauth_state');
     localStorage.removeItem('oauth_provider');
 
-    // Handle local provider
-    if (providerId === 'local' && response.code) {
-      return from(this.handleLocalCallback(response, returnUrl));
-    }
-
     // Handle TMI OAuth proxy response with tokens
     if (response.access_token) {
       return this.handleTMITokenResponse(response, providerId, returnUrl);
@@ -812,60 +707,6 @@ export class AuthService {
     return of(false);
   }
 
-  /**
-   * Handle local OAuth callback
-   * @param response OAuth response containing code
-   * @param returnUrl Optional URL to return to after authentication
-   */
-  private async handleLocalCallback(response: OAuthResponse, returnUrl?: string): Promise<boolean> {
-    this.logger.info('handleLocalCallback called', { code: response.code, returnUrl });
-
-    const userInfo = this.localProvider.exchangeCodeForUser(response.code!);
-    this.logger.info('exchangeCodeForUser result', userInfo);
-
-    if (!userInfo) {
-      this.handleAuthError({
-        code: 'local_auth_error',
-        message: 'Failed to authenticate with local provider',
-        retryable: true,
-      });
-      return false;
-    }
-
-    try {
-      // Create a local JWT-like token
-      const token = this.createLocalToken(userInfo);
-      this.logger.info('Local token created', {
-        tokenLength: token.token.length,
-        expiresAt: token.expiresAt.toISOString(),
-      });
-
-      this.storeToken(token);
-      await this.storeUserProfile(userInfo);
-
-      this.isAuthenticatedSubject.next(true);
-      this.userProfileSubject.next(userInfo);
-
-      this.logger.info(`Local user ${userInfo.email} successfully logged in`, { returnUrl });
-
-      // Navigate to return URL if provided, otherwise to default
-      if (returnUrl) {
-        void this.router.navigateByUrl(returnUrl);
-      } else {
-        void this.router.navigate(['/tm']);
-      }
-
-      return true;
-    } catch (error) {
-      this.logger.error('Error in handleLocalCallback', error);
-      this.handleAuthError({
-        code: 'local_auth_error',
-        message: error instanceof Error ? error.message : 'Failed to create local token',
-        retryable: true,
-      });
-      return false;
-    }
-  }
 
   /**
    * Handle TMI OAuth proxy token response
@@ -1135,123 +976,6 @@ export class AuthService {
     });
   }
 
-  /**
-   * Create a local JWT token with custom expiry time for development
-   * @param userInfo User profile information
-   * @param expiryMinutes Token expiry time in minutes (default: environment setting)
-   * @returns true if successful, false otherwise
-   */
-  createLocalTokenWithExpiry(userInfo: UserProfile, expiryMinutes?: number): boolean {
-    try {
-      // Ensure required fields are present
-      if (!userInfo.id) {
-        throw new Error('User ID is required for JWT token creation');
-      }
-      if (!userInfo.email) {
-        throw new Error('User email is required for JWT token creation');
-      }
-
-      const header = { alg: 'HS256', typ: 'JWT' };
-      const effectiveExpiryMinutes = expiryMinutes || environment.authTokenExpiryMinutes;
-      const payload = {
-        sub: userInfo.id,
-        name: userInfo.name || 'Local User',
-        email: userInfo.email,
-        iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000) + effectiveExpiryMinutes * 60,
-        provider: 'local',
-        providers: userInfo.providers || [{ provider: 'local', is_primary: true }],
-      };
-
-      // Create a fake JWT (just for consistency, server not involved) using UTF-8 safe encoding
-      const encoder = new TextEncoder();
-      const headerData = encoder.encode(JSON.stringify(header));
-      const payloadData = encoder.encode(JSON.stringify(payload));
-      const fakeJwt =
-        btoa(String.fromCharCode(...headerData)) +
-        '.' +
-        btoa(String.fromCharCode(...payloadData)) +
-        '.' +
-        'local-signature';
-
-      const expiresAt = new Date();
-      expiresAt.setMinutes(expiresAt.getMinutes() + effectiveExpiryMinutes);
-
-      const token: JwtToken = {
-        token: fakeJwt,
-        expiresAt,
-        expiresIn: effectiveExpiryMinutes * 60,
-      };
-
-      // Store token and user profile
-      this.storeToken(token);
-      void this.storeUserProfile(userInfo);
-
-      // Update authentication state
-      this.isAuthenticatedSubject.next(true);
-      this.userProfileSubject.next(userInfo);
-
-      this.logger.info(
-        `Local user ${userInfo.email} successfully logged in with ${effectiveExpiryMinutes} minute token`,
-      );
-      return true;
-    } catch (error) {
-      this.logger.error('Failed to create local token', error);
-      this.handleAuthError({
-        code: 'local_token_error',
-        message: error instanceof Error ? error.message : 'Failed to create local token',
-        retryable: false,
-      });
-      return false;
-    }
-  }
-
-  /**
-   * Create a local JWT-like token for development use
-   */
-  private createLocalToken(userInfo: UserProfile): JwtToken {
-    // Ensure required fields are present
-    if (!userInfo.id) {
-      throw new Error('User ID is required for JWT token creation');
-    }
-    if (!userInfo.email) {
-      throw new Error('User email is required for JWT token creation');
-    }
-    if (!userInfo.name) {
-      throw new Error('User name is required for JWT token creation');
-    }
-
-    const header = { alg: 'HS256', typ: 'JWT' };
-    const payload = {
-      sub: userInfo.id, // User ID as subject
-      name: userInfo.name,
-      email: userInfo.email,
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + environment.authTokenExpiryMinutes * 60,
-      provider: 'local',
-      providers: userInfo.providers || [{ provider: 'local', is_primary: true }],
-    };
-
-    // Create a fake JWT (just for consistency, server not involved) using UTF-8 safe encoding
-    const encoder = new TextEncoder();
-    const headerData = encoder.encode(JSON.stringify(header));
-    const payloadData = encoder.encode(JSON.stringify(payload));
-    const fakeJwt =
-      btoa(String.fromCharCode(...headerData)) +
-      '.' +
-      btoa(String.fromCharCode(...payloadData)) +
-      '.' +
-      'local-signature';
-
-    const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + environment.authTokenExpiryMinutes);
-
-    return {
-      token: fakeJwt,
-      expiresIn: environment.authTokenExpiryMinutes * 60,
-      expiresAt,
-    };
-  }
 
   /**
    * Extract expiration date from JWT token's exp claim
@@ -1681,14 +1405,12 @@ export class AuthService {
     // Determine if we should call server logout endpoint
     const isConnectedToServer =
       this.serverConnectionService.currentStatus === ServerConnectionStatus.CONNECTED;
-    const isUsingLocalAuth = this.isUsingLocalProvider;
     const shouldCallServerLogout =
-      this.isAuthenticated && isConnectedToServer && !isUsingLocalAuth && !this.isTestUser;
+      this.isAuthenticated && isConnectedToServer && !this.isTestUser;
 
     if (shouldCallServerLogout) {
       this.logger.debugComponent('Auth', 'Calling server logout endpoint', {
         isConnectedToServer,
-        isUsingLocalAuth,
         isTestUser: this.isTestUser,
       });
 
@@ -1736,7 +1458,6 @@ export class AuthService {
       // Skip server logout and just clear client-side data
       this.logger.debugComponent('Auth', 'Skipping server logout', {
         isConnectedToServer,
-        isUsingLocalAuth,
         isTestUser: this.isTestUser,
         isAuthenticated: this.isAuthenticated,
       });
