@@ -16,7 +16,6 @@ import {
   ServerConnectionService,
   ServerConnectionStatus,
 } from '../../core/services/server-connection.service';
-import { LocalOAuthProviderService } from './local-oauth-provider.service';
 import {
   JwtToken,
   UserProfile,
@@ -46,12 +45,6 @@ vi.mock('../../../environments/environment', () => ({
     operatorName: 'TMI Operator (Test)',
     operatorContact: 'test@example.com',
     defaultAuthProvider: 'test', // Set to test provider for server-mode tests
-    oauth: {
-      local: {
-        enabled: true,
-        icon: 'computer',
-      },
-    },
   },
 }));
 
@@ -83,7 +76,6 @@ describe('AuthService', () => {
   let httpClient: MockHttpClient;
   let loggerService: MockLoggerService;
   let router: MockRouter;
-  let localProvider: LocalOAuthProviderService;
   let serverConnectionService: MockServerConnectionService;
   let localStorageMock: MockStorage;
   let sessionStorageMock: MockStorage;
@@ -263,18 +255,6 @@ describe('AuthService', () => {
       configurable: true,
     });
 
-    // Create mock for LocalOAuthProviderService
-    localProvider = {
-      buildAuthUrl: vi.fn().mockReturnValue('http://localhost:4200/local/auth?state=mock-state'),
-      exchangeCodeForUser: vi.fn().mockReturnValue({
-        id: '12345678-1234-1234-1234-123456789abc',
-        email: 'test@example.com',
-        name: 'Test User',
-        providers: [{ provider: 'local', is_primary: true }],
-        picture: 'http://example.com/pic.jpg',
-      }),
-    } as unknown as LocalOAuthProviderService;
-
     // Create mock for ServerConnectionService
     serverConnectionService = {
       currentStatus: ServerConnectionStatus.CONNECTED,
@@ -288,7 +268,6 @@ describe('AuthService', () => {
       router as unknown as Router,
       httpClient as unknown as HttpClient,
       loggerService as unknown as LoggerService,
-      localProvider,
       serverConnectionService as unknown as ServerConnectionService,
     );
   });
@@ -421,30 +400,6 @@ describe('AuthService', () => {
       });
     });
 
-    it('should handle errors during local auth initialization', () => {
-      const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
-
-      // Mock provider discovery to return empty providers (forces error)
-      vi.mocked(httpClient.get).mockReturnValue(throwError(() => new Error('Network error')));
-
-      // Make localProvider throw an error for when it gets to local provider
-      localProvider.buildAuthUrl = vi.fn().mockImplementation(() => {
-        throw new Error('Local provider error');
-      });
-
-      service.initiateLogin('local');
-
-      expect(handleAuthErrorSpy).toHaveBeenCalledWith({
-        code: 'provider_discovery_error',
-        message: 'Failed to discover OAuth providers',
-        retryable: true,
-      });
-      expect(loggerService.error).toHaveBeenCalledWith(
-        'Error discovering OAuth providers',
-        expect.any(Error),
-      );
-    });
-
     it('should get available providers from TMI server', () => {
       // Mock HTTP response
       vi.mocked(httpClient.get).mockReturnValue(of(mockProvidersResponse));
@@ -496,65 +451,15 @@ describe('AuthService', () => {
       // Should only call HTTP once due to caching
       expect(httpClient.get).toHaveBeenCalledTimes(1);
     });
-
-    it('should return only local provider when server is not connected', () => {
-      // Mock server as not connected
-      vi.mocked(serverConnectionService).currentStatus = ServerConnectionStatus.ERROR;
-
-      const result$ = service.getAvailableProviders();
-
-      result$.subscribe(providers => {
-        expect(providers).toEqual([
-          {
-            id: 'local',
-            name: 'Local Development',
-            icon: 'computer',
-            auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
-            redirect_uri: expect.stringContaining('/oauth2/callback'),
-            client_id: 'local-development',
-          },
-        ]);
-      });
-
-      // Should not make any HTTP requests when server is not connected
-      expect(httpClient.get).not.toHaveBeenCalled();
-    });
   }); /* End of OAuth Login describe block */
 
   describe('OAuth Callback Handling', () => {
     beforeEach(() => {
       localStorageMock.getItem.mockImplementation((key: string) => {
         if (key === 'oauth_state') return 'mock-state-value';
-        if (key === 'oauth_provider') return 'local';
+        if (key === 'oauth_provider') return 'google';
         return null;
       });
-    });
-
-    it('should handle successful local authentication', async () => {
-      const result$ = service.handleOAuthCallback(mockOAuthResponse);
-
-      const result = await result$.toPromise();
-
-      // Wait for async token storage to complete
-      await new Promise(resolve => setTimeout(resolve, 10));
-
-      expect(result).toBe(true);
-      expect(localProvider.exchangeCodeForUser).toHaveBeenCalledWith('mock-auth-code');
-      expect(service.isAuthenticated).toBe(true);
-      expect(service.userProfile).toEqual(
-        expect.objectContaining({
-          id: expect.any(String),
-          email: 'test@example.com',
-          name: 'Test User',
-          providers: expect.any(Array),
-        }),
-      );
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'auth_token',
-        expect.stringContaining(':'),
-      );
     });
 
     it('should handle successful TMI OAuth proxy token response', async () => {
@@ -737,24 +642,6 @@ describe('AuthService', () => {
         'auth_token',
         expect.stringContaining(':'),
       );
-    });
-
-    it('should handle failed local authentication', () => {
-      const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
-
-      // Make local provider return null (failed authentication)
-      localProvider.exchangeCodeForUser = vi.fn().mockReturnValue(null);
-
-      const result$ = service.handleOAuthCallback(mockOAuthResponse);
-
-      result$.subscribe(result => {
-        expect(result).toBe(false);
-        expect(handleAuthErrorSpy).toHaveBeenCalledWith({
-          code: 'local_auth_error',
-          message: 'Failed to authenticate with local provider',
-          retryable: true,
-        });
-      });
     });
 
     it('should handle invalid callback with no valid data', () => {
@@ -1012,7 +899,6 @@ describe('AuthService', () => {
         'Skipping server logout',
         expect.objectContaining({
           isConnectedToServer: true,
-          isUsingLocalAuth: false,
           isTestUser: true,
           isAuthenticated: true,
         }),

@@ -18,7 +18,6 @@ import { JwtInterceptor } from './interceptors/jwt.interceptor';
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
 import { LoggerService } from '../core/services/logger.service';
-import { LocalOAuthProviderService } from './services/local-oauth-provider.service';
 import { ServerConnectionService } from '../core/services/server-connection.service';
 import { environment } from '../../environments/environment';
 import {
@@ -61,7 +60,6 @@ describe('Authentication Integration', () => {
   let localStorageMock: MockStorage;
   let sessionStorageMock: MockStorage;
   let cryptoMock: MockCrypto;
-  let localOAuthProvider: LocalOAuthProviderService;
   let serverConnectionService: { currentStatus: string };
 
   beforeEach(() => {
@@ -155,9 +153,6 @@ describe('Authentication Integration', () => {
       writable: true,
     });
 
-    // Create local OAuth provider service
-    localOAuthProvider = new LocalOAuthProviderService();
-
     // Create mock server connection service
     serverConnectionService = {
       currentStatus: 'connected',
@@ -168,7 +163,6 @@ describe('Authentication Integration', () => {
       router as unknown as Router,
       httpClient as unknown as HttpClient,
       logger as unknown as LoggerService,
-      localOAuthProvider,
       serverConnectionService as unknown as ServerConnectionService,
     );
   });
@@ -528,7 +522,6 @@ describe('Authentication Integration', () => {
           router as unknown as Router,
           httpClient as unknown as HttpClient,
           logger as unknown as LoggerService,
-          localOAuthProvider,
           serverConnectionService as unknown as ServerConnectionService,
         );
 
@@ -566,7 +559,6 @@ describe('Authentication Integration', () => {
           router as unknown as Router,
           httpClient as unknown as HttpClient,
           logger as unknown as LoggerService,
-          localOAuthProvider,
           serverConnectionService as unknown as ServerConnectionService,
         );
 
