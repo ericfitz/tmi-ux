@@ -61,3 +61,4 @@ docs-server
 docs-server/**
 thunder-tests
 thunder-tests/**
+.42c/conf.yaml
