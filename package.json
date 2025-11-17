@@ -84,7 +84,7 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.2.1",
     "fontkit": "^2.0.4",
-    "marked": "^16.4.1",
+    "marked": "^16.4.2",
     "mermaid": "^11.12.1",
     "ngx-markdown": "^20.1.0",
     "pdf-lib": "^1.17.1",
