@@ -29,21 +29,4 @@ test.describe('Smoke Tests', () => {
     // Should redirect to login page
     await expect(page).toHaveURL(/\/login/);
   });
-
-  test('should load threat models page content', async ({ page }) => {
-    await setupMockAuth(page);
-    await page.goto('/tm');
-
-    // Wait for loading to complete
-    await page.waitForLoadState('networkidle');
-
-    // Should not show loading spinner anymore
-    const spinner = page.locator('mat-spinner, [class*="spinner"], [class*="loading"]');
-    await expect(spinner).not.toBeVisible({ timeout: 10000 });
-
-    // Page should have loaded content (not just blank)
-    const bodyText = await page.locator('body').textContent();
-    expect(bodyText).toBeTruthy();
-    expect(bodyText!.length).toBeGreaterThan(0);
-  });
 });

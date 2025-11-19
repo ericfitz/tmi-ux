@@ -16,16 +16,13 @@ export interface MockUserProfile {
 }
 
 /**
- * Set up mock authentication in localStorage
+ * Set up authentication in localStorage
  * Must be called before navigating to the application
  */
 export async function setupMockAuth(page: Page): Promise<void> {
   // Use context storage to set localStorage before page loads
   await page.context().addInitScript(() => {
-    // Enable mock data mode
-    localStorage.setItem('useMockData', 'true');
-
-    // Set mock authentication token
+    // Set authentication token
     const mockAuthToken = {
       token: 'mock.jwt.token',
       expiresIn: 3600,
@@ -33,7 +30,7 @@ export async function setupMockAuth(page: Page): Promise<void> {
     };
     localStorage.setItem('auth_token', JSON.stringify(mockAuthToken));
 
-    // Set mock user profile
+    // Set user profile
     const mockUserProfile = {
       email: 'user1@example.com',
       name: 'user1',
@@ -58,13 +55,6 @@ export async function clearAuth(page: Page): Promise<void> {
 export async function loginWithLocalProvider(page: Page): Promise<void> {
   // Navigate to login page
   await page.goto('/login');
-
-  // Enable mock data if there's a toggle
-  const toggle = page.locator('mat-slide-toggle, input[type="checkbox"]').first();
-  if (await toggle.isVisible({ timeout: 2000 }).catch(() => false)) {
-    await toggle.click();
-    await page.waitForTimeout(500);
-  }
 
   // Click "Login as User1" button
   await page.getByRole('button', { name: /login.*user1/i }).click();
