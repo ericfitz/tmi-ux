@@ -31,9 +31,9 @@ test.describe('Navigation', () => {
     await navigateToThreatModels(page);
     await expect(page).toHaveURL(/\/tm/);
 
-    // Navigate to home
-    await navigateToHome(page);
-    await expect(page).toHaveURL('/');
+    // Navigate to about
+    await navigateToAbout(page);
+    await expect(page).toHaveURL('/about');
 
     // Go back
     await page.goBack();
@@ -46,8 +46,8 @@ test.describe('Navigation', () => {
     // Navigate to threat models
     await navigateToThreatModels(page);
 
-    // Navigate to home
-    await navigateToHome(page);
+    // Navigate to about
+    await navigateToAbout(page);
 
     // Go back
     await page.goBack();
@@ -55,7 +55,7 @@ test.describe('Navigation', () => {
 
     // Go forward
     await page.goForward();
-    await expect(page).toHaveURL('/');
+    await expect(page).toHaveURL('/about');
   });
 
   test('should have working navigation menu', async ({ page }) => {
