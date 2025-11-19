@@ -25,6 +25,18 @@ export async function navigateToThreatModel(page: Page, threatModelName: string)
 }
 
 /**
+ * Navigate to the first available threat model
+ */
+export async function navigateToFirstThreatModel(page: Page): Promise<void> {
+  await navigateToThreatModels(page);
+  const cards = page.locator('.threat-model-card');
+  await expect(cards.first()).toBeVisible({ timeout: 10000 });
+  await cards.first().click();
+  await page.waitForURL(/\/tm\/[a-f0-9-]+$/);
+  await page.waitForLoadState('networkidle');
+}
+
+/**
  * Navigate to DFD editor for a specific diagram
  */
 export async function navigateToDfdDiagram(
@@ -39,6 +51,26 @@ export async function navigateToDfdDiagram(
     .locator('.mat-mdc-list-item-title')
     .filter({ hasText: diagramName });
   await diagramLink.click();
+
+  // Wait for DFD page to load
+  await page.waitForURL(/\/tm\/[a-f0-9-]+\/dfd\/[a-f0-9-]+/);
+  await expect(page.locator('app-dfd')).toBeVisible({ timeout: 15000 });
+  await page.waitForLoadState('networkidle');
+
+  // Wait for graph to initialize
+  await page.waitForTimeout(2000);
+}
+
+/**
+ * Navigate to the first available diagram in the first threat model
+ */
+export async function navigateToFirstDiagram(page: Page): Promise<void> {
+  await navigateToFirstThreatModel(page);
+
+  // Click on the first diagram in the list
+  const diagramLinks = page.locator('.mat-mdc-list-item-title');
+  await expect(diagramLinks.first()).toBeVisible({ timeout: 10000 });
+  await diagramLinks.first().click();
 
   // Wait for DFD page to load
   await page.waitForURL(/\/tm\/[a-f0-9-]+\/dfd\/[a-f0-9-]+/);

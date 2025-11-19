@@ -115,7 +115,21 @@ e2e/
 - **Feature Tests**: Comprehensive testing of specific features
 - **Cross-Browser**: Run on Chromium, Firefox, and WebKit
 - **Parallel Execution**: Tests run in parallel for speed
-- **Mock Data**: Use local provider and mock data for deterministic tests
+- **Data Requirements**: Tests require at least one threat model with diagrams to be available
+- **Graceful Degradation**: Tests skip gracefully when no data is available
+
+## Test Data Requirements
+
+**IMPORTANT**: These e2e tests require real backend data to function properly. Since there is no offline mode, the tests need:
+
+1. **Authentication**: A valid user account with authentication tokens
+2. **Threat Models**: At least one threat model accessible to the test user
+3. **Diagrams**: At least one diagram within a threat model for DFD tests
+
+If no data is available:
+- Smoke tests and navigation tests will pass
+- Feature-specific tests (threat models, DFD) will skip with appropriate messages
+- Tests validate the empty state is displayed correctly
 
 ## Success Criteria
 
@@ -124,3 +138,4 @@ e2e/
 - Tests run in under 10 minutes
 - Clear failure messages for debugging
 - Cross-browser compatibility verified
+- Tests gracefully handle missing data scenarios

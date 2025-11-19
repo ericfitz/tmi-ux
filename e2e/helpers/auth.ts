@@ -41,8 +41,11 @@ export async function setupMockAuth(page: Page): Promise<void> {
 
 /**
  * Clear authentication state
+ * Safely clears localStorage/sessionStorage by first navigating to the app
  */
 export async function clearAuth(page: Page): Promise<void> {
+  // Navigate to the app first to ensure we have access to localStorage
+  await page.goto('/');
   await page.evaluate(() => {
     localStorage.clear();
     sessionStorage.clear();
