@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupMockAuth } from '../helpers/auth';
+import { loginWithTestProvider } from '../helpers/auth';
 import { navigateToHome, navigateToAbout, navigateToThreatModels } from '../helpers/navigation';
 
 /**
@@ -19,13 +19,13 @@ test.describe('Navigation', () => {
   });
 
   test('should navigate to threat models page when authenticated', async ({ page }) => {
-    await setupMockAuth(page);
+    await loginWithTestProvider(page);
     await navigateToThreatModels(page);
     await expect(page).toHaveURL(/\/tm/);
   });
 
   test('should navigate using browser back button', async ({ page }) => {
-    await setupMockAuth(page);
+    await loginWithTestProvider(page);
 
     // Navigate to threat models
     await navigateToThreatModels(page);
@@ -41,7 +41,7 @@ test.describe('Navigation', () => {
   });
 
   test('should navigate using browser forward button', async ({ page }) => {
-    await setupMockAuth(page);
+    await loginWithTestProvider(page);
 
     // Navigate to threat models
     await navigateToThreatModels(page);
@@ -59,7 +59,6 @@ test.describe('Navigation', () => {
   });
 
   test('should have working navigation menu', async ({ page }) => {
-    await setupMockAuth(page);
     await navigateToHome(page);
 
     // Look for navigation links

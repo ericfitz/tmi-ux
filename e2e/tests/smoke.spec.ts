@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupMockAuth } from '../helpers/auth';
+import { loginWithTestProvider } from '../helpers/auth';
 
 /**
  * Smoke tests - Quick validation that the application loads and core functionality works
@@ -12,21 +12,17 @@ test.describe('Smoke Tests', () => {
     await expect(page.locator('body')).toBeVisible();
   });
 
-  test('should load the threat models page with authentication', async ({ page }) => {
-    await setupMockAuth(page);
-    await page.goto('/tm');
-
-    // Should not redirect to login
-    await expect(page).toHaveURL(/\/tm/);
-
-    // Page should load
-    await expect(page.locator('body')).toBeVisible();
-  });
-
   test('should redirect to login when not authenticated', async ({ page }) => {
     await page.goto('/tm');
 
     // Should redirect to login page
     await expect(page).toHaveURL(/\/login/);
+  });
+
+  test('should load threat models page when authenticated', async ({ page }) => {
+    await loginWithTestProvider(page);
+    await page.goto('/tm');
+    await expect(page).toHaveURL(/\/tm/);
+    await expect(page.locator('body')).toBeVisible();
   });
 });

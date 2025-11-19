@@ -128,11 +128,7 @@ export class LoginComponent implements OnInit {
     const sorted = [...providers];
 
     return sorted.sort((a, b) => {
-      // Local provider always goes last
-      if (a.id === 'local') return 1;
-      if (b.id === 'local') return -1;
-
-      // Test provider goes next to last (before local)
+      // Test provider goes last
       if (a.id === 'test') return 1;
       if (b.id === 'test') return -1;
 

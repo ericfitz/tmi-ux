@@ -16,27 +16,31 @@ export interface MockUserProfile {
 }
 
 /**
- * Set up authentication in localStorage
- * Must be called before navigating to the application
+ * Login using the test OAuth provider
+ * This uses the actual OAuth flow with the test provider
  */
-export async function setupMockAuth(page: Page): Promise<void> {
-  // Use context storage to set localStorage before page loads
-  await page.context().addInitScript(() => {
-    // Set authentication token
-    const mockAuthToken = {
-      token: 'mock.jwt.token',
-      expiresIn: 3600,
-      expiresAt: new Date(Date.now() + 3600 * 1000).toISOString(),
-    };
-    localStorage.setItem('auth_token', JSON.stringify(mockAuthToken));
+export async function loginWithTestProvider(page: Page): Promise<void> {
+  // Navigate to login page
+  await page.goto('/login');
 
-    // Set user profile
-    const mockUserProfile = {
-      email: 'user1@example.com',
-      name: 'user1',
-    };
-    localStorage.setItem('user_profile', JSON.stringify(mockUserProfile));
-  });
+  // Wait for providers to load
+  await page.waitForSelector('button[data-provider]', { timeout: 10000 });
+
+  // Click the login button for the test provider
+  const loginButton = page.locator('button[data-provider="test"]').first();
+  await loginButton.click();
+
+  // Wait for redirect away from login (OAuth flow completes automatically)
+  await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 10000 });
+
+  // Wait for auth token to be stored in localStorage
+  await page.waitForFunction(
+    () => {
+      const token = localStorage.getItem('auth_token');
+      return token !== null && token.length > 0;
+    },
+    { timeout: 5000 },
+  );
 }
 
 /**
@@ -53,17 +57,10 @@ export async function clearAuth(page: Page): Promise<void> {
 }
 
 /**
- * Login using the local provider UI
+ * Login using the local provider UI (alias for loginWithTestProvider)
  */
 export async function loginWithLocalProvider(page: Page): Promise<void> {
-  // Navigate to login page
-  await page.goto('/login');
-
-  // Click "Login as User1" button
-  await page.getByRole('button', { name: /login.*user1/i }).click();
-
-  // Wait for navigation away from login page
-  await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 5000 });
+  await loginWithTestProvider(page);
 }
 
 /**

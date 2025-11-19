@@ -155,7 +155,7 @@ export class ServerConnectionService implements OnDestroy {
     );
 
     if (!this.shouldConnectToServer()) {
-      this.logger.info('Server monitoring disabled - not configured or using local provider');
+      this.logger.info('Server monitoring disabled - not configured');
       return;
     }
   }

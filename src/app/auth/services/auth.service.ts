@@ -366,18 +366,16 @@ export class AuthService {
       return of(this.cachedProviders);
     }
 
-    // Check server connection status
-    const serverStatus = this.serverConnectionService.currentStatus;
+    // Check if server is configured
     const isServerConfigured = this.isServerConfigured();
 
-    if (!isServerConfigured || serverStatus !== ServerConnectionStatus.CONNECTED) {
-      this.logger.error('Server not available - cannot fetch providers', {
-        isServerConfigured,
-        serverStatus,
-      });
-      return throwError(() => new Error('Server not available'));
+    if (!isServerConfigured) {
+      this.logger.error('Server not configured - cannot fetch providers');
+      return throwError(() => new Error('Server not configured'));
     }
 
+    // Try to fetch providers from server
+    // Don't check connection status here - let the HTTP call succeed or fail naturally
     this.logger.debugComponent('Auth', 'Fetching OAuth providers from TMI server');
 
     return this.http.get<ProvidersResponse>(`${environment.apiUrl}/oauth2/providers`).pipe(

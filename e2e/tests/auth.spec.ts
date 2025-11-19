@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { setupMockAuth, clearAuth, loginWithLocalProvider, verifyAuthenticated } from '../helpers/auth';
+import { clearAuth, loginWithTestProvider, verifyAuthenticated } from '../helpers/auth';
 
 /**
  * Authentication flow tests
+ * NOTE: These tests require a running backend server
  */
 
 test.describe('Authentication', () => {
@@ -10,13 +11,11 @@ test.describe('Authentication', () => {
     await clearAuth(page);
   });
 
-  test('should login with local provider', async ({ page }) => {
-    await setupMockAuth(page);
-    await page.goto('/');
+  test('should login with test provider', async ({ page }) => {
+    await loginWithTestProvider(page);
 
-    // Navigate to threat models - should work with mock auth
-    await page.goto('/tm');
-    await expect(page).toHaveURL(/\/tm/);
+    // Should be redirected to home or threat models page
+    await expect(page).not.toHaveURL(/\/login/);
 
     // Verify authenticated
     const isAuthenticated = await verifyAuthenticated(page);
@@ -29,15 +28,15 @@ test.describe('Authentication', () => {
     // Should redirect to login
     await expect(page).toHaveURL(/\/login/);
 
-    // Login page should have login button
-    await expect(page.getByRole('button', { name: /login/i })).toBeVisible();
+    // Login page should be visible
+    await expect(page.locator('body')).toContainText(/sign in/i);
   });
 
   test('should persist authentication across page reloads', async ({ page }) => {
-    await setupMockAuth(page);
-    await page.goto('/tm');
+    await loginWithTestProvider(page);
 
-    // Verify we're on the threat models page
+    // Navigate to threat models
+    await page.goto('/tm');
     await expect(page).toHaveURL(/\/tm/);
 
     // Reload the page
@@ -50,7 +49,7 @@ test.describe('Authentication', () => {
   });
 
   test('should handle session expiration', async ({ page }) => {
-    await setupMockAuth(page);
+    await loginWithTestProvider(page);
     await page.goto('/tm');
     await expect(page).toHaveURL(/\/tm/);
 

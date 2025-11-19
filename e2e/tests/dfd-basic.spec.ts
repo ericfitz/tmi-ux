@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupMockAuth } from '../helpers/auth';
+import { loginWithTestProvider } from '../helpers/auth';
 import { navigateToThreatModels, navigateToFirstDiagram } from '../helpers/navigation';
 import {
   getGraphContainer,
@@ -25,7 +25,7 @@ test.describe('DFD Basic Functionality', () => {
     const page = await context.newPage();
 
     try {
-      await setupMockAuth(page);
+      await loginWithTestProvider(page);
       await navigateToThreatModels(page);
       const cards = page.locator('.threat-model-card');
       hasData = (await cards.count()) > 0;
@@ -43,7 +43,7 @@ test.describe('DFD Basic Functionality', () => {
       return;
     }
 
-    await setupMockAuth(page);
+    await loginWithTestProvider(page);
   });
 
   test('should load DFD editor', async ({ page }) => {
