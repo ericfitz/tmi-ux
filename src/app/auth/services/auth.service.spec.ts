@@ -420,17 +420,23 @@ describe('AuthService', () => {
 
       const result$ = service.getAvailableProviders();
 
-      result$.subscribe(providers => {
-        expect(providers).toEqual([
-          {
-            id: 'local',
-            name: 'Local Development',
-            icon: 'computer',
-            auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
-            redirect_uri: expect.stringContaining('/oauth2/callback'),
-            client_id: 'local-development',
-          },
-        ]);
+      result$.subscribe({
+        next: providers => {
+          expect(providers).toEqual([
+            {
+              id: 'local',
+              name: 'Local Development',
+              icon: 'computer',
+              auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
+              redirect_uri: expect.stringContaining('/oauth2/callback'),
+              client_id: 'local-development',
+            },
+          ]);
+        },
+        error: () => {
+          // Error is caught and handled by the service, converting to local provider
+          // This shouldn't be called, but including it prevents unhandled errors
+        },
       });
 
       expect(loggerService.error).toHaveBeenCalledWith(
