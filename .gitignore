@@ -56,6 +56,11 @@ localization_dedup_plan.*
 *.log
 .version-bump-type
 
+# Playwright
+/test-results
+/playwright-report
+/playwright/.cache
+
 # local copy of server docs
 docs-server
 docs-server/**

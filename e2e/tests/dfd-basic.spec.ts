@@ -1,0 +1,152 @@
+import { test, expect } from '@playwright/test';
+import { setupMockAuth } from '../helpers/auth';
+import { navigateToDfdDiagram } from '../helpers/navigation';
+import {
+  getGraphContainer,
+  getGraphNodes,
+  createNode,
+  deleteSelected,
+  undo,
+  redo,
+} from '../helpers/dfd';
+
+/**
+ * DFD (Data Flow Diagram) basic functionality tests
+ */
+
+test.describe('DFD Basic Functionality', () => {
+  test.beforeEach(async ({ page }) => {
+    await setupMockAuth(page);
+  });
+
+  test('should load DFD editor', async ({ page }) => {
+    await navigateToDfdDiagram(page, 'System Authentication', 'System Architecture');
+
+    // Should show DFD component
+    await expect(page.locator('app-dfd')).toBeVisible();
+
+    // Should show graph container
+    const graph = getGraphContainer(page);
+    await expect(graph).toBeVisible();
+  });
+
+  test('should display toolbar with node creation buttons', async ({ page }) => {
+    await navigateToDfdDiagram(page, 'System Authentication', 'System Architecture');
+
+    // Should have buttons in toolbar
+    const buttons = page.locator('button');
+    const count = await buttons.count();
+    expect(count).toBeGreaterThan(0);
+
+    // Should have material icons for node types
+    await expect(page.locator('mat-icon').first()).toBeVisible();
+  });
+
+  test('should create an actor node', async ({ page }) => {
+    await navigateToDfdDiagram(page, 'System Authentication', 'System Architecture');
+
+    // Get initial node count
+    const initialNodes = await getGraphNodes(page).count();
+
+    // Create an actor node
+    await createNode(page, 'actor', 200, 200);
+
+    // Should have one more node
+    const finalNodes = await getGraphNodes(page).count();
+    expect(finalNodes).toBe(initialNodes + 1);
+  });
+
+  test('should create a process node', async ({ page }) => {
+    await navigateToDfdDiagram(page, 'System Authentication', 'System Architecture');
+
+    const initialNodes = await getGraphNodes(page).count();
+    await createNode(page, 'process', 300, 200);
+
+    const finalNodes = await getGraphNodes(page).count();
+    expect(finalNodes).toBe(initialNodes + 1);
+  });
+
+  test('should create a store node', async ({ page }) => {
+    await navigateToDfdDiagram(page, 'System Authentication', 'System Architecture');
+
+    const initialNodes = await getGraphNodes(page).count();
+    await createNode(page, 'store', 400, 200);
+
+    const finalNodes = await getGraphNodes(page).count();
+    expect(finalNodes).toBe(initialNodes + 1);
+  });
+
+  test('should delete a selected node', async ({ page }) => {
+    await navigateToDfdDiagram(page, 'System Authentication', 'System Architecture');
+
+    // Create a node
+    await createNode(page, 'actor', 200, 200);
+    const nodesAfterCreate = await getGraphNodes(page).count();
+
+    // Select and delete the node
+    const nodes = getGraphNodes(page);
+    await nodes.last().click();
+    await deleteSelected(page);
+
+    // Should have one fewer node
+    const nodesAfterDelete = await getGraphNodes(page).count();
+    expect(nodesAfterDelete).toBe(nodesAfterCreate - 1);
+  });
+
+  test('should undo node creation', async ({ page }) => {
+    await navigateToDfdDiagram(page, 'System Authentication', 'System Architecture');
+
+    const initialNodes = await getGraphNodes(page).count();
+
+    // Create a node
+    await createNode(page, 'actor', 200, 200);
+    const nodesAfterCreate = await getGraphNodes(page).count();
+    expect(nodesAfterCreate).toBe(initialNodes + 1);
+
+    // Undo
+    await undo(page);
+
+    // Should be back to initial count
+    const nodesAfterUndo = await getGraphNodes(page).count();
+    expect(nodesAfterUndo).toBe(initialNodes);
+  });
+
+  test('should redo node creation', async ({ page }) => {
+    await navigateToDfdDiagram(page, 'System Authentication', 'System Architecture');
+
+    const initialNodes = await getGraphNodes(page).count();
+
+    // Create a node
+    await createNode(page, 'actor', 200, 200);
+
+    // Undo
+    await undo(page);
+    const nodesAfterUndo = await getGraphNodes(page).count();
+    expect(nodesAfterUndo).toBe(initialNodes);
+
+    // Redo
+    await redo(page);
+
+    // Should have the node again
+    const nodesAfterRedo = await getGraphNodes(page).count();
+    expect(nodesAfterRedo).toBe(initialNodes + 1);
+  });
+
+  test('should persist diagram state', async ({ page }) => {
+    await navigateToDfdDiagram(page, 'System Authentication', 'System Architecture');
+
+    // Create nodes
+    await createNode(page, 'actor', 200, 200);
+    await createNode(page, 'process', 400, 200);
+
+    const nodesBeforeReload = await getGraphNodes(page).count();
+
+    // Reload page
+    await page.reload();
+    await page.waitForTimeout(3000);
+
+    // Nodes should still be there
+    const nodesAfterReload = await getGraphNodes(page).count();
+    expect(nodesAfterReload).toBe(nodesBeforeReload);
+  });
+});
