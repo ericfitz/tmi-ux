@@ -16,6 +16,7 @@ import { InfraX6GraphAdapter } from '../../infrastructure/adapters/infra-x6-grap
 import { AppDiagramService } from './app-diagram.service';
 import { AppOperationStateManager } from './app-operation-state-manager.service';
 import { AppHistoryService } from './app-history.service';
+import { AppStateService } from './app-state.service';
 import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
@@ -40,6 +41,7 @@ export class AppDiagramLoadingService {
     private diagramService: AppDiagramService,
     private historyCoordinator: AppOperationStateManager,
     private historyService: AppHistoryService,
+    private appStateService: AppStateService,
   ) {
     this.logger.info('AppDiagramLoadingService initialized');
   }
@@ -85,6 +87,15 @@ export class AppDiagramLoadingService {
         wasLoadingStateSuppressed = true;
         this.historyCoordinator.setDiagramLoadingState(true);
         this.logger.debug('Diagram loading state set - history recording suppressed');
+      }
+
+      // Set isApplyingRemoteChange flag to prevent collaboration broadcasts
+      // This prevents diagram load operations from being broadcast to collaborators
+      const wasApplyingRemoteChange =
+        this.appStateService.getCurrentState().isApplyingRemoteChange;
+      if (!wasApplyingRemoteChange) {
+        this.appStateService.setApplyingRemoteChange(true);
+        this.logger.debug('Set isApplyingRemoteChange flag - broadcasts suppressed');
       }
 
       try {
@@ -133,6 +144,12 @@ export class AppDiagramLoadingService {
         this.historyService.clear();
         this.logger.debug('Cleared AppHistoryService history after diagram load');
       } finally {
+        // Restore isApplyingRemoteChange flag if it was modified
+        if (!wasApplyingRemoteChange) {
+          this.appStateService.setApplyingRemoteChange(false);
+          this.logger.debug('Cleared isApplyingRemoteChange flag - broadcasts restored');
+        }
+
         // Restore diagram loading state if it was modified
         if (wasLoadingStateSuppressed) {
           // Clear the diagram loading state to allow normal history recording

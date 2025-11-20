@@ -191,7 +191,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
       // This prevents the broadcaster from re-broadcasting this remote operation
       const operationContext = this._operationContext; // Already verified not null above
       this.historyCoordinator.executeRemoteOperation(this._graph, () => {
-        this.graphOperationManager.execute(graphOperation, operationContext!).subscribe({
+        this.graphOperationManager.execute(graphOperation, operationContext).subscribe({
           next: result => {
             if (result.success) {
               this._stats.successfulOperations++;

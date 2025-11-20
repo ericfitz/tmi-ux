@@ -123,6 +123,8 @@ import {
   ThreatsDialogData,
 } from '../../../tm/components/threats-dialog/threats-dialog.component';
 import { environment } from '../../../../../environments/environment';
+import { AppNotificationService } from '../../application/services/app-notification.service';
+import { COLLABORATION_NOTIFICATION_SERVICE } from '../../../../core/interfaces/collaboration-notification.interface';
 
 type ExportFormat = 'png' | 'jpeg' | 'svg';
 
@@ -154,6 +156,9 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     AppDiagramResyncService, // Diagram resync service (changed from root to component-scoped)
     AppStateService, // State service (changed from root to component-scoped)
     AppOperationRejectionHandler, // Operation rejection handler service
+    AppNotificationService, // Notification service for collaboration events
+    // Provide AppNotificationService for the COLLABORATION_NOTIFICATION_SERVICE injection token
+    { provide: COLLABORATION_NOTIFICATION_SERVICE, useExisting: AppNotificationService },
     // Persistence strategies (changed from root to component-scoped)
     InfraRestPersistenceStrategy,
     WebSocketPersistenceStrategy,
