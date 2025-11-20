@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Graph, Cell } from '@antv/x6';
+import { Graph, Cell, Edge } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraWebsocketCollaborationAdapter } from '../../infrastructure/adapters/infra-websocket-collaboration.adapter';
 import { AppStateService } from './app-state.service';
@@ -163,16 +163,29 @@ export class AppDiagramOperationBroadcaster {
       this._handleCellEvent('cell:change:*', args);
     };
 
+    // Listen to edge source/target changes specifically
+    // These events fire when an edge is reconnected to a different node
+    const onEdgeSourceChanged = (args: any) => {
+      this._handleCellEvent('edge:change:source', args);
+    };
+    const onEdgeTargetChanged = (args: any) => {
+      this._handleCellEvent('edge:change:target', args);
+    };
+
     // Register listeners
     this._graph.on('cell:added', onCellAdded);
     this._graph.on('cell:removed', onCellRemoved);
     this._graph.on('cell:change:*', onCellChanged);
+    this._graph.on('edge:change:source', onEdgeSourceChanged);
+    this._graph.on('edge:change:target', onEdgeTargetChanged);
 
     // Track listeners for cleanup
     this._eventListeners.push(
       { event: 'cell:added', handler: onCellAdded },
       { event: 'cell:removed', handler: onCellRemoved },
       { event: 'cell:change:*', handler: onCellChanged },
+      { event: 'edge:change:source', handler: onEdgeSourceChanged },
+      { event: 'edge:change:target', handler: onEdgeTargetChanged },
     );
   }
 
@@ -214,25 +227,35 @@ export class AppDiagramOperationBroadcaster {
    */
   private _shouldBroadcastChange(event: string, args: any): boolean {
     const state = this.appStateService.getCurrentState();
+    const cell = args.cell;
+
+    // Create comprehensive log context for all broadcast decisions
+    const logContext = {
+      event,
+      cellId: cell?.id,
+      cellType: cell?.isNode?.() ? 'node' : cell?.isEdge?.() ? 'edge' : 'unknown',
+      changeKey: args.key,
+      isApplyingRemoteChange: state.isApplyingRemoteChange,
+      isReadOnly: state.readOnly,
+      isCollaborating: this.collaborationService.isCollaborating(),
+      isAtomicOperation: this._isInAtomicOperation,
+    };
 
     // Skip if applying remote changes (prevents echo)
     if (state.isApplyingRemoteChange) {
-      this.logger.debug('Skipping broadcast - applying remote change');
+      this.logger.debug('✓ Skipping broadcast - applying remote change', logContext);
       return false;
     }
 
     // Block broadcasts in read-only mode (prevents local changes from being persisted)
     if (state.readOnly) {
-      this.logger.warn('Blocked local change broadcast in read-only mode', {
-        event,
-        cellId: args.cell?.id,
-        changeKey: args.key,
-      });
+      this.logger.warn('✓ Blocked local change broadcast in read-only mode', logContext);
       return false;
     }
 
     // Skip if not in collaboration mode
     if (!this.collaborationService.isCollaborating()) {
+      this.logger.debug('✓ Skipping broadcast - not in collaboration mode', logContext);
       return false;
     }
 
@@ -247,10 +270,7 @@ export class AppDiagramOperationBroadcaster {
         isDragging &&
         (args.key === 'position' || args.key === 'size' || args.key === 'vertices')
       ) {
-        this.logger.debug('Skipping broadcast - intermediate drag event', {
-          cellId,
-          changeKey: args.key,
-        });
+        this.logger.debug('✓ Skipping broadcast - intermediate drag event', logContext);
         return false;
       }
     }
@@ -275,7 +295,10 @@ export class AppDiagramOperationBroadcaster {
       });
 
       if (isOnlyVisualAttributes) {
-        this.logger.debug('Skipping broadcast - visual-only changes', { attributePaths });
+        this.logger.debug('✓ Skipping broadcast - visual-only changes', {
+          ...logContext,
+          attributePaths,
+        });
         return false;
       }
 
@@ -287,11 +310,14 @@ export class AppDiagramOperationBroadcaster {
         );
 
         if (isPortVisibilityOnly) {
+          this.logger.debug('✓ Skipping broadcast - port visibility only', logContext);
           return false;
         }
       }
     }
 
+    // Will broadcast this change
+    this.logger.debug('→ Broadcasting change', logContext);
     return true;
   }
 
@@ -325,12 +351,33 @@ export class AppDiagramOperationBroadcaster {
     }
 
     switch (event) {
-      case 'cell:added':
+      case 'cell:added': {
+        // Check if cell already exists in graph
+        // If it does, this is really an update, not an add
+        const existingCell = this._graph?.getCellById(cell.id);
+        const isNewCell = !existingCell || existingCell === cell;
+
+        if (!isNewCell) {
+          // Cell exists - this is really an update, not an add
+          // This can happen when X6 fires cell:added for existing cells during reconnection
+          this.logger.debug('cell:added fired for existing cell - treating as update', {
+            cellId: cell.id,
+            cellType: cell.isNode() ? 'node' : 'edge',
+          });
+
+          return {
+            id: cell.id,
+            operation: 'update',
+            data: this._serializeCellData(cell),
+          };
+        }
+
         return {
           id: cell.id,
           operation: 'add',
           data: this._serializeCellData(cell),
         };
+      }
 
       case 'cell:removed':
         return {
@@ -348,6 +395,29 @@ export class AppDiagramOperationBroadcaster {
           id: cell.id,
           operation: 'update',
           data: changes as any,
+        };
+      }
+
+      case 'edge:change:source':
+      case 'edge:change:target': {
+        // Edge reconnection should always be UPDATE, never ADD
+        // This handles the case where a user drags an edge to connect to a different node
+        const edge = cell as Edge;
+        const changeType = event === 'edge:change:source' ? 'source' : 'target';
+        const changeValue = changeType === 'source' ? edge.getSource() : edge.getTarget();
+
+        this.logger.debug(`Edge ${changeType} changed`, {
+          edgeId: edge.id,
+          changeType,
+          newValue: changeValue,
+        });
+
+        return {
+          id: edge.id,
+          operation: 'update',
+          data: {
+            [changeType]: changeValue,
+          } as any,
         };
       }
 

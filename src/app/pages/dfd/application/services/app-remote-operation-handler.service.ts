@@ -187,30 +187,34 @@ export class AppRemoteOperationHandler implements OnDestroy {
       }
 
       // Execute the operation through the operation manager
-      // This will be wrapped in executeRemoteOperation by the operation state manager
-      this.graphOperationManager.execute(graphOperation, this._operationContext).subscribe({
-        next: result => {
-          if (result.success) {
-            this._stats.successfulOperations++;
-            this.logger.debug('Remote operation executed successfully', {
-              operationId,
-              affectedCells: result.affectedCellIds?.length || 0,
-            });
-          } else {
+      // Wrap with executeRemoteOperation to set isApplyingRemoteChange flag
+      // This prevents the broadcaster from re-broadcasting this remote operation
+      const operationContext = this._operationContext; // Already verified not null above
+      this.historyCoordinator.executeRemoteOperation(this._graph, () => {
+        this.graphOperationManager.execute(graphOperation, operationContext!).subscribe({
+          next: result => {
+            if (result.success) {
+              this._stats.successfulOperations++;
+              this.logger.debug('Remote operation executed successfully', {
+                operationId,
+                affectedCells: result.affectedCellIds?.length || 0,
+              });
+            } else {
+              this._stats.failedOperations++;
+              this.logger.error('Remote operation execution failed', {
+                operationId,
+                error: result.error,
+              });
+            }
+          },
+          error: error => {
             this._stats.failedOperations++;
-            this.logger.error('Remote operation execution failed', {
+            this.logger.error('Error executing remote operation', {
               operationId,
-              error: result.error,
+              error,
             });
-          }
-        },
-        error: error => {
-          this._stats.failedOperations++;
-          this.logger.error('Error executing remote operation', {
-            operationId,
-            error,
-          });
-        },
+          },
+        });
       });
     } catch (error) {
       this._stats.failedOperations++;
