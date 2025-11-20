@@ -1,4 +1,6 @@
 import { Page } from '@playwright/test';
+import { testConfig } from '../config/test.config';
+import { getFreshOAuthCredentials } from './oauth-credentials';
 
 /**
  * Authentication helper functions for e2e tests
@@ -18,29 +20,26 @@ export interface MockUserProfile {
 /**
  * Login using the test OAuth provider
  * This uses the actual OAuth flow with the test provider
+ * Gets fresh credentials for each test run
  */
 export async function loginWithTestProvider(page: Page): Promise<void> {
-  // Navigate to login page
-  await page.goto('/login');
+  // Get fresh OAuth credentials using the configured test provider
+  await getFreshOAuthCredentials(page);
 
-  // Wait for providers to load
-  await page.waitForSelector('button[data-provider]', { timeout: 10000 });
+  // Verify we were redirected away from login page
+  await page.waitForURL((url) => !url.pathname.includes('/login'), {
+    timeout: testConfig.authTimeout
+  });
 
-  // Click the login button for the test provider
-  const loginButton = page.locator('button[data-provider="test"]').first();
-  await loginButton.click();
+  // Verify auth token is in localStorage
+  const hasToken = await page.evaluate(() => {
+    const token = localStorage.getItem('auth_token');
+    return token !== null && token.length > 0;
+  });
 
-  // Wait for redirect away from login (OAuth flow completes automatically)
-  await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 10000 });
-
-  // Wait for auth token to be stored in localStorage
-  await page.waitForFunction(
-    () => {
-      const token = localStorage.getItem('auth_token');
-      return token !== null && token.length > 0;
-    },
-    { timeout: 5000 },
-  );
+  if (!hasToken) {
+    throw new Error('OAuth flow completed but no auth token was stored');
+  }
 }
 
 /**
@@ -49,7 +48,7 @@ export async function loginWithTestProvider(page: Page): Promise<void> {
  */
 export async function clearAuth(page: Page): Promise<void> {
   // Navigate to the app first to ensure we have access to localStorage
-  await page.goto('/');
+  await page.goto(`${testConfig.appUrl}/`);
   await page.evaluate(() => {
     localStorage.clear();
     sessionStorage.clear();

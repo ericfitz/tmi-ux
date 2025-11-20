@@ -97,19 +97,56 @@ Add new helpers to existing files or create new helper files for new feature are
 
 ## Configuration
 
-Test configuration is in `playwright.config.ts` at the project root.
+### Environment Variables
+
+The e2e tests can be configured using environment variables:
+
+- `E2E_APP_URL` - Frontend application URL (default: `http://localhost:4200`)
+- `E2E_APP_PORT` - Frontend application port (default: `4200`)
+- `E2E_API_URL` - Backend API URL (default: `http://localhost:8080`)
+- `E2E_API_PORT` - Backend API port (default: `8080`)
+- `E2E_OAUTH_PROVIDER` - OAuth provider to use for tests (default: `test`)
+
+### Configuration Files
+
+- **Main Config**: `playwright.config.ts` at the project root
+- **Test Config**: `e2e/config/test.config.ts` - centralized test configuration
+- **Global Setup**: `e2e/setup/global-setup.ts` - runs before tests to verify services are available
 
 Key settings:
-- Base URL: `http://localhost:4200`
+- Base URL: Configurable via `E2E_APP_URL` (default: `http://localhost:4200`)
 - Browsers: Chromium, Firefox, WebKit
 - Auto-start dev server before tests
 - Screenshot on failure
 - Video on failure
 - Trace on first retry
+- Service availability check before running tests
+
+### Prerequisites
+
+Before running e2e tests, ensure both services are running:
+
+1. **Frontend Application**: Running on the configured `E2E_APP_URL`
+2. **Backend API**: Running on the configured `E2E_API_URL`
+
+The test suite includes a **global setup** that verifies both services are available before running any tests. If either service is unavailable, the tests will fail fast with a clear error message.
+
+## Authentication in Tests
+
+All tests use fresh OAuth credentials obtained through the configured test provider:
+
+1. Before each test, `clearAuth()` clears all authentication state
+2. Tests that require authentication call `loginWithTestProvider()` which:
+   - Navigates to the login page
+   - Clicks the configured OAuth provider button
+   - Waits for the OAuth flow to complete
+   - Verifies the auth token is stored
+
+This ensures each test starts with a clean state and fresh credentials from the backend.
 
 ## Best Practices
 
-1. **Use Mock Data**: All tests use mock authentication and data for deterministic results
+1. **Fresh Credentials**: Tests obtain fresh OAuth credentials for each run
 2. **Page Objects**: Use helper functions instead of repeating selectors
 3. **Explicit Waits**: Use `waitForLoadState` and `expect().toBeVisible()` instead of arbitrary timeouts
 4. **Isolation**: Each test should be independent and not rely on other tests

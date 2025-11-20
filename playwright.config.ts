@@ -1,11 +1,23 @@
 import { defineConfig, devices } from '@playwright/test';
 
+// Import test configuration
+// Use dynamic import to avoid TypeScript compilation issues
+const testConfig = {
+  appUrl: process.env.E2E_APP_URL || 'http://localhost:4200',
+  appPort: parseInt(process.env.E2E_APP_PORT || '4200', 10),
+  apiUrl: process.env.E2E_API_URL || 'http://localhost:8080',
+  apiPort: parseInt(process.env.E2E_API_PORT || '8080', 10),
+};
+
 /**
  * Playwright configuration for TMI-UX e2e tests
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
   testDir: './e2e',
+
+  /* Global setup to verify services are available */
+  globalSetup: './e2e/setup/global-setup.ts',
 
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -25,7 +37,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:4200',
+    baseURL: testConfig.appUrl,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
