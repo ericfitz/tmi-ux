@@ -38,33 +38,61 @@ export async function getFreshOAuthCredentials(page: Page): Promise<OAuthCredent
     // If there's no spinner, providers already loaded
   });
 
-  // Wait for provider buttons
-  await page.waitForSelector('button[data-provider]', { timeout: 15000 });
+  // Wait for provider buttons to be present and enabled
+  await page.waitForSelector('button[data-provider]:not([disabled])', { timeout: 15000 });
 
   // Find the test provider button
-  const testProviderButton = page.locator(`button[data-provider="${testConfig.testOAuthProvider}"]`);
+  const testProviderButton = page.locator(
+    `button[data-provider="${testConfig.testOAuthProvider}"]:not([disabled])`,
+  );
   const hasTestProvider = (await testProviderButton.count()) > 0;
 
+  // Click the provider button and wait for navigation
+  // The OAuth flow involves redirects, so we need to wait for the final navigation back to our app
   if (!hasTestProvider) {
-    // Fallback to first available provider
-    const allButtons = page.locator('button[data-provider]');
+    // Fallback to first available enabled provider
+    const allButtons = page.locator('button[data-provider]:not([disabled])');
     const count = await allButtons.count();
     if (count === 0) {
-      throw new Error('No OAuth providers available on login page');
+      throw new Error('No enabled OAuth providers available on login page');
     }
-    await allButtons.first().click();
+    // Click and wait for navigation to complete
+    await Promise.all([
+      page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: testConfig.authTimeout }),
+      allButtons.first().click(),
+    ]);
   } else {
-    await testProviderButton.click();
+    // Click and wait for navigation to complete
+    await Promise.all([
+      page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: testConfig.authTimeout }),
+      testProviderButton.click(),
+    ]);
   }
 
-  // Wait for OAuth flow to complete and token to be stored
-  await page.waitForFunction(
-    () => {
-      const token = localStorage.getItem('auth_token');
-      return token !== null && token.length > 0;
-    },
-    { timeout: testConfig.authTimeout },
-  );
+  // Wait for token to be stored in localStorage after navigation completes
+  try {
+    await page.waitForFunction(
+      () => {
+        const token = localStorage.getItem('auth_token');
+        return token !== null && token.length > 0;
+      },
+      { timeout: 5000 }, // Shorter timeout since we've already waited for navigation
+    );
+  } catch (error) {
+    // Capture current URL and localStorage for debugging
+    const currentUrl = page.url();
+    const hasToken = await page.evaluate(() => localStorage.getItem('auth_token'));
+    const oauthState = await page.evaluate(() => localStorage.getItem('oauth_state'));
+    const oauthProvider = await page.evaluate(() => localStorage.getItem('oauth_provider'));
+
+    throw new Error(
+      `OAuth flow completed but token not stored after 5s. ` +
+        `Current URL: ${currentUrl}, ` +
+        `Has Token: ${!!hasToken}, ` +
+        `OAuth State: ${oauthState}, ` +
+        `OAuth Provider: ${oauthProvider}`,
+    );
+  }
 
   // Extract token from localStorage
   const tokenData = await page.evaluate(() => {
