@@ -77,13 +77,6 @@ export async function clearAuth(page: Page): Promise<void> {
 }
 
 /**
- * Login using the local provider UI (alias for loginWithTestProvider)
- */
-export async function loginWithLocalProvider(page: Page): Promise<void> {
-  await loginWithTestProvider(page);
-}
-
-/**
  * Verify user is authenticated
  */
 export async function verifyAuthenticated(page: Page): Promise<boolean> {

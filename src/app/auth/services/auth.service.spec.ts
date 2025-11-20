@@ -421,28 +421,18 @@ describe('AuthService', () => {
       const result$ = service.getAvailableProviders();
 
       result$.subscribe({
-        next: providers => {
-          expect(providers).toEqual([
-            {
-              id: 'local',
-              name: 'Local Development',
-              icon: 'computer',
-              auth_url: expect.stringContaining('http://localhost:4200/local/auth'),
-              redirect_uri: expect.stringContaining('/oauth2/callback'),
-              client_id: 'local-development',
-            },
-          ]);
+        next: () => {
+          // Should not reach here - error should be thrown
+          expect(true).toBe(false);
         },
-        error: () => {
-          // Error is caught and handled by the service, converting to local provider
-          // This shouldn't be called, but including it prevents unhandled errors
+        error: error => {
+          expect(error).toBeInstanceOf(Error);
+          expect(loggerService.error).toHaveBeenCalledWith(
+            'Failed to fetch OAuth providers',
+            expect.any(Error),
+          );
         },
       });
-
-      expect(loggerService.error).toHaveBeenCalledWith(
-        'Failed to fetch OAuth providers',
-        expect.any(Error),
-      );
     });
 
     it('should cache provider results', () => {
@@ -586,21 +576,27 @@ describe('AuthService', () => {
       });
     });
 
-    it('should handle failed authentication due to invalid state', () => {
+    it('should handle failed authentication due to invalid state for authorization code flow', () => {
+      // Mock authorization code response (no access_token)
+      const codeResponse: OAuthResponse = {
+        code: 'test-code',
+        state: 'different-state-value',
+      };
+
       localStorageMock.getItem.mockImplementation((key: string) => {
-        if (key === 'oauth_state') return 'different-state-value';
-        if (key === 'oauth_provider') return 'local';
+        if (key === 'oauth_state') return 'original-state-value';
+        if (key === 'oauth_provider') return 'google';
         return null;
       });
       const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
 
-      const result$ = service.handleOAuthCallback(mockOAuthResponse);
+      const result$ = service.handleOAuthCallback(codeResponse);
 
       result$.subscribe(result => {
         expect(result).toBe(false);
         expect(handleAuthErrorSpy).toHaveBeenCalledWith({
           code: 'invalid_state',
-          message: 'Invalid state parameter for local authentication',
+          message: 'Invalid state parameter, possible CSRF attack',
           retryable: false,
         });
       });

@@ -606,32 +606,8 @@ export class AuthService {
         hasAccessToken: !!response.access_token,
       });
 
-      // For local provider, enforce strict state validation
-      if (providerId === 'local') {
-        this.logger.info('Local provider state validation', {
-          receivedState,
-          storedState,
-          providerId,
-          decodedReceivedCsrf: decodedReceivedState.csrf,
-          decodedStoredCsrf: decodedStoredState?.csrf,
-          returnUrl: returnUrl,
-          statesMatch: decodedStoredState?.csrf === decodedReceivedState.csrf,
-        });
-
-        if (!decodedStoredState || decodedStoredState.csrf !== decodedReceivedState.csrf) {
-          this.logger.error(
-            `Local provider state mismatch: received CSRF "${decodedReceivedState.csrf}", stored CSRF "${decodedStoredState?.csrf}"`,
-          );
-          this.handleAuthError({
-            code: 'invalid_state',
-            message: 'Invalid state parameter for local authentication',
-            retryable: false,
-          });
-          return of(false);
-        }
-      }
       // For TMI OAuth proxy flows, be more flexible due to server-side state management
-      else if (response.access_token) {
+      if (response.access_token) {
         // If we have an access token, this is a TMI OAuth proxy response
         // The TMI server manages OAuth security, so we can be more lenient with state validation
         this.logger.debugComponent(

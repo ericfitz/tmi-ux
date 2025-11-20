@@ -77,9 +77,9 @@ export class LoginComponent implements OnInit {
           state,
         });
       }
-      // Handle old-style callback with code (for local provider)
+      // Handle authorization code flow callback
       else if (code && state) {
-        this.logger.info('Detected local OAuth callback', { code, state });
+        this.logger.info('Detected OAuth authorization code callback', { code, state });
         this.handleOAuthCallback({ code, state });
       }
       // Handle OAuth errors
@@ -105,13 +105,6 @@ export class LoginComponent implements OnInit {
         this.logger.debugComponent('Auth', `Loaded ${providers.length} OAuth providers`, {
           providers: providers.map(p => ({ id: p.id, name: p.name })),
         });
-
-        // Auto-login if only one provider available and not handling callback
-        const queryParams = this.route.snapshot.queryParams as LoginQueryParams;
-        const hasCallbackParams = queryParams.code || queryParams.access_token || queryParams.error;
-        if (providers.length === 1 && !hasCallbackParams) {
-          this.login(providers[0].id);
-        }
       },
       error: error => {
         this.providersLoading = false;
@@ -122,7 +115,7 @@ export class LoginComponent implements OnInit {
   }
 
   /**
-   * Sort providers alphabetically by name, with 'test' next to last and 'local' always last
+   * Sort providers alphabetically by name, with 'test' provider last
    */
   private sortProviders(providers: OAuthProviderInfo[]): OAuthProviderInfo[] {
     const sorted = [...providers];
@@ -202,7 +195,6 @@ export class LoginComponent implements OnInit {
       github: 'assets/signin-logos/github-signin-logo.svg',
       microsoft: 'assets/signin-logos/microsoft-signin-logo.svg',
       gitlab: 'assets/signin-logos/gitlab-signin-logo.svg',
-      local: 'TMI-Logo.svg',
       test: 'assets/signin-logos/test-signin-logo.svg',
     };
 

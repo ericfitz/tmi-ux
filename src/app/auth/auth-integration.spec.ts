@@ -179,16 +179,6 @@ describe('Authentication Integration', () => {
       expect(authService.username).toBe('');
       expect(authService.userEmail).toBe('');
     });
-
-    it('should handle OAuth configuration when available', () => {
-      // Test that local OAuth configuration works correctly when defined
-      if (environment.oauth?.local?.enabled) {
-        expect(environment.oauth.local.enabled).toBeTruthy();
-      }
-      if (environment.oauth?.local?.icon) {
-        expect(typeof environment.oauth.local.icon).toBe('string');
-      }
-    });
   });
 
   describe('Guards', () => {
