@@ -473,7 +473,7 @@ export class AuthService {
       const clientCallbackUrl = `${window.location.origin}/oauth2/callback`;
       const separator = provider.auth_url.includes('?') ? '&' : '?';
       const scope = encodeURIComponent('openid profile email');
-      const authUrl = `${provider.auth_url}${separator}state=${state}&client_callback=${encodeURIComponent(clientCallbackUrl)}&scope=${scope}`;
+      const authUrl = `${provider.auth_url}${separator}state=${encodeURIComponent(state)}&client_callback=${encodeURIComponent(clientCallbackUrl)}&scope=${scope}`;
 
       this.logger.debugComponent('Auth', 'Initiating OAuth with client callback', {
         providerId: provider.id,
