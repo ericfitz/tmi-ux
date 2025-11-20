@@ -40,7 +40,7 @@ In addition to the above, also:
 
 1. **Build**: Run `pnpm run build` and fix all build errors, even those unrelated to your change
 2. **Test**: Run any tests related to the code that was changed and fix any failures
-3. **Never Skip Tests**: Do not disable or skip tests - always troubleshoot to root cause and fix, or ask what to do
+3. **Never Skip Tests**: Do not disable or skip tests. Instead, always troubleshoot to root cause and fix, or ask what to do
 
 ### General Guidelines
 
@@ -345,11 +345,9 @@ export class MyComponent implements OnInit, OnDestroy {
   constructor(private myService: MyService) {}
 
   ngOnInit(): void {
-    this.myService.data$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(data => {
-        // Handle data
-      });
+    this.myService.data$.pipe(takeUntil(this.destroy$)).subscribe(data => {
+      // Handle data
+    });
   }
 
   ngOnDestroy(): void {
@@ -366,7 +364,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MyService {
   private dataSubject$ = new BehaviorSubject<Data | null>(null);
@@ -374,7 +372,7 @@ export class MyService {
 
   constructor(
     private apiService: ApiService,
-    private logger: LoggerService
+    private logger: LoggerService,
   ) {}
 
   public fetchData(): Observable<Data> {
@@ -383,7 +381,7 @@ export class MyService {
       catchError(error => {
         this.logger.error('Failed to fetch data', error);
         throw error;
-      })
+      }),
     );
   }
 }
