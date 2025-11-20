@@ -101,7 +101,11 @@
     <!-- Sensitivity -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label [transloco]="'assetEditor.sensitivity'">Sensitivity</mat-label>
-      <input matInput formControlName="sensitivity" />
+      <input
+        matInput
+        formControlName="sensitivity"
+        [placeholder]="'assetEditor.sensitivity' | transloco"
+      />
       @if (assetForm.get('sensitivity')?.hasError('maxlength')) {
         <mat-error>
           {{ 'common.validation.maxLength' | transloco: { max: 256 } }}
