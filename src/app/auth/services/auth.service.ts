@@ -1542,43 +1542,10 @@ export class AuthService {
         return null;
       }
 
-      // Check if it's already encrypted format (contains ':')
-      if (!encryptedToken.includes(':')) {
-        // This is likely cleartext from previous version
-        const parsed = JSON.parse(encryptedToken) as JwtToken;
-        // Convert expiresAt string back to Date object
-        if (typeof parsed.expiresAt === 'string') {
-          parsed.expiresAt = new Date(parsed.expiresAt);
-        }
-        // Re-encrypt and store
-        try {
-          await this.storeTokenEncrypted(parsed);
-        } catch (error) {
-          this.logger.error('Failed to re-encrypt cleartext token during retrieval', error);
-          // Log error but still return the token since it was already in cleartext
-          // Future sessions will continue to fail encryption until the underlying issue is fixed
-        }
-        return parsed;
-      }
-
       const keyMaterial = this.getTokenEncryptionKey();
       return await this.decryptToken(encryptedToken, keyMaterial);
     } catch (error) {
       this.logger.error('Failed to decrypt stored token', error);
-      // Try to parse as cleartext for backward compatibility
-      try {
-        const tokenJson = localStorage.getItem(this.tokenStorageKey);
-        if (tokenJson && !tokenJson.includes(':')) {
-          const parsed = JSON.parse(tokenJson) as JwtToken;
-          // Convert expiresAt string back to Date object if needed
-          if (typeof parsed.expiresAt === 'string') {
-            parsed.expiresAt = new Date(parsed.expiresAt);
-          }
-          return parsed;
-        }
-      } catch (parseError) {
-        this.logger.error('Could not parse token as cleartext either', parseError);
-      }
       return null;
     }
   }
