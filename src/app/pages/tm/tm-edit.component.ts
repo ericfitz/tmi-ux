@@ -7,16 +7,16 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ThreatModelAuthorizationService } from '../services/threat-model-authorization.service';
+import { ThreatModelAuthorizationService } from './services/threat-model-authorization.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subscription, Subject } from 'rxjs';
 import { debounceTime, filter, distinctUntilChanged } from 'rxjs/operators';
-import { LanguageService } from '../../../i18n/language.service';
-import { LoggerService } from '../../../core/services/logger.service';
-import { SvgCacheService } from '../services/svg-cache.service';
-import { ApiService } from '../../../core/services/api.service';
-import { environment } from '../../../../environments/environment';
-import { MockDataService } from '../../../mocks/mock-data.service';
+import { LanguageService } from '../../i18n/language.service';
+import { LoggerService } from '../../core/services/logger.service';
+import { SvgCacheService } from './services/svg-cache.service';
+import { ApiService } from '../../core/services/api.service';
+import { environment } from '../../../environments/environment';
+import { MockDataService } from '../../mocks/mock-data.service';
 
 import {
   COMMON_IMPORTS,
@@ -25,38 +25,38 @@ import {
   DATA_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
-import { CreateDiagramDialogComponent } from '../components/create-diagram-dialog/create-diagram-dialog.component';
+import { CreateDiagramDialogComponent } from './components/create-diagram-dialog/create-diagram-dialog.component';
 import {
   DocumentEditorDialogComponent,
   DocumentEditorDialogData,
-} from '../components/document-editor-dialog/document-editor-dialog.component';
+} from './components/document-editor-dialog/document-editor-dialog.component';
 import {
   RepositoryEditorDialogComponent,
   RepositoryEditorDialogData,
-} from '../components/repository-editor-dialog/repository-editor-dialog.component';
+} from './components/repository-editor-dialog/repository-editor-dialog.component';
 import {
   NoteEditorDialogComponent,
   NoteEditorDialogData,
   NoteEditorResult,
-} from '../components/note-editor-dialog/note-editor-dialog.component';
+} from './components/note-editor-dialog/note-editor-dialog.component';
 import {
   AssetEditorDialogComponent,
   AssetEditorDialogData,
-} from '../components/asset-editor-dialog/asset-editor-dialog.component';
+} from './components/asset-editor-dialog/asset-editor-dialog.component';
 import {
   PermissionsDialogComponent,
   PermissionsDialogData,
-} from '../components/permissions-dialog/permissions-dialog.component';
+} from './components/permissions-dialog/permissions-dialog.component';
 import {
   MetadataDialogComponent,
   MetadataDialogData,
-} from '../components/metadata-dialog/metadata-dialog.component';
-import { RenameDiagramDialogComponent } from '../components/rename-diagram-dialog/rename-diagram-dialog.component';
+} from './components/metadata-dialog/metadata-dialog.component';
+import { RenameDiagramDialogComponent } from './components/rename-diagram-dialog/rename-diagram-dialog.component';
 import {
   ThreatEditorDialogComponent,
   ThreatEditorDialogData,
-} from '../components/threat-editor-dialog/threat-editor-dialog.component';
-import { Diagram, DIAGRAMS_BY_ID } from '../models/diagram.model';
+} from './components/threat-editor-dialog/threat-editor-dialog.component';
+import { Diagram, DIAGRAMS_BY_ID } from './models/diagram.model';
 import {
   Authorization,
   Asset,
@@ -66,13 +66,13 @@ import {
   Repository,
   Threat,
   ThreatModel,
-} from '../models/threat-model.model';
-import { ThreatModelService } from '../services/threat-model.service';
-import { ThreatModelReportService } from '../services/threat-model-report.service';
-import { FrameworkService } from '../../../shared/services/framework.service';
-import { CellDataExtractionService } from '../../../shared/services/cell-data-extraction.service';
-import { FrameworkModel } from '../../../shared/models/framework.model';
-import { FieldOption, getFieldOptions } from '../../../shared/utils/field-value-helpers';
+} from './models/threat-model.model';
+import { ThreatModelService } from './services/threat-model.service';
+import { ThreatModelReportService } from './services/threat-model-report.service';
+import { FrameworkService } from '../../shared/services/framework.service';
+import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
+import { FrameworkModel } from '../../shared/models/framework.model';
+import { FieldOption, getFieldOptions } from '../../shared/utils/field-value-helpers';
 
 // Define form value interface
 interface ThreatModelFormValues {
@@ -492,7 +492,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     if (!threatModel || !id) {
       this.logger.error('Threat model not found in route data', { id });
-      void this.router.navigate(['/tm']);
+      void this.router.navigate(['/dashboard']);
       return;
     }
 
@@ -1900,7 +1900,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
   cancel(): void {
     // Clear SVG caches before navigating away
     this.clearSvgCaches();
-    void this.router.navigate(['/tm']);
+    void this.router.navigate(['/dashboard']);
   }
 
   /**

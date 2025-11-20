@@ -32,7 +32,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
       // Redirect to threat models page if authenticated
       if (isAuthenticated) {
-        void this.router.navigate(['/tm']);
+        void this.router.navigate(['/dashboard']);
       }
     });
   }

@@ -12,7 +12,7 @@ export const homeGuard: CanActivateFn = (_route, _state) => {
   // If user is authenticated, redirect to threat models page
   if (authService.isAuthenticated) {
     logger.debugComponent('HomeGuard', 'User is authenticated, redirecting to threat models page');
-    void router.navigate(['/tm']);
+    void router.navigate(['/dashboard']);
     return false;
   }
 

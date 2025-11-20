@@ -24,7 +24,7 @@ export const threatModelResolver: ResolveFn<ThreatModel | null> = (
 
   if (!threatModelId) {
     logger.error('No threat model ID provided in route');
-    void router.navigate(['/tm']);
+    void router.navigate(['/dashboard']);
     return of(null);
   }
 

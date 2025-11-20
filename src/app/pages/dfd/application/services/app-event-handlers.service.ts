@@ -481,7 +481,7 @@ export class AppEventHandlersService {
       });
     } else {
       // Fallback to the threat models list if no threat model ID is available
-      void this.router.navigate(['/tm']);
+      void this.router.navigate(['/dashboard']);
     }
   }
 

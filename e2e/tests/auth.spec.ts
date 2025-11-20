@@ -32,7 +32,7 @@ test.describe.skip('Authentication', () => {
   });
 
   test('should show login page when not authenticated', async ({ page }) => {
-    await page.goto('/tm');
+    await page.goto('/dashboard');
 
     // Should redirect to login
     await expect(page).toHaveURL(/\/login/);
@@ -45,7 +45,7 @@ test.describe.skip('Authentication', () => {
     await loginWithTestProvider(page);
 
     // Navigate to threat models
-    await page.goto('/tm');
+    await page.goto('/dashboard');
     await expect(page).toHaveURL(/\/tm/);
 
     // Reload the page
@@ -59,14 +59,14 @@ test.describe.skip('Authentication', () => {
 
   test('should handle session expiration', async ({ page }) => {
     await loginWithTestProvider(page);
-    await page.goto('/tm');
+    await page.goto('/dashboard');
     await expect(page).toHaveURL(/\/tm/);
 
     // Clear auth token to simulate expiration
     await clearAuth(page);
 
     // Try to navigate to protected route
-    await page.goto('/tm');
+    await page.goto('/dashboard');
 
     // Should redirect to login
     await expect(page).toHaveURL(/\/login/);

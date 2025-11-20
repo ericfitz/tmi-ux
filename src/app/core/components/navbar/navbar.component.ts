@@ -192,7 +192,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   updateHomeLink(): void {
-    this.homeLink = this.isAuthenticated ? '/tm' : '/';
+    this.homeLink = this.isAuthenticated ? '/dashboard' : '/';
   }
 
   logout(): void {

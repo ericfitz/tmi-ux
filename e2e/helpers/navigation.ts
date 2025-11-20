@@ -8,7 +8,7 @@ import { Page, expect } from '@playwright/test';
  * Navigate to threat models list page
  */
 export async function navigateToThreatModels(page: Page): Promise<void> {
-  await page.goto('/tm');
+  await page.goto('/dashboard');
   await expect(page).toHaveURL(/\/tm/);
   await page.waitForLoadState('networkidle');
 }

@@ -1,0 +1,43 @@
+<h2 mat-dialog-title class="delete-dialog-title">
+  <mat-icon class="warning-icon">warning</mat-icon>
+  {{ 'common.deleteConfirm' | transloco }}
+</h2>
+
+<mat-dialog-content appScrollIndicator>
+  <div class="delete-dialog-content">
+    <p class="threat-model-name">
+      {{ 'threatModels.deleteConfirmationMessage' | transloco: { name: data.name } }}
+    </p>
+
+    <div class="warning-box">
+      <mat-icon class="warning-icon-small">info</mat-icon>
+      <div class="warning-text">
+        <p>{{ 'threatModels.deleteWarningPermanent' | transloco }}</p>
+        <p>{{ 'threatModels.deleteWarningDownload' | transloco }}</p>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onCancel()"
+    cdkFocusInitial
+    tabindex="1"
+    [attr.aria-label]="'common.cancel' | transloco"
+  >
+    {{ 'common.cancel' | transloco }}
+  </button>
+  <button
+    mat-button
+    color="warn"
+    (click)="onConfirmDelete()"
+    tabindex="2"
+    [attr.aria-label]="'common.deleteConfirm' | transloco"
+  >
+    <mat-icon>delete</mat-icon>
+    {{ 'common.deleteConfirm' | transloco }}
+  </button>
+</mat-dialog-actions>

@@ -12,7 +12,7 @@ export class ThreatModelListPage extends PageObject {
    * Constructor
    */
   constructor() {
-    super('/tm');
+    super('/dashboard');
   }
 
   /**

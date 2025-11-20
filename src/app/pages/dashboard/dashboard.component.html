@@ -1,0 +1,214 @@
+<div class="header-row dashboard-title">
+  <h1 class="page-title" [transloco]="'threatModels.dashboard'">Dashboard</h1>
+</div>
+
+<div class="tm-container">
+  <div class="header-row">
+    <h2 class="section-title" [transloco]="'threatModels.yourThreatModels'">Your Threat Models</h2>
+    <div class="header-actions">
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="loadFromDesktop()"
+        [matTooltip]="'threatModels.tooltips.loadFromDesktop' | transloco"
+      >
+        <mat-icon>file_open</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="createThreatModel()"
+        [matTooltip]="'common.create' | transloco"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="threat-models-list">
+    @if (isLoadingThreatModels) {
+      <div class="loading-container">
+        <div class="spinner"></div>
+      </div>
+    }
+
+    <mat-card
+      *ngFor="let threatModel of threatModels"
+      class="threat-model-card"
+      (click)="openThreatModel(threatModel.id)"
+    >
+      <mat-card-content>
+        <div class="threat-model-info">
+          <mat-icon class="threat-model-icon">security</mat-icon>
+          <div class="threat-model-details">
+            <h3 class="threat-model-title">
+              {{ threatModel.name }}
+            </h3>
+            @if (threatModel.description) {
+              <p class="threat-model-description">
+                {{ threatModel.description }}
+              </p>
+            }
+            <p class="threat-model-date">
+              <span class="date-label">{{ 'common.lastModified' | transloco }}:</span>
+              {{ formatDate(threatModel.modified_at) }}
+            </p>
+            <p class="threat-model-status">
+              <span class="status-label">{{ 'common.status' | transloco }}:</span>
+              {{
+                threatModel.status ? ('threatModels.status.' + threatModel.status | transloco) : '—'
+              }}
+            </p>
+            <p class="threat-model-status-updated">
+              <span class="status-label">{{ 'threatModels.statusLastUpdated' | transloco }}:</span>
+              {{ threatModel.status_updated ? formatDate(threatModel.status_updated) : '—' }}
+            </p>
+
+            <div class="threat-model-stats">
+              <div class="stats-row">
+                <span class="stat">
+                  <mat-icon
+                    fontSet="material-symbols-outlined"
+                    fontWeight="100"
+                    style="font-variation-settings: 'FILL' 0"
+                    >diamond</mat-icon
+                  >
+                  {{ threatModel.asset_count }} {{ 'common.objectTypes.assets' | transloco }}
+                </span>
+                <span class="stat">
+                  <mat-icon
+                    fontSet="material-symbols-outlined"
+                    fontWeight="100"
+                    style="font-variation-settings: 'FILL' 0"
+                    class="skull-icon"
+                    >skull</mat-icon
+                  >
+                  {{ threatModel.threat_count }} {{ 'common.objectTypes.threats' | transloco }}
+                </span>
+              </div>
+              <div class="stats-row">
+                <span class="stat">
+                  <mat-icon>account_tree</mat-icon>
+                  {{ threatModel.diagram_count }}
+                  {{ 'threatModels.diagrams' | transloco }}
+                </span>
+                <span class="stat">
+                  <mat-icon>note</mat-icon>
+                  {{ threatModel.note_count }} {{ 'common.objectTypes.notes' | transloco }}
+                </span>
+              </div>
+              <div class="stats-row">
+                <span class="stat">
+                  <mat-icon>description</mat-icon>
+                  {{ threatModel.document_count }} {{ 'common.objectTypes.documents' | transloco }}
+                </span>
+                <span class="stat">
+                  <mat-icon>code</mat-icon>
+                  {{ threatModel.repo_count }} {{ 'threatModels.sourcesCount' | transloco }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button
+          mat-icon-button
+          color="warn"
+          class="delete-button"
+          (click)="deleteThreatModel(threatModel.id, $event)"
+          [matTooltip]="'common.delete' | transloco"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    @if (!isLoadingThreatModels && threatModels.length === 0) {
+      <div class="no-threat-models">
+        <mat-icon class="empty-icon">sentiment_dissatisfied</mat-icon>
+        <p [transloco]="'threatModels.noItemsMessage'">You don't have any threat models yet.</p>
+        <button mat-raised-button color="primary" (click)="createThreatModel()">
+          <span [transloco]="'threatModels.createFirstButton'">Create your first threat model</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>
+
+@if (shouldShowCollaboration$ | async) {
+  <div class="collaboration-sessions-container">
+    <div class="header-row">
+      <h2 class="section-title" [transloco]="'collaboration.availableCollaborationSessions'">
+        Available Collaboration Sessions
+      </h2>
+      <div class="header-actions"></div>
+    </div>
+
+    <div class="collaboration-sessions-list">
+      @if (isLoadingCollaborationSessions) {
+        <div class="loading-container">
+          <div class="spinner"></div>
+        </div>
+      }
+
+      <mat-card
+        *ngFor="let session of collaborationSessions$ | async"
+        class="collaboration-session-card"
+        (click)="openCollaborationSession(session.diagramId)"
+      >
+        <mat-card-content>
+          <div class="collaboration-session-info">
+            <mat-icon class="collaboration-session-icon">groups</mat-icon>
+            <div class="collaboration-session-details">
+              <h3 class="collaboration-session-title">
+                {{ session.threatModelName }}
+              </h3>
+              <p class="collaboration-session-diagram">
+                <mat-icon>account_tree</mat-icon> {{ session.diagramName }}
+              </p>
+              <p class="collaboration-session-host">
+                <mat-icon>person</mat-icon> {{ 'collaboration.hostedBy' | transloco }}
+                {{ session.host }}
+              </p>
+              <p class="collaboration-session-time">
+                <mat-icon>schedule</mat-icon>
+                <span class="session-text">
+                  {{ 'collaboration.sessionStarted' | transloco }}
+                  {{ formatSessionTime(session.startedAt) }}
+                </span>
+              </p>
+              <p class="collaboration-session-users">
+                <mat-icon>group</mat-icon>
+                <span class="session-text">
+                  {{ 'collaboration.activeUsers' | transloco: { count: session.activeUsers } }}
+                </span>
+              </p>
+            </div>
+          </div>
+          <mat-icon
+            class="join-icon"
+            [matTooltip]="'collaboration.joinSession' | transloco"
+            matTooltipPosition="left"
+            >login</mat-icon
+          >
+        </mat-card-content>
+      </mat-card>
+
+      @if (!isLoadingCollaborationSessions && (collaborationSessions$ | async)?.length === 0) {
+        <div class="no-collaboration-sessions">
+          <mat-icon class="empty-icon">groups_off</mat-icon>
+          <p>{{ 'collaboration.noActiveSessions' | transloco }}</p>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<!-- Import overlay spinner -->
+@if (isImporting) {
+  <div class="import-overlay">
+    <div class="import-spinner-container">
+      <div class="spinner"></div>
+      <p class="import-message">{{ 'threatModels.importing' | transloco }}</p>
+    </div>
+  </div>
+}

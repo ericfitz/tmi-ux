@@ -110,7 +110,7 @@ describe('AuthService', () => {
     picture: 'http://example.com/pic.jpg',
   };
 
-  const mockOAuthResponse: OAuthResponse = {
+  const _mockOAuthResponse: OAuthResponse = {
     code: 'mock-auth-code',
     state: 'mock-state-value',
   };
@@ -572,7 +572,7 @@ describe('AuthService', () => {
         expect(service.isAuthenticated).toBe(true);
         expect(service.userProfile?.email).toBe('john@example.com');
         expect(router.navigateByUrl).not.toHaveBeenCalled();
-        expect(router.navigate).toHaveBeenCalledWith(['/tm']);
+        expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
       });
     });
 

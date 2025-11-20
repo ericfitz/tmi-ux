@@ -218,7 +218,7 @@ describe('Authentication Integration', () => {
       expect(authService.isAuthenticated).toBe(true);
       expect(authService.userEmail).toBe(testEmail);
       expect(authService.username).toBe('test');
-      expect(router.navigate).toHaveBeenCalledWith(['/tm']);
+      expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
     });
 
     it('should handle logout correctly', () => {
@@ -275,7 +275,7 @@ describe('Authentication Integration', () => {
           expect(success).toBe(true);
           expect(authService.isAuthenticated).toBe(true);
           expect(authService.userProfile).toBeTruthy();
-          expect(router.navigate).toHaveBeenCalledWith(['/tm']);
+          expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
         });
 
         // Verify localStorage cleanup

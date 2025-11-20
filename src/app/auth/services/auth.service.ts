@@ -22,6 +22,7 @@ import {
   BehaviorSubject,
   Observable,
   catchError,
+  from,
   map,
   of,
   throwError,
@@ -779,13 +780,23 @@ export class AuthService {
       });
 
       // Navigate to return URL if provided, otherwise to default
-      if (returnUrl) {
-        void this.router.navigateByUrl(returnUrl);
-      } else {
-        void this.router.navigate(['/tm']);
-      }
+      // Wait for navigation to complete before emitting success
+      const navigationPromise = returnUrl
+        ? this.router.navigateByUrl(returnUrl)
+        : this.router.navigate(['/dashboard']);
 
-      return of(true);
+      return from(navigationPromise).pipe(
+        map(navigationSuccess => {
+          if (!navigationSuccess) {
+            this.logger.warn('Navigation after OAuth callback failed', { returnUrl });
+          }
+          return true; // Still return true as auth succeeded, even if navigation had issues
+        }),
+        catchError(navError => {
+          this.logger.error('Error during post-auth navigation', navError);
+          return of(true); // Auth succeeded, navigation error is secondary
+        }),
+      );
     } catch (error) {
       this.logger.error('Error processing TMI token response', error);
       this.handleAuthError({
@@ -904,10 +915,12 @@ export class AuthService {
           );
 
           // Navigate to return URL if provided, otherwise to default
+          // Note: We can't use from() here because we're inside a map() - just fire and forget
+          // The main navigation fix is in handleTMITokenResponse above
           if (returnUrl) {
             void this.router.navigateByUrl(returnUrl);
           } else {
-            void this.router.navigate(['/tm']);
+            void this.router.navigate(['/dashboard']);
           }
 
           return true;
@@ -1475,7 +1488,7 @@ export class AuthService {
     this.userProfileSubject.next(userProfile);
 
     this.logger.info(`Demo user ${email} logged in`);
-    void this.router.navigate(['/tm']);
+    void this.router.navigate(['/dashboard']);
   }
 
   /**

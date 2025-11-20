@@ -21,7 +21,7 @@ test.describe('DFD Basic Functionality', () => {
    */
   async function tryNavigateToFirstDiagram(page: Page): Promise<boolean> {
     // Navigate to threat models page
-    await page.goto('/tm');
+    await page.goto('/dashboard');
     await page.waitForLoadState('networkidle');
 
     // Check if we have any threat models

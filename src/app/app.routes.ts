@@ -69,6 +69,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'dashboard',
+    loadComponent: () =>
+      import(/* webpackChunkName: "dashboard" */ './pages/dashboard/dashboard.component').then(
+        c => c.DashboardComponent,
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'tm',
     loadChildren: () => import('./pages/tm/tm.routes').then(m => m.TM_ROUTES),
     canActivate: [authGuard],

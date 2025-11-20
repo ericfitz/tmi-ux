@@ -13,7 +13,7 @@ test.describe('Smoke Tests', () => {
   });
 
   test('should redirect to login when not authenticated', async ({ page }) => {
-    await page.goto('/tm');
+    await page.goto('/dashboard');
 
     // Should redirect to login page
     await expect(page).toHaveURL(/\/login/);
@@ -21,7 +21,7 @@ test.describe('Smoke Tests', () => {
 
   test('should load threat models page when authenticated', async ({ page }) => {
     await loginWithTestProvider(page);
-    await page.goto('/tm');
+    await page.goto('/dashboard');
     await expect(page).toHaveURL(/\/tm/);
     await expect(page.locator('body')).toBeVisible();
   });

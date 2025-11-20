@@ -2059,13 +2059,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         .catch(error => {
           this.logger.error('Failed to navigate back to threat model', { error });
           // Fallback: navigate to TM list
-          this.router.navigate(['/tm']).catch(fallbackError => {
+          this.router.navigate(['/dashboard']).catch(fallbackError => {
             this.logger.error('Failed to navigate to TM list as fallback', { fallbackError });
           });
         });
     } else {
       this.logger.warn('Cannot navigate: No threat model ID available, navigating to TM list');
-      this.router.navigate(['/tm']).catch(error => {
+      this.router.navigate(['/dashboard']).catch(error => {
         this.logger.error('Failed to navigate to TM list', { error });
       });
     }
