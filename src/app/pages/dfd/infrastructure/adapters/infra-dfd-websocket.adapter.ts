@@ -611,7 +611,9 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
         error: err => this._logger.error('Failed to show participant joined notification', err),
       });
     } else {
-      this._logger.warn('Cannot show participant joined notification - notification service not available');
+      this._logger.warn(
+        'Cannot show participant joined notification - notification service not available',
+      );
     }
 
     // Create domain event with required fields (User fields are optional per schema)
@@ -649,7 +651,9 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
         error: err => this._logger.error('Failed to show participant left notification', err),
       });
     } else {
-      this._logger.warn('Cannot show participant left notification - notification service not available');
+      this._logger.warn(
+        'Cannot show participant left notification - notification service not available',
+      );
     }
 
     // Create domain event with required fields (User fields are optional per schema)

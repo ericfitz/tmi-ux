@@ -91,8 +91,7 @@ export class AppDiagramLoadingService {
 
       // Set isApplyingRemoteChange flag to prevent collaboration broadcasts
       // This prevents diagram load operations from being broadcast to collaborators
-      const wasApplyingRemoteChange =
-        this.appStateService.getCurrentState().isApplyingRemoteChange;
+      const wasApplyingRemoteChange = this.appStateService.getCurrentState().isApplyingRemoteChange;
       if (!wasApplyingRemoteChange) {
         this.appStateService.setApplyingRemoteChange(true);
         this.logger.debug('Set isApplyingRemoteChange flag - broadcasts suppressed');
