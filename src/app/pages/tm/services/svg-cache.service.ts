@@ -76,16 +76,16 @@ export class SvgCacheService {
    * This should be called when navigating away from threat models or initializing dashboard
    */
   clearAllCaches(): void {
-    const validationCount = this.svgValidationCache.size;
-    const dataUrlCount = this.svgDataUrlCache.size;
+    // const validationCount = this.svgValidationCache.size;
+    // const dataUrlCount = this.svgDataUrlCache.size;
 
     this.svgValidationCache.clear();
     this.svgDataUrlCache.clear();
 
-    this.logger.debug('SVG caches cleared', {
-      validationCacheCleared: validationCount,
-      dataUrlCacheCleared: dataUrlCount,
-    });
+    // this.logger.debug('SVG caches cleared', {
+    //   validationCacheCleared: validationCount,
+    //   dataUrlCacheCleared: dataUrlCount,
+    // });
   }
 
   /**

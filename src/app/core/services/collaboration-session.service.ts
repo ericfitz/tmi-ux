@@ -115,13 +115,13 @@ export class CollaborationSessionService implements OnDestroy {
    */
   subscribeToSessionPolling(): void {
     this._subscriberCount++;
-    this.logger.debugComponent(
-      'CollaborationSession',
-      `Session polling subscriber added (count: ${this._subscriberCount})`,
-    );
+    // this.logger.debugComponent(
+    //   'CollaborationSession',
+    //   `Session polling subscriber added (count: ${this._subscriberCount})`,
+    // );
 
     if (this._subscriberCount === 1) {
-      this.logger.info('Starting collaboration session polling - first subscriber added');
+      // this.logger.info('Starting collaboration session polling - first subscriber added');
       this.startSessionPolling();
     }
   }
@@ -133,13 +133,13 @@ export class CollaborationSessionService implements OnDestroy {
   unsubscribeFromSessionPolling(): void {
     if (this._subscriberCount > 0) {
       this._subscriberCount--;
-      this.logger.debugComponent(
-        'CollaborationSession',
-        `Session polling subscriber removed (count: ${this._subscriberCount})`,
-      );
+      // this.logger.debugComponent(
+      //   'CollaborationSession',
+      //   `Session polling subscriber removed (count: ${this._subscriberCount})`,
+      // );
 
       if (this._subscriberCount === 0) {
-        this.logger.info('Stopping collaboration session polling - no subscribers remain');
+        // this.logger.info('Stopping collaboration session polling - no subscribers remain');
         this.stopSessionPolling();
         // Clear sessions when no one is subscribing
         this._sessions$.next([]);
@@ -153,7 +153,7 @@ export class CollaborationSessionService implements OnDestroy {
   refreshSessions(): void {
     this.loadSessions().subscribe({
       next: () => {
-        this.logger.debugComponent('CollaborationSession', 'Manual sessions refresh completed');
+        // this.logger.debugComponent('CollaborationSession', 'Manual sessions refresh completed');
       },
       error: error => {
         this.logger.error('Failed to refresh collaboration sessions', error);
@@ -187,7 +187,7 @@ export class CollaborationSessionService implements OnDestroy {
       )
       .subscribe({
         next: () => {
-          this.logger.debugComponent('CollaborationSession', 'Reactive session loading completed');
+          // this.logger.debugComponent('CollaborationSession', 'Reactive session loading completed');
         },
         error: error => {
           this.logger.error('Reactive session loading failed', error);
@@ -225,9 +225,9 @@ export class CollaborationSessionService implements OnDestroy {
     // Always use REST API to load sessions - WebSocket is only for real-time updates
     return this.requestSessionsViaHttp().pipe(
       map(sessions => {
-        this.logger.debug('Loaded collaboration sessions from REST API', {
-          count: sessions.length,
-        });
+        // this.logger.debug('Loaded collaboration sessions from REST API', {
+        //   count: sessions.length,
+        // });
         this._sessions$.next(sessions);
         return sessions;
       }),
@@ -256,11 +256,11 @@ export class CollaborationSessionService implements OnDestroy {
    * Transform server session data to CollaborationSession format
    */
   private transformServerSession(serverSession: ServerCollaborationSession): CollaborationSession {
-    this.logger.debugComponent(
-      'CollaborationSession',
-      'Transforming server session',
-      serverSession,
-    );
+    // this.logger.debugComponent(
+    //   'CollaborationSession',
+    //   'Transforming server session',
+    //   serverSession,
+    // );
 
     const session: CollaborationSession = {
       id: serverSession.session_id,
@@ -276,7 +276,7 @@ export class CollaborationSessionService implements OnDestroy {
       activeUsers: serverSession.participants.length,
     };
 
-    this.logger.debugComponent('CollaborationSession', 'Transformed session', session);
+    // this.logger.debugComponent('CollaborationSession', 'Transformed session', session);
     return session;
   }
 
@@ -305,10 +305,10 @@ export class CollaborationSessionService implements OnDestroy {
    * Handle session started announcement
    */
   private handleSessionStarted(session: CollaborationSession): void {
-    this.logger.info('Session started', {
-      sessionId: session.id,
-      diagramName: session.diagramName,
-    });
+    // this.logger.info('Session started', {
+    //   sessionId: session.id,
+    //   diagramName: session.diagramName,
+    // });
 
     const currentSessions = this._sessions$.value;
     const existingIndex = currentSessions.findIndex(s => s.id === session.id);
@@ -328,7 +328,7 @@ export class CollaborationSessionService implements OnDestroy {
    * Handle session ended announcement
    */
   private handleSessionEnded(session: CollaborationSession): void {
-    this.logger.info('Session ended', { sessionId: session.id, diagramName: session.diagramName });
+    // this.logger.info('Session ended', { sessionId: session.id, diagramName: session.diagramName });
 
     const currentSessions = this._sessions$.value;
     const updatedSessions = currentSessions.filter(s => s.id !== session.id);

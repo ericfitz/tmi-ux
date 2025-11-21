@@ -231,10 +231,10 @@ export class AuthService {
    * @returns Observable that resolves to a valid JWT token
    */
   getValidToken(): Observable<JwtToken> {
-    this.logger.debugComponent('Auth', 'getValidToken called');
+    // this.logger.debugComponent('Auth', 'getValidToken called');
     const token = this.getStoredToken();
     if (!token) {
-      this.logger.debugComponent('Auth', 'getValidToken: No token available');
+      // this.logger.debugComponent('Auth', 'getValidToken: No token available');
       return throwError(() => new Error('No token available'));
     }
 
@@ -242,24 +242,24 @@ export class AuthService {
     const isValid = this.isTokenValid(token);
     const shouldRefresh = this.shouldRefreshToken(token);
 
-    this.logger.debugComponent('Auth', 'Token validation status', {
-      isValid,
-      shouldRefresh,
-      hasRefreshToken: !!token.refreshToken,
-    });
+    // this.logger.debugComponent('Auth', 'Token validation status', {
+    //   isValid,
+    //   shouldRefresh,
+    //   hasRefreshToken: !!token.refreshToken,
+    // });
 
     // If token is still valid and doesn't need refresh, return it
     if (isValid && !shouldRefresh) {
-      this.logger.debugComponent('Auth', 'getValidToken: Returning valid token');
+      // this.logger.debugComponent('Auth', 'getValidToken: Returning valid token');
       return of(token);
     }
 
     // If token needs refresh and we have a refresh token, refresh it
     if (token.refreshToken) {
-      this.logger.debugComponent('Auth', 'getValidToken: Attempting token refresh');
+      // this.logger.debugComponent('Auth', 'getValidToken: Attempting token refresh');
       return this.refreshToken().pipe(
         map(newToken => {
-          this.logger.debugComponent('Auth', 'getValidToken: Token refresh successful');
+          // this.logger.debugComponent('Auth', 'getValidToken: Token refresh successful');
           this.storeToken(newToken);
           return newToken;
         }),
@@ -267,7 +267,7 @@ export class AuthService {
     }
 
     // Token is expired and no refresh token available
-    this.logger.debugComponent('Auth', 'getValidToken: Token expired, no refresh token available');
+    // this.logger.debugComponent('Auth', 'getValidToken: Token expired, no refresh token available');
     this.clearAuthData();
     return throwError(() => new Error('Token expired and no refresh token available'));
   }
@@ -434,9 +434,9 @@ export class AuthService {
           return;
         }
 
-        this.logger.info(`Initiating TMI OAuth login for provider: ${selectedProviderId}`, {
-          returnUrl,
-        });
+        // this.logger.info(`Initiating TMI OAuth login for provider: ${selectedProviderId}`, {
+        //   returnUrl,
+        // });
         this.initiateTMIOAuthLogin(provider, returnUrl);
       },
       error: error => {
@@ -457,13 +457,13 @@ export class AuthService {
    */
   private initiateTMIOAuthLogin(provider: OAuthProviderInfo, returnUrl?: string): void {
     try {
-      this.logger.info(`Initiating TMI OAuth login with ${provider.name}`);
-      this.logger.debugComponent('Auth', `Redirecting to TMI OAuth endpoint`, {
-        providerId: provider.id,
-        authUrl: provider.auth_url.replace(/\?.*$/, ''), // Remove query params for logging
-        redirectUri: provider.redirect_uri,
-        returnUrl: returnUrl,
-      });
+      // this.logger.info(`Initiating TMI OAuth login with ${provider.name}`);
+      // this.logger.debugComponent('Auth', `Redirecting to TMI OAuth endpoint`, {
+      //   providerId: provider.id,
+      //   authUrl: provider.auth_url.replace(/\?.*$/, ''), // Remove query params for logging
+      //   redirectUri: provider.redirect_uri,
+      //   returnUrl: returnUrl,
+      // });
 
       const state = this.generateRandomState(returnUrl);
       localStorage.setItem('oauth_state', state);
@@ -476,14 +476,14 @@ export class AuthService {
       // State is Base64 which is URL-safe per backend pattern ^[a-zA-Z0-9_~.+/=-]*$
       const authUrl = `${provider.auth_url}${separator}state=${state}&client_callback=${encodeURIComponent(clientCallbackUrl)}&scope=${scope}`;
 
-      this.logger.debugComponent('Auth', 'Initiating OAuth with client callback', {
-        providerId: provider.id,
-        generatedState: state,
-        stateLength: state.length,
-        stateInUrl: state, // Log the exact state being sent in URL
-        clientCallbackUrl,
-        finalAuthUrl: authUrl.replace(/\?.*$/, ''), // Log without query params for security
-      });
+      // this.logger.debugComponent('Auth', 'Initiating OAuth with client callback', {
+      //   providerId: provider.id,
+      //   generatedState: state,
+      //   stateLength: state.length,
+      //   stateInUrl: state, // Log the exact state being sent in URL
+      //   clientCallbackUrl,
+      //   finalAuthUrl: authUrl.replace(/\?.*$/, ''), // Log without query params for security
+      // });
 
       window.location.href = authUrl;
     } catch (error) {
@@ -555,12 +555,12 @@ export class AuthService {
           returnUrl: decoded.returnUrl,
         };
       }
-    } catch (error) {
-      this.logger.debugComponent(
-        'Auth',
-        'Failed to decode structured state, treating as plain CSRF token',
-        error,
-      );
+    } catch {
+      // this.logger.debugComponent(
+      //   'Auth',
+      //   'Failed to decode structured state, treating as plain CSRF token',
+      //   error,
+      // );
     }
 
     // If not Base64 or decoding failed, treat as plain CSRF token
@@ -574,12 +574,12 @@ export class AuthService {
    * @returns Observable that resolves to true if authentication is successful
    */
   handleOAuthCallback(response: OAuthResponse): Observable<boolean> {
-    this.logger.info('Handling OAuth callback from TMI proxy');
-    this.logger.debugComponent('Auth', 'Processing OAuth callback', {
-      hasAccessToken: !!response.access_token,
-      hasError: !!response.error,
-      state: response.state ? 'present' : 'missing',
-    });
+    // this.logger.info('Handling OAuth callback from TMI proxy');
+    // this.logger.debugComponent('Auth', 'Processing OAuth callback', {
+    //   hasAccessToken: !!response.access_token,
+    //   hasError: !!response.error,
+    //   state: response.state ? 'present' : 'missing',
+    // });
 
     // Handle OAuth errors first
     if (response.error) {
@@ -601,45 +601,43 @@ export class AuthService {
       const decodedReceivedState = this.decodeState(receivedState);
       returnUrl = decodedReceivedState.returnUrl;
 
-      this.logger.debugComponent('Auth', 'State parameter validation starting', {
-        receivedState: response.state,
-        storedState: storedState,
-        providerId: providerId,
-        hasAccessToken: !!response.access_token,
-      });
+      // this.logger.debugComponent('Auth', 'State parameter validation starting', {
+      //   receivedState: response.state,
+      //   storedState: storedState,
+      //   providerId: providerId,
+      //   hasAccessToken: !!response.access_token,
+      // });
 
       // For TMI OAuth proxy flows, be more flexible due to server-side state management
       if (response.access_token) {
         // If we have an access token, this is a TMI OAuth proxy response
         // The TMI server manages OAuth security, so we can be more lenient with state validation
-        this.logger.debugComponent(
-          'Auth',
-          'TMI OAuth proxy detected - using flexible state validation',
-          {
-            receivedState: response.state,
-            storedState: storedState,
-            reason: 'TMI server manages OAuth security and may transform state parameters',
-          },
-        );
-
+        // this.logger.debugComponent(
+        //   'Auth',
+        //   'TMI OAuth proxy detected - using flexible state validation',
+        //   {
+        //     receivedState: response.state,
+        //     storedState: storedState,
+        //     reason: 'TMI server manages OAuth security and may transform state parameters',
+        //   },
+        // );
         // Log the decoded state information for TMI OAuth proxy
-        this.logger.debugComponent('Auth', 'TMI OAuth proxy state decoded', {
-          originalState: response.state,
-          decodedCsrf: decodedReceivedState.csrf,
-          returnUrl: returnUrl,
-          storedCsrf: decodedStoredState?.csrf,
-        });
-
+        // this.logger.debugComponent('Auth', 'TMI OAuth proxy state decoded', {
+        //   originalState: response.state,
+        //   decodedCsrf: decodedReceivedState.csrf,
+        //   returnUrl: returnUrl,
+        //   storedCsrf: decodedStoredState?.csrf,
+        // });
         // For TMI OAuth proxy with access tokens, we trust the server's state management
         // The security is provided by the TMI server's OAuth implementation
-        this.logger.debugComponent(
-          'Auth',
-          'Accepting TMI OAuth proxy state (server manages security)',
-          {
-            receivedState: response.state,
-            storedState: storedState,
-          },
-        );
+        // this.logger.debugComponent(
+        //   'Auth',
+        //   'Accepting TMI OAuth proxy state (server manages security)',
+        //   {
+        //     receivedState: response.state,
+        //     storedState: storedState,
+        //   },
+        // );
       }
       // For other flows without access tokens, enforce strict validation
       else {
@@ -668,7 +666,7 @@ export class AuthService {
 
     // If we have a code but no access_token, exchange the code for tokens
     if (response.code) {
-      this.logger.info('Received authorization code - exchanging for tokens');
+      // this.logger.info('Received authorization code - exchanging for tokens');
       return this.exchangeAuthorizationCode(response, providerId, returnUrl);
     }
 
@@ -694,15 +692,15 @@ export class AuthService {
     returnUrl?: string,
   ): Observable<boolean> {
     try {
-      this.logger.debugComponent('Auth', 'Processing TMI token response', {
-        providerId,
-        expiresIn: response.expires_in,
-        hasRefreshToken: !!response.refresh_token,
-        accessTokenLength: response.access_token?.length,
-        accessTokenPrefix: response.access_token?.substring(0, 30) + '...',
-        refreshTokenLength: response.refresh_token?.length,
-        refreshTokenPrefix: response.refresh_token?.substring(0, 20) + '...',
-      });
+      // this.logger.debugComponent('Auth', 'Processing TMI token response', {
+      //   providerId,
+      //   expiresIn: response.expires_in,
+      //   hasRefreshToken: !!response.refresh_token,
+      //   accessTokenLength: response.access_token?.length,
+      //   accessTokenPrefix: response.access_token?.substring(0, 30) + '...',
+      //   refreshTokenLength: response.refresh_token?.length,
+      //   refreshTokenPrefix: response.refresh_token?.substring(0, 20) + '...',
+      // });
 
       // Validate the access token format
       if (!response.access_token) {
@@ -727,11 +725,11 @@ export class AuthService {
         // Calculate expiresIn from exp claim for consistency
         const now = new Date();
         expiresIn = Math.floor((expiresAt.getTime() - now.getTime()) / 1000);
-        this.logger.debugComponent('Auth', 'Using exp claim from JWT', {
-          expClaim: expiresAt.toISOString(),
-          calculatedExpiresIn: expiresIn,
-          providedExpiresIn: response.expires_in,
-        });
+        // this.logger.debugComponent('Auth', 'Using exp claim from JWT', {
+        //   expClaim: expiresAt.toISOString(),
+        //   calculatedExpiresIn: expiresIn,
+        //   providedExpiresIn: response.expires_in,
+        // });
       } else {
         // Fall back to expires_in from OAuth response
         this.logger.warn('JWT missing exp claim, falling back to expires_in', {
@@ -749,15 +747,15 @@ export class AuthService {
       };
 
       // Check if the created token is valid
-      const now = new Date();
-      const isTokenValid = token.expiresAt > now;
+      // const now = new Date();
+      // const isTokenValid = token.expiresAt > now;
 
-      this.logger.debugComponent('Auth', 'Created JWT token object', {
-        expiresAt: token.expiresAt.toISOString(),
-        expiresIn: token.expiresIn,
-        isValid: isTokenValid,
-        currentTime: now.toISOString(),
-      });
+      // this.logger.debugComponent('Auth', 'Created JWT token object', {
+      //   expiresAt: token.expiresAt.toISOString(),
+      //   expiresIn: token.expiresIn,
+      //   isValid: isTokenValid,
+      //   currentTime: now.toISOString(),
+      // });
 
       // Store token and extract user profile
       this.storeToken(token);
@@ -769,16 +767,16 @@ export class AuthService {
       this.userProfileSubject.next(userProfile);
 
       // Verify token was stored correctly
-      const storedToken = this.getStoredToken();
-      this.logger.debugComponent('Auth', 'Token storage verification', {
-        tokenWasStored: !!storedToken,
-        storedTokenLength: storedToken?.token?.length,
-        storedTokenMatches: storedToken?.token === token.token,
-      });
+      // const storedToken = this.getStoredToken();
+      // this.logger.debugComponent('Auth', 'Token storage verification', {
+      //   tokenWasStored: !!storedToken,
+      //   storedTokenLength: storedToken?.token?.length,
+      //   storedTokenMatches: storedToken?.token === token.token,
+      // });
 
-      this.logger.info(`User ${userProfile.email} successfully logged in via ${providerId}`, {
-        returnUrl,
-      });
+      // this.logger.info(`User ${userProfile.email} successfully logged in via ${providerId}`, {
+      //   returnUrl,
+      // });
 
       // Navigate to return URL if provided, otherwise to default
       // Wait for navigation to complete before emitting success
@@ -820,12 +818,12 @@ export class AuthService {
     providerId: string | null,
     returnUrl?: string,
   ): Observable<boolean> {
-    this.logger.debugComponent('Auth', 'Exchanging authorization code for tokens', {
-      providerId,
-      hasCode: !!response.code,
-      hasState: !!response.state,
-      returnUrl,
-    });
+    // this.logger.debugComponent('Auth', 'Exchanging authorization code for tokens', {
+    //   providerId,
+    //   hasCode: !!response.code,
+    //   hasState: !!response.state,
+    //   returnUrl,
+    // });
 
     if (!response.code) {
       this.handleAuthError({
@@ -847,12 +845,12 @@ export class AuthService {
     const queryParams = providerId ? `?idp=${encodeURIComponent(providerId)}` : '';
     const exchangeUrl = `${environment.apiUrl}/oauth2/token${queryParams}`;
 
-    this.logger.debugComponent('Auth', 'Sending token exchange request', {
-      exchangeUrl: exchangeUrl.replace(/\?.*$/, ''), // Log without query params
-      providerId,
-      redirectUri,
-      hasCode: !!exchangeRequest.code,
-    });
+    // this.logger.debugComponent('Auth', 'Sending token exchange request', {
+    //   exchangeUrl: exchangeUrl.replace(/\?.*$/, ''), // Log without query params
+    //   providerId,
+    //   redirectUri,
+    //   hasCode: !!exchangeRequest.code,
+    // });
 
     return this.http
       .post<{
@@ -863,12 +861,12 @@ export class AuthService {
       }>(exchangeUrl, exchangeRequest)
       .pipe(
         map(tokenResponse => {
-          this.logger.debugComponent('Auth', 'Token exchange successful', {
-            hasAccessToken: !!tokenResponse.access_token,
-            hasRefreshToken: !!tokenResponse.refresh_token,
-            expiresIn: tokenResponse.expires_in,
-            tokenType: tokenResponse.token_type,
-          });
+          // this.logger.debugComponent('Auth', 'Token exchange successful', {
+          //   hasAccessToken: !!tokenResponse.access_token,
+          //   hasRefreshToken: !!tokenResponse.refresh_token,
+          //   expiresIn: tokenResponse.expires_in,
+          //   tokenType: tokenResponse.token_type,
+          // });
 
           // Extract expiration from JWT exp claim (preferred) or fall back to expires_in
           let expiresAt = this.extractExpirationFromToken(tokenResponse.access_token);
@@ -878,11 +876,11 @@ export class AuthService {
             // Calculate expiresIn from exp claim for consistency
             const now = new Date();
             expiresIn = Math.floor((expiresAt.getTime() - now.getTime()) / 1000);
-            this.logger.debugComponent('Auth', 'Using exp claim from JWT', {
-              expClaim: expiresAt.toISOString(),
-              calculatedExpiresIn: expiresIn,
-              providedExpiresIn: tokenResponse.expires_in,
-            });
+            // this.logger.debugComponent('Auth', 'Using exp claim from JWT', {
+            //   expClaim: expiresAt.toISOString(),
+            //   calculatedExpiresIn: expiresIn,
+            //   providedExpiresIn: tokenResponse.expires_in,
+            // });
           } else {
             // Fall back to expires_in from OAuth response
             this.logger.warn('JWT missing exp claim, falling back to expires_in', {
@@ -908,12 +906,12 @@ export class AuthService {
           this.isAuthenticatedSubject.next(true);
           this.userProfileSubject.next(userProfile);
 
-          this.logger.info(
-            `User ${userProfile.email} successfully logged in via ${providerId} (code exchange)`,
-            {
-              returnUrl,
-            },
-          );
+          // this.logger.info(
+          //   `User ${userProfile.email} successfully logged in via ${providerId} (code exchange)`,
+          //   {
+          //     returnUrl,
+          //   },
+          // );
 
           // Navigate to return URL if provided, otherwise to default
           // Note: We can't use from() here because we're inside a map() - just fire and forget
@@ -1022,29 +1020,29 @@ export class AuthService {
    * @param token JWT token
    */
   storeToken(token: JwtToken): void {
-    this.logger.debugComponent('Auth', 'Storing JWT token', {
-      tokenLength: token.token?.length,
-      tokenPrefix: token.token?.substring(0, 20) + '...',
-      expiresAt: token.expiresAt.toISOString(),
-      expiresIn: token.expiresIn,
-      hasRefreshToken: !!token.refreshToken,
-      refreshTokenLength: token.refreshToken?.length,
-    });
+    // this.logger.debugComponent('Auth', 'Storing JWT token', {
+    //   tokenLength: token.token?.length,
+    //   tokenPrefix: token.token?.substring(0, 20) + '...',
+    //   expiresAt: token.expiresAt.toISOString(),
+    //   expiresIn: token.expiresIn,
+    //   hasRefreshToken: !!token.refreshToken,
+    //   refreshTokenLength: token.refreshToken?.length,
+    // });
 
     try {
       // Parse the JWT payload to log token contents (without signature)
-      const payload = token.token.split('.')[1];
-      const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
-      this.logger.debugComponent('Auth', 'JWT token payload', {
-        sub: decodedPayload.sub,
-        email: decodedPayload.email,
-        name: decodedPayload.name,
-        iat: decodedPayload.iat,
-        exp: decodedPayload.exp,
-        provider: decodedPayload.provider,
-        aud: decodedPayload.aud,
-        iss: decodedPayload.iss,
-      });
+      // const payload = token.token.split('.')[1];
+      // const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
+      // this.logger.debugComponent('Auth', 'JWT token payload', {
+      //   sub: decodedPayload.sub,
+      //   email: decodedPayload.email,
+      //   name: decodedPayload.name,
+      //   iat: decodedPayload.iat,
+      //   exp: decodedPayload.exp,
+      //   provider: decodedPayload.provider,
+      //   aud: decodedPayload.aud,
+      //   iss: decodedPayload.iss,
+      // });
     } catch (error) {
       this.logger.warn('Could not decode JWT payload for logging', error);
     }
@@ -1131,7 +1129,7 @@ export class AuthService {
    * Uses access token as encryption key material
    */
   private async storeUserProfile(profile: UserProfile): Promise<void> {
-    this.logger.debugComponent('Auth', 'Storing encrypted user profile');
+    // this.logger.debugComponent('Auth', 'Storing encrypted user profile');
     try {
       // Use the JWT access token as key material
       const tokenObj = this.getStoredToken();
@@ -1281,20 +1279,20 @@ export class AuthService {
    * @returns Observable that resolves to a new JWT token
    */
   refreshToken(): Observable<JwtToken> {
-    this.logger.debugComponent('Auth', 'Refreshing access token via TMI server');
+    // this.logger.debugComponent('Auth', 'Refreshing access token via TMI server');
 
     const currentToken = this.getStoredToken();
     if (!currentToken?.refreshToken) {
-      this.logger.debugComponent('Auth', 'No refresh token available');
+      // this.logger.debugComponent('Auth', 'No refresh token available');
       return throwError(() => new Error('No refresh token available'));
     }
 
-    this.logger.debugComponent('Auth', 'Sending refresh token request', {
-      hasRefreshToken: !!currentToken.refreshToken,
-      refreshTokenLength: currentToken.refreshToken?.length,
-      refreshTokenPrefix: currentToken.refreshToken?.substring(0, 20) + '...',
-      tokenExpiry: currentToken.expiresAt.toISOString(),
-    });
+    // this.logger.debugComponent('Auth', 'Sending refresh token request', {
+    //   hasRefreshToken: !!currentToken.refreshToken,
+    //   refreshTokenLength: currentToken.refreshToken?.length,
+    //   refreshTokenPrefix: currentToken.refreshToken?.substring(0, 20) + '...',
+    //   tokenExpiry: currentToken.expiresAt.toISOString(),
+    // });
 
     return this.http
       .post<{
@@ -1315,11 +1313,11 @@ export class AuthService {
             // Calculate expiresIn from exp claim for consistency
             const now = new Date();
             expiresIn = Math.floor((expiresAt.getTime() - now.getTime()) / 1000);
-            this.logger.debugComponent('Auth', 'Using exp claim from refreshed JWT', {
-              expClaim: expiresAt.toISOString(),
-              calculatedExpiresIn: expiresIn,
-              providedExpiresIn: response.expires_in,
-            });
+            // this.logger.debugComponent('Auth', 'Using exp claim from refreshed JWT', {
+            //   expClaim: expiresAt.toISOString(),
+            //   calculatedExpiresIn: expiresIn,
+            //   providedExpiresIn: response.expires_in,
+            // });
           } else {
             // Fall back to expires_in from refresh response
             this.logger.warn('Refreshed JWT missing exp claim, falling back to expires_in', {
@@ -1336,19 +1334,19 @@ export class AuthService {
             expiresAt,
           };
 
-          this.logger.debugComponent('Auth', 'Token refresh successful', {
-            newExpiry: newToken.expiresAt.toISOString(),
-            hasNewRefreshToken: !!newToken.refreshToken,
-          });
+          // this.logger.debugComponent('Auth', 'Token refresh successful', {
+          //   newExpiry: newToken.expiresAt.toISOString(),
+          //   hasNewRefreshToken: !!newToken.refreshToken,
+          // });
 
           return newToken;
         }),
         catchError((error: HttpErrorResponse) => {
           this.logger.error('Token refresh failed', error);
-          this.logger.debugComponent('Auth', 'Token refresh failed, clearing auth data', {
-            status: error.status,
-            message: error.message,
-          });
+          // this.logger.debugComponent('Auth', 'Token refresh failed, clearing auth data', {
+          //   status: error.status,
+          //   message: error.message,
+          // });
           // If refresh fails, clear auth data and redirect to login
           this.clearAuthData();
           return throwError(() => new Error('Token refresh failed - please login again'));
@@ -1375,7 +1373,7 @@ export class AuthService {
       this.sessionManagerService.stopExpiryTimers();
     }
 
-    this.logger.debugComponent('Auth', 'Cleared authentication data and provider cache');
+    // this.logger.debugComponent('Auth', 'Cleared authentication data and provider cache');
   }
 
   /**
@@ -1383,8 +1381,8 @@ export class AuthService {
    * Clears all authentication data and redirects to home page
    */
   logout(): void {
-    const userEmail = this.userEmail;
-    this.logger.info(`Logging out user: ${userEmail}`);
+    // const userEmail = this.userEmail;
+    // this.logger.info(`Logging out user: ${userEmail}`);
 
     // Determine if we should call server logout endpoint
     const isConnectedToServer =
@@ -1392,10 +1390,10 @@ export class AuthService {
     const shouldCallServerLogout = this.isAuthenticated && isConnectedToServer && !this.isTestUser;
 
     if (shouldCallServerLogout) {
-      this.logger.debugComponent('Auth', 'Calling server logout endpoint', {
-        isConnectedToServer,
-        isTestUser: this.isTestUser,
-      });
+      // this.logger.debugComponent('Auth', 'Calling server logout endpoint', {
+      //   isConnectedToServer,
+      //   isTestUser: this.isTestUser,
+      // });
 
       const token = this.getStoredToken();
       const headers: { [key: string]: string } = {
@@ -1424,7 +1422,7 @@ export class AuthService {
         )
         .subscribe({
           next: () => {
-            this.logger.debugComponent('Auth', 'Server logout request completed');
+            // this.logger.debugComponent('Auth', 'Server logout request completed');
           },
           error: () => {
             // This should not happen due to catchError, but handle it just in case
@@ -1433,20 +1431,20 @@ export class AuthService {
           complete: () => {
             // Clear authentication data after server request completes (or fails)
             this.clearAuthData();
-            this.logger.info('User logged out successfully');
+            // this.logger.info('User logged out successfully');
             void this.router.navigate(['/']);
           },
         });
     } else {
       // Skip server logout and just clear client-side data
-      this.logger.debugComponent('Auth', 'Skipping server logout', {
-        isConnectedToServer,
-        isTestUser: this.isTestUser,
-        isAuthenticated: this.isAuthenticated,
-      });
+      // this.logger.debugComponent('Auth', 'Skipping server logout', {
+      //   isConnectedToServer,
+      //   isTestUser: this.isTestUser,
+      //   isAuthenticated: this.isAuthenticated,
+      // });
 
       this.clearAuthData();
-      this.logger.info('User logged out successfully (client-side only)');
+      // this.logger.info('User logged out successfully (client-side only)');
       void this.router.navigate(['/']);
     }
   }
@@ -1488,7 +1486,7 @@ export class AuthService {
     this.isAuthenticatedSubject.next(true);
     this.userProfileSubject.next(userProfile);
 
-    this.logger.info(`Demo user ${email} logged in`);
+    // this.logger.info(`Demo user ${email} logged in`);
     void this.router.navigate(['/dashboard']);
   }
 

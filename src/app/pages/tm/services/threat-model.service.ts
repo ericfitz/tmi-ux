@@ -107,18 +107,18 @@ export class ThreatModelService implements OnDestroy {
    * Always fetches fresh data from API to minimize stale data issues
    */
   getThreatModelList(forceRefresh: boolean = false): Observable<TMListItem[]> {
-    this.logger.debugComponent(
-      'ThreatModelService',
-      'ThreatModelService.getThreatModelList called',
-      {
-        threatModelListCount: this._threatModelList.length,
-        forceRefresh: forceRefresh,
-        models: this._threatModelList.map(tm => ({ id: tm.id, name: tm.name })),
-      },
-    );
+    // this.logger.debugComponent(
+    //   'ThreatModelService',
+    //   'ThreatModelService.getThreatModelList called',
+    //   {
+    //     threatModelListCount: this._threatModelList.length,
+    //     forceRefresh: forceRefresh,
+    //     models: this._threatModelList.map(tm => ({ id: tm.id, name: tm.name })),
+    //   },
+    // );
 
     // Always fetch fresh data to ensure up-to-date information
-    this.logger.debugComponent('ThreatModelService', 'Fetching fresh threat model list from API');
+    // this.logger.debugComponent('ThreatModelService', 'Fetching fresh threat model list from API');
     this.fetchThreatModelListFromAPI();
 
     // Always return the reactive subject for consistent behavior
@@ -129,7 +129,7 @@ export class ThreatModelService implements OnDestroy {
    * Force refresh the threat model list from the API
    */
   refreshThreatModelList(): void {
-    this.logger.debugComponent('ThreatModelService', 'Force refreshing threat model list');
+    // this.logger.debugComponent('ThreatModelService', 'Force refreshing threat model list');
     this.fetchThreatModelListFromAPI();
   }
 
@@ -156,10 +156,10 @@ export class ThreatModelService implements OnDestroy {
 
           this._threatModelList = threatModelList;
           this._threatModelListSubject.next(threatModelList);
-          this.logger.debugComponent('ThreatModelService', 'Updated threat model list from API', {
-            count: threatModelList.length,
-            items: threatModelList.map(tm => ({ id: tm.id, name: tm.name })),
-          });
+          // this.logger.debugComponent('ThreatModelService', 'Updated threat model list from API', {
+          //   count: threatModelList.length,
+          //   items: threatModelList.map(tm => ({ id: tm.id, name: tm.name })),
+          // });
         }),
         catchError(error => {
           this.logger.error('Error fetching threat model list', error);
@@ -169,7 +169,7 @@ export class ThreatModelService implements OnDestroy {
       )
       .subscribe({
         next: () => {
-          this.logger.debugComponent('ThreatModelService', 'Threat model list fetch completed');
+          // this.logger.debugComponent('ThreatModelService', 'Threat model list fetch completed');
         },
         error: error => {
           this.logger.error('Unexpected error in threat model list subscription', error);
@@ -199,10 +199,10 @@ export class ThreatModelService implements OnDestroy {
   ): Observable<ThreatModel | undefined> {
     // Check cache first unless force refresh is requested
     if (this._cachedThreatModels.has(id) && !forceRefresh) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Returning cached threat model with ID: ${id}`,
-      );
+      // this.logger.debugComponent(
+      //   'ThreatModelService',
+      //   `Returning cached threat model with ID: ${id}`,
+      // );
       const cachedModel = this._cachedThreatModels.get(id);
 
       // Update authorization service with the cached threat model's authorization
@@ -218,11 +218,11 @@ export class ThreatModelService implements OnDestroy {
     }
 
     // Fetch from API and cache the result
-    this.logger.debugComponent(
-      'ThreatModelService',
-      `Fetching threat model with ID: ${id} from API`,
-      { forceRefresh },
-    );
+    // this.logger.debugComponent(
+    //   'ThreatModelService',
+    //   `Fetching threat model with ID: ${id} from API`,
+    //   { forceRefresh },
+    // );
     return this.apiService.get<ThreatModel>(`threat_models/${id}`).pipe(
       map(threatModel => {
         if (threatModel) {
@@ -240,11 +240,11 @@ export class ThreatModelService implements OnDestroy {
           // Cache the full model and expire all other cached models
           this.expireAllCachedModelsExcept(id);
           this._cachedThreatModels.set(id, threatModel);
-          this.logger.debugComponent(
-            'ThreatModelService',
-            `Cached threat model ${id} and expired others`,
-            { cacheSize: this._cachedThreatModels.size },
-          );
+          // this.logger.debugComponent(
+          //   'ThreatModelService',
+          //   `Cached threat model ${id} and expired others`,
+          //   { cacheSize: this._cachedThreatModels.size },
+          // );
 
           // Update authorization service with the loaded threat model's authorization
           this.authorizationService.setAuthorization(
@@ -313,10 +313,10 @@ export class ThreatModelService implements OnDestroy {
    */
   getDiagramsForThreatModel(threatModelId: string): Observable<Diagram[]> {
     // In a real implementation, this would call the API
-    this.logger.debugComponent(
-      'ThreatModelService',
-      `Fetching diagrams for threat model with ID: ${threatModelId} from API`,
-    );
+    // this.logger.debugComponent(
+      // 'ThreatModelService',
+      // `Fetching diagrams for threat model with ID: ${threatModelId} from API`,
+    // );
     return this.apiService.get<Diagram[]>(`threat_models/${threatModelId}/diagrams`).pipe(
       catchError(error => {
         this.logger.error(
@@ -333,10 +333,10 @@ export class ThreatModelService implements OnDestroy {
    */
   getDiagramById(threatModelId: string, diagramId: string): Observable<Diagram | undefined> {
     // In a real implementation, this would call the API
-    this.logger.debugComponent(
-      'ThreatModelService',
-      `Fetching diagram with ID: ${diagramId} from API`,
-    );
+    // this.logger.debugComponent(
+      // 'ThreatModelService',
+      // `Fetching diagram with ID: ${diagramId} from API`,
+    // );
     return this.apiService
       .get<Diagram>(`threat_models/${threatModelId}/diagrams/${diagramId}`)
       .pipe(
@@ -351,10 +351,10 @@ export class ThreatModelService implements OnDestroy {
    * Get documents for a threat model
    */
   getDocumentsForThreatModel(threatModelId: string): Observable<TMDocument[]> {
-    this.logger.debugComponent(
-      'ThreatModelService',
-      `Fetching documents for threat model with ID: ${threatModelId} from API`,
-    );
+    // this.logger.debugComponent(
+      // 'ThreatModelService',
+      // `Fetching documents for threat model with ID: ${threatModelId} from API`,
+    // );
     return this.apiService.get<TMDocument[]>(`threat_models/${threatModelId}/documents`).pipe(
       catchError(error => {
         this.logger.error(
@@ -370,10 +370,10 @@ export class ThreatModelService implements OnDestroy {
    * Get repository references for a threat model
    */
   getRepositoriesForThreatModel(threatModelId: string): Observable<Repository[]> {
-    this.logger.debugComponent(
-      'ThreatModelService',
-      `Fetching repositories for threat model with ID: ${threatModelId} from API`,
-    );
+    // this.logger.debugComponent(
+      // 'ThreatModelService',
+      // `Fetching repositories for threat model with ID: ${threatModelId} from API`,
+    // );
     return this.apiService.get<Repository[]>(`threat_models/${threatModelId}/repositories`).pipe(
       catchError(error => {
         this.logger.error(
@@ -389,10 +389,10 @@ export class ThreatModelService implements OnDestroy {
    * Get notes for a threat model
    */
   getNotesForThreatModel(threatModelId: string): Observable<Note[]> {
-    this.logger.debugComponent(
-      'ThreatModelService',
-      `Fetching notes for threat model with ID: ${threatModelId} from API`,
-    );
+    // this.logger.debugComponent(
+      // 'ThreatModelService',
+      // `Fetching notes for threat model with ID: ${threatModelId} from API`,
+    // );
     return this.apiService.get<Note[]>(`threat_models/${threatModelId}/notes`).pipe(
       catchError(error => {
         this.logger.error(`Error fetching notes for threat model with ID: ${threatModelId}`, error);
@@ -413,7 +413,7 @@ export class ThreatModelService implements OnDestroy {
     // Ensure framework is never empty - use STRIDE as default
     const validFramework = framework && framework.trim() !== '' ? framework : 'STRIDE';
 
-    this.logger.debugComponent('ThreatModelService', 'Creating threat model via API');
+    // this.logger.debugComponent('ThreatModelService', 'Creating threat model via API');
     const body = {
       name,
       description,
@@ -432,11 +432,11 @@ export class ThreatModelService implements OnDestroy {
           // Cache the full model
           this._cachedThreatModels.set(newThreatModel.id, newThreatModel);
 
-          this.logger.debugComponent('ThreatModelService', 'Added new threat model to cache', {
-            id: newThreatModel.id,
-            name: newThreatModel.name,
-            totalInList: this._threatModelList.length,
-          });
+          // this.logger.debugComponent('ThreatModelService', 'Added new threat model to cache', {
+            // id: newThreatModel.id,
+            // name: newThreatModel.name,
+            // totalInList: this._threatModelList.length,
+          // });
         }
       }),
       catchError(error => {
@@ -463,7 +463,7 @@ export class ThreatModelService implements OnDestroy {
     });
 
     // For API mode, always create a new threat model
-    this.logger.debugComponent('ThreatModelService', 'Creating new threat model via API');
+    // this.logger.debugComponent('ThreatModelService', 'Creating new threat model via API');
 
     return this.createNewThreatModelFromImport(data).pipe(
       map(newModel => ({ model: newModel })),
@@ -570,10 +570,10 @@ export class ThreatModelService implements OnDestroy {
    */
   updateThreatModel(threatModel: ThreatModel): Observable<ThreatModel> {
     // In a real implementation, this would call the API
-    this.logger.debugComponent(
-      'ThreatModelService',
-      `Updating threat model with ID: ${threatModel.id} via API`,
-    );
+    // this.logger.debugComponent(
+      // 'ThreatModelService',
+      // `Updating threat model with ID: ${threatModel.id} via API`,
+    // );
     // Remove server-managed fields from threat model data before sending to API
     const { created_at, modified_at, ...threatModelData } = threatModel;
 
@@ -618,11 +618,11 @@ export class ThreatModelService implements OnDestroy {
       value,
     }));
 
-    this.logger.debugComponent(
-      'ThreatModelService',
-      `Patching threat model with ID: ${threatModelId} via API`,
-      { updates, operations },
-    );
+    // this.logger.debugComponent(
+      // 'ThreatModelService',
+      // `Patching threat model with ID: ${threatModelId} via API`,
+      // { updates, operations },
+    // );
 
     return this.apiService.patch<ThreatModel>(`threat_models/${threatModelId}`, operations).pipe(
       tap(updatedModel => {
@@ -658,24 +658,24 @@ export class ThreatModelService implements OnDestroy {
    */
   deleteThreatModel(id: string): Observable<boolean> {
     // In a real implementation, this would call the API
-    this.logger.debugComponent(
-      'ThreatModelService',
-      `Deleting threat model with ID: ${id} via API`,
-    );
+    // this.logger.debugComponent(
+      // 'ThreatModelService',
+      // `Deleting threat model with ID: ${id} via API`,
+    // );
     return this.apiService.delete<void>(`threat_models/${id}`).pipe(
       tap(() => {
         // Successful delete (204 No Content) - remove from local cache and notify subscribers
         this._threatModelList = this._threatModelList.filter(tm => tm.id !== id);
         this._cachedThreatModels.delete(id);
         this._threatModelListSubject.next([...this._threatModelList]);
-        this.logger.debugComponent(
-          'ThreatModelService',
-          'Updated threat model list after API deletion',
-          {
-            remainingCount: this._threatModelList.length,
-            deletedId: id,
-          },
-        );
+        // this.logger.debugComponent(
+          // 'ThreatModelService',
+          // 'Updated threat model list after API deletion',
+          // {
+            // remainingCount: this._threatModelList.length,
+            // deletedId: id,
+          // },
+        // );
       }),
       map(() => true), // Convert successful response to boolean true
       catchError(error => {
@@ -981,11 +981,11 @@ export class ThreatModelService implements OnDestroy {
       },
     ];
 
-    this.logger.debugComponent(
-      'ThreatModelService',
-      `Patching diagram cells for diagram ID: ${diagramId} via API`,
-      { threatModelId, diagramId, cellCount: cells.length },
-    );
+    // this.logger.debugComponent(
+      // 'ThreatModelService',
+      // `Patching diagram cells for diagram ID: ${diagramId} via API`,
+      // { threatModelId, diagramId, cellCount: cells.length },
+    // );
 
     return this.apiService
       .patch<Diagram>(`threat_models/${threatModelId}/diagrams/${diagramId}`, operations)
@@ -1025,11 +1025,11 @@ export class ThreatModelService implements OnDestroy {
       },
     ];
 
-    this.logger.debugComponent(
-      'ThreatModelService',
-      `Patching diagram cells and image for diagram ID: ${diagramId} via API`,
-      { threatModelId, diagramId, cellCount: cells.length, hasImageData: !!imageData.svg },
-    );
+    // this.logger.debugComponent(
+      // 'ThreatModelService',
+      // `Patching diagram cells and image for diagram ID: ${diagramId} via API`,
+      // { threatModelId, diagramId, cellCount: cells.length, hasImageData: !!imageData.svg },
+    // );
 
     return this.apiService
       .patch<Diagram>(`threat_models/${threatModelId}/diagrams/${diagramId}`, operations)
@@ -1075,11 +1075,11 @@ export class ThreatModelService implements OnDestroy {
   updateThreatModelMetadata(threatModelId: string, metadata: Metadata[]): Observable<Metadata[]> {
     // If metadata is empty, skip the API call and return empty array
     if (!metadata || metadata.length === 0) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Skipping metadata update for threat model ${threatModelId} - no valid metadata to save`,
-        { threatModelId, metadataCount: metadata?.length || 0 },
-      );
+      // this.logger.debugComponent(
+        // 'ThreatModelService',
+        // `Skipping metadata update for threat model ${threatModelId} - no valid metadata to save`,
+        // { threatModelId, metadataCount: metadata?.length || 0 },
+      // );
       return of([]);
     }
 
@@ -1119,11 +1119,11 @@ export class ThreatModelService implements OnDestroy {
   ): Observable<Metadata[]> {
     // If metadata is empty, skip the API call and return empty array
     if (!metadata || metadata.length === 0) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Skipping metadata update for diagram ${diagramId} - no valid metadata to save`,
-        { threatModelId, diagramId, metadataCount: metadata?.length || 0 },
-      );
+      // this.logger.debugComponent(
+        // 'ThreatModelService',
+        // `Skipping metadata update for diagram ${diagramId} - no valid metadata to save`,
+        // { threatModelId, diagramId, metadataCount: metadata?.length || 0 },
+      // );
       return of([]);
     }
 
@@ -1163,11 +1163,11 @@ export class ThreatModelService implements OnDestroy {
   ): Observable<Metadata[]> {
     // If metadata is empty, skip the API call and return empty array
     if (!metadata || metadata.length === 0) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Skipping metadata update for threat ${threatId} - no valid metadata to save`,
-        { threatModelId, threatId, metadataCount: metadata?.length || 0 },
-      );
+      // this.logger.debugComponent(
+        // 'ThreatModelService',
+        // `Skipping metadata update for threat ${threatId} - no valid metadata to save`,
+        // { threatModelId, threatId, metadataCount: metadata?.length || 0 },
+      // );
       return of([]);
     }
 
@@ -1207,11 +1207,11 @@ export class ThreatModelService implements OnDestroy {
   ): Observable<Metadata[]> {
     // If metadata is empty, skip the API call and return empty array
     if (!metadata || metadata.length === 0) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Skipping metadata update for document ${documentId} - no valid metadata to save`,
-        { threatModelId, documentId, metadataCount: metadata?.length || 0 },
-      );
+      // this.logger.debugComponent(
+        // 'ThreatModelService',
+        // `Skipping metadata update for document ${documentId} - no valid metadata to save`,
+        // { threatModelId, documentId, metadataCount: metadata?.length || 0 },
+      // );
       return of([]);
     }
 
@@ -1251,11 +1251,11 @@ export class ThreatModelService implements OnDestroy {
   ): Observable<Metadata[]> {
     // If metadata is empty, skip the API call and return empty array
     if (!metadata || metadata.length === 0) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Skipping metadata update for repository ${repositoryId} - no valid metadata to save`,
-        { threatModelId, repositoryId, metadataCount: metadata?.length || 0 },
-      );
+      // this.logger.debugComponent(
+        // 'ThreatModelService',
+        // `Skipping metadata update for repository ${repositoryId} - no valid metadata to save`,
+        // { threatModelId, repositoryId, metadataCount: metadata?.length || 0 },
+      // );
       return of([]);
     }
 
@@ -1345,11 +1345,11 @@ export class ThreatModelService implements OnDestroy {
     metadata: Metadata[],
   ): Observable<Metadata[]> {
     if (!metadata || metadata.length === 0) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Skipping metadata update for note ${noteId} - no valid metadata to save`,
-        { threatModelId, noteId, metadataCount: metadata?.length || 0 },
-      );
+      // this.logger.debugComponent(
+        // 'ThreatModelService',
+        // `Skipping metadata update for note ${noteId} - no valid metadata to save`,
+        // { threatModelId, noteId, metadataCount: metadata?.length || 0 },
+      // );
       return of([]);
     }
 
@@ -1369,10 +1369,10 @@ export class ThreatModelService implements OnDestroy {
    * Get assets for a threat model
    */
   getAssetsForThreatModel(threatModelId: string): Observable<Asset[]> {
-    this.logger.debugComponent(
-      'ThreatModelService',
-      `Fetching assets for threat model with ID: ${threatModelId} from API`,
-    );
+    // this.logger.debugComponent(
+      // 'ThreatModelService',
+      // `Fetching assets for threat model with ID: ${threatModelId} from API`,
+    // );
     return this.apiService.get<Asset[]>(`threat_models/${threatModelId}/assets`).pipe(
       catchError(error => {
         this.logger.error(
@@ -1458,11 +1458,11 @@ export class ThreatModelService implements OnDestroy {
     metadata: Metadata[],
   ): Observable<Metadata[]> {
     if (!metadata || metadata.length === 0) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Skipping metadata update for asset ${assetId} - no valid metadata to save`,
-        { threatModelId, assetId, metadataCount: metadata?.length || 0 },
-      );
+      // this.logger.debugComponent(
+        // 'ThreatModelService',
+        // `Skipping metadata update for asset ${assetId} - no valid metadata to save`,
+        // { threatModelId, assetId, metadataCount: metadata?.length || 0 },
+      // );
       return of([]);
     }
 
@@ -1520,10 +1520,10 @@ export class ThreatModelService implements OnDestroy {
     keysToDelete.forEach(id => this._cachedThreatModels.delete(id));
 
     if (keysToDelete.length > 0) {
-      this.logger.debugComponent('ThreatModelService', 'Expired cached threat models', {
-        expiredCount: keysToDelete.length,
-        keptId: keepId,
-      });
+      // this.logger.debugComponent('ThreatModelService', 'Expired cached threat models', {
+      //   expiredCount: keysToDelete.length,
+      //   keptId: keepId,
+      // });
     }
   }
 

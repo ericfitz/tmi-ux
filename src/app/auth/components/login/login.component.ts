@@ -79,7 +79,7 @@ export class LoginComponent implements OnInit {
       }
       // Handle authorization code flow callback
       else if (code && state) {
-        this.logger.info('Detected OAuth authorization code callback', { code, state });
+        // this.logger.info('Detected OAuth authorization code callback', { code, state });
         this.handleOAuthCallback({ code, state });
       }
       // Handle OAuth errors
@@ -137,15 +137,15 @@ export class LoginComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    const provider = this.availableProviders.find(p => p.id === providerId);
-    const providerName = provider?.name || providerId || 'default provider';
+    // const provider = this.availableProviders.find(p => p.id === providerId);
+    // const _providerName = provider?.name || providerId || 'default provider';
 
-    this.logger.info(`Initiating login with ${providerName}`);
-    this.logger.debugComponent('Auth', 'Starting OAuth flow', {
-      providerId,
-      providerName,
-      authUrl: provider?.auth_url ? provider.auth_url.replace(/\?.*$/, '') : 'unknown', // Remove query params for logging
-    });
+    // this.logger.info(`Initiating login with ${_providerName}`);
+    // this.logger.debugComponent('Auth', 'Starting OAuth flow', {
+    //   providerId,
+    //   providerName: _providerName,
+    //   authUrl: provider?.auth_url ? provider.auth_url.replace(/\?.*$/, '') : 'unknown', // Remove query params for logging
+    // });
 
     this.authService.initiateLogin(providerId, this.returnUrl || undefined);
   }
@@ -156,7 +156,7 @@ export class LoginComponent implements OnInit {
       next: success => {
         this.isLoading = false;
         if (success) {
-          this.logger.info('OAuth callback successful');
+          // this.logger.info('OAuth callback successful');
           // Navigation is now handled by AuthService which has the decoded returnUrl
         } else {
           this.handleLoginError({

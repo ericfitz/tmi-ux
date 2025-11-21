@@ -101,7 +101,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.logger.debugComponent('Dashboard', 'DashboardComponent.ngOnInit called');
+    // this.logger.debugComponent('Dashboard', 'DashboardComponent.ngOnInit called');
 
     // Clear SVG caches when initializing dashboard to ensure fresh start
     this.svgCacheService.clearAllCaches();
@@ -125,10 +125,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       // Ensure models is always an array
       this.threatModels = models || [];
       this.isLoadingThreatModels = false;
-      this.logger.debugComponent('Dashboard', 'DashboardComponent received threat model list', {
-        count: this.threatModels.length,
-        models: this.threatModels.map(tm => ({ id: tm.id, name: tm.name })),
-      });
+      // this.logger.debugComponent('Dashboard', 'DashboardComponent received threat model list', {
+      //   count: this.threatModels.length,
+      //   models: this.threatModels.map(tm => ({ id: tm.id, name: tm.name })),
+      // });
       // Trigger change detection to update the view
       this.cdr.detectChanges();
     });
@@ -244,7 +244,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
     } catch {
       // Fallback if RelativeTimeFormat fails
-      this.logger.debugComponent('TM', 'RelativeTimeFormat not supported, using fallback');
+      // this.logger.debugComponent('TM', 'RelativeTimeFormat not supported, using fallback');
     }
 
     // Fallback to English format for unsupported browsers
@@ -283,10 +283,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
           next: success => {
             if (success) {
               // No need to manually refresh - the reactive subscription will update automatically
-              this.logger.debugComponent('TM', 'Threat model deleted successfully', {
-                id,
-                name: threatModel.name,
-              });
+              // this.logger.debugComponent('TM', 'Threat model deleted successfully', {
+              //   id,
+              //   name: threatModel.name,
+              // });
 
               // Show success message
               this.snackBar.open(`Threat model "${threatModel.name}" has been deleted.`, 'Close', {
@@ -309,7 +309,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * Refresh the collaboration sessions list
    */
   refreshCollaborationSessions(): void {
-    this.logger.info('Manually refreshing collaboration sessions');
+    // this.logger.info('Manually refreshing collaboration sessions');
     this.isLoadingCollaborationSessions = true;
     this.collaborationSessionService.refreshSessions();
     // Loading state will be cleared by the subscription to collaborationSessions$
@@ -319,12 +319,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * Refresh the threat models list
    */
   refreshThreatModels(): void {
-    this.logger.info('Manually refreshing threat models');
+    // this.logger.info('Manually refreshing threat models');
     this.isLoadingThreatModels = true;
     this.threatModelService.getThreatModelList().subscribe(models => {
       this.threatModels = models || [];
       this.isLoadingThreatModels = false;
-      this.logger.info('Threat models refreshed', { count: this.threatModels.length });
+      // this.logger.info('Threat models refreshed', { count: this.threatModels.length });
       this.cdr.detectChanges();
     });
   }
@@ -334,7 +334,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * @param diagramId The ID of the diagram to open
    */
   openCollaborationSession(diagramId: string): void {
-    this.logger.info('Opening collaboration session', { diagramId });
+    // this.logger.info('Opening collaboration session', { diagramId });
 
     // Find the session data to get the threat model ID
     this.collaborationSessions$
@@ -361,7 +361,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * Load a threat model from desktop using File System Access API
    */
   async loadFromDesktop(): Promise<void> {
-    this.logger.info('Loading threat model from desktop');
+    // this.logger.info('Loading threat model from desktop');
 
     try {
       let fileHandle: FileSystemFileHandle;
@@ -369,7 +369,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
       // Check if File System Access API is supported
       if ('showOpenFilePicker' in window) {
-        this.logger.debugComponent('TM', 'Using File System Access API');
+        // this.logger.debugComponent('TM', 'Using File System Access API');
 
         const [handle] = await window.showOpenFilePicker({
           types: [
@@ -387,7 +387,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         file = await fileHandle.getFile();
       } else {
         // Fallback for browsers that don't support File System Access API
-        this.logger.debugComponent('TM', 'Using fallback file input method');
+        // this.logger.debugComponent('TM', 'Using fallback file input method');
         file = await this.selectFileViaInput();
       }
 
@@ -395,18 +395,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
       const content = await file.text();
       const threatModelData = JSON.parse(content) as Record<string, unknown>;
 
-      this.logger.info('File loaded successfully', {
-        filename: file.name,
-        size: file.size,
-        type: file.type,
-      });
+      // this.logger.info('File loaded successfully', {
+      //   filename: file.name,
+      //   size: file.size,
+      //   type: file.type,
+      // });
 
       // Import the threat model
       await this.importThreatModel(threatModelData);
     } catch (error) {
       // Check if user cancelled the operation
       if (error instanceof DOMException && error.name === 'AbortError') {
-        this.logger.debugComponent('TM', 'File selection cancelled by user');
+        // this.logger.debugComponent('TM', 'File selection cancelled by user');
         return;
       }
 
@@ -454,10 +454,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.logger.info('Importing threat model', {
-        id: data['id'],
-        name: data['name'],
-      });
+      // this.logger.info('Importing threat model', {
+      //   id: data['id'],
+      //   name: data['name'],
+      // });
 
       // Validate the threat model data
       const validationResult = this.validator.validate(data as unknown as ThreatModel);
@@ -492,7 +492,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private navigateToImportedModel(model: ThreatModel): void {
-    this.logger.info('Threat model imported successfully', { id: model.id });
+    // this.logger.info('Threat model imported successfully', { id: model.id });
 
     this.snackBar.open(`Threat model "${model.name}" imported successfully`, 'Close', {
       duration: 3000,
