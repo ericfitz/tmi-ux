@@ -69,7 +69,7 @@ export class AppDiagramResyncService implements OnDestroy {
     private dfdStateStore: DfdStateStore,
   ) {
     this._setupDebouncedResync();
-    this.logger.info('AppDiagramResyncService initialized');
+    // this.logger.info('AppDiagramResyncService initialized');
   }
 
   /**

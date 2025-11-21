@@ -138,7 +138,7 @@ export class AppDfdOrchestrator {
     private readonly appOperationRejectionHandler: AppOperationRejectionHandler,
     private readonly dialog: MatDialog,
   ) {
-    this.logger.debug('AppDfdOrchestrator initialized (simplified autosave)');
+    // this.logger.debug('AppDfdOrchestrator initialized (simplified autosave)');
     this._setupEventIntegration();
   }
 

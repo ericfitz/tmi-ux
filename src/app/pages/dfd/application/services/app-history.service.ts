@@ -79,7 +79,7 @@ export class AppHistoryService implements OnDestroy {
   ) {
     this._config = { ...DEFAULT_HISTORY_CONFIG };
     this._historyState = createEmptyHistoryState(this._config.maxHistorySize);
-    this.logger.debug('AppHistoryService initialized');
+    // this.logger.debug('AppHistoryService initialized');
   }
 
   /**

@@ -52,7 +52,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
     private readonly graphOperationManager: AppGraphOperationManager,
     private readonly historyCoordinator: AppOperationStateManager,
   ) {
-    this.logger.debug('AppRemoteOperationHandler constructed');
+    // this.logger.debug('AppRemoteOperationHandler constructed');
   }
 
   /**

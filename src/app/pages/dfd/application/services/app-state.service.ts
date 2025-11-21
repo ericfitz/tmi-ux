@@ -131,7 +131,7 @@ export class AppStateService implements OnDestroy {
     private _threatModelService: ThreatModelService,
     private _historyCoordinator: AppOperationStateManager,
   ) {
-    this._logger.info('AppStateService initialized');
+    // this._logger.info('AppStateService initialized');
     // Set up bidirectional reference to avoid circular dependency
     this._historyCoordinator.setAppStateService(this);
   }

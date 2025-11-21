@@ -43,7 +43,7 @@ export class AppDiagramLoadingService {
     private historyService: AppHistoryService,
     private appStateService: AppStateService,
   ) {
-    this.logger.info('AppDiagramLoadingService initialized');
+    // this.logger.info('AppDiagramLoadingService initialized');
   }
 
   /**

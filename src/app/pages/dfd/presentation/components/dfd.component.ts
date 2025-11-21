@@ -239,15 +239,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private websocketCollaborationAdapter: InfraWebsocketCollaborationAdapter,
     private authService: AuthService,
   ) {
-    this.logger.info('DfdComponent v2 constructor called');
+    // this.logger.info('DfdComponent v2 constructor called');
 
     // Initialize X6 cell extensions first
-    this.logger.info('Initializing X6 cell extensions');
+    // this.logger.info('Initializing X6 cell extensions');
     initializeX6CellExtensions();
   }
 
   ngOnInit(): void {
-    this.logger.info('DfdComponent v2 ngOnInit called');
+    // this.logger.info('DfdComponent v2 ngOnInit called');
 
     // Get route parameters
     this.threatModelId = this.route.snapshot.paramMap.get('id');
@@ -256,11 +256,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Get query parameters for collaboration intent
     this.joinCollaboration = this.route.snapshot.queryParamMap.get('joinCollaboration') === 'true';
 
-    this.logger.info('DFD Component v2 route parameters extracted', {
-      threatModelId: this.threatModelId,
-      dfdId: this.dfdId,
-      joinCollaboration: this.joinCollaboration,
-    });
+    // this.logger.info('DFD Component v2 route parameters extracted', {
+    //   threatModelId: this.threatModelId,
+    //   dfdId: this.dfdId,
+    //   joinCollaboration: this.joinCollaboration,
+    // });
 
     // Set collaboration context if we have the required parameters
     if (this.threatModelId && this.dfdId) {
@@ -291,7 +291,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.logger.info('DfdComponent v2 ngAfterViewInit called - starting initialization sequence');
+    // this.logger.info('DfdComponent v2 ngAfterViewInit called - starting initialization sequence');
 
     // First check if authorization is already loaded synchronously
     const currentPermission = this.authorizationService.getCurrentUserPermission();
@@ -467,7 +467,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.logger.info('DfdComponent v2 ngOnDestroy called');
+    // this.logger.info('DfdComponent v2 ngOnDestroy called');
 
     // Save diagram with SVG thumbnail before destroying component
     if (this.appDfdOrchestrator.getState().hasUnsavedChanges && !this.isReadOnlyMode) {

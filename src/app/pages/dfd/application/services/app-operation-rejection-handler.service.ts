@@ -69,7 +69,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
     private collaborationService: DfdCollaborationService,
     private appStateService: AppStateService,
   ) {
-    this.logger.debug('AppOperationRejectionHandler constructed');
+    // this.logger.debug('AppOperationRejectionHandler constructed');
   }
 
   /**

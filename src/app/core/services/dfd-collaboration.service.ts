@@ -252,21 +252,21 @@ export class DfdCollaborationService implements OnDestroy {
    * @param diagramId The diagram ID
    */
   setDiagramContext(threatModelId: string, diagramId: string): void {
-    this._logger.info('setDiagramContext called', {
-      instanceId: this._instanceId,
-      newThreatModelId: threatModelId,
-      newDiagramId: diagramId,
-      previousThreatModelId: this._threatModelId,
-      previousDiagramId: this._diagramId,
-      currentContextReady: this._collaborationState$.value.isDiagramContextReady,
-    });
+    // this._logger.info('setDiagramContext called', {
+    //   instanceId: this._instanceId,
+    //   newThreatModelId: threatModelId,
+    //   newDiagramId: diagramId,
+    //   previousThreatModelId: this._threatModelId,
+    //   previousDiagramId: this._diagramId,
+    //   currentContextReady: this._collaborationState$.value.isDiagramContextReady,
+    // });
 
     this._threatModelId = threatModelId;
     this._diagramId = diagramId;
 
     // Update state to indicate context is ready
     if (threatModelId && diagramId) {
-      this._logger.info('Setting isDiagramContextReady to true');
+      // this._logger.info('Setting isDiagramContextReady to true');
       this._updateState({ isDiagramContextReady: true });
     } else {
       this._logger.warn('Context values are null/empty, not setting ready flag', {
