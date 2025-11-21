@@ -1842,6 +1842,16 @@ export class DfdCollaborationService implements OnDestroy {
    * Handle presenter request event (host receives this when a participant requests presenter)
    */
   private _handlePresenterRequest(message: PresenterRequestMessageWithUser): void {
+    // Defensive: The server should add user field per PresenterRequestMessageWithUser,
+    // but we need to handle cases where it's missing
+    if (!message.user) {
+      this._logger.error(
+        'Received presenter_request without user field - server not conforming to expected schema',
+        { message },
+      );
+      return;
+    }
+
     // Extract user identifier with fallback (User fields are optional per schema)
     const userEmail = message.user.email || message.user.user_id || 'unknown';
 
@@ -1927,7 +1937,7 @@ export class DfdCollaborationService implements OnDestroy {
    */
   private _redirectToDashboard(): void {
     this._router
-      .navigate(['/tm'])
+      .navigate(['/dashboard'])
       .then(() => {
         this._logger.info('Redirected to dashboard');
       })

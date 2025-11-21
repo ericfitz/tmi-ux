@@ -604,7 +604,15 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     const userIdentifier = message.joined_user.displayName
       ? `${message.joined_user.displayName} (${message.joined_user.email})`
       : message.joined_user.email || message.joined_user.user_id || 'Unknown user';
-    this._notificationService?.showSessionEvent('userJoined', userIdentifier).subscribe();
+
+    if (this._notificationService) {
+      this._logger.debug('Showing participant joined notification', { userIdentifier });
+      this._notificationService.showSessionEvent('userJoined', userIdentifier).subscribe({
+        error: err => this._logger.error('Failed to show participant joined notification', err),
+      });
+    } else {
+      this._logger.warn('Cannot show participant joined notification - notification service not available');
+    }
 
     // Create domain event with required fields (User fields are optional per schema)
     this._domainEvents$.next({
@@ -634,7 +642,15 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     const userIdentifier = message.departed_user.displayName
       ? `${message.departed_user.displayName} (${message.departed_user.email})`
       : message.departed_user.email || message.departed_user.user_id || 'Unknown user';
-    this._notificationService?.showSessionEvent('userLeft', userIdentifier).subscribe();
+
+    if (this._notificationService) {
+      this._logger.debug('Showing participant left notification', { userIdentifier });
+      this._notificationService.showSessionEvent('userLeft', userIdentifier).subscribe({
+        error: err => this._logger.error('Failed to show participant left notification', err),
+      });
+    } else {
+      this._logger.warn('Cannot show participant left notification - notification service not available');
+    }
 
     // Create domain event with required fields (User fields are optional per schema)
     this._domainEvents$.next({

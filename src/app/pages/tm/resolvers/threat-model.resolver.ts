@@ -75,7 +75,7 @@ export const threatModelResolver: ResolveFn<ThreatModel | null> = (
           threatModelId,
           status: httpError.status,
         });
-        void router.navigate(['/tm'], {
+        void router.navigate(['/dashboard'], {
           queryParams: {
             error: 'access_denied',
             threat_model_id: threatModelId,
@@ -83,7 +83,7 @@ export const threatModelResolver: ResolveFn<ThreatModel | null> = (
         });
       } else {
         // Other errors - navigate to threat models list
-        void router.navigate(['/tm'], {
+        void router.navigate(['/dashboard'], {
           queryParams: {
             error: 'load_failed',
             threat_model_id: threatModelId,
