@@ -148,9 +148,9 @@ export class DfdCollaborationService implements OnDestroy {
     private _notificationService: ICollaborationNotificationService | null,
     private _router: Router,
   ) {
-    this._logger.info('DfdCollaborationService initialized', {
-      instanceId: this._instanceId,
-    });
+    // this._logger.info('DfdCollaborationService initialized', {
+    //   instanceId: this._instanceId,
+    // });
     // WebSocket listeners will be set up when collaboration is actually started
   }
 

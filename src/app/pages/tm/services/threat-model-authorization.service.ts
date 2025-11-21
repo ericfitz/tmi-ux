@@ -29,7 +29,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
     private logger: LoggerService,
     private authService: AuthService,
   ) {
-    this.logger.info('ThreatModelAuthorizationService initialized');
+    // this.logger.info('ThreatModelAuthorizationService initialized');
   }
 
   /**

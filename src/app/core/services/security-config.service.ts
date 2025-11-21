@@ -58,17 +58,17 @@ export class SecurityConfigService {
 
   private detectSecurityContext(): void {
     const isSecure = window.isSecureContext;
-    const protocol = window.location.protocol;
+    // const protocol = window.location.protocol;
     const isLocalhost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
 
     this._isSecureContext$.next(isSecure);
 
-    this.logger.debug('Security context detected', {
-      isSecure,
-      protocol,
-      isLocalhost,
-      hostname: window.location.hostname,
-    });
+    // this.logger.debug('Security context detected', {
+    //   isSecure,
+    //   protocol: window.location.protocol,
+    //   isLocalhost,
+    //   hostname: window.location.hostname,
+    // });
 
     if (!isSecure && !isLocalhost) {
       this.logger.warn('Application is not running in a secure context', {
@@ -281,11 +281,11 @@ ${Object.entries(headers)
       this.document.head.appendChild(cspMeta);
     }
 
-    this.logger.debug('Dynamic CSP injected (note: frame-ancestors ignored in meta tags)', {
-      apiOrigin,
-      cspContent,
-      limitationsNote:
-        'For clickjacking protection, configure X-Frame-Options header at server level',
-    });
+    // this.logger.debug('Dynamic CSP injected (note: frame-ancestors ignored in meta tags)', {
+    //   apiOrigin,
+    //   cspContent,
+    //   limitationsNote:
+    //     'For clickjacking protection, configure X-Frame-Options header at server level',
+    // });
   }
 }

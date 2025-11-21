@@ -35,7 +35,7 @@ export class SessionManagerService {
     private ngZone: NgZone,
     private dialog: MatDialog,
   ) {
-    this.logger.info('Session Manager Service initialized');
+    // this.logger.info('Session Manager Service initialized');
     // Register with AuthService to avoid circular dependency
     this.authService.setSessionManager(this);
     this.initSessionMonitoring();

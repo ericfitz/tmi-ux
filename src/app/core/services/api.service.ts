@@ -50,7 +50,7 @@ export class ApiService {
     @Inject(AUTH_SERVICE) private authService: IAuthService,
     private dialog: MatDialog,
   ) {
-    this.logger.info(`API Service initialized with endpoint: ${this.apiUrl}`);
+    // this.logger.info(`API Service initialized with endpoint: ${this.apiUrl}`);
   }
 
   /**

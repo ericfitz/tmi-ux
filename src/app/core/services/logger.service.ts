@@ -69,7 +69,7 @@ export class LoggerService {
     // Initialize component-specific debug logging
     this.debugComponents = new Set(environment.debugComponents || []);
 
-    this.info(`Logger initialized with level: ${this.logLevel}`);
+    // this.info(`Logger initialized with level: ${this.logLevel}`);
   }
 
   /**
@@ -77,7 +77,7 @@ export class LoggerService {
    */
   setLogLevel(level: LogLevel): void {
     this.logLevel = level;
-    this.info(`Log level changed to: ${level}`);
+    // this.info(`Log level changed to: ${level}`);
   }
 
   // Public logging methods

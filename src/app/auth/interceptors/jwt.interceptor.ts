@@ -39,7 +39,7 @@ export class JwtInterceptor implements HttpInterceptor {
     private router: Router,
     private logger: LoggerService,
   ) {
-    this.logger.info('JWT Interceptor initialized');
+    // this.logger.info('JWT Interceptor initialized');
     // Get SessionManager from AuthService (avoids circular dependency)
     setTimeout(() => {
       this.sessionManager = (

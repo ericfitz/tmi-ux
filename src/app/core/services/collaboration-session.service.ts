@@ -182,7 +182,7 @@ export class CollaborationSessionService implements OnDestroy {
    * Initialize the service and set up reactive data flow
    */
   private initializeService(): void {
-    this.logger.info('CollaborationSessionService initialized');
+    // this.logger.info('CollaborationSessionService initialized');
 
     // Listen for WebSocket session announcements (always active for real-time updates)
     this.setupWebSocketListeners();

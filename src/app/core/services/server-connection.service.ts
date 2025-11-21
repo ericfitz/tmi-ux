@@ -149,13 +149,13 @@ export class ServerConnectionService implements OnDestroy {
     if (this._isMonitoring) return;
 
     this._isMonitoring = true;
-    this.logger.debugComponent(
-      'ServerConnection',
-      'Starting connection monitoring for save operations',
-    );
+    // this.logger.debugComponent(
+    //   'ServerConnection',
+    //   'Starting connection monitoring for save operations',
+    // );
 
     if (!this.shouldConnectToServer()) {
-      this.logger.info('Server monitoring disabled - not configured');
+      // this.logger.info('Server monitoring disabled - not configured');
       return;
     }
   }
@@ -165,7 +165,7 @@ export class ServerConnectionService implements OnDestroy {
    */
   stopMonitoring(): void {
     this._isMonitoring = false;
-    this.logger.debugComponent('ServerConnection', 'Stopping connection monitoring');
+    // this.logger.debugComponent('ServerConnection', 'Stopping connection monitoring');
   }
 
   /**
@@ -231,10 +231,10 @@ export class ServerConnectionService implements OnDestroy {
   private handleBrowserOnlineChange(isOnline: boolean): void {
     const currentStatus = this._detailedConnectionStatus$.value;
 
-    this.logger.debugComponent(
-      'ServerConnection',
-      `Browser connection changed: ${isOnline ? 'online' : 'offline'}`,
-    );
+    // this.logger.debugComponent(
+    //   'ServerConnection',
+    //   `Browser connection changed: ${isOnline ? 'online' : 'offline'}`,
+    // );
 
     if (isOnline) {
       // Browser came back online - immediately check server
@@ -265,12 +265,12 @@ export class ServerConnectionService implements OnDestroy {
   private initializeConnectionMonitoring(): void {
     // Check if server is configured
     if (!this.isServerConfigured()) {
-      this.logger.info('Server not configured - connection monitoring disabled');
+      // this.logger.info('Server not configured - connection monitoring disabled');
       this._connectionStatus$.next(ServerConnectionStatus.NOT_CONFIGURED);
       return;
     }
 
-    this.logger.info(`Server configured at ${environment.apiUrl} - starting connection monitoring`);
+    // this.logger.info(`Server configured at ${environment.apiUrl} - starting connection monitoring`);
 
     // Subscribe to auth state changes to stop monitoring when using local provider
     this.subscribeToAuthStateChanges();
@@ -279,7 +279,7 @@ export class ServerConnectionService implements OnDestroy {
     if (this.shouldConnectToServer()) {
       this.startHealthChecks();
     } else {
-      this.logger.info('Skipping server monitoring - using local provider');
+      // this.logger.info('Skipping server monitoring - using local provider');
     }
   }
 
@@ -292,38 +292,38 @@ export class ServerConnectionService implements OnDestroy {
     // Load AuthService asynchronously and subscribe to state changes
     void this.getAuthService().then(authService => {
       if (!authService) {
-        this.logger.debugComponent(
-          'ServerConnection',
-          'AuthService not available - skipping state subscription',
-        );
+        // this.logger.debugComponent(
+        //   'ServerConnection',
+        //   'AuthService not available - skipping state subscription',
+        // );
         return;
       }
 
       // Subscribe to user profile changes to detect provider switches
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
-      this._authStateSubscription = authService.userProfile$.subscribe((profile: any) => {
+      this._authStateSubscription = authService.userProfile$.subscribe((_profile: any) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         const isUsingLocal = authService.isUsingLocalProvider;
 
-        this.logger.debugComponent('ServerConnection', 'Auth state changed', {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-          isAuthenticated: authService.isAuthenticated,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          isUsingLocalProvider: isUsingLocal,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-          userEmail: profile?.email,
-        });
+        // this.logger.debugComponent('ServerConnection', 'Auth state changed', {
+        //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        //   isAuthenticated: authService.isAuthenticated,
+        //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        //   isUsingLocalProvider: isUsingLocal,
+        //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        //   userEmail: profile?.email,
+        // });
 
         // If using local provider, stop health checks
         if (isUsingLocal) {
-          this.logger.info(
-            'User logged in with local provider - stopping server connection monitoring',
-          );
+          // this.logger.info(
+          //   'User logged in with local provider - stopping server connection monitoring',
+          // );
           this.stopHealthChecks();
         }
         // If not using local provider and server is configured, start health checks
         else if (this.isServerConfigured() && !this._healthCheckSubscription) {
-          this.logger.info('User logged out or using server provider - resuming server monitoring');
+          // this.logger.info('User logged out or using server provider - resuming server monitoring');
           this.startHealthChecks();
         }
       });
@@ -385,10 +385,10 @@ export class ServerConnectionService implements OnDestroy {
     // Check if user is using local provider (synchronous check using cached authService)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (this._authService && this._authService.isUsingLocalProvider) {
-      this.logger.debugComponent(
-        'ServerConnection',
-        'Skipping server connection - user is using local provider',
-      );
+      // this.logger.debugComponent(
+      //   'ServerConnection',
+      //   'Skipping server connection - user is using local provider',
+      // );
       return false;
     }
 
@@ -436,14 +436,14 @@ export class ServerConnectionService implements OnDestroy {
   private performHealthCheck(): Observable<void> {
     // Check if we should connect to server
     if (!this.shouldConnectToServer()) {
-      this.logger.debugComponent(
-        'ServerConnection',
-        'Skipping health check - server not configured or using local provider',
-      );
+      // this.logger.debugComponent(
+      //   'ServerConnection',
+      //   'Skipping health check - server not configured or using local provider',
+      // );
       return EMPTY;
     }
 
-    this.logger.debugComponent('ServerConnection', 'Performing HTTP health check');
+    // this.logger.debugComponent('ServerConnection', 'Performing HTTP health check');
 
     // Use the root API endpoint as defined in tmi-openapi.json
     // Remove trailing /api if present (e.g., 'http://localhost:8080/api' -> 'http://localhost:8080')
@@ -452,7 +452,7 @@ export class ServerConnectionService implements OnDestroy {
     return this.http.get<ServerHealthResponse>(statusEndpoint).pipe(
       map(response => {
         if (response.status?.code === 'OK') {
-          this.logger.debugComponent('ServerConnection', 'Server status check successful');
+          // this.logger.debugComponent('ServerConnection', 'Server status check successful');
           this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
 
           // Store server version from health response
@@ -521,10 +521,10 @@ export class ServerConnectionService implements OnDestroy {
   private performDetailedHealthCheck(): Observable<DetailedConnectionStatus> {
     // Check if we should connect to server
     if (!this.shouldConnectToServer()) {
-      this.logger.debugComponent(
-        'ServerConnection',
-        'Skipping detailed health check - server not configured or using local provider',
-      );
+      // this.logger.debugComponent(
+      //   'ServerConnection',
+      //   'Skipping detailed health check - server not configured or using local provider',
+      // );
       return new Observable(subscriber => {
         subscriber.next(this._detailedConnectionStatus$.value);
         subscriber.complete();
@@ -541,9 +541,9 @@ export class ServerConnectionService implements OnDestroy {
 
     const pingUrl = `${environment.apiUrl}/`;
 
-    this.logger.debugComponent('ServerConnection', 'Pinging server for connectivity check', {
-      url: pingUrl,
-    });
+    // this.logger.debugComponent('ServerConnection', 'Pinging server for connectivity check', {
+    //   url: pingUrl,
+    // });
 
     return this.http
       .get(pingUrl, {
@@ -567,9 +567,9 @@ export class ServerConnectionService implements OnDestroy {
           this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
           this.resetBackoffDelay();
 
-          this.logger.debugComponent('ServerConnection', 'Server ping successful');
+          // this.logger.debugComponent('ServerConnection', 'Server ping successful');
         }),
-        catchError((error: HttpErrorResponse) => {
+        catchError((_error: HttpErrorResponse) => {
           // Server is not reachable
           const currentStatus = this._detailedConnectionStatus$.value;
           const consecutiveFailures = currentStatus.consecutiveFailures + 1;
@@ -587,11 +587,11 @@ export class ServerConnectionService implements OnDestroy {
           this._connectionStatus$.next(ServerConnectionStatus.ERROR);
           this._currentBackoffDelay = this.getNextBackoffDelay();
 
-          this.logger.debugComponent('ServerConnection', 'Server ping failed', {
-            error: (error as Error).message,
-            consecutiveFailures,
-            retryAttempt: currentStatus.retryAttempt + 1,
-          });
+          // this.logger.debugComponent('ServerConnection', 'Server ping failed', {
+          //   error: (error as Error).message,
+          //   consecutiveFailures,
+          //   retryAttempt: currentStatus.retryAttempt + 1,
+          // });
 
           // Return current status instead of throwing error
           return new Observable(subscriber => {
@@ -615,20 +615,20 @@ export class ServerConnectionService implements OnDestroy {
     if (this.shouldConnectToServer()) {
       this.performHealthCheck().subscribe({
         next: () => {
-          this.logger.debugComponent(
-            'ServerConnection',
-            'HTTP health check completed successfully',
-          );
+          // this.logger.debugComponent(
+          //   'ServerConnection',
+          //   'HTTP health check completed successfully',
+          // );
         },
         error: error => {
           this.logger.error('HTTP health check failed', error);
         },
       });
     } else {
-      this.logger.debugComponent(
-        'ServerConnection',
-        'Connection check skipped - server not configured or using local provider',
-      );
+      // this.logger.debugComponent(
+      //   'ServerConnection',
+      //   'Connection check skipped - server not configured or using local provider',
+      // );
     }
   }
 

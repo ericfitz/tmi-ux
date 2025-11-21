@@ -107,7 +107,7 @@ export class AuthService {
     private logger: LoggerService,
     private serverConnectionService: ServerConnectionService,
   ) {
-    this.logger.info('Auth Service initialized');
+    // this.logger.info('Auth Service initialized');
     // Initialize from localStorage on service creation
     void this.checkAuthStatus();
   }
@@ -121,7 +121,7 @@ export class AuthService {
     stopExpiryTimers: () => void;
   }): void {
     this.sessionManagerService = sessionManager;
-    this.logger.debugComponent('Auth', 'SessionManager service registered');
+    // this.logger.debugComponent('Auth', 'SessionManager service registered');
   }
 
   /**
@@ -325,31 +325,31 @@ export class AuthService {
       }
 
       const isAuthenticated = this.isTokenValid(token);
-      this.logger.debugComponent(
-        'Auth',
-        `Variable 'isAuthenticated' in AuthService.checkAuthStatus initialized to: ${isAuthenticated}`,
-      );
+      // this.logger.debugComponent(
+      //   'Auth',
+      //   `Variable 'isAuthenticated' in AuthService.checkAuthStatus initialized to: ${isAuthenticated}`,
+      // );
       this.isAuthenticatedSubject.next(isAuthenticated);
 
       // Load user profile if authenticated
       if (isAuthenticated && token) {
         const userProfile = await this.getStoredUserProfile();
         if (userProfile) {
-          this.logger.debugComponent(
-            'Auth',
-            `Variable 'userProfile' in AuthService.checkAuthStatus initialized to:`,
-            userProfile,
-          );
+          // this.logger.debugComponent(
+          //   'Auth',
+          //   `Variable 'userProfile' in AuthService.checkAuthStatus initialized to:`,
+          //   userProfile,
+          // );
           this.userProfileSubject.next(userProfile);
         }
       } else {
         this.userProfileSubject.next(null);
       }
 
-      this.logger.debugComponent(
-        'Auth',
-        `Auth status checked: authenticated=${isAuthenticated}, user=${this.userEmail}`,
-      );
+      // this.logger.debugComponent(
+      //   'Auth',
+      //   `Auth status checked: authenticated=${isAuthenticated}, user=${this.userEmail}`,
+      // );
     } catch (error) {
       this.logger.error('Error checking auth status', error);
       this.clearAuthData();

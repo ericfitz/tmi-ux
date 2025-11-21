@@ -21,7 +21,6 @@ import { Subscription } from 'rxjs';
 import { FooterComponent } from './core/components/footer/footer.component';
 import { setInjector } from './core/utils/dynamic-material-loader.util';
 import { NavbarComponent } from './core/components/navbar/navbar.component';
-import { environment } from '../environments/environment';
 import { LoggerService } from './core/services/logger.service';
 import { AuthService } from './auth/services/auth.service';
 import { SessionManagerService } from './auth/services/session-manager.service';
@@ -53,27 +52,27 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.logger.info('Application initialized');
-    this.logger.debugComponent('App', 'Environment configuration', environment);
+    // this.logger.info('Application initialized');
+    // this.logger.debugComponent('App', 'Environment configuration', environment);
 
     // Debug current route
-    this.logger.debugComponent('App', 'Current URL', window.location.href);
-    this.logger.debugComponent('App', 'Current pathname', window.location.pathname);
+    // this.logger.debugComponent('App', 'Current URL', window.location.href);
+    // this.logger.debugComponent('App', 'Current pathname', window.location.pathname);
 
     // Log application startup with environment info
-    this.logger.info(`Running in ${environment.production ? 'production' : 'development'} mode`);
-    this.logger.info(`API URL: ${environment.apiUrl}`);
+    // this.logger.info(`Running in ${environment.production ? 'production' : 'development'} mode`);
+    // this.logger.info(`API URL: ${environment.apiUrl}`);
 
     // Subscribe to authentication state
     this.authSubscription = this.authService.isAuthenticated$.subscribe(isAuthenticated => {
       this.isAuthenticated = isAuthenticated;
-      this.logger.debugComponent('App', `Authentication status: ${isAuthenticated}`);
+      // this.logger.debugComponent('App', `Authentication status: ${isAuthenticated}`);
     });
 
     // Subscribe to user profile changes
     this.userProfileSubscription = this.authService.userProfile$.subscribe(userProfile => {
       this.userProfile = userProfile;
-      this.logger.debugComponent('App', 'User profile updated:', userProfile);
+      // this.logger.debugComponent('App', 'User profile updated:', userProfile);
     });
   }
 
