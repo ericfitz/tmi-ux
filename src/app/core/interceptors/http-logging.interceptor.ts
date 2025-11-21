@@ -35,13 +35,15 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
   constructor(private logger: LoggerService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Log the outgoing request
-    this.logApiRequest(request);
+    // Log the outgoing request (if not excluded)
+    if (!this.shouldExcludeFromLogging(request)) {
+      this.logApiRequest(request);
+    }
 
     return next.handle(request).pipe(
       tap(event => {
-        // Log successful responses
-        if (event instanceof HttpResponse) {
+        // Log successful responses (if not excluded)
+        if (event instanceof HttpResponse && !this.shouldExcludeFromLogging(request)) {
           this.logApiResponse(request, event);
         }
       }),
@@ -51,6 +53,41 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
         return throwError(() => error);
       }),
     );
+  }
+
+  /**
+   * Determine if a request should be excluded from logging
+   * Excludes GET requests to:
+   * - API server root path (health checks)
+   * - Local asset files (i18n, etc.)
+   */
+  private shouldExcludeFromLogging(request: HttpRequest<unknown>): boolean {
+    // Only exclude GET requests
+    if (request.method !== 'GET') {
+      return false;
+    }
+
+    const url = request.url;
+
+    // Exclude local asset requests (relative URLs starting with /)
+    if (url.startsWith('/')) {
+      return true;
+    }
+
+    // Exclude API server root path (health checks)
+    // Match URLs that are exactly the API root without any path
+    try {
+      const urlObj = new URL(url);
+      // Check if the pathname is empty or just '/'
+      if (urlObj.pathname === '' || urlObj.pathname === '/') {
+        return true;
+      }
+    } catch {
+      // If URL parsing fails, don't exclude (let it be logged)
+      return false;
+    }
+
+    return false;
   }
 
   /**
