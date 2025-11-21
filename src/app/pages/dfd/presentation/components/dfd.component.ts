@@ -1390,23 +1390,24 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             svg: base64Svg || undefined,
           };
 
-          // Save diagram with image data
+          // Start save request (fire-and-forget - navigate immediately after request is sent)
           this.appDfdOrchestrator.saveManuallyWithImage(imageData).subscribe({
             next: () => {
-              this.logger.info('Diagram and thumbnail saved before closing');
-              this._navigateAway();
+              this.logger.info('Diagram and thumbnail save completed successfully');
             },
             error: (error: unknown) => {
-              this.logger.error('Failed to save diagram with thumbnail before closing', { error });
-              // Fall back to save without thumbnail
-              this._fallbackSaveAndClose();
+              this.logger.error('Failed to save diagram with thumbnail', { error });
             },
           });
+
+          // Navigate away immediately after starting the save request
+          this.logger.info('Save request initiated, navigating away');
+          this._navigateAway();
         })
         .catch((error: unknown) => {
           this.logger.error('Error capturing SVG thumbnail, saving without image', error);
           // Fall back to save without thumbnail
-          this._fallbackSaveAndClose();
+          this._fallbackSaveAndNavigate();
         });
     } else {
       this._navigateAway();
@@ -1416,18 +1417,20 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Fallback save without thumbnail (used when thumbnail capture fails)
    */
-  private _fallbackSaveAndClose(): void {
+  private _fallbackSaveAndNavigate(): void {
+    // Start save request (fire-and-forget - navigate immediately after request is sent)
     this.appDfdOrchestrator.saveManually().subscribe({
       next: () => {
-        this.logger.info('Diagram saved before closing (without thumbnail)');
-        this._navigateAway();
+        this.logger.info('Diagram save completed successfully (without thumbnail)');
       },
       error: (error: unknown) => {
-        this.logger.error('Failed to save diagram before closing', { error });
-        // Navigate away even if save failed
-        this._navigateAway();
+        this.logger.error('Failed to save diagram', { error });
       },
     });
+
+    // Navigate away immediately after starting the save request
+    this.logger.info('Save request initiated (no thumbnail), navigating away');
+    this._navigateAway();
   }
 
   /**
