@@ -84,11 +84,15 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this._logger.info('DfdCollaborationComponent initialized', {
-      initialIsContextReady: this.isContextReady,
-      serviceContextSet: this._collaborationService.isDiagramContextSet(),
-      serviceContext: this._collaborationService.getDiagramContext(),
-    });
+    this._logger.debugComponent(
+      'DfdCollaborationComponent',
+      'DfdCollaborationComponent initialized',
+      {
+        initialIsContextReady: this.isContextReady,
+        serviceContextSet: this._collaborationService.isDiagramContextSet(),
+        serviceContext: this._collaborationService.getDiagramContext(),
+      },
+    );
 
     // Subscribe to the unified collaboration state
     // This subscription is only for updating the badge count and button state

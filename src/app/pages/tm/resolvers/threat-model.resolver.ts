@@ -31,7 +31,7 @@ export const threatModelResolver: ResolveFn<ThreatModel | null> = (
   // Check if we should force refresh (e.g., when coming back from DFD editor)
   const forceRefresh = route.queryParamMap.get('refresh') === 'true';
 
-  logger.info('Resolving threat model data', {
+  logger.debugComponent('ThreatModelResolver', 'Resolving threat model data', {
     threatModelId,
     url: state.url,
     forceRefresh,

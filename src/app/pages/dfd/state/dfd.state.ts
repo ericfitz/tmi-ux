@@ -64,7 +64,7 @@ export class DfdStateStore {
   private _state = new BehaviorSubject<DfdState>(initialDfdState);
 
   constructor(private logger: LoggerService) {
-    this.logger.info('DfdStateStore initialized');
+    this.logger.debugComponent('DfdStateStore', 'DfdStateStore initialized');
 
     // Initialize state$ observable
     this.state$ = this._state.asObservable();

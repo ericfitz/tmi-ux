@@ -2152,7 +2152,10 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         const width = container.clientWidth;
         const height = container.clientHeight;
         this._graph.resize(width, height);
-        this.logger.info('[InfraX6GraphAdapter] Initial graph resize completed', { width, height });
+        this.logger.debugComponent('InfraX6GraphAdapter', 'Initial graph resize completed', {
+          width,
+          height,
+        });
       }
     }, 0);
   }

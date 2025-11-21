@@ -372,11 +372,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.threatModelPermission = permission === 'owner' ? 'writer' : permission;
     this.isReadOnlyMode = permission === 'reader';
 
-    this.logger.info('DFD permission determined for orchestrator initialization', {
-      permission,
-      threatModelPermission: this.threatModelPermission,
-      isReadOnlyMode: this.isReadOnlyMode,
-    });
+    this.logger.debugComponent(
+      'AppDfdOrchestratorService',
+      'DFD permission determined for orchestrator initialization',
+      {
+        permission,
+        threatModelPermission: this.threatModelPermission,
+        isReadOnlyMode: this.isReadOnlyMode,
+      },
+    );
 
     // Check if orchestrator is already initialized to avoid re-initialization
     if (this.appDfdOrchestrator.getState().initialized) {
