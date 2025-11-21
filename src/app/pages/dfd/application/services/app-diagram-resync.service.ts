@@ -86,10 +86,10 @@ export class AppDiagramResyncService implements OnDestroy {
     this._currentGraph = graph;
     this._currentX6GraphAdapter = infraX6GraphAdapter;
 
-    this.logger.info('AppDiagramResyncService initialized with context', {
-      diagramId,
-      threatModelId,
-    });
+    // this.logger.info('AppDiagramResyncService initialized with context', {
+    //   diagramId,
+    //   threatModelId,
+    // });
   }
 
   /**

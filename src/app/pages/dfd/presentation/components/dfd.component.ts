@@ -404,7 +404,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           success,
         });
         if (success) {
-          this.logger.info('DFD Orchestrator initialized successfully');
+          // this.logger.info('DFD Orchestrator initialized successfully');
 
           // Force immediate UI update after successful initialization
           this.isSystemInitialized = this.appDfdOrchestrator.getState().initialized;
@@ -447,12 +447,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 },
               }),
             );
-          } else {
-            // Normal flow: Load diagram data if we have a dfdId
-            if (this.dfdId) {
-              this.loadDiagramData(this.dfdId);
-            }
           }
+          // Note: For normal flow (not joinCollaboration), the orchestrator's initialize()
+          // method already loads the diagram via _continueInitialization() -> load()
+          // so we don't need to call loadDiagramData() here to avoid double-loading
         } else {
           this.logger.error('Failed to initialize DFD Orchestrator');
         }

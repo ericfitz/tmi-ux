@@ -266,7 +266,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
    * Initialize WebSocket subscriptions for DFD-related messages
    */
   initialize(): void {
-    this._logger.info('Initializing DFD WebSocket subscriptions');
+    // this._logger.info('Initializing DFD WebSocket subscriptions');
 
     // Subscribe to diagram operations
     this._subscriptions.add(
@@ -419,7 +419,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
         }),
     );
 
-    this._logger.info('DFD WebSocket subscriptions initialized successfully');
+    // this._logger.info('DFD WebSocket subscriptions initialized successfully');
   }
 
   /**

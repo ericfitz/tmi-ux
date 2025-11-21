@@ -647,10 +647,10 @@ export class ZOrderService {
     let iteration = 0;
     let changed = true;
 
-    this.logger.info('Starting z-order recalculation', {
-      totalCells: cells.length,
-      maxIterations,
-    });
+    // this.logger.info('Starting z-order recalculation', {
+    //   totalCells: cells.length,
+    //   maxIterations,
+    // });
 
     while (changed && iteration < maxIterations) {
       changed = false;
@@ -734,10 +734,10 @@ export class ZOrderService {
       });
     } else {
       // Success
-      this.logger.info('Z-order recalculation completed', {
-        iterations: iteration,
-        cellCount: cells.length,
-      });
+      // this.logger.info('Z-order recalculation completed', {
+      //   iterations: iteration,
+      //   cellCount: cells.length,
+      // });
     }
 
     return iteration;

@@ -56,7 +56,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
     this._setupResizeObserver();
     this._setupIntersectionObserver();
 
-    this.logger.info('UiPresenterCursorDisplayService initialized');
+    // this.logger.info('UiPresenterCursorDisplayService initialized');
   }
 
   /**

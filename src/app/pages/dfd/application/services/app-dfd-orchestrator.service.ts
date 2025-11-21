@@ -1256,7 +1256,7 @@ export class AppDfdOrchestrator {
     this.dfdInfrastructure.initializeGraph(params.containerElement);
 
     // Initialize WebSocket message handlers for collaboration
-    this.logger.info('Initializing WebSocket message handlers');
+    // this.logger.info('Initializing WebSocket message handlers');
     this.infraWebsocketAdapter.initialize();
     this.appStateService.initialize();
 
@@ -1264,7 +1264,7 @@ export class AppDfdOrchestrator {
     const graph = this.dfdInfrastructure.getGraph();
     if (graph) {
       // Initialize diagram resync service with context
-      this.logger.info('Initializing diagram resync service');
+      // this.logger.info('Initializing diagram resync service');
       this.appDiagramResyncService.initialize(
         params.diagramId,
         params.threatModelId,
@@ -1279,7 +1279,7 @@ export class AppDfdOrchestrator {
       }
 
       // Initialize presenter coordinator to handle cursor/selection broadcasting and display
-      this.logger.info('Initializing presenter coordinator for collaboration');
+      // this.logger.info('Initializing presenter coordinator for collaboration');
       this.uiPresenterCoordinator.initialize(params.containerElement, graph, this.selectionAdapter);
     } else {
       this.logger.warn('Graph not available, skipping collaboration broadcast initialization');
@@ -1306,14 +1306,14 @@ export class AppDfdOrchestrator {
     };
 
     // Initialize remote operation handler to process operations from other users
-    this.logger.info('Initializing remote operation handler');
+    // this.logger.info('Initializing remote operation handler');
     this.appRemoteOperationHandler.initialize(
       this.dfdInfrastructure.getGraph(),
       this._operationContext,
     );
 
     // Initialize history service for undo/redo operations
-    this.logger.info('Initializing history service');
+    // this.logger.info('Initializing history service');
     this.appHistoryService.initialize(
       this._operationContext,
       params.diagramId,
@@ -1321,7 +1321,7 @@ export class AppDfdOrchestrator {
     );
 
     // Initialize operation rejection handler
-    this.logger.info('Initializing operation rejection handler');
+    // this.logger.info('Initializing operation rejection handler');
     this.appOperationRejectionHandler.initialize();
 
     // Note: Validation callbacks are now configured directly in graph options during creation

@@ -92,7 +92,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
     );
 
     this._initialized = true;
-    this.logger.info('AppRemoteOperationHandler initialized');
+    // this.logger.info('AppRemoteOperationHandler initialized');
   }
 
   /**

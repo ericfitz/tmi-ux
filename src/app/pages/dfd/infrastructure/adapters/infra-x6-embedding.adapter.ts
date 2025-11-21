@@ -786,10 +786,10 @@ export class InfraX6EmbeddingAdapter {
     // Reset visual effects
     this.applyEmbeddingVisualEffects(node, originalFillColor, 0);
 
-    this.logger.info('Reset embedding appearance', {
-      nodeId: node.id,
-      originalFillColor,
-    });
+    // this.logger.info('Reset embedding appearance', {
+    //   nodeId: node.id,
+    //   originalFillColor,
+    // });
   }
 
   /**

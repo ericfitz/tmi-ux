@@ -52,7 +52,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
     this._subscribeToPresenterMessages();
 
     this._isInitialized = true;
-    this.logger.info('UiPresenterCoordinatorService initialized');
+    // this.logger.info('UiPresenterCoordinatorService initialized');
   }
 
   /**
@@ -81,7 +81,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
         }),
     );
 
-    this.logger.info('Subscribed to presenter WebSocket messages');
+    // this.logger.info('Subscribed to presenter WebSocket messages');
   }
 
   /**

@@ -41,7 +41,7 @@ export class UiPresenterSelectionService implements OnDestroy {
     this._setupSelectionListener();
 
     this._isInitialized = true;
-    this.logger.info('UiPresenterSelectionService initialized');
+    // this.logger.info('UiPresenterSelectionService initialized');
   }
 
   /**
@@ -64,7 +64,7 @@ export class UiPresenterSelectionService implements OnDestroy {
       },
     );
 
-    this.logger.info('Selection change listener setup completed');
+    // this.logger.info('Selection change listener setup completed');
   }
 
   /**

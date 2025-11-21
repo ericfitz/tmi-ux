@@ -140,7 +140,7 @@ export class AppStateService implements OnDestroy {
    * Initialize the state service and subscribe to WebSocket events
    */
   initialize(): void {
-    this._logger.info('Initializing DFD state management');
+    // this._logger.info('Initializing DFD state management');
 
     // Subscribe to domain events from WebSocket service
     this._subscriptions.add(
@@ -187,7 +187,7 @@ export class AppStateService implements OnDestroy {
         .subscribe((event: any) => this._processParticipantsUpdate(event)),
     );
 
-    this._logger.info('DFD state management initialized successfully');
+    // this._logger.info('DFD state management initialized successfully');
   }
 
   /**

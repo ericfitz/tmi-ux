@@ -45,13 +45,13 @@ export class InfraEdgeService {
       suppressHistory = false,
     } = options;
 
-    this._logger.info('Creating edge from EdgeInfo', {
-      edgeId: edgeInfo.id,
-      source: edgeInfo.source,
-      target: edgeInfo.target,
-      hasSourcePort: !!edgeInfo.source?.port,
-      hasTargetPort: !!edgeInfo.target?.port,
-    });
+    // this._logger.info('Creating edge from EdgeInfo', {
+    //   edgeId: edgeInfo.id,
+    //   source: edgeInfo.source,
+    //   target: edgeInfo.target,
+    //   hasSourcePort: !!edgeInfo.source?.port,
+    //   hasTargetPort: !!edgeInfo.target?.port,
+    // });
 
     // Verify nodes exist before creating edge
     this._verifyEdgeNodes(graph, edgeInfo);

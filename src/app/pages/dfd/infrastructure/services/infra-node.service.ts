@@ -275,12 +275,12 @@ export class InfraNodeService {
   ): any {
     const { ensureVisualRendering = true, suppressHistory = false } = options;
 
-    this.logger.info('Creating node from NodeInfo domain object', {
-      nodeId: nodeInfo.id,
-      nodeType: nodeInfo.type,
-      position: { x: nodeInfo.x, y: nodeInfo.y },
-      suppressHistory,
-    });
+    // this.logger.info('Creating node from NodeInfo domain object', {
+    //   nodeId: nodeInfo.id,
+    //   nodeType: nodeInfo.type,
+    //   position: { x: nodeInfo.x, y: nodeInfo.y },
+    //   suppressHistory,
+    // });
 
     try {
       // Convert NodeInfo to X6 node configuration

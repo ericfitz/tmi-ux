@@ -102,7 +102,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
     );
 
     this._initialized = true;
-    this.logger.info('AppOperationRejectionHandler initialized');
+    // this.logger.info('AppOperationRejectionHandler initialized');
   }
 
   /**

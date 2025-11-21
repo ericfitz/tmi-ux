@@ -64,7 +64,7 @@ export class UiPresenterCursorService implements OnDestroy {
       }),
     );
 
-    this.logger.info('UiPresenterCursorService initialized');
+    // this.logger.info('UiPresenterCursorService initialized');
   }
 
   /**
@@ -96,7 +96,7 @@ export class UiPresenterCursorService implements OnDestroy {
       }),
     );
 
-    this.logger.info('Mouse tracking setup completed');
+    // this.logger.info('Mouse tracking setup completed');
   }
 
   /**
