@@ -203,7 +203,7 @@ export class AppEdgeService {
             error: result.error,
           });
         } else {
-          this.logger.debug('Edge creation recorded in history', {
+          this.logger.debugComponent('AppEdgeService', 'Edge creation recorded in history', {
             edgeId: edge.id,
           });
         }

@@ -55,7 +55,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
       const graph = context.graph;
       const { diagramData, clearExisting } = operation;
 
-      this.logger.debug('Starting diagram load', {
+      this.logger.debugComponent('LoadDiagramExecutor', 'Starting diagram load', {
         operationId: operation.id,
         clearExisting,
         nodeCount: diagramData.nodes?.length || 0,
@@ -65,7 +65,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
       // Clear existing diagram if requested
       if (clearExisting) {
         graph.clearCells();
-        this.logger.debug('Cleared existing diagram');
+        this.logger.debugComponent('LoadDiagramExecutor', 'Cleared existing diagram');
       }
 
       const loadedCellIds: string[] = [];
@@ -73,7 +73,9 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
 
       // Load nodes first
       if (diagramData.nodes && diagramData.nodes.length > 0) {
-        this.logger.debug('Loading nodes', { count: diagramData.nodes.length });
+        this.logger.debugComponent('LoadDiagramExecutor', 'Loading nodes', {
+          count: diagramData.nodes.length,
+        });
 
         diagramData.nodes.forEach((nodeData: any) => {
           try {
@@ -96,7 +98,9 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
 
       // Load edges after nodes
       if (diagramData.edges && diagramData.edges.length > 0) {
-        this.logger.debug('Loading edges', { count: diagramData.edges.length });
+        this.logger.debugComponent('LoadDiagramExecutor', 'Loading edges', {
+          count: diagramData.edges.length,
+        });
 
         diagramData.edges.forEach((edgeData: any) => {
           try {
@@ -128,7 +132,7 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
       // Apply diagram-level properties
       if (diagramData.properties) {
         // Could store diagram properties in graph metadata
-        this.logger.debug('Applied diagram properties', {
+        this.logger.debugComponent('LoadDiagramExecutor', 'Applied diagram properties', {
           properties: Object.keys(diagramData.properties),
         });
       }

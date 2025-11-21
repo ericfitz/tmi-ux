@@ -107,7 +107,7 @@ export class AppExportService {
       // Get the content area (no zoom needed for vector export)
       const contentArea = graph.getContentArea();
 
-      this.logger.debug('Content area for export', {
+      this.logger.debugComponent('AppExportService', 'Content area for export', {
         format,
         contentArea: contentArea,
         padding: 20,
@@ -255,7 +255,7 @@ export class AppExportService {
       // Don't set viewBox here to avoid duplicates - we'll apply it during SVG processing
     };
 
-    this.logger.debug('Using bounding box approach for SVG export', {
+    this.logger.debugComponent('AppExportService', 'Using bounding box approach for SVG export', {
       bbox,
       viewBox,
       exportOptions,

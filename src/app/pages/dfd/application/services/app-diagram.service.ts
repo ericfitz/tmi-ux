@@ -698,7 +698,10 @@ export class AppDiagramService {
   saveDiagramChanges(graph: Graph, diagramId: string, threatModelId: string): Observable<boolean> {
     // Check if in collaborative mode
     if (this.collaborationService.isCollaborating()) {
-      this.logger.debug('Collaborative mode: attempting WebSocket save with REST fallback');
+      this.logger.debugComponent(
+        'AppDiagramService',
+        'Collaborative mode: attempting WebSocket save with REST fallback',
+      );
 
       // In collaborative mode, try WebSocket first, but fall back to REST if WebSocket fails
       // For bulk save operations (like auto-save), we need to convert the entire graph state
@@ -722,7 +725,8 @@ export class AppDiagramService {
   ): Observable<boolean> {
     // Check if in collaborative mode
     if (this.collaborationService.isCollaborating()) {
-      this.logger.debug(
+      this.logger.debugComponent(
+        'AppDiagramService',
         'Collaborative mode: attempting WebSocket save with image data and REST fallback',
       );
 
@@ -752,12 +756,16 @@ export class AppDiagramService {
       data: cell,
     }));
 
-    this.logger.debug('[DfdDiagram] Attempting WebSocket save with image data', {
-      diagramId,
-      threatModelId,
-      operationCount: operations.length,
-      hasImageData: !!imageData.svg,
-    });
+    this.logger.debugComponent(
+      'AppDiagramService',
+      '[DfdDiagram] Attempting WebSocket save with image data',
+      {
+        diagramId,
+        threatModelId,
+        operationCount: operations.length,
+        hasImageData: !!imageData.svg,
+      },
+    );
 
     // Try WebSocket save first
     return this.sendCollaborativeOperation(operations, graph, diagramId, threatModelId).pipe(
@@ -804,10 +812,14 @@ export class AppDiagramService {
 
     // Convert current graph state to cells format
     const cells = this.convertGraphToCellsFormat(graph);
-    this.logger.debug('[DfdDiagram] Converted graph to cells format with image', {
-      cellCount: cells.length,
-      hasImageData: !!imageData.svg,
-    });
+    this.logger.debugComponent(
+      'AppDiagramService',
+      '[DfdDiagram] Converted graph to cells format with image',
+      {
+        cellCount: cells.length,
+        hasImageData: !!imageData.svg,
+      },
+    );
 
     // Use the PATCH method for diagram-only updates with image data
     return this.threatModelService
@@ -851,7 +863,7 @@ export class AppDiagramService {
       data: cell,
     }));
 
-    this.logger.debug('Attempting WebSocket bulk save', {
+    this.logger.debugComponent('AppDiagramService', 'Attempting WebSocket bulk save', {
       cellCount: cells.length,
       diagramId,
       threatModelId,
@@ -872,9 +884,13 @@ export class AppDiagramService {
 
         // Check if error is authentication-related (don't fallback for auth errors)
         if (this._isAuthenticationError(error)) {
-          this.logger.debug('User lacks edit permissions - operation blocked as expected', {
-            error: error.message,
-          });
+          this.logger.debugComponent(
+            'AppDiagramService',
+            'User lacks edit permissions - operation blocked as expected',
+            {
+              error: error.message,
+            },
+          );
           return throwError(() => error);
         }
 
@@ -909,7 +925,11 @@ export class AppDiagramService {
 
     // Convert current graph state to cells format
     const cells = this.convertGraphToCellsFormat(graph);
-    this.logger.debug('[DfdDiagram] Converted graph to cells format', { cellCount: cells.length });
+    this.logger.debugComponent(
+      'AppDiagramService',
+      '[DfdDiagram] Converted graph to cells format',
+      { cellCount: cells.length },
+    );
 
     // Use the PATCH method for diagram-only updates
     return this.threatModelService.patchDiagramCells(threatModelId, diagramId, cells).pipe(
@@ -947,7 +967,7 @@ export class AppDiagramService {
       return throwError(() => new Error('Not in collaborative mode'));
     }
 
-    this.logger.debug('Sending collaborative operation', {
+    this.logger.debugComponent('AppDiagramService', 'Sending collaborative operation', {
       operationCount: operations.length,
       operations: operations.map(op => ({ id: op.id, operation: op.operation })),
     });
@@ -978,9 +998,13 @@ export class AppDiagramService {
 
         // Check if error is recoverable (don't fallback for auth errors)
         if (this._isAuthenticationError(error)) {
-          this.logger.debug('User lacks edit permissions - operation blocked as expected', {
-            error: error.message,
-          });
+          this.logger.debugComponent(
+            'AppDiagramService',
+            'User lacks edit permissions - operation blocked as expected',
+            {
+              error: error.message,
+            },
+          );
           return throwError(() => error);
         }
 

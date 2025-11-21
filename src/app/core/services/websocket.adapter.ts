@@ -670,7 +670,7 @@ export class WebSocketAdapter {
 
         const messageSize = this._chunkingService.getMessageSize(message);
 
-        this.logger.debug('Sending TMI message', {
+        this.logger.debugComponent('websocket-api', 'Sending TMI message', {
           type: messageData.message_type,
           userId: messageData.user?.user_id || messageData.user_id,
           userEmail: messageData.user?.email,
@@ -688,7 +688,7 @@ export class WebSocketAdapter {
           // Chunk the message and send each chunk
           this._chunkingService.chunkMessage(message).subscribe({
             next: chunks => {
-              this.logger.debug('Sending chunked message', {
+              this.logger.debugComponent('websocket-api', 'Sending chunked message', {
                 messageType: messageData.message_type,
                 totalChunks: chunks.length,
                 originalSizeBytes: messageSize,

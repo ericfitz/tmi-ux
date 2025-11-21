@@ -89,7 +89,7 @@ export class AppGraphOperationManager implements IGraphOperationManager {
     batchExecutor.registerExecutor('delete-edge', edgeExecutor);
     batchExecutor.registerExecutor('load-diagram', loadDiagramExecutor);
 
-    // this.logger.debug('Built-in executors initialized', {
+    // this.logger.debugComponent('AppGraphOperationManager', 'Built-in executors initialized', {
     //   executorCount: this._executors.size,
     //   executorTypes: ['node', 'edge', 'batch', 'load-diagram'],
     // });
@@ -235,7 +235,7 @@ export class AppGraphOperationManager implements IGraphOperationManager {
   addExecutor(executor: OperationExecutor): void {
     const key = this._getExecutorKey(executor);
     this._executors.set(key, executor);
-    // this.logger.debug('Executor added', { priority: executor.priority });
+    // this.logger.debugComponent('AppGraphOperationManager', 'Executor added', { priority: executor.priority });
   }
 
   removeExecutor(executor: OperationExecutor): void {

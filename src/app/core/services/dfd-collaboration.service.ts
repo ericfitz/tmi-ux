@@ -200,7 +200,10 @@ export class DfdCollaborationService implements OnDestroy {
     });
 
     // Log before emitting to track timing
-    this._logger.debug('[DfdCollaborationService] About to emit state update via BehaviorSubject');
+    this._logger.debugComponent(
+      'DfdCollaborationService',
+      'About to emit state update via BehaviorSubject',
+    );
 
     // Log detailed user changes if users were updated
     if (updates.users) {
@@ -214,12 +217,16 @@ export class DfdCollaborationService implements OnDestroy {
 
     this._collaborationState$.next(newState);
 
-    this._logger.debug('[DfdCollaborationService] State update complete - emitted to subscribers', {
-      isActive: newState.isActive,
-      userCount: newState.users.length,
-      hasSession: !!newState.sessionInfo,
-      users: newState.users,
-    });
+    this._logger.debugComponent(
+      'DfdCollaborationService',
+      'State update complete - emitted to subscribers',
+      {
+        isActive: newState.isActive,
+        userCount: newState.users.length,
+        hasSession: !!newState.sessionInfo,
+        users: newState.users,
+      },
+    );
   }
 
   /**
@@ -229,7 +236,7 @@ export class DfdCollaborationService implements OnDestroy {
    */
   public getCurrentState(): CollaborationState {
     const currentState = this._collaborationState$.value;
-    // this._logger.debug('[DfdCollaborationService] getCurrentState called', {
+    // this._logger.debugComponent('DfdCollaborationService', 'getCurrentState called', {
     //   isActive: currentState.isActive,
     //   userCount: currentState.users.length,
     //   hasSession: !!currentState.sessionInfo,
@@ -964,7 +971,7 @@ export class DfdCollaborationService implements OnDestroy {
       const isHost = participant.user.email === host;
       const isPresenter = participant.user.email === currentPresenter;
 
-      this._logger.debug('Participant comparison', {
+      this._logger.debugComponent('DfdCollaborationService', 'Participant comparison', {
         participantUserId: participant.user.user_id,
         participantEmail: participant.user.email,
         host,
@@ -999,7 +1006,7 @@ export class DfdCollaborationService implements OnDestroy {
 
     this._updateState(stateUpdate);
 
-    this._logger.debug('DfdCollaborationService: Updated collaboration state', {
+    this._logger.debugComponent('DfdCollaborationService', 'Updated collaboration state', {
       userCount: updatedUsers.length,
       users: updatedUsers,
       isActive: this._collaborationState$.value.isActive,
@@ -1034,7 +1041,7 @@ export class DfdCollaborationService implements OnDestroy {
     const currentUserId = this.getCurrentUserId();
     const currentUser = users.find(user => user.userId === currentUserId);
 
-    this._logger.debug('Getting current user permission', {
+    this._logger.debugComponent('DfdCollaborationService', 'Getting current user permission', {
       currentUserId,
       users: users.map(u => ({ userId: u.userId, email: u.email, permission: u.permission })),
       currentUser: currentUser
@@ -1608,7 +1615,10 @@ export class DfdCollaborationService implements OnDestroy {
    */
   private _setupWebSocketListeners(): void {
     if (this._webSocketListenersSetup) {
-      this._logger.debug('WebSocket listeners already set up, skipping');
+      this._logger.debugComponent(
+        'DfdCollaborationService',
+        'WebSocket listeners already set up, skipping',
+      );
       return;
     }
 
@@ -1688,7 +1698,7 @@ export class DfdCollaborationService implements OnDestroy {
    * Only shows notifications when there's an active collaboration session
    */
   private _handleWebSocketStateChange(state: WebSocketState): void {
-    this._logger.debug('WebSocket state changed', {
+    this._logger.debugComponent('DfdCollaborationService', 'WebSocket state changed', {
       state,
       hasActiveSession: !!this._currentSession,
       intentionalDisconnection: this._intentionalDisconnection,
@@ -1696,7 +1706,8 @@ export class DfdCollaborationService implements OnDestroy {
 
     // Only show notifications if there's an active collaboration session
     if (!this._currentSession) {
-      this._logger.debug(
+      this._logger.debugComponent(
+        'DfdCollaborationService',
         'No active collaboration session - suppressing WebSocket state notifications',
       );
       return;
@@ -1715,7 +1726,10 @@ export class DfdCollaborationService implements OnDestroy {
       case WebSocketState.DISCONNECTED:
         // Don't show disconnection notification if it was intentional (user leaving/ending session)
         if (this._intentionalDisconnection) {
-          this._logger.debug('Intentional disconnection - suppressing notification');
+          this._logger.debugComponent(
+            'DfdCollaborationService',
+            'Intentional disconnection - suppressing notification',
+          );
           // Emit session ended event
           this._sessionEndedSubject.next({ reason: 'user_ended' });
           // Reset the flag for next session
@@ -1801,7 +1815,7 @@ export class DfdCollaborationService implements OnDestroy {
     user_id?: string;
     message?: string;
   }): void {
-    this._logger.debug('Session ended via WebSocket', message);
+    this._logger.debugComponent('DfdCollaborationService', 'Session ended via WebSocket', message);
 
     // If current user is not the host and session was ended, redirect to dashboard
     if (!this.isCurrentUserHost() && this._currentSession) {
@@ -1821,7 +1835,11 @@ export class DfdCollaborationService implements OnDestroy {
     message_type: string;
     current_presenter: string;
   }): void {
-    this._logger.debug('Presenter changed event received', message);
+    this._logger.debugComponent(
+      'DfdCollaborationService',
+      'Presenter changed event received',
+      message,
+    );
 
     if (!message || !message.current_presenter) {
       this._logger.warn('Invalid presenter changed message received', message);

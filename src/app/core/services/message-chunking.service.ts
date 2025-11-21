@@ -125,7 +125,7 @@ export class MessageChunkingService implements OnDestroy {
         chunks.push(chunk);
       }
 
-      this._logger.debug('Message chunked successfully', {
+      this._logger.debugComponent('MessageChunkingService', 'Message chunked successfully', {
         chunkId,
         chunksCreated: chunks.length,
         totalSize,
@@ -146,7 +146,7 @@ export class MessageChunkingService implements OnDestroy {
       const { chunk_info, chunk_data } = chunk;
       const { chunk_id, total_chunks, chunk_index, original_message_type, total_size } = chunk_info;
 
-      this._logger.debug('Processing message chunk', {
+      this._logger.debugComponent('MessageChunkingService', 'Processing message chunk', {
         chunkId: chunk_id,
         chunkIndex: chunk_index,
         totalChunks: total_chunks,
@@ -197,7 +197,7 @@ export class MessageChunkingService implements OnDestroy {
       // Store the chunk
       reassemblyInfo.chunks.set(chunk_index, chunk_data);
 
-      this._logger.debug('Chunk stored', {
+      this._logger.debugComponent('MessageChunkingService', 'Chunk stored', {
         chunkId: chunk_id,
         chunkIndex: chunk_index,
         receivedChunks: reassemblyInfo.chunks.size,

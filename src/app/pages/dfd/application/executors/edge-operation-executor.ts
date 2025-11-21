@@ -93,9 +93,13 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
 
       if (existingEdge && isRetroactive) {
         // Edge already exists (created by X6 drag-connect), just capture state for history
-        this.logger.debug('Retroactive edge creation - edge already exists, capturing state', {
-          edgeId,
-        });
+        this.logger.debugComponent(
+          'EdgeOperationExecutor',
+          'Retroactive edge creation - edge already exists, capturing state',
+          {
+            edgeId,
+          },
+        );
 
         const currentState = this._captureEdgeState(graph, edgeId);
 
@@ -199,7 +203,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       // Capture current state for history
       const currentState = this._captureEdgeState(graph, edgeId);
 
-      this.logger.debug('Edge created successfully', {
+      this.logger.debugComponent('EdgeOperationExecutor', 'Edge created successfully', {
         edgeId,
         edgeType: (edgeInfo as any).edgeType,
         sourceNodeId,
@@ -345,7 +349,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       // Capture current state after all changes
       const currentState = this._captureEdgeState(graph, edgeId);
 
-      this.logger.debug('Edge updated successfully', {
+      this.logger.debugComponent('EdgeOperationExecutor', 'Edge updated successfully', {
         edgeId,
         changedProperties,
       });
@@ -383,7 +387,9 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       const edge = this.getEdge(graph, edgeId);
       if (!edge) {
         // Edge already doesn't exist - consider this success
-        this.logger.debug('Edge already deleted or not found', { edgeId });
+        this.logger.debugComponent('EdgeOperationExecutor', 'Edge already deleted or not found', {
+          edgeId,
+        });
         return of(this.createSuccessResult(operation, []));
       }
 
@@ -404,7 +410,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       // Remove the edge
       graph.removeEdge(edge);
 
-      this.logger.debug('Edge deleted successfully', { edgeId });
+      this.logger.debugComponent('EdgeOperationExecutor', 'Edge deleted successfully', { edgeId });
 
       const result = this.createSuccessResult(operation, [edgeId], {
         edgeId,

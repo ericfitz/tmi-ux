@@ -41,7 +41,7 @@ export class NodeOperationExecutor implements OperationExecutor {
   }
 
   execute(operation: GraphOperation, context: OperationContext): Observable<OperationResult> {
-    this.logger.debug('NodeOperationExecutor: Executing operation', {
+    this.logger.debugComponent('NodeOperationExecutor', 'Executing operation', {
       operationId: operation.id,
       type: operation.type,
     });
@@ -92,9 +92,13 @@ export class NodeOperationExecutor implements OperationExecutor {
 
       if (existingNode && isRetroactive) {
         // Node already exists (created by X6 or user interaction), just capture state for history
-        this.logger.debug('Retroactive node creation - node already exists, capturing state', {
-          nodeId,
-        });
+        this.logger.debugComponent(
+          'NodeOperationExecutor',
+          'Retroactive node creation - node already exists, capturing state',
+          {
+            nodeId,
+          },
+        );
 
         const currentState = this._captureCellState(graph, nodeId);
 
@@ -149,7 +153,7 @@ export class NodeOperationExecutor implements OperationExecutor {
       // Capture current state for history
       const currentState = this._captureCellState(graph, actualNodeId);
 
-      this.logger.debug('Node created successfully', {
+      this.logger.debugComponent('NodeOperationExecutor', 'Node created successfully', {
         nodeId: actualNodeId,
         nodeType: finalNodeData.nodeType,
         position: finalNodeData.position,
@@ -263,7 +267,7 @@ export class NodeOperationExecutor implements OperationExecutor {
       // Capture current state after all changes
       const currentState = this._captureCellState(graph, nodeId);
 
-      this.logger.debug('Node updated successfully', {
+      this.logger.debugComponent('NodeOperationExecutor', 'Node updated successfully', {
         nodeId,
         changedProperties,
         updatesCount: changedProperties.length,
@@ -309,7 +313,11 @@ export class NodeOperationExecutor implements OperationExecutor {
       const node = graph.getCellById(nodeId);
       if (!node || !node.isNode?.()) {
         // Node doesn't exist, consider it a successful no-op
-        this.logger.debug('Node not found for deletion, treating as success', { nodeId });
+        this.logger.debugComponent(
+          'NodeOperationExecutor',
+          'Node not found for deletion, treating as success',
+          { nodeId },
+        );
         return of({
           success: true,
           operationType: 'delete-node',
@@ -346,7 +354,7 @@ export class NodeOperationExecutor implements OperationExecutor {
         graph.removeCell(node);
       }
 
-      this.logger.debug('Node deleted successfully', {
+      this.logger.debugComponent('NodeOperationExecutor', 'Node deleted successfully', {
         nodeId,
         connectedEdgesCount: connectedEdgeIds.length,
       });

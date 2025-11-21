@@ -1392,7 +1392,8 @@ export class AppDfdOrchestrator {
       tap(() => {
         // History is always enabled now - just clear the diagram loading state
         // to allow normal history recording after initialization
-        this.logger.debug(
+        this.logger.debugComponent(
+          'AppDfdOrchestrator',
           'Diagram initialization complete - history filtering via GraphHistoryCoordinator',
         );
       }),

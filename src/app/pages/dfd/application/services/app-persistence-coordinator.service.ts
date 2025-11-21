@@ -74,7 +74,10 @@ export class AppPersistenceCoordinator {
     private readonly restStrategy: InfraRestPersistenceStrategy,
     private readonly webSocketStrategy: WebSocketPersistenceStrategy,
   ) {
-    // this.logger.debug('AppPersistenceCoordinator initialized (simplified)');
+    this.logger.debugComponent(
+      'AppPersistenceCoordinator',
+      'AppPersistenceCoordinator initialized (simplified)',
+    );
   }
 
   /**

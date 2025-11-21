@@ -107,7 +107,7 @@ export class AppDiagramResyncService implements OnDestroy {
       return;
     }
 
-    this.logger.debug('Resync triggered - will be debounced');
+    this.logger.debugComponent('AppDiagramResyncService', 'Resync triggered - will be debounced');
     this._resyncTrigger$.next();
   }
 
@@ -123,7 +123,11 @@ export class AppDiagramResyncService implements OnDestroy {
    */
   updateConfig(config: Partial<ResyncConfig>): void {
     Object.assign(this._config, config);
-    this.logger.debug('Resync configuration updated', this._config);
+    this.logger.debugComponent(
+      'AppDiagramResyncService',
+      'Resync configuration updated',
+      this._config,
+    );
   }
 
   /**
@@ -164,7 +168,10 @@ export class AppDiagramResyncService implements OnDestroy {
    */
   private _performResyncWithRetries(): Observable<ResyncResult> {
     if (this._isResyncInProgress) {
-      this.logger.debug('Resync already in progress, skipping duplicate request');
+      this.logger.debugComponent(
+        'AppDiagramResyncService',
+        'Resync already in progress, skipping duplicate request',
+      );
       return of({
         success: false,
         error: 'Resync already in progress',
@@ -329,7 +336,7 @@ export class AppDiagramResyncService implements OnDestroy {
     this._currentGraph = null;
     this._currentX6GraphAdapter = null;
     this._isResyncInProgress = false;
-    this.logger.debug('AppDiagramResyncService reset');
+    this.logger.debugComponent('AppDiagramResyncService', 'AppDiagramResyncService reset');
   }
 
   /**

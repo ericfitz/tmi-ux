@@ -79,7 +79,7 @@ export class AppHistoryService implements OnDestroy {
   ) {
     this._config = { ...DEFAULT_HISTORY_CONFIG };
     this._historyState = createEmptyHistoryState(this._config.maxHistorySize);
-    // this.logger.debug('AppHistoryService initialized');
+    // this.logger.debugComponent('AppHistoryService', 'AppHistoryService initialized');
   }
 
   /**
@@ -166,7 +166,7 @@ export class AppHistoryService implements OnDestroy {
     this._historyState = createEmptyHistoryState(this._config.maxHistorySize);
     this._emitHistoryStateChange('cleared');
 
-    this.logger.debug('History cleared');
+    this.logger.debugComponent('AppHistoryService', 'History cleared');
   }
 
   /**
@@ -175,11 +175,13 @@ export class AppHistoryService implements OnDestroy {
    */
   addHistoryEntry(entry: HistoryEntry): void {
     if (!this._config.enabled) {
-      this.logger.debug('History disabled, skipping entry', { entry });
+      this.logger.debugComponent('AppHistoryService', 'History disabled, skipping entry', {
+        entry,
+      });
       return;
     }
 
-    this.logger.debug('Adding history entry', {
+    this.logger.debugComponent('AppHistoryService', 'Adding history entry', {
       id: entry.id,
       operationType: entry.operationType,
       description: entry.description,
@@ -196,9 +198,13 @@ export class AppHistoryService implements OnDestroy {
     // Enforce stack size limit
     if (this._historyState.undoStack.length > this._historyState.maxStackSize) {
       const removed = this._historyState.undoStack.shift();
-      this.logger.debug('Removed oldest history entry due to size limit', {
-        removedId: removed?.id,
-      });
+      this.logger.debugComponent(
+        'AppHistoryService',
+        'Removed oldest history entry due to size limit',
+        {
+          removedId: removed?.id,
+        },
+      );
     }
 
     // Update current index
@@ -506,7 +512,7 @@ export class AppHistoryService implements OnDestroy {
   updateConfig(config: Partial<HistoryConfig>): void {
     this._config = { ...this._config, ...config };
     this._historyState.maxStackSize = this._config.maxHistorySize;
-    this.logger.debug('History configuration updated', this._config);
+    this.logger.debugComponent('AppHistoryService', 'History configuration updated', this._config);
   }
 
   /**
@@ -519,7 +525,7 @@ export class AppHistoryService implements OnDestroy {
     this._historyOperation$.complete();
     this._canUndo$.complete();
     this._canRedo$.complete();
-    this.logger.debug('AppHistoryService destroyed');
+    this.logger.debugComponent('AppHistoryService', 'AppHistoryService destroyed');
   }
 
   /**

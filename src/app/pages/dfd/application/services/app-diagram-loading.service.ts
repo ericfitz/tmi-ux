@@ -76,7 +76,7 @@ export class AppDiagramLoadingService {
       // Clear existing cells if requested
       if (clearExisting) {
         graph.clearCells();
-        this.logger.debug('Cleared existing cells from graph');
+        this.logger.debugComponent('AppDiagramLoadingService', 'Cleared existing cells from graph');
       }
 
       // Handle history suppression using GraphHistoryCoordinator
@@ -86,7 +86,10 @@ export class AppDiagramLoadingService {
         // Set diagram loading state to suppress history via the coordinator
         wasLoadingStateSuppressed = true;
         this.historyCoordinator.setDiagramLoadingState(true);
-        this.logger.debug('Diagram loading state set - history recording suppressed');
+        this.logger.debugComponent(
+          'AppDiagramLoadingService',
+          'Diagram loading state set - history recording suppressed',
+        );
       }
 
       // Set isApplyingRemoteChange flag to prevent collaboration broadcasts
@@ -94,7 +97,10 @@ export class AppDiagramLoadingService {
       const wasApplyingRemoteChange = this.appStateService.getCurrentState().isApplyingRemoteChange;
       if (!wasApplyingRemoteChange) {
         this.appStateService.setApplyingRemoteChange(true);
-        this.logger.debug('Set isApplyingRemoteChange flag - broadcasts suppressed');
+        this.logger.debugComponent(
+          'AppDiagramLoadingService',
+          'Set isApplyingRemoteChange flag - broadcasts suppressed',
+        );
       }
 
       try {
@@ -118,7 +124,7 @@ export class AppDiagramLoadingService {
 
         // Verify cells were added
         const graphCells = graph.getCells();
-        this.logger.debug('Graph state after loading', {
+        this.logger.debugComponent('AppDiagramLoadingService', 'Graph state after loading', {
           totalCellsInGraph: graphCells.length,
           cellIds: graphCells.map(cell => cell.id),
         });
@@ -126,34 +132,52 @@ export class AppDiagramLoadingService {
         // Update embedding appearances if requested (while history is still suppressed)
         if (updateEmbedding) {
           infraX6GraphAdapter.updateAllEmbeddingAppearances();
-          this.logger.debug('Updated embedding appearances after cell loading');
+          this.logger.debugComponent(
+            'AppDiagramLoadingService',
+            'Updated embedding appearances after cell loading',
+          );
         }
 
         // Recalculate z-order for all cells to fix any violations after loading
         infraX6GraphAdapter.recalculateZOrder();
-        this.logger.debug('Recalculated z-order after diagram load');
+        this.logger.debugComponent(
+          'AppDiagramLoadingService',
+          'Recalculated z-order after diagram load',
+        );
 
         // Center and fit diagram to viewport after initial load
         if (cells.length > 0) {
           graph.zoomToFit({ padding: 20, maxScale: DFD_STYLING.VIEWPORT.MAX_ZOOM });
-          this.logger.debug('Centered and fitted diagram to viewport');
+          this.logger.debugComponent(
+            'AppDiagramLoadingService',
+            'Centered and fitted diagram to viewport',
+          );
         }
 
         // Clear custom history service after diagram load
         this.historyService.clear();
-        this.logger.debug('Cleared AppHistoryService history after diagram load');
+        this.logger.debugComponent(
+          'AppDiagramLoadingService',
+          'Cleared AppHistoryService history after diagram load',
+        );
       } finally {
         // Restore isApplyingRemoteChange flag if it was modified
         if (!wasApplyingRemoteChange) {
           this.appStateService.setApplyingRemoteChange(false);
-          this.logger.debug('Cleared isApplyingRemoteChange flag - broadcasts restored');
+          this.logger.debugComponent(
+            'AppDiagramLoadingService',
+            'Cleared isApplyingRemoteChange flag - broadcasts restored',
+          );
         }
 
         // Restore diagram loading state if it was modified
         if (wasLoadingStateSuppressed) {
           // Clear the diagram loading state to allow normal history recording
           this.historyCoordinator.setDiagramLoadingState(false);
-          this.logger.debug('Diagram loading state cleared - history recording restored');
+          this.logger.debugComponent(
+            'AppDiagramLoadingService',
+            'Diagram loading state cleared - history recording restored',
+          );
         }
       }
     } catch (error) {

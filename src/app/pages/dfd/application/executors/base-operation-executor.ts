@@ -116,7 +116,7 @@ export abstract class BaseOperationExecutor implements OperationExecutor {
    * Log operation start
    */
   protected logOperationStart(operation: GraphOperation): void {
-    this.logger.debug(`Starting ${operation.type} operation`, {
+    this.logger.debugComponent('BaseOperationExecutor', `Starting ${operation.type} operation`, {
       operationId: operation.id,
       source: operation.source,
       priority: operation.priority,
@@ -127,7 +127,7 @@ export abstract class BaseOperationExecutor implements OperationExecutor {
    * Log operation completion
    */
   protected logOperationComplete(operation: GraphOperation, result: OperationResult): void {
-    this.logger.debug(`Completed ${operation.type} operation`, {
+    this.logger.debugComponent('BaseOperationExecutor', `Completed ${operation.type} operation`, {
       operationId: operation.id,
       success: result.success,
       affectedCells: result.affectedCellIds.length,

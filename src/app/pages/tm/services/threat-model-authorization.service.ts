@@ -84,13 +84,13 @@ export class ThreatModelAuthorizationService implements OnDestroy {
    * @param owner The owner of the threat model (optional for backward compatibility)
    */
   setAuthorization(threatModelId: string, authorization: Authorization[], owner?: string): void {
-    // this.logger.debug('setAuthorization called', {
-    //   threatModelId,
-    //   owner,
-    //   authorizationCount: authorization.length,
-    //   previousThreatModelId: this._currentThreatModelId,
-    //   stackTrace: new Error().stack?.split('\n').slice(1, 4).join('\n'),
-    // });
+    this.logger.debugComponent('ThreatModelAuthorizationService', 'setAuthorization called', {
+      threatModelId,
+      owner,
+      authorizationCount: authorization.length,
+      previousThreatModelId: this._currentThreatModelId,
+      stackTrace: new Error().stack?.split('\n').slice(1, 4).join('\n'),
+    });
 
     this._currentThreatModelId = threatModelId;
     this._currentOwner = owner || null;
@@ -153,11 +153,11 @@ export class ThreatModelAuthorizationService implements OnDestroy {
     // Step 1: Check if user is the owner (owner field takes absolute precedence)
     if (this._currentOwner) {
       if (this._currentOwner === currentUserId || this._currentOwner === currentUserEmail) {
-        // this.logger.debug('User matches owner field', {
-        //   owner: this._currentOwner,
-        //   userId: currentUserId,
-        //   userEmail: currentUserEmail,
-        // });
+        this.logger.debugComponent('ThreatModelAuthorizationService', 'User matches owner field', {
+          owner: this._currentOwner,
+          userId: currentUserId,
+          userEmail: currentUserEmail,
+        });
         return 'owner';
       }
     }

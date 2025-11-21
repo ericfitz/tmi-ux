@@ -27,7 +27,10 @@ export class WebSocketPersistenceStrategy {
     private readonly webSocketAdapter: WebSocketAdapter,
     private readonly collaborationAdapter: InfraWebsocketCollaborationAdapter,
   ) {
-    // this.logger.debug('WebSocketPersistenceStrategy initialized');
+    this.logger.debugComponent(
+      'WebSocketPersistenceStrategy',
+      'WebSocketPersistenceStrategy initialized',
+    );
   }
 
   save(operation: SaveOperation): Observable<SaveResult> {

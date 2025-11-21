@@ -84,7 +84,8 @@ describe('SecurityHeadersInterceptor', () => {
       expect(mockNext).toHaveBeenCalledWith(mockRequest);
 
       if (!environment.production) {
-        expect(loggerSpy.debug).toHaveBeenCalledWith(
+        expect(loggerSpy.debugComponent).toHaveBeenCalledWith(
+          'SecurityHeadersInterceptor',
           'Missing security headers in API response',
           expect.objectContaining({
             url: testUrl,
@@ -117,7 +118,7 @@ describe('SecurityHeadersInterceptor', () => {
       expect(mockNext).toHaveBeenCalledWith(mockRequest);
 
       if (!environment.production) {
-        expect(loggerSpy.debug).not.toHaveBeenCalled();
+        expect(loggerSpy.debugComponent).not.toHaveBeenCalled();
       }
     });
   });
@@ -224,7 +225,7 @@ describe('SecurityHeadersInterceptor', () => {
       expect(mockNext).toHaveBeenCalledWith(mockRequest);
       // For non-API requests, we still check HTTPS for HSTS
       // but we don't check for other missing headers
-      expect(loggerSpy.debug).not.toHaveBeenCalled();
+      expect(loggerSpy.debugComponent).not.toHaveBeenCalled();
       expect(loggerSpy.warn).toHaveBeenCalledWith(
         'Security header warnings',
         expect.objectContaining({

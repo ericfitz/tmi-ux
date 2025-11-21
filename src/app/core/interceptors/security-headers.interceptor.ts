@@ -41,11 +41,15 @@ export const securityHeadersInterceptor: HttpInterceptorFn = (req, next) => {
 
         // Log warnings about missing headers
         if (missingHeaders.length > 0 && req.url.startsWith(environment.apiUrl)) {
-          logger.debug('Missing security headers in API response', {
-            url: req.url,
-            missingHeaders,
-            hint: 'See docs/SECURITY_HEADERS.md for configuration guidance',
-          });
+          logger.debugComponent(
+            'SecurityHeadersInterceptor',
+            'Missing security headers in API response',
+            {
+              url: req.url,
+              missingHeaders,
+              hint: 'See docs/SECURITY_HEADERS.md for configuration guidance',
+            },
+          );
         }
 
         // Check for problematic header values

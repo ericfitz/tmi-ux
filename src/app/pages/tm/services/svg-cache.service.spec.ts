@@ -102,10 +102,14 @@ describe('SvgCacheService', () => {
     it('should log cache clearing with statistics', () => {
       service.clearAllCaches();
 
-      expect(mockLogger.debug).toHaveBeenCalledWith('SVG caches cleared', {
-        validationCacheCleared: 2,
-        dataUrlCacheCleared: 2,
-      });
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+        'SvgCacheService',
+        'SVG caches cleared',
+        {
+          validationCacheCleared: 2,
+          dataUrlCacheCleared: 2,
+        },
+      );
     });
   });
 

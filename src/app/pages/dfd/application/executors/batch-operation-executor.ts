@@ -36,7 +36,11 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
    */
   registerExecutor(operationType: string, executor: OperationExecutor): void {
     this._individualExecutors.set(operationType, executor);
-    // this.logger.debug('Registered executor for batch operations', { operationType });
+    this.logger.debugComponent(
+      'BatchOperationExecutor',
+      'Registered executor for batch operations',
+      { operationType },
+    );
   }
 
   execute(operation: GraphOperation, context: OperationContext): Observable<OperationResult> {
@@ -72,7 +76,7 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
       );
     }
 
-    this.logger.debug('Executing batch operation', {
+    this.logger.debugComponent('BatchOperationExecutor', 'Executing batch operation', {
       batchId: batchOperation.id,
       operationCount: operations.length,
       operationTypes: operations.map(op => op.type),
@@ -150,11 +154,15 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
     };
 
     if (success) {
-      this.logger.debug('Batch operation completed successfully', {
-        batchId: batchOperation.id,
-        operationCount: batchOperation.operations.length,
-        affectedCellsCount: allAffectedCellIds.size,
-      });
+      this.logger.debugComponent(
+        'BatchOperationExecutor',
+        'Batch operation completed successfully',
+        {
+          batchId: batchOperation.id,
+          operationCount: batchOperation.operations.length,
+          affectedCellsCount: allAffectedCellIds.size,
+        },
+      );
 
       const result = this.createSuccessResult(
         batchOperation,

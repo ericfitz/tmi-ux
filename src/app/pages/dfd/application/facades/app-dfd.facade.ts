@@ -66,7 +66,7 @@ export class AppDfdFacade {
     private readonly graphOperationManager: AppGraphOperationManager,
     private readonly appStateService: AppStateService,
   ) {
-    // this.logger.debug('AppDfdFacade initialized');
+    // this.logger.debugComponent('AppDfdFacade', 'AppDfdFacade initialized');
   }
 
   // ========================================

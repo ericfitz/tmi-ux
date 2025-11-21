@@ -28,7 +28,7 @@ export class InfraRestPersistenceStrategy {
     private readonly diagramService: AppDiagramService,
     private readonly threatModelService: ThreatModelService,
   ) {
-    // this.logger.debug('InfraRestPersistenceStrategy initialized');
+    this.logger.debugComponent('InfraRestPersistenceStrategy', 'initialized');
   }
 
   save(operation: SaveOperation): Observable<SaveResult> {
