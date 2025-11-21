@@ -127,6 +127,7 @@
     "mitigation": "Mitigation",
     "mitigationPlaceholder": "Describe recommended or planned mitigation(s) for this threat",
     "name": "Name",
+    "noDataAvailable": "No Data Available",
     "noMetadata": "No Metadata Available",
     "noThreats": "No Threats Available",
     "none": "None",

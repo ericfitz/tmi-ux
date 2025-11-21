@@ -127,6 +127,7 @@
     "mitigation": "Schadensbegrenzung",
     "mitigationPlaceholder": "Beschreiben Sie empfohlene oder geplante Gegenmaßnahmen für diese Bedrohung",
     "name": "Name",
+    "noDataAvailable": "Keine Daten verfügbar",
     "noMetadata": "Keine Metadaten verfügbar",
     "noThreats": "Keine Bedrohungen verfügbar",
     "none": "Keine",

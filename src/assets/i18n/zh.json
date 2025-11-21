@@ -127,6 +127,7 @@
     "mitigation": "缓解措施",
     "mitigationPlaceholder": "描述针对此威胁的推荐或计划缓解措施",
     "name": "名称",
+    "noDataAvailable": "无可用数据",
     "noMetadata": "无可用元数据",
     "noThreats": "无可用威胁",
     "none": "无",
