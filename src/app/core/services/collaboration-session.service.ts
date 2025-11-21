@@ -2,31 +2,22 @@
  * Collaboration Session Service
  *
  * This service manages collaboration sessions with real-time updates via WebSocket.
- * It provides centralized session management with support for both mock and real data.
+ * It provides centralized session management.
  *
  * Key functionality:
  * - Queries server for available collaboration sessions
  * - Monitors WebSocket for session announcements (started/ended)
  * - Provides reactive streams for session list updates
- * - Integrates with MockDataService for development/testing
  * - Handles server connectivity states
  */
 
 import { Injectable, OnDestroy, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, Subject, combineLatest, EMPTY, of, Subscription } from 'rxjs';
-import {
-  map,
-  switchMap,
-  takeUntil,
-  catchError,
-  distinctUntilChanged,
-  shareReplay,
-} from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, EMPTY, of, Subscription } from 'rxjs';
+import { map, switchMap, takeUntil, catchError, shareReplay } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
-import { MockDataService } from '../../mocks/mock-data.service';
 import { ServerConnectionService, ServerConnectionStatus } from './server-connection.service';
 import { WebSocketAdapter, MessageType } from './websocket.adapter';
 import { IAuthProvider } from '../interfaces/auth-provider.interface';
@@ -85,7 +76,6 @@ export class CollaborationSessionService implements OnDestroy {
   constructor(
     private http: HttpClient,
     private logger: LoggerService,
-    private mockDataService: MockDataService,
     private serverConnectionService: ServerConnectionService,
     private webSocketAdapter: WebSocketAdapter,
     private injector: Injector,
@@ -104,15 +94,8 @@ export class CollaborationSessionService implements OnDestroy {
    * Observable that determines if collaboration section should be visible
    */
   get shouldShowCollaboration$(): Observable<boolean> {
-    return combineLatest([
-      this.mockDataService.useMockData$,
-      this.serverConnectionService.connectionStatus$,
-    ]).pipe(
-      map(([useMockData, serverStatus]) => {
-        // Show if using mock data OR server is connected
-        return useMockData || serverStatus === ServerConnectionStatus.CONNECTED;
-      }),
-      distinctUntilChanged(),
+    return this.serverConnectionService.connectionStatus$.pipe(
+      map(serverStatus => serverStatus === ServerConnectionStatus.CONNECTED),
       shareReplay(1),
     );
   }
@@ -196,11 +179,8 @@ export class CollaborationSessionService implements OnDestroy {
       return; // Already polling
     }
 
-    // Set up reactive session loading based on mock data toggle and server connection
-    this._sessionPollingSubscription = combineLatest([
-      this.mockDataService.useMockData$,
-      this.serverConnectionService.connectionStatus$,
-    ])
+    // Set up reactive session loading based on server connection
+    this._sessionPollingSubscription = this.serverConnectionService.connectionStatus$
       .pipe(
         switchMap(() => this.loadSessions()),
         takeUntil(this._destroy$),
@@ -229,26 +209,13 @@ export class CollaborationSessionService implements OnDestroy {
    * Load collaboration sessions based on current state
    */
   private loadSessions(): Observable<CollaborationSession[]> {
-    if (this.mockDataService.isUsingMockData) {
-      return this.loadMockSessions();
-    } else if (this.serverConnectionService.currentStatus === ServerConnectionStatus.CONNECTED) {
+    if (this.serverConnectionService.currentStatus === ServerConnectionStatus.CONNECTED) {
       return this.loadRealSessions();
     } else {
       // No data to load - clear sessions
       this._sessions$.next([]);
       return EMPTY;
     }
-  }
-
-  /**
-   * Load mock collaboration sessions
-   */
-  private loadMockSessions(): Observable<CollaborationSession[]> {
-    const mockSessions = this.mockDataService.getMockCollaborationSessions();
-    this.logger.info('Loading mock collaboration sessions', { count: mockSessions.length });
-
-    this._sessions$.next(mockSessions);
-    return of(mockSessions);
   }
 
   /**

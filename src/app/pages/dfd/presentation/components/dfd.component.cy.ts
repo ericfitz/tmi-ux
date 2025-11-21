@@ -7,8 +7,6 @@ import { LoggerService } from '../../../../../core/services/logger.service';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { ThreatModelService } from '../tm/services/threat-model.service';
-import { MockDataService } from '../../mocks/mock-data.service';
-import { BehaviorSubject } from 'rxjs';
 
 describe('DfdComponent', () => {
   const loggerServiceStub = {
@@ -62,17 +60,12 @@ describe('DfdComponent', () => {
       }),
   };
 
-  const mockDataServiceStub = {
-    useMockData$: new BehaviorSubject<boolean>(true),
-  };
-
   const mountConfig: MountConfig<DfdComponent> = {
     providers: [
       provideHttpClient(),
       { provide: LoggerService, useValue: loggerServiceStub },
       { provide: ActivatedRoute, useValue: activatedRouteStub },
       { provide: ThreatModelService, useValue: threatModelServiceStub },
-      { provide: MockDataService, useValue: mockDataServiceStub },
     ],
   };
 

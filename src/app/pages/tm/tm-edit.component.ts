@@ -16,7 +16,6 @@ import { LoggerService } from '../../core/services/logger.service';
 import { SvgCacheService } from './services/svg-cache.service';
 import { ApiService } from '../../core/services/api.service';
 import { environment } from '../../../environments/environment';
-import { MockDataService } from '../../mocks/mock-data.service';
 
 import {
   COMMON_IMPORTS,
@@ -178,7 +177,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private transloco: TranslocoService,
     private frameworkService: FrameworkService,
-    private mockDataService: MockDataService,
     private authorizationService: ThreatModelAuthorizationService,
     private cellDataExtractionService: CellDataExtractionService,
   ) {
@@ -2571,105 +2569,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }
 
     return displayUrl;
-  }
-
-  /**
-   * Check if the save button should be shown (development builds only)
-   * @returns true if in development mode
-   */
-  shouldShowSaveButton(): boolean {
-    return !environment.production;
-  }
-
-  /**
-   * Check if the save button should be enabled
-   * @returns true if mock data is enabled and we're editing a mock threat model
-   */
-  isSaveEnabled(): boolean {
-    if (!this.threatModel) {
-      return false;
-    }
-
-    // Only enable if mock data is being used
-    if (!this.mockDataService.isUsingMockData) {
-      return false;
-    }
-
-    // Only enable for existing threat models (not new ones)
-    if (this.isNewThreatModel) {
-      return false;
-    }
-
-    // Check if this is one of the mock threat models
-    return this.mockDataService.isMockThreatModel(this.threatModel.id);
-  }
-
-  /**
-   * Save the threat model to disk for mock data replacement
-   * Downloads a file that can be used to replace the mock data file
-   */
-  saveToDisk(): void {
-    if (!this.threatModel) {
-      this.logger.warn('Cannot save threat model: no threat model loaded');
-      return;
-    }
-
-    if (!this.isSaveEnabled()) {
-      this.logger.warn('Save to disk is not enabled for this threat model');
-      return;
-    }
-
-    this.logger.debugComponent('TmEdit', 'Saving threat model to mock data file', {
-      threatModelId: this.threatModel.id,
-      threatModelName: this.threatModel.name,
-    });
-
-    try {
-      // Apply form changes to the threat model before saving
-      this.applyFormChangesToThreatModel();
-
-      // Get the mock data file name from the service
-      const mockFileName = this.mockDataService.getMockDataFileName(this.threatModel.id);
-
-      if (!mockFileName) {
-        this.logger.warn('Cannot determine mock data file name for threat model', {
-          threatModelId: this.threatModel.id,
-        });
-        return;
-      }
-
-      // Serialize the complete threat model as JSON with proper formatting
-      const jsonContent = JSON.stringify(this.threatModel, null, 2);
-      const blob = new Blob([jsonContent], { type: 'application/json' });
-
-      // Create download with the exact filename to replace in mock-data directory
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = mockFileName;
-      link.style.display = 'none';
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Clean up the object URL
-      URL.revokeObjectURL(url);
-
-      this.logger.debugComponent('TmEdit', 'Mock data file created for download', {
-        fileName: mockFileName,
-        instruction: `Replace src/assets/mock-data/${mockFileName} with the downloaded file`,
-      });
-
-      // Show success message to user in console (development only)
-      this.logger.debugComponent('TmEdit', `Mock data file created: ${mockFileName}`);
-      this.logger.debugComponent(
-        'TmEdit',
-        `Replace src/assets/mock-data/${mockFileName} with the downloaded file to update mock data`,
-      );
-    } catch (error) {
-      this.logger.error('Error saving threat model to mock data file', error);
-    }
   }
 
   /**

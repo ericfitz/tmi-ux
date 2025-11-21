@@ -14,7 +14,6 @@ import '@angular/compiler';
 import { ThreatModelService } from './threat-model.service';
 import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
-import { MockDataService } from '../../../mocks/mock-data.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ThreatModelAuthorizationService } from './threat-model-authorization.service';
 import { of } from 'rxjs';
@@ -24,14 +23,10 @@ import { createMockLoggerService } from '../../../../testing/mocks';
 // Import testing utilities
 import { waitForAsync } from '../../../../testing/async-utils';
 
-// Import mock data factory
-import { createMockThreatModel } from '../../../mocks/factories/threat-model.factory';
-
 // The Angular testing environment is initialized in src/testing/zone-setup.ts
 
 describe('ThreatModelService', () => {
   let service: ThreatModelService;
-  let mockDataService: MockDataService;
   let loggerService: LoggerService;
   let apiService: ApiService;
   let authService: AuthService;
@@ -41,35 +36,43 @@ describe('ThreatModelService', () => {
   let testThreatModel3: any;
 
   beforeEach(() => {
-    // Create test data using factory functions
-    testThreatModel1 = createMockThreatModel({
+    // Create test data
+    testThreatModel1 = {
       id: '550e8400-e29b-41d4-a716-446655440000',
       name: 'Test Threat Model 1',
-    });
-    testThreatModel2 = createMockThreatModel({
+      description: 'Test Description 1',
+      created_at: new Date().toISOString(),
+      modified_at: new Date().toISOString(),
+      owner: 'test@example.com',
+      created_by: 'test@example.com',
+      threat_model_framework: 'STRIDE',
+      diagrams: [],
+      threats: [],
+    };
+    testThreatModel2 = {
       id: '550e8400-e29b-41d4-a716-446655440001',
       name: 'Test Threat Model 2',
-    });
-    testThreatModel3 = createMockThreatModel({
+      description: 'Test Description 2',
+      created_at: new Date().toISOString(),
+      modified_at: new Date().toISOString(),
+      owner: 'test@example.com',
+      created_by: 'test@example.com',
+      threat_model_framework: 'STRIDE',
+      diagrams: [],
+      threats: [],
+    };
+    testThreatModel3 = {
       id: '550e8400-e29b-41d4-a716-446655440002',
       name: 'Test Threat Model 3',
-    });
-
-    // Create spy objects for the dependencies
-    mockDataService = {
-      getMockThreatModels: vi
-        .fn()
-        .mockReturnValue([testThreatModel1, testThreatModel2, testThreatModel3]),
-      getMockThreatModelById: vi.fn().mockReturnValue(testThreatModel1),
-      getMockDiagramsForThreatModel: vi.fn().mockReturnValue([]),
-      getMockDiagramById: vi.fn().mockReturnValue(null),
-      createThreatModel: vi.fn().mockReturnValue(
-        createMockThreatModel({
-          name: 'New Test Threat Model',
-          description: 'Created for testing',
-        }),
-      ),
-    } as unknown as MockDataService;
+      description: 'Test Description 3',
+      created_at: new Date().toISOString(),
+      modified_at: new Date().toISOString(),
+      owner: 'test@example.com',
+      created_by: 'test@example.com',
+      threat_model_framework: 'STRIDE',
+      diagrams: [],
+      threats: [],
+    };
 
     loggerService = createMockLoggerService() as unknown as LoggerService;
 
@@ -98,13 +101,23 @@ describe('ThreatModelService', () => {
       canManagePermissions: vi.fn().mockReturnValue(true),
     } as unknown as ThreatModelAuthorizationService;
 
+    // Create mocks for the additional services
+    const importOrchestrator = {
+      importThreatModel: vi.fn(),
+    } as any;
+
+    const fieldFilter = {
+      filterReadonlyFields: vi.fn(),
+    } as any;
+
     // Create the service directly with mocked dependencies
     service = new ThreatModelService(
       apiService,
       loggerService,
-      mockDataService,
       authService,
       authorizationService,
+      importOrchestrator,
+      fieldFilter,
     );
   });
 
@@ -197,10 +210,18 @@ describe('ThreatModelService', () => {
 
     it('should create a new threat model via API', waitForAsync(() => {
       // Mock the API response for creating a threat model
-      const newThreatModel = createMockThreatModel({
+      const newThreatModel = {
+        id: 'new-threat-model-id',
         name: 'New Test Threat Model',
         description: 'Created for testing',
-      });
+        created_at: new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+        owner: 'test@example.com',
+        created_by: 'test@example.com',
+        threat_model_framework: 'STRIDE',
+        diagrams: [],
+        threats: [],
+      };
       vi.mocked(apiService.post).mockReturnValue(of(newThreatModel));
 
       return new Promise<void>((resolve, reject) => {

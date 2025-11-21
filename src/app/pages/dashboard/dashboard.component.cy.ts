@@ -2,21 +2,14 @@
 
 import { MountConfig } from 'cypress/angular';
 import { TmComponent } from './tm.component';
-import { MockDataService } from '../../mocks/mock-data.service';
 import { ThreatModelService } from './services/threat-model.service';
 import { provideHttpClient } from '@angular/common/http';
 import { LoggerService } from '../../core/services/logger.service';
-import { BehaviorSubject, of } from 'rxjs';
+import { of } from 'rxjs';
 import { MOCK_THREAT_MODELS } from './models/threat-model.model';
 
 describe('TmComponent', () => {
   const [mockThreatModel1, mockThreatModel2, mockThreatModel3] = MOCK_THREAT_MODELS;
-
-  const mockDataServiceStub = {
-    useMockData$: new BehaviorSubject<boolean>(true),
-    getMockThreatModels: () => [mockThreatModel1, mockThreatModel2, mockThreatModel3],
-    toggleMockData: (_useMock: boolean) => {},
-  };
 
   const threatModelServiceStub = {
     getThreatModelList: () =>
@@ -79,7 +72,6 @@ describe('TmComponent', () => {
   const mountConfig: MountConfig<TmComponent> = {
     providers: [
       provideHttpClient(),
-      { provide: MockDataService, useValue: mockDataServiceStub },
       { provide: ThreatModelService, useValue: threatModelServiceStub },
       { provide: LoggerService, useValue: loggerServiceStub },
     ],

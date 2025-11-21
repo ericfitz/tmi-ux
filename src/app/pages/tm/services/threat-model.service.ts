@@ -69,7 +69,6 @@ interface CollaborationSession {
 }
 import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
-import { MockDataService } from '../../../mocks/mock-data.service';
 
 /**
  * Type guard to check if an error is an HttpErrorResponse
@@ -96,7 +95,6 @@ export class ThreatModelService implements OnDestroy {
   constructor(
     private apiService: ApiService,
     private logger: LoggerService,
-    private mockDataService: MockDataService,
     private authService: AuthService,
     private authorizationService: ThreatModelAuthorizationService,
     private importOrchestrator: ImportOrchestratorService,
@@ -107,7 +105,7 @@ export class ThreatModelService implements OnDestroy {
 
   /**
    * Check if we're in offline mode (standalone with no server)
-   * Note: Offline mode has been removed - always connected to server now
+   * Note: Offline mode has been removed - always returns false
    */
   private get isOfflineMode(): boolean {
     return false;
@@ -122,27 +120,14 @@ export class ThreatModelService implements OnDestroy {
       'ThreatModelService',
       'ThreatModelService.getThreatModelList called',
       {
-        isOfflineMode: this.isOfflineMode,
         threatModelListCount: this._threatModelList.length,
         forceRefresh: forceRefresh,
         models: this._threatModelList.map(tm => ({ id: tm.id, name: tm.name })),
       },
     );
 
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - returning mock threat model list');
-      // Load mock threat models from MockDataService
-      const mockModels = this.mockDataService.getMockThreatModels();
-      this._threatModelList = mockModels.map(tm => this.convertToListItem(tm));
-      this._threatModelListSubject.next(this._threatModelList);
-      return this._threatModelListSubject.asObservable();
-    }
-
-    // For API mode, always fetch fresh data to ensure up-to-date information
-    this.logger.debugComponent(
-      'ThreatModelService',
-      'API mode - fetching fresh threat model list from API',
-    );
+    // Always fetch fresh data to ensure up-to-date information
+    this.logger.debugComponent('ThreatModelService', 'Fetching fresh threat model list from API');
     this.fetchThreatModelListFromAPI();
 
     // Always return the reactive subject for consistent behavior
@@ -225,36 +210,6 @@ export class ThreatModelService implements OnDestroy {
     id: string,
     forceRefresh: boolean = false,
   ): Observable<ThreatModel | undefined> {
-    // In offline mode, use cache or load from MockDataService
-    if (this.isOfflineMode) {
-      this.logger.debugComponent(
-        'ThreatModelService',
-        `Offline mode - returning threat model with ID: ${id}`,
-      );
-
-      // Check cache first
-      let threatModel = this._cachedThreatModels.get(id);
-
-      // If not in cache, load from MockDataService
-      if (!threatModel) {
-        threatModel = this.mockDataService.getMockThreatModels().find(tm => tm.id === id);
-        if (threatModel) {
-          this._cachedThreatModels.set(id, threatModel);
-        }
-      }
-
-      // Update authorization service with the threat model's authorization
-      if (threatModel) {
-        this.authorizationService.setAuthorization(
-          threatModel.id,
-          threatModel.authorization,
-          threatModel.owner,
-        );
-      }
-
-      return of(threatModel);
-    }
-
     // Check cache first unless force refresh is requested
     if (this._cachedThreatModels.has(id) && !forceRefresh) {
       this.logger.debugComponent(
@@ -517,51 +472,6 @@ export class ThreatModelService implements OnDestroy {
     // Ensure framework is never empty - use STRIDE as default
     const validFramework = framework && framework.trim() !== '' ? framework : 'STRIDE';
 
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - creating threat model with mock data');
-
-      const now = new Date().toISOString();
-      const currentUser = this.authService.userEmail || 'anonymous@example.com';
-
-      // Use MockDataService to create threat model with proper mock data structure
-      const newThreatModel = this.mockDataService.createThreatModel({
-        id: uuidv4(),
-        name,
-        description,
-        created_at: now,
-        modified_at: now,
-        owner: currentUser,
-        created_by: currentUser,
-        threat_model_framework: validFramework,
-        issue_uri: issueUrl,
-        authorization: [
-          {
-            subject: currentUser,
-            subject_type: 'user',
-            role: 'owner',
-          },
-        ],
-        metadata: [],
-        diagrams: [],
-        threats: [],
-      });
-
-      // Add to both the list and cache
-      const listItem = this.convertToListItem(newThreatModel);
-      this._threatModelList.push(listItem);
-      this._threatModelListSubject.next([...this._threatModelList]);
-      this._cachedThreatModels.set(newThreatModel.id, newThreatModel);
-
-      this.logger.debugComponent('ThreatModelService', 'Created in-memory threat model', {
-        id: newThreatModel.id,
-        name: newThreatModel.name,
-        totalInList: this._threatModelList.length,
-      });
-
-      return of(newThreatModel);
-    }
-
-    // In a real implementation, this would call the API
     this.logger.debugComponent('ThreatModelService', 'Creating threat model via API');
     const body = {
       name,

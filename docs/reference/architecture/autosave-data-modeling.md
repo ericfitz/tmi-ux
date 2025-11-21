@@ -146,7 +146,7 @@ The application supports both development and production data sources:
 
 #### Mock Data Mode (Development)
 
-- Uses `MockDataService` with localStorage persistence for development
+- Previously used MockDataService (now removed - all data comes from API)
 - Changes applied to in-memory objects immediately
 - Simulates server behavior for testing and offline development
 
