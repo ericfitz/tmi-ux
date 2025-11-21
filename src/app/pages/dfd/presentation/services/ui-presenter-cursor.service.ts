@@ -134,7 +134,10 @@ export class UiPresenterCursorService implements OnDestroy {
 
     // Don't broadcast if graph is not visible
     if (!this._isGraphVisible) {
-      this.logger.debug('Skipping cursor broadcast - graph not visible');
+      this.logger.debugComponent(
+        'UiPresenterCursorService',
+        'Skipping cursor broadcast - graph not visible',
+      );
       return;
     }
 
@@ -145,7 +148,10 @@ export class UiPresenterCursorService implements OnDestroy {
 
       // Only proceed if coordinate conversion succeeded
       if (!cursorPosition) {
-        this.logger.debug('Skipping cursor broadcast - coordinate conversion failed');
+        this.logger.debugComponent(
+          'UiPresenterCursorService',
+          'Skipping cursor broadcast - coordinate conversion failed',
+        );
         return;
       }
 
@@ -206,10 +212,14 @@ export class UiPresenterCursorService implements OnDestroy {
     try {
       this.collaborativeOperationService.sendPresenterCursor(position).subscribe({
         next: () => {
-          this.logger.debug('Broadcast presenter cursor position', {
-            x: position.x,
-            y: position.y,
-          });
+          this.logger.debugComponent(
+            'UiPresenterCursorService',
+            'Broadcast presenter cursor position',
+            {
+              x: position.x,
+              y: position.y,
+            },
+          );
         },
         error: error => {
           this.logger.error('Error broadcasting cursor position', error);
@@ -238,10 +248,14 @@ export class UiPresenterCursorService implements OnDestroy {
         event.clientY <= window.innerHeight;
 
       if (!isWithinViewport) {
-        this.logger.debug('Presenter cursor outside viewport - skipping broadcast', {
-          cursorPosition: { x: event.clientX, y: event.clientY },
-          viewportSize: { width: window.innerWidth, height: window.innerHeight },
-        });
+        this.logger.debugComponent(
+          'UiPresenterCursorService',
+          'Presenter cursor outside viewport - skipping broadcast',
+          {
+            cursorPosition: { x: event.clientX, y: event.clientY },
+            viewportSize: { width: window.innerWidth, height: window.innerHeight },
+          },
+        );
         return false;
       }
 
@@ -257,11 +271,15 @@ export class UiPresenterCursorService implements OnDestroy {
         mouseY <= containerRect.height;
 
       if (!isWithinContainer) {
-        this.logger.debug('Presenter cursor outside graph container - skipping broadcast', {
-          cursorPosition: { x: event.clientX, y: event.clientY },
-          containerPosition: { x: mouseX, y: mouseY },
-          containerSize: { width: containerRect.width, height: containerRect.height },
-        });
+        this.logger.debugComponent(
+          'UiPresenterCursorService',
+          'Presenter cursor outside graph container - skipping broadcast',
+          {
+            cursorPosition: { x: event.clientX, y: event.clientY },
+            containerPosition: { x: mouseX, y: mouseY },
+            containerSize: { width: containerRect.width, height: containerRect.height },
+          },
+        );
         return false;
       }
 
@@ -293,10 +311,14 @@ export class UiPresenterCursorService implements OnDestroy {
           if (entry.target === this._graphContainer) {
             this._isGraphVisible = entry.isIntersecting;
 
-            this.logger.debug('Presenter graph visibility changed', {
-              isVisible: this._isGraphVisible,
-              intersectionRatio: entry.intersectionRatio,
-            });
+            this.logger.debugComponent(
+              'UiPresenterCursorService',
+              'Presenter graph visibility changed',
+              {
+                isVisible: this._isGraphVisible,
+                intersectionRatio: entry.intersectionRatio,
+              },
+            );
           }
         }
       },
@@ -306,7 +328,10 @@ export class UiPresenterCursorService implements OnDestroy {
     );
 
     this._intersectionObserver.observe(this._graphContainer);
-    this.logger.debug('IntersectionObserver initialized for presenter cursor tracking');
+    this.logger.debugComponent(
+      'UiPresenterCursorService',
+      'IntersectionObserver initialized for presenter cursor tracking',
+    );
   }
 
   /**

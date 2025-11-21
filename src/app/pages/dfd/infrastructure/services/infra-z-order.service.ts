@@ -679,13 +679,17 @@ export class ZOrderService {
               node.setZIndex(newZIndex);
               changed = true;
 
-              this.logger.debug('Adjusted node z-index (parent violation)', {
-                nodeId: node.id,
-                oldZIndex: nodeZIndex,
-                newZIndex,
-                parentZIndex,
-                iteration,
-              });
+              this.logger.debugComponent(
+                'ZOrderService',
+                'Adjusted node z-index (parent violation)',
+                {
+                  nodeId: node.id,
+                  oldZIndex: nodeZIndex,
+                  newZIndex,
+                  parentZIndex,
+                  iteration,
+                },
+              );
             }
           }
         } else if (cell.isEdge()) {
@@ -709,7 +713,7 @@ export class ZOrderService {
                 edge.setZIndex(requiredZIndex);
                 changed = true;
 
-                this.logger.debug('Adjusted edge z-index', {
+                this.logger.debugComponent('ZOrderService', 'Adjusted edge z-index', {
                   edgeId: edge.id,
                   oldZIndex: edgeZIndex,
                   newZIndex: requiredZIndex,

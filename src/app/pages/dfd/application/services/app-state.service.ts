@@ -202,7 +202,10 @@ export class AppStateService implements OnDestroy {
    */
   setBlockOperations(blocked: boolean): void {
     this._operationsBlocked = blocked;
-    this._logger.debug(`Operations ${blocked ? 'blocked' : 'unblocked'}`);
+    this._logger.debugComponent(
+      'AppStateService',
+      `Operations ${blocked ? 'blocked' : 'unblocked'}`,
+    );
   }
 
   /**
@@ -248,14 +251,14 @@ export class AppStateService implements OnDestroy {
    */
   setReadOnly(readOnly: boolean): void {
     this._updateState({ readOnly });
-    this._logger.debug('Read-only mode state updated', { readOnly });
+    this._logger.debugComponent('AppStateService', 'Read-only mode state updated', { readOnly });
   }
 
   /**
    * Process a domain event from the WebSocket service
    */
   private _processDomainEvent(event: WebSocketDomainEvent): void {
-    this._logger.debug('Processing domain event', { type: event.type });
+    this._logger.debugComponent('AppStateService', 'Processing domain event', { type: event.type });
 
     // Update sync state based on event type
     switch (event.type) {
@@ -285,13 +288,17 @@ export class AppStateService implements OnDestroy {
     // Skip our own operations
     const currentUserEmail = this._collaborationService.getCurrentUserEmail();
     if (message.initiating_user.email === currentUserEmail) {
-      this._logger.debug('Skipping own operation', { operationId: message.operation_id });
+      this._logger.debugComponent('AppStateService', 'Skipping own operation', {
+        operationId: message.operation_id,
+      });
       return;
     }
 
     // Check if we've already processed this operation
     if (this.getCurrentState().lastOperationId === message.operation_id) {
-      this._logger.debug('Operation already processed', { operationId: message.operation_id });
+      this._logger.debugComponent('AppStateService', 'Operation already processed', {
+        operationId: message.operation_id,
+      });
       return;
     }
 
@@ -358,7 +365,7 @@ export class AppStateService implements OnDestroy {
     // Trigger debounced resynchronization instead of applying cells directly
     this._triggerResyncEvent$.next();
 
-    this._logger.debug('State correction processed - resync triggered');
+    this._logger.debugComponent('AppStateService', 'State correction processed - resync triggered');
   }
 
   /**
@@ -379,14 +386,17 @@ export class AppStateService implements OnDestroy {
       cells: event.cells,
     });
 
-    this._logger.debug('Diagram state sync event emitted for persistence layer');
+    this._logger.debugComponent(
+      'AppStateService',
+      'Diagram state sync event emitted for persistence layer',
+    );
   }
 
   /**
    * Process a history operation response
    */
   private _processHistoryOperation(event: HistoryOperationEvent): void {
-    this._logger.debug('Processing history operation', event);
+    this._logger.debugComponent('AppStateService', 'Processing history operation', event);
 
     if (event.message === 'resync_required') {
       this._updateSyncState({ isSynced: false, isResyncing: true });
@@ -418,7 +428,7 @@ export class AppStateService implements OnDestroy {
         event.host,
         event.currentPresenter,
       );
-      this._logger.debug('Participants update processed successfully');
+      this._logger.debugComponent('AppStateService', 'Participants update processed successfully');
     } catch (error) {
       this._logger.error('Error processing participants update', error);
     }

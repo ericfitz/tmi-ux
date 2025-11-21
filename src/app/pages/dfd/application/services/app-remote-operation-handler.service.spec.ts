@@ -17,6 +17,7 @@ describe('AppRemoteOperationHandler', () => {
     // Mock dependencies
     mockLogger = {
       debug: vi.fn(),
+      debugComponent: vi.fn(),
       info: vi.fn(),
       warn: vi.fn(),
       error: vi.fn(),

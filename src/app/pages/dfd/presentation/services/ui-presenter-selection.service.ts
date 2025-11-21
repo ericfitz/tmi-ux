@@ -83,10 +83,14 @@ export class UiPresenterSelectionService implements OnDestroy {
       // Send selection update via collaborative operation service
       this.collaborativeOperationService.sendPresenterSelection(selectedCellIds).subscribe({
         next: () => {
-          this.logger.debug('Broadcast presenter selection change', {
-            selectedCellIds,
-            count: selectedCellIds.length,
-          });
+          this.logger.debugComponent(
+            'UiPresenterSelectionService',
+            'Broadcast presenter selection change',
+            {
+              selectedCellIds,
+              count: selectedCellIds.length,
+            },
+          );
         },
         error: error => {
           this.logger.error('Error broadcasting selection change', error);
@@ -131,10 +135,14 @@ export class UiPresenterSelectionService implements OnDestroy {
       // Also reset cursor timeout to keep presenter cursor active
       this.uiPresenterCursorDisplayService.handlePresenterSelectionUpdate();
 
-      this.logger.debug('Applied presenter selection update', {
-        selectedCellIds,
-        foundCells: cellsToSelect.length,
-      });
+      this.logger.debugComponent(
+        'UiPresenterSelectionService',
+        'Applied presenter selection update',
+        {
+          selectedCellIds,
+          foundCells: cellsToSelect.length,
+        },
+      );
     } catch (error) {
       this.logger.error('Error handling presenter selection update', error);
     }
@@ -165,7 +173,10 @@ export class UiPresenterSelectionService implements OnDestroy {
 
     try {
       this._selectionAdapter.clearSelection(this._graph);
-      this.logger.debug('Cleared selection for non-presenter user');
+      this.logger.debugComponent(
+        'UiPresenterSelectionService',
+        'Cleared selection for non-presenter user',
+      );
     } catch (error) {
       this.logger.error('Error clearing selection for non-presenter', error);
     }

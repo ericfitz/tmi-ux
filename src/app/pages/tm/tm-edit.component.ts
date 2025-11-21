@@ -714,10 +714,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
 
     // If editing a threat, refresh the threat model to get the latest threat data from server
     if (mode === 'edit' && threat) {
-      this.logger.debug('Refreshing threat model data before opening threat editor', {
-        threatId: threat.id,
-        threatModelId: this.threatModel.id,
-      });
+      this.logger.debugComponent(
+        'TmEditComponent',
+        'Refreshing threat model data before opening threat editor',
+        {
+          threatId: threat.id,
+          threatModelId: this.threatModel.id,
+        },
+      );
 
       this._subscriptions.add(
         this.threatModelService.getThreatModelById(this.threatModel.id, true).subscribe({
@@ -737,14 +741,18 @@ export class TmEditComponent implements OnInit, OnDestroy {
               const migratedThreat = this.migrateThreatFieldValues(threat);
               this.openThreatEditorWithData(migratedThreat, shapeType, mode);
             } else {
-              this.logger.debug('Using refreshed threat data for editor', {
-                threatId: updatedThreat.id,
-                hasAllProperties: !!(
-                  updatedThreat.priority &&
-                  updatedThreat.status &&
-                  updatedThreat.score
-                ),
-              });
+              this.logger.debugComponent(
+                'TmEditComponent',
+                'Using refreshed threat data for editor',
+                {
+                  threatId: updatedThreat.id,
+                  hasAllProperties: !!(
+                    updatedThreat.priority &&
+                    updatedThreat.status &&
+                    updatedThreat.score
+                  ),
+                },
+              );
               // Migrate before opening dialog
               const migratedThreat = this.migrateThreatFieldValues(updatedThreat);
               this.openThreatEditorWithData(migratedThreat, shapeType, mode);
@@ -797,7 +805,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
         availableFrameworks: this.frameworks.map(f => f.name),
       });
     } else {
-      this.logger.debug('Using framework for threat editor', {
+      this.logger.debugComponent('TmEditComponent', 'Using framework for threat editor', {
         currentFrameworkName,
         frameworkThreatTypes: framework.threatTypes.map(tt => tt.name),
         shapeType: shapeType || 'none',

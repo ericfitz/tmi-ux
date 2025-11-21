@@ -268,7 +268,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       this.diagramOptions = [...this.diagramOptions, ...remainingDiagrams];
     }
 
-    this.logger.debug('Diagram options initialized:', {
+    this.logger.debugComponent('ThreatEditorDialog', 'Diagram options initialized:', {
       currentDiagramId: this.data.diagramId,
       optionsCount: this.diagramOptions.length,
       firstOption: this.diagramOptions[0]?.name,
@@ -291,7 +291,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           tt.appliesTo.includes(this.data.shapeType!),
         );
 
-        this.logger.debug('Filtering threat types by shape type', {
+        this.logger.debugComponent('ThreatEditorDialog', 'Filtering threat types by shape type', {
           framework: this.data.framework.name,
           shapeType: this.data.shapeType,
           filteredThreatTypes: applicableThreatTypes.map(tt => tt.name),
@@ -301,11 +301,15 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
 
       this.threatTypeOptions = applicableThreatTypes.map(tt => tt.name);
 
-      this.logger.debug('Threat type options initialized from framework', {
-        framework: this.data.framework.name,
-        shapeType: this.data.shapeType || 'none',
-        threatTypes: this.threatTypeOptions,
-      });
+      this.logger.debugComponent(
+        'ThreatEditorDialog',
+        'Threat type options initialized from framework',
+        {
+          framework: this.data.framework.name,
+          shapeType: this.data.shapeType || 'none',
+          threatTypes: this.threatTypeOptions,
+        },
+      );
     } else {
       // Fallback to default threat types if no framework provided
       this.threatTypeOptions = [
@@ -328,7 +332,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     this.statusOptions = getFieldOptions('threatEditor.threatStatus', this.translocoService);
     this.priorityOptions = getFieldOptions('threatEditor.threatPriority', this.translocoService);
 
-    this.logger.debug('Field options initialized', {
+    this.logger.debugComponent('ThreatEditorDialog', 'Field options initialized', {
       severityCount: this.severityOptions.length,
       statusCount: this.statusOptions.length,
       priorityCount: this.priorityOptions.length,
@@ -345,7 +349,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     // Apply initial filtering based on current diagram selection
     this.filterCellOptions();
 
-    this.logger.debug('Cell options initialized:', {
+    this.logger.debugComponent('ThreatEditorDialog', 'Cell options initialized:', {
       currentCellId: this.data.cellId,
       currentDiagramId: this.data.diagramId,
       totalCells: this.allCellOptions.length,
@@ -392,7 +396,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       this.assetOptions = [...this.assetOptions, ...remainingAssets];
     }
 
-    this.logger.debug('Asset options initialized:', {
+    this.logger.debugComponent('ThreatEditorDialog', 'Asset options initialized:', {
       currentAssetId: currentAssetId,
       optionsCount: this.assetOptions.length,
       firstOption: this.assetOptions[0]?.name,
@@ -461,7 +465,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       this.cellOptions = [...this.cellOptions, ...filteredCells];
     }
 
-    this.logger.debug('Filtered cell options:', {
+    this.logger.debugComponent('ThreatEditorDialog', 'Filtered cell options:', {
       selectedDiagramId: diagramId as string,
       totalAvailableCells: this.allCellOptions.length,
       filteredCellCount: filteredCells.length,
@@ -480,10 +484,14 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     if (diagramControl) {
       this.diagramChangeSubscription = diagramControl.valueChanges.subscribe(
         (diagramId: string) => {
-          this.logger.debug('Diagram selection changed, filtering cells', {
-            newDiagramId: diagramId,
-            previousCellId: this.threatForm.get('cell_id')?.value as string,
-          });
+          this.logger.debugComponent(
+            'ThreatEditorDialog',
+            'Diagram selection changed, filtering cells',
+            {
+              newDiagramId: diagramId,
+              previousCellId: this.threatForm.get('cell_id')?.value as string,
+            },
+          );
 
           // Filter cell options based on new diagram selection
           this.filterCellOptions(diagramId);
@@ -493,7 +501,8 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           if (currentCellId && currentCellId !== this.NOT_ASSOCIATED_VALUE) {
             const cellExists = this.cellOptions.some(cell => cell.id === currentCellId);
             if (!cellExists) {
-              this.logger.debug(
+              this.logger.debugComponent(
+                'ThreatEditorDialog',
                 'Current cell not available in selected diagram, resetting to not associated',
                 {
                   currentCellId: currentCellId,
@@ -524,7 +533,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     });
 
     // Log detailed initialization data for debugging
-    this.logger.debug('Detailed initialization data:', {
+    this.logger.debugComponent('ThreatEditorDialog', 'Detailed initialization data:', {
       source: openedFrom,
       dialogData: JSON.stringify(this.data),
       threatData: this.data.threat
@@ -545,12 +554,15 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     this.dialogSource = openedFrom;
 
     const currentLang = this.translocoService.getActiveLang();
-    this.logger.debug('Current language:', currentLang);
+    this.logger.debugComponent('ThreatEditorDialog', 'Current language:', currentLang);
 
     // First load English as fallback
     this.translocoService.load('en-US').subscribe({
       next: () => {
-        this.logger.debug('English translations loaded successfully');
+        this.logger.debugComponent(
+          'ThreatEditorDialog',
+          'English translations loaded successfully',
+        );
 
         // Then load current language if not English
         if (currentLang !== 'en-US') {
@@ -558,7 +570,10 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
             next: () => {
               // Force translation update
               this.translocoService.setActiveLang(currentLang);
-              this.logger.debug('Translations loaded successfully for language: ' + currentLang);
+              this.logger.debugComponent(
+                'ThreatEditorDialog',
+                'Translations loaded successfully for language: ' + currentLang,
+              );
 
               // Initialize dropdown options after translations are loaded
               this.initializeDiagramOptions();
@@ -570,7 +585,10 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
               // Force change detection to update the translations
               setTimeout(() => {
                 this.dialogRef.updateSize();
-                this.logger.debug('Dialog size updated to force refresh');
+                this.logger.debugComponent(
+                  'ThreatEditorDialog',
+                  'Dialog size updated to force refresh',
+                );
               }, 100);
             },
             error: (err: unknown) => {
@@ -601,7 +619,10 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           // Force change detection to update the translations
           setTimeout(() => {
             this.dialogRef.updateSize();
-            this.logger.debug('Dialog size updated to force refresh');
+            this.logger.debugComponent(
+              'ThreatEditorDialog',
+              'Dialog size updated to force refresh',
+            );
           }, 100);
         }
       },
@@ -680,21 +701,25 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       this.initialIssueUriValue = this.data.threat.issue_uri || '';
 
       // Debug log the threat data being used for form population
-      this.logger.debug('Populating threat editor form with threat data', {
-        threatId: this.data.threat.id,
-        name: this.data.threat.name,
-        description: this.data.threat.description,
-        severity: this.data.threat.severity,
-        threat_type: this.data.threat.threat_type,
-        diagram_id: this.data.threat.diagram_id,
-        cell_id: this.data.threat.cell_id,
-        score: this.data.threat.score,
-        priority: this.data.threat.priority,
-        mitigated: this.data.threat.mitigated,
-        status: this.data.threat.status,
-        mitigation: this.data.threat.mitigation,
-        issue_uri: this.data.threat.issue_uri,
-      });
+      this.logger.debugComponent(
+        'ThreatEditorDialog',
+        'Populating threat editor form with threat data',
+        {
+          threatId: this.data.threat.id,
+          name: this.data.threat.name,
+          description: this.data.threat.description,
+          severity: this.data.threat.severity,
+          threat_type: this.data.threat.threat_type,
+          diagram_id: this.data.threat.diagram_id,
+          cell_id: this.data.threat.cell_id,
+          score: this.data.threat.score,
+          priority: this.data.threat.priority,
+          mitigated: this.data.threat.mitigated,
+          status: this.data.threat.status,
+          mitigation: this.data.threat.mitigation,
+          issue_uri: this.data.threat.issue_uri,
+        },
+      );
 
       // Determine asset_id value: use threat's asset_id if it exists in assets list, otherwise blank
       let assetIdValue = this.NOT_ASSOCIATED_VALUE;
@@ -724,7 +749,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         this.translocoService,
       );
 
-      this.logger.debug('Migrated field values', {
+      this.logger.debugComponent('ThreatEditorDialog', 'Migrated field values', {
         originalSeverity: this.data.threat.severity,
         migratedSeverity,
         originalStatus: this.data.threat.status,
@@ -750,7 +775,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       });
 
       // Debug log the form values after patching
-      this.logger.debug('Form values after patching', {
+      this.logger.debugComponent('ThreatEditorDialog', 'Form values after patching', {
         formValues: this.threatForm.value as ThreatFormValues,
       });
 
@@ -816,20 +841,25 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       const formFields = document.querySelectorAll('.mat-form-field');
       const labels = document.querySelectorAll('.mat-form-field-label');
 
-      this.logger.debug('Form field initialization in ngAfterViewInit:', {
-        source: this.dialogSource,
-        formFieldsCount: formFields.length,
-        labelsCount: labels.length,
-        // Check if form field is properly initialized with Angular Material classes
-        formFieldClasses: Array.from(formFields).map(field => {
-          return {
-            classList: Array.from(field.classList),
-            hasLabel: !!field.querySelector('.mat-form-field-label'),
-            labelText:
-              field.querySelector('.mat-form-field-label')?.textContent?.trim() || 'No label text',
-          };
-        }),
-      });
+      this.logger.debugComponent(
+        'ThreatEditorDialog',
+        'Form field initialization in ngAfterViewInit:',
+        {
+          source: this.dialogSource,
+          formFieldsCount: formFields.length,
+          labelsCount: labels.length,
+          // Check if form field is properly initialized with Angular Material classes
+          formFieldClasses: Array.from(formFields).map(field => {
+            return {
+              classList: Array.from(field.classList),
+              hasLabel: !!field.querySelector('.mat-form-field-label'),
+              labelText:
+                field.querySelector('.mat-form-field-label')?.textContent?.trim() ||
+                'No label text',
+            };
+          }),
+        },
+      );
     }, 150);
   }
 

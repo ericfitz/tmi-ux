@@ -243,7 +243,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
       });
 
       this._refreshInterval = setInterval(() => {
-        this._logger.debug('[CollaborationDialog] Periodic refresh tick', {
+        this._logger.debugComponent('CollaborationDialog', 'Periodic refresh tick', {
           timestamp: new Date().toISOString(),
           userCount: this.collaborationUsers.length,
         });
@@ -310,7 +310,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
       this._logger.warn('[CollaborationDialog] Performing recovery sync due to state mismatch');
       this._syncWithServiceState();
     } else {
-      this._logger.debug('[CollaborationDialog] State verified - in sync', {
+      this._logger.debugComponent('CollaborationDialog', 'State verified - in sync', {
         userCount: this.collaborationUsers.length,
         isActive: this.isCollaborating,
       });

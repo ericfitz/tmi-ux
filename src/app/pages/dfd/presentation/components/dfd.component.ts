@@ -269,7 +269,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Get threat model from route resolver
     const threatModel = this.route.snapshot.data['threatModel'];
-    this.logger.debug('Threat model data from route resolver', {
+    this.logger.debugComponent('DfdComponent', 'Threat model data from route resolver', {
       threatModel: threatModel
         ? {
             id: threatModel.id,
@@ -297,7 +297,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const currentPermission = this.authorizationService.getCurrentUserPermission();
     const currentThreatModelId = this.authorizationService.currentThreatModelId;
 
-    this.logger.debug('Authorization service state check', {
+    this.logger.debugComponent('DfdComponent', 'Authorization service state check', {
       currentPermission,
       currentThreatModelId,
       expectedThreatModelId: this.threatModelId,
@@ -311,7 +311,8 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.initializeWithPermission(currentPermission);
     } else {
       // Authorization not yet loaded - check if we need to manually load the threat model
-      this.logger.debug(
+      this.logger.debugComponent(
+        'DfdComponent',
         'Authorization not yet loaded, checking if we need to load threat model manually',
       );
 
@@ -348,12 +349,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         );
       } else {
         // Wait for authorization updates via subscription
-        this.logger.debug('Subscribing for authorization updates');
+        this.logger.debugComponent('DfdComponent', 'Subscribing for authorization updates');
         this._subscriptions.add(
           this.authorizationService.currentUserPermission$.subscribe(permission => {
             // Skip initialization if permission is null (not yet loaded)
             if (permission === null) {
-              this.logger.debug('DFD still waiting for authorization data to be loaded');
+              this.logger.debugComponent(
+                'DfdComponent',
+                'DFD still waiting for authorization data to be loaded',
+              );
               return;
             }
 
@@ -401,7 +405,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       joinCollaboration: this.joinCollaboration,
     };
 
-    this.logger.debug('Attempting to initialize DFD Orchestrator', initParams);
+    this.logger.debugComponent(
+      'DfdComponent',
+      'Attempting to initialize DFD Orchestrator',
+      initParams,
+    );
     this.appDfdOrchestrator.initialize(initParams).subscribe({
       next: success => {
         this.logger.debugComponent('DfdComponent', 'DFD Orchestrator initialization result', {
@@ -563,7 +571,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         .pipe(takeUntil(this._destroy$))
         .subscribe(status => {
           if (status.status === 'saved') {
-            this.logger.debug('Auto-save completed successfully');
+            this.logger.debugComponent('DfdComponent', 'Auto-save completed successfully');
           } else if (status.status === 'error') {
             this.logger.warn('Auto-save failed', { error: status.error });
           }
@@ -574,7 +582,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this._subscriptions.add(
       this.appDfdOrchestrator.state$.pipe(takeUntil(this._destroy$)).subscribe(state => {
         // Update component state based on orchestrator state
-        this.logger.debug('DFD orchestrator state changed', {
+        this.logger.debugComponent('DfdComponent', 'DFD orchestrator state changed', {
           initialized: state.initialized,
           loading: state.loading,
           error: state.error,
@@ -602,12 +610,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         this.cdr.detectChanges();
-        this.logger.debug('Updated system initialization state and triggered change detection', {
-          isSystemInitialized: this.isSystemInitialized,
-          isReadOnlyMode: this.isReadOnlyMode,
-          diagramName: this.diagramName,
-          threatModelName: this.threatModelName,
-        });
+        this.logger.debugComponent(
+          'DfdComponent',
+          'Updated system initialization state and triggered change detection',
+          {
+            isSystemInitialized: this.isSystemInitialized,
+            isReadOnlyMode: this.isReadOnlyMode,
+            diagramName: this.diagramName,
+            threatModelName: this.threatModelName,
+          },
+        );
       }),
     );
 
@@ -615,7 +627,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     const currentState = this.appDfdOrchestrator.getState();
     this.isSystemInitialized = currentState.initialized;
     this.cdr.detectChanges();
-    this.logger.debug('Initial state sync completed', {
+    this.logger.debugComponent('DfdComponent', 'Initial state sync completed', {
       isSystemInitialized: this.isSystemInitialized,
       orchestratorInitialized: currentState.initialized,
     });
@@ -634,7 +646,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         .subscribe(({ canUndo, canRedo }) => {
           this.canUndo = canUndo;
           this.canRedo = canRedo;
-          this.logger.debug('History state changed', { canUndo, canRedo });
+          this.logger.debugComponent('DfdComponent', 'History state changed', { canUndo, canRedo });
           this.cdr.detectChanges();
         }),
     );
@@ -643,7 +655,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this._subscriptions.add(
       this.appDfdOrchestrator.state$.pipe(takeUntil(this._destroy$)).subscribe(state => {
         if (this.isSystemInitialized !== state.initialized) {
-          this.logger.debug('System initialization state changed', {
+          this.logger.debugComponent('DfdComponent', 'System initialization state changed', {
             componentState: this.isSystemInitialized,
             orchestratorState: state.initialized,
           });
@@ -675,11 +687,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.logger.debug('Handling node added', { nodeId: node.id });
+    this.logger.debugComponent('DfdComponent', 'Handling node added', { nodeId: node.id });
 
     this.dfdInfrastructure.handleNodeAdded(node, this.dfdId, this.isSystemInitialized).subscribe({
       next: () => {
-        this.logger.debug('Node added successfully', { nodeId: node.id });
+        this.logger.debugComponent('DfdComponent', 'Node added successfully', { nodeId: node.id });
       },
       error: error => {
         this.logger.error('Error handling node added', { error, nodeId: node.id });
@@ -703,11 +715,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.logger.debug('Handling edge added', { edgeId: edge.id });
+    this.logger.debugComponent('DfdComponent', 'Handling edge added', { edgeId: edge.id });
 
     this.dfdInfrastructure.handleEdgeAdded(edge, this.dfdId, this.isSystemInitialized).subscribe({
       next: () => {
-        this.logger.debug('Edge added successfully', { edgeId: edge.id });
+        this.logger.debugComponent('DfdComponent', 'Edge added successfully', { edgeId: edge.id });
       },
       error: error => {
         this.logger.error('Error handling edge added', { error, edgeId: edge.id });
@@ -730,7 +742,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.logger.debug('Handling label change', {
+    this.logger.debugComponent('DfdComponent', 'Handling label change', {
       cellId: change.cellId,
       cellType: change.cellType,
       oldLabel: change.oldLabel,
@@ -739,7 +751,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.dfdInfrastructure.handleLabelChange(change, this.dfdId).subscribe({
       next: () => {
-        this.logger.debug('Label change recorded successfully', {
+        this.logger.debugComponent('DfdComponent', 'Label change recorded successfully', {
           cellId: change.cellId,
           cellType: change.cellType,
         });
@@ -768,7 +780,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.logger.debug('Handling edge reconnection', {
+    this.logger.debugComponent('DfdComponent', 'Handling edge reconnection', {
       edgeId: reconnection.edgeId,
       changeType: reconnection.changeType,
       oldNodeId: reconnection.oldNodeId,
@@ -777,7 +789,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.dfdInfrastructure.handleEdgeReconnection(reconnection, this.dfdId).subscribe({
       next: () => {
-        this.logger.debug('Edge reconnection recorded successfully', {
+        this.logger.debugComponent('DfdComponent', 'Edge reconnection recorded successfully', {
           edgeId: reconnection.edgeId,
           changeType: reconnection.changeType,
         });
@@ -804,7 +816,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.logger.debug('Handling node parent change', {
+    this.logger.debugComponent('DfdComponent', 'Handling node parent change', {
       nodeId: change.nodeId,
       oldParentId: change.oldParentId,
       newParentId: change.newParentId,
@@ -812,7 +824,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.dfdInfrastructure.handleNodeParentChange(change, this.dfdId).subscribe({
       next: () => {
-        this.logger.debug('Node parent change recorded successfully', {
+        this.logger.debugComponent('DfdComponent', 'Node parent change recorded successfully', {
           nodeId: change.nodeId,
           oldParentId: change.oldParentId,
           newParentId: change.newParentId,
@@ -831,13 +843,18 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const vertices = edge.getVertices();
-    this.logger.debug('Handling edge vertices changed', { edgeId: edge.id, vertices });
+    this.logger.debugComponent('DfdComponent', 'Handling edge vertices changed', {
+      edgeId: edge.id,
+      vertices,
+    });
 
     this.dfdInfrastructure
       .handleEdgeVerticesChanged(edge.id, vertices, this.dfdId, this.isSystemInitialized)
       .subscribe({
         next: () => {
-          this.logger.debug('Edge vertices changed successfully', { edgeId: edge.id });
+          this.logger.debugComponent('DfdComponent', 'Edge vertices changed successfully', {
+            edgeId: edge.id,
+          });
         },
         error: error => {
           this.logger.error('Error handling edge vertices changed', { error, edgeId: edge.id });
@@ -863,12 +880,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             const graph = this.appDfdOrchestrator.getGraph;
             if (graph) {
               graph.unselect(graph.getSelectedCells());
-              this.logger.debug('Cleared selection after diagram load');
+              this.logger.debugComponent('DfdComponent', 'Cleared selection after diagram load');
             }
 
             // Clear clipboard
             graphAdapter.clearClipboard();
-            this.logger.debug('Cleared clipboard after diagram load');
+            this.logger.debugComponent('DfdComponent', 'Cleared clipboard after diagram load');
           }
         } else {
           this.logger.error('Failed to load diagram', { error: result.error });
@@ -981,11 +998,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         next: result => {
           if (result.success) {
-            this.logger.debug('Node added successfully using intelligent positioning', {
-              nodeType,
-              usedIntelligentPositioning: result.metadata?.['usedIntelligentPositioning'],
-              method: result.metadata?.['method'],
-            });
+            this.logger.debugComponent(
+              'DfdComponent',
+              'Node added successfully using intelligent positioning',
+              {
+                nodeType,
+                usedIntelligentPositioning: result.metadata?.['usedIntelligentPositioning'],
+                method: result.metadata?.['method'],
+              },
+            );
           } else {
             this.logger.error('Failed to add node', { error: result.error });
           }
@@ -1008,7 +1029,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.appDfdOrchestrator.deleteSelectedCells().subscribe({
       next: result => {
         if (result.success) {
-          this.logger.debug('Selected cells deleted successfully');
+          this.logger.debugComponent('DfdComponent', 'Selected cells deleted successfully');
         } else {
           this.logger.error('Failed to delete selected cells', { error: result.error });
         }
@@ -1026,7 +1047,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.appDfdOrchestrator.undo().subscribe({
       next: result => {
         if (result.success) {
-          this.logger.debug('Undo operation completed successfully');
+          this.logger.debugComponent('DfdComponent', 'Undo operation completed successfully');
         } else {
           this.logger.error('Undo operation failed', { error: result.error });
         }
@@ -1044,7 +1065,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.appDfdOrchestrator.redo().subscribe({
       next: result => {
         if (result.success) {
-          this.logger.debug('Redo operation completed successfully');
+          this.logger.debugComponent('DfdComponent', 'Redo operation completed successfully');
         } else {
           this.logger.error('Redo operation failed', { error: result.error });
         }
@@ -1058,7 +1079,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   onCut(): void {
     if (!this.hasSelectedCells || this.isReadOnlyMode) return;
 
-    this.logger.debug('Cut operation initiated');
+    this.logger.debugComponent('DfdComponent', 'Cut operation initiated');
     this.dfdInfrastructure.cut().subscribe({
       next: result => {
         if (result.success) {
@@ -1076,14 +1097,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   onCopy(): void {
     if (!this.hasSelectedCells) return;
 
-    this.logger.debug('Copy operation initiated');
+    this.logger.debugComponent('DfdComponent', 'Copy operation initiated');
     this.dfdInfrastructure.copy();
   }
 
   onPaste(): void {
     if (this.isReadOnlyMode) return;
 
-    this.logger.debug('Paste operation initiated');
+    this.logger.debugComponent('DfdComponent', 'Paste operation initiated');
     this.dfdInfrastructure.paste();
   }
 
@@ -1491,10 +1512,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         exportGraph.toSVG((svgString: string) => {
           try {
             const base64Svg = exportService.processSvg(svgString, true, exportPrep.viewBox);
-            this.logger.debug('Successfully captured and cleaned diagram SVG thumbnail', {
-              originalLength: svgString.length,
-              base64Length: base64Svg.length,
-            });
+            this.logger.debugComponent(
+              'DfdComponent',
+              'Successfully captured and cleaned diagram SVG thumbnail',
+              {
+                originalLength: svgString.length,
+                base64Length: base64Svg.length,
+              },
+            );
             resolve(base64Svg);
           } catch (error: unknown) {
             this.logger.error('Error encoding SVG to base64', error);
@@ -1530,7 +1555,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Trigger the label editor directly
       graphAdapter.startLabelEditing(cell, syntheticEvent);
-      this.logger.debug('Label editor triggered for cell', { cellId: cell.id });
+      this.logger.debugComponent('DfdComponent', 'Label editor triggered for cell', {
+        cellId: cell.id,
+      });
     } else {
       this.logger.warn('Label editing not available - graph adapter or method not found');
     }
@@ -1554,7 +1581,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Use the facade's z-order functionality
     this.dfdInfrastructure.moveSelectedForward();
-    this.logger.debug('Moved cell forward', { cellId: targetCell.id });
+    this.logger.debugComponent('DfdComponent', 'Moved cell forward', { cellId: targetCell.id });
   }
 
   moveBackward(): void {
@@ -1566,7 +1593,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Use the facade's z-order functionality
     this.dfdInfrastructure.moveSelectedBackward();
-    this.logger.debug('Moved cell backward', { cellId: targetCell.id });
+    this.logger.debugComponent('DfdComponent', 'Moved cell backward', { cellId: targetCell.id });
   }
 
   moveToFront(): void {
@@ -1578,7 +1605,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Use the facade's z-order functionality
     this.dfdInfrastructure.moveSelectedToFront();
-    this.logger.debug('Moved cell to front', { cellId: targetCell.id });
+    this.logger.debugComponent('DfdComponent', 'Moved cell to front', { cellId: targetCell.id });
   }
 
   moveToBack(): void {
@@ -1590,7 +1617,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Use the facade's z-order functionality
     this.dfdInfrastructure.moveSelectedToBack();
-    this.logger.debug('Moved cell to back', { cellId: targetCell.id });
+    this.logger.debugComponent('DfdComponent', 'Moved cell to back', { cellId: targetCell.id });
   }
 
   // Edge methods
@@ -1856,7 +1883,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             this.openCellContextMenu(cell, x, y);
           }),
       );
-      this.logger.debug('Context menu handlers registered');
+      this.logger.debugComponent('DfdComponent', 'Context menu handlers registered');
     } else {
       this.logger.warn('Context menu observable not available from graph adapter');
     }
@@ -1885,7 +1912,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.cdr.detectChanges();
     }
 
-    this.logger.debug('Context menu opened for cell', {
+    this.logger.debugComponent('DfdComponent', 'Context menu opened for cell', {
       cellId: cell?.id,
       cellType: cell?.isNode?.() ? 'node' : cell?.isEdge?.() ? 'edge' : 'unknown',
       position: { x, y },
@@ -1964,7 +1991,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
           next: operationResult => {
             if (operationResult.success) {
-              this.logger.debug('Cell metadata updated successfully');
+              this.logger.debugComponent('DfdComponent', 'Cell metadata updated successfully');
             } else {
               this.logger.error('Failed to update cell metadata', {
                 error: operationResult.error,

@@ -498,7 +498,10 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Trigger an initial resize to ensure the graph fits the container properly
     this._scheduleInitialResize(container);
 
-    this.logger.debug('[DFD] X6 graph adapter initialized with minimal configuration');
+    this.logger.debugComponent(
+      'X6Graph',
+      'X6 graph adapter initialized with minimal configuration',
+    );
   }
 
   /**
@@ -529,7 +532,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Initialize embedding functionality using dedicated adapter
     this._embeddingAdapter.initializeEmbedding(this._graph);
 
-    this.logger.debug('[DFD] X6 graph adapter configured with orchestrator graph');
+    this.logger.debugComponent('X6Graph', 'X6 graph adapter configured with orchestrator graph');
   }
 
   /**
@@ -801,7 +804,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     }
     const selectedCells = this._graph.getSelectedCells();
     if (selectedCells.length === 0) {
-      this.logger.debug('No cells selected for cut operation');
+      this.logger.debugComponent('X6Graph', 'No cells selected for cut operation');
       return;
     }
 
@@ -814,7 +817,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
     // Cut using the cleaned clones
     this._graph.cut(cleanedCells);
-    this.logger.debug('Cut cells to clipboard', { count: cleanedCells.length });
+    this.logger.debugComponent('X6Graph', 'Cut cells to clipboard', { count: cleanedCells.length });
   }
 
   /**
@@ -828,7 +831,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     }
     const selectedCells = this._graph.getSelectedCells();
     if (selectedCells.length === 0) {
-      this.logger.debug('No cells selected for copy operation');
+      this.logger.debugComponent('X6Graph', 'No cells selected for copy operation');
       return;
     }
 
@@ -841,7 +844,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
     // Copy using the cleaned clones
     this._graph.copy(cleanedCells);
-    this.logger.debug('Copied cells to clipboard', { count: cleanedCells.length });
+    this.logger.debugComponent('X6Graph', 'Copied cells to clipboard', {
+      count: cleanedCells.length,
+    });
   }
 
   /**
@@ -854,12 +859,12 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     }
     if (!this._graph.isClipboardEmpty()) {
       this._graph.paste();
-      this.logger.debug('Pasted cells from clipboard');
+      this.logger.debugComponent('X6Graph', 'Pasted cells from clipboard');
 
       // Clear selection styling from pasted cells using selection adapter
       this._selectionAdapter.clearSelection(this._graph);
     } else {
-      this.logger.debug('Clipboard is empty, nothing to paste');
+      this.logger.debugComponent('X6Graph', 'Clipboard is empty, nothing to paste');
     }
   }
 
@@ -882,7 +887,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       return;
     }
     this._graph.cleanClipboard();
-    this.logger.debug('Clipboard cleared');
+    this.logger.debugComponent('X6Graph', 'Clipboard cleared');
   }
 
   /**
@@ -1161,7 +1166,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
         // Only emit if parent actually changed
         if (oldParentId !== newParentId) {
-          this.logger.debug('Node parent changed', {
+          this.logger.debugComponent('X6Graph', 'Node parent changed', {
             nodeId,
             oldParentId,
             newParentId,

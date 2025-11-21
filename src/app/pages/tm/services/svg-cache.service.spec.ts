@@ -8,6 +8,7 @@ describe('SvgCacheService', () => {
   beforeEach(() => {
     mockLogger = {
       debug: vi.fn(),
+      debugComponent: vi.fn(),
     };
 
     service = new SvgCacheService(mockLogger);

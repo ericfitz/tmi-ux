@@ -120,7 +120,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
     this._destroy$.next();
     this._destroy$.complete();
     this._subscriptions.unsubscribe();
-    this.logger.debug('AppRemoteOperationHandler destroyed');
+    this.logger.debugComponent('AppRemoteOperationHandler', 'destroyed');
   }
 
   /**
@@ -163,7 +163,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
 
     this._stats.totalOperations++;
 
-    this.logger.debug('Handling remote operation', {
+    this.logger.debugComponent('AppRemoteOperationHandler', 'Handling remote operation', {
       cellId: cellOperation.id,
       operation: cellOperation.operation,
       userId,
@@ -195,10 +195,14 @@ export class AppRemoteOperationHandler implements OnDestroy {
           next: result => {
             if (result.success) {
               this._stats.successfulOperations++;
-              this.logger.debug('Remote operation executed successfully', {
-                operationId,
-                affectedCells: result.affectedCellIds?.length || 0,
-              });
+              this.logger.debugComponent(
+                'AppRemoteOperationHandler',
+                'Remote operation executed successfully',
+                {
+                  operationId,
+                  affectedCells: result.affectedCellIds?.length || 0,
+                },
+              );
             } else {
               this._stats.failedOperations++;
               this.logger.error('Remote operation execution failed', {

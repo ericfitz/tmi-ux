@@ -17,6 +17,7 @@ describe('Cell Relationship Validation', () => {
     mockLogger = {
       warn: vi.fn(),
       debug: vi.fn(),
+      debugComponent: vi.fn(),
       error: vi.fn(),
       info: vi.fn(),
     } as unknown as LoggerService;
@@ -224,7 +225,8 @@ describe('Cell Relationship Validation', () => {
       const result = validateAffectedCellRelationships(affectedIds, cells, mockLogger);
 
       expect(result.hadIssues).toBe(false);
-      expect(mockLogger.debug).toHaveBeenCalledWith(
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+        'CellRelationshipValidation',
         'Validating affected cell relationships',
         expect.objectContaining({
           affectedCells: 1,
@@ -245,7 +247,7 @@ describe('Cell Relationship Validation', () => {
 
       expect(result.hadIssues).toBe(false);
       // Should validate parent1 and its children
-      expect(mockLogger.debug).toHaveBeenCalled();
+      expect(mockLogger.debugComponent).toHaveBeenCalled();
     });
 
     it('should handle empty affected IDs', () => {

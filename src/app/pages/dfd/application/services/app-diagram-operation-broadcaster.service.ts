@@ -37,14 +37,17 @@ export class AppDiagramOperationBroadcaster {
    */
   initializeListeners(graph: Graph): void {
     if (!this.collaborationService.isCollaborating()) {
-      this.logger.debug('Not in collaboration mode, skipping broadcast initialization');
+      this.logger.debugComponent(
+        'AppDiagramOperationBroadcaster',
+        'Not in collaboration mode, skipping broadcast initialization',
+      );
       return;
     }
 
     this._graph = graph;
     this._setupEventListeners();
     this.logger.debugComponent(
-      'DiagramOperationBroadcaster',
+      'AppDiagramOperationBroadcaster',
       'DiagramOperationBroadcaster initialized',
       {
         graphId: (graph as any).options?.id || 'unknown',
@@ -67,7 +70,7 @@ export class AppDiagramOperationBroadcaster {
 
     this._isInAtomicOperation = true;
     this._pendingOperations = [];
-    this.logger.debug('Started atomic operation');
+    this.logger.debugComponent('AppDiagramOperationBroadcaster', 'Started atomic operation');
   }
 
   /**
@@ -95,14 +98,20 @@ export class AppDiagramOperationBroadcaster {
           .sendDiagramOperation([...this._pendingOperations])
           .subscribe({
             next: () => {
-              this.logger.debug('Atomic operation broadcast successful');
+              this.logger.debugComponent(
+                'AppDiagramOperationBroadcaster',
+                'Atomic operation broadcast successful',
+              );
             },
             error: (error: unknown) => {
               this.logger.error('Failed to broadcast atomic operation', error);
             },
           });
       } else {
-        this.logger.debug('No operations to commit in atomic operation');
+        this.logger.debugComponent(
+          'AppDiagramOperationBroadcaster',
+          'No operations to commit in atomic operation',
+        );
       }
     } finally {
       this._isInAtomicOperation = false;
@@ -119,7 +128,7 @@ export class AppDiagramOperationBroadcaster {
     }
 
     if (this._isInAtomicOperation) {
-      this.logger.debug('Cancelled atomic operation', {
+      this.logger.debugComponent('AppDiagramOperationBroadcaster', 'Cancelled atomic operation', {
         discardedOperations: this._pendingOperations.length,
       });
       this._isInAtomicOperation = false;
@@ -141,7 +150,10 @@ export class AppDiagramOperationBroadcaster {
 
     // Cancel any pending atomic operation
     this.cancelAtomicOperation();
-    this.logger.debug('DiagramOperationBroadcaster disposed');
+    this.logger.debugComponent(
+      'AppDiagramOperationBroadcaster',
+      'DiagramOperationBroadcaster disposed',
+    );
   }
 
   /**
@@ -212,11 +224,15 @@ export class AppDiagramOperationBroadcaster {
       // Either add to pending batch or send immediately
       if (this._isInAtomicOperation) {
         this._pendingOperations.push(operation);
-        this.logger.debug('Added operation to atomic batch', {
-          operation: operation.operation,
-          cellId: operation.id,
-          batchSize: this._pendingOperations.length,
-        });
+        this.logger.debugComponent(
+          'AppDiagramOperationBroadcaster',
+          'Added operation to atomic batch',
+          {
+            operation: operation.operation,
+            cellId: operation.id,
+            batchSize: this._pendingOperations.length,
+          },
+        );
       } else {
         // Send immediately for non-atomic operations
         this._sendSingleOperation(operation);
@@ -247,7 +263,11 @@ export class AppDiagramOperationBroadcaster {
 
     // Skip if applying remote changes (prevents echo)
     if (state.isApplyingRemoteChange) {
-      this.logger.debug('✓ Skipping broadcast - applying remote change', logContext);
+      this.logger.debugComponent(
+        'AppDiagramOperationBroadcaster',
+        '✓ Skipping broadcast - applying remote change',
+        logContext,
+      );
       return false;
     }
 
@@ -259,7 +279,11 @@ export class AppDiagramOperationBroadcaster {
 
     // Skip if not in collaboration mode
     if (!this.collaborationService.isCollaborating()) {
-      this.logger.debug('✓ Skipping broadcast - not in collaboration mode', logContext);
+      this.logger.debugComponent(
+        'AppDiagramOperationBroadcaster',
+        '✓ Skipping broadcast - not in collaboration mode',
+        logContext,
+      );
       return false;
     }
 
@@ -274,7 +298,11 @@ export class AppDiagramOperationBroadcaster {
         isDragging &&
         (args.key === 'position' || args.key === 'size' || args.key === 'vertices')
       ) {
-        this.logger.debug('✓ Skipping broadcast - intermediate drag event', logContext);
+        this.logger.debugComponent(
+          'AppDiagramOperationBroadcaster',
+          '✓ Skipping broadcast - intermediate drag event',
+          logContext,
+        );
         return false;
       }
     }
@@ -299,10 +327,14 @@ export class AppDiagramOperationBroadcaster {
       });
 
       if (isOnlyVisualAttributes) {
-        this.logger.debug('✓ Skipping broadcast - visual-only changes', {
-          ...logContext,
-          attributePaths,
-        });
+        this.logger.debugComponent(
+          'AppDiagramOperationBroadcaster',
+          '✓ Skipping broadcast - visual-only changes',
+          {
+            ...logContext,
+            attributePaths,
+          },
+        );
         return false;
       }
 
@@ -314,14 +346,22 @@ export class AppDiagramOperationBroadcaster {
         );
 
         if (isPortVisibilityOnly) {
-          this.logger.debug('✓ Skipping broadcast - port visibility only', logContext);
+          this.logger.debugComponent(
+            'AppDiagramOperationBroadcaster',
+            '✓ Skipping broadcast - port visibility only',
+            logContext,
+          );
           return false;
         }
       }
     }
 
     // Will broadcast this change
-    this.logger.debug('→ Broadcasting change', logContext);
+    this.logger.debugComponent(
+      'AppDiagramOperationBroadcaster',
+      '→ Broadcasting change',
+      logContext,
+    );
     return true;
   }
 
@@ -364,10 +404,14 @@ export class AppDiagramOperationBroadcaster {
         if (!isNewCell) {
           // Cell exists - this is really an update, not an add
           // This can happen when X6 fires cell:added for existing cells during reconnection
-          this.logger.debug('cell:added fired for existing cell - treating as update', {
-            cellId: cell.id,
-            cellType: cell.isNode() ? 'node' : 'edge',
-          });
+          this.logger.debugComponent(
+            'AppDiagramOperationBroadcaster',
+            'cell:added fired for existing cell - treating as update',
+            {
+              cellId: cell.id,
+              cellType: cell.isNode() ? 'node' : 'edge',
+            },
+          );
 
           return {
             id: cell.id,
@@ -410,7 +454,7 @@ export class AppDiagramOperationBroadcaster {
         const changeType = event === 'edge:change:source' ? 'source' : 'target';
         const changeValue = changeType === 'source' ? edge.getSource() : edge.getTarget();
 
-        this.logger.debug(`Edge ${changeType} changed`, {
+        this.logger.debugComponent('AppDiagramOperationBroadcaster', `Edge ${changeType} changed`, {
           edgeId: edge.id,
           changeType,
           newValue: changeValue,
@@ -531,14 +575,17 @@ export class AppDiagramOperationBroadcaster {
    * Send a single operation immediately
    */
   private _sendSingleOperation(operation: CellOperation): void {
-    this.logger.debug('Broadcasting single operation', {
+    this.logger.debugComponent('AppDiagramOperationBroadcaster', 'Broadcasting single operation', {
       operation: operation.operation,
       cellId: operation.id,
     });
 
     this.collaborativeOperationService.sendDiagramOperation([operation]).subscribe({
       next: () => {
-        this.logger.debug('Single operation broadcast successful');
+        this.logger.debugComponent(
+          'AppDiagramOperationBroadcaster',
+          'Single operation broadcast successful',
+        );
       },
       error: error => {
         this.logger.error('Failed to broadcast single operation', error);

@@ -61,7 +61,7 @@ export class AppGraphOperationManager implements IGraphOperationManager {
   private _totalExecutionTimeMs = 0;
 
   constructor(private readonly logger: LoggerService) {
-    this.logger.debug('AppGraphOperationManager initialized');
+    this.logger.debugComponent('AppGraphOperationManager', 'initialized');
     this._initializeBuiltInExecutors();
   }
 
@@ -106,7 +106,9 @@ export class AppGraphOperationManager implements IGraphOperationManager {
     const currentConfig = this._config$.value;
     const newConfig = { ...currentConfig, ...config };
     this._config$.next(newConfig);
-    this.logger.debug('AppGraphOperationManager configuration updated', { config: newConfig });
+    this.logger.debugComponent('AppGraphOperationManager', 'configuration updated', {
+      config: newConfig,
+    });
   }
 
   /**
@@ -115,7 +117,7 @@ export class AppGraphOperationManager implements IGraphOperationManager {
   execute(operation: GraphOperation, context: OperationContext): Observable<OperationResult> {
     const startTime = performance.now();
 
-    this.logger.debug('Executing operation', {
+    this.logger.debugComponent('AppGraphOperationManager', 'Executing operation', {
       operationId: operation.id,
       type: operation.type,
       source: operation.source,
@@ -176,7 +178,9 @@ export class AppGraphOperationManager implements IGraphOperationManager {
       return of([]);
     }
 
-    this.logger.debug('Executing batch operations', { count: operations.length });
+    this.logger.debugComponent('AppGraphOperationManager', 'Executing batch operations', {
+      count: operations.length,
+    });
 
     // Execute all operations in parallel
     const executions = operations.map(operation => this.execute(operation, context));
@@ -238,14 +242,16 @@ export class AppGraphOperationManager implements IGraphOperationManager {
     const key = this._getExecutorKey(executor);
     const removed = this._executors.delete(key);
     if (removed) {
-      this.logger.debug('Executor removed', { priority: executor.priority });
+      this.logger.debugComponent('AppGraphOperationManager', 'Executor removed', {
+        priority: executor.priority,
+      });
     }
   }
 
   addValidator(validator: OperationValidator): void {
     const key = `${validator.constructor.name}-${Date.now()}`;
     this._validators.set(key, validator);
-    this.logger.debug('Validator added');
+    this.logger.debugComponent('AppGraphOperationManager', 'Validator added');
   }
 
   removeValidator(validator: OperationValidator): void {
@@ -260,18 +266,18 @@ export class AppGraphOperationManager implements IGraphOperationManager {
       }
     });
     if (removed) {
-      this.logger.debug('Validator removed');
+      this.logger.debugComponent('AppGraphOperationManager', 'Validator removed');
     }
   }
 
   addInterceptor(_interceptor: any): void {
     // For now, just log that interceptor was added
-    this.logger.debug('Interceptor added');
+    this.logger.debugComponent('AppGraphOperationManager', 'Interceptor added');
   }
 
   removeInterceptor(_interceptor: any): void {
     // For now, just log that interceptor was removed
-    this.logger.debug('Interceptor removed');
+    this.logger.debugComponent('AppGraphOperationManager', 'Interceptor removed');
   }
 
   /**
@@ -292,7 +298,7 @@ export class AppGraphOperationManager implements IGraphOperationManager {
       lastResetTime: new Date(),
     };
     this._totalExecutionTimeMs = 0;
-    this.logger.debug('Statistics reset');
+    this.logger.debugComponent('AppGraphOperationManager', 'Statistics reset');
   }
 
   get operationCompleted$(): Observable<OperationCompletedEvent> {
@@ -321,7 +327,9 @@ export class AppGraphOperationManager implements IGraphOperationManager {
   cancelOperation(operationId: string): boolean {
     if (this._pendingOperations.has(operationId)) {
       this._pendingOperations.delete(operationId);
-      this.logger.debug('Operation cancelled', { operationId });
+      this.logger.debugComponent('AppGraphOperationManager', 'Operation cancelled', {
+        operationId,
+      });
       return true;
     }
     return false;
@@ -340,7 +348,7 @@ export class AppGraphOperationManager implements IGraphOperationManager {
     this._executors.clear();
     this._validators.clear();
     this._pendingOperations.clear();
-    this.logger.debug('AppGraphOperationManager disposed');
+    this.logger.debugComponent('AppGraphOperationManager', 'disposed');
   }
 
   /**

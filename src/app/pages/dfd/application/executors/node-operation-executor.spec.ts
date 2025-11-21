@@ -21,6 +21,7 @@ describe('NodeOperationExecutor', () => {
   beforeEach(() => {
     mockLogger = {
       debug: vi.fn(),
+      debugComponent: vi.fn(),
       warn: vi.fn(),
       error: vi.fn(),
     };

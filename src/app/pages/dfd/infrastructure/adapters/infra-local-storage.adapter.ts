@@ -24,7 +24,7 @@ export class InfraLocalStorageAdapter {
   private readonly _keyPrefix = 'tmi-diagram-';
 
   constructor(private readonly logger: LoggerService) {
-    this.logger.debug('InfraLocalStorageAdapter initialized');
+    this.logger.debugComponent('InfraLocalStorageAdapter', 'initialized');
   }
 
   /**
@@ -46,7 +46,7 @@ export class InfraLocalStorageAdapter {
 
       localStorage.setItem(key, JSON.stringify(storageData));
 
-      this.logger.debug('Diagram saved to localStorage', {
+      this.logger.debugComponent('InfraLocalStorageAdapter', 'Diagram saved to localStorage', {
         diagramId,
         version,
         dataSize: JSON.stringify(data).length,
@@ -71,13 +71,15 @@ export class InfraLocalStorageAdapter {
       const data = this._getFromStorage(key);
 
       if (data) {
-        this.logger.debug('Diagram loaded from localStorage', {
+        this.logger.debugComponent('InfraLocalStorageAdapter', 'Diagram loaded from localStorage', {
           diagramId,
           version: data.version,
           timestamp: data.timestamp,
         });
       } else {
-        this.logger.debug('No diagram found in localStorage', { diagramId });
+        this.logger.debugComponent('InfraLocalStorageAdapter', 'No diagram found in localStorage', {
+          diagramId,
+        });
       }
 
       return of(data);
@@ -106,7 +108,9 @@ export class InfraLocalStorageAdapter {
       const key = this._getKey(diagramId);
       localStorage.removeItem(key);
 
-      this.logger.debug('Diagram deleted from localStorage', { diagramId });
+      this.logger.debugComponent('InfraLocalStorageAdapter', 'Diagram deleted from localStorage', {
+        diagramId,
+      });
       return of(true);
     } catch (error) {
       this.logger.error('Failed to delete diagram from localStorage', {
@@ -127,9 +131,13 @@ export class InfraLocalStorageAdapter {
 
       diagramKeys.forEach(key => localStorage.removeItem(key));
 
-      this.logger.debug('All diagrams cleared from localStorage', {
-        count: diagramKeys.length,
-      });
+      this.logger.debugComponent(
+        'InfraLocalStorageAdapter',
+        'All diagrams cleared from localStorage',
+        {
+          count: diagramKeys.length,
+        },
+      );
 
       return of(true);
     } catch (error) {

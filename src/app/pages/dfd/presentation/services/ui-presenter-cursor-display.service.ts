@@ -67,25 +67,35 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
   handlePresenterCursorUpdate(position: CursorPosition): void {
     // Only apply cursor if current user is not the presenter
     if (this.collaborationService.isCurrentUserPresenter()) {
-      this.logger.debug('Skipping presenter cursor update - current user is presenter');
+      this.logger.debugComponent(
+        'UiPresenterCursorDisplayService',
+        'Skipping presenter cursor update - current user is presenter',
+      );
       return;
     }
 
     // Don't process updates if graph is not visible
     if (!this._isGraphVisible) {
-      this.logger.debug('Skipping presenter cursor update - graph not visible');
+      this.logger.debugComponent(
+        'UiPresenterCursorDisplayService',
+        'Skipping presenter cursor update - graph not visible',
+      );
       return;
     }
 
     // Store the graph position for viewport change recalculation
     this._lastGraphPosition = { ...position };
 
-    this.logger.debug('Handling presenter cursor update', {
-      position: { x: position.x, y: position.y },
-      isCurrentUserPresenter: this.collaborationService.isCurrentUserPresenter(),
-      hasContainer: !!this._graphContainer,
-      hasGraph: !!this._graph,
-    });
+    this.logger.debugComponent(
+      'UiPresenterCursorDisplayService',
+      'Handling presenter cursor update',
+      {
+        position: { x: position.x, y: position.y },
+        isCurrentUserPresenter: this.collaborationService.isCurrentUserPresenter(),
+        hasContainer: !!this._graphContainer,
+        hasGraph: !!this._graph,
+      },
+    );
 
     try {
       // Convert graph coordinates to participant's viewport coordinates
@@ -93,7 +103,10 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
 
       if (!viewportPosition) {
         // Presenter cursor is outside participant's viewport - hide cursor
-        this.logger.debug('Presenter cursor outside participant viewport - hiding cursor');
+        this.logger.debugComponent(
+          'UiPresenterCursorDisplayService',
+          'Presenter cursor outside participant viewport - hiding cursor',
+        );
         this._removePresenterCursor();
         return;
       }
@@ -107,11 +120,15 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
       // Reset timeout for reverting to normal cursor
       this._resetCursorTimeout();
 
-      this.logger.debug('Applied presenter cursor position', {
-        graphPosition: { x: position.x, y: position.y },
-        viewportPosition: { x: viewportPosition.x, y: viewportPosition.y },
-        isShowingCursor: this._isShowingPresenterCursor,
-      });
+      this.logger.debugComponent(
+        'UiPresenterCursorDisplayService',
+        'Applied presenter cursor position',
+        {
+          graphPosition: { x: position.x, y: position.y },
+          viewportPosition: { x: viewportPosition.x, y: viewportPosition.y },
+          isShowingCursor: this._isShowingPresenterCursor,
+        },
+      );
     } catch (error) {
       this.logger.error('Error handling presenter cursor update', error);
     }
@@ -135,7 +152,10 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
       // Reset timeout for reverting to normal cursor
       this._resetCursorTimeout();
 
-      this.logger.debug('Reset cursor timeout on presenter selection update');
+      this.logger.debugComponent(
+        'UiPresenterCursorDisplayService',
+        'Reset cursor timeout on presenter selection update',
+      );
     } catch (error) {
       this.logger.error('Error handling presenter selection update', error);
     }
@@ -159,11 +179,15 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
       // Client coordinates are relative to the viewport (same as MouseEvent.clientX/Y)
       const clientCoords = this._graph.localToClient(localCoords.x, localCoords.y);
 
-      this.logger.debug('Converting participant cursor coordinates', {
-        graphPosition: { x: graphPosition.x, y: graphPosition.y },
-        localPosition: { x: localCoords.x, y: localCoords.y },
-        clientPosition: { x: clientCoords.x, y: clientCoords.y },
-      });
+      this.logger.debugComponent(
+        'UiPresenterCursorDisplayService',
+        'Converting participant cursor coordinates',
+        {
+          graphPosition: { x: graphPosition.x, y: graphPosition.y },
+          localPosition: { x: localCoords.x, y: localCoords.y },
+          clientPosition: { x: clientCoords.x, y: clientCoords.y },
+        },
+      );
 
       // Check if the resulting client coordinates are within the participant's viewport
       const isWithinViewport =
@@ -173,10 +197,14 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
         clientCoords.y <= window.innerHeight;
 
       if (!isWithinViewport) {
-        this.logger.debug('Presenter cursor position outside participant viewport', {
-          clientPosition: { x: clientCoords.x, y: clientCoords.y },
-          viewportSize: { width: window.innerWidth, height: window.innerHeight },
-        });
+        this.logger.debugComponent(
+          'UiPresenterCursorDisplayService',
+          'Presenter cursor position outside participant viewport',
+          {
+            clientPosition: { x: clientCoords.x, y: clientCoords.y },
+            viewportSize: { width: window.innerWidth, height: window.innerHeight },
+          },
+        );
         return null; // Return null to indicate cursor should be hidden
       }
 
@@ -267,7 +295,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
 
     this._isShowingPresenterCursor = false;
 
-    this.logger.debug('Reverted to normal cursor', {
+    this.logger.debugComponent('UiPresenterCursorDisplayService', 'Reverted to normal cursor', {
       childElementsCleared: graphElements.length,
     });
   }
@@ -294,10 +322,14 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
         this._lastHoveredElement.dispatchEvent(mouseOutEvent);
         this._lastHoveredElement.dispatchEvent(mouseLeaveEvent);
 
-        this.logger.debug('Cleared hover effects for element', {
-          element: this._lastHoveredElement.tagName,
-          className: this._lastHoveredElement.className,
-        });
+        this.logger.debugComponent(
+          'UiPresenterCursorDisplayService',
+          'Cleared hover effects for element',
+          {
+            element: this._lastHoveredElement.tagName,
+            className: this._lastHoveredElement.className,
+          },
+        );
       } catch (error) {
         this.logger.error('Error clearing last hovered element', error);
       }
@@ -320,10 +352,14 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
       const clientX = position.x;
       const clientY = position.y;
 
-      this.logger.debug('Generating synthetic mouse event', {
-        clientPosition: { x: clientX, y: clientY },
-        viewportSize: { width: window.innerWidth, height: window.innerHeight },
-      });
+      this.logger.debugComponent(
+        'UiPresenterCursorDisplayService',
+        'Generating synthetic mouse event',
+        {
+          clientPosition: { x: clientX, y: clientY },
+          viewportSize: { width: window.innerWidth, height: window.innerHeight },
+        },
+      );
 
       // Create synthetic mousemove event with client coordinates
       const syntheticEvent = new MouseEvent('mousemove', {
@@ -341,7 +377,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
           ? elementAtPosition
           : null;
 
-      this.logger.debug('Element at position', {
+      this.logger.debugComponent('UiPresenterCursorDisplayService', 'Element at position', {
         element: elementAtPosition?.tagName,
         className: elementAtPosition?.className,
         isInContainer: !!validElement,
@@ -376,10 +412,14 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
         this._lastHoveredElement.dispatchEvent(mouseOutEvent);
         this._lastHoveredElement.dispatchEvent(mouseLeaveEvent);
 
-        this.logger.debug('Generated mouseout/mouseleave events for', {
-          element: this._lastHoveredElement.tagName,
-          className: this._lastHoveredElement.className,
-        });
+        this.logger.debugComponent(
+          'UiPresenterCursorDisplayService',
+          'Generated mouseout/mouseleave events for',
+          {
+            element: this._lastHoveredElement.tagName,
+            className: this._lastHoveredElement.className,
+          },
+        );
       }
 
       // Dispatch mousemove to appropriate element
@@ -410,10 +450,14 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
           validElement.dispatchEvent(mouseOverEvent);
           validElement.dispatchEvent(mouseEnterEvent);
 
-          this.logger.debug('Generated mouseover/mouseenter events for', {
-            element: validElement.tagName,
-            className: validElement.className,
-          });
+          this.logger.debugComponent(
+            'UiPresenterCursorDisplayService',
+            'Generated mouseover/mouseenter events for',
+            {
+              element: validElement.tagName,
+              className: validElement.className,
+            },
+          );
         }
       } else {
         // Fallback: dispatch to container
@@ -426,11 +470,15 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
       // Update the last hovered element - only track elements within graph container
       this._lastHoveredElement = validElement;
 
-      this.logger.debug('Generated synthetic mouse events', {
-        clientPosition: { x: clientX, y: clientY },
-        targetElement: validElement?.tagName || 'container',
-        hoveredElementChanged: elementChanged,
-      });
+      this.logger.debugComponent(
+        'UiPresenterCursorDisplayService',
+        'Generated synthetic mouse events',
+        {
+          clientPosition: { x: clientX, y: clientY },
+          targetElement: validElement?.tagName || 'container',
+          hoveredElementChanged: elementChanged,
+        },
+      );
     } catch (error) {
       this.logger.error('Error generating synthetic mouse event', error);
     }
@@ -493,7 +541,10 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
       }),
     );
 
-    this.logger.debug('Viewport change handling initialized');
+    this.logger.debugComponent(
+      'UiPresenterCursorDisplayService',
+      'Viewport change handling initialized',
+    );
   }
 
   /**
@@ -514,7 +565,7 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
     this._resizeObserver = new ResizeObserver(entries => {
       for (const entry of entries) {
         if (entry.target === this._graphContainer) {
-          this.logger.debug('Graph container resized', {
+          this.logger.debugComponent('UiPresenterCursorDisplayService', 'Graph container resized', {
             width: entry.contentRect.width,
             height: entry.contentRect.height,
           });
@@ -528,7 +579,10 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
     });
 
     this._resizeObserver.observe(this._graphContainer);
-    this.logger.debug('ResizeObserver initialized for graph container');
+    this.logger.debugComponent(
+      'UiPresenterCursorDisplayService',
+      'ResizeObserver initialized for graph container',
+    );
   }
 
   /**
@@ -553,10 +607,14 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
             const wasVisible = this._isGraphVisible;
             this._isGraphVisible = entry.isIntersecting;
 
-            this.logger.debug('Graph visibility changed', {
-              isVisible: this._isGraphVisible,
-              intersectionRatio: entry.intersectionRatio,
-            });
+            this.logger.debugComponent(
+              'UiPresenterCursorDisplayService',
+              'Graph visibility changed',
+              {
+                isVisible: this._isGraphVisible,
+                intersectionRatio: entry.intersectionRatio,
+              },
+            );
 
             // If graph became invisible, hide cursor
             if (wasVisible && !this._isGraphVisible) {
@@ -575,7 +633,10 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
     );
 
     this._intersectionObserver.observe(this._graphContainer);
-    this.logger.debug('IntersectionObserver initialized for graph container');
+    this.logger.debugComponent(
+      'UiPresenterCursorDisplayService',
+      'IntersectionObserver initialized for graph container',
+    );
   }
 
   /**
@@ -587,10 +648,14 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
       return;
     }
 
-    this.logger.debug('Handling viewport change - recalculating cursor position', {
-      lastGraphPosition: this._lastGraphPosition,
-      isShowingCursor: this._isShowingPresenterCursor,
-    });
+    this.logger.debugComponent(
+      'UiPresenterCursorDisplayService',
+      'Handling viewport change - recalculating cursor position',
+      {
+        lastGraphPosition: this._lastGraphPosition,
+        isShowingCursor: this._isShowingPresenterCursor,
+      },
+    );
 
     try {
       // Recalculate viewport position from stored graph coordinates
@@ -598,15 +663,22 @@ export class UiPresenterCursorDisplayService implements OnDestroy {
 
       if (!newViewportPosition) {
         // Cursor is now outside viewport - hide it
-        this.logger.debug('Cursor outside viewport after viewport change - hiding');
+        this.logger.debugComponent(
+          'UiPresenterCursorDisplayService',
+          'Cursor outside viewport after viewport change - hiding',
+        );
         this._removePresenterCursor();
       } else {
         // Update cursor position with new coordinates
         this._generateSyntheticMouseEvent(newViewportPosition);
 
-        this.logger.debug('Cursor position recalculated after viewport change', {
-          newViewportPosition,
-        });
+        this.logger.debugComponent(
+          'UiPresenterCursorDisplayService',
+          'Cursor position recalculated after viewport change',
+          {
+            newViewportPosition,
+          },
+        );
       }
     } catch (error) {
       this.logger.error('Error handling viewport change', error);

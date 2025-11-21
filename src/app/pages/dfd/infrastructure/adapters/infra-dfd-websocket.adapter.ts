@@ -438,7 +438,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     // Extract user ID with fallback (User fields are optional per schema)
     const userId = message.initiating_user.user_id || message.initiating_user.email || 'unknown';
 
-    this._logger.debug('Received diagram operation', {
+    this._logger.debugComponent('InfraDfdWebsocketAdapter', 'Received diagram operation', {
       userId: userId,
       userEmail: message.initiating_user.email,
       operationId: message.operation_id,
@@ -474,9 +474,13 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
 
     // If our local copy has the same update vector as the server, we don't need to update
     if (currentUpdateVector === message.update_vector) {
-      this._logger.debug('Local diagram is already up to date, ignoring state correction', {
-        updateVector: message.update_vector,
-      });
+      this._logger.debugComponent(
+        'InfraDfdWebsocketAdapter',
+        'Local diagram is already up to date, ignoring state correction',
+        {
+          updateVector: message.update_vector,
+        },
+      );
       return;
     }
 
@@ -519,7 +523,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   }
 
   private _handleHistoryOperation(message: HistoryOperationMessage): void {
-    this._logger.debug('History operation', {
+    this._logger.debugComponent('InfraDfdWebsocketAdapter', 'History operation', {
       operationType: message.operation_type,
       message: message.message,
     });
@@ -543,7 +547,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   }
 
   private _handleCurrentPresenter(message: CurrentPresenterMessage): void {
-    this._logger.debug('Current presenter update', {
+    this._logger.debugComponent('InfraDfdWebsocketAdapter', 'Current presenter update', {
       presenter: message.current_presenter,
     });
 
@@ -559,7 +563,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   private _handlePresenterCursor(message: PresenterCursorMessage): void {
     // Per AsyncAPI spec, presenter_cursor does not include user field
     // The presenter is tracked separately via current_presenter message
-    this._logger.debug('Presenter cursor update', {
+    this._logger.debugComponent('InfraDfdWebsocketAdapter', 'Presenter cursor update', {
       position: message.cursor_position,
     });
 
@@ -575,7 +579,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   private _handlePresenterSelection(message: PresenterSelectionMessage): void {
     // Per AsyncAPI spec, presenter_selection does not include user field
     // The presenter is tracked separately via current_presenter message
-    this._logger.debug('Presenter selection update', {
+    this._logger.debugComponent('InfraDfdWebsocketAdapter', 'Presenter selection update', {
       cellCount: message.selected_cells.length,
     });
 
@@ -606,7 +610,11 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       : message.joined_user.email || message.joined_user.user_id || 'Unknown user';
 
     if (this._notificationService) {
-      this._logger.debug('Showing participant joined notification', { userIdentifier });
+      this._logger.debugComponent(
+        'InfraDfdWebsocketAdapter',
+        'Showing participant joined notification',
+        { userIdentifier },
+      );
       this._notificationService.showSessionEvent('userJoined', userIdentifier).subscribe({
         error: err => this._logger.error('Failed to show participant joined notification', err),
       });
@@ -646,7 +654,11 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       : message.departed_user.email || message.departed_user.user_id || 'Unknown user';
 
     if (this._notificationService) {
-      this._logger.debug('Showing participant left notification', { userIdentifier });
+      this._logger.debugComponent(
+        'InfraDfdWebsocketAdapter',
+        'Showing participant left notification',
+        { userIdentifier },
+      );
       this._notificationService.showSessionEvent('userLeft', userIdentifier).subscribe({
         error: err => this._logger.error('Failed to show participant left notification', err),
       });

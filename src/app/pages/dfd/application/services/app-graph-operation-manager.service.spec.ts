@@ -24,6 +24,7 @@ describe('AppGraphOperationManager', () => {
     mockLogger = {
       info: vi.fn(),
       debug: vi.fn(),
+      debugComponent: vi.fn(),
       warn: vi.fn(),
       error: vi.fn(),
     };

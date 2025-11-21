@@ -78,7 +78,7 @@ export class AppDfdFacade {
    * This must be called before any graph operations can be performed
    */
   initializeGraphAdapter(containerElement: HTMLElement): void {
-    this.logger.debug('AppDfdFacade: Initializing graph adapter');
+    this.logger.debugComponent('AppDfdFacade', 'Initializing graph adapter');
     this.infraX6GraphAdapter.initialize(containerElement);
 
     // Inject node service into selection adapter to avoid circular dependency
@@ -90,7 +90,7 @@ export class AppDfdFacade {
    * This allows the orchestrator to create the graph and pass it to the infrastructure
    */
   setGraphOnAdapter(graph: any): void {
-    this.logger.debug('AppDfdFacade: Setting graph instance on adapter');
+    this.logger.debugComponent('AppDfdFacade', 'Setting graph instance on adapter');
     this.infraX6GraphAdapter.setGraph(graph);
   }
 
@@ -175,11 +175,13 @@ export class AppDfdFacade {
       initialPosition.x === finalPosition.x &&
       initialPosition.y === finalPosition.y
     ) {
-      this.logger.debug('Skipping node move - no position change', { nodeId: node.id });
+      this.logger.debugComponent('AppDfdFacade', 'Skipping node move - no position change', {
+        nodeId: node.id,
+      });
       return of(undefined);
     }
 
-    this.logger.debug('Creating UpdateNodeOperation for node move', {
+    this.logger.debugComponent('AppDfdFacade', 'Creating UpdateNodeOperation for node move', {
       nodeId: node.id,
       initialPosition,
       finalPosition,
@@ -215,7 +217,9 @@ export class AppDfdFacade {
             error: result.error,
           });
         } else {
-          this.logger.debug('Node move recorded in history', { nodeId: node.id });
+          this.logger.debugComponent('AppDfdFacade', 'Node move recorded in history', {
+            nodeId: node.id,
+          });
         }
       }),
       map(() => undefined),
@@ -240,11 +244,13 @@ export class AppDfdFacade {
       initialSize.width === finalSize.width &&
       initialSize.height === finalSize.height
     ) {
-      this.logger.debug('Skipping node resize - no size change', { nodeId: node.id });
+      this.logger.debugComponent('AppDfdFacade', 'Skipping node resize - no size change', {
+        nodeId: node.id,
+      });
       return of(undefined);
     }
 
-    this.logger.debug('Creating UpdateNodeOperation for node resize', {
+    this.logger.debugComponent('AppDfdFacade', 'Creating UpdateNodeOperation for node resize', {
       nodeId: node.id,
       initialSize,
       finalSize,
@@ -280,7 +286,9 @@ export class AppDfdFacade {
             error: result.error,
           });
         } else {
-          this.logger.debug('Node resize recorded in history', { nodeId: node.id });
+          this.logger.debugComponent('AppDfdFacade', 'Node resize recorded in history', {
+            nodeId: node.id,
+          });
         }
       }),
       map(() => undefined),
@@ -301,11 +309,15 @@ export class AppDfdFacade {
 
     // Skip if vertices haven't actually changed
     if (initialVertices && this._verticesEqual(initialVertices, finalVertices)) {
-      this.logger.debug('Skipping edge vertices drag - no vertices change', { edgeId: edge.id });
+      this.logger.debugComponent(
+        'AppDfdFacade',
+        'Skipping edge vertices drag - no vertices change',
+        { edgeId: edge.id },
+      );
       return of(undefined);
     }
 
-    this.logger.debug('Creating UpdateEdgeOperation for vertices drag', {
+    this.logger.debugComponent('AppDfdFacade', 'Creating UpdateEdgeOperation for vertices drag', {
       edgeId: edge.id,
       initialVertices,
       finalVertices,
@@ -341,7 +353,9 @@ export class AppDfdFacade {
             error: result.error,
           });
         } else {
-          this.logger.debug('Edge vertices drag recorded in history', { edgeId: edge.id });
+          this.logger.debugComponent('AppDfdFacade', 'Edge vertices drag recorded in history', {
+            edgeId: edge.id,
+          });
         }
       }),
       map(() => undefined),
@@ -377,7 +391,9 @@ export class AppDfdFacade {
     // Skip if we're applying undo/redo - the operation is already in history
     const state = this.appStateService.getCurrentState();
     if (state.isApplyingUndoRedo) {
-      this.logger.debug('Skipping handleNodeAdded - applying undo/redo', { nodeId: node.id });
+      this.logger.debugComponent('AppDfdFacade', 'Skipping handleNodeAdded - applying undo/redo', {
+        nodeId: node.id,
+      });
       return of(undefined);
     }
 
@@ -440,7 +456,7 @@ export class AppDfdFacade {
             error: result.error,
           });
         } else {
-          this.logger.debug('Node creation recorded in history', {
+          this.logger.debugComponent('AppDfdFacade', 'Node creation recorded in history', {
             nodeId,
           });
         }
@@ -577,7 +593,7 @@ export class AppDfdFacade {
         return of({ success: true, deletedCount: 0 });
       }
 
-      this.logger.debug('Deleting selected cells via GraphOperations', {
+      this.logger.debugComponent('AppDfdFacade', 'Deleting selected cells via GraphOperations', {
         cellCount: selectedCells.length,
       });
 
@@ -598,7 +614,7 @@ export class AppDfdFacade {
           const successCount = results.filter(r => r.success).length;
           const allSuccess = successCount === results.length;
 
-          this.logger.debug('Delete operations completed', {
+          this.logger.debugComponent('AppDfdFacade', 'Delete operations completed', {
             total: results.length,
             successful: successCount,
           });
@@ -621,7 +637,7 @@ export class AppDfdFacade {
   private _createDeleteNodeOperation(node: any, graph: any): Observable<any> {
     const nodeId = node.id;
 
-    this.logger.debug('Creating DeleteNodeOperation', { nodeId });
+    this.logger.debugComponent('AppDfdFacade', 'Creating DeleteNodeOperation', { nodeId });
 
     const operation: DeleteNodeOperation = {
       id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -649,7 +665,7 @@ export class AppDfdFacade {
             error: result.error,
           });
         } else {
-          this.logger.debug('Node deleted successfully', { nodeId });
+          this.logger.debugComponent('AppDfdFacade', 'Node deleted successfully', { nodeId });
         }
       }),
     );
@@ -661,7 +677,7 @@ export class AppDfdFacade {
   private _createDeleteEdgeOperation(edge: any, graph: any): Observable<any> {
     const edgeId = edge.id;
 
-    this.logger.debug('Creating DeleteEdgeOperation', { edgeId });
+    this.logger.debugComponent('AppDfdFacade', 'Creating DeleteEdgeOperation', { edgeId });
 
     const operation: DeleteEdgeOperation = {
       id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -689,7 +705,7 @@ export class AppDfdFacade {
             error: result.error,
           });
         } else {
-          this.logger.debug('Edge deleted successfully', { edgeId });
+          this.logger.debugComponent('AppDfdFacade', 'Edge deleted successfully', { edgeId });
         }
       }),
     );
@@ -712,9 +728,13 @@ export class AppDfdFacade {
         return of({ success: true, cutCount: 0 });
       }
 
-      this.logger.debug('Cutting cells to clipboard with history tracking', {
-        cellCount: selectedCells.length,
-      });
+      this.logger.debugComponent(
+        'AppDfdFacade',
+        'Cutting cells to clipboard with history tracking',
+        {
+          cellCount: selectedCells.length,
+        },
+      );
 
       // First, copy to clipboard using X6's clipboard
       graph.cut(selectedCells);
@@ -727,7 +747,7 @@ export class AppDfdFacade {
         })),
         tap(result => {
           if (result.success) {
-            this.logger.debug('Cut operation completed successfully', {
+            this.logger.debugComponent('AppDfdFacade', 'Cut operation completed successfully', {
               cutCount: result.cutCount,
             });
           } else {
@@ -750,12 +770,14 @@ export class AppDfdFacade {
     const selectedCells = graph.getSelectedCells();
 
     if (selectedCells.length === 0) {
-      this.logger.debug('No cells selected for copy operation');
+      this.logger.debugComponent('AppDfdFacade', 'No cells selected for copy operation');
       return;
     }
 
     graph.copy(selectedCells);
-    this.logger.debug('Copied cells to clipboard', { count: selectedCells.length });
+    this.logger.debugComponent('AppDfdFacade', 'Copied cells to clipboard', {
+      count: selectedCells.length,
+    });
   }
 
   /**
@@ -767,9 +789,12 @@ export class AppDfdFacade {
 
     if (!graph.isClipboardEmpty()) {
       graph.paste();
-      this.logger.debug('Paste operation initiated - cells will be captured retroactively');
+      this.logger.debugComponent(
+        'AppDfdFacade',
+        'Paste operation initiated - cells will be captured retroactively',
+      );
     } else {
-      this.logger.debug('Clipboard is empty, cannot paste');
+      this.logger.debugComponent('AppDfdFacade', 'Clipboard is empty, cannot paste');
     }
   }
 
@@ -929,7 +954,7 @@ export class AppDfdFacade {
     graph: any,
     diagramId: string,
   ): Observable<void> {
-    this.logger.debug('Creating UpdateNodeOperation for label change', {
+    this.logger.debugComponent('AppDfdFacade', 'Creating UpdateNodeOperation for label change', {
       nodeId: change.cellId,
       oldLabel: change.oldLabel,
       newLabel: change.newLabel,
@@ -964,7 +989,9 @@ export class AppDfdFacade {
             error: result.error,
           });
         } else {
-          this.logger.debug('Node label change recorded in history', { nodeId: change.cellId });
+          this.logger.debugComponent('AppDfdFacade', 'Node label change recorded in history', {
+            nodeId: change.cellId,
+          });
         }
       }),
       map(() => undefined),
@@ -979,7 +1006,7 @@ export class AppDfdFacade {
     graph: any,
     diagramId: string,
   ): Observable<void> {
-    this.logger.debug('Creating UpdateEdgeOperation for label change', {
+    this.logger.debugComponent('AppDfdFacade', 'Creating UpdateEdgeOperation for label change', {
       edgeId: change.cellId,
       oldLabel: change.oldLabel,
       newLabel: change.newLabel,
@@ -1014,7 +1041,9 @@ export class AppDfdFacade {
             error: result.error,
           });
         } else {
-          this.logger.debug('Edge label change recorded in history', { edgeId: change.cellId });
+          this.logger.debugComponent('AppDfdFacade', 'Edge label change recorded in history', {
+            edgeId: change.cellId,
+          });
         }
       }),
       map(() => undefined),
@@ -1058,13 +1087,17 @@ export class AppDfdFacade {
     graph: any,
     diagramId: string,
   ): Observable<void> {
-    this.logger.debug('Creating UpdateEdgeOperation for source reconnection', {
-      edgeId: reconnection.edgeId,
-      oldNodeId: reconnection.oldNodeId,
-      oldPortId: reconnection.oldPortId,
-      newNodeId: reconnection.newNodeId,
-      newPortId: reconnection.newPortId,
-    });
+    this.logger.debugComponent(
+      'AppDfdFacade',
+      'Creating UpdateEdgeOperation for source reconnection',
+      {
+        edgeId: reconnection.edgeId,
+        oldNodeId: reconnection.oldNodeId,
+        oldPortId: reconnection.oldPortId,
+        newNodeId: reconnection.newNodeId,
+        newPortId: reconnection.newPortId,
+      },
+    );
 
     const operation: any = {
       id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -1098,9 +1131,13 @@ export class AppDfdFacade {
             error: result.error,
           });
         } else {
-          this.logger.debug('Edge source reconnection recorded in history', {
-            edgeId: reconnection.edgeId,
-          });
+          this.logger.debugComponent(
+            'AppDfdFacade',
+            'Edge source reconnection recorded in history',
+            {
+              edgeId: reconnection.edgeId,
+            },
+          );
         }
       }),
       map(() => undefined),
@@ -1121,13 +1158,17 @@ export class AppDfdFacade {
     graph: any,
     diagramId: string,
   ): Observable<void> {
-    this.logger.debug('Creating UpdateEdgeOperation for target reconnection', {
-      edgeId: reconnection.edgeId,
-      oldNodeId: reconnection.oldNodeId,
-      oldPortId: reconnection.oldPortId,
-      newNodeId: reconnection.newNodeId,
-      newPortId: reconnection.newPortId,
-    });
+    this.logger.debugComponent(
+      'AppDfdFacade',
+      'Creating UpdateEdgeOperation for target reconnection',
+      {
+        edgeId: reconnection.edgeId,
+        oldNodeId: reconnection.oldNodeId,
+        oldPortId: reconnection.oldPortId,
+        newNodeId: reconnection.newNodeId,
+        newPortId: reconnection.newPortId,
+      },
+    );
 
     const operation: any = {
       id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -1161,9 +1202,13 @@ export class AppDfdFacade {
             error: result.error,
           });
         } else {
-          this.logger.debug('Edge target reconnection recorded in history', {
-            edgeId: reconnection.edgeId,
-          });
+          this.logger.debugComponent(
+            'AppDfdFacade',
+            'Edge target reconnection recorded in history',
+            {
+              edgeId: reconnection.edgeId,
+            },
+          );
         }
       }),
       map(() => undefined),
@@ -1184,7 +1229,7 @@ export class AppDfdFacade {
   ): Observable<void> {
     const graph = this.infraX6GraphAdapter.getGraph();
 
-    this.logger.debug('Creating UpdateNodeOperation for parent change', {
+    this.logger.debugComponent('AppDfdFacade', 'Creating UpdateNodeOperation for parent change', {
       nodeId: change.nodeId,
       oldParentId: change.oldParentId,
       newParentId: change.newParentId,
@@ -1219,7 +1264,7 @@ export class AppDfdFacade {
             error: result.error,
           });
         } else {
-          this.logger.debug('Node parent change recorded in history', {
+          this.logger.debugComponent('AppDfdFacade', 'Node parent change recorded in history', {
             nodeId: change.nodeId,
             oldParentId: change.oldParentId,
             newParentId: change.newParentId,
@@ -1285,7 +1330,7 @@ export class AppDfdFacade {
    * Dispose of facade resources
    */
   dispose(): void {
-    this.logger.debug('AppDfdFacade disposing resources');
+    this.logger.debugComponent('AppDfdFacade', 'Disposing resources');
     // The individual services will handle their own cleanup
     // This facade doesn't maintain any additional state that needs cleanup
   }

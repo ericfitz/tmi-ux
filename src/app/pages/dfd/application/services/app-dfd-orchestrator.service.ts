@@ -138,7 +138,7 @@ export class AppDfdOrchestrator {
     private readonly appOperationRejectionHandler: AppOperationRejectionHandler,
     private readonly dialog: MatDialog,
   ) {
-    // this.logger.debug('AppDfdOrchestrator initialized (simplified autosave)');
+    // this.logger.debugComponent('AppDfdOrchestrator', 'AppDfdOrchestrator initialized (simplified autosave)');
     this._setupEventIntegration();
   }
 
@@ -146,7 +146,7 @@ export class AppDfdOrchestrator {
    * Initialize the DFD system
    */
   initialize(params: DfdInitializationParams): Observable<boolean> {
-    this.logger.debug('AppDfdOrchestrator: Initializing DFD system', {
+    this.logger.debugComponent('AppDfdOrchestrator', 'Initializing DFD system', {
       diagramId: params.diagramId,
       readOnly: params.readOnly,
     });
@@ -199,7 +199,7 @@ export class AppDfdOrchestrator {
       return throwError(() => new Error('Cannot execute operations in read-only mode'));
     }
 
-    this.logger.debug('AppDfdOrchestrator: Executing operation', {
+    this.logger.debugComponent('AppDfdOrchestrator', 'Executing operation', {
       operationType: operation.type,
       operationId: operation.id,
     });
@@ -241,7 +241,7 @@ export class AppDfdOrchestrator {
       return throwError(() => new Error('Cannot execute operations in read-only mode'));
     }
 
-    this.logger.debug('AppDfdOrchestrator: Executing batch operations', {
+    this.logger.debugComponent('AppDfdOrchestrator', 'Executing batch operations', {
       operationCount: operations.length,
     });
 
@@ -276,7 +276,7 @@ export class AppDfdOrchestrator {
    * Undo the last operation
    */
   undo(): Observable<OperationResult> {
-    this.logger.debug('AppDfdOrchestrator: Undo requested');
+    this.logger.debugComponent('AppDfdOrchestrator', 'Undo requested');
     return this.appHistoryService.undo().pipe(
       tap(result => {
         if (result.success) {
@@ -286,7 +286,7 @@ export class AppDfdOrchestrator {
           this.dfdInfrastructure.graphAdapter?.updateAllEmbeddingAppearances();
           // Update port visibility based on new connection state
           this.dfdInfrastructure.graphAdapter?.updateAllPortVisibility();
-          this.logger.debug('AppDfdOrchestrator: Post-undo cleanup completed');
+          this.logger.debugComponent('AppDfdOrchestrator', 'Post-undo cleanup completed');
         }
       }),
     );
@@ -296,7 +296,7 @@ export class AppDfdOrchestrator {
    * Redo the last undone operation
    */
   redo(): Observable<OperationResult> {
-    this.logger.debug('AppDfdOrchestrator: Redo requested');
+    this.logger.debugComponent('AppDfdOrchestrator', 'Redo requested');
     return this.appHistoryService.redo().pipe(
       tap(result => {
         if (result.success) {
@@ -306,7 +306,7 @@ export class AppDfdOrchestrator {
           this.dfdInfrastructure.graphAdapter?.updateAllEmbeddingAppearances();
           // Update port visibility based on new connection state
           this.dfdInfrastructure.graphAdapter?.updateAllPortVisibility();
-          this.logger.debug('AppDfdOrchestrator: Post-redo cleanup completed');
+          this.logger.debugComponent('AppDfdOrchestrator', 'Post-redo cleanup completed');
         }
       }),
     );
@@ -348,13 +348,13 @@ export class AppDfdOrchestrator {
       return throwError(() => new Error('DFD system not initialized'));
     }
 
-    this.logger.debug('AppDfdOrchestrator: Manual save triggered');
+    this.logger.debugComponent('AppDfdOrchestrator', 'Manual save triggered');
 
     // Check if in active collaboration session (socket is guaranteed connected if true)
     const isCollaborating = this.collaborationService.isCollaborating();
     const useWebSocket = isCollaborating;
 
-    this.logger.debug('Manual save strategy selection', {
+    this.logger.debugComponent('AppDfdOrchestrator', 'Manual save strategy selection', {
       isCollaborating,
       willUseWebSocket: useWebSocket,
     });
@@ -405,7 +405,7 @@ export class AppDfdOrchestrator {
       return throwError(() => new Error('No threat model ID available'));
     }
 
-    this.logger.debug('AppDfdOrchestrator: Loading diagram', {
+    this.logger.debugComponent('AppDfdOrchestrator', 'Loading diagram', {
       diagramId: targetDiagramId,
       threatModelId,
     });
@@ -490,7 +490,9 @@ export class AppDfdOrchestrator {
       return throwError(() => new Error('DFD system not initialized'));
     }
 
-    this.logger.debug('AppDfdOrchestrator: Exporting diagram', { format: format.format });
+    this.logger.debugComponent('AppDfdOrchestrator', 'Exporting diagram', {
+      format: format.format,
+    });
 
     switch (format.format) {
       case 'svg': {
@@ -606,12 +608,12 @@ export class AppDfdOrchestrator {
 
   enableAutoSave(): void {
     this._autoSaveEnabled = true;
-    this.logger.debug('Auto-save enabled');
+    this.logger.debugComponent('AppDfdOrchestrator', 'Auto-save enabled');
   }
 
   disableAutoSave(): void {
     this._autoSaveEnabled = false;
-    this.logger.debug('Auto-save disabled');
+    this.logger.debugComponent('AppDfdOrchestrator', 'Auto-save disabled');
   }
 
   /**
@@ -639,7 +641,7 @@ export class AppDfdOrchestrator {
 
     // Check if already initialized to prevent duplicate initialization
     if ((this.appDiagramOperationBroadcaster as any)._graph) {
-      this.logger.debug('Broadcaster already initialized, skipping');
+      this.logger.debugComponent('AppDfdOrchestrator', 'Broadcaster already initialized, skipping');
       return;
     }
 
@@ -658,7 +660,7 @@ export class AppDfdOrchestrator {
       } else {
         graph.select(graph.getCells());
       }
-      this.logger.debug('All cells selected');
+      this.logger.debugComponent('AppDfdOrchestrator', 'All cells selected');
     }
   }
 
@@ -673,7 +675,7 @@ export class AppDfdOrchestrator {
           graph.unselect(cell);
         }
       });
-      this.logger.debug('Selection cleared');
+      this.logger.debugComponent('AppDfdOrchestrator', 'Selection cleared');
     }
   }
 
@@ -696,7 +698,7 @@ export class AppDfdOrchestrator {
     if (graph) {
       graph.zoomToFit({ padding: 20, maxScale: DFD_STYLING.VIEWPORT.MAX_ZOOM });
       graph.centerContent();
-      this.logger.debug('Zoomed to fit and centered content');
+      this.logger.debugComponent('AppDfdOrchestrator', 'Zoomed to fit and centered content');
     }
   }
 
@@ -709,7 +711,7 @@ export class AppDfdOrchestrator {
     this.appStateService.setReadOnly(readOnly);
     // Propagate to graph adapter
     this.dfdInfrastructure.setReadOnlyMode(readOnly);
-    this.logger.debug('Read-only mode changed', { readOnly });
+    this.logger.debugComponent('AppDfdOrchestrator', 'Read-only mode changed', { readOnly });
   }
 
   setReadOnly(readOnly: boolean): void {
@@ -778,7 +780,11 @@ export class AppDfdOrchestrator {
         // Trigger manual save
         if (this._initParams && this.dfdInfrastructure.getGraph()) {
           this.saveManually().subscribe({
-            next: () => this.logger.debug('Manual save triggered via keyboard shortcut'),
+            next: () =>
+              this.logger.debugComponent(
+                'AppDfdOrchestrator',
+                'Manual save triggered via keyboard shortcut',
+              ),
             error: error => this.logger.error('Manual save failed', { error }),
           });
         }
@@ -811,13 +817,16 @@ export class AppDfdOrchestrator {
         // Don't handle delete/backspace if any Material Dialog is open
         // This prevents delete/backspace from affecting the graph while typing in dialogs
         if (this.dialog.openDialogs.length > 0) {
-          this.logger.debug('Ignoring delete/backspace key - dialog is open');
+          this.logger.debugComponent(
+            'AppDfdOrchestrator',
+            'Ignoring delete/backspace key - dialog is open',
+          );
           return false; // Let the dialog handle the key event
         }
 
         // Delete selected cells
         if (this._state$.value.readOnly) {
-          this.logger.debug('Cannot delete cells in read-only mode');
+          this.logger.debugComponent('AppDfdOrchestrator', 'Cannot delete cells in read-only mode');
           return true; // Prevent default behavior
         }
 
@@ -826,9 +835,13 @@ export class AppDfdOrchestrator {
           this.deleteSelectedCells().subscribe({
             next: result => {
               if (result.success) {
-                this.logger.debug('Selected cells deleted via keyboard shortcut', {
-                  count: result.metadata?.['deletedCount'],
-                });
+                this.logger.debugComponent(
+                  'AppDfdOrchestrator',
+                  'Selected cells deleted via keyboard shortcut',
+                  {
+                    count: result.metadata?.['deletedCount'],
+                  },
+                );
               }
             },
             error: error => this.logger.error('Delete via keyboard failed', { error }),
@@ -844,7 +857,10 @@ export class AppDfdOrchestrator {
   }
 
   handleContextMenu(event: MouseEvent): boolean {
-    this.logger.debug('Context menu handled', { x: event.clientX, y: event.clientY });
+    this.logger.debugComponent('AppDfdOrchestrator', 'Context menu handled', {
+      x: event.clientX,
+      y: event.clientY,
+    });
     event.preventDefault();
     // Implementation would show context menu
     return true;
@@ -886,9 +902,13 @@ export class AppDfdOrchestrator {
 
         // Use InfraNodeService's intelligent positioning algorithm if no position provided
         if (!position) {
-          this.logger.debug('Using InfraNodeService intelligent positioning for node creation', {
-            nodeType,
-          });
+          this.logger.debugComponent(
+            'AppDfdOrchestrator',
+            'Using InfraNodeService intelligent positioning for node creation',
+            {
+              nodeType,
+            },
+          );
 
           return this.dfdInfrastructure.createNodeWithIntelligentPositioning(nodeType, true).pipe(
             map(() => ({
@@ -938,10 +958,14 @@ export class AppDfdOrchestrator {
             nodeData,
           };
 
-          this.logger.debug('Using AppGraphOperationManager for explicit positioning', {
-            nodeType,
-            position,
-          });
+          this.logger.debugComponent(
+            'AppDfdOrchestrator',
+            'Using AppGraphOperationManager for explicit positioning',
+            {
+              nodeType,
+              position,
+            },
+          );
 
           return this.executeOperation(operation);
         }
@@ -956,9 +980,13 @@ export class AppDfdOrchestrator {
           nodeData: nodeDataOrType,
         };
 
-        this.logger.debug('Using AppGraphOperationManager for NodeData signature', {
-          nodeType: nodeDataOrType.nodeType,
-        });
+        this.logger.debugComponent(
+          'AppDfdOrchestrator',
+          'Using AppGraphOperationManager for NodeData signature',
+          {
+            nodeType: nodeDataOrType.nodeType,
+          },
+        );
 
         return this.executeOperation(operation);
       }
@@ -1027,7 +1055,7 @@ export class AppDfdOrchestrator {
       return throwError(() => new Error('DFD system not initialized'));
     }
 
-    this.logger.debug('AppDfdOrchestrator: Manual save with image triggered', {
+    this.logger.debugComponent('AppDfdOrchestrator', 'Manual save with image triggered', {
       hasSvg: !!imageData.svg,
     });
 
@@ -1087,7 +1115,7 @@ export class AppDfdOrchestrator {
       return throwError(() => new Error('No threat model ID available'));
     }
 
-    this.logger.debug('AppDfdOrchestrator: Loading diagram', {
+    this.logger.debugComponent('AppDfdOrchestrator', 'Loading diagram', {
       diagramId: targetDiagramId,
       threatModelId,
     });
@@ -1212,14 +1240,14 @@ export class AppDfdOrchestrator {
     };
     this._totalErrors = 0;
     this._startTime = Date.now();
-    this.logger.debug('Statistics reset');
+    this.logger.debugComponent('AppDfdOrchestrator', 'Statistics reset');
   }
 
   /**
    * Cleanup and destruction
    */
   destroy(): Observable<boolean> {
-    this.logger.debug('AppDfdOrchestrator: Destroying DFD system');
+    this.logger.debugComponent('AppDfdOrchestrator', 'Destroying DFD system');
 
     // Clean up collaboration broadcast services
     this.appDiagramOperationBroadcaster.dispose();
@@ -1236,7 +1264,7 @@ export class AppDfdOrchestrator {
   }
 
   reset(): Observable<boolean> {
-    this.logger.debug('AppDfdOrchestrator: Resetting DFD system');
+    this.logger.debugComponent('AppDfdOrchestrator', 'Resetting DFD system');
 
     return this.destroy().pipe(
       switchMap(() => {
@@ -1344,7 +1372,10 @@ export class AppDfdOrchestrator {
 
       // Initialize with empty diagram - the diagram will be loaded later
       // once the WebSocket connection is established
-      this.logger.debug('Diagram initialization complete - waiting for collaboration connection');
+      this.logger.debugComponent(
+        'AppDfdOrchestrator',
+        'Diagram initialization complete - waiting for collaboration connection',
+      );
       return of(true);
     }
 
@@ -1352,7 +1383,10 @@ export class AppDfdOrchestrator {
     return this.load(params.diagramId).pipe(
       catchError(() => {
         // If load fails, just continue with empty diagram
-        this.logger.debug('No existing diagram data found, starting with empty diagram');
+        this.logger.debugComponent(
+          'AppDfdOrchestrator',
+          'No existing diagram data found, starting with empty diagram',
+        );
         return of(true);
       }),
       tap(() => {
@@ -1414,10 +1448,14 @@ export class AppDfdOrchestrator {
 
     // Use state snapshots from the operation result
     if (!result.previousState || !result.currentState) {
-      this.logger.debug('Skipping history entry - no state snapshots', {
-        operationId: operation.id,
-        operationType: operation.type,
-      });
+      this.logger.debugComponent(
+        'AppDfdOrchestrator',
+        'Skipping history entry - no state snapshots',
+        {
+          operationId: operation.id,
+          operationType: operation.type,
+        },
+      );
       return;
     }
 
@@ -1545,10 +1583,14 @@ export class AppDfdOrchestrator {
     }
 
     if (!hasChanged) {
-      this.logger.debug('Skipping drag completion - no actual change detected', {
-        cellId,
-        dragType,
-      });
+      this.logger.debugComponent(
+        'AppDfdOrchestrator',
+        'Skipping drag completion - no actual change detected',
+        {
+          cellId,
+          dragType,
+        },
+      );
       return;
     }
 
@@ -1661,10 +1703,14 @@ export class AppDfdOrchestrator {
     // Send via the broadcaster's private method
     this.appDiagramOperationBroadcaster['_sendSingleOperation'](cellOperation);
 
-    this.logger.debug('Broadcasted drag completion to collaborators', {
-      cellId: cell.id,
-      dragType,
-    });
+    this.logger.debugComponent(
+      'AppDfdOrchestrator',
+      'Broadcasted drag completion to collaborators',
+      {
+        cellId: cell.id,
+        dragType,
+      },
+    );
   }
 
   /**
@@ -1797,7 +1843,7 @@ export class AppDfdOrchestrator {
 
     // Simple deduplication - skip if already saved this history index
     if (historyIndex <= this._lastSavedHistoryIndex) {
-      this.logger.debug('Skipping autosave - already saved', {
+      this.logger.debugComponent('AppDfdOrchestrator', 'Skipping autosave - already saved', {
         historyIndex,
         lastSaved: this._lastSavedHistoryIndex,
       });
@@ -1819,7 +1865,11 @@ export class AppDfdOrchestrator {
 
     // Check if local provider without server connection (offline mode)
     if (this._isLocalProviderOffline()) {
-      this.logger.debug('Saving to localStorage (local provider offline)', { diagramId });
+      this.logger.debugComponent(
+        'AppDfdOrchestrator',
+        'Saving to localStorage (local provider offline)',
+        { diagramId },
+      );
       this.appPersistenceCoordinator.saveToLocalStorage(diagramId, threatModelId, data).subscribe({
         next: result => {
           if (result.success) {
@@ -1843,7 +1893,7 @@ export class AppDfdOrchestrator {
     const isCollaborating = this.collaborationService.isCollaborating();
     const useWebSocket = isCollaborating;
 
-    this.logger.debug('Autosave strategy selection', {
+    this.logger.debugComponent('AppDfdOrchestrator', 'Autosave strategy selection', {
       isCollaborating,
       willUseWebSocket: useWebSocket,
     });
@@ -1870,7 +1920,7 @@ export class AppDfdOrchestrator {
             hasUnsavedChanges: false,
             lastSaved: new Date(),
           });
-          this.logger.debug('Autosave completed', {
+          this.logger.debugComponent('AppDfdOrchestrator', 'Autosave completed', {
             historyIndex,
             strategy: useWebSocket ? 'WebSocket' : 'REST',
           });

@@ -121,7 +121,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
    * Clear authorization data
    */
   clearAuthorization(): void {
-    this.logger.debug('clearAuthorization called', {
+    this.logger.debugComponent('ThreatModelAuthorizationService', 'clearAuthorization called', {
       previousThreatModelId: this._currentThreatModelId,
       stackTrace: new Error().stack?.split('\n').slice(1, 4).join('\n'),
     });
@@ -129,7 +129,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
     this._currentThreatModelId = null;
     this._currentOwner = null;
     this._authorizationSubject.next(null);
-    this.logger.debug('Authorization cleared');
+    this.logger.debugComponent('ThreatModelAuthorizationService', 'Authorization cleared');
   }
 
   /**
@@ -165,10 +165,14 @@ export class ThreatModelAuthorizationService implements OnDestroy {
     // Step 2: If not owner, check authorization list
     // No authorizations means no access
     if (!authorizations || authorizations.length === 0) {
-      this.logger.debug('No authorization entries found', {
-        userId: currentUserId,
-        userEmail: currentUserEmail,
-      });
+      this.logger.debugComponent(
+        'ThreatModelAuthorizationService',
+        'No authorization entries found',
+        {
+          userId: currentUserId,
+          userEmail: currentUserEmail,
+        },
+      );
       return null;
     }
 
@@ -183,10 +187,14 @@ export class ThreatModelAuthorizationService implements OnDestroy {
 
       if (newRank > currentRank) {
         highestPermission = newRole;
-        this.logger.debug('Updated highest permission', {
-          from: highestPermission || 'none',
-          to: newRole,
-        });
+        this.logger.debugComponent(
+          'ThreatModelAuthorizationService',
+          'Updated highest permission',
+          {
+            from: highestPermission || 'none',
+            to: newRole,
+          },
+        );
       }
 
       // Return true if we've reached owner (can short-circuit)
@@ -198,12 +206,16 @@ export class ThreatModelAuthorizationService implements OnDestroy {
       // Step 3A: Check user-type authorizations
       if (auth.subject_type === 'user') {
         if (auth.subject === currentUserId || auth.subject === currentUserEmail) {
-          this.logger.debug('User matches authorization entry', {
-            subject: auth.subject,
-            role: auth.role,
-            userId: currentUserId,
-            userEmail: currentUserEmail,
-          });
+          this.logger.debugComponent(
+            'ThreatModelAuthorizationService',
+            'User matches authorization entry',
+            {
+              subject: auth.subject,
+              role: auth.role,
+              userId: currentUserId,
+              userEmail: currentUserEmail,
+            },
+          );
           // Update permission and short-circuit if owner
           if (updatePermission(auth.role)) {
             return 'owner';
@@ -214,9 +226,13 @@ export class ThreatModelAuthorizationService implements OnDestroy {
       else if (auth.subject_type === 'group') {
         // Step 3B: Check for "everyone" pseudo-group (case-insensitive)
         if (auth.subject.toLowerCase() === 'everyone') {
-          this.logger.debug('User matches "everyone" group', {
-            role: auth.role,
-          });
+          this.logger.debugComponent(
+            'ThreatModelAuthorizationService',
+            'User matches "everyone" group',
+            {
+              role: auth.role,
+            },
+          );
           updatePermission(auth.role);
           // Note: "everyone" typically won't have owner role, but handle it anyway
           if (auth.role === 'owner') {
@@ -225,7 +241,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
         }
         // Step 3C: Check actual group memberships
         else if (currentUserGroups.includes(auth.subject)) {
-          this.logger.debug('User is member of group', {
+          this.logger.debugComponent('ThreatModelAuthorizationService', 'User is member of group', {
             group: auth.subject,
             role: auth.role,
             userGroups: currentUserGroups,
@@ -239,7 +255,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
     }
 
     // Return the highest permission found
-    this.logger.debug('User permission determined', {
+    this.logger.debugComponent('ThreatModelAuthorizationService', 'User permission determined', {
       threatModelId: this._currentThreatModelId,
       permission: highestPermission,
       userId: currentUserId,
@@ -281,6 +297,9 @@ export class ThreatModelAuthorizationService implements OnDestroy {
    */
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
-    this.logger.debug('ThreatModelAuthorizationService destroyed');
+    this.logger.debugComponent(
+      'ThreatModelAuthorizationService',
+      'ThreatModelAuthorizationService destroyed',
+    );
   }
 }

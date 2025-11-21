@@ -200,7 +200,7 @@ export abstract class BaseOperationValidator implements OperationValidator {
    * Log validation start
    */
   protected logValidationStart(operation: GraphOperation): void {
-    this.logger.debug(`Validating ${operation.type} operation`, {
+    this.logger.debugComponent('BaseOperationValidator', `Validating ${operation.type} operation`, {
       operationId: operation.id,
       source: operation.source,
     });
@@ -211,10 +211,14 @@ export abstract class BaseOperationValidator implements OperationValidator {
    */
   protected logValidationResult(operation: GraphOperation, result: ValidationResult): void {
     if (result.valid) {
-      this.logger.debug(`Validation passed for ${operation.type}`, {
-        operationId: operation.id,
-        warnings: result.warnings,
-      });
+      this.logger.debugComponent(
+        'BaseOperationValidator',
+        `Validation passed for ${operation.type}`,
+        {
+          operationId: operation.id,
+          warnings: result.warnings,
+        },
+      );
     } else {
       this.logger.warn(`Validation failed for ${operation.type}`, {
         operationId: operation.id,

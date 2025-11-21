@@ -98,7 +98,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     // This subscription is only for updating the badge count and button state
     this._subscriptions.add(
       this._collaborationService.collaborationState$.subscribe(state => {
-        this._logger.debug('[CollaborationComponent] State subscription fired', {
+        this._logger.debugComponent('CollaborationComponent', 'State subscription fired', {
           timestamp: new Date().toISOString(),
           isActive: state.isActive,
           userCount: state.users.length,

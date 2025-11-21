@@ -32,7 +32,7 @@ export class InfraRestPersistenceStrategy {
   }
 
   save(operation: SaveOperation): Observable<SaveResult> {
-    this.logger.debug('REST save operation started', {
+    this.logger.debugComponent('InfraRestPersistenceStrategy', 'save operation started', {
       diagramId: operation.diagramId,
     });
 
@@ -55,7 +55,7 @@ export class InfraRestPersistenceStrategy {
     // Just combine them into a single cells array
     const cells = [...(operation.data.nodes || []), ...(operation.data.edges || [])];
 
-    this.logger.debug('REST save: cells prepared', {
+    this.logger.debugComponent('InfraRestPersistenceStrategy', 'cells prepared', {
       diagramId: operation.diagramId,
       totalCells: cells.length,
       nodes: operation.data.nodes?.length || 0,
@@ -67,10 +67,14 @@ export class InfraRestPersistenceStrategy {
       .patchDiagramCells(threatModelId, operation.diagramId, cells)
       .pipe(
         map(response => {
-          this.logger.debug('REST save completed successfully', {
-            diagramId: operation.diagramId,
-            updateVector: response.update_vector,
-          });
+          this.logger.debugComponent(
+            'InfraRestPersistenceStrategy',
+            'save completed successfully',
+            {
+              diagramId: operation.diagramId,
+              updateVector: response.update_vector,
+            },
+          );
           return {
             success: true,
             operationId: `save-${Date.now()}`,
@@ -100,7 +104,7 @@ export class InfraRestPersistenceStrategy {
   }
 
   load(operation: LoadOperation): Observable<LoadResult> {
-    this.logger.debug('REST load operation started', {
+    this.logger.debugComponent('InfraRestPersistenceStrategy', 'load operation started', {
       diagramId: operation.diagramId,
       threatModelId: operation.threatModelId,
     });
@@ -121,11 +125,15 @@ export class InfraRestPersistenceStrategy {
     return this.diagramService.loadDiagram(operation.diagramId, operation.threatModelId).pipe(
       map(loadResult => {
         if (loadResult.success && loadResult.diagram) {
-          this.logger.debug('REST load completed successfully', {
-            diagramId: operation.diagramId,
-            cellCount: loadResult.diagram.cells?.length || 0,
-            updateVector: loadResult.diagram.update_vector,
-          });
+          this.logger.debugComponent(
+            'InfraRestPersistenceStrategy',
+            'load completed successfully',
+            {
+              diagramId: operation.diagramId,
+              cellCount: loadResult.diagram.cells?.length || 0,
+              updateVector: loadResult.diagram.update_vector,
+            },
+          );
 
           // Return diagram cells in the expected format
           return {

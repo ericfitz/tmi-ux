@@ -117,7 +117,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
       clearTimeout(this._notificationTimer);
     }
 
-    this.logger.debug('AppOperationRejectionHandler destroyed');
+    this.logger.debugComponent('AppOperationRejectionHandler', 'destroyed');
   }
 
   /**
@@ -201,10 +201,14 @@ export class AppOperationRejectionHandler implements OnDestroy {
     if (this._isRollingBack) {
       // Queue operation to apply after rollback
       this._operationQueue.push(operation);
-      this.logger.debug('Queued operation during rollback', {
-        operation_id: operation.operation_id,
-        queueLength: this._operationQueue.length,
-      });
+      this.logger.debugComponent(
+        'AppOperationRejectionHandler',
+        'Queued operation during rollback',
+        {
+          operation_id: operation.operation_id,
+          queueLength: this._operationQueue.length,
+        },
+      );
     }
     // Otherwise, normal handling by other services
   }

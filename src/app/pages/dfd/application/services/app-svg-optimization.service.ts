@@ -120,10 +120,14 @@ export class AppSvgOptimizationService {
    */
   optimizeForExport(svgString: string, optimalViewBox?: string): string {
     try {
-      this.logger.debug('Starting SVG optimization for export', {
-        originalLength: svgString.length,
-        hasOptimalViewBox: !!optimalViewBox,
-      });
+      this.logger.debugComponent(
+        'AppSvgOptimizationService',
+        'Starting SVG optimization for export',
+        {
+          originalLength: svgString.length,
+          hasOptimalViewBox: !!optimalViewBox,
+        },
+      );
 
       // First, apply optimal viewBox if provided
       let processedSvg = svgString;
@@ -143,13 +147,18 @@ export class AppSvgOptimizationService {
       // Post-process to handle any remaining X6-specific issues
       const finalSvg = this.postProcessX6Svg(optimizedSvg);
 
-      this.logger.debug('SVG optimization for export completed', {
-        originalLength: svgString.length,
-        optimizedLength: finalSvg.length,
-        reductionPercent: (((svgString.length - finalSvg.length) / svgString.length) * 100).toFixed(
-          1,
-        ),
-      });
+      this.logger.debugComponent(
+        'AppSvgOptimizationService',
+        'SVG optimization for export completed',
+        {
+          originalLength: svgString.length,
+          optimizedLength: finalSvg.length,
+          reductionPercent: (
+            ((svgString.length - finalSvg.length) / svgString.length) *
+            100
+          ).toFixed(1),
+        },
+      );
 
       return finalSvg;
     } catch (error) {
@@ -166,10 +175,14 @@ export class AppSvgOptimizationService {
    */
   optimizeForThumbnail(svgString: string, optimalViewBox?: string): string {
     try {
-      this.logger.debug('Starting SVG optimization for thumbnail', {
-        originalLength: svgString.length,
-        hasOptimalViewBox: !!optimalViewBox,
-      });
+      this.logger.debugComponent(
+        'AppSvgOptimizationService',
+        'Starting SVG optimization for thumbnail',
+        {
+          originalLength: svgString.length,
+          hasOptimalViewBox: !!optimalViewBox,
+        },
+      );
 
       // First, apply optimal viewBox if provided
       let processedSvg = svgString;
@@ -191,11 +204,15 @@ export class AppSvgOptimizationService {
       const data = encoder.encode(processedSvg);
       const base64 = btoa(String.fromCharCode(...data));
 
-      this.logger.debug('SVG optimization for thumbnail completed', {
-        originalLength: svgString.length,
-        optimizedLength: processedSvg.length,
-        base64Length: base64.length,
-      });
+      this.logger.debugComponent(
+        'AppSvgOptimizationService',
+        'SVG optimization for thumbnail completed',
+        {
+          originalLength: svgString.length,
+          optimizedLength: processedSvg.length,
+          base64Length: base64.length,
+        },
+      );
 
       return base64;
     } catch (error) {

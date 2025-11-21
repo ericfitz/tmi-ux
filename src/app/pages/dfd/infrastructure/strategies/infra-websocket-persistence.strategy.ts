@@ -34,7 +34,7 @@ export class WebSocketPersistenceStrategy {
     const isUndo = operation.metadata?.['isUndo'] === true;
     const isRedo = operation.metadata?.['isRedo'] === true;
 
-    this.logger.debug('WebSocket save operation started', {
+    this.logger.debugComponent('WebSocketPersistenceStrategy', 'WebSocket save operation started', {
       diagramId: operation.diagramId,
       isUndo,
       isRedo,
@@ -75,10 +75,14 @@ export class WebSocketPersistenceStrategy {
     }
 
     // For regular changes in collaboration mode, send diagram_operation message
-    this.logger.debug('WebSocket save (regular changes) - sending diagram_operation', {
-      diagramId: operation.diagramId,
-      hasData: !!operation.data,
-    });
+    this.logger.debugComponent(
+      'WebSocketPersistenceStrategy',
+      'WebSocket save (regular changes) - sending diagram_operation',
+      {
+        diagramId: operation.diagramId,
+        hasData: !!operation.data,
+      },
+    );
 
     // Convert diagram data to cell operations
     const cellOperations = this._convertDiagramDataToCellOperations(operation.data);
@@ -157,7 +161,7 @@ export class WebSocketPersistenceStrategy {
   }
 
   load(operation: LoadOperation): Observable<LoadResult> {
-    this.logger.debug('WebSocket load operation started', {
+    this.logger.debugComponent('WebSocketPersistenceStrategy', 'WebSocket load operation started', {
       diagramId: operation.diagramId,
     });
 

@@ -83,7 +83,7 @@ export class AppPersistenceCoordinator {
    * Falls back to localStorage if both fail and local provider is detected
    */
   save(operation: SaveOperation, useWebSocket: boolean): Observable<SaveResult> {
-    this.logger.debug('Starting save operation', {
+    this.logger.debugComponent('AppPersistenceCoordinator', 'Starting save operation', {
       diagramId: operation.diagramId,
       useWebSocket,
     });
@@ -104,9 +104,13 @@ export class AppPersistenceCoordinator {
       tap(result => {
         if (result.success) {
           this._stats.successfulSaves++;
-          this.logger.debug(`${strategyName} save completed successfully`, {
-            diagramId: operation.diagramId,
-          });
+          this.logger.debugComponent(
+            'AppPersistenceCoordinator',
+            `${strategyName} save completed successfully`,
+            {
+              diagramId: operation.diagramId,
+            },
+          );
 
           this._saveStatus$.next({
             diagramId: operation.diagramId,
@@ -153,7 +157,9 @@ export class AppPersistenceCoordinator {
    * Save to localStorage (for local provider offline mode)
    */
   saveToLocalStorage(diagramId: string, threatModelId: string, data: any): Observable<SaveResult> {
-    this.logger.debug('Saving to localStorage', { diagramId });
+    this.logger.debugComponent('AppPersistenceCoordinator', 'Saving to localStorage', {
+      diagramId,
+    });
 
     return this.localStorageAdapter.saveDiagram(diagramId, threatModelId, data).pipe(
       map(success => ({
@@ -179,7 +185,7 @@ export class AppPersistenceCoordinator {
    * Falls back to localStorage only if REST fails and local provider detected
    */
   load(operation: LoadOperation, allowLocalStorageFallback = false): Observable<LoadResult> {
-    this.logger.debug('Loading diagram from REST API', {
+    this.logger.debugComponent('AppPersistenceCoordinator', 'Loading diagram from REST API', {
       diagramId: operation.diagramId,
       threatModelId: operation.threatModelId,
     });
@@ -191,9 +197,13 @@ export class AppPersistenceCoordinator {
       tap(result => {
         if (result.success) {
           this._stats.successfulLoads++;
-          this.logger.debug('REST load completed successfully', {
-            diagramId: operation.diagramId,
-          });
+          this.logger.debugComponent(
+            'AppPersistenceCoordinator',
+            'REST load completed successfully',
+            {
+              diagramId: operation.diagramId,
+            },
+          );
         } else {
           this._stats.failedLoads++;
         }
@@ -214,9 +224,13 @@ export class AppPersistenceCoordinator {
           return this.localStorageAdapter.loadDiagram(operation.diagramId).pipe(
             map(localData => {
               if (localData) {
-                this.logger.debug('Loaded from localStorage fallback', {
-                  diagramId: operation.diagramId,
-                });
+                this.logger.debugComponent(
+                  'AppPersistenceCoordinator',
+                  'Loaded from localStorage fallback',
+                  {
+                    diagramId: operation.diagramId,
+                  },
+                );
                 return {
                   success: true,
                   diagramId: operation.diagramId,
@@ -276,7 +290,7 @@ export class AppPersistenceCoordinator {
       successfulLoads: 0,
       failedLoads: 0,
     };
-    this.logger.debug('Persistence statistics reset');
+    this.logger.debugComponent('AppPersistenceCoordinator', 'Persistence statistics reset');
   }
 
   /**
@@ -285,6 +299,6 @@ export class AppPersistenceCoordinator {
   dispose(): void {
     this._saveStatus$.complete();
     this._loadStatus$.complete();
-    this.logger.debug('AppPersistenceCoordinator disposed');
+    this.logger.debugComponent('AppPersistenceCoordinator', 'AppPersistenceCoordinator disposed');
   }
 }

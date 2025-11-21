@@ -265,7 +265,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
           observer.complete();
         });
 
-        this._logger.debug('Notification shown', {
+        this._logger.debugComponent('AppNotificationService', 'Notification shown', {
           message,
           type: config.type,
           duration: snackBarConfig.duration,
@@ -294,7 +294,11 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
       case WebSocketState.CONNECTED:
       case WebSocketState.RECONNECTING:
         // These are already indicated by the WebSocket icon state - no notification needed
-        this._logger.debug('WebSocket status suppressed - already indicated by UI', { state });
+        this._logger.debugComponent(
+          'AppNotificationService',
+          'WebSocket status suppressed - already indicated by UI',
+          { state },
+        );
         // Still dismiss any existing WebSocket error notifications on success
         if (state === WebSocketState.CONNECTED) {
           this._dismissWebSocketNotifications();
@@ -395,7 +399,11 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
       case 'started':
       case 'ended':
         // These are already indicated by the collaboration icon state - no notification needed
-        this._logger.debug('Session event suppressed - already indicated by UI', { eventType });
+        this._logger.debugComponent(
+          'AppNotificationService',
+          'Session event suppressed - already indicated by UI',
+          { eventType },
+        );
         return new Observable<void>(observer => {
           observer.next();
           observer.complete();
@@ -563,7 +571,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
   dismissAll(): void {
     this._snackBar.dismiss();
     this._activeNotifications.clear();
-    this._logger.debug('All notifications dismissed');
+    this._logger.debugComponent('AppNotificationService', 'All notifications dismissed');
   }
 
   /**
@@ -582,7 +590,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
 
     keysToRemove.forEach(key => this._activeNotifications.delete(key));
 
-    this._logger.debug('Notifications dismissed by pattern', {
+    this._logger.debugComponent('AppNotificationService', 'Notifications dismissed by pattern', {
       pattern: keyPattern.toString(),
       count: keysToRemove.length,
     });
@@ -665,11 +673,15 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
         observer.complete();
       });
 
-      this._logger.debug('Presenter request notification shown', {
-        userEmail,
-        displayName,
-        notificationKey,
-      });
+      this._logger.debugComponent(
+        'AppNotificationService',
+        'Presenter request notification shown',
+        {
+          userEmail,
+          displayName,
+          notificationKey,
+        },
+      );
     });
   }
 
@@ -678,6 +690,6 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
     this._destroy$.complete();
     this._subscriptions.unsubscribe();
     this.dismissAll();
-    this._logger.debug('AppNotificationService destroyed');
+    this._logger.debugComponent('AppNotificationService', 'AppNotificationService destroyed');
   }
 }

@@ -106,7 +106,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
       return;
     }
 
-    this.logger.debug('Handling presenter cursor update', {
+    this.logger.debugComponent('UiPresenterCoordinator', 'Handling presenter cursor update', {
       userId: message.user.user_id,
       userEmail: message.user.email,
       position: message.cursor_position,
@@ -138,7 +138,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
       return;
     }
 
-    this.logger.debug('Handling presenter selection update', {
+    this.logger.debugComponent('UiPresenterCoordinator', 'Handling presenter selection update', {
       userId: message.user.user_id,
       userEmail: message.user.email,
       cellCount: message.selected_cells.length,
@@ -156,7 +156,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
   cleanupPresenterDisplay(): void {
     this.uiPresenterCursorDisplayService.forceRemovePresenterCursor();
     this.uiPresenterSelectionService.clearSelectionForNonPresenters();
-    this.logger.debug('Cleaned up presenter display');
+    this.logger.debugComponent('UiPresenterCoordinator', 'Cleaned up presenter display');
   }
 
   /**

@@ -277,13 +277,17 @@ export function validateAndFixParentChildRelationships(
       ),
     });
   } else {
-    logger.debug('All parent-child relationships validated successfully', {
-      totalCells: cells.length,
-      cellsWithParents: cells.filter(c => {
-        const parent = c['parent'] as string | null | undefined;
-        return parent && parent !== null;
-      }).length,
-    });
+    logger.debugComponent(
+      'CellRelationshipValidation',
+      'All parent-child relationships validated successfully',
+      {
+        totalCells: cells.length,
+        cellsWithParents: cells.filter(c => {
+          const parent = c['parent'] as string | null | undefined;
+          return parent && parent !== null;
+        }).length,
+      },
+    );
   }
 
   return {
@@ -385,7 +389,7 @@ export function validateAffectedCellRelationships(
     }
   });
 
-  logger.debug('Validating affected cell relationships', {
+  logger.debugComponent('CellRelationshipValidation', 'Validating affected cell relationships', {
     affectedCells: affectedCellIds.length,
     totalCellsToValidate: cellsToValidate.size,
     affectedCellIds,

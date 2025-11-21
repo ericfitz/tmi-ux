@@ -140,7 +140,7 @@ export class InfraWebsocketCollaborationAdapter {
     // Deduplicate operations by cell ID, keeping the latest operation for each cell
     const deduplicatedOperations = this._deduplicateOperations(cellOperations);
 
-    this.logger.debug('Deduplicated cell operations', {
+    this.logger.debugComponent('WebSocketCollaboration', 'Deduplicated cell operations', {
       originalCount: cellOperations.length,
       deduplicatedCount: deduplicatedOperations.length,
     });
@@ -167,7 +167,7 @@ export class InfraWebsocketCollaborationAdapter {
       operation: operation,
     };
 
-    this.logger.debug('Sending diagram operation', {
+    this.logger.debugComponent('WebSocketCollaboration', 'Sending diagram operation', {
       operationId: message.operation_id,
       cellCount: deduplicatedOperations.length,
       operations: deduplicatedOperations.map(op => ({ id: op.id, operation: op.operation })),
@@ -247,7 +247,7 @@ export class InfraWebsocketCollaborationAdapter {
       },
     };
 
-    this.logger.debug('Requesting undo operation');
+    this.logger.debugComponent('WebSocketCollaboration', 'Requesting undo operation');
     return this.webSocketAdapter.sendTMIMessage(message);
   }
 
@@ -277,7 +277,7 @@ export class InfraWebsocketCollaborationAdapter {
       },
     };
 
-    this.logger.debug('Requesting redo operation');
+    this.logger.debugComponent('WebSocketCollaboration', 'Requesting redo operation');
     return this.webSocketAdapter.sendTMIMessage(message);
   }
 
@@ -548,7 +548,7 @@ export class InfraWebsocketCollaborationAdapter {
   reset(): void {
     this.clearOperationQueue();
     this._config = null;
-    this.logger.debug('CollaborativeOperationService reset');
+    this.logger.debugComponent('WebSocketCollaboration', 'CollaborativeOperationService reset');
   }
 
   /**
