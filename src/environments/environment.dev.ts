@@ -17,12 +17,6 @@ export const environment: Environment = {
   serverInterface: 'localhost',
   enableTLS: false,
   defaultAuthProvider: 'local',
-  oauth: {
-    local: {
-      enabled: true,
-      icon: 'fa-solid fa-laptop-code',
-    },
-  },
   securityConfig: {
     enableHSTS: false, // Disabled in development (no TLS)
     hstsMaxAge: 300, // 5 minutes for testing

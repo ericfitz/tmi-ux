@@ -17,7 +17,6 @@ export const environment: Environment = {
   operatorName: 'TMI Project (Development Demo)',
   operatorContact: 'https://github.com/ericfitz/tmi/discussions',
   operatorJurisdiction: 'Florida, United States of America',
-  oauth: {},
   securityConfig: {
     enableHSTS: true,
     hstsMaxAge: 31536000, // 1 year
