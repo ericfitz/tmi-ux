@@ -36,7 +36,7 @@ export class BatchOperationExecutor extends BaseOperationExecutor {
    */
   registerExecutor(operationType: string, executor: OperationExecutor): void {
     this._individualExecutors.set(operationType, executor);
-    this.logger.debug('Registered executor for batch operations', { operationType });
+    // this.logger.debug('Registered executor for batch operations', { operationType });
   }
 
   execute(operation: GraphOperation, context: OperationContext): Observable<OperationResult> {
