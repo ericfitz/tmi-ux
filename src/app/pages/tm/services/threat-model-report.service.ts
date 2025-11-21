@@ -251,9 +251,13 @@ export class ThreatModelReportService {
       // Save the PDF
       await this.savePdf(doc, threatModel.name);
 
-      this.logger.info('PDF report generated successfully with pdf-lib', {
-        threatModelName: threatModel.name,
-      });
+      this.logger.debugComponent(
+        'ThreatModelReportService',
+        'PDF report generated successfully with pdf-lib',
+        {
+          threatModelName: threatModel.name,
+        },
+      );
     } catch (error) {
       this.logger.error('Error generating PDF report with pdf-lib', error);
       throw error;
@@ -268,7 +272,7 @@ export class ThreatModelReportService {
       const currentLang = this.transloco.getActiveLang();
       const fontConfig = this.fontConfigs.get(currentLang) || this.fontConfigs.get('en-US')!;
 
-      this.logger.info('Loading fonts for language', {
+      this.logger.debugComponent('ThreatModelReportService', 'Loading fonts for language', {
         language: currentLang,
         fontConfig: fontConfig.name,
         fontPath: fontConfig.fontPath,
@@ -278,7 +282,10 @@ export class ThreatModelReportService {
       try {
         const fontData = await this.fetchFont(fontConfig.fontPath);
         this.currentFont = await doc.embedFont(fontData);
-        this.logger.info(`Successfully embedded custom font: ${fontConfig.name}`);
+        this.logger.debugComponent(
+          'ThreatModelReportService',
+          `Successfully embedded custom font: ${fontConfig.name}`,
+        );
       } catch (fontError) {
         this.logger.warn(`Failed to load custom font ${fontConfig.name}, using fallback`, {
           error: fontError instanceof Error ? fontError.message : String(fontError),
@@ -291,7 +298,10 @@ export class ThreatModelReportService {
         try {
           const italicFontData = await this.fetchFont(fontConfig.italicFontPath);
           this.currentItalicFont = await doc.embedFont(italicFontData);
-          this.logger.info(`Successfully embedded italic font: ${fontConfig.name}-Italic`);
+          this.logger.debugComponent(
+            'ThreatModelReportService',
+            `Successfully embedded italic font: ${fontConfig.name}-Italic`,
+          );
         } catch (italicError) {
           this.logger.warn(`Failed to load italic font, using standard italic fallback`, {
             error: italicError instanceof Error ? italicError.message : String(italicError),
