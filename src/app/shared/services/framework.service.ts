@@ -26,7 +26,7 @@ export class FrameworkService {
    * Load all framework JSON files and convert them to in-memory models
    */
   loadAllFrameworks(): Observable<FrameworkModel[]> {
-    this.logger.info('Loading all framework files from assets');
+    // this.logger.info('Loading all framework files from assets');
 
     const frameworkRequests = this._frameworkFiles.map(fileName =>
       this.http.get<Framework>(`${this._frameworkAssetPath}${fileName}`),

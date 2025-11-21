@@ -446,17 +446,17 @@ export class TmEditComponent implements OnInit, OnDestroy {
       this.frameworkService.loadAllFrameworks().subscribe({
         next: frameworks => {
           this.frameworks = frameworks;
-          this.logger.info('Loaded frameworks for threat model editor', {
-            count: frameworks.length,
-            frameworks: frameworks.map(f => f.name),
-          });
-          this.logger.debugComponent('TmEdit', 'Framework details loaded', {
-            frameworks: frameworks.map(f => ({
-              name: f.name,
-              threatTypeCount: f.threatTypes.length,
-              threatTypes: f.threatTypes.map(tt => tt.name),
-            })),
-          });
+          // this.logger.info('Loaded frameworks for threat model editor', {
+          //   count: frameworks.length,
+          //   frameworks: frameworks.map(f => f.name),
+          // });
+          // this.logger.debugComponent('TmEdit', 'Framework details loaded', {
+          //   frameworks: frameworks.map(f => ({
+          //     name: f.name,
+          //     threatTypeCount: f.threatTypes.length,
+          //     threatTypes: f.threatTypes.map(tt => tt.name),
+          //   })),
+          // });
         },
         error: error => {
           this.logger.error('Failed to load frameworks', error);
@@ -2489,11 +2489,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
       const svgText = atob(base64Svg);
 
       // Log for debugging
-      this.logger.debug('Validating SVG', {
-        base64Length: base64Svg.length,
-        decodedLength: svgText.length,
-        preview: svgText.substring(0, 100),
-      });
+      // this.logger.debug('Validating SVG', {
+      //   base64Length: base64Svg.length,
+      //   decodedLength: svgText.length,
+      //   preview: svgText.substring(0, 100),
+      // });
 
       // Basic SVG validation - check if it starts with SVG tag or XML declaration
       const trimmed = svgText.trim();
@@ -2516,7 +2516,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
         return false;
       }
 
-      this.logger.debug('SVG validation passed');
+      // this.logger.debug('SVG validation passed');
       return true;
     } catch (error) {
       this.logger.warn('SVG validation failed with error', { error });
