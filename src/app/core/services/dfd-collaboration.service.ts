@@ -527,13 +527,17 @@ export class DfdCollaborationService implements OnDestroy {
         tap((result: { session: CollaborationSession; isNewSession: boolean }) => {
           const session = result.session;
 
-          this._logger.info('Smart collaboration handler succeeded', {
-            sessionId: session.session_id,
-            threatModelId: session.threat_model_id,
-            diagramId: session.diagram_id,
-            websocketUrl: session.websocket_url,
-            isNewSession: result.isNewSession,
-          });
+          this._logger.debugComponent(
+            'DfdCollaborationService',
+            'Smart collaboration handler succeeded',
+            {
+              sessionId: session.session_id,
+              threatModelId: session.threat_model_id,
+              diagramId: session.diagram_id,
+              websocketUrl: session.websocket_url,
+              isNewSession: result.isNewSession,
+            },
+          );
 
           // Store the session
           this._currentSession = session;
@@ -946,7 +950,7 @@ export class DfdCollaborationService implements OnDestroy {
     // Log current user info for debugging
     const currentUserEmail = this.getCurrentUserEmail();
 
-    this._logger.info('updateAllParticipants called', {
+    this._logger.debugComponent('DfdCollaborationService', 'updateAllParticipants called', {
       participantCount: participants.length,
       participants: participants,
       host,
@@ -1002,7 +1006,7 @@ export class DfdCollaborationService implements OnDestroy {
       currentPresenter,
     });
 
-    this._logger.info('Bulk participant update applied', {
+    this._logger.debugComponent('DfdCollaborationService', 'Bulk participant update applied', {
       participantCount: participants.length,
       host,
       currentPresenter,
@@ -1499,10 +1503,14 @@ export class DfdCollaborationService implements OnDestroy {
    */
   private _connectToWebSocket(websocketUrl: string): Observable<void> {
     const fullWebSocketUrl = this._getFullWebSocketUrl(websocketUrl);
-    this._logger.info('Connecting to collaboration WebSocket', {
-      originalUrl: websocketUrl,
-      fullUrl: fullWebSocketUrl,
-    });
+    this._logger.debugComponent(
+      'DfdCollaborationService',
+      'Connecting to collaboration WebSocket',
+      {
+        originalUrl: websocketUrl,
+        fullUrl: fullWebSocketUrl,
+      },
+    );
 
     return this._webSocketAdapter.connect(fullWebSocketUrl).pipe(
       tap(() => {
@@ -1604,7 +1612,10 @@ export class DfdCollaborationService implements OnDestroy {
       return;
     }
 
-    this._logger.info('Setting up WebSocket listeners for active collaboration session');
+    this._logger.debugComponent(
+      'DfdCollaborationService',
+      'Setting up WebSocket listeners for active collaboration session',
+    );
 
     // Listen to connection state changes
     // Skip the initial state (DISCONNECTED) that's emitted immediately upon subscription

@@ -528,7 +528,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.cdr.detectChanges(); // Update UI when collaboration state changes
 
           if (isCollaborating) {
-            this.logger.debugComponent('DFD', 'Collaboration became active - initializing collaboration services');
+            this.logger.debugComponent(
+              'DFD',
+              'Collaboration became active - initializing collaboration services',
+            );
 
             // Initialize the diagram operation broadcaster
             this.appDfdOrchestrator.initializeCollaborationBroadcaster();

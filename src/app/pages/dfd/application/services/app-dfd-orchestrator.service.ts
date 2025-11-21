@@ -1274,7 +1274,10 @@ export class AppDfdOrchestrator {
 
       // Initialize diagram operation broadcaster to broadcast cell changes
       if (this.collaborationService.isCollaborating()) {
-        this.logger.info('Initializing diagram operation broadcaster for collaboration');
+        this.logger.debugComponent(
+          'AppDfdOrchestrator',
+          'Initializing diagram operation broadcaster for collaboration',
+        );
         this.appDiagramOperationBroadcaster.initializeListeners(graph);
       }
 

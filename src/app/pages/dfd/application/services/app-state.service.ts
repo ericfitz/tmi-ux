@@ -405,7 +405,7 @@ export class AppStateService implements OnDestroy {
   }
 
   private _processParticipantsUpdate(event: ParticipantsUpdatedEvent): void {
-    this._logger.info('Processing participants update', {
+    this._logger.debugComponent('AppStateService', 'Processing participants update', {
       participantCount: event.participants?.length,
       host: event.host,
       currentPresenter: event.currentPresenter,

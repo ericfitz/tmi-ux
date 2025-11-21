@@ -43,9 +43,13 @@ export class AppDiagramOperationBroadcaster {
 
     this._graph = graph;
     this._setupEventListeners();
-    this.logger.info('DiagramOperationBroadcaster initialized', {
-      graphId: (graph as any).options?.id || 'unknown',
-    });
+    this.logger.debugComponent(
+      'DiagramOperationBroadcaster',
+      'DiagramOperationBroadcaster initialized',
+      {
+        graphId: (graph as any).options?.id || 'unknown',
+      },
+    );
   }
 
   /**

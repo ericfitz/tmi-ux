@@ -1537,7 +1537,7 @@ export class ThreatModelService implements OnDestroy {
     threatModelId: string,
     diagramId: string,
   ): Observable<CollaborationSession> {
-    this.logger.info('Starting diagram collaboration session', {
+    this.logger.debugComponent('ThreatModelService', 'Starting diagram collaboration session', {
       threatModelId,
       diagramId,
       currentUser: this.authService.username,
@@ -1623,7 +1623,10 @@ export class ThreatModelService implements OnDestroy {
     threatModelId: string,
     diagramId: string,
   ): Observable<CollaborationSession | null> {
-    this.logger.info('Getting diagram collaboration session', { threatModelId, diagramId });
+    this.logger.debugComponent('ThreatModelService', 'Getting diagram collaboration session', {
+      threatModelId,
+      diagramId,
+    });
 
     return this.apiService
       .get<CollaborationSession>(`threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`)
@@ -1659,29 +1662,41 @@ export class ThreatModelService implements OnDestroy {
     threatModelId: string,
     diagramId: string,
   ): Observable<{ session: CollaborationSession; isNewSession: boolean }> {
-    this.logger.info('Smart session handler: checking for existing session before creating', {
-      threatModelId,
-      diagramId,
-    });
+    this.logger.debugComponent(
+      'ThreatModelService',
+      'Smart session handler: checking for existing session before creating',
+      {
+        threatModelId,
+        diagramId,
+      },
+    );
 
     // First, check if a session already exists
     return this.getDiagramCollaborationSession(threatModelId, diagramId).pipe(
       switchMap((existingSession: CollaborationSession | null) => {
         if (existingSession) {
           // Session exists, return it (participants connect via WebSocket)
-          this.logger.info('Found existing session, returning it for WebSocket connection', {
-            sessionId: existingSession.session_id,
-            threatModelId,
-            diagramId,
-          });
+          this.logger.debugComponent(
+            'ThreatModelService',
+            'Found existing session, returning it for WebSocket connection',
+            {
+              sessionId: existingSession.session_id,
+              threatModelId,
+              diagramId,
+            },
+          );
 
           return of({ session: existingSession, isNewSession: false });
         } else {
           // No session exists, create a new one
-          this.logger.info('No existing session found, creating new session', {
-            threatModelId,
-            diagramId,
-          });
+          this.logger.debugComponent(
+            'ThreatModelService',
+            'No existing session found, creating new session',
+            {
+              threatModelId,
+              diagramId,
+            },
+          );
 
           return this.startDiagramCollaborationSession(threatModelId, diagramId).pipe(
             map(session => {
