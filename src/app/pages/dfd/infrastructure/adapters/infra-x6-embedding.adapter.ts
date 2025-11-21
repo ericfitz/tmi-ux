@@ -44,7 +44,7 @@ export class InfraX6EmbeddingAdapter {
    * Initialize embedding functionality for the graph
    */
   initializeEmbedding(graph: Graph): void {
-    this.logger.info('Initializing embedding functionality');
+    // this.logger.info('Initializing embedding functionality');
 
     // Note: X6 embedding plugin setup would be done here
     // For now, we'll handle embedding through manual methods
@@ -434,7 +434,7 @@ export class InfraX6EmbeddingAdapter {
       nodeParentStates.set(node.id, parentId);
     });
 
-    this.logger.info('Embedding event handlers set up with unembedding detection');
+    // this.logger.info('Embedding event handlers set up with unembedding detection');
   }
 
   /**

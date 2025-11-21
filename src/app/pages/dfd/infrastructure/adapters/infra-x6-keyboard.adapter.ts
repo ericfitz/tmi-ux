@@ -80,7 +80,7 @@ export class InfraX6KeyboardAdapter {
     // Set initial cursor state (default when not pressing shift)
     this._updateCursor();
 
-    this.logger.info('Shift key handling for snap to grid control and cursor changes initialized');
+    // this.logger.info('Shift key handling for snap to grid control and cursor changes initialized');
   }
 
   /**

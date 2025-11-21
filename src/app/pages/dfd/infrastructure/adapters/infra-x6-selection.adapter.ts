@@ -97,7 +97,7 @@ export class InfraX6SelectionAdapter {
     graph.use(this.selectionPlugin);
     graph.use(this.transformPlugin);
 
-    this.logger.info('Selection and transform plugins initialized');
+    // this.logger.info('Selection and transform plugins initialized');
   }
 
   /**

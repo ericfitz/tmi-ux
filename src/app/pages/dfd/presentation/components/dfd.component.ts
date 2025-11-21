@@ -528,7 +528,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           this.cdr.detectChanges(); // Update UI when collaboration state changes
 
           if (isCollaborating) {
-            this.logger.info('Collaboration became active - initializing collaboration services');
+            this.logger.debugComponent('DFD', 'Collaboration became active - initializing collaboration services');
 
             // Initialize the diagram operation broadcaster
             this.appDfdOrchestrator.initializeCollaborationBroadcaster();
@@ -541,7 +541,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
                 userId: this.authService.userId,
                 threatModelPermission: this.threatModelPermission || 'reader',
               });
-              this.logger.info('WebSocket collaboration adapter initialized', {
+              this.logger.debugComponent('DFD', 'WebSocket collaboration adapter initialized', {
                 diagramId: this.dfdId,
                 threatModelId: this.threatModelId,
               });
@@ -1391,7 +1391,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           // Start save request (fire-and-forget - navigate immediately after request is sent)
           this.appDfdOrchestrator.saveManuallyWithImage(imageData).subscribe({
             next: () => {
-              this.logger.info('Diagram and thumbnail save completed successfully');
+              // this.logger.info('Diagram and thumbnail save completed successfully');
             },
             error: (error: unknown) => {
               this.logger.error('Failed to save diagram with thumbnail', { error });

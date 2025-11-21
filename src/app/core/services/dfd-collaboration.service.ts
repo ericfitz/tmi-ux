@@ -182,7 +182,7 @@ export class DfdCollaborationService implements OnDestroy {
     const newState = { ...currentState, ...updates };
 
     // Enhanced logging for debugging WebSocket flow
-    this._logger.info('[DfdCollaborationService] Updating collaboration state', {
+    this._logger.debugComponent('DfdCollaborationService', 'Updating collaboration state', {
       timestamp: new Date().toISOString(),
       updates: Object.keys(updates),
       previousState: {
@@ -204,7 +204,7 @@ export class DfdCollaborationService implements OnDestroy {
 
     // Log detailed user changes if users were updated
     if (updates.users) {
-      this._logger.info('[DfdCollaborationService] User list updated', {
+      this._logger.debugComponent('DfdCollaborationService', 'User list updated', {
         timestamp: new Date().toISOString(),
         previousUsers: currentState.users.map(u => ({ email: u.email, name: u.name })),
         newUsers: newState.users.map(u => ({ email: u.email, name: u.name })),

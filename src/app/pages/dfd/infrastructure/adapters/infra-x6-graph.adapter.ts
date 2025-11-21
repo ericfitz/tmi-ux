@@ -323,7 +323,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       this.dispose();
     }
 
-    this.logger.info('[DFD] Initializing X6 graph adapter');
+    // this.logger.info('[DFD] Initializing X6 graph adapter');
 
     // Create a new graph instance with proper connecting configuration for flow creation
     this._graph = new Graph({

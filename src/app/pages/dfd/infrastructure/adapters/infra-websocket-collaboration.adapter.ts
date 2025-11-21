@@ -79,7 +79,7 @@ export class InfraWebsocketCollaborationAdapter {
    */
   initialize(config: CollaborativeOperationConfig): void {
     this._config = config;
-    this.logger.info('CollaborativeOperationService initialized', {
+    this.logger.debugComponent('WebSocketCollaboration', 'CollaborativeOperationService initialized', {
       diagramId: config.diagramId,
       threatModelId: config.threatModelId,
       userId: config.userId,
