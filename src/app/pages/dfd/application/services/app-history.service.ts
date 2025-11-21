@@ -100,7 +100,7 @@ export class AppHistoryService implements OnDestroy {
       this._historyState.maxStackSize = this._config.maxHistorySize;
     }
 
-    this.logger.info('AppHistoryService initialized with context', {
+    this.logger.debugComponent('AppHistoryService', 'AppHistoryService initialized with context', {
       diagramId,
       threatModelId,
       maxHistorySize: this._config.maxHistorySize,
