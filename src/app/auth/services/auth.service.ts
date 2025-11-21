@@ -377,7 +377,7 @@ export class AuthService {
 
     // Try to fetch providers from server
     // Don't check connection status here - let the HTTP call succeed or fail naturally
-    this.logger.debugComponent('Auth', 'Fetching OAuth providers from TMI server');
+    // this.logger.debugComponent('Auth', 'Fetching OAuth providers from TMI server');
 
     return this.http.get<ProvidersResponse>(`${environment.apiUrl}/oauth2/providers`).pipe(
       map(response => {
@@ -387,13 +387,13 @@ export class AuthService {
         this.cachedProviders = providers;
         this.providersCacheTime = now;
 
-        this.logger.debugComponent(
-          'Auth',
-          `Fetched ${providers.length} OAuth providers from server`,
-          {
-            providers: providers.map(p => ({ id: p.id, name: p.name })),
-          },
-        );
+        // this.logger.debugComponent(
+        //   'Auth',
+        //   `Fetched ${providers.length} OAuth providers from server`,
+        //   {
+        //     providers: providers.map(p => ({ id: p.id, name: p.name })),
+        //   },
+        // );
         return providers;
       }),
       catchError((error: HttpErrorResponse) => {
@@ -1085,7 +1085,7 @@ export class AuthService {
       // This is a temporary synchronous fallback - we'll trigger async decryption in background
       const encryptedToken = localStorage.getItem(this.tokenStorageKey);
       if (!encryptedToken) {
-        this.logger.debugComponent('Auth', 'No token found in localStorage');
+        // this.logger.debugComponent('Auth', 'No token found in localStorage');
         return null;
       }
 
@@ -1114,7 +1114,7 @@ export class AuthService {
         }
       });
 
-      this.logger.debugComponent('Auth', 'Encrypted token found, decryption in progress');
+      // this.logger.debugComponent('Auth', 'Encrypted token found, decryption in progress');
       return null;
     } catch (error) {
       this.logger.error('Error retrieving stored token', error);

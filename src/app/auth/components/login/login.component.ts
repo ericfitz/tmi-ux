@@ -51,13 +51,13 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.logger.info('LoginComponent initialized');
+    // this.logger.info('LoginComponent initialized');
 
     // Load available providers from TMI server
     this.loadProviders();
 
     this.route.queryParams.pipe(take(1)).subscribe((params: LoginQueryParams) => {
-      this.logger.debug('LoginComponent received query params', params);
+      // this.logger.debug('LoginComponent received query params', params);
 
       this.returnUrl = params.returnUrl || '/dashboard';
       const code = params.code;
@@ -102,9 +102,9 @@ export class LoginComponent implements OnInit {
       next: providers => {
         this.availableProviders = this.sortProviders(providers);
         this.providersLoading = false;
-        this.logger.debugComponent('Auth', `Loaded ${providers.length} OAuth providers`, {
-          providers: providers.map(p => ({ id: p.id, name: p.name })),
-        });
+        // this.logger.debugComponent('Auth', `Loaded ${providers.length} OAuth providers`, {
+        //   providers: providers.map(p => ({ id: p.id, name: p.name })),
+        // });
       },
       error: error => {
         this.providersLoading = false;

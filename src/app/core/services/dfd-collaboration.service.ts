@@ -229,12 +229,12 @@ export class DfdCollaborationService implements OnDestroy {
    */
   public getCurrentState(): CollaborationState {
     const currentState = this._collaborationState$.value;
-    this._logger.debug('[DfdCollaborationService] getCurrentState called', {
-      isActive: currentState.isActive,
-      userCount: currentState.users.length,
-      hasSession: !!currentState.sessionInfo,
-      timestamp: new Date().toISOString(),
-    });
+    // this._logger.debug('[DfdCollaborationService] getCurrentState called', {
+    //   isActive: currentState.isActive,
+    //   userCount: currentState.users.length,
+    //   hasSession: !!currentState.sessionInfo,
+    //   timestamp: new Date().toISOString(),
+    // });
     return currentState;
   }
 

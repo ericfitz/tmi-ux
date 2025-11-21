@@ -99,7 +99,7 @@ export class ThreatModelService implements OnDestroy {
     private importOrchestrator: ImportOrchestratorService,
     private fieldFilter: ReadonlyFieldFilterService,
   ) {
-    this.logger.debugComponent('ThreatModelService', 'ThreatModelService initialized');
+    // this.logger.debugComponent('ThreatModelService', 'ThreatModelService initialized');
   }
 
   /**

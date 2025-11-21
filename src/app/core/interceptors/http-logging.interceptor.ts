@@ -68,14 +68,14 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
     });
 
     // Log the request with component-specific debug logging
-    // this.logger.debugComponent('api', `${request.method} request details:`, {
-    //   url: request.url,
-    //   headers: this.redactSecrets(headers, true),
-    //   body: request.body
-    //     ? this.redactSecrets(request.body as Record<string, unknown>, false)
-    //     : undefined,
-    //   params: this.extractUrlParams(request.url),
-    // });
+    this.logger.debugComponent('api', `${request.method} request details:`, {
+      url: request.url,
+      headers: this.redactSecrets(headers, true),
+      body: request.body
+        ? this.redactSecrets(request.body as Record<string, unknown>, false)
+        : undefined,
+      params: this.extractUrlParams(request.url),
+    });
   }
 
   /**
@@ -93,14 +93,14 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
     });
 
     // Log the response with component-specific debug logging
-    // this.logger.debugComponent('api', `${request.method} response from ${request.url}:`, {
-    //   status: response.status,
-    //   statusText: response.statusText,
-    //   headers: this.redactSecrets(headers, true),
-    //   body: response.body
-    //     ? this.redactSecrets(response.body as Record<string, unknown>, false)
-    //     : undefined,
-    // });
+    this.logger.debugComponent('api', `${request.method} response from ${request.url}:`, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: this.redactSecrets(headers, true),
+      body: response.body
+        ? this.redactSecrets(response.body as Record<string, unknown>, false)
+        : undefined,
+    });
   }
 
   /**
