@@ -60,10 +60,14 @@ export class AppDiagramService {
    * Returns observable with load result
    */
   loadDiagram(diagramId: string, threatModelId?: string): Observable<DiagramLoadResult> {
-    this.logger.info('Loading diagram data using dedicated diagram endpoint', {
-      diagramId,
-      threatModelId,
-    });
+    this.logger.debugComponent(
+      'AppDiagramService',
+      'Loading diagram data using dedicated diagram endpoint',
+      {
+        diagramId,
+        threatModelId,
+      },
+    );
 
     if (!threatModelId) {
       this.logger.error('Threat model ID is required to load diagram data');
@@ -156,11 +160,15 @@ export class AppDiagramService {
     diagramId: string,
     infraNodeConfigurationService: any,
   ): { relationshipFixesApplied: boolean } {
-    this.logger.info('Loading diagram cells in batch with history suppression', {
-      cellCount: cells.length,
-      diagramId,
-      cellTypes: cells.map(cell => ({ id: cell.id, shape: cell.shape })),
-    });
+    this.logger.debugComponent(
+      'AppDiagramService',
+      'Loading diagram cells in batch with history suppression',
+      {
+        cellCount: cells.length,
+        diagramId,
+        cellTypes: cells.map(cell => ({ id: cell.id, shape: cell.shape })),
+      },
+    );
 
     try {
       // Normalize cells from flat format (X6 v1 legacy) to nested format (X6 v2 native)
