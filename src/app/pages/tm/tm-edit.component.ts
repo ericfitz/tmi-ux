@@ -2603,7 +2603,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * This will be debounced to prevent excessive API calls
    */
   private autoSaveThreatModel(): void {
-    this.logger.debugComponent('TmEdit', 'Auto-save triggered');
+    this.logger.info('Auto-save triggered');
     this._autoSaveSubject.next();
   }
 
@@ -2639,7 +2639,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // Get current form values and check if they've changed
     const formValues = this.threatModelForm.getRawValue() as ThreatModelFormValues;
     if (!this.hasFormChanged(formValues)) {
-      this.logger.debugComponent('TmEdit', 'Auto-save skipped: no unsaved changes');
+      this.logger.info('Auto-save skipped: no unsaved changes');
       return;
     }
 
@@ -2694,7 +2694,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
             // Reset form dirty state so save button dims/disables
             this.threatModelForm.markAsPristine();
 
-            this.logger.debugComponent('TmEdit', 'Auto-saved threat model changes', {
+            this.logger.info('Auto-saved threat model changes', {
               threatModelId: this.threatModel.id,
               savedFields: Object.keys(updates),
               name: this.threatModel.name,
