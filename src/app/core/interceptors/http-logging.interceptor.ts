@@ -105,7 +105,7 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
     });
 
     // Log the request with component-specific debug logging
-    this.logger.debugComponent('api', `${request.method} request details:`, {
+    this.logger.debugComponent('api', `${request.method} request to ${request.url}:`, {
       url: request.url,
       headers: this.redactSecrets(headers, true),
       body: request.body
