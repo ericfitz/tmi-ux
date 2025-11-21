@@ -433,7 +433,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     // Set up simplified auto-save subscription
     this._subscriptions.add(
       this._autoSaveSubject.pipe(debounceTime(300)).subscribe(() => {
-        this.logger.debugComponent('TmEdit', 'Auto-save triggered, calling performAutoSave');
+        // this.logger.debugComponent('TmEdit', 'Auto-save triggered, calling performAutoSave');
         this.performAutoSave();
       }),
     );
@@ -2612,14 +2612,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
    * This method is called after debouncing
    */
   private performAutoSave(): void {
-    this.logger.debugComponent('TmEdit', 'performAutoSave called', {
-      threatModelExists: !!this.threatModel,
-      formValid: this.threatModelForm.valid,
-      isNewThreatModel: this.isNewThreatModel,
-      isLoadingInitialData: this._isLoadingInitialData,
-      threatModelId: this.threatModel?.id,
-      canEdit: this.canEdit,
-    });
+    // this.logger.debugComponent('TmEdit', 'performAutoSave called', {
+    //   threatModelExists: !!this.threatModel,
+    //   formValid: this.threatModelForm.valid,
+    //   isNewThreatModel: this.isNewThreatModel,
+    //   isLoadingInitialData: this._isLoadingInitialData,
+    //   threatModelId: this.threatModel?.id,
+    //   canEdit: this.canEdit,
+    // });
 
     if (
       !this.threatModel ||
