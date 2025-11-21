@@ -13,11 +13,6 @@ export const environment: Environment = {
   operatorName: 'TMI Operator (Staging)',
   operatorContact: 'contact@example.com',
   operatorJurisdiction: '',
-  oauth: {
-    local: {
-      enabled: false, // Disable local provider in staging
-    },
-  },
   securityConfig: {
     enableHSTS: true,
     hstsMaxAge: 86400, // 1 day for staging

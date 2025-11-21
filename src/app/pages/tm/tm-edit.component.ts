@@ -15,7 +15,6 @@ import { LanguageService } from '../../i18n/language.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { SvgCacheService } from './services/svg-cache.service';
 import { ApiService } from '../../core/services/api.service';
-import { environment } from '../../../environments/environment';
 
 import {
   COMMON_IMPORTS,

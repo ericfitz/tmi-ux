@@ -20,7 +20,6 @@ import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
 import { ServerConnectionService, ServerConnectionStatus } from './server-connection.service';
 import { WebSocketAdapter, MessageType } from './websocket.adapter';
-import { IAuthProvider } from '../interfaces/auth-provider.interface';
 
 /**
  * Interface for collaboration session data
@@ -71,7 +70,8 @@ export class CollaborationSessionService implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private _subscriberCount = 0;
   private _sessionPollingSubscription: Subscription | null = null;
-  private _authProvider: IAuthProvider | null = null; // Lazy-loaded to avoid circular dependency
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private _authProvider: any = null; // Lazy-loaded to avoid circular dependency
 
   constructor(
     private http: HttpClient,
@@ -340,7 +340,8 @@ export class CollaborationSessionService implements OnDestroy {
    * AuthService is in the auth module which depends on core services
    * We use late binding via Injector to get it without static import
    */
-  private getAuthProvider(): IAuthProvider | null {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private getAuthProvider(): any {
     if (!this._authProvider) {
       try {
         // Use dynamic import to load AuthService class without static import

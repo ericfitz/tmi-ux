@@ -94,7 +94,6 @@ describe('AppDfdOrchestrator', () => {
     mockAuthService = {
       getCurrentUser: vi.fn().mockReturnValue(of({ id: 'user-1', email: 'test@example.com' })),
       isAuthenticated: vi.fn().mockReturnValue(of(true)),
-      isUsingLocalProvider: vi.fn().mockReturnValue(false),
     };
 
     mockServerConnectionService = {

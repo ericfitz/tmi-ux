@@ -20,7 +20,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, BehaviorSubject, throwError, timer } from 'rxjs';
-import { v4 as uuidv4 } from 'uuid';
 import { catchError, switchMap, map, tap, retryWhen, mergeMap, take } from 'rxjs/operators';
 
 import {
@@ -104,14 +103,6 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Check if we're in offline mode (standalone with no server)
-   * Note: Offline mode has been removed - always returns false
-   */
-  private get isOfflineMode(): boolean {
-    return false;
-  }
-
-  /**
    * Get threat model list items (lightweight data for dashboard)
    * Always fetches fresh data from API to minimize stale data issues
    */
@@ -138,12 +129,8 @@ export class ThreatModelService implements OnDestroy {
    * Force refresh the threat model list from the API
    */
   refreshThreatModelList(): void {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - skipping threat model list refresh');
-    } else {
-      this.logger.debugComponent('ThreatModelService', 'Force refreshing threat model list');
-      this.fetchThreatModelListFromAPI();
-    }
+    this.logger.debugComponent('ThreatModelService', 'Force refreshing threat model list');
+    this.fetchThreatModelListFromAPI();
   }
 
   /**
@@ -284,21 +271,6 @@ export class ThreatModelService implements OnDestroy {
     | Pick<ThreatModel, 'id' | 'name' | 'description' | 'owner' | 'created_at' | 'modified_at'>
     | undefined
   > {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        return of({
-          id: threatModel.id,
-          name: threatModel.name,
-          description: threatModel.description,
-          owner: threatModel.owner,
-          created_at: threatModel.created_at,
-          modified_at: threatModel.modified_at,
-        });
-      }
-      return of(undefined);
-    }
-
     // For real API, we could use a dedicated lightweight endpoint if available
     // For now, fall back to the list endpoint and find the specific threat model
     return this.getThreatModelList().pipe(
@@ -340,12 +312,6 @@ export class ThreatModelService implements OnDestroy {
    * Get diagrams for a threat model
    */
   getDiagramsForThreatModel(threatModelId: string): Observable<Diagram[]> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - returning diagrams from cache');
-      const cachedModel = this._cachedThreatModels.get(threatModelId);
-      return of(cachedModel?.diagrams || []);
-    }
-
     // In a real implementation, this would call the API
     this.logger.debugComponent(
       'ThreatModelService',
@@ -366,13 +332,6 @@ export class ThreatModelService implements OnDestroy {
    * Get a diagram by ID
    */
   getDiagramById(threatModelId: string, diagramId: string): Observable<Diagram | undefined> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - returning diagram from cache');
-      const cachedModel = this._cachedThreatModels.get(threatModelId);
-      const diagram = cachedModel?.diagrams?.find(d => d.id === diagramId);
-      return of(diagram);
-    }
-
     // In a real implementation, this would call the API
     this.logger.debugComponent(
       'ThreatModelService',
@@ -392,12 +351,6 @@ export class ThreatModelService implements OnDestroy {
    * Get documents for a threat model
    */
   getDocumentsForThreatModel(threatModelId: string): Observable<TMDocument[]> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - returning documents from cache');
-      const cachedModel = this._cachedThreatModels.get(threatModelId);
-      return of(cachedModel?.documents || []);
-    }
-
     this.logger.debugComponent(
       'ThreatModelService',
       `Fetching documents for threat model with ID: ${threatModelId} from API`,
@@ -417,12 +370,6 @@ export class ThreatModelService implements OnDestroy {
    * Get repository references for a threat model
    */
   getRepositoriesForThreatModel(threatModelId: string): Observable<Repository[]> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - returning repositories from cache');
-      const cachedModel = this._cachedThreatModels.get(threatModelId);
-      return of(cachedModel?.repositories || []);
-    }
-
     this.logger.debugComponent(
       'ThreatModelService',
       `Fetching repositories for threat model with ID: ${threatModelId} from API`,
@@ -442,12 +389,6 @@ export class ThreatModelService implements OnDestroy {
    * Get notes for a threat model
    */
   getNotesForThreatModel(threatModelId: string): Observable<Note[]> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - returning notes from cache');
-      const cachedModel = this._cachedThreatModels.get(threatModelId);
-      return of(cachedModel?.notes || []);
-    }
-
     this.logger.debugComponent(
       'ThreatModelService',
       `Fetching notes for threat model with ID: ${threatModelId} from API`,
@@ -521,45 +462,16 @@ export class ThreatModelService implements OnDestroy {
       name: data.name,
     });
 
-    if (this.isOfflineMode) {
-      // Generate a new ID to avoid conflicts
-      const importedModel: ThreatModel = {
-        ...data,
-        id: uuidv4(),
-        created_at: new Date().toISOString(),
-        modified_at: new Date().toISOString(),
-        created_by: this.authService.userEmail || 'imported',
-        owner: this.authService.userEmail || 'imported',
-        threat_model_framework:
-          data.threat_model_framework && data.threat_model_framework.trim() !== ''
-            ? data.threat_model_framework
-            : 'STRIDE', // Provide default if missing or empty
-        authorization: data.authorization || [], // Provide default if missing
-      };
-      // Add to both the list and cache the full model
-      const listItem = this.convertToListItem(importedModel);
-      this._threatModelList.push(listItem);
-      this._threatModelListSubject.next([...this._threatModelList]);
-      this._cachedThreatModels.set(importedModel.id, importedModel);
+    // For API mode, always create a new threat model
+    this.logger.debugComponent('ThreatModelService', 'Creating new threat model via API');
 
-      this.logger.debugComponent('ThreatModelService', 'Imported threat model to offline cache', {
-        newId: importedModel.id,
-        name: importedModel.name,
-        totalCount: this._threatModelList.length,
-      });
-      return of({ model: importedModel });
-    } else {
-      // For API mode, always create a new threat model
-      this.logger.debugComponent('ThreatModelService', 'Creating new threat model via API');
-
-      return this.createNewThreatModelFromImport(data).pipe(
-        map(newModel => ({ model: newModel })),
-        catchError(error => {
-          this.logger.error('Failed to import threat model via API', error);
-          throw error;
-        }),
-      );
-    }
+    return this.createNewThreatModelFromImport(data).pipe(
+      map(newModel => ({ model: newModel })),
+      catchError(error => {
+        this.logger.error('Failed to import threat model via API', error);
+        throw error;
+      }),
+    );
   }
 
   /**
@@ -657,23 +569,6 @@ export class ThreatModelService implements OnDestroy {
    * Update a threat model
    */
   updateThreatModel(threatModel: ThreatModel): Observable<ThreatModel> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - updating threat model in cache only');
-
-      // Update in cache
-      threatModel.modified_at = new Date().toISOString();
-      this._cachedThreatModels.set(threatModel.id, { ...threatModel });
-
-      // Update in list
-      const listIndex = this._threatModelList.findIndex(tm => tm.id === threatModel.id);
-      if (listIndex !== -1) {
-        this._threatModelList[listIndex] = this.convertToListItem(threatModel);
-        this._threatModelListSubject.next([...this._threatModelList]);
-      }
-
-      return of(this._cachedThreatModels.get(threatModel.id)!);
-    }
-
     // In a real implementation, this would call the API
     this.logger.debugComponent(
       'ThreatModelService',
@@ -715,37 +610,6 @@ export class ThreatModelService implements OnDestroy {
       >
     >,
   ): Observable<ThreatModel> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - patching threat model in cache only');
-
-      const cachedModel = this._cachedThreatModels.get(threatModelId);
-      if (cachedModel) {
-        // Apply updates to cached model
-        const updatedModel = {
-          ...cachedModel,
-          ...updates,
-          modified_at: new Date().toISOString(),
-        };
-        this._cachedThreatModels.set(threatModelId, updatedModel);
-
-        // Update in list
-        const listIndex = this._threatModelList.findIndex(tm => tm.id === threatModelId);
-        if (listIndex !== -1) {
-          this._threatModelList[listIndex] = this.convertToListItem(updatedModel);
-          this._threatModelListSubject.next([...this._threatModelList]);
-        }
-
-        // Notify authorization service if authorization was updated
-        if (updates.authorization) {
-          this.authorizationService.updateAuthorization(updatedModel.authorization);
-        }
-
-        return of(updatedModel);
-      } else {
-        throw new Error(`Threat model with ID ${threatModelId} not found in cache`);
-      }
-    }
-
     // Convert updates to JSON Patch operations
     // Note: Do not include modified_at - the server manages timestamps automatically
     const operations = Object.entries(updates).map(([key, value]) => ({
@@ -793,32 +657,6 @@ export class ThreatModelService implements OnDestroy {
    * Delete a threat model
    */
   deleteThreatModel(id: string): Observable<boolean> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - deleting threat model from cache only');
-
-      const initialLength = this._threatModelList.length;
-      this._threatModelList = this._threatModelList.filter(tm => tm.id !== id);
-      const wasDeleted = this._threatModelList.length < initialLength;
-
-      if (wasDeleted) {
-        // Remove from cache
-        this._cachedThreatModels.delete(id);
-
-        // Notify all subscribers of the updated threat model list
-        this._threatModelListSubject.next([...this._threatModelList]);
-        this.logger.debugComponent(
-          'ThreatModelService',
-          'Updated threat model list after deletion',
-          {
-            remainingCount: this._threatModelList.length,
-            deletedId: id,
-          },
-        );
-      }
-
-      return of(wasDeleted);
-    }
-
     // In a real implementation, this would call the API
     this.logger.debugComponent(
       'ThreatModelService',
@@ -915,31 +753,6 @@ export class ThreatModelService implements OnDestroy {
    * Create a new threat in a threat model
    */
   createThreat(threatModelId: string, threat: Partial<Threat>): Observable<Threat> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - creating threat in cache only');
-
-      const newThreat: Threat = {
-        ...threat,
-        id: uuidv4(),
-        threat_model_id: threatModelId,
-        created_at: new Date().toISOString(),
-        modified_at: new Date().toISOString(),
-      } as Threat;
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        // Create a deep copy of the threats array to avoid mutating mock data
-        const updatedThreats = [...(threatModel.threats || []), newThreat];
-        const updatedThreatModel = {
-          ...threatModel,
-          threats: updatedThreats,
-          modified_at: new Date().toISOString(),
-        };
-        this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-      }
-      return of(newThreat);
-    }
-
     // Remove id, created_at, and modified_at fields from threat data before sending to API
     const { id, created_at, modified_at, ...threatData } = threat as Threat;
 
@@ -964,35 +777,6 @@ export class ThreatModelService implements OnDestroy {
     threatId: string,
     threat: Partial<Threat>,
   ): Observable<Threat> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - updating threat in cache only');
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.threats) {
-        const index = threatModel.threats.findIndex(t => t.id === threatId);
-        if (index !== -1) {
-          // Create a deep copy of the threats array to avoid mutating mock data
-          const updatedThreat = {
-            ...threatModel.threats[index],
-            ...threat,
-            modified_at: new Date().toISOString(),
-          };
-          const updatedThreats = [
-            ...threatModel.threats.slice(0, index),
-            updatedThreat,
-            ...threatModel.threats.slice(index + 1),
-          ];
-          const updatedThreatModel = {
-            ...threatModel,
-            threats: updatedThreats,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-          return of(updatedThreat);
-        }
-      }
-      return of(threat as Threat);
-    }
-
     // Remove server-managed fields from threat data before sending to API
     const { created_at, modified_at, ...threatData } = threat as Threat;
 
@@ -1013,28 +797,6 @@ export class ThreatModelService implements OnDestroy {
    * Delete a threat from a threat model
    */
   deleteThreat(threatModelId: string, threatId: string): Observable<boolean> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - deleting threat from cache only');
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.threats) {
-        const initialLength = threatModel.threats.length;
-        // Create a deep copy of the threats array to avoid mutating mock data
-        const filteredThreats = threatModel.threats.filter(t => t.id !== threatId);
-        const wasDeleted = filteredThreats.length < initialLength;
-        if (wasDeleted) {
-          const updatedThreatModel = {
-            ...threatModel,
-            threats: filteredThreats,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-        }
-        return of(wasDeleted);
-      }
-      return of(false);
-    }
-
     return this.apiService.delete(`threat_models/${threatModelId}/threats/${threatId}`).pipe(
       map(() => true),
       catchError(error => {
@@ -1048,29 +810,6 @@ export class ThreatModelService implements OnDestroy {
    * Create a new document in a threat model
    */
   createDocument(threatModelId: string, document: Partial<TMDocument>): Observable<TMDocument> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - creating document in cache only');
-
-      const newDocument: TMDocument = {
-        ...document,
-        id: uuidv4(),
-        metadata: [],
-      } as TMDocument;
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        // Create a deep copy of the documents array to avoid mutating mock data
-        const updatedDocuments = [...(threatModel.documents || []), newDocument];
-        const updatedThreatModel = {
-          ...threatModel,
-          documents: updatedDocuments,
-          modified_at: new Date().toISOString(),
-        };
-        this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-      }
-      return of(newDocument);
-    }
-
     // Remove id field from document data before sending to API (documents don't have timestamp fields)
     const { id, ...documentData } = document as TMDocument;
 
@@ -1095,32 +834,6 @@ export class ThreatModelService implements OnDestroy {
     documentId: string,
     document: Partial<TMDocument>,
   ): Observable<TMDocument> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - updating document in cache only');
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.documents) {
-        const index = threatModel.documents.findIndex(d => d.id === documentId);
-        if (index !== -1) {
-          // Create a deep copy of the documents array to avoid mutating mock data
-          const updatedDocument = { ...threatModel.documents[index], ...document };
-          const updatedDocuments = [
-            ...threatModel.documents.slice(0, index),
-            updatedDocument,
-            ...threatModel.documents.slice(index + 1),
-          ];
-          const updatedThreatModel = {
-            ...threatModel,
-            documents: updatedDocuments,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-          return of(updatedDocument);
-        }
-      }
-      return of(document as TMDocument);
-    }
-
     return this.apiService
       .put<TMDocument>(
         `threat_models/${threatModelId}/documents/${documentId}`,
@@ -1138,28 +851,6 @@ export class ThreatModelService implements OnDestroy {
    * Delete a document from a threat model
    */
   deleteDocument(threatModelId: string, documentId: string): Observable<boolean> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - deleting document from cache only');
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.documents) {
-        const initialLength = threatModel.documents.length;
-        // Create a deep copy of the documents array to avoid mutating mock data
-        const filteredDocuments = threatModel.documents.filter(d => d.id !== documentId);
-        const wasDeleted = filteredDocuments.length < initialLength;
-        if (wasDeleted) {
-          const updatedThreatModel = {
-            ...threatModel,
-            documents: filteredDocuments,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-        }
-        return of(wasDeleted);
-      }
-      return of(false);
-    }
-
     return this.apiService.delete(`threat_models/${threatModelId}/documents/${documentId}`).pipe(
       map(() => true),
       catchError(error => {
@@ -1173,29 +864,6 @@ export class ThreatModelService implements OnDestroy {
    * Create a new repository in a threat model
    */
   createRepository(threatModelId: string, repository: Partial<Repository>): Observable<Repository> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - creating repository in cache only');
-
-      const newRepository: Repository = {
-        ...repository,
-        id: uuidv4(),
-        metadata: [],
-      } as Repository;
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        // Create a deep copy of the repositories array to avoid mutating mock data
-        const updatedRepositories = [...(threatModel.repositories || []), newRepository];
-        const updatedThreatModel = {
-          ...threatModel,
-          repositories: updatedRepositories,
-          modified_at: new Date().toISOString(),
-        };
-        this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-      }
-      return of(newRepository);
-    }
-
     // Remove id field from repository data before sending to API (repositories don't have timestamp fields)
     const { id, ...repositoryData } = repository as Repository;
 
@@ -1223,32 +891,6 @@ export class ThreatModelService implements OnDestroy {
     repositoryId: string,
     repository: Partial<Repository>,
   ): Observable<Repository> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - updating repository in cache only');
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.repositories) {
-        const index = threatModel.repositories.findIndex(r => r.id === repositoryId);
-        if (index !== -1) {
-          // Create a deep copy of the repositories array to avoid mutating mock data
-          const updatedRepository = { ...threatModel.repositories[index], ...repository };
-          const updatedRepositories = [
-            ...threatModel.repositories.slice(0, index),
-            updatedRepository,
-            ...threatModel.repositories.slice(index + 1),
-          ];
-          const updatedThreatModel = {
-            ...threatModel,
-            repositories: updatedRepositories,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-          return of(updatedRepository);
-        }
-      }
-      return of(repository as Repository);
-    }
-
     return this.apiService
       .put<Repository>(
         `threat_models/${threatModelId}/repositories/${repositoryId}`,
@@ -1266,28 +908,6 @@ export class ThreatModelService implements OnDestroy {
    * Delete a repository from a threat model
    */
   deleteRepository(threatModelId: string, repositoryId: string): Observable<boolean> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - deleting repository from cache only');
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.repositories) {
-        const initialLength = threatModel.repositories.length;
-        // Create a deep copy of the repositories array to avoid mutating mock data
-        const filteredRepositories = threatModel.repositories.filter(r => r.id !== repositoryId);
-        const wasDeleted = filteredRepositories.length < initialLength;
-        if (wasDeleted) {
-          const updatedThreatModel = {
-            ...threatModel,
-            repositories: filteredRepositories,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-        }
-        return of(wasDeleted);
-      }
-      return of(false);
-    }
-
     return this.apiService
       .delete(`threat_models/${threatModelId}/repositories/${repositoryId}`)
       .pipe(
@@ -1303,32 +923,6 @@ export class ThreatModelService implements OnDestroy {
    * Create a new diagram in a threat model
    */
   createDiagram(threatModelId: string, diagram: Partial<Diagram>): Observable<Diagram> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - creating diagram in cache only');
-
-      const newDiagram: Diagram = {
-        ...diagram,
-        id: uuidv4(),
-        created_at: new Date().toISOString(),
-        modified_at: new Date().toISOString(),
-        metadata: [],
-        cells: [],
-      } as Diagram;
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        // Create a deep copy of the diagrams array to avoid mutating mock data
-        const updatedDiagrams = [...(threatModel.diagrams || []), newDiagram];
-        const updatedThreatModel = {
-          ...threatModel,
-          diagrams: updatedDiagrams,
-          modified_at: new Date().toISOString(),
-        };
-        this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-      }
-      return of(newDiagram);
-    }
-
     // Remove id, created_at, and modified_at fields from diagram data before sending to API
     const { id, created_at, modified_at, ...diagramData } = diagram as Diagram;
 
@@ -1354,36 +948,6 @@ export class ThreatModelService implements OnDestroy {
     diagramId: string,
     diagram: Partial<Diagram>,
   ): Observable<Diagram> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - updating diagram in cache only');
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.diagrams) {
-        const diagramIndex = threatModel.diagrams.findIndex(d => d.id === diagramId);
-        if (diagramIndex !== -1) {
-          const updatedDiagram: Diagram = {
-            ...threatModel.diagrams[diagramIndex],
-            ...diagram,
-            id: diagramId,
-            modified_at: new Date().toISOString(),
-          } as Diagram;
-
-          const updatedDiagrams = [...threatModel.diagrams];
-          updatedDiagrams[diagramIndex] = updatedDiagram;
-
-          const updatedThreatModel = {
-            ...threatModel,
-            diagrams: updatedDiagrams,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-
-          return of(updatedDiagram);
-        }
-      }
-      return throwError(() => new Error(`Diagram ${diagramId} not found in offline cache`));
-    }
-
     return this.apiService
       .put<Diagram>(
         `threat_models/${threatModelId}/diagrams/${diagramId}`,
@@ -1407,23 +971,6 @@ export class ThreatModelService implements OnDestroy {
    * NOTE: This should ONLY be called from the DFD editor
    */
   patchDiagramCells(threatModelId: string, diagramId: string, cells: Cell[]): Observable<Diagram> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - patching diagram cells in memory only');
-
-      // For local provider, simulate the patch operation (diagram is stored in localStorage via DFD service)
-      const mockDiagram: Diagram = {
-        id: diagramId,
-        name: 'Local Diagram',
-        type: 'DFD-1.0.0',
-        cells: cells,
-        metadata: [],
-        created_at: new Date().toISOString(),
-        modified_at: new Date().toISOString(),
-      };
-
-      return of(mockDiagram);
-    }
-
     // Create JSON Patch operations for the cells update
     // Note: Do not include modified_at - the server manages timestamps automatically
     const operations = [
@@ -1461,23 +1008,6 @@ export class ThreatModelService implements OnDestroy {
     cells: Cell[],
     imageData: { svg?: string; update_vector?: number },
   ): Observable<Diagram> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - patching diagram with image in memory only');
-
-      // For offline mode, simulate the patch operation
-      const mockDiagram: Diagram = {
-        id: diagramId,
-        name: 'Local Diagram',
-        type: 'DFD-1.0.0',
-        created_at: new Date().toISOString(),
-        modified_at: new Date().toISOString(),
-        cells,
-        image: imageData,
-      };
-
-      return of(mockDiagram);
-    }
-
     // Build operations array for both cells and image
     // Exclude update_vector from image data when sending PATCH request
     const { update_vector, ...imageDataForPatch } = imageData;
@@ -1518,28 +1048,6 @@ export class ThreatModelService implements OnDestroy {
    * Delete a diagram from a threat model
    */
   deleteDiagram(threatModelId: string, diagramId: string): Observable<boolean> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - deleting diagram from cache only');
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.diagrams) {
-        const initialLength = threatModel.diagrams.length;
-        // Create a deep copy of the diagrams array to avoid mutating mock data
-        const filteredDiagrams = threatModel.diagrams.filter(d => d.id !== diagramId);
-        const wasDeleted = filteredDiagrams.length < initialLength;
-        if (wasDeleted) {
-          const updatedThreatModel = {
-            ...threatModel,
-            diagrams: filteredDiagrams,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-        }
-        return of(wasDeleted);
-      }
-      return of(false);
-    }
-
     return this.apiService.delete(`threat_models/${threatModelId}/diagrams/${diagramId}`).pipe(
       map(() => true),
       catchError(error => {
@@ -1553,11 +1061,6 @@ export class ThreatModelService implements OnDestroy {
    * Get metadata for a threat model
    */
   getThreatModelMetadata(threatModelId: string): Observable<Metadata[]> {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      return of(threatModel?.metadata || []);
-    }
-
     return this.apiService.get<Metadata[]>(`threat_models/${threatModelId}/metadata`).pipe(
       catchError(error => {
         this.logger.error(`Error getting metadata for threat model ID: ${threatModelId}`, error);
@@ -1570,19 +1073,6 @@ export class ThreatModelService implements OnDestroy {
    * Update metadata for a threat model
    */
   updateThreatModelMetadata(threatModelId: string, metadata: Metadata[]): Observable<Metadata[]> {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        const updatedThreatModel = {
-          ...threatModel,
-          metadata: [...metadata],
-          modified_at: new Date().toISOString(),
-        };
-        this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-      }
-      return of(metadata);
-    }
-
     // If metadata is empty, skip the API call and return empty array
     if (!metadata || metadata.length === 0) {
       this.logger.debugComponent(
@@ -1609,12 +1099,6 @@ export class ThreatModelService implements OnDestroy {
    * Get metadata for a diagram
    */
   getDiagramMetadata(threatModelId: string, diagramId: string): Observable<Metadata[]> {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      const diagram = threatModel?.diagrams?.find(d => d.id === diagramId);
-      return of(diagram?.metadata || []);
-    }
-
     return this.apiService
       .get<Metadata[]>(`threat_models/${threatModelId}/diagrams/${diagramId}/metadata`)
       .pipe(
@@ -1633,32 +1117,6 @@ export class ThreatModelService implements OnDestroy {
     diagramId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.diagrams) {
-        const diagramIndex = threatModel.diagrams.findIndex(d => d.id === diagramId);
-        if (diagramIndex !== -1) {
-          // Create deep copies to avoid mutating mock data
-          const updatedDiagram = {
-            ...threatModel.diagrams[diagramIndex],
-            metadata: [...metadata],
-          };
-          const updatedDiagrams = [
-            ...threatModel.diagrams.slice(0, diagramIndex),
-            updatedDiagram,
-            ...threatModel.diagrams.slice(diagramIndex + 1),
-          ];
-          const updatedThreatModel = {
-            ...threatModel,
-            diagrams: updatedDiagrams,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-        }
-      }
-      return of(metadata);
-    }
-
     // If metadata is empty, skip the API call and return empty array
     if (!metadata || metadata.length === 0) {
       this.logger.debugComponent(
@@ -1685,12 +1143,6 @@ export class ThreatModelService implements OnDestroy {
    * Get metadata for a threat
    */
   getThreatMetadata(threatModelId: string, threatId: string): Observable<Metadata[]> {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      const threat = threatModel?.threats?.find(t => t.id === threatId);
-      return of(threat?.metadata || []);
-    }
-
     return this.apiService
       .get<Metadata[]>(`threat_models/${threatModelId}/threats/${threatId}/metadata`)
       .pipe(
@@ -1709,32 +1161,6 @@ export class ThreatModelService implements OnDestroy {
     threatId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.threats) {
-        const threatIndex = threatModel.threats.findIndex(t => t.id === threatId);
-        if (threatIndex !== -1) {
-          // Create deep copies to avoid mutating mock data
-          const updatedThreat = {
-            ...threatModel.threats[threatIndex],
-            metadata: [...metadata],
-          };
-          const updatedThreats = [
-            ...threatModel.threats.slice(0, threatIndex),
-            updatedThreat,
-            ...threatModel.threats.slice(threatIndex + 1),
-          ];
-          const updatedThreatModel = {
-            ...threatModel,
-            threats: updatedThreats,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-        }
-      }
-      return of(metadata);
-    }
-
     // If metadata is empty, skip the API call and return empty array
     if (!metadata || metadata.length === 0) {
       this.logger.debugComponent(
@@ -1761,12 +1187,6 @@ export class ThreatModelService implements OnDestroy {
    * Get metadata for a document
    */
   getDocumentMetadata(threatModelId: string, documentId: string): Observable<Metadata[]> {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      const document = threatModel?.documents?.find(d => d.id === documentId);
-      return of(document?.metadata || []);
-    }
-
     return this.apiService
       .get<Metadata[]>(`threat_models/${threatModelId}/documents/${documentId}/metadata`)
       .pipe(
@@ -1785,32 +1205,6 @@ export class ThreatModelService implements OnDestroy {
     documentId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.documents) {
-        const documentIndex = threatModel.documents.findIndex(d => d.id === documentId);
-        if (documentIndex !== -1) {
-          // Create deep copies to avoid mutating mock data
-          const updatedDocument = {
-            ...threatModel.documents[documentIndex],
-            metadata: [...metadata],
-          };
-          const updatedDocuments = [
-            ...threatModel.documents.slice(0, documentIndex),
-            updatedDocument,
-            ...threatModel.documents.slice(documentIndex + 1),
-          ];
-          const updatedThreatModel = {
-            ...threatModel,
-            documents: updatedDocuments,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-        }
-      }
-      return of(metadata);
-    }
-
     // If metadata is empty, skip the API call and return empty array
     if (!metadata || metadata.length === 0) {
       this.logger.debugComponent(
@@ -1837,12 +1231,6 @@ export class ThreatModelService implements OnDestroy {
    * Get metadata for a repository
    */
   getRepositoryMetadata(threatModelId: string, repositoryId: string): Observable<Metadata[]> {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      const repository = threatModel?.repositories?.find(r => r.id === repositoryId);
-      return of(repository?.metadata || []);
-    }
-
     return this.apiService
       .get<Metadata[]>(`threat_models/${threatModelId}/repositories/${repositoryId}/metadata`)
       .pipe(
@@ -1861,32 +1249,6 @@ export class ThreatModelService implements OnDestroy {
     repositoryId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.repositories) {
-        const repositoryIndex = threatModel.repositories.findIndex(r => r.id === repositoryId);
-        if (repositoryIndex !== -1) {
-          // Create deep copies to avoid mutating mock data
-          const updatedRepository = {
-            ...threatModel.repositories[repositoryIndex],
-            metadata: [...metadata],
-          };
-          const updatedRepositories = [
-            ...threatModel.repositories.slice(0, repositoryIndex),
-            updatedRepository,
-            ...threatModel.repositories.slice(repositoryIndex + 1),
-          ];
-          const updatedThreatModel = {
-            ...threatModel,
-            repositories: updatedRepositories,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-        }
-      }
-      return of(metadata);
-    }
-
     // If metadata is empty, skip the API call and return empty array
     if (!metadata || metadata.length === 0) {
       this.logger.debugComponent(
@@ -1913,28 +1275,6 @@ export class ThreatModelService implements OnDestroy {
    * Create a new note for a threat model
    */
   createNote(threatModelId: string, note: Partial<Note>): Observable<Note> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - creating note in cache only');
-
-      const newNote: Note = {
-        ...note,
-        id: uuidv4(),
-        metadata: [],
-      } as Note;
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        const updatedNotes = [...(threatModel.notes || []), newNote];
-        const updatedThreatModel = {
-          ...threatModel,
-          notes: updatedNotes,
-          modified_at: new Date().toISOString(),
-        };
-        this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-      }
-      return of(newNote);
-    }
-
     const { id, ...noteData } = note as Note;
 
     return this.apiService
@@ -1954,31 +1294,6 @@ export class ThreatModelService implements OnDestroy {
    * Update an existing note
    */
   updateNote(threatModelId: string, noteId: string, note: Partial<Note>): Observable<Note> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - updating note in cache only');
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.notes) {
-        const index = threatModel.notes.findIndex(n => n.id === noteId);
-        if (index !== -1) {
-          const updatedNote = { ...threatModel.notes[index], ...note };
-          const updatedNotes = [
-            ...threatModel.notes.slice(0, index),
-            updatedNote,
-            ...threatModel.notes.slice(index + 1),
-          ];
-          const updatedThreatModel = {
-            ...threatModel,
-            notes: updatedNotes,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-          return of(updatedNote);
-        }
-      }
-      return of(note as Note);
-    }
-
     const { id, ...noteData } = note as Note;
 
     return this.apiService
@@ -1998,27 +1313,6 @@ export class ThreatModelService implements OnDestroy {
    * Delete a note
    */
   deleteNote(threatModelId: string, noteId: string): Observable<boolean> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - deleting note from cache only');
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.notes) {
-        const initialLength = threatModel.notes.length;
-        const filteredNotes = threatModel.notes.filter(n => n.id !== noteId);
-        const wasDeleted = filteredNotes.length < initialLength;
-        if (wasDeleted) {
-          const updatedThreatModel = {
-            ...threatModel,
-            notes: filteredNotes,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-        }
-        return of(wasDeleted);
-      }
-      return of(false);
-    }
-
     return this.apiService.delete(`threat_models/${threatModelId}/notes/${noteId}`).pipe(
       map(() => true),
       catchError(error => {
@@ -2032,12 +1326,6 @@ export class ThreatModelService implements OnDestroy {
    * Get metadata for a note
    */
   getNoteMetadata(threatModelId: string, noteId: string): Observable<Metadata[]> {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      const note = threatModel?.notes?.find(n => n.id === noteId);
-      return of(note?.metadata || []);
-    }
-
     return this.apiService
       .get<Metadata[]>(`threat_models/${threatModelId}/notes/${noteId}/metadata`)
       .pipe(
@@ -2056,31 +1344,6 @@ export class ThreatModelService implements OnDestroy {
     noteId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.notes) {
-        const noteIndex = threatModel.notes.findIndex(n => n.id === noteId);
-        if (noteIndex !== -1) {
-          const updatedNote = {
-            ...threatModel.notes[noteIndex],
-            metadata: [...metadata],
-          };
-          const updatedNotes = [
-            ...threatModel.notes.slice(0, noteIndex),
-            updatedNote,
-            ...threatModel.notes.slice(noteIndex + 1),
-          ];
-          const updatedThreatModel = {
-            ...threatModel,
-            notes: updatedNotes,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-        }
-      }
-      return of(metadata);
-    }
-
     if (!metadata || metadata.length === 0) {
       this.logger.debugComponent(
         'ThreatModelService',
@@ -2106,12 +1369,6 @@ export class ThreatModelService implements OnDestroy {
    * Get assets for a threat model
    */
   getAssetsForThreatModel(threatModelId: string): Observable<Asset[]> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - returning assets from cache');
-      const cachedModel = this._cachedThreatModels.get(threatModelId);
-      return of(cachedModel?.assets || []);
-    }
-
     this.logger.debugComponent(
       'ThreatModelService',
       `Fetching assets for threat model with ID: ${threatModelId} from API`,
@@ -2131,28 +1388,6 @@ export class ThreatModelService implements OnDestroy {
    * Create a new asset for a threat model
    */
   createAsset(threatModelId: string, asset: Partial<Asset>): Observable<Asset> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - creating asset in cache only');
-
-      const newAsset: Asset = {
-        ...asset,
-        id: uuidv4(),
-        metadata: [],
-      } as Asset;
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel) {
-        const updatedAssets = [...(threatModel.assets || []), newAsset];
-        const updatedThreatModel = {
-          ...threatModel,
-          assets: updatedAssets,
-          modified_at: new Date().toISOString(),
-        };
-        this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-      }
-      return of(newAsset);
-    }
-
     const { id, ...assetData } = asset as Asset;
 
     return this.apiService
@@ -2172,31 +1407,6 @@ export class ThreatModelService implements OnDestroy {
    * Update an existing asset
    */
   updateAsset(threatModelId: string, assetId: string, asset: Partial<Asset>): Observable<Asset> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - updating asset in cache only');
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.assets) {
-        const index = threatModel.assets.findIndex(a => a.id === assetId);
-        if (index !== -1) {
-          const updatedAsset = { ...threatModel.assets[index], ...asset };
-          const updatedAssets = [
-            ...threatModel.assets.slice(0, index),
-            updatedAsset,
-            ...threatModel.assets.slice(index + 1),
-          ];
-          const updatedThreatModel = {
-            ...threatModel,
-            assets: updatedAssets,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-          return of(updatedAsset);
-        }
-      }
-      return of(asset as Asset);
-    }
-
     const { id, ...assetData } = asset as Asset;
 
     return this.apiService
@@ -2216,27 +1426,6 @@ export class ThreatModelService implements OnDestroy {
    * Delete an asset
    */
   deleteAsset(threatModelId: string, assetId: string): Observable<boolean> {
-    if (this.isOfflineMode) {
-      this.logger.info('Offline mode - deleting asset from cache only');
-
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.assets) {
-        const initialLength = threatModel.assets.length;
-        const filteredAssets = threatModel.assets.filter(a => a.id !== assetId);
-        const wasDeleted = filteredAssets.length < initialLength;
-        if (wasDeleted) {
-          const updatedThreatModel = {
-            ...threatModel,
-            assets: filteredAssets,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-        }
-        return of(wasDeleted);
-      }
-      return of(false);
-    }
-
     return this.apiService.delete(`threat_models/${threatModelId}/assets/${assetId}`).pipe(
       map(() => true),
       catchError(error => {
@@ -2250,12 +1439,6 @@ export class ThreatModelService implements OnDestroy {
    * Get metadata for an asset
    */
   getAssetMetadata(threatModelId: string, assetId: string): Observable<Metadata[]> {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      const asset = threatModel?.assets?.find(a => a.id === assetId);
-      return of(asset?.metadata || []);
-    }
-
     return this.apiService
       .get<Metadata[]>(`threat_models/${threatModelId}/assets/${assetId}/metadata`)
       .pipe(
@@ -2274,31 +1457,6 @@ export class ThreatModelService implements OnDestroy {
     assetId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    if (this.isOfflineMode) {
-      const threatModel = this._cachedThreatModels.get(threatModelId);
-      if (threatModel && threatModel.assets) {
-        const assetIndex = threatModel.assets.findIndex(a => a.id === assetId);
-        if (assetIndex !== -1) {
-          const updatedAsset = {
-            ...threatModel.assets[assetIndex],
-            metadata,
-          };
-          const updatedAssets = [
-            ...threatModel.assets.slice(0, assetIndex),
-            updatedAsset,
-            ...threatModel.assets.slice(assetIndex + 1),
-          ];
-          const updatedThreatModel = {
-            ...threatModel,
-            assets: updatedAssets,
-            modified_at: new Date().toISOString(),
-          };
-          this._cachedThreatModels.set(threatModelId, updatedThreatModel);
-        }
-      }
-      return of(metadata);
-    }
-
     if (!metadata || metadata.length === 0) {
       this.logger.debugComponent(
         'ThreatModelService',
@@ -2385,33 +1543,7 @@ export class ThreatModelService implements OnDestroy {
       currentUser: this.authService.username,
       userEmail: this.authService.userEmail,
       isAuthenticated: !!this.authService.getStoredToken(),
-      isOfflineMode: this.isOfflineMode,
     });
-
-    if (this.isOfflineMode) {
-      // For offline mode, simulate a collaboration session
-      const mockSession: CollaborationSession = {
-        session_id: `session-${Date.now()}`,
-        threat_model_id: threatModelId,
-        threat_model_name: 'Mock Threat Model',
-        diagram_id: diagramId,
-        diagram_name: 'Mock Diagram',
-        participants: [
-          {
-            user: {
-              user_id: this.authService.username || 'current-user',
-              email: this.authService.userEmail || 'current@example.com',
-              displayName: this.authService.username || 'Current User',
-            },
-            last_activity: new Date().toISOString(),
-            permissions: 'writer' as const,
-          },
-        ],
-        websocket_url: `wss://api.example.com/threat_models/${threatModelId}/diagrams/${diagramId}/ws`,
-        host: this.authService.username || 'current-user',
-      };
-      return of(mockSession);
-    }
 
     return this.apiService
       .post<CollaborationSession>(
@@ -2468,11 +1600,6 @@ export class ThreatModelService implements OnDestroy {
   endDiagramCollaborationSession(threatModelId: string, diagramId: string): Observable<void> {
     this.logger.info('Ending diagram collaboration session', { threatModelId, diagramId });
 
-    if (this.isOfflineMode) {
-      // For offline mode, just simulate success
-      return of(undefined);
-    }
-
     return this.apiService
       .delete<void>(`threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`)
       .pipe(
@@ -2497,11 +1624,6 @@ export class ThreatModelService implements OnDestroy {
     diagramId: string,
   ): Observable<CollaborationSession | null> {
     this.logger.info('Getting diagram collaboration session', { threatModelId, diagramId });
-
-    if (this.isOfflineMode) {
-      // For offline mode, return null (no active session)
-      return of(null);
-    }
 
     return this.apiService
       .get<CollaborationSession>(`threat_models/${threatModelId}/diagrams/${diagramId}/collaborate`)
@@ -2541,13 +1663,6 @@ export class ThreatModelService implements OnDestroy {
       threatModelId,
       diagramId,
     });
-
-    if (this.isOfflineMode) {
-      // For offline mode, always simulate creating a new session
-      return this.startDiagramCollaborationSession(threatModelId, diagramId).pipe(
-        map(session => ({ session, isNewSession: true })),
-      );
-    }
 
     // First, check if a session already exists
     return this.getDiagramCollaborationSession(threatModelId, diagramId).pipe(

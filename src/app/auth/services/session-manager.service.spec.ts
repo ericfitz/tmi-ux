@@ -26,7 +26,6 @@ describe('SessionManagerService', () => {
       createLocalTokenWithExpiry: vi.fn(),
       logout: vi.fn(),
       setSessionManager: vi.fn(),
-      isUsingLocalProvider: false,
       isAuthenticated: false,
       userProfile: null,
     };
@@ -112,7 +111,6 @@ describe('SessionManagerService', () => {
   });
 
   it('should logout if extend session fails', () => {
-    mockAuthService.isUsingLocalProvider = false;
     mockAuthService.refreshToken.mockReturnValue(
       throwError(() => new Error('Token refresh failed')),
     );

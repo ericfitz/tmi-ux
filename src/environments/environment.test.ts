@@ -12,10 +12,4 @@ export const environment: Environment = {
   operatorName: 'TMI Operator (Test)',
   operatorContact: 'contact@example.com',
   operatorJurisdiction: '',
-  oauth: {
-    local: {
-      enabled: true, // Enable local provider for testing
-      icon: 'computer',
-    },
-  },
 };

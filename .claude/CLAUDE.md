@@ -189,7 +189,7 @@ The application follows clean architecture principles with:
 
 **Key Modules:**
 
-- **Authentication** (`/auth`) - OAuth/JWT with local provider support
+- **Authentication** (`/auth`) - OAuth/JWT authentication
 - **Threat Modeling** (`/pages/tm`) - List, edit, and diagram management
 - **Data Flow Diagrams** (`/pages/dfd`) - Sophisticated layered architecture:
   - **Domain**: Value objects and events
@@ -411,5 +411,4 @@ When working on this codebase:
 
 - Check `docs/agent/` directory for AI agent context - [docs/agent/README.md](docs/agent/README.md) describes the information in each file
 - Check `docs/` directory for all documentation - [docs/README.md](docs/README.md) provides a complete index organized by audience
-- Local Development OAuth Provider doesn't require an OAuth server
 - Service provisioning standards: [docs/reference/architecture/service-provisioning.md](docs/reference/architecture/service-provisioning.md)

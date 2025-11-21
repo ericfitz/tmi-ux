@@ -115,31 +115,6 @@ export interface Environment {
   tlsSubjectName?: string;
 
   /**
-   * OAuth configuration for authentication providers
-   * OAuth providers are now discovered dynamically from TMI server via /auth/providers
-   * This configuration only contains local development provider settings
-   */
-  oauth?: {
-    /**
-     * Local development provider configuration
-     * Used for testing and development when TMI server is not available
-     */
-    local?: {
-      /**
-       * Whether local provider is enabled
-       * Default: true in development, false in production
-       */
-      enabled?: boolean;
-
-      /**
-       * Material icon name for local provider
-       * Default: 'computer'
-       */
-      icon?: string;
-    };
-  };
-
-  /**
    * Default authentication provider to use
    * If not specified, will use 'google' or first provider from TMI server
    */

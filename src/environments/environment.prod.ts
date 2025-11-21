@@ -28,7 +28,6 @@ export const environment: Environment = {
   operatorName: 'TMI Operator',
   operatorContact: 'contact@example.com',
   operatorJurisdiction: '',
-  oauth: {},
   securityConfig: {
     enableHSTS: true,
     hstsMaxAge: 31536000, // 1 year
