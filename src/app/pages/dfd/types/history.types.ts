@@ -178,6 +178,15 @@ export interface HistoryStateChangeEvent {
    * Timestamp of the state change
    */
   timestamp: number;
+
+  /**
+   * Type of change that triggered this state change event
+   * - 'entry-added': A new history entry was added
+   * - 'cleared': History was cleared
+   * - 'undo': Undo operation completed
+   * - 'redo': Redo operation completed
+   */
+  changeType: 'entry-added' | 'cleared' | 'undo' | 'redo';
 }
 
 /**

@@ -164,7 +164,7 @@ export class AppHistoryService implements OnDestroy {
     });
 
     this._historyState = createEmptyHistoryState(this._config.maxHistorySize);
-    this._emitHistoryStateChange();
+    this._emitHistoryStateChange('cleared');
 
     this.logger.debug('History cleared');
   }
@@ -205,7 +205,7 @@ export class AppHistoryService implements OnDestroy {
     this._historyState.currentIndex = this._historyState.undoStack.length - 1;
 
     // Emit history state change
-    this._emitHistoryStateChange();
+    this._emitHistoryStateChange('entry-added');
 
     // Emit operation event
     this._historyOperation$.next({
@@ -267,7 +267,7 @@ export class AppHistoryService implements OnDestroy {
         this._historyState.currentIndex = this._historyState.undoStack.length - 1;
 
         // Emit state change
-        this._emitHistoryStateChange();
+        this._emitHistoryStateChange('undo');
 
         // Emit operation event
         this._historyOperation$.next({
@@ -358,7 +358,7 @@ export class AppHistoryService implements OnDestroy {
         this._historyState.currentIndex = this._historyState.undoStack.length - 1;
 
         // Emit state change
-        this._emitHistoryStateChange();
+        this._emitHistoryStateChange('redo');
 
         // Emit operation event
         this._historyOperation$.next({
@@ -405,7 +405,7 @@ export class AppHistoryService implements OnDestroy {
     this._historyState.undoStack = [];
     this._historyState.redoStack = [];
     this._historyState.currentIndex = -1;
-    this._emitHistoryStateChange();
+    this._emitHistoryStateChange('cleared');
     this.logger.info('History cleared');
   }
 
@@ -525,7 +525,7 @@ export class AppHistoryService implements OnDestroy {
   /**
    * Emit history state change event
    */
-  private _emitHistoryStateChange(): void {
+  private _emitHistoryStateChange(changeType: 'entry-added' | 'cleared' | 'undo' | 'redo'): void {
     const canUndo = this.canUndo();
     const canRedo = this.canRedo();
 
@@ -540,6 +540,7 @@ export class AppHistoryService implements OnDestroy {
       undoStackSize: this._historyState.undoStack.length,
       redoStackSize: this._historyState.redoStack.length,
       timestamp: Date.now(),
+      changeType,
     });
   }
 

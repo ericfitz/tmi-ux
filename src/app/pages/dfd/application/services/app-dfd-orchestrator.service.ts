@@ -1369,10 +1369,16 @@ export class AppDfdOrchestrator {
     });
 
     // Subscribe to history state changes for auto-save trigger
+    // Only trigger autosave when a new history entry is added, not when history is cleared
     this.appHistoryService.historyStateChange$.subscribe(event => {
-      // History was just modified (new entry added)
-      this._markUnsavedChanges();
-      this._triggerAutoSave(event.undoStackSize, false, false);
+      if (event.changeType === 'entry-added') {
+        // History entry was just added - trigger autosave
+        this._markUnsavedChanges();
+        this._triggerAutoSave(event.undoStackSize, false, false);
+      }
+      // Note: We don't trigger autosave for 'cleared', 'undo', or 'redo' change types
+      // - 'cleared': happens during diagram load, should not trigger save
+      // - 'undo'/'redo': handled separately via their own save mechanisms
     });
 
     // Subscribe to drag completion events for history recording
