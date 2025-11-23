@@ -302,8 +302,8 @@ export class AppStateService implements OnDestroy {
       return;
     }
 
-    // Extract user ID with fallback (User fields are optional per schema)
-    const userId = message.initiating_user.user_id || message.initiating_user.email || 'unknown';
+    // Extract user identifier with fallback (User fields are optional per schema)
+    const userId = message.initiating_user.email || 'unknown';
 
     this._logger.info('Processing remote diagram operation', {
       userId: userId,

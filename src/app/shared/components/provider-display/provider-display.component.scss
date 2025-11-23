@@ -1,0 +1,15 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.provider-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.provider-name {
+  font-weight: 500;
+}

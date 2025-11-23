@@ -3,10 +3,31 @@ export interface Metadata {
   value: string;
 }
 
+// Principal-based identity types
+export type PrincipalType = 'user' | 'group';
+
+export interface Principal {
+  principal_type: PrincipalType;
+  provider: string;
+  provider_id: string;
+  display_name: string;
+  email?: string;
+}
+
+export interface User extends Principal {
+  principal_type: 'user';
+}
+
+export interface Group extends Principal {
+  principal_type: 'group';
+}
+
 export interface Authorization {
-  subject: string;
-  subject_type: 'user' | 'group';
-  idp?: string;
+  principal_type: PrincipalType;
+  provider: string;
+  provider_id: string;
+  display_name: string;
+  email?: string;
   role: 'reader' | 'writer' | 'owner';
 }
 
@@ -86,8 +107,8 @@ export interface ThreatModel {
   description?: string;
   created_at: string;
   modified_at: string;
-  owner: string;
-  created_by: string;
+  owner: User;
+  created_by: User;
   threat_model_framework: string;
   issue_uri?: string;
   status?: string | null;
@@ -110,16 +131,31 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
     description: 'Threats for system X',
     created_at: new Date(Date.now() - 7 * 86400000).toISOString(), // 7 days ago
     modified_at: new Date(Date.now() - 2 * 86400000).toISOString(), // 2 days ago
-    owner: 'user@example.com',
-    created_by: 'user@example.com',
+    owner: {
+      principal_type: 'user',
+      provider: 'test',
+      provider_id: 'test-user-1',
+      display_name: 'Test User',
+      email: 'user@example.com',
+    },
+    created_by: {
+      principal_type: 'user',
+      provider: 'test',
+      provider_id: 'test-user-1',
+      display_name: 'Test User',
+      email: 'user@example.com',
+    },
     threat_model_framework: 'STRIDE',
     issue_uri: 'https://issues.example.com/browse/TM-123',
     status: '1', // In Progress
     status_updated: new Date(Date.now() - 1 * 86400000).toISOString(), // 1 day ago
     authorization: [
       {
-        subject: 'user@example.com',
-        subject_type: 'user',
+        principal_type: 'user',
+        provider: 'test',
+        provider_id: 'test-user-1',
+        display_name: 'Test User',
+        email: 'user@example.com',
         role: 'owner',
       },
     ],
@@ -428,14 +464,29 @@ Schedule follow-up review in 2 weeks to assess progress.`,
     description: 'Security analysis for cloud deployment',
     created_at: new Date(Date.now() - 14 * 86400000).toISOString(), // 14 days ago
     modified_at: new Date(Date.now() - 5 * 86400000).toISOString(), // 5 days ago
-    owner: 'user@example.com',
-    created_by: 'user@example.com',
+    owner: {
+      principal_type: 'user',
+      provider: 'test',
+      provider_id: 'test-user-1',
+      display_name: 'Test User',
+      email: 'user@example.com',
+    },
+    created_by: {
+      principal_type: 'user',
+      provider: 'test',
+      provider_id: 'test-user-1',
+      display_name: 'Test User',
+      email: 'user@example.com',
+    },
     threat_model_framework: 'CIA',
     issue_uri: 'https://issues.example.com/browse/TM-124',
     authorization: [
       {
-        subject: 'user@example.com',
-        subject_type: 'user',
+        principal_type: 'user',
+        provider: 'test',
+        provider_id: 'test-user-1',
+        display_name: 'Test User',
+        email: 'user@example.com',
         role: 'owner',
       },
     ],
@@ -516,14 +567,29 @@ Schedule follow-up review in 2 weeks to assess progress.`,
     description: 'Security assessment for mobile application',
     created_at: new Date(Date.now() - 3 * 86400000).toISOString(), // 3 days ago
     modified_at: new Date(Date.now() - 1 * 86400000).toISOString(), // 1 day ago
-    owner: 'user@example.com',
-    created_by: 'user@example.com',
+    owner: {
+      principal_type: 'user',
+      provider: 'test',
+      provider_id: 'test-user-1',
+      display_name: 'Test User',
+      email: 'user@example.com',
+    },
+    created_by: {
+      principal_type: 'user',
+      provider: 'test',
+      provider_id: 'test-user-1',
+      display_name: 'Test User',
+      email: 'user@example.com',
+    },
     threat_model_framework: 'LINDDUN',
     issue_uri: 'https://issues.example.com/browse/TM-125',
     authorization: [
       {
-        subject: 'user@example.com',
-        subject_type: 'user',
+        principal_type: 'user',
+        provider: 'test',
+        provider_id: 'test-user-1',
+        display_name: 'Test User',
+        email: 'user@example.com',
         role: 'owner',
       },
     ],

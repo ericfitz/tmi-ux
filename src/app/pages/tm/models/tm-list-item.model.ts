@@ -1,3 +1,5 @@
+import { User } from './threat-model.model';
+
 /**
  * TMListItem interface matching the API specification for GET /threat_models
  *
@@ -10,8 +12,8 @@ export interface TMListItem {
   description?: string;
   created_at: string;
   modified_at: string;
-  owner: string;
-  created_by: string;
+  owner: User;
+  created_by: User;
   threat_model_framework: 'CIA' | 'STRIDE' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
   issue_uri?: string;
   status?: string | null;

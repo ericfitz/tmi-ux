@@ -64,6 +64,7 @@ import {
   Repository,
   Threat,
   ThreatModel,
+  User,
 } from './models/threat-model.model';
 import { ThreatModelService } from './services/threat-model.service';
 import { ThreatModelReportService } from './services/threat-model-report.service';
@@ -1923,7 +1924,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       permissions: this.threatModel.authorization || [],
       owner: this.threatModel.owner,
       isReadOnly: !this.canManagePermissions, // Only owners can modify permissions
-      onOwnerChange: (newOwner: string) => {
+      onOwnerChange: (newOwner: User) => {
         if (this.threatModel) {
           this.threatModel.owner = newOwner;
           this.threatModel.modified_at = new Date().toISOString();
@@ -1942,7 +1943,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       dialogRef
         .afterClosed()
-        .subscribe((result: { permissions: Authorization[]; owner: string } | undefined) => {
+        .subscribe((result: { permissions: Authorization[]; owner: User } | undefined) => {
           if (result && this.threatModel) {
             this.threatModel.authorization = result.permissions;
             this.threatModel.owner = result.owner;
@@ -1953,8 +1954,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
               authorization: this.threatModel.authorization,
             };
 
-            // Only include owner in updates if it changed
-            if (originalOwner !== result.owner) {
+            // Only include owner in updates if it changed (compare by composite key)
+            const originalOwnerKey = `${originalOwner.provider}:${originalOwner.provider_id}`;
+            const newOwnerKey = `${result.owner.provider}:${result.owner.provider_id}`;
+            if (originalOwnerKey !== newOwnerKey) {
               updates.owner = result.owner;
             }
 

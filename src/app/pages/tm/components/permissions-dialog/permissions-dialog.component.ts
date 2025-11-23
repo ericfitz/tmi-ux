@@ -11,13 +11,19 @@ import {
   FORM_MATERIAL_IMPORTS,
   ScrollIndicatorDirective,
 } from '@app/shared/imports';
-import { Authorization } from '../../models/threat-model.model';
+import { Authorization, User } from '../../models/threat-model.model';
+import { PrincipalTypeIconComponent } from '@app/shared/components/principal-type-icon/principal-type-icon.component';
+import {
+  getPrincipalDisplayName,
+  getCompositeKey,
+  principalsEqual,
+} from '@app/shared/utils/principal-display.utils';
 
 export interface PermissionsDialogData {
   permissions: Authorization[];
-  owner: string;
+  owner: User;
   isReadOnly?: boolean;
-  onOwnerChange?: (newOwner: string) => void;
+  onOwnerChange?: (newOwner: User) => void;
 }
 
 @Component({
@@ -29,6 +35,7 @@ export interface PermissionsDialogData {
     ...FORM_MATERIAL_IMPORTS,
     TranslocoModule,
     ScrollIndicatorDirective,
+    PrincipalTypeIconComponent,
   ],
   template: `
     <div class="permissions-dialog">
@@ -55,7 +62,7 @@ export interface PermissionsDialogData {
           <div class="info-section">
             <div class="info-field">
               <span class="info-label">{{ 'common.roles.owner' | transloco }}:</span>
-              <span class="info-value">{{ data.owner }}</span>
+              <span class="info-value">{{ getPrincipalDisplayName(data.owner) }}</span>
             </div>
           </div>
 
@@ -68,63 +75,144 @@ export interface PermissionsDialogData {
               #permissionsSort="matSort"
               class="permissions-table"
             >
-              <!-- IDP Column -->
-              <ng-container matColumnDef="idp">
+              <!-- Principal Type Column -->
+              <ng-container matColumnDef="principal_type">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  {{ 'threatModels.permissionsIdp' | transloco }}
-                </th>
-                <td mat-cell *matCellDef="let auth">
-                  <span>{{ auth.idp || '' }}</span>
-                </td>
-              </ng-container>
-
-              <!-- Subject Type Column -->
-              <ng-container matColumnDef="subject_type">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  {{ 'threatModels.permissionsSubjectType' | transloco }}
+                  {{ 'common.type' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
                   @if (!data.isReadOnly) {
-                    <mat-form-field class="table-field">
+                    <mat-form-field class="table-field type-field">
                       <mat-select
-                        [value]="auth.subject_type"
-                        (selectionChange)="updatePermissionSubjectType(i, $event)"
-                        [attr.tabindex]="i * 6 + 1"
+                        [value]="auth.principal_type"
+                        (selectionChange)="updatePermissionPrincipalType(i, $event)"
+                        [attr.tabindex]="i * 7 + 1"
                       >
-                        <mat-option value="user">{{
-                          'common.subjectTypes.user' | transloco
-                        }}</mat-option>
-                        <mat-option value="group">{{
-                          'common.subjectTypes.group' | transloco
-                        }}</mat-option>
+                        <mat-option value="user">
+                          <app-principal-type-icon
+                            [principalType]="'user'"
+                          ></app-principal-type-icon>
+                          {{ 'common.subjectTypes.user' | transloco }}
+                        </mat-option>
+                        <mat-option value="group">
+                          <app-principal-type-icon
+                            [principalType]="'group'"
+                          ></app-principal-type-icon>
+                          {{ 'common.subjectTypes.group' | transloco }}
+                        </mat-option>
                       </mat-select>
                     </mat-form-field>
                   }
                   @if (data.isReadOnly) {
-                    <span>{{ getSubjectTypeTranslationKey(auth.subject_type) | transloco }}</span>
+                    <div class="type-display">
+                      <app-principal-type-icon
+                        [principalType]="auth.principal_type"
+                      ></app-principal-type-icon>
+                      <span>{{
+                        getSubjectTypeTranslationKey(auth.principal_type) | transloco
+                      }}</span>
+                    </div>
                   }
                 </td>
               </ng-container>
 
-              <!-- Subject Column -->
-              <ng-container matColumnDef="subject">
+              <!-- Display Name Column -->
+              <ng-container matColumnDef="display_name">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  {{ 'threatModels.permissionsSubject' | transloco }}
+                  {{ 'threatModels.permissionsDisplayName' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
                   @if (!data.isReadOnly) {
                     <mat-form-field class="table-field">
                       <input
                         matInput
-                        [value]="auth.subject"
-                        (blur)="updatePermissionSubject(i, $event)"
-                        [placeholder]="'threatModels.permissionsSubjectPlaceholder' | transloco"
-                        [attr.tabindex]="i * 6 + 2"
+                        [value]="auth.display_name"
+                        (blur)="updatePermissionDisplayName(i, $event)"
+                        [placeholder]="'threatModels.permissionsDisplayName' | transloco"
+                        [attr.tabindex]="i * 7 + 2"
                       />
                     </mat-form-field>
                   }
                   @if (data.isReadOnly) {
-                    <span>{{ auth.subject }}</span>
+                    <span>{{ auth.display_name }}</span>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Email Column -->
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  {{ 'threatModels.permissionsEmail' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let auth; let i = index">
+                  @if (!data.isReadOnly) {
+                    <mat-form-field class="table-field">
+                      <input
+                        matInput
+                        [value]="auth.email || ''"
+                        (blur)="updatePermissionEmail(i, $event)"
+                        [placeholder]="'threatModels.permissionsEmail' | transloco"
+                        [attr.tabindex]="i * 7 + 3"
+                      />
+                    </mat-form-field>
+                  }
+                  @if (data.isReadOnly) {
+                    <span>{{ auth.email || '' }}</span>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Provider Column -->
+              <ng-container matColumnDef="provider">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  {{ 'threatModels.permissionsProvider' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let auth; let i = index">
+                  @if (!data.isReadOnly) {
+                    <mat-form-field class="table-field">
+                      <mat-select
+                        [value]="auth.provider"
+                        (selectionChange)="updatePermissionProvider(i, $event)"
+                        [attr.tabindex]="i * 7 + 4"
+                      >
+                        <mat-option value="google">Google</mat-option>
+                        <mat-option value="github">GitHub</mat-option>
+                        <mat-option value="microsoft">Microsoft</mat-option>
+                        <mat-option value="gitlab">GitLab</mat-option>
+                        <mat-option value="bitbucket">Bitbucket</mat-option>
+                        <mat-option value="apple">Apple</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  }
+                  @if (data.isReadOnly) {
+                    <span>{{ getProviderDisplayName(auth.provider) }}</span>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Provider ID Column -->
+              <ng-container matColumnDef="provider_id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  {{ 'threatModels.permissionsPrincipalId' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let auth; let i = index">
+                  @if (!data.isReadOnly) {
+                    <mat-form-field class="table-field">
+                      <input
+                        matInput
+                        [value]="auth.provider_id"
+                        (blur)="updatePermissionProviderId(i, $event)"
+                        [placeholder]="
+                          auth.principal_type === 'user'
+                            ? ('threatModels.permissionsUserId' | transloco)
+                            : ('threatModels.permissionsGroupId' | transloco)
+                        "
+                        [attr.tabindex]="i * 7 + 5"
+                      />
+                    </mat-form-field>
+                  }
+                  @if (data.isReadOnly) {
+                    <span>{{ auth.provider_id }}</span>
                   }
                 </td>
               </ng-container>
@@ -140,7 +228,7 @@ export interface PermissionsDialogData {
                       <mat-select
                         [value]="auth.role"
                         (selectionChange)="updatePermissionRole(i, $event)"
-                        [attr.tabindex]="i * 6 + 3"
+                        [attr.tabindex]="i * 7 + 6"
                       >
                         <mat-option value="owner">{{
                           'common.roles.owner' | transloco
@@ -171,8 +259,10 @@ export interface PermissionsDialogData {
                         color="primary"
                         (click)="setAsOwner(i)"
                         [matTooltip]="'threatModels.setAsOwner' | transloco"
-                        [disabled]="auth.subject === data.owner"
-                        [attr.tabindex]="i * 6 + 4"
+                        [disabled]="
+                          principalsEqual(auth, data.owner) || auth.principal_type !== 'user'
+                        "
+                        [attr.tabindex]="i * 7 + 7"
                         [attr.aria-label]="'threatModels.setAsOwner' | transloco"
                       >
                         <mat-icon fontSet="material-symbols-outlined">lock_person</mat-icon>
@@ -182,7 +272,7 @@ export interface PermissionsDialogData {
                         color="warn"
                         (click)="deletePermission(i)"
                         [matTooltip]="'common.delete' | transloco"
-                        [attr.tabindex]="i * 6 + 5"
+                        [attr.tabindex]="i * 7 + 8"
                         [attr.aria-label]="'common.delete' | transloco"
                       >
                         <mat-icon>delete</mat-icon>
@@ -291,11 +381,15 @@ export interface PermissionsDialogData {
 
       .permissions-table {
         width: 100%;
-        min-width: 400px;
+        min-width: 800px;
       }
 
       .table-field {
         width: 100%;
+        min-width: 100px;
+      }
+
+      .type-field {
         min-width: 120px;
       }
 
@@ -313,31 +407,49 @@ export interface PermissionsDialogData {
         font-size: var(--font-size-base);
       }
 
-      /* IDP column */
-      .mat-column-idp {
-        width: 140px;
-        max-width: 140px;
+      .type-display {
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
-      /* Subject type column */
-      .mat-column-subject_type {
+      /* Principal type column */
+      .mat-column-principal_type {
         width: 100px;
         max-width: 100px;
       }
 
-      /* Subject column takes remaining space */
-      .mat-column-subject {
-        flex: 1;
-        min-width: 200px;
+      /* Display name column */
+      .mat-column-display_name {
+        width: 150px;
+        min-width: 150px;
       }
 
-      /* Make role column narrower */
+      /* Email column */
+      .mat-column-email {
+        width: 180px;
+        min-width: 180px;
+      }
+
+      /* Provider column */
+      .mat-column-provider {
+        width: 120px;
+        max-width: 120px;
+      }
+
+      /* Provider ID column */
+      .mat-column-provider_id {
+        width: 150px;
+        min-width: 150px;
+      }
+
+      /* Role column */
       .mat-column-role {
         width: 120px;
         max-width: 120px;
       }
 
-      /* Make actions column wider to accommodate both buttons */
+      /* Actions column */
       .mat-column-actions {
         width: 140px;
         max-width: 140px;
@@ -351,7 +463,7 @@ export interface PermissionsDialogData {
       }
 
       .mat-mdc-cell {
-        height: 56px; /* Consistent row height */
+        height: 56px;
       }
 
       .actions-container {
@@ -361,14 +473,13 @@ export interface PermissionsDialogData {
         gap: 4px;
         height: 100%;
         min-height: 40px;
-        margin-top: -16px; /* Move buttons up by 6px */
+        margin-top: -16px;
       }
 
       .actions-cell {
         vertical-align: middle;
       }
 
-      /* Center align icons in action buttons */
       .actions-container mat-icon {
         display: flex;
         align-items: center;
@@ -381,7 +492,6 @@ export interface PermissionsDialogData {
         justify-content: center;
       }
 
-      /* Ensure form fields don't make cells too tall */
       .table-field .mat-mdc-form-field-wrapper {
         padding-bottom: 0;
         margin-bottom: 0;
@@ -405,7 +515,6 @@ export interface PermissionsDialogData {
         gap: 8px;
       }
 
-      // Save indicator styling
       .header-save-indicator {
         margin-left: 12px;
         display: inline-flex;
@@ -420,35 +529,11 @@ export interface PermissionsDialogData {
         }
 
         .permissions-table {
-          min-width: 500px;
+          min-width: 700px;
         }
 
         .table-field {
           min-width: 80px;
-        }
-
-        .mat-column-idp {
-          width: 120px;
-          max-width: 120px;
-        }
-
-        .mat-column-subject_type {
-          width: 90px;
-          max-width: 90px;
-        }
-
-        .mat-column-subject {
-          min-width: 150px;
-        }
-
-        .mat-column-role {
-          width: 100px;
-          max-width: 100px;
-        }
-
-        .mat-column-actions {
-          width: 120px;
-          max-width: 120px;
         }
       }
     `,
@@ -463,6 +548,11 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
 
   private _subscriptions: Subscription = new Subscription();
 
+  // Expose utility functions to template
+  getPrincipalDisplayName = getPrincipalDisplayName;
+  getCompositeKey = getCompositeKey;
+  principalsEqual = principalsEqual;
+
   constructor(
     public dialogRef: MatDialogRef<PermissionsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: PermissionsDialogData,
@@ -471,8 +561,8 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.permissionsDataSource.data = [...this.data.permissions];
     this.displayedColumns = this.data.isReadOnly
-      ? ['idp', 'subject_type', 'subject', 'role']
-      : ['idp', 'subject_type', 'subject', 'role', 'actions'];
+      ? ['principal_type', 'display_name', 'email', 'provider', 'provider_id', 'role']
+      : ['principal_type', 'display_name', 'email', 'provider', 'provider_id', 'role', 'actions'];
   }
 
   ngOnDestroy(): void {
@@ -480,28 +570,70 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Updates the subject (user) of a permission
+   * Updates the display name of a permission
    * @param index The index of the permission to update
-   * @param event The blur event containing the new subject value
+   * @param event The blur event containing the new display name value
    */
-  updatePermissionSubject(index: number, event: Event): void {
+  updatePermissionDisplayName(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
-    const newSubject = input.value.trim();
+    const newDisplayName = input.value.trim();
 
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
-      this.permissionsDataSource.data[index].subject = newSubject;
+      this.permissionsDataSource.data[index].display_name = newDisplayName;
       this.permissionsTable.renderRows();
     }
   }
 
   /**
-   * Updates the subject type of a permission
+   * Updates the email of a permission
    * @param index The index of the permission to update
-   * @param event The selection change event containing the new subject type value
+   * @param event The blur event containing the new email value
    */
-  updatePermissionSubjectType(index: number, event: { value: 'user' | 'group' }): void {
+  updatePermissionEmail(index: number, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const newEmail = input.value.trim();
+
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
-      this.permissionsDataSource.data[index].subject_type = event.value;
+      this.permissionsDataSource.data[index].email = newEmail;
+      this.permissionsTable.renderRows();
+    }
+  }
+
+  /**
+   * Updates the principal type of a permission
+   * @param index The index of the permission to update
+   * @param event The selection change event containing the new principal type value
+   */
+  updatePermissionPrincipalType(index: number, event: { value: 'user' | 'group' }): void {
+    if (index >= 0 && index < this.permissionsDataSource.data.length) {
+      this.permissionsDataSource.data[index].principal_type = event.value;
+      this.permissionsTable.renderRows();
+    }
+  }
+
+  /**
+   * Updates the provider of a permission
+   * @param index The index of the permission to update
+   * @param event The selection change event containing the new provider value
+   */
+  updatePermissionProvider(index: number, event: { value: string }): void {
+    if (index >= 0 && index < this.permissionsDataSource.data.length) {
+      this.permissionsDataSource.data[index].provider = event.value;
+      this.permissionsTable.renderRows();
+    }
+  }
+
+  /**
+   * Updates the provider ID of a permission
+   * @param index The index of the permission to update
+   * @param event The blur event containing the new provider ID value
+   */
+  updatePermissionProviderId(index: number, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const newProviderId = input.value.trim();
+
+    if (index >= 0 && index < this.permissionsDataSource.data.length) {
+      this.permissionsDataSource.data[index].provider_id = newProviderId;
       this.permissionsTable.renderRows();
     }
   }
@@ -523,8 +655,11 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    */
   addPermission(): void {
     this.permissionsDataSource.data.push({
-      subject: '',
-      subject_type: 'user',
+      principal_type: 'user',
+      provider: 'google',
+      provider_id: '',
+      display_name: '',
+      email: '',
       role: 'reader',
     });
     this.permissionsTable.renderRows();
@@ -548,7 +683,21 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   setAsOwner(index: number): void {
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
       const selectedAuth = this.permissionsDataSource.data[index];
-      const newOwner = selectedAuth.subject;
+
+      // Ensure only users (not groups) can be set as owner
+      if (selectedAuth.principal_type !== 'user') {
+        console.warn('Only users can be set as owner');
+        return;
+      }
+
+      // Create User object from authorization entry
+      const newOwner: User = {
+        principal_type: 'user',
+        provider: selectedAuth.provider,
+        provider_id: selectedAuth.provider_id,
+        display_name: selectedAuth.display_name,
+        email: selectedAuth.email,
+      };
 
       // Update the local owner value
       this.data.owner = newOwner;
@@ -585,7 +734,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @returns The tabindex value after all table rows
    */
   getAddPermissionButtonTabIndex(): number {
-    return this.permissionsDataSource.data.length * 6 + 1;
+    return this.permissionsDataSource.data.length * 8 + 1;
   }
 
   /**
@@ -593,7 +742,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @returns The tabindex value after the add button
    */
   getCloseButtonTabIndex(): number {
-    return this.permissionsDataSource.data.length * 6 + 2;
+    return this.permissionsDataSource.data.length * 8 + 2;
   }
 
   /**
@@ -601,7 +750,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * @returns The tabindex value after the close button
    */
   getSaveButtonTabIndex(): number {
-    return this.permissionsDataSource.data.length * 6 + 3;
+    return this.permissionsDataSource.data.length * 8 + 3;
   }
 
   /**
@@ -620,5 +769,22 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    */
   getRoleTranslationKey(role: string): string {
     return `common.roles.${role}`;
+  }
+
+  /**
+   * Gets the display name for a provider with proper capitalization
+   * @param provider The provider identifier
+   * @returns The formatted provider display name
+   */
+  getProviderDisplayName(provider: string): string {
+    const displayNames: Record<string, string> = {
+      google: 'Google',
+      github: 'GitHub',
+      microsoft: 'Microsoft',
+      gitlab: 'GitLab',
+      bitbucket: 'Bitbucket',
+      apple: 'Apple',
+    };
+    return displayNames[provider] || provider;
   }
 }

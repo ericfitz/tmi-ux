@@ -35,12 +35,15 @@ import { TMListItem } from '../models/tm-list-item.model';
 import { Diagram, Cell } from '../models/diagram.model';
 
 /**
- * User information from the API
+ * User information from the API (Principal-based)
+ * Note: This matches the User type from threat-model.model.ts
  */
 interface ApiUser {
-  user_id: string;
-  email: string;
-  displayName: string;
+  principal_type: 'user';
+  provider: string;
+  provider_id: string;
+  display_name: string;
+  email?: string;
 }
 
 /**
@@ -1560,9 +1563,9 @@ export class ThreatModelService implements OnDestroy {
             host: session.host,
             participantCount: session.participants?.length || 0,
             participants: session.participants?.map(p => ({
-              id: p.user.user_id,
-              email: p.user.email,
-              displayName: p.user.displayName,
+              id: `${p.user.provider}:${p.user.provider_id}`, // Use composite key as ID
+              email: p.user.email || '',
+              displayName: p.user.display_name,
               permissions: p.permissions,
               last_activity: p.last_activity,
             })),

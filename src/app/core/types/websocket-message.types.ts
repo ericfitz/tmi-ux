@@ -4,13 +4,14 @@
  */
 
 /**
- * User information from JWT claims
- * Requires at least one of user_id or email (anyOf)
+ * User information in Principal-based format
  */
 export interface User {
-  user_id?: string;
+  principal_type: 'user';
+  provider: string;
+  provider_id: string;
+  display_name: string;
   email?: string;
-  displayName?: string;
 }
 
 export interface CursorPosition {
@@ -94,7 +95,7 @@ export interface PresenterDeniedMessage {
 export interface ChangePresenterMessage {
   message_type: 'change_presenter';
   initiating_user: User;
-  new_presenter: User;
+  new_presenter?: User;
 }
 
 export interface CurrentPresenterMessage {
@@ -180,12 +181,8 @@ export interface HistoryOperationMessage {
 }
 
 export interface Participant {
-  user: {
-    user_id: string;
-    name: string;
-    email: string;
-  };
-  permissions: 'reader' | 'writer' | 'owner';
+  user: User;
+  role: 'reader' | 'writer' | 'owner';
   last_activity: string;
 }
 

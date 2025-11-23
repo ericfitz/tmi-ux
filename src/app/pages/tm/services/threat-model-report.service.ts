@@ -4,6 +4,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '../../../core/services/logger.service';
 import { LanguageService } from '../../../i18n/language.service';
 import { ThreatModel, Threat, Document, Repository } from '../models/threat-model.model';
+import { getPrincipalDisplayName } from '../../../shared/utils/principal-display.utils';
 import * as fontkit from 'fontkit';
 
 interface FontConfig {
@@ -558,7 +559,9 @@ export class ThreatModelReportService {
       },
       {
         label: this.transloco.translate('common.roles.owner'),
-        value: threatModel.owner || this.transloco.translate('common.noDataAvailable'),
+        value: threatModel.owner
+          ? getPrincipalDisplayName(threatModel.owner)
+          : this.transloco.translate('common.noDataAvailable'),
       },
       {
         label: this.transloco.translate('common.created'),

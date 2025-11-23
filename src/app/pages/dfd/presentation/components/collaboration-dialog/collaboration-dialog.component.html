@@ -106,7 +106,7 @@
               <ng-container>
                 <!-- Hand Down State -->
                 @if (
-                  isCurrentUser(user.userId) &&
+                  isCurrentUser(user.email) &&
                   (!user.presenterRequestState || user.presenterRequestState === 'hand_down')
                 ) {
                   <button
@@ -126,7 +126,7 @@
                 }
 
                 <!-- Hand Raised State -->
-                @if (isCurrentUser(user.userId) && user.presenterRequestState === 'hand_raised') {
+                @if (isCurrentUser(user.email) && user.presenterRequestState === 'hand_raised') {
                   <mat-icon
                     fontSet="material-symbols-outlined"
                     fontWeight="100"
@@ -139,7 +139,7 @@
                 }
 
                 <!-- Other users - show presenter request icon if they have pending request -->
-                @if (!isCurrentUser(user.userId) && hasPresenterRequest(user.email)) {
+                @if (!isCurrentUser(user.email) && hasPresenterRequest(user.email)) {
                   <mat-icon
                     fontSet="material-symbols-outlined"
                     fontWeight="100"
@@ -155,7 +155,7 @@
                 }
 
                 <!-- Other users without presenter request - placeholder -->
-                @if (!isCurrentUser(user.userId) && !hasPresenterRequest(user.email)) {
+                @if (!isCurrentUser(user.email) && !hasPresenterRequest(user.email)) {
                   <div class="presenter-placeholder"></div>
                 }
               </ng-container>

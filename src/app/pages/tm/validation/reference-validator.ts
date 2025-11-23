@@ -98,21 +98,23 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
       });
     }
 
-    // Collect user IDs from authorization
+    // Collect user composite keys from authorization
     if (Array.isArray(threatModel.authorization)) {
       threatModel.authorization.forEach(auth => {
-        if (auth?.subject) {
-          referenceMap.userIds.add(auth.subject);
+        if (auth?.provider && auth?.provider_id) {
+          referenceMap.userIds.add(`${auth.provider}:${auth.provider_id}`);
         }
       });
     }
 
-    // Add owner and creator
+    // Add owner and creator (using composite keys)
     if (threatModel.owner) {
-      referenceMap.userIds.add(threatModel.owner);
+      referenceMap.userIds.add(`${threatModel.owner.provider}:${threatModel.owner.provider_id}`);
     }
     if (threatModel.created_by) {
-      referenceMap.userIds.add(threatModel.created_by);
+      referenceMap.userIds.add(
+        `${threatModel.created_by.provider}:${threatModel.created_by.provider_id}`,
+      );
     }
 
     return referenceMap;
@@ -270,15 +272,18 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
     context: ValidationContext,
   ): void {
     // Validate that the owner exists in authorization
-    if (threatModel.owner && !referenceMap.userIds.has(threatModel.owner)) {
+    const ownerCompositeKey = threatModel.owner
+      ? `${threatModel.owner.provider}:${threatModel.owner.provider_id}`
+      : null;
+    if (ownerCompositeKey && !referenceMap.userIds.has(ownerCompositeKey)) {
       this.addError(
         ValidationUtils.createError(
           'OWNER_NOT_IN_AUTHORIZATION',
-          `ThreatModel owner '${threatModel.owner}' is not present in authorization list`,
+          `ThreatModel owner '${ownerCompositeKey}' is not present in authorization list`,
           ValidationUtils.buildPath(context.currentPath, 'owner'),
           'warning',
           {
-            owner: threatModel.owner,
+            owner: ownerCompositeKey,
             authorizedUsers: Array.from(referenceMap.userIds),
           },
         ),
@@ -286,15 +291,18 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
     }
 
     // Validate that created_by exists in current authorization (warning only)
-    if (threatModel.created_by && !referenceMap.userIds.has(threatModel.created_by)) {
+    const creatorCompositeKey = threatModel.created_by
+      ? `${threatModel.created_by.provider}:${threatModel.created_by.provider_id}`
+      : null;
+    if (creatorCompositeKey && !referenceMap.userIds.has(creatorCompositeKey)) {
       this.addError(
         ValidationUtils.createError(
           'CREATOR_NOT_IN_AUTHORIZATION',
-          `ThreatModel creator '${threatModel.created_by}' is not present in current authorization list`,
+          `ThreatModel creator '${creatorCompositeKey}' is not present in current authorization list`,
           ValidationUtils.buildPath(context.currentPath, 'created_by'),
           'info',
           {
-            creator: threatModel.created_by,
+            creator: creatorCompositeKey,
             authorizedUsers: Array.from(referenceMap.userIds),
           },
         ),

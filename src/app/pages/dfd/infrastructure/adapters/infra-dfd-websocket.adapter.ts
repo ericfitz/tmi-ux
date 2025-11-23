@@ -435,8 +435,8 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   // Message handlers that transform WebSocket messages to domain events
 
   private _handleDiagramOperation(message: DiagramOperationMessage): void {
-    // Extract user ID with fallback (User fields are optional per schema)
-    const userId = message.initiating_user.user_id || message.initiating_user.email || 'unknown';
+    // Extract user identifier with fallback (User fields are optional per schema)
+    const userId = message.initiating_user.email || 'unknown';
 
     this._logger.debugComponent('InfraDfdWebsocketAdapter', 'Received diagram operation', {
       userId: userId,
@@ -551,8 +551,8 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       presenter: message.current_presenter,
     });
 
-    // Extract user_id from User object (schema returns User, not string)
-    const presenterUserId = message.current_presenter?.user_id || null;
+    // Extract email from User object (schema returns User, not string)
+    const presenterUserId = message.current_presenter?.email || null;
 
     this._domainEvents$.next({
       type: 'presenter-changed',
@@ -605,9 +605,9 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     }
 
     // Show notification with both display name and email
-    const userIdentifier = message.joined_user.displayName
-      ? `${message.joined_user.displayName} (${message.joined_user.email})`
-      : message.joined_user.email || message.joined_user.user_id || 'Unknown user';
+    const userIdentifier = message.joined_user.display_name
+      ? `${message.joined_user.display_name} (${message.joined_user.email})`
+      : message.joined_user.email || 'Unknown user';
 
     if (this._notificationService) {
       this._logger.debugComponent(
@@ -628,9 +628,9 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     this._domainEvents$.next({
       type: 'participant-joined',
       user: {
-        user_id: message.joined_user.user_id || message.joined_user.email || 'unknown',
-        email: message.joined_user.email || message.joined_user.user_id || 'unknown',
-        displayName: message.joined_user.displayName || 'Unknown User',
+        user_id: message.joined_user.email || 'unknown',
+        email: message.joined_user.email || 'unknown',
+        displayName: message.joined_user.display_name || 'Unknown User',
       },
       timestamp: message.timestamp,
     });
@@ -649,9 +649,9 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     }
 
     // Show notification with both display name and email
-    const userIdentifier = message.departed_user.displayName
-      ? `${message.departed_user.displayName} (${message.departed_user.email})`
-      : message.departed_user.email || message.departed_user.user_id || 'Unknown user';
+    const userIdentifier = message.departed_user.display_name
+      ? `${message.departed_user.display_name} (${message.departed_user.email})`
+      : message.departed_user.email || 'Unknown user';
 
     if (this._notificationService) {
       this._logger.debugComponent(
@@ -672,9 +672,9 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     this._domainEvents$.next({
       type: 'participant-left',
       user: {
-        user_id: message.departed_user.user_id || message.departed_user.email || 'unknown',
-        email: message.departed_user.email || message.departed_user.user_id || 'unknown',
-        displayName: message.departed_user.displayName || 'Unknown User',
+        user_id: message.departed_user.email || 'unknown',
+        email: message.departed_user.email || 'unknown',
+        displayName: message.departed_user.display_name || 'Unknown User',
       },
       timestamp: message.timestamp,
     });
@@ -694,7 +694,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     // Show notification if current user is being removed
     // Note: We need collaboration service to check current user - will add this later
     this._logger.info('Participant being removed by host', {
-      removedUser: message.removed_user.email || message.removed_user.user_id,
+      removedUser: message.removed_user.email,
     });
 
     // Note: Schema does not include initiating_user in this message
@@ -703,9 +703,9 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     this._domainEvents$.next({
       type: 'participant-removed',
       removedUser: {
-        user_id: message.removed_user.user_id || message.removed_user.email || 'unknown',
-        email: message.removed_user.email || message.removed_user.user_id || 'unknown',
-        displayName: message.removed_user.displayName || 'Unknown User',
+        user_id: message.removed_user.email || 'unknown',
+        email: message.removed_user.email || 'unknown',
+        displayName: message.removed_user.display_name || 'Unknown User',
       },
       removingUser: {
         user_id: 'system',

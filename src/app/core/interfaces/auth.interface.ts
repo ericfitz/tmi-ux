@@ -35,6 +35,21 @@ export interface IAuthService {
   readonly userEmail: string;
 
   /**
+   * Get the current user's ID (provider_id from JWT sub claim)
+   */
+  readonly userId: string;
+
+  /**
+   * Get the current user's identity provider (from JWT idp claim)
+   */
+  readonly userIdp: string;
+
+  /**
+   * Get the current user's groups
+   */
+  readonly userGroups: string[];
+
+  /**
    * Get the stored JWT token
    */
   getStoredToken(): IJwtToken | null;

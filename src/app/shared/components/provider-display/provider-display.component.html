@@ -1,0 +1,8 @@
+@if (getProviderLogoPath(provider)) {
+  <img
+    [src]="getProviderLogoPath(provider)"
+    [alt]="getProviderName(provider) + ' logo'"
+    class="provider-logo"
+  />
+}
+<span class="provider-name">{{ getProviderName(provider) }}</span>

@@ -21,13 +21,15 @@ import {
   PresenterRequestMessageWithUser,
   PresenterDeniedMessage,
   PresenterSelectionMessageWithUser,
+  Participant,
 } from '../types/websocket-message.types';
 
 /**
  * Represents a user in a collaboration session
  */
 export interface CollaborationUser {
-  userId: string; // Unique user identifier - PRIMARY IDENTIFIER for deduplication
+  provider: string; // OAuth provider (e.g., "google", "github")
+  provider_id: string; // Provider-specific user ID - PART OF COMPOSITE KEY
   name: string; // Display name to show in UI
   email: string; // Email address
   permission: 'writer' | 'reader'; // Based on threat model permissions
@@ -41,12 +43,14 @@ export interface CollaborationUser {
 }
 
 /**
- * User information from the API
+ * User information from the API (Principal-based)
  */
 export interface ApiUser {
-  user_id: string;
-  email: string;
-  name: string;
+  principal_type: 'user';
+  provider: string;
+  provider_id: string;
+  display_name: string;
+  email?: string;
 }
 
 /**
@@ -55,7 +59,7 @@ export interface ApiUser {
 export interface ApiParticipant {
   user: ApiUser;
   last_activity: string;
-  permissions: 'reader' | 'writer' | 'owner';
+  role: 'reader' | 'writer' | 'owner';
 }
 
 /**
@@ -471,10 +475,12 @@ export class DfdCollaborationService implements OnDestroy {
 
     // Initialize with current user immediately to ensure UI shows at least one participant
     const currentUserEmail = this.getCurrentUserEmail();
-    const currentUserId = this._authService.userProfile?.id || '';
+    const currentUserProvider = this._authService.userIdp;
+    const currentUserProviderId = this._authService.userId;
     const isCurrentUserPresenter = currentUserEmail === existingSession.presenter;
     const initialUser: CollaborationUser = {
-      userId: currentUserId,
+      provider: currentUserProvider,
+      provider_id: currentUserProviderId,
       name: this._authService.userProfile?.name || '',
       email: currentUserEmail || '',
       permission: 'writer', // Will be updated from WebSocket messages
@@ -551,10 +557,12 @@ export class DfdCollaborationService implements OnDestroy {
 
           // Initialize with current user immediately to ensure UI shows at least one participant
           const currentUserEmail = this.getCurrentUserEmail();
-          const currentUserId = this._authService.userProfile?.id || '';
+          const currentUserProvider = this._authService.userIdp;
+          const currentUserProviderId = this._authService.userId;
           const isCurrentUserPresenter = currentUserEmail === session.presenter;
           const initialUser: CollaborationUser = {
-            userId: currentUserId,
+            provider: currentUserProvider,
+            provider_id: currentUserProviderId,
             name: this._authService.userProfile?.name || '',
             email: currentUserEmail || '',
             permission: 'writer',
@@ -638,10 +646,12 @@ export class DfdCollaborationService implements OnDestroy {
 
           // Initialize with current user immediately to ensure UI shows at least one participant
           const currentUserEmail = this.getCurrentUserEmail();
-          const currentUserId = this._authService.userProfile?.id || '';
+          const currentUserProvider = this._authService.userIdp;
+          const currentUserProviderId = this._authService.userId;
           const isCurrentUserPresenter = currentUserEmail === session.presenter;
           const initialUser: CollaborationUser = {
-            userId: currentUserId,
+            provider: currentUserProvider,
+            provider_id: currentUserProviderId,
             name: this._authService.userProfile?.name || '',
             email: currentUserEmail || '',
             permission: 'writer',
@@ -848,14 +858,18 @@ export class DfdCollaborationService implements OnDestroy {
     const removeMessage: RemoveParticipantMessageWithInitiator = {
       message_type: 'remove_participant',
       user: {
-        user_id: userProfile.id,
+        principal_type: 'user',
+        provider: this._authService.userIdp,
+        provider_id: userProfile.id,
+        display_name: userProfile.name,
         email: userProfile.email,
-        displayName: userProfile.name,
       },
       removed_user: {
-        user_id: userEmail, // Using email as user_id fallback
+        principal_type: 'user',
+        provider: this._authService.userIdp, // Best effort - using same provider
+        provider_id: userEmail, // Using email as fallback identifier
+        display_name: userEmail,
         email: userEmail,
-        displayName: userEmail, // Using email as displayName fallback
       },
     };
 
@@ -942,15 +956,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @param currentPresenter Optional current presenter ID
    */
   public updateAllParticipants(
-    participants: Array<{
-      user: {
-        user_id: string;
-        name: string;
-        email: string;
-      };
-      permissions: 'reader' | 'writer' | 'owner';
-      last_activity: string;
-    }>,
+    participants: Participant[],
     host?: string,
     currentPresenter?: string | null,
   ): void {
@@ -972,7 +978,7 @@ export class DfdCollaborationService implements OnDestroy {
       const isPresenter = participant.user.email === currentPresenter;
 
       this._logger.debugComponent('DfdCollaborationService', 'Participant comparison', {
-        participantUserId: participant.user.user_id,
+        participantCompositeKey: `${participant.user.provider}:${participant.user.provider_id}`,
         participantEmail: participant.user.email,
         host,
         currentPresenter,
@@ -981,10 +987,11 @@ export class DfdCollaborationService implements OnDestroy {
       });
 
       return {
-        userId: participant.user.user_id,
-        name: participant.user.name,
-        email: participant.user.email,
-        permission: participant.permissions === 'owner' ? 'writer' : participant.permissions, // Map owner to writer for UI
+        provider: participant.user.provider,
+        provider_id: participant.user.provider_id,
+        name: participant.user.display_name,
+        email: participant.user.email || '',
+        permission: participant.role === 'owner' ? 'writer' : participant.role, // Map owner to writer for UI
         status: 'active' as const,
         isPresenter,
         isHost,
@@ -1018,7 +1025,7 @@ export class DfdCollaborationService implements OnDestroy {
       host,
       currentPresenter,
       updatedUsers: updatedUsers.map(u => ({
-        userId: u.userId,
+        compositeKey: `${u.provider}:${u.provider_id}`,
         name: u.name,
         email: u.email,
         permission: u.permission,
@@ -1038,15 +1045,22 @@ export class DfdCollaborationService implements OnDestroy {
     }
 
     const users = this._collaborationState$.value.users;
-    const currentUserId = this.getCurrentUserId();
-    const currentUser = users.find(user => user.userId === currentUserId);
+    const currentUserProvider = this._authService.userIdp;
+    const currentUserProviderId = this._authService.userId;
+    const currentUser = users.find(
+      user => user.provider === currentUserProvider && user.provider_id === currentUserProviderId,
+    );
 
     this._logger.debugComponent('DfdCollaborationService', 'Getting current user permission', {
-      currentUserId,
-      users: users.map(u => ({ userId: u.userId, email: u.email, permission: u.permission })),
-      currentUser: currentUser
+      currentUserKey: `${currentUserProvider}:${currentUserProviderId}`,
+      users: users.map(u => ({
+        compositeKey: `${u.provider}:${u.provider_id}`,
+        email: u.email,
+        permission: u.permission,
+      })),
+      foundCurrentUser: currentUser
         ? {
-            userId: currentUser.userId,
+            compositeKey: `${currentUser.provider}:${currentUser.provider_id}`,
             email: currentUser.email,
             permission: currentUser.permission,
           }
@@ -1109,18 +1123,21 @@ export class DfdCollaborationService implements OnDestroy {
     // Check the users list directly without requiring isActive
     // This allows the host status to be determined even during session initialization
     const users = this._collaborationState$.value.users;
-    const currentUserId = this.getCurrentUserId();
+    const currentUserProvider = this._authService.userIdp;
+    const currentUserProviderId = this._authService.userId;
 
-    if (!currentUserId) {
+    if (!currentUserProvider || !currentUserProviderId) {
       return false;
     }
 
-    const currentUser = users.find(user => user.userId === currentUserId);
+    const currentUser = users.find(
+      user => user.provider === currentUserProvider && user.provider_id === currentUserProviderId,
+    );
     return currentUser?.isHost || false;
   }
 
   /**
-   * Check if a specific user is the current user (by userId)
+   * Check if a specific user is the current user (by composite key)
    * @param userId The user ID to check
    * @returns boolean indicating if this is the current user
    */
@@ -1269,9 +1286,11 @@ export class DfdCollaborationService implements OnDestroy {
     const denyMessage: PresenterDeniedMessage = {
       message_type: 'presenter_denied',
       current_presenter: {
-        user_id: userProfile.id,
+        principal_type: 'user',
+        provider: this._authService.userIdp,
+        provider_id: userProfile.id,
+        display_name: userProfile.name,
         email: userProfile.email,
-        displayName: userProfile.name,
       },
     };
     return this._webSocketAdapter.sendTMIMessage(denyMessage).pipe(
@@ -1313,17 +1332,29 @@ export class DfdCollaborationService implements OnDestroy {
       return throwError(() => new Error('No user profile available'));
     }
 
+    // Find the new presenter user by email to get their provider info
+    const newPresenterUser = userEmail
+      ? this._collaborationState$.value.users.find(u => u.email === userEmail)
+      : null;
+
     const message: ChangePresenterMessage = {
       message_type: 'change_presenter',
       initiating_user: {
-        user_id: userProfile.id,
+        principal_type: 'user',
+        provider: this._authService.userIdp,
+        provider_id: userProfile.id,
+        display_name: userProfile.name,
         email: userProfile.email,
-        displayName: userProfile.name,
       },
-      new_presenter: {
-        user_id: userEmail || '', // Per schema, new_presenter is a User object
-        email: userEmail || '',
-      },
+      new_presenter: newPresenterUser
+        ? {
+            principal_type: 'user',
+            provider: newPresenterUser.provider,
+            provider_id: newPresenterUser.provider_id,
+            display_name: newPresenterUser.name,
+            email: newPresenterUser.email,
+          }
+        : undefined,
     };
 
     return this._webSocketAdapter.sendTMIMessage(message).pipe(
@@ -1419,9 +1450,11 @@ export class DfdCollaborationService implements OnDestroy {
         const clearSelectionMessage: PresenterSelectionMessageWithUser = {
           message_type: 'presenter_selection',
           user: {
-            user_id: userProfile.id,
+            principal_type: 'user',
+            provider: this._authService.userIdp,
+            provider_id: userProfile.id,
+            display_name: userProfile.name,
             email: userProfile.email,
-            displayName: userProfile.name,
           },
           selected_cells: [], // Empty array clears all participants' selections
         };
@@ -1882,12 +1915,13 @@ export class DfdCollaborationService implements OnDestroy {
     }
 
     // Extract user identifier with fallback (User fields are optional per schema)
-    const userEmail = message.user.email || message.user.user_id || 'unknown';
+    const userEmail = message.user.email || 'unknown';
 
     this._logger.info('Presenter request received', {
       userEmail: userEmail,
-      userId: message.user.user_id,
-      displayName: message.user.displayName,
+      provider: message.user.provider,
+      providerId: message.user.provider_id,
+      displayName: message.user.display_name,
     });
 
     // Add to pending requests list
@@ -1899,7 +1933,7 @@ export class DfdCollaborationService implements OnDestroy {
     // Show notification with approve/deny actions (host only)
     if (this.isCurrentUserHost()) {
       this._notificationService
-        ?.showPresenterRequestReceived(userEmail, message.user.displayName || 'Unknown')
+        ?.showPresenterRequestReceived(userEmail, message.user.display_name || 'Unknown')
         .subscribe(action => {
           if (action === 'approve') {
             this.approvePresenterRequest(userEmail).subscribe({

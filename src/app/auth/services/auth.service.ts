@@ -50,7 +50,7 @@ interface JwtPayload {
   name?: string;
   iat?: number;
   exp?: number;
-  provider?: string;
+  idp?: string; // OAuth provider (e.g., "google", "github")
   aud?: string;
   iss?: string;
   groups?: string[];
@@ -162,6 +162,26 @@ export class AuthService {
    */
   get userId(): string {
     return this.userProfile?.id || '';
+  }
+
+  /**
+   * Get current user's OAuth provider (IDP) from JWT token
+   * @returns The OAuth provider (e.g., "google", "github") or empty string if not available
+   */
+  get userIdp(): string {
+    const token = this.getStoredToken();
+    if (!token) {
+      return '';
+    }
+
+    try {
+      const payload = token.token.split('.')[1];
+      const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
+      return decodedPayload.idp || '';
+    } catch (error) {
+      this.logger.error('Error extracting IDP from JWT token', error);
+      return '';
+    }
   }
 
   /**

@@ -3,7 +3,8 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { map, distinctUntilChanged } from 'rxjs/operators';
 import { LoggerService } from '../../../core/services/logger.service';
 import { AuthService } from '../../../auth/services/auth.service';
-import { Authorization } from '../models/threat-model.model';
+import { Authorization, User } from '../models/threat-model.model';
+import { getCompositeKey } from '../../../shared/utils/principal-display.utils';
 
 /**
  * Service for managing threat model authorization state reactively
@@ -16,8 +17,8 @@ export class ThreatModelAuthorizationService implements OnDestroy {
   // Current threat model authorization state
   private _authorizationSubject = new BehaviorSubject<Authorization[] | null>(null);
 
-  // Current threat model owner
-  private _currentOwner: string | null = null;
+  // Current threat model owner (Principal-based User object)
+  private _currentOwner: User | null = null;
 
   // Current threat model ID being tracked
   private _currentThreatModelId: string | null = null;
@@ -81,19 +82,19 @@ export class ThreatModelAuthorizationService implements OnDestroy {
    * Set authorization data for a threat model
    * @param threatModelId The threat model ID
    * @param authorization The authorization data
-   * @param owner The owner of the threat model (optional for backward compatibility)
+   * @param owner The owner of the threat model (Principal-based User object)
    */
-  setAuthorization(threatModelId: string, authorization: Authorization[], owner?: string): void {
+  setAuthorization(threatModelId: string, authorization: Authorization[], owner: User): void {
     this.logger.debugComponent('ThreatModelAuthorizationService', 'setAuthorization called', {
       threatModelId,
-      owner,
+      owner: owner ? getCompositeKey(owner) : null,
       authorizationCount: authorization.length,
       previousThreatModelId: this._currentThreatModelId,
       stackTrace: new Error().stack?.split('\n').slice(1, 4).join('\n'),
     });
 
     this._currentThreatModelId = threatModelId;
-    this._currentOwner = owner || null;
+    this._currentOwner = owner;
     this._authorizationSubject.next(authorization);
   }
 
@@ -135,28 +136,32 @@ export class ThreatModelAuthorizationService implements OnDestroy {
   /**
    * Calculate current user's permission based on authorization data
    * Implements the authorization logic described in docs-server/reference/architecture/AUTHORIZATION.md
+   * Uses Principal-based identity with (provider, provider_id) composite keys
    * @param authorizations The authorization data
    * @returns The user's permission level or null
    */
   private calculateUserPermission(
     authorizations: Authorization[] | null,
   ): 'reader' | 'writer' | 'owner' | null {
-    const currentUserId = this.authService.userId;
+    const currentUserProvider = this.authService.userIdp;
+    const currentUserProviderId = this.authService.userId;
     const currentUserEmail = this.authService.userEmail;
     const currentUserGroups = this.authService.userGroups;
 
-    if (!currentUserId || !currentUserEmail) {
+    if (!currentUserProvider || !currentUserProviderId) {
       this.logger.warn('Cannot calculate user permission - no authenticated user');
       return null;
     }
 
     // Step 1: Check if user is the owner (owner field takes absolute precedence)
     if (this._currentOwner) {
-      if (this._currentOwner === currentUserId || this._currentOwner === currentUserEmail) {
+      if (
+        this._currentOwner.provider === currentUserProvider &&
+        this._currentOwner.provider_id === currentUserProviderId
+      ) {
         this.logger.debugComponent('ThreatModelAuthorizationService', 'User matches owner field', {
-          owner: this._currentOwner,
-          userId: currentUserId,
-          userEmail: currentUserEmail,
+          owner: getCompositeKey(this._currentOwner),
+          currentUser: `${currentUserProvider}:${currentUserProviderId}`,
         });
         return 'owner';
       }
@@ -169,7 +174,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
         'ThreatModelAuthorizationService',
         'No authorization entries found',
         {
-          userId: currentUserId,
+          currentUser: `${currentUserProvider}:${currentUserProviderId}`,
           userEmail: currentUserEmail,
         },
       );
@@ -204,16 +209,16 @@ export class ThreatModelAuthorizationService implements OnDestroy {
     // Step 3: Loop through authorization entries
     for (const auth of authorizations) {
       // Step 3A: Check user-type authorizations
-      if (auth.subject_type === 'user') {
-        if (auth.subject === currentUserId || auth.subject === currentUserEmail) {
+      if (auth.principal_type === 'user') {
+        // Match by (provider, provider_id) composite key
+        if (auth.provider === currentUserProvider && auth.provider_id === currentUserProviderId) {
           this.logger.debugComponent(
             'ThreatModelAuthorizationService',
             'User matches authorization entry',
             {
-              subject: auth.subject,
+              authEntry: `${auth.provider}:${auth.provider_id}`,
               role: auth.role,
-              userId: currentUserId,
-              userEmail: currentUserEmail,
+              currentUser: `${currentUserProvider}:${currentUserProviderId}`,
             },
           );
           // Update permission and short-circuit if owner
@@ -223,9 +228,9 @@ export class ThreatModelAuthorizationService implements OnDestroy {
         }
       }
       // Step 3B & 3C: Check group-type authorizations
-      else if (auth.subject_type === 'group') {
+      else if (auth.principal_type === 'group') {
         // Step 3B: Check for "everyone" pseudo-group (case-insensitive)
-        if (auth.subject.toLowerCase() === 'everyone') {
+        if (auth.provider_id.toLowerCase() === 'everyone') {
           this.logger.debugComponent(
             'ThreatModelAuthorizationService',
             'User matches "everyone" group',
@@ -240,15 +245,28 @@ export class ThreatModelAuthorizationService implements OnDestroy {
           }
         }
         // Step 3C: Check actual group memberships
-        else if (currentUserGroups.includes(auth.subject)) {
-          this.logger.debugComponent('ThreatModelAuthorizationService', 'User is member of group', {
-            group: auth.subject,
-            role: auth.role,
-            userGroups: currentUserGroups,
-          });
-          // Update permission and short-circuit if owner
-          if (updatePermission(auth.role)) {
-            return 'owner';
+        // Groups in currentUserGroups are just group names/identifiers
+        // We need to match against the auth entry's composite key
+        else {
+          // Build composite key for this group auth entry
+          const groupCompositeKey = `${auth.provider}:${auth.provider_id}`;
+
+          // Check if user is a member of this group
+          // currentUserGroups contains group identifiers that should match provider_id
+          if (currentUserGroups.includes(auth.provider_id)) {
+            this.logger.debugComponent(
+              'ThreatModelAuthorizationService',
+              'User is member of group',
+              {
+                group: groupCompositeKey,
+                role: auth.role,
+                userGroups: currentUserGroups,
+              },
+            );
+            // Update permission and short-circuit if owner
+            if (updatePermission(auth.role)) {
+              return 'owner';
+            }
           }
         }
       }
@@ -258,10 +276,10 @@ export class ThreatModelAuthorizationService implements OnDestroy {
     this.logger.debugComponent('ThreatModelAuthorizationService', 'User permission determined', {
       threatModelId: this._currentThreatModelId,
       permission: highestPermission,
-      userId: currentUserId,
+      currentUser: `${currentUserProvider}:${currentUserProviderId}`,
       userEmail: currentUserEmail,
       userGroups: currentUserGroups,
-      owner: this._currentOwner,
+      owner: this._currentOwner ? getCompositeKey(this._currentOwner) : null,
     });
 
     return highestPermission;

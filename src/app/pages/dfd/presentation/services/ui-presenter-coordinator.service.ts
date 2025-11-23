@@ -89,7 +89,12 @@ export class UiPresenterCoordinatorService implements OnDestroy {
    */
   private _handlePresenterCursor(message: PresenterCursorMessageWithUser): void {
     // Guard against malformed messages that don't conform to AsyncAPI spec
-    if (!message.user || !message.user.user_id || !message.user.email) {
+    if (
+      !message.user ||
+      !message.user.provider ||
+      !message.user.provider_id ||
+      !message.user.email
+    ) {
       this.logger.warn('Received malformed presenter_cursor message - missing user data', {
         messageType: message.message_type,
         user: message.user,
@@ -107,7 +112,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
     }
 
     this.logger.debugComponent('UiPresenterCoordinator', 'Handling presenter cursor update', {
-      userId: message.user.user_id,
+      userCompositeKey: `${message.user.provider}:${message.user.provider_id}`,
       userEmail: message.user.email,
       position: message.cursor_position,
     });
@@ -121,7 +126,12 @@ export class UiPresenterCoordinatorService implements OnDestroy {
    */
   private _handlePresenterSelection(message: PresenterSelectionMessageWithUser): void {
     // Guard against malformed messages that don't conform to AsyncAPI spec
-    if (!message.user || !message.user.user_id || !message.user.email) {
+    if (
+      !message.user ||
+      !message.user.provider ||
+      !message.user.provider_id ||
+      !message.user.email
+    ) {
       this.logger.warn('Received malformed presenter_selection message - missing user data', {
         messageType: message.message_type,
         user: message.user,
@@ -139,7 +149,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
     }
 
     this.logger.debugComponent('UiPresenterCoordinator', 'Handling presenter selection update', {
-      userId: message.user.user_id,
+      userCompositeKey: `${message.user.provider}:${message.user.provider_id}`,
       userEmail: message.user.email,
       cellCount: message.selected_cells.length,
       selectedCells: message.selected_cells,

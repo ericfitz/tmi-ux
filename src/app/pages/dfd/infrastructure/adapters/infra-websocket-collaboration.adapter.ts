@@ -159,9 +159,11 @@ export class InfraWebsocketCollaborationAdapter {
     const message: DiagramOperationMessage = {
       message_type: 'diagram_operation',
       initiating_user: {
-        user_id: userProfile.id,
+        principal_type: 'user',
+        provider: this.authService.userIdp,
+        provider_id: userProfile.id,
+        display_name: userProfile.name,
         email: userProfile.email,
-        displayName: userProfile.name,
       },
       operation_id: uuid(),
       operation: operation,
@@ -241,9 +243,11 @@ export class InfraWebsocketCollaborationAdapter {
     const message: UndoRequestMessage = {
       message_type: 'undo_request',
       initiating_user: {
-        user_id: userProfile.id,
+        principal_type: 'user',
+        provider: this.authService.userIdp,
+        provider_id: userProfile.id,
+        display_name: userProfile.name,
         email: userProfile.email,
-        displayName: userProfile.name,
       },
     };
 
@@ -271,9 +275,11 @@ export class InfraWebsocketCollaborationAdapter {
     const message: RedoRequestMessage = {
       message_type: 'redo_request',
       initiating_user: {
-        user_id: userProfile.id,
+        principal_type: 'user',
+        provider: this.authService.userIdp,
+        provider_id: userProfile.id,
+        display_name: userProfile.name,
         email: userProfile.email,
-        displayName: userProfile.name,
       },
     };
 
