@@ -101,7 +101,7 @@ export interface PermissionsDialogData {
                     </mat-form-field>
                   }
                   @if (data.isReadOnly) {
-                    <span>{{ 'common.subjectTypes.' + auth.subject_type | transloco }}</span>
+                    <span>{{ getSubjectTypeTranslationKey(auth.subject_type) | transloco }}</span>
                   }
                 </td>
               </ng-container>
@@ -155,7 +155,7 @@ export interface PermissionsDialogData {
                     </mat-form-field>
                   }
                   @if (data.isReadOnly) {
-                    <span>{{ 'common.roles.' + auth.role | transloco }}</span>
+                    <span>{{ getRoleTranslationKey(auth.role) | transloco }}</span>
                   }
                 </td>
               </ng-container>
@@ -256,7 +256,6 @@ export interface PermissionsDialogData {
       }
 
       .info-section {
-        background-color: var(--color-background-light);
         border-radius: 8px;
         padding: 8px 12px;
         margin-bottom: 12px;
@@ -603,5 +602,23 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    */
   getSaveButtonTabIndex(): number {
     return this.permissionsDataSource.data.length * 6 + 3;
+  }
+
+  /**
+   * Gets the translation key for a subject type
+   * @param subjectType The subject type ('user' or 'group')
+   * @returns The translation key for the subject type
+   */
+  getSubjectTypeTranslationKey(subjectType: string): string {
+    return `common.subjectTypes.${subjectType}`;
+  }
+
+  /**
+   * Gets the translation key for a role
+   * @param role The role ('owner', 'writer', or 'reader')
+   * @returns The translation key for the role
+   */
+  getRoleTranslationKey(role: string): string {
+    return `common.roles.${role}`;
   }
 }
