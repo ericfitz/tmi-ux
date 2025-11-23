@@ -99,17 +99,13 @@ describe('SvgCacheService', () => {
       expect(service.hasDataUrlCache('dataurl-1')).toBe(false);
     });
 
-    it('should log cache clearing with statistics', () => {
+    it('should clear caches without error', () => {
       service.clearAllCaches();
 
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'SvgCacheService',
-        'SVG caches cleared',
-        {
-          validationCacheCleared: 2,
-          dataUrlCacheCleared: 2,
-        },
-      );
+      // Verify caches are empty
+      const stats = service.getCacheStats();
+      expect(stats.validationCacheSize).toBe(0);
+      expect(stats.dataUrlCacheSize).toBe(0);
     });
   });
 

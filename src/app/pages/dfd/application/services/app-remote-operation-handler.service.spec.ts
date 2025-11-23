@@ -1,3 +1,5 @@
+import '@angular/compiler';
+
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Graph } from '@antv/x6';
 import { of, throwError } from 'rxjs';

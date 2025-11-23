@@ -1,5 +1,5 @@
 // This project uses vitest for all unit tests, with native vitest syntax
-// This project uses cypress for all integration tests
+// This project uses playwright for all integration tests
 // Do not use Jasmine or Jest, or Jasmine or Jest syntax anywhere in the project
 // Execute all tests using: "pnpm run test"
 // Execute this test only using:  "pnpm run test" followed by the relative path to this test file from the project root.
@@ -149,9 +149,7 @@ describe('InfraX6KeyboardAdapter', () => {
       expect(graphOnSpy).toHaveBeenCalledWith('node:mousemove', expect.any(Function));
       expect(graphOnSpy).toHaveBeenCalledWith('node:mouseup', expect.any(Function));
 
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Shift key handling for snap to grid control and cursor changes initialized',
-      );
+      // Initialization logging is disabled for reduced noise
     });
 
     it('should set graph reference', () => {

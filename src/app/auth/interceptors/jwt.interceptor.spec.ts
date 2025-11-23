@@ -1,7 +1,6 @@
 import '@angular/compiler';
 
 import { HttpRequest, HttpHandler, HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { vi, beforeEach, describe, it, expect } from 'vitest';
 
@@ -75,7 +74,7 @@ describe('JwtInterceptor', () => {
 
     interceptor = new JwtInterceptor(
       authService,
-      router as unknown as Router,
+      router as any,
       loggerService as unknown as LoggerService,
     );
   });

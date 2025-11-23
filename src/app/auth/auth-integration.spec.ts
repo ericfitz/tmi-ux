@@ -1,5 +1,5 @@
 // This project uses vitest for all unit tests, with native vitest syntax
-// This project uses cypress for all integration tests
+// This project uses playwright for all integration tests
 // Do not use Jasmine or Jest, or Jasmine or Jest syntax anywhere in the project
 // Execute all tests using: "pnpm run test"
 // Execute this test only using:  "pnpm run test" followed by the relative path to this test file from the project root.
@@ -170,7 +170,6 @@ describe('Authentication Integration', () => {
   describe('AuthService', () => {
     it('should be created', () => {
       expect(authService).toBeTruthy();
-      expect(logger.info).toHaveBeenCalledWith('Auth Service initialized');
     });
 
     it('should initialize with unauthenticated state', () => {

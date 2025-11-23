@@ -48,7 +48,7 @@ describe('HttpLoggingInterceptor', () => {
 
       expect(loggerService.debugComponent).toHaveBeenCalledWith(
         'api',
-        'GET request details:',
+        `GET request to ${TEST_API_URL}:`,
         expect.objectContaining({
           url: TEST_API_URL,
           headers: expect.any(Object),
@@ -239,7 +239,7 @@ describe('HttpLoggingInterceptor', () => {
 
       expect(loggerService.debugComponent).toHaveBeenCalledWith(
         'api',
-        'GET request details:',
+        `GET request to ${TEST_API_URL}:`,
         expect.objectContaining({
           headers: expect.objectContaining({
             Authorization: 'Bearer abc1************l012',

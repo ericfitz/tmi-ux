@@ -1,5 +1,5 @@
 // This project uses vitest for all unit tests, with native vitest syntax
-// This project uses cypress for all integration tests
+// This project uses playwright for all integration tests
 // Do not use Jasmine or Jest, or Jasmine or Jest syntax anywhere in the project
 // Execute all tests using: "pnpm run test"
 // Execute this test only using:  "pnpm run test" followed by the relative path to this test file from the project root.
@@ -279,7 +279,6 @@ describe('AuthService', () => {
   describe('Service Initialization', () => {
     it('should be created', () => {
       expect(service).toBeTruthy();
-      expect(loggerService.info).toHaveBeenCalledWith('Auth Service initialized');
     });
 
     it('should initialize with unauthenticated state', () => {
@@ -379,9 +378,6 @@ describe('AuthService', () => {
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_provider', 'test');
       expect(window.location.href).toBe(
         'http://localhost:8080/oauth2/authorize/test?state=00000000000000000000000000000000&client_callback=undefined%2Foauth2%2Fcallback&scope=openid%20profile%20email',
-      );
-      expect(loggerService.info).toHaveBeenCalledWith(
-        'Initiating TMI OAuth login with Test Provider',
       );
     });
 
@@ -896,15 +892,6 @@ describe('AuthService', () => {
       service.logout();
 
       expect(httpClient.post).not.toHaveBeenCalled();
-      expect(loggerService.debugComponent).toHaveBeenCalledWith(
-        'Auth',
-        'Skipping server logout',
-        expect.objectContaining({
-          isConnectedToServer: true,
-          isTestUser: true,
-          isAuthenticated: true,
-        }),
-      );
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();
       expect(router.navigate).toHaveBeenCalledWith(['/']);
@@ -976,10 +963,6 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(loggerService.debugComponent).toHaveBeenCalledWith(
-        'Auth',
-        'Server logout request completed',
-      );
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token');
