@@ -27,6 +27,9 @@ export class ActivityTrackerService implements OnDestroy {
   // Whether tracking is currently enabled
   private isTracking = false;
 
+  // Track the current activity state to detect state changes
+  private currentActiveState = true; // Start as active since we just loaded
+
   constructor(
     private logger: LoggerService,
     private ngZone: NgZone,
@@ -94,9 +97,14 @@ export class ActivityTrackerService implements OnDestroy {
   private updateLastActivity(): void {
     this.lastActivityTime = new Date();
     this.lastActivitySubject$.next(this.lastActivityTime);
-    this.logger.debugComponent('ActivityTracker', 'User activity detected', {
-      time: this.lastActivityTime.toISOString(),
-    });
+
+    // Only log when transitioning from inactive to active
+    if (!this.currentActiveState) {
+      this.currentActiveState = true;
+      this.logger.debugComponent('ActivityTracker', 'User became active', {
+        time: this.lastActivityTime.toISOString(),
+      });
+    }
   }
 
   /**
@@ -108,11 +116,14 @@ export class ActivityTrackerService implements OnDestroy {
     const timeSinceActivity = now.getTime() - this.lastActivityTime.getTime();
     const isActive = timeSinceActivity < this.activityWindow;
 
-    this.logger.debugComponent('ActivityTracker', 'Checking user activity', {
-      lastActivity: this.lastActivityTime.toISOString(),
-      timeSinceActivity: `${Math.floor(timeSinceActivity / 1000)}s`,
-      isActive,
-    });
+    // Only log when state changes from active to inactive
+    if (this.currentActiveState && !isActive) {
+      this.currentActiveState = false;
+      this.logger.debugComponent('ActivityTracker', 'User became inactive', {
+        lastActivity: this.lastActivityTime.toISOString(),
+        timeSinceActivity: `${Math.floor(timeSinceActivity / 1000)}s`,
+      });
+    }
 
     return isActive;
   }
