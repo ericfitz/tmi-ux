@@ -15,6 +15,7 @@ describe('SessionManagerService', () => {
   let mockLogger: any;
   let mockDialog: any;
   let mockNgZone: any;
+  let mockActivityTracker: any;
   let mockIsAuthenticated$: Subject<boolean>;
 
   beforeEach(() => {
@@ -46,11 +47,24 @@ describe('SessionManagerService', () => {
       runOutsideAngular: vi.fn((callback: () => any) => callback()),
     };
 
+    mockActivityTracker = {
+      isUserActive: vi.fn().mockReturnValue(false), // Default to inactive for existing tests
+      getTimeSinceLastActivity: vi.fn().mockReturnValue(0),
+      markActive: vi.fn(),
+      lastActivity$: of(new Date()),
+    };
+
     mockIsAuthenticated$ = new Subject<boolean>();
     mockAuthService.isAuthenticated$ = mockIsAuthenticated$.asObservable();
 
     // Create service directly without TestBed
-    service = new SessionManagerService(mockAuthService, mockLogger, mockNgZone, mockDialog);
+    service = new SessionManagerService(
+      mockAuthService,
+      mockLogger,
+      mockNgZone,
+      mockDialog,
+      mockActivityTracker,
+    );
   });
 
   it('should be created', () => {
@@ -201,5 +215,121 @@ describe('SessionManagerService', () => {
     mockIsAuthenticated$.next(true);
 
     expect(mockAuthService.logout).toHaveBeenCalled();
+  });
+
+  describe('Activity-based token refresh', () => {
+    it('should not show warning dialog if user is active when warning time is reached', () => {
+      mockActivityTracker.isUserActive.mockReturnValue(true);
+
+      const mockToken: JwtToken = {
+        token: 'mock.jwt.token',
+        expiresAt: new Date(Date.now() + 250000), // 4 minutes from now
+        expiresIn: 250,
+      };
+      mockAuthService.getStoredToken.mockReturnValue(mockToken);
+
+      mockIsAuthenticated$.next(true);
+
+      // Warning dialog should not be opened since user is active
+      expect(mockDialog.open).not.toHaveBeenCalled();
+    });
+
+    it('should show warning dialog if user is inactive when warning time is reached', () => {
+      mockActivityTracker.isUserActive.mockReturnValue(false);
+
+      const mockToken: JwtToken = {
+        token: 'mock.jwt.token',
+        expiresAt: new Date(Date.now() + 250000), // 4 minutes from now
+        expiresIn: 250,
+      };
+      mockAuthService.getStoredToken.mockReturnValue(mockToken);
+
+      const mockDialogRef = {
+        afterClosed: vi.fn().mockReturnValue(of('extend')),
+        close: vi.fn(),
+      };
+      mockDialog.open.mockReturnValue(mockDialogRef);
+
+      mockIsAuthenticated$.next(true);
+
+      // Warning dialog should be opened since user is inactive
+      expect(mockDialog.open).toHaveBeenCalled();
+    });
+
+    it('should proactively refresh token when user is active and token expiring soon', () => {
+      mockActivityTracker.isUserActive.mockReturnValue(true);
+
+      const currentToken: JwtToken = {
+        token: 'mock.jwt.token',
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes from now
+        expiresIn: 600,
+      };
+      const newToken: JwtToken = {
+        token: 'new.jwt.token',
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 60 minutes from now
+        expiresIn: 3600,
+      };
+
+      mockAuthService.getStoredToken.mockReturnValue(currentToken);
+      mockAuthService.refreshToken.mockReturnValue(of(newToken));
+
+      // Trigger activity check
+      (service as any).checkActivityAndRefreshIfNeeded();
+
+      expect(mockAuthService.refreshToken).toHaveBeenCalled();
+      expect(mockAuthService.storeToken).toHaveBeenCalledWith(newToken);
+    });
+
+    it('should not proactively refresh token when user is inactive', () => {
+      mockActivityTracker.isUserActive.mockReturnValue(false);
+
+      const mockToken: JwtToken = {
+        token: 'mock.jwt.token',
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes from now
+        expiresIn: 600,
+      };
+      mockAuthService.getStoredToken.mockReturnValue(mockToken);
+
+      // Trigger activity check
+      (service as any).checkActivityAndRefreshIfNeeded();
+
+      // Should not refresh since user is inactive
+      expect(mockAuthService.refreshToken).not.toHaveBeenCalled();
+    });
+
+    it('should not proactively refresh token when token has plenty of time left', () => {
+      mockActivityTracker.isUserActive.mockReturnValue(true);
+
+      const mockToken: JwtToken = {
+        token: 'mock.jwt.token',
+        expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes from now
+        expiresIn: 1800,
+      };
+      mockAuthService.getStoredToken.mockReturnValue(mockToken);
+
+      // Trigger activity check
+      (service as any).checkActivityAndRefreshIfNeeded();
+
+      // Should not refresh since token still has 30 minutes (> 15 minute threshold)
+      expect(mockAuthService.refreshToken).not.toHaveBeenCalled();
+    });
+
+    it('should not force logout if proactive refresh fails', () => {
+      mockActivityTracker.isUserActive.mockReturnValue(true);
+
+      const mockToken: JwtToken = {
+        token: 'mock.jwt.token',
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes from now
+        expiresIn: 600,
+      };
+      mockAuthService.getStoredToken.mockReturnValue(mockToken);
+      mockAuthService.refreshToken.mockReturnValue(throwError(() => new Error('Refresh failed')));
+
+      // Trigger activity check
+      (service as any).checkActivityAndRefreshIfNeeded();
+
+      // Should not logout on proactive refresh failure
+      expect(mockAuthService.logout).not.toHaveBeenCalled();
+    });
   });
 });

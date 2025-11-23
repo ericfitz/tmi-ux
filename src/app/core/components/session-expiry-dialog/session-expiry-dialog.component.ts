@@ -23,6 +23,7 @@ export class SessionExpiryDialogComponent implements OnInit, OnDestroy {
   timeRemaining = '';
   isExtending = false;
   private countdownSubscription: Subscription | null = null;
+  private userTookAction = false;
 
   constructor(
     private dialogRef: MatDialogRef<SessionExpiryDialogComponent>,
@@ -43,12 +44,14 @@ export class SessionExpiryDialogComponent implements OnInit, OnDestroy {
 
   onExtendSession(): void {
     this.isExtending = true;
+    this.userTookAction = true;
     this.stopCountdown();
     this.data.onExtendSession();
     // Note: Dialog will be closed by SessionManager when extension completes
   }
 
   onLogout(): void {
+    this.userTookAction = true;
     this.stopCountdown();
     this.data.onLogout();
     this.dialogRef.close('logout');
@@ -62,8 +65,8 @@ export class SessionExpiryDialogComponent implements OnInit, OnDestroy {
     this.countdownSubscription = interval(1000).subscribe(() => {
       this.updateTimeRemaining();
 
-      // Auto-close if time has expired
-      if (this.getRemainingTimeInSeconds() <= 0) {
+      // Auto-close if time has expired and user hasn't taken action
+      if (this.getRemainingTimeInSeconds() <= 0 && !this.userTookAction) {
         this.stopCountdown();
         this.dialogRef.close('expired');
       }

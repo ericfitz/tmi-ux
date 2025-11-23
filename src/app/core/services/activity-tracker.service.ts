@@ -1,0 +1,134 @@
+import { Injectable, NgZone, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Observable, fromEvent, merge } from 'rxjs';
+import { throttleTime, tap } from 'rxjs/operators';
+import { LoggerService } from './logger.service';
+
+/**
+ * Service for tracking user activity
+ * Monitors mouse, keyboard, touch, and scroll events to determine if user is active
+ */
+@Injectable({
+  providedIn: 'root',
+})
+export class ActivityTrackerService implements OnDestroy {
+  // Time window for considering user "active" (2 minutes)
+  private readonly activityWindow = 2 * 60 * 1000;
+
+  // Throttle time for activity events (1 second - prevents excessive updates)
+  private readonly eventThrottleTime = 1000;
+
+  // Last time user activity was detected
+  private lastActivityTime: Date = new Date();
+
+  // Observable of last activity time
+  private lastActivitySubject$ = new BehaviorSubject<Date>(this.lastActivityTime);
+  public lastActivity$: Observable<Date> = this.lastActivitySubject$.asObservable();
+
+  // Whether tracking is currently enabled
+  private isTracking = false;
+
+  constructor(
+    private logger: LoggerService,
+    private ngZone: NgZone,
+  ) {
+    this.startTracking();
+  }
+
+  ngOnDestroy(): void {
+    this.stopTracking();
+  }
+
+  /**
+   * Start tracking user activity
+   * Sets up event listeners for mouse, keyboard, touch, and scroll events
+   */
+  private startTracking(): void {
+    if (this.isTracking) {
+      return;
+    }
+
+    this.logger.debugComponent('ActivityTracker', 'Starting activity tracking');
+
+    // Run event listeners outside Angular zone for performance
+    this.ngZone.runOutsideAngular(() => {
+      // Merge all activity events
+      const activityEvents$ = merge(
+        fromEvent(document, 'mousemove'),
+        fromEvent(document, 'keydown'),
+        fromEvent(document, 'click'),
+        fromEvent(document, 'scroll', { passive: true, capture: true }),
+        fromEvent(document, 'touchstart', { passive: true }),
+      );
+
+      // Throttle events and update last activity time
+      activityEvents$
+        .pipe(
+          throttleTime(this.eventThrottleTime),
+          tap(() => {
+            this.ngZone.run(() => {
+              this.updateLastActivity();
+            });
+          }),
+        )
+        .subscribe();
+    });
+
+    this.isTracking = true;
+  }
+
+  /**
+   * Stop tracking user activity
+   */
+  private stopTracking(): void {
+    if (!this.isTracking) {
+      return;
+    }
+
+    this.logger.debugComponent('ActivityTracker', 'Stopping activity tracking');
+    this.isTracking = false;
+  }
+
+  /**
+   * Update the last activity time to now
+   */
+  private updateLastActivity(): void {
+    this.lastActivityTime = new Date();
+    this.lastActivitySubject$.next(this.lastActivityTime);
+    this.logger.debugComponent('ActivityTracker', 'User activity detected', {
+      time: this.lastActivityTime.toISOString(),
+    });
+  }
+
+  /**
+   * Check if user is currently active
+   * User is considered active if they performed an action within the activity window
+   */
+  public isUserActive(): boolean {
+    const now = new Date();
+    const timeSinceActivity = now.getTime() - this.lastActivityTime.getTime();
+    const isActive = timeSinceActivity < this.activityWindow;
+
+    this.logger.debugComponent('ActivityTracker', 'Checking user activity', {
+      lastActivity: this.lastActivityTime.toISOString(),
+      timeSinceActivity: `${Math.floor(timeSinceActivity / 1000)}s`,
+      isActive,
+    });
+
+    return isActive;
+  }
+
+  /**
+   * Get time since last user activity in milliseconds
+   */
+  public getTimeSinceLastActivity(): number {
+    const now = new Date();
+    return now.getTime() - this.lastActivityTime.getTime();
+  }
+
+  /**
+   * Manually mark user as active (useful for programmatic activity)
+   */
+  public markActive(): void {
+    this.updateLastActivity();
+  }
+}

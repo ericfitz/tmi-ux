@@ -3,6 +3,7 @@ import { Subscription, timer } from '../../core/rxjs-imports';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 import { LoggerService } from '../../core/services/logger.service';
+import { ActivityTrackerService } from '../../core/services/activity-tracker.service';
 import { AuthService } from './auth.service';
 import {
   SessionExpiryDialogComponent,
@@ -11,29 +12,39 @@ import {
 
 /**
  * Service for managing user sessions
- * Handles token expiration with timer-based warnings and automatic logout
+ * Handles token expiration with activity-based proactive refresh and warnings
  */
 @Injectable({
   providedIn: 'root',
 })
 export class SessionManagerService {
-  // Timer for showing warning dialog (fires 5 minutes before expiry)
+  // Timer for showing warning dialog (fires 5 minutes before expiry for inactive users)
   private warningTimer: Subscription | null = null;
 
   // Timer for automatic logout (fires at token expiry)
   private logoutTimer: Subscription | null = null;
 
+  // Timer for checking activity and proactively refreshing token
+  private activityCheckTimer: Subscription | null = null;
+
   // Reference to the warning dialog
   private warningDialog: MatDialogRef<SessionExpiryDialogComponent, string> | null = null;
 
-  // Time before expiration to show warning (in milliseconds)
+  // Time before expiration to show warning for inactive users (in milliseconds)
   private readonly warningTime = 5 * 60 * 1000; // 5 minutes
+
+  // Time before expiration to proactively refresh for active users (in milliseconds)
+  private readonly proactiveRefreshTime = 15 * 60 * 1000; // 15 minutes
+
+  // Interval for checking user activity (in milliseconds)
+  private readonly activityCheckInterval = 60 * 1000; // 1 minute
 
   constructor(
     private authService: AuthService,
     private logger: LoggerService,
     private ngZone: NgZone,
     private dialog: MatDialog,
+    private activityTracker: ActivityTrackerService,
   ) {
     // this.logger.info('Session Manager Service initialized');
     // Register with AuthService to avoid circular dependency
@@ -58,7 +69,7 @@ export class SessionManagerService {
 
   /**
    * Start the token expiry timers based on current token expiration
-   * Sets up warning timer (exp - 5min) and logout timer (exp)
+   * Sets up activity check timer, warning timer (for inactive users), and logout timer
    */
   private startExpiryTimers(): void {
     const token = this.authService.getStoredToken();
@@ -86,16 +97,33 @@ export class SessionManagerService {
       return;
     }
 
-    // If we're already past the warning time, show warning immediately
+    // Start activity-based proactive refresh timer
+    this.startActivityCheckTimer();
+
+    // If we're already past the warning time, check activity and show warning if inactive
     if (timeToWarning <= 0) {
-      this.logger.warn('Token expires very soon, showing warning immediately');
-      this.showExpiryWarning(token.expiresAt);
+      this.logger.warn('Token expires very soon, checking activity');
+      if (!this.activityTracker.isUserActive()) {
+        this.showExpiryWarning(token.expiresAt);
+      } else {
+        this.logger.info(
+          'User is active but token expiring soon - proactive refresh will handle this',
+        );
+      }
     } else {
-      // Set warning timer
+      // Set warning timer (only shown if user is inactive)
       this.ngZone.runOutsideAngular(() => {
         this.warningTimer = timer(timeToWarning).subscribe(() => {
           this.ngZone.run(() => {
-            this.showExpiryWarning(token.expiresAt);
+            // Only show warning if user is inactive
+            if (!this.activityTracker.isUserActive()) {
+              this.showExpiryWarning(token.expiresAt);
+            } else {
+              this.logger.debugComponent(
+                'SessionManager',
+                'Warning time reached but user is active - skipping warning',
+              );
+            }
           });
         });
       });
@@ -121,6 +149,63 @@ export class SessionManagerService {
   }
 
   /**
+   * Start periodic activity check timer for proactive token refresh
+   * Checks every minute if user is active and token needs refresh
+   */
+  private startActivityCheckTimer(): void {
+    // Stop existing timer if any
+    if (this.activityCheckTimer) {
+      this.activityCheckTimer.unsubscribe();
+      this.activityCheckTimer = null;
+    }
+
+    this.logger.debugComponent('SessionManager', 'Starting activity check timer');
+
+    // Check immediately and then every minute
+    this.ngZone.runOutsideAngular(() => {
+      this.activityCheckTimer = timer(0, this.activityCheckInterval).subscribe(() => {
+        this.ngZone.run(() => {
+          this.checkActivityAndRefreshIfNeeded();
+        });
+      });
+    });
+  }
+
+  /**
+   * Check if user is active and proactively refresh token if needed
+   */
+  private checkActivityAndRefreshIfNeeded(): void {
+    const token = this.authService.getStoredToken();
+    if (!token) {
+      return;
+    }
+
+    const now = new Date();
+    const timeToExpiry = token.expiresAt.getTime() - now.getTime();
+
+    // If token expires within proactiveRefreshTime AND user is active, refresh proactively
+    if (timeToExpiry <= this.proactiveRefreshTime && this.activityTracker.isUserActive()) {
+      this.logger.info('User is active and token expiring soon - refreshing proactively', {
+        timeToExpiry: `${Math.floor(timeToExpiry / 1000)}s`,
+      });
+
+      this.authService.refreshToken().subscribe({
+        next: newToken => {
+          this.logger.info('Proactive token refresh successful', {
+            newExpiry: newToken.expiresAt.toISOString(),
+          });
+          // Store the new token - this will trigger onTokenRefreshed() and restart timers
+          this.authService.storeToken(newToken);
+        },
+        error: error => {
+          this.logger.error('Proactive token refresh failed', error);
+          // Don't force logout on proactive refresh failure - let normal expiry flow handle it
+        },
+      });
+    }
+  }
+
+  /**
    * Stop all expiry timers and close warning dialog
    * Made public so AuthService can call it during logout
    */
@@ -135,6 +220,12 @@ export class SessionManagerService {
       this.logger.debugComponent('SessionManager', 'Stopping logout timer');
       this.logoutTimer.unsubscribe();
       this.logoutTimer = null;
+    }
+
+    if (this.activityCheckTimer) {
+      this.logger.debugComponent('SessionManager', 'Stopping activity check timer');
+      this.activityCheckTimer.unsubscribe();
+      this.activityCheckTimer = null;
     }
 
     // Close warning dialog if open
