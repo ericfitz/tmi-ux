@@ -2815,15 +2815,15 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       this.threatModelService.getAssetsForThreatModel(threatModelId).subscribe({
         next: assets => {
-          this.logger.debugComponent('TmEditComponent', 'Assets loaded from API', {
-            count: assets.length,
-            assets: assets.map(a => ({ id: a.id, name: a.name })),
-          });
+          // this.logger.debugComponent('TmEditComponent', 'Assets loaded from API', {
+          //   count: assets.length,
+          //   assets: assets.map(a => ({ id: a.id, name: a.name })),
+          // });
           if (this.threatModel) {
             this.threatModel.assets = assets;
-            this.logger.debugComponent('TmEditComponent', 'Assets assigned to threat model', {
-              assignedCount: this.threatModel.assets.length,
-            });
+            // this.logger.debugComponent('TmEditComponent', 'Assets assigned to threat model', {
+            //   assignedCount: this.threatModel.assets.length,
+            // });
           }
         },
         error: error => {
@@ -3065,15 +3065,15 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       this.threatModelService.getNotesForThreatModel(threatModelId).subscribe({
         next: notes => {
-          this.logger.debugComponent('TmEditComponent', 'Notes loaded from API', {
-            count: notes.length,
-            notes: notes.map(n => ({ id: n.id, name: n.name })),
-          });
+          // this.logger.debugComponent('TmEditComponent', 'Notes loaded from API', {
+          //   count: notes.length,
+          //   notes: notes.map(n => ({ id: n.id, name: n.name })),
+          // });
           if (this.threatModel) {
             this.threatModel.notes = notes;
-            this.logger.debugComponent('TmEditComponent', 'Notes assigned to threat model', {
-              assignedCount: this.threatModel.notes.length,
-            });
+            // this.logger.debugComponent('TmEditComponent', 'Notes assigned to threat model', {
+            //   assignedCount: this.threatModel.notes.length,
+            // });
           }
         },
         error: error => {
