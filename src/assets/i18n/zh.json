@@ -93,8 +93,8 @@
     "about": "关于",
     "actions": "操作",
     "addMetadata": "添加元数据",
-    "addons": "插件",
     "addThreat": "添加威胁",
+    "addons": "插件",
     "cancel": "取消",
     "cellId": "单元格ID",
     "close": "关闭",
@@ -180,6 +180,7 @@
     "threatId": "威胁ID",
     "threatName": "威胁名称",
     "threatType": "威胁类型",
+    "type": "类型",
     "unsavedChangesWarning": "您有未保存的更改。确定要关闭吗？",
     "validation": {
       "invalidUrl": "请输入有效的 URL",
