@@ -113,7 +113,7 @@ export interface ThreatModel {
   issue_uri?: string;
   status?: string | null;
   status_updated?: string;
-  authorization: Authorization[];
+  authorization: Authorization[] | null;
   metadata?: Metadata[];
   documents?: Document[];
   repositories?: Repository[];

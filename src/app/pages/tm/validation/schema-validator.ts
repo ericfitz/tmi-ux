@@ -194,7 +194,7 @@ export class SchemaValidator extends BaseValidator {
    * Validate authorization array
    */
   private validateAuthorizationArray(
-    authorization: Authorization[] | undefined,
+    authorization: Authorization[] | null | undefined,
     context: ValidationContext,
   ): void {
     if (!authorization) return;

@@ -84,11 +84,15 @@ export class ThreatModelAuthorizationService implements OnDestroy {
    * @param authorization The authorization data
    * @param owner The owner of the threat model (Principal-based User object)
    */
-  setAuthorization(threatModelId: string, authorization: Authorization[], owner: User): void {
+  setAuthorization(
+    threatModelId: string,
+    authorization: Authorization[] | null,
+    owner: User,
+  ): void {
     this.logger.debugComponent('ThreatModelAuthorizationService', 'setAuthorization called', {
       threatModelId,
       owner: owner ? getCompositeKey(owner) : null,
-      authorizationCount: authorization.length,
+      authorizationCount: authorization?.length ?? 0,
       previousThreatModelId: this._currentThreatModelId,
       stackTrace: new Error().stack?.split('\n').slice(1, 4).join('\n'),
     });
