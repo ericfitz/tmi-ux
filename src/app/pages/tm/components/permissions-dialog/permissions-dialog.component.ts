@@ -97,6 +97,14 @@ export interface PermissionsDialogData {
                         (selectionChange)="updatePermissionPrincipalType(i, $event)"
                         [attr.tabindex]="i * 5 + 1"
                       >
+                        <mat-select-trigger>
+                          <div class="type-option">
+                            <app-principal-type-icon
+                              [principalType]="auth.principal_type"
+                            ></app-principal-type-icon>
+                            {{ getSubjectTypeTranslationKey(auth.principal_type) | transloco }}
+                          </div>
+                        </mat-select-trigger>
                         <mat-option value="user">
                           <div class="type-option">
                             <app-principal-type-icon
@@ -142,6 +150,9 @@ export interface PermissionsDialogData {
                         (selectionChange)="updatePermissionProvider(i, $event)"
                         [attr.tabindex]="i * 5 + 2"
                       >
+                        <mat-select-trigger>
+                          <app-provider-display [provider]="auth.provider"></app-provider-display>
+                        </mat-select-trigger>
                         @for (provider of availableProviders; track provider.id) {
                           <mat-option [value]="provider.id">
                             <app-provider-display [provider]="provider.id"></app-provider-display>
