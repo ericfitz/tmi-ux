@@ -427,6 +427,22 @@ export class ThreatModelService implements OnDestroy {
     return this.apiService.post<ThreatModel>('threat_models', body).pipe(
       tap(newThreatModel => {
         if (newThreatModel) {
+          // Log the API response to diagnose permission issues
+          this.logger.info('Created new threat model - API response:', {
+            id: newThreatModel.id,
+            name: newThreatModel.name,
+            owner: newThreatModel.owner,
+            created_by: newThreatModel.created_by,
+            authorization: newThreatModel.authorization,
+          });
+
+          // Set authorization for the newly created threat model
+          this.authorizationService.setAuthorization(
+            newThreatModel.id,
+            newThreatModel.authorization,
+            newThreatModel.owner,
+          );
+
           // Add the new threat model to the list cache and notify subscribers
           const listItem = this.convertToListItem(newThreatModel);
           this._threatModelList.push(listItem);
