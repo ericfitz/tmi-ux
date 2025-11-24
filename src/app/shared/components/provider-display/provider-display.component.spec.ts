@@ -56,9 +56,7 @@ describe('ProviderDisplayComponent', () => {
     });
 
     it('should return correct path for test', () => {
-      expect(component.getProviderLogoPath('test')).toBe(
-        'assets/signin-logos/test-signin-logo.svg',
-      );
+      expect(component.getProviderLogoPath('test')).toBe('TMI-Logo.svg');
     });
 
     it('should return null for unknown provider', () => {
@@ -97,8 +95,8 @@ describe('ProviderDisplayComponent', () => {
       expect(component.getProviderName('apple')).toBe('Apple');
     });
 
-    it('should return "Test" capitalized', () => {
-      expect(component.getProviderName('test')).toBe('Test');
+    it('should return "TMI Test" for test provider', () => {
+      expect(component.getProviderName('test')).toBe('TMI Test');
     });
 
     it('should capitalize first letter for unknown providers', () => {
