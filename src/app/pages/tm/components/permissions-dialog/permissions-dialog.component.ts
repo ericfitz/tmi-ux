@@ -13,6 +13,9 @@ import {
 } from '@app/shared/imports';
 import { Authorization, User } from '../../models/threat-model.model';
 import { PrincipalTypeIconComponent } from '@app/shared/components/principal-type-icon/principal-type-icon.component';
+import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
+import { AuthService } from '@app/auth/services/auth.service';
+import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import {
   getPrincipalDisplayName,
   getCompositeKey,
@@ -36,6 +39,7 @@ export interface PermissionsDialogData {
     TranslocoModule,
     ScrollIndicatorDirective,
     PrincipalTypeIconComponent,
+    ProviderDisplayComponent,
   ],
   template: `
     <div class="permissions-dialog">
@@ -80,25 +84,34 @@ export interface PermissionsDialogData {
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
                   {{ 'common.type' | transloco }}
                 </th>
-                <td mat-cell *matCellDef="let auth; let i = index">
+                <td
+                  mat-cell
+                  *matCellDef="let auth; let i = index"
+                  [matTooltip]="getRowTooltip(auth)"
+                  [matTooltipDisabled]="isNewPermission(auth)"
+                >
                   @if (!data.isReadOnly) {
                     <mat-form-field class="table-field type-field">
                       <mat-select
                         [value]="auth.principal_type"
                         (selectionChange)="updatePermissionPrincipalType(i, $event)"
-                        [attr.tabindex]="i * 7 + 1"
+                        [attr.tabindex]="i * 5 + 1"
                       >
                         <mat-option value="user">
-                          <app-principal-type-icon
-                            [principalType]="'user'"
-                          ></app-principal-type-icon>
-                          {{ 'common.subjectTypes.user' | transloco }}
+                          <div class="type-option">
+                            <app-principal-type-icon
+                              [principalType]="'user'"
+                            ></app-principal-type-icon>
+                            {{ 'common.subjectTypes.user' | transloco }}
+                          </div>
                         </mat-option>
                         <mat-option value="group">
-                          <app-principal-type-icon
-                            [principalType]="'group'"
-                          ></app-principal-type-icon>
-                          {{ 'common.subjectTypes.group' | transloco }}
+                          <div class="type-option">
+                            <app-principal-type-icon
+                              [principalType]="'group'"
+                            ></app-principal-type-icon>
+                            {{ 'common.subjectTypes.group' | transloco }}
+                          </div>
                         </mat-option>
                       </mat-select>
                     </mat-form-field>
@@ -116,52 +129,6 @@ export interface PermissionsDialogData {
                 </td>
               </ng-container>
 
-              <!-- Display Name Column -->
-              <ng-container matColumnDef="display_name">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  {{ 'threatModels.permissionsDisplayName' | transloco }}
-                </th>
-                <td mat-cell *matCellDef="let auth; let i = index">
-                  @if (!data.isReadOnly) {
-                    <mat-form-field class="table-field">
-                      <input
-                        matInput
-                        [value]="auth.display_name"
-                        (blur)="updatePermissionDisplayName(i, $event)"
-                        [placeholder]="'threatModels.permissionsDisplayName' | transloco"
-                        [attr.tabindex]="i * 7 + 2"
-                      />
-                    </mat-form-field>
-                  }
-                  @if (data.isReadOnly) {
-                    <span>{{ auth.display_name }}</span>
-                  }
-                </td>
-              </ng-container>
-
-              <!-- Email Column -->
-              <ng-container matColumnDef="email">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  {{ 'threatModels.permissionsEmail' | transloco }}
-                </th>
-                <td mat-cell *matCellDef="let auth; let i = index">
-                  @if (!data.isReadOnly) {
-                    <mat-form-field class="table-field">
-                      <input
-                        matInput
-                        [value]="auth.email || ''"
-                        (blur)="updatePermissionEmail(i, $event)"
-                        [placeholder]="'threatModels.permissionsEmail' | transloco"
-                        [attr.tabindex]="i * 7 + 3"
-                      />
-                    </mat-form-field>
-                  }
-                  @if (data.isReadOnly) {
-                    <span>{{ auth.email || '' }}</span>
-                  }
-                </td>
-              </ng-container>
-
               <!-- Provider Column -->
               <ng-container matColumnDef="provider">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -169,23 +136,25 @@ export interface PermissionsDialogData {
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
                   @if (!data.isReadOnly) {
-                    <mat-form-field class="table-field">
+                    <mat-form-field class="table-field provider-field">
                       <mat-select
                         [value]="auth.provider"
                         (selectionChange)="updatePermissionProvider(i, $event)"
-                        [attr.tabindex]="i * 7 + 4"
+                        [attr.tabindex]="i * 5 + 2"
                       >
-                        <mat-option value="google">Google</mat-option>
-                        <mat-option value="github">GitHub</mat-option>
-                        <mat-option value="microsoft">Microsoft</mat-option>
-                        <mat-option value="gitlab">GitLab</mat-option>
-                        <mat-option value="bitbucket">Bitbucket</mat-option>
-                        <mat-option value="apple">Apple</mat-option>
+                        @for (provider of availableProviders; track provider.id) {
+                          <mat-option [value]="provider.id">
+                            <app-provider-display [provider]="provider.id"></app-provider-display>
+                          </mat-option>
+                        }
                       </mat-select>
                     </mat-form-field>
                   }
                   @if (data.isReadOnly) {
-                    <span>{{ getProviderDisplayName(auth.provider) }}</span>
+                    <app-provider-display
+                      [provider]="auth.provider"
+                      [class.unavailable-provider]="!isProviderAvailable(auth.provider)"
+                    ></app-provider-display>
                   }
                 </td>
               </ng-container>
@@ -207,12 +176,35 @@ export interface PermissionsDialogData {
                             ? ('threatModels.permissionsUserId' | transloco)
                             : ('threatModels.permissionsGroupId' | transloco)
                         "
-                        [attr.tabindex]="i * 7 + 5"
+                        [attr.tabindex]="i * 5 + 3"
                       />
                     </mat-form-field>
                   }
                   @if (data.isReadOnly) {
                     <span>{{ auth.provider_id }}</span>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Email Column -->
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  {{ 'threatModels.permissionsEmail' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let auth; let i = index">
+                  @if (!data.isReadOnly) {
+                    <mat-form-field class="table-field">
+                      <input
+                        matInput
+                        [value]="auth.email || ''"
+                        (blur)="updatePermissionEmail(i, $event)"
+                        [placeholder]="'threatModels.permissionsEmail' | transloco"
+                        [attr.tabindex]="i * 5 + 4"
+                      />
+                    </mat-form-field>
+                  }
+                  @if (data.isReadOnly) {
+                    <span>{{ auth.email || '' }}</span>
                   }
                 </td>
               </ng-container>
@@ -228,7 +220,7 @@ export interface PermissionsDialogData {
                       <mat-select
                         [value]="auth.role"
                         (selectionChange)="updatePermissionRole(i, $event)"
-                        [attr.tabindex]="i * 7 + 6"
+                        [attr.tabindex]="i * 5 + 5"
                       >
                         <mat-option value="owner">{{
                           'common.roles.owner' | transloco
@@ -262,7 +254,7 @@ export interface PermissionsDialogData {
                         [disabled]="
                           principalsEqual(auth, data.owner) || auth.principal_type !== 'user'
                         "
-                        [attr.tabindex]="i * 7 + 7"
+                        [attr.tabindex]="i * 5 + 6"
                         [attr.aria-label]="'threatModels.setAsOwner' | transloco"
                       >
                         <mat-icon fontSet="material-symbols-outlined">lock_person</mat-icon>
@@ -272,7 +264,7 @@ export interface PermissionsDialogData {
                         color="warn"
                         (click)="deletePermission(i)"
                         [matTooltip]="'common.delete' | transloco"
-                        [attr.tabindex]="i * 7 + 8"
+                        [attr.tabindex]="i * 5 + 7"
                         [attr.aria-label]="'common.delete' | transloco"
                       >
                         <mat-icon>delete</mat-icon>
@@ -381,7 +373,7 @@ export interface PermissionsDialogData {
 
       .permissions-table {
         width: 100%;
-        min-width: 800px;
+        min-width: 900px;
       }
 
       .table-field {
@@ -390,7 +382,11 @@ export interface PermissionsDialogData {
       }
 
       .type-field {
-        min-width: 120px;
+        min-width: 140px;
+      }
+
+      .provider-field {
+        min-width: 160px;
       }
 
       .table-field .mat-mdc-form-field-wrapper {
@@ -407,49 +403,45 @@ export interface PermissionsDialogData {
         font-size: var(--font-size-base);
       }
 
-      .type-display {
+      .type-display,
+      .type-option {
         display: flex;
         align-items: center;
         gap: 8px;
       }
 
-      /* Principal type column */
+      .type-option mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      /* Column widths */
       .mat-column-principal_type {
-        width: 100px;
-        max-width: 100px;
+        width: 140px;
+        max-width: 140px;
       }
 
-      /* Display name column */
-      .mat-column-display_name {
-        width: 150px;
-        min-width: 150px;
+      .mat-column-provider {
+        width: 160px;
+        max-width: 160px;
       }
 
-      /* Email column */
-      .mat-column-email {
+      .mat-column-provider_id {
         width: 180px;
         min-width: 180px;
       }
 
-      /* Provider column */
-      .mat-column-provider {
-        width: 120px;
-        max-width: 120px;
+      .mat-column-email {
+        width: 200px;
+        min-width: 200px;
       }
 
-      /* Provider ID column */
-      .mat-column-provider_id {
-        width: 150px;
-        min-width: 150px;
-      }
-
-      /* Role column */
       .mat-column-role {
         width: 120px;
         max-width: 120px;
       }
 
-      /* Actions column */
       .mat-column-actions {
         width: 140px;
         max-width: 140px;
@@ -501,6 +493,10 @@ export interface PermissionsDialogData {
         align-items: center;
       }
 
+      .unavailable-provider {
+        opacity: 0.5;
+      }
+
       .no-items-message {
         text-align: center;
         color: var(--color-text-secondary);
@@ -529,7 +525,7 @@ export interface PermissionsDialogData {
         }
 
         .permissions-table {
-          min-width: 700px;
+          min-width: 800px;
         }
 
         .table-field {
@@ -542,11 +538,14 @@ export interface PermissionsDialogData {
 export class PermissionsDialogComponent implements OnInit, OnDestroy {
   permissionsDataSource = new MatTableDataSource<Authorization>([]);
   displayedColumns: string[] = [];
+  availableProviders: OAuthProviderInfo[] = [];
+  providersLoading = true;
 
   @ViewChild('permissionsTable') permissionsTable!: MatTable<Authorization>;
   @ViewChild('permissionsSort') permissionsSort!: MatSort;
 
   private _subscriptions: Subscription = new Subscription();
+  private _originalPermissions: Authorization[] = [];
 
   // Expose utility functions to template
   getPrincipalDisplayName = getPrincipalDisplayName;
@@ -556,13 +555,20 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   constructor(
     public dialogRef: MatDialogRef<PermissionsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: PermissionsDialogData,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     this.permissionsDataSource.data = [...this.data.permissions];
+    this._originalPermissions = [...this.data.permissions];
+
+    // Updated column order: type, provider, principal_id, email, role, actions
     this.displayedColumns = this.data.isReadOnly
-      ? ['principal_type', 'display_name', 'email', 'provider', 'provider_id', 'role']
-      : ['principal_type', 'display_name', 'email', 'provider', 'provider_id', 'role', 'actions'];
+      ? ['principal_type', 'provider', 'provider_id', 'email', 'role']
+      : ['principal_type', 'provider', 'provider_id', 'email', 'role', 'actions'];
+
+    // Load available providers
+    this.loadProviders();
   }
 
   ngOnDestroy(): void {
@@ -570,18 +576,55 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Updates the display name of a permission
-   * @param index The index of the permission to update
-   * @param event The blur event containing the new display name value
+   * Load OAuth providers from the authentication service
    */
-  updatePermissionDisplayName(index: number, event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const newDisplayName = input.value.trim();
+  private loadProviders(): void {
+    this.providersLoading = true;
+    this._subscriptions.add(
+      this.authService.getAvailableProviders().subscribe({
+        next: providers => {
+          this.availableProviders = providers;
+          this.providersLoading = false;
+        },
+        error: () => {
+          // If providers fail to load, the server is down
+          // Leave providers list empty and keep loading state
+          this.availableProviders = [];
+          this.providersLoading = false;
+        },
+      }),
+    );
+  }
 
-    if (index >= 0 && index < this.permissionsDataSource.data.length) {
-      this.permissionsDataSource.data[index].display_name = newDisplayName;
-      this.permissionsTable.renderRows();
+  /**
+   * Check if a provider is in the available providers list
+   * @param provider The provider identifier
+   * @returns True if the provider is available
+   */
+  isProviderAvailable(provider: string): boolean {
+    return this.availableProviders.some(p => p.id === provider);
+  }
+
+  /**
+   * Get tooltip text for a permission row
+   * Shows display name for existing permissions
+   * @param auth The authorization object
+   * @returns Tooltip text or empty string
+   */
+  getRowTooltip(auth: Authorization): string {
+    if (this.isNewPermission(auth)) {
+      return '';
     }
+    return auth.display_name || '';
+  }
+
+  /**
+   * Check if a permission is newly added (not in original list)
+   * @param auth The authorization object
+   * @returns True if this is a new permission
+   */
+  isNewPermission(auth: Authorization): boolean {
+    return !this._originalPermissions.some(orig => this.principalsEqual(orig, auth));
   }
 
   /**
@@ -654,9 +697,10 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * Adds a new permission to the list
    */
   addPermission(): void {
+    const defaultProvider = this.availableProviders[0]?.id || 'google';
     this.permissionsDataSource.data.push({
       principal_type: 'user',
-      provider: 'google',
+      provider: defaultProvider,
       provider_id: '',
       display_name: '',
       email: '',
@@ -769,22 +813,5 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    */
   getRoleTranslationKey(role: string): string {
     return `common.roles.${role}`;
-  }
-
-  /**
-   * Gets the display name for a provider with proper capitalization
-   * @param provider The provider identifier
-   * @returns The formatted provider display name
-   */
-  getProviderDisplayName(provider: string): string {
-    const displayNames: Record<string, string> = {
-      google: 'Google',
-      github: 'GitHub',
-      microsoft: 'Microsoft',
-      gitlab: 'GitLab',
-      bitbucket: 'Bitbucket',
-      apple: 'Apple',
-    };
-    return displayNames[provider] || provider;
   }
 }
