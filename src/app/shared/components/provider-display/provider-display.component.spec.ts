@@ -2,6 +2,8 @@
 // This project uses playwright for all integration tests
 // Do not use Jasmine or Jest, or Jasmine or Jest syntax anywhere in the project
 
+import '@angular/compiler';
+
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ProviderDisplayComponent } from './provider-display.component';
 
