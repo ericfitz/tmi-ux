@@ -418,13 +418,14 @@ export interface PermissionsDialogData {
       .type-option {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 4px;
       }
 
       .type-option mat-icon {
         font-size: 20px;
         width: 20px;
         height: 20px;
+        line-height: 1;
       }
 
       /* Column widths */

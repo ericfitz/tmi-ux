@@ -31,7 +31,7 @@ export class ProviderDisplayComponent {
       gitlab: 'assets/signin-logos/gitlab-signin-logo.svg',
       bitbucket: 'assets/signin-logos/bitbucket-signin-logo.svg',
       apple: 'assets/signin-logos/apple-signin-logo.svg',
-      test: 'assets/signin-logos/test-signin-logo.svg',
+      test: 'TMI-Logo.svg',
     };
     return logoMap[providerId.toLowerCase()] || null;
   }
@@ -54,7 +54,7 @@ export class ProviderDisplayComponent {
       microsoft: 'Microsoft',
       bitbucket: 'Bitbucket',
       apple: 'Apple',
-      test: 'Test',
+      test: 'TMI Test',
     };
 
     // Return special case if exists, otherwise capitalize first letter

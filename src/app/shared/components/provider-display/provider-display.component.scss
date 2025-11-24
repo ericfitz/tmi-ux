@@ -1,15 +1,18 @@
 :host {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 4px;
 }
 
 .provider-logo {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   object-fit: contain;
+  flex-shrink: 0;
 }
 
 .provider-name {
-  font-weight: 500;
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  line-height: 1.5;
 }
