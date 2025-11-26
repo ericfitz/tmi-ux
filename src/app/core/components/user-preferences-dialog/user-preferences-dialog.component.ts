@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
 import { DIALOG_IMPORTS } from '@app/shared/imports';
@@ -9,6 +9,10 @@ import {
   DeleteUserDataDialogComponent,
   DeleteUserDataDialogData,
 } from '../delete-user-data-dialog/delete-user-data-dialog.component';
+import { UserProfile } from '@app/auth/models/auth.models';
+import { ThreatModelAuthorizationService } from '@app/pages/tm/services/threat-model-authorization.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 export interface UserPreferences {
   animations: boolean;
@@ -29,6 +33,73 @@ interface CheckboxChangeEvent {
   template: `
     <h2 mat-dialog-title [transloco]="'userPreferences.title'">User Preferences</h2>
     <mat-dialog-content>
+      <h3 class="section-header" [transloco]="'userPreferences.userProfile.title'">User Profile</h3>
+
+      <div class="profile-info">
+        <div class="profile-item">
+          <span class="profile-label" [transloco]="'common.name'">Name</span>
+          <span class="profile-value">{{ userProfile?.name || 'N/A' }}</span>
+        </div>
+
+        <div class="profile-item">
+          <span class="profile-label" [transloco]="'common.emailLabel'">Email</span>
+          <span class="profile-value">{{ userProfile?.email || 'N/A' }}</span>
+        </div>
+
+        <div class="profile-item">
+          <span class="profile-label" [transloco]="'userPreferences.userProfile.userId'"
+            >User ID</span
+          >
+          <span class="profile-value user-id">{{ userProfile?.id || 'N/A' }}</span>
+        </div>
+
+        @if (userProfile && userProfile.providers && userProfile.providers.length > 0) {
+          <div class="profile-item">
+            <span class="profile-label" [transloco]="'userPreferences.userProfile.providers'">
+              Linked Providers
+            </span>
+            <div class="profile-value providers-list">
+              @for (provider of userProfile.providers; track provider.provider) {
+                <span class="provider-badge">
+                  {{ provider.provider }}
+                  @if (provider.is_primary) {
+                    <span class="primary-badge" [transloco]="'userPreferences.userProfile.primary'">
+                      (Primary)
+                    </span>
+                  }
+                </span>
+              }
+            </div>
+          </div>
+        }
+
+        @if (userProfile && userProfile.groups && userProfile.groups.length > 0) {
+          <div class="profile-item">
+            <span class="profile-label" [transloco]="'userPreferences.userProfile.groups'"
+              >Groups</span
+            >
+            <div class="profile-value groups-list">
+              @for (group of userProfile.groups; track group) {
+                <span class="group-badge">{{ group }}</span>
+              }
+            </div>
+          </div>
+        }
+
+        @if (currentThreatModelRole) {
+          <div class="profile-item">
+            <span class="profile-label" [transloco]="'userPreferences.userProfile.currentRole'">
+              Current Threat Model Role
+            </span>
+            <span class="profile-value role-badge">
+              {{ 'common.roles.' + currentThreatModelRole | transloco }}
+            </span>
+          </div>
+        }
+      </div>
+
+      <mat-divider></mat-divider>
+
       <h3 class="section-header" [transloco]="'userPreferences.displayPreferences'">
         Display Preferences
       </h3>
@@ -216,11 +287,77 @@ interface CheckboxChangeEvent {
         height: 20px;
         line-height: 20px;
       }
+
+      .profile-info {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .profile-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .profile-label {
+        font-weight: 500;
+        font-size: 12px;
+        color: var(--theme-text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .profile-value {
+        font-size: 14px;
+        color: var(--theme-text-primary);
+        word-break: break-word;
+      }
+
+      .user-id {
+        font-family: monospace;
+        font-size: 12px;
+        color: var(--theme-text-secondary);
+      }
+
+      .providers-list,
+      .groups-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .provider-badge,
+      .group-badge,
+      .role-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        background-color: var(--theme-surface-variant, rgba(0, 0, 0, 0.05));
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .primary-badge {
+        margin-left: 4px;
+        font-size: 11px;
+        font-weight: 400;
+        opacity: 0.7;
+      }
+
+      .role-badge {
+        background-color: var(--theme-primary-light, rgba(63, 81, 181, 0.1));
+        color: var(--theme-primary, #3f51b5);
+      }
     `,
   ],
 })
-export class UserPreferencesDialogComponent {
+export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
   preferences: UserPreferences;
+  userProfile: UserProfile | null = null;
+  currentThreatModelRole: 'owner' | 'writer' | 'reader' | null = null;
+  private destroy$ = new Subject<void>();
 
   constructor(
     public dialogRef: MatDialogRef<UserPreferencesDialogComponent>,
@@ -229,12 +366,30 @@ export class UserPreferencesDialogComponent {
     private logger: LoggerService,
     private dialog: MatDialog,
     private themeService: ThemeService,
+    private threatModelAuthService: ThreatModelAuthorizationService,
   ) {
     this.preferences = this.loadPreferences();
     // Sync with current theme preferences from ThemeService
     const themePrefs = this.themeService.getPreferences();
     this.preferences.themeMode = themePrefs.mode;
     this.preferences.colorBlindMode = themePrefs.palette === 'colorblind';
+  }
+
+  ngOnInit(): void {
+    // Get user profile from synchronous property
+    this.userProfile = this.authService.userProfile;
+
+    // Get current threat model role if available
+    this.threatModelAuthService.currentUserPermission$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(role => {
+        this.currentThreatModelRole = role;
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private loadPreferences(): UserPreferences {

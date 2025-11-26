@@ -68,10 +68,9 @@ export interface UserProfile {
   providers?: UserOAuthProvider[];
 
   /**
-   * URL to the user's profile picture (optional)
-   * @deprecated This property is no longer provided by the OAuth2 userinfo endpoint
+   * Groups the user belongs to
    */
-  picture?: string;
+  groups?: string[];
 }
 
 /**

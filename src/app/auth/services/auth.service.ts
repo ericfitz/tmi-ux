@@ -1152,8 +1152,7 @@ export class AuthService {
         email: decodedPayload.email,
         name: decodedPayload.name,
         providers: decodedPayload.providers,
-        // Keep picture for backward compatibility, but it's deprecated
-        picture: undefined,
+        groups: decodedPayload.groups,
       };
     } catch (error) {
       this.logger.error('Error extracting user profile from token', error);

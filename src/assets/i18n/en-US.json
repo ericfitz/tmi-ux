@@ -677,6 +677,14 @@
       "dark": "Dark",
       "light": "Light"
     },
-    "title": "User Preferences"
+    "title": "User Preferences",
+    "userProfile": {
+      "title": "User Profile",
+      "userId": "User ID",
+      "providers": "Linked Providers",
+      "groups": "Groups",
+      "currentRole": "Current Threat Model Role",
+      "primary": "Primary"
+    }
   }
 }
