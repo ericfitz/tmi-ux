@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
   samlProviders: SAMLProviderInfo[] = [];
   providersLoading = true;
   private returnUrl: string | null = null;
-  private providerLogos: Map<string, string> = new Map();
+  private providerLogos: Map<string, { type: 'image' | 'fontawesome'; value: string }> = new Map();
 
   constructor(
     private authService: AuthService,
@@ -227,18 +227,25 @@ export class LoginComponent implements OnInit {
    * Load a single provider logo from server or use fallback
    */
   private loadProviderLogo(providerId: string, iconPath: string, type: 'oauth' | 'saml'): void {
-    // If icon path is relative (starts with /), prepend server URL
+    // Check if iconPath is a FontAwesome reference (starts with 'fa-')
+    if (iconPath.startsWith('fa-')) {
+      this.providerLogos.set(providerId, { type: 'fontawesome', value: iconPath });
+      return;
+    }
 
+    // Determine the full icon URL
+    // If icon path is relative (starts with /), prepend API server URL
+    // If absolute URL, use as-is
     const fullIconUrl = iconPath.startsWith('/') ? `${environment.apiUrl}${iconPath}` : iconPath;
 
     // Try to load the image from the server
     const img = new Image();
     img.onload = () => {
       // Successfully loaded from server
-      this.providerLogos.set(providerId, fullIconUrl);
+      this.providerLogos.set(providerId, { type: 'image', value: fullIconUrl });
     };
     img.onerror = () => {
-      // Failed to load from server, use fallback
+      // Failed to load from server, use fallback from tmi-ux server
       let fallback: string;
       if (providerId === 'test') {
         fallback = 'assets/signin-logos/tmi.svg';
@@ -246,9 +253,25 @@ export class LoginComponent implements OnInit {
         fallback =
           type === 'oauth' ? 'assets/signin-logos/oauth.svg' : 'assets/signin-logos/saml.svg';
       }
-      this.providerLogos.set(providerId, fallback);
+      this.providerLogos.set(providerId, { type: 'image', value: fallback });
     };
     img.src = fullIconUrl;
+  }
+
+  /**
+   * Check if provider uses FontAwesome icon
+   */
+  isFontAwesomeIcon(providerId: string): boolean {
+    const logo = this.providerLogos.get(providerId);
+    return logo?.type === 'fontawesome';
+  }
+
+  /**
+   * Get the FontAwesome icon class for a given provider
+   */
+  getFontAwesomeIcon(providerId: string): string {
+    const logo = this.providerLogos.get(providerId);
+    return logo?.type === 'fontawesome' ? logo.value : '';
   }
 
   /**
@@ -256,7 +279,7 @@ export class LoginComponent implements OnInit {
    */
   getProviderLogoPath(providerId: string): string {
     const logo = this.providerLogos.get(providerId);
-    if (logo) return logo;
+    if (logo?.type === 'image') return logo.value;
     return providerId === 'test' ? 'assets/signin-logos/tmi.svg' : 'assets/signin-logos/oauth.svg';
   }
 
@@ -265,7 +288,7 @@ export class LoginComponent implements OnInit {
    */
   getSAMLProviderLogoPath(providerId: string): string {
     const logo = this.providerLogos.get(providerId);
-    if (logo) return logo;
+    if (logo?.type === 'image') return logo.value;
     return providerId === 'test' ? 'assets/signin-logos/tmi.svg' : 'assets/signin-logos/saml.svg';
   }
 }

@@ -36,11 +36,15 @@
                   [attr.data-provider]="provider.id"
                   class="provider-button"
                 >
-                  <img
-                    [src]="getProviderLogoPath(provider.id)"
-                    [alt]="provider.name + ' logo'"
-                    class="provider-logo"
-                  />
+                  @if (isFontAwesomeIcon(provider.id)) {
+                    <i [class]="getFontAwesomeIcon(provider.id) + ' provider-logo-icon'"></i>
+                  } @else {
+                    <img
+                      [src]="getProviderLogoPath(provider.id)"
+                      [alt]="provider.name + ' logo'"
+                      class="provider-logo"
+                    />
+                  }
                   <span>{{ 'login.loginWith' | transloco }} {{ provider.name }}</span>
                 </button>
               </div>
@@ -61,11 +65,15 @@
                   [attr.data-provider]="provider.id"
                   class="provider-button"
                 >
-                  <img
-                    [src]="getSAMLProviderLogoPath(provider.id)"
-                    [alt]="provider.name + ' logo'"
-                    class="provider-logo"
-                  />
+                  @if (isFontAwesomeIcon(provider.id)) {
+                    <i [class]="getFontAwesomeIcon(provider.id) + ' provider-logo-icon'"></i>
+                  } @else {
+                    <img
+                      [src]="getSAMLProviderLogoPath(provider.id)"
+                      [alt]="provider.name + ' logo'"
+                      class="provider-logo"
+                    />
+                  }
                   <span>{{ 'login.loginWith' | transloco }} {{ provider.name }}</span>
                 </button>
               </div>
