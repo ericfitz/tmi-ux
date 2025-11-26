@@ -981,8 +981,10 @@ export class AuthService {
     // Prepare the token exchange request
     const redirectUri = `${window.location.origin}/oauth2/callback`;
     const exchangeRequest = {
+      grant_type: 'authorization_code',
       code: response.code,
       redirect_uri: redirectUri,
+      ...(response.state && { state: response.state }),
     };
 
     // Add provider query parameter if we have one
