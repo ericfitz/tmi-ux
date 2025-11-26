@@ -237,7 +237,9 @@ export class LoginComponent implements OnInit {
     // If icon path is an absolute URL (starts with http:// or https://), use as-is
     // If icon path is relative (doesn't start with http:// or https://), prepend API server URL
     const isAbsoluteUrl = iconPath.startsWith('http://') || iconPath.startsWith('https://');
-    const fullIconUrl = isAbsoluteUrl ? iconPath : `${environment.apiUrl}/${iconPath}`;
+    const fullIconUrl = isAbsoluteUrl
+      ? iconPath
+      : `${environment.apiUrl}${iconPath.startsWith('/') ? '' : '/'}${iconPath}`;
 
     // Try to load the image from the server
     const img = new Image();

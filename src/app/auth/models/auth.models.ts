@@ -149,7 +149,7 @@ export interface OAuthProviderInfo {
   name: string;
 
   /**
-   * Provider icon class
+   * Provider icon (URL path relative to server root, or FontAwesome icon class prefixed with 'fa-')
    */
   icon: string;
 
@@ -194,7 +194,7 @@ export interface SAMLProviderInfo {
   name: string;
 
   /**
-   * Provider icon (URL path relative to server root)
+   * Provider icon (URL path relative to server root, or FontAwesome icon class prefixed with 'fa-')
    */
   icon: string;
 
