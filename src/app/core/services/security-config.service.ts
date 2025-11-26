@@ -238,6 +238,12 @@ ${Object.entries(headers)
       connectSources.push('http:');
     }
 
+    // Build img-src directive - allow HTTP images if API is on HTTP
+    const imgSources = ["'self'", 'data:', 'https:', 'blob:'];
+    if (apiProtocol === 'http:') {
+      imgSources.push('http:');
+    }
+
     // Build complete CSP policy
     // Note: frame-ancestors, report-uri, and sandbox directives are ignored in meta tags
     // and must be set via HTTP headers at the server level
@@ -246,7 +252,7 @@ ${Object.entries(headers)
       `script-src 'self' 'unsafe-inline' 'unsafe-eval'`,
       `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
       `font-src 'self' https://fonts.gstatic.com data:`,
-      `img-src 'self' data: https: blob:`,
+      `img-src ${imgSources.join(' ')}`,
       `connect-src ${connectSources.join(' ')}`,
       // frame-ancestors removed - only works in HTTP headers
       `base-uri 'self'`,

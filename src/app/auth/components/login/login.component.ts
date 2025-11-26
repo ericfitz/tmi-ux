@@ -228,7 +228,7 @@ export class LoginComponent implements OnInit {
    */
   private loadProviderLogo(providerId: string, iconPath: string, type: 'oauth' | 'saml'): void {
     // If icon path is relative (starts with /), prepend server URL
-     
+
     const fullIconUrl = iconPath.startsWith('/') ? `${environment.apiUrl}${iconPath}` : iconPath;
 
     // Try to load the image from the server
