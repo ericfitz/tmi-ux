@@ -169,25 +169,50 @@ export class LoggerService {
   /**
    * Redact sensitive URL parameters from a URL string
    * Shows first and last few characters of sensitive values with [...REDACTED...] in between
+   * Handles both query parameters (after ?) and fragment parameters (after #)
    */
   private redactUrl(url: string): string {
     try {
       const urlObj = new URL(url);
-      const params = urlObj.searchParams;
 
+      // Helper function to redact a parameter value
+      const redactValue = (value: string): string => {
+        if (value.length > REDACTION_VISIBLE_CHARS * 2) {
+          const start = value.substring(0, REDACTION_VISIBLE_CHARS);
+          const end = value.substring(value.length - REDACTION_VISIBLE_CHARS);
+          return `${start}...[REDACTED]...${end}`;
+        } else {
+          // If value is too short, just show [REDACTED]
+          return '[REDACTED]';
+        }
+      };
+
+      // Redact query parameters
+      const params = urlObj.searchParams;
       SENSITIVE_URL_PARAMS.forEach(param => {
         if (params.has(param)) {
           const value = params.get(param) || '';
-          if (value.length > REDACTION_VISIBLE_CHARS * 2) {
-            const start = value.substring(0, REDACTION_VISIBLE_CHARS);
-            const end = value.substring(value.length - REDACTION_VISIBLE_CHARS);
-            params.set(param, `${start}...[REDACTED]...${end}`);
-          } else {
-            // If value is too short, just show [REDACTED]
-            params.set(param, '[REDACTED]');
-          }
+          params.set(param, redactValue(value));
         }
       });
+
+      // Redact fragment parameters (OAuth tokens often appear in fragments)
+      if (urlObj.hash) {
+        const fragmentParams = new URLSearchParams(urlObj.hash.substring(1)); // Remove leading #
+        let hasRedaction = false;
+
+        SENSITIVE_URL_PARAMS.forEach(param => {
+          if (fragmentParams.has(param)) {
+            const value = fragmentParams.get(param) || '';
+            fragmentParams.set(param, redactValue(value));
+            hasRedaction = true;
+          }
+        });
+
+        if (hasRedaction) {
+          urlObj.hash = fragmentParams.toString();
+        }
+      }
 
       return urlObj.toString();
     } catch {

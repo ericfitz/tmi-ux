@@ -290,9 +290,9 @@ describe('LoggerService', () => {
       service.setLogLevel(LogLevel.DEBUG);
     });
 
-    it('should redact access_token from URL parameters', () => {
+    it('should redact access_token from URL fragment parameters', () => {
       const url =
-        'http://localhost:4200/oauth2/callback?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9&token_type=Bearer';
+        'http://localhost:4200/oauth2/callback#access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9&token_type=Bearer';
       service.debug('Current URL', url);
 
       const calls = consoleSpy.debug.mock.calls;
@@ -376,7 +376,7 @@ describe('LoggerService', () => {
 
     it('should redact tokens in debugComponent method', () => {
       const url =
-        'http://localhost:4200/oauth2/callback?access_token=eyJhbGciOiJIUzI1NiIsInR5YzRhOGIzZGMyNTE5ZWRlMTYiLCJyZXR1cm5VcmwiOiIvdG0ifQ==&token_type=Bearer';
+        'http://localhost:4200/oauth2/callback#access_token=eyJhbGciOiJIUzI1NiIsInR5YzRhOGIzZGMyNTE5ZWRlMTYiLCJyZXR1cm5VcmwiOiIvdG0ifQ==&token_type=Bearer';
       service.debugComponent('App', 'Current URL', url);
 
       const calls = consoleSpy.debug.mock.calls;

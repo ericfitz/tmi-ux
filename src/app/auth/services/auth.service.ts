@@ -568,7 +568,7 @@ export class AuthService {
       // });
 
       // Use TMI's SAML login endpoint with client callback URL
-      const clientCallbackUrl = `${window.location.origin}/saml/callback`;
+      const clientCallbackUrl = `${window.location.origin}/oauth2/callback`;
       const separator = provider.auth_url.includes('?') ? '&' : '?';
       const authUrl = `${provider.auth_url}${separator}client_callback=${encodeURIComponent(clientCallbackUrl)}`;
 

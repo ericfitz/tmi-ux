@@ -18,13 +18,14 @@ import { take } from 'rxjs';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
-interface LoginQueryParams {
+interface LoginFragmentParams {
   returnUrl?: string;
   code?: string;
   state?: string;
   access_token?: string;
   refresh_token?: string;
   expires_in?: string;
+  token_type?: string;
   error?: string;
   error_description?: string;
 }
@@ -65,10 +66,28 @@ export class LoginComponent implements OnInit {
     // Load available providers from TMI server
     this.loadProviders();
 
-    this.route.queryParams.pipe(take(1)).subscribe((params: LoginQueryParams) => {
-      // this.logger.debug('LoginComponent received query params', params);
+    // Parse fragment parameters for OAuth/SAML callbacks
+    this.route.fragment.pipe(take(1)).subscribe((fragment: string | null) => {
+      // this.logger.debug('LoginComponent received fragment', fragment);
 
-      this.returnUrl = params.returnUrl || '/dashboard';
+      // Parse fragment into key-value pairs
+      const params: LoginFragmentParams = {};
+      if (fragment) {
+        const fragmentPairs = fragment.split('&');
+        for (const pair of fragmentPairs) {
+          const [key, value] = pair.split('=');
+          if (key && value !== undefined) {
+            params[key as keyof LoginFragmentParams] = decodeURIComponent(value);
+          }
+        }
+      }
+
+      // Also check queryParams for returnUrl (may be passed separately)
+      this.route.queryParams.pipe(take(1)).subscribe(queryParams => {
+        this.returnUrl =
+          params.returnUrl || (queryParams['returnUrl'] as string | undefined) || '/dashboard';
+      });
+
       const code = params.code;
       const state = params.state;
       const accessToken = params.access_token;
@@ -85,11 +104,15 @@ export class LoginComponent implements OnInit {
           expires_in: expiresIn ? parseInt(expiresIn) : undefined,
           state,
         });
+        // Clear fragment from URL to prevent token exposure (security best practice)
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
       // Handle authorization code flow callback
       else if (code && state) {
         // this.logger.info('Detected OAuth authorization code callback', { code, state });
         this.handleOAuthCallback({ code, state });
+        // Clear fragment from URL
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
       // Handle OAuth errors
       else if (errorParam) {
@@ -98,6 +121,8 @@ export class LoginComponent implements OnInit {
           message: errorDescription || 'Authentication failed',
           retryable: true,
         });
+        // Clear fragment even on error to prevent information leakage
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
     });
   }
