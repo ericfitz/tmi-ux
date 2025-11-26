@@ -1,13 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 32">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <defs>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&amp;display=swap');
       @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=swap');
-      .roboto { font-family: 'Roboto', sans-serif; font-size: 24px; fill: #000; }
-      .icon { font-family: 'Material Symbols Outlined'; font-size: 24px; fill: #000; }
+      .roboto {
+        font-family: 'Roboto', sans-serif;
+        font-size: 28px;
+        fill: #000000;
+      }
+      .icon {
+        font-family: 'Material Symbols Outlined';
+        font-size: 28px;
+        fill: #000000;
+      }
     </style>
   </defs>
-  <text y="24">
-    <tspan class="roboto">&lt;</tspan><tspan class="icon" dy="4" dx="-2">lock</tspan><tspan class="roboto" dy="-4" dx="-1">/&gt;</tspan>
-  </text>
+  <!-- All elements vertically centered at y=65 (baseline position for centering in 100px viewBox) -->
+  <text x="8" y="65" class="roboto">&lt;</text>
+  <text x="28" y="65" class="icon">lock</text>
+  <text x="56" y="65" class="roboto">/</text>
+  <text x="70" y="65" class="roboto">&gt;</text>
 </svg>
