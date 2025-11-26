@@ -15,9 +15,9 @@
       }
     </style>
   </defs>
-  <!-- All elements vertically centered at y=65 (baseline position for centering in 100px viewBox) -->
-  <text x="8" y="65" class="roboto">&lt;</text>
-  <text x="28" y="65" class="icon">lock</text>
-  <text x="56" y="65" class="roboto">/</text>
-  <text x="70" y="65" class="roboto">&gt;</text>
+  <!-- Elements vertically centered at y=55, lock icon adjusted down with dy -->
+  <text x="8" y="55" class="roboto">&lt;</text>
+  <text x="23" y="55" class="icon"><tspan dy="4">&#xe897;</tspan></text>
+  <text x="51" y="55" class="roboto">/</text>
+  <text x="65" y="55" class="roboto">&gt;</text>
 </svg>
