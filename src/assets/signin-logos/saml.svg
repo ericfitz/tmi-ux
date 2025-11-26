@@ -1,23 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 34 68 32">
   <defs>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&amp;display=swap');
-      @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=swap');
-      .roboto {
-        font-family: 'Roboto', sans-serif;
-        font-size: 28px;
+      .saml-char {
         fill: #000000;
+        stroke: #000000;
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
       }
-      .icon {
-        font-family: 'Material Symbols Outlined';
-        font-size: 28px;
+      .saml-lock {
         fill: #000000;
       }
     </style>
   </defs>
-  <!-- Elements vertically centered at y=55, lock icon adjusted down with dy -->
-  <text x="8" y="55" class="roboto">&lt;</text>
-  <text x="23" y="55" class="icon"><tspan dy="4">&#xe897;</tspan></text>
-  <text x="51" y="55" class="roboto">/</text>
-  <text x="65" y="55" class="roboto">&gt;</text>
+
+  <!-- Less-than symbol '<' with rounded ends -->
+  <g class="saml-char">
+    <polyline points="23,42 15,50 23,58" fill="none"/>
+  </g>
+
+  <!-- Lock icon (scaled from Material Symbols, centered at x=42) -->
+  <g class="saml-lock" transform="translate(25, 62) scale(0.028)">
+    <path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm0-80h480v-400H240v400Zm240-120q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z"/>
+  </g>
+
+  <!-- Forward slash '/' with rounded ends -->
+  <g class="saml-char">
+    <line x1="54" y1="58" x2="60" y2="42"/>
+  </g>
+
+  <!-- Greater-than symbol '>' with rounded ends -->
+  <g class="saml-char">
+    <polyline points="65,42 73,50 65,58" fill="none"/>
+  </g>
 </svg>
