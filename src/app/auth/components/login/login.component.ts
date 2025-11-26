@@ -234,9 +234,10 @@ export class LoginComponent implements OnInit {
     }
 
     // Determine the full icon URL
-    // If icon path is relative (starts with /), prepend API server URL
-    // If absolute URL, use as-is
-    const fullIconUrl = iconPath.startsWith('/') ? `${environment.apiUrl}${iconPath}` : iconPath;
+    // If icon path is an absolute URL (starts with http:// or https://), use as-is
+    // If icon path is relative (doesn't start with http:// or https://), prepend API server URL
+    const isAbsoluteUrl = iconPath.startsWith('http://') || iconPath.startsWith('https://');
+    const fullIconUrl = isAbsoluteUrl ? iconPath : `${environment.apiUrl}/${iconPath}`;
 
     // Try to load the image from the server
     const img = new Image();
@@ -277,18 +278,19 @@ export class LoginComponent implements OnInit {
   /**
    * Get the logo path for a given provider
    */
-  getProviderLogoPath(providerId: string): string {
+  getProviderLogoPath(providerId: string, type: 'oauth' | 'saml' = 'oauth'): string {
     const logo = this.providerLogos.get(providerId);
     if (logo?.type === 'image') return logo.value;
-    return providerId === 'test' ? 'assets/signin-logos/tmi.svg' : 'assets/signin-logos/oauth.svg';
+
+    // Fallback logic
+    if (providerId === 'test') return 'assets/signin-logos/tmi.svg';
+    return type === 'oauth' ? 'assets/signin-logos/oauth.svg' : 'assets/signin-logos/saml.svg';
   }
 
   /**
    * Get the logo path for a given SAML provider
    */
   getSAMLProviderLogoPath(providerId: string): string {
-    const logo = this.providerLogos.get(providerId);
-    if (logo?.type === 'image') return logo.value;
-    return providerId === 'test' ? 'assets/signin-logos/tmi.svg' : 'assets/signin-logos/saml.svg';
+    return this.getProviderLogoPath(providerId, 'saml');
   }
 }
