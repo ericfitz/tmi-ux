@@ -313,7 +313,9 @@
     "loginWith": "تسجيل الدخول باستخدام",
     "noProvidersConfigured": "لم يتم تكوين موفري المصادقة.",
     "oauthFailed": "فشل في مصادقة OAuth. يرجى المحاولة مرة أخرى.",
+    "oauthProvidersTitle": "موفرو تسجيل الدخول OAuth",
     "pleaseSignIn": "يرجى تسجيل الدخول للمتابعة.",
+    "samlProvidersTitle": "موفرو تسجيل الدخول SAML",
     "title": "تسجيل الدخول إلى تي إم آي",
     "unexpectedError": "حدث خطأ غير متوقع أثناء مصادقة OAuth."
   },

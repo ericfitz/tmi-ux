@@ -313,7 +313,9 @@
     "loginWith": "Sign in with",
     "noProvidersConfigured": "No authentication providers are configured.",
     "oauthFailed": "OAuth authentication failed. Please try again.",
+    "oauthProvidersTitle": "OAuth Sign-in Providers",
     "pleaseSignIn": "Please sign in to continue.",
+    "samlProvidersTitle": "SAML Sign-in Providers",
     "title": "Sign In to TMI",
     "unexpectedError": "An unexpected error occurred during OAuth."
   },

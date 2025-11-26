@@ -313,7 +313,9 @@
     "loginWith": "使用以下方式登录",
     "noProvidersConfigured": "未配置身份验证提供程序。",
     "oauthFailed": "OAuth身份验证失败。请重试。",
+    "oauthProvidersTitle": "OAuth登录提供商",
     "pleaseSignIn": "请登录以继续。",
+    "samlProvidersTitle": "SAML登录提供商",
     "title": "登录到TMI",
     "unexpectedError": "OAuth身份验证过程中发生意外错误。"
   },

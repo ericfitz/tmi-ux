@@ -180,6 +180,61 @@ export interface ProvidersResponse {
 }
 
 /**
+ * SAML provider information from TMI server
+ */
+export interface SAMLProviderInfo {
+  /**
+   * Provider identifier
+   */
+  id: string;
+
+  /**
+   * Provider display name
+   */
+  name: string;
+
+  /**
+   * Provider icon (URL path relative to server root)
+   */
+  icon: string;
+
+  /**
+   * TMI SAML login endpoint URL
+   */
+  auth_url: string;
+
+  /**
+   * SAML service provider metadata URL
+   */
+  metadata_url: string;
+
+  /**
+   * Service Provider entity ID
+   */
+  entity_id: string;
+
+  /**
+   * Assertion Consumer Service URL
+   */
+  acs_url: string;
+
+  /**
+   * Single Logout URL (optional)
+   */
+  slo_url?: string;
+}
+
+/**
+ * Response from TMI SAML provider discovery endpoint
+ */
+export interface SAMLProvidersResponse {
+  /**
+   * List of available SAML providers
+   */
+  providers: SAMLProviderInfo[];
+}
+
+/**
  * User role in the system
  */
 export enum UserRole {

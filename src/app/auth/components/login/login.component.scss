@@ -26,6 +26,22 @@
   text-align: left !important;
 }
 
+.provider-section {
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.provider-section-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--theme-text-secondary);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
 .provider-buttons {
   display: flex;
   flex-direction: column;

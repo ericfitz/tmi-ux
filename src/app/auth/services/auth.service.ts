@@ -42,6 +42,8 @@ import {
   UserRole,
   OAuthProviderInfo,
   ProvidersResponse,
+  SAMLProviderInfo,
+  SAMLProvidersResponse,
 } from '../models/auth.models';
 
 interface JwtPayload {
@@ -88,7 +90,8 @@ export class AuthService {
   private readonly providersCacheExpiry = 5 * 60 * 1000; // 5 minutes
 
   // Cached provider information
-  private cachedProviders: OAuthProviderInfo[] | null = null;
+  private cachedOAuthProviders: OAuthProviderInfo[] | null = null;
+  private cachedSAMLProviders: SAMLProviderInfo[] | null = null;
   private providersCacheTime = 0;
 
   private get defaultProvider(): string {
@@ -377,14 +380,14 @@ export class AuthService {
   }
 
   /**
-   * Get available authentication providers from TMI server
+   * Get available OAuth authentication providers from TMI server
    * Uses caching to avoid repeated API calls
    */
   getAvailableProviders(): Observable<OAuthProviderInfo[]> {
     // Check cache first
     const now = Date.now();
-    if (this.cachedProviders && now - this.providersCacheTime < this.providersCacheExpiry) {
-      return of(this.cachedProviders);
+    if (this.cachedOAuthProviders && now - this.providersCacheTime < this.providersCacheExpiry) {
+      return of(this.cachedOAuthProviders);
     }
 
     // Check if server is configured
@@ -404,7 +407,7 @@ export class AuthService {
         const providers = [...response.providers];
 
         // Cache the results
-        this.cachedProviders = providers;
+        this.cachedOAuthProviders = providers;
         this.providersCacheTime = now;
 
         // this.logger.debugComponent(
@@ -418,6 +421,52 @@ export class AuthService {
       }),
       catchError((error: HttpErrorResponse) => {
         this.logger.error('Failed to fetch OAuth providers', error);
+        return throwError(() => error as Error);
+      }),
+    );
+  }
+
+  /**
+   * Get available SAML authentication providers from TMI server
+   * Uses caching to avoid repeated API calls
+   */
+  getAvailableSAMLProviders(): Observable<SAMLProviderInfo[]> {
+    // Check cache first
+    const now = Date.now();
+    if (this.cachedSAMLProviders && now - this.providersCacheTime < this.providersCacheExpiry) {
+      return of(this.cachedSAMLProviders);
+    }
+
+    // Check if server is configured
+    const isServerConfigured = this.isServerConfigured();
+
+    if (!isServerConfigured) {
+      this.logger.error('Server not configured - cannot fetch SAML providers');
+      return throwError(() => new Error('Server not configured'));
+    }
+
+    // Try to fetch SAML providers from server
+    // this.logger.debugComponent('Auth', 'Fetching SAML providers from TMI server');
+
+    return this.http.get<SAMLProvidersResponse>(`${environment.apiUrl}/saml/providers`).pipe(
+      map(response => {
+        const providers = [...response.providers];
+
+        // Cache the results
+        this.cachedSAMLProviders = providers;
+        this.providersCacheTime = now;
+
+        // this.logger.debugComponent(
+        //   'Auth',
+        //   `Fetched ${providers.length} SAML providers from server`,
+        //   {
+        //     providers: providers.map(p => ({ id: p.id, name: p.name })),
+        //   },
+        // );
+        return providers;
+      }),
+      catchError((error: HttpErrorResponse) => {
+        this.logger.error('Failed to fetch SAML providers', error);
         return throwError(() => error as Error);
       }),
     );
@@ -468,6 +517,81 @@ export class AuthService {
         this.logger.error('Error discovering OAuth providers', error);
       },
     });
+  }
+
+  /**
+   * Initiate SAML login with specified provider
+   * @param providerId Provider ID to use
+   * @param returnUrl Optional URL to return to after authentication
+   */
+  initiateSAMLLogin(providerId: string, returnUrl?: string): void {
+    this.getAvailableSAMLProviders().subscribe({
+      next: providers => {
+        const provider = providers.find(p => p.id === providerId);
+
+        if (!provider) {
+          this.handleAuthError({
+            code: 'provider_not_found',
+            message: `SAML provider ${providerId} is not configured`,
+            retryable: false,
+          });
+          return;
+        }
+
+        // this.logger.info(`Initiating SAML login for provider: ${providerId}`, {
+        //   returnUrl,
+        // });
+        this.initiateTMISAMLLogin(provider, returnUrl);
+      },
+      error: error => {
+        this.handleAuthError({
+          code: 'provider_discovery_error',
+          message: 'Failed to discover SAML providers',
+          retryable: true,
+        });
+        this.logger.error('Error discovering SAML providers', error);
+      },
+    });
+  }
+
+  /**
+   * Initiate TMI SAML login
+   * @param provider SAML provider information
+   * @param returnUrl Optional URL to return to after authentication
+   */
+  private initiateTMISAMLLogin(provider: SAMLProviderInfo, returnUrl?: string): void {
+    try {
+      // this.logger.info(`Initiating SAML login with ${provider.name}`);
+      // this.logger.debugComponent('Auth', `Redirecting to TMI SAML endpoint`, {
+      //   providerId: provider.id,
+      //   authUrl: provider.auth_url,
+      // });
+
+      // Use TMI's SAML login endpoint with client callback URL
+      const clientCallbackUrl = `${window.location.origin}/saml/callback`;
+      const separator = provider.auth_url.includes('?') ? '&' : '?';
+      const authUrl = `${provider.auth_url}${separator}client_callback=${encodeURIComponent(clientCallbackUrl)}`;
+
+      // this.logger.debugComponent('Auth', 'Initiating SAML with client callback', {
+      //   providerId: provider.id,
+      //   clientCallbackUrl,
+      //   finalAuthUrl: authUrl.replace(/\?.*$/, ''), // Log without query params for security
+      // });
+
+      // Store return URL if provided
+      if (returnUrl) {
+        sessionStorage.setItem('saml_return_url', returnUrl);
+      }
+
+      window.location.href = authUrl;
+    } catch (error) {
+      this.handleAuthError({
+        code: 'saml_init_error',
+        message: `Failed to initialize ${provider.name} SAML flow`,
+        retryable: true,
+      });
+      this.logger.error(`Error initializing ${provider.name} SAML`, error);
+    }
   }
 
   /**
@@ -1385,7 +1509,8 @@ export class AuthService {
     this.jwtTokenSubject.next(null);
 
     // Clear cached providers to force re-evaluation on next login
-    this.cachedProviders = null;
+    this.cachedOAuthProviders = null;
+    this.cachedSAMLProviders = null;
     this.providersCacheTime = 0;
 
     // Notify SessionManager to stop timers

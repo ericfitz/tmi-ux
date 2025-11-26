@@ -1037,7 +1037,8 @@ describe('AuthService', () => {
       service.logout();
 
       // Verify provider cache is cleared
-      expect(service['cachedProviders']).toBeNull();
+      expect(service['cachedOAuthProviders']).toBeNull();
+      expect(service['cachedSAMLProviders']).toBeNull();
       expect(service['providersCacheTime']).toBe(0);
 
       // Verify auth data is also cleared

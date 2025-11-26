@@ -313,7 +313,9 @@
     "loginWith": "Anmelden mit",
     "noProvidersConfigured": "Keine Authentifizierungsanbieter konfiguriert.",
     "oauthFailed": "OAuth-Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "oauthProvidersTitle": "OAuth-Anmeldeanbieter",
     "pleaseSignIn": "Bitte melden Sie sich an, um fortzufahren.",
+    "samlProvidersTitle": "SAML-Anmeldeanbieter",
     "title": "Bei TMI Anmelden",
     "unexpectedError": "Ein unerwarteter Fehler ist während der OAuth-Authentifizierung aufgetreten."
   },

@@ -8,8 +8,15 @@ import { MatCardModule } from '@angular/material/card';
 import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../services/auth.service';
 import { LoggerService } from '../../../core/services/logger.service';
-import { AuthError, OAuthResponse, OAuthProviderInfo } from '../../models/auth.models';
+import {
+  AuthError,
+  OAuthResponse,
+  OAuthProviderInfo,
+  SAMLProviderInfo,
+} from '../../models/auth.models';
 import { take } from 'rxjs';
+import { forkJoin } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 interface LoginQueryParams {
   returnUrl?: string;
@@ -39,9 +46,11 @@ interface LoginQueryParams {
 export class LoginComponent implements OnInit {
   isLoading = false;
   error: string | null = null;
-  availableProviders: OAuthProviderInfo[] = [];
+  oauthProviders: OAuthProviderInfo[] = [];
+  samlProviders: SAMLProviderInfo[] = [];
   providersLoading = true;
   private returnUrl: string | null = null;
+  private providerLogos: Map<string, string> = new Map();
 
   constructor(
     private authService: AuthService,
@@ -94,22 +103,35 @@ export class LoginComponent implements OnInit {
   }
 
   /**
-   * Load OAuth providers from TMI server
+   * Load OAuth and SAML providers from TMI server
    */
   private loadProviders(): void {
     this.providersLoading = true;
-    this.authService.getAvailableProviders().subscribe({
-      next: providers => {
-        this.availableProviders = this.sortProviders(providers);
+
+    // Fetch both OAuth and SAML providers in parallel
+    forkJoin({
+      oauth: this.authService.getAvailableProviders(),
+      saml: this.authService.getAvailableSAMLProviders(),
+    }).subscribe({
+      next: ({ oauth, saml }) => {
+        this.oauthProviders = this.sortProviders(oauth);
+        this.samlProviders = this.sortProviders(saml);
         this.providersLoading = false;
-        // this.logger.debugComponent('Auth', `Loaded ${providers.length} OAuth providers`, {
-        //   providers: providers.map(p => ({ id: p.id, name: p.name })),
+
+        // Load provider logos
+        this.loadProviderLogos();
+
+        // this.logger.debugComponent('Auth', `Loaded providers`, {
+        //   oauthCount: oauth.length,
+        //   samlCount: saml.length,
+        //   oauthProviders: oauth.map(p => ({ id: p.id, name: p.name })),
+        //   samlProviders: saml.map(p => ({ id: p.id, name: p.name })),
         // });
       },
       error: error => {
         this.providersLoading = false;
         this.error = 'Failed to load authentication providers';
-        this.logger.error('Failed to load OAuth providers', error);
+        this.logger.error('Failed to load authentication providers', error);
       },
     });
   }
@@ -117,7 +139,7 @@ export class LoginComponent implements OnInit {
   /**
    * Sort providers alphabetically by name, with 'test' provider last
    */
-  private sortProviders(providers: OAuthProviderInfo[]): OAuthProviderInfo[] {
+  private sortProviders<T extends { id: string; name: string }>(providers: T[]): T[] {
     const sorted = [...providers];
 
     return sorted.sort((a, b) => {
@@ -131,23 +153,23 @@ export class LoginComponent implements OnInit {
   }
 
   /**
-   * Generic login method - works with any configured provider
+   * Initiate OAuth login with specified provider
    */
-  login(providerId?: string): void {
+  loginWithOAuth(providerId: string): void {
     this.isLoading = true;
     this.error = null;
 
-    // const provider = this.availableProviders.find(p => p.id === providerId);
-    // const _providerName = provider?.name || providerId || 'default provider';
-
-    // this.logger.info(`Initiating login with ${_providerName}`);
-    // this.logger.debugComponent('Auth', 'Starting OAuth flow', {
-    //   providerId,
-    //   providerName: _providerName,
-    //   authUrl: provider?.auth_url ? provider.auth_url.replace(/\?.*$/, '') : 'unknown', // Remove query params for logging
-    // });
-
     this.authService.initiateLogin(providerId, this.returnUrl || undefined);
+  }
+
+  /**
+   * Initiate SAML login with specified provider
+   */
+  loginWithSAML(providerId: string): void {
+    this.isLoading = true;
+    this.error = null;
+
+    this.authService.initiateSAMLLogin(providerId, this.returnUrl || undefined);
   }
 
   private handleOAuthCallback(response: OAuthResponse): void {
@@ -187,17 +209,66 @@ export class LoginComponent implements OnInit {
   }
 
   /**
-   * Get the logo path for a given OAuth provider
+   * Load provider logos from server or use fallbacks
    */
-  getProviderLogoPath(providerId: string): string | null {
-    const logoMap: Record<string, string> = {
-      google: 'assets/signin-logos/google-signin-logo.svg',
-      github: 'assets/signin-logos/github-signin-logo.svg',
-      microsoft: 'assets/signin-logos/microsoft-signin-logo.svg',
-      gitlab: 'assets/signin-logos/gitlab-signin-logo.svg',
-      test: 'assets/signin-logos/test-signin-logo.svg',
-    };
+  private loadProviderLogos(): void {
+    // Load OAuth provider logos
+    this.oauthProviders.forEach(provider => {
+      this.loadProviderLogo(provider.id, provider.icon, 'oauth');
+    });
 
-    return logoMap[providerId] || null;
+    // Load SAML provider logos
+    this.samlProviders.forEach(provider => {
+      this.loadProviderLogo(provider.id, provider.icon, 'saml');
+    });
+  }
+
+  /**
+   * Load a single provider logo from server or use fallback
+   */
+  private loadProviderLogo(providerId: string, iconPath: string, type: 'oauth' | 'saml'): void {
+    // If icon path is relative (starts with /), prepend server URL
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const fullIconUrl = iconPath.startsWith('/') ? `${environment.apiUrl}${iconPath}` : iconPath;
+
+    // Try to load the image from the server
+    const img = new Image();
+    img.onload = () => {
+      // Successfully loaded from server
+      this.providerLogos.set(providerId, fullIconUrl);
+    };
+    img.onerror = () => {
+      // Failed to load from server, use fallback
+      let fallback: string;
+      if (providerId === 'test') {
+        fallback = 'assets/signin-logos/tmi.svg';
+      } else {
+        fallback = type === 'oauth' ? 'assets/signin-logos/oauth.svg' : 'assets/signin-logos/saml.svg';
+      }
+      this.providerLogos.set(providerId, fallback);
+    };
+    img.src = fullIconUrl;
+  }
+
+  /**
+   * Get the logo path for a given provider
+   */
+  getProviderLogoPath(providerId: string): string {
+    const logo = this.providerLogos.get(providerId);
+    if (logo) return logo;
+    return providerId === 'test'
+      ? 'assets/signin-logos/tmi.svg'
+      : 'assets/signin-logos/oauth.svg';
+  }
+
+  /**
+   * Get the logo path for a given SAML provider
+   */
+  getSAMLProviderLogoPath(providerId: string): string {
+    const logo = this.providerLogos.get(providerId);
+    if (logo) return logo;
+    return providerId === 'test'
+      ? 'assets/signin-logos/tmi.svg'
+      : 'assets/signin-logos/saml.svg';
   }
 }

@@ -17,78 +17,65 @@
         </div>
       }
 
-      <!-- Multiple providers -->
-      @if (!providersLoading && availableProviders.length > 1) {
+      <!-- Providers available -->
+      @if (!providersLoading && (oauthProviders.length > 0 || samlProviders.length > 0)) {
         <div>
           <p>{{ 'login.chooseMethod' | transloco }}</p>
-          <div class="provider-buttons">
-            <button
-              mat-raised-button
-              color="primary"
-              *ngFor="let provider of availableProviders"
-              (click)="login(provider.id)"
-              [disabled]="isLoading"
-              [attr.data-provider]="provider.id"
-              class="provider-button"
-            >
-              @if (getProviderLogoPath(provider.id)) {
-                <img
-                  [src]="getProviderLogoPath(provider.id)"
-                  [alt]="provider.name + ' logo'"
-                  class="provider-logo"
-                />
-              }
 
-              <span>{{ 'login.loginWith' | transloco }} {{ provider.name }}</span>
-            </button>
-          </div>
-        </div>
-      }
+          <!-- OAuth Providers Section -->
+          @if (oauthProviders.length > 0) {
+            <div class="provider-section">
+              <h3 class="provider-section-title">{{ 'login.oauthProvidersTitle' | transloco }}</h3>
+              <div class="provider-buttons">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  *ngFor="let provider of oauthProviders"
+                  (click)="loginWithOAuth(provider.id)"
+                  [disabled]="isLoading"
+                  [attr.data-provider]="provider.id"
+                  class="provider-button"
+                >
+                  <img
+                    [src]="getProviderLogoPath(provider.id)"
+                    [alt]="provider.name + ' logo'"
+                    class="provider-logo"
+                  />
+                  <span>{{ 'login.loginWith' | transloco }} {{ provider.name }}</span>
+                </button>
+              </div>
+            </div>
+          }
 
-      <!-- Single provider auto-login -->
-      @if (!providersLoading && availableProviders.length === 1 && isLoading) {
-        <div>
-          <div class="single-provider-loading">
-            @if (getProviderLogoPath(availableProviders[0].id)) {
-              <img
-                [src]="getProviderLogoPath(availableProviders[0].id)"
-                [alt]="availableProviders[0].name + ' logo'"
-                class="provider-logo-large"
-              />
-            }
-
-            <p>{{ 'login.loggingInWith' | transloco: { provider: availableProviders[0].name } }}</p>
-            <mat-spinner diameter="20"></mat-spinner>
-          </div>
-        </div>
-      }
-
-      <!-- Single provider ready to login -->
-      @if (!providersLoading && availableProviders.length === 1 && !isLoading) {
-        <div>
-          <p>{{ 'login.pleaseSignIn' | transloco }}</p>
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="login(availableProviders[0].id)"
-            class="single-provider-button"
-            [attr.data-provider]="availableProviders[0].id"
-          >
-            @if (getProviderLogoPath(availableProviders[0].id)) {
-              <img
-                [src]="getProviderLogoPath(availableProviders[0].id)"
-                [alt]="availableProviders[0].name + ' logo'"
-                class="provider-logo"
-              />
-            }
-
-            <span>{{ 'login.loginWith' | transloco }} {{ availableProviders[0].name }}</span>
-          </button>
+          <!-- SAML Providers Section -->
+          @if (samlProviders.length > 0) {
+            <div class="provider-section">
+              <h3 class="provider-section-title">{{ 'login.samlProvidersTitle' | transloco }}</h3>
+              <div class="provider-buttons">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  *ngFor="let provider of samlProviders"
+                  (click)="loginWithSAML(provider.id)"
+                  [disabled]="isLoading"
+                  [attr.data-provider]="provider.id"
+                  class="provider-button"
+                >
+                  <img
+                    [src]="getSAMLProviderLogoPath(provider.id)"
+                    [alt]="provider.name + ' logo'"
+                    class="provider-logo"
+                  />
+                  <span>{{ 'login.loginWith' | transloco }} {{ provider.name }}</span>
+                </button>
+              </div>
+            </div>
+          }
         </div>
       }
 
       <!-- No providers configured -->
-      @if (!providersLoading && availableProviders.length === 0) {
+      @if (!providersLoading && oauthProviders.length === 0 && samlProviders.length === 0) {
         <div>
           <div class="no-providers">
             <span class="material-symbols-outlined warning-icon">warning</span>
