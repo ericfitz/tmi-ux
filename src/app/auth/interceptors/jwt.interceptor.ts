@@ -29,6 +29,7 @@ export class JwtInterceptor implements HttpInterceptor {
     '/oauth2/refresh',
     '/oauth2/authorize/*',
     '/oauth2/token/*',
+    '/saml/providers',
   ];
 
   // SessionManager service (will be injected if available)

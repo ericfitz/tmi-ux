@@ -228,7 +228,7 @@ export class LoginComponent implements OnInit {
    */
   private loadProviderLogo(providerId: string, iconPath: string, type: 'oauth' | 'saml'): void {
     // If icon path is relative (starts with /), prepend server URL
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+     
     const fullIconUrl = iconPath.startsWith('/') ? `${environment.apiUrl}${iconPath}` : iconPath;
 
     // Try to load the image from the server
@@ -243,7 +243,8 @@ export class LoginComponent implements OnInit {
       if (providerId === 'test') {
         fallback = 'assets/signin-logos/tmi.svg';
       } else {
-        fallback = type === 'oauth' ? 'assets/signin-logos/oauth.svg' : 'assets/signin-logos/saml.svg';
+        fallback =
+          type === 'oauth' ? 'assets/signin-logos/oauth.svg' : 'assets/signin-logos/saml.svg';
       }
       this.providerLogos.set(providerId, fallback);
     };
@@ -256,9 +257,7 @@ export class LoginComponent implements OnInit {
   getProviderLogoPath(providerId: string): string {
     const logo = this.providerLogos.get(providerId);
     if (logo) return logo;
-    return providerId === 'test'
-      ? 'assets/signin-logos/tmi.svg'
-      : 'assets/signin-logos/oauth.svg';
+    return providerId === 'test' ? 'assets/signin-logos/tmi.svg' : 'assets/signin-logos/oauth.svg';
   }
 
   /**
@@ -267,8 +266,6 @@ export class LoginComponent implements OnInit {
   getSAMLProviderLogoPath(providerId: string): string {
     const logo = this.providerLogos.get(providerId);
     if (logo) return logo;
-    return providerId === 'test'
-      ? 'assets/signin-logos/tmi.svg'
-      : 'assets/signin-logos/saml.svg';
+    return providerId === 'test' ? 'assets/signin-logos/tmi.svg' : 'assets/signin-logos/saml.svg';
   }
 }
