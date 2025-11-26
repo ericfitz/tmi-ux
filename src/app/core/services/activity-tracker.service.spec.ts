@@ -70,17 +70,21 @@ describe('ActivityTrackerService', () => {
     expect(service.isUserActive()).toBe(true);
   });
 
-  it('should update lastActivity$ observable on activity', done => {
+  it('should update lastActivity$ observable on activity', async () => {
     const initialTime = new Date();
 
-    service.lastActivity$.subscribe(activityTime => {
-      expect(activityTime).toBeDefined();
-      expect(activityTime instanceof Date).toBe(true);
-      expect(activityTime.getTime()).toBeGreaterThanOrEqual(initialTime.getTime());
-      done();
+    const activityPromise = new Promise<Date>(resolve => {
+      service.lastActivity$.subscribe(activityTime => {
+        resolve(activityTime);
+      });
     });
 
     // Manually trigger activity
     service.markActive();
+
+    const activityTime = await activityPromise;
+    expect(activityTime).toBeDefined();
+    expect(activityTime instanceof Date).toBe(true);
+    expect(activityTime.getTime()).toBeGreaterThanOrEqual(initialTime.getTime());
   });
 });

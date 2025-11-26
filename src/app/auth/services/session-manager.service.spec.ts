@@ -22,7 +22,9 @@ describe('SessionManagerService', () => {
     mockAuthService = {
       getStoredToken: vi.fn(),
       getValidToken: vi.fn(),
-      refreshToken: vi.fn(),
+      refreshToken: vi
+        .fn()
+        .mockReturnValue(of({ token: 'mock', expiresAt: new Date(), expiresIn: 0 })),
       storeToken: vi.fn(),
       createLocalTokenWithExpiry: vi.fn(),
       logout: vi.fn(),
@@ -271,12 +273,14 @@ describe('SessionManagerService', () => {
       };
 
       mockAuthService.getStoredToken.mockReturnValue(currentToken);
-      mockAuthService.refreshToken.mockReturnValue(of(newToken));
+
+      // Ensure refreshToken returns an observable before the test calls checkActivityAndRefreshIfNeeded
+      const refreshSpy = vi.spyOn(mockAuthService, 'refreshToken').mockReturnValue(of(newToken));
 
       // Trigger activity check
       (service as any).checkActivityAndRefreshIfNeeded();
 
-      expect(mockAuthService.refreshToken).toHaveBeenCalled();
+      expect(refreshSpy).toHaveBeenCalled();
       expect(mockAuthService.storeToken).toHaveBeenCalledWith(newToken);
     });
 
