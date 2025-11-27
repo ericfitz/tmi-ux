@@ -61,6 +61,7 @@ describe('Authentication Integration', () => {
   let sessionStorageMock: MockStorage;
   let cryptoMock: MockCrypto;
   let serverConnectionService: { currentStatus: string };
+  let mockPkceService: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -158,12 +159,26 @@ describe('Authentication Integration', () => {
       currentStatus: 'connected',
     };
 
+    // Create mock PKCE service
+    mockPkceService = {
+      generatePkceParameters: vi.fn().mockResolvedValue({
+        codeVerifier: 'test-verifier-' + 'A'.repeat(30),
+        codeChallenge: 'test-challenge-' + 'B'.repeat(29),
+        codeChallengeMethod: 'S256',
+        generatedAt: Date.now(),
+      }),
+      retrieveVerifier: vi.fn().mockReturnValue('test-verifier-' + 'A'.repeat(30)),
+      clearVerifier: vi.fn(),
+      hasStoredVerifier: vi.fn().mockReturnValue(false),
+    };
+
     // Create the service with mocked dependencies
     authService = new AuthService(
       router as unknown as Router,
       httpClient as unknown as HttpClient,
       logger as unknown as LoggerService,
       serverConnectionService as unknown as ServerConnectionService,
+      mockPkceService,
     );
   });
 
@@ -415,7 +430,7 @@ describe('Authentication Integration', () => {
         });
 
         expect(logger.error).toHaveBeenCalledWith(
-          'Authorization code exchange failed',
+          'Authorization code exchange failed (PKCE)',
           exchangeError,
         );
       });
@@ -512,6 +527,7 @@ describe('Authentication Integration', () => {
           httpClient as unknown as HttpClient,
           logger as unknown as LoggerService,
           serverConnectionService as unknown as ServerConnectionService,
+          mockPkceService,
         );
 
         // Trigger async authentication restoration
@@ -549,6 +565,7 @@ describe('Authentication Integration', () => {
           httpClient as unknown as HttpClient,
           logger as unknown as LoggerService,
           serverConnectionService as unknown as ServerConnectionService,
+          mockPkceService,
         );
 
         // Should not restore authentication state with expired token

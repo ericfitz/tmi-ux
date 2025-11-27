@@ -45,6 +45,20 @@
     }
   },
   "auth": {
+    "actions": {
+      "log_in_again": "تسجيل الدخول مرة أخرى",
+      "try_again": "حاول مرة أخرى"
+    },
+    "errors": {
+      "pkce_exchange_failed": "فشل تسجيل الدخول",
+      "pkce_exchange_failed_detail": "تعذر إكمال تسجيل الدخول. الرجاء المحاولة مرة أخرى.",
+      "pkce_generation_failed": "فشل إعداد المصادقة",
+      "pkce_generation_failed_detail": "تعذر تهيئة تسجيل الدخول الآمن. الرجاء المحاولة مرة أخرى.",
+      "pkce_verifier_expired": "انتهت مهلة جلسة تسجيل الدخول",
+      "pkce_verifier_expired_detail": "انتهت صلاحية جلسة تسجيل الدخول الخاصة بك. الرجاء المحاولة مرة أخرى.",
+      "pkce_verifier_not_found": "فقدت الجلسة",
+      "pkce_verifier_not_found_detail": "فقدت جلسة تسجيل الدخول الخاصة بك. يمكن أن يحدث هذا إذا تم إغلاق المتصفح أو تحديث الصفحة. الرجاء تسجيل الدخول مرة أخرى."
+    },
     "unauthorized": {
       "401": "401 غير مصرح",
       "403": "403 ممنوع",

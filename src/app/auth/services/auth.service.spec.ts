@@ -80,6 +80,7 @@ describe('AuthService', () => {
   let localStorageMock: MockStorage;
   let sessionStorageMock: MockStorage;
   let cryptoMock: MockCrypto;
+  let mockPkceService: any;
 
   // Test data
   const mockJwtPayload = {
@@ -263,12 +264,26 @@ describe('AuthService', () => {
       },
     };
 
+    // Create mock PKCE service
+    mockPkceService = {
+      generatePkceParameters: vi.fn().mockResolvedValue({
+        codeVerifier: 'test-verifier-' + 'A'.repeat(30),
+        codeChallenge: 'test-challenge-' + 'B'.repeat(29),
+        codeChallengeMethod: 'S256',
+        generatedAt: Date.now(),
+      }),
+      retrieveVerifier: vi.fn().mockReturnValue('test-verifier-' + 'A'.repeat(30)),
+      clearVerifier: vi.fn(),
+      hasStoredVerifier: vi.fn().mockReturnValue(false),
+    };
+
     // Create the service directly with mocked dependencies
     service = new AuthService(
       router as unknown as Router,
       httpClient as unknown as HttpClient,
       loggerService as unknown as LoggerService,
       serverConnectionService as unknown as ServerConnectionService,
+      mockPkceService,
     );
   });
 

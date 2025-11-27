@@ -45,6 +45,8 @@ import {
   SAMLProviderInfo,
   SAMLProvidersResponse,
 } from '../models/auth.models';
+import { PkceService } from './pkce.service';
+import { PkceError } from '../models/pkce.models';
 
 interface JwtPayload {
   sub?: string;
@@ -109,6 +111,7 @@ export class AuthService {
     private http: HttpClient,
     private logger: LoggerService,
     private serverConnectionService: ServerConnectionService,
+    private pkceService: PkceService,
   ) {
     // this.logger.info('Auth Service initialized');
     // Initialize from localStorage on service creation
@@ -506,7 +509,7 @@ export class AuthService {
         // this.logger.info(`Initiating TMI OAuth login for provider: ${selectedProviderId}`, {
         //   returnUrl,
         // });
-        this.initiateTMIOAuthLogin(provider, returnUrl);
+        void this.initiateTMIOAuthLogin(provider, returnUrl);
       },
       error: error => {
         this.handleAuthError({
@@ -595,11 +598,14 @@ export class AuthService {
   }
 
   /**
-   * Initiate TMI OAuth proxy login
+   * Initiate TMI OAuth proxy login with PKCE
    * @param provider OAuth provider information
    * @param returnUrl Optional URL to return to after authentication
    */
-  private initiateTMIOAuthLogin(provider: OAuthProviderInfo, returnUrl?: string): void {
+  private async initiateTMIOAuthLogin(
+    provider: OAuthProviderInfo,
+    returnUrl?: string,
+  ): Promise<void> {
     try {
       // this.logger.info(`Initiating TMI OAuth login with ${provider.name}`);
       // this.logger.debugComponent('Auth', `Redirecting to TMI OAuth endpoint`, {
@@ -609,33 +615,52 @@ export class AuthService {
       //   returnUrl: returnUrl,
       // });
 
+      // Generate PKCE parameters (code_verifier + code_challenge)
+      const pkceParams = await this.pkceService.generatePkceParameters();
+
       const state = this.generateRandomState(returnUrl);
       localStorage.setItem('oauth_state', state);
       localStorage.setItem('oauth_provider', provider.id);
 
-      // Use TMI's OAuth proxy endpoint with state, client callback URL, and required scope
+      // Use TMI's OAuth proxy endpoint with state, client callback URL, scope, and PKCE parameters
       const clientCallbackUrl = `${window.location.origin}/oauth2/callback`;
       const separator = provider.auth_url.includes('?') ? '&' : '?';
       const scope = encodeURIComponent('openid profile email');
       // State is Base64 which is URL-safe per backend pattern ^[a-zA-Z0-9_~.+/=-]*$
-      const authUrl = `${provider.auth_url}${separator}state=${state}&client_callback=${encodeURIComponent(clientCallbackUrl)}&scope=${scope}`;
+      const authUrl =
+        `${provider.auth_url}${separator}` +
+        `state=${state}` +
+        `&client_callback=${encodeURIComponent(clientCallbackUrl)}` +
+        `&scope=${scope}` +
+        `&code_challenge=${encodeURIComponent(pkceParams.codeChallenge)}` +
+        `&code_challenge_method=${pkceParams.codeChallengeMethod}`;
 
-      // this.logger.debugComponent('Auth', 'Initiating OAuth with client callback', {
+      // this.logger.debugComponent('Auth', 'Initiating OAuth with PKCE', {
       //   providerId: provider.id,
       //   generatedState: state,
       //   stateLength: state.length,
-      //   stateInUrl: state, // Log the exact state being sent in URL
       //   clientCallbackUrl,
-      //   finalAuthUrl: authUrl.replace(/\?.*$/, ''), // Log without query params for security
+      //   hasPkceChallenge: !!pkceParams.codeChallenge,
+      //   challengeLength: pkceParams.codeChallenge.length,
       // });
 
       window.location.href = authUrl;
     } catch (error) {
-      this.handleAuthError({
-        code: 'oauth_init_error',
-        message: `Failed to initialize ${provider.name} OAuth flow`,
-        retryable: true,
-      });
+      // Handle PKCE generation errors
+      if ((error as PkceError).code) {
+        const pkceError = error as PkceError;
+        this.handleAuthError({
+          code: pkceError.code,
+          message: pkceError.message,
+          retryable: pkceError.retryable,
+        });
+      } else {
+        this.handleAuthError({
+          code: 'oauth_init_error',
+          message: `Failed to initialize ${provider.name} OAuth flow`,
+          retryable: true,
+        });
+      }
       this.logger.error(`Error initializing ${provider.name} OAuth`, error);
     }
   }
@@ -952,7 +977,7 @@ export class AuthService {
   }
 
   /**
-   * Exchange authorization code for tokens
+   * Exchange authorization code for tokens with PKCE verifier
    * @param response OAuth response containing the authorization code
    * @param providerId OAuth provider ID
    * @param returnUrl Optional URL to return to after authentication
@@ -962,7 +987,7 @@ export class AuthService {
     providerId: string | null,
     returnUrl?: string,
   ): Observable<boolean> {
-    // this.logger.debugComponent('Auth', 'Exchanging authorization code for tokens', {
+    // this.logger.debugComponent('Auth', 'Exchanging authorization code for tokens with PKCE', {
     //   providerId,
     //   hasCode: !!response.code,
     //   hasState: !!response.state,
@@ -978,11 +1003,26 @@ export class AuthService {
       return of(false);
     }
 
-    // Prepare the token exchange request
+    // Retrieve PKCE code verifier
+    let codeVerifier: string;
+    try {
+      codeVerifier = this.pkceService.retrieveVerifier();
+    } catch (error) {
+      const pkceError = error as PkceError;
+      this.handleAuthError({
+        code: pkceError.code,
+        message: pkceError.message,
+        retryable: pkceError.retryable,
+      });
+      return of(false);
+    }
+
+    // Prepare the token exchange request with PKCE verifier
     const redirectUri = `${window.location.origin}/oauth2/callback`;
     const exchangeRequest = {
       grant_type: 'authorization_code',
       code: response.code,
+      code_verifier: codeVerifier,
       redirect_uri: redirectUri,
       ...(response.state && { state: response.state }),
     };
@@ -1043,6 +1083,9 @@ export class AuthService {
             expiresAt,
           };
 
+          // Clear PKCE verifier after successful exchange
+          this.pkceService.clearVerifier();
+
           // Store token and extract user profile
           this.storeToken(token);
           const userProfile = this.extractUserProfileFromToken(token);
@@ -1071,7 +1114,10 @@ export class AuthService {
           return true;
         }),
         catchError((error: HttpErrorResponse) => {
-          this.logger.error('Authorization code exchange failed', error);
+          // Clear PKCE verifier on error
+          this.pkceService.clearVerifier();
+
+          this.logger.error('Authorization code exchange failed (PKCE)', error);
           this.handleAuthError({
             code: 'code_exchange_failed',
             message: `Failed to exchange authorization code: ${error.message}`,
@@ -1513,6 +1559,9 @@ export class AuthService {
     this.cachedOAuthProviders = null;
     this.cachedSAMLProviders = null;
     this.providersCacheTime = 0;
+
+    // Clear PKCE verifier
+    this.pkceService.clearVerifier();
 
     // Notify SessionManager to stop timers
     if (this.sessionManagerService) {

@@ -66,64 +66,90 @@ export class LoginComponent implements OnInit {
     // Load available providers from TMI server
     this.loadProviders();
 
-    // Parse fragment parameters for OAuth/SAML callbacks
-    this.route.fragment.pipe(take(1)).subscribe((fragment: string | null) => {
-      // this.logger.debug('LoginComponent received fragment', fragment);
+    // Check query params FIRST for PKCE flow (RFC 7636 compliant)
+    // Then fall back to fragments for backward compatibility
+    this.route.queryParams.pipe(take(1)).subscribe(queryParams => {
+      const code = queryParams['code'] as string | undefined;
+      const state = queryParams['state'] as string | undefined;
+      const error = queryParams['error'] as string | undefined;
+      const errorDescription = queryParams['error_description'] as string | undefined;
+      this.returnUrl = (queryParams['returnUrl'] as string | undefined) || '/dashboard';
 
-      // Parse fragment into key-value pairs
-      const params: LoginFragmentParams = {};
-      if (fragment) {
-        const fragmentPairs = fragment.split('&');
-        for (const pair of fragmentPairs) {
-          const [key, value] = pair.split('=');
-          if (key && value !== undefined) {
-            params[key as keyof LoginFragmentParams] = decodeURIComponent(value);
+      // PKCE flow: authorization code in query params
+      if (code || error) {
+        if (error) {
+          this.handleLoginError({
+            code: error,
+            message: errorDescription || 'Authentication failed',
+            retryable: true,
+          });
+        } else if (code) {
+          // this.logger.info('Detected OAuth authorization code callback (PKCE)', { code, state });
+          this.handleOAuthCallback({ code, state });
+        }
+        // Clear query params from URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return; // PKCE flow handled, skip fragment parsing
+      }
+
+      // Fall back to fragment parsing for backward compatibility (direct token delivery)
+      this.route.fragment.pipe(take(1)).subscribe((fragment: string | null) => {
+        // this.logger.debug('LoginComponent received fragment', fragment);
+
+        // Parse fragment into key-value pairs
+        const params: LoginFragmentParams = {};
+        if (fragment) {
+          const fragmentPairs = fragment.split('&');
+          for (const pair of fragmentPairs) {
+            const [key, value] = pair.split('=');
+            if (key && value !== undefined) {
+              params[key as keyof LoginFragmentParams] = decodeURIComponent(value);
+            }
           }
         }
-      }
 
-      // Also check queryParams for returnUrl (may be passed separately)
-      this.route.queryParams.pipe(take(1)).subscribe(queryParams => {
-        this.returnUrl =
-          params.returnUrl || (queryParams['returnUrl'] as string | undefined) || '/dashboard';
+        // Update returnUrl if provided in fragment
+        if (params.returnUrl) {
+          this.returnUrl = params.returnUrl;
+        }
+
+        const fragmentCode = params.code;
+        const fragmentState = params.state;
+        const accessToken = params.access_token;
+        const refreshToken = params.refresh_token;
+        const expiresIn = params.expires_in;
+        const fragmentError = params.error;
+        const fragmentErrorDescription = params.error_description;
+
+        // Handle TMI OAuth callback with tokens (direct token delivery)
+        if (accessToken) {
+          this.handleOAuthCallback({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+            expires_in: expiresIn ? parseInt(expiresIn) : undefined,
+            state: fragmentState,
+          });
+          // Clear fragment from URL to prevent token exposure (security best practice)
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        // Handle authorization code flow callback (fragment-based, legacy)
+        else if (fragmentCode && fragmentState) {
+          // this.logger.info('Detected OAuth authorization code callback (fragment)', { code: fragmentCode, state: fragmentState });
+          this.handleOAuthCallback({ code: fragmentCode, state: fragmentState });
+          // Clear fragment from URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        // Handle OAuth errors in fragment
+        else if (fragmentError) {
+          this.handleLoginError({
+            code: fragmentError,
+            message: fragmentErrorDescription || 'Authentication failed',
+            retryable: true,
+          });
+          // Clear fragment even on error to prevent information leakage
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
       });
-
-      const code = params.code;
-      const state = params.state;
-      const accessToken = params.access_token;
-      const refreshToken = params.refresh_token;
-      const expiresIn = params.expires_in;
-      const errorParam = params.error;
-      const errorDescription = params.error_description;
-
-      // Handle TMI OAuth callback with tokens
-      if (accessToken) {
-        this.handleOAuthCallback({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-          expires_in: expiresIn ? parseInt(expiresIn) : undefined,
-          state,
-        });
-        // Clear fragment from URL to prevent token exposure (security best practice)
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-      // Handle authorization code flow callback
-      else if (code && state) {
-        // this.logger.info('Detected OAuth authorization code callback', { code, state });
-        this.handleOAuthCallback({ code, state });
-        // Clear fragment from URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-      // Handle OAuth errors
-      else if (errorParam) {
-        this.handleLoginError({
-          code: errorParam,
-          message: errorDescription || 'Authentication failed',
-          retryable: true,
-        });
-        // Clear fragment even on error to prevent information leakage
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
     });
   }
 

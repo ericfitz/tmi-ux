@@ -45,6 +45,20 @@
     }
   },
   "auth": {
+    "actions": {
+      "log_in_again": "Log In Again",
+      "try_again": "Try Again"
+    },
+    "errors": {
+      "pkce_exchange_failed": "Login failed",
+      "pkce_exchange_failed_detail": "Unable to complete login. Please try again.",
+      "pkce_generation_failed": "Authentication setup failed",
+      "pkce_generation_failed_detail": "Unable to initialize secure login. Please try again.",
+      "pkce_verifier_expired": "Login session timed out",
+      "pkce_verifier_expired_detail": "Your login session expired. Please try again.",
+      "pkce_verifier_not_found": "Session lost",
+      "pkce_verifier_not_found_detail": "Your login session was lost. This can happen if your browser was closed or the page was refreshed. Please log in again."
+    },
     "unauthorized": {
       "401": "401 Unauthorized",
       "403": "403 Forbidden",

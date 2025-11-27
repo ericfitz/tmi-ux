@@ -45,6 +45,20 @@
     }
   },
   "auth": {
+    "actions": {
+      "log_in_again": "Erneut anmelden",
+      "try_again": "Erneut versuchen"
+    },
+    "errors": {
+      "pkce_exchange_failed": "Anmeldung fehlgeschlagen",
+      "pkce_exchange_failed_detail": "Die Anmeldung konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
+      "pkce_generation_failed": "Authentifizierungs-Setup fehlgeschlagen",
+      "pkce_generation_failed_detail": "Sichere Anmeldung konnte nicht initialisiert werden. Bitte versuchen Sie es erneut.",
+      "pkce_verifier_expired": "Anmeldungssitzung abgelaufen",
+      "pkce_verifier_expired_detail": "Ihre Anmeldungssitzung ist abgelaufen. Bitte versuchen Sie es erneut.",
+      "pkce_verifier_not_found": "Sitzung verloren",
+      "pkce_verifier_not_found_detail": "Ihre Anmeldungssitzung wurde verloren. Dies kann passieren, wenn Ihr Browser geschlossen oder die Seite aktualisiert wurde. Bitte melden Sie sich erneut an."
+    },
     "unauthorized": {
       "401": "401 Nicht autorisiert",
       "403": "403 Verboten",

@@ -45,6 +45,20 @@
     }
   },
   "auth": {
+    "actions": {
+      "log_in_again": "重新登录",
+      "try_again": "重试"
+    },
+    "errors": {
+      "pkce_exchange_failed": "登录失败",
+      "pkce_exchange_failed_detail": "无法完成登录。请重试。",
+      "pkce_generation_failed": "身份验证设置失败",
+      "pkce_generation_failed_detail": "无法初始化安全登录。请重试。",
+      "pkce_verifier_expired": "登录会话超时",
+      "pkce_verifier_expired_detail": "您的登录会话已过期。请重试。",
+      "pkce_verifier_not_found": "会话丢失",
+      "pkce_verifier_not_found_detail": "您的登录会话丢失。这可能是因为浏览器关闭或页面刷新。请重新登录。"
+    },
     "unauthorized": {
       "401": "401 未授权",
       "403": "403 禁止访问",
