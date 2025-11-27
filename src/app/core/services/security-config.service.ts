@@ -2,7 +2,6 @@ import { Injectable, Inject, DOCUMENT } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { Environment } from '../../../environments/environment.interface';
 import { LoggerService } from './logger.service';
 
 export interface SecurityHeaders {
@@ -104,7 +103,7 @@ export class SecurityConfigService {
 
   public getSecurityConfig(): SecurityConfig {
     // Allow environment-based overrides
-    const env = environment as Environment & { securityConfig?: Partial<SecurityConfig> };
+    const env = environment;
     const envConfig = env.securityConfig || {};
     return {
       ...this.defaultConfig,

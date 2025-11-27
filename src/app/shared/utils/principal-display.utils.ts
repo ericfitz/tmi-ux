@@ -5,7 +5,7 @@ import { Principal, User, Group } from '@app/pages/tm/models/threat-model.model'
  * @param principal The principal (User or Group) to get display name for
  * @returns Formatted display name
  */
-export function getPrincipalDisplayName(principal: Principal | User | Group): string {
+export function getPrincipalDisplayName(principal: Principal): string {
   if (!principal) {
     return '';
   }
@@ -28,7 +28,7 @@ export function getPrincipalDisplayName(principal: Principal | User | Group): st
  * @param principal The principal to get composite key for
  * @returns Composite key string
  */
-export function getCompositeKey(principal: Principal | User | Group): string {
+export function getCompositeKey(principal: Principal): string {
   if (!principal) {
     return '';
   }
@@ -42,8 +42,8 @@ export function getCompositeKey(principal: Principal | User | Group): string {
  * @returns True if principals match
  */
 export function principalsEqual(
-  p1: Principal | User | Group | null | undefined,
-  p2: Principal | User | Group | null | undefined,
+  p1: Principal | null | undefined,
+  p2: Principal | null | undefined,
 ): boolean {
   if (!p1 || !p2) {
     return false;
