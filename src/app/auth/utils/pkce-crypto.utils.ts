@@ -11,11 +11,11 @@
  * Generate cryptographically secure random bytes
  * Uses Web Crypto API for hardware-accelerated random generation
  *
- * @param length Number of bytes to generate (1-1024)
+ * @param length Number of bytes to generate (1-1024), defaults to 32
  * @returns Uint8Array of random bytes
  * @throws Error if length is invalid
  */
-export function generateRandomBytes(length: number): Uint8Array {
+export function generateRandomBytes(length: number = 32): Uint8Array {
   if (length < 1 || length > 1024) {
     throw new Error(`Invalid byte length: ${length}. Must be between 1 and 1024.`);
   }

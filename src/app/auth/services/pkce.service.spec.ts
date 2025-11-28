@@ -118,7 +118,7 @@ describe('PkceService', () => {
 
     it('should throw PkceError if sessionStorage is unavailable', async () => {
       const originalSetItem = sessionStorage.setItem;
-       
+
       (sessionStorage as any).setItem = vi.fn(() => {
         throw new DOMException('QuotaExceededError');
       });
@@ -433,7 +433,6 @@ describe('PkceService', () => {
     it('should handle sessionStorage quota exceeded', async () => {
       const originalSetItem = sessionStorage.setItem;
 
-       
       (sessionStorage as any).setItem = vi.fn(() => {
         throw new DOMException('QuotaExceededError');
       });

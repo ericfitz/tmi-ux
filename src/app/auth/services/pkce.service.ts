@@ -57,6 +57,22 @@ export class PkceService {
 
       return params;
     } catch (error) {
+      // Re-throw PkceErrorClass as-is to preserve error details
+      if (error instanceof PkceErrorClass) {
+        throw error;
+      }
+      // Duck-type check for PKCE error structure (handles errors across different realms/contexts)
+      if (
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        'retryable' in error &&
+        typeof (error as { retryable: unknown }).retryable === 'boolean'
+      ) {
+        // Re-throw errors that have PKCE error structure
+        throw error;
+      }
+      // Wrap other errors
       this.logger.error('Failed to generate PKCE parameters', error);
       throw new PkceErrorClass(
         PkceErrorCode.GENERATION_FAILED,

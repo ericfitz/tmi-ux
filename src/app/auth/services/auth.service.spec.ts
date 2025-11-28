@@ -378,7 +378,7 @@ describe('AuthService', () => {
   }); /* End of Service Initialization describe block */
 
   describe('OAuth Login', () => {
-    it('should initiate OAuth login flow with default provider', () => {
+    it('should initiate OAuth login flow with default provider', async () => {
       // Mock crypto to return predictable values
       const mockArray = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
       cryptoMock.getRandomValues.mockReturnValue(mockArray);
@@ -388,12 +388,19 @@ describe('AuthService', () => {
 
       service.initiateLogin();
 
-      expect(cryptoMock.getRandomValues).toHaveBeenCalled();
+      // Wait for async PKCE generation
+      await vi.waitFor(() => {
+        expect(mockPkceService.generatePkceParameters).toHaveBeenCalled();
+      });
+
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_state', expect.any(String));
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_provider', 'test');
-      expect(window.location.href).toBe(
-        'http://localhost:8080/oauth2/authorize/test?state=00000000000000000000000000000000&client_callback=undefined%2Foauth2%2Fcallback&scope=openid%20profile%20email',
-      );
+      expect(window.location.href).toContain('http://localhost:8080/oauth2/authorize/test');
+      expect(window.location.href).toContain('state=');
+      expect(window.location.href).toContain('client_callback=');
+      expect(window.location.href).toContain('scope=openid%20profile%20email');
+      expect(window.location.href).toContain('code_challenge=');
+      expect(window.location.href).toContain('code_challenge_method=S256');
     });
 
     it('should handle missing provider configuration', () => {

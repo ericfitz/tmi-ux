@@ -1,4 +1,5 @@
 import { JSDOM } from 'jsdom';
+import { webcrypto } from 'node:crypto';
 import type { Environment } from 'vitest';
 
 /**
@@ -37,7 +38,8 @@ export default {
     global.getComputedStyle = window.getComputedStyle;
     global.btoa = window.btoa;
     global.atob = window.atob;
-    global.crypto = window.crypto; // Ensure crypto is available for OAuth tests
+    // Use Node.js Web Crypto API polyfill for PKCE tests
+    global.crypto = webcrypto as unknown as Crypto;
 
     return {
       teardown() {
