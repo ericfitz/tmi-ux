@@ -29,6 +29,8 @@ describe('PkceService', () => {
 
   afterEach(() => {
     sessionStorage.clear();
+    // Restore all mocks to ensure sessionStorage methods aren't mocked in subsequent tests
+    vi.restoreAllMocks();
   });
 
   describe('Service Creation', () => {
@@ -117,19 +119,20 @@ describe('PkceService', () => {
     });
 
     it('should throw PkceError if sessionStorage is unavailable', async () => {
-      const originalSetItem = sessionStorage.setItem;
-
-      (sessionStorage as any).setItem = vi.fn(() => {
+      const originalSetItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = vi.fn(() => {
         throw new DOMException('QuotaExceededError');
       });
 
-      await expect(service.generatePkceParameters()).rejects.toMatchObject({
-        code: PkceErrorCode.GENERATION_FAILED,
-        message: 'Failed to store PKCE verifier - sessionStorage unavailable',
-        retryable: false,
-      });
-
-      sessionStorage.setItem = originalSetItem;
+      try {
+        await expect(service.generatePkceParameters()).rejects.toMatchObject({
+          code: PkceErrorCode.GENERATION_FAILED,
+          message: 'Failed to store PKCE verifier - sessionStorage unavailable',
+          retryable: false,
+        });
+      } finally {
+        Storage.prototype.setItem = originalSetItem;
+      }
     });
 
     it('should generate unique parameters on each call', async () => {
@@ -252,9 +255,12 @@ describe('PkceService', () => {
     it('should accept verifier that is exactly 5 minutes old', async () => {
       await service.generatePkceParameters();
 
+      // Set to exactly 5 minutes in the past minus 1ms to account for execution time
+      const fiveMinutesAgo = Date.now() - (5 * 60 * 1000 - 1);
+
       const stored = sessionStorage.getItem('pkce_verifier');
       const params = JSON.parse(stored!);
-      params.generatedAt = Date.now() - 5 * 60 * 1000; // Exactly 5 minutes
+      params.generatedAt = fiveMinutesAgo;
       sessionStorage.setItem('pkce_verifier', JSON.stringify(params));
 
       expect(() => service.retrieveVerifier()).not.toThrow();
@@ -431,17 +437,18 @@ describe('PkceService', () => {
     });
 
     it('should handle sessionStorage quota exceeded', async () => {
-      const originalSetItem = sessionStorage.setItem;
-
-      (sessionStorage as any).setItem = vi.fn(() => {
+      const originalSetItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = vi.fn(() => {
         throw new DOMException('QuotaExceededError');
       });
 
-      await expect(service.generatePkceParameters()).rejects.toMatchObject({
-        code: PkceErrorCode.GENERATION_FAILED,
-      });
-
-      sessionStorage.setItem = originalSetItem;
+      try {
+        await expect(service.generatePkceParameters()).rejects.toMatchObject({
+          code: PkceErrorCode.GENERATION_FAILED,
+        });
+      } finally {
+        Storage.prototype.setItem = originalSetItem;
+      }
     });
   });
 });
