@@ -227,7 +227,7 @@ export class LoginComponent implements OnInit {
    * Cancel login and return to home page
    */
   cancel(): void {
-    this.router.navigate(['/']);
+    void this.router.navigate(['/']);
   }
 
   private handleOAuthCallback(response: OAuthResponse): void {
