@@ -311,24 +311,24 @@ export class LoginComponent implements OnInit {
       ? iconPath
       : `${environment.apiUrl}${iconPath.startsWith('/') ? '' : '/'}${iconPath}`;
 
-    this.logger.info(
-      `[${type.toUpperCase()}] Provider icon loading`,
-      `Provider: ${providerName} (${providerId})`,
-      `Original icon path: ${iconPath}`,
-      `Resolved URL: ${fullIconUrl}`,
-      `URL type: ${isAbsoluteUrl ? 'Absolute URL' : 'Server-relative (prepended with API URL)'}`,
-    );
+    // this.logger.info(
+    //   `[${type.toUpperCase()}] Provider icon loading`,
+    //   `Provider: ${providerName} (${providerId})`,
+    //   `Original icon path: ${iconPath}`,
+    //   `Resolved URL: ${fullIconUrl}`,
+    //   `URL type: ${isAbsoluteUrl ? 'Absolute URL' : 'Server-relative (prepended with API URL)'}`,
+    // );
 
     // Try to load the image from the server
     const img = new Image();
     img.onload = () => {
       // Successfully loaded from server
       this.providerLogos.set(providerId, { type: 'image', value: fullIconUrl });
-      this.logger.info(
-        `[${type.toUpperCase()}] Provider icon loaded successfully`,
-        `Provider: ${providerName} (${providerId})`,
-        `Icon source: ${fullIconUrl}`,
-      );
+      // this.logger.info(
+      //   `[${type.toUpperCase()}] Provider icon loaded successfully`,
+      //   `Provider: ${providerName} (${providerId})`,
+      //   `Icon source: ${fullIconUrl}`,
+      // );
     };
     img.onerror = () => {
       // Failed to load from server, use fallback from tmi-ux server
