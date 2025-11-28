@@ -170,6 +170,15 @@
   }
 }
 
+// SAML provider icon size adjustment to match visual weight
+.provider-button img[src*='saml'],
+.single-provider-button img[src*='saml'] {
+  width: 28px !important;
+  height: 28px !important;
+  margin-left: -2px !important;
+  margin-right: 8px !important;
+}
+
 .single-provider-loading {
   display: flex;
   flex-direction: column;
@@ -242,4 +251,10 @@
     color: var(--color-error-darker);
     font-size: 14px;
   }
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: center;
+  padding: 8px 16px 16px;
 }

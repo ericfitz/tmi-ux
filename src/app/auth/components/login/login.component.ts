@@ -223,6 +223,13 @@ export class LoginComponent implements OnInit {
     this.authService.initiateSAMLLogin(providerId, this.returnUrl || undefined);
   }
 
+  /**
+   * Cancel login and return to home page
+   */
+  cancel(): void {
+    this.router.navigate(['/']);
+  }
+
   private handleOAuthCallback(response: OAuthResponse): void {
     this.isLoading = true;
     this.authService.handleOAuthCallback(response).subscribe({
@@ -278,9 +285,21 @@ export class LoginComponent implements OnInit {
    * Load a single provider logo from server or use fallback
    */
   private loadProviderLogo(providerId: string, iconPath: string, type: 'oauth' | 'saml'): void {
+    // Get provider name for logging
+    const providerName =
+      type === 'oauth'
+        ? this.oauthProviders.find(p => p.id === providerId)?.name
+        : this.samlProviders.find(p => p.id === providerId)?.name;
+
     // Check if iconPath is a FontAwesome reference (starts with 'fa-')
     if (iconPath.startsWith('fa-')) {
       this.providerLogos.set(providerId, { type: 'fontawesome', value: iconPath });
+      this.logger.info(
+        `[${type.toUpperCase()}] Provider icon resolved`,
+        `Provider: ${providerName} (${providerId})`,
+        `Original icon path: ${iconPath}`,
+        `Icon source: FontAwesome class "${iconPath}"`,
+      );
       return;
     }
 
@@ -292,11 +311,24 @@ export class LoginComponent implements OnInit {
       ? iconPath
       : `${environment.apiUrl}${iconPath.startsWith('/') ? '' : '/'}${iconPath}`;
 
+    this.logger.info(
+      `[${type.toUpperCase()}] Provider icon loading`,
+      `Provider: ${providerName} (${providerId})`,
+      `Original icon path: ${iconPath}`,
+      `Resolved URL: ${fullIconUrl}`,
+      `URL type: ${isAbsoluteUrl ? 'Absolute URL' : 'Server-relative (prepended with API URL)'}`,
+    );
+
     // Try to load the image from the server
     const img = new Image();
     img.onload = () => {
       // Successfully loaded from server
       this.providerLogos.set(providerId, { type: 'image', value: fullIconUrl });
+      this.logger.info(
+        `[${type.toUpperCase()}] Provider icon loaded successfully`,
+        `Provider: ${providerName} (${providerId})`,
+        `Icon source: ${fullIconUrl}`,
+      );
     };
     img.onerror = () => {
       // Failed to load from server, use fallback from tmi-ux server
@@ -308,6 +340,12 @@ export class LoginComponent implements OnInit {
           type === 'oauth' ? 'assets/signin-logos/oauth.svg' : 'assets/signin-logos/saml.svg';
       }
       this.providerLogos.set(providerId, { type: 'image', value: fallback });
+      this.logger.info(
+        `[${type.toUpperCase()}] Provider icon failed to load, using fallback`,
+        `Provider: ${providerName} (${providerId})`,
+        `Failed URL: ${fullIconUrl}`,
+        `Fallback icon: ${fallback}`,
+      );
     };
     img.src = fullIconUrl;
   }
