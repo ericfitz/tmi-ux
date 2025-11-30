@@ -23,6 +23,36 @@
     "webApplicationSourceCode": "Web应用程序源代码：",
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
   },
+  "admin": {
+    "sections": {
+      "addons": {
+        "description": "安装和配置应用程序插件",
+        "title": "管理插件"
+      },
+      "administrators": {
+        "description": "授予或撤销管理员权限",
+        "title": "管理管理员"
+      },
+      "groups": {
+        "description": "配置用户组和成员资格",
+        "title": "管理用户组"
+      },
+      "quotas": {
+        "description": "配置资源配额和限制",
+        "title": "管理配额"
+      },
+      "users": {
+        "description": "查看和管理用户账户",
+        "title": "管理用户"
+      },
+      "webhooks": {
+        "description": "安装和配置 webhook 集成",
+        "title": "管理 Webhooks"
+      }
+    },
+    "subtitle": "管理系统设置和配置",
+    "title": "系统管理"
+  },
   "assetEditor": {
     "chipPlaceholder": "输入值并按 Enter",
     "classification": "分类",
@@ -132,6 +162,7 @@
     "lastModified": "最后修改",
     "lastModifiedDate": "最后修改：{{date}}",
     "lastUpdated": "最后更新: ",
+    "manage": "管理",
     "manageMetadata": "管理元数据",
     "manageThreats": "管理威胁",
     "metadata": "元数据",
@@ -653,6 +684,9 @@
     "title": "服务条款"
   },
   "userPreferences": {
+    "administration": {
+      "title": "系统管理"
+    },
     "colorBlindMode": "启用色盲模式",
     "deleteMyData": {
       "confirmation": "您确定要删除所有数据吗？",
@@ -692,38 +726,13 @@
       "light": "浅色"
     },
     "title": "用户偏好",
-    "administration": {
-      "title": "Administration"
-    }
-  },
-  "admin": {
-    "title": "Administration",
-    "subtitle": "Manage system settings and configurations",
-    "sections": {
-      "administrators": {
-        "title": "Manage Administrators",
-        "description": "Configure administrator accounts and permissions"
-      },
-      "users": {
-        "title": "Manage Users",
-        "description": "View and manage user accounts"
-      },
-      "groups": {
-        "title": "Manage Groups",
-        "description": "Configure user groups and memberships"
-      },
-      "quotas": {
-        "title": "Manage Quotas",
-        "description": "Configure resource quotas and limits"
-      },
-      "webhooks": {
-        "title": "Manage Webhooks",
-        "description": "Configure webhook integrations and callbacks"
-      },
-      "addons": {
-        "title": "Manage Addons",
-        "description": "Install and configure application addons"
-      }
+    "userProfile": {
+      "currentRole": "当前威胁模型角色",
+      "groups": "用户组",
+      "primary": "主要",
+      "providers": "关联的提供商",
+      "title": "用户资料",
+      "userId": "用户ID"
     }
   }
 }

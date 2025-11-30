@@ -23,6 +23,36 @@
     "webApplicationSourceCode": "Web Application Source Code: ",
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
   },
+  "admin": {
+    "sections": {
+      "addons": {
+        "description": "Install and configure application addons",
+        "title": "Manage Addons"
+      },
+      "administrators": {
+        "description": "Grant or revoke administrator permissions",
+        "title": "Manage Administrators"
+      },
+      "groups": {
+        "description": "Configure user groups and memberships",
+        "title": "Manage Groups"
+      },
+      "quotas": {
+        "description": "Configure resource quotas and limits",
+        "title": "Manage Quotas"
+      },
+      "users": {
+        "description": "View and manage user accounts",
+        "title": "Manage Users"
+      },
+      "webhooks": {
+        "description": "Install and configure webhook integrations",
+        "title": "Manage Webhooks"
+      }
+    },
+    "subtitle": "Manage system settings and configurations",
+    "title": "Administration"
+  },
   "assetEditor": {
     "chipPlaceholder": "Enter value and press Enter",
     "classification": "Classification",
@@ -132,6 +162,7 @@
     "lastModified": "Last Modified",
     "lastModifiedDate": "Last Modified: {{date}}",
     "lastUpdated": "Last updated: ",
+    "manage": "Manage",
     "manageMetadata": "Manage Metadata",
     "manageThreats": "Manage Threats",
     "metadata": "Metadata",
@@ -653,6 +684,9 @@
     "title": "Terms of Service"
   },
   "userPreferences": {
+    "administration": {
+      "title": "Administration"
+    },
     "colorBlindMode": "Enable Color Blind Mode",
     "deleteMyData": {
       "confirmation": "Are you sure that you want to delete all your data?",
@@ -693,45 +727,12 @@
     },
     "title": "User Preferences",
     "userProfile": {
-      "title": "User Profile",
-      "userId": "User ID",
-      "providers": "Linked Providers",
-      "groups": "Groups",
       "currentRole": "Current Threat Model Role",
-      "primary": "Primary"
-    },
-    "administration": {
-      "title": "Administration"
-    }
-  },
-  "admin": {
-    "title": "Administration",
-    "subtitle": "Manage system settings and configurations",
-    "sections": {
-      "administrators": {
-        "title": "Manage Administrators",
-        "description": "Configure administrator accounts and permissions"
-      },
-      "users": {
-        "title": "Manage Users",
-        "description": "View and manage user accounts"
-      },
-      "groups": {
-        "title": "Manage Groups",
-        "description": "Configure user groups and memberships"
-      },
-      "quotas": {
-        "title": "Manage Quotas",
-        "description": "Configure resource quotas and limits"
-      },
-      "webhooks": {
-        "title": "Manage Webhooks",
-        "description": "Configure webhook integrations and callbacks"
-      },
-      "addons": {
-        "title": "Manage Addons",
-        "description": "Install and configure application addons"
-      }
+      "groups": "Groups",
+      "primary": "Primary",
+      "providers": "Linked Providers",
+      "title": "User Profile",
+      "userId": "User ID"
     }
   }
 }

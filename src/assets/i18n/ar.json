@@ -23,6 +23,36 @@
     "webApplicationSourceCode": "الكود المصدري لتطبيق الويب: ",
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
   },
+  "admin": {
+    "sections": {
+      "addons": {
+        "description": "تثبيت وتكوين الوظائف الإضافية للتطبيق",
+        "title": "إدارة الوظائف الإضافية"
+      },
+      "administrators": {
+        "description": "منح أو إلغاء أذونات المسؤول",
+        "title": "إدارة المسؤولين"
+      },
+      "groups": {
+        "description": "تكوين مجموعات المستخدمين والعضويات",
+        "title": "إدارة المجموعات"
+      },
+      "quotas": {
+        "description": "تكوين حصص الموارد والحدود",
+        "title": "إدارة الحصص"
+      },
+      "users": {
+        "description": "عرض وإدارة حسابات المستخدمين",
+        "title": "إدارة المستخدمين"
+      },
+      "webhooks": {
+        "description": "تثبيت وتكوين تكاملات الخطافات",
+        "title": "إدارة الخطافات"
+      }
+    },
+    "subtitle": "إدارة إعدادات النظام والتكوينات",
+    "title": "الإدارة"
+  },
   "assetEditor": {
     "chipPlaceholder": "أدخل القيمة واضغط Enter",
     "classification": "التصنيف",
@@ -132,6 +162,7 @@
     "lastModified": "آخر تعديل",
     "lastModifiedDate": "آخر تعديل: {{date}}",
     "lastUpdated": "آخر تحديث: ",
+    "manage": "إدارة",
     "manageMetadata": "إدارة البيانات الوصفية",
     "manageThreats": "إدارة التهديدات",
     "metadata": "البيانات الوصفية",
@@ -653,6 +684,9 @@
     "title": "شروط الخدمة"
   },
   "userPreferences": {
+    "administration": {
+      "title": "الإدارة"
+    },
     "colorBlindMode": "تفعيل وضع عمى الألوان",
     "deleteMyData": {
       "confirmation": "هل أنت متأكد من أنك تريد حذف جميع بياناتك؟",
@@ -692,38 +726,13 @@
       "light": "فاتح"
     },
     "title": "تفضيلات المستخدم",
-    "administration": {
-      "title": "Administration"
-    }
-  },
-  "admin": {
-    "title": "Administration",
-    "subtitle": "Manage system settings and configurations",
-    "sections": {
-      "administrators": {
-        "title": "Manage Administrators",
-        "description": "Configure administrator accounts and permissions"
-      },
-      "users": {
-        "title": "Manage Users",
-        "description": "View and manage user accounts"
-      },
-      "groups": {
-        "title": "Manage Groups",
-        "description": "Configure user groups and memberships"
-      },
-      "quotas": {
-        "title": "Manage Quotas",
-        "description": "Configure resource quotas and limits"
-      },
-      "webhooks": {
-        "title": "Manage Webhooks",
-        "description": "Configure webhook integrations and callbacks"
-      },
-      "addons": {
-        "title": "Manage Addons",
-        "description": "Install and configure application addons"
-      }
+    "userProfile": {
+      "currentRole": "دور نموذج التهديد الحالي",
+      "groups": "المجموعات",
+      "primary": "أساسي",
+      "providers": "الموفرون المرتبطون",
+      "title": "ملف المستخدم",
+      "userId": "معرف المستخدم"
     }
   }
 }

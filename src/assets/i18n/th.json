@@ -23,6 +23,36 @@
     "webApplicationSourceCode": "รหัสต้นฉบับเว็บแอปพลิเคชัน: ",
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
   },
+  "admin": {
+    "sections": {
+      "addons": {
+        "description": "ติดตั้งและกำหนดค่าส่วนเสริมของแอปพลิเคชัน",
+        "title": "จัดการส่วนเสริม"
+      },
+      "administrators": {
+        "description": "ให้หรือเพิกถอนสิทธิ์ผู้ดูแลระบบ",
+        "title": "จัดการผู้ดูแลระบบ"
+      },
+      "groups": {
+        "description": "กำหนดค่ากลุ่มผู้ใช้และสมาชิก",
+        "title": "จัดการกลุ่ม"
+      },
+      "quotas": {
+        "description": "กำหนดค่าโควตาทรัพยากรและข้อจำกัด",
+        "title": "จัดการโควตา"
+      },
+      "users": {
+        "description": "ดูและจัดการบัญชีผู้ใช้",
+        "title": "จัดการผู้ใช้"
+      },
+      "webhooks": {
+        "description": "ติดตั้งและกำหนดค่าการรวม webhook",
+        "title": "จัดการ Webhooks"
+      }
+    },
+    "subtitle": "จัดการการตั้งค่าระบบและการกำหนดค่า",
+    "title": "การจัดการระบบ"
+  },
   "assetEditor": {
     "chipPlaceholder": "ป้อนค่าและกด Enter",
     "classification": "การจัดหมวดหมู่",
@@ -132,6 +162,7 @@
     "lastModified": "แก้ไขล่าสุด",
     "lastModifiedDate": "แก้ไขล่าสุด: {{date}}",
     "lastUpdated": "อัปเดตล่าสุด: ",
+    "manage": "จัดการ",
     "manageMetadata": "จัดการข้อมูลเมตา",
     "manageThreats": "จัดการภัยคุกคาม",
     "metadata": "ข้อมูลเมตา",
@@ -653,6 +684,9 @@
     "title": "เงื่อนไขการให้บริการ"
   },
   "userPreferences": {
+    "administration": {
+      "title": "การจัดการระบบ"
+    },
     "colorBlindMode": "เปิดใช้งานโหมดตาบอดสี",
     "deleteMyData": {
       "confirmation": "คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลทั้งหมดของคุณ?",
@@ -692,38 +726,13 @@
       "light": "สว่าง"
     },
     "title": "การตั้งค่าผู้ใช้",
-    "administration": {
-      "title": "Administration"
-    }
-  },
-  "admin": {
-    "title": "Administration",
-    "subtitle": "Manage system settings and configurations",
-    "sections": {
-      "administrators": {
-        "title": "Manage Administrators",
-        "description": "Configure administrator accounts and permissions"
-      },
-      "users": {
-        "title": "Manage Users",
-        "description": "View and manage user accounts"
-      },
-      "groups": {
-        "title": "Manage Groups",
-        "description": "Configure user groups and memberships"
-      },
-      "quotas": {
-        "title": "Manage Quotas",
-        "description": "Configure resource quotas and limits"
-      },
-      "webhooks": {
-        "title": "Manage Webhooks",
-        "description": "Configure webhook integrations and callbacks"
-      },
-      "addons": {
-        "title": "Manage Addons",
-        "description": "Install and configure application addons"
-      }
+    "userProfile": {
+      "currentRole": "บทบาทโมเดลภัยคุกคามปัจจุบัน",
+      "groups": "กลุ่ม",
+      "primary": "หลัก",
+      "providers": "ผู้ให้บริการที่เชื่อมโยง",
+      "title": "โปรไฟล์ผู้ใช้",
+      "userId": "รหัสผู้ใช้"
     }
   }
 }
