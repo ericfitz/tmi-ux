@@ -52,7 +52,7 @@ interface CheckboxChangeEvent {
             <span class="profile-label" [transloco]="'userPreferences.userProfile.provider'">
               Identity Provider
             </span>
-            <span class="profile-value provider-badge">{{ userProfile?.provider }}</span>
+            <span class="profile-value">{{ userProfile?.provider }}</span>
           </div>
         }
 
@@ -83,7 +83,7 @@ interface CheckboxChangeEvent {
             <span class="profile-label" [transloco]="'userPreferences.userProfile.currentRole'">
               Current Threat Model Role
             </span>
-            <span class="profile-value role-badge">
+            <span class="profile-value">
               {{ 'common.roles.' + currentThreatModelRole | transloco }}
             </span>
           </div>
@@ -329,16 +329,13 @@ interface CheckboxChangeEvent {
         color: var(--theme-text-secondary);
       }
 
-      .providers-list,
       .groups-list {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
       }
 
-      .provider-badge,
-      .group-badge,
-      .role-badge {
+      .group-badge {
         display: inline-flex;
         align-items: center;
         padding: 4px 12px;
@@ -346,18 +343,6 @@ interface CheckboxChangeEvent {
         border-radius: 12px;
         font-size: 13px;
         font-weight: 500;
-      }
-
-      .primary-badge {
-        margin-left: 4px;
-        font-size: 11px;
-        font-weight: 400;
-        opacity: 0.7;
-      }
-
-      .role-badge {
-        background-color: var(--theme-primary-light, rgba(63, 81, 181, 0.1));
-        color: var(--theme-primary, #3f51b5);
       }
     `,
   ],
