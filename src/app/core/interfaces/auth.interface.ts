@@ -15,12 +15,11 @@ export interface IJwtToken {
  * User profile information
  */
 export interface IUserProfile {
-  id: string;
-  email: string;
-  name: string;
   provider: string;
   provider_id: string;
-  groups?: string[];
+  display_name: string;
+  email: string;
+  groups: string[] | null;
   is_admin?: boolean;
 }
 
@@ -40,9 +39,9 @@ export interface IAuthService {
   readonly userEmail: string;
 
   /**
-   * Get the current user's ID (provider_id from JWT sub claim)
+   * Get the current user's provider ID (provider-assigned user identifier from JWT sub claim)
    */
-  readonly userId: string;
+  readonly providerId: string;
 
   /**
    * Get the current user's identity provider (from JWT idp claim)

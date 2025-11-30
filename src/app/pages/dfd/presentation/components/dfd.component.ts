@@ -549,11 +549,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             this.appDfdOrchestrator.initializeCollaborationBroadcaster();
 
             // Initialize the WebSocket collaboration adapter for cursor/selection broadcasting
-            if (this.threatModelId && this.dfdId && this.authService.userId) {
+            if (this.threatModelId && this.dfdId && this.authService.providerId) {
               this.websocketCollaborationAdapter.initialize({
                 diagramId: this.dfdId,
                 threatModelId: this.threatModelId,
-                userId: this.authService.userId,
+                userId: this.authService.providerId,
                 threatModelPermission: this.threatModelPermission || 'reader',
               });
               this.logger.debugComponent('DFD', 'WebSocket collaboration adapter initialized', {

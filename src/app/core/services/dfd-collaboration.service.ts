@@ -476,12 +476,12 @@ export class DfdCollaborationService implements OnDestroy {
     // Initialize with current user immediately to ensure UI shows at least one participant
     const currentUserEmail = this.getCurrentUserEmail();
     const currentUserProvider = this._authService.userIdp;
-    const currentUserProviderId = this._authService.userId;
+    const currentUserProviderId = this._authService.providerId;
     const isCurrentUserPresenter = currentUserEmail === existingSession.presenter;
     const initialUser: CollaborationUser = {
       provider: currentUserProvider,
       provider_id: currentUserProviderId,
-      name: this._authService.userProfile?.name || '',
+      name: this._authService.userProfile?.display_name || '',
       email: currentUserEmail || '',
       permission: 'writer', // Will be updated from WebSocket messages
       status: 'active',
@@ -558,12 +558,12 @@ export class DfdCollaborationService implements OnDestroy {
           // Initialize with current user immediately to ensure UI shows at least one participant
           const currentUserEmail = this.getCurrentUserEmail();
           const currentUserProvider = this._authService.userIdp;
-          const currentUserProviderId = this._authService.userId;
+          const currentUserProviderId = this._authService.providerId;
           const isCurrentUserPresenter = currentUserEmail === session.presenter;
           const initialUser: CollaborationUser = {
             provider: currentUserProvider,
             provider_id: currentUserProviderId,
-            name: this._authService.userProfile?.name || '',
+            name: this._authService.userProfile?.display_name || '',
             email: currentUserEmail || '',
             permission: 'writer',
             status: 'active',
@@ -647,12 +647,12 @@ export class DfdCollaborationService implements OnDestroy {
           // Initialize with current user immediately to ensure UI shows at least one participant
           const currentUserEmail = this.getCurrentUserEmail();
           const currentUserProvider = this._authService.userIdp;
-          const currentUserProviderId = this._authService.userId;
+          const currentUserProviderId = this._authService.providerId;
           const isCurrentUserPresenter = currentUserEmail === session.presenter;
           const initialUser: CollaborationUser = {
             provider: currentUserProvider,
             provider_id: currentUserProviderId,
-            name: this._authService.userProfile?.name || '',
+            name: this._authService.userProfile?.display_name || '',
             email: currentUserEmail || '',
             permission: 'writer',
             status: 'active',
@@ -860,8 +860,8 @@ export class DfdCollaborationService implements OnDestroy {
       user: {
         principal_type: 'user',
         provider: this._authService.userIdp,
-        provider_id: userProfile.id,
-        display_name: userProfile.name,
+        provider_id: userProfile.provider_id,
+        display_name: userProfile.display_name,
         email: userProfile.email,
       },
       removed_user: {
@@ -1046,7 +1046,7 @@ export class DfdCollaborationService implements OnDestroy {
 
     const users = this._collaborationState$.value.users;
     const currentUserProvider = this._authService.userIdp;
-    const currentUserProviderId = this._authService.userId;
+    const currentUserProviderId = this._authService.providerId;
     const currentUser = users.find(
       user => user.provider === currentUserProvider && user.provider_id === currentUserProviderId,
     );
@@ -1124,7 +1124,7 @@ export class DfdCollaborationService implements OnDestroy {
     // This allows the host status to be determined even during session initialization
     const users = this._collaborationState$.value.users;
     const currentUserProvider = this._authService.userIdp;
-    const currentUserProviderId = this._authService.userId;
+    const currentUserProviderId = this._authService.providerId;
 
     if (!currentUserProvider || !currentUserProviderId) {
       return false;
@@ -1162,7 +1162,7 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns The current user's ID or null if not authenticated
    */
   public getCurrentUserId(): string | null {
-    return this._authService.userProfile?.id || null;
+    return this._authService.userProfile?.provider_id || null;
   }
 
   /**
@@ -1288,8 +1288,8 @@ export class DfdCollaborationService implements OnDestroy {
       current_presenter: {
         principal_type: 'user',
         provider: this._authService.userIdp,
-        provider_id: userProfile.id,
-        display_name: userProfile.name,
+        provider_id: userProfile.provider_id,
+        display_name: userProfile.display_name,
         email: userProfile.email,
       },
     };
@@ -1342,8 +1342,8 @@ export class DfdCollaborationService implements OnDestroy {
       initiating_user: {
         principal_type: 'user',
         provider: this._authService.userIdp,
-        provider_id: userProfile.id,
-        display_name: userProfile.name,
+        provider_id: userProfile.provider_id,
+        display_name: userProfile.display_name,
         email: userProfile.email,
       },
       new_presenter: newPresenterUser
@@ -1452,8 +1452,8 @@ export class DfdCollaborationService implements OnDestroy {
           user: {
             principal_type: 'user',
             provider: this._authService.userIdp,
-            provider_id: userProfile.id,
-            display_name: userProfile.name,
+            provider_id: userProfile.provider_id,
+            display_name: userProfile.display_name,
             email: userProfile.email,
           },
           selected_cells: [], // Empty array clears all participants' selections

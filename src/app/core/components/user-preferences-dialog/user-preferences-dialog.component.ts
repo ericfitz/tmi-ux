@@ -39,19 +39,12 @@ interface CheckboxChangeEvent {
       <div class="profile-info">
         <div class="profile-item">
           <span class="profile-label" [transloco]="'common.name'">Name</span>
-          <span class="profile-value">{{ userProfile?.name || 'N/A' }}</span>
+          <span class="profile-value">{{ userProfile?.display_name || 'N/A' }}</span>
         </div>
 
         <div class="profile-item">
           <span class="profile-label" [transloco]="'common.emailLabel'">Email</span>
           <span class="profile-value">{{ userProfile?.email || 'N/A' }}</span>
-        </div>
-
-        <div class="profile-item">
-          <span class="profile-label" [transloco]="'userPreferences.userProfile.userId'"
-            >User ID</span
-          >
-          <span class="profile-value user-id">{{ userProfile?.id || 'N/A' }}</span>
         </div>
 
         @if (userProfile?.provider) {

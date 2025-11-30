@@ -20,6 +20,7 @@ import { roleGuard } from './guards/role.guard';
 import { LoggerService } from '../core/services/logger.service';
 import { ServerConnectionService } from '../core/services/server-connection.service';
 import { environment } from '../../environments/environment';
+import { JwtToken, UserProfile } from './models/auth.models';
 import {
   createTypedMockLoggerService,
   createTypedMockRouter,
@@ -218,26 +219,66 @@ describe('Authentication Integration', () => {
     });
   });
 
-  describe('Demo Login Flow', () => {
-    it('should handle demo login correctly', () => {
+  describe('Authentication State Management', () => {
+    it('should handle manual login state setup correctly', async () => {
       const testEmail = 'test@example.com';
 
       // Before login
       expect(authService.isAuthenticated).toBe(false);
 
-      // Perform demo login
-      authService.demoLogin(testEmail);
+      // Manually set up authenticated state
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 1);
 
-      // After login
+      const token: JwtToken = {
+        token: 'mock.jwt.token',
+        expiresIn: 3600,
+        expiresAt,
+      };
+
+      const userProfile: UserProfile = {
+        provider: 'test',
+        provider_id: testEmail,
+        display_name: 'test',
+        email: testEmail,
+        groups: null,
+      };
+
+      authService.storeToken(token);
+      await authService.storeUserProfile(userProfile);
+      authService['isAuthenticatedSubject'].next(true);
+      authService['userProfileSubject'].next(userProfile);
+
+      // After setup
       expect(authService.isAuthenticated).toBe(true);
       expect(authService.userEmail).toBe(testEmail);
       expect(authService.username).toBe('test');
-      expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
     });
 
-    it('should handle logout correctly', () => {
-      // Login first
-      authService.demoLogin('test@example.com');
+    it('should handle logout correctly', async () => {
+      // Set up authenticated state first
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 1);
+
+      const token: JwtToken = {
+        token: 'mock.jwt.token',
+        expiresIn: 3600,
+        expiresAt,
+      };
+
+      const userProfile: UserProfile = {
+        provider: 'test',
+        provider_id: 'test@example.com',
+        display_name: 'test',
+        email: 'test@example.com',
+        groups: null,
+      };
+
+      authService.storeToken(token);
+      await authService.storeUserProfile(userProfile);
+      authService['isAuthenticatedSubject'].next(true);
+      authService['userProfileSubject'].next(userProfile);
+
       expect(authService.isAuthenticated).toBe(true);
 
       // Logout
@@ -477,12 +518,12 @@ describe('Authentication Integration', () => {
           expiresAt: new Date(Date.now() + 1800000), // 30 minutes from now
         };
 
-        const storedProfile = {
-          id: '12345678-1234-1234-1234-123456789abc',
+        const storedProfile: UserProfile = {
+          provider: 'google',
+          provider_id: 'restored@example.com',
+          display_name: 'Restored User',
           email: 'restored@example.com',
-          name: 'Restored User',
-          providers: [{ provider: 'google', is_primary: true }],
-          picture: 'https://example.com/pic.jpg',
+          groups: null,
         };
 
         // Helper function to XOR encrypt data like the real service would

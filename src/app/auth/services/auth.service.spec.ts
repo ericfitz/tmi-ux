@@ -104,11 +104,11 @@ describe('AuthService', () => {
   };
 
   const mockUserProfile: UserProfile = {
-    id: '12345678-1234-1234-1234-123456789abc',
+    provider: 'test',
+    provider_id: 'test@example.com',
+    display_name: 'Test User',
     email: 'test@example.com',
-    name: 'Test User',
-    providers: [{ provider: 'test', is_primary: true }],
-    picture: 'http://example.com/pic.jpg',
+    groups: null,
   };
 
   const _mockOAuthResponse: OAuthResponse = {
@@ -497,14 +497,12 @@ describe('AuthService', () => {
 
       expect(result).toBe(true);
       expect(service.isAuthenticated).toBe(true);
-      expect(service.userProfile).toEqual(
-        expect.objectContaining({
-          id: expect.any(String),
-          email: 'test@example.com',
-          name: 'Test User',
-          providers: expect.any(Array),
-        }),
-      );
+      expect(service.userProfile).toMatchObject({
+        provider: expect.any(String),
+        provider_id: expect.any(String),
+        display_name: 'Test User',
+        email: 'test@example.com',
+      });
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
@@ -589,9 +587,11 @@ describe('AuthService', () => {
 
       // Mock GET /users/me call that happens after successful token exchange
       const johnUserProfile: UserProfile = {
-        id: '1234567890',
+        provider: 'test',
+        provider_id: '1234567890',
+        display_name: 'John Doe',
         email: 'john@example.com',
-        name: 'John Doe',
+        groups: null,
       };
       vi.mocked(httpClient.get).mockReturnValue(of(johnUserProfile));
 
@@ -663,14 +663,12 @@ describe('AuthService', () => {
 
       expect(result).toBe(true);
       expect(service.isAuthenticated).toBe(true);
-      expect(service.userProfile).toEqual(
-        expect.objectContaining({
-          id: expect.any(String),
-          email: 'test@example.com',
-          name: 'Test User',
-          providers: expect.any(Array),
-        }),
-      );
+      expect(service.userProfile).toMatchObject({
+        provider: expect.any(String),
+        provider_id: expect.any(String),
+        display_name: 'Test User',
+        email: 'test@example.com',
+      });
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
@@ -698,10 +696,30 @@ describe('AuthService', () => {
   }); /* End of OAuth Callback Handling describe block */
 
   describe('Token Management', () => {
-    it('should store and retrieve tokens correctly using demoLogin', async () => {
+    it('should store and retrieve tokens correctly', async () => {
+      // Manually set up authenticated state
       const testEmail = 'demo.user@example.com';
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 1);
 
-      service.demoLogin(testEmail);
+      const token: JwtToken = {
+        token: 'mock.jwt.token',
+        expiresIn: 3600,
+        expiresAt,
+      };
+
+      const userProfile: UserProfile = {
+        provider: 'test',
+        provider_id: testEmail,
+        display_name: 'Demo User',
+        email: testEmail,
+        groups: null,
+      };
+
+      service.storeToken(token);
+      await service.storeUserProfile(userProfile);
+      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(userProfile);
 
       // Wait for the next tick to allow async operations to complete
       await new Promise(resolve => setTimeout(resolve, 100));

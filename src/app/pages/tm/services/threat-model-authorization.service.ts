@@ -148,7 +148,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
     authorizations: Authorization[] | null,
   ): 'reader' | 'writer' | 'owner' | null {
     const currentUserProvider = this.authService.userIdp;
-    const currentUserProviderId = this.authService.userId;
+    const currentUserProviderId = this.authService.providerId;
     const currentUserEmail = this.authService.userEmail;
     const currentUserGroups = this.authService.userGroups;
 

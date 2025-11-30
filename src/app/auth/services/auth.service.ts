@@ -50,9 +50,9 @@ import { PkceService } from './pkce.service';
 import { PkceError } from '../models/pkce.models';
 
 interface JwtPayload {
-  sub?: string;
+  sub?: string; // Provider-assigned user ID (maps to provider_id)
   email?: string;
-  name?: string;
+  name?: string; // Display name (maps to display_name)
   iat?: number;
   exp?: number;
   idp?: string; // OAuth provider (e.g., "google", "github")
@@ -85,7 +85,7 @@ export class AuthService {
   authError$ = this.authErrorSubject.asObservable();
 
   // Backward compatibility for existing components
-  username$ = this.userProfileSubject.pipe(map(profile => profile?.name || ''));
+  username$ = this.userProfileSubject.pipe(map(profile => profile?.display_name || ''));
 
   // OAuth configuration
   private readonly tokenStorageKey = 'auth_token';
@@ -152,7 +152,7 @@ export class AuthService {
    * @returns The current username or empty string if not authenticated
    */
   get username(): string {
-    return this.userProfile?.name || '';
+    return this.userProfile?.display_name || '';
   }
 
   /**
@@ -164,11 +164,11 @@ export class AuthService {
   }
 
   /**
-   * Get current user ID
-   * @returns The current user ID or empty string if not authenticated
+   * Get current user's provider ID
+   * @returns The provider-assigned user ID or empty string if not authenticated
    */
-  get userId(): string {
-    return this.userProfile?.id || '';
+  get providerId(): string {
+    return this.userProfile?.provider_id || '';
   }
 
   /**
@@ -1195,26 +1195,22 @@ export class AuthService {
       // Base64 decode and parse as JSON
       const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
 
-      // Extract user ID from 'sub' claim (standard JWT)
-      const userId = decodedPayload.sub;
+      // Extract provider-specific user ID from 'sub' claim (standard JWT)
+      const providerId = decodedPayload.sub;
 
-      if (!userId || !decodedPayload.email || !decodedPayload.name) {
+      if (!providerId || !decodedPayload.email || !decodedPayload.name) {
         throw new Error('Required user profile fields missing from JWT token');
       }
 
       // Extract provider from idp claim (identity provider)
       const provider = decodedPayload.idp || 'unknown';
-      // The sub claim contains the provider-specific user ID
-      const providerId = userId;
 
       return {
-        id: userId,
-        email: decodedPayload.email,
-        name: decodedPayload.name,
         provider,
         provider_id: providerId,
-        providers: decodedPayload.providers,
-        groups: decodedPayload.groups,
+        display_name: decodedPayload.name,
+        email: decodedPayload.email,
+        groups: decodedPayload.groups || null,
       };
     } catch (error) {
       this.logger.error('Error extracting user profile from token', error);
@@ -1232,6 +1228,16 @@ export class AuthService {
     this.logger.info('Fetching current user profile from server');
     return this.http.get<UserProfile>(`${environment.apiUrl}/users/me`).pipe(
       tap(profile => {
+        // Validate that server provider_id matches JWT sub claim
+        const currentProfile = this.userProfile;
+        if (currentProfile && profile.provider_id !== currentProfile.provider_id) {
+          this.logger.error('Provider ID mismatch between JWT and server response', {
+            jwtProviderId: currentProfile.provider_id,
+            serverProviderId: profile.provider_id,
+            provider: profile.provider,
+          });
+        }
+
         // Update the cached profile with server data (including is_admin)
         this.userProfileSubject.next(profile);
         void this.storeUserProfile(profile);
@@ -1684,49 +1690,6 @@ export class AuthService {
       // this.logger.info('User logged out successfully (client-side only)');
       void this.router.navigate(['/']);
     }
-  }
-
-  /**
-   * Legacy method for demo login
-   * @param email Email to use for demo login
-   * @deprecated Use loginWithGoogle instead
-   */
-  demoLogin(email: string = 'demo.user@example.com'): void {
-    // Only show deprecation warning in production builds
-    if (environment.production) {
-      this.logger.warn('Using deprecated demoLogin method');
-    }
-
-    // Create a mock token
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1);
-
-    const token: JwtToken = {
-      token: 'mock.jwt.token',
-      expiresIn: 3600,
-      expiresAt,
-    };
-
-    // Create a mock user profile with hard-coded demo ID
-    const userProfile: UserProfile = {
-      id: 'demo-user-1',
-      email,
-      name: email.split('@')[0],
-      provider: 'demo',
-      provider_id: email,
-      providers: [{ provider: 'demo', is_primary: true }],
-    };
-
-    // Store token and profile
-    this.storeToken(token);
-    void this.storeUserProfile(userProfile);
-
-    // Update authentication state
-    this.isAuthenticatedSubject.next(true);
-    this.userProfileSubject.next(userProfile);
-
-    // this.logger.info(`Demo user ${email} logged in`);
-    void this.router.navigate(['/dashboard']);
   }
 
   /**

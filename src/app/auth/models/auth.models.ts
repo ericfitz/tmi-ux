@@ -46,24 +46,9 @@ export interface UserOAuthProvider {
 
 /**
  * User profile information (matches backend Principal + User schema)
+ * User identity is defined by the combination of (provider, provider_id)
  */
 export interface UserProfile {
-  /**
-   * Unique identifier for the user (UUID)
-   * Note: This is the TMI internal user ID, not the provider-specific ID
-   */
-  id: string;
-
-  /**
-   * User's email address
-   */
-  email: string;
-
-  /**
-   * User's display name (full name)
-   */
-  name: string;
-
   /**
    * Identity provider name (e.g., "google", "github", "microsoft", "test")
    */
@@ -71,20 +56,24 @@ export interface UserProfile {
 
   /**
    * Provider-assigned identifier (e.g., OAuth sub claim or provider-specific user ID)
+   * This is the user's unique identifier within the context of their provider
    */
   provider_id: string;
 
   /**
-   * Linked OAuth providers for this user
-   * @deprecated Backend no longer returns this field; use provider and provider_id instead
+   * User's display name (full name)
    */
-  providers?: UserOAuthProvider[];
+  display_name: string;
 
   /**
-   * Groups the user belongs to
-   * Note: Backend returns group names as strings
+   * User's email address
    */
-  groups?: string[];
+  email: string;
+
+  /**
+   * Groups the user belongs to (nullable array of group names)
+   */
+  groups: string[] | null;
 
   /**
    * Whether the user has administrator privileges

@@ -161,8 +161,8 @@ export class InfraWebsocketCollaborationAdapter {
       initiating_user: {
         principal_type: 'user',
         provider: this.authService.userIdp,
-        provider_id: userProfile.id,
-        display_name: userProfile.name,
+        provider_id: userProfile.provider_id,
+        display_name: userProfile.display_name,
         email: userProfile.email,
       },
       operation_id: uuid(),
@@ -245,8 +245,8 @@ export class InfraWebsocketCollaborationAdapter {
       initiating_user: {
         principal_type: 'user',
         provider: this.authService.userIdp,
-        provider_id: userProfile.id,
-        display_name: userProfile.name,
+        provider_id: userProfile.provider_id,
+        display_name: userProfile.display_name,
         email: userProfile.email,
       },
     };
@@ -277,8 +277,8 @@ export class InfraWebsocketCollaborationAdapter {
       initiating_user: {
         principal_type: 'user',
         provider: this.authService.userIdp,
-        provider_id: userProfile.id,
-        display_name: userProfile.name,
+        provider_id: userProfile.provider_id,
+        display_name: userProfile.display_name,
         email: userProfile.email,
       },
     };

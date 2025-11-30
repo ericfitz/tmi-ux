@@ -365,7 +365,7 @@ export class AppDfdOrchestrator {
       data: this._getGraphData(),
       metadata: {
         saveType: 'manual',
-        userId: this.authService.userId,
+        userId: this.authService.providerId,
         userEmail: this.authService.userEmail,
         userName: this.authService.username,
       },
@@ -1328,7 +1328,7 @@ export class AppDfdOrchestrator {
       graph: this.dfdInfrastructure.getGraph(),
       diagramId: params.diagramId,
       threatModelId: params.threatModelId,
-      userId: this.authService.userId,
+      userId: this.authService.providerId,
       isCollaborating: this.collaborationService.isCollaborating(),
       permissions: ['read', 'write'],
       suppressValidation: false,
@@ -1516,7 +1516,7 @@ export class AppDfdOrchestrator {
     _context: OperationContext,
   ): any {
     const timestamp = Date.now();
-    const userId = this.authService.userId;
+    const userId = this.authService.providerId;
 
     // Use state snapshots from the operation result
     const currentCells = result.currentState || [];
@@ -1653,7 +1653,7 @@ export class AppDfdOrchestrator {
       description,
       cells: currentCells,
       previousCells,
-      userId: this.authService.userId,
+      userId: this.authService.providerId,
       metadata: {
         dragType,
         dragDuration: dragCompletion.duration || 0,
@@ -1906,7 +1906,7 @@ export class AppDfdOrchestrator {
       metadata: {
         saveType: 'auto',
         historyIndex,
-        userId: this.authService.userId,
+        userId: this.authService.providerId,
         userEmail: this.authService.userEmail,
         userName: this.authService.username,
       },
