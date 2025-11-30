@@ -26,6 +26,7 @@ import {
   map,
   of,
   throwError,
+  tap,
 } from '../../core/rxjs-imports';
 
 import { LoggerService } from '../../core/services/logger.service';
@@ -33,6 +34,7 @@ import {
   ServerConnectionService,
   ServerConnectionStatus,
 } from '../../core/services/server-connection.service';
+import { UserService } from '../../core/services/user.service';
 import { environment } from '../../../environments/environment';
 import {
   AuthError,
@@ -112,6 +114,7 @@ export class AuthService {
     private logger: LoggerService,
     private serverConnectionService: ServerConnectionService,
     private pkceService: PkceService,
+    private userService: UserService,
   ) {
     // this.logger.info('Auth Service initialized');
     // Initialize from localStorage on service creation
@@ -947,6 +950,10 @@ export class AuthService {
       //   returnUrl,
       // });
 
+      // Fetch admin status from server after login
+      // Fire and forget - don't block navigation on this
+      this.refreshUserProfile().subscribe();
+
       // Navigate to return URL if provided, otherwise to default
       // Wait for navigation to complete before emitting success
       const navigationPromise = returnUrl
@@ -1102,6 +1109,10 @@ export class AuthService {
           //   },
           // );
 
+          // Fetch admin status from server after login
+          // Fire and forget - don't block navigation on this
+          this.refreshUserProfile().subscribe();
+
           // Navigate to return URL if provided, otherwise to default
           // Note: We can't use from() here because we're inside a map() - just fire and forget
           // The main navigation fix is in handleTMITokenResponse above
@@ -1204,6 +1215,30 @@ export class AuthService {
       this.logger.error('Error extracting user profile from token', error);
       throw new Error('Failed to extract user profile from token');
     }
+  }
+
+  /**
+   * Fetch current user profile from server and update cached profile with admin status
+   * This should be called after login to get the is_admin flag
+   * @returns Observable that completes when profile is updated
+   */
+  refreshUserProfile(): Observable<UserProfile> {
+    return this.userService.getCurrentUser().pipe(
+      tap(profile => {
+        // Update the cached profile with server data (including is_admin)
+        this.userProfileSubject.next(profile);
+        void this.storeUserProfile(profile);
+        this.logger.info('User profile refreshed with admin status', {
+          isAdmin: profile.is_admin,
+        });
+      }),
+      catchError(error => {
+        this.logger.error('Failed to refresh user profile', error);
+        // Don't throw - we already have basic profile from JWT
+        // Just return the current profile without is_admin
+        return of(this.userProfile!);
+      }),
+    );
   }
 
   /**

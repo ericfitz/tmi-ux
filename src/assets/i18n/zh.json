@@ -691,6 +691,39 @@
       "dark": "深色",
       "light": "浅色"
     },
-    "title": "用户偏好"
+    "title": "用户偏好",
+    "administration": {
+      "title": "Administration"
+    }
+  },
+  "admin": {
+    "title": "Administration",
+    "subtitle": "Manage system settings and configurations",
+    "sections": {
+      "administrators": {
+        "title": "Manage Administrators",
+        "description": "Configure administrator accounts and permissions"
+      },
+      "users": {
+        "title": "Manage Users",
+        "description": "View and manage user accounts"
+      },
+      "groups": {
+        "title": "Manage Groups",
+        "description": "Configure user groups and memberships"
+      },
+      "quotas": {
+        "title": "Manage Quotas",
+        "description": "Configure resource quotas and limits"
+      },
+      "webhooks": {
+        "title": "Manage Webhooks",
+        "description": "Configure webhook integrations and callbacks"
+      },
+      "addons": {
+        "title": "Manage Addons",
+        "description": "Install and configure application addons"
+      }
+    }
   }
 }

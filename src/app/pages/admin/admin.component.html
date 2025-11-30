@@ -1,0 +1,32 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h1 [transloco]="'admin.title'">Administration</h1>
+    <p class="admin-subtitle" [transloco]="'admin.subtitle'">
+      Manage system settings and configurations
+    </p>
+  </div>
+
+  <div class="admin-grid">
+    @for (section of adminSections; track section.action) {
+      <mat-card class="admin-card" (click)="onSectionClick(section.action)">
+        <mat-card-header>
+          <div class="card-icon-container">
+            <mat-icon class="card-icon">{{ section.icon }}</mat-icon>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          <h2 class="card-title" [transloco]="section.title">{{ section.title }}</h2>
+          <p class="card-description" [transloco]="section.description">
+            {{ section.description }}
+          </p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button color="primary">
+            <span [transloco]="'common.manage'">Manage</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    }
+  </div>
+</div>

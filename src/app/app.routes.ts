@@ -16,6 +16,7 @@
 
 import { Routes } from '@angular/router';
 
+import { adminGuard } from './auth/guards/admin.guard';
 import { authGuard } from './auth/guards/auth.guard';
 import { homeGuard } from './auth/guards/home.guard';
 
@@ -75,6 +76,14 @@ export const routes: Routes = [
         c => c.DashboardComponent,
       ),
     canActivate: [authGuard],
+  },
+  {
+    path: 'admin',
+    loadComponent: () =>
+      import(/* webpackChunkName: "admin" */ './pages/admin/admin.component').then(
+        c => c.AdminComponent,
+      ),
+    canActivate: [authGuard, adminGuard],
   },
   {
     path: 'tm',

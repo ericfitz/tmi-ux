@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
 
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
+import { UserProfile } from '@app/auth/models/auth.models';
 
 /**
  * Response from requesting account deletion challenge
@@ -35,6 +36,15 @@ export class UserService {
     private logger: LoggerService,
   ) {
     this.logger.info('User Service initialized');
+  }
+
+  /**
+   * Get current user profile with admin status
+   * @returns Observable with user profile including is_admin flag
+   */
+  getCurrentUser(): Observable<UserProfile> {
+    this.logger.info('Fetching current user profile');
+    return this.apiService.get<UserProfile>('users/me');
   }
 
   /**

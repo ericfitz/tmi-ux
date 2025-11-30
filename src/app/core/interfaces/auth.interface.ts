@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { UserProfile } from '@app/auth/models/auth.models';
 
 /**
  * JWT token structure
@@ -58,6 +59,11 @@ export interface IAuthService {
    * Get a valid access token, refreshing if necessary
    */
   getValidToken(): Observable<IJwtToken>;
+
+  /**
+   * Refresh user profile from server to get latest admin status and other fields
+   */
+  refreshUserProfile(): Observable<UserProfile>;
 
   /**
    * Log out the current user

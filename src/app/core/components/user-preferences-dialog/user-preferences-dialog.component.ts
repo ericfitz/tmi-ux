@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { DIALOG_IMPORTS } from '@app/shared/imports';
 import { LoggerService } from '../../services/logger.service';
@@ -192,12 +193,27 @@ interface CheckboxChangeEvent {
 
       <mat-divider></mat-divider>
 
+      @if (userProfile?.is_admin) {
+        <div class="preference-item">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="onAdminClick()"
+            tabindex="11"
+            class="admin-button"
+          >
+            <mat-icon>supervisor_account</mat-icon>
+            <span [transloco]="'userPreferences.administration.title'">Administration</span>
+          </button>
+        </div>
+      }
+
       <div class="preference-item">
         <button
           mat-raised-button
           color="warn"
           (click)="onDeleteData()"
-          tabindex="11"
+          [tabindex]="userProfile?.is_admin ? 12 : 11"
           class="delete-button"
         >
           <mat-icon>delete_forever</mat-icon>
@@ -275,12 +291,14 @@ interface CheckboxChangeEvent {
         margin: 20px 0;
       }
 
+      .admin-button,
       .delete-button {
         display: flex;
         align-items: center;
         gap: 8px;
       }
 
+      .admin-button mat-icon,
       .delete-button mat-icon {
         font-size: 20px;
         width: 20px;
@@ -365,6 +383,7 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
     @Inject(AUTH_SERVICE) private authService: IAuthService,
     private logger: LoggerService,
     private dialog: MatDialog,
+    private router: Router,
     private themeService: ThemeService,
     private threatModelAuthService: ThreatModelAuthorizationService,
   ) {
@@ -378,6 +397,13 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Get user profile from synchronous property
     this.userProfile = this.authService.userProfile;
+
+    // Refresh user profile to get latest admin status
+    this.authService.refreshUserProfile().pipe(takeUntil(this.destroy$)).subscribe({
+      next: profile => {
+        this.userProfile = profile;
+      },
+    });
 
     // Get current threat model role if available
     this.threatModelAuthService.currentUserPermission$
@@ -449,6 +475,14 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
 
   onMarginSizeChange(): void {
     this.savePreferences(this.preferences);
+  }
+
+  onAdminClick(): void {
+    this.logger.info('Administration button clicked');
+    // Close the preferences dialog
+    this.dialogRef.close();
+    // Navigate to admin page
+    void this.router.navigate(['/admin']);
   }
 
   onDeleteData(): void {

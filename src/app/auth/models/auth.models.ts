@@ -71,6 +71,12 @@ export interface UserProfile {
    * Groups the user belongs to
    */
   groups?: string[];
+
+  /**
+   * Whether the user has administrator privileges
+   * Only populated when fetched from GET /users/me endpoint
+   */
+  is_admin?: boolean;
 }
 
 /**
