@@ -34,7 +34,6 @@ import {
   ServerConnectionService,
   ServerConnectionStatus,
 } from '../../core/services/server-connection.service';
-import { UserService } from '../../core/services/user.service';
 import { environment } from '../../../environments/environment';
 import {
   AuthError,
@@ -114,7 +113,6 @@ export class AuthService {
     private logger: LoggerService,
     private serverConnectionService: ServerConnectionService,
     private pkceService: PkceService,
-    private userService: UserService,
   ) {
     // this.logger.info('Auth Service initialized');
     // Initialize from localStorage on service creation
@@ -1220,10 +1218,12 @@ export class AuthService {
   /**
    * Fetch current user profile from server and update cached profile with admin status
    * This should be called after login to get the is_admin flag
+   * Calls GET /users/me directly to avoid circular dependency
    * @returns Observable that completes when profile is updated
    */
   refreshUserProfile(): Observable<UserProfile> {
-    return this.userService.getCurrentUser().pipe(
+    this.logger.info('Fetching current user profile from server');
+    return this.http.get<UserProfile>(`${environment.apiUrl}/users/me`).pipe(
       tap(profile => {
         // Update the cached profile with server data (including is_admin)
         this.userProfileSubject.next(profile);
@@ -1232,7 +1232,7 @@ export class AuthService {
           isAdmin: profile.is_admin,
         });
       }),
-      catchError(error => {
+      catchError((error: HttpErrorResponse) => {
         this.logger.error('Failed to refresh user profile', error);
         // Don't throw - we already have basic profile from JWT
         // Just return the current profile without is_admin

@@ -6,7 +6,7 @@
  *
  * Key functionality:
  * - Uses Angular's functional guard pattern with dependency injection
- * - Checks admin status by fetching user profile from server
+ * - Checks admin status by fetching user profile from server via AuthService
  * - Redirects non-admin users to dashboard with error message
  * - Provides logging for authorization decisions
  * - Default deny unless admin status is confirmed
@@ -14,16 +14,16 @@
 
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { UserService } from '../../core/services/user.service';
+import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { map, catchError, of } from 'rxjs';
 
 export const adminGuard: CanActivateFn = () => {
-  const userService = inject(UserService);
+  const authService = inject(AuthService);
   const router = inject(Router);
   const logger = inject(LoggerService);
 
-  return userService.getCurrentUser().pipe(
+  return authService.refreshUserProfile().pipe(
     map(userProfile => {
       if (userProfile.is_admin) {
         logger.info('Admin access granted');
