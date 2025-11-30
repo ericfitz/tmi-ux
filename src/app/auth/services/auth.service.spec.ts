@@ -362,16 +362,17 @@ describe('AuthService', () => {
       expect(service.userProfile).toBeNull();
     });
 
-    it('should handle localStorage errors gracefully', () => {
+    it('should handle localStorage errors gracefully', async () => {
       localStorageMock.getItem.mockImplementation(() => {
         throw new Error('Storage error');
       });
 
-      service.checkAuthStatus();
+      await service.checkAuthStatus();
 
       expect(service.isAuthenticated).toBe(false);
+      // localStorage throwing errors is logged at ERROR level by checkAuthStatus
       expect(loggerService.error).toHaveBeenCalledWith(
-        'Failed to decrypt stored token',
+        'Error checking auth status',
         expect.any(Error),
       );
     });
@@ -484,6 +485,9 @@ describe('AuthService', () => {
         return null;
       });
 
+      // Mock GET /users/me call that happens after successful token response
+      vi.mocked(httpClient.get).mockReturnValue(of(mockUserProfile));
+
       const result$ = service.handleOAuthCallback(mockTMITokenResponse);
 
       const result = await result$.toPromise();
@@ -583,6 +587,14 @@ describe('AuthService', () => {
       };
       httpClient.post.mockReturnValue(of(tokenResponse));
 
+      // Mock GET /users/me call that happens after successful token exchange
+      const johnUserProfile: UserProfile = {
+        id: '1234567890',
+        email: 'john@example.com',
+        name: 'John Doe',
+      };
+      vi.mocked(httpClient.get).mockReturnValue(of(johnUserProfile));
+
       const result$ = service.handleOAuthCallback(codeResponse);
 
       result$.subscribe(result => {
@@ -638,6 +650,9 @@ describe('AuthService', () => {
       };
 
       router.navigate = vi.fn().mockResolvedValue(true);
+
+      // Mock GET /users/me call that happens after successful token response
+      vi.mocked(httpClient.get).mockReturnValue(of(mockUserProfile));
 
       const result$ = service.handleOAuthCallback(responseWithBase64State);
 

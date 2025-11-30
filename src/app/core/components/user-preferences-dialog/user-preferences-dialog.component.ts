@@ -399,11 +399,14 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
     this.userProfile = this.authService.userProfile;
 
     // Refresh user profile to get latest admin status
-    this.authService.refreshUserProfile().pipe(takeUntil(this.destroy$)).subscribe({
-      next: profile => {
-        this.userProfile = profile;
-      },
-    });
+    this.authService
+      .refreshUserProfile()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: profile => {
+          this.userProfile = profile;
+        },
+      });
 
     // Get current threat model role if available
     this.threatModelAuthService.currentUserPermission$

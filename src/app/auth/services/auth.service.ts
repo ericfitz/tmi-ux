@@ -1764,18 +1764,13 @@ export class AuthService {
    * Decrypt and retrieve JWT token
    */
   private async getStoredTokenDecrypted(): Promise<JwtToken | null> {
-    try {
-      const encryptedToken = localStorage.getItem(this.tokenStorageKey);
-      if (!encryptedToken) {
-        return null;
-      }
-
-      const keyMaterial = this.getTokenEncryptionKey();
-      return await this.decryptToken(encryptedToken, keyMaterial);
-    } catch (error) {
-      this.logger.error('Failed to decrypt stored token', error);
+    const encryptedToken = localStorage.getItem(this.tokenStorageKey);
+    if (!encryptedToken) {
       return null;
     }
+
+    const keyMaterial = this.getTokenEncryptionKey();
+    return await this.decryptToken(encryptedToken, keyMaterial);
   }
 
   /**
@@ -1798,20 +1793,27 @@ export class AuthService {
     const [b64Iv, b64Cipher] = encryptedToken.split(':');
     if (!b64Iv || !b64Cipher) return null;
 
-    const key = await this.getAesKeyFromString(keyStr);
-    const iv = this.b64ToUint8(b64Iv);
-    const ciphertext = this.b64ToUint8(b64Cipher);
-    const plaintextBuf = await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv: iv as BufferSource },
-      key,
-      ciphertext as BufferSource,
-    );
-    const plaintext = new TextDecoder().decode(plaintextBuf);
-    const parsed = JSON.parse(plaintext) as JwtToken;
-    // Convert expiresAt string back to Date object if needed
-    if (typeof parsed.expiresAt === 'string') {
-      parsed.expiresAt = new Date(parsed.expiresAt);
+    try {
+      const key = await this.getAesKeyFromString(keyStr);
+      const iv = this.b64ToUint8(b64Iv);
+      const ciphertext = this.b64ToUint8(b64Cipher);
+      const plaintextBuf = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv: iv as BufferSource },
+        key,
+        ciphertext as BufferSource,
+      );
+      const plaintext = new TextDecoder().decode(plaintextBuf);
+      const parsed = JSON.parse(plaintext) as JwtToken;
+      // Convert expiresAt string back to Date object if needed
+      if (typeof parsed.expiresAt === 'string') {
+        parsed.expiresAt = new Date(parsed.expiresAt);
+      }
+      return parsed;
+    } catch (error) {
+      // Decryption failure is expected when browser session context changes
+      // (different fingerprint/salt makes the encryption key invalid)
+      this.logger.debug('Token decryption failed - session context may have changed', error);
+      return null;
     }
-    return parsed;
   }
 }
