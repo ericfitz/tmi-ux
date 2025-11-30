@@ -730,6 +730,8 @@
       "currentRole": "当前威胁模型角色",
       "groups": "用户组",
       "primary": "主要",
+      "provider": "身份提供商",
+      "providerId": "提供商ID",
       "providers": "关联的提供商",
       "title": "用户资料",
       "userId": "用户ID"

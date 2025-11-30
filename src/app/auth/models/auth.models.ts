@@ -30,6 +30,7 @@ export interface JwtToken {
 
 /**
  * OAuth provider information for a user
+ * @deprecated Use provider and provider_id fields on UserProfile instead
  */
 export interface UserOAuthProvider {
   /**
@@ -44,11 +45,12 @@ export interface UserOAuthProvider {
 }
 
 /**
- * User profile information
+ * User profile information (matches backend Principal + User schema)
  */
 export interface UserProfile {
   /**
    * Unique identifier for the user (UUID)
+   * Note: This is the TMI internal user ID, not the provider-specific ID
    */
   id: string;
 
@@ -58,17 +60,29 @@ export interface UserProfile {
   email: string;
 
   /**
-   * User's display name
+   * User's display name (full name)
    */
   name: string;
 
   /**
+   * Identity provider name (e.g., "google", "github", "microsoft", "test")
+   */
+  provider: string;
+
+  /**
+   * Provider-assigned identifier (e.g., OAuth sub claim or provider-specific user ID)
+   */
+  provider_id: string;
+
+  /**
    * Linked OAuth providers for this user
+   * @deprecated Backend no longer returns this field; use provider and provider_id instead
    */
   providers?: UserOAuthProvider[];
 
   /**
    * Groups the user belongs to
+   * Note: Backend returns group names as strings
    */
   groups?: string[];
 

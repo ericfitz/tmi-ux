@@ -54,33 +54,31 @@ interface CheckboxChangeEvent {
           <span class="profile-value user-id">{{ userProfile?.id || 'N/A' }}</span>
         </div>
 
-        @if (userProfile && userProfile.providers && userProfile.providers.length > 0) {
+        @if (userProfile?.provider) {
           <div class="profile-item">
-            <span class="profile-label" [transloco]="'userPreferences.userProfile.providers'">
-              Linked Providers
+            <span class="profile-label" [transloco]="'userPreferences.userProfile.provider'">
+              Identity Provider
             </span>
-            <div class="profile-value providers-list">
-              @for (provider of userProfile.providers; track provider.provider) {
-                <span class="provider-badge">
-                  {{ provider.provider }}
-                  @if (provider.is_primary) {
-                    <span class="primary-badge" [transloco]="'userPreferences.userProfile.primary'">
-                      (Primary)
-                    </span>
-                  }
-                </span>
-              }
-            </div>
+            <span class="profile-value provider-badge">{{ userProfile?.provider }}</span>
           </div>
         }
 
-        @if (userProfile && userProfile.groups && userProfile.groups.length > 0) {
+        @if (userProfile?.provider_id) {
+          <div class="profile-item">
+            <span class="profile-label" [transloco]="'userPreferences.userProfile.providerId'">
+              Provider ID
+            </span>
+            <span class="profile-value user-id">{{ userProfile?.provider_id }}</span>
+          </div>
+        }
+
+        @if (userProfile?.groups && (userProfile?.groups?.length ?? 0) > 0) {
           <div class="profile-item">
             <span class="profile-label" [transloco]="'userPreferences.userProfile.groups'"
               >Groups</span
             >
             <div class="profile-value groups-list">
-              @for (group of userProfile.groups; track group) {
+              @for (group of userProfile?.groups; track group) {
                 <span class="group-badge">{{ group }}</span>
               }
             </div>
@@ -211,7 +209,6 @@ interface CheckboxChangeEvent {
       <div class="preference-item">
         <button
           mat-raised-button
-          color="warn"
           (click)="onDeleteData()"
           [tabindex]="userProfile?.is_admin ? 12 : 11"
           class="delete-button"
@@ -304,6 +301,15 @@ interface CheckboxChangeEvent {
         width: 20px;
         height: 20px;
         line-height: 20px;
+      }
+
+      .delete-button {
+        background-color: var(--theme-error, #f44336) !important;
+        color: var(--theme-on-error, #ffffff) !important;
+      }
+
+      .delete-button:hover {
+        background-color: var(--theme-error-dark, #d32f2f) !important;
       }
 
       .profile-info {

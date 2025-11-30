@@ -1202,10 +1202,17 @@ export class AuthService {
         throw new Error('Required user profile fields missing from JWT token');
       }
 
+      // Extract provider from idp claim (identity provider)
+      const provider = decodedPayload.idp || 'unknown';
+      // The sub claim contains the provider-specific user ID
+      const providerId = userId;
+
       return {
         id: userId,
         email: decodedPayload.email,
         name: decodedPayload.name,
+        provider,
+        provider_id: providerId,
         providers: decodedPayload.providers,
         groups: decodedPayload.groups,
       };
@@ -1705,6 +1712,8 @@ export class AuthService {
       id: 'demo-user-1',
       email,
       name: email.split('@')[0],
+      provider: 'demo',
+      provider_id: email,
       providers: [{ provider: 'demo', is_primary: true }],
     };
 

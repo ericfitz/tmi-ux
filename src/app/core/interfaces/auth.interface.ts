@@ -18,6 +18,10 @@ export interface IUserProfile {
   id: string;
   email: string;
   name: string;
+  provider: string;
+  provider_id: string;
+  groups?: string[];
+  is_admin?: boolean;
 }
 
 /**

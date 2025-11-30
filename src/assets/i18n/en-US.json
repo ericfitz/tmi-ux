@@ -730,6 +730,8 @@
       "currentRole": "Current Threat Model Role",
       "groups": "Groups",
       "primary": "Primary",
+      "provider": "Identity Provider",
+      "providerId": "Provider ID",
       "providers": "Linked Providers",
       "title": "User Profile",
       "userId": "User ID"

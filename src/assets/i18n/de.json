@@ -730,6 +730,8 @@
       "currentRole": "Aktuelle Bedrohungsmodell-Rolle",
       "groups": "Gruppen",
       "primary": "Primär",
+      "provider": "Identitätsanbieter",
+      "providerId": "Anbieter-ID",
       "providers": "Verknüpfte Anbieter",
       "title": "Benutzerprofil",
       "userId": "Benutzer-ID"
