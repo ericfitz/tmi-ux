@@ -5,6 +5,10 @@
  * Uses CSS variables from material-theme.scss for proper theming
  */
 
+@use '@angular/material' as mat;
+@use 'm3-palettes-generated' as regular;
+@use 'm3-palettes-colorblind-generated' as colorblind;
+
 // =============================================================================
 // MATERIAL COMPONENT THEMING
 // =============================================================================
@@ -37,6 +41,66 @@ mat-toolbar,
   .mdc-fab {
     border-radius: 8px;
   }
+}
+
+// Material 3 error color buttons
+// In M3, the color attribute adds a class but doesn't apply styles automatically
+// We need to use the button-color mixin to apply error colors
+$light-normal-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: regular.$primary-palette,
+      tertiary: regular.$tertiary-palette,
+    ),
+  )
+);
+$light-colorblind-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: colorblind.$primary-palette,
+      tertiary: colorblind.$tertiary-palette,
+    ),
+  )
+);
+$dark-normal-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: regular.$primary-palette,
+      tertiary: regular.$tertiary-palette,
+    ),
+  )
+);
+$dark-colorblind-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: colorblind.$primary-palette,
+      tertiary: colorblind.$tertiary-palette,
+    ),
+  )
+);
+
+// Default: Light + Normal
+.mat-error {
+  @include mat.button-color($light-normal-theme, $color-variant: error);
+}
+
+// Light + Colorblind
+.colorblind-palette .mat-error {
+  @include mat.button-color($light-colorblind-theme, $color-variant: error);
+}
+
+// Dark + Normal
+.dark-theme .mat-error {
+  @include mat.button-color($dark-normal-theme, $color-variant: error);
+}
+
+// Dark + Colorblind
+.dark-theme.colorblind-palette .mat-error {
+  @include mat.button-color($dark-colorblind-theme, $color-variant: error);
 }
 
 // =============================================================================
