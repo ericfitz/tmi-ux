@@ -209,6 +209,7 @@ interface CheckboxChangeEvent {
       <div class="preference-item">
         <button
           mat-raised-button
+          color="error"
           (click)="onDeleteData()"
           [tabindex]="userProfile?.is_admin ? 12 : 11"
           class="delete-button"
@@ -301,15 +302,6 @@ interface CheckboxChangeEvent {
         width: 20px;
         height: 20px;
         line-height: 20px;
-      }
-
-      .delete-button {
-        background-color: var(--theme-error, #f44336) !important;
-        color: var(--theme-on-error, #ffffff) !important;
-      }
-
-      .delete-button:hover {
-        background-color: var(--theme-error-dark, #d32f2f) !important;
       }
 
       .profile-info {
