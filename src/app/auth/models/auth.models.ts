@@ -79,7 +79,7 @@ export interface UserMeResponse {
   /**
    * Provider-assigned user identifier (maps to UserProfile.provider_id)
    */
-  provider_user_id: string;
+  provider_id: string;
 
   /**
    * User's full name (maps to UserProfile.display_name)

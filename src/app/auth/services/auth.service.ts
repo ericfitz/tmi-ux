@@ -1232,7 +1232,7 @@ export class AuthService {
         // Transform API response to UserProfile format
         const serverProfile: UserProfile = {
           provider: response.provider,
-          provider_id: response.provider_user_id,
+          provider_id: response.provider_id,
           display_name: response.name,
           email: response.email,
           groups: response.groups ?? null,
