@@ -106,33 +106,13 @@ export interface CurrentPresenterMessage {
 export interface PresenterCursorMessage {
   message_type: 'presenter_cursor';
   cursor_position: CursorPosition;
-}
-
-/**
- * Extended version of PresenterCursorMessage with server-added user field
- * NOTE: The AsyncAPI schema does not include a user field, but the actual
- * server implementation includes it when broadcasting to clients.
- * This is a gap between the schema and implementation.
- * @deprecated Use collaboration state to track current presenter instead
- */
-export interface PresenterCursorMessageWithUser extends PresenterCursorMessage {
-  user: User;
+  user?: User; // Optional when sending, server adds when broadcasting
 }
 
 export interface PresenterSelectionMessage {
   message_type: 'presenter_selection';
   selected_cells: string[];
-}
-
-/**
- * Extended version of PresenterSelectionMessage with server-added user field
- * NOTE: The AsyncAPI schema does not include a user field, but the actual
- * server implementation includes it when broadcasting to clients.
- * This is a gap between the schema and implementation.
- * @deprecated Use collaboration state to track current presenter instead
- */
-export interface PresenterSelectionMessageWithUser extends PresenterSelectionMessage {
-  user: User;
+  user?: User; // Optional when sending, server adds when broadcasting
 }
 
 export interface AuthorizationDeniedMessage {

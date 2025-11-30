@@ -4,8 +4,8 @@ import { Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 import {
-  PresenterCursorMessageWithUser,
-  PresenterSelectionMessageWithUser,
+  PresenterCursorMessage,
+  PresenterSelectionMessage,
 } from '../../../../core/types/websocket-message.types';
 import { UiPresenterCursorService } from './ui-presenter-cursor.service';
 import { UiPresenterCursorDisplayService } from './ui-presenter-cursor-display.service';
@@ -60,10 +60,9 @@ export class UiPresenterCoordinatorService implements OnDestroy {
    */
   private _subscribeToPresenterMessages(): void {
     // Subscribe to presenter cursor messages
-    // NOTE: Using extended type with user field that server includes
     this._subscriptions.add(
       this.webSocketAdapter
-        .getTMIMessagesOfType<PresenterCursorMessageWithUser>('presenter_cursor')
+        .getTMIMessagesOfType<PresenterCursorMessage>('presenter_cursor')
         .subscribe({
           next: message => this._handlePresenterCursor(message),
           error: error => this.logger.error('Error in presenter cursor subscription', error),
@@ -71,10 +70,9 @@ export class UiPresenterCoordinatorService implements OnDestroy {
     );
 
     // Subscribe to presenter selection messages
-    // NOTE: Using extended type with user field that server includes
     this._subscriptions.add(
       this.webSocketAdapter
-        .getTMIMessagesOfType<PresenterSelectionMessageWithUser>('presenter_selection')
+        .getTMIMessagesOfType<PresenterSelectionMessage>('presenter_selection')
         .subscribe({
           next: message => this._handlePresenterSelection(message),
           error: error => this.logger.error('Error in presenter selection subscription', error),
@@ -87,7 +85,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
   /**
    * Handle incoming presenter cursor messages
    */
-  private _handlePresenterCursor(message: PresenterCursorMessageWithUser): void {
+  private _handlePresenterCursor(message: PresenterCursorMessage): void {
     // Guard against malformed messages that don't conform to AsyncAPI spec
     if (
       !message.user ||
@@ -124,7 +122,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
   /**
    * Handle incoming presenter selection messages
    */
-  private _handlePresenterSelection(message: PresenterSelectionMessageWithUser): void {
+  private _handlePresenterSelection(message: PresenterSelectionMessage): void {
     // Guard against malformed messages that don't conform to AsyncAPI spec
     if (
       !message.user ||

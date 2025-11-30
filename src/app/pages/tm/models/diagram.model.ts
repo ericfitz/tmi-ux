@@ -39,15 +39,6 @@ export interface Cell {
   visible?: boolean;
   attrs?: Record<string, unknown>;
   data?: Record<string, unknown>;
-  // Old legacy properties - DEPRECATED, will be removed
-  value?: string;
-  geometry?: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-  style?: string;
 }
 
 /**

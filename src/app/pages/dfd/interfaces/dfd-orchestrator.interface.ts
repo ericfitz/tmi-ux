@@ -93,7 +93,6 @@ export interface IDfdOrchestrator {
   getSelectedCells(): string[];
 
   // Collaboration operations
-  startCollaboration(): Observable<boolean>;
   stopCollaboration(): Observable<boolean>;
   requestPresenterRole(): Observable<boolean>;
 

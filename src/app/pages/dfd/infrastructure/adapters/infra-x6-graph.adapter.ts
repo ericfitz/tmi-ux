@@ -2253,13 +2253,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   }
 
   /**
-   * @deprecated Use AppHistoryService instead
-   */
-  private _shouldIncludeInHistoryInternal(_event: string, _args: any): boolean {
-    return true;
-  }
-
-  /**
    * Find the actual paths of attributes that changed between current and previous
    */
   private _findActualAttributeChanges(current: any, previous: any): string[] {

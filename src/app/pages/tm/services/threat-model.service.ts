@@ -181,19 +181,6 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * @deprecated Use getThreatModelList() for dashboard, getThreatModelById() for editing
-   * Get all threat models (backwards compatibility)
-   */
-  getThreatModels(): Observable<ThreatModel[]> {
-    this.logger.warn(
-      'getThreatModels() is deprecated. Use getThreatModelList() for dashboard or getThreatModelById() for editing.',
-    );
-
-    // Return empty array to encourage migration to new methods
-    return of([]);
-  }
-
-  /**
    * Get a full threat model by ID (for editing)
    */
   getThreatModelById(

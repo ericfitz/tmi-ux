@@ -20,7 +20,6 @@ import {
   PresenterRequestMessage,
   PresenterRequestMessageWithUser,
   PresenterDeniedMessage,
-  PresenterSelectionMessageWithUser,
   Participant,
 } from '../types/websocket-message.types';
 
@@ -610,91 +609,6 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Start a new collaboration session (host only) - DEPRECATED
-   * Use startOrJoinCollaboration() instead for better UX
-   * @returns Observable<boolean> indicating success or failure
-   */
-  public startCollaboration(): Observable<boolean> {
-    this._logger.info('Starting collaboration session');
-
-    if (!this._threatModelId || !this._diagramId) {
-      this._logger.error('Cannot start collaboration: diagram context not set');
-      return throwError(
-        () => new Error('Diagram context not set. Call setDiagramContext() first.'),
-      );
-    }
-
-    if (this._collaborationState$.value.isActive) {
-      this._logger.warn('Collaboration session already active');
-      return throwError(() => new Error('Collaboration session is already active'));
-    }
-
-    // Make API call to start collaboration session
-    return this._threatModelService
-      .startDiagramCollaborationSession(this._threatModelId, this._diagramId)
-      .pipe(
-        tap((session: CollaborationSession) => {
-          this._logger.info('Collaboration session started successfully', {
-            sessionId: session.session_id,
-            threatModelId: session.threat_model_id,
-            diagramId: session.diagram_id,
-            websocketUrl: session.websocket_url,
-          });
-
-          // Store the session
-          this._currentSession = session;
-
-          // Initialize with current user immediately to ensure UI shows at least one participant
-          const currentUserEmail = this.getCurrentUserEmail();
-          const currentUserProvider = this._authService.userIdp;
-          const currentUserProviderId = this._authService.providerId;
-          const isCurrentUserPresenter = currentUserEmail === session.presenter;
-          const initialUser: CollaborationUser = {
-            provider: currentUserProvider,
-            provider_id: currentUserProviderId,
-            name: this._authService.userProfile?.display_name || '',
-            email: currentUserEmail || '',
-            permission: 'writer',
-            status: 'active',
-            isHost: currentUserEmail === session.host, // Check if current user is the host from session data
-            isPresenter: isCurrentUserPresenter, // Check if current user is the presenter from session data
-            lastActivity: new Date(),
-            presenterRequestState: isCurrentUserPresenter ? 'presenter' : 'hand_down',
-          };
-
-          // Update collaboration state atomically
-          this._updateState({
-            isActive: true,
-            users: [initialUser],
-            sessionInfo: session,
-            existingSessionAvailable: null,
-            currentPresenterEmail: session.presenter || null,
-          });
-
-          // Set up WebSocket listeners before connecting
-          this._setupWebSocketListeners();
-        }),
-        // Connect to WebSocket and wait for connection to be established
-        switchMap((session: CollaborationSession) => {
-          return this._connectToWebSocket(session.websocket_url).pipe(map(() => session));
-        }),
-        // No longer ensuring user in participant list via REST API
-        // Participants will be managed through WebSocket messages only
-        tap(() => {
-          // Show session started notification only after user is verified in list
-          this._notificationService?.showSessionEvent('started').subscribe();
-
-          // Participants will be updated through WebSocket messages only
-        }),
-        map(() => true),
-        catchError((error: unknown) => {
-          this._logger.error('Failed to start collaboration session', error);
-          return throwError(() => error);
-        }),
-      );
-  }
-
-  /**
    * Leave the current collaboration session (for non-owners)
    * @returns Observable<boolean> indicating success or failure
    */
@@ -917,38 +831,6 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Add a participant to the collaboration session
-   * @param userEmail The user email
-   * @param permission The user's permission level
-   * @deprecated This method should not be used - participants are managed via WebSocket messages only
-   */
-  public addParticipant(userEmail: string, permission: 'reader' | 'writer' = 'reader'): void {
-    this._logger.warn(
-      'addParticipant called but participants should only be updated via WebSocket messages',
-      {
-        userEmail,
-        permission,
-      },
-    );
-    // Do not modify local state - wait for server update
-  }
-
-  /**
-   * Remove a participant from the collaboration session
-   * @param userEmail The user email to remove
-   * @deprecated This method should not be used - participants are managed via WebSocket messages only
-   */
-  public removeParticipant(userEmail: string): void {
-    this._logger.warn(
-      'removeParticipant called but participants should only be updated via WebSocket messages',
-      {
-        userEmail,
-      },
-    );
-    // Do not modify local state - wait for server update
-  }
-
-  /**
    * Update all participants from a bulk update message
    * This replaces the entire participant list with the new data
    * @param participants Array of participant information
@@ -1144,17 +1026,6 @@ export class DfdCollaborationService implements OnDestroy {
   public isCurrentUser(userId: string): boolean {
     const currentUserId = this.getCurrentUserId();
     return !!currentUserId && userId === currentUserId;
-  }
-
-  /**
-   * Check if a specific user is the current user (by email - deprecated, use userId)
-   * @param userEmail The user email to check
-   * @returns boolean indicating if this is the current user
-   * @deprecated Use isCurrentUser(userId) instead for proper deduplication
-   */
-  public isCurrentUserByEmail(userEmail: string): boolean {
-    const currentUserEmail = this.getCurrentUserEmail();
-    return !!currentUserEmail && userEmail === currentUserEmail;
   }
 
   /**
@@ -1446,16 +1317,8 @@ export class DfdCollaborationService implements OnDestroy {
     if (!newPresenterModeState) {
       const userProfile = this._authService.userProfile;
       if (userProfile) {
-        // NOTE: Using extended type since actual server expects user field
-        const clearSelectionMessage: PresenterSelectionMessageWithUser = {
-          message_type: 'presenter_selection',
-          user: {
-            principal_type: 'user',
-            provider: this._authService.userIdp,
-            provider_id: userProfile.provider_id,
-            display_name: userProfile.display_name,
-            email: userProfile.email,
-          },
+        const clearSelectionMessage = {
+          message_type: 'presenter_selection' as const,
           selected_cells: [], // Empty array clears all participants' selections
         };
 

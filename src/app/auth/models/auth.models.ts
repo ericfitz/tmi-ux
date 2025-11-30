@@ -29,22 +29,6 @@ export interface JwtToken {
 }
 
 /**
- * OAuth provider information for a user
- * @deprecated Use provider and provider_id fields on UserProfile instead
- */
-export interface UserOAuthProvider {
-  /**
-   * OAuth provider name (e.g., "google", "github", "microsoft")
-   */
-  provider: string;
-
-  /**
-   * Whether this is the primary authentication method
-   */
-  is_primary: boolean;
-}
-
-/**
  * User profile information (matches backend Principal + User schema)
  * User identity is defined by the combination of (provider, provider_id)
  */

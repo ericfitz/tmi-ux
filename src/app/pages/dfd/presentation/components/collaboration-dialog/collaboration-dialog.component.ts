@@ -683,14 +683,6 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Track users by email for efficient rendering (deprecated)
-   * @deprecated Use trackByUserId instead for proper deduplication
-   */
-  trackByUserEmail(_index: number, user: CollaborationUser): string {
-    return user.email;
-  }
-
-  /**
    * Check if a user has a pending presenter request
    */
   hasPresenterRequest(userEmail: string): boolean {

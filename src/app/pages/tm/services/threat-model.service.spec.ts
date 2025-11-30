@@ -180,12 +180,6 @@ describe('ThreatModelService', () => {
       });
     }));
 
-    it('should return mock threat models (deprecated method)', waitForAsync(() => {
-      service.getThreatModels().subscribe(threatModels => {
-        expect(threatModels.length).toBe(0); // Deprecated method returns empty for efficiency
-      });
-    }));
-
     it('should return a specific threat model by ID from API', waitForAsync(() => {
       // Mock the API call for getting a specific threat model
       vi.mocked(apiService.get).mockReturnValue(of(testThreatModel1));

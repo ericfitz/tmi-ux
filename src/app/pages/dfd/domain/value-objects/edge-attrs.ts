@@ -76,7 +76,7 @@ export interface EdgeAttrs {
   };
 
   /**
-   * Text/label styling attributes (deprecated - use labels array instead)
+   * Text/label styling attributes
    */
   text?: {
     /**

@@ -142,15 +142,6 @@ export class DfdStateStore {
   }
 
   /**
-   * Get the history plugin from the graph
-   * @deprecated X6 History plugin has been removed - use AppHistoryService instead
-   */
-  getHistory(): null {
-    this.logger.warn('getHistory() is deprecated - X6 History plugin has been removed');
-    return null;
-  }
-
-  /**
    * Query specific state property as an observable
    * @param selector Function that selects a portion of the state
    * @returns Observable of the queried state portion
