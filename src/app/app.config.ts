@@ -125,9 +125,10 @@ function markedOptionsFactory(): MarkedOptions {
     const text = this.parser.parseInline(args.tokens);
     const level = args.depth;
     // Generate ID from heading text (lowercase, replace spaces with hyphens)
-    const id = text
+    // Use DOMPurify to strip HTML tags to avoid incomplete multi-character sanitization
+    // vulnerability (text is already rendered HTML at this point from parseInline)
+    const id = DOMPurify.sanitize(text, { ALLOWED_TAGS: [] })
       .toLowerCase()
-      .replace(/<[^>]*>/g, '') // Remove HTML tags
       .replace(/[^\w\s-]/g, '') // Remove special characters
       .replace(/\s+/g, '-') // Replace spaces with hyphens
       .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
