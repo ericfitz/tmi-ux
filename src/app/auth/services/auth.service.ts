@@ -40,6 +40,7 @@ import {
   JwtToken,
   OAuthResponse,
   UserProfile,
+  UserMeResponse,
   UserRole,
   OAuthProviderInfo,
   ProvidersResponse,
@@ -1226,19 +1227,81 @@ export class AuthService {
    */
   refreshUserProfile(): Observable<UserProfile> {
     this.logger.info('Fetching current user profile from server');
-    return this.http.get<UserProfile>(`${environment.apiUrl}/users/me`).pipe(
-      tap(profile => {
-        // Validate that server provider_id matches JWT sub claim
+    return this.http.get<UserMeResponse>(`${environment.apiUrl}/users/me`).pipe(
+      map(response => {
+        // Transform API response to UserProfile format
+        const serverProfile: UserProfile = {
+          provider: response.provider,
+          provider_id: response.provider_user_id,
+          display_name: response.name,
+          email: response.email,
+          groups: response.groups ?? null,
+          is_admin: response.is_admin,
+        };
+
+        // Get current JWT-derived profile
         const currentProfile = this.userProfile;
-        if (currentProfile && profile.provider_id !== currentProfile.provider_id) {
-          this.logger.error('Provider ID mismatch between JWT and server response', {
-            jwtProviderId: currentProfile.provider_id,
-            serverProviderId: profile.provider_id,
-            provider: profile.provider,
+
+        if (!currentProfile) {
+          // No current profile, use server response as-is
+          return serverProfile;
+        }
+
+        // Validate critical identity fields (must match exactly)
+        if (serverProfile.provider !== currentProfile.provider) {
+          this.logger.error('Provider mismatch between JWT and server response', {
+            jwtProvider: currentProfile.provider,
+            serverProvider: serverProfile.provider,
           });
         }
 
-        // Update the cached profile with server data (including is_admin)
+        if (serverProfile.provider_id !== currentProfile.provider_id) {
+          this.logger.error('Provider ID mismatch between JWT and server response', {
+            jwtProviderId: currentProfile.provider_id,
+            serverProviderId: serverProfile.provider_id,
+            provider: serverProfile.provider,
+          });
+        }
+
+        // Merge profiles: use JWT values for identity fields, fill in missing non-identity fields
+        const mergedProfile: UserProfile = {
+          // Identity fields: always use JWT values (authoritative source)
+          provider: currentProfile.provider,
+          provider_id: currentProfile.provider_id,
+
+          // Non-identity fields: prefer server values if present, otherwise keep JWT values
+          display_name: serverProfile.display_name || currentProfile.display_name,
+          email: serverProfile.email || currentProfile.email,
+          groups: serverProfile.groups !== null ? serverProfile.groups : currentProfile.groups,
+
+          // Server-only fields
+          is_admin: serverProfile.is_admin,
+        };
+
+        // Warn about mismatched non-critical fields
+        if (
+          serverProfile.display_name &&
+          serverProfile.display_name !== currentProfile.display_name
+        ) {
+          this.logger.warn('Display name differs between JWT and server', {
+            jwtName: currentProfile.display_name,
+            serverName: serverProfile.display_name,
+            usingServer: true,
+          });
+        }
+
+        if (serverProfile.email && serverProfile.email !== currentProfile.email) {
+          this.logger.warn('Email differs between JWT and server', {
+            jwtEmail: currentProfile.email,
+            serverEmail: serverProfile.email,
+            usingServer: true,
+          });
+        }
+
+        return mergedProfile;
+      }),
+      tap(profile => {
+        // Update the cached profile with merged data
         this.userProfileSubject.next(profile);
         void this.storeUserProfile(profile);
         this.logger.info('User profile refreshed with admin status', {

@@ -67,6 +67,67 @@ export interface UserProfile {
 }
 
 /**
+ * API response from GET /users/me endpoint
+ * Uses different field names than UserProfile (backend API naming)
+ */
+export interface UserMeResponse {
+  /**
+   * Identity provider name (e.g., "google", "github", "microsoft", "test")
+   */
+  provider: string;
+
+  /**
+   * Provider-assigned user identifier (maps to UserProfile.provider_id)
+   */
+  provider_user_id: string;
+
+  /**
+   * User's full name (maps to UserProfile.display_name)
+   */
+  name: string;
+
+  /**
+   * User's email address
+   */
+  email: string;
+
+  /**
+   * Whether email has been verified
+   */
+  email_verified?: boolean;
+
+  /**
+   * Identity provider (alternate field name, should match provider)
+   */
+  idp?: string;
+
+  /**
+   * Whether the user has administrator privileges
+   */
+  is_admin: boolean;
+
+  /**
+   * Account creation timestamp
+   */
+  created_at?: string;
+
+  /**
+   * Last modification timestamp
+   */
+  modified_at?: string;
+
+  /**
+   * Last login timestamp
+   */
+  last_login?: string;
+
+  /**
+   * Groups the user belongs to (nullable array of group names)
+   */
+  groups?: string[] | null;
+}
+
+/**
  * OAuth response from the authorization server
  */
 export interface OAuthResponse {
