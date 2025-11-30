@@ -155,7 +155,7 @@ export interface PermissionsDialogData {
                         </mat-select-trigger>
                         @for (provider of availableProviders; track provider.id) {
                           <mat-option [value]="provider.id">
-                            <app-provider-display [provider]="provider.id"></app-provider-display>
+                            <app-provider-display [providerInfo]="provider"></app-provider-display>
                           </mat-option>
                         }
                       </mat-select>

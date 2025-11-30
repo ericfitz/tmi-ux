@@ -6,6 +6,7 @@ import '@angular/compiler';
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ProviderDisplayComponent } from './provider-display.component';
+import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 
 describe('ProviderDisplayComponent', () => {
   let component: ProviderDisplayComponent;
@@ -19,93 +20,176 @@ describe('ProviderDisplayComponent', () => {
   });
 
   describe('getProviderLogoPath', () => {
-    it('should return correct path for google', () => {
-      expect(component.getProviderLogoPath('google')).toBe(
-        'assets/signin-logos/google-signin-logo.svg',
-      );
+    describe('with provider string input', () => {
+      it('should return correct path for google', () => {
+        component.provider = 'google';
+        expect(component.getProviderLogoPath()).toBe('assets/signin-logos/google-signin-logo.svg');
+      });
+
+      it('should return correct path for github', () => {
+        component.provider = 'github';
+        expect(component.getProviderLogoPath()).toBe('assets/signin-logos/github-signin-logo.svg');
+      });
+
+      it('should return correct path for microsoft', () => {
+        component.provider = 'microsoft';
+        expect(component.getProviderLogoPath()).toBe(
+          'assets/signin-logos/microsoft-signin-logo.svg',
+        );
+      });
+
+      it('should return correct path for gitlab', () => {
+        component.provider = 'gitlab';
+        expect(component.getProviderLogoPath()).toBe('assets/signin-logos/gitlab-signin-logo.svg');
+      });
+
+      it('should return correct path for bitbucket', () => {
+        component.provider = 'bitbucket';
+        expect(component.getProviderLogoPath()).toBe(
+          'assets/signin-logos/bitbucket-signin-logo.svg',
+        );
+      });
+
+      it('should return correct path for apple', () => {
+        component.provider = 'apple';
+        expect(component.getProviderLogoPath()).toBe('assets/signin-logos/apple-signin-logo.svg');
+      });
+
+      it('should return correct path for test', () => {
+        component.provider = 'test';
+        expect(component.getProviderLogoPath()).toBe('TMI-Logo.svg');
+      });
+
+      it('should return null for unknown provider', () => {
+        component.provider = 'unknown';
+        expect(component.getProviderLogoPath()).toBeNull();
+      });
+
+      it('should be case-insensitive', () => {
+        component.provider = 'GOOGLE';
+        expect(component.getProviderLogoPath()).toBe('assets/signin-logos/google-signin-logo.svg');
+      });
     });
 
-    it('should return correct path for github', () => {
-      expect(component.getProviderLogoPath('github')).toBe(
-        'assets/signin-logos/github-signin-logo.svg',
-      );
-    });
+    describe('with providerInfo object input', () => {
+      it('should use icon from API when available', () => {
+        component.providerInfo = {
+          id: 'custom',
+          name: 'Custom Provider',
+          icon: 'https://example.com/custom-icon.svg',
+          auth_url: 'https://example.com/auth',
+          token_url: 'https://example.com/token',
+          redirect_uri: 'https://example.com/callback',
+          client_id: 'test-client',
+        };
+        expect(component.getProviderLogoPath()).toBe('https://example.com/custom-icon.svg');
+      });
 
-    it('should return correct path for microsoft', () => {
-      expect(component.getProviderLogoPath('microsoft')).toBe(
-        'assets/signin-logos/microsoft-signin-logo.svg',
-      );
-    });
+      it('should return null for FontAwesome icons', () => {
+        component.providerInfo = {
+          id: 'custom',
+          name: 'Custom Provider',
+          icon: 'fa-custom-icon',
+          auth_url: 'https://example.com/auth',
+          token_url: 'https://example.com/token',
+          redirect_uri: 'https://example.com/callback',
+          client_id: 'test-client',
+        };
+        expect(component.getProviderLogoPath()).toBeNull();
+      });
 
-    it('should return correct path for gitlab', () => {
-      expect(component.getProviderLogoPath('gitlab')).toBe(
-        'assets/signin-logos/gitlab-signin-logo.svg',
-      );
-    });
-
-    it('should return correct path for bitbucket', () => {
-      expect(component.getProviderLogoPath('bitbucket')).toBe(
-        'assets/signin-logos/bitbucket-signin-logo.svg',
-      );
-    });
-
-    it('should return correct path for apple', () => {
-      expect(component.getProviderLogoPath('apple')).toBe(
-        'assets/signin-logos/apple-signin-logo.svg',
-      );
-    });
-
-    it('should return correct path for test', () => {
-      expect(component.getProviderLogoPath('test')).toBe('TMI-Logo.svg');
-    });
-
-    it('should return null for unknown provider', () => {
-      expect(component.getProviderLogoPath('unknown')).toBeNull();
-    });
-
-    it('should be case-insensitive', () => {
-      expect(component.getProviderLogoPath('GOOGLE')).toBe(
-        'assets/signin-logos/google-signin-logo.svg',
-      );
+      it('should fall back to hardcoded path when icon not provided', () => {
+        component.providerInfo = {
+          id: 'google',
+          name: 'Google',
+          icon: '',
+          auth_url: 'https://example.com/auth',
+          token_url: 'https://example.com/token',
+          redirect_uri: 'https://example.com/callback',
+          client_id: 'test-client',
+        };
+        expect(component.getProviderLogoPath()).toBe('assets/signin-logos/google-signin-logo.svg');
+      });
     });
   });
 
   describe('getProviderName', () => {
-    it('should return "GitHub" with capital H', () => {
-      expect(component.getProviderName('github')).toBe('GitHub');
+    describe('with provider string input', () => {
+      it('should return "GitHub" with capital H', () => {
+        component.provider = 'github';
+        expect(component.getProviderName()).toBe('GitHub');
+      });
+
+      it('should return "GitLab" with capital L', () => {
+        component.provider = 'gitlab';
+        expect(component.getProviderName()).toBe('GitLab');
+      });
+
+      it('should return "Google" capitalized', () => {
+        component.provider = 'google';
+        expect(component.getProviderName()).toBe('Google');
+      });
+
+      it('should return "Microsoft" capitalized', () => {
+        component.provider = 'microsoft';
+        expect(component.getProviderName()).toBe('Microsoft');
+      });
+
+      it('should return "Bitbucket" with only first letter capitalized', () => {
+        component.provider = 'bitbucket';
+        expect(component.getProviderName()).toBe('Bitbucket');
+      });
+
+      it('should return "Apple" capitalized', () => {
+        component.provider = 'apple';
+        expect(component.getProviderName()).toBe('Apple');
+      });
+
+      it('should return "TMI Test" for test provider', () => {
+        component.provider = 'test';
+        expect(component.getProviderName()).toBe('TMI Test');
+      });
+
+      it('should capitalize first letter for unknown providers', () => {
+        component.provider = 'unknown';
+        expect(component.getProviderName()).toBe('Unknown');
+      });
+
+      it('should be case-insensitive for known providers', () => {
+        component.provider = 'GITHUB';
+        expect(component.getProviderName()).toBe('GitHub');
+
+        component.provider = 'GiTlAb';
+        expect(component.getProviderName()).toBe('GitLab');
+      });
     });
 
-    it('should return "GitLab" with capital L', () => {
-      expect(component.getProviderName('gitlab')).toBe('GitLab');
-    });
+    describe('with providerInfo object input', () => {
+      it('should use name from API when available', () => {
+        component.providerInfo = {
+          id: 'custom',
+          name: 'Custom OAuth Provider',
+          icon: 'https://example.com/icon.svg',
+          auth_url: 'https://example.com/auth',
+          token_url: 'https://example.com/token',
+          redirect_uri: 'https://example.com/callback',
+          client_id: 'test-client',
+        };
+        expect(component.getProviderName()).toBe('Custom OAuth Provider');
+      });
 
-    it('should return "Google" capitalized', () => {
-      expect(component.getProviderName('google')).toBe('Google');
-    });
-
-    it('should return "Microsoft" capitalized', () => {
-      expect(component.getProviderName('microsoft')).toBe('Microsoft');
-    });
-
-    it('should return "Bitbucket" with only first letter capitalized', () => {
-      expect(component.getProviderName('bitbucket')).toBe('Bitbucket');
-    });
-
-    it('should return "Apple" capitalized', () => {
-      expect(component.getProviderName('apple')).toBe('Apple');
-    });
-
-    it('should return "TMI Test" for test provider', () => {
-      expect(component.getProviderName('test')).toBe('TMI Test');
-    });
-
-    it('should capitalize first letter for unknown providers', () => {
-      expect(component.getProviderName('unknown')).toBe('Unknown');
-    });
-
-    it('should be case-insensitive for known providers', () => {
-      expect(component.getProviderName('GITHUB')).toBe('GitHub');
-      expect(component.getProviderName('GiTlAb')).toBe('GitLab');
+      it('should fall back to capitalizing ID when name not provided', () => {
+        component.providerInfo = {
+          id: 'github',
+          name: '',
+          auth_url: 'https://example.com/auth',
+          token_url: 'https://example.com/token',
+          redirect_uri: 'https://example.com/callback',
+          client_id: 'test-client',
+          icon: 'https://example.com/icon.svg',
+        };
+        expect(component.getProviderName()).toBe('GitHub');
+      });
     });
   });
 
