@@ -21,6 +21,7 @@ import {
   getCompositeKey,
   principalsEqual,
 } from '@app/shared/utils/principal-display.utils';
+import { ProviderAdapterService } from '../../services/providers/provider-adapter.service';
 
 export interface PermissionsDialogData {
   permissions: Authorization[];
@@ -172,52 +173,25 @@ export interface PermissionsDialogData {
                 </td>
               </ng-container>
 
-              <!-- Provider ID Column -->
-              <ng-container matColumnDef="provider_id">
+              <!-- Subject Column (replaces Provider ID and Email) -->
+              <ng-container matColumnDef="subject">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  {{ 'threatModels.permissionsPrincipalId' | transloco }}
+                  {{ 'threatModels.permissionsSubject' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
                   @if (!data.isReadOnly) {
                     <mat-form-field class="table-field">
                       <input
                         matInput
-                        [value]="auth.provider_id"
-                        (blur)="updatePermissionProviderId(i, $event)"
-                        [placeholder]="
-                          auth.principal_type === 'user'
-                            ? ('threatModels.permissionsUserId' | transloco)
-                            : ('threatModels.permissionsGroupId' | transloco)
-                        "
+                        [value]="getSubjectValue(auth)"
+                        (blur)="updatePermissionSubject(i, $event)"
+                        [placeholder]="getSubjectPlaceholder(auth)"
                         [attr.tabindex]="i * 5 + 3"
                       />
                     </mat-form-field>
                   }
                   @if (data.isReadOnly) {
-                    <span>{{ auth.provider_id }}</span>
-                  }
-                </td>
-              </ng-container>
-
-              <!-- Email Column -->
-              <ng-container matColumnDef="email">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                  {{ 'threatModels.permissionsEmail' | transloco }}
-                </th>
-                <td mat-cell *matCellDef="let auth; let i = index">
-                  @if (!data.isReadOnly) {
-                    <mat-form-field class="table-field">
-                      <input
-                        matInput
-                        [value]="auth.email || ''"
-                        (blur)="updatePermissionEmail(i, $event)"
-                        [placeholder]="'threatModels.permissionsEmail' | transloco"
-                        [attr.tabindex]="i * 5 + 4"
-                      />
-                    </mat-form-field>
-                  }
-                  @if (data.isReadOnly) {
-                    <span>{{ auth.email || '' }}</span>
+                    <span>{{ getSubjectValue(auth) }}</span>
                   }
                 </td>
               </ng-container>
@@ -441,14 +415,9 @@ export interface PermissionsDialogData {
         max-width: 160px;
       }
 
-      .mat-column-provider_id {
-        width: 180px;
-        min-width: 180px;
-      }
-
-      .mat-column-email {
-        width: 200px;
-        min-width: 200px;
+      .mat-column-subject {
+        width: 240px;
+        min-width: 240px;
       }
 
       .mat-column-role {
@@ -570,16 +539,17 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
     public dialogRef: MatDialogRef<PermissionsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: PermissionsDialogData,
     private authService: AuthService,
+    private providerAdapter: ProviderAdapterService,
   ) {}
 
   ngOnInit(): void {
     this.permissionsDataSource.data = [...this.data.permissions];
     this._originalPermissions = [...this.data.permissions];
 
-    // Updated column order: type, provider, principal_id, email, role, actions
+    // Updated column order: type, provider, subject, role, actions
     this.displayedColumns = this.data.isReadOnly
-      ? ['principal_type', 'provider', 'provider_id', 'email', 'role']
-      : ['principal_type', 'provider', 'provider_id', 'email', 'role', 'actions'];
+      ? ['principal_type', 'provider', 'subject', 'role']
+      : ['principal_type', 'provider', 'subject', 'role', 'actions'];
 
     // Load available providers
     this.loadProviders();
@@ -591,13 +561,24 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
 
   /**
    * Load OAuth providers from the authentication service
+   * Also adds the built-in TMI provider
    */
   private loadProviders(): void {
     this.providersLoading = true;
     this._subscriptions.add(
       this.authService.getAvailableProviders().subscribe({
         next: providers => {
-          this.availableProviders = providers;
+          // Add hardcoded TMI provider at the beginning
+          const tmiProvider: OAuthProviderInfo = {
+            id: 'tmi',
+            name: 'TMI',
+            icon: 'assets/signin-logos/tmi.svg',
+            auth_url: '',
+            redirect_uri: '',
+            client_id: '',
+          };
+
+          this.availableProviders = [tmiProvider, ...providers];
           this.providersLoading = false;
         },
         error: () => {
@@ -651,16 +632,44 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Updates the email of a permission
-   * @param index The index of the permission to update
-   * @param event The blur event containing the new email value
+   * Get the subject value for display (email or provider_id)
+   * @param auth The authorization object
+   * @returns The subject value to display
    */
-  updatePermissionEmail(index: number, event: Event): void {
+  getSubjectValue(auth: Authorization): string {
+    // Check if there's a cached _subject value first
+    const cachedSubject = (auth as any)._subject;
+    if (cachedSubject !== undefined) {
+      return cachedSubject;
+    }
+    // Otherwise return email or provider_id
+    return auth.email || auth.provider_id;
+  }
+
+  /**
+   * Get placeholder text for the subject field based on principal type
+   * @param auth The authorization object
+   * @returns Placeholder text
+   */
+  getSubjectPlaceholder(auth: Authorization): string {
+    return auth.principal_type === 'group' ? 'Group name (e.g., everyone)' : 'Email or user ID';
+  }
+
+  /**
+   * Updates the subject of a permission
+   * @param index The index of the permission to update
+   * @param event The blur event containing the new subject value
+   */
+  updatePermissionSubject(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
-    const newEmail = input.value.trim();
+    const subject = input.value.trim();
 
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
-      this.permissionsDataSource.data[index].email = newEmail;
+      const auth = this.permissionsDataSource.data[index];
+
+      // Store in temporary field for later parsing by AuthorizationPrepareService
+      (auth as any)._subject = subject;
+
       this.permissionsTable.renderRows();
     }
   }
@@ -684,22 +693,20 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    */
   updatePermissionProvider(index: number, event: { value: string }): void {
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
-      this.permissionsDataSource.data[index].provider = event.value;
-      this.permissionsTable.renderRows();
-    }
-  }
+      const auth = this.permissionsDataSource.data[index];
+      auth.provider = event.value;
 
-  /**
-   * Updates the provider ID of a permission
-   * @param index The index of the permission to update
-   * @param event The blur event containing the new provider ID value
-   */
-  updatePermissionProviderId(index: number, event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const newProviderId = input.value.trim();
+      // Auto-populate subject with default if available
+      const defaultSubject = this.providerAdapter.getDefaultSubject(
+        event.value,
+        auth.principal_type,
+      );
+      if (defaultSubject) {
+        (auth as any)._subject = defaultSubject;
+        auth.provider_id = defaultSubject;
+        auth.email = undefined;
+      }
 
-    if (index >= 0 && index < this.permissionsDataSource.data.length) {
-      this.permissionsDataSource.data[index].provider_id = newProviderId;
       this.permissionsTable.renderRows();
     }
   }
@@ -781,10 +788,16 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
 
   /**
    * Saves the permissions and closes the dialog
+   * Ensures _subject field is set for all permissions
    */
   save(): void {
+    const permissions = this.permissionsDataSource.data.map(auth => ({
+      ...auth,
+      _subject: (auth as any)._subject || auth.email || auth.provider_id,
+    }));
+
     this.dialogRef.close({
-      permissions: this.permissionsDataSource.data,
+      permissions,
       owner: this.data.owner,
     });
   }

@@ -87,6 +87,7 @@ export class ProviderDisplayComponent {
       gitlab: 'assets/signin-logos/gitlab-signin-logo.svg',
       bitbucket: 'assets/signin-logos/bitbucket-signin-logo.svg',
       apple: 'assets/signin-logos/apple-signin-logo.svg',
+      tmi: 'assets/signin-logos/tmi.svg',
       test: 'TMI-Logo.svg',
     };
     return logoMap[providerId.toLowerCase()] || null;
@@ -114,6 +115,7 @@ export class ProviderDisplayComponent {
       microsoft: 'Microsoft',
       bitbucket: 'Bitbucket',
       apple: 'Apple',
+      tmi: 'TMI',
       test: 'TMI Test',
     };
 

@@ -8,6 +8,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThreatModelAuthorizationService } from './services/threat-model-authorization.service';
+import { AuthorizationPrepareService } from './services/providers/authorization-prepare.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subscription, Subject } from 'rxjs';
 import { debounceTime, filter, distinctUntilChanged } from 'rxjs/operators';
@@ -179,6 +180,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
     private frameworkService: FrameworkService,
     private authorizationService: ThreatModelAuthorizationService,
     private cellDataExtractionService: CellDataExtractionService,
+    private authorizationPrepare: AuthorizationPrepareService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -1917,8 +1919,11 @@ export class TmEditComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Capture the original owner before opening the dialog
-    const originalOwner = this.threatModel.owner;
+    // Capture original state for rollback on error
+    const originalAuthorizations = this.threatModel.authorization
+      ? JSON.parse(JSON.stringify(this.threatModel.authorization))
+      : [];
+    const originalOwner = { ...this.threatModel.owner };
 
     const dialogData: PermissionsDialogData = {
       permissions: this.threatModel.authorization || [],
@@ -1944,37 +1949,56 @@ export class TmEditComponent implements OnInit, OnDestroy {
       dialogRef
         .afterClosed()
         .subscribe((result: { permissions: Authorization[]; owner: User } | undefined) => {
-          if (result && this.threatModel) {
-            this.threatModel.authorization = result.permissions;
-            this.threatModel.owner = result.owner;
-            this.threatModel.modified_at = new Date().toISOString();
-
-            // Create updates object with both authorization and owner if owner changed
-            const updates: Partial<Pick<ThreatModel, 'authorization' | 'owner'>> = {
-              authorization: this.threatModel.authorization,
-            };
-
-            // Only include owner in updates if it changed (compare by composite key)
-            const originalOwnerKey = `${originalOwner.provider}:${originalOwner.provider_id}`;
-            const newOwnerKey = `${result.owner.provider}:${result.owner.provider_id}`;
-            if (originalOwnerKey !== newOwnerKey) {
-              updates.owner = result.owner;
-            }
-
-            // Update the threat model with PATCH
-            this._subscriptions.add(
-              this.threatModelService
-                .patchThreatModel(this.threatModel.id, updates)
-                .subscribe(updatedModel => {
-                  if (updatedModel && this.threatModel) {
-                    // Update the relevant fields from the result
-                    this.threatModel.authorization = updatedModel.authorization;
-                    this.threatModel.owner = updatedModel.owner;
-                    this.threatModel.modified_at = updatedModel.modified_at;
-                  }
-                }),
-            );
+          if (!result || !this.threatModel) {
+            return;
           }
+
+          // Prepare authorizations for API (parse subject, transform provider)
+          const preparedAuthorizations = this.authorizationPrepare.prepareForApi(
+            result.permissions,
+          );
+
+          // Update local state
+          this.threatModel.authorization = preparedAuthorizations;
+          this.threatModel.owner = result.owner;
+          this.threatModel.modified_at = new Date().toISOString();
+
+          // Create updates object with both authorization and owner if owner changed
+          const updates: Partial<Pick<ThreatModel, 'authorization' | 'owner'>> = {
+            authorization: preparedAuthorizations,
+          };
+
+          // Only include owner in updates if it changed (compare by composite key)
+          const originalOwnerKey = `${originalOwner.provider}:${originalOwner.provider_id}`;
+          const newOwnerKey = `${result.owner.provider}:${result.owner.provider_id}`;
+          if (originalOwnerKey !== newOwnerKey) {
+            updates.owner = result.owner;
+          }
+
+          // Update the threat model with PATCH and error handling
+          this._subscriptions.add(
+            this.threatModelService.patchThreatModel(this.threatModel.id, updates).subscribe({
+              next: updatedModel => {
+                if (updatedModel && this.threatModel) {
+                  // Update the relevant fields from the result
+                  this.threatModel.authorization = updatedModel.authorization;
+                  this.threatModel.owner = updatedModel.owner;
+                  this.threatModel.modified_at = updatedModel.modified_at;
+                }
+              },
+              error: error => {
+                this.logger.error('Failed to update permissions', error);
+
+                // Rollback state on error
+                if (this.threatModel) {
+                  this.threatModel.authorization = originalAuthorizations;
+                  this.threatModel.owner = originalOwner;
+                }
+
+                // TODO: Show error notification to user
+              },
+            }),
+          );
         }),
     );
   }

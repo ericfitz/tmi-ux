@@ -85,6 +85,7 @@ import {
   type ImportSummary,
 } from './import/import-orchestrator.service';
 import { ReadonlyFieldFilterService } from './import/readonly-field-filter.service';
+import { ProviderAdapterService } from './providers/provider-adapter.service';
 
 @Injectable({
   providedIn: 'root',
@@ -101,6 +102,7 @@ export class ThreatModelService implements OnDestroy {
     private authorizationService: ThreatModelAuthorizationService,
     private importOrchestrator: ImportOrchestratorService,
     private fieldFilter: ReadonlyFieldFilterService,
+    private providerAdapter: ProviderAdapterService,
   ) {
     // this.logger.debugComponent('ThreatModelService', 'ThreatModelService initialized');
   }
@@ -221,6 +223,14 @@ export class ThreatModelService implements OnDestroy {
             threatModel.threats = threatModel.threats.map(threat =>
               this.migrateLegacyThreatFieldValues(threat),
             );
+          }
+
+          // Transform providers for display (* → tmi)
+          if (threatModel.authorization) {
+            threatModel.authorization = threatModel.authorization.map(auth => ({
+              ...auth,
+              provider: this.providerAdapter.transformProviderForDisplay(auth.provider),
+            }));
           }
         }
         return threatModel;
