@@ -572,7 +572,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
           const tmiProvider: OAuthProviderInfo = {
             id: 'tmi',
             name: 'TMI',
-            icon: 'assets/signin-logos/tmi.svg',
+            icon: 'TMI-Logo.svg',
             auth_url: '',
             redirect_uri: '',
             client_id: '',

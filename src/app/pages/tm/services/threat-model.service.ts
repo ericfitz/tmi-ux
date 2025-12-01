@@ -649,6 +649,18 @@ export class ThreatModelService implements OnDestroy {
     // );
 
     return this.apiService.patch<ThreatModel>(`threat_models/${threatModelId}`, operations).pipe(
+      map(updatedModel => {
+        if (updatedModel) {
+          // Transform providers for display (* → tmi)
+          if (updatedModel.authorization) {
+            updatedModel.authorization = updatedModel.authorization.map(auth => ({
+              ...auth,
+              provider: this.providerAdapter.transformProviderForDisplay(auth.provider),
+            }));
+          }
+        }
+        return updatedModel;
+      }),
       tap(updatedModel => {
         // Update cache with the server response
         if (updatedModel) {
