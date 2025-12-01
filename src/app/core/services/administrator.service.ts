@@ -31,7 +31,7 @@ export class AdministratorService {
    */
   public list(filter?: AdministratorFilter): Observable<Administrator[]> {
     const params = this.buildParams(filter);
-    return this.apiService.get<ListAdministratorsResponse>('/admin/administrators', params).pipe(
+    return this.apiService.get<ListAdministratorsResponse>('admin/administrators', params).pipe(
       map(response => response.administrators),
       tap(administrators => {
         this.administratorsSubject$.next(administrators);
@@ -49,7 +49,7 @@ export class AdministratorService {
    */
   public create(request: CreateAdministratorRequest): Observable<Administrator> {
     return this.apiService
-      .post<Administrator>('/admin/administrators', request as unknown as Record<string, unknown>)
+      .post<Administrator>('admin/administrators', request as unknown as Record<string, unknown>)
       .pipe(
         tap(admin => {
           this.logger.info('Administrator created', { id: admin.id });
@@ -66,7 +66,7 @@ export class AdministratorService {
    * Delete an administrator grant
    */
   public delete(id: string): Observable<void> {
-    return this.apiService.delete<void>(`/admin/administrators/${id}`).pipe(
+    return this.apiService.delete<void>(`admin/administrators/${id}`).pipe(
       tap(() => {
         this.logger.info('Administrator deleted', { id });
         this.list().subscribe();

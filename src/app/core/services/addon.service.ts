@@ -26,7 +26,7 @@ export class AddonService {
    */
   public list(filter?: AddonFilter): Observable<Addon[]> {
     const params = this.buildParams(filter);
-    return this.apiService.get<ListAddonsResponse>('/addons', params).pipe(
+    return this.apiService.get<ListAddonsResponse>('addons', params).pipe(
       map(response => response.addons),
       tap(addons => {
         this.addonsSubject$.next(addons);
@@ -43,7 +43,7 @@ export class AddonService {
    * Get a specific addon by ID
    */
   public get(id: string): Observable<Addon> {
-    return this.apiService.get<Addon>(`/addons/${id}`).pipe(
+    return this.apiService.get<Addon>(`addons/${id}`).pipe(
       tap(addon => this.logger.debug('Addon loaded', { id: addon.id })),
       catchError(error => {
         this.logger.error('Failed to get addon', error);
@@ -57,7 +57,7 @@ export class AddonService {
    */
   public create(request: CreateAddonRequest): Observable<Addon> {
     return this.apiService
-      .post<Addon>('/addons', request as unknown as Record<string, unknown>)
+      .post<Addon>('addons', request as unknown as Record<string, unknown>)
       .pipe(
         tap(addon => {
           this.logger.info('Addon created', { id: addon.id });
@@ -75,7 +75,7 @@ export class AddonService {
    */
   public update(id: string, request: CreateAddonRequest): Observable<Addon> {
     return this.apiService
-      .put<Addon>(`/addons/${id}`, request as unknown as Record<string, unknown>)
+      .put<Addon>(`addons/${id}`, request as unknown as Record<string, unknown>)
       .pipe(
         tap(addon => {
           this.logger.info('Addon updated', { id: addon.id });
@@ -92,7 +92,7 @@ export class AddonService {
    * Delete an addon
    */
   public delete(id: string): Observable<void> {
-    return this.apiService.delete<void>(`/addons/${id}`).pipe(
+    return this.apiService.delete<void>(`addons/${id}`).pipe(
       tap(() => {
         this.logger.info('Addon deleted', { id });
         this.list().subscribe();

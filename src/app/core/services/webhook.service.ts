@@ -31,7 +31,7 @@ export class WebhookService {
    */
   public list(filter?: WebhookFilter): Observable<WebhookSubscription[]> {
     const params = this.buildParams(filter);
-    return this.apiService.get<WebhookSubscription[]>('/webhooks/subscriptions', params).pipe(
+    return this.apiService.get<WebhookSubscription[]>('webhooks/subscriptions', params).pipe(
       tap(webhooks => {
         this.webhooksSubject$.next(webhooks);
         this.logger.debug('Webhooks loaded', { count: webhooks.length });
@@ -47,7 +47,7 @@ export class WebhookService {
    * Get a specific webhook subscription by ID
    */
   public get(id: string): Observable<WebhookSubscription> {
-    return this.apiService.get<WebhookSubscription>(`/webhooks/subscriptions/${id}`).pipe(
+    return this.apiService.get<WebhookSubscription>(`webhooks/subscriptions/${id}`).pipe(
       tap(webhook => this.logger.debug('Webhook loaded', { id: webhook.id })),
       catchError(error => {
         this.logger.error('Failed to get webhook', error);
@@ -62,7 +62,7 @@ export class WebhookService {
   public create(input: WebhookSubscriptionInput): Observable<WebhookSubscription> {
     return this.apiService
       .post<WebhookSubscription>(
-        '/webhooks/subscriptions',
+        'webhooks/subscriptions',
         input as unknown as Record<string, unknown>,
       )
       .pipe(
@@ -83,7 +83,7 @@ export class WebhookService {
   public update(id: string, input: WebhookSubscriptionInput): Observable<WebhookSubscription> {
     return this.apiService
       .put<WebhookSubscription>(
-        `/webhooks/subscriptions/${id}`,
+        `webhooks/subscriptions/${id}`,
         input as unknown as Record<string, unknown>,
       )
       .pipe(
@@ -102,7 +102,7 @@ export class WebhookService {
    * Delete a webhook subscription
    */
   public delete(id: string): Observable<void> {
-    return this.apiService.delete<void>(`/webhooks/subscriptions/${id}`).pipe(
+    return this.apiService.delete<void>(`webhooks/subscriptions/${id}`).pipe(
       tap(() => {
         this.logger.info('Webhook deleted', { id });
         this.list().subscribe();
@@ -118,7 +118,7 @@ export class WebhookService {
    * Test a webhook subscription
    */
   public test(id: string): Observable<void> {
-    return this.apiService.post<void>(`/webhooks/subscriptions/${id}/test`, {}).pipe(
+    return this.apiService.post<void>(`webhooks/subscriptions/${id}/test`, {}).pipe(
       tap(() => this.logger.info('Webhook test triggered', { id })),
       catchError(error => {
         this.logger.error('Failed to test webhook', error);
