@@ -27,7 +27,7 @@ import {
 import { Router } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Observable, Subscription } from 'rxjs';
-import { take, map } from 'rxjs/operators';
+import { take, map, filter, switchMap } from 'rxjs/operators';
 
 import {
   COMMON_IMPORTS,
@@ -53,6 +53,7 @@ import {
   DeleteThreatModelDialogComponent,
   DeleteThreatModelDialogData,
 } from './components/delete-threat-model-dialog/delete-threat-model-dialog.component';
+import { AuthService } from '../../auth/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -98,6 +99,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
     private transloco: TranslocoService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -158,9 +160,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   createThreatModel(): void {
-    // Create a new threat model and navigate to the edit page
-    this.threatModelService
-      .createThreatModel('New Threat Model', 'Description of the threat model', 'STRIDE')
+    // Wait for user profile to load before creating threat model
+    // This ensures authorization can be properly calculated
+    this.authService.userProfile$
+      .pipe(
+        filter(profile => profile !== null),
+        take(1),
+        switchMap(() =>
+          this.threatModelService.createThreatModel(
+            'New Threat Model',
+            'Description of the threat model',
+            'STRIDE',
+          ),
+        ),
+      )
       .subscribe(model => {
         void this.router.navigate(['/tm', model.id]);
       });
