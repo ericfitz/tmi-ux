@@ -24,6 +24,58 @@
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
   },
   "admin": {
+    "addons": {
+      "addButton": "Add Addon",
+      "addDialog": {
+        "description": "Description",
+        "descriptionHint": "What does this addon do?",
+        "descriptionPlaceholder": "Describe the addon functionality",
+        "icon": "Icon",
+        "iconHint": "Material Symbols format (e.g., material-symbols:security)",
+        "iconInvalid": "Invalid icon format",
+        "iconPlaceholder": "material-symbols:extension",
+        "name": "Name",
+        "nameHint": "Display name for this addon",
+        "namePlaceholder": "My Custom Addon",
+        "nameRequired": "Name is required",
+        "objects": "Object Types",
+        "objectsHint": "Select TMI object types this addon can operate on",
+        "save": "Create Addon",
+        "title": "Add Addon",
+        "webhook": "Webhook",
+        "webhookHint": "Associated webhook subscription",
+        "webhookRequired": "Webhook is required"
+      },
+      "created": "Created",
+      "deleteTooltip": "Delete addon",
+      "filterLabel": "Filter Addons",
+      "filterPlaceholder": "Search by name or description",
+      "listTitle": "System Addons",
+      "noAddons": "No addons found",
+      "subtitle": "Configure addons for extending TMI functionality",
+      "title": "Manage Addons"
+    },
+    "administrators": {
+      "addButton": "Add Administrator",
+      "addDialog": {
+        "provider": "Provider",
+        "providerRequired": "Provider is required",
+        "save": "Add Administrator",
+        "subject": "Subject",
+        "subjectHint": "Enter user email or group name",
+        "subjectPlaceholder": "User email or group name",
+        "subjectRequired": "Subject is required",
+        "title": "Add Administrator"
+      },
+      "createdAt": "Added on",
+      "filterLabel": "Filter Administrators",
+      "filterPlaceholder": "Search by email or group name",
+      "listTitle": "System Administrators",
+      "noAdministrators": "No administrators found",
+      "removeTooltip": "Remove Administrator Permissions",
+      "subtitle": "Control who has administrative access to the system",
+      "title": "Manage Administrators"
+    },
     "sections": {
       "addons": {
         "description": "Install and configure application addons",
@@ -51,7 +103,43 @@
       }
     },
     "subtitle": "Manage system settings and configurations",
-    "title": "Administration"
+    "title": "Administration",
+    "webhooks": {
+      "addButton": "Add Webhook",
+      "addDialog": {
+        "events": "Events",
+        "eventsHint": "Event types to subscribe to (e.g., threat_model.created)",
+        "eventsRequired": "At least one event is required",
+        "name": "Name",
+        "nameHint": "Descriptive name for this webhook",
+        "namePlaceholder": "Production Notifications",
+        "nameRequired": "Name is required",
+        "save": "Create Webhook",
+        "secret": "Secret",
+        "secretHint": "HMAC secret for signing payloads (auto-generated if empty)",
+        "secretPlaceholder": "Leave empty to auto-generate",
+        "title": "Add Webhook",
+        "url": "Webhook URL",
+        "urlHint": "Must be HTTPS URL",
+        "urlInvalid": "URL must be HTTPS",
+        "urlPlaceholder": "https://example.com/webhook",
+        "urlRequired": "URL is required"
+      },
+      "created": "Created",
+      "deleteTooltip": "Delete webhook",
+      "events": "events",
+      "filterLabel": "Filter Webhooks",
+      "filterPlaceholder": "Search by name or URL",
+      "listTitle": "Webhook Subscriptions",
+      "noWebhooks": "No webhooks found",
+      "status": {
+        "active": "Active",
+        "pending_delete": "Pending Delete",
+        "pending_verification": "Pending Verification"
+      },
+      "subtitle": "Configure webhook subscriptions for event notifications",
+      "title": "Manage Webhooks"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "Enter value and press Enter",

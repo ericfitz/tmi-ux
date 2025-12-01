@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, DATA_MATERIAL_IMPORTS } from '@app/shared/imports';
 
@@ -16,6 +17,7 @@ import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, DATA_MATERIAL_IMPORTS } from '@a
   styleUrl: './admin.component.scss',
 })
 export class AdminComponent {
+  constructor(private router: Router) {}
   adminSections = [
     {
       title: 'admin.sections.administrators.title',
@@ -55,8 +57,11 @@ export class AdminComponent {
     },
   ];
 
-  onSectionClick(_action: string): void {
-    // Placeholder - buttons don't do anything yet
-    // Future: implement navigation to section-specific pages
+  onSectionClick(action: string): void {
+    void this.router.navigate(['/admin', action]);
+  }
+
+  onClose(): void {
+    void this.router.navigate(['/dashboard']);
   }
 }

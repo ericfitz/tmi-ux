@@ -1,0 +1,218 @@
+.admin-page-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+
+  .header-content {
+    flex: 1;
+  }
+
+  h1 {
+    margin: 0 0 8px;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--theme-text-primary);
+  }
+
+  .subtitle {
+    color: var(--theme-text-secondary);
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .close-button {
+    margin-left: 16px;
+  }
+}
+
+.filter-card {
+  margin-bottom: 24px;
+
+  mat-card-content {
+    padding: 16px;
+  }
+
+  .filter-field {
+    width: 100%;
+  }
+}
+
+.addons-card {
+  mat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 16px 16px 0;
+
+    mat-card-title {
+      flex: 1;
+      margin: 0;
+    }
+
+    .header-actions {
+      margin-left: auto;
+
+      button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+    }
+  }
+
+  mat-card-content {
+    padding: 0;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 0;
+}
+
+.addon-item {
+  min-height: 96px;
+  padding: 16px;
+  border-bottom: 1px solid var(--theme-divider);
+  transition: background-color 0.2s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: var(--theme-hover);
+  }
+
+  .addon-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .addon-name {
+    font-weight: 500;
+    color: var(--theme-text-primary);
+    font-size: 16px;
+  }
+
+  .addon-description {
+    color: var(--theme-text-secondary);
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  .addon-metadata {
+    display: flex;
+    gap: 24px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .metadata-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--theme-text-secondary);
+    font-size: 12px;
+  }
+
+  .inline-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .object-chips {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .object-chip {
+    font-size: 10px;
+    min-height: 20px;
+    padding: 0 6px;
+    background-color: var(--theme-primary-light, rgb(63 81 181 / 10%));
+    color: var(--theme-primary, #3f51b5);
+  }
+
+  .addon-actions {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.no-items-message {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--theme-text-secondary);
+
+  .no-items-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    opacity: 0.3;
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin: 0;
+    font-style: italic;
+    font-size: 14px;
+  }
+}
+
+@media (width <= 768px) {
+  .admin-page-container {
+    padding: 16px;
+  }
+
+  .admin-header {
+    h1 {
+      font-size: 24px;
+    }
+
+    .close-button {
+      margin-left: 8px;
+    }
+  }
+
+  .addons-card {
+    mat-card-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+
+      .header-actions {
+        width: 100%;
+        margin-left: 0;
+
+        button {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    }
+  }
+
+  .addon-item {
+    .addon-metadata {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  }
+}

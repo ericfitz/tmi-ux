@@ -1,9 +1,19 @@
 <div class="admin-container">
   <div class="admin-header">
-    <h1 [transloco]="'admin.title'">Administration</h1>
-    <p class="admin-subtitle" [transloco]="'admin.subtitle'">
-      Manage system settings and configurations
-    </p>
+    <div class="header-content">
+      <h1 [transloco]="'admin.title'">Administration</h1>
+      <p class="admin-subtitle" [transloco]="'admin.subtitle'">
+        Manage system settings and configurations
+      </p>
+    </div>
+    <button
+      mat-icon-button
+      class="close-button"
+      (click)="onClose()"
+      [attr.aria-label]="'common.close' | transloco"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
   </div>
 
   <div class="admin-grid">

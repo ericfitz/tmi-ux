@@ -1,0 +1,106 @@
+<div class="admin-page-container">
+  <div class="admin-header">
+    <div class="header-content">
+      <h1 [transloco]="'admin.addons.title'">Manage Addons</h1>
+      <p class="subtitle" [transloco]="'admin.addons.subtitle'">
+        Configure addons for extending TMI functionality
+      </p>
+    </div>
+    <button
+      mat-icon-button
+      class="close-button"
+      (click)="onClose()"
+      [attr.aria-label]="'common.close' | transloco"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-card class="filter-card">
+    <mat-card-content>
+      <mat-form-field class="filter-field">
+        <mat-label [transloco]="'admin.addons.filterLabel'">Filter Addons</mat-label>
+        <input
+          matInput
+          [value]="filterText"
+          (input)="onFilterChange($any($event.target).value)"
+          [placeholder]="'admin.addons.filterPlaceholder' | transloco"
+        />
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="addons-card">
+    <mat-card-header>
+      <mat-card-title [transloco]="'admin.addons.listTitle'">System Addons</mat-card-title>
+      <div class="header-actions">
+        <button mat-raised-button color="primary" (click)="onAddAddon()">
+          <mat-icon>add</mat-icon>
+          <span [transloco]="'admin.addons.addButton'">Add Addon</span>
+        </button>
+      </div>
+    </mat-card-header>
+    <mat-card-content>
+      @if (loading) {
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      } @else if (filteredAddons.length > 0) {
+        <mat-list>
+          @for (addon of filteredAddons; track addon.id) {
+            <mat-list-item class="addon-item">
+              @if (addon.icon) {
+                <mat-icon matListItemIcon>{{
+                  addon.icon.replace('material-symbols:', '')
+                }}</mat-icon>
+              } @else {
+                <mat-icon matListItemIcon>extension</mat-icon>
+              }
+              <div matListItemTitle class="addon-title">
+                <span class="addon-name">{{ addon.name }}</span>
+              </div>
+              @if (addon.description) {
+                <div matListItemLine class="addon-description">
+                  {{ addon.description }}
+                </div>
+              }
+              <div matListItemLine class="addon-metadata">
+                @if (addon.objects && addon.objects.length > 0) {
+                  <span class="metadata-item">
+                    <mat-icon class="inline-icon">category</mat-icon>
+                    <span class="object-chips">
+                      @for (obj of addon.objects; track obj) {
+                        <mat-chip class="object-chip">{{ obj }}</mat-chip>
+                      }
+                    </span>
+                  </span>
+                }
+                <span class="metadata-item">
+                  <mat-icon class="inline-icon">schedule</mat-icon>
+                  <span [transloco]="'admin.addons.created'">Created</span>
+                  {{ addon.created_at | date: 'short' }}
+                </span>
+              </div>
+              <div matListItemMeta class="addon-actions">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="onDeleteAddon(addon)"
+                  [matTooltip]="'admin.addons.deleteTooltip' | transloco"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </mat-list-item>
+          }
+        </mat-list>
+      } @else {
+        <div class="no-items-message">
+          <mat-icon class="no-items-icon">extension</mat-icon>
+          <p [transloco]="'admin.addons.noAddons'">No addons found</p>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

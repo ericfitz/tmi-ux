@@ -79,11 +79,37 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    loadComponent: () =>
-      import(/* webpackChunkName: "admin" */ './pages/admin/admin.component').then(
-        c => c.AdminComponent,
-      ),
     canActivate: [authGuard, adminGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import(/* webpackChunkName: "admin" */ './pages/admin/admin.component').then(
+            c => c.AdminComponent,
+          ),
+      },
+      {
+        path: 'administrators',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-administrators" */ './pages/admin/administrators/admin-administrators.component'
+          ).then(c => c.AdminAdministratorsComponent),
+      },
+      {
+        path: 'webhooks',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-webhooks" */ './pages/admin/webhooks/admin-webhooks.component'
+          ).then(c => c.AdminWebhooksComponent),
+      },
+      {
+        path: 'addons',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-addons" */ './pages/admin/addons/admin-addons.component'
+          ).then(c => c.AdminAddonsComponent),
+      },
+    ],
   },
   {
     path: 'tm',
