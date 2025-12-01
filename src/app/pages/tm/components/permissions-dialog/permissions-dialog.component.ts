@@ -151,7 +151,9 @@ export interface PermissionsDialogData {
                         [attr.tabindex]="i * 5 + 2"
                       >
                         <mat-select-trigger>
-                          <app-provider-display [provider]="auth.provider"></app-provider-display>
+                          <app-provider-display
+                            [providerInfo]="getProviderInfo(auth.provider)"
+                          ></app-provider-display>
                         </mat-select-trigger>
                         @for (provider of availableProviders; track provider.id) {
                           <mat-option [value]="provider.id">
@@ -618,6 +620,15 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Get the provider info object for a provider ID
+   * @param providerId The provider identifier
+   * @returns The provider info object or null if not found
+   */
+  getProviderInfo(providerId: string): OAuthProviderInfo | null {
+    return this.availableProviders.find(p => p.id === providerId) || null;
+  }
+
+  /**
    * Get tooltip text for a permission row
    * Shows display name for existing permissions
    * @param auth The authorization object
@@ -714,10 +725,10 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
       principal_type: 'user',
       provider: defaultProvider,
       provider_id: '',
-      display_name: '',
       email: '',
       role: 'reader',
-    });
+      // Note: display_name is intentionally omitted as it's a server-managed field
+    } as Authorization);
     this.permissionsTable.renderRows();
   }
 

@@ -616,9 +616,17 @@ export class ThreatModelService implements OnDestroy {
       >
     >,
   ): Observable<ThreatModel> {
+    // Filter authorization entries to remove read-only fields like display_name
+    const filteredUpdates = { ...updates };
+    if (filteredUpdates.authorization) {
+      filteredUpdates.authorization = this.fieldFilter.filterAuthorizations(
+        filteredUpdates.authorization,
+      ) as typeof filteredUpdates.authorization;
+    }
+
     // Convert updates to JSON Patch operations
     // Note: Do not include modified_at - the server manages timestamps automatically
-    const operations = Object.entries(updates).map(([key, value]) => ({
+    const operations = Object.entries(filteredUpdates).map(([key, value]) => ({
       op: 'replace' as const,
       path: `/${key}`,
       value,

@@ -6,7 +6,6 @@ import '@angular/compiler';
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ProviderDisplayComponent } from './provider-display.component';
-import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 
 describe('ProviderDisplayComponent', () => {
   let component: ProviderDisplayComponent;

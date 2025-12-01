@@ -95,6 +95,12 @@ export class ReadonlyFieldFilterService {
   ] as const;
 
   /**
+   * Read-only fields on Authorization that should be stripped before POST/PUT/PATCH
+   * display_name is populated by the server based on the principal identity
+   */
+  private readonly _authorizationReadOnlyFields = ['display_name'] as const;
+
+  /**
    * Filters read-only fields from a ThreatModel object.
    * Also extracts metadata for separate handling.
    */
@@ -191,6 +197,32 @@ export class ReadonlyFieldFilterService {
     const metadata = data['metadata'] as Metadata[] | undefined;
     const filtered = this._filterFields(data, this._repositoryReadOnlyFields);
     return { filtered, metadata };
+  }
+
+  /**
+   * Filters read-only fields from an Authorization object.
+   * Removes display_name which is a server-managed field.
+   *
+   * @param authorization The authorization object to filter
+   * @returns Filtered authorization object ready for API submission
+   */
+  filterAuthorization(authorization: Record<string, unknown>): Record<string, unknown> {
+    return this._filterFields(authorization, this._authorizationReadOnlyFields);
+  }
+
+  /**
+   * Filters an array of authorization objects.
+   *
+   * @param authorizations Array of authorizations to filter
+   * @returns Array of filtered authorizations
+   */
+  filterAuthorizations(authorizations: unknown[]): unknown[] {
+    return authorizations.map(auth => {
+      if (typeof auth === 'object' && auth !== null) {
+        return this.filterAuthorization(auth as Record<string, unknown>);
+      }
+      return auth;
+    });
   }
 
   /**
