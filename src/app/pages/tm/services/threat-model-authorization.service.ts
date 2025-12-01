@@ -31,6 +31,28 @@ export class ThreatModelAuthorizationService implements OnDestroy {
     private authService: AuthService,
   ) {
     // this.logger.info('ThreatModelAuthorizationService initialized');
+
+    // Subscribe to user profile changes and recalculate permissions
+    // This handles the case where authorization is set before user profile is loaded
+    this._subscriptions.add(
+      this.authService.userProfile$.subscribe(() => {
+        // Only recalculate if we have authorization data
+        const currentAuthorizations = this._authorizationSubject.value;
+        if (currentAuthorizations !== null) {
+          // Trigger recalculation by emitting the same authorization data
+          // This will cause calculateUserPermission to run again with updated user info
+          this._authorizationSubject.next(currentAuthorizations);
+          this.logger.debugComponent(
+            'ThreatModelAuthorizationService',
+            'User profile changed - recalculating permissions',
+            {
+              threatModelId: this._currentThreatModelId,
+              permission: this.getCurrentUserPermission(),
+            },
+          );
+        }
+      }),
+    );
   }
 
   /**
