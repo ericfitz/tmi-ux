@@ -36,9 +36,11 @@ export class ThreatModelAuthorizationService implements OnDestroy {
     // This handles the case where authorization is set before user profile is loaded
     this._subscriptions.add(
       this.authService.userProfile$.subscribe(() => {
-        // Only recalculate if we have authorization data
-        const currentAuthorizations = this._authorizationSubject.value;
-        if (currentAuthorizations !== null) {
+        // Recalculate if we have a threat model loaded (even with null authorization)
+        // This is critical for newly created threat models where authorization is null
+        // but the owner field grants permissions
+        if (this._currentThreatModelId !== null) {
+          const currentAuthorizations = this._authorizationSubject.value;
           // Trigger recalculation by emitting the same authorization data
           // This will cause calculateUserPermission to run again with updated user info
           this._authorizationSubject.next(currentAuthorizations);
@@ -47,6 +49,7 @@ export class ThreatModelAuthorizationService implements OnDestroy {
             'User profile changed - recalculating permissions',
             {
               threatModelId: this._currentThreatModelId,
+              owner: this._currentOwner ? getCompositeKey(this._currentOwner) : null,
               permission: this.getCurrentUserPermission(),
             },
           );
