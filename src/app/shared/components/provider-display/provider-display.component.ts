@@ -33,17 +33,40 @@ export class ProviderDisplayComponent {
   @Input() providerInfo: OAuthProviderInfo | null = null;
 
   /**
+   * Check if provider uses FontAwesome icon
+   */
+  isFontAwesomeIcon(): boolean {
+    if (this.providerInfo?.icon) {
+      return this.providerInfo.icon.startsWith('fa-');
+    }
+    return false;
+  }
+
+  /**
+   * Get the FontAwesome icon class for the provider
+   * Returns the FontAwesome class string (e.g., 'fa-brands fa-microsoft')
+   */
+  getFontAwesomeIcon(): string {
+    if (this.providerInfo?.icon && this.providerInfo.icon.startsWith('fa-')) {
+      return this.providerInfo.icon;
+    }
+    return '';
+  }
+
+  /**
    * Get the logo path for the provider
    * Uses icon from providerInfo if available, otherwise falls back to hardcoded mapping
+   * Note: Returns null for FontAwesome icons (use isFontAwesomeIcon() to detect those)
    */
   getProviderLogoPath(): string | null {
     // Use icon from API if available
     if (this.providerInfo?.icon) {
       const iconPath = this.providerInfo.icon;
 
-      // If icon starts with 'fa-', it's a FontAwesome icon (not implemented in this component yet)
+      // If icon starts with 'fa-', it's a FontAwesome icon - return null
+      // (caller should use isFontAwesomeIcon() and getFontAwesomeIcon() instead)
       if (iconPath.startsWith('fa-')) {
-        return null; // FontAwesome icons not yet supported in this component
+        return null;
       }
 
       // Determine the full icon URL
@@ -52,8 +75,7 @@ export class ProviderDisplayComponent {
       const isAbsoluteUrl = iconPath.startsWith('http://') || iconPath.startsWith('https://');
       return isAbsoluteUrl
         ? iconPath
-        : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          `${environment.apiUrl}${iconPath.startsWith('/') ? '' : '/'}${iconPath}`;
+        : `${environment.apiUrl}${iconPath.startsWith('/') ? '' : '/'}${iconPath}`;  
     }
 
     // Fall back to hardcoded mapping based on provider ID

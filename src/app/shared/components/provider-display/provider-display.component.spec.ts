@@ -71,7 +71,7 @@ describe('ProviderDisplayComponent', () => {
     });
 
     describe('with providerInfo object input', () => {
-      it('should use icon from API when available', () => {
+      it('should use absolute URL icon from API when available', () => {
         component.providerInfo = {
           id: 'custom',
           name: 'Custom Provider',
@@ -82,6 +82,38 @@ describe('ProviderDisplayComponent', () => {
           client_id: 'test-client',
         };
         expect(component.getProviderLogoPath()).toBe('https://example.com/custom-icon.svg');
+      });
+
+      it('should prepend API URL for relative icon paths (with leading slash)', () => {
+        component.providerInfo = {
+          id: 'custom',
+          name: 'Custom Provider',
+          icon: '/icons/custom.svg',
+          auth_url: 'https://example.com/auth',
+          token_url: 'https://example.com/token',
+          redirect_uri: 'https://example.com/callback',
+          client_id: 'test-client',
+        };
+        // Should use environment.apiUrl (http://localhost:8080 in dev)
+        expect(component.getProviderLogoPath()).toMatch(
+          /^http:\/\/localhost:8080\/icons\/custom\.svg$/,
+        );
+      });
+
+      it('should prepend API URL for relative icon paths (without leading slash)', () => {
+        component.providerInfo = {
+          id: 'custom',
+          name: 'Custom Provider',
+          icon: 'microsoft.svg',
+          auth_url: 'https://example.com/auth',
+          token_url: 'https://example.com/token',
+          redirect_uri: 'https://example.com/callback',
+          client_id: 'test-client',
+        };
+        // Should add slash and prepend API URL
+        expect(component.getProviderLogoPath()).toMatch(
+          /^http:\/\/localhost:8080\/microsoft\.svg$/,
+        );
       });
 
       it('should return null for FontAwesome icons', () => {
@@ -109,6 +141,83 @@ describe('ProviderDisplayComponent', () => {
         };
         expect(component.getProviderLogoPath()).toBe('assets/signin-logos/google-signin-logo.svg');
       });
+    });
+  });
+
+  describe('isFontAwesomeIcon', () => {
+    it('should return true for FontAwesome icon paths', () => {
+      component.providerInfo = {
+        id: 'custom',
+        name: 'Custom',
+        icon: 'fa-brands fa-microsoft',
+        auth_url: 'https://example.com/auth',
+        token_url: 'https://example.com/token',
+        redirect_uri: 'https://example.com/callback',
+        client_id: 'test-client',
+      };
+      expect(component.isFontAwesomeIcon()).toBe(true);
+    });
+
+    it('should return false for absolute URL icons', () => {
+      component.providerInfo = {
+        id: 'custom',
+        name: 'Custom',
+        icon: 'https://example.com/icon.svg',
+        auth_url: 'https://example.com/auth',
+        token_url: 'https://example.com/token',
+        redirect_uri: 'https://example.com/callback',
+        client_id: 'test-client',
+      };
+      expect(component.isFontAwesomeIcon()).toBe(false);
+    });
+
+    it('should return false for relative URL icons', () => {
+      component.providerInfo = {
+        id: 'custom',
+        name: 'Custom',
+        icon: 'microsoft.svg',
+        auth_url: 'https://example.com/auth',
+        token_url: 'https://example.com/token',
+        redirect_uri: 'https://example.com/callback',
+        client_id: 'test-client',
+      };
+      expect(component.isFontAwesomeIcon()).toBe(false);
+    });
+
+    it('should return false when no providerInfo', () => {
+      expect(component.isFontAwesomeIcon()).toBe(false);
+    });
+  });
+
+  describe('getFontAwesomeIcon', () => {
+    it('should return the FontAwesome class string', () => {
+      component.providerInfo = {
+        id: 'custom',
+        name: 'Custom',
+        icon: 'fa-brands fa-microsoft',
+        auth_url: 'https://example.com/auth',
+        token_url: 'https://example.com/token',
+        redirect_uri: 'https://example.com/callback',
+        client_id: 'test-client',
+      };
+      expect(component.getFontAwesomeIcon()).toBe('fa-brands fa-microsoft');
+    });
+
+    it('should return empty string for non-FontAwesome icons', () => {
+      component.providerInfo = {
+        id: 'custom',
+        name: 'Custom',
+        icon: 'https://example.com/icon.svg',
+        auth_url: 'https://example.com/auth',
+        token_url: 'https://example.com/token',
+        redirect_uri: 'https://example.com/callback',
+        client_id: 'test-client',
+      };
+      expect(component.getFontAwesomeIcon()).toBe('');
+    });
+
+    it('should return empty string when no providerInfo', () => {
+      expect(component.getFontAwesomeIcon()).toBe('');
     });
   });
 

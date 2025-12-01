@@ -1,4 +1,6 @@
-@if (getProviderLogoPath()) {
+@if (isFontAwesomeIcon()) {
+  <i [class]="getFontAwesomeIcon() + ' provider-logo-icon'"></i>
+} @else if (getProviderLogoPath()) {
   <img [src]="getProviderLogoPath()" [alt]="getProviderName() + ' logo'" class="provider-logo" />
 }
 <span class="provider-name">{{ getProviderName() }}</span>
