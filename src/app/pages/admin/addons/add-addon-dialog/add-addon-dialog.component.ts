@@ -29,7 +29,9 @@ import { LoggerService } from '@app/core/services/logger.service';
     ...DIALOG_IMPORTS,
     ...FORM_MATERIAL_IMPORTS,
     ...CORE_MATERIAL_IMPORTS,
-    ...FEEDBACK_MATERIAL_IMPORTS, TranslocoModule],
+    ...FEEDBACK_MATERIAL_IMPORTS,
+    TranslocoModule,
+  ],
   template: `
     <h2 mat-dialog-title [transloco]="'admin.addons.addDialog.title'">Add Addon</h2>
     <mat-dialog-content>

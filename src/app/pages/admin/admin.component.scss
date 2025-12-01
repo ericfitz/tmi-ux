@@ -40,16 +40,9 @@
 }
 
 .admin-card {
-  cursor: pointer;
-  transition: all 0.3s ease;
   height: 100%;
   display: flex;
   flex-direction: column;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgb(0 0 0 / 15%);
-  }
 
   mat-card-header {
     margin-bottom: 16px;

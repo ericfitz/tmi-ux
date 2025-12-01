@@ -18,7 +18,7 @@
 
   <div class="admin-grid">
     @for (section of adminSections; track section.action) {
-      <mat-card class="admin-card" (click)="onSectionClick(section.action)">
+      <mat-card class="admin-card">
         <mat-card-header>
           <div class="card-icon-container">
             <mat-icon class="card-icon">{{ section.icon }}</mat-icon>
@@ -31,7 +31,7 @@
           </p>
         </mat-card-content>
         <mat-card-actions>
-          <button mat-button color="primary">
+          <button mat-button color="primary" (click)="onSectionClick(section.action)">
             <span [transloco]="'common.manage'">Manage</span>
             <mat-icon>arrow_forward</mat-icon>
           </button>

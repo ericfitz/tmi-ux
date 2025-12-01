@@ -48,16 +48,18 @@ export class AdministratorService {
    * Create a new administrator grant
    */
   public create(request: CreateAdministratorRequest): Observable<Administrator> {
-    return this.apiService.post<Administrator>('/admin/administrators', request as unknown as Record<string, unknown>).pipe(
-      tap(admin => {
-        this.logger.info('Administrator created', { id: admin.id });
-        this.list().subscribe();
-      }),
-      catchError(error => {
-        this.logger.error('Failed to create administrator', error);
-        throw error;
-      }),
-    );
+    return this.apiService
+      .post<Administrator>('/admin/administrators', request as unknown as Record<string, unknown>)
+      .pipe(
+        tap(admin => {
+          this.logger.info('Administrator created', { id: admin.id });
+          this.list().subscribe();
+        }),
+        catchError(error => {
+          this.logger.error('Failed to create administrator', error);
+          throw error;
+        }),
+      );
   }
 
   /**

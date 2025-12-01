@@ -60,32 +60,42 @@ export class WebhookService {
    * Create a new webhook subscription
    */
   public create(input: WebhookSubscriptionInput): Observable<WebhookSubscription> {
-    return this.apiService.post<WebhookSubscription>('/webhooks/subscriptions', input as unknown as Record<string, unknown>).pipe(
-      tap(webhook => {
-        this.logger.info('Webhook created', { id: webhook.id });
-        this.list().subscribe();
-      }),
-      catchError(error => {
-        this.logger.error('Failed to create webhook', error);
-        throw error;
-      }),
-    );
+    return this.apiService
+      .post<WebhookSubscription>(
+        '/webhooks/subscriptions',
+        input as unknown as Record<string, unknown>,
+      )
+      .pipe(
+        tap(webhook => {
+          this.logger.info('Webhook created', { id: webhook.id });
+          this.list().subscribe();
+        }),
+        catchError(error => {
+          this.logger.error('Failed to create webhook', error);
+          throw error;
+        }),
+      );
   }
 
   /**
    * Update an existing webhook subscription
    */
   public update(id: string, input: WebhookSubscriptionInput): Observable<WebhookSubscription> {
-    return this.apiService.put<WebhookSubscription>(`/webhooks/subscriptions/${id}`, input as unknown as Record<string, unknown>).pipe(
-      tap(webhook => {
-        this.logger.info('Webhook updated', { id: webhook.id });
-        this.list().subscribe();
-      }),
-      catchError(error => {
-        this.logger.error('Failed to update webhook', error);
-        throw error;
-      }),
-    );
+    return this.apiService
+      .put<WebhookSubscription>(
+        `/webhooks/subscriptions/${id}`,
+        input as unknown as Record<string, unknown>,
+      )
+      .pipe(
+        tap(webhook => {
+          this.logger.info('Webhook updated', { id: webhook.id });
+          this.list().subscribe();
+        }),
+        catchError(error => {
+          this.logger.error('Failed to update webhook', error);
+          throw error;
+        }),
+      );
   }
 
   /**

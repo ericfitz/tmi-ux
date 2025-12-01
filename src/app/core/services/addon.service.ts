@@ -56,32 +56,36 @@ export class AddonService {
    * Create a new addon
    */
   public create(request: CreateAddonRequest): Observable<Addon> {
-    return this.apiService.post<Addon>('/addons', request as unknown as Record<string, unknown>).pipe(
-      tap(addon => {
-        this.logger.info('Addon created', { id: addon.id });
-        this.list().subscribe();
-      }),
-      catchError(error => {
-        this.logger.error('Failed to create addon', error);
-        throw error;
-      }),
-    );
+    return this.apiService
+      .post<Addon>('/addons', request as unknown as Record<string, unknown>)
+      .pipe(
+        tap(addon => {
+          this.logger.info('Addon created', { id: addon.id });
+          this.list().subscribe();
+        }),
+        catchError(error => {
+          this.logger.error('Failed to create addon', error);
+          throw error;
+        }),
+      );
   }
 
   /**
    * Update an existing addon
    */
   public update(id: string, request: CreateAddonRequest): Observable<Addon> {
-    return this.apiService.put<Addon>(`/addons/${id}`, request as unknown as Record<string, unknown>).pipe(
-      tap(addon => {
-        this.logger.info('Addon updated', { id: addon.id });
-        this.list().subscribe();
-      }),
-      catchError(error => {
-        this.logger.error('Failed to update addon', error);
-        throw error;
-      }),
-    );
+    return this.apiService
+      .put<Addon>(`/addons/${id}`, request as unknown as Record<string, unknown>)
+      .pipe(
+        tap(addon => {
+          this.logger.info('Addon updated', { id: addon.id });
+          this.list().subscribe();
+        }),
+        catchError(error => {
+          this.logger.error('Failed to update addon', error);
+          throw error;
+        }),
+      );
   }
 
   /**
