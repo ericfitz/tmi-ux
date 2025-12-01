@@ -54,6 +54,11 @@ describe('ProviderDisplayComponent', () => {
         expect(component.getProviderLogoPath()).toBe('assets/signin-logos/apple-signin-logo.svg');
       });
 
+      it('should return correct path for tmi', () => {
+        component.provider = 'tmi';
+        expect(component.getProviderLogoPath()).toBe('TMI-Logo.svg');
+      });
+
       it('should return correct path for test', () => {
         component.provider = 'test';
         expect(component.getProviderLogoPath()).toBe('TMI-Logo.svg');
