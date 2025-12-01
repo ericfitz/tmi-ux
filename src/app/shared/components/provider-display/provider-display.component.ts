@@ -1,6 +1,7 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
+import { environment } from '../../../../environments/environment';
 
 /**
  * Component to display an OAuth provider with its logo and capitalized name
@@ -38,12 +39,21 @@ export class ProviderDisplayComponent {
   getProviderLogoPath(): string | null {
     // Use icon from API if available
     if (this.providerInfo?.icon) {
+      const iconPath = this.providerInfo.icon;
+
       // If icon starts with 'fa-', it's a FontAwesome icon (not implemented in this component yet)
-      if (this.providerInfo.icon.startsWith('fa-')) {
+      if (iconPath.startsWith('fa-')) {
         return null; // FontAwesome icons not yet supported in this component
       }
-      // Return the icon URL from API (may be absolute or relative)
-      return this.providerInfo.icon;
+
+      // Determine the full icon URL
+      // If icon path is an absolute URL (starts with http:// or https://), use as-is
+      // If icon path is relative (doesn't start with http:// or https://), prepend API server URL
+      const isAbsoluteUrl = iconPath.startsWith('http://') || iconPath.startsWith('https://');
+      return isAbsoluteUrl
+        ? iconPath
+        : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          `${environment.apiUrl}${iconPath.startsWith('/') ? '' : '/'}${iconPath}`;
     }
 
     // Fall back to hardcoded mapping based on provider ID
