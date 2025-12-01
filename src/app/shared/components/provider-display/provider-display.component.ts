@@ -75,7 +75,7 @@ export class ProviderDisplayComponent {
       const isAbsoluteUrl = iconPath.startsWith('http://') || iconPath.startsWith('https://');
       return isAbsoluteUrl
         ? iconPath
-        : `${environment.apiUrl}${iconPath.startsWith('/') ? '' : '/'}${iconPath}`;  
+        : `${environment.apiUrl}${iconPath.startsWith('/') ? '' : '/'}${iconPath}`;
     }
 
     // Fall back to hardcoded mapping based on provider ID
