@@ -31,7 +31,7 @@
         "descriptionHint": "What does this addon do?",
         "descriptionPlaceholder": "Describe the addon functionality",
         "icon": "Icon",
-        "iconHint": "Material Symbols format (e.g., material-symbols:security)",
+        "iconHint": "UI Icon (examples: \"material-symbols:security\", \"fa-regular fa-user-shield\")",
         "iconInvalid": "Invalid icon format",
         "iconPlaceholder": "material-symbols:extension",
         "name": "Name",

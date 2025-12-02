@@ -134,10 +134,31 @@ function iconFormatValidator(control: AbstractControl): ValidationErrors | null 
             matInput
             formControlName="icon"
             [placeholder]="'admin.addons.addDialog.iconPlaceholder' | transloco"
+            (blur)="onIconBlur()"
           />
-          <mat-hint [transloco]="'admin.addons.addDialog.iconHint'"
-            >Material Symbols format (e.g., material-symbols:security)</mat-hint
-          >
+          <mat-hint class="icon-hint-with-links">
+            <span [transloco]="'admin.addons.addDialog.iconHint'">
+              UI Icon (examples: "material-symbols:security", "fa-regular fa-user-shield")
+            </span>
+            <a
+              href="https://fonts.google.com/icons"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="icon-reference-link"
+              title="Browse Material Symbols icons"
+            >
+              <span class="material-symbols-outlined">link</span>
+            </a>
+            <a
+              href="https://fontawesome.com/search?ic=free-collection"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="icon-reference-link"
+              title="Browse FontAwesome icons"
+            >
+              <span class="material-symbols-outlined">link</span>
+            </a>
+          </mat-hint>
           <mat-error *ngIf="form.get('icon')?.hasError('iconFormat')">
             {{
               form.get('icon')?.errors?.['iconFormat']?.message ||
@@ -215,6 +236,28 @@ function iconFormatValidator(control: AbstractControl): ValidationErrors | null 
         padding: 16px 24px 16px 0;
         margin: 0;
       }
+
+      .icon-hint-with-links {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .icon-reference-link {
+        display: inline-flex;
+        align-items: center;
+        color: var(--theme-primary);
+        text-decoration: none;
+        transition: opacity 0.2s;
+      }
+
+      .icon-reference-link:hover {
+        opacity: 0.7;
+      }
+
+      .icon-reference-link .material-symbols-outlined {
+        font-size: 16px;
+      }
     `,
   ],
 })
@@ -250,7 +293,7 @@ export class AddAddonDialogComponent implements OnInit, OnDestroy {
       name: ['', Validators.required],
       description: [''],
       webhook_id: ['', Validators.required],
-      icon: ['', iconFormatValidator],
+      icon: ['material-symbols:extension', iconFormatValidator],
       objects: [[]],
     });
 
@@ -312,5 +355,65 @@ export class AddAddonDialogComponent implements OnInit, OnDestroy {
 
   onCancel(): void {
     this.dialogRef.close(false);
+  }
+
+  /**
+   * Handles blur event on icon field to normalize and correct format
+   */
+  onIconBlur(): void {
+    const iconControl = this.form.get('icon');
+    if (!iconControl) {
+      return;
+    }
+
+    let value = iconControl.value as string;
+
+    // Step 1: Normalize whitespace
+    // Remove leading/trailing spaces
+    value = value.trim();
+    // Replace any whitespace character with normal space
+    value = value.replace(/\s/g, ' ');
+    // Replace multiple spaces with single space
+    value = value.replace(/\s{2,}/g, ' ');
+
+    // Step 2: Handle empty value
+    if (!value) {
+      iconControl.setValue('material-symbols:extension');
+      return;
+    }
+
+    // Step 3: Handle values containing colon
+    if (value.includes(':')) {
+      // Remove everything up to and including the colon
+      const afterColon = value.substring(value.indexOf(':') + 1);
+      // Replace hyphens or spaces with underscores
+      const normalized = afterColon.replace(/[-\s]/g, '_');
+      // Prepend material-symbols:
+      value = `material-symbols:${normalized}`;
+    }
+
+    // Step 4: Handle FontAwesome values (starting with "fa")
+    if (value.startsWith('fa')) {
+      // Replace underscores with hyphens
+      value = value.replace(/_/g, '-');
+      // Replace spaces with hyphens, except before "fa"
+      // Split by "fa" to preserve spacing before it
+      const parts = value.split(/\bfa\b/);
+      value = parts
+        .map((part, index) => {
+          if (index === 0) {
+            // First part (before first "fa") - replace spaces with hyphens
+            return part.replace(/\s/g, '-');
+          } else {
+            // Parts after "fa" - preserve the "fa" and handle spacing
+            return 'fa' + part.replace(/\s/g, '-');
+          }
+        })
+        .join('')
+        .replace(/^-+/, ''); // Remove leading hyphens
+    }
+
+    // Set the corrected value back to the control
+    iconControl.setValue(value);
   }
 }
