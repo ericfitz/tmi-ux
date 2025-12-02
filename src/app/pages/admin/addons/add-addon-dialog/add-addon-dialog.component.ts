@@ -1,5 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -15,6 +21,46 @@ import { WebhookSubscription } from '@app/types/webhook.types';
 import { AddonService } from '@app/core/services/addon.service';
 import { WebhookService } from '@app/core/services/webhook.service';
 import { LoggerService } from '@app/core/services/logger.service';
+
+/**
+ * Custom validator for icon format
+ * Validates Material Symbols and FontAwesome icon strings with length limits
+ */
+function iconFormatValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value as string;
+
+  if (!value || value.trim() === '') {
+    return null; // Empty is valid (icon is optional)
+  }
+
+  // Length validation first
+  const MATERIAL_SYMBOLS_MAX_LENGTH = 64;
+  const FONTAWESOME_MAX_LENGTH = 80;
+
+  if (value.startsWith('material-symbols:')) {
+    if (value.length > MATERIAL_SYMBOLS_MAX_LENGTH) {
+      return { iconFormat: { message: 'Material Symbols icon must be 64 characters or less' } };
+    }
+    // Pattern: material-symbols:[a-z0-9]{1,16}(_[a-z0-9]{1,16}){0,6}
+    const materialPattern = /^material-symbols:[a-z0-9]{1,16}(_[a-z0-9]{1,16}){0,6}$/;
+    if (!materialPattern.test(value)) {
+      return { iconFormat: { message: 'Invalid Material Symbols format' } };
+    }
+  } else if (value.startsWith('fa')) {
+    if (value.length > FONTAWESOME_MAX_LENGTH) {
+      return { iconFormat: { message: 'FontAwesome icon must be 80 characters or less' } };
+    }
+    // Pattern: fa[a-z]?(-[a-z0-9]{1,16})? fa(-[a-z0-9]{1,16}){0,8}
+    const fontAwesomePattern = /^fa[a-z]?(-[a-z0-9]{1,16})? fa(-[a-z0-9]{1,16}){0,8}$/;
+    if (!fontAwesomePattern.test(value)) {
+      return { iconFormat: { message: 'Invalid FontAwesome format' } };
+    }
+  } else {
+    return { iconFormat: { message: 'Icon must start with "material-symbols:" or "fa"' } };
+  }
+
+  return null;
+}
 
 /**
  * Add Addon Dialog Component
@@ -92,8 +138,8 @@ import { LoggerService } from '@app/core/services/logger.service';
           <mat-hint [transloco]="'admin.addons.addDialog.iconHint'"
             >Material Symbols format (e.g., material-symbols:security)</mat-hint
           >
-          <mat-error *ngIf="form.get('icon')?.hasError('pattern')">
-            <span [transloco]="'admin.addons.addDialog.iconInvalid'">Invalid icon format</span>
+          <mat-error *ngIf="form.get('icon')?.hasError('iconFormat')">
+            {{ form.get('icon')?.errors?.['iconFormat']?.message || 'Invalid icon format' }}
           </mat-error>
         </mat-form-field>
 
@@ -228,12 +274,7 @@ export class AddAddonDialogComponent implements OnInit, OnDestroy {
       name: ['', Validators.required],
       description: [''],
       webhook_id: ['', Validators.required],
-      icon: [
-        '',
-        Validators.pattern(
-          /^(material-symbols:[a-z]([a-z0-9_]*[a-z0-9])?|fa-[a-z]([a-z]*[a-z])?([-a-z]+)? fa-([a-z]+)([-a-z]+)*)$/,
-        ),
-      ],
+      icon: ['', iconFormatValidator],
     };
 
     this.objectTypes.forEach(objType => {
