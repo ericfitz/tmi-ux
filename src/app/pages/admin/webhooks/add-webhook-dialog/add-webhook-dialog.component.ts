@@ -242,9 +242,9 @@ export class AddWebhookDialogComponent implements OnInit, OnDestroy {
         .create(input)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: () => {
+          next: webhook => {
             this.logger.info('Webhook created successfully');
-            this.dialogRef.close(true);
+            this.dialogRef.close(webhook);
           },
           error: (error: { error?: { message?: string } }) => {
             this.logger.error('Failed to create webhook', error);

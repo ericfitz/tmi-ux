@@ -16,6 +16,7 @@ import { WebhookService } from '@app/core/services/webhook.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
 import { AddWebhookDialogComponent } from './add-webhook-dialog/add-webhook-dialog.component';
+import { HmacSecretDialogComponent } from './hmac-secret-dialog/hmac-secret-dialog.component';
 
 /**
  * Webhooks Management Component
@@ -113,11 +114,23 @@ export class AdminWebhooksComponent implements OnInit, OnDestroy {
     dialogRef
       .afterClosed()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(result => {
+      .subscribe((result: WebhookSubscription | undefined) => {
         if (result) {
           this.loadWebhooks();
+          // Show HMAC secret dialog if secret was returned
+          if (result.secret) {
+            this.showHmacSecretDialog(result.secret);
+          }
         }
       });
+  }
+
+  private showHmacSecretDialog(secret: string): void {
+    this.dialog.open(HmacSecretDialogComponent, {
+      width: '600px',
+      disableClose: true,
+      data: { secret },
+    });
   }
 
   onDeleteWebhook(webhook: WebhookSubscription): void {
@@ -139,6 +152,19 @@ export class AdminWebhooksComponent implements OnInit, OnDestroy {
     }
   }
 
+  getStatusIcon(status: string): string {
+    switch (status) {
+      case 'active':
+        return 'check';
+      case 'pending_verification':
+        return 'pending_actions';
+      case 'pending_delete':
+        return 'auto_delete';
+      default:
+        return 'help';
+    }
+  }
+
   getStatusColor(status: string): string {
     switch (status) {
       case 'active':
@@ -150,6 +176,14 @@ export class AdminWebhooksComponent implements OnInit, OnDestroy {
       default:
         return '';
     }
+  }
+
+  getEventsTooltip(events: string[]): string {
+    return events.join('\n');
+  }
+
+  openWebhookUrl(url: string): void {
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   onClose(): void {

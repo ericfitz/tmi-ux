@@ -49,35 +49,38 @@
           <mat-spinner diameter="40"></mat-spinner>
         </div>
       } @else if (filteredWebhooks.length > 0) {
-        <mat-list>
+        <div class="webhooks-list">
           @for (webhook of filteredWebhooks; track webhook.id) {
-            <mat-list-item class="webhook-item">
-              <mat-icon matListItemIcon>webhook</mat-icon>
-              <div matListItemTitle class="webhook-title">
-                <span class="webhook-name">{{ webhook.name }}</span>
-                <mat-chip class="status-chip" [class]="'status-' + webhook.status">
-                  {{ 'admin.webhooks.status.' + webhook.status | transloco }}
+            <div class="webhook-item">
+              <!-- Column 1: Webhook icon spanning both rows -->
+              <div class="webhook-icon">
+                <mat-icon>webhook</mat-icon>
+              </div>
+
+              <!-- Row 1 Columns -->
+              <div class="webhook-status">
+                <mat-chip [class]="'status-chip status-' + webhook.status">
+                  <mat-icon class="chip-icon">{{ getStatusIcon(webhook.status) }}</mat-icon>
+                  <span>{{ 'admin.webhooks.status.' + webhook.status | transloco }}</span>
                 </mat-chip>
               </div>
-              <div matListItemLine class="webhook-url">
-                <mat-icon class="inline-icon">link</mat-icon>
-                <span class="url-text">{{ webhook.url }}</span>
+
+              <div class="webhook-url">
+                <button
+                  mat-icon-button
+                  (click)="openWebhookUrl(webhook.url)"
+                  [matTooltip]="webhook.url"
+                >
+                  <mat-icon>link</mat-icon>
+                </button>
               </div>
-              <div matListItemLine class="webhook-metadata">
-                <span class="metadata-item">
-                  <mat-icon class="inline-icon">event</mat-icon>
-                  <span
-                    >{{ webhook.events.length }}
-                    <span [transloco]="'admin.webhooks.events'">events</span></span
-                  >
-                </span>
-                <span class="metadata-item">
-                  <mat-icon class="inline-icon">schedule</mat-icon>
-                  <span [transloco]="'admin.webhooks.created'">Created</span>
-                  {{ webhook.created_at | date: 'short' }}
-                </span>
+
+              <div class="webhook-name">
+                <strong>{{ webhook.name }}</strong>
               </div>
-              <div matListItemMeta class="webhook-actions">
+
+              <!-- Actions spanning both rows -->
+              <div class="webhook-actions">
                 <button
                   mat-icon-button
                   color="warn"
@@ -87,9 +90,24 @@
                   <mat-icon>delete</mat-icon>
                 </button>
               </div>
-            </mat-list-item>
+
+              <!-- Row 2 Columns -->
+              <div class="webhook-events">
+                <mat-icon [matTooltip]="getEventsTooltip(webhook.events)">notifications</mat-icon>
+                <span
+                  >{{ webhook.events.length }}
+                  <span [transloco]="'admin.webhooks.events'">events</span></span
+                >
+              </div>
+
+              <div class="webhook-created">
+                <mat-icon class="inline-icon">schedule</mat-icon>
+                <span [transloco]="'admin.webhooks.created'">Created</span>
+                {{ webhook.created_at | date: 'short' }}
+              </div>
+            </div>
           }
-        </mat-list>
+        </div>
       } @else {
         <div class="no-items-message">
           <mat-icon class="no-items-icon">webhook</mat-icon>

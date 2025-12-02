@@ -26,6 +26,8 @@ export interface WebhookSubscription {
   events: string[];
   /** Subscription status */
   status: WebhookStatus;
+  /** HMAC secret for signing payloads (only returned during creation) */
+  secret?: string;
   /** Number of verification challenges sent */
   challenges_sent?: number;
   /** Creation timestamp */
