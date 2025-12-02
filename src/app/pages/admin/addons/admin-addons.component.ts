@@ -14,6 +14,7 @@ import {
 import { Addon } from '@app/types/addon.types';
 import { AddonService } from '@app/core/services/addon.service';
 import { LoggerService } from '@app/core/services/logger.service';
+import { AuthService } from '@app/auth/services/auth.service';
 import { AddAddonDialogComponent } from './add-addon-dialog/add-addon-dialog.component';
 
 /**
@@ -51,6 +52,7 @@ export class AdminAddonsComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private logger: LoggerService,
     private transloco: TranslocoService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -139,6 +141,10 @@ export class AdminAddonsComponent implements OnInit, OnDestroy {
   }
 
   onClose(): void {
-    void this.router.navigate(['/admin']);
+    if (this.authService.isAdmin) {
+      void this.router.navigate(['/admin']);
+    } else {
+      void this.router.navigate(['/dashboard']);
+    }
   }
 }

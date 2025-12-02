@@ -79,7 +79,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    canActivate: [authGuard, adminGuard],
+    canActivate: [authGuard],
     children: [
       {
         path: '',
@@ -87,6 +87,7 @@ export const routes: Routes = [
           import(/* webpackChunkName: "admin" */ './pages/admin/admin.component').then(
             c => c.AdminComponent,
           ),
+        canActivate: [adminGuard],
       },
       {
         path: 'administrators',
@@ -94,6 +95,22 @@ export const routes: Routes = [
           import(
             /* webpackChunkName: "admin-administrators" */ './pages/admin/administrators/admin-administrators.component'
           ).then(c => c.AdminAdministratorsComponent),
+        canActivate: [adminGuard],
+      },
+      {
+        path: 'users',
+        redirectTo: '',
+        canActivate: [adminGuard],
+      },
+      {
+        path: 'groups',
+        redirectTo: '',
+        canActivate: [adminGuard],
+      },
+      {
+        path: 'quotas',
+        redirectTo: '',
+        canActivate: [adminGuard],
       },
       {
         path: 'webhooks',

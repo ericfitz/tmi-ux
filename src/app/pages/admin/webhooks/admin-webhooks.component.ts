@@ -14,6 +14,7 @@ import {
 import { WebhookSubscription } from '@app/types/webhook.types';
 import { WebhookService } from '@app/core/services/webhook.service';
 import { LoggerService } from '@app/core/services/logger.service';
+import { AuthService } from '@app/auth/services/auth.service';
 import { AddWebhookDialogComponent } from './add-webhook-dialog/add-webhook-dialog.component';
 
 /**
@@ -50,6 +51,7 @@ export class AdminWebhooksComponent implements OnInit, OnDestroy {
     private router: Router,
     private dialog: MatDialog,
     private logger: LoggerService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -151,6 +153,10 @@ export class AdminWebhooksComponent implements OnInit, OnDestroy {
   }
 
   onClose(): void {
-    void this.router.navigate(['/admin']);
+    if (this.authService.isAdmin) {
+      void this.router.navigate(['/admin']);
+    } else {
+      void this.router.navigate(['/dashboard']);
+    }
   }
 }

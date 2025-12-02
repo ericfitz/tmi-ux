@@ -223,6 +223,14 @@ export class AuthService {
   }
 
   /**
+   * Check if the current user is an administrator
+   * @returns True if the current user has admin privileges
+   */
+  get isAdmin(): boolean {
+    return this.userProfile?.is_admin === true;
+  }
+
+  /**
    * Check if the current JWT token is valid and not expired
    * @param token Optional token to check, otherwise retrieves from storage
    * @returns True if the token is valid and not expired
