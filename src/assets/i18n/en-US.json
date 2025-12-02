@@ -46,8 +46,11 @@
         "webhookHint": "Associated webhook subscription",
         "webhookRequired": "Webhook is required"
       },
+      "confirmDelete": "Are you sure you want to delete the addon \"{{name}}\"?",
       "created": "Created",
       "deleteTooltip": "Delete addon",
+      "errorLoadingWebhooks": "Failed to load available webhooks",
+      "errorCreatingAddon": "Failed to create addon. Please try again.",
       "filterLabel": "Filter Addons",
       "filterPlaceholder": "Search by name or description",
       "listTitle": "System Addons",

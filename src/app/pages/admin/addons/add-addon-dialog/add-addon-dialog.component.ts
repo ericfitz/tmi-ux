@@ -9,7 +9,7 @@ import {
 import { MatDialogRef } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
   FORM_MATERIAL_IMPORTS,
@@ -139,25 +139,28 @@ function iconFormatValidator(control: AbstractControl): ValidationErrors | null 
             >Material Symbols format (e.g., material-symbols:security)</mat-hint
           >
           <mat-error *ngIf="form.get('icon')?.hasError('iconFormat')">
-            {{ form.get('icon')?.errors?.['iconFormat']?.message || 'Invalid icon format' }}
+            {{
+              form.get('icon')?.errors?.['iconFormat']?.message ||
+                ('admin.addons.addDialog.iconInvalid' | transloco)
+            }}
           </mat-error>
         </mat-form-field>
 
-        <div class="form-section">
-          <label class="section-label" [transloco]="'admin.addons.addDialog.objects'"
-            >Object Types (Optional)</label
+        <mat-form-field class="full-width">
+          <mat-label [transloco]="'admin.addons.addDialog.objects'"
+            >Object Types (Optional)</mat-label
           >
-          <p class="section-hint" [transloco]="'admin.addons.addDialog.objectsHint'">
-            Select TMI object types this addon can operate on
-          </p>
-          <div class="checkbox-group">
+          <mat-select formControlName="objects" multiple>
             @for (objType of objectTypes; track objType) {
-              <mat-checkbox [formControlName]="'object_' + objType">
+              <mat-option [value]="objType">
                 {{ objType }}
-              </mat-checkbox>
+              </mat-option>
             }
-          </div>
-        </div>
+          </mat-select>
+          <mat-hint [transloco]="'admin.addons.addDialog.objectsHint'">
+            Select TMI object types this addon can operate on
+          </mat-hint>
+        </mat-form-field>
 
         @if (errorMessage) {
           <mat-error class="form-error">
@@ -197,34 +200,6 @@ function iconFormatValidator(control: AbstractControl): ValidationErrors | null 
         width: 100%;
       }
 
-      .form-section {
-        margin-top: 8px;
-
-        .section-label {
-          display: block;
-          font-size: 14px;
-          font-weight: 500;
-          color: var(--theme-text-primary);
-          margin-bottom: 4px;
-        }
-
-        .section-hint {
-          font-size: 12px;
-          color: var(--theme-text-secondary);
-          margin: 0 0 12px;
-        }
-
-        .checkbox-group {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 8px;
-
-          mat-checkbox {
-            font-size: 14px;
-          }
-        }
-      }
-
       .form-error {
         color: var(--theme-error);
         font-size: 12px;
@@ -237,7 +212,7 @@ function iconFormatValidator(control: AbstractControl): ValidationErrors | null 
       }
 
       mat-dialog-actions {
-        padding: 16px 0 0;
+        padding: 16px 24px 16px 0;
         margin: 0;
       }
     `,
@@ -267,21 +242,17 @@ export class AddAddonDialogComponent implements OnInit, OnDestroy {
     private webhookService: WebhookService,
     private fb: FormBuilder,
     private logger: LoggerService,
+    private transloco: TranslocoService,
   ) {}
 
   ngOnInit(): void {
-    const formConfig: Record<string, unknown> = {
+    this.form = this.fb.group({
       name: ['', Validators.required],
       description: [''],
       webhook_id: ['', Validators.required],
       icon: ['', iconFormatValidator],
-    };
-
-    this.objectTypes.forEach(objType => {
-      formConfig[`object_${objType}`] = [false];
+      objects: [[]],
     });
-
-    this.form = this.fb.group(formConfig);
 
     this.webhookService
       .list()
@@ -292,7 +263,7 @@ export class AddAddonDialogComponent implements OnInit, OnDestroy {
         },
         error: error => {
           this.logger.error('Failed to load webhooks', error);
-          this.errorMessage = 'Failed to load available webhooks';
+          this.errorMessage = this.transloco.translate('admin.addons.errorLoadingWebhooks');
         },
       });
   }
@@ -307,15 +278,11 @@ export class AddAddonDialogComponent implements OnInit, OnDestroy {
       this.saving = true;
       this.errorMessage = '';
 
-      const formValue = this.form.value;
-      const name = formValue['name'] as string;
-      const description = formValue['description'] as string;
-      const webhook_id = formValue['webhook_id'] as string;
-      const icon = formValue['icon'] as string;
-
-      const selectedObjects: AddonObjectType[] = this.objectTypes.filter(
-        objType => formValue[`object_${objType}`] as boolean,
-      );
+      const name = this.form.get('name')?.value as string;
+      const description = this.form.get('description')?.value as string;
+      const webhook_id = this.form.get('webhook_id')?.value as string;
+      const icon = this.form.get('icon')?.value as string;
+      const selectedObjects = (this.form.get('objects')?.value as AddonObjectType[]) || [];
 
       const request: CreateAddonRequest = {
         name,
@@ -335,7 +302,8 @@ export class AddAddonDialogComponent implements OnInit, OnDestroy {
           },
           error: (error: { error?: { message?: string } }) => {
             this.logger.error('Failed to create addon', error);
-            this.errorMessage = error.error?.message || 'Failed to create addon. Please try again.';
+            this.errorMessage =
+              error.error?.message || this.transloco.translate('admin.addons.errorCreatingAddon');
             this.saving = false;
           },
         });

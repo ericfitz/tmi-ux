@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -50,6 +50,7 @@ export class AdminAddonsComponent implements OnInit, OnDestroy {
     private router: Router,
     private dialog: MatDialog,
     private logger: LoggerService,
+    private transloco: TranslocoService,
   ) {}
 
   ngOnInit(): void {
@@ -118,7 +119,8 @@ export class AdminAddonsComponent implements OnInit, OnDestroy {
   }
 
   onDeleteAddon(addon: Addon): void {
-    const confirmed = confirm(`Are you sure you want to delete the addon "${addon.name}"?`);
+    const message = this.transloco.translate('admin.addons.confirmDelete', { name: addon.name });
+    const confirmed = confirm(message);
 
     if (confirmed) {
       this.addonService
