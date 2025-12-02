@@ -225,12 +225,18 @@ export class ThreatModelService implements OnDestroy {
             );
           }
 
-          // Transform providers for display (* → tmi)
+          // Transform providers for display (* → tmi) and remove read-only fields
           if (threatModel.authorization) {
-            threatModel.authorization = threatModel.authorization.map(auth => ({
-              ...auth,
-              provider: this.providerAdapter.transformProviderForDisplay(auth.provider),
-            }));
+            threatModel.authorization = threatModel.authorization.map(auth => {
+              const transformed = {
+                ...auth,
+                provider: this.providerAdapter.transformProviderForDisplay(auth.provider),
+              };
+              // Remove display_name which is a server-managed read-only field
+              // This prevents it from being accidentally included in PATCH requests
+              delete (transformed as { display_name?: string }).display_name;
+              return transformed;
+            });
           }
         }
         return threatModel;
@@ -422,6 +428,19 @@ export class ThreatModelService implements OnDestroy {
     };
 
     return this.apiService.post<ThreatModel>('threat_models', body).pipe(
+      map(newThreatModel => {
+        if (newThreatModel) {
+          // Remove display_name from authorization entries (server-managed read-only field)
+          if (newThreatModel.authorization) {
+            newThreatModel.authorization = newThreatModel.authorization.map(auth => {
+              const cleaned = { ...auth };
+              delete (cleaned as { display_name?: string }).display_name;
+              return cleaned;
+            });
+          }
+        }
+        return newThreatModel;
+      }),
       tap(newThreatModel => {
         if (newThreatModel) {
           // Log the API response to diagnose permission issues
@@ -651,12 +670,18 @@ export class ThreatModelService implements OnDestroy {
     return this.apiService.patch<ThreatModel>(`threat_models/${threatModelId}`, operations).pipe(
       map(updatedModel => {
         if (updatedModel) {
-          // Transform providers for display (* → tmi)
+          // Transform providers for display (* → tmi) and remove read-only fields
           if (updatedModel.authorization) {
-            updatedModel.authorization = updatedModel.authorization.map(auth => ({
-              ...auth,
-              provider: this.providerAdapter.transformProviderForDisplay(auth.provider),
-            }));
+            updatedModel.authorization = updatedModel.authorization.map(auth => {
+              const transformed = {
+                ...auth,
+                provider: this.providerAdapter.transformProviderForDisplay(auth.provider),
+              };
+              // Remove display_name which is a server-managed read-only field
+              // This prevents it from being accidentally included in subsequent PATCH requests
+              delete (transformed as { display_name?: string }).display_name;
+              return transformed;
+            });
           }
         }
         return updatedModel;
