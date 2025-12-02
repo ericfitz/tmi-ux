@@ -29,6 +29,9 @@
 
   .close-button {
     margin-left: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
@@ -41,6 +44,11 @@
 
   .filter-field {
     width: 100%;
+
+    mat-icon {
+      display: flex;
+      align-items: center;
+    }
   }
 }
 

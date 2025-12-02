@@ -110,8 +110,9 @@
     "webhooks": {
       "addButton": "Add Webhook",
       "addDialog": {
-        "events": "Events",
+        "events": "Event Types to Subscribe To",
         "eventsHint": "Event types to subscribe to (e.g., threat_model.created)",
+        "eventsPlaceholder": "Select event types",
         "eventsRequired": "At least one event is required",
         "name": "Name",
         "nameHint": "Descriptive name for this webhook",

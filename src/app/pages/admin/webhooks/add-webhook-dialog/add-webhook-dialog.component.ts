@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { MatChipInputEvent } from '@angular/material/chips';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -72,22 +71,19 @@ import { LoggerService } from '@app/core/services/logger.service';
         </mat-form-field>
 
         <mat-form-field class="full-width">
-          <mat-label [transloco]="'admin.webhooks.addDialog.events'">Events</mat-label>
-          <mat-chip-grid #eventChipGrid formControlName="events" required>
-            @for (event of selectedEvents; track event) {
-              <mat-chip-row (removed)="removeEvent(event)">
-                {{ event }}
-                <button matChipRemove [attr.aria-label]="'Remove ' + event">
-                  <mat-icon>cancel</mat-icon>
-                </button>
-              </mat-chip-row>
+          <mat-label [transloco]="'admin.webhooks.addDialog.events'"
+            >Event Types to Subscribe To</mat-label
+          >
+          <mat-select
+            formControlName="events"
+            multiple
+            required
+            [placeholder]="'admin.webhooks.addDialog.eventsPlaceholder' | transloco"
+          >
+            @for (eventType of availableEventTypes; track eventType) {
+              <mat-option [value]="eventType">{{ eventType }}</mat-option>
             }
-          </mat-chip-grid>
-          <input
-            placeholder="Add event type..."
-            [matChipInputFor]="eventChipGrid"
-            (matChipInputTokenEnd)="addEvent($event)"
-          />
+          </mat-select>
           <mat-hint [transloco]="'admin.webhooks.addDialog.eventsHint'"
             >Event types to subscribe to (e.g., threat_model.created)</mat-hint
           >
@@ -161,7 +157,7 @@ import { LoggerService } from '@app/core/services/logger.service';
       }
 
       mat-dialog-actions {
-        padding: 16px 0 0;
+        padding: 16px 24px 16px 0;
         margin: 0;
       }
     `,
@@ -171,9 +167,37 @@ export class AddWebhookDialogComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   form!: FormGroup;
-  selectedEvents: string[] = [];
   saving = false;
   errorMessage = '';
+
+  // Event types from OpenAPI schema
+  availableEventTypes: string[] = [
+    'threat_model.created',
+    'threat_model.updated',
+    'threat_model.deleted',
+    'diagram.created',
+    'diagram.updated',
+    'diagram.deleted',
+    'document.created',
+    'document.updated',
+    'document.deleted',
+    'note.created',
+    'note.updated',
+    'note.deleted',
+    'repository.created',
+    'repository.updated',
+    'repository.deleted',
+    'asset.created',
+    'asset.updated',
+    'asset.deleted',
+    'threat.created',
+    'threat.updated',
+    'threat.deleted',
+    'metadata.created',
+    'metadata.updated',
+    'metadata.deleted',
+    'addon.invoked',
+  ];
 
   constructor(
     private dialogRef: MatDialogRef<AddWebhookDialogComponent>,
@@ -194,23 +218,6 @@ export class AddWebhookDialogComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  addEvent(event: MatChipInputEvent): void {
-    const value = (event.value || '').trim();
-    if (value) {
-      this.selectedEvents.push(value);
-      this.form.patchValue({ events: this.selectedEvents });
-      event.chipInput?.clear();
-    }
-  }
-
-  removeEvent(event: string): void {
-    const index = this.selectedEvents.indexOf(event);
-    if (index >= 0) {
-      this.selectedEvents.splice(index, 1);
-      this.form.patchValue({ events: this.selectedEvents });
-    }
   }
 
   onSave(): void {
