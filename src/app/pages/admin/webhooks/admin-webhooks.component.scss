@@ -67,18 +67,18 @@
 
     .header-actions {
       margin-left: auto;
-
-      button {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
     }
   }
 
   mat-card-content {
     padding: 0;
   }
+}
+
+.webhooks-card mat-card-header .header-actions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .loading-container {

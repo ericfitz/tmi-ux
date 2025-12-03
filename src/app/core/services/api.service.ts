@@ -54,12 +54,28 @@ export class ApiService {
   }
 
   /**
+   * Build full URL from base API URL and endpoint
+   * Normalizes slashes to prevent double-slashes or missing slashes
+   * @param endpoint The API endpoint path
+   * @returns Full URL with properly normalized slashes
+   */
+  private buildUrl(endpoint: string): string {
+    // Remove trailing slash from apiUrl if present
+    const baseUrl = this.apiUrl.endsWith('/') ? this.apiUrl.slice(0, -1) : this.apiUrl;
+
+    // Ensure endpoint starts with a slash
+    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+
+    return `${baseUrl}${normalizedEndpoint}`;
+  }
+
+  /**
    * Generic GET request
    * @param endpoint The API endpoint (without the base URL)
    * @param params Optional query parameters
    */
   get<T>(endpoint: string, params?: Record<string, string | number | boolean>): Observable<T> {
-    const url = `${this.apiUrl}/${endpoint}`;
+    const url = this.buildUrl(endpoint);
 
     // Request logging handled by JWT interceptor
 
@@ -76,7 +92,7 @@ export class ApiService {
    * @param body The request body
    */
   post<T>(endpoint: string, body: Record<string, unknown>): Observable<T> {
-    const url = `${this.apiUrl}/${endpoint}`;
+    const url = this.buildUrl(endpoint);
 
     // Request logging handled by JWT interceptor
 
@@ -93,7 +109,7 @@ export class ApiService {
    * @param context Optional HttpContext for advanced request configuration
    */
   put<T>(endpoint: string, body: Record<string, unknown>, context?: HttpContext): Observable<T> {
-    const url = `${this.apiUrl}/${endpoint}`;
+    const url = this.buildUrl(endpoint);
 
     // Request logging handled by JWT interceptor
 
@@ -108,7 +124,7 @@ export class ApiService {
    * @param endpoint The API endpoint (without the base URL)
    */
   delete<T>(endpoint: string): Observable<T> {
-    const url = `${this.apiUrl}/${endpoint}`;
+    const url = this.buildUrl(endpoint);
 
     // Request logging handled by JWT interceptor
 
@@ -127,7 +143,7 @@ export class ApiService {
     endpoint: string,
     params?: Record<string, string | number | boolean>,
   ): Observable<T> {
-    const url = `${this.apiUrl}/${endpoint}`;
+    const url = this.buildUrl(endpoint);
 
     // Request logging handled by JWT interceptor
 
@@ -148,7 +164,7 @@ export class ApiService {
     operations: Array<{ op: string; path: string; value?: unknown }>,
     timeoutMs?: number,
   ): Observable<T> {
-    const url = `${this.apiUrl}/${endpoint}`;
+    const url = this.buildUrl(endpoint);
     const requestTimeout = timeoutMs || this.SAVE_TIMEOUT;
 
     // Request logging handled by JWT interceptor
