@@ -79,6 +79,33 @@
       "subtitle": "Control who has administrative access to the system",
       "title": "Manage Administrators"
     },
+    "quotas": {
+      "addButton": "Add Quota",
+      "addDialog": {
+        "apiQuotas": "API Rate Limits",
+        "configureQuotas": "Configure Quotas",
+        "searchLabel": "Search for user",
+        "searchPlaceholder": "Type user email to search",
+        "selectUser": "Select User",
+        "title": "Add Custom Quotas",
+        "webhookQuotas": "Webhook Limits"
+      },
+      "deleteTooltip": "Remove custom quota (revert to defaults)",
+      "eventsPerMinute": "Events per minute",
+      "filterLabel": "Filter Quotas",
+      "filterPlaceholder": "Search by email, name, provider, or user ID",
+      "maxSubscriptions": "Max subscriptions",
+      "noUserAPIQuotas": "No custom API quotas found",
+      "noWebhookQuotas": "No custom webhook quotas found",
+      "requestsPerHour": "Requests per hour",
+      "requestsPerMinute": "Requests per minute",
+      "subReqPerDay": "Subscription requests per day",
+      "subReqPerMinute": "Subscription requests per minute",
+      "subtitle": "Configure rate limits and quotas for users",
+      "title": "Manage Quotas",
+      "userAPITitle": "API Rate Limits",
+      "webhookTitle": "Webhook Limits"
+    },
     "sections": {
       "addons": {
         "description": "Install and configure application addons",

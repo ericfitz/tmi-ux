@@ -109,7 +109,10 @@ export const routes: Routes = [
       },
       {
         path: 'quotas',
-        redirectTo: '',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-quotas" */ './pages/admin/quotas/admin-quotas.component'
+          ).then(c => c.AdminQuotasComponent),
         canActivate: [adminGuard],
       },
       {

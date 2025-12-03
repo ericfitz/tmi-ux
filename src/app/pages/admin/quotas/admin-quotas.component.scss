@@ -1,0 +1,255 @@
+.admin-page-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+
+  .header-content {
+    flex: 1;
+  }
+
+  h1 {
+    margin: 0 0 8px;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--theme-text-primary);
+  }
+
+  .subtitle {
+    color: var(--theme-text-secondary);
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .close-button {
+    margin-left: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.filter-card {
+  margin-bottom: 24px;
+
+  mat-card-content {
+    padding: 16px;
+  }
+
+  .filter-field {
+    width: 100%;
+
+    mat-icon {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+.quotas-card {
+  margin-bottom: 24px;
+
+  mat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 16px 16px 0;
+
+    mat-card-title {
+      flex: 1;
+      margin: 0;
+    }
+
+    .header-actions {
+      margin-left: auto;
+
+      button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+    }
+  }
+
+  mat-card-content {
+    padding: 0;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 0;
+}
+
+.quotas-table {
+  width: 100%;
+  overflow-x: auto;
+
+  table {
+    width: 100%;
+  }
+
+  th {
+    font-weight: 600;
+    color: var(--theme-text-primary);
+    background-color: var(--theme-background-secondary);
+  }
+
+  td,
+  th {
+    padding: 12px 16px;
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .user-email {
+      font-weight: 500;
+      color: var(--theme-text-primary);
+    }
+
+    .user-name {
+      font-size: 12px;
+      color: var(--theme-text-secondary);
+    }
+
+    .user-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 11px;
+      color: var(--theme-text-secondary);
+
+      .provider {
+        font-family: monospace;
+      }
+
+      .user-id {
+        font-family: monospace;
+        opacity: 0.7;
+      }
+    }
+  }
+
+  .quota-input {
+    width: 120px;
+    font-size: 14px;
+
+    input {
+      text-align: right;
+    }
+  }
+
+  .default-hint {
+    font-size: 10px;
+    color: var(--theme-text-secondary);
+    margin-top: 2px;
+    font-style: italic;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+}
+
+.no-items-message {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--theme-text-secondary);
+
+  .no-items-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    opacity: 0.3;
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin: 0;
+    font-style: italic;
+    font-size: 14px;
+  }
+}
+
+@media (width <= 1200px) {
+  .admin-page-container {
+    max-width: 100%;
+  }
+
+  .quotas-table {
+    th,
+    td {
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    .quota-input {
+      width: 100px;
+    }
+  }
+}
+
+@media (width <= 768px) {
+  .admin-page-container {
+    padding: 16px;
+  }
+
+  .admin-header {
+    h1 {
+      font-size: 24px;
+    }
+
+    .close-button {
+      margin-left: 8px;
+    }
+  }
+
+  .quotas-card {
+    mat-card-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+
+      .header-actions {
+        width: 100%;
+        margin-left: 0;
+
+        button {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    }
+  }
+
+  .quotas-table {
+    font-size: 12px;
+
+    th,
+    td {
+      padding: 6px 8px;
+    }
+
+    .quota-input {
+      width: 80px;
+    }
+
+    .user-meta {
+      flex-direction: column;
+      gap: 2px;
+    }
+  }
+}

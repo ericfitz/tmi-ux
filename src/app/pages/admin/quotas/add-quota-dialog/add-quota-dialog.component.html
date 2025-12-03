@@ -1,0 +1,147 @@
+<h2 mat-dialog-title [transloco]="'admin.quotas.addDialog.title'">Add Custom Quotas</h2>
+
+<mat-dialog-content>
+  <!-- User Search Section -->
+  <div class="search-section">
+    <h3 [transloco]="'admin.quotas.addDialog.selectUser'">Select User</h3>
+
+    @if (!selectedUser) {
+      <form [formGroup]="userSearchForm">
+        <mat-form-field class="search-field">
+          <mat-label [transloco]="'admin.quotas.addDialog.searchLabel'">Search by email</mat-label>
+          <input
+            matInput
+            formControlName="searchText"
+            (input)="onSearchChange($any($event.target).value)"
+            [placeholder]="'admin.quotas.addDialog.searchPlaceholder' | transloco"
+          />
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+      </form>
+
+      @if (searchingUsers) {
+        <div class="loading-container">
+          <mat-spinner diameter="30"></mat-spinner>
+        </div>
+      } @else if (filteredUsers.length > 0) {
+        <div class="user-list">
+          @for (user of filteredUsers; track user.internal_uuid) {
+            <div class="user-item" (click)="onSelectUser(user)">
+              <div class="user-email">{{ user.email }}</div>
+              <div class="user-meta">
+                <span class="user-name">{{ user.name }}</span>
+                <span class="provider">{{ user.provider }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    } @else {
+      <div class="selected-user">
+        <div class="user-info">
+          <div class="user-email">{{ selectedUser.email }}</div>
+          <div class="user-meta">
+            <span class="user-name">{{ selectedUser.name }}</span>
+            <span class="provider">{{ selectedUser.provider }}</span>
+          </div>
+        </div>
+        <button mat-icon-button (click)="onClearUser()" [matTooltip]="'common.clear' | transloco">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
+  </div>
+
+  <!-- Quota Configuration Section -->
+  @if (selectedUser) {
+    <div class="quota-section">
+      <h3 [transloco]="'admin.quotas.addDialog.configureQuotas'">Configure Quotas</h3>
+
+      <form [formGroup]="quotaForm">
+        <!-- User API Quotas -->
+        <h4 [transloco]="'admin.quotas.addDialog.apiQuotas'">API Rate Limits</h4>
+        <div class="quota-fields">
+          <mat-form-field>
+            <mat-label [transloco]="'admin.quotas.requestsPerMinute'"
+              >Requests per minute</mat-label
+            >
+            <input matInput type="number" formControlName="max_requests_per_minute" min="1" />
+            <mat-hint>Default: {{ defaultUserAPIQuota.max_requests_per_minute }}</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label [transloco]="'admin.quotas.requestsPerHour'"
+              >Requests per hour (optional)</mat-label
+            >
+            <input matInput type="number" formControlName="max_requests_per_hour" min="1" />
+            <mat-hint>Default: {{ defaultUserAPIQuota.max_requests_per_hour }}</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <!-- Webhook Quotas -->
+        <h4 [transloco]="'admin.quotas.addDialog.webhookQuotas'">Webhook Limits</h4>
+        <div class="quota-fields">
+          <mat-form-field>
+            <mat-label [transloco]="'admin.quotas.maxSubscriptions'">Max subscriptions</mat-label>
+            <input matInput type="number" formControlName="max_subscriptions" min="1" />
+            <mat-hint>Default: {{ defaultWebhookQuota.max_subscriptions }}</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label [transloco]="'admin.quotas.eventsPerMinute'">Events per minute</mat-label>
+            <input matInput type="number" formControlName="max_events_per_minute" min="1" />
+            <mat-hint>Default: {{ defaultWebhookQuota.max_events_per_minute }}</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label [transloco]="'admin.quotas.subReqPerMinute'"
+              >Subscription requests per minute</mat-label
+            >
+            <input
+              matInput
+              type="number"
+              formControlName="max_subscription_requests_per_minute"
+              min="1"
+            />
+            <mat-hint
+              >Default: {{ defaultWebhookQuota.max_subscription_requests_per_minute }}</mat-hint
+            >
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label [transloco]="'admin.quotas.subReqPerDay'"
+              >Subscription requests per day</mat-label
+            >
+            <input
+              matInput
+              type="number"
+              formControlName="max_subscription_requests_per_day"
+              min="1"
+            />
+            <mat-hint
+              >Default: {{ defaultWebhookQuota.max_subscription_requests_per_day }}</mat-hint
+            >
+          </mat-form-field>
+        </div>
+      </form>
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="saving">
+    <span [transloco]="'common.cancel'">Cancel</span>
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSave()"
+    [disabled]="!selectedUser || quotaForm.invalid || saving"
+  >
+    @if (saving) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      <span [transloco]="'common.save'">Save</span>
+    }
+  </button>
+</mat-dialog-actions>
