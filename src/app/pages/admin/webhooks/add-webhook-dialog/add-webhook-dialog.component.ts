@@ -225,11 +225,16 @@ export class AddWebhookDialogComponent implements OnInit, OnDestroy {
       this.saving = true;
       this.errorMessage = '';
 
-      const formValue = this.form.value;
-      const name = formValue['name'] as string;
-      const url = formValue['url'] as string;
-      const events = formValue['events'] as string[];
-      const secret = formValue['secret'] as string;
+      const formValue = this.form.value as {
+        name: string;
+        url: string;
+        events: string[];
+        secret: string;
+      };
+      const name = formValue.name;
+      const url = formValue.url;
+      const events = formValue.events;
+      const secret = formValue.secret;
 
       const input: WebhookSubscriptionInput = {
         name,

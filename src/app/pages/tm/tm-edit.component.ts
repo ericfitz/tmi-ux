@@ -1920,10 +1920,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }
 
     // Capture original state for rollback on error
-    const originalAuthorizations = this.threatModel.authorization
-      ? JSON.parse(JSON.stringify(this.threatModel.authorization))
+    const originalAuthorizations: Authorization[] = this.threatModel.authorization
+      ? (JSON.parse(JSON.stringify(this.threatModel.authorization)) as Authorization[])
       : [];
-    const originalOwner = { ...this.threatModel.owner };
+    const originalOwner: User = { ...this.threatModel.owner };
 
     const dialogData: PermissionsDialogData = {
       permissions: this.threatModel.authorization || [],

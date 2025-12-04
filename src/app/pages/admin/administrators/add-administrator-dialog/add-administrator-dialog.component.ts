@@ -174,9 +174,9 @@ export class AddAdministratorDialogComponent implements OnInit, OnDestroy {
       this.saving = true;
       this.errorMessage = '';
 
-      const formValue = this.form.value;
-      const provider = formValue['provider'] as string;
-      const subject = formValue['subject'] as string;
+      const formValue = this.form.value as { provider: string; subject: string };
+      const provider = formValue.provider;
+      const subject = formValue.subject;
 
       const request: CreateAdministratorRequest = {
         provider,

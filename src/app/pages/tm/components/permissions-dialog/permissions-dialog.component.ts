@@ -23,6 +23,13 @@ import {
 } from '@app/shared/utils/principal-display.utils';
 import { ProviderAdapterService } from '../../services/providers/provider-adapter.service';
 
+/**
+ * Authorization with temporary _subject field for UI state management
+ */
+interface AuthorizationWithSubject extends Authorization {
+  _subject?: string;
+}
+
 export interface PermissionsDialogData {
   permissions: Authorization[];
   owner: User;
@@ -638,7 +645,7 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    */
   getSubjectValue(auth: Authorization): string {
     // Check if there's a cached _subject value first
-    const cachedSubject = (auth as any)._subject;
+    const cachedSubject = (auth as AuthorizationWithSubject)._subject;
     if (cachedSubject !== undefined) {
       return cachedSubject;
     }
@@ -665,10 +672,10 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
     const subject = input.value.trim();
 
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
-      const auth = this.permissionsDataSource.data[index];
+      const auth = this.permissionsDataSource.data[index] as AuthorizationWithSubject;
 
       // Store in temporary field for later parsing by AuthorizationPrepareService
-      (auth as any)._subject = subject;
+      auth._subject = subject;
 
       this.permissionsTable.renderRows();
     }
@@ -702,7 +709,8 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
         auth.principal_type,
       );
       if (defaultSubject) {
-        (auth as any)._subject = defaultSubject;
+        const authWithSubject = auth as AuthorizationWithSubject;
+        authWithSubject._subject = defaultSubject;
         auth.provider_id = defaultSubject;
         auth.email = undefined;
       }
@@ -791,10 +799,13 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    * Ensures _subject field is set for all permissions
    */
   save(): void {
-    const permissions = this.permissionsDataSource.data.map(auth => ({
-      ...auth,
-      _subject: (auth as any)._subject || auth.email || auth.provider_id,
-    }));
+    const permissions = this.permissionsDataSource.data.map(auth => {
+      const authWithSubject = auth as AuthorizationWithSubject;
+      return {
+        ...auth,
+        _subject: authWithSubject._subject || auth.email || auth.provider_id,
+      };
+    });
 
     this.dialogRef.close({
       permissions,

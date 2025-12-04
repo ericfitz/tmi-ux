@@ -35,7 +35,11 @@ export class AuthorizationPrepareService {
   prepareForApi(authorizations: Authorization[]): Authorization[] {
     return authorizations.map(auth => {
       // Extract subject from temporary field if it exists
-      const subject = (auth as any)._subject || auth.email || auth.provider_id || '';
+      interface AuthorizationWithSubject extends Authorization {
+        _subject?: string;
+      }
+      const authWithSubject = auth as AuthorizationWithSubject;
+      const subject = authWithSubject._subject || auth.email || auth.provider_id || '';
 
       // Parse subject into provider_id and email based on rules
       const parsed = this.parseSubject(subject, auth.provider, auth.principal_type);
@@ -49,7 +53,8 @@ export class AuthorizationPrepareService {
       };
 
       // Remove temporary _subject field if it exists
-      delete (prepared as any)._subject;
+      const preparedWithSubject = prepared as AuthorizationWithSubject;
+      delete preparedWithSubject._subject;
 
       // Validate (log warnings for invalid entries)
       const validationError = this.validate(prepared);
