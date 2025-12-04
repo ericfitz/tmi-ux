@@ -11,13 +11,10 @@ import {
   FORM_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
-import { Administrator } from '@app/types/administrator.types';
 import { AdministratorService } from '@app/core/services/administrator.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
-import { OAuthProviderInfo } from '@app/auth/models/auth.models';
-import { PrincipalTypeIconComponent } from '@app/shared/components/principal-type-icon/principal-type-icon.component';
-import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
+import { Administrator } from '@app/types/administrator.types';
 import { AddAdministratorDialogComponent } from './add-administrator-dialog/add-administrator-dialog.component';
 
 /**
@@ -36,8 +33,6 @@ import { AddAdministratorDialogComponent } from './add-administrator-dialog/add-
     ...FORM_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
     TranslocoModule,
-    PrincipalTypeIconComponent,
-    ProviderDisplayComponent,
   ],
   templateUrl: './admin-administrators.component.html',
   styleUrl: './admin-administrators.component.scss',
@@ -48,9 +43,9 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
 
   administrators: Administrator[] = [];
   filteredAdministrators: Administrator[] = [];
+
   filterText = '';
   loading = false;
-  availableProviders: OAuthProviderInfo[] = [];
 
   constructor(
     private administratorService: AdministratorService,
@@ -61,38 +56,11 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.loadProviders();
     this.loadAdministrators();
 
     this.filterSubject$.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe(() => {
       this.applyFilter();
     });
-  }
-
-  private loadProviders(): void {
-    this.authService
-      .getAvailableProviders()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: providers => {
-          const tmiProvider: OAuthProviderInfo = {
-            id: 'tmi',
-            name: 'TMI',
-            icon: 'TMI-Logo.svg',
-            auth_url: '',
-            redirect_uri: '',
-            client_id: '',
-          };
-          this.availableProviders = [tmiProvider, ...providers];
-        },
-        error: () => {
-          this.availableProviders = [];
-        },
-      });
-  }
-
-  getProviderInfo(provider: string): OAuthProviderInfo | null {
-    return this.availableProviders.find(p => p.id === provider) || null;
   }
 
   ngOnDestroy(): void {
@@ -110,8 +78,10 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
           this.administrators = administrators;
           this.applyFilter();
           this.loading = false;
+          this.logger.info('Administrators loaded', { count: administrators.length });
         },
-        error: () => {
+        error: error => {
+          this.logger.error('Failed to load administrators', error);
           this.loading = false;
         },
       });
@@ -142,7 +112,7 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
 
   onAddAdministrator(): void {
     const dialogRef = this.dialog.open(AddAdministratorDialogComponent, {
-      width: '600px',
+      width: '700px',
       disableClose: false,
     });
 
@@ -156,10 +126,11 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
       });
   }
 
-  onRemoveAdministrator(admin: Administrator): void {
-    const subject = admin.user_email || admin.group_name || 'this administrator';
+  onDeleteAdministrator(admin: Administrator): void {
+    const subject =
+      admin.user_email || admin.group_name || admin.display_name || 'this administrator';
     const confirmed = confirm(
-      `Are you sure you want to remove administrator permissions for ${subject}?`,
+      `Are you sure you want to remove administrator privileges for ${subject}?`,
     );
 
     if (confirmed) {
@@ -168,17 +139,29 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            this.logger.info('Administrator removed', { id: admin.id });
+            this.logger.info('Administrator deleted', { id: admin.id });
             this.loadAdministrators();
           },
           error: error => {
-            this.logger.error('Failed to remove administrator', error);
+            this.logger.error('Failed to delete administrator', error);
           },
         });
     }
   }
 
   onClose(): void {
-    void this.router.navigate(['/admin']);
+    if (this.authService.isAdmin) {
+      void this.router.navigate(['/admin']);
+    } else {
+      void this.router.navigate(['/dashboard']);
+    }
+  }
+
+  getSubjectName(admin: Administrator): string {
+    return admin.user_name || admin.display_name || admin.group_name || '';
+  }
+
+  getSubjectIdentifier(admin: Administrator): string {
+    return admin.user_email || admin.group_name || admin.provider_id || '';
   }
 }
