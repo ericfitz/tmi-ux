@@ -14,6 +14,8 @@ import {
 import { Administrator } from '@app/types/administrator.types';
 import { AdministratorService } from '@app/core/services/administrator.service';
 import { LoggerService } from '@app/core/services/logger.service';
+import { AuthService } from '@app/auth/services/auth.service';
+import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import { PrincipalTypeIconComponent } from '@app/shared/components/principal-type-icon/principal-type-icon.component';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
 import { AddAdministratorDialogComponent } from './add-administrator-dialog/add-administrator-dialog.component';
@@ -48,20 +50,49 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
   filteredAdministrators: Administrator[] = [];
   filterText = '';
   loading = false;
+  availableProviders: OAuthProviderInfo[] = [];
 
   constructor(
     private administratorService: AdministratorService,
     private router: Router,
     private dialog: MatDialog,
     private logger: LoggerService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
+    this.loadProviders();
     this.loadAdministrators();
 
     this.filterSubject$.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe(() => {
       this.applyFilter();
     });
+  }
+
+  private loadProviders(): void {
+    this.authService
+      .getAvailableProviders()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: providers => {
+          const tmiProvider: OAuthProviderInfo = {
+            id: 'tmi',
+            name: 'TMI',
+            icon: 'TMI-Logo.svg',
+            auth_url: '',
+            redirect_uri: '',
+            client_id: '',
+          };
+          this.availableProviders = [tmiProvider, ...providers];
+        },
+        error: () => {
+          this.availableProviders = [];
+        },
+      });
+  }
+
+  getProviderInfo(provider: string): OAuthProviderInfo | null {
+    return this.availableProviders.find(p => p.id === provider) || null;
   }
 
   ngOnDestroy(): void {
@@ -101,8 +132,11 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
     this.filteredAdministrators = this.administrators.filter(
       admin =>
         admin.user_email?.toLowerCase().includes(filter) ||
+        admin.user_name?.toLowerCase().includes(filter) ||
+        admin.display_name?.toLowerCase().includes(filter) ||
         admin.group_name?.toLowerCase().includes(filter) ||
-        admin.provider.toLowerCase().includes(filter),
+        admin.provider.toLowerCase().includes(filter) ||
+        admin.provider_id?.toLowerCase().includes(filter),
     );
   }
 

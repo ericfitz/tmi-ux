@@ -22,13 +22,13 @@
         <mat-label [transloco]="'admin.administrators.filterLabel'"
           >Filter Administrators</mat-label
         >
+        <mat-icon matIconPrefix class="search-icon">search</mat-icon>
         <input
           matInput
           [value]="filterText"
           (input)="onFilterChange($any($event.target).value)"
           [placeholder]="'admin.administrators.filterPlaceholder' | transloco"
         />
-        <mat-icon matPrefix>search</mat-icon>
       </mat-form-field>
     </mat-card-content>
   </mat-card>
@@ -54,12 +54,23 @@
         <mat-list>
           @for (admin of filteredAdministrators; track admin.id) {
             <mat-list-item class="admin-item">
-              <app-principal-type-icon
-                [principalType]="admin.user_id ? 'user' : 'group'"
-                matListItemIcon
-              />
-              <div matListItemTitle class="admin-title">
-                <app-provider-display [provider]="admin.provider" />
+              <div matListItemAvatar class="admin-icon-container">
+                <app-principal-type-icon
+                  [principalType]="admin.user_id ? 'user' : 'group'"
+                  class="principal-icon"
+                />
+              </div>
+              @if (admin.user_name || admin.display_name) {
+                <div matListItemTitle class="admin-name">
+                  {{ admin.user_name || admin.display_name }}
+                </div>
+              }
+              <div
+                [attr.matListItemLine]="admin.user_name || admin.display_name ? '' : null"
+                [class.admin-email]="admin.user_name || admin.display_name"
+                [class.admin-title]="!(admin.user_name || admin.display_name)"
+              >
+                <app-provider-display [providerInfo]="getProviderInfo(admin.provider)" />
                 <span class="admin-subject">
                   {{ admin.user_email || admin.group_name }}
                 </span>
@@ -70,12 +81,13 @@
                   {{ admin.created_at | date: 'short' }}
                 </span>
               </div>
-              <div matListItemMeta class="admin-actions">
+              <div matListItemMeta class="admin-actions-container">
                 <button
                   mat-icon-button
                   color="warn"
                   (click)="onRemoveAdministrator(admin)"
                   [matTooltip]="'admin.administrators.removeTooltip' | transloco"
+                  class="action-button"
                 >
                   <mat-icon>{{ admin.user_id ? 'person_remove' : 'group_remove' }}</mat-icon>
                 </button>

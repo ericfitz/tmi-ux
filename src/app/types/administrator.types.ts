@@ -14,6 +14,12 @@ export interface Administrator {
   user_id: string | null;
   /** User email (enriched from user profile) */
   user_email: string | null;
+  /** User name (enriched from user profile) */
+  user_name: string | null;
+  /** Display name (enriched from user profile) */
+  display_name: string | null;
+  /** Provider ID from the OAuth provider */
+  provider_id: string | null;
   /** Group ID (if group-based grant) */
   group_id: string | null;
   /** Group name (enriched from group info) */
