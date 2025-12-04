@@ -30,6 +30,7 @@ import {
   ValidationErrorDialogComponent,
   ValidationErrorData,
 } from '../components/validation-error-dialog/validation-error-dialog.component';
+import { extractHttpErrorDetails } from '@app/shared/utils/http-error.utils';
 
 /**
  * Service for making API requests
@@ -252,13 +253,11 @@ export class ApiService {
    */
   private handleValidationError(error: HttpErrorResponse): void {
     try {
-      const errorBody = error.error as { error?: string; error_description?: string } | undefined;
-      const validationError = errorBody?.error || 'Unknown validation error';
-      const errorDescription = errorBody?.error_description || '';
+      const { error: validationError, errorDescription } = extractHttpErrorDetails(error);
 
       const dialogData: ValidationErrorData = {
-        error: validationError,
-        errorDescription: errorDescription,
+        error: validationError || 'Unknown validation error',
+        errorDescription: errorDescription || '',
       };
 
       this.dialog.open(ValidationErrorDialogComponent, {

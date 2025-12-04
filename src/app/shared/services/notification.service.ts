@@ -3,6 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { LoggerService } from '../../core/services/logger.service';
+import { extractHttpErrorMessage } from '../utils/http-error.utils';
 
 /**
  * Configuration for save error notifications
@@ -225,8 +226,7 @@ export class NotificationService {
       switch (error.status) {
         case 400:
           title = 'Validation Error';
-          message =
-            this.extractServerErrorMessage(error) || 'Please check your input and try again';
+          message = extractHttpErrorMessage(error) || 'Please check your input and try again';
           break;
         case 401:
           title = 'Authentication Required';
@@ -242,17 +242,16 @@ export class NotificationService {
           break;
         case 409:
           title = 'Conflict';
-          message =
-            this.extractServerErrorMessage(error) || 'This item was modified by another user';
+          message = extractHttpErrorMessage(error) || 'This item was modified by another user';
           break;
         case 422:
           title = 'Validation Error';
-          message = this.extractServerErrorMessage(error) || 'The data provided is invalid';
+          message = extractHttpErrorMessage(error) || 'The data provided is invalid';
           break;
         case 500:
           title = 'Server Error';
           message =
-            this.extractServerErrorMessage(error) || 'The server encountered an error while saving';
+            extractHttpErrorMessage(error) || 'The server encountered an error while saving';
           break;
         case 502:
         case 503:
@@ -262,8 +261,7 @@ export class NotificationService {
           break;
         default:
           title = `HTTP ${error.status}`;
-          message =
-            this.extractServerErrorMessage(error) || `Server returned error ${error.status}`;
+          message = extractHttpErrorMessage(error) || `Server returned error ${error.status}`;
       }
     } else if (error instanceof Error) {
       // Handle JavaScript errors
@@ -285,41 +283,5 @@ export class NotificationService {
       duration: 8000,
       actionLabel: retryAction ? 'Retry' : undefined,
     };
-  }
-
-  /**
-   * Extract detailed error message from HTTP error response
-   * @param error HttpErrorResponse
-   * @returns Extracted error message or null
-   */
-  private extractServerErrorMessage(error: HttpErrorResponse): string | null {
-    try {
-      const errorBody = error.error as unknown;
-
-      // Try different common error message formats
-      if (typeof errorBody === 'string') {
-        return errorBody;
-      }
-
-      if (errorBody && typeof errorBody === 'object') {
-        // Try common error message fields
-        return (
-          (((errorBody as Record<string, unknown>)['message'] ||
-            (errorBody as Record<string, unknown>)['error_description'] ||
-            (errorBody as Record<string, unknown>)['detail'] ||
-            (errorBody as Record<string, unknown>)['error']) as string) || null
-        );
-      }
-
-      return null;
-    } catch (e) {
-      // If we can't parse the error body, return null
-      this.logger.debugComponent(
-        'Notification',
-        'Failed to parse error message from server response',
-        e,
-      );
-      return null;
-    }
   }
 }

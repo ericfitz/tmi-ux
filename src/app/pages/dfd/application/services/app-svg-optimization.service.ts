@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { optimize } from 'svgo/dist/svgo.browser.js';
+import { optimize } from 'svgo/browser';
 import { LoggerService } from '../../../../core/services/logger.service';
 
 /**

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { SvgOptimizationService } from '../../../dfd/services/svg-optimization.service';
+import { AppSvgOptimizationService } from './app-svg-optimization.service';
 
 /**
  * Service responsible for diagram export functionality in DFD diagrams
@@ -12,7 +12,7 @@ import { SvgOptimizationService } from '../../../dfd/services/svg-optimization.s
 export class AppExportService {
   constructor(
     private logger: LoggerService,
-    private svgOptimizationService: SvgOptimizationService,
+    private svgOptimizationService: AppSvgOptimizationService,
   ) {}
 
   /**
