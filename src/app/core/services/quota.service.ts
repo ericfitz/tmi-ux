@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, forkJoin } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, forkJoin, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import {
@@ -75,6 +75,26 @@ export class QuotaService {
   }
 
   /**
+   * List all user API quotas (only returns users with custom quotas)
+   */
+  listUserAPIQuotas(limit?: number, offset?: number): Observable<UserAPIQuota[]> {
+    const params: Record<string, string> = {};
+    if (limit !== undefined) params['limit'] = limit.toString();
+    if (offset !== undefined) params['offset'] = offset.toString();
+    return this.apiService.get<UserAPIQuota[]>('/admin/quotas/users', params);
+  }
+
+  /**
+   * List all webhook quotas (only returns users with custom quotas)
+   */
+  listWebhookQuotas(limit?: number, offset?: number): Observable<WebhookQuota[]> {
+    const params: Record<string, string> = {};
+    if (limit !== undefined) params['limit'] = limit.toString();
+    if (offset !== undefined) params['offset'] = offset.toString();
+    return this.apiService.get<WebhookQuota[]>('/admin/quotas/webhooks', params);
+  }
+
+  /**
    * List admin users with optional filtering
    */
   listUsers(filter?: AdminUserFilter): Observable<ListAdminUsersResponse> {
@@ -139,5 +159,45 @@ export class QuotaService {
       quota: this.getWebhookQuota(userId),
       user: this.getUser(userId),
     }).pipe(map(({ quota, user }) => this.enrichWebhookQuota(quota, user)));
+  }
+
+  /**
+   * List all enriched user API quotas (includes user information)
+   */
+  listEnrichedUserAPIQuotas(limit?: number, offset?: number): Observable<EnrichedUserAPIQuota[]> {
+    return this.listUserAPIQuotas(limit, offset).pipe(
+      switchMap(quotas => {
+        if (quotas.length === 0) {
+          return of([]);
+        }
+        const enrichedQuotas$ = quotas.map(quota =>
+          forkJoin({
+            quota: this.getUserAPIQuota(quota.user_id),
+            user: this.getUser(quota.user_id),
+          }).pipe(map(({ quota: q, user }) => this.enrichUserAPIQuota(q, user))),
+        );
+        return forkJoin(enrichedQuotas$);
+      }),
+    );
+  }
+
+  /**
+   * List all enriched webhook quotas (includes user information)
+   */
+  listEnrichedWebhookQuotas(limit?: number, offset?: number): Observable<EnrichedWebhookQuota[]> {
+    return this.listWebhookQuotas(limit, offset).pipe(
+      switchMap(quotas => {
+        if (quotas.length === 0) {
+          return of([]);
+        }
+        const enrichedQuotas$ = quotas.map(quota =>
+          forkJoin({
+            quota: this.getWebhookQuota(quota.owner_id),
+            user: this.getUser(quota.owner_id),
+          }).pipe(map(({ quota: q, user }) => this.enrichWebhookQuota(q, user))),
+        );
+        return forkJoin(enrichedQuotas$);
+      }),
+    );
   }
 }

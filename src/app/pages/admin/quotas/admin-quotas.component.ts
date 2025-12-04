@@ -106,15 +106,48 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
 
   loadUserAPIQuotas(): void {
     this.loadingUserAPI = true;
-    // TODO: Implement when backend provides list endpoint for all users with custom quotas
-    // For now, this would need to be implemented as part of the quota API
-    this.loadingUserAPI = false;
+    this.quotaService
+      .listEnrichedUserAPIQuotas()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: quotas => {
+          this.userAPIQuotas = quotas.map(quota => ({
+            ...quota,
+            editing: false,
+            saving: false,
+          }));
+          this.applyFilter();
+          this.loadingUserAPI = false;
+          this.logger.info('User API quotas loaded', { count: quotas.length });
+        },
+        error: error => {
+          this.logger.error('Failed to load user API quotas', error);
+          this.loadingUserAPI = false;
+        },
+      });
   }
 
   loadWebhookQuotas(): void {
     this.loadingWebhook = true;
-    // TODO: Implement when backend provides list endpoint for all users with custom quotas
-    this.loadingWebhook = false;
+    this.quotaService
+      .listEnrichedWebhookQuotas()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: quotas => {
+          this.webhookQuotas = quotas.map(quota => ({
+            ...quota,
+            editing: false,
+            saving: false,
+          }));
+          this.applyFilter();
+          this.loadingWebhook = false;
+          this.logger.info('Webhook quotas loaded', { count: quotas.length });
+        },
+        error: error => {
+          this.logger.error('Failed to load webhook quotas', error);
+          this.loadingWebhook = false;
+        },
+      });
   }
 
   onFilterChange(value: string): void {

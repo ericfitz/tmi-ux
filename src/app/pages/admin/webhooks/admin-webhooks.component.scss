@@ -75,12 +75,6 @@
   }
 }
 
-.webhooks-card mat-card-header .header-actions button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .loading-container {
   display: flex;
   justify-content: center;
@@ -361,4 +355,10 @@
       grid-row: 1 / 5;
     }
   }
+}
+
+.webhooks-card mat-card-header .header-actions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
