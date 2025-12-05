@@ -167,7 +167,7 @@ export class QuotaService {
   listEnrichedUserAPIQuotas(limit?: number, offset?: number): Observable<EnrichedUserAPIQuota[]> {
     return this.listUserAPIQuotas(limit, offset).pipe(
       switchMap(quotas => {
-        if (quotas.length === 0) {
+        if (!quotas || quotas.length === 0) {
           return of([]);
         }
         const enrichedQuotas$ = quotas.map(quota =>
@@ -187,7 +187,7 @@ export class QuotaService {
   listEnrichedWebhookQuotas(limit?: number, offset?: number): Observable<EnrichedWebhookQuota[]> {
     return this.listWebhookQuotas(limit, offset).pipe(
       switchMap(quotas => {
-        if (quotas.length === 0) {
+        if (!quotas || quotas.length === 0) {
           return of([]);
         }
         const enrichedQuotas$ = quotas.map(quota =>
