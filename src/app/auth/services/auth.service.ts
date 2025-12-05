@@ -1257,7 +1257,7 @@ export class AuthService {
 
         // Validate critical identity fields (must match exactly)
         if (serverProfile.provider !== currentProfile.provider) {
-          this.logger.error('Provider mismatch between JWT and server response', {
+          this.logger.warn('Provider mismatch between JWT and server response', {
             jwtProvider: currentProfile.provider,
             serverProvider: serverProfile.provider,
           });
