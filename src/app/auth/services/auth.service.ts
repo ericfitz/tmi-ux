@@ -1038,12 +1038,12 @@ export class AuthService {
       code: response.code,
       code_verifier: codeVerifier,
       redirect_uri: redirectUri,
+      ...(providerId && { idp: providerId }),
       ...(response.state && { state: response.state }),
     };
 
-    // Add provider query parameter if we have one
-    const queryParams = providerId ? `?idp=${encodeURIComponent(providerId)}` : '';
-    const exchangeUrl = `${environment.apiUrl}/oauth2/token${queryParams}`;
+    // Token exchange endpoint (no query parameters - all data in request body)
+    const exchangeUrl = `${environment.apiUrl}/oauth2/token`;
 
     // this.logger.debugComponent('Auth', 'Sending token exchange request', {
     //   exchangeUrl: exchangeUrl.replace(/\?.*$/, ''), // Log without query params
