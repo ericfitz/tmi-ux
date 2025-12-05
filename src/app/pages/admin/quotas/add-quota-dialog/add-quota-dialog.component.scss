@@ -3,9 +3,11 @@ h2 {
 }
 
 mat-dialog-content {
-  min-width: 600px;
+  min-width: 700px;
+  max-width: 700px;
   max-height: 70vh;
   padding: 20px 24px;
+  overflow-x: hidden;
 }
 
 .search-section,
@@ -89,6 +91,14 @@ mat-dialog-content {
   border-radius: 4px;
   background-color: var(--theme-background-secondary);
 
+  button {
+    mat-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
   .user-info {
     flex: 1;
 
@@ -119,9 +129,11 @@ mat-dialog-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+  width: 100%;
 
   mat-form-field {
     width: 100%;
+    min-width: 0;
   }
 }
 

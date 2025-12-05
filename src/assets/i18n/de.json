@@ -141,6 +141,7 @@
     "addons": "Erweiterungen",
     "cancel": "Abbrechen",
     "cellId": "Zellen-ID",
+    "clear": "Löschen",
     "close": "Schließen",
     "confirmDelete": "Sind Sie sicher, dass Sie {{item}} \"{{name}}\" löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
     "copy": "Kopieren",

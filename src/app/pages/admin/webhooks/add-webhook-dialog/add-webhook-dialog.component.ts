@@ -100,6 +100,7 @@ import { LoggerService } from '@app/core/services/logger.service';
             matInput
             formControlName="secret"
             type="password"
+            autocomplete="off"
             [placeholder]="'admin.webhooks.addDialog.secretPlaceholder' | transloco"
           />
           <mat-hint [transloco]="'admin.webhooks.addDialog.secretHint'"

@@ -141,6 +141,7 @@
     "addons": "插件",
     "cancel": "取消",
     "cellId": "单元格ID",
+    "clear": "清除",
     "close": "关闭",
     "confirmDelete": "您确定要删除{{item}}\"{{name}}\"吗？此操作无法撤销。",
     "copy": "复制",

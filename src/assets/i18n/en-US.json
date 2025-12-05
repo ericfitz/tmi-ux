@@ -265,6 +265,7 @@
     "addons": "Addons",
     "cancel": "Cancel",
     "cellId": "Cell ID",
+    "clear": "Clear",
     "close": "Close",
     "confirmDelete": "Are you sure you want to delete the {{item}} \"{{name}}\"? This action cannot be undone.",
     "copy": "Copy",
