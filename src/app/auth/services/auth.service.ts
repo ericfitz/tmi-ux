@@ -1032,18 +1032,18 @@ export class AuthService {
     }
 
     // Prepare the token exchange request with PKCE verifier
+    // Note: idp is sent as a query parameter (server expects c.Query("idp"))
+    // state is NOT included - it's for CSRF protection and validated on callback only
     const redirectUri = `${window.location.origin}/oauth2/callback`;
     const exchangeRequest = {
       grant_type: 'authorization_code',
       code: response.code,
       code_verifier: codeVerifier,
       redirect_uri: redirectUri,
-      ...(providerId && { idp: providerId }),
-      ...(response.state && { state: response.state }),
     };
 
-    // Token exchange endpoint (no query parameters - all data in request body)
-    const exchangeUrl = `${environment.apiUrl}/oauth2/token`;
+    // Token exchange endpoint with idp as query parameter
+    const exchangeUrl = `${environment.apiUrl}/oauth2/token${providerId ? `?idp=${providerId}` : ''}`;
 
     // this.logger.debugComponent('Auth', 'Sending token exchange request', {
     //   exchangeUrl: exchangeUrl.replace(/\?.*$/, ''), // Log without query params
