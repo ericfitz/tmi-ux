@@ -24,6 +24,88 @@
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
   },
   "admin": {
+    "addons": {
+      "addButton": "Add Addon",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "What does this addon do?",
+        "descriptionPlaceholder": "Describe the addon functionality",
+        "icon": "Icon",
+        "iconHint": "UI Icon (examples: \"material-symbols:security\", \"fa-regular fa-user-shield\")",
+        "iconInvalid": "Invalid icon format",
+        "iconPlaceholder": "material-symbols:extension",
+        "name": "{{common.name}}",
+        "nameHint": "Display name for this addon",
+        "namePlaceholder": "My Custom Addon",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "objects": "Object Types",
+        "objectsHint": "Select TMI object types this addon can operate on",
+        "save": "Create Addon",
+        "title": "Add Addon",
+        "webhook": "Webhook",
+        "webhookHint": "Associated webhook subscription",
+        "webhookRequired": "Webhook is required"
+      },
+      "confirmDelete": "Are you sure you want to delete the addon \"{{name}}\"?",
+      "created": "{{common.created}}",
+      "deleteTooltip": "Delete addon",
+      "errorCreatingAddon": "Failed to create addon. Please try again.",
+      "errorLoadingWebhooks": "Failed to load available webhooks",
+      "filterLabel": "Filter Addons",
+      "filterPlaceholder": "Search by name or description",
+      "listTitle": "System Addons",
+      "noAddons": "No addons found",
+      "subtitle": "Configure addons for extending TMI functionality",
+      "title": "Manage Addons"
+    },
+    "administrators": {
+      "addButton": "Add Administrator",
+      "addDialog": {
+        "provider": "{{common.provider}}",
+        "providerRequired": "Provider is required",
+        "save": "Add Administrator",
+        "subject": "Subject",
+        "subjectHint": "Enter user email or group name",
+        "subjectPlaceholder": "User email or group name",
+        "subjectRequired": "Subject is required",
+        "title": "Add Administrator"
+      },
+      "createdAt": "Added on",
+      "filterLabel": "Filter Administrators",
+      "filterPlaceholder": "Search by email or group name",
+      "listTitle": "System Administrators",
+      "noAdministrators": "No administrators found",
+      "removeTooltip": "Remove Administrator Permissions",
+      "subtitle": "Control who has administrative access to the system",
+      "title": "Manage Administrators"
+    },
+    "quotas": {
+      "addButton": "Add Quota",
+      "addDialog": {
+        "apiQuotas": "API Rate Limits",
+        "configureQuotas": "Configure Quotas",
+        "searchLabel": "Search for user",
+        "searchPlaceholder": "Type user email to search",
+        "selectUser": "Select User",
+        "title": "Add Custom Quotas",
+        "webhookQuotas": "Webhook Limits"
+      },
+      "deleteTooltip": "Remove custom quota (revert to defaults)",
+      "eventsPerMinute": "Events per minute",
+      "filterLabel": "Filter Quotas",
+      "filterPlaceholder": "Search by email, name, provider, or user ID",
+      "maxSubscriptions": "Max subscriptions",
+      "noUserAPIQuotas": "No custom API quotas found",
+      "noWebhookQuotas": "No custom webhook quotas found",
+      "requestsPerHour": "Requests per hour",
+      "requestsPerMinute": "Requests per minute",
+      "subReqPerDay": "Subscription requests per day",
+      "subReqPerMinute": "Subscription requests per minute",
+      "subtitle": "Configure rate limits and quotas for users",
+      "title": "Manage Quotas",
+      "userAPITitle": "API Rate Limits",
+      "webhookTitle": "Webhook Limits"
+    },
     "sections": {
       "addons": {
         "description": "安装和配置应用程序插件",
@@ -51,7 +133,49 @@
       }
     },
     "subtitle": "管理系统设置和配置",
-    "title": "系统管理"
+    "title": "系统管理",
+    "webhooks": {
+      "addButton": "Add Webhook",
+      "addDialog": {
+        "events": "Event Types to Subscribe To",
+        "eventsHint": "Event types to subscribe to (e.g., threat_model.created)",
+        "eventsPlaceholder": "Select event types",
+        "eventsRequired": "At least one event is required",
+        "name": "{{common.name}}",
+        "nameHint": "Descriptive name for this webhook",
+        "namePlaceholder": "Webhook name",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "Create Webhook",
+        "secret": "HMAC Secret",
+        "secretHint": "HMAC secret for signing payloads (auto-generated if empty)",
+        "secretPlaceholder": "Leave empty to auto-generate",
+        "title": "Add Webhook",
+        "url": "Webhook URL",
+        "urlHint": "Must be an HTTPS URL",
+        "urlInvalid": "Must be an HTTPS URL",
+        "urlPlaceholder": "https://example.com/webhook",
+        "urlRequired": "URL is required"
+      },
+      "created": "{{common.created}}",
+      "deleteTooltip": "Delete webhook",
+      "events": "events",
+      "filterLabel": "Filter Webhooks",
+      "filterPlaceholder": "Search by name or URL",
+      "hmacSecretDialog": {
+        "title": "HMAC Secret",
+        "warning": "This is the only time you will be able to view this secret. Please copy it. If you lose or forget it, you will have to delete and re-create the webhook."
+      },
+      "listTitle": "Webhook Subscriptions",
+      "noWebhooks": "No webhooks found",
+      "secret": "HMAC secret",
+      "status": {
+        "active": "Active",
+        "pending_delete": "Pending Delete",
+        "pending_verification": "Pending Verification"
+      },
+      "subtitle": "Configure webhook subscriptions for event notifications",
+      "title": "Manage Webhooks"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "输入值并按 Enter",
@@ -158,6 +282,7 @@
     "editThreat": "编辑威胁",
     "emailLabel": "电子邮件地址",
     "fonts": "字体",
+    "identityProvider": "Identity Provider",
     "issueUri": "问题URL",
     "language": "{{language}}",
     "lastModified": "最后修改",
@@ -199,6 +324,7 @@
     "paste": "粘贴",
     "permissions": "权限",
     "priority": "优先级",
+    "provider": "Provider",
     "readOnly": "只读",
     "readOnlyTooltip": "您对此威胁模型具有只读访问权限。请联系所有者请求编辑权限。",
     "refresh": "刷新",
@@ -228,9 +354,11 @@
     "threatType": "威胁类型",
     "type": "类型",
     "unsavedChangesWarning": "您有未保存的更改。确定要关闭吗？",
+    "userId": "User ID",
     "validation": {
       "invalidUrl": "请输入有效的 URL",
       "maxLength": "最大长度为{{max}}个字符",
+      "nameRequired": "Name is required",
       "required": "此字段为必填项"
     },
     "view": "查看",

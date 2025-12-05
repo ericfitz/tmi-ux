@@ -27,17 +27,17 @@
     "addons": {
       "addButton": "Add Addon",
       "addDialog": {
-        "description": "Description",
+        "description": "{{common.description}}",
         "descriptionHint": "What does this addon do?",
         "descriptionPlaceholder": "Describe the addon functionality",
         "icon": "Icon",
         "iconHint": "UI Icon (examples: \"material-symbols:security\", \"fa-regular fa-user-shield\")",
         "iconInvalid": "Invalid icon format",
         "iconPlaceholder": "material-symbols:extension",
-        "name": "Name",
+        "name": "{{common.name}}",
         "nameHint": "Display name for this addon",
         "namePlaceholder": "My Custom Addon",
-        "nameRequired": "Name is required",
+        "nameRequired": "{{common.validation.nameRequired}}",
         "objects": "Object Types",
         "objectsHint": "Select TMI object types this addon can operate on",
         "save": "Create Addon",
@@ -47,10 +47,10 @@
         "webhookRequired": "Webhook is required"
       },
       "confirmDelete": "Are you sure you want to delete the addon \"{{name}}\"?",
-      "created": "Created",
+      "created": "{{common.created}}",
       "deleteTooltip": "Delete addon",
-      "errorLoadingWebhooks": "Failed to load available webhooks",
       "errorCreatingAddon": "Failed to create addon. Please try again.",
+      "errorLoadingWebhooks": "Failed to load available webhooks",
       "filterLabel": "Filter Addons",
       "filterPlaceholder": "Search by name or description",
       "listTitle": "System Addons",
@@ -61,7 +61,7 @@
     "administrators": {
       "addButton": "Add Administrator",
       "addDialog": {
-        "provider": "Provider",
+        "provider": "{{common.provider}}",
         "providerRequired": "Provider is required",
         "save": "Add Administrator",
         "subject": "Subject",
@@ -141,10 +141,10 @@
         "eventsHint": "Event types to subscribe to (e.g., threat_model.created)",
         "eventsPlaceholder": "Select event types",
         "eventsRequired": "At least one event is required",
-        "name": "Name",
+        "name": "{{common.name}}",
         "nameHint": "Descriptive name for this webhook",
         "namePlaceholder": "Webhook name",
-        "nameRequired": "Name is required",
+        "nameRequired": "{{common.validation.nameRequired}}",
         "save": "Create Webhook",
         "secret": "HMAC Secret",
         "secretHint": "HMAC secret for signing payloads (auto-generated if empty)",
@@ -156,7 +156,7 @@
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL is required"
       },
-      "created": "Created",
+      "created": "{{common.created}}",
       "deleteTooltip": "Delete webhook",
       "events": "events",
       "filterLabel": "Filter Webhooks",
@@ -282,6 +282,7 @@
     "editThreat": "Edit Threat",
     "emailLabel": "Email Address",
     "fonts": "Fonts",
+    "identityProvider": "Identity Provider",
     "issueUri": "Issue URL",
     "language": "{{language}}",
     "lastModified": "Last Modified",
@@ -323,6 +324,7 @@
     "paste": "Paste",
     "permissions": "Permissions",
     "priority": "Priority",
+    "provider": "Provider",
     "readOnly": "Read-Only",
     "readOnlyTooltip": "You have read-only access to this threat model. Contact the owner to request edit permissions.",
     "refresh": "Refresh",
@@ -352,9 +354,11 @@
     "threatType": "Threat Type",
     "type": "Type",
     "unsavedChangesWarning": "You have unsaved changes. Are you sure you want to close?",
+    "userId": "User ID",
     "validation": {
       "invalidUrl": "Please enter a valid URL",
       "maxLength": "Maximum length is {{max}} characters",
+      "nameRequired": "Name is required",
       "required": "This field is required"
     },
     "view": "View",
@@ -413,7 +417,7 @@
       "title": "History",
       "undoStack": "Undo Stack",
       "undoStackSize": "Undo Stack Size",
-      "userId": "User ID"
+      "userId": "{{common.userId}}"
     }
   },
   "editor": {
@@ -679,17 +683,16 @@
     "pageTitle": "Threat Models",
     "permissionsDisplayName": "Display Name",
     "permissionsEmail": "Email",
-    "permissionsSubject": "Subject",
     "permissionsGroupId": "Group ID",
-    "permissionsIdp": "Identity Provider",
+    "permissionsIdp": "{{common.identityProvider}}",
     "permissionsPrincipalId": "Principal ID",
-    "permissionsProvider": "Provider",
+    "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Role",
     "permissionsSubject": "Subject",
     "permissionsSubjectPlaceholder": "Subject (User ID, User Email Address, or Group Name)",
-    "permissionsSubjectType": "Type",
+    "permissionsSubjectType": "{{common.type}}",
     "permissionsTooltip": "Manage Permissions",
-    "permissionsUserId": "User ID",
+    "permissionsUserId": "{{common.userId}}",
     "rename": "Rename",
     "renameDiagram": "Rename Diagram",
     "repositoryDescriptionPlaceholder": "Describe the repository or its purpose",
@@ -856,11 +859,11 @@
       "currentRole": "Current Threat Model Role",
       "groups": "Groups",
       "primary": "Primary",
-      "provider": "Identity Provider",
+      "provider": "{{common.identityProvider}}",
       "providerId": "Provider ID",
       "providers": "Linked Providers",
       "title": "User Profile",
-      "userId": "User ID"
+      "userId": "{{common.userId}}"
     }
   }
 }
