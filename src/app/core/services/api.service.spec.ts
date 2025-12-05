@@ -390,7 +390,7 @@ describe('ApiService', () => {
       const endpointWithSlash = '/test-endpoint';
       service.get<typeof mockSuccessResponse>(endpointWithSlash);
 
-      expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/${endpointWithSlash}`, {
+      expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}${endpointWithSlash}`, {
         params: undefined,
       });
     });

@@ -645,7 +645,7 @@ export class ZOrderService {
   recalculateZOrder(cells: Cell[]): number {
     const maxIterations = cells.filter(c => c.isNode()).length;
     let iteration = 0;
-    let changed = false;
+    let changed = true;
 
     // this.logger.info('Starting z-order recalculation', {
     //   totalCells: cells.length,
