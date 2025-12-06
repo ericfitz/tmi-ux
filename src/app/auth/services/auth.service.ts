@@ -165,11 +165,30 @@ export class AuthService {
   }
 
   /**
-   * Get current user's provider ID
+   * Get current user's provider ID from user profile or JWT token
+   * Falls back to JWT token's 'sub' field if user profile hasn't loaded yet
    * @returns The provider-assigned user ID or empty string if not authenticated
    */
   get providerId(): string {
-    return this.userProfile?.provider_id || '';
+    // First try to get from user profile
+    if (this.userProfile?.provider_id) {
+      return this.userProfile.provider_id;
+    }
+
+    // Fall back to JWT token's 'sub' field if profile hasn't loaded yet
+    const token = this.getStoredToken();
+    if (!token) {
+      return '';
+    }
+
+    try {
+      const payload = token.token.split('.')[1];
+      const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
+      return decodedPayload.sub || '';
+    } catch (error) {
+      this.logger.error('Error extracting provider ID from JWT token', error);
+      return '';
+    }
   }
 
   /**
