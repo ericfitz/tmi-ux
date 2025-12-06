@@ -37,6 +37,7 @@ export class AuthorizationPrepareService {
       // Extract subject from temporary field if it exists
       interface AuthorizationWithSubject extends Authorization {
         _subject?: string;
+        display_name?: string;
       }
       const authWithSubject = auth as AuthorizationWithSubject;
       const subject = authWithSubject._subject || auth.email || auth.provider_id || '';
@@ -55,6 +56,9 @@ export class AuthorizationPrepareService {
       // Remove temporary _subject field if it exists
       const preparedWithSubject = prepared as AuthorizationWithSubject;
       delete preparedWithSubject._subject;
+
+      // Remove read-only display_name field (server-managed response-only field)
+      delete preparedWithSubject.display_name;
 
       // Validate (log warnings for invalid entries)
       const validationError = this.validate(prepared);

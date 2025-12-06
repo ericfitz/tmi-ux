@@ -10,7 +10,7 @@ export interface Principal {
   principal_type: PrincipalType;
   provider: string;
   provider_id: string;
-  display_name: string;
+  display_name?: string; // Optional: server-managed response-only field
   email?: string;
 }
 
@@ -26,7 +26,7 @@ export interface Authorization {
   principal_type: PrincipalType;
   provider: string;
   provider_id: string;
-  display_name: string;
+  display_name?: string; // Optional: server-managed response-only field
   email?: string;
   role: 'reader' | 'writer' | 'owner';
 }
