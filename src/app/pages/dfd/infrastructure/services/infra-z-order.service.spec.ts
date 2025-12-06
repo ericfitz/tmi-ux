@@ -671,5 +671,14 @@ describe('ZOrderService', () => {
         }),
       );
     });
+
+    it('should handle empty cells array without error', () => {
+      // Act
+      const iterations = service.recalculateZOrder([]);
+
+      // Assert
+      expect(iterations).toBe(0);
+      expect(mockLogger.error).not.toHaveBeenCalled();
+    });
   });
 });

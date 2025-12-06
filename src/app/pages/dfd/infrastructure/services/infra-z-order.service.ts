@@ -643,7 +643,14 @@ export class ZOrderService {
    * @returns Number of iterations performed
    */
   recalculateZOrder(cells: Cell[]): number {
-    const maxIterations = cells.filter(c => c.isNode()).length;
+    const nodeCount = cells.filter(c => c.isNode()).length;
+
+    // No cells to process - early return
+    if (nodeCount === 0) {
+      return 0;
+    }
+
+    const maxIterations = nodeCount;
     let iteration = 0;
     let changed = true;
 
