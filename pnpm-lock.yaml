@@ -62,26 +62,26 @@ importers:
         specifier: ^20.3.15
         version: 20.3.15(@angular/common@20.3.15(@angular/core@20.3.15(@angular/compiler@20.3.15)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.3.15(@angular/compiler@20.3.15)(rxjs@7.8.2)(zone.js@0.15.1))(@angular/platform-browser@20.3.15(@angular/animations@20.3.15(@angular/core@20.3.15(@angular/compiler@20.3.15)(rxjs@7.8.2)(zone.js@0.15.1)))(@angular/common@20.3.15(@angular/core@20.3.15(@angular/compiler@20.3.15)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@20.3.15(@angular/compiler@20.3.15)(rxjs@7.8.2)(zone.js@0.15.1)))(rxjs@7.8.2)
       '@antv/x6':
-        specifier: 2.18.1
-        version: 2.18.1
+        specifier: 2.19.2
+        version: 2.19.2
       '@antv/x6-plugin-clipboard':
         specifier: ^2.1.6
-        version: 2.1.6(@antv/x6@2.18.1)
+        version: 2.1.6(@antv/x6@2.19.2)
       '@antv/x6-plugin-export':
         specifier: ^2.1.6
-        version: 2.1.6(@antv/x6@2.18.1)
+        version: 2.1.6(@antv/x6@2.19.2)
       '@antv/x6-plugin-history':
         specifier: ^2.2.4
-        version: 2.2.4(@antv/x6@2.18.1)
+        version: 2.2.4(@antv/x6@2.19.2)
       '@antv/x6-plugin-selection':
         specifier: ^2.2.2
-        version: 2.2.2(@antv/x6@2.18.1)
+        version: 2.2.2(@antv/x6@2.19.2)
       '@antv/x6-plugin-snapline':
         specifier: ^2.1.7
-        version: 2.1.7(@antv/x6@2.18.1)
+        version: 2.1.7(@antv/x6@2.19.2)
       '@antv/x6-plugin-transform':
         specifier: ^2.1.8
-        version: 2.1.8(@antv/x6@2.18.1)
+        version: 2.1.8(@antv/x6@2.19.2)
       '@jsverse/transloco':
         specifier: ^8.2.0
         version: 8.2.0(@angular/core@20.3.15(@angular/compiler@20.3.15)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)(typescript@5.9.3)
@@ -629,8 +629,8 @@ packages:
     peerDependencies:
       '@antv/x6': ^2.x
 
-  '@antv/x6@2.18.1':
-    resolution: {integrity: sha512-FkWdbLOpN9J7dfJ+kiBxzowSx2N6syBily13NMVdMs+wqC6Eo5sLXWCZjQHateTFWgFw7ZGi2y9o3Pmdov1sXw==}
+  '@antv/x6@2.19.2':
+    resolution: {integrity: sha512-lr9sUAlrR7eSVANru8kUNZUqCRl7eOCgb36M61FMDonUYREwkHpRN+0zq+1egSSOdz3HHSDBjs7UMtGH1ZEg2w==}
 
   '@asamuzakjp/css-color@4.0.4':
     resolution: {integrity: sha512-cKjSKvWGmAziQWbCouOsFwb14mp1betm8Y7Fn+yglDMUUu3r9DCbJ9iJbeFDenLMqFbIMC0pQP8K+B8LAxX3OQ==}
@@ -7106,31 +7106,31 @@ snapshots:
 
   '@antv/x6-geometry@2.0.5': {}
 
-  '@antv/x6-plugin-clipboard@2.1.6(@antv/x6@2.18.1)':
+  '@antv/x6-plugin-clipboard@2.1.6(@antv/x6@2.19.2)':
     dependencies:
-      '@antv/x6': 2.18.1
+      '@antv/x6': 2.19.2
 
-  '@antv/x6-plugin-export@2.1.6(@antv/x6@2.18.1)':
+  '@antv/x6-plugin-export@2.1.6(@antv/x6@2.19.2)':
     dependencies:
-      '@antv/x6': 2.18.1
+      '@antv/x6': 2.19.2
 
-  '@antv/x6-plugin-history@2.2.4(@antv/x6@2.18.1)':
+  '@antv/x6-plugin-history@2.2.4(@antv/x6@2.19.2)':
     dependencies:
-      '@antv/x6': 2.18.1
+      '@antv/x6': 2.19.2
 
-  '@antv/x6-plugin-selection@2.2.2(@antv/x6@2.18.1)':
+  '@antv/x6-plugin-selection@2.2.2(@antv/x6@2.19.2)':
     dependencies:
-      '@antv/x6': 2.18.1
+      '@antv/x6': 2.19.2
 
-  '@antv/x6-plugin-snapline@2.1.7(@antv/x6@2.18.1)':
+  '@antv/x6-plugin-snapline@2.1.7(@antv/x6@2.19.2)':
     dependencies:
-      '@antv/x6': 2.18.1
+      '@antv/x6': 2.19.2
 
-  '@antv/x6-plugin-transform@2.1.8(@antv/x6@2.18.1)':
+  '@antv/x6-plugin-transform@2.1.8(@antv/x6@2.19.2)':
     dependencies:
-      '@antv/x6': 2.18.1
+      '@antv/x6': 2.19.2
 
-  '@antv/x6@2.18.1':
+  '@antv/x6@2.19.2':
     dependencies:
       '@antv/x6-common': 2.0.17
       '@antv/x6-geometry': 2.0.5
