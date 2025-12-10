@@ -645,8 +645,10 @@ export class ThreatModelService implements OnDestroy {
       >
     >,
   ): Observable<ThreatModel> {
-    // Filter authorization entries to remove read-only fields like display_name
+    // Create a clean copy of updates to prevent prototype pollution or accidental property inclusion
     const filteredUpdates = { ...updates };
+
+    // Filter authorization entries to remove read-only fields like display_name
     if (filteredUpdates.authorization) {
       filteredUpdates.authorization = this.fieldFilter.filterAuthorizations(
         filteredUpdates.authorization,
@@ -661,11 +663,12 @@ export class ThreatModelService implements OnDestroy {
       value,
     }));
 
-    // this.logger.debugComponent(
-    // 'ThreatModelService',
-    // `Patching threat model with ID: ${threatModelId} via API`,
-    // { updates, operations },
-    // );
+    // Log the PATCH operations for debugging (helps identify unauthorized fields being sent)
+    this.logger.debugComponent(
+      'ThreatModelService',
+      `Patching threat model with ID: ${threatModelId} via API`,
+      { updates, filteredUpdates, operations },
+    );
 
     return this.apiService.patch<ThreatModel>(`threat_models/${threatModelId}`, operations).pipe(
       map(updatedModel => {

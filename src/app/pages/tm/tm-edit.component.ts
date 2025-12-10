@@ -1981,6 +1981,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
               next: updatedModel => {
                 if (updatedModel && this.threatModel) {
                   // Update the relevant fields from the result
+                  // Note: authorization from server response should already have display_name filtered out
+                  // by ThreatModelService.patchThreatModel(), but we defensively ensure it here as well
                   this.threatModel.authorization = updatedModel.authorization;
                   this.threatModel.owner = updatedModel.owner;
                   this.threatModel.modified_at = updatedModel.modified_at;
@@ -2679,7 +2681,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
     }
 
     // Create updates object with only changed form fields
-    const updates: Partial<ThreatModelFormValues> = {};
+    // Note: This object should NEVER contain authorization/owner - those are managed separately
+    const updates: Partial<
+      Pick<ThreatModel, 'name' | 'description' | 'threat_model_framework' | 'issue_uri' | 'status'>
+    > = {};
 
     if (formValues.name !== this._originalFormValues!.name) {
       updates.name = formValues.name;
