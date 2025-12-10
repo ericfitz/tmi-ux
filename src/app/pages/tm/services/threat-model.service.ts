@@ -664,10 +664,9 @@ export class ThreatModelService implements OnDestroy {
     }));
 
     // Log the PATCH operations for debugging (helps identify unauthorized fields being sent)
-    this.logger.debugComponent(
-      'ThreatModelService',
-      `Patching threat model with ID: ${threatModelId} via API`,
-      { updates, filteredUpdates, operations },
+    this.logger.info(
+      `PATCH threat model ${threatModelId}: ${Object.keys(filteredUpdates).join(', ')}`,
+      { updateKeys: Object.keys(filteredUpdates), operationCount: operations.length },
     );
 
     return this.apiService.patch<ThreatModel>(`threat_models/${threatModelId}`, operations).pipe(

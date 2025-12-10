@@ -2706,9 +2706,10 @@ export class TmEditComponent implements OnInit, OnDestroy {
       updates.status = formValues.status;
     }
 
-    this.logger.debugComponent('TmEdit', 'Calling threatModelService.patchThreatModel', {
+    // Log what fields are being updated (INFO level for Heroku debugging)
+    this.logger.info('Auto-save PATCH request', {
       threatModelId: this.threatModel.id,
-      updates,
+      updateKeys: Object.keys(updates),
     });
 
     // Save to server with PATCH (only changed fields)
