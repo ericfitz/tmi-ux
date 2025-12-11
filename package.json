@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "0.12.1251",
+  "version": "0.12.1252",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -55,7 +55,7 @@
     "build:hosted-container": "ng build --configuration=hosted-container",
     "heroku-postbuild": "ng build --configuration=hosted-container",
     "deploy:heroku": "./scripts/push-heroku.sh",
-    "sync:docs-server": "cp -r $TMI_DIRECTORY/docs/* $TMI_UX_DIRECTORY/docs-server/"
+    "sync:docs-server": "node ./scripts/sync-server-docs.js"
   },
   "private": true,
   "dependencies": {
