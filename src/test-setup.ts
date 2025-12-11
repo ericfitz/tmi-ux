@@ -7,3 +7,12 @@ import './testing/compiler-setup';
 import './testing/zone-setup';
 
 // Additional global test setup can go here
+
+// Global cleanup to prevent test pollution
+import { afterEach, vi } from 'vitest';
+
+afterEach(() => {
+  // Restore all mocks/spies after each test to prevent cross-test contamination
+  // This is critical for tests that spy on global objects like crypto, window, etc.
+  vi.restoreAllMocks();
+});

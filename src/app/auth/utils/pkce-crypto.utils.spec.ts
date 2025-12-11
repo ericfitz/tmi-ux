@@ -2,7 +2,7 @@
 // Execute all tests using: "pnpm run test"
 // Execute this test only using: "pnpm run test" followed by the relative path to this test file from the project root.
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   generateCodeVerifier,
   computeCodeChallenge,
@@ -12,6 +12,10 @@ import {
 } from './pkce-crypto.utils';
 
 describe('PKCE Crypto Utils', () => {
+  // Ensure all spies are restored after each test to prevent cross-test pollution
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
   describe('generateRandomBytes', () => {
     it('should generate 32 bytes by default', () => {
       const bytes = generateRandomBytes();
