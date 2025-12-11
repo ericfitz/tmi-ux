@@ -184,16 +184,70 @@ export class ThreatModelAuthorizationService implements OnDestroy {
 
     // Step 1: Check if user is the owner (owner field takes absolute precedence)
     if (this._currentOwner) {
-      if (
-        this._currentOwner.provider === currentUserProvider &&
-        this._currentOwner.provider_id === currentUserProviderId
-      ) {
+      this.logger.debugComponent(
+        'ThreatModelAuthorizationService',
+        'Comparing user against owner field',
+        {
+          currentOwner: this._currentOwner,
+          currentUser: {
+            provider: currentUserProvider,
+            provider_id: currentUserProviderId,
+          },
+          providerMatch: this._currentOwner.provider === currentUserProvider,
+          providerIdMatch: this._currentOwner.provider_id === currentUserProviderId,
+        },
+      );
+
+      // Primary match: provider and provider_id
+      const providerMatches = this._currentOwner.provider === currentUserProvider;
+      const providerIdMatches = this._currentOwner.provider_id === currentUserProviderId;
+
+      // Fallback match: If provider_id doesn't match but is an email, compare against user's email
+      // This handles a backend bug where owner.provider_id contains email instead of OAuth provider ID
+      const emailFallbackMatches =
+        !providerIdMatches &&
+        this._currentOwner.email &&
+        currentUserEmail &&
+        this._currentOwner.provider_id === currentUserEmail;
+
+      if (providerMatches && (providerIdMatches || emailFallbackMatches)) {
+        if (emailFallbackMatches) {
+          this.logger.warn(
+            'Owner matched via email fallback - backend is storing email in provider_id field',
+            {
+              owner: getCompositeKey(this._currentOwner),
+              currentUser: `${currentUserProvider}:${currentUserProviderId}`,
+              matchedVia: 'email',
+            },
+          );
+        }
         this.logger.debugComponent('ThreatModelAuthorizationService', 'User matches owner field', {
           owner: getCompositeKey(this._currentOwner),
           currentUser: `${currentUserProvider}:${currentUserProviderId}`,
+          matchMethod: emailFallbackMatches ? 'email' : 'provider_id',
         });
         return 'owner';
+      } else {
+        this.logger.debugComponent(
+          'ThreatModelAuthorizationService',
+          'User does NOT match owner field',
+          {
+            owner: getCompositeKey(this._currentOwner),
+            currentUser: `${currentUserProvider}:${currentUserProviderId}`,
+            providerMatches,
+            providerIdMatches,
+            emailFallbackMatches,
+          },
+        );
       }
+    } else {
+      this.logger.debugComponent(
+        'ThreatModelAuthorizationService',
+        'No owner set for threat model',
+        {
+          threatModelId: this._currentThreatModelId,
+        },
+      );
     }
 
     // Step 2: If not owner, check authorization list
