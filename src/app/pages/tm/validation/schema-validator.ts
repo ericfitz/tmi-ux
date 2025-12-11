@@ -107,7 +107,11 @@ export class SchemaValidator extends BaseValidator {
     { field: 'id', required: true, type: 'uuid' },
     { field: 'threat_model_id', required: true, type: 'uuid' },
     { field: 'name', required: true, type: 'string' },
-    { field: 'threat_type', required: true, type: 'string' },
+    {
+      field: 'threat_type',
+      required: true,
+      type: 'array',
+    },
     {
       field: 'severity',
       required: true,
@@ -373,20 +377,62 @@ export class SchemaValidator extends BaseValidator {
 
         // Validate threat_type against framework
         if (framework && item?.threat_type && validThreatTypes.length > 0) {
-          if (!validThreatTypes.includes(item.threat_type)) {
+          // Validate that threat_type is an array
+          if (!Array.isArray(item.threat_type)) {
             this.addError(
               ValidationUtils.createError(
-                'INVALID_THREAT_TYPE',
-                `Threat type '${item.threat_type}' is not valid for framework '${framework}'. Valid types are: ${validThreatTypes.join(', ')}`,
+                'INVALID_TYPE',
+                `Threat type must be an array, got ${typeof item.threat_type}`,
                 ValidationUtils.buildPath(itemPath, 'threat_type'),
                 'error',
-                {
-                  framework,
-                  threatType: item.threat_type,
-                  validThreatTypes,
-                },
               ),
             );
+          } else {
+            // Validate each threat type in the array against framework
+            const invalidTypes = item.threat_type.filter(
+              (tt: string) => !validThreatTypes.includes(tt),
+            );
+
+            if (invalidTypes.length > 0) {
+              this.addError(
+                ValidationUtils.createError(
+                  'INVALID_THREAT_TYPE',
+                  `Invalid threat types for framework '${framework}': ${invalidTypes.join(', ')}. Valid types are: ${validThreatTypes.join(', ')}`,
+                  ValidationUtils.buildPath(itemPath, 'threat_type'),
+                  'error',
+                  {
+                    framework,
+                    invalidThreatTypes: invalidTypes,
+                    validThreatTypes,
+                  },
+                ),
+              );
+            }
+
+            // Validate array constraints (maxItems)
+            if (item.threat_type.length > 20) {
+              this.addError(
+                ValidationUtils.createError(
+                  'ARRAY_TOO_LONG',
+                  `Threat type array cannot exceed 20 items, has ${item.threat_type.length}`,
+                  ValidationUtils.buildPath(itemPath, 'threat_type'),
+                  'error',
+                ),
+              );
+            }
+
+            // Check for duplicates
+            const uniqueTypes = new Set(item.threat_type);
+            if (uniqueTypes.size !== item.threat_type.length) {
+              this.addError(
+                ValidationUtils.createError(
+                  'DUPLICATE_VALUES',
+                  'Threat type array contains duplicate values',
+                  ValidationUtils.buildPath(itemPath, 'threat_type'),
+                  'warning',
+                ),
+              );
+            }
           }
         }
 

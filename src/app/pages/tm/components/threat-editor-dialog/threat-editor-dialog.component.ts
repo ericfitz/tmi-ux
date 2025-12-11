@@ -29,7 +29,7 @@ interface ThreatFormValues {
   name: string;
   description: string;
   severity: string | null;
-  threat_type: string;
+  threat_type: string[];
   asset_id?: string;
   diagram_id?: string;
   cell_id?: string;
@@ -155,7 +155,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       asset_id: [''],
       description: ['', Validators.maxLength(500)],
       severity: [null],
-      threat_type: ['', Validators.required],
+      threat_type: [[]],
       diagram_id: [''],
       cell_id: [''],
       score: [null],
@@ -651,10 +651,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
           created_at: new Date().toISOString(),
           modified_at: new Date().toISOString(),
           severity: '1', // High (using numeric key: Critical=0, High=1, Medium=2, Low=3, Info=4, Unknown=5)
-          threat_type:
-            this.threatTypeOptions.length > 0
-              ? this.threatTypeOptions[0]
-              : 'Information Disclosure',
+          threat_type: [],
           diagram_id: this.data.diagramId || '',
           cell_id: this.data.cellId || '',
           score: 10.0,
@@ -675,16 +672,12 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     // Initialize form with empty values for text fields and default values for other fields
     // We're using floatLabel="always" in the HTML to ensure labels are always visible
 
-    // Use first threat type from framework, or fallback to a default
-    const defaultThreatType =
-      this.threatTypeOptions.length > 0 ? this.threatTypeOptions[0] : 'Information Disclosure';
-
     this.threatForm.patchValue({
       name: '',
       asset_id: this.NOT_ASSOCIATED_VALUE,
       description: '',
       severity: null,
-      threat_type: defaultThreatType,
+      threat_type: [],
       diagram_id: this.data.diagramId || this.NOT_ASSOCIATED_VALUE,
       cell_id: this.data.cellId || this.NOT_ASSOCIATED_VALUE,
       score: null,
@@ -763,7 +756,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         asset_id: assetIdValue,
         description: this.data.threat.description || '',
         severity: migratedSeverity,
-        threat_type: this.data.threat.threat_type || '',
+        threat_type: this.data.threat.threat_type || [],
         diagram_id: this.data.threat.diagram_id || this.NOT_ASSOCIATED_VALUE,
         cell_id: this.data.threat.cell_id || this.NOT_ASSOCIATED_VALUE,
         score: this.data.threat.score || null,

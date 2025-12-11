@@ -507,7 +507,7 @@ describe('ThreatModelService', () => {
           name: 'Test Threat',
           description: 'A test threat',
           severity: 'High' as const,
-          threat_type: 'Information Disclosure',
+          threat_type: ['Information Disclosure'],
         };
         const expectedThreat = {
           ...threatData,

@@ -425,7 +425,7 @@
                 fontSet="material-symbols-outlined"
                 fontWeight="100"
                 style="font-variation-settings: 'FILL' 0"
-                [matTooltip]="threat.threat_type"
+                [matTooltip]="threat.threat_type && threat.threat_type.length > 0 ? threat.threat_type.join('\n') : ''"
                 >skull</mat-icon
               >
               <div matListItemTitle class="threat-content">

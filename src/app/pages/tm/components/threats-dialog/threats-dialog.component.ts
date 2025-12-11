@@ -23,7 +23,7 @@ interface ThreatUpdateResult {
   name: string;
   description: string;
   severity: string | null;
-  threat_type: string;
+  threat_type: string[];
   diagram_id?: string;
   cell_id?: string;
   score?: number;

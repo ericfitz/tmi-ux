@@ -907,7 +907,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
             name: string;
             description: string;
             severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
-            threat_type: string;
+            threat_type: string[];
             asset_id?: string;
             diagram_id?: string;
             cell_id?: string;
@@ -925,7 +925,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
               name: formResult.name,
               description: formResult.description,
               severity: formResult.severity || 'High',
-              threat_type: formResult.threat_type || 'Information Disclosure',
+              threat_type: formResult.threat_type || [],
               mitigated: formResult.mitigated || false,
               status: formResult.status || 'Open',
               metadata: [],
@@ -973,7 +973,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
               name: formResult.name,
               description: formResult.description,
               severity: formResult.severity || threat.severity,
-              threat_type: formResult.threat_type || threat.threat_type,
+              threat_type: formResult.threat_type || threat.threat_type || [],
             };
 
             // Only include optional fields if they have values

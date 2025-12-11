@@ -76,7 +76,7 @@ describe('ThreatModelValidatorService', () => {
             id: '0199b111-621f-71bd-b4a9-59304aa963fb', // UUIDv7 format
             threat_model_id: '0199b111-621f-71bd-b4a9-59304aa963fa',
             name: 'Test Threat',
-            threat_type: 'Tampering',
+            threat_type: ['Tampering'],
             severity: 'High',
             created_at: '2025-01-01T00:00:00Z',
             modified_at: '2025-01-01T00:00:00Z',
@@ -153,7 +153,7 @@ describe('ThreatModelValidatorService', () => {
             id: 'threat-1',
             threat_model_id: '550e8400-e29b-41d4-a716-446655440000',
             name: 'Test Threat',
-            threat_type: 'Tampering',
+            threat_type: ['Tampering'],
             severity: 'High',
             created_at: '2025-01-01T00:00:00Z',
             modified_at: '2025-01-01T00:00:00Z',

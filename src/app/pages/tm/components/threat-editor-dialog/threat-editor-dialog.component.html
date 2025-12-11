@@ -79,16 +79,11 @@
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'common.threatType' | transloco }}</mat-label>
-        <mat-select formControlName="threat_type" tabindex="4">
+        <mat-select formControlName="threat_type" tabindex="4" multiple>
           <mat-option *ngFor="let threatType of threatTypeOptions" [value]="threatType">
             {{ threatType }}
           </mat-option>
         </mat-select>
-        @if (threatForm.get('threat_type')?.hasError('required')) {
-          <mat-error>
-            {{ 'common.validation.required' | transloco }}
-          </mat-error>
-        }
       </mat-form-field>
     </div>
 
