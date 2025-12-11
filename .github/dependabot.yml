@@ -12,3 +12,76 @@ updates:
       time: "13:00" # 9am EDT
       day: "monday" # every Monday morning
     target-branch: "main" # Adjust if your default branch is different
+
+    # Ignore Angular 21 packages until Q1 2026 (tracked in issue #241)
+    # Remove these ignores when ready to upgrade (after AnalogJS and ngx-markdown support v21)
+    ignore:
+      # Angular core packages
+      - dependency-name: "@angular/animations"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "@angular/common"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "@angular/compiler"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "@angular/core"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "@angular/forms"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "@angular/platform-browser"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "@angular/platform-browser-dynamic"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "@angular/router"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+
+      # Angular Material/CDK
+      - dependency-name: "@angular/cdk"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "@angular/material"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+
+      # Angular CLI
+      - dependency-name: "@angular/cli"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "@angular/compiler-cli"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "@angular-devkit/build-angular"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+
+      # Angular ESLint
+      - dependency-name: "@angular-eslint/builder"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "@angular-eslint/eslint-plugin"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "@angular-eslint/eslint-plugin-template"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "@angular-eslint/schematics"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "@angular-eslint/template-parser"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+      - dependency-name: "angular-eslint"
+        update-types: ["version-update:semver-major"]
+        versions: [">=21.0.0", "<22.0.0"]
+
+      # Zone.js
+      - dependency-name: "zone.js"
+        update-types: ["version-update:semver-minor"]
+        versions: [">=0.16.0", "<1.0.0"]
