@@ -335,8 +335,8 @@
 
                     @if (asset.sensitivity && asset.sensitivity.length > 0) {
                       <mat-chip-set class="asset-chips sensitivity-chips">
-                        <mat-chip *ngFor="let item of asset.sensitivity" disabled>
-                          {{ item }}
+                        <mat-chip disabled>
+                          {{ asset.sensitivity }}
                         </mat-chip>
                       </mat-chip-set>
                     }
