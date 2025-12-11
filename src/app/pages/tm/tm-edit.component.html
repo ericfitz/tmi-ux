@@ -302,7 +302,7 @@
         <mat-card-content>
           <mat-list>
             <mat-list-item
-              *ngFor="let asset of threatModel.assets"
+              *ngFor="let asset of sortedAssets"
               class="asset-item clickable"
               (click)="editAsset(asset, $event)"
             >
@@ -361,17 +361,6 @@
                 >
                   <mat-icon>list</mat-icon>
                 </button>
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="editAsset(asset, $event)"
-                  [matTooltip]="canEdit ? ('common.edit' | transloco) : ('common.view' | transloco)"
-                  [attr.aria-label]="
-                    canEdit ? ('common.edit' | transloco) : ('common.view' | transloco)
-                  "
-                >
-                  <mat-icon>{{ canEdit ? 'edit' : 'visibility' }}</mat-icon>
-                </button>
                 @if (canEdit) {
                   <button
                     mat-icon-button
@@ -427,7 +416,7 @@
         <mat-card-content>
           <mat-list>
             <mat-list-item
-              *ngFor="let threat of threatModel.threats"
+              *ngFor="let threat of sortedThreats"
               (click)="openThreatEditor(threat)"
               class="clickable-item threat-list-item"
             >
@@ -540,7 +529,7 @@
         <mat-card-content>
           <mat-list>
             <mat-list-item
-              *ngFor="let diagram of diagrams"
+              *ngFor="let diagram of sortedDiagrams"
               class="diagram-item"
               [routerLink]="['/tm', threatModel.id, 'dfd', diagram.id]"
             >
@@ -656,7 +645,7 @@
         <mat-card-content>
           <mat-list>
             <mat-list-item
-              *ngFor="let note of threatModel.notes"
+              *ngFor="let note of sortedNotes"
               class="note-item clickable"
               (click)="editNote(note, $event)"
             >
@@ -753,7 +742,7 @@
         <mat-card-content>
           <mat-list>
             <mat-list-item
-              *ngFor="let document of threatModel.documents"
+              *ngFor="let document of sortedDocuments"
               class="document-item clickable"
               (click)="editDocument(document, $event)"
             >
@@ -848,7 +837,7 @@
         <mat-card-content>
           <mat-list>
             <mat-list-item
-              *ngFor="let repository of threatModel.repositories"
+              *ngFor="let repository of sortedRepositories"
               class="repository-item"
               (click)="editRepository(repository, $event)"
             >

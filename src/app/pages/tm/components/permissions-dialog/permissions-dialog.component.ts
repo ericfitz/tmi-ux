@@ -321,7 +321,7 @@ export interface PermissionsDialogData {
       .permissions-dialog {
         width: 100%;
         max-width: 90vw;
-        min-width: 500px;
+        min-width: 900px;
       }
 
       .permissions-content {
@@ -455,7 +455,6 @@ export interface PermissionsDialogData {
         gap: 4px;
         height: 100%;
         min-height: 40px;
-        margin-top: -16px;
       }
 
       .actions-cell {

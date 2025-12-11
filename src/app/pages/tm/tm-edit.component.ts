@@ -158,6 +158,66 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this.computeDiagramSvgData();
   }
 
+  // Sorted list getters
+  get sortedDiagrams(): Diagram[] {
+    if (!this._diagrams) return [];
+    return [...this._diagrams].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+    );
+  }
+
+  get sortedAssets(): Asset[] {
+    if (!this.threatModel?.assets) return [];
+    return [...this.threatModel.assets].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+    );
+  }
+
+  get sortedThreats(): Threat[] {
+    if (!this.threatModel?.threats) return [];
+    const severityOrder: Record<string, number> = {
+      critical: 4,
+      high: 3,
+      medium: 2,
+      low: 1,
+    };
+
+    return [...this.threatModel.threats].sort((a, b) => {
+      const aSeverity = a.severity ? severityOrder[a.severity] || 0 : 0;
+      const bSeverity = b.severity ? severityOrder[b.severity] || 0 : 0;
+
+      // Sort by severity descending (higher values first)
+      // null/undefined (0) will be at the top
+      if (aSeverity !== bSeverity) {
+        return bSeverity - aSeverity;
+      }
+
+      // If severity is the same, sort by name ascending
+      return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+    });
+  }
+
+  get sortedNotes(): Note[] {
+    if (!this.threatModel?.notes) return [];
+    return [...this.threatModel.notes].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+    );
+  }
+
+  get sortedDocuments(): Document[] {
+    if (!this.threatModel?.documents) return [];
+    return [...this.threatModel.documents].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+    );
+  }
+
+  get sortedRepositories(): Repository[] {
+    if (!this.threatModel?.repositories) return [];
+    return [...this.threatModel.repositories].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+    );
+  }
+
   // Enhanced save behavior properties
   // Simplified form tracking
   private _subscriptions = new Subscription();
