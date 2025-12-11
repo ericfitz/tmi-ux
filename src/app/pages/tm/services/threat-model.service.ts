@@ -674,7 +674,9 @@ export class ThreatModelService implements OnDestroy {
         if (updatedModel) {
           // Transform providers for display (* → tmi) and remove read-only fields
           if (updatedModel.authorization) {
+            const beforeFilter = updatedModel.authorization.length;
             updatedModel.authorization = updatedModel.authorization.map(auth => {
+              const hasDisplayName = 'display_name' in auth;
               const transformed = {
                 ...auth,
                 provider: this.providerAdapter.transformProviderForDisplay(auth.provider),
@@ -682,8 +684,26 @@ export class ThreatModelService implements OnDestroy {
               // Remove display_name which is a server-managed read-only field
               // This prevents it from being accidentally included in subsequent PATCH requests
               delete (transformed as { display_name?: string }).display_name;
+              if (hasDisplayName) {
+                this.logger.info(
+                  `Filtered display_name from PATCH response authorization entry`,
+                  { threatModelId },
+                );
+              }
               return transformed;
             });
+            if (beforeFilter > 0) {
+              this.logger.info(
+                `PATCH response authorization filtering complete`,
+                {
+                  threatModelId,
+                  authCount: beforeFilter,
+                  hasDisplayName: updatedModel.authorization.some(
+                    a => 'display_name' in (a as object),
+                  ),
+                },
+              );
+            }
           }
         }
         return updatedModel;

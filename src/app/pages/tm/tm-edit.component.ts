@@ -2706,15 +2706,31 @@ export class TmEditComponent implements OnInit, OnDestroy {
       updates.status = formValues.status;
     }
 
+    // Runtime safety: Remove authorization/owner if somehow present (should not happen due to type constraint)
+    // This is a defensive measure against runtime object mutations
+    const safeUpdates = updates as Record<string, unknown>;
+    if ('authorization' in safeUpdates) {
+      this.logger.warn('Unexpected authorization field in form auto-save updates - removing it', {
+        updateKeys: Object.keys(safeUpdates),
+      });
+      delete safeUpdates['authorization'];
+    }
+    if ('owner' in safeUpdates) {
+      this.logger.warn('Unexpected owner field in form auto-save updates - removing it', {
+        updateKeys: Object.keys(safeUpdates),
+      });
+      delete safeUpdates['owner'];
+    }
+
     // Log what fields are being updated (INFO level for Heroku debugging)
     this.logger.info('Auto-save PATCH request', {
       threatModelId: this.threatModel.id,
-      updateKeys: Object.keys(updates),
+      updateKeys: Object.keys(safeUpdates),
     });
 
     // Save to server with PATCH (only changed fields)
     this._subscriptions.add(
-      this.threatModelService.patchThreatModel(this.threatModel.id, updates).subscribe({
+      this.threatModelService.patchThreatModel(this.threatModel.id, safeUpdates).subscribe({
         next: result => {
           if (result && this.threatModel) {
             // Update the threat model with server response
