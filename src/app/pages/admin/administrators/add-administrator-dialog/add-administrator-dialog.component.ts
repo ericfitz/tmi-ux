@@ -43,7 +43,7 @@ import { ProviderDisplayComponent } from '@app/shared/components/provider-displa
           <mat-select formControlName="provider" required>
             @for (provider of availableProviders; track provider.id) {
               <mat-option [value]="provider.id">
-                <app-provider-display [provider]="provider.id" />
+                <app-provider-display [providerInfo]="provider" />
               </mat-option>
             }
           </mat-select>
@@ -122,7 +122,7 @@ import { ProviderDisplayComponent } from '@app/shared/components/provider-displa
       }
 
       mat-dialog-actions {
-        padding: 16px 0 0;
+        padding: 16px 24px;
         margin: 0;
       }
     `,
