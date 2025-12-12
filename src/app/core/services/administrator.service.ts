@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import {
@@ -29,13 +29,15 @@ export class AdministratorService {
   /**
    * List all administrators with optional filtering
    */
-  public list(filter?: AdministratorFilter): Observable<Administrator[]> {
+  public list(filter?: AdministratorFilter): Observable<ListAdministratorsResponse> {
     const params = this.buildParams(filter);
     return this.apiService.get<ListAdministratorsResponse>('admin/administrators', params).pipe(
-      map(response => response.administrators),
-      tap(administrators => {
-        this.administratorsSubject$.next(administrators);
-        this.logger.debug('Administrators loaded', { count: administrators.length });
+      tap(response => {
+        this.administratorsSubject$.next(response.administrators);
+        this.logger.debug('Administrators loaded', {
+          count: response.administrators.length,
+          total: response.total,
+        });
       }),
       catchError(error => {
         this.logger.error('Failed to list administrators', error);

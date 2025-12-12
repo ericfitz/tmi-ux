@@ -43,6 +43,7 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
 
   administrators: Administrator[] = [];
   filteredAdministrators: Administrator[] = [];
+  totalAdministrators: number | null = null;
 
   filterText = '';
   loading = false;
@@ -74,11 +75,15 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
       .list()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: administrators => {
-          this.administrators = administrators;
+        next: response => {
+          this.administrators = response.administrators;
+          this.totalAdministrators = response.total;
           this.applyFilter();
           this.loading = false;
-          this.logger.info('Administrators loaded', { count: administrators.length });
+          this.logger.info('Administrators loaded', {
+            count: response.administrators.length,
+            total: response.total,
+          });
         },
         error: error => {
           this.logger.error('Failed to load administrators', error);
@@ -103,10 +108,8 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
       admin =>
         admin.user_email?.toLowerCase().includes(filter) ||
         admin.user_name?.toLowerCase().includes(filter) ||
-        admin.display_name?.toLowerCase().includes(filter) ||
         admin.group_name?.toLowerCase().includes(filter) ||
-        admin.provider.toLowerCase().includes(filter) ||
-        admin.provider_id?.toLowerCase().includes(filter),
+        admin.provider.toLowerCase().includes(filter),
     );
   }
 
@@ -127,8 +130,7 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
   }
 
   onDeleteAdministrator(admin: Administrator): void {
-    const subject =
-      admin.user_email || admin.group_name || admin.display_name || 'this administrator';
+    const subject = admin.user_email || admin.group_name || admin.user_name || 'this administrator';
     const confirmed = confirm(
       `Are you sure you want to remove administrator privileges for ${subject}?`,
     );
@@ -158,10 +160,10 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
   }
 
   getSubjectName(admin: Administrator): string {
-    return admin.user_name || admin.display_name || admin.group_name || '';
+    return admin.user_name || admin.group_name || '';
   }
 
   getSubjectIdentifier(admin: Administrator): string {
-    return admin.user_email || admin.group_name || admin.provider_id || '';
+    return admin.user_email || admin.group_name || '';
   }
 }

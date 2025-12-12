@@ -63,7 +63,7 @@ import { ProviderDisplayComponent } from '@app/shared/components/provider-displa
             required
           />
           <mat-hint [transloco]="'admin.administrators.addDialog.subjectHint'"
-            >Enter user email or group name</mat-hint
+            >Enter user email, provider user ID, or group name</mat-hint
           >
           <mat-error *ngIf="form.get('subject')?.hasError('required')">
             <span [transloco]="'admin.administrators.addDialog.subjectRequired'"
@@ -178,9 +178,14 @@ export class AddAdministratorDialogComponent implements OnInit, OnDestroy {
       const provider = formValue.provider;
       const subject = formValue.subject;
 
+      const fieldType = this.detectFieldType(subject);
       const request: CreateAdministratorRequest = {
         provider,
-        ...(this.isEmail(subject) ? { user_id: subject } : { group_id: subject }),
+        ...(fieldType === 'email'
+          ? { email: subject }
+          : fieldType === 'provider_user_id'
+            ? { provider_user_id: subject }
+            : { group_name: subject }),
       };
 
       this.administratorService
@@ -207,5 +212,22 @@ export class AddAdministratorDialogComponent implements OnInit, OnDestroy {
 
   private isEmail(value: string): boolean {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+
+  private detectFieldType(value: string): 'email' | 'provider_user_id' | 'group_name' {
+    // Email: contains @ symbol
+    if (this.isEmail(value)) {
+      return 'email';
+    }
+
+    // Provider User ID: hexadecimal string with minimum 7 characters
+    // Matches Google (numeric), Microsoft (hex), GitHub (numeric) provider IDs
+    // Examples: "101155414856250184779", "0b7114cb15bf2ea9", "2677124"
+    if (/^[0-9a-fA-F]{7,}$/.test(value)) {
+      return 'provider_user_id';
+    }
+
+    // Group name: everything else (includes short alphanumeric strings)
+    return 'group_name';
   }
 }

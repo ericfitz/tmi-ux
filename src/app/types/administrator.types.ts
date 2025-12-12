@@ -16,10 +16,6 @@ export interface Administrator {
   user_email: string | null;
   /** User name (enriched from user profile) */
   user_name: string | null;
-  /** Display name (enriched from user profile) */
-  display_name: string | null;
-  /** Provider ID from the OAuth provider */
-  provider_id: string | null;
   /** Group ID (if group-based grant) */
   group_id: string | null;
   /** Group name (enriched from group info) */
@@ -32,15 +28,17 @@ export interface Administrator {
 
 /**
  * Request to create a new administrator grant
- * Exactly one of user_id or group_id must be specified
+ * Exactly one of email, provider_user_id, or group_name must be specified
  */
 export interface CreateAdministratorRequest {
   /** OAuth/SAML provider */
   provider: string;
-  /** User ID to grant admin privileges (mutually exclusive with group_id) */
-  user_id?: string;
-  /** Group ID to grant admin privileges (mutually exclusive with user_id) */
-  group_id?: string;
+  /** User email to grant admin privileges (mutually exclusive with provider_user_id and group_name) */
+  email?: string;
+  /** Provider's user ID to grant admin privileges (mutually exclusive with email and group_name) */
+  provider_user_id?: string;
+  /** Group name to grant admin privileges (mutually exclusive with email and provider_user_id) */
+  group_name?: string;
 }
 
 /**
@@ -64,4 +62,5 @@ export interface AdministratorFilter {
  */
 export interface ListAdministratorsResponse {
   administrators: Administrator[];
+  total: number;
 }

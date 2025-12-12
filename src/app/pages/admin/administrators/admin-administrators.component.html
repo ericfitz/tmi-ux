@@ -65,9 +65,6 @@
                   <div class="subject-identifier">{{ getSubjectIdentifier(admin) }}</div>
                   <div class="subject-meta">
                     <span class="provider">{{ admin.provider }}</span>
-                    @if (admin.provider_id) {
-                      <span class="provider-id">{{ admin.provider_id }}</span>
-                    }
                   </div>
                 </div>
               </td>
@@ -107,6 +104,10 @@
           <mat-icon class="no-items-icon">supervisor_account</mat-icon>
           <p [transloco]="'admin.administrators.noAdministrators'">No administrators found</p>
         </div>
+      }
+
+      @if (totalAdministrators !== null) {
+        <div class="total-count">Total administrators: {{ totalAdministrators }}</div>
       }
     </mat-card-content>
   </mat-card>
