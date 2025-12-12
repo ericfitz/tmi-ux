@@ -175,6 +175,14 @@
   }
 }
 
+.total-count {
+  padding: 16px;
+  text-align: right;
+  color: var(--theme-text-secondary);
+  font-size: 14px;
+  border-top: 1px solid var(--theme-divider);
+}
+
 @media (width <= 1200px) {
   .admin-page-container {
     max-width: 100%;
