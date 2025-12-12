@@ -1,0 +1,128 @@
+<h2 mat-dialog-title>
+  <mat-icon>people</mat-icon>
+  <span>{{ getGroupDisplayName() }} Members</span>
+</h2>
+
+<mat-dialog-content>
+  <div class="members-dialog-content">
+    <!-- Add Member Section -->
+    <div class="add-member-section">
+      <h3 [transloco]="'admin.groups.membersDialog.addMember'">Add Member</h3>
+      <mat-form-field class="full-width">
+        <mat-label [transloco]="'admin.groups.membersDialog.searchUser'"
+          >Search User by Email</mat-label
+        >
+        <input
+          matInput
+          [formControl]="userSearchControl"
+          [matAutocomplete]="auto"
+          [placeholder]="'admin.groups.membersDialog.searchPlaceholder' | transloco"
+        />
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          [displayWith]="displayUser"
+          (optionSelected)="onUserSelected($event)"
+        >
+          @for (user of filteredUsers$ | async; track user.internal_uuid) {
+            <mat-option [value]="user">
+              <div class="user-option">
+                <app-provider-display [providerInfo]="getProviderInfo(user.provider)" />
+                <div class="user-details">
+                  <div class="user-name">{{ user.name }}</div>
+                  <div class="user-email">{{ user.email }}</div>
+                </div>
+              </div>
+            </mat-option>
+          }
+        </mat-autocomplete>
+        <mat-hint [transloco]="'admin.groups.membersDialog.searchHint'"
+          >Type at least 2 characters to search</mat-hint
+        >
+      </mat-form-field>
+
+      @if (errorMessage) {
+        <mat-error class="form-error">
+          {{ errorMessage }}
+        </mat-error>
+      }
+    </div>
+
+    <!-- Members List Section -->
+    <div class="members-list-section">
+      <h3 [transloco]="'admin.groups.membersDialog.currentMembers'">Current Members</h3>
+
+      @if (loading) {
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      } @else if (members.length > 0) {
+        <div class="members-table">
+          <table mat-table [dataSource]="members">
+            <!-- Provider Column -->
+            <ng-container matColumnDef="provider">
+              <th mat-header-cell *matHeaderCellDef>Provider</th>
+              <td mat-cell *matCellDef="let member">
+                <app-provider-display [providerInfo]="getProviderInfo(member.provider)" />
+              </td>
+            </ng-container>
+
+            <!-- User Column -->
+            <ng-container matColumnDef="user">
+              <th mat-header-cell *matHeaderCellDef>User</th>
+              <td mat-cell *matCellDef="let member">
+                <div class="user-info">
+                  <div class="user-name">{{ member.name }}</div>
+                  <div class="user-email">{{ member.email }}</div>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Added Column -->
+            <ng-container matColumnDef="added">
+              <th mat-header-cell *matHeaderCellDef>Added</th>
+              <td mat-cell *matCellDef="let member">
+                {{ member.added_at | date: 'short' }}
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let member">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="onRemoveMember(member)"
+                  [matTooltip]="'admin.groups.membersDialog.removeTooltip' | transloco"
+                >
+                  <mat-icon>person_remove</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['provider', 'user', 'added', 'actions']"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: ['provider', 'user', 'added', 'actions']"
+            ></tr>
+          </table>
+        </div>
+
+        @if (totalMembers !== null) {
+          <div class="total-count">Total members: {{ totalMembers }}</div>
+        }
+      } @else {
+        <div class="no-members-message">
+          <mat-icon>person_off</mat-icon>
+          <p [transloco]="'admin.groups.membersDialog.noMembers'">No members in this group</p>
+        </div>
+      }
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" (click)="onClose()">
+    <span [transloco]="'common.close'">Close</span>
+  </button>
+</mat-dialog-actions>

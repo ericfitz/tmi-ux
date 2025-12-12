@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -11,22 +10,21 @@ import {
   FORM_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
-import { AdministratorService } from '@app/core/services/administrator.service';
+import { UserAdminService } from '@app/core/services/user-admin.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
-import { Administrator } from '@app/types/administrator.types';
+import { AdminUser } from '@app/types/user.types';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
-import { AddAdministratorDialogComponent } from './add-administrator-dialog/add-administrator-dialog.component';
 
 /**
- * Administrators Management Component
+ * Users Management Component
  *
- * Displays and manages system administrator grants.
- * Allows adding and removing administrator privileges for users and groups.
+ * Displays and manages system users.
+ * Allows viewing user details and deleting users.
  */
 @Component({
-  selector: 'app-admin-administrators',
+  selector: 'app-admin-users',
   standalone: true,
   imports: [
     ...COMMON_IMPORTS,
@@ -37,32 +35,31 @@ import { AddAdministratorDialogComponent } from './add-administrator-dialog/add-
     TranslocoModule,
     ProviderDisplayComponent,
   ],
-  templateUrl: './admin-administrators.component.html',
-  styleUrl: './admin-administrators.component.scss',
+  templateUrl: './admin-users.component.html',
+  styleUrl: './admin-users.component.scss',
 })
-export class AdminAdministratorsComponent implements OnInit, OnDestroy {
+export class AdminUsersComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private filterSubject$ = new Subject<string>();
 
-  administrators: Administrator[] = [];
-  filteredAdministrators: Administrator[] = [];
-  totalAdministrators: number | null = null;
+  users: AdminUser[] = [];
+  filteredUsers: AdminUser[] = [];
+  totalUsers: number | null = null;
   availableProviders: OAuthProviderInfo[] = [];
 
   filterText = '';
   loading = false;
 
   constructor(
-    private administratorService: AdministratorService,
+    private userAdminService: UserAdminService,
     private router: Router,
-    private dialog: MatDialog,
     private logger: LoggerService,
     private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     this.loadProviders();
-    this.loadAdministrators();
+    this.loadUsers();
 
     this.filterSubject$.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe(() => {
       this.applyFilter();
@@ -85,7 +82,7 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
             client_id: '',
           };
           this.availableProviders = [tmiProvider, ...providers];
-          this.logger.debug('Providers loaded for administrators list', {
+          this.logger.debug('Providers loaded for user list', {
             count: this.availableProviders.length,
           });
         },
@@ -100,24 +97,24 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  loadAdministrators(): void {
+  loadUsers(): void {
     this.loading = true;
-    this.administratorService
+    this.userAdminService
       .list()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: response => {
-          this.administrators = response.administrators;
-          this.totalAdministrators = response.total;
+          this.users = response.users;
+          this.totalUsers = response.total;
           this.applyFilter();
           this.loading = false;
-          this.logger.info('Administrators loaded', {
-            count: response.administrators.length,
+          this.logger.info('Users loaded', {
+            count: response.users.length,
             total: response.total,
           });
         },
         error: error => {
-          this.logger.error('Failed to load administrators', error);
+          this.logger.error('Failed to load users', error);
           this.loading = false;
         },
       });
@@ -131,52 +128,44 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
   applyFilter(): void {
     const filter = this.filterText.toLowerCase().trim();
     if (!filter) {
-      this.filteredAdministrators = [...this.administrators];
+      this.filteredUsers = [...this.users];
       return;
     }
 
-    this.filteredAdministrators = this.administrators.filter(
-      admin =>
-        admin.user_email?.toLowerCase().includes(filter) ||
-        admin.user_name?.toLowerCase().includes(filter) ||
-        admin.group_name?.toLowerCase().includes(filter) ||
-        admin.provider.toLowerCase().includes(filter),
+    this.filteredUsers = this.users.filter(
+      user =>
+        user.email?.toLowerCase().includes(filter) ||
+        user.name?.toLowerCase().includes(filter) ||
+        user.provider.toLowerCase().includes(filter) ||
+        user.groups?.some(group => group.toLowerCase().includes(filter)),
     );
   }
 
-  onAddAdministrator(): void {
-    const dialogRef = this.dialog.open(AddAdministratorDialogComponent, {
-      width: '700px',
-      disableClose: false,
-    });
+  onDeleteUser(user: AdminUser): void {
+    const warningMessage = `Are you sure you want to delete user ${user.email}?
 
-    dialogRef
-      .afterClosed()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(result => {
-        if (result) {
-          this.loadAdministrators();
-        }
-      });
-  }
+This will permanently delete:
+• User identity data (provider ID, name, email)
+• User permissions from all threat models they do not own
+• For threat models owned by this user:
+  - If other owners exist, ownership will transfer to them
+  - If no other owners exist, the threat model and all associated data will be irrevocably deleted
 
-  onDeleteAdministrator(admin: Administrator): void {
-    const subject = admin.user_email || admin.group_name || admin.user_name || 'this administrator';
-    const confirmed = confirm(
-      `Are you sure you want to remove administrator privileges for ${subject}?`,
-    );
+This action cannot be undone.`;
+
+    const confirmed = confirm(warningMessage);
 
     if (confirmed) {
-      this.administratorService
-        .delete(admin.id)
+      this.userAdminService
+        .delete(user.provider, user.provider_user_id)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            this.logger.info('Administrator deleted', { id: admin.id });
-            this.loadAdministrators();
+            this.logger.info('User deleted', { email: user.email });
+            this.loadUsers();
           },
           error: error => {
-            this.logger.error('Failed to delete administrator', error);
+            this.logger.error('Failed to delete user', error);
           },
         });
     }
@@ -190,12 +179,18 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
     }
   }
 
-  getSubjectName(admin: Administrator): string {
-    return admin.user_name || admin.group_name || '';
+  formatGroups(groups: string[] | undefined): string {
+    if (!groups || groups.length === 0) {
+      return 'None';
+    }
+    return groups.join(', ');
   }
 
-  getSubjectIdentifier(admin: Administrator): string {
-    return admin.user_email || admin.group_name || '';
+  formatLastLogin(lastLogin: string | null | undefined): string {
+    if (!lastLogin) {
+      return 'Never';
+    }
+    return lastLogin;
   }
 
   getProviderInfo(providerId: string): OAuthProviderInfo | null {

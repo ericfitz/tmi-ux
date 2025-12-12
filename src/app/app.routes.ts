@@ -99,12 +99,18 @@ export const routes: Routes = [
       },
       {
         path: 'users',
-        redirectTo: '',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-users" */ './pages/admin/users/admin-users.component'
+          ).then(c => c.AdminUsersComponent),
         canActivate: [adminGuard],
       },
       {
         path: 'groups',
-        redirectTo: '',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-groups" */ './pages/admin/groups/admin-groups.component'
+          ).then(c => c.AdminGroupsComponent),
         canActivate: [adminGuard],
       },
       {

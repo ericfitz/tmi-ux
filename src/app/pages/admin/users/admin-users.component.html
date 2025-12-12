@@ -1,0 +1,157 @@
+<div class="admin-page-container">
+  <div class="admin-header">
+    <div class="header-content">
+      <h1 [transloco]="'admin.users.title'">Manage Users</h1>
+      <p class="subtitle" [transloco]="'admin.users.subtitle'">View and manage system users</p>
+    </div>
+    <button
+      mat-icon-button
+      class="close-button"
+      (click)="onClose()"
+      [attr.aria-label]="'common.close' | transloco"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-card class="filter-card">
+    <mat-card-content>
+      <mat-form-field class="filter-field">
+        <mat-label [transloco]="'admin.users.filterLabel'">Filter Users</mat-label>
+        <input
+          matInput
+          [value]="filterText"
+          (input)="onFilterChange($any($event.target).value)"
+          [placeholder]="'admin.users.filterPlaceholder' | transloco"
+        />
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Users Section -->
+  <mat-card class="users-card">
+    <mat-card-header>
+      <mat-card-title [transloco]="'admin.users.listTitle'">Users</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (loading) {
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      } @else if (filteredUsers.length > 0) {
+        <div class="users-table">
+          <table mat-table [dataSource]="filteredUsers">
+            <!-- Provider Column -->
+            <ng-container matColumnDef="provider">
+              <th mat-header-cell *matHeaderCellDef>Provider</th>
+              <td mat-cell *matCellDef="let user">
+                <app-provider-display [providerInfo]="getProviderInfo(user.provider)" />
+              </td>
+            </ng-container>
+
+            <!-- Subject Column -->
+            <ng-container matColumnDef="subject">
+              <th mat-header-cell *matHeaderCellDef>User</th>
+              <td mat-cell *matCellDef="let user">
+                <div class="subject-info">
+                  @if (user.name) {
+                    <div class="subject-name">{{ user.name }}</div>
+                  }
+                  <div class="subject-identifier">{{ user.email }}</div>
+                  @if (user.is_admin) {
+                    <div class="admin-badge">
+                      <mat-icon class="admin-icon">verified_user</mat-icon>
+                      <span>Admin</span>
+                    </div>
+                  }
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Last Login Column -->
+            <ng-container matColumnDef="lastLogin">
+              <th mat-header-cell *matHeaderCellDef>Last Login</th>
+              <td mat-cell *matCellDef="let user">
+                @if (user.last_login) {
+                  {{ user.last_login | date: 'short' }}
+                } @else {
+                  <span class="muted">Never</span>
+                }
+              </td>
+            </ng-container>
+
+            <!-- Groups Column -->
+            <ng-container matColumnDef="groups">
+              <th mat-header-cell *matHeaderCellDef>Groups</th>
+              <td mat-cell *matCellDef="let user">
+                @if (user.groups && user.groups.length > 0) {
+                  <div class="groups-list">
+                    @for (group of user.groups; track group) {
+                      <span class="group-badge">{{ group }}</span>
+                    }
+                  </div>
+                } @else {
+                  <span class="muted">None</span>
+                }
+              </td>
+            </ng-container>
+
+            <!-- Threat Models Column -->
+            <ng-container matColumnDef="threatModels">
+              <th mat-header-cell *matHeaderCellDef>TMs</th>
+              <td mat-cell *matCellDef="let user">
+                {{ user.active_threat_models || 0 }}
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let user">
+                <div class="action-buttons">
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="onDeleteUser(user)"
+                    [matTooltip]="'admin.users.deleteTooltip' | transloco"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr
+              mat-header-row
+              *matHeaderRowDef="[
+                'provider',
+                'subject',
+                'lastLogin',
+                'groups',
+                'threatModels',
+                'actions',
+              ]"
+            ></tr>
+            <tr
+              mat-row
+              *matRowDef="
+                let row;
+                columns: ['provider', 'subject', 'lastLogin', 'groups', 'threatModels', 'actions']
+              "
+            ></tr>
+          </table>
+        </div>
+      } @else {
+        <div class="no-items-message">
+          <mat-icon class="no-items-icon">person</mat-icon>
+          <p [transloco]="'admin.users.noUsers'">No users found</p>
+        </div>
+      }
+
+      @if (totalUsers !== null) {
+        <div class="total-count">Total users: {{ totalUsers }}</div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

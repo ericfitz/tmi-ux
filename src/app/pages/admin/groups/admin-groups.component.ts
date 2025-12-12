@@ -11,22 +11,23 @@ import {
   FORM_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
-import { AdministratorService } from '@app/core/services/administrator.service';
+import { GroupAdminService } from '@app/core/services/group-admin.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
-import { Administrator } from '@app/types/administrator.types';
+import { AdminGroup } from '@app/types/group.types';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
-import { AddAdministratorDialogComponent } from './add-administrator-dialog/add-administrator-dialog.component';
+import { AddGroupDialogComponent } from './add-group-dialog/add-group-dialog.component';
+import { GroupMembersDialogComponent } from './group-members-dialog/group-members-dialog.component';
 
 /**
- * Administrators Management Component
+ * Groups Management Component
  *
- * Displays and manages system administrator grants.
- * Allows adding and removing administrator privileges for users and groups.
+ * Displays and manages system groups.
+ * Allows adding groups, viewing group details, and managing group membership.
  */
 @Component({
-  selector: 'app-admin-administrators',
+  selector: 'app-admin-groups',
   standalone: true,
   imports: [
     ...COMMON_IMPORTS,
@@ -37,23 +38,23 @@ import { AddAdministratorDialogComponent } from './add-administrator-dialog/add-
     TranslocoModule,
     ProviderDisplayComponent,
   ],
-  templateUrl: './admin-administrators.component.html',
-  styleUrl: './admin-administrators.component.scss',
+  templateUrl: './admin-groups.component.html',
+  styleUrl: './admin-groups.component.scss',
 })
-export class AdminAdministratorsComponent implements OnInit, OnDestroy {
+export class AdminGroupsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private filterSubject$ = new Subject<string>();
 
-  administrators: Administrator[] = [];
-  filteredAdministrators: Administrator[] = [];
-  totalAdministrators: number | null = null;
+  groups: AdminGroup[] = [];
+  filteredGroups: AdminGroup[] = [];
+  totalGroups: number | null = null;
   availableProviders: OAuthProviderInfo[] = [];
 
   filterText = '';
   loading = false;
 
   constructor(
-    private administratorService: AdministratorService,
+    private groupAdminService: GroupAdminService,
     private router: Router,
     private dialog: MatDialog,
     private logger: LoggerService,
@@ -62,7 +63,7 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadProviders();
-    this.loadAdministrators();
+    this.loadGroups();
 
     this.filterSubject$.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe(() => {
       this.applyFilter();
@@ -85,7 +86,7 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
             client_id: '',
           };
           this.availableProviders = [tmiProvider, ...providers];
-          this.logger.debug('Providers loaded for administrators list', {
+          this.logger.debug('Providers loaded for group list', {
             count: this.availableProviders.length,
           });
         },
@@ -100,24 +101,24 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  loadAdministrators(): void {
+  loadGroups(): void {
     this.loading = true;
-    this.administratorService
+    this.groupAdminService
       .list()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: response => {
-          this.administrators = response.administrators;
-          this.totalAdministrators = response.total;
+          this.groups = response.groups;
+          this.totalGroups = response.total;
           this.applyFilter();
           this.loading = false;
-          this.logger.info('Administrators loaded', {
-            count: response.administrators.length,
+          this.logger.info('Groups loaded', {
+            count: response.groups.length,
             total: response.total,
           });
         },
         error: error => {
-          this.logger.error('Failed to load administrators', error);
+          this.logger.error('Failed to load groups', error);
           this.loading = false;
         },
       });
@@ -131,21 +132,20 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
   applyFilter(): void {
     const filter = this.filterText.toLowerCase().trim();
     if (!filter) {
-      this.filteredAdministrators = [...this.administrators];
+      this.filteredGroups = [...this.groups];
       return;
     }
 
-    this.filteredAdministrators = this.administrators.filter(
-      admin =>
-        admin.user_email?.toLowerCase().includes(filter) ||
-        admin.user_name?.toLowerCase().includes(filter) ||
-        admin.group_name?.toLowerCase().includes(filter) ||
-        admin.provider.toLowerCase().includes(filter),
+    this.filteredGroups = this.groups.filter(
+      group =>
+        group.group_name?.toLowerCase().includes(filter) ||
+        group.name?.toLowerCase().includes(filter) ||
+        group.provider.toLowerCase().includes(filter),
     );
   }
 
-  onAddAdministrator(): void {
-    const dialogRef = this.dialog.open(AddAdministratorDialogComponent, {
+  onAddGroup(): void {
+    const dialogRef = this.dialog.open(AddGroupDialogComponent, {
       width: '700px',
       disableClose: false,
     });
@@ -155,28 +155,52 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
         if (result) {
-          this.loadAdministrators();
+          this.loadGroups();
         }
       });
   }
 
-  onDeleteAdministrator(admin: Administrator): void {
-    const subject = admin.user_email || admin.group_name || admin.user_name || 'this administrator';
-    const confirmed = confirm(
-      `Are you sure you want to remove administrator privileges for ${subject}?`,
-    );
+  onViewMembers(group: AdminGroup): void {
+    const dialogRef = this.dialog.open(GroupMembersDialogComponent, {
+      width: '900px',
+      disableClose: false,
+      data: { group },
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        // Reload groups in case member count changed
+        this.loadGroups();
+      });
+  }
+
+  onDeleteGroup(group: AdminGroup): void {
+    const groupName = this.getGroupDisplayName(group);
+    const confirmed = confirm(`Are you sure you want to delete the group "${groupName}"?
+
+This action cannot be undone.`);
 
     if (confirmed) {
-      this.administratorService
-        .delete(admin.id)
+      this.groupAdminService
+        .delete(group.internal_uuid)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            this.logger.info('Administrator deleted', { id: admin.id });
-            this.loadAdministrators();
+            this.logger.info('Group deleted', { group_name: group.group_name });
+            this.loadGroups();
           },
-          error: error => {
-            this.logger.error('Failed to delete administrator', error);
+          error: (error: { status?: number; error?: { message?: string } }) => {
+            if (error.status === 501) {
+              alert('Group deletion is not currently supported by the API.');
+            } else {
+              this.logger.error('Failed to delete group', error);
+              alert(
+                error.error?.message ||
+                  'Failed to delete group. Please check the logs for details.',
+              );
+            }
           },
         });
     }
@@ -190,12 +214,12 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
     }
   }
 
-  getSubjectName(admin: Administrator): string {
-    return admin.user_name || admin.group_name || '';
+  getGroupDisplayName(group: AdminGroup): string {
+    return group.name || group.group_name;
   }
 
-  getSubjectIdentifier(admin: Administrator): string {
-    return admin.user_email || admin.group_name || '';
+  getGroupIdentifier(group: AdminGroup): string {
+    return group.group_name;
   }
 
   getProviderInfo(providerId: string): OAuthProviderInfo | null {

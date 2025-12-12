@@ -53,13 +53,13 @@
 }
 
 // Action button icons centering - placed before higher specificity selectors
-.administrators-table .action-buttons button {
+.groups-table .action-buttons button {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.administrators-card {
+.groups-card {
   margin-bottom: 24px;
 
   mat-card-header {
@@ -97,7 +97,7 @@
   padding: 48px 0;
 }
 
-.administrators-table {
+.groups-table {
   width: 100%;
   overflow-x: auto;
 
@@ -116,36 +116,73 @@
     padding: 12px 16px;
   }
 
-  .subject-info {
+  .provider-independent {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--theme-text-secondary);
+    background-color: var(--theme-background-secondary);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .group-info {
     display: flex;
     flex-direction: column;
     gap: 4px;
 
-    .subject-name {
+    .group-name {
       font-weight: 500;
       color: var(--theme-text-primary);
     }
 
-    .subject-identifier {
+    .group-identifier {
+      font-size: 14px;
+      color: var(--theme-text-primary);
+      font-family: monospace;
+    }
+
+    .group-description {
+      font-size: 12px;
+      color: var(--theme-text-secondary);
+      font-style: italic;
+    }
+  }
+
+  .usage-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .usage-count {
       font-size: 14px;
       color: var(--theme-text-primary);
     }
 
-    .subject-meta {
-      display: flex;
-      gap: 12px;
-      font-size: 11px;
-      color: var(--theme-text-secondary);
+    .usage-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      width: fit-content;
 
-      .provider {
-        font-family: monospace;
+      &.authz {
+        background-color: rgb(33 150 243 / 10%);
+        color: rgb(33 150 243);
       }
 
-      .provider-id {
-        font-family: monospace;
-        opacity: 0.7;
+      &.admin {
+        background-color: rgb(255 152 0 / 10%);
+        color: rgb(255 152 0);
       }
     }
+  }
+
+  .muted {
+    color: var(--theme-text-secondary);
+    font-style: italic;
+    font-size: 14px;
   }
 
   .action-buttons {
@@ -175,12 +212,20 @@
   }
 }
 
+.total-count {
+  padding: 16px;
+  text-align: right;
+  color: var(--theme-text-secondary);
+  font-size: 14px;
+  border-top: 1px solid var(--theme-divider);
+}
+
 @media (width <= 1200px) {
   .admin-page-container {
     max-width: 100%;
   }
 
-  .administrators-table {
+  .groups-table {
     th,
     td {
       padding: 8px 12px;
@@ -204,7 +249,7 @@
     }
   }
 
-  .administrators-card {
+  .groups-card {
     mat-card-header {
       flex-direction: column;
       align-items: flex-start;
@@ -222,17 +267,12 @@
     }
   }
 
-  .administrators-table {
+  .groups-table {
     font-size: 12px;
 
     th,
     td {
       padding: 6px 8px;
-    }
-
-    .subject-meta {
-      flex-direction: column;
-      gap: 2px;
     }
   }
 }

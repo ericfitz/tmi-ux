@@ -175,6 +175,51 @@
       },
       "subtitle": "Configure webhook subscriptions for event notifications",
       "title": "Manage Webhooks"
+    },
+    "users": {
+      "deleteTooltip": "Delete user account",
+      "filterLabel": "Filter Users",
+      "filterPlaceholder": "Search by email, name, provider, or group name",
+      "listTitle": "Users",
+      "noUsers": "No users found",
+      "subtitle": "View and manage system users",
+      "title": "Manage Users"
+    },
+    "groups": {
+      "addButton": "Add Group",
+      "addDialog": {
+        "description": "Description (Optional)",
+        "descriptionHint": "Optional description of the group's purpose",
+        "descriptionPlaceholder": "Description of this group",
+        "displayName": "Display Name",
+        "displayNameHint": "Human-readable group name",
+        "displayNamePlaceholder": "My Custom Group",
+        "displayNameRequired": "Display name is required",
+        "groupName": "Group Identifier",
+        "groupNameHint": "Alphanumeric, hyphens, and underscores only",
+        "groupNamePattern": "Only alphanumeric, hyphens, and underscores allowed",
+        "groupNamePlaceholder": "my-custom-group",
+        "groupNameRequired": "Group identifier is required",
+        "save": "Create Group",
+        "title": "Add Group"
+      },
+      "filterLabel": "Filter Groups",
+      "filterPlaceholder": "Search by group name or provider",
+      "listTitle": "Groups",
+      "membersDialog": {
+        "addMember": "Add Member",
+        "currentMembers": "Current Members",
+        "noMembers": "No members in this group",
+        "removeTooltip": "Remove from group",
+        "searchHint": "Type at least 2 characters to search",
+        "searchPlaceholder": "Start typing email address...",
+        "searchUser": "Search User by Email"
+      },
+      "noGroups": "No groups found",
+      "subtitle": "View and manage system groups",
+      "title": "Manage Groups",
+      "viewMembersTooltip": "View and manage group members",
+      "deleteTooltip": "Delete group"
     }
   },
   "assetEditor": {

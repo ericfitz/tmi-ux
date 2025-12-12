@@ -52,14 +52,7 @@
   }
 }
 
-// Action button icons centering - placed before higher specificity selectors
-.administrators-table .action-buttons button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.administrators-card {
+.users-card {
   margin-bottom: 24px;
 
   mat-card-header {
@@ -72,16 +65,6 @@
     mat-card-title {
       flex: 1;
       margin: 0;
-    }
-
-    .header-actions {
-      margin-left: auto;
-
-      button {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
     }
   }
 
@@ -97,7 +80,7 @@
   padding: 48px 0;
 }
 
-.administrators-table {
+.users-table {
   width: 100%;
   overflow-x: auto;
 
@@ -131,27 +114,53 @@
       color: var(--theme-text-primary);
     }
 
-    .subject-meta {
-      display: flex;
-      gap: 12px;
+    .admin-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       font-size: 11px;
-      color: var(--theme-text-secondary);
+      color: var(--theme-primary);
+      margin-top: 2px;
 
-      .provider {
-        font-family: monospace;
-      }
-
-      .provider-id {
-        font-family: monospace;
-        opacity: 0.7;
+      .admin-icon {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
       }
     }
+  }
+
+  .groups-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+
+    .group-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background-color: var(--theme-background-secondary);
+      border-radius: 12px;
+      font-size: 12px;
+      color: var(--theme-text-primary);
+    }
+  }
+
+  .muted {
+    color: var(--theme-text-secondary);
+    font-style: italic;
+    font-size: 14px;
   }
 
   .action-buttons {
     display: flex;
     gap: 4px;
     align-items: center;
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
 
@@ -175,12 +184,20 @@
   }
 }
 
+.total-count {
+  padding: 16px;
+  text-align: right;
+  color: var(--theme-text-secondary);
+  font-size: 14px;
+  border-top: 1px solid var(--theme-divider);
+}
+
 @media (width <= 1200px) {
   .admin-page-container {
     max-width: 100%;
   }
 
-  .administrators-table {
+  .users-table {
     th,
     td {
       padding: 8px 12px;
@@ -204,35 +221,12 @@
     }
   }
 
-  .administrators-card {
-    mat-card-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
-
-      .header-actions {
-        width: 100%;
-        margin-left: 0;
-
-        button {
-          width: 100%;
-          justify-content: center;
-        }
-      }
-    }
-  }
-
-  .administrators-table {
+  .users-table {
     font-size: 12px;
 
     th,
     td {
       padding: 6px 8px;
-    }
-
-    .subject-meta {
-      flex-direction: column;
-      gap: 2px;
     }
   }
 }

@@ -88,7 +88,6 @@ export class ProviderDisplayComponent {
       bitbucket: 'assets/signin-logos/bitbucket-signin-logo.svg',
       apple: 'assets/signin-logos/apple-signin-logo.svg',
       tmi: 'TMI-Logo.svg',
-      test: 'TMI-Logo.svg',
     };
     return logoMap[providerId.toLowerCase()] || null;
   }
@@ -116,7 +115,6 @@ export class ProviderDisplayComponent {
       bitbucket: 'Bitbucket',
       apple: 'Apple',
       tmi: 'TMI',
-      test: 'TMI Test',
     };
 
     // Return special case if exists, otherwise capitalize first letter

@@ -59,11 +59,6 @@ describe('ProviderDisplayComponent', () => {
         expect(component.getProviderLogoPath()).toBe('TMI-Logo.svg');
       });
 
-      it('should return correct path for test', () => {
-        component.provider = 'test';
-        expect(component.getProviderLogoPath()).toBe('TMI-Logo.svg');
-      });
-
       it('should return null for unknown provider', () => {
         component.provider = 'unknown';
         expect(component.getProviderLogoPath()).toBeNull();
@@ -258,9 +253,9 @@ describe('ProviderDisplayComponent', () => {
         expect(component.getProviderName()).toBe('Apple');
       });
 
-      it('should return "TMI Test" for test provider', () => {
-        component.provider = 'test';
-        expect(component.getProviderName()).toBe('TMI Test');
+      it('should return "TMI" for tmi provider', () => {
+        component.provider = 'tmi';
+        expect(component.getProviderName()).toBe('TMI');
       });
 
       it('should capitalize first letter for unknown providers', () => {
