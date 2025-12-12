@@ -21,6 +21,7 @@ import {
   DEFAULT_WEBHOOK_QUOTA,
 } from '@app/types/quota.types';
 import { AddQuotaDialogComponent } from './add-quota-dialog/add-quota-dialog.component';
+import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
 
 interface EditableUserAPIQuota extends EnrichedUserAPIQuota {
   editing: boolean;
@@ -58,6 +59,7 @@ interface EditableWebhookQuota extends EnrichedWebhookQuota {
     ...FORM_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
     TranslocoModule,
+    ProviderDisplayComponent,
   ],
   templateUrl: './admin-quotas.component.html',
   styleUrl: './admin-quotas.component.scss',
@@ -182,7 +184,7 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
 
   onAddQuota(): void {
     const dialogRef = this.dialog.open(AddQuotaDialogComponent, {
-      width: '700px',
+      width: '800px',
       disableClose: false,
     });
 

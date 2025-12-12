@@ -321,14 +321,14 @@ export interface PermissionsDialogData {
       .permissions-dialog {
         width: 100%;
         max-width: 90vw;
-        min-width: 900px;
+        min-width: 1000px;
       }
 
       .permissions-content {
         min-height: 200px;
         max-height: 60vh;
         overflow-y: auto;
-        overflow-x: hidden;
+        overflow-x: auto;
       }
 
       .info-section {
@@ -367,7 +367,7 @@ export interface PermissionsDialogData {
 
       .permissions-table {
         width: 100%;
-        min-width: 900px;
+        min-width: 1000px;
       }
 
       .table-field {

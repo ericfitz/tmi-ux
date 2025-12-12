@@ -114,30 +114,22 @@
     flex-direction: column;
     gap: 4px;
 
-    .user-email {
-      font-weight: 500;
+    .user-name {
+      font-weight: 600;
+      font-size: 14px;
       color: var(--theme-text-primary);
     }
 
-    .user-name {
-      font-size: 12px;
+    .user-email {
+      font-size: 13px;
       color: var(--theme-text-secondary);
     }
 
-    .user-meta {
-      display: flex;
-      gap: 12px;
+    .user-provider-id {
       font-size: 11px;
       color: var(--theme-text-secondary);
-
-      .provider {
-        font-family: monospace;
-      }
-
-      .user-id {
-        font-family: monospace;
-        opacity: 0.7;
-      }
+      font-family: monospace;
+      opacity: 0.8;
     }
   }
 
