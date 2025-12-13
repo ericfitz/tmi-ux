@@ -8,11 +8,16 @@ h2 {
   }
 }
 
+mat-dialog-content {
+  padding: 16px 24px !important;
+  max-width: none !important;
+}
+
 .members-dialog-content {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  min-width: 800px;
+  min-width: 1000px;
   padding: 16px 0;
 }
 
