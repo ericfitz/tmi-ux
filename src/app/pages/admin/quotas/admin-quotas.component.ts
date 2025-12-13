@@ -214,6 +214,7 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
   onAddQuota(): void {
     const dialogRef = this.dialog.open(AddQuotaDialogComponent, {
       width: '800px',
+      maxWidth: '90vw',
       disableClose: false,
     });
 

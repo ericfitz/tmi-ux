@@ -1998,9 +1998,8 @@ export class TmEditComponent implements OnInit, OnDestroy {
     };
 
     const dialogRef = this.dialog.open(PermissionsDialogComponent, {
-      width: '90vw',
-      maxWidth: '800px',
-      minWidth: '500px',
+      width: '1000px',
+      maxWidth: '90vw',
       maxHeight: '80vh',
       data: dialogData,
     });

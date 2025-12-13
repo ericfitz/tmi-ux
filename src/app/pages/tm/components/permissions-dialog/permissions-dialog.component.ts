@@ -320,8 +320,6 @@ export interface PermissionsDialogData {
     `
       .permissions-dialog {
         width: 100%;
-        max-width: 90vw;
-        min-width: 1000px;
       }
 
       .permissions-content {
