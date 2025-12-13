@@ -374,7 +374,7 @@ export interface PermissionsDialogData {
       }
 
       .type-field {
-        min-width: 140px;
+        min-width: 110px;
       }
 
       .provider-field {
@@ -411,8 +411,8 @@ export interface PermissionsDialogData {
 
       /* Column widths */
       .mat-column-principal_type {
-        width: 140px;
-        max-width: 140px;
+        width: 110px;
+        max-width: 110px;
       }
 
       .mat-column-provider {
@@ -426,8 +426,8 @@ export interface PermissionsDialogData {
       }
 
       .mat-column-role {
-        width: 120px;
-        max-width: 120px;
+        width: 100px;
+        max-width: 100px;
       }
 
       .mat-column-actions {
