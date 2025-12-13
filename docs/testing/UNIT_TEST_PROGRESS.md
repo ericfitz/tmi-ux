@@ -1,8 +1,8 @@
 # Unit Test Implementation Progress
 
 **Last Updated:** 2025-12-13
-**Current Status:** 29/40 services complete (72.5% of gap)
-**Token Usage:** ~80k/200k (40% used)
+**Current Status:** 30/40 services complete (75% of gap)
+**Token Usage:** ~116k/200k (58% used)
 
 ## Summary
 
@@ -52,25 +52,25 @@ All internationalization services now have comprehensive unit tests:
 25. ✅ `language.service.ts` - Language switching, direction management, localStorage integration (20 tests)
 26. ✅ `transloco-loader.service.ts` - Translation file loading via HTTP (13 tests)
 
-## Remaining Services (11/40)
+## Remaining Services (10/40)
 
 ### Priority 3: DFD Application Layer (9/11 STARTED)
-**Status:** 3/11 complete
+**Status:** 4/11 complete
 **Complexity:** Medium-High
 **Location:** `src/app/pages/dfd/application/services/`
 
-**Note:** Created shared mock service factories in `test-helpers/mock-services.ts` to reduce duplication across tests. Contains reusable mocks for: LoggerService, AppStateService, AppHistoryService, AppOperationStateManager, AppDiagramService, InfraNodeConfigurationService, InfraX6GraphAdapter, Graph, DfdCollaborationService, InfraDfdWebsocketAdapter, AppDiagramResyncService.
+**Note:** Created shared mock service factories in `test-helpers/mock-services.ts` to reduce duplication across tests. Contains reusable mocks for: LoggerService, AppStateService, AppHistoryService, AppOperationStateManager, AppDiagramService, InfraNodeConfigurationService, InfraX6GraphAdapter, Graph (with batchUpdate), DfdCollaborationService, InfraDfdWebsocketAdapter, AppDiagramResyncService.
 
 27. ✅ `app-export.service.ts` - Export preparation and SVG processing (24 tests)
 28. ✅ `app-svg-optimization.service.ts` - SVG optimization with SVGO (36 tests)
 29. ✅ `app-diagram-loading.service.ts` - Diagram loading coordination with shared mocks (29 tests)
+30. ✅ `app-operation-state-manager.service.ts` - Drag tracking, state management, operation coordination (58 tests)
 - [ ] `app-diagram.service.ts` - Diagram state management
 - [ ] `app-diagram-operation-broadcaster.service.ts` - Operation broadcasting
 - [ ] `app-diagram-resync.service.ts` - Diagram resynchronization
 - [ ] `app-event-handlers.service.ts` - Event handling
 - [ ] `app-history.service.ts` - Undo/redo history (COMPLEX - many dependencies)
 - [ ] `app-operation-rejection-handler.service.ts` - Operation rejection
-- [ ] `app-operation-state-manager.service.ts` - Operation state tracking
 - [ ] `app-state.service.ts` - Application state (COMPLEX - many dependencies)
 
 ### Priority 4: DFD Presentation Layer (4/5 STARTED)
@@ -225,6 +225,7 @@ All test files follow pattern: `{service-name}.spec.ts` alongside source file
 - `src/app/pages/dfd/application/services/app-export.service.spec.ts`
 - `src/app/pages/dfd/application/services/app-svg-optimization.service.spec.ts`
 - `src/app/pages/dfd/application/services/app-diagram-loading.service.spec.ts`
+- `src/app/pages/dfd/application/services/app-operation-state-manager.service.spec.ts`
 - `src/app/pages/dfd/application/services/test-helpers/mock-services.ts` (shared mock factories)
 
 **Priority 6 (I18N Services):**
