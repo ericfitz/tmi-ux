@@ -1,14 +1,14 @@
 # Unit Test Implementation Progress
 
 **Last Updated:** 2025-12-13
-**Current Status:** 24/40 services complete (60% of gap)
-**Token Usage:** ~76k/200k (38% used)
+**Current Status:** 26/40 services complete (65% of gap)
+**Token Usage:** ~111k/200k (56% used)
 
 ## Summary
 
 Implementing unit tests for all services without existing test coverage. Using Vitest with promise-based async patterns (no `done()` callbacks). Following established patterns from completed tests.
 
-## Completed Services (24/40)
+## Completed Services (26/40)
 
 ### Priority 1: Core Services ✓ COMPLETE
 All 10 high-priority core services now have comprehensive unit tests:
@@ -46,7 +46,13 @@ All shared services now have comprehensive unit tests:
 21. ✅ `framework.service.ts` - Framework JSON loading and conversion (18 tests)
 22. ✅ `cell-data-extraction.service.ts` - Cell data extraction from X6 and threat models (24 tests)
 
-## Remaining Services (18/40)
+### Priority 6: I18N Services ✓ COMPLETE (2/2)
+All internationalization services now have comprehensive unit tests:
+
+25. ✅ `language.service.ts` - Language switching, direction management, localStorage integration (20 tests)
+26. ✅ `transloco-loader.service.ts` - Translation file loading via HTTP (13 tests)
+
+## Remaining Services (14/40)
 
 ### Priority 3: DFD Application Layer (11 services)
 **Status:** Not started
@@ -77,13 +83,6 @@ All shared services now have comprehensive unit tests:
 - [ ] `ui-presenter-cursor-display.service.ts` - Complex cursor display with viewport tracking (VERY COMPLEX - defer)
 
 
-### Priority 6: I18N Services (2 services)
-**Status:** Not started
-**Complexity:** Low
-**Location:** `src/app/i18n/`
-
-- [ ] `transloco-loader.service.ts` - Translation loading (NOTE: May already have tests)
-- [ ] `language.service.ts` - Language switching
 
 ## Established Patterns
 
@@ -219,6 +218,10 @@ All test files follow pattern: `{service-name}.spec.ts` alongside source file
 - `src/app/shared/services/form-validation.service.spec.ts`
 - `src/app/shared/services/framework.service.spec.ts`
 - `src/app/shared/services/cell-data-extraction.service.spec.ts`
+
+**Priority 6 (I18N Services):**
+- `src/app/i18n/language.service.spec.ts`
+- `src/app/i18n/transloco-loader.service.spec.ts`
 
 ## Documentation References
 
