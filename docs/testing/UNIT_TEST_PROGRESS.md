@@ -1,8 +1,8 @@
 # Unit Test Implementation Progress
 
 **Last Updated:** 2025-12-13
-**Current Status:** 32/40 services complete (80% of gap)
-**Token Usage:** ~92k/200k (46% used)
+**Current Status:** 33/40 services complete (82.5% of gap)
+**Token Usage:** ~58k/200k (29% used)
 
 ## Summary
 
@@ -55,7 +55,7 @@ All internationalization services now have comprehensive unit tests:
 ## Remaining Services (9/40)
 
 ### Priority 3: DFD Application Layer (9/11 STARTED)
-**Status:** 6/11 complete
+**Status:** 7/11 complete
 **Complexity:** Medium-High
 **Location:** `src/app/pages/dfd/application/services/`
 
@@ -67,8 +67,8 @@ All internationalization services now have comprehensive unit tests:
 30. ✅ `app-operation-state-manager.service.ts` - Drag tracking, state management, operation coordination (58 tests)
 31. ✅ `app-diagram-operation-broadcaster.service.ts` - X6 event broadcasting with filtering (36 tests)
 32. ✅ `app-diagram.service.ts` - Diagram data loading, batch processing, WebSocket/REST saving (31 tests)
+33. ✅ `app-event-handlers.service.ts` - Event handling, keyboard events, context menus, label editing (49 tests)
 - [ ] `app-diagram-resync.service.ts` - Diagram resynchronization
-- [ ] `app-event-handlers.service.ts` - Event handling
 - [ ] `app-history.service.ts` - Undo/redo history (COMPLEX - many dependencies)
 - [ ] `app-operation-rejection-handler.service.ts` - Operation rejection
 - [ ] `app-state.service.ts` - Application state (COMPLEX - many dependencies)
@@ -228,6 +228,7 @@ All test files follow pattern: `{service-name}.spec.ts` alongside source file
 - `src/app/pages/dfd/application/services/app-operation-state-manager.service.spec.ts`
 - `src/app/pages/dfd/application/services/app-diagram-operation-broadcaster.service.spec.ts`
 - `src/app/pages/dfd/application/services/app-diagram.service.spec.ts`
+- `src/app/pages/dfd/application/services/app-event-handlers.service.spec.ts`
 - `src/app/pages/dfd/application/services/test-helpers/mock-services.ts` (shared mock factories)
 
 **Priority 6 (I18N Services):**
