@@ -260,10 +260,7 @@ describe('AdministratorService', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
       service.create(mockCreateRequest).subscribe(admin => {
-        expect(mockApiService.post).toHaveBeenCalledWith(
-          'admin/administrators',
-          mockCreateRequest,
-        );
+        expect(mockApiService.post).toHaveBeenCalledWith('admin/administrators', mockCreateRequest);
         expect(admin).toEqual(mockAdministrator);
       });
     });

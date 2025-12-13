@@ -131,10 +131,7 @@ describe('QuotaService', () => {
       mockApiService.put.mockReturnValue(of(mockUserAPIQuota));
 
       service.updateUserAPIQuota(testUserId, updateData).subscribe(quota => {
-        expect(mockApiService.put).toHaveBeenCalledWith(
-          '/admin/quotas/users/user-123',
-          updateData,
-        );
+        expect(mockApiService.put).toHaveBeenCalledWith('/admin/quotas/users/user-123', updateData);
         expect(quota).toEqual(mockUserAPIQuota);
       });
     });
