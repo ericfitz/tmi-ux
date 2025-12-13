@@ -10,10 +10,7 @@ import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import {
-  ServerConnectionService,
-  ServerConnectionStatus,
-} from './server-connection.service';
+import { ServerConnectionService, ServerConnectionStatus } from './server-connection.service';
 import { LoggerService } from './logger.service';
 
 // Mock environment
