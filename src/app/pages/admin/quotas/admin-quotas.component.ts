@@ -20,6 +20,7 @@ import {
   DEFAULT_USER_API_QUOTA,
   DEFAULT_WEBHOOK_QUOTA,
 } from '@app/types/quota.types';
+import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import { AddQuotaDialogComponent } from './add-quota-dialog/add-quota-dialog.component';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
 
@@ -72,6 +73,7 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
   webhookQuotas: EditableWebhookQuota[] = [];
   filteredUserAPIQuotas: EditableUserAPIQuota[] = [];
   filteredWebhookQuotas: EditableWebhookQuota[] = [];
+  availableProviders: OAuthProviderInfo[] = [];
 
   filterText = '';
   loadingUserAPI = false;
@@ -89,11 +91,38 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.loadProviders();
     this.loadAllQuotas();
 
     this.filterSubject$.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe(() => {
       this.applyFilter();
     });
+  }
+
+  loadProviders(): void {
+    this.authService
+      .getAvailableProviders()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: providers => {
+          // Add hardcoded TMI provider at the beginning
+          const tmiProvider: OAuthProviderInfo = {
+            id: 'tmi',
+            name: 'TMI',
+            icon: 'TMI-Logo.svg',
+            auth_url: '',
+            redirect_uri: '',
+            client_id: '',
+          };
+          this.availableProviders = [tmiProvider, ...providers];
+          this.logger.debug('Providers loaded for quotas list', {
+            count: this.availableProviders.length,
+          });
+        },
+        error: error => {
+          this.logger.error('Failed to load providers', error);
+        },
+      });
   }
 
   ngOnDestroy(): void {
@@ -318,6 +347,10 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
           },
         });
     }
+  }
+
+  getProviderInfo(providerId: string): OAuthProviderInfo | null {
+    return this.availableProviders.find(p => p.id === providerId) || null;
   }
 
   onClose(): void {
