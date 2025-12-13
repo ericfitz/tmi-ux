@@ -8,9 +8,9 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
-import { RendererFactory2, Renderer2 } from '@angular/core';
+import { RendererFactory2 } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { ThemeService, ThemeMode, PaletteType, ThemePreferences } from './theme.service';
+import { ThemeService, ThemePreferences } from './theme.service';
 
 describe('ThemeService', () => {
   let service: ThemeService;
@@ -377,27 +377,31 @@ describe('ThemeService', () => {
   describe('System Theme Changes', () => {
     it('should react to system theme changes in automatic mode', () => {
       // Capture the change handler before any mode changes
-      const changeHandler = mockMediaQueryList.addEventListener.mock.calls[0][1] as Function;
+      const changeHandler = mockMediaQueryList.addEventListener.mock.calls[0][1] as (
+        event: MediaQueryListEvent,
+      ) => void;
 
       service.setThemeMode('automatic');
 
       // Trigger system theme change
       mockMediaQueryList.matches = true;
-      changeHandler(new Event('change') as any);
+      changeHandler(new Event('change') as MediaQueryListEvent);
 
       expect(mockRenderer.addClass).toHaveBeenCalledWith(document.body, 'dark-theme');
     });
 
     it('should not react to system theme changes in light mode', () => {
       // Capture the change handler before clearing mocks
-      const changeHandler = mockMediaQueryList.addEventListener.mock.calls[0][1] as Function;
+      const changeHandler = mockMediaQueryList.addEventListener.mock.calls[0][1] as (
+        event: MediaQueryListEvent,
+      ) => void;
 
       service.setThemeMode('light');
       vi.clearAllMocks();
 
       // Trigger system theme change
       mockMediaQueryList.matches = true;
-      changeHandler(new Event('change') as any);
+      changeHandler(new Event('change') as MediaQueryListEvent);
 
       // Should not add dark class since mode is explicitly light
       expect(mockRenderer.addClass).not.toHaveBeenCalledWith(document.body, 'dark-theme');
@@ -405,14 +409,16 @@ describe('ThemeService', () => {
 
     it('should not react to system theme changes in dark mode', () => {
       // Capture the change handler before clearing mocks
-      const changeHandler = mockMediaQueryList.addEventListener.mock.calls[0][1] as Function;
+      const changeHandler = mockMediaQueryList.addEventListener.mock.calls[0][1] as (
+        event: MediaQueryListEvent,
+      ) => void;
 
       service.setThemeMode('dark');
       vi.clearAllMocks();
 
       // Trigger system theme change
       mockMediaQueryList.matches = false;
-      changeHandler(new Event('change') as any);
+      changeHandler(new Event('change') as MediaQueryListEvent);
 
       // Should still have dark class since mode is explicitly dark
       expect(mockRenderer.removeClass).not.toHaveBeenCalledWith(document.body, 'dark-theme');

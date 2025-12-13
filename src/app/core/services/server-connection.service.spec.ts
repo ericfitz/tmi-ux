@@ -13,7 +13,6 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import {
   ServerConnectionService,
   ServerConnectionStatus,
-  DetailedConnectionStatus,
 } from './server-connection.service';
 import { LoggerService } from './logger.service';
 
