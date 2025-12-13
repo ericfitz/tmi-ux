@@ -163,6 +163,7 @@ export class AdminGroupsComponent implements OnInit, OnDestroy {
   onViewMembers(group: AdminGroup): void {
     const dialogRef = this.dialog.open(GroupMembersDialogComponent, {
       width: '1100px',
+      maxWidth: '90vw',
       disableClose: false,
       data: { group },
     });
