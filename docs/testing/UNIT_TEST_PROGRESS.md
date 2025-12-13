@@ -1,14 +1,14 @@
 # Unit Test Implementation Progress
 
-**Last Updated:** 2025-12-12
-**Current Status:** 16/40 services complete (40% of gap)
-**Token Usage:** ~100k/200k (50% used)
+**Last Updated:** 2025-12-13
+**Current Status:** 24/40 services complete (60% of gap)
+**Token Usage:** ~76k/200k (38% used)
 
 ## Summary
 
 Implementing unit tests for all services without existing test coverage. Using Vitest with promise-based async patterns (no `done()` callbacks). Following established patterns from completed tests.
 
-## Completed Services (16/40)
+## Completed Services (24/40)
 
 ### Priority 1: Core Services ✓ COMPLETE
 All 10 high-priority core services now have comprehensive unit tests:
@@ -38,7 +38,15 @@ All straightforward TM services now have comprehensive unit tests:
 - `threat-model-report.service.ts` - PDF generation (complex with pdf-lib)
 - `import-orchestrator.service.ts` - Import coordination (many dependencies)
 
-## Remaining Services (24/40)
+### Priority 5: Shared Services ✓ COMPLETE (4/4)
+All shared services now have comprehensive unit tests:
+
+19. ✅ `notification.service.ts` - MatSnackBar notifications with spam prevention (25 tests)
+20. ✅ `form-validation.service.ts` - Form validation with multiple validators (51 tests)
+21. ✅ `framework.service.ts` - Framework JSON loading and conversion (18 tests)
+22. ✅ `cell-data-extraction.service.ts` - Cell data extraction from X6 and threat models (24 tests)
+
+## Remaining Services (18/40)
 
 ### Priority 3: DFD Application Layer (11 services)
 **Status:** Not started
@@ -57,26 +65,17 @@ All straightforward TM services now have comprehensive unit tests:
 - [ ] `app-state.service.ts` - Application state
 - [ ] `app-svg-optimization.service.ts` - SVG optimization
 
-### Priority 4: DFD Presentation Layer (5 services)
-**Status:** Not started
+### Priority 4: DFD Presentation Layer (4/5 STARTED)
+**Status:** 4/5 complete
 **Complexity:** Low-Medium
 **Location:** `src/app/pages/dfd/presentation/services/`
 
-- [ ] `ui-presenter-coordinator.service.ts` - Presenter coordination
-- [ ] `ui-presenter-cursor-display.service.ts` - Cursor display
-- [ ] `ui-presenter-cursor.service.ts` - Cursor management
-- [ ] `ui-presenter-selection.service.ts` - Selection display
-- [ ] `ui-tooltip.service.ts` - Tooltip management
+17. ✅ `ui-tooltip.service.ts` - Tooltip content and positioning (42 tests)
+18. ✅ `ui-presenter-coordinator.service.ts` - Presenter coordination with WebSocket (32 tests)
+23. ✅ `ui-presenter-cursor.service.ts` - Mouse tracking, broadcasting, coordinate conversion (17 tests)
+24. ✅ `ui-presenter-selection.service.ts` - Selection broadcasting and synchronization (21 tests)
+- [ ] `ui-presenter-cursor-display.service.ts` - Complex cursor display with viewport tracking (VERY COMPLEX - defer)
 
-### Priority 5: Shared Services (4 services)
-**Status:** Not started
-**Complexity:** Low
-**Location:** `src/app/shared/services/`
-
-- [ ] `notification.service.ts` - User notifications
-- [ ] `dialog.service.ts` - Dialog management
-- [ ] `breadcrumb.service.ts` - Breadcrumb navigation
-- [ ] `title.service.ts` - Page title management
 
 ### Priority 6: I18N Services (2 services)
 **Status:** Not started
@@ -208,6 +207,18 @@ All test files follow pattern: `{service-name}.spec.ts` alongside source file
 - `src/app/pages/tm/services/import/reference-rewriter.service.spec.ts`
 - `src/app/pages/tm/services/providers/authorization-prepare.service.spec.ts`
 - `src/app/pages/tm/services/providers/provider-adapter.service.spec.ts`
+
+**Priority 4 (DFD Presentation Layer):**
+- `src/app/pages/dfd/presentation/services/ui-tooltip.service.spec.ts`
+- `src/app/pages/dfd/presentation/services/ui-presenter-coordinator.service.spec.ts`
+- `src/app/pages/dfd/presentation/services/ui-presenter-cursor.service.spec.ts`
+- `src/app/pages/dfd/presentation/services/ui-presenter-selection.service.spec.ts`
+
+**Priority 5 (Shared Services):**
+- `src/app/shared/services/notification.service.spec.ts`
+- `src/app/shared/services/form-validation.service.spec.ts`
+- `src/app/shared/services/framework.service.spec.ts`
+- `src/app/shared/services/cell-data-extraction.service.spec.ts`
 
 ## Documentation References
 
