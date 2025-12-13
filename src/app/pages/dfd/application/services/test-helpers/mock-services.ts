@@ -124,6 +124,7 @@ export function createMockGraph() {
     centerContent: vi.fn(),
     on: vi.fn(),
     off: vi.fn(),
+    batchUpdate: vi.fn((callback: () => any) => callback()),
   };
 }
 
