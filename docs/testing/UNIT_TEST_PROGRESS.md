@@ -1,8 +1,8 @@
 # Unit Test Implementation Progress
 
 **Last Updated:** 2025-12-13
-**Current Status:** 27/40 services complete (68% of gap)
-**Token Usage:** ~91k/200k (46% used)
+**Current Status:** 28/40 services complete (70% of gap)
+**Token Usage:** ~116k/200k (58% used)
 
 ## Summary
 
@@ -52,14 +52,15 @@ All internationalization services now have comprehensive unit tests:
 25. ✅ `language.service.ts` - Language switching, direction management, localStorage integration (20 tests)
 26. ✅ `transloco-loader.service.ts` - Translation file loading via HTTP (13 tests)
 
-## Remaining Services (13/40)
+## Remaining Services (12/40)
 
-### Priority 3: DFD Application Layer (10/11 STARTED)
-**Status:** 1/11 complete
+### Priority 3: DFD Application Layer (9/11 STARTED)
+**Status:** 2/11 complete
 **Complexity:** Medium-High
 **Location:** `src/app/pages/dfd/application/services/`
 
 27. ✅ `app-export.service.ts` - Export preparation and SVG processing (24 tests)
+28. ✅ `app-svg-optimization.service.ts` - SVG optimization with SVGO (36 tests)
 - [ ] `app-diagram.service.ts` - Diagram state management
 - [ ] `app-diagram-loading.service.ts` - Diagram loading coordination
 - [ ] `app-diagram-operation-broadcaster.service.ts` - Operation broadcasting
@@ -69,7 +70,6 @@ All internationalization services now have comprehensive unit tests:
 - [ ] `app-operation-rejection-handler.service.ts` - Operation rejection
 - [ ] `app-operation-state-manager.service.ts` - Operation state tracking
 - [ ] `app-state.service.ts` - Application state (COMPLEX - many dependencies)
-- [ ] `app-svg-optimization.service.ts` - SVG optimization with SVGO
 
 ### Priority 4: DFD Presentation Layer (4/5 STARTED)
 **Status:** 4/5 complete
@@ -221,6 +221,7 @@ All test files follow pattern: `{service-name}.spec.ts` alongside source file
 
 **Priority 3 (DFD Application Layer):**
 - `src/app/pages/dfd/application/services/app-export.service.spec.ts`
+- `src/app/pages/dfd/application/services/app-svg-optimization.service.spec.ts`
 
 **Priority 6 (I18N Services):**
 - `src/app/i18n/language.service.spec.ts`
