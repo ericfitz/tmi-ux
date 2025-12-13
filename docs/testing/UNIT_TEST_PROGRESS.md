@@ -1,8 +1,8 @@
 # Unit Test Implementation Progress
 
 **Last Updated:** 2025-12-13
-**Current Status:** 28/40 services complete (70% of gap)
-**Token Usage:** ~116k/200k (58% used)
+**Current Status:** 29/40 services complete (72.5% of gap)
+**Token Usage:** ~80k/200k (40% used)
 
 ## Summary
 
@@ -52,17 +52,19 @@ All internationalization services now have comprehensive unit tests:
 25. ✅ `language.service.ts` - Language switching, direction management, localStorage integration (20 tests)
 26. ✅ `transloco-loader.service.ts` - Translation file loading via HTTP (13 tests)
 
-## Remaining Services (12/40)
+## Remaining Services (11/40)
 
 ### Priority 3: DFD Application Layer (9/11 STARTED)
-**Status:** 2/11 complete
+**Status:** 3/11 complete
 **Complexity:** Medium-High
 **Location:** `src/app/pages/dfd/application/services/`
 
+**Note:** Created shared mock service factories in `test-helpers/mock-services.ts` to reduce duplication across tests. Contains reusable mocks for: LoggerService, AppStateService, AppHistoryService, AppOperationStateManager, AppDiagramService, InfraNodeConfigurationService, InfraX6GraphAdapter, Graph, DfdCollaborationService, InfraDfdWebsocketAdapter, AppDiagramResyncService.
+
 27. ✅ `app-export.service.ts` - Export preparation and SVG processing (24 tests)
 28. ✅ `app-svg-optimization.service.ts` - SVG optimization with SVGO (36 tests)
+29. ✅ `app-diagram-loading.service.ts` - Diagram loading coordination with shared mocks (29 tests)
 - [ ] `app-diagram.service.ts` - Diagram state management
-- [ ] `app-diagram-loading.service.ts` - Diagram loading coordination
 - [ ] `app-diagram-operation-broadcaster.service.ts` - Operation broadcasting
 - [ ] `app-diagram-resync.service.ts` - Diagram resynchronization
 - [ ] `app-event-handlers.service.ts` - Event handling
@@ -222,6 +224,8 @@ All test files follow pattern: `{service-name}.spec.ts` alongside source file
 **Priority 3 (DFD Application Layer):**
 - `src/app/pages/dfd/application/services/app-export.service.spec.ts`
 - `src/app/pages/dfd/application/services/app-svg-optimization.service.spec.ts`
+- `src/app/pages/dfd/application/services/app-diagram-loading.service.spec.ts`
+- `src/app/pages/dfd/application/services/test-helpers/mock-services.ts` (shared mock factories)
 
 **Priority 6 (I18N Services):**
 - `src/app/i18n/language.service.spec.ts`
