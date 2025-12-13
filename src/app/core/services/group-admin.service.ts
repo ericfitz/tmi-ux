@@ -159,7 +159,8 @@ export class GroupAdminService {
 
   /**
    * Delete a group by internal UUID
-   * Note: API may return 501 Not Implemented
+   * Deletes a TMI-managed group and handles threat model cleanup.
+   * Protected groups like 'everyone' cannot be deleted.
    */
   public delete(internal_uuid: string): Observable<void> {
     return this.apiService.delete<void>(`admin/groups/${internal_uuid}`).pipe(

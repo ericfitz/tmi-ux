@@ -157,7 +157,7 @@ This action cannot be undone.`;
 
     if (confirmed) {
       this.userAdminService
-        .delete(user.provider, user.provider_user_id)
+        .delete(user.internal_uuid)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {

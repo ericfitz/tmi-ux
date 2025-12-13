@@ -42,18 +42,14 @@ export class UserAdminService {
   }
 
   /**
-   * Delete a user by provider and provider_user_id
+   * Delete a user by internal UUID
    * Deletes a user and all associated data.
    * Transfers sole-owned threat models or deletes them if no other owners exist.
    */
-  public delete(provider: string, provider_user_id: string): Observable<void> {
-    const params = {
-      provider,
-      provider_user_id,
-    };
-    return this.apiService.deleteWithParams<void>('admin/users', params).pipe(
+  public delete(internal_uuid: string): Observable<void> {
+    return this.apiService.delete<void>(`admin/users/${internal_uuid}`).pipe(
       tap(() => {
-        this.logger.info('User deleted', { provider, provider_user_id });
+        this.logger.info('User deleted', { internal_uuid });
         // Refresh the users list
         this.list().subscribe();
       }),
