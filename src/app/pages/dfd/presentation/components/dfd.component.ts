@@ -52,6 +52,7 @@ import { AppDiagramLoadingService } from '../../application/services/app-diagram
 import { AppDiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
 import { AppRemoteOperationHandler } from '../../application/services/app-remote-operation-handler.service';
 import { AppHistoryService } from '../../application/services/app-history.service';
+import { AppCellOperationConverterService } from '../../application/services/app-cell-operation-converter.service';
 import { AppGraphOperationManager } from '../../application/services/app-graph-operation-manager.service';
 import { AppPersistenceCoordinator } from '../../application/services/app-persistence-coordinator.service';
 import { AppDiagramResyncService } from '../../application/services/app-diagram-resync.service';
@@ -151,6 +152,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     AppDiagramOperationBroadcaster, // Operation broadcaster service
     AppRemoteOperationHandler, // Remote operation handler service
     AppHistoryService, // Custom history service for undo/redo
+    AppCellOperationConverterService, // Cell-to-operation converter service
     AppGraphOperationManager, // Operation manager service
     AppPersistenceCoordinator, // Simplified persistence coordination service
     AppDiagramResyncService, // Diagram resync service (changed from root to component-scoped)

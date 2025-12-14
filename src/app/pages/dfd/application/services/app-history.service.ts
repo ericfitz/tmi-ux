@@ -12,7 +12,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, throwError, of, forkJoin } from 'rxjs';
 import { map, catchError, tap, finalize } from 'rxjs/operators';
-import { v4 as uuidv4 } from 'uuid';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
@@ -20,6 +19,7 @@ import { AppGraphOperationManager } from './app-graph-operation-manager.service'
 import { AppDiagramOperationBroadcaster } from './app-diagram-operation-broadcaster.service';
 import { AppPersistenceCoordinator } from './app-persistence-coordinator.service';
 import { AppStateService } from './app-state.service';
+import { AppCellOperationConverterService } from './app-cell-operation-converter.service';
 import {
   HistoryEntry,
   HistoryState,
@@ -29,19 +29,11 @@ import {
   DEFAULT_HISTORY_CONFIG,
   createEmptyHistoryState,
 } from '../../types/history.types';
-import { Cell } from '../../../../core/types/websocket-message.types';
 import {
   GraphOperation,
   OperationContext,
   OperationResult,
-  CreateNodeOperation,
-  UpdateNodeOperation,
-  CreateEdgeOperation,
-  UpdateEdgeOperation,
-  NodeData,
 } from '../../types/graph-operation.types';
-import { EdgeInfo } from '../../domain/value-objects/edge-info';
-import { normalizeCell } from '../../utils/cell-normalization.util';
 
 @Injectable()
 export class AppHistoryService implements OnDestroy {
@@ -76,6 +68,7 @@ export class AppHistoryService implements OnDestroy {
     private readonly diagramOperationBroadcaster: AppDiagramOperationBroadcaster,
     private readonly persistenceCoordinator: AppPersistenceCoordinator,
     private readonly appStateService: AppStateService,
+    private readonly cellOperationConverter: AppCellOperationConverterService,
   ) {
     this._config = { ...DEFAULT_HISTORY_CONFIG };
     this._historyState = createEmptyHistoryState(this._config.maxHistorySize);
@@ -252,7 +245,7 @@ export class AppHistoryService implements OnDestroy {
     this.appStateService.setApplyingUndoRedo(true);
 
     // Convert previous cells to operations
-    const operations = this._convertCellsToOperations(
+    const operations = this.cellOperationConverter.convertCellsToOperations(
       entry.previousCells,
       entry.cells,
       'undo-redo',
@@ -343,7 +336,7 @@ export class AppHistoryService implements OnDestroy {
     this.appStateService.setApplyingUndoRedo(true);
 
     // Convert cells to operations
-    const operations = this._convertCellsToOperations(
+    const operations = this.cellOperationConverter.convertCellsToOperations(
       entry.cells,
       entry.previousCells,
       'undo-redo',
@@ -548,291 +541,6 @@ export class AppHistoryService implements OnDestroy {
       timestamp: Date.now(),
       changeType,
     });
-  }
-
-  /**
-   * Convert Cell[] to GraphOperation[]
-   * Handles additions, updates, and deletions by comparing cells and previousCells
-   */
-  private _convertCellsToOperations(
-    cells: Cell[],
-    previousCells: Cell[],
-    source: 'user-interaction' | 'undo-redo',
-  ): GraphOperation[] {
-    const operations: GraphOperation[] = [];
-
-    // Handle additions and updates (cells in target state)
-    cells.forEach(cell => {
-      const previousCell = previousCells.find(c => c.id === cell.id);
-      const operation = this._convertCellToOperation(cell, previousCell, source);
-
-      if (operation) {
-        operations.push(operation);
-      }
-    });
-
-    // Handle deletions (cells in previous state but not in target state)
-    previousCells.forEach(previousCell => {
-      const cell = cells.find(c => c.id === previousCell.id);
-      if (!cell) {
-        // This cell needs to be deleted
-        const deleteOperation = this._createDeleteOperation(previousCell, source);
-        if (deleteOperation) {
-          operations.push(deleteOperation);
-        }
-      }
-    });
-
-    return operations;
-  }
-
-  /**
-   * Convert a single Cell to GraphOperation
-   */
-  private _convertCellToOperation(
-    cell: Cell,
-    previousCell: Cell | undefined,
-    source: 'user-interaction' | 'undo-redo',
-  ): GraphOperation | null {
-    const baseOperation = {
-      id: uuidv4(),
-      source,
-      priority: 'normal' as const,
-      timestamp: Date.now(),
-    };
-
-    const isNode = cell.shape !== 'edge';
-
-    // Determine operation type based on cell presence
-    if (!previousCell) {
-      // Cell was added
-      if (isNode) {
-        return this._createNodeOperation(cell, baseOperation);
-      } else {
-        return this._createEdgeOperation(cell, baseOperation);
-      }
-    } else {
-      // Cell was updated
-      if (isNode) {
-        return this._updateNodeOperation(cell, previousCell, baseOperation);
-      } else {
-        return this._updateEdgeOperation(cell, previousCell, baseOperation);
-      }
-    }
-  }
-
-  /**
-   * Create node operation from cell
-   */
-  private _createNodeOperation(
-    cell: Cell,
-    baseOperation: Partial<GraphOperation>,
-  ): CreateNodeOperation {
-    // Normalize cell to remove visual-only properties (filter effects, tools)
-    const normalizedCell = normalizeCell(cell);
-
-    // Extract label from X6 native attrs structure
-    const label =
-      normalizedCell.attrs &&
-      typeof normalizedCell.attrs === 'object' &&
-      'text' in normalizedCell.attrs
-        ? (normalizedCell.attrs as any).text?.text
-        : undefined;
-
-    const nodeData: NodeData = {
-      id: normalizedCell.id,
-      nodeType: normalizedCell.shape,
-      position: normalizedCell.position,
-      size: normalizedCell.size,
-      label: typeof label === 'string' ? label : undefined,
-      style: normalizedCell.attrs as Record<string, any>,
-      properties: {
-        ...(normalizedCell as Record<string, any>),
-        // Include additional X6 properties that may not be in our explicit fields
-        ports: (normalizedCell as any).ports,
-        data: (normalizedCell as any).data,
-        visible: (normalizedCell as any).visible,
-        zIndex: (normalizedCell as any).zIndex,
-      },
-    };
-
-    return {
-      ...baseOperation,
-      type: 'create-node',
-      nodeData,
-    } as CreateNodeOperation;
-  }
-
-  /**
-   * Update node operation from cell
-   */
-  private _updateNodeOperation(
-    cell: Cell,
-    previousCell: Cell,
-    baseOperation: Partial<GraphOperation>,
-  ): UpdateNodeOperation {
-    // Normalize cell to remove visual-only properties (filter effects, tools)
-    const normalizedCell = normalizeCell(cell);
-
-    // Extract label from X6 native attrs structure
-    const label =
-      normalizedCell.attrs &&
-      typeof normalizedCell.attrs === 'object' &&
-      'text' in normalizedCell.attrs
-        ? (normalizedCell.attrs as any).text?.text
-        : undefined;
-
-    const nodeData: Partial<NodeData> = {
-      id: normalizedCell.id,
-      nodeType: normalizedCell.shape,
-      position: normalizedCell.position,
-      size: normalizedCell.size,
-      label: typeof label === 'string' ? label : undefined,
-      style: normalizedCell.attrs as Record<string, any>,
-      properties: {
-        ...(normalizedCell as Record<string, any>),
-        // Include additional X6 properties that may not be in our explicit fields
-        ports: (normalizedCell as any).ports,
-        data: (normalizedCell as any).data,
-        visible: (normalizedCell as any).visible,
-        zIndex: (normalizedCell as any).zIndex,
-      },
-    };
-
-    return {
-      ...baseOperation,
-      type: 'update-node',
-      nodeId: normalizedCell.id,
-      updates: nodeData,
-    } as UpdateNodeOperation;
-  }
-
-  /**
-   * Create edge operation from cell
-   */
-  private _createEdgeOperation(
-    cell: Cell,
-    baseOperation: Partial<GraphOperation>,
-  ): CreateEdgeOperation {
-    // Normalize cell to remove visual-only properties (filter effects, tools)
-    const normalizedCell = normalizeCell(cell);
-
-    // Extract source and target node IDs for legacy field support
-    const sourceNodeId =
-      typeof normalizedCell.source === 'object' && normalizedCell.source !== null
-        ? (normalizedCell.source as any).cell
-        : '';
-    const targetNodeId =
-      typeof normalizedCell.target === 'object' && normalizedCell.target !== null
-        ? (normalizedCell.target as any).cell
-        : '';
-    const sourcePortId =
-      typeof normalizedCell.source === 'object' && normalizedCell.source !== null
-        ? (normalizedCell.source as any).port
-        : undefined;
-    const targetPortId =
-      typeof normalizedCell.target === 'object' && normalizedCell.target !== null
-        ? (normalizedCell.target as any).port
-        : undefined;
-
-    // Use EdgeInfo.fromJSON to handle both new and legacy format
-    const edgeInfo = EdgeInfo.fromJSON({
-      id: normalizedCell.id,
-      source: normalizedCell.source as any,
-      target: normalizedCell.target as any,
-      sourceNodeId,
-      targetNodeId,
-      sourcePortId,
-      targetPortId,
-      vertices: (normalizedCell as any).vertices || [],
-      attrs: normalizedCell.attrs as Record<string, any>,
-      labels: (normalizedCell as any).labels || [],
-      // Include additional X6 properties
-      connector: (normalizedCell as any).connector,
-      router: (normalizedCell as any).router,
-      zIndex: (normalizedCell as any).zIndex,
-      data: (normalizedCell as any).data,
-    });
-
-    return {
-      ...baseOperation,
-      type: 'create-edge',
-      edgeInfo,
-      sourceNodeId,
-      targetNodeId,
-      sourcePortId,
-      targetPortId,
-    } as CreateEdgeOperation;
-  }
-
-  /**
-   * Update edge operation from cell
-   */
-  private _updateEdgeOperation(
-    cell: Cell,
-    previousCell: Cell,
-    baseOperation: Partial<GraphOperation>,
-  ): UpdateEdgeOperation {
-    // Normalize cell to remove visual-only properties (filter effects, tools)
-    const normalizedCell = normalizeCell(cell);
-
-    const edgeInfo: Partial<EdgeInfo> = {
-      id: normalizedCell.id,
-      source:
-        typeof normalizedCell.source === 'object' && normalizedCell.source !== null
-          ? (normalizedCell.source as any)
-          : undefined,
-      target:
-        typeof normalizedCell.target === 'object' && normalizedCell.target !== null
-          ? (normalizedCell.target as any)
-          : undefined,
-      vertices: (normalizedCell as any).vertices,
-      attrs: normalizedCell.attrs as Record<string, any>,
-      labels: (normalizedCell as any).labels || [],
-      // Include additional X6 properties
-      connector: (normalizedCell as any).connector,
-      router: (normalizedCell as any).router,
-      zIndex: (normalizedCell as any).zIndex,
-      data: (normalizedCell as any).data,
-    };
-
-    return {
-      ...baseOperation,
-      type: 'update-edge',
-      edgeId: normalizedCell.id,
-      updates: edgeInfo,
-    } as UpdateEdgeOperation;
-  }
-
-  /**
-   * Create delete operation from cell
-   */
-  private _createDeleteOperation(
-    cell: Cell,
-    source: 'user-interaction' | 'undo-redo',
-  ): GraphOperation {
-    const baseOperation = {
-      id: uuidv4(),
-      source,
-      priority: 'normal' as const,
-      timestamp: Date.now(),
-    };
-
-    const isNode = cell.shape !== 'edge';
-
-    if (isNode) {
-      return {
-        ...baseOperation,
-        type: 'delete-node',
-        nodeId: cell.id,
-      } as GraphOperation;
-    } else {
-      return {
-        ...baseOperation,
-        type: 'delete-edge',
-        edgeId: cell.id,
-      } as GraphOperation;
-    }
   }
 
   /**
