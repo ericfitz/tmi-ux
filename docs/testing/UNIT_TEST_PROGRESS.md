@@ -1,7 +1,7 @@
 # Unit Test Implementation Progress
 
-**Last Updated:** 2025-12-13
-**Current Status:** 34/40 services complete (85% of gap)
+**Last Updated:** 2025-12-14
+**Current Status:** 35/40 services complete (87.5% of gap)
 **Token Usage:** ~94k/200k (47% used)
 
 ## Summary
@@ -52,10 +52,10 @@ All internationalization services now have comprehensive unit tests:
 25. ✅ `language.service.ts` - Language switching, direction management, localStorage integration (20 tests)
 26. ✅ `transloco-loader.service.ts` - Translation file loading via HTTP (13 tests)
 
-## Remaining Services (9/40)
+## Remaining Services (8/40)
 
 ### Priority 3: DFD Application Layer (9/11 STARTED)
-**Status:** 8/11 complete
+**Status:** 9/11 complete
 **Complexity:** Medium-High
 **Location:** `src/app/pages/dfd/application/services/`
 
@@ -69,7 +69,7 @@ All internationalization services now have comprehensive unit tests:
 32. ✅ `app-diagram.service.ts` - Diagram data loading, batch processing, WebSocket/REST saving (31 tests)
 33. ✅ `app-event-handlers.service.ts` - Event handling, keyboard events, context menus, label editing (49 tests)
 34. ✅ `app-operation-rejection-handler.service.ts` - Operation rejection, circuit breaker, rollback coordination (25 tests)
-- [ ] `app-diagram-resync.service.ts` - Diagram resynchronization
+35. ✅ `app-diagram-resync.service.ts` - Diagram resynchronization with debouncing, retry logic, and exponential backoff (38 tests)
 - [ ] `app-history.service.ts` - Undo/redo history (COMPLEX - many dependencies)
 - [ ] `app-state.service.ts` - Application state (COMPLEX - many dependencies)
 
@@ -230,6 +230,7 @@ All test files follow pattern: `{service-name}.spec.ts` alongside source file
 - `src/app/pages/dfd/application/services/app-diagram.service.spec.ts`
 - `src/app/pages/dfd/application/services/app-event-handlers.service.spec.ts`
 - `src/app/pages/dfd/application/services/app-operation-rejection-handler.service.spec.ts`
+- `src/app/pages/dfd/application/services/app-diagram-resync.service.spec.ts`
 - `src/app/pages/dfd/application/services/test-helpers/mock-services.ts` (shared mock factories)
 
 **Priority 6 (I18N Services):**
