@@ -8,17 +8,19 @@
 import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { AppOperationStateManager } from './app-operation-state-manager.service';
-import { createMockLogger } from './test-helpers/mock-services';
+import { createMockLogger, createMockGraph } from './test-helpers/mock-services';
 
 describe('AppOperationStateManager', () => {
   let service: AppOperationStateManager;
   let mockLogger: ReturnType<typeof createMockLogger>;
+  let mockGraph: ReturnType<typeof createMockGraph>;
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
 
     mockLogger = createMockLogger();
+    mockGraph = createMockGraph();
 
     service = new AppOperationStateManager(mockLogger as any);
   });
