@@ -17,18 +17,24 @@ import {
   CellOperation,
   CellPatchOperation,
   Cell as WSCell,
-  DiagramOperationMessage,
 } from '../../../../core/types/websocket-message.types';
 import {
   InfraDfdWebsocketAdapter,
   WebSocketDomainEvent,
-  StateCorrectionEvent,
-  DiagramStateSyncEvent,
-  HistoryOperationEvent,
-  ResyncRequestedEvent,
-  ParticipantsUpdatedEvent,
 } from '../../infrastructure/adapters/infra-dfd-websocket.adapter';
-import { AppOperationStateManager } from './app-operation-state-manager.service';
+import {
+  AppOperationStateManager,
+  OperationStateEvent,
+} from './app-operation-state-manager.service';
+import {
+  AppWebSocketEventProcessor,
+  ProcessedDiagramOperation,
+  ProcessedStateCorrection,
+  ProcessedDiagramSync,
+  ProcessedHistoryOperation,
+  ProcessedResyncRequest,
+  ProcessedParticipantsUpdate,
+} from './app-websocket-event-processor.service';
 
 /**
  * Represents the synchronization state of the diagram
@@ -130,10 +136,9 @@ export class AppStateService implements OnDestroy {
     private _collaborationService: DfdCollaborationService,
     private _threatModelService: ThreatModelService,
     private _historyCoordinator: AppOperationStateManager,
+    private _eventProcessor: AppWebSocketEventProcessor,
   ) {
     // this._logger.info('AppStateService initialized');
-    // Set up bidirectional reference to avoid circular dependency
-    this._historyCoordinator.setAppStateService(this);
   }
 
   /**
@@ -142,6 +147,13 @@ export class AppStateService implements OnDestroy {
   initialize(): void {
     // this._logger.info('Initializing DFD state management');
 
+    // Subscribe to operation state events from AppOperationStateManager
+    this._subscriptions.add(
+      this._historyCoordinator.stateEvents$
+        .pipe(takeUntil(this._destroy$))
+        .subscribe(event => this._handleOperationStateEvent(event)),
+    );
+
     // Subscribe to domain events from WebSocket service
     this._subscriptions.add(
       this._webSocketService.domainEvents$
@@ -149,42 +161,44 @@ export class AppStateService implements OnDestroy {
         .subscribe((event: any) => this._processDomainEvent(event)),
     );
 
-    // Subscribe to specific events for targeted handling
+    // Initialize event processor
+    this._eventProcessor.initialize();
+
+    // Subscribe to processed events from event processor
     this._subscriptions.add(
-      this._webSocketService.diagramOperations$
+      this._eventProcessor.diagramOperations$
         .pipe(takeUntil(this._destroy$))
-        .subscribe((message: any) => this._processDiagramOperation(message)),
+        .subscribe(operation => this._handleProcessedDiagramOperation(operation)),
     );
 
     this._subscriptions.add(
-      this._webSocketService.stateCorrections$
+      this._eventProcessor.stateCorrections$
         .pipe(takeUntil(this._destroy$))
-        .subscribe((event: any) => this._processStateCorrection(event)),
+        .subscribe(correction => this._handleProcessedStateCorrection(correction)),
     );
 
     this._subscriptions.add(
-      this._webSocketService.diagramStateSyncs$
+      this._eventProcessor.diagramSyncs$
         .pipe(takeUntil(this._destroy$))
-        .subscribe((event: any) => this._processDiagramStateSync(event)),
+        .subscribe(sync => this._handleProcessedDiagramSync(sync)),
     );
 
     this._subscriptions.add(
-      this._webSocketService.historyOperations$
+      this._eventProcessor.historyOperations$
         .pipe(takeUntil(this._destroy$))
-        .subscribe((event: any) => this._processHistoryOperation(event)),
+        .subscribe(operation => this._handleProcessedHistoryOperation(operation)),
     );
 
     this._subscriptions.add(
-      this._webSocketService.resyncRequests$
+      this._eventProcessor.resyncRequests$
         .pipe(takeUntil(this._destroy$))
-        .subscribe((event: any) => this._processResyncRequest(event)),
+        .subscribe(request => this._handleProcessedResyncRequest(request)),
     );
 
-    // Subscribe to participant management events
     this._subscriptions.add(
-      this._webSocketService.participantsUpdated$
+      this._eventProcessor.participantsUpdates$
         .pipe(takeUntil(this._destroy$))
-        .subscribe((event: any) => this._processParticipantsUpdate(event)),
+        .subscribe(update => this._handleProcessedParticipantsUpdate(update)),
     );
 
     // this._logger.info('DFD state management initialized successfully');
@@ -255,6 +269,27 @@ export class AppStateService implements OnDestroy {
   }
 
   /**
+   * Handle operation state events from AppOperationStateManager
+   */
+  private _handleOperationStateEvent(event: OperationStateEvent): void {
+    switch (event.type) {
+      case 'remote-operation-start':
+        // Only set flag if it's not already set
+        if (!this.getCurrentState().isApplyingRemoteChange) {
+          this.setApplyingRemoteChange(true);
+        }
+        break;
+
+      case 'remote-operation-end':
+        // Only clear flag if it was set by remote operation
+        if (this.getCurrentState().isApplyingRemoteChange) {
+          this.setApplyingRemoteChange(false);
+        }
+        break;
+    }
+  }
+
+  /**
    * Process a domain event from the WebSocket service
    */
   private _processDomainEvent(event: WebSocketDomainEvent): void {
@@ -282,59 +317,40 @@ export class AppStateService implements OnDestroy {
   }
 
   /**
-   * Process a diagram operation from another user
+   * Handle processed diagram operation from event processor
    */
-  private _processDiagramOperation(message: DiagramOperationMessage): void {
-    // Skip our own operations
-    const currentUserEmail = this._collaborationService.getCurrentUserEmail();
-    if (message.initiating_user.email === currentUserEmail) {
-      this._logger.debugComponent('AppStateService', 'Skipping own operation', {
-        operationId: message.operation_id,
-      });
-      return;
-    }
-
+  private _handleProcessedDiagramOperation(operation: ProcessedDiagramOperation): void {
     // Check if we've already processed this operation
-    if (this.getCurrentState().lastOperationId === message.operation_id) {
+    if (this.getCurrentState().lastOperationId === operation.operationId) {
       this._logger.debugComponent('AppStateService', 'Operation already processed', {
-        operationId: message.operation_id,
+        operationId: operation.operationId,
       });
       return;
     }
-
-    // Extract user identifier with fallback (User fields are optional per schema)
-    const userId = message.initiating_user.email || 'unknown';
-
-    this._logger.info('Processing remote diagram operation', {
-      userId: userId,
-      userEmail: message.initiating_user.email,
-      operationId: message.operation_id,
-      operationType: message.operation?.type,
-      cellCount: message.operation?.cells?.length || 0,
-    });
 
     // Update state
     this._updateState({
-      lastOperationId: message.operation_id,
+      lastOperationId: operation.operationId,
       pendingRemoteOperations: [
         ...this.getCurrentState().pendingRemoteOperations,
         {
-          operationId: message.operation_id,
-          userId: userId,
-          operation: message.operation,
+          operationId: operation.operationId,
+          userId: operation.userId,
+          operation: {
+            type: 'patch',
+            cells: operation.operations,
+          },
           timestamp: Date.now(),
         },
       ],
     });
 
     // Emit batched operation event to preserve semantic grouping
-    if (message.operation && message.operation.cells && message.operation.cells.length > 0) {
-      this._applyBatchedOperationsEvent$.next({
-        operations: message.operation.cells,
-        userId: userId,
-        operationId: message.operation_id,
-      });
-    }
+    this._applyBatchedOperationsEvent$.next({
+      operations: operation.operations,
+      userId: operation.userId,
+      operationId: operation.operationId,
+    });
 
     // Update sync state
     this._updateSyncState({
@@ -344,12 +360,12 @@ export class AppStateService implements OnDestroy {
   }
 
   /**
-   * Process a state correction from the server
+   * Handle processed state correction from event processor
    * Uses debounced resynchronization instead of applying the correction directly
    */
-  private _processStateCorrection(event: StateCorrectionEvent): void {
+  private _handleProcessedStateCorrection(correction: ProcessedStateCorrection): void {
     this._logger.warn('Processing state correction - triggering debounced resync', {
-      serverUpdateVector: event.update_vector,
+      serverUpdateVector: correction.updateVector,
     });
 
     this._updateSyncState({
@@ -369,21 +385,21 @@ export class AppStateService implements OnDestroy {
   }
 
   /**
-   * Process initial diagram state sync from the server
+   * Handle processed diagram state sync from event processor
    * This message is sent immediately upon WebSocket connection
    */
-  private _processDiagramStateSync(event: DiagramStateSyncEvent): void {
+  private _handleProcessedDiagramSync(sync: ProcessedDiagramSync): void {
     this._logger.info('Processing diagram state sync', {
-      diagramId: event.diagram_id,
-      serverUpdateVector: event.update_vector,
-      cellCount: event.cells.length,
+      diagramId: sync.diagramId,
+      serverUpdateVector: sync.updateVector,
+      cellCount: sync.cells.length,
     });
 
     // Emit the state sync event for the persistence layer to handle
     this._diagramStateSyncEvent$.next({
-      diagram_id: event.diagram_id,
-      update_vector: event.update_vector,
-      cells: event.cells,
+      diagram_id: sync.diagramId,
+      update_vector: sync.updateVector,
+      cells: sync.cells,
     });
 
     this._logger.debugComponent(
@@ -393,40 +409,43 @@ export class AppStateService implements OnDestroy {
   }
 
   /**
-   * Process a history operation response
+   * Handle processed history operation from event processor
    */
-  private _processHistoryOperation(event: HistoryOperationEvent): void {
-    this._logger.debugComponent('AppStateService', 'Processing history operation', event);
+  private _handleProcessedHistoryOperation(operation: ProcessedHistoryOperation): void {
+    this._logger.debugComponent('AppStateService', 'Processing history operation', operation);
 
-    if (event.message === 'resync_required') {
+    if (operation.requiresResync) {
       this._updateSyncState({ isSynced: false, isResyncing: true });
       this._requestResyncEvent$.next({ method: 'rest_api' });
     }
   }
 
   /**
-   * Process a resync request
+   * Handle processed resync request from event processor
    */
-  private _processResyncRequest(event: ResyncRequestedEvent): void {
-    this._logger.info('Processing resync request', { method: event.method });
+  private _handleProcessedResyncRequest(request: ProcessedResyncRequest): void {
+    this._logger.info('Processing resync request', { method: request.method });
 
     this._updateSyncState({ isResyncing: true });
-    this._requestResyncEvent$.next({ method: event.method });
+    this._requestResyncEvent$.next({ method: request.method });
   }
 
-  private _processParticipantsUpdate(event: ParticipantsUpdatedEvent): void {
+  /**
+   * Handle processed participants update from event processor
+   */
+  private _handleProcessedParticipantsUpdate(update: ProcessedParticipantsUpdate): void {
     this._logger.debugComponent('AppStateService', 'Processing participants update', {
-      participantCount: event.participants?.length,
-      host: event.host,
-      currentPresenter: event.currentPresenter,
+      participantCount: update.participants?.length,
+      host: update.host,
+      currentPresenter: update.currentPresenter,
     });
 
     // Delegate to the collaboration service to update participants
     try {
       this._collaborationService.updateAllParticipants(
-        event.participants,
-        event.host,
-        event.currentPresenter,
+        update.participants,
+        update.host,
+        update.currentPresenter,
       );
       this._logger.debugComponent('AppStateService', 'Participants update processed successfully');
     } catch (error) {

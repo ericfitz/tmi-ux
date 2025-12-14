@@ -11,8 +11,6 @@ import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { of } from 'rxjs';
 import { AppHistoryService } from './app-history.service';
 
-
-
 describe('AppHistoryService', () => {
   let service: AppHistoryService;
   let mockLogger: {

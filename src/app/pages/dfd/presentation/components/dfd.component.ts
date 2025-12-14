@@ -56,6 +56,7 @@ import { AppCellOperationConverterService } from '../../application/services/app
 import { AppGraphOperationManager } from '../../application/services/app-graph-operation-manager.service';
 import { AppPersistenceCoordinator } from '../../application/services/app-persistence-coordinator.service';
 import { AppDiagramResyncService } from '../../application/services/app-diagram-resync.service';
+import { AppWebSocketEventProcessor } from '../../application/services/app-websocket-event-processor.service';
 import { AppStateService } from '../../application/services/app-state.service';
 import { AppOperationRejectionHandler } from '../../application/services/app-operation-rejection-handler.service';
 
@@ -156,6 +157,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     AppGraphOperationManager, // Operation manager service
     AppPersistenceCoordinator, // Simplified persistence coordination service
     AppDiagramResyncService, // Diagram resync service (changed from root to component-scoped)
+    AppWebSocketEventProcessor, // WebSocket event processor service
     AppStateService, // State service (changed from root to component-scoped)
     AppOperationRejectionHandler, // Operation rejection handler service
     AppNotificationService, // Notification service for collaboration events

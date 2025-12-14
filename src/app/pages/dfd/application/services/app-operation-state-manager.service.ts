@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
-import type { AppStateService } from './app-state.service';
 
 /**
  * Interface for drag tracking data
@@ -28,6 +27,15 @@ interface DragCompletionEvent {
 }
 
 /**
+ * Interface for operation state events
+ * Used to notify AppStateService when remote operations start/end
+ */
+export interface OperationStateEvent {
+  type: 'remote-operation-start' | 'remote-operation-end';
+  timestamp: number;
+}
+
+/**
  * AppOperationStateManager service - manages operation state and drag tracking
  *
  * Formerly AppGraphHistoryCoordinator. Now focused on:
@@ -40,20 +48,21 @@ interface DragCompletionEvent {
 @Injectable()
 export class AppOperationStateManager {
   private readonly _dragCompletions$ = new Subject<DragCompletionEvent>();
+  private readonly _stateEvents$ = new Subject<OperationStateEvent>();
   private readonly _activeDrags = new Map<string, DragTrackingData>();
   private readonly _dragDebounceMap = new Map<string, number>();
   private readonly DRAG_COMPLETION_DELAY = 150; // ms to wait after drag stops before recording
   private _diagramLoadingState = false;
   private _currentOperationType: string | null = null;
-  private _appStateService?: AppStateService;
 
   constructor(private logger: LoggerService) {}
 
   /**
-   * Set the AppStateService (called after construction to avoid circular dependency)
+   * Observable for operation state events
+   * Emits events when remote operations start/end
    */
-  setAppStateService(appStateService: AppStateService): void {
-    this._appStateService = appStateService;
+  get stateEvents$(): Observable<OperationStateEvent> {
+    return this._stateEvents$.asObservable();
   }
 
   /**
@@ -105,25 +114,26 @@ export class AppOperationStateManager {
 
   /**
    * Execute a remote operation with isApplyingRemoteChange flag set
-   * Sets isApplyingRemoteChange flag to prevent broadcasting these changes
+   * Emits events to notify AppStateService to prevent broadcasting these changes
    *
    * Note: X6 history plugin integration removed. Remote operations are now recorded
    * in history (per user feedback) and filtered by the operation source if needed.
    */
   executeRemoteOperation<T>(graph: Graph, operation: () => T): T {
-    // Set flag to prevent broadcasting remote operations (including diagram load)
-    const wasApplyingRemoteChange = this._appStateService?.getCurrentState().isApplyingRemoteChange;
-    if (this._appStateService && !wasApplyingRemoteChange) {
-      this._appStateService.setApplyingRemoteChange(true);
-    }
+    // Emit event to signal remote operation start
+    this._stateEvents$.next({
+      type: 'remote-operation-start',
+      timestamp: Date.now(),
+    });
 
     try {
       return operation();
     } finally {
-      // Restore isApplyingRemoteChange flag
-      if (this._appStateService && !wasApplyingRemoteChange) {
-        this._appStateService.setApplyingRemoteChange(false);
-      }
+      // Emit event to signal remote operation end
+      this._stateEvents$.next({
+        type: 'remote-operation-end',
+        timestamp: Date.now(),
+      });
     }
   }
 
@@ -342,6 +352,7 @@ export class AppOperationStateManager {
     this._dragDebounceMap.clear();
     this._activeDrags.clear();
     this._dragCompletions$.complete();
+    this._stateEvents$.complete();
   }
 
   /**

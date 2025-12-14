@@ -29,7 +29,6 @@ describe('AppOperationStateManager', () => {
     mockGraph = createMockGraph();
 
     service = new AppOperationStateManager(mockLogger as any);
-    service.setAppStateService(mockAppStateService as any);
   });
 
   afterEach(() => {
@@ -42,10 +41,10 @@ describe('AppOperationStateManager', () => {
       expect(service).toBeDefined();
     });
 
-    it('should set AppStateService after construction', () => {
+    it('should expose stateEvents$ observable', () => {
       const newService = new AppOperationStateManager(mockLogger as any);
-      newService.setAppStateService(mockAppStateService as any);
-      expect(newService).toBeDefined();
+      expect(newService.stateEvents$).toBeDefined();
+      newService.dispose();
     });
 
     it('should initialize with no diagram loading state', () => {
@@ -330,36 +329,42 @@ describe('AppOperationStateManager', () => {
   });
 
   describe('executeRemoteOperation()', () => {
-    it('should set and restore isApplyingRemoteChange flag', () => {
-      const operation = vi.fn(() => 'result');
+    it('should emit start and end events', () => {
+      const events: any[] = [];
+      service.stateEvents$.subscribe(event => events.push(event));
 
+      const operation = vi.fn(() => 'result');
       const result = service.executeRemoteOperation(mockGraph as any, operation);
 
       expect(result).toBe('result');
-      expect(mockAppStateService.setApplyingRemoteChange).toHaveBeenCalledWith(true);
-      expect(mockAppStateService.setApplyingRemoteChange).toHaveBeenCalledWith(false);
+      expect(events).toHaveLength(2);
+      expect(events[0]).toMatchObject({ type: 'remote-operation-start' });
+      expect(events[1]).toMatchObject({ type: 'remote-operation-end' });
     });
 
-    it('should not modify flag if already applying remote change', () => {
-      mockAppStateService.getCurrentState.mockReturnValue({
-        isApplyingRemoteChange: true,
-        isBlockingOperations: false,
-        isApplyingUndoRedo: false,
-      });
+    it('should emit end event even on error', () => {
+      const events: any[] = [];
+      service.stateEvents$.subscribe(event => events.push(event));
 
-      service.executeRemoteOperation(mockGraph as any, () => 'result');
-
-      expect(mockAppStateService.setApplyingRemoteChange).not.toHaveBeenCalled();
-    });
-
-    it('should restore flag even on error', () => {
       expect(() => {
         service.executeRemoteOperation(mockGraph as any, () => {
           throw new Error('Operation failed');
         });
       }).toThrow('Operation failed');
 
-      expect(mockAppStateService.setApplyingRemoteChange).toHaveBeenCalledWith(false);
+      expect(events).toHaveLength(2);
+      expect(events[0]).toMatchObject({ type: 'remote-operation-start' });
+      expect(events[1]).toMatchObject({ type: 'remote-operation-end' });
+    });
+
+    it('should include timestamps in events', () => {
+      const events: any[] = [];
+      service.stateEvents$.subscribe(event => events.push(event));
+
+      service.executeRemoteOperation(mockGraph as any, () => 'result');
+
+      expect(events[0].timestamp).toBeDefined();
+      expect(events[1].timestamp).toBeDefined();
     });
   });
 
