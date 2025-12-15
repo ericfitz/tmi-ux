@@ -127,7 +127,7 @@ describe('Collaboration Reflection Prevention (Integration)', () => {
   });
 
   describe('Remote Operation Reflection Prevention', () => {
-    it('should NOT re-broadcast add operation received from server', done => {
+    it('should NOT re-broadcast add operation received from server', async () => {
       // Arrange
       const remoteAddOperation: CellOperation = {
         id: 'node-1',
@@ -147,13 +147,11 @@ describe('Collaboration Reflection Prevention (Integration)', () => {
       privateHandler._handleRemoteOperation(remoteAddOperation, 'remote-user-123', 'op-123');
 
       // Assert: WebSocket should NOT be called during remote operation processing
-      setTimeout(() => {
-        expect(mockWebSocketAdapter.sendDiagramOperation).not.toHaveBeenCalled();
-        done();
-      }, 50);
+      await new Promise(resolve => setTimeout(resolve, 50));
+      expect(mockWebSocketAdapter.sendDiagramOperation).not.toHaveBeenCalled();
     });
 
-    it('should NOT re-broadcast update operation received from server', done => {
+    it('should NOT re-broadcast update operation received from server', async () => {
       // Arrange: First add a node
       graph.addNode({
         id: 'node-1',
@@ -180,13 +178,11 @@ describe('Collaboration Reflection Prevention (Integration)', () => {
       privateHandler._handleRemoteOperation(remoteUpdateOperation, 'remote-user-123', 'op-124');
 
       // Assert
-      setTimeout(() => {
-        expect(mockWebSocketAdapter.sendDiagramOperation).not.toHaveBeenCalled();
-        done();
-      }, 50);
+      await new Promise(resolve => setTimeout(resolve, 50));
+      expect(mockWebSocketAdapter.sendDiagramOperation).not.toHaveBeenCalled();
     });
 
-    it('should NOT re-broadcast remove operation received from server', done => {
+    it('should NOT re-broadcast remove operation received from server', async () => {
       // Arrange: First add a node
       graph.addNode({
         id: 'node-1',
@@ -210,15 +206,13 @@ describe('Collaboration Reflection Prevention (Integration)', () => {
       privateHandler._handleRemoteOperation(remoteRemoveOperation, 'remote-user-123', 'op-125');
 
       // Assert
-      setTimeout(() => {
-        expect(mockWebSocketAdapter.sendDiagramOperation).not.toHaveBeenCalled();
-        done();
-      }, 50);
+      await new Promise(resolve => setTimeout(resolve, 50));
+      expect(mockWebSocketAdapter.sendDiagramOperation).not.toHaveBeenCalled();
     });
   });
 
   describe('Local Operation Broadcasting', () => {
-    it('should broadcast local edge source reconnection as ONE update operation', done => {
+    it('should broadcast local edge source reconnection as ONE update operation', async () => {
       // Arrange: Create nodes and edge
       const node1 = graph.addNode({
         id: 'node-1',
@@ -261,22 +255,20 @@ describe('Collaboration Reflection Prevention (Integration)', () => {
       edge.setSource(node3);
 
       // Assert: Should send ONE update operation
-      setTimeout(() => {
-        const calls = mockWebSocketAdapter.sendDiagramOperation.mock.calls;
-        const updateCalls = calls.filter(
-          call => call[0].operation === 'update' && call[0].id === 'edge-1',
-        );
+      await new Promise(resolve => setTimeout(resolve, 50));
+      const calls = mockWebSocketAdapter.sendDiagramOperation.mock.calls;
+      const updateCalls = calls.filter(
+        call => call[0].operation === 'update' && call[0].id === 'edge-1',
+      );
 
-        expect(updateCalls.length).toBe(1);
-        expect(updateCalls[0][0]).toMatchObject({
-          id: 'edge-1',
-          operation: 'update',
-        });
-        done();
-      }, 50);
+      expect(updateCalls.length).toBe(1);
+      expect(updateCalls[0][0]).toMatchObject({
+        id: 'edge-1',
+        operation: 'update',
+      });
     });
 
-    it('should broadcast local edge target reconnection as ONE update operation', done => {
+    it('should broadcast local edge target reconnection as ONE update operation', async () => {
       // Arrange: Create nodes and edge
       const node1 = graph.addNode({
         id: 'node-1',
@@ -319,22 +311,20 @@ describe('Collaboration Reflection Prevention (Integration)', () => {
       edge.setTarget(node3);
 
       // Assert: Should send ONE update operation
-      setTimeout(() => {
-        const calls = mockWebSocketAdapter.sendDiagramOperation.mock.calls;
-        const updateCalls = calls.filter(
-          call => call[0].operation === 'update' && call[0].id === 'edge-1',
-        );
+      await new Promise(resolve => setTimeout(resolve, 50));
+      const calls = mockWebSocketAdapter.sendDiagramOperation.mock.calls;
+      const updateCalls = calls.filter(
+        call => call[0].operation === 'update' && call[0].id === 'edge-1',
+      );
 
-        expect(updateCalls.length).toBe(1);
-        expect(updateCalls[0][0]).toMatchObject({
-          id: 'edge-1',
-          operation: 'update',
-        });
-        done();
-      }, 50);
+      expect(updateCalls.length).toBe(1);
+      expect(updateCalls[0][0]).toMatchObject({
+        id: 'edge-1',
+        operation: 'update',
+      });
     });
 
-    it('should broadcast local new edge creation as ONE add operation', done => {
+    it('should broadcast local new edge creation as ONE add operation', async () => {
       // Arrange: Create nodes
       const node1 = graph.addNode({
         id: 'node-1',
@@ -366,18 +356,14 @@ describe('Collaboration Reflection Prevention (Integration)', () => {
       });
 
       // Assert: Should send ONE add operation
-      setTimeout(() => {
-        const calls = mockWebSocketAdapter.sendDiagramOperation.mock.calls;
-        const addCalls = calls.filter(
-          call => call[0].operation === 'add' && call[0].id === 'edge-1',
-        );
+      await new Promise(resolve => setTimeout(resolve, 50));
+      const calls = mockWebSocketAdapter.sendDiagramOperation.mock.calls;
+      const addCalls = calls.filter(call => call[0].operation === 'add' && call[0].id === 'edge-1');
 
-        expect(addCalls.length).toBe(1);
-        done();
-      }, 50);
+      expect(addCalls.length).toBe(1);
     });
 
-    it('should broadcast only local operations when local and remote occur simultaneously', done => {
+    it('should broadcast only local operations when local and remote occur simultaneously', async () => {
       // Arrange: Setup
       const remoteAddOperation: CellOperation = {
         id: 'remote-node',
@@ -398,27 +384,24 @@ describe('Collaboration Reflection Prevention (Integration)', () => {
       privateHandler._handleRemoteOperation(remoteAddOperation, 'remote-user-123', 'op-remote');
 
       // Add local node immediately after
-      setTimeout(() => {
-        graph.addNode({
-          id: 'local-node',
-          shape: 'rect',
-          x: 300,
-          y: 300,
-          width: 80,
-          height: 40,
-        });
-      }, 10);
+      await new Promise(resolve => setTimeout(resolve, 10));
+      graph.addNode({
+        id: 'local-node',
+        shape: 'rect',
+        x: 300,
+        y: 300,
+        width: 80,
+        height: 40,
+      });
 
       // Assert: Only local node should be broadcast
-      setTimeout(() => {
-        const calls = mockWebSocketAdapter.sendDiagramOperation.mock.calls;
-        const localNodeCalls = calls.filter(call => call[0].id === 'local-node');
-        const remoteNodeCalls = calls.filter(call => call[0].id === 'remote-node');
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const calls = mockWebSocketAdapter.sendDiagramOperation.mock.calls;
+      const localNodeCalls = calls.filter(call => call[0].id === 'local-node');
+      const remoteNodeCalls = calls.filter(call => call[0].id === 'remote-node');
 
-        expect(localNodeCalls.length).toBeGreaterThan(0);
-        expect(remoteNodeCalls.length).toBe(0);
-        done();
-      }, 100);
+      expect(localNodeCalls.length).toBeGreaterThan(0);
+      expect(remoteNodeCalls.length).toBe(0);
     });
   });
 });

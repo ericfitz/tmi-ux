@@ -349,7 +349,7 @@ describe('AppHistoryService', () => {
       });
     });
 
-    it('should fail if not initialized', done => {
+    it('should fail if not initialized', async () => {
       const uninitializedService = new AppHistoryService(
         mockLogger as any,
         mockCollaborationService as any,
@@ -363,80 +363,102 @@ describe('AppHistoryService', () => {
       const entry = createMockHistoryEntry('1', [createMockCell('cell-1')]);
       uninitializedService.addHistoryEntry(entry);
 
-      uninitializedService.undo().subscribe({
-        error: error => {
-          expect(error.message).toContain('operation context not initialized');
-          uninitializedService.ngOnDestroy();
-          done();
-        },
-      });
+      await expect(async () => {
+        await new Promise((resolve, reject) => {
+          uninitializedService.undo().subscribe({
+            error: reject,
+          });
+        });
+      }).rejects.toThrow('operation context not initialized');
+
+      uninitializedService.ngOnDestroy();
     });
 
-    it('should pop from undo stack', done => {
+    it('should pop from undo stack', async () => {
       const cell = createMockCell('cell-1');
       const entry = createMockHistoryEntry('1', [cell], []);
       service.addHistoryEntry(entry);
 
-      service.undo().subscribe(() => {
-        const state = service.getHistoryState();
-        expect(state.undoStack).toHaveLength(0);
-        done();
+      await new Promise<void>(resolve => {
+        service.undo().subscribe(() => {
+          const state = service.getHistoryState();
+          expect(state.undoStack).toHaveLength(0);
+          resolve();
+        });
       });
     });
 
-    it('should push to redo stack', done => {
+    it('should push to redo stack', async () => {
       const cell = createMockCell('cell-1');
       const entry = createMockHistoryEntry('1', [cell], []);
       service.addHistoryEntry(entry);
 
-      service.undo().subscribe(() => {
-        const state = service.getHistoryState();
-        expect(state.redoStack).toHaveLength(1);
-        expect(state.redoStack[0]).toEqual(entry);
-        done();
+      await new Promise<void>(resolve => {
+        service.undo().subscribe(() => {
+          const state = service.getHistoryState();
+          expect(state.redoStack).toHaveLength(1);
+          expect(state.redoStack[0]).toEqual(entry);
+          resolve();
+        });
       });
     });
 
-    it('should set applyingUndoRedo flag during execution', done => {
+    it('should set applyingUndoRedo flag during execution', async () => {
       const cell = createMockCell('cell-1');
       const entry = createMockHistoryEntry('1', [cell], []);
       service.addHistoryEntry(entry);
 
-      service.undo().subscribe(() => {
-        expect(mockAppStateService.setApplyingUndoRedo).toHaveBeenCalledWith(true);
-        expect(mockAppStateService.setApplyingUndoRedo).toHaveBeenCalledWith(false);
-        done();
+      await new Promise<void>((resolve, reject) => {
+        service.undo().subscribe({
+          complete: () => {
+            // Use setTimeout to ensure finalize has run
+            setTimeout(() => {
+              try {
+                expect(mockAppStateService.setApplyingUndoRedo).toHaveBeenCalledWith(true);
+                expect(mockAppStateService.setApplyingUndoRedo).toHaveBeenCalledWith(false);
+                resolve();
+              } catch (e) {
+                reject(e instanceof Error ? e : new Error(String(e)));
+              }
+            }, 0);
+          },
+          error: reject,
+        });
       });
     });
 
-    it('should convert cells to operations', done => {
+    it('should convert cells to operations', async () => {
       const cell = createMockCell('cell-1');
       const prevCell = createMockCell('cell-1', 50, 50);
       const entry = createMockHistoryEntry('1', [cell], [prevCell]);
       service.addHistoryEntry(entry);
 
-      service.undo().subscribe(() => {
-        expect(mockCellOperationConverter.convertCellsToOperations).toHaveBeenCalledWith(
-          [prevCell],
-          [cell],
-          'undo-redo',
-        );
-        done();
+      await new Promise<void>(resolve => {
+        service.undo().subscribe(() => {
+          expect(mockCellOperationConverter.convertCellsToOperations).toHaveBeenCalledWith(
+            [prevCell],
+            [cell],
+            'undo-redo',
+          );
+          resolve();
+        });
       });
     });
 
-    it('should execute operations via graph operation manager', done => {
+    it('should execute operations via graph operation manager', async () => {
       const cell = createMockCell('cell-1');
       const entry = createMockHistoryEntry('1', [cell], []);
       service.addHistoryEntry(entry);
 
-      service.undo().subscribe(() => {
-        expect(mockGraphOperationManager.execute).toHaveBeenCalled();
-        done();
+      await new Promise<void>(resolve => {
+        service.undo().subscribe(() => {
+          expect(mockGraphOperationManager.execute).toHaveBeenCalled();
+          resolve();
+        });
       });
     });
 
-    it('should emit history state change event', done => {
+    it('should emit history state change event', async () => {
       const stateChanges: any[] = [];
       service.historyStateChange$.subscribe(event => stateChanges.push(event));
 
@@ -447,16 +469,18 @@ describe('AppHistoryService', () => {
       // Clear the 'entry-added' event
       stateChanges.length = 0;
 
-      service.undo().subscribe(() => {
-        const undoEvent = stateChanges.find(e => e.changeType === 'undo');
-        expect(undoEvent).toBeDefined();
-        expect(undoEvent.canUndo).toBe(false);
-        expect(undoEvent.canRedo).toBe(true);
-        done();
+      await new Promise<void>(resolve => {
+        service.undo().subscribe(() => {
+          const undoEvent = stateChanges.find(e => e.changeType === 'undo');
+          expect(undoEvent).toBeDefined();
+          expect(undoEvent.canUndo).toBe(false);
+          expect(undoEvent.canRedo).toBe(true);
+          resolve();
+        });
       });
     });
 
-    it('should emit history operation event', done => {
+    it('should emit history operation event', async () => {
       const operationEvents: any[] = [];
       service.historyOperation$.subscribe(event => operationEvents.push(event));
 
@@ -467,17 +491,19 @@ describe('AppHistoryService', () => {
       // Clear the 'add' event
       operationEvents.length = 0;
 
-      service.undo().subscribe(() => {
-        expect(operationEvents).toHaveLength(1);
-        expect(operationEvents[0]).toMatchObject({
-          operationType: 'undo',
-          success: true,
+      await new Promise<void>(resolve => {
+        service.undo().subscribe(() => {
+          expect(operationEvents).toHaveLength(1);
+          expect(operationEvents[0]).toMatchObject({
+            operationType: 'undo',
+            success: true,
+          });
+          resolve();
         });
-        done();
       });
     });
 
-    it('should handle execution failure', done => {
+    it('should handle execution failure', async () => {
       mockGraphOperationManager.execute.mockReturnValue(
         throwError(() => new Error('Execution failed')),
       );
@@ -486,18 +512,20 @@ describe('AppHistoryService', () => {
       const entry = createMockHistoryEntry('1', [cell], []);
       service.addHistoryEntry(entry);
 
-      service.undo().subscribe({
-        error: error => {
-          expect(error.message).toBe('Execution failed');
-          // Entry should be back on undo stack
-          const state = service.getHistoryState();
-          expect(state.undoStack).toHaveLength(1);
-          done();
-        },
-      });
+      await expect(async () => {
+        await new Promise((resolve, reject) => {
+          service.undo().subscribe({
+            error: reject,
+          });
+        });
+      }).rejects.toThrow('Execution failed');
+
+      // Entry should be back on undo stack
+      const state = service.getHistoryState();
+      expect(state.undoStack).toHaveLength(1);
     });
 
-    it('should clear applyingUndoRedo flag on error', done => {
+    it('should clear applyingUndoRedo flag on error', async () => {
       mockGraphOperationManager.execute.mockReturnValue(
         throwError(() => new Error('Execution failed')),
       );
@@ -506,28 +534,32 @@ describe('AppHistoryService', () => {
       const entry = createMockHistoryEntry('1', [cell], []);
       service.addHistoryEntry(entry);
 
-      service.undo().subscribe({
-        error: () => {
-          expect(mockAppStateService.setApplyingUndoRedo).toHaveBeenCalledWith(true);
-          expect(mockAppStateService.setApplyingUndoRedo).toHaveBeenCalledWith(false);
-          done();
-        },
-      });
+      await expect(async () => {
+        await new Promise((resolve, reject) => {
+          service.undo().subscribe({
+            error: reject,
+          });
+        });
+      }).rejects.toThrow('Execution failed');
+
+      expect(mockAppStateService.setApplyingUndoRedo).toHaveBeenCalledWith(true);
+      expect(mockAppStateService.setApplyingUndoRedo).toHaveBeenCalledWith(false);
     });
 
-    it('should fail if no operations generated', done => {
+    it('should fail if no operations generated', async () => {
       mockCellOperationConverter.convertCellsToOperations.mockReturnValue([]);
 
       const cell = createMockCell('cell-1');
       const entry = createMockHistoryEntry('1', [cell], []);
       service.addHistoryEntry(entry);
 
-      service.undo().subscribe({
-        error: error => {
-          expect(error.message).toContain('Failed to generate undo operations');
-          done();
-        },
-      });
+      await expect(async () => {
+        await new Promise((resolve, reject) => {
+          service.undo().subscribe({
+            error: reject,
+          });
+        });
+      }).rejects.toThrow('Failed to generate undo operations');
     });
   });
 
@@ -536,60 +568,83 @@ describe('AppHistoryService', () => {
       service.initialize(mockOperationContext, 'diagram-1', 'tm-1');
     });
 
-    it('should fail if redo stack is empty', done => {
-      service.redo().subscribe({
-        error: error => {
-          expect(error.message).toContain('no operations in redo stack');
-          done();
-        },
-      });
+    it('should fail if redo stack is empty', async () => {
+      await expect(async () => {
+        await new Promise((resolve, reject) => {
+          service.redo().subscribe({
+            error: reject,
+          });
+        });
+      }).rejects.toThrow('no operations in redo stack');
     });
 
-    it('should pop from redo stack', done => {
+    it('should pop from redo stack', async () => {
       const cell = createMockCell('cell-1');
       const entry = createMockHistoryEntry('1', [cell], []);
 
       service.addHistoryEntry(entry);
-      service.undo().subscribe(() => {
-        service.redo().subscribe(() => {
-          const state = service.getHistoryState();
-          expect(state.redoStack).toHaveLength(0);
-          done();
+
+      await new Promise<void>(resolve => {
+        service.undo().subscribe(() => {
+          service.redo().subscribe(() => {
+            const state = service.getHistoryState();
+            expect(state.redoStack).toHaveLength(0);
+            resolve();
+          });
         });
       });
     });
 
-    it('should push to undo stack', done => {
+    it('should push to undo stack', async () => {
       const cell = createMockCell('cell-1');
       const entry = createMockHistoryEntry('1', [cell], []);
 
       service.addHistoryEntry(entry);
-      service.undo().subscribe(() => {
-        service.redo().subscribe(() => {
-          const state = service.getHistoryState();
-          expect(state.undoStack).toHaveLength(1);
-          expect(state.undoStack[0]).toEqual(entry);
-          done();
+
+      await new Promise<void>(resolve => {
+        service.undo().subscribe(() => {
+          service.redo().subscribe(() => {
+            const state = service.getHistoryState();
+            expect(state.undoStack).toHaveLength(1);
+            expect(state.undoStack[0]).toEqual(entry);
+            resolve();
+          });
         });
       });
     });
 
-    it('should set applyingUndoRedo flag during execution', done => {
+    it('should set applyingUndoRedo flag during execution', async () => {
       const cell = createMockCell('cell-1');
       const entry = createMockHistoryEntry('1', [cell], []);
 
       service.addHistoryEntry(entry);
-      service.undo().subscribe(() => {
-        vi.clearAllMocks();
-        service.redo().subscribe(() => {
-          expect(mockAppStateService.setApplyingUndoRedo).toHaveBeenCalledWith(true);
-          expect(mockAppStateService.setApplyingUndoRedo).toHaveBeenCalledWith(false);
-          done();
+
+      await new Promise<void>((resolve, reject) => {
+        service.undo().subscribe({
+          complete: () => {
+            vi.clearAllMocks();
+            service.redo().subscribe({
+              complete: () => {
+                // Use setTimeout to ensure finalize has run
+                setTimeout(() => {
+                  try {
+                    expect(mockAppStateService.setApplyingUndoRedo).toHaveBeenCalledWith(true);
+                    expect(mockAppStateService.setApplyingUndoRedo).toHaveBeenCalledWith(false);
+                    resolve();
+                  } catch (e) {
+                    reject(e instanceof Error ? e : new Error(String(e)));
+                  }
+                }, 0);
+              },
+              error: reject,
+            });
+          },
+          error: reject,
         });
       });
     });
 
-    it('should emit history state change event', done => {
+    it('should emit history state change event', async () => {
       const stateChanges: any[] = [];
       service.historyStateChange$.subscribe(event => stateChanges.push(event));
 
@@ -597,37 +652,50 @@ describe('AppHistoryService', () => {
       const entry = createMockHistoryEntry('1', [cell], []);
 
       service.addHistoryEntry(entry);
-      service.undo().subscribe(() => {
-        stateChanges.length = 0; // Clear previous events
 
-        service.redo().subscribe(() => {
-          const redoEvent = stateChanges.find(e => e.changeType === 'redo');
-          expect(redoEvent).toBeDefined();
-          expect(redoEvent.canUndo).toBe(true);
-          expect(redoEvent.canRedo).toBe(false);
-          done();
+      await new Promise<void>(resolve => {
+        service.undo().subscribe(() => {
+          stateChanges.length = 0; // Clear previous events
+
+          service.redo().subscribe(() => {
+            const redoEvent = stateChanges.find(e => e.changeType === 'redo');
+            expect(redoEvent).toBeDefined();
+            expect(redoEvent.canUndo).toBe(true);
+            expect(redoEvent.canRedo).toBe(false);
+            resolve();
+          });
         });
       });
     });
 
-    it('should handle execution failure', done => {
+    it('should handle execution failure', async () => {
       const cell = createMockCell('cell-1');
       const entry = createMockHistoryEntry('1', [cell], []);
 
       service.addHistoryEntry(entry);
-      service.undo().subscribe(() => {
-        mockGraphOperationManager.execute.mockReturnValue(
-          throwError(() => new Error('Redo failed')),
-        );
 
-        service.redo().subscribe({
-          error: error => {
-            expect(error.message).toBe('Redo failed');
-            // Entry should be back on redo stack
-            const state = service.getHistoryState();
-            expect(state.redoStack).toHaveLength(1);
-            done();
+      await new Promise<void>((resolve, reject) => {
+        service.undo().subscribe({
+          next: () => {
+            mockGraphOperationManager.execute.mockReturnValue(
+              throwError(() => new Error('Redo failed')),
+            );
+
+            service.redo().subscribe({
+              error: error => {
+                try {
+                  expect(error.message).toBe('Redo failed');
+                  // Entry should be back on redo stack
+                  const state = service.getHistoryState();
+                  expect(state.redoStack).toHaveLength(1);
+                  resolve();
+                } catch (e) {
+                  reject(e instanceof Error ? e : new Error(String(e)));
+                }
+              },
+            });
           },
+          error: reject,
         });
       });
     });
@@ -773,18 +841,19 @@ describe('AppHistoryService', () => {
       service.initialize(mockOperationContext, 'diagram-1', 'tm-1');
     });
 
-    it('should fail if operation ID not found', done => {
+    it('should fail if operation ID not found', async () => {
       service.addHistoryEntry(createMockHistoryEntry('1', [createMockCell('cell-1')]));
 
-      service.undoUntilOperationId('nonexistent').subscribe({
-        error: error => {
-          expect(error.message).toContain('Cannot find history entry');
-          done();
-        },
-      });
+      await expect(async () => {
+        await new Promise((resolve, reject) => {
+          service.undoUntilOperationId('nonexistent').subscribe({
+            error: reject,
+          });
+        });
+      }).rejects.toThrow('Cannot find history entry');
     });
 
-    it('should undo multiple operations', done => {
+    it('should undo multiple operations', async () => {
       const entry1 = createMockHistoryEntry('1', [createMockCell('cell-1')]);
       const entry2 = createMockHistoryEntry('2', [createMockCell('cell-2')]);
       const entry3 = createMockHistoryEntry('3', [createMockCell('cell-3')]);
@@ -793,14 +862,16 @@ describe('AppHistoryService', () => {
       service.addHistoryEntry(entry2);
       service.addHistoryEntry(entry3);
 
-      service.undoUntilOperationId('op-1').subscribe(result => {
-        expect(result.undoCount).toBe(3);
-        expect(result.success).toBe(true);
-        done();
+      await new Promise<void>(resolve => {
+        service.undoUntilOperationId('op-1').subscribe(result => {
+          expect(result.undoCount).toBe(3);
+          expect(result.success).toBe(true);
+          resolve();
+        });
       });
     });
 
-    it('should undo to specific operation', done => {
+    it('should undo to specific operation', async () => {
       const entry1 = createMockHistoryEntry('1', [createMockCell('cell-1')]);
       const entry2 = createMockHistoryEntry('2', [createMockCell('cell-2')]);
       const entry3 = createMockHistoryEntry('3', [createMockCell('cell-3')]);
@@ -809,10 +880,12 @@ describe('AppHistoryService', () => {
       service.addHistoryEntry(entry2);
       service.addHistoryEntry(entry3);
 
-      service.undoUntilOperationId('op-2').subscribe(result => {
-        expect(result.undoCount).toBe(2); // Undo entry3 and entry2
-        expect(result.success).toBe(true);
-        done();
+      await new Promise<void>(resolve => {
+        service.undoUntilOperationId('op-2').subscribe(result => {
+          expect(result.undoCount).toBe(2); // Undo entry3 and entry2
+          expect(result.success).toBe(true);
+          resolve();
+        });
       });
     });
   });
@@ -857,7 +930,7 @@ describe('AppHistoryService', () => {
       expect(canUndoValues).toContain(true); // After add
     });
 
-    it('should update canRedo$ when state changes', done => {
+    it('should update canRedo$ when state changes', async () => {
       const canRedoValues: boolean[] = [];
       service.canRedo$.subscribe(value => canRedoValues.push(value));
 
@@ -866,10 +939,12 @@ describe('AppHistoryService', () => {
       const entry = createMockHistoryEntry('1', [createMockCell('cell-1')]);
       service.addHistoryEntry(entry);
 
-      service.undo().subscribe(() => {
-        expect(canRedoValues).toContain(false); // Initial
-        expect(canRedoValues).toContain(true); // After undo
-        done();
+      await new Promise<void>(resolve => {
+        service.undo().subscribe(() => {
+          expect(canRedoValues).toContain(false); // Initial
+          expect(canRedoValues).toContain(true); // After undo
+          resolve();
+        });
       });
     });
   });
