@@ -1,7 +1,7 @@
 import { Point } from './point';
 import { NodeAttrs, createDefaultNodeAttrs } from './node-attrs';
 import { PortConfiguration, createDefaultPortConfiguration } from './port-configuration';
-import { Metadata } from './metadata';
+import { Metadata, safeMetadataEntry } from './metadata';
 import { MarkupElement, CellTool } from './x6-types';
 import { DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 
@@ -112,7 +112,9 @@ export class NodeInfo {
     let hybridData = data.data || { _metadata: [] };
     if (!data.data && data.metadata) {
       // Convert legacy metadata to hybrid format
-      const metadataArray = Object.entries(data.metadata).map(([key, value]) => ({ key, value }));
+      const metadataArray = Object.entries(data.metadata).map(([key, value]) =>
+        safeMetadataEntry(key, value, 'NodeInfo.fromJSON'),
+      );
       hybridData = { _metadata: metadataArray };
     }
 
@@ -150,7 +152,9 @@ export class NodeInfo {
     customData?: Record<string, any>;
   }): NodeInfo {
     const metadataEntries = data.metadata
-      ? Object.entries(data.metadata).map(([key, value]) => ({ key, value }))
+      ? Object.entries(data.metadata).map(([key, value]) =>
+          safeMetadataEntry(key, value, 'NodeInfo.create'),
+        )
       : [];
 
     const hybridData = {
@@ -384,7 +388,9 @@ export class NodeInfo {
     if (Array.isArray(metadata)) {
       newMetadata = metadata;
     } else {
-      newMetadata = Object.entries(metadata).map(([key, value]) => ({ key, value }));
+      newMetadata = Object.entries(metadata).map(([key, value]) =>
+        safeMetadataEntry(key, value, 'NodeInfo.withMetadata'),
+      );
     }
 
     const newData = {

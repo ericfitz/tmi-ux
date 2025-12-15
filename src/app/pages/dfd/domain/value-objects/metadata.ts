@@ -27,9 +27,46 @@ export function metadataToRecord(metadata: Metadata[]): Record<string, string> {
 
 /**
  * Converts a Record object to an array of Metadata entries
+ * Ensures all values are strings and logs warnings for non-string values
  */
 export function recordToMetadata(record: Record<string, string>): Metadata[] {
-  return Object.entries(record).map(([key, value]) => ({ key, value }));
+  return Object.entries(record).map(([key, value]) =>
+    safeMetadataEntry(key, value, 'recordToMetadata'),
+  );
+}
+
+/**
+ * Safely creates a metadata entry, ensuring the value is always a string
+ * Logs a warning if conversion from non-string is required
+ *
+ * @param key - The metadata key
+ * @param value - The metadata value (should be string, but may be any at runtime)
+ * @param source - The source location/function calling this (for logging)
+ * @returns A Metadata entry with guaranteed string value
+ */
+export function safeMetadataEntry(key: string, value: unknown, source?: string): Metadata {
+  // If value is already a string, return as-is
+  if (typeof value === 'string') {
+    return { key, value };
+  }
+
+  // Non-string value detected - log warning
+  const valueType = value === null ? 'null' : value === undefined ? 'undefined' : typeof value;
+
+  const isObject = valueType === 'object';
+  const stringValue = isObject ? JSON.stringify(value) : String(value);
+
+  // Use console.warn for immediate visibility - this will be caught by LoggerService if configured
+  console.warn(`[Metadata Conversion Warning] Non-string value detected in metadata`, {
+    source: source || 'unknown',
+    key,
+    valueType,
+    originalValue: value,
+    convertedValue: stringValue,
+    isObject,
+  });
+
+  return { key, value: stringValue };
 }
 
 /**

@@ -1,6 +1,6 @@
 import { NodeInfo } from './node-info';
 import { EdgeInfo } from './edge-info';
-import { Metadata } from './metadata';
+import { Metadata, safeMetadataEntry } from './metadata';
 
 /**
  * Diagram type supported by the DFD component
@@ -72,7 +72,9 @@ export class DiagramInfo {
       if (Array.isArray(data.metadata)) {
         metadata = data.metadata;
       } else {
-        metadata = Object.entries(data.metadata).map(([key, value]) => ({ key, value }));
+        metadata = Object.entries(data.metadata).map(([key, value]) =>
+          safeMetadataEntry(key, value, 'DiagramInfo.fromJSON'),
+        );
       }
     }
 
@@ -171,7 +173,9 @@ export class DiagramInfo {
     if (Array.isArray(metadata)) {
       newMetadata = metadata;
     } else {
-      newMetadata = Object.entries(metadata).map(([key, value]) => ({ key, value }));
+      newMetadata = Object.entries(metadata).map(([key, value]) =>
+        safeMetadataEntry(key, value, 'DiagramInfo.withMetadata'),
+      );
     }
 
     return new DiagramInfo(

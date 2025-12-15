@@ -2,7 +2,7 @@ import { Point } from './point';
 import { EdgeTerminal } from './edge-terminal';
 import { EdgeAttrs } from './edge-attrs';
 import { EdgeLabel } from './edge-label';
-import { Metadata } from './metadata';
+import { Metadata, safeMetadataEntry } from './metadata';
 import { MarkupElement, CellTool, EdgeRouter, EdgeConnector } from './x6-types';
 
 /**
@@ -109,7 +109,9 @@ export class EdgeInfo {
     let hybridData = data.data || { _metadata: [] };
     if (!data.data && data.metadata) {
       // Convert legacy metadata to hybrid format
-      const metadataArray = Object.entries(data.metadata).map(([key, value]) => ({ key, value }));
+      const metadataArray = Object.entries(data.metadata).map(([key, value]) =>
+        safeMetadataEntry(key, value, 'EdgeInfo.fromJSON'),
+      );
       hybridData = { _metadata: metadataArray };
     }
 
@@ -168,7 +170,9 @@ export class EdgeInfo {
     const vertices = (data.vertices || []).map(v => new Point(v.x, v.y));
 
     const metadataEntries: Metadata[] = data.metadata
-      ? Object.entries(data.metadata).map(([key, value]) => ({ key, value }))
+      ? Object.entries(data.metadata).map(([key, value]) =>
+          safeMetadataEntry(key, value, 'EdgeInfo.create'),
+        )
       : [];
 
     const hybridData = {
@@ -316,7 +320,9 @@ export class EdgeInfo {
     if (Array.isArray(metadata)) {
       newMetadata = metadata;
     } else {
-      newMetadata = Object.entries(metadata).map(([key, value]) => ({ key, value }));
+      newMetadata = Object.entries(metadata).map(([key, value]) =>
+        safeMetadataEntry(key, value, 'EdgeInfo.withMetadata'),
+      );
     }
 
     const newData = {
@@ -495,7 +501,9 @@ export class EdgeInfo {
         if (Array.isArray(updates.metadata)) {
           newMetadata = updates.metadata;
         } else {
-          newMetadata = Object.entries(updates.metadata).map(([key, value]) => ({ key, value }));
+          newMetadata = Object.entries(updates.metadata).map(([key, value]) =>
+            safeMetadataEntry(key, value, 'EdgeInfo.update'),
+          );
         }
       }
 

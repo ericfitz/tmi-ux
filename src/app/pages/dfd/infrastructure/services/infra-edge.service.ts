@@ -6,6 +6,7 @@ import { DFD_STYLING } from '../../constants/styling-constants';
 import { InfraPortStateService } from './infra-port-state.service';
 import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service';
 import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
+import { safeMetadataEntry } from '../../domain/value-objects/metadata';
 
 /**
  * Consolidated Edge Service
@@ -182,11 +183,10 @@ export class InfraEdgeService {
         if (Array.isArray(updates.metadata)) {
           (edge as any).setMetadata(updates.metadata);
         } else {
-          // Convert Record to array format
-          const metadataArray = Object.entries(updates.metadata).map(([key, value]) => ({
-            key,
-            value,
-          }));
+          // Convert Record to array format with safe string conversion
+          const metadataArray = Object.entries(updates.metadata).map(([key, value]) =>
+            safeMetadataEntry(key, value, 'InfraEdgeService.updateEdge'),
+          );
           (edge as any).setMetadata(metadataArray);
         }
       }
