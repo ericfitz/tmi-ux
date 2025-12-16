@@ -38,6 +38,13 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
+thunder-tests
+thunder-tests/**
+.42c/conf.yaml
+.mcp.json
+.dedupe/
+.trunk
+.trunk/**
 
 # System files
 .DS_Store
@@ -64,8 +71,3 @@ localization_dedup_plan.*
 # local copy of server docs
 docs-server
 docs-server/**
-thunder-tests
-thunder-tests/**
-.42c/conf.yaml
-.mcp.json
-.dedupe/
