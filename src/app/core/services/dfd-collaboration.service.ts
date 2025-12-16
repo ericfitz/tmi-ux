@@ -21,6 +21,7 @@ import {
   PresenterRequestMessageWithUser,
   PresenterDeniedMessage,
   Participant,
+  WebSocketErrorMessage,
 } from '../types/websocket-message.types';
 
 /**
@@ -1556,6 +1557,15 @@ export class DfdCollaborationService implements OnDestroy {
         }),
     );
 
+    // Listen to error messages from server
+    this._subscriptions.add(
+      this._webSocketAdapter
+        .getTMIMessagesOfType<WebSocketErrorMessage>('error')
+        .subscribe(message => {
+          this._handleWebSocketError(message);
+        }),
+    );
+
     // NOTE: join/leave events are now handled by WebSocketService
     // to avoid duplicate handling and conflicts with local state updates
 
@@ -1719,6 +1729,34 @@ export class DfdCollaborationService implements OnDestroy {
       this._cleanupSessionState();
       this._redirectToDashboard();
     }
+  }
+
+  /**
+   * Handle error messages from WebSocket
+   * These indicate the server rejected the collaboration request
+   */
+  private _handleWebSocketError(message: WebSocketErrorMessage): void {
+    this._logger.error('Collaboration error from server', {
+      errorType: message.error,
+      errorMessage: message.message,
+    });
+
+    // Mark as intentional disconnection to prevent "unexpected disconnection" handling
+    this._intentionalDisconnection = true;
+
+    // Clean up collaboration state
+    this._cleanupSessionState();
+
+    // Show error notification to user
+    this._notificationService
+      ?.showOperationError('start collaboration', message.message || 'Unknown error')
+      .subscribe();
+
+    // Navigate back to threat model editor (user stays in context)
+    this._redirectToThreatModel();
+
+    // Emit session ended event
+    this._sessionEndedSubject.next({ reason: 'error' });
   }
 
   // join/leave handlers removed - now handled by WebSocketService

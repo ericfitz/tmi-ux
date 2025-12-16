@@ -207,6 +207,13 @@ export interface SessionTerminatedMessage {
   timestamp: string;
 }
 
+export interface WebSocketErrorMessage {
+  message_type: 'error';
+  error: string;
+  message: string;
+  timestamp: string;
+}
+
 export interface OperationRejectedMessage {
   message_type: 'operation_rejected';
   operation_id: string;
@@ -247,6 +254,7 @@ export type TMIWebSocketMessage =
   | ParticipantLeftMessage
   | RemoveParticipantMessage
   | SessionTerminatedMessage
+  | WebSocketErrorMessage
   | OperationRejectedMessage
   | ChunkedMessage;
 
@@ -271,6 +279,7 @@ export type TMIMessageType =
   | 'participant_left'
   | 'remove_participant'
   | 'session_terminated'
+  | 'error'
   | 'operation_rejected'
   | 'chunked_message';
 
