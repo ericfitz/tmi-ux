@@ -610,6 +610,15 @@ export class WebSocketAdapter {
               fullBody: this._redactSensitiveData(messageData),
             });
 
+            // Log error messages more prominently
+            if (messageTypeToCheck === 'error') {
+              this.logger.error('WebSocket received error message from server', {
+                errorMessage: messageData.message,
+                errorReason: messageData.reason,
+                fullErrorData: this._redactSensitiveData(messageData),
+              });
+            }
+
             // Check if token needs refresh on WebSocket activity
             if (this._authService) {
               this._authService.getValidToken().subscribe({
