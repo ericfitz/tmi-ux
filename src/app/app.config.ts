@@ -51,11 +51,16 @@ import { HttpLoggingInterceptor } from './core/interceptors/http-logging.interce
 import { JwtInterceptor } from './auth/interceptors/jwt.interceptor';
 import { SecurityConfigService } from './core/services/security-config.service';
 import { DialogDirectionService } from './core/services/dialog-direction.service';
-import { AUTH_SERVICE, THREAT_MODEL_SERVICE } from './core/interfaces';
+import {
+  AUTH_SERVICE,
+  THREAT_MODEL_SERVICE,
+  COLLABORATION_NOTIFICATION_SERVICE,
+} from './core/interfaces';
 import { AuthService } from './auth/services/auth.service';
 import { ThreatModelService } from './pages/tm/services/threat-model.service';
 import { ThemeService } from './core/services/theme.service';
 import { WebSocketAdapter } from './core/services/websocket.adapter';
+import { AppNotificationService } from './pages/dfd/application/services/app-notification.service';
 
 // We still need LOCALE_ID for date formatting with Angular's pipes
 function getBasicLocale(): string {
@@ -363,6 +368,10 @@ export const appConfig: ApplicationConfig = {
     {
       provide: THREAT_MODEL_SERVICE,
       useExisting: ThreatModelService,
+    },
+    {
+      provide: COLLABORATION_NOTIFICATION_SERVICE,
+      useExisting: AppNotificationService,
     },
   ],
 };

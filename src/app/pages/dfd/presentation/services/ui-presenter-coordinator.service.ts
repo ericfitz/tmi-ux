@@ -86,34 +86,25 @@ export class UiPresenterCoordinatorService implements OnDestroy {
    * Handle incoming presenter cursor messages
    */
   private _handlePresenterCursor(message: PresenterCursorMessage): void {
-    // Guard against malformed messages that don't conform to AsyncAPI spec
-    if (
-      !message.user ||
-      !message.user.provider ||
-      !message.user.provider_id ||
-      !message.user.email
-    ) {
-      this.logger.warn('Received malformed presenter_cursor message - missing user data', {
-        messageType: message.message_type,
-        user: message.user,
-      });
-      return;
-    }
-
     // Guard against missing cursor position
     if (!message.cursor_position) {
       this.logger.warn('Received presenter_cursor message without cursor position', {
         messageType: message.message_type,
-        user: message.user.email,
       });
       return;
     }
 
-    this.logger.debugComponent('UiPresenterCoordinator', 'Handling presenter cursor update', {
-      userCompositeKey: `${message.user.provider}:${message.user.provider_id}`,
-      userEmail: message.user.email,
+    // Per AsyncAPI spec, user field is optional (presenter tracked via current_presenter message)
+    const debugInfo: Record<string, unknown> = {
       position: message.cursor_position,
-    });
+    };
+
+    if (message.user) {
+      debugInfo['userCompositeKey'] = `${message.user.provider}:${message.user.provider_id}`;
+      debugInfo['userEmail'] = message.user.email;
+    }
+
+    this.logger.debugComponent('UiPresenterCoordinator', 'Handling presenter cursor update', debugInfo);
 
     // Delegate to cursor display service
     this.uiPresenterCursorDisplayService.handlePresenterCursorUpdate(message.cursor_position);
@@ -123,35 +114,26 @@ export class UiPresenterCoordinatorService implements OnDestroy {
    * Handle incoming presenter selection messages
    */
   private _handlePresenterSelection(message: PresenterSelectionMessage): void {
-    // Guard against malformed messages that don't conform to AsyncAPI spec
-    if (
-      !message.user ||
-      !message.user.provider ||
-      !message.user.provider_id ||
-      !message.user.email
-    ) {
-      this.logger.warn('Received malformed presenter_selection message - missing user data', {
-        messageType: message.message_type,
-        user: message.user,
-      });
-      return;
-    }
-
     // Guard against missing selected cells
     if (!message.selected_cells) {
       this.logger.warn('Received presenter_selection message without selected_cells', {
         messageType: message.message_type,
-        user: message.user.email,
       });
       return;
     }
 
-    this.logger.debugComponent('UiPresenterCoordinator', 'Handling presenter selection update', {
-      userCompositeKey: `${message.user.provider}:${message.user.provider_id}`,
-      userEmail: message.user.email,
+    // Per AsyncAPI spec, user field is optional (presenter tracked via current_presenter message)
+    const debugInfo: Record<string, unknown> = {
       cellCount: message.selected_cells.length,
       selectedCells: message.selected_cells,
-    });
+    };
+
+    if (message.user) {
+      debugInfo['userCompositeKey'] = `${message.user.provider}:${message.user.provider_id}`;
+      debugInfo['userEmail'] = message.user.email;
+    }
+
+    this.logger.debugComponent('UiPresenterCoordinator', 'Handling presenter selection update', debugInfo);
 
     // Delegate to selection service
     this.uiPresenterSelectionService.handlePresenterSelectionUpdate(message.selected_cells);

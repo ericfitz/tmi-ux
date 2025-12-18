@@ -207,7 +207,7 @@ describe('UiPresenterCoordinatorService', () => {
       );
     });
 
-    it('should reject message with missing user', () => {
+    it('should handle message without user field (per AsyncAPI spec)', () => {
       const message = {
         message_type: 'presenter_cursor',
         cursor_position: { x: 100, y: 200 },
@@ -215,76 +215,17 @@ describe('UiPresenterCoordinatorService', () => {
 
       presenterCursorSubject.next(message);
 
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Received malformed presenter_cursor message - missing user data',
-        expect.any(Object),
+      expect(mockUiPresenterCursorDisplayService.handlePresenterCursorUpdate).toHaveBeenCalledWith({
+        x: 100,
+        y: 200,
+      });
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+        'UiPresenterCoordinator',
+        'Handling presenter cursor update',
+        expect.objectContaining({
+          position: { x: 100, y: 200 },
+        }),
       );
-      expect(
-        mockUiPresenterCursorDisplayService.handlePresenterCursorUpdate,
-      ).not.toHaveBeenCalled();
-    });
-
-    it('should reject message with missing user.provider', () => {
-      const message = {
-        message_type: 'presenter_cursor',
-        user: {
-          provider_id: 'user-123',
-          email: 'user@example.com',
-        },
-        cursor_position: { x: 100, y: 200 },
-      } as PresenterCursorMessage;
-
-      presenterCursorSubject.next(message);
-
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Received malformed presenter_cursor message - missing user data',
-        expect.any(Object),
-      );
-      expect(
-        mockUiPresenterCursorDisplayService.handlePresenterCursorUpdate,
-      ).not.toHaveBeenCalled();
-    });
-
-    it('should reject message with missing user.provider_id', () => {
-      const message = {
-        message_type: 'presenter_cursor',
-        user: {
-          provider: 'google',
-          email: 'user@example.com',
-        },
-        cursor_position: { x: 100, y: 200 },
-      } as PresenterCursorMessage;
-
-      presenterCursorSubject.next(message);
-
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Received malformed presenter_cursor message - missing user data',
-        expect.any(Object),
-      );
-      expect(
-        mockUiPresenterCursorDisplayService.handlePresenterCursorUpdate,
-      ).not.toHaveBeenCalled();
-    });
-
-    it('should reject message with missing user.email', () => {
-      const message = {
-        message_type: 'presenter_cursor',
-        user: {
-          provider: 'google',
-          provider_id: 'user-123',
-        },
-        cursor_position: { x: 100, y: 200 },
-      } as PresenterCursorMessage;
-
-      presenterCursorSubject.next(message);
-
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Received malformed presenter_cursor message - missing user data',
-        expect.any(Object),
-      );
-      expect(
-        mockUiPresenterCursorDisplayService.handlePresenterCursorUpdate,
-      ).not.toHaveBeenCalled();
     });
 
     it('should reject message with missing cursor_position', () => {
@@ -377,76 +318,26 @@ describe('UiPresenterCoordinatorService', () => {
       );
     });
 
-    it('should reject message with missing user', () => {
+    it('should handle message without user field (per AsyncAPI spec)', () => {
       const message = {
         message_type: 'presenter_selection',
-        selected_cells: ['cell-1'],
+        selected_cells: ['cell-1', 'cell-2'],
       } as PresenterSelectionMessage;
 
       presenterSelectionSubject.next(message);
 
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Received malformed presenter_selection message - missing user data',
-        expect.any(Object),
+      expect(mockUiPresenterSelectionService.handlePresenterSelectionUpdate).toHaveBeenCalledWith([
+        'cell-1',
+        'cell-2',
+      ]);
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+        'UiPresenterCoordinator',
+        'Handling presenter selection update',
+        expect.objectContaining({
+          cellCount: 2,
+          selectedCells: ['cell-1', 'cell-2'],
+        }),
       );
-      expect(mockUiPresenterSelectionService.handlePresenterSelectionUpdate).not.toHaveBeenCalled();
-    });
-
-    it('should reject message with missing user.provider', () => {
-      const message = {
-        message_type: 'presenter_selection',
-        user: {
-          provider_id: 'user-123',
-          email: 'user@example.com',
-        },
-        selected_cells: ['cell-1'],
-      } as PresenterSelectionMessage;
-
-      presenterSelectionSubject.next(message);
-
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Received malformed presenter_selection message - missing user data',
-        expect.any(Object),
-      );
-      expect(mockUiPresenterSelectionService.handlePresenterSelectionUpdate).not.toHaveBeenCalled();
-    });
-
-    it('should reject message with missing user.provider_id', () => {
-      const message = {
-        message_type: 'presenter_selection',
-        user: {
-          provider: 'google',
-          email: 'user@example.com',
-        },
-        selected_cells: ['cell-1'],
-      } as PresenterSelectionMessage;
-
-      presenterSelectionSubject.next(message);
-
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Received malformed presenter_selection message - missing user data',
-        expect.any(Object),
-      );
-      expect(mockUiPresenterSelectionService.handlePresenterSelectionUpdate).not.toHaveBeenCalled();
-    });
-
-    it('should reject message with missing user.email', () => {
-      const message = {
-        message_type: 'presenter_selection',
-        user: {
-          provider: 'google',
-          provider_id: 'user-123',
-        },
-        selected_cells: ['cell-1'],
-      } as PresenterSelectionMessage;
-
-      presenterSelectionSubject.next(message);
-
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Received malformed presenter_selection message - missing user data',
-        expect.any(Object),
-      );
-      expect(mockUiPresenterSelectionService.handlePresenterSelectionUpdate).not.toHaveBeenCalled();
     });
 
     it('should reject message with missing selected_cells', () => {
