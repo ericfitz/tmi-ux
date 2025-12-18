@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "0.12.1269",
+  "version": "0.12.1270",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -54,6 +54,7 @@
     "check:security": "tsx scripts/check-security.ts",
     "build:hosted-container": "ng build --configuration=hosted-container",
     "heroku-postbuild": "ng build --configuration=hosted-container",
+    "scan:trivy": "trivy fs --ignorefile ./.trivyignore.yaml .",
     "deploy:heroku": "./scripts/push-heroku.sh",
     "sync:docs-server": "node ./scripts/sync-server-docs.js"
   },

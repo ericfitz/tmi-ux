@@ -1,0 +1,10 @@
+vulnerabilities:
+
+misconfigurations:
+
+secrets:
+  - id: jwt-token
+    paths:
+      - 'src/app/auth/services/auth.service.spec.ts'
+
+licenses:
