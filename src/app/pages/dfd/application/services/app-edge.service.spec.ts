@@ -93,6 +93,14 @@ describe('AppEdgeService - Comprehensive Tests', () => {
       execute: vi.fn().mockReturnValue(of({ success: true, affectedCellIds: [] })),
     };
 
+    // Create mock AppStateService
+    const mockAppStateService = {
+      getCurrentState: vi.fn().mockReturnValue({
+        isApplyingUndoRedo: false,
+        isApplyingRemoteChange: false,
+      }),
+    };
+
     // Create service instance
     service = new AppEdgeService(
       mockLogger as unknown as LoggerService,
@@ -102,6 +110,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
       mockEdgeService as unknown as InfraEdgeService,
       mockGraphHistoryCoordinator as unknown as AppOperationStateManager,
       mockGraphOperationManager as any,
+      mockAppStateService as any,
     );
   });
 

@@ -33,6 +33,7 @@ import {
   HISTORY_OPERATION_TYPES,
 } from './app-operation-state-manager.service';
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
+import { AppStateService } from './app-state.service';
 import { CreateEdgeOperation, OperationContext } from '../../types/graph-operation.types';
 import { DFD_STYLING } from '../../constants/styling-constants';
 
@@ -81,6 +82,7 @@ export class AppEdgeService {
     private infraEdgeService: InfraEdgeService,
     private historyCoordinator: AppOperationStateManager,
     private graphOperationManager: AppGraphOperationManager,
+    private appStateService: AppStateService,
   ) {}
 
   // ========================================
@@ -100,6 +102,30 @@ export class AppEdgeService {
     if (!isInitialized) {
       this.logger.warn('Cannot handle edge added: Graph is not initialized');
       throw new Error('Graph is not initialized');
+    }
+
+    // Skip if we're applying undo/redo or remote changes - don't create history
+    const state = this.appStateService.getCurrentState();
+    if (state.isApplyingUndoRedo) {
+      this.logger.debugComponent(
+        'AppEdgeService',
+        'Skipping handleEdgeAdded - applying undo/redo',
+        {
+          edgeId: edge.id,
+        },
+      );
+      return of(undefined);
+    }
+
+    if (state.isApplyingRemoteChange) {
+      this.logger.debugComponent(
+        'AppEdgeService',
+        'Skipping handleEdgeAdded - applying remote change',
+        {
+          edgeId: edge.id,
+        },
+      );
+      return of(undefined);
     }
 
     // Check if this edge was created by user interaction (drag-connect)

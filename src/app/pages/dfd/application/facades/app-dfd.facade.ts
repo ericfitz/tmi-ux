@@ -397,6 +397,18 @@ export class AppDfdFacade {
       return of(undefined);
     }
 
+    // Skip if we're applying remote changes (diagram sync/load) - don't create history
+    if (state.isApplyingRemoteChange) {
+      this.logger.debugComponent(
+        'AppDfdFacade',
+        'Skipping handleNodeAdded - applying remote change',
+        {
+          nodeId: node.id,
+        },
+      );
+      return of(undefined);
+    }
+
     const graph = this.infraX6GraphAdapter.getGraph();
     const nodeId = node.id;
 
