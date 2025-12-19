@@ -67,8 +67,6 @@ export function createMockHistoryService() {
  */
 export function createMockOperationStateManager() {
   return {
-    setDiagramLoadingState: vi.fn(),
-    getDiagramLoadingState: vi.fn(() => false),
     setDragInProgress: vi.fn(),
     getDragInProgress: vi.fn(() => false),
   };

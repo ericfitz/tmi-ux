@@ -39,7 +39,7 @@ export interface OperationStateEvent {
  * AppOperationStateManager service - manages operation state and drag tracking
  *
  * Formerly AppGraphHistoryCoordinator. Now focused on:
- * - Managing operation state flags (isApplyingRemoteChange, isDiagramLoading)
+ * - Managing operation state flags (isApplyingRemoteChange)
  * - Drag completion tracking to coordinate with history recording
  * - Providing utilities for executing operations with suppressed state
  *
@@ -52,7 +52,6 @@ export class AppOperationStateManager {
   private readonly _activeDrags = new Map<string, DragTrackingData>();
   private readonly _dragDebounceMap = new Map<string, number>();
   private readonly DRAG_COMPLETION_DELAY = 150; // ms to wait after drag stops before recording
-  private _diagramLoadingState = false;
   private _currentOperationType: string | null = null;
 
   constructor(private logger: LoggerService) {}
@@ -286,23 +285,6 @@ export class AppOperationStateManager {
   }
 
   /**
-   * Set diagram loading state to suppress history during initial load
-   */
-  setDiagramLoadingState(isLoading: boolean): void {
-    this._diagramLoadingState = isLoading;
-    this.logger.debugComponent('GraphHistoryCoordinator', 'Diagram loading state changed', {
-      isLoading,
-    });
-  }
-
-  /**
-   * Check if diagram is currently loading
-   */
-  isDiagramLoading(): boolean {
-    return this._diagramLoadingState;
-  }
-
-  /**
    * Set current operation type for context-aware filtering
    */
   setCurrentOperationType(operationType: string | null): void {
@@ -317,30 +299,11 @@ export class AppOperationStateManager {
   }
 
   /**
-   * Execute an operation with diagram loading suppression
-   */
-  executeWithDiagramLoading<T>(operation: () => T): T {
-    this.setDiagramLoadingState(true);
-    try {
-      return operation();
-    } finally {
-      this.setDiagramLoadingState(false);
-    }
-  }
-
-  /**
    * Check if an operation should be excluded from history based on type
    */
   shouldExcludeOperationType(operationType?: string): boolean {
     if (!operationType) return false;
     return EXCLUDED_OPERATION_TYPES.has(operationType as any);
-  }
-
-  /**
-   * Check if changes should be excluded during diagram loading
-   */
-  shouldExcludeDuringDiagramLoading(): boolean {
-    return this._diagramLoadingState;
   }
 
   /**

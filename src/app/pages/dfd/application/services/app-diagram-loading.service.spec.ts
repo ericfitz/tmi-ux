@@ -123,33 +123,6 @@ describe('AppDiagramLoadingService', () => {
       expect(mockGraph.clearCells).not.toHaveBeenCalled();
     });
 
-    it('should always suppress history during diagram loading', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-      );
-
-      expect(mockOperationStateManager.setDiagramLoadingState).toHaveBeenCalledWith(true);
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'AppDiagramLoadingService',
-        'Diagram loading state set - history recording prevented',
-      );
-    });
-
-    it('should restore diagram loading state after loading', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-      );
-
-      expect(mockOperationStateManager.setDiagramLoadingState).toHaveBeenCalledWith(true);
-      expect(mockOperationStateManager.setDiagramLoadingState).toHaveBeenCalledWith(false);
-    });
-
     it('should set and restore isApplyingRemoteChange flag', () => {
       service.loadCellsIntoGraph(
         mockCells,
@@ -372,7 +345,6 @@ describe('AppDiagramLoadingService', () => {
       }).toThrow('Loading failed');
 
       // Verify cleanup happened despite error
-      expect(mockOperationStateManager.setDiagramLoadingState).toHaveBeenCalledWith(false);
       expect(mockAppStateService.setApplyingRemoteChange).toHaveBeenCalledWith(false);
     });
 
@@ -478,8 +450,6 @@ describe('AppDiagramLoadingService', () => {
       );
 
       expect(mockGraph.clearCells).not.toHaveBeenCalled();
-      // Diagram loading always sets loading state
-      expect(mockOperationStateManager.setDiagramLoadingState).toHaveBeenCalledWith(true);
       expect(mockX6GraphAdapter.updateAllEmbeddingAppearances).not.toHaveBeenCalled();
       // Z-order should still be recalculated
       expect(mockX6GraphAdapter.recalculateZOrder).toHaveBeenCalled();
@@ -498,7 +468,6 @@ describe('AppDiagramLoadingService', () => {
       );
 
       expect(mockGraph.clearCells).toHaveBeenCalled();
-      expect(mockOperationStateManager.setDiagramLoadingState).toHaveBeenCalledWith(true);
       expect(mockX6GraphAdapter.updateAllEmbeddingAppearances).toHaveBeenCalled();
       expect(mockX6GraphAdapter.recalculateZOrder).toHaveBeenCalled();
     });
@@ -508,9 +477,6 @@ describe('AppDiagramLoadingService', () => {
     it('should set states in correct order', () => {
       const callOrder: string[] = [];
 
-      mockOperationStateManager.setDiagramLoadingState.mockImplementation((value: boolean) => {
-        callOrder.push(`loading:${value}`);
-      });
       mockAppStateService.setApplyingRemoteChange.mockImplementation((value: boolean) => {
         callOrder.push(`remote:${value}`);
       });
@@ -525,13 +491,7 @@ describe('AppDiagramLoadingService', () => {
         mockX6GraphAdapter as any,
       );
 
-      expect(callOrder).toEqual([
-        'loading:true',
-        'remote:true',
-        'load',
-        'remote:false',
-        'loading:false',
-      ]);
+      expect(callOrder).toEqual(['remote:true', 'load', 'remote:false']);
     });
 
     it('should maintain state consistency even with nested errors', () => {
@@ -549,7 +509,6 @@ describe('AppDiagramLoadingService', () => {
       }).toThrow('Embedding update failed');
 
       // State should still be restored
-      expect(mockOperationStateManager.setDiagramLoadingState).toHaveBeenCalledWith(false);
       expect(mockAppStateService.setApplyingRemoteChange).toHaveBeenCalledWith(false);
     });
   });

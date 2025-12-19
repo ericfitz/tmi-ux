@@ -41,73 +41,8 @@ describe('AppOperationStateManager', () => {
       newService.dispose();
     });
 
-    it('should initialize with no diagram loading state', () => {
-      expect(service.isDiagramLoading()).toBe(false);
-    });
-
     it('should initialize with no active drags', () => {
       expect(service.isAnyDragInProgress()).toBe(false);
-    });
-  });
-
-  describe('Diagram Loading State', () => {
-    it('should set diagram loading state', () => {
-      service.setDiagramLoadingState(true);
-
-      expect(service.isDiagramLoading()).toBe(true);
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'GraphHistoryCoordinator',
-        'Diagram loading state changed',
-        { isLoading: true },
-      );
-    });
-
-    it('should clear diagram loading state', () => {
-      service.setDiagramLoadingState(true);
-      service.setDiagramLoadingState(false);
-
-      expect(service.isDiagramLoading()).toBe(false);
-    });
-
-    it('should exclude operations during diagram loading', () => {
-      service.setDiagramLoadingState(true);
-
-      expect(service.shouldExcludeDuringDiagramLoading()).toBe(true);
-    });
-
-    it('should not exclude operations when not loading', () => {
-      service.setDiagramLoadingState(false);
-
-      expect(service.shouldExcludeDuringDiagramLoading()).toBe(false);
-    });
-  });
-
-  describe('executeWithDiagramLoading()', () => {
-    it('should execute operation with diagram loading suppression', () => {
-      const operation = vi.fn(() => 'result');
-
-      const result = service.executeWithDiagramLoading(operation);
-
-      expect(result).toBe('result');
-      expect(operation).toHaveBeenCalled();
-    });
-
-    it('should restore loading state after operation', () => {
-      service.executeWithDiagramLoading(() => {
-        expect(service.isDiagramLoading()).toBe(true);
-      });
-
-      expect(service.isDiagramLoading()).toBe(false);
-    });
-
-    it('should restore loading state even on error', () => {
-      expect(() => {
-        service.executeWithDiagramLoading(() => {
-          throw new Error('Operation failed');
-        });
-      }).toThrow('Operation failed');
-
-      expect(service.isDiagramLoading()).toBe(false);
     });
   });
 

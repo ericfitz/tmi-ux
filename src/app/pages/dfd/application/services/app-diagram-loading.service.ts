@@ -66,13 +66,6 @@ export class AppDiagramLoadingService {
     });
 
     try {
-      // Always set diagram loading state to prevent history creation during load
-      this.historyCoordinator.setDiagramLoadingState(true);
-      this.logger.debugComponent(
-        'AppDiagramLoadingService',
-        'Diagram loading state set - history recording prevented',
-      );
-
       // Set isApplyingRemoteChange flag to prevent collaboration broadcasts
       // This prevents diagram load operations from being broadcast to collaborators
       // CRITICAL: Must be set BEFORE clearing cells to prevent broadcasts
@@ -158,13 +151,6 @@ export class AppDiagramLoadingService {
             'Cleared isApplyingRemoteChange flag - broadcasts restored',
           );
         }
-
-        // Always clear the diagram loading state to allow normal history recording
-        this.historyCoordinator.setDiagramLoadingState(false);
-        this.logger.debugComponent(
-          'AppDiagramLoadingService',
-          'Diagram loading state cleared - history recording restored',
-        );
       }
     } catch (error) {
       this.logger.error('Error loading diagram cells', error);
