@@ -47,6 +47,7 @@ import {
   NodeData,
 } from '../../types/graph-operation.types';
 import { normalizeCells } from '../../utils/cell-normalization.util';
+import { shouldTriggerHistoryOrPersistence } from '../../utils/cell-property-filter.util';
 import { DFD_STYLING } from '../../constants/styling-constants';
 
 // Simple interfaces that match what the tests expect
@@ -1492,6 +1493,47 @@ export class AppDfdOrchestrator {
       return false;
     }
 
+    // Property-level filtering: check if changes are only to excluded properties
+    // If ALL changes are to excluded properties (visual effects, ports, zIndex, tools),
+    // then skip recording in history
+    if (result.affectedCellIds && result.affectedCellIds.length > 0) {
+      const graph = this.dfdInfrastructure.getGraph();
+      if (!graph) {
+        return true; // Can't check cells, allow recording
+      }
+
+      // Check each affected cell
+      const allCellsOnlyHaveExcludedChanges = result.affectedCellIds.every(cellId => {
+        const currentCell = graph.getCellById(cellId);
+        if (!currentCell) {
+          return false; // Cell doesn't exist, can't filter
+        }
+
+        // Find the previous state for this cell
+        const previousCellData = result.previousState?.find((c: any) => c.id === cellId);
+        if (!previousCellData) {
+          return false; // No previous state, can't filter
+        }
+
+        const currentCellData = currentCell.toJSON();
+
+        // Use property filter to determine if changes should trigger history
+        return !shouldTriggerHistoryOrPersistence(previousCellData, currentCellData);
+      });
+
+      if (allCellsOnlyHaveExcludedChanges) {
+        this.logger.debugComponent(
+          'AppDfdOrchestrator',
+          'Skipping history - all changes are to excluded properties',
+          {
+            operationId: operation.id,
+            affectedCellIds: result.affectedCellIds,
+          },
+        );
+        return false;
+      }
+    }
+
     return true;
   }
 
@@ -1526,8 +1568,9 @@ export class AppDfdOrchestrator {
     const userId = this.authService.providerId;
 
     // Use state snapshots from the operation result
-    const currentCells = result.currentState || [];
-    const previousCells = result.previousState || [];
+    // IMPORTANT: Normalize cells to remove excluded properties (visual effects, tools, etc.)
+    const currentCells = normalizeCells(result.currentState || []);
+    const previousCells = normalizeCells(result.previousState || []);
 
     // Generate description based on operation type
     const description = this._generateOperationDescription(operation, currentCells.length);

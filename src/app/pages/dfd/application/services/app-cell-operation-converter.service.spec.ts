@@ -311,7 +311,7 @@ describe('AppCellOperationConverterService', () => {
       expect(operation.nodeData.label).toBeUndefined();
     });
 
-    it('should include additional X6 properties', () => {
+    it('should include additional X6 properties (excluding sanitized ones)', () => {
       const cell: Cell = {
         id: 'node1',
         shape: 'process',
@@ -321,7 +321,7 @@ describe('AppCellOperationConverterService', () => {
         ports: { items: [] },
         data: { customData: 'test' },
         visible: true,
-        zIndex: 1,
+        zIndex: 1, // Will be removed by sanitization
       };
 
       const baseOperation = {
@@ -336,7 +336,8 @@ describe('AppCellOperationConverterService', () => {
       expect(operation.nodeData.properties.ports).toEqual({ items: [] });
       expect(operation.nodeData.properties.data).toEqual({ customData: 'test' });
       expect(operation.nodeData.properties.visible).toBe(true);
-      expect(operation.nodeData.properties.zIndex).toBe(1);
+      // zIndex is now excluded by cell property filter (sanitized from cells)
+      expect(operation.nodeData.properties.zIndex).toBeUndefined();
     });
   });
 

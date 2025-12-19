@@ -2,8 +2,7 @@
  * Cell normalization utilities for diagram persistence
  *
  * Normalizes cell data before saving to ensure consistency:
- * - Removes visual effect filters (text/filter, body/filter, line/filter, etc.)
- * - Removes the tools property (runtime UI-only state)
+ * - Sanitizes cells using comprehensive property filter (removes visual effects, tools, etc.)
  * - Rounds position and size coordinates to integers
  * - For edges: keeps only the first label
  *
@@ -12,35 +11,16 @@
  */
 
 import { Cell } from '../../../core/types/websocket-message.types';
+import { sanitizeCell } from './cell-property-filter.util';
 
 /**
  * Normalizes a single cell for persistence
  * Expects cell in X6 v2 nested format with position {x, y} and size {width, height}
  */
 export function normalizeCell(cell: Cell): Cell {
-  const normalized: Cell = { ...cell };
-
-  // Remove all filter attributes from attrs
-  // X6 stores attrs as nested objects: { body: { filter: "...", fill: "#fff" } }
-  // We need to remove the 'filter' property from each nested object
-  if (normalized.attrs) {
-    const filteredAttrs: Record<string, unknown> = {};
-    Object.keys(normalized.attrs).forEach(key => {
-      const value = normalized.attrs![key];
-      // If value is an object (not null, not array), remove 'filter' property
-      if (value && typeof value === 'object' && !Array.isArray(value)) {
-        const { filter, ...rest } = value as Record<string, unknown>;
-        filteredAttrs[key] = rest;
-      } else {
-        // Preserve non-object values as-is
-        filteredAttrs[key] = value;
-      }
-    });
-    normalized.attrs = filteredAttrs;
-  }
-
-  // Remove tools property (runtime UI-only state)
-  delete normalized['tools'];
+  // First, sanitize the cell using the comprehensive property filter
+  // This removes all excluded properties (visual effects, tools, zIndex, port visibility, etc.)
+  let normalized = sanitizeCell(cell);
 
   // Round position coordinates to nearest integer
   if (normalized.position) {
