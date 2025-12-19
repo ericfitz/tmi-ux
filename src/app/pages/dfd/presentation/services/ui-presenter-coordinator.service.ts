@@ -104,7 +104,11 @@ export class UiPresenterCoordinatorService implements OnDestroy {
       debugInfo['userEmail'] = message.user.email;
     }
 
-    this.logger.debugComponent('UiPresenterCoordinator', 'Handling presenter cursor update', debugInfo);
+    this.logger.debugComponent(
+      'UiPresenterCoordinator',
+      'Handling presenter cursor update',
+      debugInfo,
+    );
 
     // Delegate to cursor display service
     this.uiPresenterCursorDisplayService.handlePresenterCursorUpdate(message.cursor_position);
@@ -133,7 +137,11 @@ export class UiPresenterCoordinatorService implements OnDestroy {
       debugInfo['userEmail'] = message.user.email;
     }
 
-    this.logger.debugComponent('UiPresenterCoordinator', 'Handling presenter selection update', debugInfo);
+    this.logger.debugComponent(
+      'UiPresenterCoordinator',
+      'Handling presenter selection update',
+      debugInfo,
+    );
 
     // Delegate to selection service
     this.uiPresenterSelectionService.handlePresenterSelectionUpdate(message.selected_cells);
