@@ -20,7 +20,7 @@ import { sanitizeCell } from './cell-property-filter.util';
 export function normalizeCell(cell: Cell): Cell {
   // First, sanitize the cell using the comprehensive property filter
   // This removes all excluded properties (visual effects, tools, zIndex, port visibility, etc.)
-  let normalized = sanitizeCell(cell);
+  const normalized = sanitizeCell(cell);
 
   // Round position coordinates to nearest integer
   if (normalized.position) {

@@ -1793,7 +1793,7 @@ export class AppDfdOrchestrator {
       this.dfdInfrastructure.graphAdapter,
       {
         clearExisting: true, // Clear any existing cells
-        updateEmbedding: true, // Update embedding appearances
+        updateEmbedding: false, // Server already has correct embedding colors
         source: 'collaboration-sync', // Mark source for logging
       },
     );

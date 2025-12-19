@@ -126,7 +126,7 @@ export function extractPropertyPaths(
   const paths = new Set<string>();
 
   for (const key in obj) {
-    if (!obj.hasOwnProperty(key)) continue;
+    if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
 
     const path = prefix ? `${prefix}.${key}` : key;
     const value = obj[key];
@@ -173,10 +173,7 @@ export function extractPropertyPaths(
  * Returns false if ALL changed properties are in the exclusion list.
  * Returns true if ANY changed property is NOT in the exclusion list.
  */
-export function shouldTriggerHistoryOrPersistence(
-  previousCell: Cell,
-  currentCell: Cell,
-): boolean {
+export function shouldTriggerHistoryOrPersistence(previousCell: Cell, currentCell: Cell): boolean {
   // Build a change object containing only changed properties
   const changes = buildChangeObject(previousCell, currentCell);
 
@@ -202,12 +199,15 @@ export function shouldTriggerHistoryOrPersistence(
  * Build an object containing only the changed properties between two cells
  * Recursively compares nested objects to only include actually changed leaf values
  */
-function buildChangeObject(previous: Cell, current: Cell): Record<string, any> {
+function buildChangeObject(
+  previous: Cell | Record<string, any>,
+  current: Cell | Record<string, any>,
+): Record<string, any> {
   const changes: Record<string, any> = {};
 
   // Compare all keys in current cell
   for (const key in current) {
-    if (!current.hasOwnProperty(key)) continue;
+    if (!Object.prototype.hasOwnProperty.call(current, key)) continue;
 
     const currentValue = current[key];
     const previousValue = previous[key];
@@ -268,7 +268,7 @@ function buildChangeObject(previous: Cell, current: Cell): Record<string, any> {
 
   // Check for deleted keys (in previous but not in current)
   for (const key in previous) {
-    if (!previous.hasOwnProperty(key)) continue;
+    if (!Object.prototype.hasOwnProperty.call(previous, key)) continue;
     if (!(key in current)) {
       changes[key] = undefined; // Deletion
     }
@@ -362,7 +362,7 @@ function removePropertyRecursive(
   }
   // Handle array index or wildcard
   else if (Array.isArray(obj)) {
-    obj.forEach((item, idx) => {
+    obj.forEach(item => {
       if (isLastSegment) {
         // Don't delete array items, just recurse into them
         removePropertyRecursive(item, segments, index + 1, originalPattern);

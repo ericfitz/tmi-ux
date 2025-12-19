@@ -43,12 +43,7 @@ describe('Cell Property Filter Utility', () => {
             '$.ports.items[*].attrs.circle.style.visibility',
           ),
         ).toBe(true);
-        expect(
-          JSONPathMatcher.matches(
-            'tools[0].name',
-            '$.tools[*]',
-          ),
-        ).toBe(true);
+        expect(JSONPathMatcher.matches('tools[0].name', '$.tools[*]')).toBe(true);
       });
 
       it('should match object wildcard patterns', () => {
@@ -132,10 +127,7 @@ describe('Cell Property Filter Utility', () => {
 
     it('should extract array paths with indices (all paths)', () => {
       const obj = {
-        tools: [
-          { name: 'button-remove' },
-          { name: 'boundary' },
-        ],
+        tools: [{ name: 'button-remove' }, { name: 'boundary' }],
       };
       const paths = extractPropertyPaths(obj, '', false);
       expect(paths.has('tools')).toBe(true);
@@ -364,10 +356,7 @@ describe('Cell Property Filter Utility', () => {
       const cell: Cell = {
         id: 'node1',
         shape: 'rect',
-        tools: [
-          { name: 'button-remove' },
-          { name: 'boundary' },
-        ],
+        tools: [{ name: 'button-remove' }, { name: 'boundary' }],
       };
 
       const sanitized = sanitizeCell(cell);
