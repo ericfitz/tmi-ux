@@ -73,12 +73,6 @@ export class AppDiagramLoadingService {
     });
 
     try {
-      // Clear existing cells if requested
-      if (clearExisting) {
-        graph.clearCells();
-        this.logger.debugComponent('AppDiagramLoadingService', 'Cleared existing cells from graph');
-      }
-
       // Handle history suppression using GraphHistoryCoordinator
       let wasLoadingStateSuppressed = false;
 
@@ -94,6 +88,7 @@ export class AppDiagramLoadingService {
 
       // Set isApplyingRemoteChange flag to prevent collaboration broadcasts
       // This prevents diagram load operations from being broadcast to collaborators
+      // CRITICAL: Must be set BEFORE clearing cells to prevent broadcasts
       const wasApplyingRemoteChange = this.appStateService.getCurrentState().isApplyingRemoteChange;
       if (!wasApplyingRemoteChange) {
         this.appStateService.setApplyingRemoteChange(true);
@@ -101,6 +96,13 @@ export class AppDiagramLoadingService {
           'AppDiagramLoadingService',
           'Set isApplyingRemoteChange flag - broadcasts suppressed',
         );
+      }
+
+      // Clear existing cells if requested
+      // This must happen AFTER setting isApplyingRemoteChange to prevent broadcasts
+      if (clearExisting) {
+        graph.clearCells();
+        this.logger.debugComponent('AppDiagramLoadingService', 'Cleared existing cells from graph');
       }
 
       try {
