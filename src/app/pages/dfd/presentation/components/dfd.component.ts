@@ -428,32 +428,36 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
               'Auto-joining collaboration session (joinCollaboration=true from query param)',
             );
             // Automatically start/join collaboration which will establish WebSocket
-            // and then load the diagram
+            // The diagram will be loaded via diagram_state_sync WebSocket message
             this._subscriptions.add(
               this.collaborationService.startOrJoinCollaboration().subscribe({
                 next: success => {
                   if (success) {
                     this.logger.info(
-                      'Successfully joined collaboration session, now loading diagram',
+                      'Successfully joined collaboration session - waiting for diagram_state_sync',
                     );
 
                     // Note: Collaboration services (broadcaster and WebSocket adapter) are
                     // initialized automatically via the isCollaborating$ subscription
                     // in setupOrchestratorSubscriptions()
 
-                    // Now that WebSocket is connected, load the diagram
-                    if (this.dfdId) {
-                      this.loadDiagramData(this.dfdId);
-                    }
+                    // Note: The diagram will be loaded automatically when the server sends
+                    // a diagram_state_sync message. We must NOT call loadDiagramData() here
+                    // to avoid duplicate cell creation.
                   } else {
                     this.logger.error('Failed to join collaboration session');
+                    // Fall back to loading via REST API if collaboration fails
+                    if (this.dfdId) {
+                      this.logger.info('Falling back to non-collaborative load via REST API');
+                      this.loadDiagramData(this.dfdId);
+                    }
                   }
                 },
                 error: error => {
                   this.logger.error('Error joining collaboration session', { error });
                   // Fall back to loading without collaboration
                   if (this.dfdId) {
-                    this.logger.info('Falling back to non-collaborative load');
+                    this.logger.info('Falling back to non-collaborative load via REST API');
                     this.loadDiagramData(this.dfdId);
                   }
                 },

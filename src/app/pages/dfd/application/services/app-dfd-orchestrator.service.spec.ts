@@ -185,6 +185,7 @@ describe('AppDfdOrchestrator', () => {
 
     const historyModifiedSubject = new Subject();
     const triggerResyncSubject = new Subject();
+    const diagramStateSyncSubject = new Subject();
 
     mockDfdFacade = {
       initializeGraph: vi.fn().mockReturnValue(of(true)),
@@ -204,6 +205,7 @@ describe('AppDfdOrchestrator', () => {
 
     mockAppStateService = {
       triggerResyncEvents$: triggerResyncSubject.asObservable(),
+      diagramStateSyncEvents$: diagramStateSyncSubject.asObservable(),
       getState: vi.fn(),
       setState: vi.fn(),
       initialize: vi.fn(),

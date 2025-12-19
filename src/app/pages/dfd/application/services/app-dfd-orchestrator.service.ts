@@ -1429,6 +1429,11 @@ export class AppDfdOrchestrator {
       this.logger.info('State correction triggered - initiating diagram resynchronization');
       this.appDiagramResyncService.triggerResync();
     });
+
+    // Subscribe to diagram_state_sync events for initial collaboration join
+    this.appStateService.diagramStateSyncEvents$.subscribe(event => {
+      this._handleDiagramStateSync(event);
+    });
   }
 
   /**
@@ -1712,6 +1717,55 @@ export class AppDfdOrchestrator {
         dragType,
       },
     );
+  }
+
+  /**
+   * Handle diagram_state_sync event from WebSocket when joining collaboration
+   * This loads the initial diagram state without triggering any broadcasts
+   */
+  private _handleDiagramStateSync(event: {
+    diagram_id: string;
+    update_vector: number | null;
+    cells: any[];
+  }): void {
+    const graph = this.dfdInfrastructure.getGraph();
+    if (!graph) {
+      this.logger.error('Cannot handle diagram_state_sync - graph not initialized');
+      return;
+    }
+
+    this.logger.info('Handling diagram_state_sync for collaboration join', {
+      diagramId: event.diagram_id,
+      updateVector: event.update_vector,
+      cellCount: event.cells.length,
+    });
+
+    // Use the diagram loading service to load cells with proper suppression
+    this.appDiagramLoadingService.loadCellsIntoGraph(
+      event.cells,
+      graph,
+      event.diagram_id,
+      this.dfdInfrastructure.graphAdapter,
+      {
+        clearExisting: true, // Clear any existing cells
+        suppressHistory: true, // Don't create history entries
+        updateEmbedding: true, // Update embedding appearances
+        source: 'collaboration-sync', // Mark source for logging
+      },
+    );
+
+    // Update the state store with the server's update vector (if provided)
+    if (event.update_vector !== null && event.update_vector !== undefined) {
+      this.dfdStateStore.updateState(
+        { updateVector: event.update_vector },
+        'AppDfdOrchestrator.diagramStateSync',
+      );
+    }
+
+    this.logger.info('Diagram state sync completed successfully', {
+      cellCount: event.cells.length,
+      updateVector: event.update_vector,
+    });
   }
 
   /**
