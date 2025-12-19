@@ -231,7 +231,6 @@ describe('AppDiagramResyncService', () => {
         mockX6GraphAdapter,
         {
           clearExisting: true,
-          suppressHistory: true,
           updateEmbedding: true,
           source: 'resync',
         },

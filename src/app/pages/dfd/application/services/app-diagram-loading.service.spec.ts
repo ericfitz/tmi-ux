@@ -123,21 +123,18 @@ describe('AppDiagramLoadingService', () => {
       expect(mockGraph.clearCells).not.toHaveBeenCalled();
     });
 
-    it('should suppress history when suppressHistory is true', () => {
+    it('should always suppress history during diagram loading', () => {
       service.loadCellsIntoGraph(
         mockCells,
         mockGraph as any,
         'diagram-123',
         mockX6GraphAdapter as any,
-        {
-          suppressHistory: true,
-        },
       );
 
       expect(mockOperationStateManager.setDiagramLoadingState).toHaveBeenCalledWith(true);
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'AppDiagramLoadingService',
-        'Diagram loading state set - history recording suppressed',
+        'Diagram loading state set - history recording prevented',
       );
     });
 
@@ -147,27 +144,10 @@ describe('AppDiagramLoadingService', () => {
         mockGraph as any,
         'diagram-123',
         mockX6GraphAdapter as any,
-        {
-          suppressHistory: true,
-        },
       );
 
       expect(mockOperationStateManager.setDiagramLoadingState).toHaveBeenCalledWith(true);
       expect(mockOperationStateManager.setDiagramLoadingState).toHaveBeenCalledWith(false);
-    });
-
-    it('should not suppress history when suppressHistory is false', () => {
-      service.loadCellsIntoGraph(
-        mockCells,
-        mockGraph as any,
-        'diagram-123',
-        mockX6GraphAdapter as any,
-        {
-          suppressHistory: false,
-        },
-      );
-
-      expect(mockOperationStateManager.setDiagramLoadingState).not.toHaveBeenCalled();
     });
 
     it('should set and restore isApplyingRemoteChange flag', () => {
@@ -388,9 +368,6 @@ describe('AppDiagramLoadingService', () => {
           mockGraph as any,
           'diagram-123',
           mockX6GraphAdapter as any,
-          {
-            suppressHistory: true,
-          },
         );
       }).toThrow('Loading failed');
 
@@ -496,13 +473,13 @@ describe('AppDiagramLoadingService', () => {
         mockX6GraphAdapter as any,
         {
           clearExisting: false,
-          suppressHistory: false,
           updateEmbedding: false,
         },
       );
 
       expect(mockGraph.clearCells).not.toHaveBeenCalled();
-      expect(mockOperationStateManager.setDiagramLoadingState).not.toHaveBeenCalled();
+      // Diagram loading always sets loading state
+      expect(mockOperationStateManager.setDiagramLoadingState).toHaveBeenCalledWith(true);
       expect(mockX6GraphAdapter.updateAllEmbeddingAppearances).not.toHaveBeenCalled();
       // Z-order should still be recalculated
       expect(mockX6GraphAdapter.recalculateZOrder).toHaveBeenCalled();
@@ -516,7 +493,6 @@ describe('AppDiagramLoadingService', () => {
         mockX6GraphAdapter as any,
         {
           clearExisting: true,
-          suppressHistory: true,
           updateEmbedding: true,
         },
       );
@@ -547,9 +523,6 @@ describe('AppDiagramLoadingService', () => {
         mockGraph as any,
         'diagram-123',
         mockX6GraphAdapter as any,
-        {
-          suppressHistory: true,
-        },
       );
 
       expect(callOrder).toEqual([
@@ -572,9 +545,6 @@ describe('AppDiagramLoadingService', () => {
           mockGraph as any,
           'diagram-123',
           mockX6GraphAdapter as any,
-          {
-            suppressHistory: true,
-          },
         );
       }).toThrow('Embedding update failed');
 

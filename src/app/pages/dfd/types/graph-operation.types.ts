@@ -46,6 +46,7 @@ export interface GraphOperation {
   readonly timestamp: number;
   readonly userId?: string;
   readonly metadata?: Record<string, unknown>;
+  readonly includeInHistory?: boolean;
 }
 
 /**
@@ -179,11 +180,6 @@ export interface OperationContext {
   readonly userId: string;
   readonly isCollaborating: boolean;
   readonly permissions: string[];
-  readonly suppressHistory?: boolean;
-  readonly suppressAutoSave?: boolean;
-  readonly suppressVisualEffects?: boolean;
-  readonly suppressValidation?: boolean;
-  readonly suppressBroadcast?: boolean;
 }
 
 /**

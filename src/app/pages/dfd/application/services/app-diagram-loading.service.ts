@@ -25,8 +25,6 @@ import { DFD_STYLING } from '../../constants/styling-constants';
 export interface CellLoadingOptions {
   /** Clear existing cells before loading new ones */
   clearExisting?: boolean;
-  /** Suppress history tracking during load */
-  suppressHistory?: boolean;
   /** Update embedding appearances after load */
   updateEmbedding?: boolean;
   /** Source of the loading operation for logging */
@@ -57,34 +55,23 @@ export class AppDiagramLoadingService {
     infraX6GraphAdapter: InfraX6GraphAdapter,
     options: CellLoadingOptions = {},
   ): void {
-    const {
-      clearExisting = false,
-      suppressHistory = true,
-      updateEmbedding = true,
-      source = 'unknown',
-    } = options;
+    const { clearExisting = false, updateEmbedding = true, source = 'unknown' } = options;
 
     this.logger.debugComponent('DfdDiagram', 'Loading diagram cells into graph', {
       cellCount: cells.length,
       diagramId,
       source,
-      options: { clearExisting, suppressHistory, updateEmbedding },
+      options: { clearExisting, updateEmbedding },
       cells: cells.map(cell => ({ id: cell.id, shape: cell.shape })),
     });
 
     try {
-      // Handle history suppression using GraphHistoryCoordinator
-      let wasLoadingStateSuppressed = false;
-
-      if (suppressHistory) {
-        // Set diagram loading state to suppress history via the coordinator
-        wasLoadingStateSuppressed = true;
-        this.historyCoordinator.setDiagramLoadingState(true);
-        this.logger.debugComponent(
-          'AppDiagramLoadingService',
-          'Diagram loading state set - history recording suppressed',
-        );
-      }
+      // Always set diagram loading state to prevent history creation during load
+      this.historyCoordinator.setDiagramLoadingState(true);
+      this.logger.debugComponent(
+        'AppDiagramLoadingService',
+        'Diagram loading state set - history recording prevented',
+      );
 
       // Set isApplyingRemoteChange flag to prevent collaboration broadcasts
       // This prevents diagram load operations from being broadcast to collaborators
@@ -172,15 +159,12 @@ export class AppDiagramLoadingService {
           );
         }
 
-        // Restore diagram loading state if it was modified
-        if (wasLoadingStateSuppressed) {
-          // Clear the diagram loading state to allow normal history recording
-          this.historyCoordinator.setDiagramLoadingState(false);
-          this.logger.debugComponent(
-            'AppDiagramLoadingService',
-            'Diagram loading state cleared - history recording restored',
-          );
-        }
+        // Always clear the diagram loading state to allow normal history recording
+        this.historyCoordinator.setDiagramLoadingState(false);
+        this.logger.debugComponent(
+          'AppDiagramLoadingService',
+          'Diagram loading state cleared - history recording restored',
+        );
       }
     } catch (error) {
       this.logger.error('Error loading diagram cells', error);

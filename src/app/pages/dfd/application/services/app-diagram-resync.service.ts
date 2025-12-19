@@ -292,7 +292,6 @@ export class AppDiagramResyncService implements OnDestroy {
             this._currentX6GraphAdapter,
             {
               clearExisting: true, // Clear existing cells for full resync
-              suppressHistory: true, // Don't create history entries
               updateEmbedding: true, // Update embedding appearances
               source: 'resync', // Mark source for logging
             },

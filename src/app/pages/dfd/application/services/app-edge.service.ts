@@ -203,6 +203,7 @@ export class AppEdgeService {
       targetNodeId,
       sourcePortId,
       targetPortId,
+      includeInHistory: true,
       metadata: {
         retroactive: true, // Flag to indicate edge already exists
       },

@@ -443,7 +443,6 @@ export class AppDfdOrchestrator {
             this.dfdInfrastructure.graphAdapter,
             {
               clearExisting: true,
-              suppressHistory: true,
               updateEmbedding: true,
               source: 'orchestrator-load',
             },
@@ -956,6 +955,7 @@ export class AppDfdOrchestrator {
             priority: 'normal',
             timestamp: Date.now(),
             nodeData,
+            includeInHistory: true,
           };
 
           this.logger.debugComponent(
@@ -978,6 +978,7 @@ export class AppDfdOrchestrator {
           priority: 'normal',
           timestamp: Date.now(),
           nodeData: nodeDataOrType,
+          includeInHistory: true,
         };
 
         this.logger.debugComponent(
@@ -1155,7 +1156,6 @@ export class AppDfdOrchestrator {
             this.dfdInfrastructure.graphAdapter,
             {
               clearExisting: true,
-              suppressHistory: true,
               updateEmbedding: true,
               source: 'orchestrator-loadDiagram',
             },
@@ -1331,9 +1331,6 @@ export class AppDfdOrchestrator {
       userId: this.authService.providerId,
       isCollaborating: this.collaborationService.isCollaborating(),
       permissions: ['read', 'write'],
-      suppressValidation: false,
-      suppressHistory: false,
-      suppressBroadcast: false,
     };
 
     // Initialize remote operation handler to process operations from other users
@@ -1474,8 +1471,13 @@ export class AppDfdOrchestrator {
    * Check if operation should be recorded in history
    */
   private _shouldRecordInHistory(operation: GraphOperation, result: OperationResult): boolean {
-    // Only record user-interaction operations in history
-    // Remote operations are already in the remote user's history and shouldn't be in local undo/redo
+    // Explicit opt-in required
+    if (!operation.includeInHistory) {
+      return false;
+    }
+
+    // Never record remote, undo-redo, or load operations
+    // Only user-interaction operations should be in local history
     if (operation.source !== 'user-interaction') {
       return false;
     }
@@ -1748,7 +1750,6 @@ export class AppDfdOrchestrator {
       this.dfdInfrastructure.graphAdapter,
       {
         clearExisting: true, // Clear any existing cells
-        suppressHistory: true, // Don't create history entries
         updateEmbedding: true, // Update embedding appearances
         source: 'collaboration-sync', // Mark source for logging
       },

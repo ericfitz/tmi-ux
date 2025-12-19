@@ -76,11 +76,9 @@ export class NodeOperationExecutor implements OperationExecutor {
       const { graph } = context;
 
       // Validate required fields (before applying defaults)
-      if (!context.suppressValidation) {
-        const validationError = this._validateNodeData(nodeData);
-        if (validationError) {
-          return throwError(() => new Error(`Node validation failed: ${validationError}`));
-        }
+      const validationError = this._validateNodeData(nodeData);
+      if (validationError) {
+        return throwError(() => new Error(`Node validation failed: ${validationError}`));
       }
 
       // Generate node ID if not provided

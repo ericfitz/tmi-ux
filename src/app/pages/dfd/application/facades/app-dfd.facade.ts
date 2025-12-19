@@ -443,6 +443,7 @@ export class AppDfdFacade {
       timestamp: Date.now(),
       priority: 'normal',
       nodeData,
+      includeInHistory: true,
       metadata: {
         retroactive: true, // Flag to indicate node already exists
       },
@@ -658,6 +659,7 @@ export class AppDfdFacade {
       timestamp: Date.now(),
       priority: 'normal',
       nodeId,
+      includeInHistory: true,
     };
 
     const context: OperationContext = {
@@ -698,6 +700,7 @@ export class AppDfdFacade {
       timestamp: Date.now(),
       priority: 'normal',
       edgeId,
+      includeInHistory: true,
     };
 
     const context: OperationContext = {
@@ -982,6 +985,7 @@ export class AppDfdFacade {
       updates: {
         label: change.newLabel,
       },
+      includeInHistory: true,
     };
 
     const context: OperationContext = {
@@ -1034,6 +1038,7 @@ export class AppDfdFacade {
       updates: {
         label: change.newLabel,
       },
+      includeInHistory: true,
     };
 
     const context: OperationContext = {
@@ -1124,6 +1129,7 @@ export class AppDfdFacade {
           port: reconnection.newPortId,
         },
       },
+      includeInHistory: true,
     };
 
     const context: OperationContext = {
@@ -1195,6 +1201,7 @@ export class AppDfdFacade {
           port: reconnection.newPortId,
         },
       },
+      includeInHistory: true,
     };
 
     const context: OperationContext = {
@@ -1257,6 +1264,7 @@ export class AppDfdFacade {
       updates: {
         parent: change.newParentId,
       },
+      includeInHistory: true,
     };
 
     const context: OperationContext = {
