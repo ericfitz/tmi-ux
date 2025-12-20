@@ -3,34 +3,46 @@
  * Handles save/load operations via real-time WebSocket connections
  */
 
-import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Observable, of, throwError, Subject, merge, buffer, debounceTime } from 'rxjs';
+import { map, catchError, filter, takeUntil } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 import { InfraWebsocketCollaborationAdapter } from '../adapters/infra-websocket-collaboration.adapter';
-import { CellOperation } from '../../../../core/types/websocket-message.types';
+import {
+  CellOperation,
+  HistoryOperationMessage,
+} from '../../../../core/types/websocket-message.types';
 import {
   SaveOperation,
   SaveResult,
   LoadOperation,
   LoadResult,
 } from '../../application/services/app-persistence-coordinator.service';
+import { AppHistoryService } from '../../application/services/app-history.service';
+import { HistoryOperationEvent } from '../../types/history.types';
 
 @Injectable()
-export class WebSocketPersistenceStrategy {
+export class WebSocketPersistenceStrategy implements OnDestroy {
   readonly type = 'websocket' as const;
+
+  private readonly destroy$ = new Subject<void>();
+  private readonly batchTrigger$ = new Subject<void>();
 
   constructor(
     private readonly logger: LoggerService,
     private readonly webSocketAdapter: WebSocketAdapter,
     private readonly collaborationAdapter: InfraWebsocketCollaborationAdapter,
+    private readonly historyService: AppHistoryService,
   ) {
     this.logger.debugComponent(
       'WebSocketPersistenceStrategy',
       'WebSocketPersistenceStrategy initialized',
     );
+
+    // Subscribe to history operations and broadcast them
+    this._initializeHistoryBroadcasting();
   }
 
   save(operation: SaveOperation): Observable<SaveResult> {
@@ -183,5 +195,177 @@ export class WebSocketPersistenceStrategy {
   // Connection status methods
   getConnectionStatus(): boolean {
     return this.webSocketAdapter.isConnected;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.batchTrigger$.complete();
+  }
+
+  /**
+   * Initialize history-driven broadcasting
+   * Listens to history operation events and broadcasts them to collaborators
+   */
+  private _initializeHistoryBroadcasting(): void {
+    // Buffer 'add' operations for batching
+    const addOperations$ = this.historyService.historyOperation$.pipe(
+      filter(event => event.operationType === 'add' && event.success),
+      takeUntil(this.destroy$),
+    );
+
+    // Batch buffer: collect operations until batchTrigger$ emits or 50ms passes
+    const batchedAdds$ = addOperations$.pipe(
+      buffer(merge(this.batchTrigger$, addOperations$.pipe(debounceTime(50)))),
+      filter(events => events.length > 0),
+    );
+
+    // Subscribe to batched add operations
+    batchedAdds$.subscribe(events => {
+      this._broadcastAddOperations(events);
+    });
+
+    // Subscribe to undo operations
+    this.historyService.historyOperation$
+      .pipe(
+        filter(event => event.operationType === 'undo' && event.success),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(event => {
+        this._broadcastUndoOperation(event);
+      });
+
+    // Subscribe to redo operations
+    this.historyService.historyOperation$
+      .pipe(
+        filter(event => event.operationType === 'redo' && event.success),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(event => {
+        this._broadcastRedoOperation(event);
+      });
+
+    this.logger.debugComponent(
+      'WebSocketPersistenceStrategy',
+      'History-driven broadcasting initialized',
+    );
+  }
+
+  /**
+   * Broadcast batched add operations as diagram_operation
+   */
+  private _broadcastAddOperations(events: HistoryOperationEvent[]): void {
+    if (!this.webSocketAdapter.isConnected) {
+      this.logger.warn('WebSocket not connected, skipping add broadcast', {
+        eventCount: events.length,
+      });
+      return;
+    }
+
+    // Collect all cells from all events (preserving atomic batches)
+    const allCells = events.flatMap(event => event.entry?.cells || []);
+
+    if (allCells.length === 0) {
+      this.logger.warn('No cells to broadcast in add operations', { eventCount: events.length });
+      return;
+    }
+
+    // Convert cells to cell operations
+    const cellOperations: CellOperation[] = allCells.map(cell => ({
+      id: cell.id,
+      operation: 'update',
+      data: cell,
+    }));
+
+    this.logger.info('Broadcasting batched add operations', {
+      eventCount: events.length,
+      cellCount: allCells.length,
+      operationCount: cellOperations.length,
+    });
+
+    // Send via collaboration adapter
+    this.collaborationAdapter.sendDiagramOperation(cellOperations).subscribe({
+      next: () => {
+        this.logger.debugComponent(
+          'WebSocketPersistenceStrategy',
+          'Successfully broadcast add operations',
+          {
+            eventCount: events.length,
+            cellCount: allCells.length,
+          },
+        );
+      },
+      error: error => {
+        this.logger.error('Failed to broadcast add operations', {
+          error,
+          eventCount: events.length,
+          cellCount: allCells.length,
+        });
+      },
+    });
+  }
+
+  /**
+   * Broadcast undo operation
+   */
+  private _broadcastUndoOperation(event: HistoryOperationEvent): void {
+    if (!this.webSocketAdapter.isConnected) {
+      this.logger.warn('WebSocket not connected, skipping undo broadcast');
+      return;
+    }
+
+    const message: HistoryOperationMessage = {
+      message_type: 'history_operation',
+      operation_type: 'undo',
+      message: 'resync_required',
+    };
+
+    this.logger.info('Broadcasting undo operation', {
+      entryId: event.entry?.id,
+    });
+
+    this.webSocketAdapter.sendTMIMessage(message).subscribe({
+      next: () => {
+        this.logger.debugComponent(
+          'WebSocketPersistenceStrategy',
+          'Successfully broadcast undo operation',
+        );
+      },
+      error: error => {
+        this.logger.error('Failed to broadcast undo operation', { error });
+      },
+    });
+  }
+
+  /**
+   * Broadcast redo operation
+   */
+  private _broadcastRedoOperation(event: HistoryOperationEvent): void {
+    if (!this.webSocketAdapter.isConnected) {
+      this.logger.warn('WebSocket not connected, skipping redo broadcast');
+      return;
+    }
+
+    const message: HistoryOperationMessage = {
+      message_type: 'history_operation',
+      operation_type: 'redo',
+      message: 'resync_required',
+    };
+
+    this.logger.info('Broadcasting redo operation', {
+      entryId: event.entry?.id,
+    });
+
+    this.webSocketAdapter.sendTMIMessage(message).subscribe({
+      next: () => {
+        this.logger.debugComponent(
+          'WebSocketPersistenceStrategy',
+          'Successfully broadcast redo operation',
+        );
+      },
+      error: error => {
+        this.logger.error('Failed to broadcast redo operation', { error });
+      },
+    });
   }
 }

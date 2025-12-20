@@ -52,7 +52,6 @@ import {
   AppOperationStateManager,
   HISTORY_OPERATION_TYPES,
 } from '../../application/services/app-operation-state-manager.service';
-import { AppDiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
 import { InfraX6CoreOperationsService } from '../services/infra-x6-core-operations.service';
 import { AppNotificationService } from '../../application/services/app-notification.service';
 
@@ -164,7 +163,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     private readonly _x6EventLogger: InfraX6EventLoggerAdapter,
     private readonly _edgeService: AppEdgeService,
     private readonly _historyCoordinator: AppOperationStateManager,
-    private readonly _diagramOperationBroadcaster: AppDiagramOperationBroadcaster,
     private readonly _x6CoreOps: InfraX6CoreOperationsService,
     private readonly _injector: Injector,
   ) {
@@ -550,13 +548,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       throw new Error('Graph not initialized. Call initialize() first.');
     }
     return this._graph;
-  }
-
-  /**
-   * Get the Diagram Operation Broadcaster for access to collaborative broadcasting
-   */
-  getDiagramOperationBroadcaster(): AppDiagramOperationBroadcaster {
-    return this._diagramOperationBroadcaster;
   }
 
   /**
@@ -1003,9 +994,6 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     if (this._historyCoordinator) {
       this._historyCoordinator.dispose();
     }
-
-    // Clean up diagram operation broadcaster
-    this._diagramOperationBroadcaster.dispose();
 
     if (this._graph) {
       this._graph.dispose();

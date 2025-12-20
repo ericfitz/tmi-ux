@@ -49,7 +49,6 @@ import { AppEdgeService } from '../../application/services/app-edge.service';
 import { AppOperationStateManager } from '../../application/services/app-operation-state-manager.service';
 import { AppDiagramService } from '../../application/services/app-diagram.service';
 import { AppDiagramLoadingService } from '../../application/services/app-diagram-loading.service';
-import { AppDiagramOperationBroadcaster } from '../../application/services/app-diagram-operation-broadcaster.service';
 import { AppRemoteOperationHandler } from '../../application/services/app-remote-operation-handler.service';
 import { AppHistoryService } from '../../application/services/app-history.service';
 import { AppCellOperationConverterService } from '../../application/services/app-cell-operation-converter.service';
@@ -148,7 +147,6 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     AppOperationStateManager, // Operation state management service
     AppDiagramService, // Diagram data management service
     AppDiagramLoadingService, // Diagram loading service
-    AppDiagramOperationBroadcaster, // Operation broadcaster service
     AppRemoteOperationHandler, // Remote operation handler service
     AppHistoryService, // Custom history service for undo/redo
     AppCellOperationConverterService, // Cell-to-operation converter service
@@ -548,9 +546,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
               'DFD',
               'Collaboration became active - initializing collaboration services',
             );
-
-            // Initialize the diagram operation broadcaster
-            this.appDfdOrchestrator.initializeCollaborationBroadcaster();
 
             // Initialize the WebSocket collaboration adapter for cursor/selection broadcasting
             if (this.threatModelId && this.dfdId && this.authService.providerId) {

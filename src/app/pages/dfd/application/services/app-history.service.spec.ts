@@ -27,9 +27,6 @@ describe('AppHistoryService', () => {
   let mockGraphOperationManager: {
     execute: ReturnType<typeof vi.fn>;
   };
-  let mockDiagramOperationBroadcaster: {
-    broadcastOperations: ReturnType<typeof vi.fn>;
-  };
   let mockPersistenceCoordinator: {
     persistOperations: ReturnType<typeof vi.fn>;
   };
@@ -97,10 +94,6 @@ describe('AppHistoryService', () => {
       ),
     };
 
-    mockDiagramOperationBroadcaster = {
-      broadcastOperations: vi.fn(() => of(void 0)),
-    };
-
     mockPersistenceCoordinator = {
       persistOperations: vi.fn(() => of(void 0)),
     };
@@ -143,7 +136,6 @@ describe('AppHistoryService', () => {
       mockLogger as any,
       mockCollaborationService as any,
       mockGraphOperationManager as any,
-      mockDiagramOperationBroadcaster as any,
       mockPersistenceCoordinator as any,
       mockAppStateService as any,
       mockCellOperationConverter as any,
@@ -354,7 +346,6 @@ describe('AppHistoryService', () => {
         mockLogger as any,
         mockCollaborationService as any,
         mockGraphOperationManager as any,
-        mockDiagramOperationBroadcaster as any,
         mockPersistenceCoordinator as any,
         mockAppStateService as any,
         mockCellOperationConverter as any,

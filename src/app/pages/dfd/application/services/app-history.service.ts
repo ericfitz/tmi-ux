@@ -16,7 +16,6 @@ import { map, catchError, tap, finalize } from 'rxjs/operators';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
-import { AppDiagramOperationBroadcaster } from './app-diagram-operation-broadcaster.service';
 import { AppPersistenceCoordinator } from './app-persistence-coordinator.service';
 import { AppStateService } from './app-state.service';
 import { AppCellOperationConverterService } from './app-cell-operation-converter.service';
@@ -65,7 +64,6 @@ export class AppHistoryService implements OnDestroy {
     private readonly logger: LoggerService,
     private readonly collaborationService: DfdCollaborationService,
     private readonly graphOperationManager: AppGraphOperationManager,
-    private readonly diagramOperationBroadcaster: AppDiagramOperationBroadcaster,
     private readonly persistenceCoordinator: AppPersistenceCoordinator,
     private readonly appStateService: AppStateService,
     private readonly cellOperationConverter: AppCellOperationConverterService,

@@ -28,7 +28,6 @@ import { AppDiagramResyncService } from './app-diagram-resync.service';
 import { AppDfdFacade } from '../facades/app-dfd.facade';
 import { InfraDfdWebsocketAdapter } from '../../infrastructure/adapters/infra-dfd-websocket.adapter';
 import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
-import { AppDiagramOperationBroadcaster } from './app-diagram-operation-broadcaster.service';
 import { AppRemoteOperationHandler } from './app-remote-operation-handler.service';
 import { AppHistoryService } from './app-history.service';
 import { AppOperationRejectionHandler } from './app-operation-rejection-handler.service';
@@ -128,7 +127,6 @@ export class AppDfdOrchestrator {
     private readonly appStateService: AppStateService,
     private readonly infraWebsocketAdapter: InfraDfdWebsocketAdapter,
     private readonly dfdInfrastructure: AppDfdFacade,
-    private readonly appDiagramOperationBroadcaster: AppDiagramOperationBroadcaster,
     private readonly appRemoteOperationHandler: AppRemoteOperationHandler,
     private readonly appHistoryService: AppHistoryService,
     private readonly appOperationStateManager: AppOperationStateManager,
@@ -621,33 +619,6 @@ export class AppDfdOrchestrator {
    * Collaboration state is now managed entirely by DfdCollaborationService
    * Use collaborationService.createSession() / joinSession() / leaveSession() instead
    */
-
-  /**
-   * Initialize the collaboration broadcaster after a collaboration session becomes active
-   * This must be called after joining/creating a collaboration session to enable
-   * broadcasting of diagram operations to other participants
-   */
-  initializeCollaborationBroadcaster(): void {
-    const graph = this.dfdInfrastructure.getGraph();
-    if (!graph) {
-      this.logger.warn('Cannot initialize broadcaster - graph not available');
-      return;
-    }
-
-    if (!this.collaborationService.isCollaborating()) {
-      this.logger.warn('Cannot initialize broadcaster - not in collaboration mode');
-      return;
-    }
-
-    // Check if already initialized to prevent duplicate initialization
-    if ((this.appDiagramOperationBroadcaster as any)._graph) {
-      this.logger.debugComponent('AppDfdOrchestrator', 'Broadcaster already initialized, skipping');
-      return;
-    }
-
-    this.logger.info('Initializing diagram operation broadcaster for collaboration session');
-    this.appDiagramOperationBroadcaster.initializeListeners(graph);
-  }
 
   /**
    * Selection management
@@ -1250,8 +1221,6 @@ export class AppDfdOrchestrator {
   destroy(): Observable<boolean> {
     this.logger.debugComponent('AppDfdOrchestrator', 'Destroying DFD system');
 
-    // Clean up collaboration broadcast services
-    this.appDiagramOperationBroadcaster.dispose();
     // Note: uiPresenterCoordinator has its own ngOnDestroy lifecycle
 
     // Graph disposal is now handled by the infrastructure facade
@@ -1300,15 +1269,6 @@ export class AppDfdOrchestrator {
         graph,
         this.dfdInfrastructure.graphAdapter,
       );
-
-      // Initialize diagram operation broadcaster to broadcast cell changes
-      if (this.collaborationService.isCollaborating()) {
-        this.logger.debugComponent(
-          'AppDfdOrchestrator',
-          'Initializing diagram operation broadcaster for collaboration',
-        );
-        this.appDiagramOperationBroadcaster.initializeListeners(graph);
-      }
 
       // Initialize presenter coordinator to handle cursor/selection broadcasting and display
       // this.logger.info('Initializing presenter coordinator for collaboration');
@@ -1712,56 +1672,8 @@ export class AppDfdOrchestrator {
     };
 
     // Record in local history
+    // The history entry will be automatically broadcast via WebSocketPersistenceStrategy
     this.appHistoryService.addHistoryEntry(historyEntry);
-
-    // Broadcast final state to collaborators if in collaboration mode
-    if (this.collaborationService.isCollaborating()) {
-      this._broadcastDragCompletion(cell, dragType, currentCells[0]);
-    }
-  }
-
-  /**
-   * Broadcast drag completion to collaborators
-   * Since X6 already updated the graph, we just need to broadcast the final state
-   */
-  private _broadcastDragCompletion(cell: any, dragType: string, finalState: any): void {
-    // Build the update data based on drag type
-    const updateData: any = {
-      id: cell.id,
-      shape: cell.shape,
-    };
-
-    // Add position/size/vertices changes based on drag type
-    if (dragType === 'move' && finalState.position) {
-      updateData.x = finalState.position.x;
-      updateData.y = finalState.position.y;
-    }
-    if (dragType === 'resize' && finalState.size) {
-      updateData.width = finalState.size.width;
-      updateData.height = finalState.size.height;
-    }
-    if (dragType === 'vertex' && finalState.vertices) {
-      updateData.vertices = finalState.vertices;
-    }
-
-    // Create a CellOperation conforming to the type
-    const cellOperation = {
-      operation: 'update' as const,
-      id: cell.id,
-      data: updateData,
-    };
-
-    // Send via the broadcaster's private method
-    this.appDiagramOperationBroadcaster['_sendSingleOperation'](cellOperation);
-
-    this.logger.debugComponent(
-      'AppDfdOrchestrator',
-      'Broadcasted drag completion to collaborators',
-      {
-        cellId: cell.id,
-        dragType,
-      },
-    );
   }
 
   /**
