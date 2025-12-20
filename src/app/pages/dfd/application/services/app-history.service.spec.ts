@@ -27,9 +27,6 @@ describe('AppHistoryService', () => {
   let mockGraphOperationManager: {
     execute: ReturnType<typeof vi.fn>;
   };
-  let mockPersistenceCoordinator: {
-    persistOperations: ReturnType<typeof vi.fn>;
-  };
   let mockAppStateService: {
     getCurrentState: ReturnType<typeof vi.fn>;
     setApplyingUndoRedo: ReturnType<typeof vi.fn>;
@@ -94,10 +91,6 @@ describe('AppHistoryService', () => {
       ),
     };
 
-    mockPersistenceCoordinator = {
-      persistOperations: vi.fn(() => of(void 0)),
-    };
-
     mockAppStateService = {
       getCurrentState: vi.fn(() => ({
         syncState: {
@@ -136,7 +129,6 @@ describe('AppHistoryService', () => {
       mockLogger as any,
       mockCollaborationService as any,
       mockGraphOperationManager as any,
-      mockPersistenceCoordinator as any,
       mockAppStateService as any,
       mockCellOperationConverter as any,
     );
@@ -346,7 +338,6 @@ describe('AppHistoryService', () => {
         mockLogger as any,
         mockCollaborationService as any,
         mockGraphOperationManager as any,
-        mockPersistenceCoordinator as any,
         mockAppStateService as any,
         mockCellOperationConverter as any,
       );
