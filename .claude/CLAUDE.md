@@ -27,45 +27,44 @@ You are a senior software engineer collaborating with a peer. Prioritize thoroug
 
 ## Task Completion Requirements
 
-Before completing any task, you must follow these requirements:
+Before completing any task:
 
 ### For Any File Changes
 
-1. **Format and Lint**: Run `pnpm run format` and `pnpm run lint:all`, then fix any lint issues related to the change
-2. **Git Commit**: Suggest a git commit message using conventional commit format (e.g., `feat:`, `fix:`, `chore:`, `refactor:`, etc.)
+1. **Format and Lint**: Run `pnpm run format` and `pnpm run lint:all`, fix any issues
+2. **Git Commit**: Suggest conventional commit message (e.g., `feat:`, `fix:`, `chore:`, `refactor:`)
 
 ### For Code Changes
 
-In addition to the above, also:
+Also:
 
-1. **Build**: Run `pnpm run build` and fix all build errors, even those unrelated to your change
-2. **Test**: Run any tests related to the code that was changed and fix any failures
-3. **Never Skip Tests**: Do not disable or skip tests. Instead, always troubleshoot to root cause and fix, or ask what to do
+1. **Build**: Run `pnpm run build` and fix all build errors
+2. **Test**: Run related tests and fix any failures
+3. **Never Skip Tests**: Always troubleshoot to root cause and fix, or ask what to do
 
 ### General Guidelines
 
-- Unused references should be removed rather than prefixed with an underscore, unless they are placeholders for future functionality
-- When removing or relocating functionality, do not add comments indicating that the code has been removed or relocated
-- Do not disable code that needs fixing, unless instructed to do so by the user
-- Do not report a task complete while there is functionality that has not yet been implemented - write down remaining work in a document
+- Remove unused references rather than prefixing with underscore (unless placeholders)
+- Don't add comments indicating code has been removed or relocated
+- Don't disable code that needs fixing unless instructed
+- Don't report task complete with unimplemented functionality - document remaining work
 
 ## When Planning
 
 - Present multiple options with pros/cons when they exist
-- Call out edge cases and how we should handle them
+- Call out edge cases and how to handle them
 - Ask clarifying questions rather than making assumptions
-- Question design decisions that seem suboptimal
-- Share opinions on best practices, but acknowledge when something is opinion vs fact
-- Prefer elegant, minimal solutions that eliminate complexity and bugs
-- Ask whether backward compatibility is needed; assume that it is not unless requested
-- Prioritize readable code with minimal abstraction.
+- Question suboptimal design decisions
+- Share opinions on best practices, acknowledge opinion vs fact
+- Prefer elegant, minimal solutions
+- Ask whether backward compatibility is needed; assume not unless requested
+- Prioritize readable code with minimal abstraction
 
-## When Implementing (after alignment)
+## When Implementing
 
 - Follow the agreed-upon plan precisely
 - If you discover an unforeseen issue, stop and discuss
-- Note concerns inline if you see them during implementation
-- See "Task Completion Requirements" section for mandatory steps before completing any task
+- Note concerns inline during implementation
 
 ## What NOT to do
 
@@ -77,16 +76,16 @@ In addition to the above, also:
 - Don't hedge criticism excessively - be direct but professional
 - Don't treat subjective preferences as objective improvements
 
-## Technical Discussion Guidelines
+## Technical Discussion
 
-- Assume I understand common programming concepts without over-explaining
+- Assume I understand common programming concepts
 - Don't assume I understand language-specific constructs or patterns
 - Point out potential bugs, performance issues, or maintainability concerns
-- Be direct with feedback rather than couching it in niceties
+- Be direct with feedback
 
 ## Context About Me
 
-- Highly experienced security engineer with moderate software development experience but deep technical background
+- Highly experienced security engineer with moderate development experience but deep technical background
 - Prefer thorough planning to minimize code revisions
 - Want to be consulted on implementation decisions
 - Comfortable with technical discussions and constructive feedback
@@ -94,321 +93,63 @@ In addition to the above, also:
 
 ## Project Overview
 
-TMI-UX (Threat Modeling Improved - User Interface) is an Angular-based web application that provides a frontend for threat modeling. The application features real-time collaborative editing, data flow diagram creation, and comprehensive threat analysis tools.
+TMI-UX is an Angular-based threat modeling application with real-time collaborative editing and data flow diagram creation.
 
 ## API and Backend
 
-- Backend API specification: `docs-server/reference/apis/tmi-openapi.json`
-- WebSocket API specification: `docs-server/reference/apis/tmi-asyncapi.yaml`
-- OAuth integration guide: `docs-server/developer/integration/CLIENT_OAUTH_INTEGRATION.md`
-- Client integration guide: `docs-server/developer/integration/CLIENT_INTEGRATION_GUIDE.md`
-- Authorization documentation: `docs-server/reference/architecture/AUTHORIZATION.md`
-- Role-based access control with Owner, Writer, and Reader roles
+- API specs: `docs-server/reference/apis/tmi-openapi.json` (REST), `tmi-asyncapi.yaml` (WebSocket)
+- Integration: `docs-server/developer/integration/CLIENT_*.md`
+- Authorization: `docs-server/reference/architecture/AUTHORIZATION.md` (Owner/Writer/Reader RBAC)
 
 ## Development Commands
 
-- Always run pnpm commands from the project root directory
-- Always use pnpm commands preferentially over bespoke command lines
+**Always use pnpm scripts** from `package.json` for building, testing, linting, and deployment rather than bespoke command lines. Run from project root.
 
-### Essential Commands
+Key commands: `pnpm run dev`, `pnpm test`, `pnpm run build`, `pnpm run lint:all`, `pnpm run format`
 
-```bash
-# Install dependencies (uses pnpm)
-pnpm install
+## Architecture
 
-# Start development server (default: http://localhost:4200)
-pnpm run dev              # Uses development environment
-pnpm run dev:local        # Uses local environment (for backend development)
-pnpm run dev:staging      # Uses staging environment
-pnpm run dev:prod         # Uses production environment
+See [docs/reference/architecture/overview.md](docs/reference/architecture/overview.md) for complete architecture documentation.
 
-# Run tests
-pnpm test                 # Run unit tests once
-pnpm test:watch          # Run tests in watch mode
-pnpm test:coverage       # Run tests with coverage report
-pnpm run test:e2e        # Run Cypress e2e tests
-
-# Linting and formatting
-pnpm run lint            # Lint TypeScript and HTML
-pnpm run lint:scss       # Lint SCSS files
-pnpm run lint:all        # Lint all files
-pnpm run format          # Format code with Prettier
-pnpm run format:check    # Check formatting without changes
-pnpm run check           # Run type checking and validation
-
-# Build
-pnpm run build           # Build for development
-pnpm run build:prod      # Build for production (auto-bumps version)
-pnpm run build:staging   # Build for staging (auto-bumps version)
-
-# Versioning
-pnpm run validate:deployment  # Check commit format and versioning readiness
-pnpm run version:set-minor    # Set next build to bump minor version
-pnpm run version:set-patch    # Set next build to bump patch version
-
-# Internationalization
-pnpm run check-i18n      # Check for missing translation keys
-
-# Deployment
-pnpm run deploy:heroku   # Deploy to Heroku (builds container and releases)
-```
-
-### Run a Single Test
-
-```bash
-# Run a specific test file
-pnpm test -- src/app/core/services/auth.service.spec.ts
-
-# Run tests matching a pattern
-pnpm test -- --grep "AuthService"
-
-# Run tests for specific component
-pnpm run test <componentname>  # Currently supported: tm, dfd
-
-# Focus tests in code
-# Use describe.only() and it.only() in spec files
-```
-
-## Architecture Overview
-
-For comprehensive architecture documentation, see:
-
-- **[Architecture Guide](docs/reference/architecture/overview.md)** - Complete architecture overview, patterns, and best practices
-- **[Service Provisioning Standards](docs/reference/architecture/service-provisioning.md)** - Service patterns
-- **[Architecture Validation](docs/reference/architecture/validation.md)** - How to validate compliance
-
-### Quick Architecture Summary
-
-The application follows clean architecture principles with:
-
-- **Standalone Components** - All components use Angular's standalone API (no NgModules)
-- **Domain-Driven Design** - Clear separation of domain, application, and infrastructure layers
-- **Reactive Programming** - RxJS for state management with `takeUntil(destroy$)` pattern
-- **Type Safety** - Strict TypeScript with comprehensive type definitions
-- **Import Constants** - Reusable import sets in `src/app/shared/imports.ts` (COMMON_IMPORTS, MATERIAL_IMPORTS, etc.)
+**Key Principles:**
+- Standalone components (no NgModules), domain-driven design, reactive programming
+- Import constants from `src/app/shared/imports.ts` (COMMON_IMPORTS, MATERIAL_IMPORTS, etc.)
+- Always unsubscribe using `takeUntil(destroy$)` pattern
 
 **Key Modules:**
+- Authentication (`/auth`) - OAuth/JWT
+- Threat Modeling (`/pages/tm`) - List, edit, diagram management
+- Data Flow Diagrams (`/pages/dfd`) - Layered DDD architecture with AntV X6 graphing
+- Core Services (`/core`) - ApiService, AuthService, LoggerService, WebSocketService, etc.
 
-- **Authentication** (`/auth`) - OAuth/JWT authentication
-- **Threat Modeling** (`/pages/tm`) - List, edit, and diagram management
-- **Data Flow Diagrams** (`/pages/dfd`) - Sophisticated layered architecture:
-  - **Domain**: Value objects and events
-  - **Application**: Services, executors, validators, state managers
-  - **Infrastructure**: X6 graph adapter, WebSocket/REST persistence strategies
-  - **Presentation**: DfdComponent with sub-components
-  - Uses **AntV X6** graphing library for diagram rendering
-- **Core Services** (`/core`) - 18 singleton services including ApiService, AuthService, LoggerService, WebSocketService, SecurityConfigService, ThemeService, etc.
+**Environments:** `src/environments/` - API URLs, feature flags, OAuth config
 
-### Environment Configuration
+## Testing
 
-Environments are configured in `src/environments/`:
+**Unit Tests (Vitest):** NOT Jasmine/Jest. Use `describe.only()` and `it.only()` to focus tests.
+- Config: `vitest.config.ts`, mocks in `src/app/mocks/`, utilities in `src/testing/`
+- Tests alongside source: `*.spec.ts`
 
-- API URLs and authentication endpoints
-- Feature flags and debug settings
-- OAuth provider configurations
+**Integration Tests (Cypress):** E2E tests in `cypress/e2e/`, component tests enabled
 
-Use the appropriate development command to run against different backends.
+## Versioning
 
-### Testing Strategy
+Automatic semantic versioning via git hooks using [Conventional Commits](https://www.conventionalcommits.org/):
+- `feat:`/`refactor:` → minor bump (0.x.0)
+- `fix:`/`chore:`/`docs:`/`perf:`/`test:`/`ci:`/`build:` → patch bump (0.0.x)
+- Version bumps happen on commit, not build
 
-#### Unit Testing (Vitest)
+## Code Style
 
-- All services and utilities should have unit tests
-- **IMPORTANT**: Uses **Vitest** framework (NOT Jasmine or Jest)
-- Configuration: `vitest.config.ts` with AnalogJS Angular plugin
-- Test environment: jsdom
-- Global setup: `src/test-setup.ts` (compiler + Zone.js configuration)
-- Mock services available in `src/app/mocks/`
-- Test utilities, helpers, and page objects in `src/testing/`
-- Component tests focus on user interactions and service integration
-- Run specific tests: `pnpm test -- src/path/to/file.spec.ts`
-- Focus tests in code with `describe.only()` and `it.only()`
-
-#### Integration Testing (Cypress)
-
-- DFD module has comprehensive integration tests
-- Tests real AntV X6 graph operations without mocking
-- Focuses on styling persistence and state management
-- Visual regression testing for graph components
-- Run with: `pnpm run test:e2e`
-
-#### Test Organization
-
-- Unit tests: `*.spec.ts` files alongside source
-- Integration tests: `integration/` directories within modules
-- E2E tests: `cypress/e2e/` directory
-- Component tests: Cypress component testing enabled
-
-### WebSocket Communication
-
-The application uses WebSockets for real-time collaboration:
-
-- Message types defined in `src/app/types/websocket.types.ts`
-- Handlers in `src/app/pages/dfd/services/websocket-handlers/`
-- Automatic reconnection and error recovery
-
-### Localization
-
-- Uses @jsverse/transloco for i18n
-- Translation files in `src/assets/i18n/`
-- Run `pnpm run i18n:check-keys` to validate translation completeness
-
-### Automatic Semantic Versioning
-
-The project uses automatic semantic versioning via git hooks. Version bumps happen automatically on every commit that follows the Conventional Commits specification.
-
-#### How It Works
-
-1. **Automatic on commit**: A `prepare-commit-msg` hook analyzes your commit message and automatically bumps the version
-2. **Version bump rules**:
-   - `feat:` or `refactor:` commits → minor version bump (0.x.0)
-   - `fix:`, `chore:`, `docs:`, `perf:`, `test:`, `ci:`, `build:` → patch bump (0.0.x)
-   - Non-conventional commits → no version bump
-   - Major version remains at 0 until launch
-
-3. **Git integration**:
-   - Updates `package.json` version field
-   - Stages the updated `package.json` with your commit
-   - Creates annotated git tag: `vX.Y.Z`
-
-#### Commit Message Format (Conventional Commits)
-
-Format: `<type>: <description>`
-
-Valid types:
-
-- `feat`: New feature (triggers **minor** bump)
-- `refactor`: Code refactoring (triggers **minor** bump)
-- `fix`: Bug fix (triggers **patch** bump)
-- `chore`: Maintenance, dependencies, tooling (triggers **patch** bump)
-- `docs`: Documentation changes (triggers **patch** bump)
-- `perf`: Performance improvements (triggers **patch** bump)
-- `test`: Test additions or modifications (triggers **patch** bump)
-- `ci`: CI/CD configuration changes (triggers **patch** bump)
-- `build`: Build system changes (triggers **patch** bump)
-
-Examples:
-
-```
-feat: add user authentication          # bumps minor version
-refactor: restructure auth module      # bumps minor version
-fix: correct login validation bug      # bumps patch version
-chore: update dependencies             # bumps patch version
-docs: update API documentation         # bumps patch version
-```
-
-**Note**: The commit message validation hook is in **warning mode** - it alerts you about non-conventional commits but doesn't block them. However, only conventional commits will trigger automatic version bumps.
-
-#### Versioning Commands
-
-```bash
-# Check what commits will trigger version bumps
-pnpm run validate:deployment
-
-# Build commands (no automatic version bumping)
-pnpm run build:prod      # Production build
-pnpm run build:staging   # Staging build
-
-# Container deployment
-./scripts/push-heroku.sh  # Builds and deploys container to Heroku
-```
-
-#### Best Practices
-
-- Use conventional commit format for all commits to enable automatic versioning
-- Run `pnpm run validate:deployment` before deploying to check which commits will bump the version
-- Version bumping happens automatically during commit, not during build
-- Builds (`build:prod`, `build:staging`) no longer bump versions - they just build the current version
-- For releases, ensure your last commit uses conventional format to trigger the appropriate version bump
-
-## Common Patterns
-
-### Component Pattern
-
-```typescript
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { COMMON_IMPORTS } from '@app/shared/imports';
-
-@Component({
-  selector: 'app-my-component',
-  standalone: true,
-  imports: [...COMMON_IMPORTS],
-  templateUrl: './my-component.html',
-  styleUrl: './my-component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class MyComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
-
-  constructor(private myService: MyService) {}
-
-  ngOnInit(): void {
-    this.myService.data$.pipe(takeUntil(this.destroy$)).subscribe(data => {
-      // Handle data
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-}
-```
-
-### Service Pattern
-
-```typescript
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-
-@Injectable({
-  providedIn: 'root',
-})
-export class MyService {
-  private dataSubject$ = new BehaviorSubject<Data | null>(null);
-  public data$: Observable<Data | null> = this.dataSubject$.asObservable();
-
-  constructor(
-    private apiService: ApiService,
-    private logger: LoggerService,
-  ) {}
-
-  public fetchData(): Observable<Data> {
-    return this.apiService.get<Data>('/endpoint').pipe(
-      tap(data => this.dataSubject$.next(data)),
-      catchError(error => {
-        this.logger.error('Failed to fetch data', error);
-        throw error;
-      }),
-    );
-  }
-}
-```
-
-## Code Style Guidelines
-
-- **Indentation**: 2 spaces
-- **Quotes**: Single quotes for TypeScript
-- **Line Length**: Max 100 characters
-- **TypeScript**: Strict mode enabled, prefer `unknown` over `any`
-- **Components**: app-prefix selectors, SCSS styles, OnPush change detection (default)
-- **Import Order**: Angular core → Angular modules → Third-party → Project modules
-- **Import Constants**: Use shared imports from `@app/shared/imports.ts` instead of importing common dependencies individually (COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, FORM_MATERIAL_IMPORTS, etc.)
-- **Naming Conventions**:
-  - Observables: Use `$` suffix
-  - Private members: Use `_` prefix
-- **Error Handling**: Use `catchError` with `LoggerService` (never use `console.log`)
-- **Type Annotations**: Explicit function return types required
-- **Documentation**: JSDoc style comments
-- **Services**: Provided in root, constructor-based DI
-- **Subscriptions**: Always unsubscribe using `takeUntil(destroy$)` pattern where `destroy$` is a `Subject<void>()` completed in `ngOnDestroy()`
+- 2 spaces, single quotes, max 100 chars, strict TypeScript
+- Standalone components with OnPush change detection
+- Observables: `$` suffix, private members: `_` prefix (remove unused, don't prefix with `_`)
+- Error handling: `catchError` with `LoggerService`, never `console.log`
+- Explicit return types, JSDoc comments
+- Import order: Angular core → Angular modules → Third-party → Project
 
 ## Additional Resources
 
-When working on this codebase:
-
-- Check `docs/agent/` directory for AI agent context - [docs/agent/README.md](docs/agent/README.md) describes the information in each file
-- Check `docs/` directory for all documentation - [docs/README.md](docs/README.md) provides a complete index organized by audience
-- Service provisioning standards: [docs/reference/architecture/service-provisioning.md](docs/reference/architecture/service-provisioning.md)
+- Agent context: [docs/agent/README.md](docs/agent/README.md)
+- All docs: [docs/README.md](docs/README.md)
+- Service standards: [docs/reference/architecture/service-provisioning.md](docs/reference/architecture/service-provisioning.md)
