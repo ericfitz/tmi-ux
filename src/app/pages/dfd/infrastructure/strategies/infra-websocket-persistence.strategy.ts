@@ -10,9 +10,7 @@ import { map, catchError, filter, takeUntil } from 'rxjs/operators';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 import { InfraWebsocketCollaborationAdapter } from '../adapters/infra-websocket-collaboration.adapter';
-import {
-  CellOperation,
-} from '../../../../core/types/websocket-message.types';
+import { CellOperation } from '../../../../core/types/websocket-message.types';
 import {
   SaveOperation,
   SaveResult,
