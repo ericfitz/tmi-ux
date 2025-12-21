@@ -27,6 +27,7 @@ import { AppStateService } from './app-state.service';
 import { AppDiagramResyncService } from './app-diagram-resync.service';
 import { AppDfdFacade } from '../facades/app-dfd.facade';
 import { InfraDfdWebsocketAdapter } from '../../infrastructure/adapters/infra-dfd-websocket.adapter';
+import { InfraWebsocketCollaborationAdapter } from '../../infrastructure/adapters/infra-websocket-collaboration.adapter';
 import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-selection.adapter';
 import { AppRemoteOperationHandler } from './app-remote-operation-handler.service';
 import { AppHistoryService } from './app-history.service';
@@ -126,6 +127,7 @@ export class AppDfdOrchestrator {
     private readonly appExportService: AppExportService,
     private readonly appStateService: AppStateService,
     private readonly infraWebsocketAdapter: InfraDfdWebsocketAdapter,
+    private readonly websocketCollaborationAdapter: InfraWebsocketCollaborationAdapter,
     private readonly dfdInfrastructure: AppDfdFacade,
     private readonly appRemoteOperationHandler: AppRemoteOperationHandler,
     private readonly appHistoryService: AppHistoryService,
@@ -286,7 +288,7 @@ export class AppDfdOrchestrator {
       // Collaboration mode: send WebSocket message instead of local undo
       // Server will respond with diagram_operation containing the changes
       this.logger.info('Undo in collaboration mode - sending WebSocket message');
-      return this.infraWebsocketAdapter.sendUndoOperation().pipe(
+      return this.websocketCollaborationAdapter.requestUndo().pipe(
         map(() => ({
           success: true,
           operationType: 'batch-operation' as const,
@@ -332,7 +334,7 @@ export class AppDfdOrchestrator {
       // Collaboration mode: send WebSocket message instead of local redo
       // Server will respond with diagram_operation containing the changes
       this.logger.info('Redo in collaboration mode - sending WebSocket message');
-      return this.infraWebsocketAdapter.sendRedoOperation().pipe(
+      return this.websocketCollaborationAdapter.requestRedo().pipe(
         map(() => ({
           success: true,
           operationType: 'batch-operation' as const,

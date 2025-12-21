@@ -31,7 +31,6 @@ import {
   ProcessedDiagramOperation,
   ProcessedStateCorrection,
   ProcessedDiagramSync,
-  ProcessedHistoryOperation,
   ProcessedResyncRequest,
   ProcessedParticipantsUpdate,
 } from './app-websocket-event-processor.service';
@@ -181,12 +180,6 @@ export class AppStateService implements OnDestroy {
       this._eventProcessor.diagramSyncs$
         .pipe(takeUntil(this._destroy$))
         .subscribe(sync => this._handleProcessedDiagramSync(sync)),
-    );
-
-    this._subscriptions.add(
-      this._eventProcessor.historyOperations$
-        .pipe(takeUntil(this._destroy$))
-        .subscribe(operation => this._handleProcessedHistoryOperation(operation)),
     );
 
     this._subscriptions.add(
@@ -406,18 +399,6 @@ export class AppStateService implements OnDestroy {
       'AppStateService',
       'Diagram state sync event emitted for persistence layer',
     );
-  }
-
-  /**
-   * Handle processed history operation from event processor
-   */
-  private _handleProcessedHistoryOperation(operation: ProcessedHistoryOperation): void {
-    this._logger.debugComponent('AppStateService', 'Processing history operation', operation);
-
-    if (operation.requiresResync) {
-      this._updateSyncState({ isSynced: false, isResyncing: true });
-      this._requestResyncEvent$.next({ method: 'rest_api' });
-    }
   }
 
   /**

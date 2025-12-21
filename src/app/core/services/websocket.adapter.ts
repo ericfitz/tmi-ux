@@ -24,12 +24,7 @@ import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter, takeUntil, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 
 import { LoggerService } from './logger.service';
-import { MessageChunkingService } from './message-chunking.service';
-import {
-  TMIWebSocketMessage,
-  TMIMessageType,
-  ChunkedMessage,
-} from '../types/websocket-message.types';
+import { TMIWebSocketMessage, TMIMessageType } from '../types/websocket-message.types';
 import type { IAuthService } from '../interfaces/auth.interface';
 
 /**
@@ -136,10 +131,7 @@ export class WebSocketAdapter {
   // Auth service for token refresh on WebSocket activity
   private _authService: IAuthService | null = null;
 
-  constructor(
-    private logger: LoggerService,
-    private _chunkingService: MessageChunkingService,
-  ) {}
+  constructor(private logger: LoggerService) {}
 
   /**
    * Set the auth service (called by app initialization to avoid circular dependency)
@@ -524,29 +516,6 @@ export class WebSocketAdapter {
               return; // Not a TMI message
             }
 
-            // Check if this is a chunked message
-            if (msgObj['message_type'] === 'chunked_message') {
-              const chunkMessage = parsedMessage as ChunkedMessage;
-              this._chunkingService.processChunk(chunkMessage).subscribe({
-                next: reassembledMessage => {
-                  if (reassembledMessage) {
-                    this.logger.info('Message reassembled from chunks', {
-                      chunkId: chunkMessage.chunk_info.chunk_id,
-                      originalMessageType: chunkMessage.chunk_info.original_message_type,
-                    });
-                    this._tmiMessages$.next(reassembledMessage);
-                  }
-                },
-                error: (error: unknown) => {
-                  this.logger.error('Failed to process chunk', {
-                    error: error instanceof Error ? error : String(error),
-                    chunkId: chunkMessage.chunk_info?.chunk_id,
-                  });
-                },
-              });
-              return;
-            }
-
             // Validate TMI message structure
             const validationResult = this._validateTMIMessage(parsedMessage);
             if (!validationResult.isValid) {
@@ -677,99 +646,30 @@ export class WebSocketAdapter {
           operation?: unknown;
         };
 
-        const messageSize = this._chunkingService.getMessageSize(message);
-
         this.logger.debugComponent('websocket-api', 'Sending TMI message', {
           type: messageData.message_type,
           userId: messageData.user?.user_id || messageData.user_id,
           userEmail: messageData.user?.email,
-          messageSizeBytes: messageSize,
         });
 
-        // Check if message needs chunking
-        if (this._chunkingService.needsChunking(message)) {
-          this.logger.info('Message requires chunking', {
-            messageType: messageData.message_type,
-            messageSizeBytes: messageSize,
-            operationId: messageData.operation_id,
-          });
+        // Send message
+        this.logger.debugComponent('websocket-api', 'WebSocket message sent:', {
+          messageType: messageData.message_type,
+          userId: messageData.user?.user_id || messageData.user_id,
+          userEmail: messageData.user?.email,
+          operationId: messageData.operation_id,
+          hasOperation: !!messageData.operation,
+          body: this._redactSensitiveData(message),
+        });
 
-          // Chunk the message and send each chunk
-          this._chunkingService.chunkMessage(message).subscribe({
-            next: chunks => {
-              this.logger.debugComponent('websocket-api', 'Sending chunked message', {
-                messageType: messageData.message_type,
-                totalChunks: chunks.length,
-                originalSizeBytes: messageSize,
-              });
-
-              // Send each chunk sequentially
-              this._sendChunksSequentially(chunks, 0, observer);
-            },
-            error: (error: unknown) => {
-              this.logger.error('Failed to chunk message', {
-                error: error instanceof Error ? error : String(error),
-                message,
-              });
-              observer.error(error);
-            },
-          });
-        } else {
-          // Send message normally
-          this.logger.debugComponent('websocket-api', 'WebSocket message sent:', {
-            messageType: messageData.message_type,
-            userId: messageData.user?.user_id || messageData.user_id,
-            userEmail: messageData.user?.email,
-            operationId: messageData.operation_id,
-            hasOperation: !!messageData.operation,
-            messageSizeBytes: messageSize,
-            body: this._redactSensitiveData(message),
-          });
-
-          this._socket!.send(JSON.stringify(message));
-          observer.next();
-          observer.complete();
-        }
+        this._socket!.send(JSON.stringify(message));
+        observer.next();
+        observer.complete();
       } catch (error) {
         this.logger.error('Failed to send TMI message', { error, message });
         observer.error(error);
       }
     });
-  }
-
-  /**
-   * Send chunks sequentially to maintain order
-   */
-  private _sendChunksSequentially(
-    chunks: ChunkedMessage[],
-    index: number,
-    observer: { next: () => void; complete: () => void; error: (error: unknown) => void },
-  ): void {
-    if (index >= chunks.length) {
-      observer.next();
-      observer.complete();
-      return;
-    }
-
-    const chunk = chunks[index];
-    try {
-      this.logger.debugComponent('websocket-api', 'WebSocket chunk sent:', {
-        chunkId: chunk.chunk_info.chunk_id,
-        chunkIndex: chunk.chunk_info.chunk_index,
-        totalChunks: chunk.chunk_info.total_chunks,
-        originalMessageType: chunk.chunk_info.original_message_type,
-      });
-
-      this._socket!.send(JSON.stringify(chunk));
-
-      // Send next chunk
-      setTimeout(() => {
-        this._sendChunksSequentially(chunks, index + 1, observer);
-      }, 10); // Small delay to ensure order
-    } catch (error) {
-      this.logger.error('Failed to send chunk', { error, chunk, index });
-      observer.error(error);
-    }
   }
 
   /**

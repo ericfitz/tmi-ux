@@ -100,7 +100,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
     };
 
     if (message.user) {
-      debugInfo['userCompositeKey'] = `${message.user.provider}:${message.user.provider_id}`;
+      debugInfo['userId'] = message.user.user_id;
       debugInfo['userEmail'] = message.user.email;
     }
 
@@ -133,7 +133,7 @@ export class UiPresenterCoordinatorService implements OnDestroy {
     };
 
     if (message.user) {
-      debugInfo['userCompositeKey'] = `${message.user.provider}:${message.user.provider_id}`;
+      debugInfo['userId'] = message.user.user_id;
       debugInfo['userEmail'] = message.user.email;
     }
 

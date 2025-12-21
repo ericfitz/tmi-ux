@@ -15,7 +15,7 @@ import { AuthService } from '../../../../auth/services/auth.service';
 import { WebSocketAdapter, WebSocketState } from '../../../../core/services/websocket.adapter';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
 import {
-  DiagramOperationMessage,
+  DiagramOperationRequestMessage,
   CellOperation,
   CellPatchOperation,
   Cell,
@@ -33,7 +33,7 @@ import {
  */
 interface QueuedOperation {
   id: string;
-  operation: DiagramOperationMessage;
+  operation: DiagramOperationRequestMessage;
   retryCount: number;
   maxRetries: number;
   timestamp: number;
@@ -53,7 +53,7 @@ export class InfraWebsocketCollaborationAdapter {
   private _pendingOperations = new Map<
     string,
     {
-      operation: DiagramOperationMessage;
+      operation: DiagramOperationRequestMessage;
       timestamp: number;
       resolve: (value: void) => void;
       reject: (error: any) => void;
@@ -150,26 +150,14 @@ export class InfraWebsocketCollaborationAdapter {
       cells: deduplicatedOperations,
     };
 
-    // Get user profile for user object
-    const userProfile = this.authService.userProfile;
-    if (!userProfile) {
-      return throwError(() => new Error('User not authenticated'));
-    }
-
-    const message: DiagramOperationMessage = {
-      message_type: 'diagram_operation',
-      initiating_user: {
-        principal_type: 'user',
-        provider: this.authService.userIdp,
-        provider_id: userProfile.provider_id,
-        display_name: userProfile.display_name,
-        email: userProfile.email,
-      },
+    // Client-to-server request - no initiating_user field (server uses authenticated context)
+    const message: DiagramOperationRequestMessage = {
+      message_type: 'diagram_operation_request',
       operation_id: uuid(),
       operation: operation,
     };
 
-    this.logger.debugComponent('WebSocketCollaboration', 'Sending diagram operation', {
+    this.logger.debugComponent('WebSocketCollaboration', 'Sending diagram operation request', {
       operationId: message.operation_id,
       cellCount: deduplicatedOperations.length,
       operations: deduplicatedOperations.map(op => ({ id: op.id, operation: op.operation })),
@@ -235,20 +223,9 @@ export class InfraWebsocketCollaborationAdapter {
       return throwError(() => new Error('Insufficient permissions to undo'));
     }
 
-    const userProfile = this.authService.userProfile;
-    if (!userProfile) {
-      return throwError(() => new Error('User not authenticated'));
-    }
-
+    // Client-to-server request - no initiating_user field (server uses authenticated context)
     const message: UndoRequestMessage = {
       message_type: 'undo_request',
-      initiating_user: {
-        principal_type: 'user',
-        provider: this.authService.userIdp,
-        provider_id: userProfile.provider_id,
-        display_name: userProfile.display_name,
-        email: userProfile.email,
-      },
     };
 
     this.logger.debugComponent('WebSocketCollaboration', 'Requesting undo operation');
@@ -267,20 +244,9 @@ export class InfraWebsocketCollaborationAdapter {
       return throwError(() => new Error('Insufficient permissions to redo'));
     }
 
-    const userProfile = this.authService.userProfile;
-    if (!userProfile) {
-      return throwError(() => new Error('User not authenticated'));
-    }
-
+    // Client-to-server request - no initiating_user field (server uses authenticated context)
     const message: RedoRequestMessage = {
       message_type: 'redo_request',
-      initiating_user: {
-        principal_type: 'user',
-        provider: this.authService.userIdp,
-        provider_id: userProfile.provider_id,
-        display_name: userProfile.display_name,
-        email: userProfile.email,
-      },
     };
 
     this.logger.debugComponent('WebSocketCollaboration', 'Requesting redo operation');
@@ -293,11 +259,6 @@ export class InfraWebsocketCollaborationAdapter {
   requestResync(): Observable<void> {
     if (!this._config) {
       return throwError(() => new Error('CollaborativeOperationService not initialized'));
-    }
-
-    const userProfile = this.authService.userProfile;
-    if (!userProfile) {
-      return throwError(() => new Error('User not authenticated'));
     }
 
     const message: ResyncRequestMessage = {
@@ -364,7 +325,7 @@ export class InfraWebsocketCollaborationAdapter {
    * Send operation with retry and queuing mechanisms
    */
   private _sendOperationWithRetry(
-    message: DiagramOperationMessage,
+    message: DiagramOperationRequestMessage,
     maxRetries: number = 3,
   ): Observable<void> {
     return new Observable(observer => {
@@ -430,7 +391,7 @@ export class InfraWebsocketCollaborationAdapter {
   /**
    * Queue operation for later retry
    */
-  private _queueOperation(message: DiagramOperationMessage, maxRetries: number): void {
+  private _queueOperation(message: DiagramOperationRequestMessage, maxRetries: number): void {
     const queuedOp: QueuedOperation = {
       id: message.operation_id,
       operation: message,

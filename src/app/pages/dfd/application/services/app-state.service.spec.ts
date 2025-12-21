@@ -35,7 +35,6 @@ describe('AppStateService', () => {
     diagramOperations$: Subject<any>;
     stateCorrections$: Subject<any>;
     diagramSyncs$: Subject<any>;
-    historyOperations$: Subject<any>;
     resyncRequests$: Subject<any>;
     participantsUpdates$: Subject<any>;
   };
@@ -71,7 +70,6 @@ describe('AppStateService', () => {
       diagramOperations$: new Subject(),
       stateCorrections$: new Subject(),
       diagramSyncs$: new Subject(),
-      historyOperations$: new Subject(),
       resyncRequests$: new Subject(),
       participantsUpdates$: new Subject(),
     };
@@ -593,45 +591,6 @@ describe('AppStateService', () => {
         serverUpdateVector: 42,
         cellCount: 1,
       });
-    });
-  });
-
-  describe('Processed History Operation Handling', () => {
-    beforeEach(() => {
-      service.initialize();
-    });
-
-    it('should request resync if required', () => {
-      const resyncRequests: any[] = [];
-      service.requestResyncEvents$.subscribe(req => resyncRequests.push(req));
-
-      mockEventProcessor.historyOperations$.next({
-        requiresResync: true,
-      });
-
-      expect(resyncRequests).toHaveLength(1);
-      expect(resyncRequests[0].method).toBe('rest_api');
-    });
-
-    it('should update sync state if resync required', () => {
-      mockEventProcessor.historyOperations$.next({
-        requiresResync: true,
-      });
-
-      const state = service.getCurrentState();
-      expect(state.syncState.isSynced).toBe(false);
-      expect(state.syncState.isResyncing).toBe(true);
-    });
-
-    it('should not request resync if not required', () => {
-      const resyncRequests: any[] = [];
-      service.requestResyncEvents$.subscribe(req => resyncRequests.push(req));
-
-      mockEventProcessor.historyOperations$.next({
-        requiresResync: false,
-      });
-
-      expect(resyncRequests).toHaveLength(0);
     });
   });
 

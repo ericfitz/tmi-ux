@@ -24,7 +24,6 @@ import {
   InfraDfdWebsocketAdapter,
   StateCorrectionEvent,
   DiagramStateSyncEvent,
-  HistoryOperationEvent,
   ResyncRequestedEvent,
   ParticipantsUpdatedEvent,
 } from '../../infrastructure/adapters/infra-dfd-websocket.adapter';
@@ -48,10 +47,6 @@ export interface ProcessedDiagramSync {
   cells: WSCell[];
 }
 
-export interface ProcessedHistoryOperation {
-  requiresResync: boolean;
-}
-
 export interface ProcessedResyncRequest {
   method: string;
 }
@@ -71,14 +66,12 @@ export class AppWebSocketEventProcessor implements OnDestroy {
   private readonly _diagramOperation$ = new Subject<ProcessedDiagramOperation>();
   private readonly _stateCorrection$ = new Subject<ProcessedStateCorrection>();
   private readonly _diagramSync$ = new Subject<ProcessedDiagramSync>();
-  private readonly _historyOperation$ = new Subject<ProcessedHistoryOperation>();
   private readonly _resyncRequest$ = new Subject<ProcessedResyncRequest>();
   private readonly _participantsUpdate$ = new Subject<ProcessedParticipantsUpdate>();
 
   public readonly diagramOperations$ = this._diagramOperation$.asObservable();
   public readonly stateCorrections$ = this._stateCorrection$.asObservable();
   public readonly diagramSyncs$ = this._diagramSync$.asObservable();
-  public readonly historyOperations$ = this._historyOperation$.asObservable();
   public readonly resyncRequests$ = this._resyncRequest$.asObservable();
   public readonly participantsUpdates$ = this._participantsUpdate$.asObservable();
 
@@ -108,12 +101,6 @@ export class AppWebSocketEventProcessor implements OnDestroy {
       this._webSocketService.diagramStateSyncs$
         .pipe(takeUntil(this._destroy$))
         .subscribe(event => this._processDiagramStateSync(event)),
-    );
-
-    this._subscriptions.add(
-      this._webSocketService.historyOperations$
-        .pipe(takeUntil(this._destroy$))
-        .subscribe(event => this._processHistoryOperation(event)),
     );
 
     this._subscriptions.add(
@@ -187,21 +174,6 @@ export class AppWebSocketEventProcessor implements OnDestroy {
       diagramId: event.diagram_id,
       updateVector: event.update_vector,
       cells: event.cells,
-    });
-  }
-
-  /**
-   * Process history operation event
-   */
-  private _processHistoryOperation(event: HistoryOperationEvent): void {
-    this._logger.debugComponent(
-      'AppWebSocketEventProcessor',
-      'Processing history operation',
-      event,
-    );
-
-    this._historyOperation$.next({
-      requiresResync: event.message === 'resync_required',
     });
   }
 

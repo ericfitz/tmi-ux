@@ -7,7 +7,7 @@
  */
 
 import { Injectable, OnDestroy, Optional, Inject } from '@angular/core';
-import { Subject, Subscription, Observable } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { filter, map, takeUntil } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -19,17 +19,14 @@ import {
 import { DfdStateStore } from '../../state/dfd.state';
 import {
   DiagramOperationMessage,
+  DiagramOperationEventMessage,
   AuthorizationDeniedMessage,
   StateCorrectionMessage,
   DiagramStateSyncMessage,
-  HistoryOperationMessage,
   ResyncResponseMessage,
   CurrentPresenterMessage,
   PresenterCursorMessage,
   PresenterSelectionMessage,
-  ParticipantJoinedMessage,
-  ParticipantLeftMessage,
-  RemoveParticipantMessage,
   ParticipantsUpdateMessage,
   OperationRejectedMessage,
   Participant,
@@ -60,12 +57,6 @@ export interface DiagramStateSyncEvent {
   diagram_id: string;
   update_vector: number | null;
   cells: Cell[];
-}
-
-export interface HistoryOperationEvent {
-  type: 'history-operation';
-  operationType: string;
-  message: string;
 }
 
 export interface ResyncRequestedEvent {
@@ -164,7 +155,6 @@ export type WebSocketDomainEvent =
   | AuthorizationDeniedEvent
   | StateCorrectionEvent
   | DiagramStateSyncEvent
-  | HistoryOperationEvent
   | ResyncRequestedEvent
   | PresenterChangedEvent
   | PresenterCursorEvent
@@ -182,6 +172,9 @@ export type WebSocketDomainEvent =
 export class InfraDfdWebsocketAdapter implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private readonly _subscriptions = new Subscription();
+
+  // Participant list tracking for join/leave detection
+  private _previousParticipants: Participant[] = [];
 
   // Domain event streams
   private readonly _domainEvents$ = new Subject<WebSocketDomainEvent>();
@@ -202,10 +195,6 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
 
   public readonly diagramStateSyncs$ = this._domainEvents$.pipe(
     filter((event): event is DiagramStateSyncEvent => event.type === 'diagram-state-sync'),
-  );
-
-  public readonly historyOperations$ = this._domainEvents$.pipe(
-    filter((event): event is HistoryOperationEvent => event.type === 'history-operation'),
   );
 
   public readonly resyncRequests$ = this._domainEvents$.pipe(
@@ -268,10 +257,10 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   initialize(): void {
     // this._logger.info('Initializing DFD WebSocket subscriptions');
 
-    // Subscribe to diagram operations
+    // Subscribe to diagram operation events (server broadcasts)
     this._subscriptions.add(
       this._webSocketAdapter
-        .getTMIMessagesOfType<DiagramOperationMessage>('diagram_operation')
+        .getTMIMessagesOfType<DiagramOperationEventMessage>('diagram_operation_event')
         .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: message => this._handleDiagramOperation(message),
@@ -309,17 +298,6 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
         .subscribe({
           next: message => this._handleDiagramStateSync(message),
           error: error => this._logger.error('Error in diagram state sync subscription', error),
-        }),
-    );
-
-    // Subscribe to history operation messages
-    this._subscriptions.add(
-      this._webSocketAdapter
-        .getTMIMessagesOfType<HistoryOperationMessage>('history_operation')
-        .pipe(takeUntil(this._destroy$))
-        .subscribe({
-          next: message => this._handleHistoryOperation(message),
-          error: error => this._logger.error('Error in history operation subscription', error),
         }),
     );
 
@@ -368,36 +346,8 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     // Note: presenter_request and presenter_denied messages are handled by DfdCollaborationService
     // to avoid duplication and maintain proper separation of concerns
 
-    // Subscribe to participant management messages
-    this._subscriptions.add(
-      this._webSocketAdapter
-        .getTMIMessagesOfType<ParticipantJoinedMessage>('participant_joined')
-        .pipe(takeUntil(this._destroy$))
-        .subscribe({
-          next: message => this._handleParticipantJoined(message),
-          error: error => this._logger.error('Error in participant joined subscription', error),
-        }),
-    );
-
-    this._subscriptions.add(
-      this._webSocketAdapter
-        .getTMIMessagesOfType<ParticipantLeftMessage>('participant_left')
-        .pipe(takeUntil(this._destroy$))
-        .subscribe({
-          next: message => this._handleParticipantLeft(message),
-          error: error => this._logger.error('Error in participant left subscription', error),
-        }),
-    );
-
-    this._subscriptions.add(
-      this._webSocketAdapter
-        .getTMIMessagesOfType<RemoveParticipantMessage>('remove_participant')
-        .pipe(takeUntil(this._destroy$))
-        .subscribe({
-          next: message => this._handleRemoveParticipant(message),
-          error: error => this._logger.error('Error in remove participant subscription', error),
-        }),
-    );
+    // Note: participant_joined and participant_left messages are deprecated
+    // Joins and leaves are now detected by comparing participant lists in participants_update
 
     this._subscriptions.add(
       this._webSocketAdapter
@@ -434,13 +384,14 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
 
   // Message handlers that transform WebSocket messages to domain events
 
-  private _handleDiagramOperation(message: DiagramOperationMessage): void {
-    // Extract user identifier with fallback (User fields are optional per schema)
-    const userId = message.initiating_user.email || 'unknown';
+  private _handleDiagramOperation(message: DiagramOperationEventMessage): void {
+    // Extract user identifier with fallback (user_id primary, email fallback)
+    const userId = message.initiating_user.user_id || message.initiating_user.email || 'unknown';
 
     this._logger.debugComponent('InfraDfdWebsocketAdapter', 'Received diagram operation', {
       userId: userId,
       userEmail: message.initiating_user.email,
+      displayName: message.initiating_user.displayName,
       operationId: message.operation_id,
       operationType: message.operation?.type,
     });
@@ -522,19 +473,6 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     });
   }
 
-  private _handleHistoryOperation(message: HistoryOperationMessage): void {
-    this._logger.debugComponent('InfraDfdWebsocketAdapter', 'History operation', {
-      operationType: message.operation_type,
-      message: message.message,
-    });
-
-    this._domainEvents$.next({
-      type: 'history-operation',
-      operationType: message.operation_type,
-      message: message.message,
-    });
-  }
-
   private _handleResyncResponse(message: ResyncResponseMessage): void {
     this._logger.info('Resync response received', {
       method: message.method,
@@ -549,10 +487,12 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   private _handleCurrentPresenter(message: CurrentPresenterMessage): void {
     this._logger.debugComponent('InfraDfdWebsocketAdapter', 'Current presenter update', {
       presenter: message.current_presenter,
+      initiatingUser: message.initiating_user,
     });
 
-    // Extract email from User object (schema returns User, not string)
-    const presenterUserId = message.current_presenter?.email || null;
+    // Extract user_id from User object (with email fallback)
+    const presenterUserId =
+      message.current_presenter?.user_id || message.current_presenter?.email || null;
 
     this._domainEvents$.next({
       type: 'presenter-changed',
@@ -592,134 +532,12 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     });
   }
 
-  private _handleParticipantJoined(message: ParticipantJoinedMessage): void {
-    this._logger.info('Participant joined event received', {
-      user: message.joined_user,
-      timestamp: message.timestamp,
-    });
-
-    // Validate message format
-    if (!message || !message.joined_user) {
-      this._logger.warn('Invalid participant joined message received', message);
-      return;
-    }
-
-    // Show notification with both display name and email
-    const userIdentifier = message.joined_user.display_name
-      ? `${message.joined_user.display_name} (${message.joined_user.email})`
-      : message.joined_user.email || 'Unknown user';
-
-    if (this._notificationService) {
-      this._logger.debugComponent(
-        'InfraDfdWebsocketAdapter',
-        'Showing participant joined notification',
-        { userIdentifier },
-      );
-      this._notificationService.showSessionEvent('userJoined', userIdentifier).subscribe({
-        error: err => this._logger.error('Failed to show participant joined notification', err),
-      });
-    } else {
-      this._logger.warn(
-        'Cannot show participant joined notification - notification service not available',
-      );
-    }
-
-    // Create domain event with required fields (User fields are optional per schema)
-    this._domainEvents$.next({
-      type: 'participant-joined',
-      user: {
-        user_id: message.joined_user.email || 'unknown',
-        email: message.joined_user.email || 'unknown',
-        displayName: message.joined_user.display_name || 'Unknown User',
-      },
-      timestamp: message.timestamp,
-    });
-  }
-
-  private _handleParticipantLeft(message: ParticipantLeftMessage): void {
-    this._logger.info('Participant left event received', {
-      user: message.departed_user,
-      timestamp: message.timestamp,
-    });
-
-    // Validate message format
-    if (!message || !message.departed_user) {
-      this._logger.warn('Invalid participant left message received', message);
-      return;
-    }
-
-    // Show notification with both display name and email
-    const userIdentifier = message.departed_user.display_name
-      ? `${message.departed_user.display_name} (${message.departed_user.email})`
-      : message.departed_user.email || 'Unknown user';
-
-    if (this._notificationService) {
-      this._logger.debugComponent(
-        'InfraDfdWebsocketAdapter',
-        'Showing participant left notification',
-        { userIdentifier },
-      );
-      this._notificationService.showSessionEvent('userLeft', userIdentifier).subscribe({
-        error: err => this._logger.error('Failed to show participant left notification', err),
-      });
-    } else {
-      this._logger.warn(
-        'Cannot show participant left notification - notification service not available',
-      );
-    }
-
-    // Create domain event with required fields (User fields are optional per schema)
-    this._domainEvents$.next({
-      type: 'participant-left',
-      user: {
-        user_id: message.departed_user.email || 'unknown',
-        email: message.departed_user.email || 'unknown',
-        displayName: message.departed_user.display_name || 'Unknown User',
-      },
-      timestamp: message.timestamp,
-    });
-  }
-
-  private _handleRemoveParticipant(message: RemoveParticipantMessage): void {
-    this._logger.info('Remove participant request received', {
-      removedUser: message.removed_user,
-    });
-
-    // Validate message format
-    if (!message || !message.removed_user) {
-      this._logger.warn('Invalid remove participant message received', message);
-      return;
-    }
-
-    // Show notification if current user is being removed
-    // Note: We need collaboration service to check current user - will add this later
-    this._logger.info('Participant being removed by host', {
-      removedUser: message.removed_user.email,
-    });
-
-    // Note: Schema does not include initiating_user in this message
-    // The domain event type expects removingUser, but we don't have that info from schema-compliant messages
-    // Create domain event with required fields (User fields are optional per schema)
-    this._domainEvents$.next({
-      type: 'participant-removed',
-      removedUser: {
-        user_id: message.removed_user.email || 'unknown',
-        email: message.removed_user.email || 'unknown',
-        displayName: message.removed_user.display_name || 'Unknown User',
-      },
-      removingUser: {
-        user_id: 'system',
-        email: 'system@host',
-        displayName: 'System',
-      },
-    });
-  }
-
   private _handleParticipantsUpdate(message: ParticipantsUpdateMessage): void {
     this._logger.info('Participants update received', {
       participantCount: message?.participants?.length,
       host: message?.host,
       currentPresenter: message?.current_presenter,
+      initiatingUser: message?.initiating_user,
     });
 
     // Validate message format
@@ -728,6 +546,100 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       return;
     }
 
+    // Compare with previous participant list to detect changes
+    const currentUserIds = new Set(message.participants.map(p => p.user.user_id));
+    const previousUserIds = new Set(this._previousParticipants.map(p => p.user.user_id));
+
+    // Detect newly joined users
+    const joinedUsers = message.participants.filter(p => !previousUserIds.has(p.user.user_id));
+
+    // Detect users who left
+    const leftUsers = this._previousParticipants.filter(p => !currentUserIds.has(p.user.user_id));
+
+    // Handle based on initiating_user field
+    if (message.initiating_user === null) {
+      // System event (join/leave) - show notifications and emit synthetic events
+      joinedUsers.forEach(participant => {
+        const displayName = participant.user.name || participant.user.email;
+
+        if (this._notificationService) {
+          this._logger.debugComponent(
+            'InfraDfdWebsocketAdapter',
+            'Showing participant joined notification',
+            { displayName },
+          );
+          this._notificationService.showSessionEvent('userJoined', displayName).subscribe({
+            error: err => this._logger.error('Failed to show participant joined notification', err),
+          });
+        }
+
+        // Emit synthetic domain event for backward compatibility
+        this._domainEvents$.next({
+          type: 'participant-joined',
+          user: {
+            user_id: participant.user.user_id,
+            email: participant.user.email,
+            displayName: participant.user.name,
+          },
+          timestamp: new Date().toISOString(),
+        });
+      });
+
+      leftUsers.forEach(participant => {
+        const displayName = participant.user.name || participant.user.email;
+
+        if (this._notificationService) {
+          this._logger.debugComponent(
+            'InfraDfdWebsocketAdapter',
+            'Showing participant left notification',
+            { displayName },
+          );
+          this._notificationService.showSessionEvent('userLeft', displayName).subscribe({
+            error: err => this._logger.error('Failed to show participant left notification', err),
+          });
+        }
+
+        // Emit synthetic domain event
+        this._domainEvents$.next({
+          type: 'participant-left',
+          user: {
+            user_id: participant.user.user_id,
+            email: participant.user.email,
+            displayName: participant.user.name,
+          },
+          timestamp: new Date().toISOString(),
+        });
+      });
+    } else {
+      // User-initiated event (kick) - emit participant-removed event
+      if (leftUsers.length > 0) {
+        const kickedUser = leftUsers[0];
+
+        this._logger.info('Participant removed by host', {
+          removedUser: kickedUser.user.user_id,
+          initiatingUser: message.initiating_user.user_id,
+        });
+
+        this._domainEvents$.next({
+          type: 'participant-removed',
+          removedUser: {
+            user_id: kickedUser.user.user_id,
+            email: kickedUser.user.email,
+            displayName: kickedUser.user.name,
+          },
+          removingUser: {
+            user_id: message.initiating_user.user_id,
+            email: message.initiating_user.email || '',
+            displayName: message.initiating_user.displayName || 'Host',
+          },
+        });
+      }
+    }
+
+    // Store current participants for next comparison
+    this._previousParticipants = [...message.participants];
+
+    // Emit participants updated event
     this._domainEvents$.next({
       type: 'participants-updated',
       participants: message.participants,
@@ -755,33 +667,5 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       requires_resync: message.requires_resync,
       timestamp: message.timestamp,
     });
-  }
-
-  /**
-   * Send an undo history operation message
-   */
-  public sendUndoOperation(): Observable<void> {
-    const message: HistoryOperationMessage = {
-      message_type: 'history_operation',
-      operation_type: 'undo',
-      message: 'resync_required',
-    };
-
-    this._logger.info('Sending undo operation via WebSocket');
-    return this._webSocketAdapter.sendTMIMessage(message);
-  }
-
-  /**
-   * Send a redo history operation message
-   */
-  public sendRedoOperation(): Observable<void> {
-    const message: HistoryOperationMessage = {
-      message_type: 'history_operation',
-      operation_type: 'redo',
-      message: 'resync_required',
-    };
-
-    this._logger.info('Sending redo operation via WebSocket');
-    return this._webSocketAdapter.sendTMIMessage(message);
   }
 }

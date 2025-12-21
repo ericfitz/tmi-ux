@@ -4,14 +4,13 @@
  */
 
 /**
- * User information in Principal-based format
+ * User information from AsyncAPI spec
+ * Based on JWT claims with user_id as primary identifier
  */
 export interface User {
-  principal_type: 'user';
-  provider: string;
-  provider_id: string;
-  display_name: string;
-  email?: string;
+  user_id: string; // JWT 'sub' claim (primary identifier, e.g., "auth0|507f1f77bcf86cd799439011")
+  email?: string; // Fallback identifier for authorization
+  displayName?: string; // JWT 'name' claim (optional)
 }
 
 export interface CursorPosition {
@@ -65,13 +64,34 @@ export interface CellPatchOperation {
   cells: CellOperation[];
 }
 
-export interface DiagramOperationMessage {
-  message_type: 'diagram_operation';
+/**
+ * Client-to-server diagram operation request
+ * Client does not send initiating_user - server uses authenticated context
+ */
+export interface DiagramOperationRequestMessage {
+  message_type: 'diagram_operation_request';
+  operation_id: string;
+  sequence_number?: number;
+  operation: CellPatchOperation;
+}
+
+/**
+ * Server-to-client diagram operation event (broadcast)
+ * Server adds initiating_user showing who triggered the operation
+ */
+export interface DiagramOperationEventMessage {
+  message_type: 'diagram_operation_event';
   initiating_user: User;
   operation_id: string;
   sequence_number?: number;
   operation: CellPatchOperation;
 }
+
+/**
+ * @deprecated Use DiagramOperationEventMessage for received messages
+ * Kept for backward compatibility during transition
+ */
+export type DiagramOperationMessage = DiagramOperationEventMessage;
 
 export interface PresenterRequestMessage {
   message_type: 'presenter_request';
@@ -92,14 +112,28 @@ export interface PresenterDeniedMessage {
   current_presenter: User;
 }
 
-export interface ChangePresenterMessage {
-  message_type: 'change_presenter';
-  initiating_user: User;
+/**
+ * Client-to-server request to change the active presenter (host only)
+ * Client does not send initiating_user - server uses authenticated context
+ */
+export interface ChangePresenterRequestMessage {
+  message_type: 'change_presenter_request';
   new_presenter?: User;
 }
 
+/**
+ * @deprecated Use ChangePresenterRequestMessage for client requests
+ * Kept for backward compatibility during transition
+ */
+export type ChangePresenterMessage = ChangePresenterRequestMessage;
+
+/**
+ * Server-to-client event broadcasting current presenter (broadcast to all)
+ * Includes initiating_user showing who triggered the presenter change
+ */
 export interface CurrentPresenterMessage {
   message_type: 'current_presenter';
+  initiating_user: User;
   current_presenter: User;
 }
 
@@ -144,67 +178,93 @@ export interface ResyncResponseMessage {
   threat_model_id?: string;
 }
 
+/**
+ * Client-to-server undo request
+ * Client does not send initiating_user - server uses authenticated context
+ */
 export interface UndoRequestMessage {
   message_type: 'undo_request';
-  initiating_user: User;
 }
 
+/**
+ * Client-to-server redo request
+ * Client does not send initiating_user - server uses authenticated context
+ */
 export interface RedoRequestMessage {
   message_type: 'redo_request';
-  initiating_user: User;
 }
 
-export interface HistoryOperationMessage {
-  message_type: 'history_operation';
-  operation_type: 'undo' | 'redo';
-  message: 'resync_required' | 'no_operations_to_undo' | 'no_operations_to_redo';
-}
-
+/**
+ * Participant information from AsyncAPI spec
+ * Note: Uses 'name' field (not 'displayName') and 'permissions' (not 'role')
+ */
 export interface Participant {
-  user: User;
-  role: 'reader' | 'writer' | 'owner';
+  user: {
+    user_id: string; // Primary identifier
+    name: string; // Display name (note: 'name' not 'displayName')
+    email: string; // Email address
+  };
+  permissions: 'reader' | 'writer'; // Note: no 'owner' value in spec
   last_activity: string;
 }
 
+/**
+ * Server-to-client event with complete participant list
+ * Sent whenever the participant list changes (join/leave/kick)
+ * initiating_user is null for system events (join/leave), populated for user-initiated events (kick)
+ */
 export interface ParticipantsUpdateMessage {
   message_type: 'participants_update';
+  initiating_user: User | null; // null for join/leave, User for kicks
   participants: Participant[];
-  host?: string;
-  current_presenter?: string | null;
+  host: string; // user_id of the host (required)
+  current_presenter: string; // user_id of current presenter (required, may be empty string)
 }
 
+/**
+ * @deprecated Server no longer sends this message type
+ * Clients detect joins by comparing participant lists in participants_update
+ * Kept for internal synthetic domain events
+ */
 export interface ParticipantJoinedMessage {
   message_type: 'participant_joined';
   joined_user: User;
   timestamp: string;
 }
 
+/**
+ * @deprecated Server no longer sends this message type
+ * Clients detect leaves by comparing participant lists in participants_update
+ * Kept for internal synthetic domain events
+ */
 export interface ParticipantLeftMessage {
   message_type: 'participant_left';
   departed_user: User;
   timestamp: string;
 }
 
-export interface RemoveParticipantMessage {
-  message_type: 'remove_participant';
+/**
+ * Client-to-server request to remove a participant from the session (host only)
+ * Client does not send initiating_user - server uses authenticated context
+ * When processed, server broadcasts participants_update with initiating_user
+ */
+export interface RemoveParticipantRequestMessage {
+  message_type: 'remove_participant_request';
   removed_user: User;
 }
 
 /**
- * Extended version of RemoveParticipantMessage with server-added initiating user field
- * NOTE: The AsyncAPI schema only includes removed_user, but the actual
- * server implementation may include the initiating user (host) as well.
- * This is a gap between the schema and implementation.
+ * @deprecated Use RemoveParticipantRequestMessage for client requests
+ * The server does not echo this message back; it broadcasts participants_update instead
  */
-export interface RemoveParticipantMessageWithInitiator extends RemoveParticipantMessage {
-  user: User;
-}
+export type RemoveParticipantMessage = RemoveParticipantRequestMessage;
 
-export interface SessionTerminatedMessage {
-  message_type: 'session_terminated';
-  reason: string;
-  host_id: string;
-  timestamp: string;
+/**
+ * @deprecated Server no longer sends this message type
+ * Kept for backward compatibility during transition
+ */
+export interface RemoveParticipantMessageWithInitiator extends RemoveParticipantRequestMessage {
+  user: User;
 }
 
 export interface WebSocketErrorMessage {
@@ -234,10 +294,13 @@ export interface OperationRejectedMessage {
 }
 
 export type TMIWebSocketMessage =
-  | DiagramOperationMessage
+  | DiagramOperationRequestMessage
+  | DiagramOperationEventMessage
+  // deprecated alias
   | PresenterRequestMessage
   | PresenterDeniedMessage
-  | ChangePresenterMessage
+  | ChangePresenterRequestMessage
+  // deprecated alias
   | CurrentPresenterMessage
   | PresenterCursorMessage
   | PresenterSelectionMessage
@@ -248,21 +311,22 @@ export type TMIWebSocketMessage =
   | ResyncResponseMessage
   | UndoRequestMessage
   | RedoRequestMessage
-  | HistoryOperationMessage
   | ParticipantsUpdateMessage
-  | ParticipantJoinedMessage
-  | ParticipantLeftMessage
-  | RemoveParticipantMessage
-  | SessionTerminatedMessage
+  | ParticipantJoinedMessage // deprecated (synthetic only)
+  | ParticipantLeftMessage // deprecated (synthetic only)
+  | RemoveParticipantRequestMessage
+  // deprecated alias
   | WebSocketErrorMessage
-  | OperationRejectedMessage
-  | ChunkedMessage;
+  | OperationRejectedMessage;
 
 export type TMIMessageType =
-  | 'diagram_operation'
+  | 'diagram_operation' // deprecated
+  | 'diagram_operation_request'
+  | 'diagram_operation_event'
   | 'presenter_request'
   | 'presenter_denied'
-  | 'change_presenter'
+  | 'change_presenter' // deprecated
+  | 'change_presenter_request'
   | 'current_presenter'
   | 'presenter_cursor'
   | 'presenter_selection'
@@ -273,15 +337,13 @@ export type TMIMessageType =
   | 'resync_response'
   | 'undo_request'
   | 'redo_request'
-  | 'history_operation'
   | 'participants_update'
-  | 'participant_joined'
-  | 'participant_left'
-  | 'remove_participant'
-  | 'session_terminated'
+  | 'participant_joined' // deprecated (synthetic only)
+  | 'participant_left' // deprecated (synthetic only)
+  | 'remove_participant' // deprecated
+  | 'remove_participant_request'
   | 'error'
-  | 'operation_rejected'
-  | 'chunked_message';
+  | 'operation_rejected';
 
 /**
  * Options for applying remote operations to local graph
@@ -305,37 +367,3 @@ export interface CollaborativeOperationConfig {
   cursorThrottleMs?: number;
   selectionDebounceMs?: number;
 }
-
-/**
- * Chunked message types for handling large payloads
- */
-export interface MessageChunkInfo {
-  chunk_id: string;
-  total_chunks: number;
-  chunk_index: number;
-  original_message_type: TMIMessageType;
-  total_size: number;
-}
-
-export interface ChunkedMessage {
-  message_type: 'chunked_message';
-  chunk_info: MessageChunkInfo;
-  chunk_data: string; // Base64 encoded chunk data
-}
-
-export interface ChunkReassemblyInfo {
-  chunks: Map<number, string>;
-  totalChunks: number;
-  originalMessageType: TMIMessageType;
-  totalSize: number;
-  receivedAt: number;
-}
-
-/**
- * Constants for message chunking
- */
-export const MESSAGE_CHUNK_CONSTANTS = {
-  MAX_MESSAGE_SIZE: 64 * 1024, // 64KB
-  CHUNK_SIZE: 60 * 1024, // 60KB to leave room for metadata
-  CHUNK_TIMEOUT_MS: 30000, // 30 seconds timeout for chunk assembly
-} as const;

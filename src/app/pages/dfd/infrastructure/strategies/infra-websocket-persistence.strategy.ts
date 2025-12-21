@@ -58,32 +58,17 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
       return throwError(() => new Error(error));
     }
 
-    // For undo/redo in collaboration mode, send history operation message
+    // For undo/redo in collaboration mode, these operations should be routed through
+    // the collaboration adapter's requestUndo()/requestRedo() methods instead of this strategy
     if (isUndo || isRedo) {
-      const message: any = {
-        message_type: 'history_operation',
-        operation_type: isUndo ? 'undo' : 'redo',
-        message: 'resync_required', // Default message value
-      };
-
-      this.logger.info('Sending WebSocket history operation', {
-        operationType: message.operation_type,
+      const error =
+        'Undo/redo operations should use collaboration adapter, not persistence strategy';
+      this.logger.error(error, {
         diagramId: operation.diagramId,
+        isUndo,
+        isRedo,
       });
-
-      // Send via WebSocket
-      this.webSocketAdapter.sendTMIMessage(message).subscribe();
-
-      return of({
-        success: true,
-        operationId: `ws-history-${Date.now()}`,
-        diagramId: operation.diagramId,
-        timestamp: Date.now(),
-        metadata: {
-          sentViaWebSocket: true,
-          operationType: message.operation_type,
-        },
-      });
+      return throwError(() => new Error(error));
     }
 
     // For regular changes in collaboration mode, send diagram_operation message
