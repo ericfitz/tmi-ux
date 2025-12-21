@@ -273,9 +273,35 @@ export class AppDfdOrchestrator {
 
   /**
    * Undo the last operation
+   * In collaboration mode: sends WebSocket undo message and waits for server response
+   * In solo mode: executes local undo operation
    */
   undo(): Observable<OperationResult> {
     this.logger.debugComponent('AppDfdOrchestrator', 'Undo requested');
+
+    // Check if in active collaboration session
+    const isCollaborating = this.collaborationService.isCollaborating();
+
+    if (isCollaborating) {
+      // Collaboration mode: send WebSocket message instead of local undo
+      // Server will respond with diagram_operation containing the changes
+      this.logger.info('Undo in collaboration mode - sending WebSocket message');
+      return this.infraWebsocketAdapter.sendUndoOperation().pipe(
+        map(() => ({
+          success: true,
+          operationType: 'batch-operation' as const,
+          affectedCellIds: [],
+          timestamp: Date.now(),
+        })),
+        catchError(error => {
+          this.logger.error('Failed to send undo WebSocket message', { error });
+          return throwError(() => error);
+        }),
+      );
+    }
+
+    // Solo mode: execute local undo
+    this.logger.info('Undo in solo mode - executing local operation');
     return this.appHistoryService.undo().pipe(
       tap(result => {
         if (result.success) {
@@ -293,9 +319,35 @@ export class AppDfdOrchestrator {
 
   /**
    * Redo the last undone operation
+   * In collaboration mode: sends WebSocket redo message and waits for server response
+   * In solo mode: executes local redo operation
    */
   redo(): Observable<OperationResult> {
     this.logger.debugComponent('AppDfdOrchestrator', 'Redo requested');
+
+    // Check if in active collaboration session
+    const isCollaborating = this.collaborationService.isCollaborating();
+
+    if (isCollaborating) {
+      // Collaboration mode: send WebSocket message instead of local redo
+      // Server will respond with diagram_operation containing the changes
+      this.logger.info('Redo in collaboration mode - sending WebSocket message');
+      return this.infraWebsocketAdapter.sendRedoOperation().pipe(
+        map(() => ({
+          success: true,
+          operationType: 'batch-operation' as const,
+          affectedCellIds: [],
+          timestamp: Date.now(),
+        })),
+        catchError(error => {
+          this.logger.error('Failed to send redo WebSocket message', { error });
+          return throwError(() => error);
+        }),
+      );
+    }
+
+    // Solo mode: execute local redo
+    this.logger.info('Redo in solo mode - executing local operation');
     return this.appHistoryService.redo().pipe(
       tap(result => {
         if (result.success) {

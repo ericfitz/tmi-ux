@@ -7,7 +7,7 @@
  */
 
 import { Injectable, OnDestroy, Optional, Inject } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, Observable } from 'rxjs';
 import { filter, map, takeUntil } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -755,5 +755,33 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       requires_resync: message.requires_resync,
       timestamp: message.timestamp,
     });
+  }
+
+  /**
+   * Send an undo history operation message
+   */
+  public sendUndoOperation(): Observable<void> {
+    const message: HistoryOperationMessage = {
+      message_type: 'history_operation',
+      operation_type: 'undo',
+      message: 'resync_required',
+    };
+
+    this._logger.info('Sending undo operation via WebSocket');
+    return this._webSocketAdapter.sendTMIMessage(message);
+  }
+
+  /**
+   * Send a redo history operation message
+   */
+  public sendRedoOperation(): Observable<void> {
+    const message: HistoryOperationMessage = {
+      message_type: 'history_operation',
+      operation_type: 'redo',
+      message: 'resync_required',
+    };
+
+    this._logger.info('Sending redo operation via WebSocket');
+    return this._webSocketAdapter.sendTMIMessage(message);
   }
 }

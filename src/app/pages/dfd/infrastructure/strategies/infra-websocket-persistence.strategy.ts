@@ -12,7 +12,6 @@ import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 import { InfraWebsocketCollaborationAdapter } from '../adapters/infra-websocket-collaboration.adapter';
 import {
   CellOperation,
-  HistoryOperationMessage,
 } from '../../../../core/types/websocket-message.types';
 import {
   SaveOperation,
@@ -225,29 +224,13 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
       this._broadcastAddOperations(events);
     });
 
-    // Subscribe to undo operations
-    this.historyService.historyOperation$
-      .pipe(
-        filter(event => event.operationType === 'undo' && event.success),
-        takeUntil(this.destroy$),
-      )
-      .subscribe(event => {
-        this._broadcastUndoOperation(event);
-      });
-
-    // Subscribe to redo operations
-    this.historyService.historyOperation$
-      .pipe(
-        filter(event => event.operationType === 'redo' && event.success),
-        takeUntil(this.destroy$),
-      )
-      .subscribe(event => {
-        this._broadcastRedoOperation(event);
-      });
+    // Note: Undo/redo operations are NOT broadcast from history events
+    // In collaboration mode, undo/redo buttons send WebSocket messages directly
+    // The server responds with diagram_operation messages that are applied normally
 
     this.logger.debugComponent(
       'WebSocketPersistenceStrategy',
-      'History-driven broadcasting initialized',
+      'History-driven broadcasting initialized (add operations only)',
     );
   }
 
@@ -301,70 +284,6 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
           eventCount: events.length,
           cellCount: allCells.length,
         });
-      },
-    });
-  }
-
-  /**
-   * Broadcast undo operation
-   */
-  private _broadcastUndoOperation(event: HistoryOperationEvent): void {
-    if (!this.webSocketAdapter.isConnected) {
-      this.logger.warn('WebSocket not connected, skipping undo broadcast');
-      return;
-    }
-
-    const message: HistoryOperationMessage = {
-      message_type: 'history_operation',
-      operation_type: 'undo',
-      message: 'resync_required',
-    };
-
-    this.logger.info('Broadcasting undo operation', {
-      entryId: event.entry?.id,
-    });
-
-    this.webSocketAdapter.sendTMIMessage(message).subscribe({
-      next: () => {
-        this.logger.debugComponent(
-          'WebSocketPersistenceStrategy',
-          'Successfully broadcast undo operation',
-        );
-      },
-      error: error => {
-        this.logger.error('Failed to broadcast undo operation', { error });
-      },
-    });
-  }
-
-  /**
-   * Broadcast redo operation
-   */
-  private _broadcastRedoOperation(event: HistoryOperationEvent): void {
-    if (!this.webSocketAdapter.isConnected) {
-      this.logger.warn('WebSocket not connected, skipping redo broadcast');
-      return;
-    }
-
-    const message: HistoryOperationMessage = {
-      message_type: 'history_operation',
-      operation_type: 'redo',
-      message: 'resync_required',
-    };
-
-    this.logger.info('Broadcasting redo operation', {
-      entryId: event.entry?.id,
-    });
-
-    this.webSocketAdapter.sendTMIMessage(message).subscribe({
-      next: () => {
-        this.logger.debugComponent(
-          'WebSocketPersistenceStrategy',
-          'Successfully broadcast redo operation',
-        );
-      },
-      error: error => {
-        this.logger.error('Failed to broadcast redo operation', { error });
       },
     });
   }
