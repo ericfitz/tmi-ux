@@ -973,9 +973,23 @@ export class DfdCollaborationService implements OnDestroy {
     const users = this._collaborationState$.value.users;
     const currentUserProvider = this._authService.userIdp;
     const currentUserProviderId = this._authService.providerId;
-    const currentUser = users.find(
+    const currentUserEmail = this._authService.userEmail;
+
+    // Try multiple matching strategies to find the current user
+    // 1. Try exact match on provider AND provider_id (ideal case)
+    let currentUser = users.find(
       user => user.provider === currentUserProvider && user.provider_id === currentUserProviderId,
     );
+
+    // 2. Fall back to matching just provider_id (handles cases where provider is 'unknown')
+    if (!currentUser && currentUserProviderId) {
+      currentUser = users.find(user => user.provider_id === currentUserProviderId);
+    }
+
+    // 3. Last resort: match by email
+    if (!currentUser && currentUserEmail) {
+      currentUser = users.find(user => user.email === currentUserEmail);
+    }
 
     this._logger.debugComponent('DfdCollaborationService', 'Getting current user permission', {
       currentUserKey: `${currentUserProvider}:${currentUserProviderId}`,
@@ -1051,14 +1065,28 @@ export class DfdCollaborationService implements OnDestroy {
     const users = this._collaborationState$.value.users;
     const currentUserProvider = this._authService.userIdp;
     const currentUserProviderId = this._authService.providerId;
+    const currentUserEmail = this._authService.userEmail;
 
-    if (!currentUserProvider || !currentUserProviderId) {
+    if (!currentUserProviderId && !currentUserEmail) {
       return false;
     }
 
-    const currentUser = users.find(
+    // Try multiple matching strategies to find the current user
+    // 1. Try exact match on provider AND provider_id (ideal case)
+    let currentUser = users.find(
       user => user.provider === currentUserProvider && user.provider_id === currentUserProviderId,
     );
+
+    // 2. Fall back to matching just provider_id (handles cases where provider is 'unknown')
+    if (!currentUser && currentUserProviderId) {
+      currentUser = users.find(user => user.provider_id === currentUserProviderId);
+    }
+
+    // 3. Last resort: match by email
+    if (!currentUser && currentUserEmail) {
+      currentUser = users.find(user => user.email === currentUserEmail);
+    }
+
     return currentUser?.isHost || false;
   }
 
