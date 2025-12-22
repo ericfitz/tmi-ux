@@ -71,6 +71,7 @@ describe('AppDfdOrchestrator', () => {
   let mockContainerElement: HTMLElement;
   let mockAppStateService: any;
   let mockInfraWebsocketAdapter: any;
+  let mockWebsocketCollaborationAdapter: any;
   let mockUiPresenterCoordinator: any;
   let mockSelectionAdapter: any;
   let mockDfdStateStore: any;
@@ -223,6 +224,15 @@ describe('AppDfdOrchestrator', () => {
       initialize: vi.fn(),
     };
 
+    mockWebsocketCollaborationAdapter = {
+      initialize: vi.fn(),
+      destroy: vi.fn(),
+      sendPresenterRequest: vi.fn(),
+      sendChangePresenter: vi.fn(),
+      sendPresenterCursor: vi.fn(),
+      sendPresenterSelection: vi.fn(),
+    };
+
     mockUiPresenterCoordinator = {
       setPresenterMode: vi.fn(),
       clearPresenterMode: vi.fn(),
@@ -308,6 +318,7 @@ describe('AppDfdOrchestrator', () => {
       mockExportService,
       mockAppStateService,
       mockInfraWebsocketAdapter,
+      mockWebsocketCollaborationAdapter,
       mockDfdFacade,
       mockAppRemoteOperationHandler,
       mockAppHistoryService,
@@ -560,6 +571,7 @@ describe('AppDfdOrchestrator', () => {
         mockExportService,
         mockAppStateService,
         mockInfraWebsocketAdapter,
+        mockWebsocketCollaborationAdapter,
         mockDfdFacade,
         mockAppRemoteOperationHandler,
         mockAppHistoryService,

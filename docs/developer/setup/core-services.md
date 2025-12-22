@@ -187,7 +187,6 @@ Below is the complete list of component names used throughout the application fo
 - `Api` - API service
 - `api` - API interceptor/helper
 - `DfdCollaborationService` - DFD collaboration service
-- `MessageChunkingService` - Message chunking for WebSocket
 - `SecurityConfigService` - Security configuration
 - `ServerConnection` - Server connection management
 - `SessionManager` - Session management
