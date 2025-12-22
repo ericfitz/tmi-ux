@@ -905,6 +905,7 @@ export class DfdCollaborationService implements OnDestroy {
 
       this._logger.debugComponent('DfdCollaborationService', 'Participant comparison', {
         participantUserId: participant.user.user_id,
+        participantProvider: participant.user.provider,
         participantEmail: participant.user.email,
         host,
         currentPresenter,
@@ -913,11 +914,11 @@ export class DfdCollaborationService implements OnDestroy {
       });
 
       return {
-        provider: 'unknown', // Not available in new spec
-        provider_id: participant.user.user_id,
-        name: participant.user.name, // Note: using 'name' not 'display_name'
-        email: participant.user.email || '',
-        permission: participant.permissions, // Changed from 'role' to 'permissions'
+        provider: participant.user.provider, // Now available from full User schema
+        provider_id: participant.user.user_id, // user_id in JSON is provider_id in internal schema
+        name: participant.user.name, // name in JSON is display_name in internal schema
+        email: participant.user.email,
+        permission: participant.permissions,
         status: 'active' as const,
         isPresenter,
         isHost,
@@ -981,7 +982,7 @@ export class DfdCollaborationService implements OnDestroy {
       user => user.provider === currentUserProvider && user.provider_id === currentUserProviderId,
     );
 
-    // 2. Fall back to matching just provider_id (handles cases where provider is 'unknown')
+    // 2. Fall back to matching just provider_id (handles edge cases)
     if (!currentUser && currentUserProviderId) {
       currentUser = users.find(user => user.provider_id === currentUserProviderId);
     }
@@ -1077,7 +1078,7 @@ export class DfdCollaborationService implements OnDestroy {
       user => user.provider === currentUserProvider && user.provider_id === currentUserProviderId,
     );
 
-    // 2. Fall back to matching just provider_id (handles cases where provider is 'unknown')
+    // 2. Fall back to matching just provider_id (handles edge cases)
     if (!currentUser && currentUserProviderId) {
       currentUser = users.find(user => user.provider_id === currentUserProviderId);
     }

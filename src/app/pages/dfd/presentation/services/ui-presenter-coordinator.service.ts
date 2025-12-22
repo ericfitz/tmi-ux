@@ -102,6 +102,10 @@ export class UiPresenterCoordinatorService implements OnDestroy {
     if (message.user) {
       debugInfo['userId'] = message.user.user_id;
       debugInfo['userEmail'] = message.user.email;
+      // Now that provider is available from the server, create composite key
+      if (message.user.provider) {
+        debugInfo['userCompositeKey'] = `${message.user.provider}:${message.user.user_id}`;
+      }
     }
 
     this.logger.debugComponent(
@@ -135,6 +139,10 @@ export class UiPresenterCoordinatorService implements OnDestroy {
     if (message.user) {
       debugInfo['userId'] = message.user.user_id;
       debugInfo['userEmail'] = message.user.email;
+      // Now that provider is available from the server, create composite key
+      if (message.user.provider) {
+        debugInfo['userCompositeKey'] = `${message.user.provider}:${message.user.user_id}`;
+      }
     }
 
     this.logger.debugComponent(

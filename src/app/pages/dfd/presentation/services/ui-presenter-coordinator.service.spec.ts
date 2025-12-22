@@ -185,7 +185,7 @@ describe('UiPresenterCoordinatorService', () => {
         message_type: 'presenter_cursor',
         user: {
           provider: 'google',
-          provider_id: 'user-123',
+          user_id: 'user-123',
           email: 'user@example.com',
         },
         cursor_position: { x: 100, y: 200 },
@@ -277,7 +277,7 @@ describe('UiPresenterCoordinatorService', () => {
         message_type: 'presenter_selection',
         user: {
           provider: 'google',
-          provider_id: 'user-123',
+          user_id: 'user-123',
           email: 'user@example.com',
         },
         selected_cells: ['cell-1', 'cell-2'],
@@ -305,7 +305,7 @@ describe('UiPresenterCoordinatorService', () => {
         message_type: 'presenter_selection',
         user: {
           provider: 'google',
-          provider_id: 'user-123',
+          user_id: 'user-123',
           email: 'user@example.com',
         },
         selected_cells: [],

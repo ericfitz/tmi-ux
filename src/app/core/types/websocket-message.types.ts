@@ -4,13 +4,17 @@
  */
 
 /**
- * User information from AsyncAPI spec
+ * User information from WebSocket messages
+ * Server now uses full User schema from OpenAPI (includes Principal base fields)
  * Based on JWT claims with user_id as primary identifier
  */
 export interface User {
   user_id: string; // JWT 'sub' claim (primary identifier, e.g., "auth0|507f1f77bcf86cd799439011")
   email?: string; // Fallback identifier for authorization
   displayName?: string; // JWT 'name' claim (optional)
+  provider?: string; // Identity provider (e.g., "google", "github", "microsoft", "test") - from Principal base
+  provider_id?: string; // Provider-specific user ID - from Principal base
+  principal_type?: 'user'; // Always "user" when present - from Principal base
 }
 
 export interface CursorPosition {
@@ -196,13 +200,17 @@ export interface RedoRequestMessage {
 
 /**
  * Participant information from AsyncAPI spec
- * Note: Uses 'name' field (not 'displayName') and 'permissions' (not 'role')
+ * Note: Uses 'permissions' (not 'role')
+ * User object now includes provider field from full User schema (Principal base)
+ * Field names use JSON serialization format: user_id (not provider_id), name (not display_name)
  */
 export interface Participant {
   user: {
-    user_id: string; // Primary identifier
-    name: string; // Display name (note: 'name' not 'displayName')
-    email: string; // Email address
+    principal_type?: 'user'; // Always "user" for participants
+    provider: string; // Identity provider (e.g., "google", "github", "microsoft", "test") - newly added
+    user_id: string; // Provider-specific user ID (JSON serialization of provider_id)
+    email: string; // Email address (required)
+    name: string; // Display name for UI (JSON serialization of display_name)
   };
   permissions: 'reader' | 'writer'; // Note: no 'owner' value in spec
   last_activity: string;
