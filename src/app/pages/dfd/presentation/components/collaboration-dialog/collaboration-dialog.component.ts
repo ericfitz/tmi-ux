@@ -31,6 +31,7 @@ import {
 } from '../../../../../core/services/dfd-collaboration.service';
 import { AppNotificationService } from '../../../application/services/app-notification.service';
 import { WebSocketAdapter } from '../../../../../core/services/websocket.adapter';
+import { ScrollIndicatorDirective } from '../../../../../shared/directives/scroll-indicator.directive';
 
 export type CollaborationDialogData = object;
 
@@ -51,6 +52,7 @@ export type CollaborationDialogData = object;
     MatSnackBarModule,
     MatMenuModule,
     TranslocoModule,
+    ScrollIndicatorDirective,
   ],
   templateUrl: './collaboration-dialog.component.html',
   styleUrls: ['./collaboration-dialog.component.scss'],

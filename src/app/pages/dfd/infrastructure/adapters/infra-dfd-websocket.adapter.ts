@@ -611,14 +611,27 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
         });
       });
     } else {
-      // User-initiated event (kick) - emit participant-removed event
+      // User-initiated event (kick) - emit participant-removed event and show notification
       if (leftUsers.length > 0) {
         const kickedUser = leftUsers[0];
+        const displayName = kickedUser.user.name || kickedUser.user.email;
 
         this._logger.info('Participant removed by host', {
           removedUser: kickedUser.user.user_id,
           initiatingUser: message.initiating_user.user_id,
         });
+
+        // Show notification for removed user
+        if (this._notificationService) {
+          this._logger.debugComponent(
+            'InfraDfdWebsocketAdapter',
+            'Showing participant removed notification',
+            { displayName },
+          );
+          this._notificationService.showSessionEvent('userRemoved', displayName).subscribe({
+            error: err => this._logger.error('Failed to show participant removed notification', err),
+          });
+        }
 
         this._domainEvents$.next({
           type: 'participant-removed',

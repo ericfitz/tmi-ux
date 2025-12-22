@@ -936,18 +936,58 @@ export class AppDfdOrchestrator {
           );
 
           return this.dfdInfrastructure.createNodeWithIntelligentPositioning(nodeType, true).pipe(
-            map(() => ({
-              success: true,
-              operationId: `create-node-${Date.now()}`,
-              operationType: 'create-node' as const,
-              affectedCellIds: [], // Facade doesn't return the node ID, but creation will succeed
-              timestamp: Date.now(),
-              metadata: {
-                nodeType,
-                usedIntelligentPositioning: true,
-                method: 'AppDfdFacade.createNodeWithIntelligentPositioning',
-              },
-            })),
+            map(({ nodeId }) => {
+              // Record history for broadcasting to collaborators
+              const graph = this.dfdInfrastructure.getGraph();
+              if (graph) {
+                const cells = graph.getCells().map((cell: any) => ({
+                  id: cell.id,
+                  shape: cell.shape,
+                  x: cell.isNode() ? cell.position().x : 0,
+                  y: cell.isNode() ? cell.position().y : 0,
+                  width: cell.isNode() ? cell.size().width : 0,
+                  height: cell.isNode() ? cell.size().height : 0,
+                  zIndex: cell.getZIndex(),
+                  label: cell.isNode() ? cell.attr('text/text') || '' : '',
+                  attrs: cell.getAttrs(),
+                  data: cell.getData(),
+                  ports: cell.isNode() ? cell.getPorts() : undefined,
+                  source: cell.isEdge() ? cell.getSourceCellId() : undefined,
+                  target: cell.isEdge() ? cell.getTargetCellId() : undefined,
+                  vertices: cell.isEdge() ? cell.getVertices() : undefined,
+                }));
+
+                const historyEntry = {
+                  id: `hist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                  timestamp: Date.now(),
+                  operationType: 'add-node' as const,
+                  description: `Create ${nodeType}`,
+                  cells,
+                  previousCells: cells.filter((c: any) => c.id !== nodeId), // All cells except the new one
+                  userId: this.authService.providerId,
+                  metadata: {
+                    nodeType,
+                    usedIntelligentPositioning: true,
+                    affectedCellIds: [nodeId],
+                  },
+                };
+
+                this.appHistoryService.addHistoryEntry(historyEntry);
+              }
+
+              return {
+                success: true,
+                operationId: `create-node-${Date.now()}`,
+                operationType: 'create-node' as const,
+                affectedCellIds: [nodeId],
+                timestamp: Date.now(),
+                metadata: {
+                  nodeType,
+                  usedIntelligentPositioning: true,
+                  method: 'AppDfdFacade.createNodeWithIntelligentPositioning',
+                },
+              };
+            }),
             catchError(error => {
               this.logger.error('AppDfdFacade node creation failed', {
                 error,
@@ -1752,6 +1792,7 @@ export class AppDfdOrchestrator {
     });
 
     // Use the diagram loading service to load cells with proper suppression
+    // Use same processing as REST API load (updateEmbedding: true, z-order, etc.)
     this.appDiagramLoadingService.loadCellsIntoGraph(
       event.cells,
       graph,
@@ -1759,7 +1800,7 @@ export class AppDfdOrchestrator {
       this.dfdInfrastructure.graphAdapter,
       {
         clearExisting: true, // Clear any existing cells
-        updateEmbedding: false, // Server already has correct embedding colors
+        updateEmbedding: true, // Apply embedding styles (same as REST API load)
         source: 'collaboration-sync', // Mark source for logging
       },
     );

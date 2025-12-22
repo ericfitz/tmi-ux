@@ -68,7 +68,10 @@ export class InfraNodeService {
   /**
    * Add a node at a predictable position
    */
-  addGraphNode(shapeType: NodeType = 'actor', isInitialized: boolean): Observable<void> {
+  addGraphNode(
+    shapeType: NodeType = 'actor',
+    isInitialized: boolean,
+  ): Observable<{ nodeId: string; node: any }> {
     if (!isInitialized) {
       this.logger.warn('Cannot add node: Graph is not initialized');
       throw new Error('Graph is not initialized');
@@ -153,7 +156,10 @@ export class InfraNodeService {
    * Create a node with the specified type and position directly in X6
    * All operations are batched into a single history command
    */
-  private createNode(shapeType: NodeType, position: { x: number; y: number }): Observable<void> {
+  private createNode(
+    shapeType: NodeType,
+    position: { x: number; y: number },
+  ): Observable<{ nodeId: string; node: any }> {
     const nodeId = uuidv4(); // Generate UUID type 4 for UX-created nodes
 
     try {
@@ -189,7 +195,9 @@ export class InfraNodeService {
         'Node created successfully directly in X6 with creation highlight (batched)',
         { nodeId, shapeType },
       );
-      return of(void 0);
+
+      // Return the created node ID so orchestrator can record history
+      return of({ nodeId, node: createdNode });
     } catch (error) {
       this.logger.error('Error creating node directly in X6', error);
       throw error;
