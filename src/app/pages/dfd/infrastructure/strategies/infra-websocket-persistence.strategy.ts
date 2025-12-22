@@ -237,9 +237,10 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
     }
 
     // Convert cells to cell operations
+    // These are new cells from 'add' history operations, so use 'add' operation
     const cellOperations: CellOperation[] = allCells.map(cell => ({
       id: cell.id,
-      operation: 'update',
+      operation: 'add',
       data: cell,
     }));
 
