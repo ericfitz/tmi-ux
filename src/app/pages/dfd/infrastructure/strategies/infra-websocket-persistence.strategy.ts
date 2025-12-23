@@ -222,9 +222,13 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
    */
   private _broadcastAddOperations(events: HistoryOperationEvent[]): void {
     if (!this.webSocketAdapter.isConnected) {
-      this.logger.warn('WebSocket not connected, skipping add broadcast', {
-        eventCount: events.length,
-      });
+      this.logger.debugComponent(
+        'WebSocketPersistenceStrategy',
+        'WebSocket not connected, skipping add broadcast',
+        {
+          eventCount: events.length,
+        },
+      );
       return;
     }
 
@@ -232,7 +236,11 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
     const allCells = events.flatMap(event => event.entry?.cells || []);
 
     if (allCells.length === 0) {
-      this.logger.warn('No cells to broadcast in add operations', { eventCount: events.length });
+      this.logger.debugComponent(
+        'WebSocketPersistenceStrategy',
+        'No cells to broadcast in add operations',
+        { eventCount: events.length },
+      );
       return;
     }
 

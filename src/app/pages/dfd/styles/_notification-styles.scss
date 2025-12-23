@@ -6,6 +6,8 @@
 /* stylelint-disable no-descending-specificity */
 
 // Success notifications (green theme)
+// Both notification-success (AppNotificationService) and success-snackbar (NotificationService)
+.success-snackbar,
 .notification-success {
   --mdc-snackbar-container-color: var(--color-success) !important;
   --mdc-snackbar-supporting-text-color: #fff !important;
@@ -35,6 +37,7 @@
 }
 
 // Info notifications (blue theme)
+// Both notification-info (AppNotificationService) and info-snackbar (if used)
 .notification-info {
   --mdc-snackbar-container-color: var(--color-info) !important;
   --mdc-snackbar-supporting-text-color: #fff !important;
@@ -64,6 +67,8 @@
 }
 
 // Warning notifications (orange theme)
+// Both notification-warning (AppNotificationService) and warning-snackbar (NotificationService)
+.warning-snackbar,
 .notification-warning {
   --mdc-snackbar-container-color: var(--color-warning) !important;
   --mdc-snackbar-supporting-text-color: #fff !important;
@@ -93,6 +98,8 @@
 }
 
 // Error notifications (red theme)
+// Both notification-error (AppNotificationService) and error-snackbar (NotificationService)
+.error-snackbar,
 .notification-error {
   --mdc-snackbar-container-color: var(--color-error) !important;
   --mdc-snackbar-supporting-text-color: #fff !important;
@@ -123,18 +130,24 @@
 
 // Shared animation improvements for all notification types
 .notification-success .mat-mdc-snack-bar-container .mdc-snackbar__surface,
+.success-snackbar .mat-mdc-snack-bar-container .mdc-snackbar__surface,
 .notification-info .mat-mdc-snack-bar-container .mdc-snackbar__surface,
 .notification-warning .mat-mdc-snack-bar-container .mdc-snackbar__surface,
-.notification-error .mat-mdc-snack-bar-container .mdc-snackbar__surface {
+.warning-snackbar .mat-mdc-snack-bar-container .mdc-snackbar__surface,
+.notification-error .mat-mdc-snack-bar-container .mdc-snackbar__surface,
+.error-snackbar .mat-mdc-snack-bar-container .mdc-snackbar__surface {
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%) !important;
   border-radius: 8px !important;
   transition: all 0.3s ease-in-out !important;
 }
 
 .notification-success .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button,
+.success-snackbar .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button,
 .notification-info .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button,
 .notification-warning .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button,
-.notification-error .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button {
+.warning-snackbar .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button,
+.notification-error .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button,
+.error-snackbar .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button {
   font-weight: 500 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
@@ -144,9 +157,12 @@
 }
 
 .notification-success .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus,
+.success-snackbar .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus,
 .notification-info .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus,
 .notification-warning .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus,
-.notification-error .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus {
+.warning-snackbar .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus,
+.notification-error .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus,
+.error-snackbar .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus {
   outline: 2px solid rgb(255 255 255 / 30%) !important;
   outline-offset: 2px !important;
 }
@@ -173,9 +189,12 @@
 // Responsive positioning
 @media (width <= 768px) {
   .notification-success,
+  .success-snackbar,
   .notification-info,
   .notification-warning,
-  .notification-error {
+  .warning-snackbar,
+  .notification-error,
+  .error-snackbar {
     .mat-mdc-snack-bar-container {
       margin: 8px !important;
       max-width: calc(100vw - 16px) !important;

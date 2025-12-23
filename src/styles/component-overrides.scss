@@ -254,18 +254,9 @@ body {
 // SNACKBAR STYLING
 // =============================================================================
 
-.mat-mdc-snack-bar-container {
-  background-color: var(--theme-surface);
-  color: var(--theme-text-primary);
-
-  .mdc-snackbar__surface {
-    background-color: var(--theme-surface);
-  }
-
-  .mat-mdc-snack-bar-label {
-    color: var(--theme-text-primary);
-  }
-}
+// Note: Snackbar styling is handled by notification-specific classes
+// (notification-success, notification-info, notification-warning, notification-error)
+// in _notification-styles.scss to ensure proper color contrast
 
 // =============================================================================
 // TABLE STYLING
