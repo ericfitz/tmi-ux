@@ -207,10 +207,11 @@ export interface RedoRequestMessage {
 export interface Participant {
   user: {
     principal_type?: 'user'; // Always "user" for participants
-    provider: string; // Identity provider (e.g., "google", "github", "microsoft", "test") - newly added
+    provider?: string; // Identity provider (e.g., "google", "github", "microsoft", "test") - optional per AsyncAPI spec
     user_id: string; // Provider-specific user ID (JSON serialization of provider_id)
     email: string; // Email address (required)
-    name: string; // Display name for UI (JSON serialization of display_name)
+    name?: string; // Display name for UI (JSON serialization of display_name)
+    display_name?: string; // Alternative field name from OpenAPI schema (fallback)
   };
   permissions: 'reader' | 'writer'; // Note: no 'owner' value in spec
   last_activity: string;

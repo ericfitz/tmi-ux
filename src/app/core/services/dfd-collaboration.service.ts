@@ -902,11 +902,17 @@ export class DfdCollaborationService implements OnDestroy {
     const updatedUsers: CollaborationUser[] = participants.map(participant => {
       const isHost = participant.user.user_id === host;
       const isPresenter = participant.user.user_id === currentPresenter;
+      // Handle both 'name' (AsyncAPI) and 'display_name' (OpenAPI) field names for compatibility
+      const displayName =
+        participant.user.name || participant.user.display_name || participant.user.email;
 
       this._logger.debugComponent('DfdCollaborationService', 'Participant comparison', {
         participantUserId: participant.user.user_id,
         participantProvider: participant.user.provider,
         participantEmail: participant.user.email,
+        participantName: participant.user.name,
+        participantDisplayName: participant.user.display_name,
+        resolvedDisplayName: displayName,
         host,
         currentPresenter,
         isHost,
@@ -914,9 +920,9 @@ export class DfdCollaborationService implements OnDestroy {
       });
 
       return {
-        provider: participant.user.provider, // Now available from full User schema
+        provider: participant.user.provider || 'unknown', // Fallback for missing provider
         provider_id: participant.user.user_id, // user_id in JSON is provider_id in internal schema
-        name: participant.user.name, // name in JSON is display_name in internal schema
+        name: displayName, // Use resolved display name with fallback
         email: participant.user.email,
         permission: participant.permissions,
         status: 'active' as const,

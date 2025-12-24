@@ -560,7 +560,9 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     if (message.initiating_user === null) {
       // System event (join/leave) - show notifications and emit synthetic events
       joinedUsers.forEach(participant => {
-        const displayName = participant.user.name || participant.user.email;
+        // Handle both 'name' (AsyncAPI) and 'display_name' (OpenAPI) field names
+        const displayName =
+          participant.user.name || participant.user.display_name || participant.user.email;
 
         if (this._notificationService) {
           this._logger.debugComponent(
@@ -579,14 +581,16 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
           user: {
             user_id: participant.user.user_id,
             email: participant.user.email,
-            displayName: participant.user.name,
+            displayName: displayName,
           },
           timestamp: new Date().toISOString(),
         });
       });
 
       leftUsers.forEach(participant => {
-        const displayName = participant.user.name || participant.user.email;
+        // Handle both 'name' (AsyncAPI) and 'display_name' (OpenAPI) field names
+        const displayName =
+          participant.user.name || participant.user.display_name || participant.user.email;
 
         if (this._notificationService) {
           this._logger.debugComponent(
@@ -605,7 +609,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
           user: {
             user_id: participant.user.user_id,
             email: participant.user.email,
-            displayName: participant.user.name,
+            displayName: displayName,
           },
           timestamp: new Date().toISOString(),
         });
@@ -614,7 +618,9 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       // User-initiated event (kick) - emit participant-removed event and show notification
       if (leftUsers.length > 0) {
         const kickedUser = leftUsers[0];
-        const displayName = kickedUser.user.name || kickedUser.user.email;
+        // Handle both 'name' (AsyncAPI) and 'display_name' (OpenAPI) field names
+        const displayName =
+          kickedUser.user.name || kickedUser.user.display_name || kickedUser.user.email;
 
         this._logger.info('Participant removed by host', {
           removedUser: kickedUser.user.user_id,
@@ -629,7 +635,8 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
             { displayName },
           );
           this._notificationService.showSessionEvent('userRemoved', displayName).subscribe({
-            error: err => this._logger.error('Failed to show participant removed notification', err),
+            error: err =>
+              this._logger.error('Failed to show participant removed notification', err),
           });
         }
 
@@ -638,7 +645,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
           removedUser: {
             user_id: kickedUser.user.user_id,
             email: kickedUser.user.email,
-            displayName: kickedUser.user.name,
+            displayName: displayName,
           },
           removingUser: {
             user_id: message.initiating_user.user_id,
