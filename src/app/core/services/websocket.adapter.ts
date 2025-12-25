@@ -529,62 +529,17 @@ export class WebSocketAdapter {
 
             const message = parsedMessage as TMIWebSocketMessage;
 
-            // Type assertion for accessing various message properties
-            const messageData = message as {
-              message_type?: string;
-              user?: {
-                user_id?: string;
-                email?: string;
-                displayName?: string;
-              };
-              user_id?: string; // Legacy field, some messages might still have this
-              timestamp?: string;
-              operation_id?: string;
-              sequence_number?: number;
-              target_user?: string;
-              current_presenter?: string;
-              host?: string;
-              participants?: unknown[];
-              operation?: {
-                type?: string;
-                cells?: unknown[];
-              };
-              reason?: string;
-              method?: string;
-              operation_type?: string;
-              message?: string;
-            };
+            // Type assertion for accessing message_type
+            const messageData = message as { message_type?: string; message?: string; reason?: string };
 
-            const messageTypeToCheck = messageData.message_type;
-
-            // Log ALL TMI messages for debugging
-            this.logger.debugComponent('websocket-api', 'TMI WebSocket message received', {
-              messageType: messageTypeToCheck,
-              userId: messageData.user?.user_id || messageData.user_id,
-              userEmail: messageData.user?.email,
-              timestamp: messageData.timestamp,
-              operationId: messageData.operation_id,
-              sequenceNumber: messageData.sequence_number,
-              targetUser: messageData.target_user,
-              currentPresenter: messageData.current_presenter,
-              host: messageData.host,
-              participantCount: messageData.participants?.length,
-              hasOperation: !!messageData.operation,
-              operationType: messageData.operation?.type,
-              cellCount: messageData.operation?.cells?.length,
-              reason: messageData.reason,
-              method: messageData.method,
-              operationType2: messageData.operation_type,
-              message: messageData.message,
-              fullBody: this._redactSensitiveData(messageData),
-            });
+            // Log TMI messages
+            this.logger.debugComponent('websocket-api', 'TMI WebSocket message received', message);
 
             // Log error messages more prominently
-            if (messageTypeToCheck === 'error') {
+            if (messageData.message_type === 'error') {
               this.logger.error('WebSocket received error message from server', {
-                errorMessage: messageData.message,
-                errorReason: messageData.reason,
-                fullErrorData: this._redactSensitiveData(messageData),
+                message: messageData.message,
+                reason: messageData.reason,
               });
             }
 
