@@ -5,7 +5,7 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, of, throwError, Subject, merge, buffer, debounceTime } from 'rxjs';
-import { map, catchError, filter, takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
@@ -71,55 +71,29 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
       return throwError(() => new Error(error));
     }
 
-    // For regular changes in collaboration mode, send diagram_operation message
+    // For regular changes in collaboration mode, we use history-driven broadcasting
+    // (via _initializeHistoryBroadcasting) which sends incremental changes only.
+    // The save() method should NOT broadcast the entire diagram state, as that would
+    // duplicate operations and send unchanged cells. Just return success to satisfy
+    // the autosave mechanism - the actual broadcasting happens via historyOperation$.
     this.logger.debugComponent(
       'WebSocketPersistenceStrategy',
-      'WebSocket save (regular changes) - sending diagram_operation',
+      'WebSocket save - using history-driven broadcasting (save() is no-op for regular changes)',
       {
         diagramId: operation.diagramId,
-        hasData: !!operation.data,
       },
     );
 
-    // Convert diagram data to cell operations
-    const cellOperations = this._convertDiagramDataToCellOperations(operation.data);
-
-    if (cellOperations.length === 0) {
-      this.logger.warn('No cell operations to broadcast', { diagramId: operation.diagramId });
-      return of({
-        success: true,
-        operationId: `ws-save-empty-${Date.now()}`,
-        diagramId: operation.diagramId,
-        timestamp: Date.now(),
-        metadata: { note: 'No changes to broadcast' },
-      });
-    }
-
-    this.logger.info('Sending diagram_operation via collaboration adapter', {
+    return of({
+      success: true,
+      operationId: `ws-save-${Date.now()}`,
       diagramId: operation.diagramId,
-      cellCount: cellOperations.length,
+      timestamp: Date.now(),
+      metadata: {
+        note: 'Changes broadcast via history-driven broadcasting',
+        sentViaWebSocket: true,
+      },
     });
-
-    // Send diagram operation via WebSocket collaboration adapter
-    return this.collaborationAdapter.sendDiagramOperation(cellOperations).pipe(
-      map(() => ({
-        success: true,
-        operationId: `ws-save-${Date.now()}`,
-        diagramId: operation.diagramId,
-        timestamp: Date.now(),
-        metadata: {
-          sentViaWebSocket: true,
-          cellOperations: cellOperations.length,
-        },
-      })),
-      catchError(error => {
-        this.logger.error('Failed to send diagram_operation', {
-          error,
-          diagramId: operation.diagramId,
-        });
-        return throwError(() => error);
-      }),
-    );
   }
 
   /**
@@ -219,6 +193,7 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
 
   /**
    * Broadcast batched add operations as diagram_operation
+   * Only sends the cells that were actually added/modified, not the entire diagram state
    */
   private _broadcastAddOperations(events: HistoryOperationEvent[]): void {
     if (!this.webSocketAdapter.isConnected) {
@@ -232,30 +207,56 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
       return;
     }
 
-    // Collect all cells from all events (preserving atomic batches)
-    const allCells = events.flatMap(event => event.entry?.cells || []);
+    // Compute cell operations by diffing cells vs previousCells for each event
+    const cellOperations: CellOperation[] = [];
 
-    if (allCells.length === 0) {
+    for (const event of events) {
+      if (!event.entry) continue;
+
+      const { cells, previousCells, metadata } = event.entry;
+      const previousCellIds = new Set(previousCells.map(c => c.id));
+
+      // Find newly added cells (in cells but not in previousCells)
+      const addedCells = cells.filter(cell => !previousCellIds.has(cell.id));
+
+      // Also check metadata.affectedCellIds if available for additional context
+      const affectedCellIds = new Set(metadata?.affectedCellIds || []);
+
+      for (const cell of addedCells) {
+        cellOperations.push({
+          id: cell.id,
+          operation: 'add',
+          data: cell,
+        });
+      }
+
+      // Log if there's a mismatch between diff and metadata
+      if (affectedCellIds.size > 0 && addedCells.length !== affectedCellIds.size) {
+        this.logger.debugComponent(
+          'WebSocketPersistenceStrategy',
+          'Cell diff vs metadata mismatch (using diff result)',
+          {
+            diffAddedCount: addedCells.length,
+            diffAddedIds: addedCells.map(c => c.id),
+            metadataAffectedIds: Array.from(affectedCellIds),
+          },
+        );
+      }
+    }
+
+    if (cellOperations.length === 0) {
       this.logger.debugComponent(
         'WebSocketPersistenceStrategy',
-        'No cells to broadcast in add operations',
+        'No cells to broadcast in add operations (diff yielded no new cells)',
         { eventCount: events.length },
       );
       return;
     }
 
-    // Convert cells to cell operations
-    // These are new cells from 'add' history operations, so use 'add' operation
-    const cellOperations: CellOperation[] = allCells.map(cell => ({
-      id: cell.id,
-      operation: 'add',
-      data: cell,
-    }));
-
     this.logger.info('Broadcasting batched add operations', {
       eventCount: events.length,
-      cellCount: allCells.length,
       operationCount: cellOperations.length,
+      cellIds: cellOperations.map(op => op.id),
     });
 
     // Send via collaboration adapter
@@ -266,7 +267,7 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
           'Successfully broadcast add operations',
           {
             eventCount: events.length,
-            cellCount: allCells.length,
+            operationCount: cellOperations.length,
           },
         );
       },
@@ -274,7 +275,7 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
         this.logger.error('Failed to broadcast add operations', {
           error,
           eventCount: events.length,
-          cellCount: allCells.length,
+          operationCount: cellOperations.length,
         });
       },
     });

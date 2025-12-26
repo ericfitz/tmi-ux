@@ -248,8 +248,8 @@ export interface ParticipantsUpdateMessage {
   message_type: 'participants_update';
   initiating_user: User | null; // null for join/leave, User for kicks
   participants: Participant[];
-  host: string; // user_id of the host (required)
-  current_presenter: string; // user_id of current presenter (required, may be empty string)
+  host: User; // User object for the session host (required)
+  current_presenter: User | null; // User object for current presenter, or null if no presenter
 }
 
 /**

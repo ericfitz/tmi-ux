@@ -19,6 +19,8 @@ import {
   CellOperation,
   Cell as WSCell,
   DiagramOperationEventMessage,
+  User,
+  Participant,
 } from '../../../../core/types/websocket-message.types';
 import {
   InfraDfdWebsocketAdapter,
@@ -52,9 +54,9 @@ export interface ProcessedDiagramSync {
 }
 
 export interface ProcessedParticipantsUpdate {
-  participants: any[];
-  host: any;
-  currentPresenter: any;
+  participants: Participant[];
+  host?: User;
+  currentPresenter?: User | null;
 }
 
 @Injectable()

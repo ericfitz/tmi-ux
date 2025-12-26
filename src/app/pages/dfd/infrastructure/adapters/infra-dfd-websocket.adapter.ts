@@ -30,6 +30,7 @@ import {
   OperationRejectedMessage,
   Participant,
   Cell,
+  User,
 } from '../../../../core/types/websocket-message.types';
 
 /**
@@ -131,8 +132,8 @@ export interface ParticipantRemovedEvent {
 export interface ParticipantsUpdatedEvent {
   type: 'participants-updated';
   participants: Participant[];
-  host?: string;
-  currentPresenter?: string | null;
+  host?: User;
+  currentPresenter?: User | null;
 }
 
 export interface OperationRejectedEvent {

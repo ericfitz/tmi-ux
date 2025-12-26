@@ -878,13 +878,13 @@ export class DfdCollaborationService implements OnDestroy {
    * Update all participants from a bulk update message
    * This replaces the entire participant list with the new data
    * @param participants Array of participant information
-   * @param host Optional host ID
-   * @param currentPresenter Optional current presenter ID
+   * @param host Optional host User object
+   * @param currentPresenter Optional current presenter User object (null if no presenter)
    */
   public updateAllParticipants(
     participants: Participant[],
-    host?: string,
-    currentPresenter?: string | null,
+    host?: User,
+    currentPresenter?: User | null,
   ): void {
     // Log current user info for debugging
     const currentUserEmail = this.getCurrentUserEmail();
@@ -900,8 +900,11 @@ export class DfdCollaborationService implements OnDestroy {
 
     // Build the new participant list
     const updatedUsers: CollaborationUser[] = participants.map(participant => {
-      const isHost = participant.user.user_id === host;
-      const isPresenter = participant.user.user_id === currentPresenter;
+      // Compare using user_id (both should have provider info but user_id is the primary key)
+      const isHost = host ? this._usersMatch(participant.user, host) : false;
+      const isPresenter = currentPresenter
+        ? this._usersMatch(participant.user, currentPresenter)
+        : false;
       // Handle both 'name' (AsyncAPI) and 'display_name' (OpenAPI) field names for compatibility
       const displayName =
         participant.user.name || participant.user.display_name || participant.user.email;
@@ -913,8 +916,10 @@ export class DfdCollaborationService implements OnDestroy {
         participantName: participant.user.name,
         participantDisplayName: participant.user.display_name,
         resolvedDisplayName: displayName,
-        host,
-        currentPresenter,
+        hostUserId: host?.user_id,
+        hostProvider: host?.provider,
+        presenterUserId: currentPresenter?.user_id,
+        presenterProvider: currentPresenter?.provider,
         isHost,
         isPresenter,
       });
@@ -940,8 +945,9 @@ export class DfdCollaborationService implements OnDestroy {
       isActive: true,
     };
 
+    // Store presenter email for backwards compatibility with UI
     if (currentPresenter !== undefined) {
-      stateUpdate.currentPresenterEmail = currentPresenter;
+      stateUpdate.currentPresenterEmail = currentPresenter?.email ?? null;
     }
 
     this._updateState(stateUpdate);
@@ -950,13 +956,19 @@ export class DfdCollaborationService implements OnDestroy {
       userCount: updatedUsers.length,
       users: updatedUsers,
       isActive: this._collaborationState$.value.isActive,
-      currentPresenter,
+      currentPresenterEmail: currentPresenter?.email,
     });
 
     this._logger.debugComponent('DfdCollaborationService', 'Bulk participant update applied', {
       participantCount: participants.length,
-      host,
-      currentPresenter,
+      host: host ? { user_id: host.user_id, provider: host.provider, email: host.email } : null,
+      currentPresenter: currentPresenter
+        ? {
+            user_id: currentPresenter.user_id,
+            provider: currentPresenter.provider,
+            email: currentPresenter.email,
+          }
+        : null,
       updatedUsers: updatedUsers.map(u => ({
         compositeKey: `${u.provider}:${u.provider_id}`,
         name: u.name,
@@ -966,6 +978,26 @@ export class DfdCollaborationService implements OnDestroy {
         isPresenter: u.isPresenter,
       })),
     });
+  }
+
+  /**
+   * Compare two User objects for identity
+   * Uses provider + user_id as primary key, falls back to email comparison
+   */
+  private _usersMatch(user1: User, user2: User): boolean {
+    // Primary comparison: provider + user_id
+    if (user1.provider && user2.provider && user1.user_id && user2.user_id) {
+      return user1.provider === user2.provider && user1.user_id === user2.user_id;
+    }
+    // Fallback: just user_id comparison (for cases where provider might be missing)
+    if (user1.user_id && user2.user_id) {
+      return user1.user_id === user2.user_id;
+    }
+    // Last resort: email comparison
+    if (user1.email && user2.email) {
+      return user1.email === user2.email;
+    }
+    return false;
   }
 
   /**
