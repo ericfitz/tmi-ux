@@ -21,9 +21,8 @@ import {
   DiagramOperationMessage,
   DiagramOperationEventMessage,
   AuthorizationDeniedMessage,
-  StateCorrectionMessage,
-  DiagramStateSyncMessage,
-  ResyncResponseMessage,
+  DiagramStateMessage,
+  SyncStatusResponseMessage,
   CurrentPresenterMessage,
   PresenterCursorMessage,
   PresenterSelectionMessage,
@@ -47,11 +46,6 @@ export interface AuthorizationDeniedEvent {
   reason: string;
 }
 
-export interface StateCorrectionEvent {
-  type: 'state-correction';
-  update_vector: number;
-}
-
 export interface DiagramStateSyncEvent {
   type: 'diagram-state-sync';
   diagram_id: string;
@@ -59,9 +53,12 @@ export interface DiagramStateSyncEvent {
   cells: Cell[];
 }
 
-export interface ResyncRequestedEvent {
-  type: 'resync-requested';
-  method: string;
+/**
+ * Server response with current update vector (sync protocol)
+ */
+export interface SyncStatusResponseEvent {
+  type: 'sync-status-response';
+  update_vector: number;
 }
 
 export interface PresenterChangedEvent {
@@ -142,6 +139,7 @@ export interface OperationRejectedEvent {
   type: 'operation-rejected';
   operation_id: string;
   sequence_number?: number;
+  update_vector: number; // Current server update_vector when rejection occurred
   reason: string;
   message: string;
   details?: string;
@@ -153,9 +151,8 @@ export interface OperationRejectedEvent {
 export type WebSocketDomainEvent =
   | DiagramOperationEvent
   | AuthorizationDeniedEvent
-  | StateCorrectionEvent
   | DiagramStateSyncEvent
-  | ResyncRequestedEvent
+  | SyncStatusResponseEvent
   | PresenterChangedEvent
   | PresenterCursorEvent
   | PresenterSelectionEvent
@@ -189,16 +186,13 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     filter((event): event is AuthorizationDeniedEvent => event.type === 'authorization-denied'),
   );
 
-  public readonly stateCorrections$ = this._domainEvents$.pipe(
-    filter((event): event is StateCorrectionEvent => event.type === 'state-correction'),
-  );
-
   public readonly diagramStateSyncs$ = this._domainEvents$.pipe(
     filter((event): event is DiagramStateSyncEvent => event.type === 'diagram-state-sync'),
   );
 
-  public readonly resyncRequests$ = this._domainEvents$.pipe(
-    filter((event): event is ResyncRequestedEvent => event.type === 'resync-requested'),
+  /** Server responds with current update_vector (sync protocol) */
+  public readonly syncStatusResponses$ = this._domainEvents$.pipe(
+    filter((event): event is SyncStatusResponseEvent => event.type === 'sync-status-response'),
   );
 
   public readonly presenterChanges$ = this._domainEvents$.pipe(
@@ -279,36 +273,25 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
         }),
     );
 
-    // Subscribe to state correction messages
+    // Subscribe to diagram_state messages
     this._subscriptions.add(
       this._webSocketAdapter
-        .getTMIMessagesOfType<StateCorrectionMessage>('state_correction')
+        .getTMIMessagesOfType<DiagramStateMessage>('diagram_state')
         .pipe(takeUntil(this._destroy$))
         .subscribe({
-          next: message => this._handleStateCorrection(message),
-          error: error => this._logger.error('Error in state correction subscription', error),
+          next: message => this._handleDiagramState(message),
+          error: error => this._logger.error('Error in diagram state subscription', error),
         }),
     );
 
-    // Subscribe to diagram state sync messages
+    // Subscribe to sync_status_response messages
     this._subscriptions.add(
       this._webSocketAdapter
-        .getTMIMessagesOfType<DiagramStateSyncMessage>('diagram_state_sync')
+        .getTMIMessagesOfType<SyncStatusResponseMessage>('sync_status_response')
         .pipe(takeUntil(this._destroy$))
         .subscribe({
-          next: message => this._handleDiagramStateSync(message),
-          error: error => this._logger.error('Error in diagram state sync subscription', error),
-        }),
-    );
-
-    // Subscribe to resync response messages
-    this._subscriptions.add(
-      this._webSocketAdapter
-        .getTMIMessagesOfType<ResyncResponseMessage>('resync_response')
-        .pipe(takeUntil(this._destroy$))
-        .subscribe({
-          next: message => this._handleResyncResponse(message),
-          error: error => this._logger.error('Error in resync response subscription', error),
+          next: message => this._handleSyncStatusResponse(message),
+          error: error => this._logger.error('Error in sync status response subscription', error),
         }),
     );
 
@@ -415,50 +398,13 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     });
   }
 
-  private _handleStateCorrection(message: StateCorrectionMessage): void {
+  /**
+   * Handle diagram_state message - full diagram state from server
+   */
+  private _handleDiagramState(message: DiagramStateMessage): void {
     const currentUpdateVector = this._dfdStateStore.updateVector;
 
-    this._logger.info('State correction received', {
-      serverUpdateVector: message.update_vector,
-      currentUpdateVector,
-    });
-
-    // If our local copy has the same update vector as the server, we don't need to update
-    if (currentUpdateVector === message.update_vector) {
-      this._logger.debugComponent(
-        'InfraDfdWebsocketAdapter',
-        'Local diagram is already up to date, ignoring state correction',
-        {
-          updateVector: message.update_vector,
-        },
-      );
-      return;
-    }
-
-    // If the server's update vector is higher, we need to resync
-    if (message.update_vector > currentUpdateVector) {
-      this._logger.info('Server has newer version, triggering resync', {
-        serverUpdateVector: message.update_vector,
-        currentUpdateVector,
-      });
-
-      this._domainEvents$.next({
-        type: 'state-correction',
-        update_vector: message.update_vector,
-      });
-    } else {
-      // Server's update vector is lower than ours - this shouldn't normally happen
-      this._logger.warn('Received state correction with older update vector', {
-        serverUpdateVector: message.update_vector,
-        currentUpdateVector,
-      });
-    }
-  }
-
-  private _handleDiagramStateSync(message: DiagramStateSyncMessage): void {
-    const currentUpdateVector = this._dfdStateStore.updateVector;
-
-    this._logger.info('Diagram state sync received', {
+    this._logger.info('Diagram state received', {
       diagramId: message.diagram_id,
       serverUpdateVector: message.update_vector,
       currentUpdateVector,
@@ -473,14 +419,17 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     });
   }
 
-  private _handleResyncResponse(message: ResyncResponseMessage): void {
-    this._logger.info('Resync response received', {
-      method: message.method,
+  /**
+   * Handle sync_status_response message - server's current update vector
+   */
+  private _handleSyncStatusResponse(message: SyncStatusResponseMessage): void {
+    this._logger.info('Sync status response received', {
+      serverUpdateVector: message.update_vector,
     });
 
     this._domainEvents$.next({
-      type: 'resync-requested',
-      method: message.method,
+      type: 'sync-status-response',
+      update_vector: message.update_vector,
     });
   }
 
@@ -671,6 +620,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   private _handleOperationRejected(message: OperationRejectedMessage): void {
     this._logger.warn('Operation rejected', {
       operation_id: message.operation_id,
+      update_vector: message.update_vector,
       reason: message.reason,
       message: message.message,
       requires_resync: message.requires_resync,
@@ -680,6 +630,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       type: 'operation-rejected',
       operation_id: message.operation_id,
       sequence_number: message.sequence_number,
+      update_vector: message.update_vector,
       reason: message.reason,
       message: message.message,
       details: message.details,

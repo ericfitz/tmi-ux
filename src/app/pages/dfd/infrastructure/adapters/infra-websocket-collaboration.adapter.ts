@@ -14,6 +14,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { AuthService } from '../../../../auth/services/auth.service';
 import { WebSocketAdapter, WebSocketState } from '../../../../core/services/websocket.adapter';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
+import { DfdStateStore } from '../../state/dfd.state';
 import {
   DiagramOperationRequestMessage,
   CellOperation,
@@ -21,7 +22,8 @@ import {
   Cell,
   UndoRequestMessage,
   RedoRequestMessage,
-  ResyncRequestMessage,
+  SyncRequestMessage,
+  SyncStatusRequestMessage,
   PresenterCursorMessage,
   PresenterSelectionMessage,
   CursorPosition,
@@ -64,6 +66,7 @@ export class InfraWebsocketCollaborationAdapter {
     private webSocketAdapter: WebSocketAdapter,
     private authService: AuthService,
     private collaborationService: DfdCollaborationService,
+    private dfdStateStore: DfdStateStore,
     private logger: LoggerService,
   ) {
     // Listen for connection state changes to process queued operations
@@ -150,15 +153,20 @@ export class InfraWebsocketCollaborationAdapter {
       cells: deduplicatedOperations,
     };
 
+    // Get current update_vector for conflict detection
+    const baseVector = this.dfdStateStore.updateVector;
+
     // Client-to-server request - no initiating_user field (server uses authenticated context)
     const message: DiagramOperationRequestMessage = {
       message_type: 'diagram_operation_request',
       operation_id: uuid(),
+      base_vector: baseVector,
       operation: operation,
     };
 
     this.logger.debugComponent('WebSocketCollaboration', 'Sending diagram operation request', {
       operationId: message.operation_id,
+      baseVector: baseVector,
       cellCount: deduplicatedOperations.length,
       operations: deduplicatedOperations.map(op => ({ id: op.id, operation: op.operation })),
     });
@@ -254,18 +262,38 @@ export class InfraWebsocketCollaborationAdapter {
   }
 
   /**
-   * Request full diagram resync from server
+   * Request full diagram state from server
+   * If updateVector is provided and matches server's, server sends SyncStatusResponse instead
+   * If updateVector differs or is omitted, server sends DiagramStateMessage
    */
-  requestResync(): Observable<void> {
+  sendSyncRequest(updateVector?: number): Observable<void> {
     if (!this._config) {
       return throwError(() => new Error('CollaborativeOperationService not initialized'));
     }
 
-    const message: ResyncRequestMessage = {
-      message_type: 'resync_request',
+    const message: SyncRequestMessage = {
+      message_type: 'sync_request',
+      ...(updateVector !== undefined && { update_vector: updateVector }),
     };
 
-    this.logger.info('Requesting diagram resync');
+    this.logger.info('Sending sync request', { updateVector });
+    return this.webSocketAdapter.sendTMIMessage(message);
+  }
+
+  /**
+   * Request sync status check from server (new sync protocol)
+   * Server responds with current update_vector only
+   */
+  sendSyncStatusRequest(): Observable<void> {
+    if (!this._config) {
+      return throwError(() => new Error('CollaborativeOperationService not initialized'));
+    }
+
+    const message: SyncStatusRequestMessage = {
+      message_type: 'sync_status_request',
+    };
+
+    this.logger.info('Sending sync status request');
     return this.webSocketAdapter.sendTMIMessage(message);
   }
 

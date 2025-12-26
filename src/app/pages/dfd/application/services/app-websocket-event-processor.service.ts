@@ -18,13 +18,12 @@ import { DfdCollaborationService } from '../../../../core/services/dfd-collabora
 import {
   CellOperation,
   Cell as WSCell,
-  DiagramOperationMessage,
+  DiagramOperationEventMessage,
 } from '../../../../core/types/websocket-message.types';
 import {
   InfraDfdWebsocketAdapter,
-  StateCorrectionEvent,
   DiagramStateSyncEvent,
-  ResyncRequestedEvent,
+  SyncStatusResponseEvent,
   ParticipantsUpdatedEvent,
 } from '../../infrastructure/adapters/infra-dfd-websocket.adapter';
 
@@ -34,10 +33,15 @@ import {
 export interface ProcessedDiagramOperation {
   userId: string;
   operationId: string;
+  sequenceNumber: number; // Server-assigned sequence number for operation ordering
+  updateVector: number; // New diagram update_vector after this operation
   operations: CellOperation[];
 }
 
-export interface ProcessedStateCorrection {
+/**
+ * Processed sync status response from server
+ */
+export interface ProcessedSyncStatusResponse {
   updateVector: number;
 }
 
@@ -45,10 +49,6 @@ export interface ProcessedDiagramSync {
   diagramId: string;
   updateVector: number | null;
   cells: WSCell[];
-}
-
-export interface ProcessedResyncRequest {
-  method: string;
 }
 
 export interface ProcessedParticipantsUpdate {
@@ -64,15 +64,13 @@ export class AppWebSocketEventProcessor implements OnDestroy {
 
   // Processed event streams
   private readonly _diagramOperation$ = new Subject<ProcessedDiagramOperation>();
-  private readonly _stateCorrection$ = new Subject<ProcessedStateCorrection>();
+  private readonly _syncStatusResponse$ = new Subject<ProcessedSyncStatusResponse>();
   private readonly _diagramSync$ = new Subject<ProcessedDiagramSync>();
-  private readonly _resyncRequest$ = new Subject<ProcessedResyncRequest>();
   private readonly _participantsUpdate$ = new Subject<ProcessedParticipantsUpdate>();
 
   public readonly diagramOperations$ = this._diagramOperation$.asObservable();
-  public readonly stateCorrections$ = this._stateCorrection$.asObservable();
+  public readonly syncStatusResponses$ = this._syncStatusResponse$.asObservable();
   public readonly diagramSyncs$ = this._diagramSync$.asObservable();
-  public readonly resyncRequests$ = this._resyncRequest$.asObservable();
   public readonly participantsUpdates$ = this._participantsUpdate$.asObservable();
 
   constructor(
@@ -92,21 +90,15 @@ export class AppWebSocketEventProcessor implements OnDestroy {
     );
 
     this._subscriptions.add(
-      this._webSocketService.stateCorrections$
-        .pipe(takeUntil(this._destroy$))
-        .subscribe(event => this._processStateCorrection(event)),
-    );
-
-    this._subscriptions.add(
       this._webSocketService.diagramStateSyncs$
         .pipe(takeUntil(this._destroy$))
         .subscribe(event => this._processDiagramStateSync(event)),
     );
 
     this._subscriptions.add(
-      this._webSocketService.resyncRequests$
+      this._webSocketService.syncStatusResponses$
         .pipe(takeUntil(this._destroy$))
-        .subscribe(event => this._processResyncRequest(event)),
+        .subscribe(event => this._processSyncStatusResponse(event)),
     );
 
     this._subscriptions.add(
@@ -119,7 +111,7 @@ export class AppWebSocketEventProcessor implements OnDestroy {
   /**
    * Process diagram operation from another user
    */
-  private _processDiagramOperation(message: DiagramOperationMessage): void {
+  private _processDiagramOperation(message: DiagramOperationEventMessage): void {
     // Skip our own operations
     const currentUserEmail = this._collaborationService.getCurrentUserEmail();
     if (message.initiating_user.email === currentUserEmail) {
@@ -134,6 +126,8 @@ export class AppWebSocketEventProcessor implements OnDestroy {
     this._logger.info('Processing remote diagram operation', {
       userId,
       operationId: message.operation_id,
+      sequenceNumber: message.sequence_number,
+      updateVector: message.update_vector,
       operationType: message.operation?.type,
       cellCount: message.operation?.cells?.length || 0,
     });
@@ -142,22 +136,11 @@ export class AppWebSocketEventProcessor implements OnDestroy {
       this._diagramOperation$.next({
         userId,
         operationId: message.operation_id,
+        sequenceNumber: message.sequence_number,
+        updateVector: message.update_vector,
         operations: message.operation.cells,
       });
     }
-  }
-
-  /**
-   * Process state correction event
-   */
-  private _processStateCorrection(event: StateCorrectionEvent): void {
-    this._logger.warn('Processing state correction', {
-      serverUpdateVector: event.update_vector,
-    });
-
-    this._stateCorrection$.next({
-      updateVector: event.update_vector,
-    });
   }
 
   /**
@@ -178,13 +161,15 @@ export class AppWebSocketEventProcessor implements OnDestroy {
   }
 
   /**
-   * Process resync request event
+   * Process sync status response event
    */
-  private _processResyncRequest(event: ResyncRequestedEvent): void {
-    this._logger.info('Processing resync request', { method: event.method });
+  private _processSyncStatusResponse(event: SyncStatusResponseEvent): void {
+    this._logger.info('Processing sync status response', {
+      serverUpdateVector: event.update_vector,
+    });
 
-    this._resyncRequest$.next({
-      method: event.method,
+    this._syncStatusResponse$.next({
+      updateVector: event.update_vector,
     });
   }
 

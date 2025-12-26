@@ -75,7 +75,7 @@ export interface CellPatchOperation {
 export interface DiagramOperationRequestMessage {
   message_type: 'diagram_operation_request';
   operation_id: string;
-  sequence_number?: number;
+  base_vector: number; // Client's current update_vector when operation was created
   operation: CellPatchOperation;
 }
 
@@ -87,7 +87,8 @@ export interface DiagramOperationEventMessage {
   message_type: 'diagram_operation_event';
   initiating_user: User;
   operation_id: string;
-  sequence_number?: number;
+  sequence_number: number; // Server-assigned sequence number for operation ordering within session
+  update_vector: number; // New diagram update_vector after this operation was applied
   operation: CellPatchOperation;
 }
 
@@ -159,27 +160,48 @@ export interface AuthorizationDeniedMessage {
   reason: 'insufficient_permissions' | 'read_only_user' | 'invalid_user';
 }
 
-export interface StateCorrectionMessage {
-  message_type: 'state_correction';
+// ============================================================================
+// Sync Protocol Messages
+// ============================================================================
+
+/**
+ * Client-to-server request to check the server's current update vector
+ * Useful for lightweight sync status check without requesting full state
+ */
+export interface SyncStatusRequestMessage {
+  message_type: 'sync_status_request';
+}
+
+/**
+ * Server-to-client response containing only the current update vector
+ * Sent in response to SyncStatusRequestMessage, or as response to
+ * SyncRequestMessage when client's update_vector matches server's
+ */
+export interface SyncStatusResponseMessage {
+  message_type: 'sync_status_response';
   update_vector: number;
 }
 
-export interface DiagramStateSyncMessage {
-  message_type: 'diagram_state_sync';
+/**
+ * Client-to-server request for full diagram state
+ * If update_vector is provided and matches server's, server sends SyncStatusResponseMessage
+ * If update_vector differs or is omitted, server sends DiagramStateMessage
+ */
+export interface SyncRequestMessage {
+  message_type: 'sync_request';
+  update_vector?: number; // Client's current update_vector for conditional sync
+}
+
+/**
+ * Full diagram state sent by server on initial connection or in response
+ * to SyncRequestMessage when client is stale
+ * Replaces the deprecated DiagramStateSyncMessage
+ */
+export interface DiagramStateMessage {
+  message_type: 'diagram_state';
   diagram_id: string;
-  update_vector: number | null;
+  update_vector: number; // Required, never null
   cells: Cell[];
-}
-
-export interface ResyncRequestMessage {
-  message_type: 'resync_request';
-}
-
-export interface ResyncResponseMessage {
-  message_type: 'resync_response';
-  method: 'rest_api';
-  diagram_id: string;
-  threat_model_id?: string;
 }
 
 /**
@@ -286,7 +308,8 @@ export interface WebSocketErrorMessage {
 export interface OperationRejectedMessage {
   message_type: 'operation_rejected';
   operation_id: string;
-  sequence_number?: number;
+  sequence_number?: number; // Server-assigned sequence number (if assigned before rejection)
+  update_vector: number; // Current server update_vector when rejection occurred
   reason:
     | 'validation_failed'
     | 'conflict_detected'
@@ -305,51 +328,45 @@ export interface OperationRejectedMessage {
 export type TMIWebSocketMessage =
   | DiagramOperationRequestMessage
   | DiagramOperationEventMessage
-  // deprecated alias
   | PresenterRequestMessage
   | PresenterDeniedMessage
   | ChangePresenterRequestMessage
-  // deprecated alias
   | CurrentPresenterMessage
   | PresenterCursorMessage
   | PresenterSelectionMessage
   | AuthorizationDeniedMessage
-  | StateCorrectionMessage
-  | DiagramStateSyncMessage
-  | ResyncRequestMessage
-  | ResyncResponseMessage
+  | SyncStatusRequestMessage
+  | SyncStatusResponseMessage
+  | SyncRequestMessage
+  | DiagramStateMessage
   | UndoRequestMessage
   | RedoRequestMessage
   | ParticipantsUpdateMessage
-  | ParticipantJoinedMessage // deprecated (synthetic only)
-  | ParticipantLeftMessage // deprecated (synthetic only)
+  | ParticipantJoinedMessage // synthetic only (for internal events)
+  | ParticipantLeftMessage // synthetic only (for internal events)
   | RemoveParticipantRequestMessage
-  // deprecated alias
   | WebSocketErrorMessage
   | OperationRejectedMessage;
 
 export type TMIMessageType =
-  | 'diagram_operation' // deprecated
   | 'diagram_operation_request'
   | 'diagram_operation_event'
   | 'presenter_request'
   | 'presenter_denied'
-  | 'change_presenter' // deprecated
   | 'change_presenter_request'
   | 'current_presenter'
   | 'presenter_cursor'
   | 'presenter_selection'
   | 'authorization_denied'
-  | 'state_correction'
-  | 'diagram_state_sync'
-  | 'resync_request'
-  | 'resync_response'
+  | 'sync_status_request'
+  | 'sync_status_response'
+  | 'sync_request'
+  | 'diagram_state'
   | 'undo_request'
   | 'redo_request'
   | 'participants_update'
-  | 'participant_joined' // deprecated (synthetic only)
-  | 'participant_left' // deprecated (synthetic only)
-  | 'remove_participant' // deprecated
+  | 'participant_joined' // synthetic only (for internal events)
+  | 'participant_left' // synthetic only (for internal events)
   | 'remove_participant_request'
   | 'error'
   | 'operation_rejected';

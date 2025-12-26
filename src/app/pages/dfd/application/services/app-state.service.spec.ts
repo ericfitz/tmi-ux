@@ -33,10 +33,13 @@ describe('AppStateService', () => {
   let mockEventProcessor: {
     initialize: ReturnType<typeof vi.fn>;
     diagramOperations$: Subject<any>;
-    stateCorrections$: Subject<any>;
+    syncStatusResponses$: Subject<any>;
     diagramSyncs$: Subject<any>;
-    resyncRequests$: Subject<any>;
     participantsUpdates$: Subject<any>;
+  };
+  let mockDfdStateStore: {
+    updateVector: number;
+    updateState: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(() => {
@@ -68,10 +71,14 @@ describe('AppStateService', () => {
     mockEventProcessor = {
       initialize: vi.fn(),
       diagramOperations$: new Subject(),
-      stateCorrections$: new Subject(),
+      syncStatusResponses$: new Subject(),
       diagramSyncs$: new Subject(),
-      resyncRequests$: new Subject(),
       participantsUpdates$: new Subject(),
+    };
+
+    mockDfdStateStore = {
+      updateVector: 0,
+      updateState: vi.fn(),
     };
 
     service = new AppStateService(
@@ -79,6 +86,7 @@ describe('AppStateService', () => {
       mockWebSocketService as any,
       mockCollaborationService as any,
       mockThreatModelService as any,
+      mockDfdStateStore as any,
       mockHistoryCoordinator as any,
       mockEventProcessor as any,
     );
@@ -114,7 +122,6 @@ describe('AppStateService', () => {
       expect(service.applyOperationEvents$).toBeDefined();
       expect(service.applyBatchedOperationsEvents$).toBeDefined();
       expect(service.applyCorrectionEvents$).toBeDefined();
-      expect(service.requestResyncEvents$).toBeDefined();
       expect(service.triggerResyncEvents$).toBeDefined();
       expect(service.diagramStateSyncEvents$).toBeDefined();
     });
@@ -366,17 +373,6 @@ describe('AppStateService', () => {
       );
     });
 
-    it('should update sync state on state-correction event', () => {
-      mockWebSocketService.domainEvents$.next({
-        type: 'state-correction',
-        payload: {},
-      });
-
-      const state = service.getCurrentState();
-      expect(state.syncState.isSynced).toBe(false);
-      expect(state.conflictCount).toBe(1);
-    });
-
     it('should increment conflict count on authorization-denied event', () => {
       mockWebSocketService.domainEvents$.next({
         type: 'authorization-denied',
@@ -509,53 +505,6 @@ describe('AppStateService', () => {
     });
   });
 
-  describe('Processed State Correction Handling', () => {
-    beforeEach(() => {
-      service.initialize();
-    });
-
-    it('should trigger resync on state correction', () => {
-      const resyncEvents: any[] = [];
-      service.triggerResyncEvents$.subscribe(() => resyncEvents.push(true));
-
-      mockEventProcessor.stateCorrections$.next({
-        updateVector: 42,
-      });
-
-      expect(resyncEvents).toHaveLength(1);
-    });
-
-    it('should update sync state on correction', () => {
-      mockEventProcessor.stateCorrections$.next({
-        updateVector: 42,
-      });
-
-      const state = service.getCurrentState();
-      expect(state.syncState.isSynced).toBe(false);
-      expect(state.syncState.isResyncing).toBe(true);
-    });
-
-    it('should increment conflict count', () => {
-      mockEventProcessor.stateCorrections$.next({
-        updateVector: 42,
-      });
-
-      const state = service.getCurrentState();
-      expect(state.conflictCount).toBe(1);
-    });
-
-    it('should log warning on state correction', () => {
-      mockEventProcessor.stateCorrections$.next({
-        updateVector: 42,
-      });
-
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Processing state correction - triggering debounced resync',
-        { serverUpdateVector: 42 },
-      );
-    });
-  });
-
   describe('Processed Diagram Sync Handling', () => {
     beforeEach(() => {
       service.initialize();
@@ -590,43 +539,6 @@ describe('AppStateService', () => {
         diagramId: 'diagram1',
         serverUpdateVector: 42,
         cellCount: 1,
-      });
-    });
-  });
-
-  describe('Processed Resync Request Handling', () => {
-    beforeEach(() => {
-      service.initialize();
-    });
-
-    it('should emit resync request event', () => {
-      const resyncRequests: any[] = [];
-      service.requestResyncEvents$.subscribe(req => resyncRequests.push(req));
-
-      mockEventProcessor.resyncRequests$.next({
-        method: 'websocket',
-      });
-
-      expect(resyncRequests).toHaveLength(1);
-      expect(resyncRequests[0].method).toBe('websocket');
-    });
-
-    it('should update sync state', () => {
-      mockEventProcessor.resyncRequests$.next({
-        method: 'websocket',
-      });
-
-      const state = service.getCurrentState();
-      expect(state.syncState.isResyncing).toBe(true);
-    });
-
-    it('should log resync request', () => {
-      mockEventProcessor.resyncRequests$.next({
-        method: 'websocket',
-      });
-
-      expect(mockLogger.info).toHaveBeenCalledWith('Processing resync request', {
-        method: 'websocket',
       });
     });
   });

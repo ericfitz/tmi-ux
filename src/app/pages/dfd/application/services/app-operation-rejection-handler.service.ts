@@ -25,6 +25,7 @@ import { DiagramOperationMessage } from '../../../../core/types/websocket-messag
 interface RejectionEvent {
   operation_id: string;
   sequence_number?: number;
+  update_vector: number; // Current server update_vector when rejection occurred
   reason: string;
   message: string;
   details?: string;
@@ -126,6 +127,7 @@ export class AppOperationRejectionHandler implements OnDestroy {
   private _handleOperationRejected(event: RejectionEvent): void {
     this.logger.warn('Operation rejected by server', {
       operation_id: event.operation_id,
+      update_vector: event.update_vector,
       reason: event.reason,
       requires_resync: event.requires_resync,
     });

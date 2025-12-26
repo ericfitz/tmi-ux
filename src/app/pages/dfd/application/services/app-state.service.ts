@@ -22,6 +22,7 @@ import {
   InfraDfdWebsocketAdapter,
   WebSocketDomainEvent,
 } from '../../infrastructure/adapters/infra-dfd-websocket.adapter';
+import { DfdStateStore } from '../../state/dfd.state';
 import {
   AppOperationStateManager,
   OperationStateEvent,
@@ -29,9 +30,8 @@ import {
 import {
   AppWebSocketEventProcessor,
   ProcessedDiagramOperation,
-  ProcessedStateCorrection,
+  ProcessedSyncStatusResponse,
   ProcessedDiagramSync,
-  ProcessedResyncRequest,
   ProcessedParticipantsUpdate,
 } from './app-websocket-event-processor.service';
 
@@ -114,7 +114,6 @@ export class AppStateService implements OnDestroy {
     operationId: string;
   }>();
   private readonly _applyCorrectionEvent$ = new Subject<WSCell[]>();
-  private readonly _requestResyncEvent$ = new Subject<{ method: string }>();
   private readonly _triggerResyncEvent$ = new Subject<void>();
   private readonly _diagramStateSyncEvent$ = new Subject<{
     diagram_id: string;
@@ -125,7 +124,6 @@ export class AppStateService implements OnDestroy {
   public readonly applyOperationEvents$ = this._applyOperationEvent$.asObservable();
   public readonly applyBatchedOperationsEvents$ = this._applyBatchedOperationsEvent$.asObservable();
   public readonly applyCorrectionEvents$ = this._applyCorrectionEvent$.asObservable();
-  public readonly requestResyncEvents$ = this._requestResyncEvent$.asObservable();
   public readonly triggerResyncEvents$ = this._triggerResyncEvent$.asObservable();
   public readonly diagramStateSyncEvents$ = this._diagramStateSyncEvent$.asObservable();
 
@@ -134,6 +132,7 @@ export class AppStateService implements OnDestroy {
     private _webSocketService: InfraDfdWebsocketAdapter,
     private _collaborationService: DfdCollaborationService,
     private _threatModelService: ThreatModelService,
+    private _dfdStateStore: DfdStateStore,
     private _historyCoordinator: AppOperationStateManager,
     private _eventProcessor: AppWebSocketEventProcessor,
   ) {
@@ -171,21 +170,15 @@ export class AppStateService implements OnDestroy {
     );
 
     this._subscriptions.add(
-      this._eventProcessor.stateCorrections$
-        .pipe(takeUntil(this._destroy$))
-        .subscribe(correction => this._handleProcessedStateCorrection(correction)),
-    );
-
-    this._subscriptions.add(
       this._eventProcessor.diagramSyncs$
         .pipe(takeUntil(this._destroy$))
         .subscribe(sync => this._handleProcessedDiagramSync(sync)),
     );
 
     this._subscriptions.add(
-      this._eventProcessor.resyncRequests$
+      this._eventProcessor.syncStatusResponses$
         .pipe(takeUntil(this._destroy$))
-        .subscribe(request => this._handleProcessedResyncRequest(request)),
+        .subscribe(response => this._handleProcessedSyncStatusResponse(response)),
     );
 
     this._subscriptions.add(
@@ -296,13 +289,6 @@ export class AppStateService implements OnDestroy {
         });
         break;
 
-      case 'state-correction':
-        this._updateState({
-          syncState: { ...this.getCurrentState().syncState, isSynced: false },
-          conflictCount: this.getCurrentState().conflictCount + 1,
-        });
-        break;
-
       case 'authorization-denied':
         this._updateState({ conflictCount: this.getCurrentState().conflictCount + 1 });
         break;
@@ -319,6 +305,17 @@ export class AppStateService implements OnDestroy {
         operationId: operation.operationId,
       });
       return;
+    }
+
+    // Update local updateVector from the operation event
+    const currentVector = this._dfdStateStore.updateVector;
+    if (operation.updateVector > currentVector) {
+      this._logger.debugComponent('AppStateService', 'Updating local updateVector from operation', {
+        previousVector: currentVector,
+        newVector: operation.updateVector,
+        operationId: operation.operationId,
+      });
+      this._dfdStateStore.updateState({ updateVector: operation.updateVector }, 'remote-operation');
     }
 
     // Update state
@@ -353,31 +350,6 @@ export class AppStateService implements OnDestroy {
   }
 
   /**
-   * Handle processed state correction from event processor
-   * Uses debounced resynchronization instead of applying the correction directly
-   */
-  private _handleProcessedStateCorrection(correction: ProcessedStateCorrection): void {
-    this._logger.warn('Processing state correction - triggering debounced resync', {
-      serverUpdateVector: correction.updateVector,
-    });
-
-    this._updateSyncState({
-      isSynced: false,
-      isResyncing: true,
-    });
-
-    // Increment conflict count to track corrections
-    this._updateState({
-      conflictCount: this.getCurrentState().conflictCount + 1,
-    });
-
-    // Trigger debounced resynchronization instead of applying cells directly
-    this._triggerResyncEvent$.next();
-
-    this._logger.debugComponent('AppStateService', 'State correction processed - resync triggered');
-  }
-
-  /**
    * Handle processed diagram state sync from event processor
    * This message is sent immediately upon WebSocket connection
    */
@@ -402,13 +374,37 @@ export class AppStateService implements OnDestroy {
   }
 
   /**
-   * Handle processed resync request from event processor
+   * Handle processed sync status response from event processor
+   * Compare server's update_vector with local state to determine if resync is needed
    */
-  private _handleProcessedResyncRequest(request: ProcessedResyncRequest): void {
-    this._logger.info('Processing resync request', { method: request.method });
+  private _handleProcessedSyncStatusResponse(response: ProcessedSyncStatusResponse): void {
+    const localVector = this._dfdStateStore.updateVector;
 
-    this._updateSyncState({ isResyncing: true });
-    this._requestResyncEvent$.next({ method: request.method });
+    this._logger.info('Processing sync status response', {
+      serverUpdateVector: response.updateVector,
+      localUpdateVector: localVector,
+    });
+
+    if (response.updateVector === localVector) {
+      // Client is synchronized
+      this._logger.debugComponent('AppStateService', 'Client is synchronized with server');
+      this._updateSyncState({
+        isSynced: true,
+        isResyncing: false,
+        lastSyncTimestamp: Date.now(),
+      });
+    } else {
+      // Client is out of sync - trigger resync
+      this._logger.warn('Client out of sync - triggering resync', {
+        serverUpdateVector: response.updateVector,
+        localUpdateVector: localVector,
+      });
+      this._updateSyncState({
+        isSynced: false,
+        isResyncing: true,
+      });
+      this._triggerResyncEvent$.next();
+    }
   }
 
   /**
