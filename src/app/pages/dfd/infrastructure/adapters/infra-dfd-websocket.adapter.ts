@@ -375,7 +375,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     this._logger.debugComponent('InfraDfdWebsocketAdapter', 'Received diagram operation', {
       userId: userId,
       userEmail: message.initiating_user.email,
-      displayName: message.initiating_user.displayName,
+      displayName: message.initiating_user.display_name,
       operationId: message.operation_id,
       operationType: message.operation?.type,
     });
@@ -600,7 +600,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
           removingUser: {
             user_id: message.initiating_user.user_id,
             email: message.initiating_user.email || '',
-            displayName: message.initiating_user.displayName || 'Host',
+            displayName: message.initiating_user.display_name || 'Host',
           },
         });
       }

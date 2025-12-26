@@ -11,7 +11,7 @@
 export interface User {
   user_id: string; // JWT 'sub' claim (primary identifier, e.g., "auth0|507f1f77bcf86cd799439011")
   email?: string; // Fallback identifier for authorization
-  displayName?: string; // JWT 'name' claim (optional)
+  display_name?: string; // JWT 'name' claim (optional) - snake_case matches server JSON serialization
   provider?: string; // Identity provider (e.g., "google", "github", "microsoft", "test") - from Principal base
   provider_id?: string; // Provider-specific user ID - from Principal base
   principal_type?: 'user'; // Always "user" when present - from Principal base

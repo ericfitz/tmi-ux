@@ -263,7 +263,7 @@ export class DfdCollaborationService implements OnDestroy {
     return {
       user_id: userProfile.provider_id || userProfile.email, // Use provider_id (JWT sub) as user_id
       email: userProfile.email,
-      displayName: userProfile.display_name,
+      display_name: userProfile.display_name,
     };
   }
 
@@ -1314,7 +1314,7 @@ export class DfdCollaborationService implements OnDestroy {
         ? {
             user_id: newPresenterUser.provider_id,
             email: newPresenterUser.email,
-            displayName: newPresenterUser.name,
+            display_name: newPresenterUser.name,
           }
         : undefined,
     };
@@ -1862,7 +1862,7 @@ export class DfdCollaborationService implements OnDestroy {
     if (this._isCurrentUser(message.current_presenter)) {
       this._notificationService?.showPresenterEvent('assigned').subscribe();
     } else {
-      const displayName = message.current_presenter.displayName || presenterUserId;
+      const displayName = message.current_presenter.display_name || presenterUserId;
       this._notificationService?.showPresenterEvent('assigned', displayName).subscribe();
     }
 
@@ -1885,7 +1885,7 @@ export class DfdCollaborationService implements OnDestroy {
 
     // Extract user identifier with fallback
     const userIdentifier = this._getUserIdentifier(message.user);
-    const displayName = message.user.displayName || message.user.email || userIdentifier;
+    const displayName = message.user.display_name || message.user.email || userIdentifier;
 
     this._logger.info('Presenter request received', {
       userId: message.user.user_id,

@@ -18,6 +18,7 @@ import { AppStateService } from './app-state.service';
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
 import { AppOperationStateManager } from './app-operation-state-manager.service';
 import { CellOperation, Cell as WSCell } from '../../../../core/types/websocket-message.types';
+import { normalizeCellFormat } from '../../utils/cell-format-normalization.util';
 import {
   GraphOperation,
   OperationContext,
@@ -290,20 +291,25 @@ export class AppRemoteOperationHandler implements OnDestroy {
     cellData: WSCell,
     baseOperation: Partial<GraphOperation>,
   ): GraphOperation | null {
+    // Normalize cell data from flat (x,y,width,height) to nested (position,size) format
+    const normalizedCell = normalizeCellFormat(cellData);
+
     // Extract label from X6 native attrs structure
     const label =
-      cellData.attrs && typeof cellData.attrs === 'object' && 'text' in cellData.attrs
-        ? (cellData.attrs as any).text?.text
+      normalizedCell.attrs &&
+      typeof normalizedCell.attrs === 'object' &&
+      'text' in normalizedCell.attrs
+        ? (normalizedCell.attrs as any).text?.text
         : undefined;
 
     const nodeData: NodeData = {
-      id: cellData.id,
-      nodeType: cellData.shape,
-      position: cellData.position,
-      size: cellData.size,
+      id: normalizedCell.id,
+      nodeType: normalizedCell.shape,
+      position: normalizedCell.position,
+      size: normalizedCell.size,
       label: typeof label === 'string' ? label : undefined,
-      style: cellData.attrs as Record<string, any>,
-      properties: cellData as Record<string, any>,
+      style: normalizedCell.attrs as Record<string, any>,
+      properties: normalizedCell as Record<string, any>,
     };
 
     switch (cellOp.operation) {
@@ -318,7 +324,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
         return {
           ...baseOperation,
           type: 'update-node',
-          nodeId: cellData.id,
+          nodeId: normalizedCell.id,
           updates: nodeData,
         } as UpdateNodeOperation;
 
@@ -326,7 +332,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
         return {
           ...baseOperation,
           type: 'delete-node',
-          nodeId: cellData.id,
+          nodeId: normalizedCell.id,
           nodeData,
         } as DeleteNodeOperation;
 
