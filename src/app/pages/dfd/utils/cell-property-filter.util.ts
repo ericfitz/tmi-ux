@@ -78,14 +78,22 @@ export class JSONPathMatcher {
     // Check if pattern ends with a wildcard (for prefix matching)
     const endsWithWildcard = pattern.endsWith('[*]') || pattern.endsWith('.*');
 
-    // Escape dots for literal matching
-    pattern = pattern.replace(/\./g, '\\.');
+    // Use placeholders for wildcards before escaping metacharacters
+    // This ensures wildcards are preserved through the escaping process
+    const ARRAY_WILDCARD = '\x00ARRAY_WILDCARD\x00';
+    const OBJECT_WILDCARD = '\x00OBJECT_WILDCARD\x00';
 
-    // Replace [*] with array index matcher
-    pattern = pattern.replace(/\[\*\]/g, '\\[\\d+\\]');
+    // Replace wildcards with placeholders
+    pattern = pattern.replace(/\[\*\]/g, ARRAY_WILDCARD);
+    pattern = pattern.replace(/\.\*/g, OBJECT_WILDCARD);
 
-    // Replace .* with property name matcher (but not if it was already processed)
-    pattern = pattern.replace(/\\\.\*/g, '\\.[^.\\[]+');
+    // Escape all regex metacharacters (including backslashes) for safe regex construction
+    // This prevents regex injection if untrusted input is ever passed to this method
+    pattern = pattern.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
+
+    // Restore wildcards with their regex equivalents
+    pattern = pattern.replace(new RegExp(ARRAY_WILDCARD, 'g'), '\\[\\d+\\]');
+    pattern = pattern.replace(new RegExp(OBJECT_WILDCARD, 'g'), '\\.[^.\\[]+');
 
     // If pattern ends with wildcard and prefix matching is allowed,
     // match the prefix and anything after it
