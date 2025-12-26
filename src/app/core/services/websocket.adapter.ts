@@ -530,7 +530,11 @@ export class WebSocketAdapter {
             const message = parsedMessage as TMIWebSocketMessage;
 
             // Type assertion for accessing message_type
-            const messageData = message as { message_type?: string; message?: string; reason?: string };
+            const messageData = message as {
+              message_type?: string;
+              message?: string;
+              reason?: string;
+            };
 
             // Log TMI messages
             this.logger.debugComponent('websocket-api', 'TMI WebSocket message received', message);
