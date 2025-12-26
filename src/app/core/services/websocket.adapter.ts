@@ -600,22 +600,29 @@ export class WebSocketAdapter {
             user_id?: string;
             email?: string;
           };
+          removed_user?: {
+            user_id?: string;
+            email?: string;
+          };
           user_id?: string; // Legacy field
           operation_id?: string;
           operation?: unknown;
         };
 
+        // Extract user info from either 'user' or 'removed_user' field
+        const userInfo = messageData.user || messageData.removed_user;
+
         this.logger.debugComponent('websocket-api', 'Sending TMI message', {
           type: messageData.message_type,
-          userId: messageData.user?.user_id || messageData.user_id,
-          userEmail: messageData.user?.email,
+          userId: userInfo?.user_id || messageData.user_id,
+          userEmail: userInfo?.email,
         });
 
         // Send message
         this.logger.debugComponent('websocket-api', 'WebSocket message sent:', {
           messageType: messageData.message_type,
-          userId: messageData.user?.user_id || messageData.user_id,
-          userEmail: messageData.user?.email,
+          userId: userInfo?.user_id || messageData.user_id,
+          userEmail: userInfo?.email,
           operationId: messageData.operation_id,
           hasOperation: !!messageData.operation,
           body: this._redactSensitiveData(message),

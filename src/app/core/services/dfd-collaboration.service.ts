@@ -803,21 +803,23 @@ export class DfdCollaborationService implements OnDestroy {
 
   /**
    * Remove a user from the collaboration session
-   * @param userEmail The email of the user to remove
+   * @param user The user to remove (must include provider_id and email)
    * @returns Observable<boolean> indicating success or failure
    */
-  public removeUser(userEmail: string): Observable<boolean> {
-    this._logger.info('Removing user from collaboration session', { userEmail });
+  public removeUser(user: {
+    provider_id: string;
+    email: string;
+    name?: string;
+    provider?: string;
+  }): Observable<boolean> {
+    this._logger.info('Removing user from collaboration session', {
+      provider_id: user.provider_id,
+      email: user.email,
+    });
 
     // Only the host can remove users
     if (!this.isCurrentUserHost()) {
       return throwError(() => new Error('Only host can remove users from session'));
-    }
-
-    // Get the host's (current user's) profile information
-    const userProfile = this._authService.userProfile;
-    if (!userProfile) {
-      return throwError(() => new Error('User profile not available'));
     }
 
     // Send remove participant request message via WebSocket
@@ -825,19 +827,27 @@ export class DfdCollaborationService implements OnDestroy {
     const removeMessage: RemoveParticipantRequestMessage = {
       message_type: 'remove_participant_request',
       removed_user: {
-        user_id: userEmail, // Using email as user_id (spec allows this)
-        email: userEmail,
-        // displayName is optional
+        user_id: user.provider_id, // Use provider_id as user_id (matches JWT sub claim)
+        email: user.email,
+        display_name: user.name,
+        provider: user.provider,
       },
     };
 
     return this._webSocketAdapter.sendTMIMessage(removeMessage).pipe(
       map(() => {
-        this._logger.info('Remove participant message sent successfully', { userEmail });
+        this._logger.info('Remove participant message sent successfully', {
+          provider_id: user.provider_id,
+          email: user.email,
+        });
         return true;
       }),
       catchError((error: unknown) => {
-        this._logger.error('Failed to send remove participant message', { error, userEmail });
+        this._logger.error('Failed to send remove participant message', {
+          error,
+          provider_id: user.provider_id,
+          email: user.email,
+        });
         return throwError(() => error);
       }),
     );

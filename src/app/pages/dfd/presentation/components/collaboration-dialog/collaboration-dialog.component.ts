@@ -425,15 +425,26 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
   /**
    * Remove a user from the collaboration session
    */
-  removeUser(userEmail: string): void {
+  removeUser(user: CollaborationUser): void {
     this._collaborationService
-      .removeUser(userEmail)
+      .removeUser({
+        provider_id: user.provider_id,
+        email: user.email,
+        name: user.name,
+        provider: user.provider,
+      })
       .pipe(take(1))
       .subscribe(success => {
         if (success) {
-          this._logger.info('User removed successfully', { userEmail });
+          this._logger.info('User removed successfully', {
+            provider_id: user.provider_id,
+            email: user.email,
+          });
         } else {
-          this._logger.error('Failed to remove user', { userEmail });
+          this._logger.error('Failed to remove user', {
+            provider_id: user.provider_id,
+            email: user.email,
+          });
         }
       });
   }
