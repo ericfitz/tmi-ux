@@ -6,8 +6,8 @@
     "contactoperator": "Operator: ",
     "contactoperatordetails": "Operator Contact: ",
     "contacttitle": "Operated By",
-    "description1": "TMI (Threat Modeling Improved) is a collaborative platform for creating, managing, and sharing threat models. Our mission is to make security threat modeling accessible, efficient, and integrated into the software development lifecycle.",
-    "description2": "The platform features interactive diagram creation with real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams identify, analyze, and mitigate security threats through collaborative modeling.",
+    "description1": "TMI (Threat Modeling Improved) is a collaborative platform for managing an organization's security review process, including threat modeling. Our mission is to reduce the toil of security reviewing, and to make threat modeling accessible, efficient, and integrated into the software development lifecycle.",
+    "description2": "The platform features security review organization and state management, interactive data flow diagram creation with real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams manage the security review process and identify, analyze, and mitigate security threats through collaborative modeling.",
     "opensource": {
       "paragraph1": "This application is built with the support of exceptional open-source projects. We're grateful to the communities behind these projects for providing the capabilities that bring our interface and functionality to life.",
       "paragraph2": "A special thanks for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application goes to "
@@ -21,7 +21,9 @@
     "version": "Version Information",
     "webApplication": "Web Application",
     "webApplicationSourceCode": "Web Application Source Code: ",
-    "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
+    "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux",
+    "wiki": "TMI Wiki: ",
+    "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
   "admin": {
     "addons": {
@@ -79,6 +81,42 @@
       "subtitle": "Control who has administrative access to the system",
       "title": "Manage Administrators"
     },
+    "groups": {
+      "addButton": "Add Group",
+      "addDialog": {
+        "description": "Description (Optional)",
+        "descriptionHint": "Optional description of the group's purpose",
+        "descriptionPlaceholder": "Description of this group",
+        "displayName": "Display Name",
+        "displayNameHint": "Human-readable group name",
+        "displayNamePlaceholder": "My Custom Group",
+        "displayNameRequired": "Display name is required",
+        "groupName": "Group Identifier",
+        "groupNameHint": "Alphanumeric, hyphens, and underscores only",
+        "groupNamePattern": "Only alphanumeric, hyphens, and underscores allowed",
+        "groupNamePlaceholder": "my-custom-group",
+        "groupNameRequired": "Group identifier is required",
+        "save": "Create Group",
+        "title": "Add Group"
+      },
+      "deleteTooltip": "Delete group",
+      "filterLabel": "Filter Groups",
+      "filterPlaceholder": "Search by group name or provider",
+      "listTitle": "Groups",
+      "membersDialog": {
+        "addMember": "Add Member",
+        "currentMembers": "Current Members",
+        "noMembers": "No members in this group",
+        "removeTooltip": "Remove from group",
+        "searchHint": "Type at least 2 characters to search",
+        "searchPlaceholder": "Start typing email address...",
+        "searchUser": "Search User by Email"
+      },
+      "noGroups": "No groups found",
+      "subtitle": "View and manage system groups",
+      "title": "Manage Groups",
+      "viewMembersTooltip": "View and manage group members"
+    },
     "quotas": {
       "addButton": "Add Quota",
       "addDialog": {
@@ -134,6 +172,15 @@
     },
     "subtitle": "Manage system settings and configurations",
     "title": "Administration",
+    "users": {
+      "deleteTooltip": "Delete user account",
+      "filterLabel": "Filter Users",
+      "filterPlaceholder": "Search by email, name, provider, or group name",
+      "listTitle": "Users",
+      "noUsers": "No users found",
+      "subtitle": "View and manage system users",
+      "title": "Manage Users"
+    },
     "webhooks": {
       "addButton": "Add Webhook",
       "addDialog": {
@@ -175,51 +222,6 @@
       },
       "subtitle": "Configure webhook subscriptions for event notifications",
       "title": "Manage Webhooks"
-    },
-    "users": {
-      "deleteTooltip": "Delete user account",
-      "filterLabel": "Filter Users",
-      "filterPlaceholder": "Search by email, name, provider, or group name",
-      "listTitle": "Users",
-      "noUsers": "No users found",
-      "subtitle": "View and manage system users",
-      "title": "Manage Users"
-    },
-    "groups": {
-      "addButton": "Add Group",
-      "addDialog": {
-        "description": "Description (Optional)",
-        "descriptionHint": "Optional description of the group's purpose",
-        "descriptionPlaceholder": "Description of this group",
-        "displayName": "Display Name",
-        "displayNameHint": "Human-readable group name",
-        "displayNamePlaceholder": "My Custom Group",
-        "displayNameRequired": "Display name is required",
-        "groupName": "Group Identifier",
-        "groupNameHint": "Alphanumeric, hyphens, and underscores only",
-        "groupNamePattern": "Only alphanumeric, hyphens, and underscores allowed",
-        "groupNamePlaceholder": "my-custom-group",
-        "groupNameRequired": "Group identifier is required",
-        "save": "Create Group",
-        "title": "Add Group"
-      },
-      "filterLabel": "Filter Groups",
-      "filterPlaceholder": "Search by group name or provider",
-      "listTitle": "Groups",
-      "membersDialog": {
-        "addMember": "Add Member",
-        "currentMembers": "Current Members",
-        "noMembers": "No members in this group",
-        "removeTooltip": "Remove from group",
-        "searchHint": "Type at least 2 characters to search",
-        "searchPlaceholder": "Start typing email address...",
-        "searchUser": "Search User by Email"
-      },
-      "noGroups": "No groups found",
-      "subtitle": "View and manage system groups",
-      "title": "Manage Groups",
-      "viewMembersTooltip": "View and manage group members",
-      "deleteTooltip": "Delete group"
     }
   },
   "assetEditor": {

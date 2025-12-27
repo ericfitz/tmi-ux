@@ -6,8 +6,8 @@
     "contactoperator": "Betreiber: ",
     "contactoperatordetails": "Kontaktinformation des Betreibers: ",
     "contacttitle": "Betrieben von",
-    "description1": "TMI (Threat Modeling Improved) ist eine kollaborative Plattform für die Erstellung, Verwaltung und gemeinsame Nutzung von Bedrohungsmodellen. Unsere Mission ist es, die Modellierung von Sicherheitsbedrohungen zugänglich, effizient und in den Software-Entwicklungslebenszyklus integriert zu gestalten.",
-    "description2": "Die Plattform bietet interaktive Diagrammerstellung, Echtzeit-Zusammenarbeit und umfassende Funktionen zur Dokumentation von Bedrohungen. TMI wurde mit modernen Webtechnologien entwickelt und hilft Teams, Sicherheitsbedrohungen durch kollaborative Modellierung zu identifizieren, zu analysieren und zu mindern.",
+    "description1": "TMI (Threat Modeling Improved) ist eine kollaborative Plattform zur Verwaltung des Sicherheitsüberprüfungsprozesses einer Organisation, einschließlich Bedrohungsmodellierung. Unsere Mission ist es, den Aufwand bei Sicherheitsüberprüfungen zu reduzieren und die Bedrohungsmodellierung zugänglich, effizient und in den Softwareentwicklungszyklus integriert zu machen.",
+    "description2": "Die Plattform bietet Organisation und Statusverwaltung von Sicherheitsüberprüfungen, interaktive Erstellung von Datenflussdiagrammen mit Echtzeit-Zusammenarbeit und umfassende Bedrohungsdokumentationsfunktionen. Mit modernen Webtechnologien entwickelt, hilft TMI Teams bei der Verwaltung des Sicherheitsüberprüfungsprozesses und der Identifizierung, Analyse und Minderung von Sicherheitsbedrohungen durch kollaborative Modellierung.",
     "opensource": {
       "paragraph1": "Diese Anwendung wird mit Unterstützung von außergewöhnlichen Open-Source-Projekten erstellt. Wir sind den Gemeinschaften hinter diesen Projekten dankbar für die Bereitstellung der Funktionen, die unsere Benutzeroberfläche und Funktionalität zum Leben erwecken.",
       "paragraph2": "Ein besonderer Dank für die Bereitstellung von Inspiration, die uns geholfen hat, unsere Vision und unseren Ansatz zum Aufbau einer sicheren und benutzerfreundlichen Anwendung zu gestalten, geht an "
@@ -21,7 +21,9 @@
     "version": "Versionsinformationen",
     "webApplication": "Webanwendung",
     "webApplicationSourceCode": "Webanwendungs-Quellcode: ",
-    "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
+    "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux",
+    "wiki": "TMI Wiki: ",
+    "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
   "admin": {
     "addons": {
@@ -79,6 +81,42 @@
       "subtitle": "Control who has administrative access to the system",
       "title": "Manage Administrators"
     },
+    "groups": {
+      "addButton": "Gruppe hinzufügen",
+      "addDialog": {
+        "description": "Beschreibung (Optional)",
+        "descriptionHint": "Optionale Beschreibung des Gruppenzwecks",
+        "descriptionPlaceholder": "Beschreibung dieser Gruppe",
+        "displayName": "Anzeigename",
+        "displayNameHint": "Lesbarer Gruppenname",
+        "displayNamePlaceholder": "Meine Benutzerdefinierte Gruppe",
+        "displayNameRequired": "Anzeigename ist erforderlich",
+        "groupName": "Gruppenkennung",
+        "groupNameHint": "Nur alphanumerische Zeichen, Bindestriche und Unterstriche",
+        "groupNamePattern": "Nur alphanumerische Zeichen, Bindestriche und Unterstriche erlaubt",
+        "groupNamePlaceholder": "meine-benutzerdefinierte-gruppe",
+        "groupNameRequired": "Gruppenkennung ist erforderlich",
+        "save": "Gruppe erstellen",
+        "title": "Gruppe hinzufügen"
+      },
+      "deleteTooltip": "Gruppe löschen",
+      "filterLabel": "Gruppen filtern",
+      "filterPlaceholder": "Nach Gruppenname oder Anbieter suchen",
+      "listTitle": "Gruppen",
+      "membersDialog": {
+        "addMember": "Mitglied hinzufügen",
+        "currentMembers": "Aktuelle Mitglieder",
+        "noMembers": "Keine Mitglieder in dieser Gruppe",
+        "removeTooltip": "Aus Gruppe entfernen",
+        "searchHint": "Mindestens 2 Zeichen eingeben zum Suchen",
+        "searchPlaceholder": "E-Mail-Adresse eingeben...",
+        "searchUser": "Benutzer per E-Mail suchen"
+      },
+      "noGroups": "Keine Gruppen gefunden",
+      "subtitle": "Systemgruppen anzeigen und verwalten",
+      "title": "Gruppen verwalten",
+      "viewMembersTooltip": "Gruppenmitglieder anzeigen und verwalten"
+    },
     "quotas": {
       "addButton": "Add Quota",
       "addDialog": {
@@ -134,6 +172,15 @@
     },
     "subtitle": "Systemeinstellungen und Konfigurationen verwalten",
     "title": "Verwaltung",
+    "users": {
+      "deleteTooltip": "Benutzerkonto löschen",
+      "filterLabel": "Benutzer filtern",
+      "filterPlaceholder": "Nach E-Mail, Name, Anbieter oder Gruppenname suchen",
+      "listTitle": "Benutzer",
+      "noUsers": "Keine Benutzer gefunden",
+      "subtitle": "Systembenutzer anzeigen und verwalten",
+      "title": "Benutzer verwalten"
+    },
     "webhooks": {
       "addButton": "Add Webhook",
       "addDialog": {

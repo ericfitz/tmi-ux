@@ -6,8 +6,8 @@
     "contactoperator": "运营者：",
     "contactoperatordetails": "运营者联系方式：",
     "contacttitle": "运营者",
-    "description1": "TMI（威胁建模改进）是一个用于创建、管理和共享威胁模型的协作平台。我们的使命是使安全威胁建模变得易于访问、高效，并集成到软件开发生命周期中。",
-    "description2": "该平台具有交互式图表创建、实时协作和全面的威胁文档功能。TMI采用现代Web技术构建，通过协作建模帮助团队识别、分析和减轻安全威胁。",
+    "description1": "TMI（威胁建模改进）是一个用于管理组织安全审查流程（包括威胁建模）的协作平台。我们的使命是减少安全审查的繁琐工作，使威胁建模变得易于访问、高效，并融入软件开发生命周期。",
+    "description2": "该平台具有安全审查组织和状态管理、具有实时协作功能的交互式数据流图创建以及全面的威胁文档功能。采用现代网络技术构建，TMI帮助团队管理安全审查流程，并通过协作建模识别、分析和缓解安全威胁。",
     "opensource": {
       "paragraph1": "此应用程序是在杰出开源项目的支持下构建的。我们感谢这些项目背后的社区为我们提供了使界面和功能栩栩如生的能力。",
       "paragraph2": "特别感谢为我们塑造构建安全且用户友好的应用程序的愿景和方法提供灵感的 "
@@ -21,7 +21,9 @@
     "version": "版本信息",
     "webApplication": "Web应用程序",
     "webApplicationSourceCode": "Web应用程序源代码：",
-    "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux"
+    "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux",
+    "wiki": "TMI Wiki：",
+    "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
   "admin": {
     "addons": {
@@ -79,6 +81,42 @@
       "subtitle": "Control who has administrative access to the system",
       "title": "Manage Administrators"
     },
+    "groups": {
+      "addButton": "添加用户组",
+      "addDialog": {
+        "description": "描述（可选）",
+        "descriptionHint": "用户组用途的可选描述",
+        "descriptionPlaceholder": "此用户组的描述",
+        "displayName": "显示名称",
+        "displayNameHint": "人类可读的用户组名称",
+        "displayNamePlaceholder": "我的自定义组",
+        "displayNameRequired": "显示名称为必填项",
+        "groupName": "组标识符",
+        "groupNameHint": "仅限字母数字、连字符和下划线",
+        "groupNamePattern": "仅允许字母数字、连字符和下划线",
+        "groupNamePlaceholder": "my-custom-group",
+        "groupNameRequired": "组标识符为必填项",
+        "save": "创建用户组",
+        "title": "添加用户组"
+      },
+      "deleteTooltip": "删除用户组",
+      "filterLabel": "筛选用户组",
+      "filterPlaceholder": "按组名或提供商搜索",
+      "listTitle": "用户组",
+      "membersDialog": {
+        "addMember": "添加成员",
+        "currentMembers": "当前成员",
+        "noMembers": "此组中没有成员",
+        "removeTooltip": "从组中移除",
+        "searchHint": "输入至少2个字符进行搜索",
+        "searchPlaceholder": "开始输入电子邮件地址...",
+        "searchUser": "按电子邮件搜索用户"
+      },
+      "noGroups": "未找到用户组",
+      "subtitle": "查看和管理系统用户组",
+      "title": "管理用户组",
+      "viewMembersTooltip": "查看和管理组成员"
+    },
     "quotas": {
       "addButton": "Add Quota",
       "addDialog": {
@@ -134,6 +172,15 @@
     },
     "subtitle": "管理系统设置和配置",
     "title": "系统管理",
+    "users": {
+      "deleteTooltip": "删除用户账户",
+      "filterLabel": "筛选用户",
+      "filterPlaceholder": "按电子邮件、姓名、提供商或组名搜索",
+      "listTitle": "用户",
+      "noUsers": "未找到用户",
+      "subtitle": "查看和管理系统用户",
+      "title": "管理用户"
+    },
     "webhooks": {
       "addButton": "Add Webhook",
       "addDialog": {
