@@ -1,28 +1,29 @@
 {
   "about": {
-    "bugReport": "File a bug report or request a feature: ",
+    "bugReport": "Signaler un bug ou demander une fonctionnalité : ",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
-    "contactjurisdiction": "Legal Jurisdiction: ",
-    "contactoperator": "Operator: ",
-    "contactoperatordetails": "Operator Contact: ",
+    "contactjurisdiction": "Juridiction légale : ",
+    "contactoperator": "Opérateur : ",
+    "contactoperatordetails": "Contact de l'opérateur : ",
     "contacttitle": "Exploité Par",
-    "description1": "TMI (Threat Modeling Improved) is a collaborative platform for managing an organization's security review process, including threat modeling. Our mission is to reduce the toil of security reviewing, and to make threat modeling accessible, efficient, and integrated into the software development lifecycle.",
-    "description2": "The platform features security review organization and state management, interactive data flow diagram creation with real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams manage the security review process and identify, analyze, and mitigate security threats through collaborative modeling.",
+    "description1": "TMI (Threat Modeling Improved) est une plateforme collaborative pour gérer le processus de révision de sécurité d'une organisation, y compris la modélisation des menaces. Notre mission est de réduire la charge de travail des révisions de sécurité et de rendre la modélisation des menaces accessible, efficace et intégrée au cycle de vie du développement logiciel.",
+    "description2": "La plateforme propose l'organisation et la gestion d'état des révisions de sécurité, la création interactive de diagrammes de flux de données avec collaboration en temps réel, et des capacités complètes de documentation des menaces. Construite avec des technologies web modernes, TMI aide les équipes à gérer le processus de révision de sécurité et à identifier, analyser et atténuer les menaces de sécurité grâce à la modélisation collaborative.",
     "opensource": {
-      "paragraph1": "This application is built with the support of exceptional open-source projects. We're grateful to the communities behind these projects for providing the capabilities that bring our interface and functionality to life.",
-      "paragraph2": "A special thanks for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application goes to "
+      "paragraph1": "Cette application est construite avec le soutien de projets open-source exceptionnels. Nous sommes reconnaissants envers les communautés derrière ces projets pour avoir fourni les capacités qui donnent vie à notre interface et à nos fonctionnalités.",
+      "paragraph2": "Un remerciement spécial pour avoir fourni l'inspiration qui a aidé à façonner notre vision et notre approche pour construire une application sécurisée et conviviale va à "
     },
     "opensourcetitle": "Open Source",
-    "server": "Server",
-    "serverSourceCode": "Server Source Code: ",
+    "server": "Serveur",
+    "serverSourceCode": "Code source du serveur : ",
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
     "sourcetitle": "Projet TMI",
     "title": "À Propos de TMI",
-    "version": "Version Information",
-    "webApplication": "Web Application",
-    "webApplicationSourceCode": "Web Application Source Code: ",
+    "trademarks": "Tous les noms de produits, logos et marques sont la propriété de leurs propriétaires respectifs. Tous les noms d'entreprises, de produits et de services utilisés dans cette application sont uniquement à des fins d'identification. L'utilisation de ces noms, logos et marques n'implique pas d'approbation.",
+    "version": "Informations de version",
+    "webApplication": "Application Web",
+    "webApplicationSourceCode": "Code source de l'application web : ",
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux",
-    "wiki": "TMI Wiki: ",
+    "wiki": "Wiki TMI : ",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
   "admin": {
