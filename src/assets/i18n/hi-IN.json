@@ -5,20 +5,19 @@
     "contactjurisdiction": "Legal Jurisdiction: ",
     "contactoperator": "Operator: ",
     "contactoperatordetails": "Operator Contact: ",
-    "contacttitle": "Operated By",
+    "contacttitle": "संचालक द्वारा",
     "description1": "TMI (Threat Modeling Improved) is a collaborative platform for managing an organization's security review process, including threat modeling. Our mission is to reduce the toil of security reviewing, and to make threat modeling accessible, efficient, and integrated into the software development lifecycle.",
     "description2": "The platform features security review organization and state management, interactive data flow diagram creation with real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams manage the security review process and identify, analyze, and mitigate security threats through collaborative modeling.",
     "opensource": {
       "paragraph1": "This application is built with the support of exceptional open-source projects. We're grateful to the communities behind these projects for providing the capabilities that bring our interface and functionality to life.",
       "paragraph2": "A special thanks for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application goes to "
     },
-    "opensourcetitle": "Open Source",
+    "opensourcetitle": "ओपन सोर्स",
     "server": "Server",
     "serverSourceCode": "Server Source Code: ",
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
-    "sourcetitle": "TMI Project",
-    "title": "About TMI",
-    "trademarks": "All product names, logos, and brands are property of their respective owners. All company, product, and service names used in this application are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.",
+    "sourcetitle": "TMI प्रोजेक्ट",
+    "title": "TMI के बारे में",
     "version": "Version Information",
     "webApplication": "Web Application",
     "webApplicationSourceCode": "Web Application Source Code: ",
@@ -28,7 +27,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "Add Addon",
+      "addButton": "ऐडऑन जोड़ें",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "What does this addon do?",
@@ -44,7 +43,7 @@
         "objects": "Object Types",
         "objectsHint": "Select TMI object types this addon can operate on",
         "save": "Create Addon",
-        "title": "Add Addon",
+        "title": "ऐडऑन जोड़ें",
         "webhook": "Webhook",
         "webhookHint": "Associated webhook subscription",
         "webhookRequired": "Webhook is required"
@@ -56,13 +55,13 @@
       "errorLoadingWebhooks": "Failed to load available webhooks",
       "filterLabel": "Filter Addons",
       "filterPlaceholder": "Search by name or description",
-      "listTitle": "System Addons",
+      "listTitle": "सिस्टम ऐडऑन",
       "noAddons": "No addons found",
       "subtitle": "Configure addons for extending TMI functionality",
-      "title": "Manage Addons"
+      "title": "ऐडऑन प्रबंधित करें"
     },
     "administrators": {
-      "addButton": "Add Administrator",
+      "addButton": "व्यवस्थापक जोड़ें",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "Provider is required",
@@ -71,19 +70,19 @@
         "subjectHint": "Enter user email or group name",
         "subjectPlaceholder": "User email or group name",
         "subjectRequired": "Subject is required",
-        "title": "Add Administrator"
+        "title": "व्यवस्थापक जोड़ें"
       },
       "createdAt": "Added on",
       "filterLabel": "Filter Administrators",
       "filterPlaceholder": "Search by email or group name",
-      "listTitle": "System Administrators",
+      "listTitle": "सिस्टम व्यवस्थापक",
       "noAdministrators": "No administrators found",
       "removeTooltip": "Remove Administrator Permissions",
       "subtitle": "Control who has administrative access to the system",
-      "title": "Manage Administrators"
+      "title": "व्यवस्थापक प्रबंधित करें"
     },
     "groups": {
-      "addButton": "Add Group",
+      "addButton": "समूह जोड़ें",
       "addDialog": {
         "description": "Description (Optional)",
         "descriptionHint": "Optional description of the group's purpose",
@@ -98,12 +97,12 @@
         "groupNamePlaceholder": "my-custom-group",
         "groupNameRequired": "Group identifier is required",
         "save": "Create Group",
-        "title": "Add Group"
+        "title": "समूह जोड़ें"
       },
       "deleteTooltip": "Delete group",
       "filterLabel": "Filter Groups",
       "filterPlaceholder": "Search by group name or provider",
-      "listTitle": "Groups",
+      "listTitle": "समूह",
       "membersDialog": {
         "addMember": "Add Member",
         "currentMembers": "Current Members",
@@ -115,18 +114,17 @@
       },
       "noGroups": "No groups found",
       "subtitle": "View and manage system groups",
-      "title": "Manage Groups",
-      "viewMembersTooltip": "View and manage group members"
+      "title": "समूह प्रबंधित करें"
     },
     "quotas": {
-      "addButton": "Add Quota",
+      "addButton": "कोटा जोड़ें",
       "addDialog": {
         "apiQuotas": "API Rate Limits",
         "configureQuotas": "Configure Quotas",
         "searchLabel": "Search for user",
         "searchPlaceholder": "Type user email to search",
         "selectUser": "Select User",
-        "title": "Add Custom Quotas",
+        "title": "कस्टम कोटा जोड़ें",
         "webhookQuotas": "Webhook Limits"
       },
       "deleteTooltip": "Remove custom quota (revert to defaults)",
@@ -141,49 +139,49 @@
       "subReqPerDay": "Subscription requests per day",
       "subReqPerMinute": "Subscription requests per minute",
       "subtitle": "Configure rate limits and quotas for users",
-      "title": "Manage Quotas",
-      "userAPITitle": "API Rate Limits",
-      "webhookTitle": "Webhook Limits"
+      "title": "कोटा प्रबंधित करें",
+      "userAPITitle": "API दर सीमाएं",
+      "webhookTitle": "Webhook सीमाएं"
     },
     "sections": {
       "addons": {
         "description": "Install and configure application addons",
-        "title": "Manage Addons"
+        "title": "ऐडऑन प्रबंधित करें"
       },
       "administrators": {
         "description": "Grant or revoke administrator permissions",
-        "title": "Manage Administrators"
+        "title": "व्यवस्थापक प्रबंधित करें"
       },
       "groups": {
         "description": "Configure user groups and memberships",
-        "title": "Manage Groups"
+        "title": "समूह प्रबंधित करें"
       },
       "quotas": {
         "description": "Configure resource quotas and limits",
-        "title": "Manage Quotas"
+        "title": "कोटा प्रबंधित करें"
       },
       "users": {
         "description": "View and manage user accounts",
-        "title": "Manage Users"
+        "title": "उपयोगकर्ता प्रबंधित करें"
       },
       "webhooks": {
         "description": "Install and configure webhook integrations",
-        "title": "Manage Webhooks"
+        "title": "Webhooks प्रबंधित करें"
       }
     },
     "subtitle": "Manage system settings and configurations",
-    "title": "Administration",
+    "title": "प्रशासन",
     "users": {
       "deleteTooltip": "Delete user account",
       "filterLabel": "Filter Users",
       "filterPlaceholder": "Search by email, name, provider, or group name",
-      "listTitle": "Users",
+      "listTitle": "उपयोगकर्ता",
       "noUsers": "No users found",
       "subtitle": "View and manage system users",
-      "title": "Manage Users"
+      "title": "उपयोगकर्ता प्रबंधित करें"
     },
     "webhooks": {
-      "addButton": "Add Webhook",
+      "addButton": "Webhook जोड़ें",
       "addDialog": {
         "events": "Event Types to Subscribe To",
         "eventsHint": "Event types to subscribe to (e.g., threat_model.created)",
@@ -194,10 +192,7 @@
         "namePlaceholder": "Webhook name",
         "nameRequired": "{{common.validation.nameRequired}}",
         "save": "Create Webhook",
-        "secret": "HMAC Secret",
-        "secretHint": "HMAC secret for signing payloads (auto-generated if empty)",
-        "secretPlaceholder": "Leave empty to auto-generate",
-        "title": "Add Webhook",
+        "title": "Webhook जोड़ें",
         "url": "Webhook URL",
         "urlHint": "Must be an HTTPS URL",
         "urlInvalid": "Must be an HTTPS URL",
@@ -210,10 +205,10 @@
       "filterLabel": "Filter Webhooks",
       "filterPlaceholder": "Search by name or URL",
       "hmacSecretDialog": {
-        "title": "HMAC Secret",
+        "title": "HMAC सीक्रेट",
         "warning": "This is the only time you will be able to view this secret. Please copy it. If you lose or forget it, you will have to delete and re-create the webhook."
       },
-      "listTitle": "Webhook Subscriptions",
+      "listTitle": "Webhook सब्सक्रिप्शन",
       "noWebhooks": "No webhooks found",
       "secret": "HMAC secret",
       "status": {
@@ -222,7 +217,7 @@
         "pending_verification": "Pending Verification"
       },
       "subtitle": "Configure webhook subscriptions for event notifications",
-      "title": "Manage Webhooks"
+      "title": "Webhooks प्रबंधित करें"
     }
   },
   "assetEditor": {
@@ -232,9 +227,9 @@
     "name": "Asset Name",
     "sensitivity": "Sensitivity",
     "title": {
-      "create": "Create Asset",
-      "edit": "Edit Asset",
-      "view": "View Asset"
+      "create": "एसेट बनाएं",
+      "edit": "एसेट संपादित करें",
+      "view": "एसेट देखें"
     },
     "type": "Asset Type",
     "types": {
@@ -266,7 +261,7 @@
       "403": "403 Forbidden",
       "noPermission": "You do not have permission to access this page.",
       "requiredRole": "You need the {{role}} role to view this content.",
-      "title": "Unauthorized Access"
+      "title": "अनधिकृत पहुंच"
     }
   },
   "collaboration": {
@@ -295,7 +290,7 @@
     "shareLinkHeader": "Share Collaboration Link",
     "startCollaboration": "Start Collaboration",
     "takeBackPresenter": "Take Back Presenter",
-    "title": "Collaboration Session Participants",
+    "title": "सहयोग सत्र प्रतिभागी",
     "userJoined": "{{user}} joined the collaboration",
     "userLeft": "{{user}} left the collaboration",
     "viewParticipants": "View Participants",
@@ -306,113 +301,113 @@
     }
   },
   "common": {
-    "about": "About",
-    "actions": "Actions",
-    "addMetadata": "Add Metadata",
-    "addThreat": "Add Threat",
-    "addons": "Addons",
-    "cancel": "Cancel",
-    "cellId": "Cell ID",
-    "clear": "Clear",
-    "close": "Close",
-    "confirmDelete": "Are you sure you want to delete the {{item}} \"{{name}}\"? This action cannot be undone.",
-    "copy": "Copy",
-    "copyToClipboard": "Copy to Clipboard",
-    "create": "Create",
-    "created": "Created",
-    "cut": "Cut",
-    "delete": "Delete",
-    "deleteConfirm": "Delete Threat Model",
-    "description": "Description",
-    "diagramId": "Diagram ID",
-    "done": "Done",
-    "edit": "Edit",
-    "editThreat": "Edit Threat",
-    "emailLabel": "Email Address",
-    "fonts": "Fonts",
-    "identityProvider": "Identity Provider",
-    "issueUri": "Issue URL",
+    "about": "के बारे में",
+    "actions": "कार्य",
+    "addMetadata": "मेटाडेटा जोड़ें",
+    "addThreat": "खतरा जोड़ें",
+    "addons": "ऐडऑन",
+    "cancel": "रद्द करें",
+    "cellId": "सेल आईडी",
+    "clear": "साफ़ करें",
+    "close": "बंद करें",
+    "confirmDelete": "क्या आप वाकई {{item}} \"{{name}}\" को हटाना चाहते हैं? यह कार्य पूर्ववत नहीं किया जा सकता।",
+    "copy": "कॉपी",
+    "copyToClipboard": "क्लिपबोर्ड पर कॉपी करें",
+    "create": "बनाएं",
+    "created": "बनाया गया",
+    "cut": "काटें",
+    "delete": "हटाएं",
+    "deleteConfirm": "थ्रेट मॉडल हटाएं",
+    "description": "विवरण",
+    "diagramId": "डायग्राम आईडी",
+    "done": "पूर्ण",
+    "edit": "संपादित करें",
+    "editThreat": "खतरा संपादित करें",
+    "emailLabel": "ईमेल पता",
+    "fonts": "फ़ॉन्ट्स",
+    "identityProvider": "पहचान प्रदाता",
+    "issueUri": "समस्या URL",
     "language": "{{language}}",
-    "lastModified": "Last Modified",
-    "lastModifiedDate": "Last Modified: {{date}}",
-    "lastUpdated": "Last updated: ",
-    "manage": "Manage",
-    "manageMetadata": "Manage Metadata",
-    "manageThreats": "Manage Threats",
-    "metadata": "Metadata",
-    "metadataKey": "Key",
-    "metadataValue": "Value",
-    "mitigated": "Mitigated",
-    "mitigation": "Mitigation",
-    "mitigationPlaceholder": "Describe recommended or planned mitigation(s) for this threat",
-    "name": "Name",
-    "noDataAvailable": "No Data Available",
-    "noMetadata": "No Metadata Available",
-    "noThreats": "No Threats Available",
-    "none": "None",
+    "lastModified": "अंतिम संशोधित",
+    "lastModifiedDate": "अंतिम संशोधित: {{date}}",
+    "lastUpdated": "अंतिम अपडेट: ",
+    "manage": "प्रबंधित करें",
+    "manageMetadata": "मेटाडेटा प्रबंधित करें",
+    "manageThreats": "खतरे प्रबंधित करें",
+    "metadata": "मेटाडेटा",
+    "metadataKey": "कुंजी",
+    "metadataValue": "मान",
+    "mitigated": "शमन किया गया",
+    "mitigation": "शमन",
+    "mitigationPlaceholder": "इस खतरे के लिए अनुशंसित या नियोजित शमन का वर्णन करें",
+    "name": "नाम",
+    "noDataAvailable": "कोई डेटा उपलब्ध नहीं",
+    "noMetadata": "कोई मेटाडेटा उपलब्ध नहीं",
+    "noThreats": "कोई खतरा उपलब्ध नहीं",
+    "none": "कोई नहीं",
     "objectTypes": {
-      "asset": "Asset",
-      "assets": "Assets",
-      "cell": "Cell",
-      "diagram": "Diagram",
-      "document": "Document",
-      "documents": "Documents",
-      "note": "Note",
-      "notes": "Notes",
-      "report": "Report",
-      "repositories": "Repositories",
-      "repository": "Repository",
-      "threat": "Threat",
-      "threatModel": "Threat Model",
-      "threats": "Threats"
+      "asset": "एसेट",
+      "assets": "एसेट्स",
+      "cell": "सेल",
+      "diagram": "डायग्राम",
+      "document": "दस्तावेज़",
+      "documents": "दस्तावेज़",
+      "note": "नोट",
+      "notes": "नोट्स",
+      "report": "रिपोर्ट",
+      "repositories": "रिपॉजिटरीज",
+      "repository": "रिपॉजिटरी",
+      "threat": "खतरा",
+      "threatModel": "थ्रेट मॉडल",
+      "threats": "खतरे"
     },
-    "ok": "OK",
-    "openInNewTab": "Open in New Tab",
-    "other": "Other",
-    "paste": "Paste",
-    "permissions": "Permissions",
-    "priority": "Priority",
-    "provider": "Provider",
-    "readOnly": "Read-Only",
-    "readOnlyTooltip": "You have read-only access to this threat model. Contact the owner to request edit permissions.",
-    "refresh": "Refresh",
+    "ok": "ठीक है",
+    "openInNewTab": "नए टैब में खोलें",
+    "other": "अन्य",
+    "paste": "पेस्ट करें",
+    "permissions": "अनुमतियां",
+    "priority": "प्राथमिकता",
+    "provider": "प्रदाता",
+    "readOnly": "केवल पढ़ने के लिए",
+    "readOnlyTooltip": "इस थ्रेट मॉडल तक आपकी केवल पढ़ने की पहुंच है। संपादन अनुमतियों के लिए स्वामी से संपर्क करें।",
+    "refresh": "रिफ्रेश",
     "roles": {
-      "owner": "Owner",
-      "reader": "Reader",
-      "writer": "Writer"
+      "owner": "स्वामी",
+      "reader": "पाठक",
+      "writer": "लेखक"
     },
-    "save": "Save",
-    "saveAndClose": "Save & Close",
-    "score": "Score",
+    "save": "सहेजें",
+    "saveAndClose": "सहेजें और बंद करें",
+    "score": "स्कोर",
     "sessionRoles": {
-      "host": "Host",
-      "participant": "Participant",
-      "presenter": "Presenter"
+      "host": "होस्ट",
+      "participant": "प्रतिभागी",
+      "presenter": "प्रस्तुतकर्ता"
     },
-    "severity": "Severity",
-    "status": "Status",
+    "severity": "गंभीरता",
+    "status": "स्थिति",
     "subjectTypes": {
-      "group": "Group",
-      "user": "User"
+      "group": "समूह",
+      "user": "उपयोगकर्ता"
     },
-    "threatDescription": "Threat Description",
-    "threatDescriptionPlaceholder": "Describe the Threat in Detail",
-    "threatId": "Threat ID",
-    "threatName": "Threat Name",
-    "threatType": "Threat Type",
-    "type": "Type",
-    "unsavedChangesWarning": "You have unsaved changes. Are you sure you want to close?",
-    "userId": "User ID",
+    "threatDescription": "खतरे का विवरण",
+    "threatDescriptionPlaceholder": "खतरे का विस्तार से वर्णन करें",
+    "threatId": "खतरा आईडी",
+    "threatName": "खतरे का नाम",
+    "threatType": "खतरे का प्रकार",
+    "type": "प्रकार",
+    "unsavedChangesWarning": "आपके पास सहेजे न गए परिवर्तन हैं। क्या आप वाकई बंद करना चाहते हैं?",
+    "userId": "उपयोगकर्ता आईडी",
     "validation": {
-      "invalidUrl": "Please enter a valid URL",
-      "maxLength": "Maximum length is {{max}} characters",
-      "nameRequired": "Name is required",
-      "required": "This field is required"
+      "invalidUrl": "कृपया एक वैध URL दर्ज करें",
+      "maxLength": "अधिकतम लंबाई {{max}} अक्षर है",
+      "nameRequired": "नाम आवश्यक है",
+      "required": "यह फ़ील्ड आवश्यक है"
     },
-    "view": "View",
-    "viewMetadata": "View Metadata",
-    "viewPermissions": "View Permissions",
-    "viewThreat": "View Threat"
+    "view": "देखें",
+    "viewMetadata": "मेटाडेटा देखें",
+    "viewPermissions": "अनुमतियां देखें",
+    "viewThreat": "खतरा देखें"
   },
   "contextMenu": {
     "addInverseConnection": "Add Inverse Connection",
@@ -425,8 +420,8 @@
   "dataAssetDialog": {
     "selectAsset": "Data Asset",
     "title": {
-      "select": "Select Data Asset",
-      "view": "View Data Asset"
+      "select": "डेटा एसेट चुनें",
+      "view": "डेटा एसेट देखें"
     }
   },
   "debugDialogs": {
@@ -435,7 +430,7 @@
       "clearClipboard": "Clear Clipboard",
       "clipboardJson": "Clipboard JSON",
       "isEmpty": "Is Empty",
-      "title": "Clipboard Data"
+      "title": "क्लिपबोर्ड डेटा"
     },
     "common": {
       "affectedCells": "Affected Cells",
@@ -445,7 +440,7 @@
     },
     "graphDataDialog": {
       "graphJson": "Graph JSON",
-      "title": "Graph Data"
+      "title": "ग्राफ़ डेटा"
     },
     "historyDialog": {
       "canRedo": "Can Redo",
@@ -462,7 +457,7 @@
       "redoStackSize": "Redo Stack Size",
       "summary": "Summary",
       "timestamp": "Timestamp",
-      "title": "History",
+      "title": "इतिहास",
       "undoStack": "Undo Stack",
       "undoStackSize": "Undo Stack Size",
       "userId": "{{common.userId}}"
@@ -479,7 +474,7 @@
     "flowLabel": "Flow",
     "helpDialog": {
       "panLabel": "Hold Shift and drag to pan",
-      "title": "Diagram Editor Help",
+      "title": "डायग्राम एडिटर सहायता",
       "zoomLabel": "Hold Shift and use the mouse wheel to zoom"
     },
     "nodeLabels": {
@@ -490,7 +485,7 @@
       "store": "Data Store",
       "textbox": "Text"
     },
-    "pageTitle": "Data Flow Diagram Editor",
+    "pageTitle": "डेटा फ्लो डायग्राम एडिटर",
     "toolbar": {
       "exportMenu": {
         "exportAsJpeg": "Export as JPEG",
@@ -518,7 +513,7 @@
   },
   "getStarted": "Get Started",
   "homeDescription": "A collaborative threat modeling tool designed to help teams identify, analyze, and document security threats in their systems. Create, share, and collaboratively edit threat models and diagrams to improve your application security.",
-  "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
+  "homeWelcomeTitle": "TMI में आपका स्वागत है: थ्रेट मॉडलिंग इम्प्रूव्ड",
   "login": {
     "chooseMethod": "Choose your sign in method:",
     "explanation": "Sign in with your existing account from a trusted identity provider. This eliminates the need for a separate password, streamlining your experience while keeping you secure. We never store or manage passwords—your credentials stay with your provider and can't be compromised through us.",
@@ -526,27 +521,27 @@
     "local": {
       "emailInvalid": "Please enter a valid email address",
       "emailRequired": "Email address is required",
-      "loginButton": "Sign in",
+      "loginButton": "साइन इन करें",
       "subtitle": "Enter your email address for testing",
-      "title": "Local Development Sign In",
+      "title": "स्थानीय विकास साइन इन",
       "userName": "Local User"
     },
     "loggingInWith": "Signing in with {{provider}}...",
     "loginWith": "Sign in with",
     "noProvidersConfigured": "No authentication providers are configured.",
     "oauthFailed": "OAuth authentication failed. Please try again.",
-    "oauthProvidersTitle": "OAuth Sign-in Providers",
+    "oauthProvidersTitle": "OAuth साइन-इन प्रदाता",
     "pleaseSignIn": "Please sign in to continue.",
-    "samlProvidersTitle": "SAML Sign-in Providers",
-    "title": "Sign In to TMI",
+    "samlProvidersTitle": "SAML साइन-इन प्रदाता",
+    "title": "TMI में साइन इन करें",
     "unexpectedError": "An unexpected error occurred during OAuth."
   },
   "navbar": {
-    "appTitle": "TMI: Threat Modeling Improved",
+    "appTitle": "TMI: थ्रेट मॉडलिंग इम्प्रूव्ड",
     "copyUserEmail": "Copy User Email to Clipboard",
     "feedback": "Report a bug, request a feature or provide feedback",
     "home": "Home",
-    "logoutButton": "Sign Out",
+    "logoutButton": "साइन आउट",
     "serverStatus": {
       "noServerConfigured": "No Server Configured",
       "serverConnected": "Server Connected",
@@ -573,9 +568,9 @@
     "saveFailed": "Failed to save note",
     "savedSuccessfully": "Note saved successfully",
     "title": {
-      "create": "Create Note",
-      "edit": "Edit Note",
-      "view": "View Note"
+      "create": "नोट बनाएं",
+      "edit": "नोट संपादित करें",
+      "view": "नोट देखें"
     }
   },
   "presenter": {
@@ -584,49 +579,49 @@
   },
   "privacy": {
     "changesContent": "We may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated \"Last Updated\" date.",
-    "changesTitle": "Changes to This Policy",
+    "changesTitle": "इस नीति में परिवर्तन",
     "complianceContent": "We will only disclose information if required to do so by law, such as in response to a valid government order or subpoena. In such cases, The Operator will comply with applicable legal obligations.",
-    "complianceTitle": "Legal Compliance",
+    "complianceTitle": "कानूनी अनुपालन",
     "contactContent": {
       "part1": "If you have any questions about this Privacy Policy, please feel free to contact the Operator of this web site via the contact information on the ",
       "part2": " page."
     },
-    "contactTitle": "Contact Us",
+    "contactTitle": "हमसे संपर्क करें",
     "dataSecurityContent1": "The Operator implements industry-standard security measures to protect your personal data, including encryption in transit and at rest, secure authentication protocols, and regular security updates. Access to your information is restricted to authorized personnel on a need-to-know basis.",
     "dataSecurityContent2": "While no system is entirely impervious to risks, The Operator continuously monitors and updates safeguards to mitigate threats and ensure the confidentiality, integrity, and availability of your data.",
-    "dataSecurityTitle": "Data Security",
+    "dataSecurityTitle": "डेटा सुरक्षा",
     "dataSharingContent1": "The Operator does not share your personal information with any third parties, except in the following limited circumstances:",
     "dataSharingContent2": "Beyond these exceptions, The Operator does not sell, rent, or share your data with any other entities for marketing, advertising, or any other purpose.",
     "dataSharingList1": "Service Providers: Your data may be stored and processed on secure third-party cloud infrastructure (such as AWS, Google Cloud, or similar providers) solely to operate and maintain the application. These providers are contractually obligated to protect your data and use it only for the purposes The Operator specifies.",
     "dataSharingList2": "Legal Compliance: The Operator may disclose information if required by law, such as in response to a valid court order, subpoena, or government request.",
-    "dataSharingTitle": "Data Sharing",
+    "dataSharingTitle": "डेटा साझाकरण",
     "informationCollectionContent1": "When users authenticate via social login (using OAuth or OpenID Connect providers such as Sign in with Google, Login with GitHub, Microsoft Entra External ID, or others), the application collects the following information from the selected provider, solely to facilitate authentication and provide personalized services:",
     "informationCollectionContent2": "No additional personal data is collected without explicit user consent. The Operator does not access or store sensitive information such as passwords, contacts, or other provider-specific data beyond what is necessary for authentication. All collected information is handled in accordance with the respective provider's API policies and The Operator's commitment to user privacy.",
     "informationCollectionList1": "Basic Profile Information: Full name, email address, and profile picture (if provided and available).",
     "informationCollectionList2": "Unique Identifier: A provider-specific user ID to manage account sessions securely.",
-    "informationCollectionTitle": "Information Collection and Use",
+    "informationCollectionTitle": "जानकारी संग्रह और उपयोग",
     "intro1": {
       "part1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the Operator listed on the ",
       "part2": " page of this web site (\"The Operator\")."
     },
     "intro2": "The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.",
-    "introductionTitle": "Introduction",
+    "introductionTitle": "परिचय",
     "lastUpdatedDate": "2025-10-24",
-    "title": "Privacy Policy",
+    "title": "गोपनीयता नीति",
     "userRightsContent1": "You have full control over your personal data. At any time, you may access the \"Delete All My Data\" feature in the User Preferences section of the application.",
     "userRightsContent2": "This option enables immediate deletion of all data The Operator stores on your behalf, including profile information and authentication records. Upon activation, your data will be permanently removed from The Operator's systems and third-party providers, subject to any legal retention obligations.",
-    "userRightsTitle": "User Rights"
+    "userRightsTitle": "उपयोगकर्ता अधिकार"
   },
   "sessionExpiry": {
-    "extendButton": "Extend Session",
+    "extendButton": "सत्र बढ़ाएं",
     "extending": "Extending your session, please wait...",
-    "logoutButton": "Sign Out Now",
+    "logoutButton": "अभी साइन आउट करें",
     "message": "Your session is about to expire. Would you like to extend your session or log out now?",
     "timeFormat": {
       "minutesSeconds": "{{minutes}}:{{seconds}}",
       "seconds": "{{seconds}} seconds"
     },
-    "title": "Session Expiring Soon"
+    "title": "सत्र जल्द समाप्त हो रहा है"
   },
   "threatEditor": {
     "createNewThreat": "Create New Threat",
@@ -687,7 +682,7 @@
     "branch": "Branch",
     "commit": "Commit",
     "confirmDeleteNote": "Are you sure you want to delete the note '{{name}}'?",
-    "createFirstButton": "Create Your First Threat Model",
+    "createFirstButton": "अपना पहला थ्रेट मॉडल बनाएं",
     "createNewDiagram": "Create New Diagram",
     "createNewDocument": "Add Document Reference",
     "createNewRepository": "Add Repository Reference",
@@ -707,14 +702,14 @@
     "documentDescriptionPlaceholder": "Describe the Document's Purpose or Content",
     "documentEditor": {
       "title": {
-        "create": "Create Document Reference",
-        "edit": "Edit Document Reference",
-        "view": "View Document Reference"
+        "create": "दस्तावेज़ संदर्भ बनाएं",
+        "edit": "दस्तावेज़ संदर्भ संपादित करें",
+        "view": "दस्तावेज़ संदर्भ देखें"
       }
     },
     "documentName": "Document Name",
     "documentUrl": "Document URL",
-    "downloadButton": "Download to Desktop",
+    "downloadButton": "डेस्कटॉप पर डाउनलोड करें",
     "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",
     "idLabel": "ID:",
     "importing": "Importing threat model...",
@@ -728,7 +723,7 @@
     "noPermissions": "No Permissions Defined",
     "noRepositories": "No Repositories Added Yet",
     "noThreats": "No Threats Added Yet",
-    "pageTitle": "Threat Models",
+    "pageTitle": "थ्रेट मॉडल्स",
     "permissionsDisplayName": "Display Name",
     "permissionsEmail": "Email",
     "permissionsGroupId": "Group ID",
@@ -746,9 +741,9 @@
     "repositoryDescriptionPlaceholder": "Describe the repository or its purpose",
     "repositoryEditor": {
       "title": {
-        "create": "Create Repository Reference",
-        "edit": "Edit Repository Reference",
-        "view": "View Repository Reference"
+        "create": "रिपॉजिटरी संदर्भ बनाएं",
+        "edit": "रिपॉजिटरी संदर्भ संपादित करें",
+        "view": "रिपॉजिटरी संदर्भ देखें"
       }
     },
     "repositoryName": "Repository Name",
@@ -822,47 +817,47 @@
     "lastUpdatedDate": "2025-10-10",
     "section1": {
       "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.",
-      "title": "1. Acceptance of Terms"
+      "title": "1. शर्तों की स्वीकृति"
     },
     "section2": {
       "content": "You may use the web site for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the web site or its underlying systems.",
-      "title": "2. Use of the Web Site"
+      "title": "2. वेब साइट का उपयोग"
     },
     "section3": {
       "content": "The web site is provided \"as is\" without warranties of any kind, express or implied, including but not limited to fitness for a particular purpose, availability, or accuracy. We do not guarantee uninterrupted or error-free operation.",
-      "title": "3. No Warranty"
+      "title": "3. कोई वारंटी नहीं"
     },
     "section4": {
       "content": "To the fullest extent permitted by law, The Operator shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the website.",
-      "title": "4. Limitation of Liability"
+      "title": "4. दायित्व की सीमा"
     },
     "section5": {
       "content": {
         "part1": "This website runs the TMI open source software. Its source code is available at the links provided on the ",
         "part2": " page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. Unless stated otherwise, the Operator of this web site is not affiliated with the TMI project or its creators."
       },
-      "title": "5. Open Source Software"
+      "title": "5. ओपन सोर्स सॉफ्टवेयर"
     },
     "section6": {
       "content": "The Operator may update these Terms at any time. Continued use of the web site after changes constitutes acceptance of the updated Terms.",
-      "title": "6. Changes to Terms"
+      "title": "6. शर्तों में परिवर्तन"
     },
     "section7": {
       "content": "The Operator reserves the right to suspend or terminate access to the web site at The Operator's discretion, without notice, for any reason.",
-      "title": "7. Termination"
+      "title": "7. समाप्ति"
     },
     "section8": {
       "content": {
         "part1": "These Terms are governed by the laws of the jurisdiction specified by the Operator on the ",
         "part2": " page, without regard to conflict of law principles."
       },
-      "title": "8. Governing Law"
+      "title": "8. शासकीय कानून"
     },
-    "title": "Terms of Service"
+    "title": "सेवा की शर्तें"
   },
   "userPreferences": {
     "administration": {
-      "title": "Administration"
+      "title": "प्रशासन"
     },
     "colorBlindMode": "Enable Color Blind Mode",
     "deleteMyData": {
@@ -879,7 +874,7 @@
         "intro": "Confirming this operation will permanently delete the following data and revoke associated permissions:"
       },
       "processing": "Deleting your account...",
-      "title": "Delete All My Data",
+      "title": "मेरा सारा डेटा हटाएं",
       "validation": "To confirm your deletion request, type your email address exactly as it appears here:"
     },
     "diagramAnimationEffects": "Enable Animation Effects in Diagram Editor",
@@ -887,12 +882,12 @@
     "marginSize": {
       "narrow": "Narrow",
       "standard": "Standard",
-      "title": "Preferred Margin Size for Reports",
+      "title": "रिपोर्ट के लिए पसंदीदा मार्जिन आकार",
       "wide": "Wide"
     },
     "pageSize": {
       "A4": "A4",
-      "title": "Preferred Page Size for Reports",
+      "title": "रिपोर्ट के लिए पसंदीदा पेज आकार",
       "usLetter": "US Letter"
     },
     "reportPreferences": "Report Preferences",
@@ -902,7 +897,7 @@
       "dark": "Dark",
       "light": "Light"
     },
-    "title": "User Preferences",
+    "title": "उपयोगकर्ता प्राथमिकताएं",
     "userProfile": {
       "currentRole": "Current Threat Model Role",
       "groups": "Groups",
@@ -910,7 +905,7 @@
       "provider": "{{common.identityProvider}}",
       "providerId": "Provider ID",
       "providers": "Linked Providers",
-      "title": "User Profile",
+      "title": "उपयोगकर्ता प्रोफ़ाइल",
       "userId": "{{common.userId}}"
     }
   }

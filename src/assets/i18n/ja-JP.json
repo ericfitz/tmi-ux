@@ -5,20 +5,19 @@
     "contactjurisdiction": "Legal Jurisdiction: ",
     "contactoperator": "Operator: ",
     "contactoperatordetails": "Operator Contact: ",
-    "contacttitle": "Operated By",
+    "contacttitle": "運営元",
     "description1": "TMI (Threat Modeling Improved) is a collaborative platform for managing an organization's security review process, including threat modeling. Our mission is to reduce the toil of security reviewing, and to make threat modeling accessible, efficient, and integrated into the software development lifecycle.",
     "description2": "The platform features security review organization and state management, interactive data flow diagram creation with real-time collaboration, and comprehensive threat documentation capabilities. Built with modern web technologies, TMI helps teams manage the security review process and identify, analyze, and mitigate security threats through collaborative modeling.",
     "opensource": {
       "paragraph1": "This application is built with the support of exceptional open-source projects. We're grateful to the communities behind these projects for providing the capabilities that bring our interface and functionality to life.",
       "paragraph2": "A special thanks for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application goes to "
     },
-    "opensourcetitle": "Open Source",
+    "opensourcetitle": "オープンソース",
     "server": "Server",
     "serverSourceCode": "Server Source Code: ",
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
-    "sourcetitle": "TMI Project",
-    "title": "About TMI",
-    "trademarks": "All product names, logos, and brands are property of their respective owners. All company, product, and service names used in this application are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.",
+    "sourcetitle": "TMIプロジェクト",
+    "title": "TMIについて",
     "version": "Version Information",
     "webApplication": "Web Application",
     "webApplicationSourceCode": "Web Application Source Code: ",
@@ -28,7 +27,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "Add Addon",
+      "addButton": "アドオンを追加",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "What does this addon do?",
@@ -44,7 +43,7 @@
         "objects": "Object Types",
         "objectsHint": "Select TMI object types this addon can operate on",
         "save": "Create Addon",
-        "title": "Add Addon",
+        "title": "アドオンを追加",
         "webhook": "Webhook",
         "webhookHint": "Associated webhook subscription",
         "webhookRequired": "Webhook is required"
@@ -56,13 +55,13 @@
       "errorLoadingWebhooks": "Failed to load available webhooks",
       "filterLabel": "Filter Addons",
       "filterPlaceholder": "Search by name or description",
-      "listTitle": "System Addons",
+      "listTitle": "システムアドオン",
       "noAddons": "No addons found",
       "subtitle": "Configure addons for extending TMI functionality",
-      "title": "Manage Addons"
+      "title": "アドオンの管理"
     },
     "administrators": {
-      "addButton": "Add Administrator",
+      "addButton": "管理者を追加",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "Provider is required",
@@ -71,19 +70,19 @@
         "subjectHint": "Enter user email or group name",
         "subjectPlaceholder": "User email or group name",
         "subjectRequired": "Subject is required",
-        "title": "Add Administrator"
+        "title": "管理者を追加"
       },
       "createdAt": "Added on",
       "filterLabel": "Filter Administrators",
       "filterPlaceholder": "Search by email or group name",
-      "listTitle": "System Administrators",
+      "listTitle": "システム管理者",
       "noAdministrators": "No administrators found",
       "removeTooltip": "Remove Administrator Permissions",
       "subtitle": "Control who has administrative access to the system",
-      "title": "Manage Administrators"
+      "title": "管理者の管理"
     },
     "groups": {
-      "addButton": "Add Group",
+      "addButton": "グループを追加",
       "addDialog": {
         "description": "Description (Optional)",
         "descriptionHint": "Optional description of the group's purpose",
@@ -98,12 +97,12 @@
         "groupNamePlaceholder": "my-custom-group",
         "groupNameRequired": "Group identifier is required",
         "save": "Create Group",
-        "title": "Add Group"
+        "title": "グループを追加"
       },
       "deleteTooltip": "Delete group",
       "filterLabel": "Filter Groups",
       "filterPlaceholder": "Search by group name or provider",
-      "listTitle": "Groups",
+      "listTitle": "グループ",
       "membersDialog": {
         "addMember": "Add Member",
         "currentMembers": "Current Members",
@@ -115,18 +114,17 @@
       },
       "noGroups": "No groups found",
       "subtitle": "View and manage system groups",
-      "title": "Manage Groups",
-      "viewMembersTooltip": "View and manage group members"
+      "title": "グループの管理"
     },
     "quotas": {
-      "addButton": "Add Quota",
+      "addButton": "クォータを追加",
       "addDialog": {
         "apiQuotas": "API Rate Limits",
         "configureQuotas": "Configure Quotas",
         "searchLabel": "Search for user",
         "searchPlaceholder": "Type user email to search",
         "selectUser": "Select User",
-        "title": "Add Custom Quotas",
+        "title": "カスタムクォータを追加",
         "webhookQuotas": "Webhook Limits"
       },
       "deleteTooltip": "Remove custom quota (revert to defaults)",
@@ -141,49 +139,49 @@
       "subReqPerDay": "Subscription requests per day",
       "subReqPerMinute": "Subscription requests per minute",
       "subtitle": "Configure rate limits and quotas for users",
-      "title": "Manage Quotas",
-      "userAPITitle": "API Rate Limits",
-      "webhookTitle": "Webhook Limits"
+      "title": "クォータの管理",
+      "userAPITitle": "API制限",
+      "webhookTitle": "Webhook制限"
     },
     "sections": {
       "addons": {
         "description": "Install and configure application addons",
-        "title": "Manage Addons"
+        "title": "アドオンの管理"
       },
       "administrators": {
         "description": "Grant or revoke administrator permissions",
-        "title": "Manage Administrators"
+        "title": "管理者の管理"
       },
       "groups": {
         "description": "Configure user groups and memberships",
-        "title": "Manage Groups"
+        "title": "グループの管理"
       },
       "quotas": {
         "description": "Configure resource quotas and limits",
-        "title": "Manage Quotas"
+        "title": "クォータの管理"
       },
       "users": {
         "description": "View and manage user accounts",
-        "title": "Manage Users"
+        "title": "ユーザーの管理"
       },
       "webhooks": {
         "description": "Install and configure webhook integrations",
-        "title": "Manage Webhooks"
+        "title": "Webhooksの管理"
       }
     },
     "subtitle": "Manage system settings and configurations",
-    "title": "Administration",
+    "title": "管理",
     "users": {
       "deleteTooltip": "Delete user account",
       "filterLabel": "Filter Users",
       "filterPlaceholder": "Search by email, name, provider, or group name",
-      "listTitle": "Users",
+      "listTitle": "ユーザー",
       "noUsers": "No users found",
       "subtitle": "View and manage system users",
-      "title": "Manage Users"
+      "title": "ユーザーの管理"
     },
     "webhooks": {
-      "addButton": "Add Webhook",
+      "addButton": "Webhookを追加",
       "addDialog": {
         "events": "Event Types to Subscribe To",
         "eventsHint": "Event types to subscribe to (e.g., threat_model.created)",
@@ -194,10 +192,7 @@
         "namePlaceholder": "Webhook name",
         "nameRequired": "{{common.validation.nameRequired}}",
         "save": "Create Webhook",
-        "secret": "HMAC Secret",
-        "secretHint": "HMAC secret for signing payloads (auto-generated if empty)",
-        "secretPlaceholder": "Leave empty to auto-generate",
-        "title": "Add Webhook",
+        "title": "Webhookを追加",
         "url": "Webhook URL",
         "urlHint": "Must be an HTTPS URL",
         "urlInvalid": "Must be an HTTPS URL",
@@ -210,10 +205,10 @@
       "filterLabel": "Filter Webhooks",
       "filterPlaceholder": "Search by name or URL",
       "hmacSecretDialog": {
-        "title": "HMAC Secret",
+        "title": "HMACシークレット",
         "warning": "This is the only time you will be able to view this secret. Please copy it. If you lose or forget it, you will have to delete and re-create the webhook."
       },
-      "listTitle": "Webhook Subscriptions",
+      "listTitle": "Webhookサブスクリプション",
       "noWebhooks": "No webhooks found",
       "secret": "HMAC secret",
       "status": {
@@ -222,7 +217,7 @@
         "pending_verification": "Pending Verification"
       },
       "subtitle": "Configure webhook subscriptions for event notifications",
-      "title": "Manage Webhooks"
+      "title": "Webhooksの管理"
     }
   },
   "assetEditor": {
@@ -232,9 +227,9 @@
     "name": "Asset Name",
     "sensitivity": "Sensitivity",
     "title": {
-      "create": "Create Asset",
-      "edit": "Edit Asset",
-      "view": "View Asset"
+      "create": "アセットを作成",
+      "edit": "アセットを編集",
+      "view": "アセットを表示"
     },
     "type": "Asset Type",
     "types": {
@@ -266,7 +261,7 @@
       "403": "403 Forbidden",
       "noPermission": "You do not have permission to access this page.",
       "requiredRole": "You need the {{role}} role to view this content.",
-      "title": "Unauthorized Access"
+      "title": "アクセス権限がありません"
     }
   },
   "collaboration": {
@@ -295,7 +290,7 @@
     "shareLinkHeader": "Share Collaboration Link",
     "startCollaboration": "Start Collaboration",
     "takeBackPresenter": "Take Back Presenter",
-    "title": "Collaboration Session Participants",
+    "title": "コラボレーションセッション参加者",
     "userJoined": "{{user}} joined the collaboration",
     "userLeft": "{{user}} left the collaboration",
     "viewParticipants": "View Participants",
@@ -306,113 +301,113 @@
     }
   },
   "common": {
-    "about": "About",
-    "actions": "Actions",
-    "addMetadata": "Add Metadata",
-    "addThreat": "Add Threat",
-    "addons": "Addons",
-    "cancel": "Cancel",
-    "cellId": "Cell ID",
-    "clear": "Clear",
-    "close": "Close",
-    "confirmDelete": "Are you sure you want to delete the {{item}} \"{{name}}\"? This action cannot be undone.",
-    "copy": "Copy",
-    "copyToClipboard": "Copy to Clipboard",
-    "create": "Create",
-    "created": "Created",
-    "cut": "Cut",
-    "delete": "Delete",
-    "deleteConfirm": "Delete Threat Model",
-    "description": "Description",
-    "diagramId": "Diagram ID",
-    "done": "Done",
-    "edit": "Edit",
-    "editThreat": "Edit Threat",
-    "emailLabel": "Email Address",
-    "fonts": "Fonts",
-    "identityProvider": "Identity Provider",
-    "issueUri": "Issue URL",
+    "about": "概要",
+    "actions": "アクション",
+    "addMetadata": "メタデータを追加",
+    "addThreat": "脅威を追加",
+    "addons": "アドオン",
+    "cancel": "キャンセル",
+    "cellId": "セルID",
+    "clear": "クリア",
+    "close": "閉じる",
+    "confirmDelete": "{{item}}「{{name}}」を削除してもよろしいですか？この操作は元に戻せません。",
+    "copy": "コピー",
+    "copyToClipboard": "クリップボードにコピー",
+    "create": "作成",
+    "created": "作成日時",
+    "cut": "切り取り",
+    "delete": "削除",
+    "deleteConfirm": "脅威モデルを削除",
+    "description": "説明",
+    "diagramId": "ダイアグラムID",
+    "done": "完了",
+    "edit": "編集",
+    "editThreat": "脅威を編集",
+    "emailLabel": "メールアドレス",
+    "fonts": "フォント",
+    "identityProvider": "IDプロバイダー",
+    "issueUri": "課題URL",
     "language": "{{language}}",
-    "lastModified": "Last Modified",
-    "lastModifiedDate": "Last Modified: {{date}}",
-    "lastUpdated": "Last updated: ",
-    "manage": "Manage",
-    "manageMetadata": "Manage Metadata",
-    "manageThreats": "Manage Threats",
-    "metadata": "Metadata",
-    "metadataKey": "Key",
-    "metadataValue": "Value",
-    "mitigated": "Mitigated",
-    "mitigation": "Mitigation",
-    "mitigationPlaceholder": "Describe recommended or planned mitigation(s) for this threat",
-    "name": "Name",
-    "noDataAvailable": "No Data Available",
-    "noMetadata": "No Metadata Available",
-    "noThreats": "No Threats Available",
-    "none": "None",
+    "lastModified": "最終更新日",
+    "lastModifiedDate": "最終更新日: {{date}}",
+    "lastUpdated": "最終更新: ",
+    "manage": "管理",
+    "manageMetadata": "メタデータを管理",
+    "manageThreats": "脅威を管理",
+    "metadata": "メタデータ",
+    "metadataKey": "キー",
+    "metadataValue": "値",
+    "mitigated": "軽減済み",
+    "mitigation": "軽減策",
+    "mitigationPlaceholder": "この脅威に対する推奨または計画された軽減策を記述してください",
+    "name": "名前",
+    "noDataAvailable": "データがありません",
+    "noMetadata": "メタデータがありません",
+    "noThreats": "脅威がありません",
+    "none": "なし",
     "objectTypes": {
-      "asset": "Asset",
-      "assets": "Assets",
-      "cell": "Cell",
-      "diagram": "Diagram",
-      "document": "Document",
-      "documents": "Documents",
-      "note": "Note",
-      "notes": "Notes",
-      "report": "Report",
-      "repositories": "Repositories",
-      "repository": "Repository",
-      "threat": "Threat",
-      "threatModel": "Threat Model",
-      "threats": "Threats"
+      "asset": "アセット",
+      "assets": "アセット",
+      "cell": "セル",
+      "diagram": "ダイアグラム",
+      "document": "ドキュメント",
+      "documents": "ドキュメント",
+      "note": "ノート",
+      "notes": "ノート",
+      "report": "レポート",
+      "repositories": "リポジトリ",
+      "repository": "リポジトリ",
+      "threat": "脅威",
+      "threatModel": "脅威モデル",
+      "threats": "脅威"
     },
     "ok": "OK",
-    "openInNewTab": "Open in New Tab",
-    "other": "Other",
-    "paste": "Paste",
-    "permissions": "Permissions",
-    "priority": "Priority",
-    "provider": "Provider",
-    "readOnly": "Read-Only",
-    "readOnlyTooltip": "You have read-only access to this threat model. Contact the owner to request edit permissions.",
-    "refresh": "Refresh",
+    "openInNewTab": "新しいタブで開く",
+    "other": "その他",
+    "paste": "貼り付け",
+    "permissions": "権限",
+    "priority": "優先度",
+    "provider": "プロバイダー",
+    "readOnly": "読み取り専用",
+    "readOnlyTooltip": "この脅威モデルへの読み取り専用アクセス権があります。編集権限についてはオーナーにお問い合わせください。",
+    "refresh": "更新",
     "roles": {
-      "owner": "Owner",
-      "reader": "Reader",
-      "writer": "Writer"
+      "owner": "オーナー",
+      "reader": "閲覧者",
+      "writer": "編集者"
     },
-    "save": "Save",
-    "saveAndClose": "Save & Close",
-    "score": "Score",
+    "save": "保存",
+    "saveAndClose": "保存して閉じる",
+    "score": "スコア",
     "sessionRoles": {
-      "host": "Host",
-      "participant": "Participant",
-      "presenter": "Presenter"
+      "host": "ホスト",
+      "participant": "参加者",
+      "presenter": "プレゼンター"
     },
-    "severity": "Severity",
-    "status": "Status",
+    "severity": "重大度",
+    "status": "ステータス",
     "subjectTypes": {
-      "group": "Group",
-      "user": "User"
+      "group": "グループ",
+      "user": "ユーザー"
     },
-    "threatDescription": "Threat Description",
-    "threatDescriptionPlaceholder": "Describe the Threat in Detail",
-    "threatId": "Threat ID",
-    "threatName": "Threat Name",
-    "threatType": "Threat Type",
-    "type": "Type",
-    "unsavedChangesWarning": "You have unsaved changes. Are you sure you want to close?",
-    "userId": "User ID",
+    "threatDescription": "脅威の説明",
+    "threatDescriptionPlaceholder": "脅威を詳細に説明してください",
+    "threatId": "脅威ID",
+    "threatName": "脅威名",
+    "threatType": "脅威タイプ",
+    "type": "タイプ",
+    "unsavedChangesWarning": "保存されていない変更があります。閉じてもよろしいですか？",
+    "userId": "ユーザーID",
     "validation": {
-      "invalidUrl": "Please enter a valid URL",
-      "maxLength": "Maximum length is {{max}} characters",
-      "nameRequired": "Name is required",
-      "required": "This field is required"
+      "invalidUrl": "有効なURLを入力してください",
+      "maxLength": "最大文字数は{{max}}文字です",
+      "nameRequired": "名前は必須です",
+      "required": "このフィールドは必須です"
     },
-    "view": "View",
-    "viewMetadata": "View Metadata",
-    "viewPermissions": "View Permissions",
-    "viewThreat": "View Threat"
+    "view": "表示",
+    "viewMetadata": "メタデータを表示",
+    "viewPermissions": "権限を表示",
+    "viewThreat": "脅威を表示"
   },
   "contextMenu": {
     "addInverseConnection": "Add Inverse Connection",
@@ -425,8 +420,8 @@
   "dataAssetDialog": {
     "selectAsset": "Data Asset",
     "title": {
-      "select": "Select Data Asset",
-      "view": "View Data Asset"
+      "select": "データアセットを選択",
+      "view": "データアセットを表示"
     }
   },
   "debugDialogs": {
@@ -435,7 +430,7 @@
       "clearClipboard": "Clear Clipboard",
       "clipboardJson": "Clipboard JSON",
       "isEmpty": "Is Empty",
-      "title": "Clipboard Data"
+      "title": "クリップボードデータ"
     },
     "common": {
       "affectedCells": "Affected Cells",
@@ -445,7 +440,7 @@
     },
     "graphDataDialog": {
       "graphJson": "Graph JSON",
-      "title": "Graph Data"
+      "title": "グラフデータ"
     },
     "historyDialog": {
       "canRedo": "Can Redo",
@@ -462,7 +457,7 @@
       "redoStackSize": "Redo Stack Size",
       "summary": "Summary",
       "timestamp": "Timestamp",
-      "title": "History",
+      "title": "履歴",
       "undoStack": "Undo Stack",
       "undoStackSize": "Undo Stack Size",
       "userId": "{{common.userId}}"
@@ -479,7 +474,7 @@
     "flowLabel": "Flow",
     "helpDialog": {
       "panLabel": "Hold Shift and drag to pan",
-      "title": "Diagram Editor Help",
+      "title": "ダイアグラムエディターヘルプ",
       "zoomLabel": "Hold Shift and use the mouse wheel to zoom"
     },
     "nodeLabels": {
@@ -490,7 +485,7 @@
       "store": "Data Store",
       "textbox": "Text"
     },
-    "pageTitle": "Data Flow Diagram Editor",
+    "pageTitle": "データフローダイアグラムエディター",
     "toolbar": {
       "exportMenu": {
         "exportAsJpeg": "Export as JPEG",
@@ -518,7 +513,7 @@
   },
   "getStarted": "Get Started",
   "homeDescription": "A collaborative threat modeling tool designed to help teams identify, analyze, and document security threats in their systems. Create, share, and collaboratively edit threat models and diagrams to improve your application security.",
-  "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
+  "homeWelcomeTitle": "TMIへようこそ: 脅威モデリング改善版",
   "login": {
     "chooseMethod": "Choose your sign in method:",
     "explanation": "Sign in with your existing account from a trusted identity provider. This eliminates the need for a separate password, streamlining your experience while keeping you secure. We never store or manage passwords—your credentials stay with your provider and can't be compromised through us.",
@@ -526,27 +521,27 @@
     "local": {
       "emailInvalid": "Please enter a valid email address",
       "emailRequired": "Email address is required",
-      "loginButton": "Sign in",
+      "loginButton": "サインイン",
       "subtitle": "Enter your email address for testing",
-      "title": "Local Development Sign In",
+      "title": "ローカル開発サインイン",
       "userName": "Local User"
     },
     "loggingInWith": "Signing in with {{provider}}...",
     "loginWith": "Sign in with",
     "noProvidersConfigured": "No authentication providers are configured.",
     "oauthFailed": "OAuth authentication failed. Please try again.",
-    "oauthProvidersTitle": "OAuth Sign-in Providers",
+    "oauthProvidersTitle": "OAuthサインインプロバイダー",
     "pleaseSignIn": "Please sign in to continue.",
-    "samlProvidersTitle": "SAML Sign-in Providers",
-    "title": "Sign In to TMI",
+    "samlProvidersTitle": "SAMLサインインプロバイダー",
+    "title": "TMIにサインイン",
     "unexpectedError": "An unexpected error occurred during OAuth."
   },
   "navbar": {
-    "appTitle": "TMI: Threat Modeling Improved",
+    "appTitle": "TMI: 脅威モデリング改善版",
     "copyUserEmail": "Copy User Email to Clipboard",
     "feedback": "Report a bug, request a feature or provide feedback",
     "home": "Home",
-    "logoutButton": "Sign Out",
+    "logoutButton": "サインアウト",
     "serverStatus": {
       "noServerConfigured": "No Server Configured",
       "serverConnected": "Server Connected",
@@ -573,9 +568,9 @@
     "saveFailed": "Failed to save note",
     "savedSuccessfully": "Note saved successfully",
     "title": {
-      "create": "Create Note",
-      "edit": "Edit Note",
-      "view": "View Note"
+      "create": "ノートを作成",
+      "edit": "ノートを編集",
+      "view": "ノートを表示"
     }
   },
   "presenter": {
@@ -584,49 +579,49 @@
   },
   "privacy": {
     "changesContent": "We may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated \"Last Updated\" date.",
-    "changesTitle": "Changes to This Policy",
+    "changesTitle": "本ポリシーの変更",
     "complianceContent": "We will only disclose information if required to do so by law, such as in response to a valid government order or subpoena. In such cases, The Operator will comply with applicable legal obligations.",
-    "complianceTitle": "Legal Compliance",
+    "complianceTitle": "法令遵守",
     "contactContent": {
       "part1": "If you have any questions about this Privacy Policy, please feel free to contact the Operator of this web site via the contact information on the ",
       "part2": " page."
     },
-    "contactTitle": "Contact Us",
+    "contactTitle": "お問い合わせ",
     "dataSecurityContent1": "The Operator implements industry-standard security measures to protect your personal data, including encryption in transit and at rest, secure authentication protocols, and regular security updates. Access to your information is restricted to authorized personnel on a need-to-know basis.",
     "dataSecurityContent2": "While no system is entirely impervious to risks, The Operator continuously monitors and updates safeguards to mitigate threats and ensure the confidentiality, integrity, and availability of your data.",
-    "dataSecurityTitle": "Data Security",
+    "dataSecurityTitle": "データセキュリティ",
     "dataSharingContent1": "The Operator does not share your personal information with any third parties, except in the following limited circumstances:",
     "dataSharingContent2": "Beyond these exceptions, The Operator does not sell, rent, or share your data with any other entities for marketing, advertising, or any other purpose.",
     "dataSharingList1": "Service Providers: Your data may be stored and processed on secure third-party cloud infrastructure (such as AWS, Google Cloud, or similar providers) solely to operate and maintain the application. These providers are contractually obligated to protect your data and use it only for the purposes The Operator specifies.",
     "dataSharingList2": "Legal Compliance: The Operator may disclose information if required by law, such as in response to a valid court order, subpoena, or government request.",
-    "dataSharingTitle": "Data Sharing",
+    "dataSharingTitle": "データ共有",
     "informationCollectionContent1": "When users authenticate via social login (using OAuth or OpenID Connect providers such as Sign in with Google, Login with GitHub, Microsoft Entra External ID, or others), the application collects the following information from the selected provider, solely to facilitate authentication and provide personalized services:",
     "informationCollectionContent2": "No additional personal data is collected without explicit user consent. The Operator does not access or store sensitive information such as passwords, contacts, or other provider-specific data beyond what is necessary for authentication. All collected information is handled in accordance with the respective provider's API policies and The Operator's commitment to user privacy.",
     "informationCollectionList1": "Basic Profile Information: Full name, email address, and profile picture (if provided and available).",
     "informationCollectionList2": "Unique Identifier: A provider-specific user ID to manage account sessions securely.",
-    "informationCollectionTitle": "Information Collection and Use",
+    "informationCollectionTitle": "情報の収集と利用",
     "intro1": {
       "part1": "This web site is an instance of an open-source web application (\"TMI\") that is made available by the Operator listed on the ",
       "part2": " page of this web site (\"The Operator\")."
     },
     "intro2": "The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.",
-    "introductionTitle": "Introduction",
+    "introductionTitle": "はじめに",
     "lastUpdatedDate": "2025-10-24",
-    "title": "Privacy Policy",
+    "title": "プライバシーポリシー",
     "userRightsContent1": "You have full control over your personal data. At any time, you may access the \"Delete All My Data\" feature in the User Preferences section of the application.",
     "userRightsContent2": "This option enables immediate deletion of all data The Operator stores on your behalf, including profile information and authentication records. Upon activation, your data will be permanently removed from The Operator's systems and third-party providers, subject to any legal retention obligations.",
-    "userRightsTitle": "User Rights"
+    "userRightsTitle": "ユーザーの権利"
   },
   "sessionExpiry": {
-    "extendButton": "Extend Session",
+    "extendButton": "セッションを延長",
     "extending": "Extending your session, please wait...",
-    "logoutButton": "Sign Out Now",
+    "logoutButton": "今すぐサインアウト",
     "message": "Your session is about to expire. Would you like to extend your session or log out now?",
     "timeFormat": {
       "minutesSeconds": "{{minutes}}:{{seconds}}",
       "seconds": "{{seconds}} seconds"
     },
-    "title": "Session Expiring Soon"
+    "title": "セッションがまもなく期限切れになります"
   },
   "threatEditor": {
     "createNewThreat": "Create New Threat",
@@ -687,7 +682,7 @@
     "branch": "Branch",
     "commit": "Commit",
     "confirmDeleteNote": "Are you sure you want to delete the note '{{name}}'?",
-    "createFirstButton": "Create Your First Threat Model",
+    "createFirstButton": "最初の脅威モデルを作成",
     "createNewDiagram": "Create New Diagram",
     "createNewDocument": "Add Document Reference",
     "createNewRepository": "Add Repository Reference",
@@ -707,14 +702,14 @@
     "documentDescriptionPlaceholder": "Describe the Document's Purpose or Content",
     "documentEditor": {
       "title": {
-        "create": "Create Document Reference",
-        "edit": "Edit Document Reference",
-        "view": "View Document Reference"
+        "create": "ドキュメント参照を作成",
+        "edit": "ドキュメント参照を編集",
+        "view": "ドキュメント参照を表示"
       }
     },
     "documentName": "Document Name",
     "documentUrl": "Document URL",
-    "downloadButton": "Download to Desktop",
+    "downloadButton": "デスクトップにダウンロード",
     "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",
     "idLabel": "ID:",
     "importing": "Importing threat model...",
@@ -728,7 +723,7 @@
     "noPermissions": "No Permissions Defined",
     "noRepositories": "No Repositories Added Yet",
     "noThreats": "No Threats Added Yet",
-    "pageTitle": "Threat Models",
+    "pageTitle": "脅威モデル",
     "permissionsDisplayName": "Display Name",
     "permissionsEmail": "Email",
     "permissionsGroupId": "Group ID",
@@ -746,9 +741,9 @@
     "repositoryDescriptionPlaceholder": "Describe the repository or its purpose",
     "repositoryEditor": {
       "title": {
-        "create": "Create Repository Reference",
-        "edit": "Edit Repository Reference",
-        "view": "View Repository Reference"
+        "create": "リポジトリ参照を作成",
+        "edit": "リポジトリ参照を編集",
+        "view": "リポジトリ参照を表示"
       }
     },
     "repositoryName": "Repository Name",
@@ -822,47 +817,47 @@
     "lastUpdatedDate": "2025-10-10",
     "section1": {
       "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.",
-      "title": "1. Acceptance of Terms"
+      "title": "1. 利用規約の同意"
     },
     "section2": {
       "content": "You may use the web site for lawful purposes only. You agree not to misuse, disrupt, or attempt to gain unauthorized access to the web site or its underlying systems.",
-      "title": "2. Use of the Web Site"
+      "title": "2. ウェブサイトの利用"
     },
     "section3": {
       "content": "The web site is provided \"as is\" without warranties of any kind, express or implied, including but not limited to fitness for a particular purpose, availability, or accuracy. We do not guarantee uninterrupted or error-free operation.",
-      "title": "3. No Warranty"
+      "title": "3. 保証の否認"
     },
     "section4": {
       "content": "To the fullest extent permitted by law, The Operator shall not be liable for any direct, indirect, incidental, or consequential damages arising from your use of or inability to use the website.",
-      "title": "4. Limitation of Liability"
+      "title": "4. 責任の制限"
     },
     "section5": {
       "content": {
         "part1": "This website runs the TMI open source software. Its source code is available at the links provided on the ",
         "part2": " page of this web site. Your use of the software is subject to its open-source license terms. We are not responsible for the software itself, only for operating this instance. Unless stated otherwise, the Operator of this web site is not affiliated with the TMI project or its creators."
       },
-      "title": "5. Open Source Software"
+      "title": "5. オープンソースソフトウェア"
     },
     "section6": {
       "content": "The Operator may update these Terms at any time. Continued use of the web site after changes constitutes acceptance of the updated Terms.",
-      "title": "6. Changes to Terms"
+      "title": "6. 規約の変更"
     },
     "section7": {
       "content": "The Operator reserves the right to suspend or terminate access to the web site at The Operator's discretion, without notice, for any reason.",
-      "title": "7. Termination"
+      "title": "7. 終了"
     },
     "section8": {
       "content": {
         "part1": "These Terms are governed by the laws of the jurisdiction specified by the Operator on the ",
         "part2": " page, without regard to conflict of law principles."
       },
-      "title": "8. Governing Law"
+      "title": "8. 準拠法"
     },
-    "title": "Terms of Service"
+    "title": "利用規約"
   },
   "userPreferences": {
     "administration": {
-      "title": "Administration"
+      "title": "管理"
     },
     "colorBlindMode": "Enable Color Blind Mode",
     "deleteMyData": {
@@ -879,7 +874,7 @@
         "intro": "Confirming this operation will permanently delete the following data and revoke associated permissions:"
       },
       "processing": "Deleting your account...",
-      "title": "Delete All My Data",
+      "title": "すべてのデータを削除",
       "validation": "To confirm your deletion request, type your email address exactly as it appears here:"
     },
     "diagramAnimationEffects": "Enable Animation Effects in Diagram Editor",
@@ -887,12 +882,12 @@
     "marginSize": {
       "narrow": "Narrow",
       "standard": "Standard",
-      "title": "Preferred Margin Size for Reports",
+      "title": "レポートの余白サイズ設定",
       "wide": "Wide"
     },
     "pageSize": {
       "A4": "A4",
-      "title": "Preferred Page Size for Reports",
+      "title": "レポートのページサイズ設定",
       "usLetter": "US Letter"
     },
     "reportPreferences": "Report Preferences",
@@ -902,7 +897,7 @@
       "dark": "Dark",
       "light": "Light"
     },
-    "title": "User Preferences",
+    "title": "ユーザー設定",
     "userProfile": {
       "currentRole": "Current Threat Model Role",
       "groups": "Groups",
@@ -910,7 +905,7 @@
       "provider": "{{common.identityProvider}}",
       "providerId": "Provider ID",
       "providers": "Linked Providers",
-      "title": "User Profile",
+      "title": "ユーザープロフィール",
       "userId": "{{common.userId}}"
     }
   }

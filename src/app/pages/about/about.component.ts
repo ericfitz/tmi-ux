@@ -20,19 +20,41 @@ export class AboutComponent implements OnInit {
   webApplicationVersion = '';
   serverVersion = '';
   openSourceProjects = [
-    { name: 'AntV/X6', url: 'https://x6.antv.vision/en' },
     { name: 'TypeScript', url: 'https://www.typescriptlang.org/' },
     { name: 'Angular', url: 'https://angular.io/' },
     { name: 'Angular Material', url: 'https://material.angular.io/' },
     { name: 'RxJS', url: 'https://rxjs.dev/' },
     { name: 'Transloco', url: 'https://github.com/jsverse/transloco' },
+    { name: 'AntV/X6', url: 'https://x6.antv.vision/en' },
+  ];
+
+  otherOpenSourceProjects = [
+    {
+      name: 'Note Editing',
+      links: [
+        { name: 'marked', url: 'https://marked.js.org/' },
+        { name: 'mermaid', url: 'https://mermaid.js.org/' },
+        { name: 'ngx-markdown', url: 'https://jfcere.github.io/ngx-markdown/' },
+        { name: 'prismjs', url: 'https://prismjs.com/' },
+      ],
+    },
+    {
+      name: 'Input Sanitization',
+      links: [{ name: 'dompurify', url: 'https://cure53.de/purify' }],
+    },
+    {
+      name: 'PDF Processing',
+      links: [
+        { name: 'pdf-lib', url: 'https://pdf-lib.js.org/' },
+        { name: 'fontkit', url: 'https://github.com/foliojs/fontkit' },
+      ],
+    },
   ];
 
   fonts = [
     {
       name: 'Roboto',
       links: [
-        { name: 'Roboto', url: 'https://fonts.google.com/specimen/Roboto' },
         { name: 'Roboto Condensed', url: 'https://fonts.google.com/specimen/Roboto+Condensed' },
         { name: 'Roboto Mono', url: 'https://fonts.google.com/specimen/Roboto+Mono' },
       ],

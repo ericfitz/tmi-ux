@@ -16,10 +16,21 @@ export class LanguageService implements OnDestroy {
   // Available languages
   private availableLanguages: Language[] = [
     { code: 'en-US', name: 'English', localName: 'English' },
-    { code: 'de', name: 'German', localName: 'Deutsch' },
-    { code: 'zh', name: 'Chinese', localName: '中文' },
-    { code: 'ar', name: 'Arabic', localName: 'العربية', rtl: true },
-    { code: 'th', name: 'Thai', localName: 'ไทย' },
+    { code: 'ar-SA', name: 'Arabic', localName: 'العربية', rtl: true },
+    { code: 'bn-BD', name: 'Bengali', localName: 'বাংলা' },
+    { code: 'de-DE', name: 'German', localName: 'Deutsch' },
+    { code: 'es-ES', name: 'Spanish', localName: 'Español' },
+    { code: 'fr-FR', name: 'French', localName: 'Français' },
+    { code: 'he-IL', name: 'Hebrew', localName: 'עברית', rtl: true },
+    { code: 'hi-IN', name: 'Hindi', localName: 'हिन्दी' },
+    { code: 'id-ID', name: 'Indonesian', localName: 'Bahasa Indonesia' },
+    { code: 'ja-JP', name: 'Japanese', localName: '日本語' },
+    { code: 'ko-KR', name: 'Korean', localName: '한국어' },
+    { code: 'pt-BR', name: 'Portuguese', localName: 'Português' },
+    { code: 'ru-RU', name: 'Russian', localName: 'Русский' },
+    { code: 'th-TH', name: 'Thai', localName: 'ไทย' },
+    { code: 'ur-PK', name: 'Urdu', localName: 'اردو', rtl: true },
+    { code: 'zh-CN', name: 'Chinese', localName: '中文' },
   ];
 
   // Private subjects

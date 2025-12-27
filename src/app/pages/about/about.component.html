@@ -9,15 +9,17 @@
 
   <div class="content-row">
     <p class="page-content" [transloco]="'about.description1'">
-      TMI (Threat Modeling Improved) is a collaborative platform for creating, managing, and sharing
-      threat models. Our mission is to make security threat modeling accessible, efficient, and
-      integrated into the software development lifecycle.
+      TMI (Threat Modeling Improved) is a collaborative platform for managing an organization's
+      security review process, including threat modeling. Our mission is to reduce the toil of
+      security reviewing, and to make threat modeling accessible, efficient, and integrated into the
+      software development lifecycle.
     </p>
 
     <p class="page-content" [transloco]="'about.description2'">
-      The platform features interactive diagram creation, real-time collaboration, and comprehensive
-      threat documentation capabilities. Built with modern web technologies, TMI helps teams
-      identify, analyze, and mitigate security threats through collaborative modeling.
+      The platform features security review organization and state management, interactive data flow
+      diagram creation with real-time collaboration, and comprehensive threat documentation
+      capabilities. Built with modern web technologies, TMI helps teams manage the security review
+      process and identify, analyze, and mitigate security threats through collaborative modeling.
     </p>
   </div>
 
@@ -58,6 +60,13 @@
   </div>
 
   <div class="contact-content-row">
+    <p class="page-content">
+      {{ 'about.wiki' | transloco: { url: '' }
+      }}<a href="{{ 'about.wikiUrl' | transloco }}" target="_blank" rel="noopener noreferrer">{{
+        'about.wikiUrl' | transloco
+      }}</a>
+    </p>
+
     <p class="page-content">
       {{ 'about.serverSourceCode' | transloco: { url: '' }
       }}<a
@@ -105,6 +114,20 @@
         </a>
       </li>
       <li>
+        {{ 'common.other' | transloco }}
+        <ul class="other-projects-list">
+          <li *ngFor="let category of otherOpenSourceProjects">
+            {{ category.name }}:
+            <ng-container *ngFor="let link of category.links; let i = index">
+              @if (i > 0) {
+                <ng-container>, </ng-container>
+              }
+              <a [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.name }}</a>
+            </ng-container>
+          </li>
+        </ul>
+      </li>
+      <li>
         {{ 'common.fonts' | transloco }}
         <ul class="fonts-list">
           <li *ngFor="let font of fonts">
@@ -140,6 +163,12 @@
         rel="noopener noreferrer"
         >OWASP Threat Dragon</a
       >.
+    </p>
+
+    <p class="page-content trademarks" [transloco]="'about.trademarks'">
+      All product names, logos, and brands are property of their respective owners. All company,
+      product, and service names used in this application are for identification purposes only. Use
+      of these names, logos, and brands does not imply endorsement.
     </p>
   </div>
 

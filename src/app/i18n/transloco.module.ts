@@ -7,7 +7,24 @@ import { environment } from '../../environments/environment';
 
 // Function to get the initial language
 function getInitialLang(): string {
-  const supportedLangs = ['en-US', 'de', 'zh', 'ar', 'th'];
+  const supportedLangs = [
+    'en-US',
+    'ar-SA',
+    'bn-BD',
+    'de-DE',
+    'es-ES',
+    'fr-FR',
+    'he-IL',
+    'hi-IN',
+    'id-ID',
+    'ja-JP',
+    'ko-KR',
+    'pt-BR',
+    'ru-RU',
+    'th-TH',
+    'ur-PK',
+    'zh-CN',
+  ];
 
   // Check localStorage for saved preference
   const savedLang = localStorage.getItem('preferredLanguage');
@@ -48,7 +65,8 @@ export function preloadTranslations(transloco: TranslocoService): () => Promise<
     document.documentElement.lang = langToLoad;
 
     // Set RTL if needed
-    if (langToLoad === 'ar') {
+    const rtlLanguages = ['ar-SA', 'he-IL', 'ur-PK'];
+    if (rtlLanguages.includes(langToLoad)) {
       document.documentElement.dir = 'rtl';
     } else {
       document.documentElement.dir = 'ltr';
@@ -72,7 +90,24 @@ export function preloadTranslations(transloco: TranslocoService): () => Promise<
   providers: [
     provideTransloco({
       config: {
-        availableLangs: ['en-US', 'de', 'zh', 'ar', 'th'],
+        availableLangs: [
+          'en-US',
+          'ar-SA',
+          'bn-BD',
+          'de-DE',
+          'es-ES',
+          'fr-FR',
+          'he-IL',
+          'hi-IN',
+          'id-ID',
+          'ja-JP',
+          'ko-KR',
+          'pt-BR',
+          'ru-RU',
+          'th-TH',
+          'ur-PK',
+          'zh-CN',
+        ],
         defaultLang: 'en-US',
         fallbackLang: 'en-US',
         reRenderOnLangChange: true,

@@ -32,6 +32,11 @@
   font-size: var(--font-size-lg);
   line-height: 1.6;
   margin-bottom: 16px;
+
+  &.trademarks {
+    font-style: italic;
+    opacity: 0.7;
+  }
 }
 
 .opensource-list {
