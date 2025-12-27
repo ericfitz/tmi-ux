@@ -78,9 +78,8 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
     },
     websocketDisconnected: {
       type: NotificationType.WARN,
-      duration: 0, // Persistent until resolved
+      duration: 5000, // Auto-dismiss after 5 seconds
       panelClass: ['notification-warning'],
-      actionLabel: 'Retry',
     },
     websocketReconnecting: {
       type: NotificationType.INFO,

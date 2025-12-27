@@ -86,18 +86,26 @@ export function initializeX6CellExtensions(): void {
       // For nodes, set the text attribute directly
       this.setAttrByPath('text/text', label);
     } else if (this.isEdge()) {
-      // For edges, preserve existing label styling while updating text
+      // For edges, preserve existing label position while using correct attrs.text structure
       const existingLabels = (this as Edge).getLabels();
       if (existingLabels && existingLabels.length > 0) {
-        // Preserve existing label attributes and only update the text
+        // Update labels, ensuring we use the correct attrs.text.text structure
         const updatedLabels = existingLabels.map(existingLabel => {
-          if (existingLabel && typeof existingLabel === 'object' && 'attrs' in existingLabel) {
+          if (existingLabel && typeof existingLabel === 'object') {
+            // Extract existing text styling from the correct location (attrs.text)
+            const existingAttrs = existingLabel.attrs as any;
+            const existingTextAttrs = existingAttrs?.text || {};
+
+            // Build the correct label structure with attrs.text.text
             return {
-              ...existingLabel,
+              position: (existingLabel as any).position ?? 0.5,
               attrs: {
-                ...existingLabel.attrs,
                 text: {
-                  ...(existingLabel.attrs as any)?.text,
+                  fontSize: existingTextAttrs.fontSize || DFD_STYLING.DEFAULT_FONT_SIZE,
+                  fill: existingTextAttrs.fill || '#333',
+                  fontFamily: existingTextAttrs.fontFamily || DFD_STYLING.TEXT_FONT_FAMILY,
+                  textAnchor: existingTextAttrs.textAnchor || 'middle',
+                  dominantBaseline: existingTextAttrs.dominantBaseline || 'middle',
                   text: label,
                 },
               },
@@ -119,10 +127,6 @@ export function initializeX6CellExtensions(): void {
                 fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
                 textAnchor: 'middle',
                 dominantBaseline: 'middle',
-              },
-              rect: {
-                fill: '#ffffff',
-                stroke: 'none',
               },
             },
           },
