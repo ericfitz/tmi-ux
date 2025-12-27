@@ -32,7 +32,7 @@ Before completing any task:
 ### For Any File Changes
 
 1. **Format and Lint**: Run `pnpm run format` and `pnpm run lint:all`, fix any issues
-2. **Git Commit**: Suggest conventional commit message (e.g., `feat:`, `fix:`, `chore:`, `refactor:`)
+2. **Git Commit**: Use conventional commit messages (e.g., `feat:`, `fix:`, `chore:`, `refactor:`). Do not run `git diff` or `git log` before committing - just commit directly with an appropriate message based on the work done.
 
 ### For Code Changes
 
