@@ -47,6 +47,8 @@ import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
 import { InfraX6EmbeddingAdapter } from './infra-x6-embedding.adapter';
 import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
 import { InfraX6EventLoggerAdapter } from './infra-x6-event-logger.adapter';
+import { normalizeCell } from '../../utils/cell-normalization.util';
+import { Cell as WebSocketCell } from '../../../../core/types/websocket-message.types';
 import { AppEdgeService } from '../../application/services/app-edge.service';
 import {
   AppOperationStateManager,
@@ -115,6 +117,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     cellType: 'node' | 'edge';
     oldLabel: string;
     newLabel: string;
+    previousCellState?: any; // Full cell state before label change, for history tracking
   }>();
   private readonly _edgeReconnected$ = new Subject<{
     edgeId: string;
@@ -123,11 +126,13 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     oldPortId: string | undefined;
     newNodeId: string | undefined;
     newPortId: string | undefined;
+    previousCellState?: any; // Full edge state before reconnection, for history tracking
   }>();
   private readonly _nodeParentChanged$ = new Subject<{
     nodeId: string;
     oldParentId: string | null;
     newParentId: string | null;
+    previousCellState?: any; // Full node state before parent change, for history tracking
   }>();
   private readonly _historyChanged$ = new Subject<{ canUndo: boolean; canRedo: boolean }>();
 
@@ -135,19 +140,11 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   private _previousCanUndo = false;
   private _previousCanRedo = false;
 
-  // Track edge connections for reconnection history
-  private readonly _edgeConnections = new Map<
-    string,
-    {
-      sourceNodeId: string | undefined;
-      sourcePortId: string | undefined;
-      targetNodeId: string | undefined;
-      targetPortId: string | undefined;
-    }
-  >();
+  // Track edge state for reconnection history (full cell state for accurate history tracking)
+  private readonly _edgePreviousStates = new Map<string, WebSocketCell>();
 
-  // Track node parent relationships for embedding/unembedding history
-  private readonly _nodeParents = new Map<string, string | null>();
+  // Track node state for parent change history (full cell state for accurate history tracking)
+  private readonly _nodePreviousStates = new Map<string, WebSocketCell>();
 
   constructor(
     private logger: LoggerService,
@@ -277,6 +274,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     cellType: 'node' | 'edge';
     oldLabel: string;
     newLabel: string;
+    previousCellState?: any;
   }> {
     return this._cellLabelChanged$.asObservable();
   }
@@ -291,6 +289,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     oldPortId: string | undefined;
     newNodeId: string | undefined;
     newPortId: string | undefined;
+    previousCellState?: any;
   }> {
     return this._edgeReconnected$.asObservable();
   }
@@ -302,6 +301,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     nodeId: string;
     oldParentId: string | null;
     newParentId: string | null;
+    previousCellState?: any;
   }> {
     return this._nodeParentChanged$.asObservable();
   }
@@ -1053,6 +1053,10 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Capture old label before changing
     const oldLabel = this.getCellLabel(cell);
 
+    // Capture previous cell state BEFORE changing the label (for history tracking)
+    // This is critical because the operation executor needs the pre-change state
+    const previousCellState = this._captureCellState(cell);
+
     // Batch all label changes into a single history command
     // This ensures multiple attribute changes are grouped as one undoable operation
     this._graph.batchUpdate(() => {
@@ -1075,8 +1079,51 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         cellType: cell.isNode() ? 'node' : 'edge',
         oldLabel,
         newLabel: text,
+        previousCellState,
       });
     }
+  }
+
+  /**
+   * Capture the current state of a cell for history tracking
+   * Returns a normalized WebSocket Cell format
+   */
+  private _captureCellState(cell: Cell): WebSocketCell | null {
+    if (!cell) {
+      return null;
+    }
+
+    if (cell.isNode()) {
+      const typedNode = cell;
+      const cellData: WebSocketCell = {
+        id: typedNode.id,
+        shape: typedNode.shape,
+        position: typedNode.getPosition(),
+        size: typedNode.getSize(),
+        attrs: typedNode.getAttrs(),
+        ports: (typedNode as any).getPorts?.(),
+        data: typedNode.getData(),
+        visible: typedNode.isVisible?.(),
+        zIndex: typedNode.getZIndex(),
+      };
+      return normalizeCell(cellData);
+    } else if (cell.isEdge()) {
+      const typedEdge = cell;
+      const cellData: WebSocketCell = {
+        id: typedEdge.id,
+        shape: typedEdge.shape,
+        source: typedEdge.getSource(),
+        target: typedEdge.getTarget(),
+        vertices: typedEdge.getVertices?.() || [],
+        attrs: typedEdge.getAttrs(),
+        labels: typedEdge.getLabels?.() || [],
+        data: typedEdge.getData(),
+        zIndex: typedEdge.getZIndex(),
+      };
+      return normalizeCell(cellData);
+    }
+
+    return null;
   }
 
   /**
@@ -1117,15 +1164,17 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Node events
     this._graph.on('node:added', ({ node }: { node: Node }) => {
       this._nodeAdded$.next(node);
-      // Initialize parent tracking for this node
-      const parent = node.getParent();
-      this._nodeParents.set(node.id, parent?.id ?? null);
+      // Initialize state tracking for this node (for parent change history)
+      const initialState = this._captureCellState(node);
+      if (initialState) {
+        this._nodePreviousStates.set(node.id, initialState);
+      }
     });
 
     this._graph.on('node:removed', ({ node }: { node: Node }) => {
       this._nodeRemoved$.next({ nodeId: node.id, node });
-      // Clean up parent tracking when node is removed
-      this._nodeParents.delete(node.id);
+      // Clean up state tracking when node is removed
+      this._nodePreviousStates.delete(node.id);
     });
 
     // Node parent changes (embedding/unembedding)
@@ -1144,13 +1193,8 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         const oldParentId = previous?.id ?? null;
         const newParentId = current?.id ?? null;
 
-        // Get stored parent state for comparison
-        const storedParentId = this._nodeParents.get(nodeId);
-
-        // Initialize parent tracking for this node if not already tracked
-        if (storedParentId === undefined) {
-          this._nodeParents.set(nodeId, oldParentId);
-        }
+        // Get previous node state for history tracking
+        const previousCellState = this._nodePreviousStates.get(nodeId);
 
         // Only emit if parent actually changed
         if (oldParentId !== newParentId) {
@@ -1164,10 +1208,14 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
             nodeId,
             oldParentId,
             newParentId,
+            previousCellState,
           });
 
-          // Update stored parent state
-          this._nodeParents.set(nodeId, newParentId);
+          // Update stored node state after emitting
+          const newState = this._captureCellState(node);
+          if (newState) {
+            this._nodePreviousStates.set(nodeId, newState);
+          }
         }
       },
     );
@@ -1761,18 +1809,16 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
   /**
    * Set up tracking for source/target connection changes on an edge
-   * Also stores initial connection state for history tracking
+   * Also stores initial edge state for history tracking
    */
   private _setupEdgeConnectionChangeTracking(edge: Edge): void {
     if (!this._graph) return;
 
-    // Store initial connection state
-    this._edgeConnections.set(edge.id, {
-      sourceNodeId: edge.getSourceCellId(),
-      sourcePortId: edge.getSourcePortId(),
-      targetNodeId: edge.getTargetCellId(),
-      targetPortId: edge.getTargetPortId(),
-    });
+    // Store initial edge state for history tracking
+    const initialState = this._captureCellState(edge);
+    if (initialState) {
+      this._edgePreviousStates.set(edge.id, initialState);
+    }
 
     // Listen for source changes on this specific edge
     const sourceChangeHandler = ({ edge: changedEdge }: { edge: Edge }): void => {
@@ -1780,34 +1826,36 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         const newSourceId = changedEdge.getSourceCellId();
         const newSourcePortId = changedEdge.getSourcePortId();
 
-        // Get old connection state
-        const oldConnection = this._edgeConnections.get(edge.id);
+        // Get previous edge state
+        const previousCellState = this._edgePreviousStates.get(edge.id);
+        const prevSource = previousCellState?.source as
+          | { cell?: string; port?: string }
+          | undefined;
 
         this.logger.info('[DFD] Edge source changed', {
           edgeId: edge.id,
-          oldSourceId: oldConnection?.sourceNodeId,
-          oldSourcePortId: oldConnection?.sourcePortId,
+          oldSourceId: prevSource?.cell,
           newSourceId,
           newSourcePortId,
         });
 
         // Emit reconnection event for history tracking
-        if (oldConnection) {
+        if (previousCellState) {
           this._edgeReconnected$.next({
             edgeId: edge.id,
             changeType: 'source',
-            oldNodeId: oldConnection.sourceNodeId,
-            oldPortId: oldConnection.sourcePortId,
+            oldNodeId: prevSource?.cell,
+            oldPortId: prevSource?.port,
             newNodeId: newSourceId,
             newPortId: newSourcePortId,
+            previousCellState,
           });
 
-          // Update stored connection state
-          this._edgeConnections.set(edge.id, {
-            ...oldConnection,
-            sourceNodeId: newSourceId,
-            sourcePortId: newSourcePortId,
-          });
+          // Update stored edge state after emitting
+          const newState = this._captureCellState(changedEdge);
+          if (newState) {
+            this._edgePreviousStates.set(edge.id, newState);
+          }
         }
 
         // Update port visibility for old and new source nodes using port manager
@@ -1827,34 +1875,36 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         const newTargetId = changedEdge.getTargetCellId();
         const newTargetPortId = changedEdge.getTargetPortId();
 
-        // Get old connection state
-        const oldConnection = this._edgeConnections.get(edge.id);
+        // Get previous edge state
+        const previousCellState = this._edgePreviousStates.get(edge.id);
+        const prevTarget = previousCellState?.target as
+          | { cell?: string; port?: string }
+          | undefined;
 
         this.logger.info('[DFD] Edge target changed', {
           edgeId: edge.id,
-          oldTargetId: oldConnection?.targetNodeId,
-          oldTargetPortId: oldConnection?.targetPortId,
+          oldTargetId: prevTarget?.cell,
           newTargetId,
           newTargetPortId,
         });
 
         // Emit reconnection event for history tracking
-        if (oldConnection) {
+        if (previousCellState) {
           this._edgeReconnected$.next({
             edgeId: edge.id,
             changeType: 'target',
-            oldNodeId: oldConnection.targetNodeId,
-            oldPortId: oldConnection.targetPortId,
+            oldNodeId: prevTarget?.cell,
+            oldPortId: prevTarget?.port,
             newNodeId: newTargetId,
             newPortId: newTargetPortId,
+            previousCellState,
           });
 
-          // Update stored connection state
-          this._edgeConnections.set(edge.id, {
-            ...oldConnection,
-            targetNodeId: newTargetId,
-            targetPortId: newTargetPortId,
-          });
+          // Update stored edge state after emitting
+          const newState = this._captureCellState(changedEdge);
+          if (newState) {
+            this._edgePreviousStates.set(edge.id, newState);
+          }
         }
 
         // Update port visibility for old and new target nodes using port manager

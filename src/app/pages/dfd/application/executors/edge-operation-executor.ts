@@ -244,12 +244,51 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
         return of(this.createFailureResult(operation, error));
       }
 
-      // Capture previous state before any changes
-      const previousState = this._captureEdgeState(graph, edgeId);
+      // Use pre-captured state from metadata if available (for label changes where
+      // the graph has already been updated before the operation runs), otherwise
+      // capture from the current graph state
+      const previousState = operation.metadata?.['previousCellState']
+        ? (operation.metadata['previousCellState'] as Cell)
+        : this._captureEdgeState(graph, edgeId);
 
       // Apply updates
       const changedProperties: string[] = [];
 
+      // Handle singular label string (from facade label changes)
+      if ((updates as any).label !== undefined) {
+        const labelText = (updates as any).label;
+        edge.setLabels([
+          {
+            markup: [
+              {
+                tagName: 'rect',
+                selector: 'body',
+              },
+              {
+                tagName: 'text',
+                selector: 'label',
+              },
+            ],
+            attrs: {
+              label: {
+                text: labelText,
+                fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
+                fill: DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
+              },
+              body: {
+                fill: DFD_STYLING.EDGES.LABEL_BACKGROUND,
+                stroke: DFD_STYLING.EDGES.LABEL_BORDER,
+                strokeWidth: DFD_STYLING.EDGES.LABEL_BORDER_WIDTH,
+                rx: 3,
+                ry: 3,
+              },
+            },
+          },
+        ]);
+        changedProperties.push('label');
+      }
+
+      // Handle labels array (from remote operations or history)
       if (updates.labels !== undefined && updates.labels.length > 0) {
         if (updates.labels[0]) {
           // Add or update label

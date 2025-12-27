@@ -949,6 +949,7 @@ export class AppDfdFacade {
       cellType: 'node' | 'edge';
       oldLabel: string;
       newLabel: string;
+      previousCellState?: any;
     },
     diagramId: string,
   ): Observable<void> {
@@ -965,7 +966,7 @@ export class AppDfdFacade {
    * Handle node label change
    */
   private _handleNodeLabelChange(
-    change: { cellId: string; oldLabel: string; newLabel: string },
+    change: { cellId: string; oldLabel: string; newLabel: string; previousCellState?: any },
     graph: any,
     diagramId: string,
   ): Observable<void> {
@@ -986,6 +987,9 @@ export class AppDfdFacade {
         label: change.newLabel,
       },
       includeInHistory: true,
+      metadata: {
+        previousCellState: change.previousCellState,
+      },
     };
 
     const context: OperationContext = {
@@ -1018,7 +1022,7 @@ export class AppDfdFacade {
    * Handle edge label change
    */
   private _handleEdgeLabelChange(
-    change: { cellId: string; oldLabel: string; newLabel: string },
+    change: { cellId: string; oldLabel: string; newLabel: string; previousCellState?: any },
     graph: any,
     diagramId: string,
   ): Observable<void> {
@@ -1039,6 +1043,9 @@ export class AppDfdFacade {
         label: change.newLabel,
       },
       includeInHistory: true,
+      metadata: {
+        previousCellState: change.previousCellState,
+      },
     };
 
     const context: OperationContext = {
@@ -1078,6 +1085,7 @@ export class AppDfdFacade {
       oldPortId: string | undefined;
       newNodeId: string | undefined;
       newPortId: string | undefined;
+      previousCellState?: any;
     },
     diagramId: string,
   ): Observable<void> {
@@ -1100,6 +1108,7 @@ export class AppDfdFacade {
       oldPortId: string | undefined;
       newNodeId: string | undefined;
       newPortId: string | undefined;
+      previousCellState?: any;
     },
     graph: any,
     diagramId: string,
@@ -1130,6 +1139,9 @@ export class AppDfdFacade {
         },
       },
       includeInHistory: true,
+      metadata: {
+        previousCellState: reconnection.previousCellState,
+      },
     };
 
     const context: OperationContext = {
@@ -1172,6 +1184,7 @@ export class AppDfdFacade {
       oldPortId: string | undefined;
       newNodeId: string | undefined;
       newPortId: string | undefined;
+      previousCellState?: any;
     },
     graph: any,
     diagramId: string,
@@ -1202,6 +1215,9 @@ export class AppDfdFacade {
         },
       },
       includeInHistory: true,
+      metadata: {
+        previousCellState: reconnection.previousCellState,
+      },
     };
 
     const context: OperationContext = {
@@ -1243,6 +1259,7 @@ export class AppDfdFacade {
       nodeId: string;
       oldParentId: string | null;
       newParentId: string | null;
+      previousCellState?: any;
     },
     diagramId: string,
   ): Observable<void> {
@@ -1265,6 +1282,9 @@ export class AppDfdFacade {
         parent: change.newParentId,
       },
       includeInHistory: true,
+      metadata: {
+        previousCellState: change.previousCellState,
+      },
     };
 
     const context: OperationContext = {

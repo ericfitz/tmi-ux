@@ -207,8 +207,12 @@ export class NodeOperationExecutor implements OperationExecutor {
         });
       }
 
-      // Capture previous state before any changes
-      const previousState = this._captureCellState(graph, nodeId);
+      // Use pre-captured state from metadata if available (for label changes where
+      // the graph has already been updated before the operation runs), otherwise
+      // capture from the current graph state
+      const previousState = operation.metadata?.['previousCellState']
+        ? (operation.metadata['previousCellState'] as Cell)
+        : this._captureCellState(graph, nodeId);
 
       const changedProperties: string[] = [];
 
