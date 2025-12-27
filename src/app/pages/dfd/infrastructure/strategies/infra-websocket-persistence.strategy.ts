@@ -10,7 +10,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { WebSocketAdapter } from '../../../../core/services/websocket.adapter';
 import { InfraWebsocketCollaborationAdapter } from '../adapters/infra-websocket-collaboration.adapter';
-import { CellOperation } from '../../../../core/types/websocket-message.types';
+import { Cell, CellOperation } from '../../../../core/types/websocket-message.types';
 import {
   SaveOperation,
   SaveResult,
@@ -19,6 +19,7 @@ import {
 } from '../../application/services/app-persistence-coordinator.service';
 import { AppHistoryService } from '../../application/services/app-history.service';
 import { HistoryOperationEvent } from '../../types/history.types';
+import { normalizeCells } from '../../utils/cell-normalization.util';
 
 @Injectable()
 export class WebSocketPersistenceStrategy implements OnDestroy {
@@ -164,21 +165,21 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
    * Listens to history operation events and broadcasts them to collaborators
    */
   private _initializeHistoryBroadcasting(): void {
-    // Buffer 'add' operations for batching
+    // Buffer 'add' operations for batching (these contain all cell changes: adds, updates, deletes)
     const addOperations$ = this.historyService.historyOperation$.pipe(
       filter(event => event.operationType === 'add' && event.success),
       takeUntil(this.destroy$),
     );
 
     // Batch buffer: collect operations until batchTrigger$ emits or 50ms passes
-    const batchedAdds$ = addOperations$.pipe(
+    const batchedOperations$ = addOperations$.pipe(
       buffer(merge(this.batchTrigger$, addOperations$.pipe(debounceTime(50)))),
       filter(events => events.length > 0),
     );
 
-    // Subscribe to batched add operations
-    batchedAdds$.subscribe(events => {
-      this._broadcastAddOperations(events);
+    // Subscribe to batched operations
+    batchedOperations$.subscribe(events => {
+      this._broadcastCellOperations(events);
     });
 
     // Note: Undo/redo operations are NOT broadcast from history events
@@ -187,19 +188,20 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
 
     this.logger.debugComponent(
       'WebSocketPersistenceStrategy',
-      'History-driven broadcasting initialized (add operations only)',
+      'History-driven broadcasting initialized (add/update/remove operations)',
     );
   }
 
   /**
-   * Broadcast batched add operations as diagram_operation
-   * Only sends the cells that were actually added/modified, not the entire diagram state
+   * Broadcast batched cell operations as diagram_operation
+   * Computes add/update/remove operations by diffing cells vs previousCells
+   * Normalizes cells before comparison to filter out visual effects and other transient properties
    */
-  private _broadcastAddOperations(events: HistoryOperationEvent[]): void {
+  private _broadcastCellOperations(events: HistoryOperationEvent[]): void {
     if (!this.webSocketAdapter.isConnected) {
       this.logger.debugComponent(
         'WebSocketPersistenceStrategy',
-        'WebSocket not connected, skipping add broadcast',
+        'WebSocket not connected, skipping broadcast',
         {
           eventCount: events.length,
         },
@@ -213,49 +215,79 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
     for (const event of events) {
       if (!event.entry) continue;
 
-      const { cells, previousCells, metadata } = event.entry;
-      const previousCellIds = new Set(previousCells.map(c => c.id));
+      const { cells, previousCells } = event.entry;
 
-      // Find newly added cells (in cells but not in previousCells)
-      const addedCells = cells.filter(cell => !previousCellIds.has(cell.id));
+      // Normalize both cell arrays to filter out visual effects, tools, zIndex, etc.
+      // This ensures we only compare and broadcast persistable properties
+      const normalizedCells = normalizeCells(cells);
+      const normalizedPreviousCells = normalizeCells(previousCells);
 
-      // Also check metadata.affectedCellIds if available for additional context
-      const affectedCellIds = new Set(metadata?.affectedCellIds || []);
-
-      for (const cell of addedCells) {
-        cellOperations.push({
-          id: cell.id,
-          operation: 'add',
-          data: cell,
-        });
+      // Build maps for efficient lookup
+      const previousCellMap = new Map<string, Cell>();
+      for (const cell of normalizedPreviousCells) {
+        previousCellMap.set(cell.id, cell);
       }
 
-      // Log if there's a mismatch between diff and metadata
-      if (affectedCellIds.size > 0 && addedCells.length !== affectedCellIds.size) {
-        this.logger.debugComponent(
-          'WebSocketPersistenceStrategy',
-          'Cell diff vs metadata mismatch (using diff result)',
-          {
-            diffAddedCount: addedCells.length,
-            diffAddedIds: addedCells.map(c => c.id),
-            metadataAffectedIds: Array.from(affectedCellIds),
-          },
-        );
+      const currentCellMap = new Map<string, Cell>();
+      for (const cell of normalizedCells) {
+        currentCellMap.set(cell.id, cell);
+      }
+
+      // Find added cells (in current but not in previous)
+      for (const cell of normalizedCells) {
+        if (!previousCellMap.has(cell.id)) {
+          cellOperations.push({
+            id: cell.id,
+            operation: 'add',
+            data: cell,
+          });
+        }
+      }
+
+      // Find removed cells (in previous but not in current)
+      for (const cell of normalizedPreviousCells) {
+        if (!currentCellMap.has(cell.id)) {
+          cellOperations.push({
+            id: cell.id,
+            operation: 'remove',
+            // No data needed for remove operations
+          });
+        }
+      }
+
+      // Find updated cells (in both, but content differs)
+      for (const cell of normalizedCells) {
+        const previousCell = previousCellMap.get(cell.id);
+        if (previousCell && this._cellsAreDifferent(previousCell, cell)) {
+          cellOperations.push({
+            id: cell.id,
+            operation: 'update',
+            data: cell,
+          });
+        }
       }
     }
 
     if (cellOperations.length === 0) {
       this.logger.debugComponent(
         'WebSocketPersistenceStrategy',
-        'No cells to broadcast in add operations (diff yielded no new cells)',
+        'No cell changes to broadcast (diff yielded no operations)',
         { eventCount: events.length },
       );
       return;
     }
 
-    this.logger.info('Broadcasting batched add operations', {
+    // Count operations by type for logging
+    const addCount = cellOperations.filter(op => op.operation === 'add').length;
+    const updateCount = cellOperations.filter(op => op.operation === 'update').length;
+    const removeCount = cellOperations.filter(op => op.operation === 'remove').length;
+
+    this.logger.info('Broadcasting batched cell operations', {
       eventCount: events.length,
       operationCount: cellOperations.length,
+      addCount,
+      updateCount,
+      removeCount,
       cellIds: cellOperations.map(op => op.id),
     });
 
@@ -264,20 +296,33 @@ export class WebSocketPersistenceStrategy implements OnDestroy {
       next: () => {
         this.logger.debugComponent(
           'WebSocketPersistenceStrategy',
-          'Successfully broadcast add operations',
+          'Successfully broadcast cell operations',
           {
             eventCount: events.length,
             operationCount: cellOperations.length,
+            addCount,
+            updateCount,
+            removeCount,
           },
         );
       },
       error: error => {
-        this.logger.error('Failed to broadcast add operations', {
+        this.logger.error('Failed to broadcast cell operations', {
           error,
           eventCount: events.length,
           operationCount: cellOperations.length,
         });
       },
     });
+  }
+
+  /**
+   * Compare two normalized cells to determine if they are different
+   * Uses JSON serialization for deep comparison
+   */
+  private _cellsAreDifferent(cellA: Cell, cellB: Cell): boolean {
+    // Simple deep comparison using JSON serialization
+    // Both cells are already normalized, so this comparison is consistent
+    return JSON.stringify(cellA) !== JSON.stringify(cellB);
   }
 }

@@ -17,6 +17,8 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { AppStateService } from './app-state.service';
 import { AppGraphOperationManager } from './app-graph-operation-manager.service';
 import { AppOperationStateManager } from './app-operation-state-manager.service';
+import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
+import { DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 import { CellOperation, Cell as WSCell } from '../../../../core/types/websocket-message.types';
 import { normalizeCellFormat } from '../../utils/cell-format-normalization.util';
 import {
@@ -52,6 +54,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
     private readonly appStateService: AppStateService,
     private readonly graphOperationManager: AppGraphOperationManager,
     private readonly historyCoordinator: AppOperationStateManager,
+    private readonly visualEffectsService: InfraVisualEffectsService,
   ) {
     // this.logger.debugComponent('AppRemoteOperationHandler', 'constructed');
   }
@@ -191,6 +194,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
       // Wrap with executeRemoteOperation to set isApplyingRemoteChange flag
       // This prevents the broadcaster from re-broadcasting this remote operation
       const operationContext = this._operationContext; // Already verified not null above
+      const graph = this._graph; // Capture for use in callback
       this.historyCoordinator.executeRemoteOperation(this._graph, () => {
         this.graphOperationManager.execute(graphOperation, operationContext).subscribe({
           next: result => {
@@ -204,6 +208,15 @@ export class AppRemoteOperationHandler implements OnDestroy {
                   affectedCells: result.affectedCellIds?.length || 0,
                 },
               );
+
+              // Apply creation visual effects for remote add operations
+              if (
+                (graphOperation.type === 'create-node' || graphOperation.type === 'create-edge') &&
+                result.affectedCellIds &&
+                result.affectedCellIds.length > 0
+              ) {
+                this._applyRemoteCreationEffects(graph, result.affectedCellIds);
+              }
             } else {
               this._stats.failedOperations++;
               this.logger.error('Remote operation execution failed', {
@@ -412,6 +425,24 @@ export class AppRemoteOperationHandler implements OnDestroy {
       default:
         this.logger.warn('Unknown cell operation type', { operation: cellOp.operation });
         return null;
+    }
+  }
+
+  /**
+   * Apply creation visual effects to remotely created cells
+   * Uses green color to distinguish from local operations (blue)
+   */
+  private _applyRemoteCreationEffects(graph: Graph, cellIds: string[]): void {
+    const remoteColor = DFD_STYLING_HELPERS.getRemoteCreationColor();
+
+    for (const cellId of cellIds) {
+      const cell = graph.getCellById(cellId);
+      if (cell) {
+        this.visualEffectsService.applyCreationHighlight(cell, graph, remoteColor);
+        this.logger.debugComponent('AppRemoteOperationHandler', 'Applied remote creation effect', {
+          cellId,
+        });
+      }
     }
   }
 }
