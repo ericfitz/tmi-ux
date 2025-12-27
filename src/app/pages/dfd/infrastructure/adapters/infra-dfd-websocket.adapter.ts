@@ -369,11 +369,12 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
   // Message handlers that transform WebSocket messages to domain events
 
   private _handleDiagramOperation(message: DiagramOperationEventMessage): void {
-    // Extract user identifier with fallback (user_id primary, email fallback)
-    const userId = message.initiating_user.user_id || message.initiating_user.email || 'unknown';
+    // Extract user identifier with fallback (provider_id primary, email fallback)
+    const providerId =
+      message.initiating_user.provider_id || message.initiating_user.email || 'unknown';
 
     this._logger.debugComponent('InfraDfdWebsocketAdapter', 'Received diagram operation', {
-      userId: userId,
+      providerId: providerId,
       userEmail: message.initiating_user.email,
       displayName: message.initiating_user.display_name,
       operationId: message.operation_id,
@@ -440,13 +441,13 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       initiatingUser: message.initiating_user,
     });
 
-    // Extract user_id from User object (with email fallback)
-    const presenterUserId =
-      message.current_presenter?.user_id || message.current_presenter?.email || null;
+    // Extract provider_id from User object (with email fallback)
+    const presenterProviderId =
+      message.current_presenter?.provider_id || message.current_presenter?.email || null;
 
     this._domainEvents$.next({
       type: 'presenter-changed',
-      presenterEmail: presenterUserId,
+      presenterEmail: presenterProviderId,
     });
   }
 
@@ -497,14 +498,16 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     }
 
     // Compare with previous participant list to detect changes
-    const currentUserIds = new Set(message.participants.map(p => p.user.user_id));
-    const previousUserIds = new Set(this._previousParticipants.map(p => p.user.user_id));
+    const currentUserIds = new Set(message.participants.map(p => p.user.provider_id));
+    const previousUserIds = new Set(this._previousParticipants.map(p => p.user.provider_id));
 
     // Detect newly joined users
-    const joinedUsers = message.participants.filter(p => !previousUserIds.has(p.user.user_id));
+    const joinedUsers = message.participants.filter(p => !previousUserIds.has(p.user.provider_id));
 
     // Detect users who left
-    const leftUsers = this._previousParticipants.filter(p => !currentUserIds.has(p.user.user_id));
+    const leftUsers = this._previousParticipants.filter(
+      p => !currentUserIds.has(p.user.provider_id),
+    );
 
     // Handle based on initiating_user field
     if (message.initiating_user === null) {
@@ -529,7 +532,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
         this._domainEvents$.next({
           type: 'participant-joined',
           user: {
-            user_id: participant.user.user_id,
+            user_id: participant.user.provider_id,
             email: participant.user.email,
             displayName: displayName,
           },
@@ -557,7 +560,7 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
         this._domainEvents$.next({
           type: 'participant-left',
           user: {
-            user_id: participant.user.user_id,
+            user_id: participant.user.provider_id,
             email: participant.user.email,
             displayName: displayName,
           },
@@ -573,8 +576,8 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
           kickedUser.user.name || kickedUser.user.display_name || kickedUser.user.email;
 
         this._logger.info('Participant removed by host', {
-          removedUser: kickedUser.user.user_id,
-          initiatingUser: message.initiating_user.user_id,
+          removedUser: kickedUser.user.provider_id,
+          initiatingUser: message.initiating_user.provider_id,
         });
 
         // Show notification for removed user
@@ -593,12 +596,12 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
         this._domainEvents$.next({
           type: 'participant-removed',
           removedUser: {
-            user_id: kickedUser.user.user_id,
+            user_id: kickedUser.user.provider_id,
             email: kickedUser.user.email,
             displayName: displayName,
           },
           removingUser: {
-            user_id: message.initiating_user.user_id,
+            user_id: message.initiating_user.provider_id,
             email: message.initiating_user.email || '',
             displayName: message.initiating_user.display_name || 'Host',
           },

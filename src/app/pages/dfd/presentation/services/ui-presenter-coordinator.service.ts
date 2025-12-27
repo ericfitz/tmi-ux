@@ -100,11 +100,11 @@ export class UiPresenterCoordinatorService implements OnDestroy {
     };
 
     if (message.user) {
-      debugInfo['userId'] = message.user.user_id;
+      debugInfo['providerId'] = message.user.provider_id;
       debugInfo['userEmail'] = message.user.email;
-      // Now that provider is available from the server, create composite key
+      // Create composite key from provider + provider_id
       if (message.user.provider) {
-        debugInfo['userCompositeKey'] = `${message.user.provider}:${message.user.user_id}`;
+        debugInfo['userCompositeKey'] = `${message.user.provider}:${message.user.provider_id}`;
       }
     }
 
@@ -137,11 +137,11 @@ export class UiPresenterCoordinatorService implements OnDestroy {
     };
 
     if (message.user) {
-      debugInfo['userId'] = message.user.user_id;
+      debugInfo['providerId'] = message.user.provider_id;
       debugInfo['userEmail'] = message.user.email;
-      // Now that provider is available from the server, create composite key
+      // Create composite key from provider + provider_id
       if (message.user.provider) {
-        debugInfo['userCompositeKey'] = `${message.user.provider}:${message.user.user_id}`;
+        debugInfo['userCompositeKey'] = `${message.user.provider}:${message.user.provider_id}`;
       }
     }
 

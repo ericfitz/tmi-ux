@@ -184,9 +184,11 @@ describe('UiPresenterCoordinatorService', () => {
       const message: PresenterCursorMessage = {
         message_type: 'presenter_cursor',
         user: {
+          principal_type: 'user',
           provider: 'google',
-          user_id: 'user-123',
+          provider_id: 'user-123',
           email: 'user@example.com',
+          display_name: 'Test User',
         },
         cursor_position: { x: 100, y: 200 },
       };
@@ -276,9 +278,11 @@ describe('UiPresenterCoordinatorService', () => {
       const message: PresenterSelectionMessage = {
         message_type: 'presenter_selection',
         user: {
+          principal_type: 'user',
           provider: 'google',
-          user_id: 'user-123',
+          provider_id: 'user-123',
           email: 'user@example.com',
+          display_name: 'Test User',
         },
         selected_cells: ['cell-1', 'cell-2'],
       };
@@ -304,9 +308,11 @@ describe('UiPresenterCoordinatorService', () => {
       const message: PresenterSelectionMessage = {
         message_type: 'presenter_selection',
         user: {
+          principal_type: 'user',
           provider: 'google',
-          user_id: 'user-123',
+          provider_id: 'user-123',
           email: 'user@example.com',
+          display_name: 'Test User',
         },
         selected_cells: [],
       };

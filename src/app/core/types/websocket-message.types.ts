@@ -5,16 +5,15 @@
 
 /**
  * User information from WebSocket messages
- * Server now uses full User schema from OpenAPI (includes Principal base fields)
- * Based on JWT claims with user_id as primary identifier
+ * Based on Principal schema with provider_id as the primary identifier
+ * All fields are required per the AsyncAPI spec
  */
 export interface User {
-  user_id: string; // JWT 'sub' claim (primary identifier, e.g., "auth0|507f1f77bcf86cd799439011")
-  email?: string; // Fallback identifier for authorization
-  display_name?: string; // JWT 'name' claim (optional) - snake_case matches server JSON serialization
-  provider?: string; // Identity provider (e.g., "google", "github", "microsoft", "test") - from Principal base
-  provider_id?: string; // Provider-specific user ID - from Principal base
-  principal_type?: 'user'; // Always "user" when present - from Principal base
+  principal_type: 'user'; // Always "user" for User objects
+  provider: string; // Identity provider (e.g., "google", "github", "microsoft", "test")
+  provider_id: string; // Provider-assigned unique identifier from JWT 'sub' claim (primary key)
+  email: string; // User email address from JWT 'email' claim
+  display_name: string; // User display name from JWT 'name' claim
 }
 
 export interface CursorPosition {
@@ -223,14 +222,14 @@ export interface RedoRequestMessage {
 /**
  * Participant information from AsyncAPI spec
  * Note: Uses 'permissions' (not 'role')
- * User object now includes provider field from full User schema (Principal base)
- * Field names use JSON serialization format: user_id (not provider_id), name (not display_name)
+ * User object uses Principal-based schema with provider_id as primary key
+ * AsyncAPI spec uses provider_id in participants_update messages
  */
 export interface Participant {
   user: {
     principal_type?: 'user'; // Always "user" for participants
     provider?: string; // Identity provider (e.g., "google", "github", "microsoft", "test") - optional per AsyncAPI spec
-    user_id: string; // Provider-specific user ID (JSON serialization of provider_id)
+    provider_id: string; // Provider-specific user ID (primary key for user identity)
     email: string; // Email address (required)
     name?: string; // Display name for UI (JSON serialization of display_name)
     display_name?: string; // Alternative field name from OpenAPI schema (fallback)

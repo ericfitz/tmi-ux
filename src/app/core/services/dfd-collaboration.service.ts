@@ -256,12 +256,15 @@ export class DfdCollaborationService implements OnDestroy {
    * @returns AsyncAPI-compliant User object
    */
   private _mapToAsyncApiUser(userProfile: {
+    provider: string;
     provider_id: string;
     email: string;
     display_name: string;
   }): User {
     return {
-      user_id: userProfile.provider_id || userProfile.email, // Use provider_id (JWT sub) as user_id
+      principal_type: 'user',
+      provider: userProfile.provider,
+      provider_id: userProfile.provider_id,
       email: userProfile.email,
       display_name: userProfile.display_name,
     };
@@ -269,7 +272,7 @@ export class DfdCollaborationService implements OnDestroy {
 
   /**
    * Matches a User object from server with current user
-   * Uses user_id first, falls back to email
+   * Uses provider + provider_id first, falls back to email
    * @param user User object from server
    * @returns true if user matches current authenticated user
    */
@@ -279,8 +282,13 @@ export class DfdCollaborationService implements OnDestroy {
       return false;
     }
 
-    // Primary: match by user_id (provider_id from JWT sub)
-    if (user.user_id && user.user_id === currentProfile.provider_id) {
+    // Primary: match by provider + provider_id
+    if (
+      user.provider &&
+      user.provider_id &&
+      user.provider === currentProfile.provider &&
+      user.provider_id === currentProfile.provider_id
+    ) {
       return true;
     }
 
@@ -293,12 +301,12 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Extracts identifier for user (user_id with email fallback)
+   * Extracts identifier for user (provider_id with email fallback)
    * @param user User object from server
    * @returns User identifier string
    */
   private _getUserIdentifier(user: User): string {
-    return user.user_id || user.email || 'unknown';
+    return user.provider_id || user.email || 'unknown';
   }
 
   /**
@@ -827,10 +835,11 @@ export class DfdCollaborationService implements OnDestroy {
     const removeMessage: RemoveParticipantRequestMessage = {
       message_type: 'remove_participant_request',
       removed_user: {
-        user_id: user.provider_id, // Use provider_id as user_id (matches JWT sub claim)
+        principal_type: 'user',
+        provider: user.provider || 'unknown',
+        provider_id: user.provider_id,
         email: user.email,
-        display_name: user.name,
-        provider: user.provider,
+        display_name: user.name || user.email,
       },
     };
 
@@ -920,15 +929,15 @@ export class DfdCollaborationService implements OnDestroy {
         participant.user.name || participant.user.display_name || participant.user.email;
 
       this._logger.debugComponent('DfdCollaborationService', 'Participant comparison', {
-        participantUserId: participant.user.user_id,
+        participantProviderId: participant.user.provider_id,
         participantProvider: participant.user.provider,
         participantEmail: participant.user.email,
         participantName: participant.user.name,
         participantDisplayName: participant.user.display_name,
         resolvedDisplayName: displayName,
-        hostUserId: host?.user_id,
+        hostProviderId: host?.provider_id,
         hostProvider: host?.provider,
-        presenterUserId: currentPresenter?.user_id,
+        presenterProviderId: currentPresenter?.provider_id,
         presenterProvider: currentPresenter?.provider,
         isHost,
         isPresenter,
@@ -936,7 +945,7 @@ export class DfdCollaborationService implements OnDestroy {
 
       return {
         provider: participant.user.provider || 'unknown', // Fallback for missing provider
-        provider_id: participant.user.user_id, // user_id in JSON is provider_id in internal schema
+        provider_id: participant.user.provider_id, // AsyncAPI spec uses provider_id in participants_update
         name: displayName, // Use resolved display name with fallback
         email: participant.user.email,
         permission: participant.permissions,
@@ -971,10 +980,12 @@ export class DfdCollaborationService implements OnDestroy {
 
     this._logger.debugComponent('DfdCollaborationService', 'Bulk participant update applied', {
       participantCount: participants.length,
-      host: host ? { user_id: host.user_id, provider: host.provider, email: host.email } : null,
+      host: host
+        ? { provider_id: host.provider_id, provider: host.provider, email: host.email }
+        : null,
       currentPresenter: currentPresenter
         ? {
-            user_id: currentPresenter.user_id,
+            provider_id: currentPresenter.provider_id,
             provider: currentPresenter.provider,
             email: currentPresenter.email,
           }
@@ -991,17 +1002,20 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Compare two User objects for identity
-   * Uses provider + user_id as primary key, falls back to email comparison
+   * Compare two user objects for identity
+   * Uses provider + provider_id as primary key, falls back to email comparison
    */
-  private _usersMatch(user1: User, user2: User): boolean {
-    // Primary comparison: provider + user_id
-    if (user1.provider && user2.provider && user1.user_id && user2.user_id) {
-      return user1.provider === user2.provider && user1.user_id === user2.user_id;
+  private _usersMatch(
+    user1: { provider?: string; provider_id?: string; email?: string },
+    user2: { provider?: string; provider_id?: string; email?: string },
+  ): boolean {
+    // Primary comparison: provider + provider_id
+    if (user1.provider && user2.provider && user1.provider_id && user2.provider_id) {
+      return user1.provider === user2.provider && user1.provider_id === user2.provider_id;
     }
-    // Fallback: just user_id comparison (for cases where provider might be missing)
-    if (user1.user_id && user2.user_id) {
-      return user1.user_id === user2.user_id;
+    // Fallback: just provider_id comparison (for cases where provider might be missing)
+    if (user1.provider_id && user2.provider_id) {
+      return user1.provider_id === user2.provider_id;
     }
     // Last resort: email comparison
     if (user1.email && user2.email) {
@@ -1322,7 +1336,9 @@ export class DfdCollaborationService implements OnDestroy {
       message_type: 'change_presenter_request',
       new_presenter: newPresenterUser
         ? {
-            user_id: newPresenterUser.provider_id,
+            principal_type: 'user',
+            provider: newPresenterUser.provider,
+            provider_id: newPresenterUser.provider_id,
             email: newPresenterUser.email,
             display_name: newPresenterUser.name,
           }
@@ -1809,10 +1825,37 @@ export class DfdCollaborationService implements OnDestroy {
 
   /**
    * Handle error messages from WebSocket
-   * These indicate the server rejected the collaboration request
+   * Differentiates between fatal errors (require ending session) and non-fatal errors (just notify)
    */
   private _handleWebSocketError(message: WebSocketErrorMessage): void {
     this._logger.error('Collaboration error from server', {
+      errorType: message.error,
+      errorMessage: message.message,
+    });
+
+    // Non-fatal errors: show notification but don't end the session
+    // These are errors from operations that failed but don't affect the session itself
+    const nonFatalErrors = [
+      'invalid_participant', // User not in session (already left, or never joined)
+      'permission_denied', // User doesn't have permission for an operation
+      'validation_error', // Invalid message format
+    ];
+
+    if (nonFatalErrors.includes(message.error)) {
+      this._logger.warn('Non-fatal collaboration error - showing notification only', {
+        errorType: message.error,
+        errorMessage: message.message,
+      });
+
+      // Show error notification but keep session active
+      this._notificationService
+        ?.showOperationError('collaboration', message.message || 'Operation failed')
+        .subscribe();
+      return;
+    }
+
+    // Fatal errors: end the session
+    this._logger.error('Fatal collaboration error - ending session', {
       errorType: message.error,
       errorMessage: message.message,
     });
@@ -1898,7 +1941,7 @@ export class DfdCollaborationService implements OnDestroy {
     const displayName = message.user.display_name || message.user.email || userIdentifier;
 
     this._logger.info('Presenter request received', {
-      userId: message.user.user_id,
+      providerId: message.user.provider_id,
       userEmail: message.user.email,
       displayName: displayName,
     });
