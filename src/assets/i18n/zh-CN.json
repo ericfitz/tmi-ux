@@ -12,7 +12,7 @@
       "paragraph1": "此应用程序是在杰出开源项目的支持下构建的。我们感谢这些项目背后的社区为我们提供了使界面和功能栩栩如生的能力。",
       "paragraph2": "特别感谢为我们塑造构建安全且用户友好的应用程序的愿景和方法提供灵感的 "
     },
-    "opensourcetitle": "开源软件",
+    "opensourcetitle": "开源",
     "server": "服务器",
     "serverSourceCode": "服务器源代码：",
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
@@ -330,7 +330,7 @@
     "editThreat": "编辑威胁",
     "emailLabel": "电子邮件地址",
     "fonts": "字体",
-    "identityProvider": "Identity Provider",
+    "identityProvider": "身份提供商",
     "issueUri": "问题URL",
     "language": "{{language}}",
     "lastModified": "最后修改",
@@ -361,7 +361,7 @@
       "notes": "笔记",
       "report": "报告",
       "repositories": "代码仓库",
-      "repository": "代码仓库",
+      "repository": "仓库",
       "threat": "威胁",
       "threatModel": "威胁模型",
       "threats": "威胁"
@@ -372,7 +372,7 @@
     "paste": "粘贴",
     "permissions": "权限",
     "priority": "优先级",
-    "provider": "Provider",
+    "provider": "提供商",
     "readOnly": "只读",
     "readOnlyTooltip": "您对此威胁模型具有只读访问权限。请联系所有者请求编辑权限。",
     "refresh": "刷新",
@@ -488,7 +488,7 @@
       "process": "处理过程",
       "securityBoundary": "信任边界",
       "store": "数据存储",
-      "textbox": "文本框"
+      "textbox": "文本"
     },
     "pageTitle": "数据流图编辑器",
     "toolbar": {
@@ -716,7 +716,7 @@
     "documentUrl": "文档链接",
     "downloadButton": "下载到桌面",
     "frameworkDisabledHint": "存在威胁时无法更改框架",
-    "idLabel": "ID:",
+    "idLabel": "ID：",
     "importing": "正在导入威胁模型...",
     "issueUriHint": "输入URL以在外部系统中跟踪此威胁模型",
     "newThreatModel": "新威胁模型",
@@ -761,7 +761,7 @@
     "repositoryType": "存储库类型",
     "repositoryUri": "存储库URL",
     "setAsOwner": "设为所有者",
-    "sourcesCount": "代码库",
+    "sourcesCount": "仓库",
     "status": {
       "0": "未开始",
       "0.tooltip": "安全审查已启动，但尚未开始评估活动。",

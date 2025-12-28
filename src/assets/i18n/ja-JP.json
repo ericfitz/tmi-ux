@@ -13,7 +13,7 @@
       "paragraph2": "A special thanks for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application goes to "
     },
     "opensourcetitle": "オープンソース",
-    "server": "Server",
+    "server": "サーバー",
     "serverSourceCode": "Server Source Code: ",
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
     "sourcetitle": "TMIプロジェクト",
@@ -239,11 +239,11 @@
     "type": "Asset Type",
     "types": {
       "data": "Data",
-      "hardware": "Hardware",
+      "hardware": "ハードウェア",
       "infrastructure": "Infrastructure",
       "personnel": "Personnel",
       "service": "Service",
-      "software": "Software"
+      "software": "ソフトウェア"
     }
   },
   "auth": {
@@ -488,7 +488,7 @@
       "process": "Process",
       "securityBoundary": "Security Boundary",
       "store": "Data Store",
-      "textbox": "Text"
+      "textbox": "テキスト"
     },
     "pageTitle": "データフローダイアグラムエディター",
     "toolbar": {
@@ -684,8 +684,8 @@
   },
   "threatModels": {
     "addPermission": "Add Permission",
-    "branch": "Branch",
-    "commit": "Commit",
+    "branch": "ブランチ",
+    "commit": "コミット",
     "confirmDeleteNote": "Are you sure you want to delete the note '{{name}}'?",
     "createFirstButton": "最初の脅威モデルを作成",
     "createNewDiagram": "Create New Diagram",
@@ -693,7 +693,7 @@
     "createNewRepository": "Add Repository Reference",
     "created": "Created:",
     "createdBy": "Created By:",
-    "dashboard": "Dashboard",
+    "dashboard": "ダッシュボード",
     "dataFlowDiagram": "Data Flow Diagram",
     "deleteConfirmationMessage": "Are you sure you want to delete the threat model \"{{name}}\"?",
     "deleteWarningDownload": "Consider downloading a local copy first to preserve your work.",
@@ -761,7 +761,7 @@
     "repositoryType": "Repository Type",
     "repositoryUri": "Repository URL",
     "setAsOwner": "Set as Owner",
-    "sourcesCount": "Repos",
+    "sourcesCount": "リポジトリ",
     "status": {
       "0": "Not Started",
       "0.tooltip": "The security review has been initiated but no assessment activities have begun.",
@@ -786,7 +786,7 @@
     },
     "statusChipPlaceholder": "Enter status and press Enter",
     "statusLastUpdated": "Status Last Updated",
-    "tag": "Tag",
+    "tag": "タグ",
     "threatModelFramework": "Threat Model Framework",
     "threatModelPrefix": "Threat Model:",
     "tooltips": {
@@ -886,7 +886,7 @@
     "displayPreferences": "Display Preferences",
     "marginSize": {
       "narrow": "Narrow",
-      "standard": "Standard",
+      "standard": "標準",
       "title": "レポートの余白サイズ設定",
       "wide": "Wide"
     },

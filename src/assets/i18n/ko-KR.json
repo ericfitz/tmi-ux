@@ -13,7 +13,7 @@
       "paragraph2": "A special thanks for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application goes to "
     },
     "opensourcetitle": "오픈 소스",
-    "server": "Server",
+    "server": "서버",
     "serverSourceCode": "Server Source Code: ",
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
     "sourcetitle": "TMI 프로젝트",
@@ -23,7 +23,7 @@
     "webApplication": "Web Application",
     "webApplicationSourceCode": "Web Application Source Code: ",
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux",
-    "wiki": "TMI Wiki: ",
+    "wiki": "TMI 위키: ",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
   "admin": {
@@ -45,7 +45,7 @@
         "objectsHint": "Select TMI object types this addon can operate on",
         "save": "Create Addon",
         "title": "애드온 추가",
-        "webhook": "Webhook",
+        "webhook": "웹훅",
         "webhookHint": "Associated webhook subscription",
         "webhookRequired": "Webhook is required"
       },
@@ -239,11 +239,11 @@
     "type": "Asset Type",
     "types": {
       "data": "Data",
-      "hardware": "Hardware",
+      "hardware": "하드웨어",
       "infrastructure": "Infrastructure",
       "personnel": "Personnel",
       "service": "Service",
-      "software": "Software"
+      "software": "소프트웨어"
     }
   },
   "auth": {
@@ -330,7 +330,7 @@
     "editThreat": "위협 편집",
     "emailLabel": "이메일 주소",
     "fonts": "글꼴",
-    "identityProvider": "ID 제공자",
+    "identityProvider": "ID 공급자",
     "issueUri": "이슈 URL",
     "language": "{{language}}",
     "lastModified": "마지막 수정",
@@ -372,7 +372,7 @@
     "paste": "붙여넣기",
     "permissions": "권한",
     "priority": "우선순위",
-    "provider": "제공자",
+    "provider": "공급자",
     "readOnly": "읽기 전용",
     "readOnlyTooltip": "이 위협 모델에 대한 읽기 전용 액세스 권한이 있습니다. 편집 권한을 요청하려면 소유자에게 문의하세요.",
     "refresh": "새로고침",
@@ -488,7 +488,7 @@
       "process": "Process",
       "securityBoundary": "Security Boundary",
       "store": "Data Store",
-      "textbox": "Text"
+      "textbox": "텍스트"
     },
     "pageTitle": "데이터 흐름 다이어그램 편집기",
     "toolbar": {
@@ -684,8 +684,8 @@
   },
   "threatModels": {
     "addPermission": "Add Permission",
-    "branch": "Branch",
-    "commit": "Commit",
+    "branch": "브랜치",
+    "commit": "커밋",
     "confirmDeleteNote": "Are you sure you want to delete the note '{{name}}'?",
     "createFirstButton": "첫 번째 위협 모델 만들기",
     "createNewDiagram": "Create New Diagram",
@@ -693,7 +693,7 @@
     "createNewRepository": "Add Repository Reference",
     "created": "Created:",
     "createdBy": "Created By:",
-    "dashboard": "Dashboard",
+    "dashboard": "대시보드",
     "dataFlowDiagram": "Data Flow Diagram",
     "deleteConfirmationMessage": "Are you sure you want to delete the threat model \"{{name}}\"?",
     "deleteWarningDownload": "Consider downloading a local copy first to preserve your work.",
@@ -761,7 +761,7 @@
     "repositoryType": "Repository Type",
     "repositoryUri": "Repository URL",
     "setAsOwner": "Set as Owner",
-    "sourcesCount": "Repos",
+    "sourcesCount": "저장소",
     "status": {
       "0": "Not Started",
       "0.tooltip": "The security review has been initiated but no assessment activities have begun.",
@@ -786,7 +786,7 @@
     },
     "statusChipPlaceholder": "Enter status and press Enter",
     "statusLastUpdated": "Status Last Updated",
-    "tag": "Tag",
+    "tag": "태그",
     "threatModelFramework": "Threat Model Framework",
     "threatModelPrefix": "Threat Model:",
     "tooltips": {
@@ -886,7 +886,7 @@
     "displayPreferences": "Display Preferences",
     "marginSize": {
       "narrow": "Narrow",
-      "standard": "Standard",
+      "standard": "표준",
       "title": "보고서 여백 크기 설정",
       "wide": "Wide"
     },

@@ -12,8 +12,8 @@
       "paragraph1": "This application is built with the support of exceptional open-source projects. We're grateful to the communities behind these projects for providing the capabilities that bring our interface and functionality to life.",
       "paragraph2": "A special thanks for providing inspiration that helped shape our vision and approach to building a secure and user-friendly application goes to "
     },
-    "opensourcetitle": "Открытый Исходный Код",
-    "server": "Server",
+    "opensourcetitle": "Открытый исходный код",
+    "server": "Сервер",
     "serverSourceCode": "Server Source Code: ",
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
     "sourcetitle": "Проект TMI",
@@ -45,7 +45,7 @@
         "objectsHint": "Select TMI object types this addon can operate on",
         "save": "Create Addon",
         "title": "Добавить Дополнение",
-        "webhook": "Webhook",
+        "webhook": "Вебхук",
         "webhookHint": "Associated webhook subscription",
         "webhookRequired": "Webhook is required"
       },
@@ -239,11 +239,11 @@
     "type": "Asset Type",
     "types": {
       "data": "Data",
-      "hardware": "Hardware",
+      "hardware": "Оборудование",
       "infrastructure": "Infrastructure",
       "personnel": "Personnel",
       "service": "Service",
-      "software": "Software"
+      "software": "Программное обеспечение"
     }
   },
   "auth": {
@@ -330,7 +330,7 @@
     "editThreat": "Редактировать Угрозу",
     "emailLabel": "Адрес Электронной Почты",
     "fonts": "Шрифты",
-    "identityProvider": "Поставщик Идентификации",
+    "identityProvider": "Поставщик удостоверений",
     "issueUri": "URL Задачи",
     "language": "{{language}}",
     "lastModified": "Последнее Изменение",
@@ -452,7 +452,7 @@
       "canUndo": "Can Undo",
       "clearHistory": "Clear History",
       "currentIndex": "Current Index",
-      "id": "ID",
+      "id": "Идентификатор",
       "maxStackSize": "Max Stack Size",
       "noRedoEntries": "No redo entries",
       "noUndoEntries": "No undo entries",
@@ -488,7 +488,7 @@
       "process": "Process",
       "securityBoundary": "Security Boundary",
       "store": "Data Store",
-      "textbox": "Text"
+      "textbox": "Текст"
     },
     "pageTitle": "Редактор Диаграмм Потоков Данных",
     "toolbar": {
@@ -684,8 +684,8 @@
   },
   "threatModels": {
     "addPermission": "Add Permission",
-    "branch": "Branch",
-    "commit": "Commit",
+    "branch": "Ветка",
+    "commit": "Коммит",
     "confirmDeleteNote": "Are you sure you want to delete the note '{{name}}'?",
     "createFirstButton": "Создайте Свою Первую Модель Угроз",
     "createNewDiagram": "Create New Diagram",
@@ -693,7 +693,7 @@
     "createNewRepository": "Add Repository Reference",
     "created": "Created:",
     "createdBy": "Created By:",
-    "dashboard": "Dashboard",
+    "dashboard": "Панель мониторинга",
     "dataFlowDiagram": "Data Flow Diagram",
     "deleteConfirmationMessage": "Are you sure you want to delete the threat model \"{{name}}\"?",
     "deleteWarningDownload": "Consider downloading a local copy first to preserve your work.",
@@ -716,7 +716,7 @@
     "documentUrl": "Document URL",
     "downloadButton": "Загрузить на Рабочий Стол",
     "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",
-    "idLabel": "ID:",
+    "idLabel": "Идентификатор:",
     "importing": "Importing threat model...",
     "issueUriHint": "Enter a URL to track this threat model in an external system",
     "newThreatModel": "New Threat Model",
@@ -761,7 +761,7 @@
     "repositoryType": "Repository Type",
     "repositoryUri": "Repository URL",
     "setAsOwner": "Set as Owner",
-    "sourcesCount": "Repos",
+    "sourcesCount": "Репозитории",
     "status": {
       "0": "Not Started",
       "0.tooltip": "The security review has been initiated but no assessment activities have begun.",
@@ -786,7 +786,7 @@
     },
     "statusChipPlaceholder": "Enter status and press Enter",
     "statusLastUpdated": "Status Last Updated",
-    "tag": "Tag",
+    "tag": "Тег",
     "threatModelFramework": "Threat Model Framework",
     "threatModelPrefix": "Threat Model:",
     "tooltips": {
@@ -886,7 +886,7 @@
     "displayPreferences": "Display Preferences",
     "marginSize": {
       "narrow": "Narrow",
-      "standard": "Standard",
+      "standard": "Стандартный",
       "title": "Предпочтительный Размер Полей для Отчётов",
       "wide": "Wide"
     },
