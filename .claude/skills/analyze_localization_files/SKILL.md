@@ -1,139 +1,220 @@
 ---
 name: analyze_localization_files
-description: Analyze differences between English master i18n file and target language files. Identifies missing keys, extra keys, and keys with English placeholder values. Use when reviewing localization/translation completeness or preparing translation tasks.
-allowed-tools: Read, Glob
+description: Analyze differences between English master i18n file and target language files using the project's check-i18n tool. Builds task manifests with missing keys and English values for translation work.
+allowed-tools: Bash, Read
 ---
 
 # Analyze Localization Files
 
-Analyze the differences between an English master i18n JSON file and target language files to identify translation gaps and issues.
+Analyze the differences between the English master i18n file and all target language files using the project's existing `check-i18n` tool to build translation task manifests.
 
 ## Inputs
 
-- **english_file_path**: Path to the English master file (default: `src/assets/i18n/en-US.json`)
-- **target_file_paths**: List of paths to target language files. If not specified, automatically discover all JSON files in the same directory as the English file.
+None - this skill uses the project's existing `pnpm run check-i18n` script.
 
-## Process
-
-### Step 1: Load English Master File
-
-Load and parse the English master JSON file. Flatten the nested structure into dot-notation keys for comparison.
-
-Example: `{ "about": { "title": "About" } }` becomes `about.title: "About"`
-
-### Step 2: Discover Target Files (if not specified)
-
-If target_file_paths is not provided, use Glob to find all `*.json` files in `src/assets/i18n/` excluding `en-US.json`.
-
-### Step 3: Process Each Target Language File
-
-For each target language file:
-
-1. **Extract language code** from filename:
-   - `es-ES.json` -> `es` (primary language code)
-   - `zh-CN.json` -> `zh-CN` (keep full code for Chinese variants)
-   - `pt-BR.json` -> `pt-BR` (keep full code for Portuguese variants)
-
-2. **Load and flatten** the target JSON file
-
-3. **Compare keys**:
-   - **missing_keys**: Keys present in English but not in target (need translation)
-   - **extra_keys**: Keys present in target but not in English (potentially obsolete)
-   - **english_placeholder_keys**: Keys where target value appears to be in English (untranslated)
-
-### Step 4: Detect English Placeholder Values
-
-A value is considered an English placeholder if:
-- The target value exactly matches the English value AND
-- The value contains Latin alphabet characters (not just numbers, URLs, or template variables)
-- Exclude keys that are inherently language-agnostic:
-  - URLs (values starting with `http://` or `https://`)
-  - Template references (values like `{{common.name}}`)
-  - Technical identifiers (all uppercase, or contains only numbers/symbols)
-
-### Step 5: Map Language Codes to Names
-
-Use this mapping for language_name:
-
-| Code | Name |
-|------|------|
-| ar | Arabic |
-| bn | Bengali |
-| de | German |
-| es | Spanish |
-| fr | French |
-| he | Hebrew |
-| hi | Hindi |
-| id | Indonesian |
-| ja | Japanese |
-| ko | Korean |
-| pt-BR | Portuguese (Brazil) |
-| ru | Russian |
-| th | Thai |
-| ur | Urdu |
-| zh-CN | Chinese (Simplified) |
-
-## Output Format
+## Output
 
 Return a dictionary mapping language code to task manifest:
 
 ```json
 {
-  "es": {
-    "file_path": "src/assets/i18n/es-ES.json",
-    "language_code": "es",
-    "language_name": "Spanish",
+  "ar-SA": {
+    "file_path": "src/assets/i18n/ar-SA.json",
+    "language_code": "ar-SA",
+    "language_name": "Arabic (Saudi Arabia)",
     "missing_keys": [
-      {"key": "about.trademarks", "english_value": "All product names..."},
-      {"key": "admin.addons.addDialog.icon", "english_value": "Icon"}
+      ["about.trademarks", "All product names, logos, and brands are property of their respective owners..."]
     ],
-    "extra_keys": ["obsolete.key1", "obsolete.key2"],
-    "english_placeholder_keys": [
-      {"key": "about.description1", "value": "TMI (Threat Modeling Improved)..."}
-    ],
-    "summary": {
-      "total_english_keys": 450,
-      "total_target_keys": 445,
-      "missing_count": 12,
-      "extra_count": 7,
-      "english_placeholder_count": 38,
-      "completion_percentage": 91.1
-    }
+    "extra_keys": [],
+    "total_missing": 1
   },
-  "de": {
-    ...
+  "bn-BD": {
+    "file_path": "src/assets/i18n/bn-BD.json",
+    "language_code": "bn-BD",
+    "language_name": "Bengali (Bangladesh)",
+    "missing_keys": [
+      ["about.trademarks", "All product names, logos, and brands..."],
+      ["admin.groups.viewMembersTooltip", "View and manage group members"],
+      ["admin.webhooks.addDialog.secret", "HMAC Secret"],
+      ["admin.webhooks.addDialog.secretHint", "HMAC secret for signing payloads (auto-generated if empty)"],
+      ["admin.webhooks.addDialog.secretPlaceholder", "Leave empty to auto-generate"]
+    ],
+    "extra_keys": [],
+    "total_missing": 5
   }
 }
 ```
 
-## Summary Statistics
+## Process
 
-After processing all languages, provide a summary table:
+### Step 1: Run check-i18n Script
 
-| Language | Missing | Extra | Placeholders | Completion % |
-|----------|---------|-------|--------------|--------------|
-| Spanish  | 12      | 7     | 38           | 91.1%        |
-| German   | 5       | 0     | 250          | 44.4%        |
-| ...      | ...     | ...   | ...          | ...          |
+Execute the project's i18n validation script:
 
-Completion percentage = `((total_english_keys - missing_count - english_placeholder_count) / total_english_keys) * 100`
-
-## Usage Examples
-
-### Analyze all language files
-
-```
-/analyze_localization_files
+```bash
+pnpm run check-i18n
 ```
 
-### Analyze specific language files
+This script:
+- Compares all language files against `en-US.json`
+- Reports missing keys in each language file
+- Reports extra keys (keys in target but not in master)
+- Automatically sorts JSON files
+- Creates backups in `/tmp`
+
+### Step 2: Parse Script Output
+
+The script output follows this pattern:
 
 ```
-/analyze_localization_files src/assets/i18n/es-ES.json src/assets/i18n/de-DE.json
+=== Comparing src/assets/i18n/en-US.json with src/assets/i18n/ar-SA.json ===
+
+Keys present in src/assets/i18n/en-US.json but missing in src/assets/i18n/ar-SA.json:
+about.trademarks
+
+No keys missing in src/assets/i18n/en-US.json
+Backup and sorted files saved to /tmp/...
+
+=== Comparing src/assets/i18n/en-US.json with src/assets/i18n/bn-BD.json ===
+
+Keys present in src/assets/i18n/en-US.json but missing in src/assets/i18n/bn-BD.json:
+about.trademarks
+admin.groups.viewMembersTooltip
+admin.webhooks.addDialog.secret
+admin.webhooks.addDialog.secretHint
+admin.webhooks.addDialog.secretPlaceholder
+
+No keys missing in src/assets/i18n/en-US.json
+...
 ```
 
-### Analyze with custom English master
+**Parsing logic:**
 
+1. **Identify language sections**: Look for pattern `=== Comparing ... with src/assets/i18n/XX-YY.json ===`
+2. **Extract language code**: Parse `XX-YY` from the file path (e.g., `ar-SA`, `bn-BD`, `zh-CN`)
+3. **Extract missing keys**: Collect lines between "Keys present in en-US.json but missing in..." and the next section marker or "No keys missing"
+4. **Detect extra keys**: If output shows "Keys present in [target] but missing in en-US.json", collect those keys
+
+### Step 3: Read English Values
+
+Load and parse `src/assets/i18n/en-US.json` to retrieve the English values for each missing key.
+
+**Key lookup logic:**
+
+For a dot-notation key like `admin.webhooks.addDialog.secret`:
+1. Split by `.` to get path: `["admin", "webhooks", "addDialog", "secret"]`
+2. Traverse the JSON object following the path
+3. Return the leaf value
+
+### Step 4: Map Language Codes to Names
+
+Use this mapping for `language_name`:
+
+| Code | Language Name |
+|------|---------------|
+| ar-SA | Arabic (Saudi Arabia) |
+| bn-BD | Bengali (Bangladesh) |
+| de-DE | German (Germany) |
+| es-ES | Spanish (Spain) |
+| fr-FR | French (France) |
+| he-IL | Hebrew (Israel) |
+| hi-IN | Hindi (India) |
+| id-ID | Indonesian (Indonesia) |
+| ja-JP | Japanese (Japan) |
+| ko-KR | Korean (South Korea) |
+| pt-BR | Portuguese (Brazil) |
+| ru-RU | Russian (Russia) |
+| th-TH | Thai (Thailand) |
+| ur-PK | Urdu (Pakistan) |
+| zh-CN | Chinese (Simplified, China) |
+
+### Step 5: Build Task Manifests
+
+For each language, construct the task manifest:
+
+```json
+{
+  "file_path": "src/assets/i18n/XX-YY.json",
+  "language_code": "XX-YY",
+  "language_name": "Language Name",
+  "missing_keys": [
+    ["key.path", "English value"],
+    ["another.key", "Another English value"]
+  ],
+  "extra_keys": ["obsolete.key1", "obsolete.key2"],
+  "total_missing": 2
+}
 ```
-/analyze_localization_files --english=custom/en.json src/assets/i18n/*.json
+
+## Output Format Details
+
+### Task Manifest Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `file_path` | string | Full path to the language file |
+| `language_code` | string | ISO language-country code (e.g., `es-ES`) |
+| `language_name` | string | Human-readable language name with region |
+| `missing_keys` | array | List of `[key, english_value]` tuples |
+| `extra_keys` | array | List of key strings present in target but not in master |
+| `total_missing` | number | Count of missing keys |
+
+### missing_keys Entry
+
+Each entry is a tuple (2-element array):
+- Element 0: Dot-notation key path (string)
+- Element 1: English value from en-US.json (string)
+
+```json
+["admin.webhooks.addDialog.secret", "HMAC Secret"]
 ```
+
+## Example Output
+
+```json
+{
+  "ar-SA": {
+    "file_path": "src/assets/i18n/ar-SA.json",
+    "language_code": "ar-SA",
+    "language_name": "Arabic (Saudi Arabia)",
+    "missing_keys": [
+      ["about.trademarks", "All product names, logos, and brands are property of their respective owners. All company, product, and service names used in this application are for identification purposes only. Use of these names, logos, and brands does not imply endorsement."]
+    ],
+    "extra_keys": [],
+    "total_missing": 1
+  },
+  "de-DE": {
+    "file_path": "src/assets/i18n/de-DE.json",
+    "language_code": "de-DE",
+    "language_name": "German (Germany)",
+    "missing_keys": [],
+    "extra_keys": [],
+    "total_missing": 0
+  },
+  "fr-FR": {
+    "file_path": "src/assets/i18n/fr-FR.json",
+    "language_code": "fr-FR",
+    "language_name": "French (France)",
+    "missing_keys": [
+      ["admin.webhooks.addDialog.secret", "HMAC Secret"],
+      ["admin.webhooks.addDialog.secretHint", "HMAC secret for signing payloads (auto-generated if empty)"]
+    ],
+    "extra_keys": [],
+    "total_missing": 2
+  }
+}
+```
+
+## Notes
+
+1. **Script side effects**: The `check-i18n` script automatically sorts JSON files and creates backups in `/tmp`. This is expected behavior.
+
+2. **Empty results**: Languages with no missing keys will have `missing_keys: []` and `total_missing: 0`.
+
+3. **Extra keys**: These indicate potentially obsolete translations that exist in the target file but not in the English master.
+
+4. **Key value lookup**: If a key path doesn't exist in en-US.json (shouldn't happen), use an empty string or note the error.
+
+5. **Nested keys**: The English value lookup must handle deeply nested objects. A key like `a.b.c.d.e` requires traversing 5 levels.
+
+6. **Template variables**: English values may contain template variables like `{{name}}` or `{{count}}`. These should be preserved exactly in the output.
