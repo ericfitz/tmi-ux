@@ -89,22 +89,21 @@ def compare_keys(data1, data2, file1_name, file2_name):
     values1 = get_leaf_values(data1)
     values2 = get_leaf_values(data2)
 
-    # Find keys that exist in both and have the same non-empty string value
+    # Find keys that exist in both and have the same string value
     untranslated = []
     common_keys = set(values1.keys()) & set(values2.keys())
     for key in common_keys:
         val1 = values1[key]
         val2 = values2[key]
-        # Only flag string values that are identical and non-empty
-        # Skip template references like {{common.name}} as they're intentionally the same
+        # Only flag string values that are identical
+        # Skip values that are intentionally not translated
         if (
             isinstance(val1, str)
             and isinstance(val2, str)
             and val1 == val2
-            and val1.strip()  # non-empty
             and not val1.startswith("{{")  # not a template reference
             and not val1.startswith("http")  # not a URL
-            and " " in val1  # has multiple words (likely translatable text)
+            and "@" not in val1  # not an email address
         ):
             untranslated.append(key)
 
