@@ -115,7 +115,8 @@
       },
       "noGroups": "No groups found",
       "subtitle": "View and manage system groups",
-      "title": "Gérer les Groupes"
+      "title": "Gérer les Groupes",
+      "viewMembersTooltip": "Afficher et gérer les membres du groupe"
     },
     "quotas": {
       "addButton": "Ajouter un Quota",
@@ -193,6 +194,9 @@
         "namePlaceholder": "Webhook name",
         "nameRequired": "{{common.validation.nameRequired}}",
         "save": "Create Webhook",
+        "secret": "Secret HMAC",
+        "secretHint": "Secret HMAC pour signer les charges utiles (généré automatiquement si vide)",
+        "secretPlaceholder": "Laisser vide pour générer automatiquement",
         "title": "Ajouter un Webhook",
         "url": "Webhook URL",
         "urlHint": "Must be an HTTPS URL",

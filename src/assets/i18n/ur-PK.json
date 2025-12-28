@@ -115,7 +115,8 @@
       },
       "noGroups": "No groups found",
       "subtitle": "View and manage system groups",
-      "title": "گروپس کا انتظام"
+      "title": "گروپس کا انتظام",
+      "viewMembersTooltip": "گروپ کے اراکین کو دیکھیں اور ان کا انتظام کریں"
     },
     "quotas": {
       "addButton": "کوٹہ شامل کریں",

@@ -18,6 +18,7 @@
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
     "sourcetitle": "Проект TMI",
     "title": "О TMI",
+    "trademarks": "Все названия продуктов, логотипы и торговые марки являются собственностью их соответствующих владельцев. Все названия компаний, продуктов и услуг, используемые в этом приложении, предназначены только для идентификации. Использование этих названий, логотипов и торговых марок не подразумевает одобрения.",
     "version": "Version Information",
     "webApplication": "Web Application",
     "webApplicationSourceCode": "Web Application Source Code: ",
@@ -114,7 +115,8 @@
       },
       "noGroups": "No groups found",
       "subtitle": "View and manage system groups",
-      "title": "Управление Группами"
+      "title": "Управление Группами",
+      "viewMembersTooltip": "Просмотр и управление членами группы"
     },
     "quotas": {
       "addButton": "Добавить Квоту",
@@ -192,6 +194,9 @@
         "namePlaceholder": "Webhook name",
         "nameRequired": "{{common.validation.nameRequired}}",
         "save": "Create Webhook",
+        "secret": "HMAC Secret",
+        "secretHint": "HMAC secret для подписи полезной нагрузки (автоматически генерируется, если пусто)",
+        "secretPlaceholder": "Оставить пусто для автоматической генерации",
         "title": "Добавить Webhook",
         "url": "Webhook URL",
         "urlHint": "Must be an HTTPS URL",

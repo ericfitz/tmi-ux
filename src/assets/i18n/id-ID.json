@@ -115,7 +115,8 @@
       },
       "noGroups": "No groups found",
       "subtitle": "View and manage system groups",
-      "title": "Kelola Grup"
+      "title": "Kelola Grup",
+      "viewMembersTooltip": "Lihat dan kelola anggota grup"
     },
     "quotas": {
       "addButton": "Tambah Kuota",

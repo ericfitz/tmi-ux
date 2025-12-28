@@ -18,6 +18,7 @@
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
     "sourcetitle": "TMI 프로젝트",
     "title": "TMI 소개",
+    "trademarks": "모든 제품명, 로고, 브랜드는 각 소유자의 재산입니다. 본 애플리케이션에서 사용되는 모든 회사, 제품 및 서비스명은 식별 목적으로만 사용됩니다. 이러한 명칭, 로고 및 브랜드의 사용이 보증을 의미하지 않습니다.",
     "version": "Version Information",
     "webApplication": "Web Application",
     "webApplicationSourceCode": "Web Application Source Code: ",
@@ -114,7 +115,8 @@
       },
       "noGroups": "No groups found",
       "subtitle": "View and manage system groups",
-      "title": "그룹 관리"
+      "title": "그룹 관리",
+      "viewMembersTooltip": "그룹 멤버 보기 및 관리"
     },
     "quotas": {
       "addButton": "할당량 추가",
@@ -192,6 +194,9 @@
         "namePlaceholder": "Webhook name",
         "nameRequired": "{{common.validation.nameRequired}}",
         "save": "Create Webhook",
+        "secret": "HMAC 시크릿",
+        "secretHint": "페이로드 서명을 위한 HMAC 시크릿 (비우면 자동 생성됨)",
+        "secretPlaceholder": "비우면 자동 생성됩니다",
         "title": "Webhook 추가",
         "url": "Webhook URL",
         "urlHint": "Must be an HTTPS URL",

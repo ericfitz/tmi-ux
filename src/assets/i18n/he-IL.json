@@ -18,6 +18,7 @@
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
     "sourcetitle": "פרויקט TMI",
     "title": "אודות TMI",
+    "trademarks": "כל שמות המוצרים, הלוגואים והמותגים הם רכוש של בעליהם בהתאם. כל שמות החברות, המוצרים והשירותים המשמשים ביישום זה הם למטרות זיהוי בלבד. שימוש בשמות, לוגואים ומותגים אלה אינו מהווה אישור.",
     "version": "Version Information",
     "webApplication": "Web Application",
     "webApplicationSourceCode": "Web Application Source Code: ",
@@ -114,7 +115,8 @@
       },
       "noGroups": "No groups found",
       "subtitle": "View and manage system groups",
-      "title": "ניהול קבוצות"
+      "title": "ניהול קבוצות",
+      "viewMembersTooltip": "הצג וניהול חברי קבוצה"
     },
     "quotas": {
       "addButton": "הוסף מכסה",
@@ -192,6 +194,9 @@
         "namePlaceholder": "Webhook name",
         "nameRequired": "{{common.validation.nameRequired}}",
         "save": "Create Webhook",
+        "secret": "HMAC Secret",
+        "secretHint": "HMAC secret לחתימת payload (ייוצר באופן אוטומטי אם ריק)",
+        "secretPlaceholder": "השאר ריק לצורך יצירה אוטומטית",
         "title": "הוסף Webhook",
         "url": "Webhook URL",
         "urlHint": "Must be an HTTPS URL",

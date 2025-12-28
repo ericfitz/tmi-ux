@@ -18,6 +18,7 @@
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
     "sourcetitle": "TMI প্রকল্প",
     "title": "TMI সম্পর্কে",
+    "trademarks": "সমস্ত পণ্যের নাম, লোগো এবং ব্র্যান্ড তাদের নিজ নিজ মালিকদের সম্পত্তি। এই অ্যাপ্লিকেশনে ব্যবহৃত সমস্ত কোম্পানি, পণ্য এবং সেবার নাম শুধুমাত্র সনাক্তকরণের উদ্দেশ্যে ব্যবহৃত হয়। এই নাম, লোগো এবং ব্র্যান্ডের ব্যবহার কোনো অনুমোদন নির্দেশ করে না।",
     "version": "Version Information",
     "webApplication": "Web Application",
     "webApplicationSourceCode": "Web Application Source Code: ",
@@ -114,7 +115,8 @@
       },
       "noGroups": "No groups found",
       "subtitle": "View and manage system groups",
-      "title": "গ্রুপ পরিচালনা করুন"
+      "title": "গ্রুপ পরিচালনা করুন",
+      "viewMembersTooltip": "গ্রুপ সদস্যদের দেখুন এবং পরিচালনা করুন"
     },
     "quotas": {
       "addButton": "কোটা যোগ করুন",
@@ -192,6 +194,9 @@
         "namePlaceholder": "Webhook name",
         "nameRequired": "{{common.validation.nameRequired}}",
         "save": "Create Webhook",
+        "secret": "HMAC গোপনীয়তা",
+        "secretHint": "পেলোড স্বাক্ষর করার জন্য HMAC গোপনীয়তা (খালি থাকলে স্বয়ংক্রিয়ভাবে তৈরি হয়)",
+        "secretPlaceholder": "স্বয়ংক্রিয়ভাবে তৈরি করতে খালি রেখে দিন",
         "title": "Webhook যোগ করুন",
         "url": "Webhook URL",
         "urlHint": "Must be an HTTPS URL",

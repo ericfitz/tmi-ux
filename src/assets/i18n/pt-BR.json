@@ -18,6 +18,7 @@
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
     "sourcetitle": "Projeto TMI",
     "title": "Sobre o TMI",
+    "trademarks": "Todos os nomes de produtos, logotipos e marcas são propriedade de seus respectivos proprietários. Todos os nomes de empresas, produtos e serviços utilizados neste aplicativo são apenas para fins de identificação. O uso desses nomes, logotipos e marcas não implica endosso.",
     "version": "Version Information",
     "webApplication": "Web Application",
     "webApplicationSourceCode": "Web Application Source Code: ",
@@ -114,7 +115,8 @@
       },
       "noGroups": "No groups found",
       "subtitle": "View and manage system groups",
-      "title": "Gerenciar Grupos"
+      "title": "Gerenciar Grupos",
+      "viewMembersTooltip": "Visualizar e gerenciar membros do grupo"
     },
     "quotas": {
       "addButton": "Adicionar Cota",
@@ -192,6 +194,9 @@
         "namePlaceholder": "Webhook name",
         "nameRequired": "{{common.validation.nameRequired}}",
         "save": "Create Webhook",
+        "secret": "Chave HMAC",
+        "secretHint": "Chave HMAC para assinar payloads (gerada automaticamente se vazio)",
+        "secretPlaceholder": "Deixe vazio para gerar automaticamente",
         "title": "Adicionar Webhook",
         "url": "Webhook URL",
         "urlHint": "Must be an HTTPS URL",
