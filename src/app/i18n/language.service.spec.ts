@@ -126,14 +126,14 @@ describe('LanguageService', () => {
     it('should return list of available languages', () => {
       const languages = service.getAvailableLanguages();
 
-      expect(languages).toHaveLength(5);
+      expect(languages).toHaveLength(16);
       expect(languages[0].code).toBe('en-US');
       expect(languages[0].name).toBe('English');
     });
 
     it('should include RTL language (Arabic)', () => {
       const languages = service.getAvailableLanguages();
-      const arabic = languages.find(lang => lang.code === 'ar');
+      const arabic = languages.find(lang => lang.code === 'ar-SA');
 
       expect(arabic).toBeDefined();
       expect(arabic?.rtl).toBe(true);
@@ -144,46 +144,47 @@ describe('LanguageService', () => {
       const codes = languages.map(lang => lang.code);
 
       expect(codes).toContain('en-US');
-      expect(codes).toContain('de');
-      expect(codes).toContain('zh');
-      expect(codes).toContain('ar');
-      expect(codes).toContain('th');
+      expect(codes).toContain('de-DE');
+      expect(codes).toContain('zh-CN');
+      expect(codes).toContain('ar-SA');
+      expect(codes).toContain('th-TH');
+      expect(codes).toContain('ja-JP');
     });
   });
 
   describe('setLanguage()', () => {
     it('should set language in Transloco', () => {
-      service.setLanguage('de');
+      service.setLanguage('de-DE');
 
-      expect(mockTranslocoService.setActiveLang).toHaveBeenCalledWith('de');
+      expect(mockTranslocoService.setActiveLang).toHaveBeenCalledWith('de-DE');
     });
 
     it('should load translations', () => {
-      service.setLanguage('de');
+      service.setLanguage('de-DE');
 
-      expect(mockTranslocoService.load).toHaveBeenCalledWith('de');
+      expect(mockTranslocoService.load).toHaveBeenCalledWith('de-DE');
     });
 
     it('should save language to localStorage', () => {
-      service.setLanguage('de');
+      service.setLanguage('de-DE');
 
-      expect(localStorage.setItem).toHaveBeenCalledWith('preferredLanguage', 'de');
+      expect(localStorage.setItem).toHaveBeenCalledWith('preferredLanguage', 'de-DE');
     });
 
     it('should update current language observable', () => {
-      service.setLanguage('de');
+      service.setLanguage('de-DE');
 
       let currentLang: any;
       service.currentLanguage$.subscribe(lang => {
         currentLang = lang;
       });
 
-      expect(currentLang.code).toBe('de');
+      expect(currentLang.code).toBe('de-DE');
       expect(currentLang.name).toBe('German');
     });
 
     it('should update direction to LTR for German', () => {
-      service.setLanguage('de');
+      service.setLanguage('de-DE');
 
       let direction: any;
       service.direction$.subscribe(dir => {
@@ -194,7 +195,7 @@ describe('LanguageService', () => {
     });
 
     it('should update direction to RTL for Arabic', () => {
-      service.setLanguage('ar');
+      service.setLanguage('ar-SA');
 
       let direction: any;
       service.direction$.subscribe(dir => {
@@ -205,22 +206,22 @@ describe('LanguageService', () => {
     });
 
     it('should set document direction', () => {
-      service.setLanguage('ar');
+      service.setLanguage('ar-SA');
 
       expect(document.documentElement.dir).toBe('rtl');
     });
 
     it('should set document language', () => {
-      service.setLanguage('de');
+      service.setLanguage('de-DE');
 
-      expect(document.documentElement.lang).toBe('de');
+      expect(document.documentElement.lang).toBe('de-DE');
     });
 
     it('should handle translation loading errors', () => {
       mockTranslocoService.load.mockReturnValue(throwError(() => new Error('Load failed')));
 
       // Should not throw
-      expect(() => service.setLanguage('de')).not.toThrow();
+      expect(() => service.setLanguage('de-DE')).not.toThrow();
     });
   });
 
@@ -232,9 +233,9 @@ describe('LanguageService', () => {
       });
 
       // Trigger language change
-      mockTranslocoService.langChanges$.next('de');
+      mockTranslocoService.langChanges$.next('de-DE');
 
-      expect(currentLang.code).toBe('de');
+      expect(currentLang.code).toBe('de-DE');
       expect(currentLang.name).toBe('German');
     });
 
@@ -244,7 +245,7 @@ describe('LanguageService', () => {
         direction = dir;
       });
 
-      mockTranslocoService.langChanges$.next('ar');
+      mockTranslocoService.langChanges$.next('ar-SA');
 
       expect(direction).toBe('rtl');
     });
@@ -284,7 +285,7 @@ describe('LanguageService', () => {
       });
 
       // Should not throw even if property is read-only
-      expect(() => service.setLanguage('ar')).not.toThrow();
+      expect(() => service.setLanguage('ar-SA')).not.toThrow();
     });
   });
 });
