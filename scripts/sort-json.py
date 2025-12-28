@@ -50,6 +50,19 @@ def get_all_keys(obj, prefix=""):
     return keys
 
 
+def get_leaf_values(obj, prefix=""):
+    """Recursively collect all leaf key-value pairs (non-dict values) with their full path."""
+    values = {}
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            full_key = f"{prefix}.{key}" if prefix else key
+            if isinstance(value, dict):
+                values.update(get_leaf_values(value, full_key))
+            else:
+                values[full_key] = value
+    return values
+
+
 def compare_keys(data1, data2, file1_name, file2_name):
     """Compare keys between two JSON objects and report differences."""
     keys1 = get_all_keys(data1)
@@ -71,6 +84,36 @@ def compare_keys(data1, data2, file1_name, file2_name):
             print(f"  {key}")
     else:
         print(f"\nNo keys missing in {file1_name}.")
+
+    # Check for untranslated placeholders (keys that exist in both but have identical values)
+    values1 = get_leaf_values(data1)
+    values2 = get_leaf_values(data2)
+
+    # Find keys that exist in both and have the same non-empty string value
+    untranslated = []
+    common_keys = set(values1.keys()) & set(values2.keys())
+    for key in common_keys:
+        val1 = values1[key]
+        val2 = values2[key]
+        # Only flag string values that are identical and non-empty
+        # Skip template references like {{common.name}} as they're intentionally the same
+        if (
+            isinstance(val1, str)
+            and isinstance(val2, str)
+            and val1 == val2
+            and val1.strip()  # non-empty
+            and not val1.startswith("{{")  # not a template reference
+            and not val1.startswith("http")  # not a URL
+            and " " in val1  # has multiple words (likely translatable text)
+        ):
+            untranslated.append(key)
+
+    if untranslated:
+        print(f"\nPotentially untranslated (same value as {file1_name}):")
+        for key in sorted(untranslated):
+            print(f"  {key}")
+    else:
+        print(f"\nNo untranslated placeholders detected.")
 
 
 def confirm_overwrite(file_path, auto_yes):
