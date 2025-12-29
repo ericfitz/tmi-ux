@@ -28,7 +28,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "הוסף תוסף",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "מה התוסף הזה עושה?",
@@ -62,7 +62,7 @@
       "title": "ניהול תוספים"
     },
     "administrators": {
-      "addButton": "הוסף מנהל",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "ספק נדרש",
@@ -71,7 +71,7 @@
         "subjectHint": "הזן דוא\"ל משתמש או שם קבוצה",
         "subjectPlaceholder": "דוא\"ל משתמש או שם קבוצה",
         "subjectRequired": "נושא נדרש",
-        "title": "הוסף מנהל"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "נוסף בתאריך",
       "filterLabel": "סנן מנהלים",
@@ -83,7 +83,7 @@
       "title": "ניהול מנהלים"
     },
     "groups": {
-      "addButton": "הוסף קבוצה",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "תיאור (אופציונלי)",
         "descriptionHint": "תיאור אופציונלי של מטרת הקבוצה",
@@ -103,7 +103,7 @@
       "deleteTooltip": "מחק קבוצה",
       "filterLabel": "סנן קבוצות",
       "filterPlaceholder": "חפש לפי שם קבוצה או ספק",
-      "listTitle": "קבוצות",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "הוסף חבר",
         "currentMembers": "חברים נוכחיים",
@@ -121,13 +121,13 @@
     "quotas": {
       "addButton": "הוסף מכסה",
       "addDialog": {
-        "apiQuotas": "מגבלות קצב API",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "הגדר מכסות",
         "searchLabel": "חפש משתמש",
         "searchPlaceholder": "הקלד דוא\"ל משתמש לחיפוש",
         "selectUser": "בחר משתמש",
         "title": "הוסף מכסות מותאמות אישית",
-        "webhookQuotas": "מגבלות Webhook"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "הסר מכסה מותאמת אישית (חזור לברירות מחדל)",
       "eventsPerMinute": "אירועים לדקה",
@@ -148,27 +148,27 @@
     "sections": {
       "addons": {
         "description": "התקן והגדר תוספי יישום",
-        "title": "ניהול תוספים"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "הענק או בטל הרשאות מנהל",
-        "title": "ניהול מנהלים"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "הגדר קבוצות משתמשים וחברויות",
-        "title": "ניהול קבוצות"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "הגדר מכסות ומגבלות משאבים",
-        "title": "ניהול מכסות"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "צפה ונהל חשבונות משתמשים",
-        "title": "ניהול משתמשים"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "התקן והגדר שילובי webhook",
-        "title": "ניהול Webhooks"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "נהל הגדרות מערכת ותצורות",
@@ -183,7 +183,7 @@
       "title": "ניהול משתמשים"
     },
     "webhooks": {
-      "addButton": "הוסף Webhook",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "סוגי אירועים להרשמה",
         "eventsHint": "סוגי אירועים להרשמה (לדוגמה, threat_model.created)",
@@ -199,7 +199,7 @@
         "secretPlaceholder": "השאר ריק לצורך יצירה אוטומטית",
         "title": "הוסף Webhook",
         "url": "כתובת URL של Webhook",
-        "urlHint": "חייב להיות כתובת HTTPS",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "חייב להיות כתובת HTTPS",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "כתובת URL נדרשת"
@@ -210,7 +210,7 @@
       "filterLabel": "סנן Webhooks",
       "filterPlaceholder": "חפש לפי שם או כתובת URL",
       "hmacSecretDialog": {
-        "title": "סוד HMAC",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "זו הפעם היחידה שתוכל לצפות בסוד זה. אנא העתק אותו. אם תאבד או תשכח אותו, תצטרך למחוק וליצור מחדש את ה-webhook."
       },
       "listTitle": "מנויי Webhook",
@@ -729,14 +729,14 @@
     "noRepositories": "טרם נוספו מאגרים",
     "noThreats": "טרם נוספו איומים",
     "pageTitle": "מודלי איומים",
-    "permissionsDisplayName": "שם תצוגה",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "דוא\"ל",
     "permissionsGroupId": "מזהה קבוצה",
     "permissionsIdp": "{{common.identityProvider}}",
     "permissionsPrincipalId": "מזהה Principal",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "תפקיד",
-    "permissionsSubject": "נושא",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "נושא (מזהה משתמש, כתובת דוא\"ל של משתמש או שם קבוצה)",
     "permissionsSubjectType": "{{common.type}}",
     "permissionsTooltip": "נהל הרשאות",
@@ -862,7 +862,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "ניהול"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "הפעל מצב עיוורון צבעים",
     "deleteMyData": {
