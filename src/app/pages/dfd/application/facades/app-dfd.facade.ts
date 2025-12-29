@@ -813,6 +813,14 @@ export class AppDfdFacade {
     }
   }
 
+  /**
+   * Check if the clipboard is empty
+   */
+  isClipboardEmpty(): boolean {
+    const graph = this.infraX6GraphAdapter.getGraph();
+    return graph.isClipboardEmpty();
+  }
+
   // ========================================
   // Graph State Operations
   // ========================================

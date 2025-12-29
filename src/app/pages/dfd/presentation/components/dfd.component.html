@@ -130,7 +130,7 @@
         mat-icon-button
         color="basic"
         (click)="paste()"
-        [disabled]="isReadOnlyMode"
+        [disabled]="!hasClipboardContent || isReadOnlyMode"
         [matTooltip]="'common.paste' | transloco"
       >
         <mat-icon

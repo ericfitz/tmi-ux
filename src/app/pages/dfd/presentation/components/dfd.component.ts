@@ -212,6 +212,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   canUndo = false;
   canRedo = false;
 
+  // Clipboard state
+  hasClipboardContent = false;
+
   // Context menu state
   contextMenuPosition = { x: '0px', y: '0px' };
   private _rightClickedCell: any = null;
@@ -1083,6 +1086,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       next: result => {
         if (result.success) {
           this.logger.info('Cut operation completed', { cutCount: result.cutCount });
+          this.updateClipboardState();
         } else {
           this.logger.error('Cut operation failed');
         }
@@ -1098,6 +1102,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.logger.debugComponent('DfdComponent', 'Copy operation initiated');
     this.dfdInfrastructure.copy();
+    this.updateClipboardState();
   }
 
   onPaste(): void {
@@ -2069,6 +2074,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       oldSelectedCellIsTextBox !== this.selectedCellIsTextBox ||
       oldSelectedCellIsSecurityBoundary !== this.selectedCellIsSecurityBoundary
     ) {
+      this.cdr.detectChanges();
+    }
+  }
+
+  private updateClipboardState(): void {
+    const oldHasClipboardContent = this.hasClipboardContent;
+    this.hasClipboardContent = !this.dfdInfrastructure.isClipboardEmpty();
+
+    if (oldHasClipboardContent !== this.hasClipboardContent) {
       this.cdr.detectChanges();
     }
   }
