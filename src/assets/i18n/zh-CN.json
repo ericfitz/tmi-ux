@@ -28,7 +28,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "添加插件",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "此插件有什么功能？",
@@ -62,7 +62,7 @@
       "title": "管理插件"
     },
     "administrators": {
-      "addButton": "添加管理员",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "提供商为必填项",
@@ -71,7 +71,7 @@
         "subjectHint": "输入用户电子邮件或组名",
         "subjectPlaceholder": "用户电子邮件或组名",
         "subjectRequired": "主体为必填项",
-        "title": "添加管理员"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "添加于",
       "filterLabel": "筛选管理员",
@@ -83,7 +83,7 @@
       "title": "管理管理员"
     },
     "groups": {
-      "addButton": "添加用户组",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "描述（可选）",
         "descriptionHint": "用户组用途的可选描述",
@@ -103,7 +103,7 @@
       "deleteTooltip": "删除用户组",
       "filterLabel": "筛选用户组",
       "filterPlaceholder": "按组名或提供商搜索",
-      "listTitle": "用户组",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "添加成员",
         "currentMembers": "当前成员",
@@ -121,13 +121,13 @@
     "quotas": {
       "addButton": "添加配额",
       "addDialog": {
-        "apiQuotas": "API速率限制",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "配置配额",
         "searchLabel": "搜索用户",
         "searchPlaceholder": "输入用户电子邮件进行搜索",
         "selectUser": "选择用户",
         "title": "添加自定义配额",
-        "webhookQuotas": "Webhook限制"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "移除自定义配额（恢复默认值）",
       "eventsPerMinute": "每分钟事件数",
@@ -148,27 +148,27 @@
     "sections": {
       "addons": {
         "description": "安装和配置应用程序插件",
-        "title": "管理插件"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "授予或撤销管理员权限",
-        "title": "管理管理员"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "配置用户组和成员资格",
-        "title": "管理用户组"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "配置资源配额和限制",
-        "title": "管理配额"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "查看和管理用户账户",
-        "title": "管理用户"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "安装和配置 webhook 集成",
-        "title": "管理 Webhooks"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "管理系统设置和配置",
@@ -183,7 +183,7 @@
       "title": "管理用户"
     },
     "webhooks": {
-      "addButton": "添加Webhook",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "要订阅的事件类型",
         "eventsHint": "要订阅的事件类型（例如：threat_model.created）",
@@ -199,7 +199,7 @@
         "secretPlaceholder": "留空以自动生成",
         "title": "添加Webhook",
         "url": "Webhook URL",
-        "urlHint": "必须是HTTPS URL",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "必须是HTTPS URL",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL为必填项"
@@ -210,7 +210,7 @@
       "filterLabel": "筛选Webhook",
       "filterPlaceholder": "按名称或URL搜索",
       "hmacSecretDialog": {
-        "title": "HMAC密钥",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "这是您唯一可以查看此密钥的机会。请复制它。如果您丢失或忘记它，您将需要删除并重新创建webhook。"
       },
       "listTitle": "Webhook订阅",
@@ -729,14 +729,14 @@
     "noRepositories": "尚未添加仓库",
     "noThreats": "尚未添加威胁",
     "pageTitle": "威胁模型",
-    "permissionsDisplayName": "显示名称",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "电子邮件",
     "permissionsGroupId": "组ID",
     "permissionsIdp": "身份提供者",
     "permissionsPrincipalId": "主体ID",
     "permissionsProvider": "提供者",
     "permissionsRole": "角色",
-    "permissionsSubject": "主体",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "主体（用户 ID、用户电子邮件地址或组名称）",
     "permissionsSubjectType": "类型",
     "permissionsTooltip": "管理权限",
@@ -862,7 +862,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "系统管理"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "启用色盲模式",
     "deleteMyData": {
