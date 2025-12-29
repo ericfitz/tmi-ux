@@ -95,7 +95,7 @@
         "groupName": "Идентификатор группы",
         "groupNameHint": "Только буквы, цифры, дефисы и подчёркивания",
         "groupNamePattern": "Допускаются только буквы, цифры, дефисы и подчёркивания",
-        "groupNamePlaceholder": "my-custom-group",
+        "groupNamePlaceholder": "моя-произвольная-группа",
         "groupNameRequired": "Идентификатор группы обязателен",
         "save": "Создать группу",
         "title": "Добавить Группу"
@@ -730,7 +730,7 @@
     "noThreats": "Угрозы ещё не добавлены",
     "pageTitle": "Модели Угроз",
     "permissionsDisplayName": "Отображаемое имя",
-    "permissionsEmail": "Email",
+    "permissionsEmail": "Электронная почта",
     "permissionsGroupId": "ID группы",
     "permissionsIdp": "{{common.identityProvider}}",
     "permissionsPrincipalId": "ID принципала",

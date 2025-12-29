@@ -45,7 +45,7 @@
         "objectsHint": "منتخب کریں کہ یہ ایڈ آن کن TMI آبجیکٹ اقسام پر کام کر سکتا ہے",
         "save": "ایڈ آن بنائیں",
         "title": "ایڈ آن شامل کریں",
-        "webhook": "Webhook",
+        "webhook": "ویب ہک",
         "webhookHint": "منسلک webhook سبسکرپشن",
         "webhookRequired": "Webhook ضروری ہے"
       },
@@ -198,7 +198,7 @@
         "secretHint": "پے لوڈز پر دستخط کرنے کے لیے HMAC راز (خالی چھوڑنے پر خودکار پیدا ہوگا)",
         "secretPlaceholder": "خودکار پیدا کرنے کے لیے خالی چھوڑیں",
         "title": "Webhook شامل کریں",
-        "url": "Webhook URL",
+        "url": "ویب ہک URL",
         "urlHint": "HTTPS URL ہونا ضروری ہے",
         "urlInvalid": "HTTPS URL ہونا ضروری ہے",
         "urlPlaceholder": "https://example.com/webhook",

@@ -194,7 +194,7 @@
         "namePlaceholder": "ชื่อ Webhook",
         "nameRequired": "{{common.validation.nameRequired}}",
         "save": "สร้าง Webhook",
-        "secret": "HMAC Secret",
+        "secret": "ความลับ HMAC",
         "secretHint": "HMAC secret สำหรับลงนาม payloads (สร้างอัตโนมัติถ้าว่าง)",
         "secretPlaceholder": "ปล่อยว่างเพื่อสร้างอัตโนมัติ",
         "title": "เพิ่ม Webhook",
@@ -215,7 +215,7 @@
       },
       "listTitle": "การสมัครสมาชิก Webhook",
       "noWebhooks": "ไม่พบ webhooks",
-      "secret": "HMAC secret",
+      "secret": "ความลับ HMAC",
       "status": {
         "active": "ใช้งานอยู่",
         "pending_delete": "รอการลบ",
@@ -685,7 +685,7 @@
   "threatModels": {
     "addPermission": "เพิ่มสิทธิ์การเข้าถึง",
     "branch": "สาขา",
-    "commit": "Commit",
+    "commit": "คอมมิต",
     "confirmDeleteNote": "คุณแน่ใจหรือไม่ว่าต้องการลบหมายเหตุ '{{name}}'?",
     "createFirstButton": "สร้างแบบจำลองภัยคุกคามแรกของคุณ",
     "createNewDiagram": "สร้างแผนภาพใหม่",

@@ -45,7 +45,7 @@
         "objectsHint": "حدد أنواع كائنات TMI التي يمكن لهذا الملحق العمل عليها",
         "save": "إنشاء ملحق",
         "title": "إضافة ملحق",
-        "webhook": "Webhook",
+        "webhook": "ويبهوك",
         "webhookHint": "اشتراك Webhook المرتبط",
         "webhookRequired": "Webhook مطلوب"
       },

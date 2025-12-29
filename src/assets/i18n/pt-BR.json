@@ -684,7 +684,7 @@
   },
   "threatModels": {
     "addPermission": "Adicionar Permissao",
-    "branch": "Branch",
+    "branch": "Ramo",
     "commit": "Commit",
     "confirmDeleteNote": "Tem certeza de que deseja excluir a nota '{{name}}'?",
     "createFirstButton": "Crie Seu Primeiro Modelo de Ameacas",

@@ -45,7 +45,7 @@
         "objectsHint": "TMI ऑब्जेक्ट प्रकार चुनें जिन पर यह ऐडऑन काम कर सकता है",
         "save": "ऐडऑन बनाएं",
         "title": "ऐडऑन जोड़ें",
-        "webhook": "Webhook",
+        "webhook": "वेबहुक",
         "webhookHint": "संबंधित webhook सब्सक्रिप्शन",
         "webhookRequired": "Webhook आवश्यक है"
       },
@@ -506,9 +506,9 @@
         "deleteSelected": "चयनित हटाएं",
         "export": "निर्यात...",
         "help": "सहायता",
-        "redo": "Redo",
+        "redo": "फिर से करें",
         "share": "साझा करें",
-        "undo": "Undo",
+        "undo": "पूर्ववत करें",
         "zoomToFit": "फ़िट करने के लिए ज़ूम करें"
       }
     }
