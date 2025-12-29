@@ -12,16 +12,18 @@ Tool to find duplicate localized string values and generate a de-duplication pla
 
 import argparse
 import json
+import re
 import yaml
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Tuple, Any, Set
+from typing import Dict, List, Tuple, Any
 
 
 class LocalizationDeDuplicator:
-    def __init__(self, locale_file_path: str, skip_policy: bool = False):
+    def __init__(self, locale_file_path: str, skip_policy: bool = False, reference_mode: bool = False):
         self.locale_file_path = Path(locale_file_path)
         self.skip_policy = skip_policy
+        self.reference_mode = reference_mode
         self.localization_data = {}
         self.key_value_map = {}  # Full path key -> value
         self.value_to_keys = defaultdict(list)  # Value -> list of full path keys
@@ -34,6 +36,10 @@ class LocalizationDeDuplicator:
     
     def should_skip_key(self, key: str) -> bool:
         """Check if a key should be skipped based on policy settings."""
+        # Skip comment keys (these are translator notes, not actual translations)
+        if key.endswith('.comment'):
+            return True
+
         # Skip enum value patterns (these are not duplicates)
         if key.startswith('threatEditor.threatStatus.') or key.startswith('threatModels.status.'):
             return True
@@ -42,7 +48,12 @@ class LocalizationDeDuplicator:
             top_section = key.split('.')[0]
             return top_section in ['privacy', 'tos']
         return False
-    
+
+    def is_key_reference(self, value: str) -> bool:
+        """Check if a value is a reference to another key (e.g., '{{section.keyname}}')."""
+        # Match values that are purely key references like "{{section.keyname}}"
+        return bool(re.fullmatch(r'\{\{[\w.]+\}\}', value))
+
     def extract_key_value_pairs(self, data: Dict[str, Any], prefix: str = '') -> None:
         """Recursively extract all key-value pairs with their full paths."""
         for key, value in data.items():
@@ -56,6 +67,9 @@ class LocalizationDeDuplicator:
                 # Recurse into nested objects
                 self.extract_key_value_pairs(value, full_key)
             elif isinstance(value, str):
+                # Skip key references (e.g., "{{section.keyname}}")
+                if self.is_key_reference(value):
+                    continue
                 # Store the key-value mapping
                 self.key_value_map[full_key] = value
                 self.value_to_keys[value].append(full_key)
@@ -152,47 +166,66 @@ class LocalizationDeDuplicator:
         for value, keys in self.value_to_keys.items():
             if len(keys) < 2:
                 continue  # Not a duplicate
-            
+
             # Sort keys for consistent output
             keys.sort()
-            
+
             # Choose which key to keep
             keeper = self.choose_keeper(keys)
             target_key = self.make_target_key(keeper, value)
-            
+
             # Create plan entries
             plan_entry = {
                 'value': value,
                 'keys': []
             }
-            
-            for key in keys:
-                if key == keeper:
-                    if key == target_key:
+
+            if self.reference_mode:
+                # Reference mode: keep the actual keeper key, change duplicates to references
+                # In reference mode, we use the keeper key as-is (no renaming/moving)
+                for key in keys:
+                    if key == keeper:
                         action = 'KEEP'
-                        instruction = f"KEEP {key} AS {target_key}"
+                        instruction = f"KEEP {key}"
                     else:
-                        action = 'MOVE'
-                        instruction = f"MOVE {key} TO {target_key}"
-                    refactor = f"REFACTOR no changes needed for {key}"
-                else:
-                    action = 'DELETE'
-                    instruction = f"DELETE {key}"
-                    refactor = f"REFACTOR rename {key} to {target_key}"
-                
-                plan_entry['keys'].append({
-                    'key': key,
-                    'action': action,
-                    'instruction': instruction,
-                    'refactor': refactor
-                })
-            
+                        action = 'REFER'
+                        instruction = f"REFER {key} TO {{{{{keeper}}}}}"
+
+                    plan_entry['keys'].append({
+                        'key': key,
+                        'action': action,
+                        'instruction': instruction,
+                    })
+            else:
+                # Legacy mode: delete duplicates and rename references
+                for key in keys:
+                    if key == keeper:
+                        if key == target_key:
+                            action = 'KEEP'
+                            instruction = f"KEEP {key}"
+                            refactor = f"REFACTOR no changes needed for {key}"
+                        else:
+                            action = 'MOVE'
+                            instruction = f"MOVE {key} TO {target_key}"
+                            refactor = f"REFACTOR rename {key} to {target_key}"
+                    else:
+                        action = 'DELETE'
+                        instruction = f"DELETE {key}"
+                        refactor = f"REFACTOR rename {key} to {target_key}"
+
+                    plan_entry['keys'].append({
+                        'key': key,
+                        'action': action,
+                        'instruction': instruction,
+                        'refactor': refactor
+                    })
+
             self.dedup_plan.append(plan_entry)
     
     def save_plan(self, output_file: str = 'localization_dedup_plan.txt', output_format: str = 'txt'):
         """Save the de-duplication plan to a file."""
         output_path = Path(output_file)
-        
+
         if output_format == 'yaml':
             # Save as YAML
             yaml_data = []
@@ -202,49 +235,60 @@ class LocalizationDeDuplicator:
                     'duplicates': []
                 }
                 for key_info in entry['keys']:
-                    yaml_entry['duplicates'].append({
-                        'instruction': key_info['instruction'],
-                        'refactor': key_info['refactor']
-                    })
+                    entry_data = {'instruction': key_info['instruction']}
+                    if 'refactor' in key_info:
+                        entry_data['refactor'] = key_info['refactor']
+                    yaml_entry['duplicates'].append(entry_data)
                 yaml_data.append(yaml_entry)
-            
+
             with open(output_path, 'w', encoding='utf-8') as f:
                 yaml.dump(yaml_data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
         else:
             # Save as plain text
             with open(output_path, 'w', encoding='utf-8') as f:
                 # Write header
-                f.write("Localization De-duplication Plan\n")
+                mode_name = "Reference" if self.reference_mode else "Legacy"
+                f.write(f"Localization De-duplication Plan ({mode_name} Mode)\n")
                 f.write("=" * 70 + "\n\n")
-                
+
                 # Summary statistics
                 total_keys = len(self.key_value_map)
                 duplicate_groups = len(self.dedup_plan)
-                keys_to_delete = sum(1 for entry in self.dedup_plan 
-                                   for key_info in entry['keys'] 
-                                   if key_info['action'] == 'DELETE')
-                keys_to_move = sum(1 for entry in self.dedup_plan 
-                                 for key_info in entry['keys'] 
-                                 if key_info['action'] == 'MOVE')
-                keys_to_keep = sum(1 for entry in self.dedup_plan 
-                                 for key_info in entry['keys'] 
-                                 if key_info['action'] == 'KEEP')
-                
+                keys_to_keep = sum(1 for entry in self.dedup_plan
+                                   for key_info in entry['keys']
+                                   if key_info['action'] == 'KEEP')
+
                 f.write(f"Total keys analyzed: {total_keys}\n")
                 f.write(f"Duplicate groups found: {duplicate_groups}\n")
-                f.write(f"Keys to delete: {keys_to_delete}\n")
-                f.write(f"Keys to move: {keys_to_move}\n")
-                f.write(f"Keys to keep: {keys_to_keep}\n")
+
+                if self.reference_mode:
+                    keys_to_refer = sum(1 for entry in self.dedup_plan
+                                        for key_info in entry['keys']
+                                        if key_info['action'] == 'REFER')
+                    f.write(f"Keys to convert to references: {keys_to_refer}\n")
+                    f.write(f"Keys to keep: {keys_to_keep}\n")
+                else:
+                    keys_to_delete = sum(1 for entry in self.dedup_plan
+                                         for key_info in entry['keys']
+                                         if key_info['action'] == 'DELETE')
+                    keys_to_move = sum(1 for entry in self.dedup_plan
+                                       for key_info in entry['keys']
+                                       if key_info['action'] == 'MOVE')
+                    f.write(f"Keys to delete: {keys_to_delete}\n")
+                    f.write(f"Keys to move: {keys_to_move}\n")
+                    f.write(f"Keys to keep: {keys_to_keep}\n")
+
                 f.write("\n" + "=" * 70 + "\n\n")
-                
+
                 # Write duplicate groups
                 for entry in self.dedup_plan:
                     f.write(f'Value: "{entry["value"]}"\n')
                     for key_info in entry['keys']:
                         f.write(f"  {key_info['instruction']}\n")
-                        f.write(f"  {key_info['refactor']}\n")
+                        if 'refactor' in key_info:
+                            f.write(f"  {key_info['refactor']}\n")
                     f.write("\n")
-        
+
         print(f"De-duplication plan saved to: {output_path}")
     
     def run(self, output_file: str = 'localization_dedup_plan.txt', output_format: str = 'txt'):
@@ -272,25 +316,31 @@ class LocalizationDeDuplicator:
 
 def main():
     parser = argparse.ArgumentParser(description='Find duplicate localization strings and generate de-duplication plan')
-    parser.add_argument('--skippolicy', action='store_true', 
+    parser.add_argument('--skippolicy', action='store_true',
                         help='Skip privacy and tos sections in duplicate detection')
+    parser.add_argument('--reference', action='store_true',
+                        help='Use reference mode: convert duplicates to key references instead of deleting')
     parser.add_argument('--output', '-o', default='localization_dedup_plan.txt',
                         help='Output file name (default: localization_dedup_plan.txt)')
     parser.add_argument('--format', '-f', choices=['txt', 'yaml'], default='txt',
                         help='Output format (default: txt)')
-    
+
     args = parser.parse_args()
-    
+
     # Path to the en-US.json file
     locale_file = "src/assets/i18n/en-US.json"
-    
+
     # Determine output file extension based on format
-    output_file = args.output
+    output_file: str = args.output
     if args.format == 'yaml' and not output_file.endswith('.yaml') and not output_file.endswith('.yml'):
-        output_file = Path(output_file).with_suffix('.yaml')
-    
+        output_file = str(Path(output_file).with_suffix('.yaml'))
+
     # Create and run the de-duplicator
-    deduplicator = LocalizationDeDuplicator(locale_file, skip_policy=args.skippolicy)
+    deduplicator = LocalizationDeDuplicator(
+        locale_file,
+        skip_policy=args.skippolicy,
+        reference_mode=args.reference
+    )
     deduplicator.run(output_file, args.format)
 
 

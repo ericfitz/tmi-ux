@@ -32,15 +32,17 @@
   },
   "admin": {
     "addons": {
-      "addButton": "Add Addon",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "What does this addon do?",
         "descriptionPlaceholder": "Describe the addon functionality",
         "icon": "Icon",
         "iconHint": "UI Icon (examples: \"material-symbols:security\", \"fa-regular fa-user-shield\")",
+        "iconHint.comment": "The text in quotes are proper names and should not be translated.",
         "iconInvalid": "Invalid icon format",
         "iconPlaceholder": "material-symbols:extension",
+        "iconPlaceholder.comment": "This is a proper name and should not be translated.",
         "name": "{{common.name}}",
         "nameHint": "Display name for this addon",
         "namePlaceholder": "My Custom Addon",
@@ -66,7 +68,7 @@
       "title": "Manage Addons"
     },
     "administrators": {
-      "addButton": "Add Administrator",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "Provider is required",
@@ -75,7 +77,7 @@
         "subjectHint": "Enter user email or group name",
         "subjectPlaceholder": "User email or group name",
         "subjectRequired": "Subject is required",
-        "title": "Add Administrator"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "Added on",
       "filterLabel": "Filter Administrators",
@@ -84,10 +86,11 @@
       "noAdministrators": "No administrators found",
       "removeTooltip": "Remove Administrator Permissions",
       "subtitle": "Control who has administrative access to the system",
+      "subtitle.comment": "'Control' is the imperative verb form.",
       "title": "Manage Administrators"
     },
     "groups": {
-      "addButton": "Add Group",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "Description (Optional)",
         "descriptionHint": "Optional description of the group's purpose",
@@ -100,6 +103,7 @@
         "groupNameHint": "Alphanumeric, hyphens, and underscores only",
         "groupNamePattern": "Only alphanumeric, hyphens, and underscores allowed",
         "groupNamePlaceholder": "my-custom-group",
+        "groupNamePlaceholder.comment": "This is placeholder text and should be translated as if the hyphens were spaces.",
         "groupNameRequired": "Group identifier is required",
         "save": "Create Group",
         "title": "Add Group"
@@ -107,7 +111,7 @@
       "deleteTooltip": "Delete group",
       "filterLabel": "Filter Groups",
       "filterPlaceholder": "Search by group name or provider",
-      "listTitle": "Groups",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "Add Member",
         "currentMembers": "Current Members",
@@ -125,19 +129,20 @@
     "quotas": {
       "addButton": "Add Quota",
       "addDialog": {
-        "apiQuotas": "API Rate Limits",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "Configure Quotas",
         "searchLabel": "Search for user",
         "searchPlaceholder": "Type user email to search",
         "selectUser": "Select User",
         "title": "Add Custom Quotas",
-        "webhookQuotas": "Webhook Limits"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "Remove custom quota (revert to defaults)",
       "eventsPerMinute": "Events per minute",
       "filterLabel": "Filter Quotas",
       "filterPlaceholder": "Search by email, name, provider, or user ID",
       "maxSubscriptions": "Max subscriptions",
+      "maxSubscriptions.comment": "The word 'Max' is short for 'Maximum'.",
       "noUserAPIQuotas": "No custom API quotas found",
       "noWebhookQuotas": "No custom webhook quotas found",
       "requestsPerHour": "Requests per hour",
@@ -152,27 +157,27 @@
     "sections": {
       "addons": {
         "description": "Install and configure application addons",
-        "title": "Manage Addons"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "Grant or revoke administrator permissions",
-        "title": "Manage Administrators"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "Configure user groups and memberships",
-        "title": "Manage Groups"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "Configure resource quotas and limits",
-        "title": "Manage Quotas"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "View and manage user accounts",
-        "title": "Manage Users"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "Install and configure webhook integrations",
-        "title": "Manage Webhooks"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "Manage system settings and configurations",
@@ -187,7 +192,7 @@
       "title": "Manage Users"
     },
     "webhooks": {
-      "addButton": "Add Webhook",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "Event Types to Subscribe To",
         "eventsHint": "Event types to subscribe to (e.g., threat_model.created)",
@@ -199,11 +204,14 @@
         "nameRequired": "{{common.validation.nameRequired}}",
         "save": "Create Webhook",
         "secret": "HMAC Secret",
+        "secret.comment": "The acronym HMAC should not be translated, but the word secret should be translated.",
         "secretHint": "HMAC secret for signing payloads (auto-generated if empty)",
+        "secretHint.comment": "The acronym HMAC should not be translated.  'Auto-generated' is short for 'Automatically Generated'.",
         "secretPlaceholder": "Leave empty to auto-generate",
+        "secretPlaceholder.comment": "'Auto-generate' should be translated as if it were 'generate automatically'.",
         "title": "Add Webhook",
         "url": "Webhook URL",
-        "urlHint": "Must be an HTTPS URL",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "Must be an HTTPS URL",
         "urlPlaceholder": "https://example.com/webhook",
         "urlPlaceholder.comment": "This is a URL and should not be translated.",
@@ -215,7 +223,7 @@
       "filterLabel": "Filter Webhooks",
       "filterPlaceholder": "Search by name or URL",
       "hmacSecretDialog": {
-        "title": "HMAC Secret",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "This is the only time you will be able to view this secret. Please copy it. If you lose or forget it, you will have to delete and re-create the webhook."
       },
       "listTitle": "Webhook Subscriptions",
@@ -232,10 +240,14 @@
   },
   "assetEditor": {
     "chipPlaceholder": "Enter value and press Enter",
+    "chipPlaceholder.comment": "The first 'Enter' is an imperative verb.  The second is a reference to the enter/return key on the keyboard.",
     "classification": "Classification",
+    "classification.comment": "Used in the sense of the category that something is placed in.",
     "criticality": "Criticality",
+    "criticality.comment": "Used in the sense of how important something is, or how much impact would occur.",
     "name": "Asset Name",
     "sensitivity": "Sensitivity",
+    "sensitivity.comment": "Used in the sense of how damaging something would be if it were discovered, not in the sense of the keenness of senses.",
     "title": {
       "create": "Create Asset",
       "edit": "Edit Asset",
@@ -268,7 +280,9 @@
     },
     "unauthorized": {
       "401": "401 Unauthorized",
+      "401.comment": "This is a standard error message and should not be translated.",
       "403": "403 Forbidden",
+      "403.comment": "This is a standard error message and should not be translated.",
       "noPermission": "You do not have permission to access this page.",
       "requiredRole": "You need the {{role}} role to view this content.",
       "title": "Unauthorized Access"
@@ -739,14 +753,14 @@
     "noRepositories": "No Repositories Added Yet",
     "noThreats": "No Threats Added Yet",
     "pageTitle": "Threat Models",
-    "permissionsDisplayName": "Display Name",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "Email",
     "permissionsGroupId": "Group ID",
     "permissionsIdp": "{{common.identityProvider}}",
     "permissionsPrincipalId": "Principal ID",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Role",
-    "permissionsSubject": "Subject",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "Subject (User ID, User Email Address, or Group Name)",
     "permissionsSubjectType": "{{common.type}}",
     "permissionsTooltip": "Manage Permissions",
@@ -873,7 +887,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "Administration"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "Enable Color Blind Mode",
     "deleteMyData": {
