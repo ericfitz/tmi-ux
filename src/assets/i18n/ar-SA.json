@@ -28,7 +28,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "إضافة ملحق",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "ما هي وظيفة هذا الملحق؟",
@@ -62,7 +62,7 @@
       "title": "إدارة الملحقات"
     },
     "administrators": {
-      "addButton": "إضافة مسؤول",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "المزود مطلوب",
@@ -71,7 +71,7 @@
         "subjectHint": "أدخل البريد الإلكتروني للمستخدم أو اسم المجموعة",
         "subjectPlaceholder": "البريد الإلكتروني للمستخدم أو اسم المجموعة",
         "subjectRequired": "الموضوع مطلوب",
-        "title": "إضافة مسؤول"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "تمت الإضافة في",
       "filterLabel": "تصفية المسؤولين",
@@ -83,7 +83,7 @@
       "title": "إدارة المسؤولين"
     },
     "groups": {
-      "addButton": "إضافة مجموعة",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "الوصف (اختياري)",
         "descriptionHint": "وصف اختياري لغرض المجموعة",
@@ -103,7 +103,7 @@
       "deleteTooltip": "حذف المجموعة",
       "filterLabel": "تصفية المجموعات",
       "filterPlaceholder": "البحث بالاسم أو المزود",
-      "listTitle": "المجموعات",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "إضافة عضو",
         "currentMembers": "الأعضاء الحاليون",
@@ -121,13 +121,13 @@
     "quotas": {
       "addButton": "إضافة حصة",
       "addDialog": {
-        "apiQuotas": "حدود معدل API",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "تكوين الحصص",
         "searchLabel": "البحث عن مستخدم",
         "searchPlaceholder": "اكتب البريد الإلكتروني للمستخدم للبحث",
         "selectUser": "اختر مستخدم",
         "title": "إضافة حصص مخصصة",
-        "webhookQuotas": "حدود Webhook"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "إزالة الحصة المخصصة (العودة للإعدادات الافتراضية)",
       "eventsPerMinute": "الأحداث في الدقيقة",
@@ -148,27 +148,27 @@
     "sections": {
       "addons": {
         "description": "تثبيت وتكوين الوظائف الإضافية للتطبيق",
-        "title": "إدارة الوظائف الإضافية"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "منح أو إلغاء أذونات المسؤول",
-        "title": "إدارة المسؤولين"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "تكوين مجموعات المستخدمين والعضويات",
-        "title": "إدارة المجموعات"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "تكوين حصص الموارد والحدود",
-        "title": "إدارة الحصص"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "عرض وإدارة حسابات المستخدمين",
-        "title": "إدارة المستخدمين"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "تثبيت وتكوين تكاملات الخطافات",
-        "title": "إدارة الخطافات"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "إدارة إعدادات النظام والتكوينات",
@@ -183,7 +183,7 @@
       "title": "إدارة المستخدمين"
     },
     "webhooks": {
-      "addButton": "إضافة Webhook",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "أنواع الأحداث للاشتراك فيها",
         "eventsHint": "أنواع الأحداث للاشتراك فيها (مثال: threat_model.created)",
@@ -199,7 +199,7 @@
         "secretPlaceholder": "اتركه فارغاً للإنشاء التلقائي",
         "title": "إضافة Webhook",
         "url": "رابط Webhook",
-        "urlHint": "يجب أن يكون رابط HTTPS",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "يجب أن يكون رابط HTTPS",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "الرابط مطلوب"
@@ -210,7 +210,7 @@
       "filterLabel": "تصفية Webhooks",
       "filterPlaceholder": "البحث بالاسم أو الرابط",
       "hmacSecretDialog": {
-        "title": "مفتاح HMAC السري",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "هذه هي المرة الوحيدة التي ستتمكن فيها من عرض هذا المفتاح السري. يرجى نسخه. إذا فقدته أو نسيته، سيتعين عليك حذف وإعادة إنشاء الـ Webhook."
       },
       "listTitle": "اشتراكات Webhook",
@@ -729,14 +729,14 @@
     "noRepositories": "لم تتم إضافة أي مستودعات بعد",
     "noThreats": "لم تتم إضافة أي تهديدات بعد",
     "pageTitle": "نماذج التهديدات",
-    "permissionsDisplayName": "الاسم المعروض",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "البريد الإلكتروني",
     "permissionsGroupId": "معرف المجموعة",
     "permissionsIdp": "مزود الهوية",
     "permissionsPrincipalId": "معرف الأساسي",
     "permissionsProvider": "المزود",
     "permissionsRole": "الدور",
-    "permissionsSubject": "الموضوع",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "الموضوع (معرف المستخدم، عنوان البريد الإلكتروني للمستخدم، أو اسم المجموعة)",
     "permissionsSubjectType": "النوع",
     "permissionsTooltip": "إدارة الأذونات",
@@ -862,7 +862,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "الإدارة"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "تفعيل وضع عمى الألوان",
     "deleteMyData": {
