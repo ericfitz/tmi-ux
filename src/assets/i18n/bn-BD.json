@@ -28,7 +28,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "অ্যাডঅন যোগ করুন",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "এই অ্যাডঅন কী করে?",
@@ -62,7 +62,7 @@
       "title": "অ্যাডঅন পরিচালনা করুন"
     },
     "administrators": {
-      "addButton": "প্রশাসক যোগ করুন",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "প্রোভাইডার প্রয়োজন",
@@ -71,7 +71,7 @@
         "subjectHint": "ব্যবহারকারীর ইমেইল বা গ্রুপের নাম লিখুন",
         "subjectPlaceholder": "ব্যবহারকারীর ইমেইল বা গ্রুপের নাম",
         "subjectRequired": "বিষয় প্রয়োজন",
-        "title": "প্রশাসক যোগ করুন"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "যোগ করা হয়েছে",
       "filterLabel": "অ্যাডমিনিস্ট্রেটর ফিল্টার করুন",
@@ -83,7 +83,7 @@
       "title": "প্রশাসক পরিচালনা করুন"
     },
     "groups": {
-      "addButton": "গ্রুপ যোগ করুন",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "বিবরণ (ঐচ্ছিক)",
         "descriptionHint": "গ্রুপের উদ্দেশ্যের ঐচ্ছিক বিবরণ",
@@ -103,7 +103,7 @@
       "deleteTooltip": "গ্রুপ মুছুন",
       "filterLabel": "গ্রুপ ফিল্টার করুন",
       "filterPlaceholder": "গ্রুপের নাম বা প্রোভাইডার দিয়ে খুঁজুন",
-      "listTitle": "গ্রুপ",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "সদস্য যোগ করুন",
         "currentMembers": "বর্তমান সদস্য",
@@ -121,13 +121,13 @@
     "quotas": {
       "addButton": "কোটা যোগ করুন",
       "addDialog": {
-        "apiQuotas": "API রেট লিমিট",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "কোটা কনফিগার করুন",
         "searchLabel": "ব্যবহারকারী খুঁজুন",
         "searchPlaceholder": "খুঁজতে ব্যবহারকারীর ইমেইল টাইপ করুন",
         "selectUser": "ব্যবহারকারী নির্বাচন করুন",
         "title": "কাস্টম কোটা যোগ করুন",
-        "webhookQuotas": "ওয়েবহুক লিমিট"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "কাস্টম কোটা সরান (ডিফল্টে ফিরে যান)",
       "eventsPerMinute": "প্রতি মিনিটে ইভেন্ট",
@@ -148,27 +148,27 @@
     "sections": {
       "addons": {
         "description": "অ্যাপ্লিকেশন অ্যাডঅন ইনস্টল এবং কনফিগার করুন",
-        "title": "অ্যাডঅন পরিচালনা করুন"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "অ্যাডমিনিস্ট্রেটর অনুমতি প্রদান বা প্রত্যাহার করুন",
-        "title": "প্রশাসক পরিচালনা করুন"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "ব্যবহারকারী গ্রুপ এবং সদস্যপদ কনফিগার করুন",
-        "title": "গ্রুপ পরিচালনা করুন"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "রিসোর্স কোটা এবং লিমিট কনফিগার করুন",
-        "title": "কোটা পরিচালনা করুন"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "ব্যবহারকারী অ্যাকাউন্ট দেখুন এবং পরিচালনা করুন",
-        "title": "ব্যবহারকারী পরিচালনা করুন"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "ওয়েবহুক ইন্টিগ্রেশন ইনস্টল এবং কনফিগার করুন",
-        "title": "Webhooks পরিচালনা করুন"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "সিস্টেম সেটিংস এবং কনফিগারেশন পরিচালনা করুন",
@@ -183,7 +183,7 @@
       "title": "ব্যবহারকারী পরিচালনা করুন"
     },
     "webhooks": {
-      "addButton": "Webhook যোগ করুন",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "সাবস্ক্রাইব করার জন্য ইভেন্ট প্রকার",
         "eventsHint": "সাবস্ক্রাইব করার জন্য ইভেন্ট প্রকার (যেমন, threat_model.created)",
@@ -199,7 +199,7 @@
         "secretPlaceholder": "স্বয়ংক্রিয়ভাবে তৈরি করতে খালি রেখে দিন",
         "title": "Webhook যোগ করুন",
         "url": "ওয়েবহুক URL",
-        "urlHint": "HTTPS URL হতে হবে",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "HTTPS URL হতে হবে",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL প্রয়োজন"
@@ -210,7 +210,7 @@
       "filterLabel": "ওয়েবহুক ফিল্টার করুন",
       "filterPlaceholder": "নাম বা URL দিয়ে খুঁজুন",
       "hmacSecretDialog": {
-        "title": "HMAC সিক্রেট",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "এটাই একমাত্র সময় যখন আপনি এই সিক্রেট দেখতে পারবেন। অনুগ্রহ করে এটি কপি করুন। আপনি যদি এটি হারান বা ভুলে যান, আপনাকে ওয়েবহুক মুছে পুনরায় তৈরি করতে হবে।"
       },
       "listTitle": "Webhook সাবস্ক্রিপশন",
@@ -729,14 +729,14 @@
     "noRepositories": "এখনো কোনো রিপোজিটরি যোগ করা হয়নি",
     "noThreats": "এখনো কোনো হুমকি যোগ করা হয়নি",
     "pageTitle": "থ্রেট মডেল",
-    "permissionsDisplayName": "প্রদর্শন নাম",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "ইমেইল",
     "permissionsGroupId": "গ্রুপ আইডি",
     "permissionsIdp": "{{common.identityProvider}}",
     "permissionsPrincipalId": "প্রিন্সিপাল আইডি",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "ভূমিকা",
-    "permissionsSubject": "বিষয়",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "বিষয় (ব্যবহারকারী আইডি, ব্যবহারকারীর ইমেইল ঠিকানা, বা গ্রুপের নাম)",
     "permissionsSubjectType": "{{common.type}}",
     "permissionsTooltip": "অনুমতি পরিচালনা করুন",
@@ -862,7 +862,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "প্রশাসন"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "কালার ব্লাইন্ড মোড সক্রিয় করুন",
     "deleteMyData": {
