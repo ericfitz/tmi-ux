@@ -110,7 +110,7 @@ describe('NodeOperationExecutor', () => {
               expect(nodeConfig.y).toBe(100);
               expect(nodeConfig.width).toBe(120);
               expect(nodeConfig.height).toBe(60);
-              expect(nodeConfig.attrs.label.text).toBe('Test Node');
+              expect(nodeConfig.attrs.text.text).toBe('Test Node');
 
               resolve();
             } catch (error) {
@@ -166,8 +166,8 @@ describe('NodeOperationExecutor', () => {
               expect(nodeConfig.attrs.body.fill).toBe('#ff0000');
               expect(nodeConfig.attrs.body.stroke).toBe('#00ff00');
               expect(nodeConfig.attrs.body.strokeWidth).toBe(3);
-              expect(nodeConfig.attrs.label.fontSize).toBe(16);
-              expect(nodeConfig.attrs.label.fill).toBe('#0000ff');
+              expect(nodeConfig.attrs.text.fontSize).toBe(16);
+              expect(nodeConfig.attrs.text.fill).toBe('#0000ff');
 
               resolve();
             } catch (error) {
@@ -216,7 +216,7 @@ describe('NodeOperationExecutor', () => {
               expect(nodeConfig.y).toBe(100);
               expect(nodeConfig.width).toBe(140); // Default size for process nodes
               expect(nodeConfig.height).toBe(60); // Default height for process nodes
-              expect(nodeConfig.attrs.label.text).toBe('Process'); // Default label for process nodes
+              expect(nodeConfig.attrs.text.text).toBe('Process'); // Default label for process nodes
 
               resolve();
             } catch (error) {
@@ -284,7 +284,7 @@ describe('NodeOperationExecutor', () => {
 
               expect(mockNode.setPosition).toHaveBeenCalledWith(200, 200);
               expect(mockNode.setSize).toHaveBeenCalledWith(150, 80);
-              expect(mockNode.setAttrByPath).toHaveBeenCalledWith('label/text', 'Updated Label');
+              expect(mockNode.setAttrByPath).toHaveBeenCalledWith('text/text', 'Updated Label');
               expect(mockNode.setAttrByPath).toHaveBeenCalledWith('body/fill', '#ffff00');
               expect(mockNode.setData).toHaveBeenCalledWith({ existing: 'data', updated: true });
 
@@ -326,10 +326,7 @@ describe('NodeOperationExecutor', () => {
             try {
               expect(result.success).toBe(true);
 
-              expect(mockNode.setAttrByPath).toHaveBeenCalledWith(
-                'label/text',
-                'Only Label Update',
-              );
+              expect(mockNode.setAttrByPath).toHaveBeenCalledWith('text/text', 'Only Label Update');
               expect(mockNode.setPosition).not.toHaveBeenCalled();
               expect(mockNode.setSize).not.toHaveBeenCalled();
 
@@ -408,7 +405,7 @@ describe('NodeOperationExecutor', () => {
         isNode: vi.fn().mockReturnValue(true),
         getPosition: vi.fn().mockReturnValue({ x: 100, y: 100 }),
         getSize: vi.fn().mockReturnValue({ width: 120, height: 60 }),
-        getAttrs: vi.fn().mockReturnValue({ label: { text: 'Test Node' } }),
+        getAttrs: vi.fn().mockReturnValue({ text: { text: 'Test Node' } }),
         getAttrByPath: vi.fn().mockReturnValue('Test Node'),
         getZIndex: vi.fn().mockReturnValue(1),
         getData: vi.fn().mockReturnValue({ nodeType: 'process' }),

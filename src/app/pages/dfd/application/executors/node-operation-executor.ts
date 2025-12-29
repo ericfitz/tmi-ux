@@ -230,7 +230,7 @@ export class NodeOperationExecutor implements OperationExecutor {
 
       // Update label
       if (updates.label !== undefined) {
-        node.setAttrByPath('label/text', updates.label);
+        node.setAttrByPath('text/text', updates.label);
         changedProperties.push('label');
       }
 
@@ -249,11 +249,11 @@ export class NodeOperationExecutor implements OperationExecutor {
           changedProperties.push('strokeWidth');
         }
         if (updates.style['fontSize'] !== undefined) {
-          node.setAttrByPath('label/fontSize', updates.style['fontSize']);
+          node.setAttrByPath('text/fontSize', updates.style['fontSize']);
           changedProperties.push('fontSize');
         }
         if (updates.style['textColor'] !== undefined) {
-          node.setAttrByPath('label/fill', updates.style['textColor']);
+          node.setAttrByPath('text/fill', updates.style['textColor']);
           changedProperties.push('textColor');
         }
       }
@@ -426,10 +426,10 @@ export class NodeOperationExecutor implements OperationExecutor {
    */
   private _buildNodeConfig(nodeId: string, nodeData: NodeData): any {
     // Check if style contains full X6 attrs (from history/undo-redo)
-    // If it has nested objects with body/label/text, it's likely the full attrs structure
+    // If it has nested objects with body/text (or legacy label), it's the full attrs structure
     const hasFullAttrs =
       nodeData.style &&
-      (nodeData.style['body'] || nodeData.style['label'] || nodeData.style['text']);
+      (nodeData.style['body'] || nodeData.style['text'] || nodeData.style['label']);
 
     // Check if properties contains full cell.data (from history/undo-redo)
     // Properties from history will have the full data structure stored
@@ -451,7 +451,7 @@ export class NodeOperationExecutor implements OperationExecutor {
               stroke: nodeData.style!['stroke'],
               strokeWidth: nodeData.style!['strokeWidth'],
             },
-            label: {
+            text: {
               text: nodeData.label,
               fontSize: nodeData.style!['fontSize'],
               fill: nodeData.style!['textColor'],

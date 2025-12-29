@@ -195,8 +195,9 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
           stroke: DFD_STYLING.NODES.STROKE,
           strokeWidth: DFD_STYLING.NODES.STROKE_WIDTH,
         },
-        label: {
-          text: nodeData.label || nodeData.attrs?.label?.text || 'Node',
+        text: {
+          text:
+            nodeData.label || nodeData.attrs?.text?.text || nodeData.attrs?.label?.text || 'Node',
           fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
           fill: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
         },
