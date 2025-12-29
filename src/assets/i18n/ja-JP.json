@@ -28,7 +28,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "アドオンを追加",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "このアドオンは何をしますか？",
@@ -62,7 +62,7 @@
       "title": "アドオンの管理"
     },
     "administrators": {
-      "addButton": "管理者を追加",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "プロバイダーは必須です",
@@ -71,7 +71,7 @@
         "subjectHint": "ユーザーメールアドレスまたはグループ名を入力",
         "subjectPlaceholder": "ユーザーメールアドレスまたはグループ名",
         "subjectRequired": "サブジェクトは必須です",
-        "title": "管理者を追加"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "追加日",
       "filterLabel": "管理者をフィルター",
@@ -83,7 +83,7 @@
       "title": "管理者の管理"
     },
     "groups": {
-      "addButton": "グループを追加",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "説明（任意）",
         "descriptionHint": "グループの目的の説明（任意）",
@@ -103,7 +103,7 @@
       "deleteTooltip": "グループを削除",
       "filterLabel": "グループをフィルター",
       "filterPlaceholder": "グループ名またはプロバイダーで検索",
-      "listTitle": "グループ",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "メンバーを追加",
         "currentMembers": "現在のメンバー",
@@ -121,13 +121,13 @@
     "quotas": {
       "addButton": "クォータを追加",
       "addDialog": {
-        "apiQuotas": "APIレート制限",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "クォータを設定",
         "searchLabel": "ユーザーを検索",
         "searchPlaceholder": "ユーザーメールアドレスを入力して検索",
         "selectUser": "ユーザーを選択",
         "title": "カスタムクォータを追加",
-        "webhookQuotas": "Webhook制限"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "カスタムクォータを削除（デフォルトに戻す）",
       "eventsPerMinute": "1分あたりのイベント数",
@@ -148,27 +148,27 @@
     "sections": {
       "addons": {
         "description": "アプリケーションアドオンのインストールと設定",
-        "title": "アドオンの管理"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "管理者権限の付与または取り消し",
-        "title": "管理者の管理"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "ユーザーグループとメンバーシップの設定",
-        "title": "グループの管理"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "リソースクォータと制限の設定",
-        "title": "クォータの管理"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "ユーザーアカウントの表示と管理",
-        "title": "ユーザーの管理"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "Webhook統合のインストールと設定",
-        "title": "Webhooksの管理"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "システム設定と構成の管理",
@@ -183,7 +183,7 @@
       "title": "ユーザーの管理"
     },
     "webhooks": {
-      "addButton": "Webhookを追加",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "サブスクライブするイベントタイプ",
         "eventsHint": "サブスクライブするイベントタイプ（例: threat_model.created）",
@@ -199,7 +199,7 @@
         "secretPlaceholder": "自動生成する場合は空のままにしてください",
         "title": "Webhookを追加",
         "url": "Webhook URL",
-        "urlHint": "HTTPS URLである必要があります",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "HTTPS URLである必要があります",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URLは必須です"
@@ -210,7 +210,7 @@
       "filterLabel": "Webhookをフィルター",
       "filterPlaceholder": "名前またはURLで検索",
       "hmacSecretDialog": {
-        "title": "HMACシークレット",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "このシークレットを表示できるのはこの1回のみです。必ずコピーしてください。紛失した場合は、Webhookを削除して再作成する必要があります。"
       },
       "listTitle": "Webhookサブスクリプション",
@@ -729,14 +729,14 @@
     "noRepositories": "まだリポジトリが追加されていません",
     "noThreats": "まだ脅威が追加されていません",
     "pageTitle": "脅威モデル",
-    "permissionsDisplayName": "表示名",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "メールアドレス",
     "permissionsGroupId": "グループID",
     "permissionsIdp": "{{common.identityProvider}}",
     "permissionsPrincipalId": "プリンシパルID",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "ロール",
-    "permissionsSubject": "サブジェクト",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "サブジェクト（ユーザーID、ユーザーメールアドレス、またはグループ名）",
     "permissionsSubjectType": "{{common.type}}",
     "permissionsTooltip": "権限を管理",
@@ -862,7 +862,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "管理"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "色覚補助モードを有効にする",
     "deleteMyData": {
