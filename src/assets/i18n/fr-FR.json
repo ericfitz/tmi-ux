@@ -28,7 +28,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "Ajouter un Module",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "Que fait cet addon ?",
@@ -62,7 +62,7 @@
       "title": "Gerer les Modules"
     },
     "administrators": {
-      "addButton": "Ajouter un Administrateur",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "Le fournisseur est requis",
@@ -71,7 +71,7 @@
         "subjectHint": "Entrez l'email de l'utilisateur ou le nom du groupe",
         "subjectPlaceholder": "Email de l'utilisateur ou nom du groupe",
         "subjectRequired": "Le sujet est requis",
-        "title": "Ajouter un Administrateur"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "Ajoute le",
       "filterLabel": "Filtrer les administrateurs",
@@ -83,7 +83,7 @@
       "title": "Gerer les Administrateurs"
     },
     "groups": {
-      "addButton": "Ajouter un Groupe",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "Description (Optionnelle)",
         "descriptionHint": "Description optionnelle de l'objectif du groupe",
@@ -103,7 +103,7 @@
       "deleteTooltip": "Supprimer le groupe",
       "filterLabel": "Filtrer les groupes",
       "filterPlaceholder": "Rechercher par nom de groupe ou fournisseur",
-      "listTitle": "Groupes",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "Ajouter un membre",
         "currentMembers": "Membres actuels",
@@ -121,13 +121,13 @@
     "quotas": {
       "addButton": "Ajouter un Quota",
       "addDialog": {
-        "apiQuotas": "Limites de taux API",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "Configurer les quotas",
         "searchLabel": "Rechercher un utilisateur",
         "searchPlaceholder": "Tapez l'email de l'utilisateur pour rechercher",
         "selectUser": "Selectionner un utilisateur",
         "title": "Ajouter des Quotas Personnalises",
-        "webhookQuotas": "Limites de webhooks"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "Supprimer le quota personnalise (revenir aux valeurs par defaut)",
       "eventsPerMinute": "Evenements par minute",
@@ -148,27 +148,27 @@
     "sections": {
       "addons": {
         "description": "Installer et configurer les addons d'application",
-        "title": "Gerer les Modules"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "Accorder ou revoquer les permissions d'administrateur",
-        "title": "Gerer les Administrateurs"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "Configurer les groupes d'utilisateurs et les appartenances",
-        "title": "Gerer les Groupes"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "Configurer les quotas et limites de ressources",
-        "title": "Gerer les Quotas"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "Afficher et gerer les comptes utilisateurs",
-        "title": "Gerer les Utilisateurs"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "Installer et configurer les integrations webhook",
-        "title": "Gerer les Webhooks"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "Gerer les parametres et configurations du systeme",
@@ -183,7 +183,7 @@
       "title": "Gerer les Utilisateurs"
     },
     "webhooks": {
-      "addButton": "Ajouter un Webhook",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "Types d'evenements auxquels s'abonner",
         "eventsHint": "Types d'evenements auxquels s'abonner (ex : threat_model.created)",
@@ -199,7 +199,7 @@
         "secretPlaceholder": "Laisser vide pour generer automatiquement",
         "title": "Ajouter un Webhook",
         "url": "URL du webhook",
-        "urlHint": "Doit etre une URL HTTPS",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "Doit etre une URL HTTPS",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "L'URL est requise"
@@ -210,7 +210,7 @@
       "filterLabel": "Filtrer les webhooks",
       "filterPlaceholder": "Rechercher par nom ou URL",
       "hmacSecretDialog": {
-        "title": "Secret HMAC",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "C'est la seule fois ou vous pourrez voir ce secret. Veuillez le copier. Si vous le perdez ou l'oubliez, vous devrez supprimer et recreer le webhook."
       },
       "listTitle": "Abonnements Webhook",
@@ -729,14 +729,14 @@
     "noRepositories": "Aucun depot ajoute pour le moment",
     "noThreats": "Aucune menace ajoutee pour le moment",
     "pageTitle": "Modeles de Menaces",
-    "permissionsDisplayName": "Nom d'affichage",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "E-mail",
     "permissionsGroupId": "ID du groupe",
     "permissionsIdp": "{{common.identityProvider}}",
     "permissionsPrincipalId": "ID du principal",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Role",
-    "permissionsSubject": "Sujet",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "Sujet (ID utilisateur, adresse e-mail ou nom de groupe)",
     "permissionsSubjectType": "{{common.type}}",
     "permissionsTooltip": "Gerer les permissions",
@@ -862,7 +862,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "Administration"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "Activer le mode daltonien",
     "deleteMyData": {
