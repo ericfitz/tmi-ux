@@ -761,7 +761,7 @@
     "repositoryType": "Tipo de Repositorio",
     "repositoryUri": "URL del Repositorio",
     "setAsOwner": "Establecer como Propietario",
-    "sourcesCount": "Repos",
+    "sourcesCount": "Repositorios",
     "status": {
       "0": "No Iniciado",
       "0.tooltip": "La revisión de seguridad se ha iniciado pero no han comenzado actividades de evaluación.",
