@@ -28,7 +28,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "Adicionar Complemento",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "O que este complemento faz?",
@@ -62,7 +62,7 @@
       "title": "Gerenciar Complementos"
     },
     "administrators": {
-      "addButton": "Adicionar Administrador",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "Provedor e obrigatorio",
@@ -71,7 +71,7 @@
         "subjectHint": "Digite o e-mail do usuario ou nome do grupo",
         "subjectPlaceholder": "E-mail do usuario ou nome do grupo",
         "subjectRequired": "Assunto e obrigatorio",
-        "title": "Adicionar Administrador"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "Adicionado em",
       "filterLabel": "Filtrar Administradores",
@@ -83,7 +83,7 @@
       "title": "Gerenciar Administradores"
     },
     "groups": {
-      "addButton": "Adicionar Grupo",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "Descricao (Opcional)",
         "descriptionHint": "Descricao opcional do proposito do grupo",
@@ -103,7 +103,7 @@
       "deleteTooltip": "Excluir grupo",
       "filterLabel": "Filtrar Grupos",
       "filterPlaceholder": "Pesquisar por nome do grupo ou provedor",
-      "listTitle": "Grupos",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "Adicionar Membro",
         "currentMembers": "Membros Atuais",
@@ -121,13 +121,13 @@
     "quotas": {
       "addButton": "Adicionar Cota",
       "addDialog": {
-        "apiQuotas": "Limites de Taxa de API",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "Configurar Cotas",
         "searchLabel": "Pesquisar usuario",
         "searchPlaceholder": "Digite o e-mail do usuario para pesquisar",
         "selectUser": "Selecionar Usuario",
         "title": "Adicionar Cotas Personalizadas",
-        "webhookQuotas": "Limites de Webhook"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "Remover cota personalizada (reverter para padroes)",
       "eventsPerMinute": "Eventos por minuto",
@@ -148,27 +148,27 @@
     "sections": {
       "addons": {
         "description": "Instalar e configurar complementos do aplicativo",
-        "title": "Gerenciar Complementos"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "Conceder ou revogar permissoes de administrador",
-        "title": "Gerenciar Administradores"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "Configurar grupos de usuarios e associacoes",
-        "title": "Gerenciar Grupos"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "Configurar cotas de recursos e limites",
-        "title": "Gerenciar Cotas"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "Visualizar e gerenciar contas de usuarios",
-        "title": "Gerenciar Usuarios"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "Instalar e configurar integracoes de webhook",
-        "title": "Gerenciar Webhooks"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "Gerenciar configuracoes e ajustes do sistema",
@@ -183,7 +183,7 @@
       "title": "Gerenciar Usuarios"
     },
     "webhooks": {
-      "addButton": "Adicionar Webhook",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "Tipos de Evento para Assinar",
         "eventsHint": "Tipos de evento para assinar (ex.: threat_model.created)",
@@ -199,7 +199,7 @@
         "secretPlaceholder": "Deixe vazio para gerar automaticamente",
         "title": "Adicionar Webhook",
         "url": "URL do Webhook",
-        "urlHint": "Deve ser uma URL HTTPS",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "Deve ser uma URL HTTPS",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL e obrigatoria"
@@ -210,7 +210,7 @@
       "filterLabel": "Filtrar Webhooks",
       "filterPlaceholder": "Pesquisar por nome ou URL",
       "hmacSecretDialog": {
-        "title": "Segredo HMAC",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "Esta e a unica vez que voce podera visualizar este segredo. Por favor, copie-o. Se voce perder ou esquecer, tera que excluir e recriar o webhook."
       },
       "listTitle": "Assinaturas de Webhook",
@@ -729,14 +729,14 @@
     "noRepositories": "Nenhum Repositorio Adicionado Ainda",
     "noThreats": "Nenhuma Ameaca Adicionada Ainda",
     "pageTitle": "Modelos de Ameacas",
-    "permissionsDisplayName": "Nome de Exibicao",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "E-mail",
     "permissionsGroupId": "ID do Grupo",
     "permissionsIdp": "{{common.identityProvider}}",
     "permissionsPrincipalId": "ID Principal",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Funcao",
-    "permissionsSubject": "Sujeito",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "Sujeito (ID do Usuario, Endereco de E-mail do Usuario ou Nome do Grupo)",
     "permissionsSubjectType": "{{common.type}}",
     "permissionsTooltip": "Gerenciar Permissoes",
@@ -862,7 +862,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "Administracao"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "Habilitar Modo para Daltonicos",
     "deleteMyData": {
