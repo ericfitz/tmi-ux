@@ -129,37 +129,24 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       // Create edge configuration
       // Use labels from edgeInfo if available (preserves complete structure from history)
       // Otherwise create new label from legacy label property
+      // Uses X6 native label format: { position, attrs: { text: { text, fontSize, ... } } }
       let labels: any[] = [];
       if (edgeInfo.labels && edgeInfo.labels.length > 0) {
         // Use labels directly from edgeInfo to preserve all styling and structure
         labels = edgeInfo.labels;
       } else if ((edgeInfo as any).label) {
-        // Legacy: create new label from simple label string
+        // Legacy: create new label from simple label string using X6 native format
         labels = [
           {
-            markup: [
-              {
-                tagName: 'rect',
-                selector: 'body',
-              },
-              {
-                tagName: 'text',
-                selector: 'label',
-              },
-            ],
+            position: 0.5,
             attrs: {
-              label: {
+              text: {
                 text: (edgeInfo as any).label,
                 fontSize: (edgeInfo as any).style?.fontSize || DFD_STYLING.DEFAULT_FONT_SIZE,
                 fill: (edgeInfo as any).style?.textColor || DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
-              },
-              body: {
-                fill:
-                  (edgeInfo as any).style?.labelBackground || DFD_STYLING.EDGES.LABEL_BACKGROUND,
-                stroke: (edgeInfo as any).style?.labelBorder || DFD_STYLING.EDGES.LABEL_BORDER,
-                strokeWidth: DFD_STYLING.EDGES.LABEL_BORDER_WIDTH,
-                rx: 3,
-                ry: 3,
+                fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
+                textAnchor: 'middle',
+                dominantBaseline: 'middle',
               },
             },
           },
@@ -255,32 +242,20 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       const changedProperties: string[] = [];
 
       // Handle singular label string (from facade label changes)
+      // Uses X6 native label format: { position, attrs: { text: { text, fontSize, ... } } }
       if ((updates as any).label !== undefined) {
         const labelText = (updates as any).label;
         edge.setLabels([
           {
-            markup: [
-              {
-                tagName: 'rect',
-                selector: 'body',
-              },
-              {
-                tagName: 'text',
-                selector: 'label',
-              },
-            ],
+            position: 0.5,
             attrs: {
-              label: {
+              text: {
                 text: labelText,
                 fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
                 fill: DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
-              },
-              body: {
-                fill: DFD_STYLING.EDGES.LABEL_BACKGROUND,
-                stroke: DFD_STYLING.EDGES.LABEL_BORDER,
-                strokeWidth: DFD_STYLING.EDGES.LABEL_BORDER_WIDTH,
-                rx: 3,
-                ry: 3,
+                fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
+                textAnchor: 'middle',
+                dominantBaseline: 'middle',
               },
             },
           },
@@ -289,46 +264,9 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       }
 
       // Handle labels array (from remote operations or history)
-      if (updates.labels !== undefined && updates.labels.length > 0) {
-        if (updates.labels[0]) {
-          // Add or update label
-          edge.setLabels([
-            {
-              markup: [
-                {
-                  tagName: 'rect',
-                  selector: 'body',
-                },
-                {
-                  tagName: 'text',
-                  selector: 'label',
-                },
-              ],
-              attrs: {
-                label: {
-                  text: (updates.labels[0] as any).text || '',
-                  fontSize:
-                    (updates.labels[0] as any).attrs?.label?.fontSize ||
-                    DFD_STYLING.DEFAULT_FONT_SIZE,
-                  fill:
-                    (updates.labels[0] as any).attrs?.label?.fill ||
-                    DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
-                },
-                body: {
-                  fill:
-                    (updates as any).style?.labelBackground || DFD_STYLING.EDGES.LABEL_BACKGROUND,
-                  stroke: (updates as any).style?.labelBorder || DFD_STYLING.EDGES.LABEL_BORDER,
-                  strokeWidth: DFD_STYLING.EDGES.LABEL_BORDER_WIDTH,
-                  rx: 3,
-                  ry: 3,
-                },
-              },
-            },
-          ]);
-        } else {
-          // Remove label
-          edge.setLabels([]);
-        }
+      // Labels should already be in X6 native format from history capture, pass through directly
+      if (updates.labels !== undefined) {
+        edge.setLabels(updates.labels);
         changedProperties.push('label');
       }
 
