@@ -28,7 +28,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "Добавить Дополнение",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "Что делает это дополнение?",
@@ -62,7 +62,7 @@
       "title": "Управление Дополнениями"
     },
     "administrators": {
-      "addButton": "Добавить Администратора",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "Провайдер обязателен",
@@ -71,7 +71,7 @@
         "subjectHint": "Введите email пользователя или название группы",
         "subjectPlaceholder": "Email пользователя или название группы",
         "subjectRequired": "Субъект обязателен",
-        "title": "Добавить Администратора"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "Добавлен",
       "filterLabel": "Фильтр администраторов",
@@ -83,7 +83,7 @@
       "title": "Управление Администраторами"
     },
     "groups": {
-      "addButton": "Добавить Группу",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "Описание (необязательно)",
         "descriptionHint": "Необязательное описание назначения группы",
@@ -103,7 +103,7 @@
       "deleteTooltip": "Удалить группу",
       "filterLabel": "Фильтр групп",
       "filterPlaceholder": "Поиск по названию группы или провайдеру",
-      "listTitle": "Группы",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "Добавить участника",
         "currentMembers": "Текущие участники",
@@ -121,13 +121,13 @@
     "quotas": {
       "addButton": "Добавить Квоту",
       "addDialog": {
-        "apiQuotas": "Лимиты API",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "Настроить квоты",
         "searchLabel": "Поиск пользователя",
         "searchPlaceholder": "Введите email пользователя для поиска",
         "selectUser": "Выбрать пользователя",
         "title": "Добавить Пользовательские Квоты",
-        "webhookQuotas": "Лимиты вебхуков"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "Удалить пользовательскую квоту (вернуть к значениям по умолчанию)",
       "eventsPerMinute": "Событий в минуту",
@@ -148,27 +148,27 @@
     "sections": {
       "addons": {
         "description": "Установка и настройка дополнений приложения",
-        "title": "Управление Дополнениями"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "Предоставление или отзыв прав администратора",
-        "title": "Управление Администраторами"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "Настройка групп пользователей и членства",
-        "title": "Управление Группами"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "Настройка квот и лимитов ресурсов",
-        "title": "Управление Квотами"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "Просмотр и управление учётными записями пользователей",
-        "title": "Управление Пользователями"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "Установка и настройка интеграций вебхуков",
-        "title": "Управление Webhooks"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "Управление системными настройками и конфигурациями",
@@ -183,7 +183,7 @@
       "title": "Управление Пользователями"
     },
     "webhooks": {
-      "addButton": "Добавить Webhook",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "Типы событий для подписки",
         "eventsHint": "Типы событий для подписки (например, threat_model.created)",
@@ -199,7 +199,7 @@
         "secretPlaceholder": "Оставить пусто для автоматической генерации",
         "title": "Добавить Webhook",
         "url": "URL вебхука",
-        "urlHint": "Должен быть HTTPS URL",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "Должен быть HTTPS URL",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL обязателен"
@@ -210,7 +210,7 @@
       "filterLabel": "Фильтр вебхуков",
       "filterPlaceholder": "Поиск по названию или URL",
       "hmacSecretDialog": {
-        "title": "Секрет HMAC",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "Это единственный раз, когда вы сможете увидеть этот секрет. Пожалуйста, скопируйте его. Если вы потеряете или забудете его, вам придётся удалить и заново создать вебхук."
       },
       "listTitle": "Подписки Webhook",
@@ -729,14 +729,14 @@
     "noRepositories": "Репозитории ещё не добавлены",
     "noThreats": "Угрозы ещё не добавлены",
     "pageTitle": "Модели Угроз",
-    "permissionsDisplayName": "Отображаемое имя",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "Электронная почта",
     "permissionsGroupId": "ID группы",
     "permissionsIdp": "{{common.identityProvider}}",
     "permissionsPrincipalId": "ID принципала",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Роль",
-    "permissionsSubject": "Субъект",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "Субъект (ID пользователя, адрес электронной почты или название группы)",
     "permissionsSubjectType": "{{common.type}}",
     "permissionsTooltip": "Управление разрешениями",
@@ -862,7 +862,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "Администрирование"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "Включить режим для дальтоников",
     "deleteMyData": {
