@@ -28,7 +28,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "Tambah Addon",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "Apa fungsi addon ini?",
@@ -62,7 +62,7 @@
       "title": "Kelola Addon"
     },
     "administrators": {
-      "addButton": "Tambah Administrator",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "Penyedia wajib diisi",
@@ -71,7 +71,7 @@
         "subjectHint": "Masukkan email pengguna atau nama grup",
         "subjectPlaceholder": "Email pengguna atau nama grup",
         "subjectRequired": "Subjek wajib diisi",
-        "title": "Tambah Administrator"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "Ditambahkan pada",
       "filterLabel": "Filter Administrator",
@@ -83,7 +83,7 @@
       "title": "Kelola Administrator"
     },
     "groups": {
-      "addButton": "Tambah Grup",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "Deskripsi (Opsional)",
         "descriptionHint": "Deskripsi opsional tentang tujuan grup",
@@ -103,7 +103,7 @@
       "deleteTooltip": "Hapus grup",
       "filterLabel": "Filter Grup",
       "filterPlaceholder": "Cari berdasarkan nama grup atau penyedia",
-      "listTitle": "Grup",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "Tambah Anggota",
         "currentMembers": "Anggota Saat Ini",
@@ -121,13 +121,13 @@
     "quotas": {
       "addButton": "Tambah Kuota",
       "addDialog": {
-        "apiQuotas": "Batas Tingkat API",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "Konfigurasi Kuota",
         "searchLabel": "Cari pengguna",
         "searchPlaceholder": "Ketik email pengguna untuk mencari",
         "selectUser": "Pilih Pengguna",
         "title": "Tambah Kuota Kustom",
-        "webhookQuotas": "Batas Webhook"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "Hapus kuota kustom (kembalikan ke default)",
       "eventsPerMinute": "Peristiwa per menit",
@@ -148,27 +148,27 @@
     "sections": {
       "addons": {
         "description": "Pasang dan konfigurasikan addon aplikasi",
-        "title": "Kelola Addon"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "Berikan atau cabut izin administrator",
-        "title": "Kelola Administrator"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "Konfigurasikan grup pengguna dan keanggotaan",
-        "title": "Kelola Grup"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "Konfigurasikan kuota dan batas sumber daya",
-        "title": "Kelola Kuota"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "Lihat dan kelola akun pengguna",
-        "title": "Kelola Pengguna"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "Pasang dan konfigurasikan integrasi webhook",
-        "title": "Kelola Webhook"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "Kelola pengaturan dan konfigurasi sistem",
@@ -183,7 +183,7 @@
       "title": "Kelola Pengguna"
     },
     "webhooks": {
-      "addButton": "Tambah Webhook",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "Jenis Peristiwa untuk Berlangganan",
         "eventsHint": "Jenis peristiwa untuk berlangganan (misalnya, threat_model.created)",
@@ -199,7 +199,7 @@
         "secretPlaceholder": "Biarkan kosong untuk dibuat otomatis",
         "title": "Tambah Webhook",
         "url": "URL Webhook",
-        "urlHint": "Harus berupa URL HTTPS",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "Harus berupa URL HTTPS",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL wajib diisi"
@@ -210,7 +210,7 @@
       "filterLabel": "Filter Webhook",
       "filterPlaceholder": "Cari berdasarkan nama atau URL",
       "hmacSecretDialog": {
-        "title": "Rahasia HMAC",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "Ini adalah satu-satunya waktu Anda dapat melihat rahasia ini. Silakan salin. Jika Anda kehilangan atau melupakannya, Anda harus menghapus dan membuat ulang webhook."
       },
       "listTitle": "Langganan Webhook",
@@ -729,14 +729,14 @@
     "noRepositories": "Belum Ada Repositori Ditambahkan",
     "noThreats": "Belum Ada Ancaman Ditambahkan",
     "pageTitle": "Model Ancaman",
-    "permissionsDisplayName": "Nama Tampilan",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "Email",
     "permissionsGroupId": "ID Grup",
     "permissionsIdp": "{{common.identityProvider}}",
     "permissionsPrincipalId": "ID Prinsipal",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Peran",
-    "permissionsSubject": "Subjek",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "Subjek (ID Pengguna, Alamat Email Pengguna, atau Nama Grup)",
     "permissionsSubjectType": "{{common.type}}",
     "permissionsTooltip": "Kelola Izin",
@@ -862,7 +862,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "Administrasi"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "Aktifkan Mode Buta Warna",
     "deleteMyData": {
