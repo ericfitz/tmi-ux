@@ -2,6 +2,7 @@
   "about": {
     "bugReport": "File a bug report or request a feature: ",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
+    "bugReportUrl.comment": "This is a URL and does not need to be translated.",
     "contactjurisdiction": "Legal Jurisdiction: ",
     "contactoperator": "Operator: ",
     "contactoperatordetails": "Operator Contact: ",
@@ -16,6 +17,7 @@
     "server": "Server",
     "serverSourceCode": "Server Source Code: ",
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
+    "serverSourceCodeUrl.comment": "This is a URL and does not need to be translated.",
     "sourcetitle": "TMI Project",
     "title": "About TMI",
     "trademarks": "All product names, logos, and brands are property of their respective owners. All company, product, and service names used in this application are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.",
@@ -23,8 +25,10 @@
     "webApplication": "Web Application",
     "webApplicationSourceCode": "Web Application Source Code: ",
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux",
+    "webappSourceCodeUrl.comment": "This is a URL and does not need to be translated.",
     "wiki": "TMI Wiki: ",
-    "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
+    "wikiUrl": "https://github.com/ericfitz/tmi/wiki",
+    "wikiUrl.comment": "This is a URL and does not need to be translated."
   },
   "admin": {
     "addons": {
@@ -202,6 +206,7 @@
         "urlHint": "Must be an HTTPS URL",
         "urlInvalid": "Must be an HTTPS URL",
         "urlPlaceholder": "https://example.com/webhook",
+        "urlPlaceholder.comment": "This is a URL and does not need to be translated.",
         "urlRequired": "URL is required"
       },
       "created": "{{common.created}}",
@@ -346,6 +351,7 @@
     "mitigation": "Mitigation",
     "mitigationPlaceholder": "Describe recommended or planned mitigation(s) for this threat",
     "name": "Name",
+    "name.comment": "The German (de-DE) word for name is the same as the English word.",
     "noDataAvailable": "No Data Available",
     "noMetadata": "No Metadata Available",
     "noThreats": "No Threats Available",
@@ -410,6 +416,7 @@
       "required": "This field is required"
     },
     "view": "View",
+    "view.comment": "View is used as a verb here.",
     "viewMetadata": "View Metadata",
     "viewPermissions": "View Permissions",
     "viewThreat": "View Threat"
@@ -612,6 +619,7 @@
     "intro2": "The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.",
     "introductionTitle": "Introduction",
     "lastUpdatedDate": "2025-10-24",
+    "lastUpdatedDate.comment": "This is a date value and does not need to be translated.",
     "title": "Privacy Policy",
     "userRightsContent1": "You have full control over your personal data. At any time, you may access the \"Delete All My Data\" feature in the User Preferences section of the application.",
     "userRightsContent2": "This option enables immediate deletion of all data The Operator stores on your behalf, including profile information and authentication records. Upon activation, your data will be permanently removed from The Operator's systems and third-party providers, subject to any legal retention obligations.",
@@ -686,12 +694,14 @@
     "addPermission": "Add Permission",
     "branch": "Branch",
     "commit": "Commit",
+    "commit.comment": "This is used as a noun, representing the id value of a change in a source code management system.",
     "confirmDeleteNote": "Are you sure you want to delete the note '{{name}}'?",
     "createFirstButton": "Create Your First Threat Model",
     "createNewDiagram": "Create New Diagram",
     "createNewDocument": "Add Document Reference",
     "createNewRepository": "Add Repository Reference",
     "created": "Created:",
+    "created.comment": "This is used to reference the date and time that something was created.",
     "createdBy": "Created By:",
     "dashboard": "Dashboard",
     "dataFlowDiagram": "Data Flow Diagram",
@@ -820,6 +830,7 @@
       "part2": " page of this web site (\"The Operator\")."
     },
     "lastUpdatedDate": "2025-10-10",
+    "lastUpdatedDate.comment": "This is a date value and does not need to be translated.",
     "section1": {
       "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.",
       "title": "1. Acceptance of Terms"
@@ -892,11 +903,14 @@
     },
     "pageSize": {
       "A4": "A4",
+      "A4.comment": "This is a proper name and should not be translated.",
       "title": "Preferred Page Size for Reports",
-      "usLetter": "US Letter"
+      "usLetter": "US Letter",
+      "usLetter.comment": "This is a proper name and should not be translated."
     },
     "reportPreferences": "Report Preferences",
     "theme": "Theme",
+    "theme.comment": "Theme is used as a noun here, to indicate visual styles applied in the UI.",
     "themeMode": {
       "automatic": "Automatic (System)",
       "dark": "Dark",
