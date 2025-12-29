@@ -28,7 +28,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "ऐडऑन जोड़ें",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "यह ऐडऑन क्या करता है?",
@@ -62,7 +62,7 @@
       "title": "ऐडऑन प्रबंधित करें"
     },
     "administrators": {
-      "addButton": "व्यवस्थापक जोड़ें",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "प्रदाता आवश्यक है",
@@ -71,7 +71,7 @@
         "subjectHint": "उपयोगकर्ता ईमेल या समूह का नाम दर्ज करें",
         "subjectPlaceholder": "उपयोगकर्ता ईमेल या समूह का नाम",
         "subjectRequired": "विषय आवश्यक है",
-        "title": "व्यवस्थापक जोड़ें"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "जोड़ा गया",
       "filterLabel": "व्यवस्थापक फ़िल्टर करें",
@@ -83,7 +83,7 @@
       "title": "व्यवस्थापक प्रबंधित करें"
     },
     "groups": {
-      "addButton": "समूह जोड़ें",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "विवरण (वैकल्पिक)",
         "descriptionHint": "समूह के उद्देश्य का वैकल्पिक विवरण",
@@ -103,7 +103,7 @@
       "deleteTooltip": "समूह हटाएं",
       "filterLabel": "समूह फ़िल्टर करें",
       "filterPlaceholder": "समूह के नाम या प्रदाता द्वारा खोजें",
-      "listTitle": "समूह",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "सदस्य जोड़ें",
         "currentMembers": "वर्तमान सदस्य",
@@ -121,13 +121,13 @@
     "quotas": {
       "addButton": "कोटा जोड़ें",
       "addDialog": {
-        "apiQuotas": "API दर सीमाएं",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "कोटा कॉन्फ़िगर करें",
         "searchLabel": "उपयोगकर्ता खोजें",
         "searchPlaceholder": "खोजने के लिए उपयोगकर्ता ईमेल टाइप करें",
         "selectUser": "उपयोगकर्ता चुनें",
         "title": "कस्टम कोटा जोड़ें",
-        "webhookQuotas": "Webhook सीमाएं"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "कस्टम कोटा हटाएं (डिफ़ॉल्ट पर वापस जाएं)",
       "eventsPerMinute": "प्रति मिनट इवेंट्स",
@@ -148,27 +148,27 @@
     "sections": {
       "addons": {
         "description": "एप्लिकेशन ऐडऑन इंस्टॉल और कॉन्फ़िगर करें",
-        "title": "ऐडऑन प्रबंधित करें"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "व्यवस्थापक अनुमतियां प्रदान या रद्द करें",
-        "title": "व्यवस्थापक प्रबंधित करें"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "उपयोगकर्ता समूह और सदस्यताएं कॉन्फ़िगर करें",
-        "title": "समूह प्रबंधित करें"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "संसाधन कोटा और सीमाएं कॉन्फ़िगर करें",
-        "title": "कोटा प्रबंधित करें"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "उपयोगकर्ता खातों को देखें और प्रबंधित करें",
-        "title": "उपयोगकर्ता प्रबंधित करें"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "Webhook एकीकरण इंस्टॉल और कॉन्फ़िगर करें",
-        "title": "Webhooks प्रबंधित करें"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "सिस्टम सेटिंग्स और कॉन्फ़िगरेशन प्रबंधित करें",
@@ -183,7 +183,7 @@
       "title": "उपयोगकर्ता प्रबंधित करें"
     },
     "webhooks": {
-      "addButton": "Webhook जोड़ें",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "सब्सक्राइब करने के लिए इवेंट प्रकार",
         "eventsHint": "सब्सक्राइब करने के लिए इवेंट प्रकार (उदा., threat_model.created)",
@@ -199,7 +199,7 @@
         "secretPlaceholder": "स्वचालित रूप से उत्पन्न करने के लिए खाली छोड़ें",
         "title": "Webhook जोड़ें",
         "url": "Webhook URL",
-        "urlHint": "HTTPS URL होना चाहिए",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "HTTPS URL होना चाहिए",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL आवश्यक है"
@@ -210,7 +210,7 @@
       "filterLabel": "Webhooks फ़िल्टर करें",
       "filterPlaceholder": "नाम या URL द्वारा खोजें",
       "hmacSecretDialog": {
-        "title": "HMAC सीक्रेट",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "यह एकमात्र समय है जब आप इस सीक्रेट को देख सकते हैं। कृपया इसे कॉपी करें। यदि आप इसे खो देते हैं या भूल जाते हैं, तो आपको webhook को हटाना और पुनः बनाना होगा।"
       },
       "listTitle": "Webhook सब्सक्रिप्शन",
@@ -729,14 +729,14 @@
     "noRepositories": "अभी तक कोई रिपॉजिटरी नहीं जोड़ी गई",
     "noThreats": "अभी तक कोई खतरा नहीं जोड़ा गया",
     "pageTitle": "थ्रेट मॉडल्स",
-    "permissionsDisplayName": "प्रदर्शन नाम",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "ईमेल",
     "permissionsGroupId": "समूह ID",
     "permissionsIdp": "{{common.identityProvider}}",
     "permissionsPrincipalId": "प्रिंसिपल ID",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "भूमिका",
-    "permissionsSubject": "विषय",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "विषय (उपयोगकर्ता ID, उपयोगकर्ता ईमेल पता, या समूह का नाम)",
     "permissionsSubjectType": "{{common.type}}",
     "permissionsTooltip": "अनुमतियां प्रबंधित करें",
@@ -862,7 +862,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "प्रशासन"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "कलर ब्लाइंड मोड सक्षम करें",
     "deleteMyData": {
