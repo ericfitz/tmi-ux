@@ -28,7 +28,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "เพิ่มส่วนเสริม",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "ส่วนเสริมนี้ทำอะไร?",
@@ -62,7 +62,7 @@
       "title": "จัดการส่วนเสริม"
     },
     "administrators": {
-      "addButton": "เพิ่มผู้ดูแลระบบ",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "จำเป็นต้องระบุผู้ให้บริการ",
@@ -71,7 +71,7 @@
         "subjectHint": "ป้อนอีเมลผู้ใช้หรือชื่อกลุ่ม",
         "subjectPlaceholder": "อีเมลผู้ใช้หรือชื่อกลุ่ม",
         "subjectRequired": "จำเป็นต้องระบุหัวเรื่อง",
-        "title": "เพิ่มผู้ดูแลระบบ"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "เพิ่มเมื่อ",
       "filterLabel": "กรองผู้ดูแลระบบ",
@@ -83,7 +83,7 @@
       "title": "จัดการผู้ดูแลระบบ"
     },
     "groups": {
-      "addButton": "เพิ่มกลุ่ม",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "คำอธิบาย (ไม่บังคับ)",
         "descriptionHint": "คำอธิบายเพิ่มเติมของวัตถุประสงค์กลุ่ม",
@@ -103,7 +103,7 @@
       "deleteTooltip": "ลบกลุ่ม",
       "filterLabel": "กรองกลุ่ม",
       "filterPlaceholder": "ค้นหาตามชื่อกลุ่มหรือผู้ให้บริการ",
-      "listTitle": "กลุ่ม",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "เพิ่มสมาชิก",
         "currentMembers": "สมาชิกปัจจุบัน",
@@ -121,13 +121,13 @@
     "quotas": {
       "addButton": "เพิ่มโควตา",
       "addDialog": {
-        "apiQuotas": "จำกัดอัตรา API",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "กำหนดค่าโควตา",
         "searchLabel": "ค้นหาผู้ใช้",
         "searchPlaceholder": "พิมพ์อีเมลผู้ใช้เพื่อค้นหา",
         "selectUser": "เลือกผู้ใช้",
         "title": "เพิ่มโควตาที่กำหนดเอง",
-        "webhookQuotas": "จำกัด Webhook"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "ลบโควตาที่กำหนดเอง (กลับไปใช้ค่าเริ่มต้น)",
       "eventsPerMinute": "เหตุการณ์ต่อนาที",
@@ -148,27 +148,27 @@
     "sections": {
       "addons": {
         "description": "ติดตั้งและกำหนดค่าส่วนเสริมของแอปพลิเคชัน",
-        "title": "จัดการส่วนเสริม"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "ให้หรือเพิกถอนสิทธิ์ผู้ดูแลระบบ",
-        "title": "จัดการผู้ดูแลระบบ"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "กำหนดค่ากลุ่มผู้ใช้และสมาชิก",
-        "title": "จัดการกลุ่ม"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "กำหนดค่าโควตาทรัพยากรและข้อจำกัด",
-        "title": "จัดการโควตา"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "ดูและจัดการบัญชีผู้ใช้",
-        "title": "จัดการผู้ใช้"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "ติดตั้งและกำหนดค่าการรวม webhook",
-        "title": "จัดการ Webhooks"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "จัดการการตั้งค่าระบบและการกำหนดค่า",
@@ -183,7 +183,7 @@
       "title": "จัดการผู้ใช้"
     },
     "webhooks": {
-      "addButton": "เพิ่ม Webhook",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "ประเภทเหตุการณ์ที่จะสมัครรับ",
         "eventsHint": "ประเภทเหตุการณ์ที่จะสมัครรับ (เช่น threat_model.created)",
@@ -199,7 +199,7 @@
         "secretPlaceholder": "ปล่อยว่างเพื่อสร้างอัตโนมัติ",
         "title": "เพิ่ม Webhook",
         "url": "URL Webhook",
-        "urlHint": "ต้องเป็น HTTPS URL",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "ต้องเป็น HTTPS URL",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "จำเป็นต้องระบุ URL"
@@ -210,7 +210,7 @@
       "filterLabel": "กรอง Webhooks",
       "filterPlaceholder": "ค้นหาตามชื่อหรือ URL",
       "hmacSecretDialog": {
-        "title": "HMAC Secret",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "นี่เป็นครั้งเดียวที่คุณจะสามารถดู secret นี้ได้ โปรดคัดลอกไว้ หากคุณทำหายหรือลืม คุณจะต้องลบและสร้าง webhook ใหม่"
       },
       "listTitle": "การสมัครสมาชิก Webhook",
@@ -729,14 +729,14 @@
     "noRepositories": "ยังไม่มีการเพิ่มที่เก็บ",
     "noThreats": "ยังไม่มีการเพิ่มภัยคุกคาม",
     "pageTitle": "แบบจำลองภัยคุกคาม",
-    "permissionsDisplayName": "ชื่อที่แสดง",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "อีเมล",
     "permissionsGroupId": "รหัสกลุ่ม",
     "permissionsIdp": "ผู้ให้บริการข้อมูลประจำตัว",
     "permissionsPrincipalId": "รหัสผู้ใช้หลัก",
     "permissionsProvider": "ผู้ให้บริการ",
     "permissionsRole": "บทบาท",
-    "permissionsSubject": "หัวข้อ",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "หัวข้อ (รหัสผู้ใช้, ที่อยู่อีเมลผู้ใช้, หรือชื่อกลุ่ม)",
     "permissionsSubjectType": "ประเภท",
     "permissionsTooltip": "จัดการสิทธิ์การเข้าถึง",
@@ -862,7 +862,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "การจัดการระบบ"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "เปิดใช้งานโหมดตาบอดสี",
     "deleteMyData": {
