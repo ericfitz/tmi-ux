@@ -28,7 +28,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "Erweiterung hinzufügen",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "Was macht diese Erweiterung?",
@@ -62,7 +62,7 @@
       "title": "Erweiterungen verwalten"
     },
     "administrators": {
-      "addButton": "Administrator hinzufügen",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "Anbieter ist erforderlich",
@@ -71,7 +71,7 @@
         "subjectHint": "Benutzer-E-Mail oder Gruppenname eingeben",
         "subjectPlaceholder": "Benutzer-E-Mail oder Gruppenname",
         "subjectRequired": "Subjekt ist erforderlich",
-        "title": "Administrator hinzufügen"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "Hinzugefügt am",
       "filterLabel": "Administratoren filtern",
@@ -83,7 +83,7 @@
       "title": "Administratoren verwalten"
     },
     "groups": {
-      "addButton": "Gruppe hinzufügen",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "Beschreibung (Optional)",
         "descriptionHint": "Optionale Beschreibung des Gruppenzwecks",
@@ -103,7 +103,7 @@
       "deleteTooltip": "Gruppe löschen",
       "filterLabel": "Gruppen filtern",
       "filterPlaceholder": "Nach Gruppenname oder Anbieter suchen",
-      "listTitle": "Gruppen",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "Mitglied hinzufügen",
         "currentMembers": "Aktuelle Mitglieder",
@@ -121,13 +121,13 @@
     "quotas": {
       "addButton": "Kontingent hinzufügen",
       "addDialog": {
-        "apiQuotas": "API-Ratenlimits",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "Kontingente konfigurieren",
         "searchLabel": "Benutzer suchen",
         "searchPlaceholder": "Benutzer-E-Mail zum Suchen eingeben",
         "selectUser": "Benutzer auswählen",
         "title": "Benutzerdefinierte Kontingente hinzufügen",
-        "webhookQuotas": "Webhook-Limits"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "Benutzerdefiniertes Kontingent entfernen (auf Standard zurücksetzen)",
       "eventsPerMinute": "Ereignisse pro Minute",
@@ -148,27 +148,27 @@
     "sections": {
       "addons": {
         "description": "Anwendungserweiterungen installieren und konfigurieren",
-        "title": "Erweiterungen verwalten"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "Administratorberechtigungen erteilen oder entziehen",
-        "title": "Administratoren verwalten"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "Benutzergruppen und Mitgliedschaften konfigurieren",
-        "title": "Gruppen verwalten"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "Ressourcenkontingente und -limits konfigurieren",
-        "title": "Kontingente verwalten"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "Benutzerkonten anzeigen und verwalten",
-        "title": "Benutzer verwalten"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "Webhook-Integrationen installieren und konfigurieren",
-        "title": "Webhooks verwalten"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "Systemeinstellungen und Konfigurationen verwalten",
@@ -183,7 +183,7 @@
       "title": "Benutzer verwalten"
     },
     "webhooks": {
-      "addButton": "Webhook hinzufügen",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "Zu abonnierende Ereignistypen",
         "eventsHint": "Ereignistypen zum Abonnieren (z.B. threat_model.created)",
@@ -199,7 +199,7 @@
         "secretPlaceholder": "Leer lassen für automatische Generierung",
         "title": "Webhook hinzufügen",
         "url": "Webhook-URL",
-        "urlHint": "Muss eine HTTPS-URL sein",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "Muss eine HTTPS-URL sein",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL ist erforderlich"
@@ -210,7 +210,7 @@
       "filterLabel": "Webhooks filtern",
       "filterPlaceholder": "Nach Name oder URL suchen",
       "hmacSecretDialog": {
-        "title": "HMAC-Geheimnis",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "Dies ist die einzige Gelegenheit, dieses Geheimnis anzuzeigen. Bitte kopieren Sie es. Wenn Sie es verlieren oder vergessen, müssen Sie den Webhook löschen und neu erstellen."
       },
       "listTitle": "Webhook-Abonnements",
@@ -729,14 +729,14 @@
     "noRepositories": "Noch keine Repositories hinzugefügt",
     "noThreats": "Noch keine Bedrohungen hinzugefügt",
     "pageTitle": "Bedrohungsmodelle",
-    "permissionsDisplayName": "Anzeigename",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "E-Mail",
     "permissionsGroupId": "Gruppen-ID",
     "permissionsIdp": "Identitätsanbieter",
     "permissionsPrincipalId": "Prinzipal-ID",
     "permissionsProvider": "Anbieter",
     "permissionsRole": "Rolle",
-    "permissionsSubject": "Subjekt",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "Subjekt (Benutzer-ID, E-Mail-Adresse oder Gruppenname)",
     "permissionsSubjectType": "Typ",
     "permissionsTooltip": "Berechtigungen verwalten",
@@ -862,7 +862,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "Verwaltung"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "Farbenblindmodus aktivieren",
     "deleteMyData": {
