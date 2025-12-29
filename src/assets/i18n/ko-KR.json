@@ -28,7 +28,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "애드온 추가",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "이 애드온은 무엇을 하나요?",
@@ -62,7 +62,7 @@
       "title": "애드온 관리"
     },
     "administrators": {
-      "addButton": "관리자 추가",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "공급자는 필수입니다",
@@ -71,7 +71,7 @@
         "subjectHint": "사용자 이메일 또는 그룹 이름을 입력하세요",
         "subjectPlaceholder": "사용자 이메일 또는 그룹 이름",
         "subjectRequired": "주체는 필수입니다",
-        "title": "관리자 추가"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "추가일",
       "filterLabel": "관리자 필터",
@@ -83,7 +83,7 @@
       "title": "관리자 관리"
     },
     "groups": {
-      "addButton": "그룹 추가",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "설명 (선택사항)",
         "descriptionHint": "그룹 목적에 대한 선택적 설명",
@@ -103,7 +103,7 @@
       "deleteTooltip": "그룹 삭제",
       "filterLabel": "그룹 필터",
       "filterPlaceholder": "그룹 이름 또는 공급자로 검색",
-      "listTitle": "그룹",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "멤버 추가",
         "currentMembers": "현재 멤버",
@@ -121,13 +121,13 @@
     "quotas": {
       "addButton": "할당량 추가",
       "addDialog": {
-        "apiQuotas": "API 요청 제한",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "할당량 구성",
         "searchLabel": "사용자 검색",
         "searchPlaceholder": "사용자 이메일을 입력하여 검색",
         "selectUser": "사용자 선택",
         "title": "사용자 정의 할당량 추가",
-        "webhookQuotas": "웹훅 제한"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "사용자 정의 할당량 제거 (기본값으로 복원)",
       "eventsPerMinute": "분당 이벤트 수",
@@ -148,27 +148,27 @@
     "sections": {
       "addons": {
         "description": "애플리케이션 애드온 설치 및 구성",
-        "title": "애드온 관리"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "관리자 권한 부여 또는 철회",
-        "title": "관리자 관리"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "사용자 그룹 및 멤버십 구성",
-        "title": "그룹 관리"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "리소스 할당량 및 제한 구성",
-        "title": "할당량 관리"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "사용자 계정 보기 및 관리",
-        "title": "사용자 관리"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "웹훅 통합 설치 및 구성",
-        "title": "Webhooks 관리"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "시스템 설정 및 구성 관리",
@@ -183,7 +183,7 @@
       "title": "사용자 관리"
     },
     "webhooks": {
-      "addButton": "Webhook 추가",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "구독할 이벤트 유형",
         "eventsHint": "구독할 이벤트 유형 (예: threat_model.created)",
@@ -199,7 +199,7 @@
         "secretPlaceholder": "비우면 자동 생성됩니다",
         "title": "Webhook 추가",
         "url": "웹훅 URL",
-        "urlHint": "HTTPS URL이어야 합니다",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "HTTPS URL이어야 합니다",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL은 필수입니다"
@@ -210,7 +210,7 @@
       "filterLabel": "웹훅 필터",
       "filterPlaceholder": "이름 또는 URL로 검색",
       "hmacSecretDialog": {
-        "title": "HMAC 시크릿",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "이 시크릿은 지금만 볼 수 있습니다. 복사해 두세요. 분실하거나 잊어버리면 웹훅을 삭제하고 다시 생성해야 합니다."
       },
       "listTitle": "Webhook 구독",
@@ -729,14 +729,14 @@
     "noRepositories": "추가된 저장소 없음",
     "noThreats": "추가된 위협 없음",
     "pageTitle": "위협 모델",
-    "permissionsDisplayName": "표시 이름",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "이메일",
     "permissionsGroupId": "그룹 ID",
     "permissionsIdp": "{{common.identityProvider}}",
     "permissionsPrincipalId": "주체 ID",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "역할",
-    "permissionsSubject": "주체",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "주체 (사용자 ID, 사용자 이메일 주소 또는 그룹 이름)",
     "permissionsSubjectType": "{{common.type}}",
     "permissionsTooltip": "권한 관리",
@@ -862,7 +862,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "관리"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "색맹 모드 활성화",
     "deleteMyData": {
