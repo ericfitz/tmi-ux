@@ -28,7 +28,7 @@
   },
   "admin": {
     "addons": {
-      "addButton": "ایڈ آن شامل کریں",
+      "addButton": "{{admin.addons.addDialog.title}}",
       "addDialog": {
         "description": "{{common.description}}",
         "descriptionHint": "یہ ایڈ آن کیا کرتا ہے؟",
@@ -62,7 +62,7 @@
       "title": "ایڈ آنز کا انتظام"
     },
     "administrators": {
-      "addButton": "ایڈمنسٹریٹر شامل کریں",
+      "addButton": "{{admin.administrators.addDialog.save}}",
       "addDialog": {
         "provider": "{{common.provider}}",
         "providerRequired": "فراہم کنندہ ضروری ہے",
@@ -71,7 +71,7 @@
         "subjectHint": "صارف کا ای میل یا گروپ کا نام درج کریں",
         "subjectPlaceholder": "صارف کا ای میل یا گروپ کا نام",
         "subjectRequired": "موضوع ضروری ہے",
-        "title": "ایڈمنسٹریٹر شامل کریں"
+        "title": "{{admin.administrators.addDialog.save}}"
       },
       "createdAt": "شامل ہونے کی تاریخ",
       "filterLabel": "ایڈمنسٹریٹرز فلٹر کریں",
@@ -83,7 +83,7 @@
       "title": "ایڈمنسٹریٹرز کا انتظام"
     },
     "groups": {
-      "addButton": "گروپ شامل کریں",
+      "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
         "description": "تفصیل (اختیاری)",
         "descriptionHint": "گروپ کے مقصد کی اختیاری تفصیل",
@@ -103,7 +103,7 @@
       "deleteTooltip": "گروپ حذف کریں",
       "filterLabel": "گروپس فلٹر کریں",
       "filterPlaceholder": "گروپ کے نام یا فراہم کنندہ سے تلاش کریں",
-      "listTitle": "گروپس",
+      "listTitle": "{{userPreferences.userProfile.groups}}",
       "membersDialog": {
         "addMember": "رکن شامل کریں",
         "currentMembers": "موجودہ اراکین",
@@ -121,13 +121,13 @@
     "quotas": {
       "addButton": "کوٹہ شامل کریں",
       "addDialog": {
-        "apiQuotas": "API شرح کی حدود",
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "کوٹہ ترتیب دیں",
         "searchLabel": "صارف تلاش کریں",
         "searchPlaceholder": "تلاش کے لیے صارف کا ای میل ٹائپ کریں",
         "selectUser": "صارف منتخب کریں",
         "title": "حسب ضرورت کوٹہ شامل کریں",
-        "webhookQuotas": "Webhook کی حدود"
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
       "deleteTooltip": "حسب ضرورت کوٹہ ہٹائیں (ڈیفالٹس پر واپس جائیں)",
       "eventsPerMinute": "فی منٹ ایونٹس",
@@ -148,27 +148,27 @@
     "sections": {
       "addons": {
         "description": "ایپلیکیشن ایڈ آنز انسٹال اور ترتیب دیں",
-        "title": "ایڈ آنز کا انتظام"
+        "title": "{{admin.addons.title}}"
       },
       "administrators": {
         "description": "ایڈمنسٹریٹر کی اجازتیں دیں یا منسوخ کریں",
-        "title": "ایڈمنسٹریٹرز کا انتظام"
+        "title": "{{admin.administrators.title}}"
       },
       "groups": {
         "description": "صارف گروپس اور رکنیتیں ترتیب دیں",
-        "title": "گروپس کا انتظام"
+        "title": "{{admin.groups.title}}"
       },
       "quotas": {
         "description": "وسائل کے کوٹہ اور حدود ترتیب دیں",
-        "title": "کوٹہ کا انتظام"
+        "title": "{{admin.quotas.title}}"
       },
       "users": {
         "description": "صارف اکاؤنٹس دیکھیں اور ان کا انتظام کریں",
-        "title": "صارفین کا انتظام"
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "webhook انضمام انسٹال اور ترتیب دیں",
-        "title": "Webhooks کا انتظام"
+        "title": "{{admin.webhooks.title}}"
       }
     },
     "subtitle": "سسٹم کی ترتیبات اور تشکیلات کا انتظام کریں",
@@ -183,7 +183,7 @@
       "title": "صارفین کا انتظام"
     },
     "webhooks": {
-      "addButton": "Webhook شامل کریں",
+      "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
         "events": "سبسکرائب کرنے کے لیے ایونٹ کی اقسام",
         "eventsHint": "سبسکرائب کرنے کے لیے ایونٹ کی اقسام (مثلاً، threat_model.created)",
@@ -199,7 +199,7 @@
         "secretPlaceholder": "خودکار پیدا کرنے کے لیے خالی چھوڑیں",
         "title": "Webhook شامل کریں",
         "url": "ویب ہک URL",
-        "urlHint": "HTTPS URL ہونا ضروری ہے",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "HTTPS URL ہونا ضروری ہے",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL ضروری ہے"
@@ -210,7 +210,7 @@
       "filterLabel": "Webhooks فلٹر کریں",
       "filterPlaceholder": "نام یا URL سے تلاش کریں",
       "hmacSecretDialog": {
-        "title": "HMAC راز",
+        "title": "{{admin.webhooks.addDialog.secret}}",
         "warning": "یہ واحد موقع ہے جب آپ یہ راز دیکھ سکیں گے۔ براہ کرم اسے کاپی کریں۔ اگر آپ اسے کھو دیں یا بھول جائیں، تو آپ کو webhook حذف کرکے دوبارہ بنانا ہوگا۔"
       },
       "listTitle": "Webhook سبسکرپشنز",
@@ -729,14 +729,14 @@
     "noRepositories": "ابھی تک کوئی ریپوزٹریز شامل نہیں",
     "noThreats": "ابھی تک کوئی خطرات شامل نہیں",
     "pageTitle": "خطرے کے ماڈلز",
-    "permissionsDisplayName": "ڈسپلے نام",
+    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
     "permissionsEmail": "ای میل",
     "permissionsGroupId": "گروپ ID",
     "permissionsIdp": "{{common.identityProvider}}",
     "permissionsPrincipalId": "پرنسپل ID",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "کردار",
-    "permissionsSubject": "موضوع",
+    "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "موضوع (صارف ID، صارف ای میل ایڈریس، یا گروپ کا نام)",
     "permissionsSubjectType": "{{common.type}}",
     "permissionsTooltip": "اجازتوں کا انتظام کریں",
@@ -862,7 +862,7 @@
   },
   "userPreferences": {
     "administration": {
-      "title": "انتظامیہ"
+      "title": "{{admin.title}}"
     },
     "colorBlindMode": "کلر بلائنڈ موڈ فعال کریں",
     "deleteMyData": {
