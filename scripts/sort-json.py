@@ -39,28 +39,69 @@ def load_and_sort_json(file_path):
         return None
 
 
-def get_all_keys(obj, prefix=""):
-    """Recursively collect all keys in a JSON object with their full path."""
+def get_all_keys(obj, prefix="", skip_comments=True):
+    """Recursively collect all keys in a JSON object with their full path.
+
+    Args:
+        obj: The JSON object to traverse
+        prefix: Current key path prefix
+        skip_comments: If True, skip keys ending in '.comment'
+    """
     keys = set()
     if isinstance(obj, dict):
         for key, value in obj.items():
             full_key = f"{prefix}.{key}" if prefix else key
+            # Skip .comment keys - these are translator notes, not translatable content
+            if skip_comments and full_key.endswith(".comment"):
+                continue
             keys.add(full_key)
-            keys.update(get_all_keys(value, full_key))
+            keys.update(get_all_keys(value, full_key, skip_comments))
     return keys
 
 
-def get_leaf_values(obj, prefix=""):
-    """Recursively collect all leaf key-value pairs (non-dict values) with their full path."""
+def get_leaf_values(obj, prefix="", skip_comments=True):
+    """Recursively collect all leaf key-value pairs (non-dict values) with their full path.
+
+    Args:
+        obj: The JSON object to traverse
+        prefix: Current key path prefix
+        skip_comments: If True, skip keys ending in '.comment'
+    """
     values = {}
     if isinstance(obj, dict):
         for key, value in obj.items():
             full_key = f"{prefix}.{key}" if prefix else key
+            # Skip .comment keys - these are translator notes, not translatable content
+            if skip_comments and full_key.endswith(".comment"):
+                continue
             if isinstance(value, dict):
-                values.update(get_leaf_values(value, full_key))
+                values.update(get_leaf_values(value, full_key, skip_comments))
             else:
                 values[full_key] = value
     return values
+
+
+def get_non_translatable_keys(obj, prefix=""):
+    """Find keys that have a .comment indicating they should not be translated.
+
+    Looks for comment keys (ending in .comment) whose value contains
+    "should not be translated." and returns the set of associated keys.
+    """
+    non_translatable = set()
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            full_key = f"{prefix}.{key}" if prefix else key
+            if isinstance(value, dict):
+                non_translatable.update(get_non_translatable_keys(value, full_key))
+            elif (
+                full_key.endswith(".comment")
+                and isinstance(value, str)
+                and "should not be translated." in value
+            ):
+                # The associated key is the comment key without the .comment suffix
+                associated_key = full_key[: -len(".comment")]
+                non_translatable.add(associated_key)
+    return non_translatable
 
 
 def compare_keys(data1, data2, file1_name, file2_name):
@@ -68,7 +109,10 @@ def compare_keys(data1, data2, file1_name, file2_name):
     keys1 = get_all_keys(data1)
     keys2 = get_all_keys(data2)
 
-    missing_in_file2 = keys1 - keys2
+    # Get keys marked as non-translatable via .comment
+    non_translatable = get_non_translatable_keys(data1)
+
+    missing_in_file2 = keys1 - keys2 - non_translatable
     missing_in_file1 = keys2 - keys1
 
     if missing_in_file2:
@@ -93,6 +137,9 @@ def compare_keys(data1, data2, file1_name, file2_name):
     untranslated = []
     common_keys = set(values1.keys()) & set(values2.keys())
     for key in common_keys:
+        # Skip keys marked as non-translatable
+        if key in non_translatable:
+            continue
         val1 = values1[key]
         val2 = values2[key]
         # Only flag string values that are identical

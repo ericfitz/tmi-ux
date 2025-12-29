@@ -2,7 +2,7 @@
   "about": {
     "bugReport": "File a bug report or request a feature: ",
     "bugReportUrl": "https://github.com/ericfitz/tmi/issues",
-    "bugReportUrl.comment": "This is a URL and does not need to be translated.",
+    "bugReportUrl.comment": "This is a URL and should not be translated.",
     "contactjurisdiction": "Legal Jurisdiction: ",
     "contactoperator": "Operator: ",
     "contactoperatordetails": "Operator Contact: ",
@@ -17,7 +17,7 @@
     "server": "Server",
     "serverSourceCode": "Server Source Code: ",
     "serverSourceCodeUrl": "https://github.com/ericfitz/tmi",
-    "serverSourceCodeUrl.comment": "This is a URL and does not need to be translated.",
+    "serverSourceCodeUrl.comment": "This is a URL and should not be translated.",
     "sourcetitle": "TMI Project",
     "title": "About TMI",
     "trademarks": "All product names, logos, and brands are property of their respective owners. All company, product, and service names used in this application are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.",
@@ -25,10 +25,10 @@
     "webApplication": "Web Application",
     "webApplicationSourceCode": "Web Application Source Code: ",
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux",
-    "webappSourceCodeUrl.comment": "This is a URL and does not need to be translated.",
+    "webappSourceCodeUrl.comment": "This is a URL and should not be translated.",
     "wiki": "TMI Wiki: ",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki",
-    "wikiUrl.comment": "This is a URL and does not need to be translated."
+    "wikiUrl.comment": "This is a URL and should not be translated."
   },
   "admin": {
     "addons": {
@@ -206,7 +206,7 @@
         "urlHint": "Must be an HTTPS URL",
         "urlInvalid": "Must be an HTTPS URL",
         "urlPlaceholder": "https://example.com/webhook",
-        "urlPlaceholder.comment": "This is a URL and does not need to be translated.",
+        "urlPlaceholder.comment": "This is a URL and should not be translated.",
         "urlRequired": "URL is required"
       },
       "created": "{{common.created}}",
@@ -619,7 +619,7 @@
     "intro2": "The Operator is committed to protecting your privacy. This Privacy Policy explains how your information is handled.",
     "introductionTitle": "Introduction",
     "lastUpdatedDate": "2025-10-24",
-    "lastUpdatedDate.comment": "This is a date value and does not need to be translated.",
+    "lastUpdatedDate.comment": "This is a date value and should not be translated.",
     "title": "Privacy Policy",
     "userRightsContent1": "You have full control over your personal data. At any time, you may access the \"Delete All My Data\" feature in the User Preferences section of the application.",
     "userRightsContent2": "This option enables immediate deletion of all data The Operator stores on your behalf, including profile information and authentication records. Upon activation, your data will be permanently removed from The Operator's systems and third-party providers, subject to any legal retention obligations.",
@@ -830,7 +830,7 @@
       "part2": " page of this web site (\"The Operator\")."
     },
     "lastUpdatedDate": "2025-10-10",
-    "lastUpdatedDate.comment": "This is a date value and does not need to be translated.",
+    "lastUpdatedDate.comment": "This is a date value and should not be translated.",
     "section1": {
       "content": "By accessing and using this web site, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these terms, please do not use this web site.",
       "title": "1. Acceptance of Terms"
