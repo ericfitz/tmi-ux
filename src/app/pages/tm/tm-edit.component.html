@@ -667,6 +667,14 @@
               <div matListItemMeta class="action-buttons">
                 <button
                   mat-icon-button
+                  (click)="downloadNote(note, $event)"
+                  [matTooltip]="'common.download' | transloco"
+                  [attr.aria-label]="'common.download' | transloco"
+                >
+                  <mat-icon>download</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
                   (click)="openNoteMetadataDialog(note, $event)"
                   [matTooltip]="
                     canEdit

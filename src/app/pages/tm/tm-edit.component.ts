@@ -1871,6 +1871,26 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Downloads a note as a markdown file
+   */
+  downloadNote(note: Note, event: Event): void {
+    event.stopPropagation();
+
+    const content = note.content || '';
+    const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${this.threatModel?.name || 'ThreatModel'}-${note.name}.md`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  }
+
+  /**
    * Opens the metadata dialog for a specific note
    */
   openNoteMetadataDialog(note: Note, event: Event): void {
