@@ -41,7 +41,9 @@
       "WebFetch(domain:x6.antv.vision)",
       "WebFetchTool(domain:angular.io)",
       "WebFetchTool(domain:github.com)",
-      "WebSearch"
+      "WebSearch",
+      "Skill(translate_to_language)",
+      "Skill(translate_to_language:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
