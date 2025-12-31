@@ -866,6 +866,11 @@
       "title": "{{admin.title}}"
     },
     "colorBlindMode": "Habilitar Modo para Daltonicos",
+    "credentials": {
+      "comingSoon": "Em breve",
+      "description": "Este recurso permitirá que você gerencie credenciais de API para webhooks, integrações externas e acesso programático aos seus modelos de ameaça.",
+      "title": "Credenciais de API"
+    },
     "deleteMyData": {
       "confirmation": "Tem certeza de que deseja excluir todos os seus dados?",
       "continue": "Continuar",
@@ -897,6 +902,13 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Preferencias de Relatorio",
+    "tabs": {
+      "credentials": "Credenciais",
+      "danger": "Perigo",
+      "display": "Exibição",
+      "profile": "Perfil",
+      "reports": "Relatórios"
+    },
     "theme": "Tema",
     "themeMode": {
       "automatic": "Automatico (Sistema)",

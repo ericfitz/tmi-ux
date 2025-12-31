@@ -866,6 +866,11 @@
       "title": "{{admin.title}}"
     },
     "colorBlindMode": "色覚補助モードを有効にする",
+    "credentials": {
+      "comingSoon": "近日公開予定",
+      "description": "この機能を使用すると、ウェブフック、外部統合、および脅威モデルへのプログラムによるアクセスのためのAPI認証情報を管理できます。",
+      "title": "API認証情報"
+    },
     "deleteMyData": {
       "confirmation": "本当にすべてのデータを削除しますか？",
       "continue": "続行",
@@ -897,6 +902,13 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "レポート設定",
+    "tabs": {
+      "credentials": "認証情報",
+      "danger": "危険",
+      "display": "表示",
+      "profile": "プロフィール",
+      "reports": "レポート"
+    },
     "theme": "テーマ",
     "themeMode": {
       "automatic": "自動（システム設定に従う）",

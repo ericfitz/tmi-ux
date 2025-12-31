@@ -866,6 +866,11 @@
       "title": "{{admin.title}}"
     },
     "colorBlindMode": "Aktifkan Mode Buta Warna",
+    "credentials": {
+      "comingSoon": "Segera hadir",
+      "description": "Fitur ini akan memungkinkan Anda mengelola kredensial API untuk webhook, integrasi eksternal, dan akses terprogram ke model ancaman Anda.",
+      "title": "Kredensial API"
+    },
     "deleteMyData": {
       "confirmation": "Apakah Anda yakin ingin menghapus semua data Anda?",
       "continue": "Lanjutkan",
@@ -897,6 +902,13 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Preferensi Laporan",
+    "tabs": {
+      "credentials": "Kredensial",
+      "danger": "Bahaya",
+      "display": "Tampilan",
+      "profile": "Profil",
+      "reports": "Laporan"
+    },
     "theme": "Tema",
     "themeMode": {
       "automatic": "Otomatis (Sistem)",

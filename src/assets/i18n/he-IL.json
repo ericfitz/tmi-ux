@@ -866,6 +866,11 @@
       "title": "{{admin.title}}"
     },
     "colorBlindMode": "הפעל מצב עיוורון צבעים",
+    "credentials": {
+      "comingSoon": "בקרוב",
+      "description": "תכונה זו תאפשר לך לנהל אישורי API עבור webhooks, שילובים חיצוניים וגישה תכנותית למודלי האיום שלך.",
+      "title": "אישורי API"
+    },
     "deleteMyData": {
       "confirmation": "האם אתה בטוח שברצונך למחוק את כל הנתונים שלך?",
       "continue": "המשך",
@@ -897,6 +902,13 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "העדפות דוחות",
+    "tabs": {
+      "credentials": "אישורים",
+      "danger": "סכנה",
+      "display": "תצוגה",
+      "profile": "פרופיל",
+      "reports": "דוחות"
+    },
     "theme": "ערכת נושא",
     "themeMode": {
       "automatic": "אוטומטי (מערכת)",

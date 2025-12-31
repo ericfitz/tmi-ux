@@ -866,6 +866,11 @@
       "title": "{{admin.title}}"
     },
     "colorBlindMode": "কালার ব্লাইন্ড মোড সক্রিয় করুন",
+    "credentials": {
+      "comingSoon": "শীঘ্রই আসছে",
+      "description": "এই বৈশিষ্ট্যটি আপনাকে ওয়েবহুক, বাহ্যিক ইন্টিগ্রেশন এবং আপনার হুমকি মডেলগুলিতে প্রোগ্রামেটিক অ্যাক্সেসের জন্য API শংসাপত্র পরিচালনা করতে দেবে।",
+      "title": "API শংসাপত্র"
+    },
     "deleteMyData": {
       "confirmation": "আপনি কি নিশ্চিত যে আপনি আপনার সমস্ত ডেটা মুছতে চান?",
       "continue": "চালিয়ে যান",
@@ -897,6 +902,13 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "রিপোর্ট পছন্দ",
+    "tabs": {
+      "credentials": "শংসাপত্র",
+      "danger": "বিপদ",
+      "display": "প্রদর্শন",
+      "profile": "প্রোফাইল",
+      "reports": "প্রতিবেদন"
+    },
     "theme": "থিম",
     "themeMode": {
       "automatic": "স্বয়ংক্রিয় (সিস্টেম)",

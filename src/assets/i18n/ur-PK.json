@@ -866,6 +866,11 @@
       "title": "{{admin.title}}"
     },
     "colorBlindMode": "کلر بلائنڈ موڈ فعال کریں",
+    "credentials": {
+      "comingSoon": "جلد آرہا ہے",
+      "description": "یہ خصوصیت آپ کو ویب ہُکس، بیرونی انضمام، اور اپنے دھمکی کے ماڈلز تک پروگرام کی رسائی کے لیے API اعتبارات کو منظم کرنے کی اجازت دے گی۔",
+      "title": "API اعتبارات"
+    },
     "deleteMyData": {
       "confirmation": "کیا آپ واقعی اپنا سارا ڈیٹا حذف کرنا چاہتے ہیں؟",
       "continue": "جاری رکھیں",
@@ -897,6 +902,13 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "رپورٹ کی ترجیحات",
+    "tabs": {
+      "credentials": "اعتبارات",
+      "danger": "خطرناک",
+      "display": "نمائش",
+      "profile": "پروفائل",
+      "reports": "رپورٹس"
+    },
     "theme": "تھیم",
     "themeMode": {
       "automatic": "خودکار (سسٹم)",

@@ -866,6 +866,11 @@
       "title": "{{admin.title}}"
     },
     "colorBlindMode": "เปิดใช้งานโหมดตาบอดสี",
+    "credentials": {
+      "comingSoon": "เร็ว ๆ นี้",
+      "description": "คุณสมบัตินี้จะช่วยให้คุณสามารถจัดการข้อมูลประจำตัว API สำหรับ webhooks, การรวมระบบภายนอก, และการเข้าถึงแบบทำให้เป็นโปรแกรมไปยังโมเดลการขู่เข็ญของคุณได้",
+      "title": "ข้อมูลประจำตัว API"
+    },
     "deleteMyData": {
       "confirmation": "คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลทั้งหมดของคุณ?",
       "continue": "ดำเนินการต่อ",
@@ -897,6 +902,13 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "การตั้งค่ารายงาน",
+    "tabs": {
+      "credentials": "ข้อมูลประจำตัว",
+      "danger": "อันตราย",
+      "display": "การแสดงผล",
+      "profile": "โปรไฟล์",
+      "reports": "รายงาน"
+    },
     "theme": "ธีม",
     "themeMode": {
       "automatic": "อัตโนมัติ (ระบบ)",

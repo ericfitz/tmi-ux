@@ -866,6 +866,11 @@
       "title": "{{admin.title}}"
     },
     "colorBlindMode": "색맹 모드 활성화",
+    "credentials": {
+      "comingSoon": "곧 출시 예정",
+      "description": "이 기능을 통해 웹훅, 외부 통합 및 위협 모델에 대한 프로그래밍 방식 액세스를 위한 API 자격증명을 관리할 수 있습니다.",
+      "title": "API 자격증명"
+    },
     "deleteMyData": {
       "confirmation": "모든 데이터를 삭제하시겠습니까?",
       "continue": "계속",
@@ -897,6 +902,13 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "보고서 설정",
+    "tabs": {
+      "credentials": "자격증명",
+      "danger": "위험",
+      "display": "표시",
+      "profile": "프로필",
+      "reports": "보고서"
+    },
     "theme": "테마",
     "themeMode": {
       "automatic": "자동 (시스템)",

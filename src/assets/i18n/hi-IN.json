@@ -866,6 +866,11 @@
       "title": "{{admin.title}}"
     },
     "colorBlindMode": "कलर ब्लाइंड मोड सक्षम करें",
+    "credentials": {
+      "comingSoon": "जल्द आ रहा है",
+      "description": "यह सुविधा आपको वेबहुक, बाहरी एकीकरण, और अपने खतरे के मॉडल तक प्रोग्रामेटिक पहुंच के लिए API क्रेडेंशियल प्रबंधित करने की अनुमति देगी।",
+      "title": "API क्रेडेंशियल"
+    },
     "deleteMyData": {
       "confirmation": "क्या आप वाकई अपना सारा डेटा हटाना चाहते हैं?",
       "continue": "जारी रखें",
@@ -897,6 +902,13 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "रिपोर्ट प्राथमिकताएं",
+    "tabs": {
+      "credentials": "क्रेडेंशियल",
+      "danger": "खतरा",
+      "display": "प्रदर्शन",
+      "profile": "प्रोफ़ाइल",
+      "reports": "रिपोर्ट"
+    },
     "theme": "थीम",
     "themeMode": {
       "automatic": "स्वचालित (सिस्टम)",

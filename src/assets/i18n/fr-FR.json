@@ -866,6 +866,11 @@
       "title": "{{admin.title}}"
     },
     "colorBlindMode": "Activer le mode daltonien",
+    "credentials": {
+      "comingSoon": "À venir",
+      "description": "Cette fonctionnalité vous permettra de gérer les identifiants API pour les webhooks, les intégrations externes et l'accès programmatique à vos modèles de menace.",
+      "title": "Identifiants API"
+    },
     "deleteMyData": {
       "confirmation": "Etes-vous sur de vouloir supprimer toutes vos donnees ?",
       "continue": "Continuer",
@@ -897,6 +902,13 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Preferences de rapport",
+    "tabs": {
+      "credentials": "Identifiants",
+      "danger": "Danger",
+      "display": "Affichage",
+      "profile": "Profil",
+      "reports": "Rapports"
+    },
     "theme": "Theme",
     "themeMode": {
       "automatic": "Automatique (Systeme)",

@@ -891,6 +891,11 @@
       "title": "{{admin.title}}"
     },
     "colorBlindMode": "Enable Color Blind Mode",
+    "credentials": {
+      "comingSoon": "Coming soon",
+      "description": "This feature will allow you to manage API credentials for webhooks, external integrations, and programmatic access to your threat models.",
+      "title": "API Credentials"
+    },
     "deleteMyData": {
       "confirmation": "Are you sure that you want to delete all your data?",
       "continue": "Continue",
@@ -924,6 +929,13 @@
       "usLetter.comment": "This is a proper name and should not be translated."
     },
     "reportPreferences": "Report Preferences",
+    "tabs": {
+      "credentials": "Credentials",
+      "danger": "Danger",
+      "display": "Display",
+      "profile": "Profile",
+      "reports": "Reports"
+    },
     "theme": "Theme",
     "theme.comment": "Theme is used as a noun here, to indicate visual styles applied in the UI.",
     "themeMode": {

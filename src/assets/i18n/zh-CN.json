@@ -866,6 +866,11 @@
       "title": "{{admin.title}}"
     },
     "colorBlindMode": "启用色盲模式",
+    "credentials": {
+      "comingSoon": "即将推出",
+      "description": "此功能将允许您管理用于webhooks、外部集成以及对威胁模型的编程访问的API凭证。",
+      "title": "API凭证"
+    },
     "deleteMyData": {
       "confirmation": "您确定要删除所有数据吗？",
       "continue": "继续",
@@ -897,6 +902,13 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "报告首选项",
+    "tabs": {
+      "credentials": "凭证",
+      "danger": "危险区域",
+      "display": "显示",
+      "profile": "个人资料",
+      "reports": "报告"
+    },
     "theme": "主题",
     "themeMode": {
       "automatic": "自动（系统）",

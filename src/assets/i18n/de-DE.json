@@ -866,6 +866,11 @@
       "title": "{{admin.title}}"
     },
     "colorBlindMode": "Farbenblindmodus aktivieren",
+    "credentials": {
+      "comingSoon": "Kommt bald",
+      "description": "Mit dieser Funktion können Sie API-Anmeldedaten für Webhooks, externe Integrationen und programmatischen Zugriff auf Ihre Bedrohungsmodelle verwalten.",
+      "title": "API-Anmeldedaten"
+    },
     "deleteMyData": {
       "confirmation": "Sind Sie sicher, dass Sie alle Ihre Daten löschen möchten?",
       "continue": "Weiter",
@@ -897,6 +902,13 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Berichtseinstellungen",
+    "tabs": {
+      "credentials": "Anmeldedaten",
+      "danger": "Gefahr",
+      "display": "Anzeige",
+      "profile": "Profil",
+      "reports": "Berichte"
+    },
     "theme": "Design",
     "themeMode": {
       "automatic": "Automatisch (System)",

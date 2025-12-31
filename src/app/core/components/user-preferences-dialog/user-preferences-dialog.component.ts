@@ -34,190 +34,233 @@ interface CheckboxChangeEvent {
   template: `
     <h2 mat-dialog-title [transloco]="'userPreferences.title'">User Preferences</h2>
     <mat-dialog-content>
-      <h3 class="section-header" [transloco]="'userPreferences.userProfile.title'">User Profile</h3>
+      <mat-tab-group>
+        <!-- Profile Tab -->
+        <mat-tab [label]="'userPreferences.tabs.profile' | transloco">
+          <div class="tab-content">
+            <h3 class="section-header" [transloco]="'userPreferences.userProfile.title'">
+              User Profile
+            </h3>
 
-      <div class="profile-info">
-        <div class="profile-item">
-          <span class="profile-label" [transloco]="'common.name'">Name</span>
-          <span class="profile-value">{{ userProfile?.display_name || 'N/A' }}</span>
-        </div>
+            <div class="profile-info">
+              <div class="profile-item">
+                <span class="profile-label" [transloco]="'common.name'">Name</span>
+                <span class="profile-value">{{ userProfile?.display_name || 'N/A' }}</span>
+              </div>
 
-        <div class="profile-item">
-          <span class="profile-label" [transloco]="'common.emailLabel'">Email</span>
-          <span class="profile-value">{{ userProfile?.email || 'N/A' }}</span>
-        </div>
+              <div class="profile-item">
+                <span class="profile-label" [transloco]="'common.emailLabel'">Email</span>
+                <span class="profile-value">{{ userProfile?.email || 'N/A' }}</span>
+              </div>
 
-        @if (userProfile?.provider) {
-          <div class="profile-item">
-            <span class="profile-label" [transloco]="'userPreferences.userProfile.provider'">
-              Identity Provider
-            </span>
-            <span class="profile-value">{{ userProfile?.provider }}</span>
-          </div>
-        }
+              @if (userProfile?.provider) {
+                <div class="profile-item">
+                  <span class="profile-label" [transloco]="'userPreferences.userProfile.provider'">
+                    Identity Provider
+                  </span>
+                  <span class="profile-value">{{ userProfile?.provider }}</span>
+                </div>
+              }
 
-        @if (userProfile?.provider_id) {
-          <div class="profile-item">
-            <span class="profile-label" [transloco]="'userPreferences.userProfile.providerId'">
-              Provider ID
-            </span>
-            <span class="profile-value user-id">{{ userProfile?.provider_id }}</span>
-          </div>
-        }
+              @if (userProfile?.provider_id) {
+                <div class="profile-item">
+                  <span
+                    class="profile-label"
+                    [transloco]="'userPreferences.userProfile.providerId'"
+                  >
+                    Provider ID
+                  </span>
+                  <span class="profile-value user-id">{{ userProfile?.provider_id }}</span>
+                </div>
+              }
 
-        @if (userProfile?.groups && (userProfile?.groups?.length ?? 0) > 0) {
-          <div class="profile-item">
-            <span class="profile-label" [transloco]="'userPreferences.userProfile.groups'"
-              >Groups</span
-            >
-            <div class="profile-value groups-list">
-              @for (group of userProfile?.groups; track group) {
-                <span class="group-badge">{{ group }}</span>
+              @if (userProfile?.groups && (userProfile?.groups?.length ?? 0) > 0) {
+                <div class="profile-item">
+                  <span class="profile-label" [transloco]="'userPreferences.userProfile.groups'">
+                    Groups
+                  </span>
+                  <div class="profile-value groups-list">
+                    @for (group of userProfile?.groups; track group) {
+                      <span class="group-badge">{{ group }}</span>
+                    }
+                  </div>
+                </div>
+              }
+
+              @if (currentThreatModelRole) {
+                <div class="profile-item">
+                  <span
+                    class="profile-label"
+                    [transloco]="'userPreferences.userProfile.currentRole'"
+                  >
+                    Current Threat Model Role
+                  </span>
+                  <span class="profile-value">
+                    {{ 'common.roles.' + currentThreatModelRole | transloco }}
+                  </span>
+                </div>
               }
             </div>
           </div>
-        }
+        </mat-tab>
 
-        @if (currentThreatModelRole) {
-          <div class="profile-item">
-            <span class="profile-label" [transloco]="'userPreferences.userProfile.currentRole'">
-              Current Threat Model Role
-            </span>
-            <span class="profile-value">
-              {{ 'common.roles.' + currentThreatModelRole | transloco }}
+        <!-- Display Tab -->
+        <mat-tab [label]="'userPreferences.tabs.display' | transloco">
+          <div class="tab-content">
+            <h3 class="section-header" [transloco]="'userPreferences.displayPreferences'">
+              Display Preferences
+            </h3>
+
+            <div class="preference-item">
+              <mat-checkbox
+                [(ngModel)]="preferences.animations"
+                (change)="onAnimationPreferenceChange($event)"
+              >
+                <span [transloco]="'userPreferences.diagramAnimationEffects'">
+                  Diagram animation effects
+                </span>
+              </mat-checkbox>
+            </div>
+
+            <div class="preference-item">
+              <label class="preference-label" [transloco]="'userPreferences.theme'">Theme</label>
+              <mat-radio-group
+                [(ngModel)]="preferences.themeMode"
+                (change)="onThemeModeChange()"
+                class="radio-group"
+              >
+                <mat-radio-button value="automatic">
+                  <span [transloco]="'userPreferences.themeMode.automatic'">
+                    Automatic (System)
+                  </span>
+                </mat-radio-button>
+                <mat-radio-button value="light">
+                  <span [transloco]="'userPreferences.themeMode.light'">Light</span>
+                </mat-radio-button>
+                <mat-radio-button value="dark">
+                  <span [transloco]="'userPreferences.themeMode.dark'">Dark</span>
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+
+            <div class="preference-item">
+              <mat-checkbox
+                [(ngModel)]="preferences.colorBlindMode"
+                (change)="onColorBlindModeChange($event)"
+              >
+                <span [transloco]="'userPreferences.colorBlindMode'">
+                  Color Blind Safe Palette
+                </span>
+              </mat-checkbox>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Reports Tab -->
+        <mat-tab [label]="'userPreferences.tabs.reports' | transloco">
+          <div class="tab-content">
+            <h3 class="section-header" [transloco]="'userPreferences.reportPreferences'">
+              Report Preferences
+            </h3>
+
+            <div class="preference-item">
+              <label class="preference-label" [transloco]="'userPreferences.pageSize.title'">
+                Preferred Page Size for Reports
+              </label>
+              <mat-radio-group
+                [(ngModel)]="preferences.pageSize"
+                (change)="onPageSizeChange()"
+                class="radio-group"
+              >
+                <mat-radio-button value="usLetter">
+                  <span [transloco]="'userPreferences.pageSize.usLetter'">US Letter</span>
+                </mat-radio-button>
+                <mat-radio-button value="A4">
+                  <span [transloco]="'userPreferences.pageSize.A4'">A4</span>
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+
+            <div class="preference-item">
+              <label class="preference-label" [transloco]="'userPreferences.marginSize.title'">
+                Preferred Margin Size for Reports
+              </label>
+              <mat-radio-group
+                [(ngModel)]="preferences.marginSize"
+                (change)="onMarginSizeChange()"
+                class="radio-group"
+              >
+                <mat-radio-button value="narrow">
+                  <span [transloco]="'userPreferences.marginSize.narrow'">Narrow</span>
+                </mat-radio-button>
+                <mat-radio-button value="standard">
+                  <span [transloco]="'userPreferences.marginSize.standard'">Standard</span>
+                </mat-radio-button>
+                <mat-radio-button value="wide">
+                  <span [transloco]="'userPreferences.marginSize.wide'">Wide</span>
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Credentials Tab (Placeholder) -->
+        <mat-tab [label]="'userPreferences.tabs.credentials' | transloco">
+          <div class="tab-content credentials-placeholder">
+            <mat-icon class="placeholder-icon">vpn_key</mat-icon>
+            <h3 class="placeholder-title" [transloco]="'userPreferences.credentials.title'">
+              API Credentials
+            </h3>
+            <p
+              class="placeholder-description"
+              [transloco]="'userPreferences.credentials.description'"
+            >
+              This feature will allow you to manage API credentials for webhooks, external
+              integrations, and programmatic access to your threat models.
+            </p>
+            <span class="coming-soon-badge" [transloco]="'userPreferences.credentials.comingSoon'">
+              Coming soon
             </span>
           </div>
-        }
-      </div>
+        </mat-tab>
 
-      <mat-divider></mat-divider>
+        <!-- Danger Tab -->
+        <mat-tab [label]="'userPreferences.tabs.danger' | transloco">
+          <div class="tab-content danger-tab">
+            @if (userProfile?.is_admin) {
+              <div class="preference-item">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="onAdminClick()"
+                  class="admin-button"
+                >
+                  <mat-icon>supervisor_account</mat-icon>
+                  <span [transloco]="'userPreferences.administration.title'">Administration</span>
+                </button>
+              </div>
+            }
 
-      <h3 class="section-header" [transloco]="'userPreferences.displayPreferences'">
-        Display Preferences
-      </h3>
-
-      <div class="preference-item">
-        <mat-checkbox
-          [(ngModel)]="preferences.animations"
-          (change)="onAnimationPreferenceChange($event)"
-          tabindex="1"
-        >
-          <span [transloco]="'userPreferences.diagramAnimationEffects'"
-            >Diagram animation effects</span
-          >
-        </mat-checkbox>
-      </div>
-
-      <div class="preference-item">
-        <label class="preference-label" [transloco]="'userPreferences.theme'">Theme</label>
-        <mat-radio-group
-          [(ngModel)]="preferences.themeMode"
-          (change)="onThemeModeChange()"
-          class="radio-group"
-        >
-          <mat-radio-button value="automatic" tabindex="2">
-            <span [transloco]="'userPreferences.themeMode.automatic'">Automatic (System)</span>
-          </mat-radio-button>
-          <mat-radio-button value="light" tabindex="3">
-            <span [transloco]="'userPreferences.themeMode.light'">Light</span>
-          </mat-radio-button>
-          <mat-radio-button value="dark" tabindex="4">
-            <span [transloco]="'userPreferences.themeMode.dark'">Dark</span>
-          </mat-radio-button>
-        </mat-radio-group>
-      </div>
-
-      <div class="preference-item">
-        <mat-checkbox
-          [(ngModel)]="preferences.colorBlindMode"
-          (change)="onColorBlindModeChange($event)"
-          tabindex="5"
-        >
-          <span [transloco]="'userPreferences.colorBlindMode'">Color Blind Safe Palette</span>
-        </mat-checkbox>
-      </div>
-
-      <mat-divider></mat-divider>
-
-      <h3 class="section-header" [transloco]="'userPreferences.reportPreferences'">
-        Report Preferences
-      </h3>
-
-      <div class="preference-item">
-        <label class="preference-label" [transloco]="'userPreferences.pageSize.title'"
-          >Preferred Page Size for Reports</label
-        >
-        <mat-radio-group
-          [(ngModel)]="preferences.pageSize"
-          (change)="onPageSizeChange()"
-          class="radio-group"
-        >
-          <mat-radio-button value="usLetter" tabindex="6">
-            <span [transloco]="'userPreferences.pageSize.usLetter'">US Letter</span>
-          </mat-radio-button>
-          <mat-radio-button value="A4" tabindex="7">
-            <span [transloco]="'userPreferences.pageSize.A4'">A4</span>
-          </mat-radio-button>
-        </mat-radio-group>
-      </div>
-
-      <div class="preference-item">
-        <label class="preference-label" [transloco]="'userPreferences.marginSize.title'"
-          >Preferred Margin Size for Reports</label
-        >
-        <mat-radio-group
-          [(ngModel)]="preferences.marginSize"
-          (change)="onMarginSizeChange()"
-          class="radio-group"
-        >
-          <mat-radio-button value="narrow" tabindex="8">
-            <span [transloco]="'userPreferences.marginSize.narrow'">Narrow</span>
-          </mat-radio-button>
-          <mat-radio-button value="standard" tabindex="9">
-            <span [transloco]="'userPreferences.marginSize.standard'">Standard</span>
-          </mat-radio-button>
-          <mat-radio-button value="wide" tabindex="10">
-            <span [transloco]="'userPreferences.marginSize.wide'">Wide</span>
-          </mat-radio-button>
-        </mat-radio-group>
-      </div>
-
-      <mat-divider></mat-divider>
-
-      @if (userProfile?.is_admin) {
-        <div class="preference-item">
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="onAdminClick()"
-            tabindex="11"
-            class="admin-button"
-          >
-            <mat-icon>supervisor_account</mat-icon>
-            <span [transloco]="'userPreferences.administration.title'">Administration</span>
-          </button>
-        </div>
-      }
-
-      <div class="preference-item">
-        <button
-          mat-raised-button
-          color="error"
-          (click)="onDeleteData()"
-          [tabindex]="userProfile?.is_admin ? 12 : 11"
-          class="delete-button"
-        >
-          <mat-icon>delete_forever</mat-icon>
-          <span [transloco]="'userPreferences.deleteMyData.title'">Delete All My Data</span>
-        </button>
-      </div>
+            <div class="preference-item">
+              <button
+                mat-raised-button
+                color="error"
+                (click)="onDeleteData()"
+                class="delete-button"
+              >
+                <mat-icon>delete_forever</mat-icon>
+                <span [transloco]="'userPreferences.deleteMyData.title'">Delete All My Data</span>
+              </button>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button
         mat-button
         (click)="close()"
         [transloco]="'common.close'"
-        tabindex="12"
         [attr.aria-label]="'common.close' | transloco"
       >
         Close
@@ -226,42 +269,28 @@ interface CheckboxChangeEvent {
   `,
   styles: [
     `
-      .preference-item {
-        margin: 16px 0;
-      }
-
       mat-dialog-content {
-        min-width: 400px;
-        max-height: calc(100vh - 250px);
-        overflow-y: auto;
-        overflow-x: hidden;
+        min-width: 550px;
+        padding: 0 24px;
       }
 
-      @media (max-height: 900px) {
-        mat-dialog-content {
-          max-height: calc(100vh - 220px);
-        }
+      mat-tab-group {
+        min-height: 300px;
       }
 
-      @media (max-height: 768px) {
-        mat-dialog-content {
-          max-height: calc(100vh - 190px);
-        }
-      }
-
-      mat-dialog-actions {
-        position: sticky;
-        bottom: 0;
-        background: var(--theme-background, #fff);
-        border-top: 1px solid var(--theme-divider, rgba(0, 0, 0, 0.12));
-        margin-top: 8px;
+      .tab-content {
+        padding: 16px 0;
       }
 
       .section-header {
-        margin: 20px 0 12px 0;
+        margin: 0 0 16px 0;
         font-size: 16px;
         font-weight: 500;
         color: var(--theme-text-primary);
+      }
+
+      .preference-item {
+        margin: 16px 0;
       }
 
       .preference-label {
@@ -276,10 +305,6 @@ interface CheckboxChangeEvent {
         flex-direction: column;
         gap: 8px;
         margin-left: 8px;
-      }
-
-      mat-divider {
-        margin: 20px 0;
       }
 
       .admin-button,
@@ -343,6 +368,57 @@ interface CheckboxChangeEvent {
         border-radius: 12px;
         font-size: 13px;
         font-weight: 500;
+      }
+
+      /* Credentials placeholder styles */
+      .credentials-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 40px 20px;
+        min-height: 200px;
+      }
+
+      .placeholder-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: var(--theme-text-secondary);
+        margin-bottom: 16px;
+      }
+
+      .placeholder-title {
+        margin: 0 0 12px 0;
+        font-size: 18px;
+        font-weight: 500;
+        color: var(--theme-text-primary);
+      }
+
+      .placeholder-description {
+        margin: 0 0 16px 0;
+        font-size: 14px;
+        color: var(--theme-text-secondary);
+        max-width: 400px;
+        line-height: 1.5;
+      }
+
+      .coming-soon-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        background-color: var(--theme-surface-variant, rgba(0, 0, 0, 0.05));
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--theme-text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Danger tab styles */
+      .danger-tab {
+        padding-top: 8px;
       }
     `,
   ],
