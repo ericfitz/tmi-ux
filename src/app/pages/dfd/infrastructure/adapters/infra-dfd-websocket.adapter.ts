@@ -511,102 +511,9 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
 
     // Handle based on initiating_user field
     if (message.initiating_user === null) {
-      // System event (join/leave) - show notifications and emit synthetic events
-      joinedUsers.forEach(participant => {
-        // Handle both 'name' (AsyncAPI) and 'display_name' (OpenAPI) field names
-        const displayName =
-          participant.user.name || participant.user.display_name || participant.user.email;
-
-        if (this._notificationService) {
-          this._logger.debugComponent(
-            'InfraDfdWebsocketAdapter',
-            'Showing participant joined notification',
-            { displayName },
-          );
-          this._notificationService.showSessionEvent('userJoined', displayName).subscribe({
-            error: err => this._logger.error('Failed to show participant joined notification', err),
-          });
-        }
-
-        // Emit synthetic domain event for backward compatibility
-        this._domainEvents$.next({
-          type: 'participant-joined',
-          user: {
-            user_id: participant.user.provider_id,
-            email: participant.user.email,
-            displayName: displayName,
-          },
-          timestamp: new Date().toISOString(),
-        });
-      });
-
-      leftUsers.forEach(participant => {
-        // Handle both 'name' (AsyncAPI) and 'display_name' (OpenAPI) field names
-        const displayName =
-          participant.user.name || participant.user.display_name || participant.user.email;
-
-        if (this._notificationService) {
-          this._logger.debugComponent(
-            'InfraDfdWebsocketAdapter',
-            'Showing participant left notification',
-            { displayName },
-          );
-          this._notificationService.showSessionEvent('userLeft', displayName).subscribe({
-            error: err => this._logger.error('Failed to show participant left notification', err),
-          });
-        }
-
-        // Emit synthetic domain event
-        this._domainEvents$.next({
-          type: 'participant-left',
-          user: {
-            user_id: participant.user.provider_id,
-            email: participant.user.email,
-            displayName: displayName,
-          },
-          timestamp: new Date().toISOString(),
-        });
-      });
+      this._handleSystemParticipantEvent(joinedUsers, leftUsers);
     } else {
-      // User-initiated event (kick) - emit participant-removed event and show notification
-      if (leftUsers.length > 0) {
-        const kickedUser = leftUsers[0];
-        // Handle both 'name' (AsyncAPI) and 'display_name' (OpenAPI) field names
-        const displayName =
-          kickedUser.user.name || kickedUser.user.display_name || kickedUser.user.email;
-
-        this._logger.info('Participant removed by host', {
-          removedUser: kickedUser.user.provider_id,
-          initiatingUser: message.initiating_user.provider_id,
-        });
-
-        // Show notification for removed user
-        if (this._notificationService) {
-          this._logger.debugComponent(
-            'InfraDfdWebsocketAdapter',
-            'Showing participant removed notification',
-            { displayName },
-          );
-          this._notificationService.showSessionEvent('userRemoved', displayName).subscribe({
-            error: err =>
-              this._logger.error('Failed to show participant removed notification', err),
-          });
-        }
-
-        this._domainEvents$.next({
-          type: 'participant-removed',
-          removedUser: {
-            user_id: kickedUser.user.provider_id,
-            email: kickedUser.user.email,
-            displayName: displayName,
-          },
-          removingUser: {
-            user_id: message.initiating_user.provider_id,
-            email: message.initiating_user.email || '',
-            displayName: message.initiating_user.display_name || 'Host',
-          },
-        });
-      }
+      this._handleUserInitiatedRemoval(leftUsers, message.initiating_user);
     }
 
     // Store current participants for next comparison
@@ -618,6 +525,119 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       participants: message.participants,
       host: message.host,
       currentPresenter: message.current_presenter,
+    });
+  }
+
+  /**
+   * Handle system-initiated participant events (join/leave)
+   */
+  private _handleSystemParticipantEvent(
+    joinedUsers: Participant[],
+    leftUsers: Participant[],
+  ): void {
+    joinedUsers.forEach(participant => {
+      const displayName = this._getParticipantDisplayName(participant);
+      this._showParticipantNotification('userJoined', displayName);
+      this._emitParticipantJoinedEvent(participant, displayName);
+    });
+
+    leftUsers.forEach(participant => {
+      const displayName = this._getParticipantDisplayName(participant);
+      this._showParticipantNotification('userLeft', displayName);
+      this._emitParticipantLeftEvent(participant, displayName);
+    });
+  }
+
+  /**
+   * Handle user-initiated participant removal (kick)
+   */
+  private _handleUserInitiatedRemoval(
+    leftUsers: Participant[],
+    initiatingUser: { provider_id: string; email?: string; display_name?: string },
+  ): void {
+    if (leftUsers.length === 0) {
+      return;
+    }
+
+    const kickedUser = leftUsers[0];
+    const displayName = this._getParticipantDisplayName(kickedUser);
+
+    this._logger.info('Participant removed by host', {
+      removedUser: kickedUser.user.provider_id,
+      initiatingUser: initiatingUser.provider_id,
+    });
+
+    this._showParticipantNotification('userRemoved', displayName);
+
+    this._domainEvents$.next({
+      type: 'participant-removed',
+      removedUser: {
+        user_id: kickedUser.user.provider_id,
+        email: kickedUser.user.email,
+        displayName: displayName,
+      },
+      removingUser: {
+        user_id: initiatingUser.provider_id,
+        email: initiatingUser.email || '',
+        displayName: initiatingUser.display_name || 'Host',
+      },
+    });
+  }
+
+  /**
+   * Get display name from participant (handles both AsyncAPI and OpenAPI field names)
+   */
+  private _getParticipantDisplayName(participant: Participant): string {
+    return participant.user.name || participant.user.display_name || participant.user.email;
+  }
+
+  /**
+   * Show notification for participant event
+   */
+  private _showParticipantNotification(
+    eventType: 'userJoined' | 'userLeft' | 'userRemoved',
+    displayName: string,
+  ): void {
+    if (!this._notificationService) {
+      return;
+    }
+
+    this._logger.debugComponent('InfraDfdWebsocketAdapter', `Showing ${eventType} notification`, {
+      displayName,
+    });
+
+    this._notificationService.showSessionEvent(eventType, displayName).subscribe({
+      error: err => this._logger.error(`Failed to show ${eventType} notification`, err),
+    });
+  }
+
+  /**
+   * Emit participant-joined domain event
+   */
+  private _emitParticipantJoinedEvent(participant: Participant, displayName: string): void {
+    this._domainEvents$.next({
+      type: 'participant-joined',
+      user: {
+        user_id: participant.user.provider_id,
+        email: participant.user.email,
+        displayName: displayName,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  /**
+   * Emit participant-left domain event
+   */
+  private _emitParticipantLeftEvent(participant: Participant, displayName: string): void {
+    this._domainEvents$.next({
+      type: 'participant-left',
+      user: {
+        user_id: participant.user.provider_id,
+        email: participant.user.email,
+        displayName: displayName,
+      },
+      timestamp: new Date().toISOString(),
     });
   }
 

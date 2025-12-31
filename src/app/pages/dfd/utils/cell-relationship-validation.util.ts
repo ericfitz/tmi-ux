@@ -59,6 +59,16 @@ const EMBEDDING_RULES = {
 };
 
 /**
+ * Context object passed to validation helper functions
+ */
+interface ValidationContext {
+  cellMap: Map<string, Cell>;
+  issues: ValidationIssue[];
+  fixCount: number;
+  logger: LoggerService;
+}
+
+/**
  * Validate and fix parent-child relationships in diagram cells
  *
  * This function ensures mutual consistency of parent-child relationships:
@@ -75,184 +85,168 @@ export function validateAndFixParentChildRelationships(
   cells: Cell[],
   logger: LoggerService,
 ): ValidationResult {
-  const issues: ValidationIssue[] = [];
-  let fixCount = 0;
-
   // Create a map of cell ID -> cell for quick lookups
   const cellMap = new Map<string, Cell>();
   cells.forEach(cell => cellMap.set(cell.id, cell));
 
-  // Build a map of parent ID -> child IDs based on parent references
-  const parentToChildren = new Map<string, Set<string>>();
-  cells.forEach(cell => {
-    const parent = cell['parent'] as string | null | undefined;
-    if (parent && parent !== null) {
-      if (!parentToChildren.has(parent)) {
-        parentToChildren.set(parent, new Set());
-      }
-      parentToChildren.get(parent)!.add(cell.id);
-    }
-  });
+  const context: ValidationContext = {
+    cellMap,
+    issues: [],
+    fixCount: 0,
+    logger,
+  };
 
-  // Validate each cell with a parent reference
+  // Validate parent references (child -> parent direction)
+  validateParentReferences(cells, context);
+
+  // Validate child references (parent -> children direction)
+  validateChildReferences(cells, context);
+
+  // Log summary
+  logValidationSummary(cells, context);
+
+  return {
+    hadIssues: context.fixCount > 0,
+    fixCount: context.fixCount,
+    issues: context.issues,
+    cells,
+  };
+}
+
+/**
+ * Validate parent references from each cell
+ * Ensures referenced parents exist and embedding rules are satisfied
+ */
+function validateParentReferences(cells: Cell[], context: ValidationContext): void {
   cells.forEach(cell => {
     const parent = cell['parent'] as string | null | undefined;
     if (!parent || parent === null) {
-      return; // No parent, nothing to validate
+      return;
     }
 
-    const parentCell = cellMap.get(parent);
+    const parentCell = context.cellMap.get(parent);
 
-    // Issue 1: Parent doesn't exist
+    // Check if parent exists
     if (!parentCell) {
-      const issue: ValidationIssue = {
+      addIssueAndFix(context, {
         type: 'missing-parent',
         childId: cell.id,
         parentId: parent,
         message: `Cell ${cell.id} references non-existent parent ${parent}`,
         action: 'Removed parent reference',
-      };
-      issues.push(issue);
-      logger.warn(issue.message, { childId: cell.id, parentId: parent, action: issue.action });
-
-      // Fix: Remove invalid parent reference
+      });
       cell['parent'] = null;
-      fixCount++;
       return;
     }
 
-    // Issue 2: Check for circular relationships
-    if (hasCircularRelationship(cell.id, parent, cellMap)) {
-      const issue: ValidationIssue = {
+    // Check for circular relationships
+    if (hasCircularRelationship(cell.id, parent, context.cellMap)) {
+      addIssueAndFix(context, {
         type: 'circular',
         childId: cell.id,
         parentId: parent,
         message: `Circular parent-child relationship detected for cell ${cell.id}`,
         action: 'Removed parent reference to break cycle',
-      };
-      issues.push(issue);
-      logger.warn(issue.message, { childId: cell.id, parentId: parent, action: issue.action });
-
-      // Fix: Remove parent reference to break cycle
+      });
       cell['parent'] = null;
-      fixCount++;
       return;
     }
 
-    // Issue 3: Validate embedding rules based on shape types
-    const childShape = cell.shape;
-    const parentShape = parentCell.shape;
+    // Validate embedding rules
+    validateEmbeddingRules(cell, parentCell, context);
+  });
+}
 
-    // Rule 3a: text-box cannot be a parent
-    if (EMBEDDING_RULES.CANNOT_BE_PARENT.includes(parentShape)) {
-      const issue: ValidationIssue = {
+/**
+ * Validate embedding rules based on shape types
+ */
+function validateEmbeddingRules(cell: Cell, parentCell: Cell, context: ValidationContext): void {
+  const childShape = cell.shape;
+  const parentShape = parentCell.shape;
+  const parent = cell['parent'] as string;
+
+  // Rule: text-box cannot be a parent
+  if (EMBEDDING_RULES.CANNOT_BE_PARENT.includes(parentShape)) {
+    addIssueAndFix(
+      context,
+      {
         type: 'invalid-parent-type',
         childId: cell.id,
         parentId: parent,
         message: `Cell ${cell.id} cannot be embedded in ${parentShape} (shape type ${parentShape} cannot contain other nodes)`,
         action: 'Removed parent reference',
-      };
-      issues.push(issue);
-      logger.warn(issue.message, {
-        childId: cell.id,
-        parentId: parent,
-        childShape,
-        parentShape,
-        action: issue.action,
-      });
+      },
+      { childShape, parentShape },
+    );
+    cell['parent'] = null;
+    return;
+  }
 
-      // Fix: Remove invalid parent reference
-      cell['parent'] = null;
-      fixCount++;
-      return;
-    }
-
-    // Rule 3b: security-boundary can only be embedded in security-boundary
-    if (
-      childShape === EMBEDDING_RULES.SECURITY_BOUNDARY_RULE.childShape &&
-      !EMBEDDING_RULES.SECURITY_BOUNDARY_RULE.allowedParents.includes(parentShape)
-    ) {
-      const issue: ValidationIssue = {
+  // Rule: security-boundary can only be embedded in security-boundary
+  if (
+    childShape === EMBEDDING_RULES.SECURITY_BOUNDARY_RULE.childShape &&
+    !EMBEDDING_RULES.SECURITY_BOUNDARY_RULE.allowedParents.includes(parentShape)
+  ) {
+    addIssueAndFix(
+      context,
+      {
         type: 'invalid-child-type',
         childId: cell.id,
         parentId: parent,
         message: `Security boundary ${cell.id} can only be embedded in other security boundaries, not ${parentShape}`,
         action: 'Removed parent reference',
-      };
-      issues.push(issue);
-      logger.warn(issue.message, {
-        childId: cell.id,
-        parentId: parent,
-        childShape,
-        parentShape,
-        action: issue.action,
-      });
+      },
+      { childShape, parentShape },
+    );
+    cell['parent'] = null;
+  }
+}
 
-      // Fix: Remove invalid parent reference
-      cell['parent'] = null;
-      fixCount++;
-      return;
-    }
-  });
-
-  // Validate reverse direction: if parent.children contains a child, that child must reference the parent
+/**
+ * Validate child references from parent cells
+ * Ensures children exist and reference the parent back
+ */
+function validateChildReferences(cells: Cell[], context: ValidationContext): void {
   cells.forEach(cell => {
     const children = cell['children'] as string[] | undefined;
     if (!children || !Array.isArray(children)) {
-      return; // No children array, nothing to validate
+      return;
     }
 
-    // Collect valid children (filter out invalid ones)
     const validChildren: string[] = [];
 
     children.forEach(childId => {
-      const childCell = cellMap.get(childId);
+      const childCell = context.cellMap.get(childId);
 
-      // Issue 4: Child in parent.children array doesn't exist
+      // Check if child exists
       if (!childCell) {
-        const issue: ValidationIssue = {
+        addIssueAndFix(context, {
           type: 'missing-child',
           childId: childId,
           parentId: cell.id,
           message: `Cell ${cell.id} has non-existent child ${childId} in children array`,
           action: 'Removed child from children array',
-        };
-        issues.push(issue);
-        logger.warn(issue.message, {
-          parentId: cell.id,
-          childId: childId,
-          action: issue.action,
         });
-
-        // Don't add to validChildren (effectively removes it)
-        fixCount++;
         return;
       }
 
-      // Issue 5: Child exists but doesn't reference this cell as parent
+      // Check if child references this parent
       const childParent = childCell['parent'] as string | null | undefined;
       if (childParent !== cell.id) {
-        const issue: ValidationIssue = {
-          type: 'missing-child',
-          childId: childId,
-          parentId: cell.id,
-          message: `Cell ${cell.id} lists ${childId} as child, but ${childId} doesn't reference ${cell.id} as parent (has parent: ${childParent || 'null'})`,
-          action: 'Added parent reference to child',
-        };
-        issues.push(issue);
-        logger.warn(issue.message, {
-          parentId: cell.id,
-          childId: childId,
-          childCurrentParent: childParent || null,
-          action: issue.action,
-        });
-
-        // Fix: Add parent reference to child
+        addIssueAndFix(
+          context,
+          {
+            type: 'missing-child',
+            childId: childId,
+            parentId: cell.id,
+            message: `Cell ${cell.id} lists ${childId} as child, but ${childId} doesn't reference ${cell.id} as parent (has parent: ${childParent || 'null'})`,
+            action: 'Added parent reference to child',
+          },
+          { childCurrentParent: childParent || null },
+        );
         childCell['parent'] = cell.id;
-        fixCount++;
       }
 
-      // Add to valid children
       validChildren.push(childId);
     });
 
@@ -261,14 +255,36 @@ export function validateAndFixParentChildRelationships(
       cell['children'] = validChildren;
     }
   });
+}
 
-  // Log summary
-  if (fixCount > 0) {
-    logger.warn('Fixed parent-child relationship issues in diagram cells', {
+/**
+ * Add an issue to the context and increment fix count
+ */
+function addIssueAndFix(
+  context: ValidationContext,
+  issue: ValidationIssue,
+  extraLogData?: Record<string, unknown>,
+): void {
+  context.issues.push(issue);
+  context.fixCount++;
+  context.logger.warn(issue.message, {
+    childId: issue.childId,
+    parentId: issue.parentId,
+    action: issue.action,
+    ...extraLogData,
+  });
+}
+
+/**
+ * Log validation summary
+ */
+function logValidationSummary(cells: Cell[], context: ValidationContext): void {
+  if (context.fixCount > 0) {
+    context.logger.warn('Fixed parent-child relationship issues in diagram cells', {
       totalCells: cells.length,
-      issuesFound: issues.length,
-      fixesApplied: fixCount,
-      issueTypes: issues.reduce(
+      issuesFound: context.issues.length,
+      fixesApplied: context.fixCount,
+      issueTypes: context.issues.reduce(
         (acc, issue) => {
           acc[issue.type] = (acc[issue.type] || 0) + 1;
           return acc;
@@ -277,7 +293,7 @@ export function validateAndFixParentChildRelationships(
       ),
     });
   } else {
-    logger.debugComponent(
+    context.logger.debugComponent(
       'CellRelationshipValidation',
       'All parent-child relationships validated successfully',
       {
@@ -289,13 +305,6 @@ export function validateAndFixParentChildRelationships(
       },
     );
   }
-
-  return {
-    hadIssues: fixCount > 0,
-    fixCount,
-    issues,
-    cells,
-  };
 }
 
 /**

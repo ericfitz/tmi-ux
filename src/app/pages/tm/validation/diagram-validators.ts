@@ -215,7 +215,17 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
   private validateNodeCell(cell: Cell, cellPath: string): ValidationError[] {
     const errors: ValidationError[] = [];
 
-    // Check for position in either flat or nested format
+    errors.push(...this._validatePosition(cell, cellPath));
+    errors.push(...this._validateSize(cell, cellPath));
+
+    return errors;
+  }
+
+  /**
+   * Validate position properties (supports both nested and flat formats)
+   */
+  private _validatePosition(cell: Cell, cellPath: string): ValidationError[] {
+    const errors: ValidationError[] = [];
     const hasNestedPosition = cell.position && typeof cell.position === 'object';
     const hasFlatPosition = typeof cell['x'] === 'number' && typeof cell['y'] === 'number';
 
@@ -227,9 +237,9 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
           cellPath,
         ),
       );
+      return errors;
     }
 
-    // Validate nested position format if present
     if (hasNestedPosition) {
       const position = cell.position as { x?: unknown; y?: unknown };
       if (typeof position.x !== 'number' || typeof position.y !== 'number') {
@@ -241,12 +251,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
           ),
         );
       }
-    }
-
-    // Validate flat position format if present
-    if (hasFlatPosition && !hasNestedPosition) {
-      // Position values are already validated by type check above
-      // Just ensure they are finite numbers
+    } else if (hasFlatPosition) {
       const x = cell['x'] as number;
       const y = cell['y'] as number;
       if (!isFinite(x) || !isFinite(y)) {
@@ -260,7 +265,14 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
       }
     }
 
-    // Check for size in either flat or nested format
+    return errors;
+  }
+
+  /**
+   * Validate size properties (supports both nested and flat formats)
+   */
+  private _validateSize(cell: Cell, cellPath: string): ValidationError[] {
+    const errors: ValidationError[] = [];
     const hasNestedSize = cell.size && typeof cell.size === 'object';
     const hasFlatSize = typeof cell['width'] === 'number' && typeof cell['height'] === 'number';
 
@@ -272,9 +284,13 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
           cellPath,
         ),
       );
+      return errors;
     }
 
-    // Validate nested size format if present
+    let width: number;
+    let height: number;
+    let sizePath = cellPath;
+
     if (hasNestedSize) {
       const size = cell.size as { width?: unknown; height?: unknown };
       if (typeof size.width !== 'number' || typeof size.height !== 'number') {
@@ -285,38 +301,14 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
             ValidationUtils.buildPath(cellPath, 'size'),
           ),
         );
-      } else {
-        // Validate minimum dimensions per OpenAPI spec (width >= 40, height >= 30)
-        if (size.width < 40 || size.height < 30) {
-          errors.push(
-            ValidationUtils.createError(
-              'INVALID_DIMENSIONS',
-              `Node dimensions must meet minimum requirements (width >= 40, height >= 30). Got width=${size.width}, height=${size.height}`,
-              ValidationUtils.buildPath(cellPath, 'size'),
-              'error',
-            ),
-          );
-        }
-
-        // Warn if dimensions are not positive
-        if (size.width <= 0 || size.height <= 0) {
-          errors.push(
-            ValidationUtils.createError(
-              'INVALID_DIMENSIONS',
-              'Node dimensions must be positive numbers',
-              ValidationUtils.buildPath(cellPath, 'size'),
-              'warning',
-            ),
-          );
-        }
+        return errors;
       }
-    }
-
-    // Validate flat size format if present
-    if (hasFlatSize && !hasNestedSize) {
-      const width = cell['width'] as number;
-      const height = cell['height'] as number;
-
+      width = size.width;
+      height = size.height;
+      sizePath = ValidationUtils.buildPath(cellPath, 'size');
+    } else {
+      width = cell['width'] as number;
+      height = cell['height'] as number;
       if (!isFinite(width) || !isFinite(height)) {
         errors.push(
           ValidationUtils.createError(
@@ -325,31 +317,40 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
             cellPath,
           ),
         );
-      } else {
-        // Validate minimum dimensions per OpenAPI spec (width >= 40, height >= 30)
-        if (width < 40 || height < 30) {
-          errors.push(
-            ValidationUtils.createError(
-              'INVALID_DIMENSIONS',
-              `Node dimensions must meet minimum requirements (width >= 40, height >= 30). Got width=${width}, height=${height}`,
-              cellPath,
-              'error',
-            ),
-          );
-        }
-
-        // Warn if dimensions are not positive
-        if (width <= 0 || height <= 0) {
-          errors.push(
-            ValidationUtils.createError(
-              'INVALID_DIMENSIONS',
-              'Node dimensions must be positive numbers',
-              cellPath,
-              'warning',
-            ),
-          );
-        }
+        return errors;
       }
+    }
+
+    errors.push(...this._validateDimensions(width, height, sizePath));
+    return errors;
+  }
+
+  /**
+   * Validate dimension values meet requirements
+   */
+  private _validateDimensions(width: number, height: number, path: string): ValidationError[] {
+    const errors: ValidationError[] = [];
+
+    if (width <= 0 || height <= 0) {
+      errors.push(
+        ValidationUtils.createError(
+          'INVALID_DIMENSIONS',
+          'Node dimensions must be positive numbers',
+          path,
+          'warning',
+        ),
+      );
+    }
+
+    if (width < 40 || height < 30) {
+      errors.push(
+        ValidationUtils.createError(
+          'INVALID_DIMENSIONS',
+          `Node dimensions must meet minimum requirements (width >= 40, height >= 30). Got width=${width}, height=${height}`,
+          path,
+          'error',
+        ),
+      );
     }
 
     return errors;
@@ -431,7 +432,7 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
     const duplicateIds: string[] = [];
 
     // Build cell ID map and check for duplicates
-    cells.forEach((cell, _index) => {
+    cells.forEach(cell => {
       if (cell?.id) {
         if (cellIds.has(cell.id)) {
           duplicateIds.push(cell.id);
@@ -458,38 +459,38 @@ export class DfdDiagramValidator extends BaseDiagramValidator {
     cells.forEach((cell, index) => {
       if (cell?.shape === 'edge' && cell.source && cell.target) {
         const cellPath = ValidationUtils.buildPath(basePath, index);
-
-        // Extract source ID (handle both string and object formats)
-        const sourceId = typeof cell.source === 'string' ? cell.source : cell.source.cell;
-        // Check if source exists
-        if (!cellIds.has(sourceId)) {
-          errors.push(
-            ValidationUtils.createError(
-              'INVALID_EDGE_SOURCE',
-              `Edge source '${sourceId}' does not reference an existing cell`,
-              ValidationUtils.buildPath(cellPath, 'source'),
-              'error',
-              { sourceId, availableIds: Array.from(cellIds) },
-            ),
-          );
-        }
-
-        // Extract target ID (handle both string and object formats)
-        const targetId = typeof cell.target === 'string' ? cell.target : cell.target.cell;
-        // Check if target exists
-        if (!cellIds.has(targetId)) {
-          errors.push(
-            ValidationUtils.createError(
-              'INVALID_EDGE_TARGET',
-              `Edge target '${targetId}' does not reference an existing cell`,
-              ValidationUtils.buildPath(cellPath, 'target'),
-              'error',
-              { targetId, availableIds: Array.from(cellIds) },
-            ),
-          );
-        }
+        errors.push(...this._validateEdgeReference(cell.source, 'source', cellIds, cellPath));
+        errors.push(...this._validateEdgeReference(cell.target, 'target', cellIds, cellPath));
       }
     });
+
+    return errors;
+  }
+
+  /**
+   * Validate an edge reference (source or target) exists in the cell set
+   */
+  private _validateEdgeReference(
+    ref: string | { cell: string },
+    refType: 'source' | 'target',
+    cellIds: Set<string>,
+    cellPath: string,
+  ): ValidationError[] {
+    const errors: ValidationError[] = [];
+    const refId = typeof ref === 'string' ? ref : ref.cell;
+
+    if (!cellIds.has(refId)) {
+      const errorCode = refType === 'source' ? 'INVALID_EDGE_SOURCE' : 'INVALID_EDGE_TARGET';
+      errors.push(
+        ValidationUtils.createError(
+          errorCode,
+          `Edge ${refType} '${refId}' does not reference an existing cell`,
+          ValidationUtils.buildPath(cellPath, refType),
+          'error',
+          { [refType + 'Id']: refId, availableIds: Array.from(cellIds) },
+        ),
+      );
+    }
 
     return errors;
   }

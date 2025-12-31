@@ -39,6 +39,25 @@ interface RejectionRecord {
   reason: string;
 }
 
+/** Lookup map for rejection reason to notification severity */
+const REJECTION_SEVERITY_MAP: Record<string, 'info' | 'warning' | 'error'> = {
+  no_state_change: 'info',
+  conflict_detected: 'warning',
+  validation_failed: 'error',
+  permission_denied: 'error',
+};
+
+/** Lookup map for rejection reason to notification title */
+const REJECTION_TITLE_MAP: Record<string, string> = {
+  conflict_detected: 'Operation Conflict',
+  validation_failed: 'Invalid Operation',
+  permission_denied: 'Permission Denied',
+  no_state_change: 'No Changes',
+  diagram_not_found: 'Diagram Not Found',
+  invalid_operation_type: 'Invalid Operation Type',
+  empty_operation: 'Empty Operation',
+};
+
 @Injectable()
 export class AppOperationRejectionHandler implements OnDestroy {
   private readonly _destroy$ = new Subject<void>();
@@ -264,50 +283,42 @@ export class AppOperationRejectionHandler implements OnDestroy {
 
     this.logger.info('Showing batched rejection notifications', { count });
 
-    // For now, just log the notification
+    const notification = this._buildNotification(count, firstEvent, requiresResync);
+
+    this.logger.warn('Rejection notification', notification);
+
+    // Clear pending notifications
+    this._pendingNotifications = [];
+    this._notificationTimer = null;
+
     // TODO: Integrate with actual notification service when available
+  }
+
+  /**
+   * Build notification object from rejection events
+   */
+  private _buildNotification(
+    count: number,
+    firstEvent: RejectionEvent,
+    requiresResync: boolean,
+  ): { title: string; message: string; severity: string; requiresResync: boolean; action: string } {
     const severity = this._getSeverity(firstEvent.reason);
-    const title =
-      count === 1
-        ? this._getTitle(firstEvent.reason)
-        : `${count} Operations Rejected: ${this._getTitle(firstEvent.reason)}`;
+    const baseTitle = this._getTitle(firstEvent.reason);
+
+    const title = count === 1 ? baseTitle : `${count} Operations Rejected: ${baseTitle}`;
 
     const message =
       count === 1
         ? `${firstEvent.message}\n\nRolled back 1 operation.`
         : `Multiple operations were rejected.\n\nRolled back ${count} operations.`;
 
-    this.logger.warn('Rejection notification', {
+    return {
       title,
       message,
       severity,
       requiresResync,
       action: requiresResync ? 'Resync Diagram' : 'None',
-    });
-
-    // Clear pending notifications
-    this._pendingNotifications = [];
-    this._notificationTimer = null;
-
-    // Note: In a real implementation, you would call a notification service here
-    // Example:
-    // if (requiresResync) {
-    //   this.notificationService.showWithAction({
-    //     title,
-    //     message,
-    //     severity,
-    //     actionLabel: 'Resync Diagram',
-    //     actionCallback: () => this._userInitiatedResync(),
-    //     duration: 15000,
-    //   });
-    // } else {
-    //   this.notificationService.show({
-    //     title,
-    //     message,
-    //     severity,
-    //     duration: 10000,
-    //   });
-    // }
+    };
   }
 
   /**
@@ -419,40 +430,13 @@ export class AppOperationRejectionHandler implements OnDestroy {
    * Get notification severity based on rejection reason
    */
   private _getSeverity(reason: string): 'info' | 'warning' | 'error' {
-    switch (reason) {
-      case 'no_state_change':
-        return 'info';
-      case 'conflict_detected':
-        return 'warning';
-      case 'validation_failed':
-      case 'permission_denied':
-        return 'error';
-      default:
-        return 'warning';
-    }
+    return REJECTION_SEVERITY_MAP[reason] ?? 'warning';
   }
 
   /**
    * Get notification title based on rejection reason
    */
   private _getTitle(reason: string): string {
-    switch (reason) {
-      case 'conflict_detected':
-        return 'Operation Conflict';
-      case 'validation_failed':
-        return 'Invalid Operation';
-      case 'permission_denied':
-        return 'Permission Denied';
-      case 'no_state_change':
-        return 'No Changes';
-      case 'diagram_not_found':
-        return 'Diagram Not Found';
-      case 'invalid_operation_type':
-        return 'Invalid Operation Type';
-      case 'empty_operation':
-        return 'Empty Operation';
-      default:
-        return 'Operation Rejected';
-    }
+    return REJECTION_TITLE_MAP[reason] ?? 'Operation Rejected';
   }
 }
