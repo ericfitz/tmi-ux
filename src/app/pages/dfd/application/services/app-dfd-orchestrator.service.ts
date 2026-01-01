@@ -446,91 +446,14 @@ export class AppDfdOrchestrator {
 
   /**
    * Load diagram data
+   * Delegates to loadDiagram() and returns a boolean indicating success
    */
   load(diagramId?: string): Observable<boolean> {
-    const targetDiagramId = diagramId || this._initParams?.diagramId;
-    const threatModelId = this._initParams?.threatModelId;
-
-    if (!targetDiagramId) {
-      return throwError(() => new Error('No diagram ID provided'));
-    }
-
-    if (!threatModelId) {
-      return throwError(() => new Error('No threat model ID available'));
-    }
-
-    this.logger.debugComponent('AppDfdOrchestrator', 'Loading diagram', {
-      diagramId: targetDiagramId,
-      threatModelId,
-    });
-
-    this._updateState({ loading: true });
-
-    const loadOperation = {
-      diagramId: targetDiagramId,
-      threatModelId,
-    };
-
-    const graph = this.dfdInfrastructure.getGraph();
-    if (!graph) {
-      this._updateState({ loading: false, error: 'Graph not initialized' });
-      return throwError(() => new Error('Graph not initialized'));
-    }
-
-    // Determine if we should allow localStorage fallback (local provider without server)
-    const allowLocalStorageFallback = this._isLocalProviderOffline();
-
-    return this.appPersistenceCoordinator.load(loadOperation, allowLocalStorageFallback).pipe(
-      map(result => {
-        if (result.success && result.data && result.data.cells) {
-          this.logger.info('Diagram data loaded from persistence, loading cells into graph', {
-            cellCount: result.data.cells.length,
-            updateVector: result.data.update_vector,
-          });
-
-          // Use AppDiagramLoadingService to properly load cells into the graph
-          // This ensures all edges get connector/router defaults from the domain layer
-          this.appDiagramLoadingService.loadCellsIntoGraph(
-            result.data.cells,
-            graph,
-            targetDiagramId,
-            this.dfdInfrastructure.graphAdapter,
-            {
-              clearExisting: true,
-              updateEmbedding: true,
-              source: 'orchestrator-load',
-            },
-          );
-
-          // Update the state store with the server's update vector to prevent resync loops
-          if (result.data.update_vector !== undefined && result.data.update_vector !== null) {
-            this.dfdStateStore.updateState(
-              { updateVector: result.data.update_vector },
-              'AppDfdOrchestrator.load',
-            );
-            this.logger.info('Updated local update vector after diagram load', {
-              updateVector: result.data.update_vector,
-            });
-          }
-
-          this._updateState({
-            loading: false,
-            hasUnsavedChanges: false,
-            lastSaved: new Date(),
-          });
-          return true;
-        }
-        this._updateState({ loading: false });
-        return false;
-      }),
-      catchError(error => {
-        this._updateState({
-          loading: false,
-          error: error.message || 'Load failed',
-        });
-        this.logger.error('Diagram load failed', { error });
-        return throwError(() => error);
-      }),
+    // Delegate to loadDiagram with forceLoad=true to skip unsaved changes check
+    // (load() is used during initialization when there are no unsaved changes to protect)
+    return this.loadDiagram(diagramId, true).pipe(
+      map(result => !!(result.success && result.data && result.data.cells)),
+      catchError(() => of(false)),
     );
   }
 
@@ -1227,6 +1150,17 @@ export class AppDfdOrchestrator {
               source: 'orchestrator-loadDiagram',
             },
           );
+
+          // Update the state store with the server's update vector to prevent resync loops
+          if (result.data.update_vector !== undefined && result.data.update_vector !== null) {
+            this.dfdStateStore.updateState(
+              { updateVector: result.data.update_vector },
+              'AppDfdOrchestrator.loadDiagram',
+            );
+            this.logger.info('Updated local update vector after diagram load', {
+              updateVector: result.data.update_vector,
+            });
+          }
 
           this._updateState({
             loading: false,
