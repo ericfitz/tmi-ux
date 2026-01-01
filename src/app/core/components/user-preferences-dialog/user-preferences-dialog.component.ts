@@ -18,10 +18,7 @@ import { UserProfile } from '@app/auth/models/auth.models';
 import { ThreatModelAuthorizationService } from '@app/pages/tm/services/threat-model-authorization.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import {
-  ClientCredentialInfo,
-  ClientCredentialResponse,
-} from '@app/types/client-credential.types';
+import { ClientCredentialInfo, ClientCredentialResponse } from '@app/types/client-credential.types';
 import { ClientCredentialService } from '../../services/client-credential.service';
 import { CreateCredentialDialogComponent } from './create-credential-dialog/create-credential-dialog.component';
 import {
