@@ -104,7 +104,48 @@ def get_non_translatable_keys(obj, prefix=""):
     return non_translatable
 
 
-def compare_keys(data1, data2, file1_name, file2_name):
+def load_allowlist(main_file_path):
+    """Load the i18n allowlist file if it exists.
+
+    The allowlist is a JSON file with language codes as keys and arrays of
+    key paths as values. The special key '*' contains keys that apply to all
+    languages.
+
+    Returns:
+        dict: The allowlist data, or empty dict if file doesn't exist
+    """
+    # Look for allowlist in the same directory as the main file
+    allowlist_path = os.path.join(os.path.dirname(main_file_path), "i18n-allowlist.json")
+    if os.path.exists(allowlist_path):
+        try:
+            with open(allowlist_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError) as e:
+            print(f"Warning: Failed to load allowlist from {allowlist_path}: {e}")
+    return {}
+
+
+def get_allowed_keys(allowlist, lang_code):
+    """Get the set of allowed keys for a specific language.
+
+    Args:
+        allowlist: The allowlist dictionary
+        lang_code: The language code (e.g., 'de-DE')
+
+    Returns:
+        set: Keys that are allowed to be identical to English
+    """
+    allowed = set()
+    # Add global allowlist keys (apply to all languages)
+    if "*" in allowlist:
+        allowed.update(allowlist["*"])
+    # Add language-specific allowlist keys
+    if lang_code in allowlist:
+        allowed.update(allowlist[lang_code])
+    return allowed
+
+
+def compare_keys(data1, data2, file1_name, file2_name, allowlist=None):
     """Compare keys between two JSON objects and report differences."""
     keys1 = get_all_keys(data1)
     keys2 = get_all_keys(data2)
@@ -133,12 +174,22 @@ def compare_keys(data1, data2, file1_name, file2_name):
     values1 = get_leaf_values(data1)
     values2 = get_leaf_values(data2)
 
+    # Get allowed keys from allowlist based on the target language file
+    allowed_keys = set()
+    if allowlist:
+        # Extract language code from file2_name (e.g., 'de-DE' from '.../de-DE.json')
+        lang_code = os.path.basename(file2_name).replace(".json", "")
+        allowed_keys = get_allowed_keys(allowlist, lang_code)
+
     # Find keys that exist in both and have the same string value
     untranslated = []
     common_keys = set(values1.keys()) & set(values2.keys())
     for key in common_keys:
         # Skip keys marked as non-translatable
         if key in non_translatable:
+            continue
+        # Skip keys in the allowlist
+        if key in allowed_keys:
             continue
         val1 = values1[key]
         val2 = values2[key]
@@ -230,6 +281,8 @@ def main(main_file_path, diff_files=None, auto_yes=False, dry_run=False):
     if not success:
         return False
 
+    # Load the allowlist for untranslated key checking
+    allowlist = load_allowlist(main_file_path)
 
     # If diff files specified, compare each one against the main file
     if diff_files:
@@ -237,7 +290,11 @@ def main(main_file_path, diff_files=None, auto_yes=False, dry_run=False):
             # Skip if this diff file is the same as the main file
             if os.path.abspath(diff_file) == os.path.abspath(main_file_path):
                 continue
-                
+
+            # Skip the allowlist file - it's not a translation file
+            if os.path.basename(diff_file) == "i18n-allowlist.json":
+                continue
+
             if not os.path.exists(diff_file):
                 print(f"Warning: Diff file {diff_file} not found, skipping.")
                 continue
@@ -250,7 +307,7 @@ def main(main_file_path, diff_files=None, auto_yes=False, dry_run=False):
 
             # Compare keys between main file and this diff file
             print(f"\n=== Comparing {main_file_path} with {diff_file} ===")
-            compare_keys(main_data, diff_data, main_file_path, diff_file)
+            compare_keys(main_data, diff_data, main_file_path, diff_file, allowlist)
 
             # Sort and save the diff file
             diff_success = rename_and_save_json(diff_data, diff_file, auto_yes, dry_run)
