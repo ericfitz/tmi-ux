@@ -215,7 +215,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   openUserPreferences(): void {
     this.dialog.open(UserPreferencesDialogComponent, {
-      width: '600px',
+      width: '800px',
       disableClose: false,
     });
   }

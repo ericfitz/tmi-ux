@@ -384,12 +384,7 @@ interface CheckboxChangeEvent {
   styles: [
     `
       mat-dialog-content {
-        min-width: 700px;
         padding: 0 24px;
-      }
-
-      .credentials-tab {
-        min-width: 750px;
       }
 
       ::ng-deep .mat-mdc-tab-header {
@@ -398,10 +393,6 @@ interface CheckboxChangeEvent {
 
       ::ng-deep .mat-mdc-tab-header-pagination {
         display: none !important;
-      }
-
-      ::ng-deep .mat-mdc-tab-label-container {
-        flex-grow: 0;
       }
 
       ::ng-deep .mat-mdc-tab-body-wrapper {
