@@ -795,6 +795,26 @@
                     >
                       <mat-icon>list</mat-icon>
                     </button>
+                    <button
+                      mat-icon-button
+                      [matMenuTriggerFor]="downloadModelMenu"
+                      [matTooltip]="'threatModels.tooltips.downloadModel' | transloco"
+                      [attr.aria-label]="'threatModels.tooltips.downloadModel' | transloco"
+                      (click)="$event.stopPropagation()"
+                    >
+                      <mat-icon class="download-icon">download</mat-icon>
+                    </button>
+                    <mat-menu #downloadModelMenu="matMenu">
+                      <button mat-menu-item (click)="downloadDiagramModel(diagram, 'json')">
+                        JSON
+                      </button>
+                      <button mat-menu-item (click)="downloadDiagramModel(diagram, 'yaml')">
+                        YAML
+                      </button>
+                      <button mat-menu-item (click)="downloadDiagramModel(diagram, 'graphml')">
+                        GraphML
+                      </button>
+                    </mat-menu>
                     @if (canEdit) {
                       <button
                         mat-icon-button

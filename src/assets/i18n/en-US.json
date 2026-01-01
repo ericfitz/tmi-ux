@@ -835,6 +835,8 @@
       "deleteDocument": "Delete Document",
       "deleteRepository": "Delete Repository Reference",
       "deleteThreat": "Delete Threat",
+      "downloadModel": "Download Model",
+      "downloadModel.comment": "This is a label for a button to instruct the application to download a model file.",
       "diagramsCardTitle": "Diagrams in TMI are machine-readable representations of data movement and processes within a system, enabling both manual and automated security analysis.",
       "documentsCardTitle": "Document references are links to documents stored outside TMI. Relevant documents describe the system to be analyzed, and can be used by both security analysts and automated analysis processes.",
       "loadFromDesktop": "Load From Desktop",

@@ -1820,6 +1820,185 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
+   * Downloads a diagram model in the specified format
+   * @param diagram The diagram to download
+   * @param format The format to download: 'json', 'yaml', or 'graphml'
+   */
+  downloadDiagramModel(diagram: Diagram, format: 'json' | 'yaml' | 'graphml'): void {
+    if (!this.threatModel) {
+      this.logger.warn('Cannot download diagram model: no threat model loaded');
+      return;
+    }
+
+    this.logger.info('Downloading diagram model', {
+      diagramId: diagram.id,
+      diagramName: diagram.name,
+      format,
+    });
+
+    this._subscriptions.add(
+      this.threatModelService.getDiagramModel(this.threatModel.id, diagram.id, format).subscribe({
+        next: content => {
+          const mimeType = this.getMimeTypeForFormat(format);
+          const extension = this.getExtensionForFormat(format);
+          const filename = this.generateDiagramModelFilename(diagram.name, extension);
+          const blob = new Blob([content], { type: mimeType });
+
+          this.handleDiagramModelExport(blob, filename, format).catch(error => {
+            this.logger.error('Error downloading diagram model', error);
+          });
+        },
+        error: error => {
+          this.logger.error('Error fetching diagram model from API', error);
+        },
+      }),
+    );
+  }
+
+  /**
+   * Get the MIME type for a diagram model format
+   */
+  private getMimeTypeForFormat(format: 'json' | 'yaml' | 'graphml'): string {
+    switch (format) {
+      case 'json':
+        return 'application/json';
+      case 'yaml':
+        return 'application/x-yaml';
+      case 'graphml':
+        return 'application/xml';
+      default:
+        return 'application/octet-stream';
+    }
+  }
+
+  /**
+   * Get the file extension for a diagram model format
+   */
+  private getExtensionForFormat(format: 'json' | 'yaml' | 'graphml'): string {
+    switch (format) {
+      case 'json':
+        return '.json';
+      case 'yaml':
+        return '.yaml';
+      case 'graphml':
+        return '.graphml';
+      default:
+        return '';
+    }
+  }
+
+  /**
+   * Generate filename for diagram model download
+   * Format: "{threatModelName}-{diagramName}-model{extension}"
+   */
+  private generateDiagramModelFilename(diagramName: string, extension: string): string {
+    const sanitizeAndTruncate = (name: string, maxLength: number): string => {
+      const sanitized = name
+        .replace(/[<>:"/\\|?*]/g, '-')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+      return sanitized.length > maxLength ? sanitized.substring(0, maxLength) : sanitized;
+    };
+
+    const threatModelPart = sanitizeAndTruncate(
+      this.threatModel?.name?.trim() || 'ThreatModel',
+      40,
+    );
+    const diagramPart = sanitizeAndTruncate(diagramName.trim(), 40);
+
+    const filename = `${threatModelPart}-${diagramPart}-model${extension}`;
+
+    this.logger.debugComponent('TmEdit', 'Generated diagram model filename', {
+      threatModelName: this.threatModel?.name,
+      diagramName,
+      filename,
+    });
+
+    return filename;
+  }
+
+  /**
+   * Handle diagram model export using File System Access API with fallback
+   */
+  private async handleDiagramModelExport(
+    blob: Blob,
+    filename: string,
+    format: 'json' | 'yaml' | 'graphml',
+  ): Promise<void> {
+    if ('showSaveFilePicker' in window) {
+      try {
+        this.logger.debugComponent('TmEdit', 'Using File System Access API for diagram model save');
+
+        const fileTypes = this.getFileTypesForFormat(format);
+        const fileHandle = await window.showSaveFilePicker({
+          suggestedName: filename,
+          types: fileTypes,
+        });
+
+        const writable = await fileHandle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+
+        this.logger.info('Diagram model saved successfully using File System Access API', {
+          filename,
+          format,
+        });
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          this.logger.debugComponent('TmEdit', 'Diagram model save cancelled by user');
+          return;
+        } else {
+          this.logger.warn('File System Access API failed, falling back to download method', error);
+        }
+      }
+    } else {
+      this.logger.debugComponent(
+        'TmEdit',
+        'File System Access API not supported, using fallback download method',
+      );
+    }
+
+    // Fallback method
+    try {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      this.logger.info('Diagram model downloaded successfully using fallback method', {
+        filename,
+        format,
+      });
+    } catch (fallbackError) {
+      this.logger.error('Both File System Access API and fallback method failed', fallbackError);
+      throw fallbackError;
+    }
+  }
+
+  /**
+   * Get file types configuration for the save dialog based on format
+   */
+  private getFileTypesForFormat(
+    format: 'json' | 'yaml' | 'graphml',
+  ): { description: string; accept: Record<string, string[]> }[] {
+    switch (format) {
+      case 'json':
+        return [{ description: 'JSON files', accept: { 'application/json': ['.json'] } }];
+      case 'yaml':
+        return [{ description: 'YAML files', accept: { 'application/x-yaml': ['.yaml', '.yml'] } }];
+      case 'graphml':
+        return [{ description: 'GraphML files', accept: { 'application/xml': ['.graphml'] } }];
+      default:
+        return [];
+    }
+  }
+
+  /**
    * Opens the metadata dialog for a specific note
    */
   openNoteMetadataDialog(note: Note, event: Event): void {

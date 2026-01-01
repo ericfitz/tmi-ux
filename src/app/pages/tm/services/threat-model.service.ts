@@ -1263,6 +1263,42 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
+   * Get the minimal diagram model for automated analysis
+   * Returns content in the specified format (json, yaml, or graphml)
+   * @param threatModelId The threat model ID
+   * @param diagramId The diagram ID
+   * @param format Output format: 'json', 'yaml', or 'graphml'
+   * @returns Observable containing the model content as a string
+   */
+  getDiagramModel(
+    threatModelId: string,
+    diagramId: string,
+    format: 'json' | 'yaml' | 'graphml',
+  ): Observable<string> {
+    return this.apiService
+      .get<string | object>(`threat_models/${threatModelId}/diagrams/${diagramId}/model`, {
+        format,
+      })
+      .pipe(
+        map(response => {
+          // For JSON format, the API returns an object; convert to string
+          if (format === 'json' && typeof response === 'object') {
+            return JSON.stringify(response, null, 2);
+          }
+          // For YAML and GraphML, the API returns a string
+          return response as string;
+        }),
+        catchError(error => {
+          this.logger.error(
+            `Error getting diagram model for diagram ID: ${diagramId} in format: ${format}`,
+            error,
+          );
+          throw error;
+        }),
+      );
+  }
+
+  /**
    * Get metadata for a threat
    */
   getThreatMetadata(threatModelId: string, threatId: string): Observable<Metadata[]> {
