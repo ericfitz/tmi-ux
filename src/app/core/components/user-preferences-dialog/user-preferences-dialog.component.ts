@@ -392,7 +392,7 @@ interface CheckboxChangeEvent {
   styles: [
     `
       mat-dialog-content {
-        min-width: 550px;
+        min-width: 700px;
         padding: 0 24px;
       }
 
@@ -548,10 +548,11 @@ interface CheckboxChangeEvent {
         overflow-x: auto;
         border: 1px solid var(--theme-divider);
         border-radius: 4px;
+        max-width: 100%;
       }
 
       .credentials-table {
-        width: 100%;
+        min-width: 650px;
       }
 
       .credentials-table th {
