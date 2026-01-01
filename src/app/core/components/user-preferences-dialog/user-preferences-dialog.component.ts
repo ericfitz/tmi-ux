@@ -266,9 +266,7 @@ interface CheckboxChangeEvent {
                       Client ID
                     </th>
                     <td mat-cell *matCellDef="let credential">
-                      <span class="client-id" [matTooltip]="credential.client_id">
-                        {{ truncateClientId(credential.client_id) }}
-                      </span>
+                      <span class="client-id">{{ credential.client_id }}</span>
                     </td>
                   </ng-container>
 
@@ -545,14 +543,21 @@ interface CheckboxChangeEvent {
       }
 
       .credentials-table-container {
-        overflow-x: auto;
         border: 1px solid var(--theme-divider);
         border-radius: 4px;
-        max-width: 100%;
       }
 
       .credentials-table {
-        min-width: 650px;
+        width: 100%;
+      }
+
+      .credentials-table th,
+      .credentials-table td {
+        white-space: normal;
+        word-break: break-word;
+        vertical-align: top;
+        padding-top: 12px;
+        padding-bottom: 12px;
       }
 
       .credentials-table th {
@@ -569,18 +574,21 @@ interface CheckboxChangeEvent {
 
       .credential-name {
         font-weight: 500;
+        word-break: break-word;
       }
 
       .credential-description {
         font-size: 12px;
         color: var(--theme-text-secondary);
-        margin-top: 2px;
+        margin-top: 4px;
+        word-break: break-word;
       }
 
       .client-id {
         font-family: monospace;
         font-size: 12px;
         color: var(--theme-text-secondary);
+        word-break: break-all;
       }
 
       .status-badge {
@@ -844,13 +852,6 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
           },
         });
     }
-  }
-
-  truncateClientId(clientId: string): string {
-    if (clientId.length <= 16) {
-      return clientId;
-    }
-    return clientId.substring(0, 16) + '...';
   }
 
   formatDate(dateString: string): string {
