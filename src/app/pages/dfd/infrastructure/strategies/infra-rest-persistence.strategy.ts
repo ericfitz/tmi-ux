@@ -142,6 +142,7 @@ export class InfraRestPersistenceStrategy {
             data: {
               cells: loadResult.diagram.cells || [],
               name: loadResult.diagram.name,
+              description: loadResult.diagram.description,
               threatModelId: loadResult.diagram.threatModelId,
               threatModelName: loadResult.diagram.threatModelName,
               update_vector: loadResult.diagram.update_vector,
