@@ -360,7 +360,7 @@ export class TmComponent implements OnInit, OnDestroy {
   /**
    * Load a threat model from desktop using File System Access API
    */
-  async loadFromDesktop(): Promise<void> {
+  async import(): Promise<void> {
     this.logger.info('Loading threat model from desktop');
 
     try {

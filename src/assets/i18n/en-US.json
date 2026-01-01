@@ -749,7 +749,7 @@
     },
     "documentName": "Document Name",
     "documentUrl": "Document URL",
-    "downloadButton": "Download to Desktop",
+    "export": "Export",
     "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",
     "idLabel": "ID",
     "importing": "Importing threat model...",
@@ -839,7 +839,7 @@
       "documentsCardTitle": "Document references are links to documents stored outside TMI. Relevant documents describe the system to be analyzed, and can be used by both security analysts and automated analysis processes.",
       "downloadModel": "Download Model",
       "downloadModel.comment": "This is a label for a button to instruct the application to download a model file.",
-      "loadFromDesktop": "Load From Desktop",
+      "import": "Import",
       "notesCardTitle": "Notes are markdown format text that is completely contained within the threat model, used to capture notes and annotation from security analysts and automated analysis processes.",
       "repositoriesCardTitle": "Repositories are links to Source Code Repositories where source code for the system is managed.",
       "threatsCardTitle": "Threats are potential adverse events or action that exploits a vulnerability or weakness in a system to compromise its confidentiality, integrity, availability, or other security objectives. In TMI, threat objects also contain information about the type and level of risk associated with the threat and information to track the work needed to mitigate the threat."

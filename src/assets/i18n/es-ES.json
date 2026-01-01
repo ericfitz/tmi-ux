@@ -725,7 +725,7 @@
     },
     "documentName": "Nombre del Documento",
     "documentUrl": "URL del Documento",
-    "downloadButton": "Descargar al Escritorio",
+    "export": "Exportar",
     "frameworkDisabledHint": "No Se Puede Cambiar el Framework Cuando Existen Amenazas",
     "idLabel": "ID",
     "importing": "Importando modelo de amenazas...",
@@ -814,7 +814,7 @@
       "diagramsCardTitle": "Los diagramas en TMI son representaciones legibles por máquina del movimiento de datos y procesos dentro de un sistema, permitiendo análisis de seguridad tanto manual como automatizado.",
       "documentsCardTitle": "Las referencias de documentos son enlaces a documentos almacenados fuera de TMI. Los documentos relevantes describen el sistema a analizar y pueden ser utilizados tanto por analistas de seguridad como por procesos de análisis automatizados.",
       "downloadModel": "Descargar modelo",
-      "loadFromDesktop": "Cargar desde Escritorio",
+      "import": "Importar",
       "notesCardTitle": "Las notas son texto en formato markdown que está completamente contenido dentro del modelo de amenazas, utilizado para capturar notas y anotaciones de analistas de seguridad y procesos de análisis automatizados.",
       "repositoriesCardTitle": "Los repositorios son enlaces a Repositorios de Código Fuente donde se gestiona el código fuente del sistema.",
       "threatsCardTitle": "Las amenazas son eventos adversos potenciales o acciones que explotan una vulnerabilidad o debilidad en un sistema para comprometer su confidencialidad, integridad, disponibilidad u otros objetivos de seguridad. En TMI, los objetos de amenaza también contienen información sobre el tipo y nivel de riesgo asociado con la amenaza e información para rastrear el trabajo necesario para mitigar la amenaza."

@@ -725,7 +725,7 @@
     },
     "documentName": "Nama Dokumen",
     "documentUrl": "URL Dokumen",
-    "downloadButton": "Unduh ke Desktop",
+    "export": "Ekspor",
     "frameworkDisabledHint": "Tidak Dapat Mengubah Framework Ketika Ancaman Ada",
     "idLabel": "ID",
     "importing": "Mengimpor model ancaman...",
@@ -814,7 +814,7 @@
       "diagramsCardTitle": "Diagram di TMI adalah representasi yang dapat dibaca mesin dari pergerakan data dan proses dalam sistem, memungkinkan analisis keamanan manual dan otomatis.",
       "documentsCardTitle": "Referensi dokumen adalah tautan ke dokumen yang disimpan di luar TMI. Dokumen yang relevan menjelaskan sistem yang akan dianalisis, dan dapat digunakan oleh analis keamanan dan proses analisis otomatis.",
       "downloadModel": "Unduh Model",
-      "loadFromDesktop": "Muat dari Desktop",
+      "import": "Impor",
       "notesCardTitle": "Catatan adalah teks format markdown yang sepenuhnya terkandung dalam model ancaman, digunakan untuk menangkap catatan dan anotasi dari analis keamanan dan proses analisis otomatis.",
       "repositoriesCardTitle": "Repositori adalah tautan ke Repositori Kode Sumber tempat kode sumber sistem dikelola.",
       "threatsCardTitle": "Ancaman adalah potensi peristiwa atau tindakan merugikan yang mengeksploitasi kerentanan atau kelemahan dalam sistem untuk mengkompromikan kerahasiaan, integritas, ketersediaan, atau tujuan keamanan lainnya. Di TMI, objek ancaman juga berisi informasi tentang jenis dan tingkat risiko yang terkait dengan ancaman dan informasi untuk melacak pekerjaan yang diperlukan untuk memitigasi ancaman."
