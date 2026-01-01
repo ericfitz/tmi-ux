@@ -902,9 +902,34 @@
     },
     "colorBlindMode": "Enable Color Blind Mode",
     "credentials": {
-      "comingSoon": "Coming soon",
-      "description": "This feature will allow you to manage API credentials for webhooks, external integrations, and programmatic access to your threat models.",
-      "title": "API Credentials"
+      "add": "Add",
+      "clientId": "Client ID",
+      "clientSecret": "Client Secret",
+      "created": "{{common.created}}",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "Optional: Describe what this credential is used for",
+        "descriptionPlaceholder": "Used for CI/CD pipeline integration",
+        "descriptionTooLong": "Description must be 500 characters or less",
+        "expiresAt": "Expiration Date",
+        "expiresAtHint": "Optional: Leave blank for no expiration",
+        "name": "{{common.name}}",
+        "nameHint": "A descriptive name for this credential",
+        "namePlaceholder": "My API Credential",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "Name must be 100 characters or less",
+        "title": "Create Client Credential"
+      },
+      "lastUsed": "Last Used",
+      "noCredentials": "No client credentials yet",
+      "noCredentialsDescription": "Create credentials to access the TMI API programmatically.",
+      "secretDialog": {
+        "title": "Client Credential Created",
+        "warning": "Save these credentials now. The client secret will not be shown again."
+      },
+      "status": "{{common.status}}",
+      "title": "Client Credentials"
     },
     "deleteMyData": {
       "confirmation": "Are you sure that you want to delete all your data?",
