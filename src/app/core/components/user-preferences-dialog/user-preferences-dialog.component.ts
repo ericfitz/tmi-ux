@@ -394,6 +394,10 @@ interface CheckboxChangeEvent {
         padding: 0 24px;
       }
 
+      .credentials-tab {
+        min-width: 750px;
+      }
+
       ::ng-deep .mat-mdc-tab-header {
         --mdc-secondary-navigation-tab-container-height: 40px;
       }
