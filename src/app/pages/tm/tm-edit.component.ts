@@ -170,6 +170,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   assetsDisplayedColumns: string[] = [
     'icon',
     'name',
+    'description',
     'criticality',
     'sensitivity',
     'classification',
@@ -178,9 +179,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   threatsDisplayedColumns: string[] = [
     'icon',
     'name',
+    'description',
     'status',
     'severity',
-    'description',
     'hyperlink',
     'actions',
   ];
