@@ -385,7 +385,7 @@
       "writer": "Penulis"
     },
     "save": "Simpan",
-    "saveAndClose": "Simpan & Tutup",
+    "saveAndClose": "Simpan dan Tutup",
     "score": "Skor",
     "sensitivity": "Sensitivitas",
     "sessionRoles": {
@@ -813,6 +813,7 @@
       "deleteThreat": "Hapus Ancaman",
       "diagramsCardTitle": "Diagram di TMI adalah representasi yang dapat dibaca mesin dari pergerakan data dan proses dalam sistem, memungkinkan analisis keamanan manual dan otomatis.",
       "documentsCardTitle": "Referensi dokumen adalah tautan ke dokumen yang disimpan di luar TMI. Dokumen yang relevan menjelaskan sistem yang akan dianalisis, dan dapat digunakan oleh analis keamanan dan proses analisis otomatis.",
+      "downloadModel": "Unduh Model",
       "loadFromDesktop": "Muat dari Desktop",
       "notesCardTitle": "Catatan adalah teks format markdown yang sepenuhnya terkandung dalam model ancaman, digunakan untuk menangkap catatan dan anotasi dari analis keamanan dan proses analisis otomatis.",
       "repositoriesCardTitle": "Repositori adalah tautan ke Repositori Kode Sumber tempat kode sumber sistem dikelola.",

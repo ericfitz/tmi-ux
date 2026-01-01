@@ -813,6 +813,7 @@
       "deleteThreat": "Excluir Ameaca",
       "diagramsCardTitle": "Diagramas no TMI sao representacoes legiveis por maquina do movimento de dados e processos dentro de um sistema, permitindo analise de seguranca manual e automatizada.",
       "documentsCardTitle": "Referencias de documentos sao links para documentos armazenados fora do TMI. Documentos relevantes descrevem o sistema a ser analisado e podem ser usados por analistas de seguranca e processos de analise automatizada.",
+      "downloadModel": "Baixar modelo",
       "loadFromDesktop": "Carregar do Desktop",
       "notesCardTitle": "Notas sao texto em formato markdown contido inteiramente no modelo de ameacas, usado para capturar notas e anotacoes de analistas de seguranca e processos de analise automatizada.",
       "repositoriesCardTitle": "Repositorios sao links para Repositorios de Codigo Fonte onde o codigo fonte do sistema e gerenciado.",

@@ -813,6 +813,7 @@
       "deleteThreat": "Supprimer la menace",
       "diagramsCardTitle": "Les diagrammes dans TMI sont des representations lisibles par machine du mouvement des donnees et des processus au sein d'un systeme, permettant une analyse de securite manuelle et automatisee.",
       "documentsCardTitle": "Les references de documents sont des liens vers des documents stockes en dehors de TMI. Les documents pertinents decrivent le systeme a analyser et peuvent etre utilises par les analystes de securite et les processus d'analyse automatises.",
+      "downloadModel": "Télécharger le modèle",
       "loadFromDesktop": "Charger depuis le bureau",
       "notesCardTitle": "Les notes sont du texte au format markdown entierement contenu dans le modele de menaces, utilise pour capturer les notes et annotations des analystes de securite et des processus d'analyse automatises.",
       "repositoriesCardTitle": "Les depots sont des liens vers des depots de code source ou le code source du systeme est gere.",

@@ -385,7 +385,7 @@
       "writer": "Bearbeiter"
     },
     "save": "Speichern",
-    "saveAndClose": "Speichern & Schließen",
+    "saveAndClose": "Speichern und Schließen",
     "score": "Bewertung",
     "sensitivity": "Sensibilität",
     "sessionRoles": {
@@ -813,6 +813,7 @@
       "deleteThreat": "Bedrohung löschen",
       "diagramsCardTitle": "Diagramme in TMI sind maschinenlesbare Darstellungen von Datenbewegungen und Prozessen innerhalb eines Systems, die sowohl manuelle als auch automatisierte Sicherheitsanalysen ermöglichen.",
       "documentsCardTitle": "Dokumentreferenzen sind Links zu Dokumenten, die außerhalb von TMI gespeichert sind. Relevante Dokumente beschreiben das zu analysierende System und können sowohl von Sicherheitsanalysten als auch von automatisierten Analyseprozessen verwendet werden.",
+      "downloadModel": "Modell herunterladen",
       "loadFromDesktop": "Vom Desktop laden",
       "notesCardTitle": "Notizen sind Texte im Markdown-Format, die vollständig im Bedrohungsmodell enthalten sind und zur Erfassung von Notizen und Anmerkungen von Sicherheitsanalysten und automatisierten Analyseprozessen verwendet werden.",
       "repositoriesCardTitle": "Repositories sind Links zu Quellcode-Repositories, in denen der Quellcode für das System verwaltet wird.",

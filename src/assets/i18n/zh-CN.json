@@ -813,6 +813,7 @@
       "deleteThreat": "删除威胁",
       "diagramsCardTitle": "TMI中的图表是系统内数据流动和处理过程的机器可读表示，支持手动和自动化安全分析。",
       "documentsCardTitle": "文档引用是指向存储在TMI外部的文档的链接。相关文档描述要分析的系统，可供安全分析师和自动化分析流程使用。",
+      "downloadModel": "下载模型",
       "loadFromDesktop": "从桌面加载",
       "notesCardTitle": "笔记是完全包含在威胁模型中的markdown格式文本，用于捕获来自安全分析师和自动化分析流程的笔记和注释。",
       "repositoriesCardTitle": "代码仓库是指向源代码仓库的链接，这些仓库管理着系统的源代码。",

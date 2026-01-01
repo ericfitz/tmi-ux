@@ -813,6 +813,7 @@
       "deleteThreat": "Eliminar Amenaza",
       "diagramsCardTitle": "Los diagramas en TMI son representaciones legibles por máquina del movimiento de datos y procesos dentro de un sistema, permitiendo análisis de seguridad tanto manual como automatizado.",
       "documentsCardTitle": "Las referencias de documentos son enlaces a documentos almacenados fuera de TMI. Los documentos relevantes describen el sistema a analizar y pueden ser utilizados tanto por analistas de seguridad como por procesos de análisis automatizados.",
+      "downloadModel": "Descargar modelo",
       "loadFromDesktop": "Cargar desde Escritorio",
       "notesCardTitle": "Las notas son texto en formato markdown que está completamente contenido dentro del modelo de amenazas, utilizado para capturar notas y anotaciones de analistas de seguridad y procesos de análisis automatizados.",
       "repositoriesCardTitle": "Los repositorios son enlaces a Repositorios de Código Fuente donde se gestiona el código fuente del sistema.",
