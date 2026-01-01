@@ -597,10 +597,16 @@ mat-card-header {
 .column-description {
   flex: 1;
   min-width: 150px;
+  max-width: 300px;
   color: var(--theme-text-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+
+  .description-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: break-word;
+  }
 }
 
 .column-status {

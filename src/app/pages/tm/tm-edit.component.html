@@ -336,7 +336,7 @@
                   {{ 'common.description' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let asset" class="column-description">
-                  {{ asset.description || '-' }}
+                  <span class="description-text">{{ asset.description || '-' }}</span>
                 </td>
               </ng-container>
 
@@ -559,7 +559,7 @@
                   {{ 'common.description' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let threat" class="column-description">
-                  {{ threat.description || '-' }}
+                  <span class="description-text">{{ threat.description || '-' }}</span>
                 </td>
               </ng-container>
 
@@ -725,7 +725,7 @@
                   {{ 'common.description' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let diagram" class="column-description">
-                  {{ diagram.description || '-' }}
+                  <span class="description-text">{{ diagram.description || '-' }}</span>
                 </td>
               </ng-container>
 
@@ -916,7 +916,7 @@
                   {{ 'common.description' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let note" class="column-description">
-                  {{ note.description || '-' }}
+                  <span class="description-text">{{ note.description || '-' }}</span>
                 </td>
               </ng-container>
 
@@ -1062,7 +1062,7 @@
                   {{ 'common.description' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let document" class="column-description">
-                  {{ document.description || '-' }}
+                  <span class="description-text">{{ document.description || '-' }}</span>
                 </td>
               </ng-container>
 
@@ -1220,7 +1220,7 @@
                   {{ 'common.description' | transloco }}
                 </th>
                 <td mat-cell *matCellDef="let repository" class="column-description">
-                  {{ repository.description || '-' }}
+                  <span class="description-text">{{ repository.description || '-' }}</span>
                 </td>
               </ng-container>
 
