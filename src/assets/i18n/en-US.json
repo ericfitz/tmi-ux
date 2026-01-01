@@ -241,13 +241,10 @@
   "assetEditor": {
     "chipPlaceholder": "Enter value and press Enter",
     "chipPlaceholder.comment": "The first 'Enter' is an imperative verb.  The second is a reference to the enter/return key on the keyboard.",
-    "classification": "Classification",
-    "classification.comment": "Used in the sense of the category that something is placed in.",
-    "criticality": "Criticality",
-    "criticality.comment": "Used in the sense of how important something is, or how much impact would occur.",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "Asset Name",
-    "sensitivity": "Sensitivity",
-    "sensitivity.comment": "Used in the sense of how damaging something would be if it were discovered, not in the sense of the keenness of senses.",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "Create Asset",
       "edit": "Edit Asset",
@@ -438,7 +435,10 @@
     "view.comment": "View is used as a verb here.",
     "viewMetadata": "View Metadata",
     "viewPermissions": "View Permissions",
-    "viewThreat": "View Threat"
+    "viewThreat": "View Threat",
+    "classification.comment": "Used in the sense of the category that something is placed in.",
+    "criticality.comment": "Used in the sense of how important something is, or how much impact would occur.",
+    "sensitivity.comment": "Used in the sense of how damaging something would be if it were discovered, not in the sense of the keenness of senses."
   },
   "contextMenu": {
     "addInverseConnection": "Add Inverse Connection",
@@ -517,7 +517,7 @@
       "textbox": "Text"
     },
     "pageTitle": "Data Flow Diagram Editor",
-    "description": "Description",
+    "description": "{{common.description}}",
     "diagramNamePlaceholder": "Enter diagram name",
     "diagramDescriptionPlaceholder": "Enter diagram description",
     "editDiagramName": "Click to edit diagram name",

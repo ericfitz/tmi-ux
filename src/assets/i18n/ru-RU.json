@@ -227,10 +227,10 @@
   },
   "assetEditor": {
     "chipPlaceholder": "Введите значение и нажмите Enter",
-    "classification": "Классификация",
-    "criticality": "Критичность",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "Название актива",
-    "sensitivity": "Чувствительность",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "Создать Актив",
       "edit": "Редактировать Актив",
@@ -512,7 +512,8 @@
         "undo": "Отменить",
         "zoomToFit": "Масштабировать по размеру"
       }
-    }
+    },
+    "description": "{{common.description}}"
   },
   "errors": {
     "validationError": "Ошибка валидации"

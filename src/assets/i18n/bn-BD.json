@@ -227,10 +227,10 @@
   },
   "assetEditor": {
     "chipPlaceholder": "মান লিখুন এবং Enter চাপুন",
-    "classification": "শ্রেণীবিভাগ",
-    "criticality": "গুরুত্ব",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "অ্যাসেটের নাম",
-    "sensitivity": "সংবেদনশীলতা",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "অ্যাসেট তৈরি করুন",
       "edit": "অ্যাসেট সম্পাদনা করুন",
@@ -512,7 +512,8 @@
         "undo": "আনডু",
         "zoomToFit": "ফিট করে জুম করুন"
       }
-    }
+    },
+    "description": "{{common.description}}"
   },
   "errors": {
     "validationError": "যাচাইকরণ ত্রুটি"

@@ -227,10 +227,10 @@
   },
   "assetEditor": {
     "chipPlaceholder": "値を入力してEnterを押してください",
-    "classification": "分類",
-    "criticality": "重要度",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "アセット名",
-    "sensitivity": "機密性",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "アセットを作成",
       "edit": "アセットを編集",
@@ -512,7 +512,8 @@
         "undo": "元に戻す",
         "zoomToFit": "全体を表示"
       }
-    }
+    },
+    "description": "{{common.description}}"
   },
   "errors": {
     "validationError": "バリデーションエラー"

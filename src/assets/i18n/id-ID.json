@@ -227,10 +227,10 @@
   },
   "assetEditor": {
     "chipPlaceholder": "Masukkan nilai dan tekan Enter",
-    "classification": "Klasifikasi",
-    "criticality": "Kekritisan",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "Nama Aset",
-    "sensitivity": "Sensitivitas",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "Buat Aset",
       "edit": "Edit Aset",
@@ -512,7 +512,8 @@
         "undo": "Batalkan",
         "zoomToFit": "Perbesar Sesuai Layar"
       }
-    }
+    },
+    "description": "{{common.description}}"
   },
   "errors": {
     "validationError": "Kesalahan Validasi"

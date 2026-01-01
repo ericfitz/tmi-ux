@@ -227,10 +227,10 @@
   },
   "assetEditor": {
     "chipPlaceholder": "ป้อนค่าและกด Enter",
-    "classification": "การจัดหมวดหมู่",
-    "criticality": "ความสำคัญวิกฤต",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "ชื่อสินทรัพย์",
-    "sensitivity": "ความอ่อนไหว",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "สร้างสินทรัพย์",
       "edit": "แก้ไขสินทรัพย์",
@@ -512,7 +512,8 @@
         "undo": "เลิกทำ",
         "zoomToFit": "ซูมให้พอดีหน้าจอ"
       }
-    }
+    },
+    "description": "{{common.description}}"
   },
   "errors": {
     "validationError": "ข้อผิดพลาดในการตรวจสอบ"

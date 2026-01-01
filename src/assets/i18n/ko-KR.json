@@ -227,10 +227,10 @@
   },
   "assetEditor": {
     "chipPlaceholder": "값을 입력하고 Enter를 누르세요",
-    "classification": "분류",
-    "criticality": "중요도",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "자산 이름",
-    "sensitivity": "민감도",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "자산 생성",
       "edit": "자산 편집",
@@ -512,7 +512,8 @@
         "undo": "실행 취소",
         "zoomToFit": "화면에 맞게 확대/축소"
       }
-    }
+    },
+    "description": "{{common.description}}"
   },
   "errors": {
     "validationError": "유효성 검사 오류"

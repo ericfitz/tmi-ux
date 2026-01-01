@@ -227,10 +227,10 @@
   },
   "assetEditor": {
     "chipPlaceholder": "输入值并按 Enter",
-    "classification": "分类",
-    "criticality": "关键性",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "资产名称",
-    "sensitivity": "敏感性",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "创建资产",
       "edit": "编辑资产",
@@ -512,7 +512,8 @@
         "undo": "撤销",
         "zoomToFit": "缩放至适合大小"
       }
-    }
+    },
+    "description": "{{common.description}}"
   },
   "errors": {
     "validationError": "验证错误"

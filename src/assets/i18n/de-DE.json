@@ -227,10 +227,10 @@
   },
   "assetEditor": {
     "chipPlaceholder": "Wert eingeben und Enter drücken",
-    "classification": "Klassifizierung",
-    "criticality": "Kritikalität",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "Asset-Name",
-    "sensitivity": "Sensibilität",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "Asset erstellen",
       "edit": "Asset bearbeiten",
@@ -512,7 +512,8 @@
         "undo": "Rückgängig",
         "zoomToFit": "An Bildschirmgröße anpassen"
       }
-    }
+    },
+    "description": "{{common.description}}"
   },
   "errors": {
     "validationError": "Validierungsfehler"

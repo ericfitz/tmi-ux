@@ -227,10 +227,10 @@
   },
   "assetEditor": {
     "chipPlaceholder": "قدر درج کریں اور Enter دبائیں",
-    "classification": "درجہ بندی",
-    "criticality": "اہمیت",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "اثاثے کا نام",
-    "sensitivity": "حساسیت",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "اثاثہ بنائیں",
       "edit": "اثاثہ میں ترمیم کریں",
@@ -512,7 +512,8 @@
         "undo": "واپس کریں",
         "zoomToFit": "فٹ کرنے کے لیے زوم کریں"
       }
-    }
+    },
+    "description": "{{common.description}}"
   },
   "errors": {
     "validationError": "توثیق کی خرابی"

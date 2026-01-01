@@ -227,10 +227,10 @@
   },
   "assetEditor": {
     "chipPlaceholder": "मान दर्ज करें और Enter दबाएं",
-    "classification": "वर्गीकरण",
-    "criticality": "महत्वपूर्णता",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "एसेट का नाम",
-    "sensitivity": "संवेदनशीलता",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "एसेट बनाएं",
       "edit": "एसेट संपादित करें",
@@ -512,7 +512,8 @@
         "undo": "पूर्ववत करें",
         "zoomToFit": "फ़िट करने के लिए ज़ूम करें"
       }
-    }
+    },
+    "description": "{{common.description}}"
   },
   "errors": {
     "validationError": "सत्यापन त्रुटि"

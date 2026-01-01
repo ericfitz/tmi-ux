@@ -227,10 +227,10 @@
   },
   "assetEditor": {
     "chipPlaceholder": "Introduzca un valor y pulse Intro",
-    "classification": "Clasificación",
-    "criticality": "Criticidad",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "Nombre del Activo",
-    "sensitivity": "Sensibilidad",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "Crear Activo",
       "edit": "Editar Activo",
@@ -512,7 +512,8 @@
         "undo": "Deshacer",
         "zoomToFit": "Ajustar al Tamaño"
       }
-    }
+    },
+    "description": "{{common.description}}"
   },
   "errors": {
     "validationError": "Error de Validación"

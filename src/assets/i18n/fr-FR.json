@@ -227,10 +227,10 @@
   },
   "assetEditor": {
     "chipPlaceholder": "Entrez une valeur et appuyez sur Entree",
-    "classification": "Classification",
-    "criticality": "Criticite",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "Nom de l'actif",
-    "sensitivity": "Sensibilite",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "Creer un Actif",
       "edit": "Modifier l'Actif",
@@ -512,7 +512,8 @@
         "undo": "Annuler",
         "zoomToFit": "Ajuster le zoom"
       }
-    }
+    },
+    "description": "{{common.description}}"
   },
   "errors": {
     "validationError": "Erreur de validation"

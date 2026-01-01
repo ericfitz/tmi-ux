@@ -227,10 +227,10 @@
   },
   "assetEditor": {
     "chipPlaceholder": "أدخل القيمة واضغط Enter",
-    "classification": "التصنيف",
-    "criticality": "الأهمية الحرجة",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "اسم الأصل",
-    "sensitivity": "الحساسية",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "إنشاء أصل",
       "edit": "تحرير الأصل",
@@ -512,7 +512,8 @@
         "undo": "تراجع",
         "zoomToFit": "تكبير لملائمة العرض"
       }
-    }
+    },
+    "description": "{{common.description}}"
   },
   "errors": {
     "validationError": "خطأ في التحقق"

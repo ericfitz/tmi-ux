@@ -227,10 +227,10 @@
   },
   "assetEditor": {
     "chipPlaceholder": "הזן ערך ולחץ Enter",
-    "classification": "סיווג",
-    "criticality": "קריטיות",
+    "classification": "{{common.classification}}",
+    "criticality": "{{common.criticality}}",
     "name": "שם הנכס",
-    "sensitivity": "רגישות",
+    "sensitivity": "{{common.sensitivity}}",
     "title": {
       "create": "צור נכס",
       "edit": "ערוך נכס",
@@ -512,7 +512,8 @@
         "undo": "בטל",
         "zoomToFit": "התאם לתצוגה"
       }
-    }
+    },
+    "description": "{{common.description}}"
   },
   "errors": {
     "validationError": "שגיאת אימות"
