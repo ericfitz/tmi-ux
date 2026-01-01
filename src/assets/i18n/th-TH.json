@@ -313,6 +313,7 @@
     "addons": "ส่วนเสริม",
     "cancel": "ยกเลิก",
     "cellId": "รหัสเซลล์",
+    "classification": "การจำแนกประเภท",
     "clear": "ล้าง",
     "close": "ปิด",
     "confirmDelete": "คุณแน่ใจหรือไม่ว่าต้องการลบ {{item}} \"{{name}}\"? การกระทำนี้ไม่สามารถย้อนกลับได้",
@@ -320,6 +321,7 @@
     "copyToClipboard": "คัดลอกไปยังคลิปบอร์ด",
     "create": "สร้าง",
     "created": "สร้างแล้ว",
+    "criticality": "ความสำคัญ",
     "cut": "ตัด",
     "delete": "ลบ",
     "deleteConfirm": "ลบโมเดลภัยคุกคาม",
@@ -385,6 +387,7 @@
     "save": "บันทึก",
     "saveAndClose": "บันทึกและปิด",
     "score": "คะแนน",
+    "sensitivity": "ความอ่อนไหว",
     "sessionRoles": {
       "host": "เจ้าภาพ",
       "participant": "ผู้เข้าร่วม",
@@ -401,6 +404,7 @@
     "threatId": "รหัสภัยคุกคาม",
     "threatName": "ชื่อภัยคุกคาม",
     "threatType": "ประเภทภัยคุกคาม",
+    "thumbnail": "รูปขนาดย่อ",
     "type": "ประเภท",
     "unsavedChangesWarning": "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก คุณแน่ใจหรือไม่ว่าต้องการปิด?",
     "userId": "รหัสผู้ใช้",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "ป้อนคำอธิบายแผนภาพ",
+    "diagramNamePlaceholder": "ป้อนชื่อแผนภาพ",
     "diagramPrefix": "แผนภาพ:",
+    "editDiagramDescription": "คลิกเพื่อแก้ไขคำอธิบายแผนภาพ",
+    "editDiagramName": "คลิกเพื่อแก้ไขชื่อแผนภาพ",
+    "editDisabledDuringCollaboration": "ปิดใช้งานการแก้ไขระหว่างการทำงานร่วมกัน",
     "embedding": {
       "cannotEmbedIntoTextBox": "ไม่สามารถฝังรูปร่างลงในกล่องข้อความได้",
       "cannotEmbedTextBox": "กล่องข้อความไม่สามารถฝังลงในรูปร่างอื่นได้",
@@ -512,8 +522,7 @@
         "undo": "เลิกทำ",
         "zoomToFit": "ซูมให้พอดีหน้าจอ"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "ข้อผิดพลาดในการตรวจสอบ"
@@ -868,8 +877,33 @@
     },
     "colorBlindMode": "เปิดใช้งานโหมดตาบอดสี",
     "credentials": {
-      "comingSoon": "เร็ว ๆ นี้",
-      "description": "คุณสมบัตินี้จะช่วยให้คุณสามารถจัดการข้อมูลประจำตัว API สำหรับ webhooks, การรวมระบบภายนอก, และการเข้าถึงแบบทำให้เป็นโปรแกรมไปยังโมเดลการขู่เข็ญของคุณได้",
+      "add": "เพิ่ม",
+      "clientId": "Client ID",
+      "clientSecret": "Client Secret",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "ไม่บังคับ: อธิบายว่าข้อมูลรับรองนี้ใช้สำหรับอะไร",
+        "descriptionPlaceholder": "ใช้สำหรับการรวม CI/CD pipeline",
+        "descriptionTooLong": "คำอธิบายต้องไม่เกิน 500 ตัวอักษร",
+        "expiresAt": "วันหมดอายุ",
+        "expiresAtHint": "ไม่บังคับ: เว้นว่างไว้หากไม่มีวันหมดอายุ",
+        "name": "{{common.name}}",
+        "nameHint": "ชื่อที่สื่อความหมายสำหรับข้อมูลรับรองนี้",
+        "namePlaceholder": "ข้อมูลรับรอง API ของฉัน",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "ชื่อต้องไม่เกิน 100 ตัวอักษร",
+        "title": "สร้างข้อมูลรับรองไคลเอนต์"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "ใช้ล่าสุด",
+      "noCredentials": "ยังไม่มีข้อมูลรับรองไคลเอนต์",
+      "noCredentialsDescription": "สร้างข้อมูลรับรองเพื่อเข้าถึง TMI API ผ่านโปรแกรม",
+      "secretDialog": {
+        "title": "สร้างข้อมูลรับรองไคลเอนต์แล้ว",
+        "warning": "บันทึกข้อมูลรับรองเหล่านี้ตอนนี้ Client secret จะไม่แสดงอีก"
+      },
+      "status": "{{common.status}}",
       "title": "ข้อมูลประจำตัว API"
     },
     "deleteMyData": {

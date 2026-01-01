@@ -313,6 +313,7 @@
     "addons": "Complementos",
     "cancel": "Cancelar",
     "cellId": "ID da Celula",
+    "classification": "Classificação",
     "clear": "Limpar",
     "close": "Fechar",
     "confirmDelete": "Tem certeza de que deseja excluir {{item}} \"{{name}}\"? Esta acao nao pode ser desfeita.",
@@ -320,6 +321,7 @@
     "copyToClipboard": "Copiar para a Area de Transferencia",
     "create": "Criar",
     "created": "Criado",
+    "criticality": "Criticidade",
     "cut": "Recortar",
     "delete": "Excluir",
     "deleteConfirm": "Excluir Modelo de Ameacas",
@@ -385,6 +387,7 @@
     "save": "Salvar",
     "saveAndClose": "Salvar e Fechar",
     "score": "Pontuacao",
+    "sensitivity": "Sensibilidade",
     "sessionRoles": {
       "host": "Anfitriao",
       "participant": "Participante",
@@ -401,6 +404,7 @@
     "threatId": "ID da Ameaca",
     "threatName": "Nome da Ameaca",
     "threatType": "Tipo de Ameaca",
+    "thumbnail": "Miniatura",
     "type": "Tipo",
     "unsavedChangesWarning": "Voce tem alteracoes nao salvas. Tem certeza de que deseja fechar?",
     "userId": "ID do Usuario",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "Insira a descrição do diagrama",
+    "diagramNamePlaceholder": "Insira o nome do diagrama",
     "diagramPrefix": "Diagrama:",
+    "editDiagramDescription": "Clique para editar a descrição do diagrama",
+    "editDiagramName": "Clique para editar o nome do diagrama",
+    "editDisabledDuringCollaboration": "Edição desativada durante a colaboração",
     "embedding": {
       "cannotEmbedIntoTextBox": "Nao e possivel incorporar formas em caixas de texto",
       "cannotEmbedTextBox": "Caixas de texto nao podem ser incorporadas em outras formas",
@@ -512,8 +522,7 @@
         "undo": "Desfazer",
         "zoomToFit": "Ajustar ao Tamanho"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "Erro de Validacao"
@@ -788,7 +797,7 @@
     },
     "statusChipPlaceholder": "Insira o status e pressione Enter",
     "statusLastUpdated": "Ultima Atualizacao do Status",
-    "tag": "Tag",
+    "tag": "Etiqueta",
     "threatModelFramework": "Framework do Modelo de Ameacas",
     "threatModelPrefix": "Modelo de Ameacas:",
     "tooltips": {
@@ -868,8 +877,33 @@
     },
     "colorBlindMode": "Habilitar Modo para Daltonicos",
     "credentials": {
-      "comingSoon": "Em breve",
-      "description": "Este recurso permitirá que você gerencie credenciais de API para webhooks, integrações externas e acesso programático aos seus modelos de ameaça.",
+      "add": "Adicionar",
+      "clientId": "ID do Cliente",
+      "clientSecret": "Segredo do Cliente",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "Opcional: Descreva para que esta credencial é utilizada",
+        "descriptionPlaceholder": "Usado para integração com pipeline de CI/CD",
+        "descriptionTooLong": "A descrição deve ter 500 caracteres ou menos",
+        "expiresAt": "Data de Expiração",
+        "expiresAtHint": "Opcional: Deixe em branco para não expirar",
+        "name": "{{common.name}}",
+        "nameHint": "Um nome descritivo para esta credencial",
+        "namePlaceholder": "Minha Credencial de API",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "O nome deve ter 100 caracteres ou menos",
+        "title": "Criar Credencial de Cliente"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "Último Uso",
+      "noCredentials": "Nenhuma credencial de cliente ainda",
+      "noCredentialsDescription": "Crie credenciais para acessar a API do TMI programaticamente.",
+      "secretDialog": {
+        "title": "Credencial de Cliente Criada",
+        "warning": "Salve estas credenciais agora. O segredo do cliente não será exibido novamente."
+      },
+      "status": "{{common.status}}",
       "title": "Credenciais de API"
     },
     "deleteMyData": {

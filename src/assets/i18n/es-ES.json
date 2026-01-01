@@ -313,6 +313,7 @@
     "addons": "Complementos",
     "cancel": "Cancelar",
     "cellId": "ID de Celda",
+    "classification": "Clasificación",
     "clear": "Limpiar",
     "close": "Cerrar",
     "confirmDelete": "¿Está seguro de que desea eliminar {{item}} \"{{name}}\"? Esta acción no se puede deshacer.",
@@ -320,6 +321,7 @@
     "copyToClipboard": "Copiar al Portapapeles",
     "create": "Crear",
     "created": "Creado",
+    "criticality": "Criticidad",
     "cut": "Cortar",
     "delete": "Eliminar",
     "deleteConfirm": "Eliminar Modelo de Amenazas",
@@ -385,6 +387,7 @@
     "save": "Guardar",
     "saveAndClose": "Guardar y Cerrar",
     "score": "Puntuación",
+    "sensitivity": "Sensibilidad",
     "sessionRoles": {
       "host": "Anfitrión",
       "participant": "Participante",
@@ -401,6 +404,7 @@
     "threatId": "ID de Amenaza",
     "threatName": "Nombre de la Amenaza",
     "threatType": "Tipo de Amenaza",
+    "thumbnail": "Miniatura",
     "type": "Tipo",
     "unsavedChangesWarning": "Tiene cambios sin guardar. ¿Está seguro de que desea cerrar?",
     "userId": "ID de Usuario",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "Introduzca la descripción del diagrama",
+    "diagramNamePlaceholder": "Introduzca el nombre del diagrama",
     "diagramPrefix": "Diagrama:",
+    "editDiagramDescription": "Haga clic para editar la descripción del diagrama",
+    "editDiagramName": "Haga clic para editar el nombre del diagrama",
+    "editDisabledDuringCollaboration": "Edición deshabilitada durante la colaboración",
     "embedding": {
       "cannotEmbedIntoTextBox": "No se pueden incrustar formas en cuadros de texto",
       "cannotEmbedTextBox": "Los cuadros de texto no pueden incrustarse en otras formas",
@@ -512,8 +522,7 @@
         "undo": "Deshacer",
         "zoomToFit": "Ajustar al Tamaño"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "Error de Validación"
@@ -868,8 +877,33 @@
     },
     "colorBlindMode": "Activar Modo para Daltonismo",
     "credentials": {
-      "comingSoon": "Próximamente",
-      "description": "Esta funcionalidad le permitirá gestionar credenciales de API para webhooks, integraciones externas y acceso programático a sus modelos de amenazas.",
+      "add": "Agregar",
+      "clientId": "ID de Cliente",
+      "clientSecret": "Secreto de Cliente",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "Opcional: Describa para qué se utiliza esta credencial",
+        "descriptionPlaceholder": "Utilizado para integración de pipeline CI/CD",
+        "descriptionTooLong": "La descripción debe tener 500 caracteres o menos",
+        "expiresAt": "Fecha de Expiración",
+        "expiresAtHint": "Opcional: Deje en blanco para que no expire",
+        "name": "{{common.name}}",
+        "nameHint": "Un nombre descriptivo para esta credencial",
+        "namePlaceholder": "Mi Credencial de API",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "El nombre debe tener 100 caracteres o menos",
+        "title": "Crear Credencial de Cliente"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "Último Uso",
+      "noCredentials": "Aún no hay credenciales de cliente",
+      "noCredentialsDescription": "Cree credenciales para acceder a la API de TMI programáticamente.",
+      "secretDialog": {
+        "title": "Credencial de Cliente Creada",
+        "warning": "Guarde estas credenciales ahora. El secreto de cliente no se mostrará de nuevo."
+      },
+      "status": "{{common.status}}",
       "title": "Credenciales de API"
     },
     "deleteMyData": {

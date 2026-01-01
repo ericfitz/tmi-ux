@@ -313,6 +313,7 @@
     "addons": "Erweiterungen",
     "cancel": "Abbrechen",
     "cellId": "Zellen-ID",
+    "classification": "Klassifizierung",
     "clear": "Löschen",
     "close": "Schließen",
     "confirmDelete": "Sind Sie sicher, dass Sie {{item}} \"{{name}}\" löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
@@ -320,6 +321,7 @@
     "copyToClipboard": "In die Zwischenablage kopieren",
     "create": "Erstellen",
     "created": "Erstellt",
+    "criticality": "Kritikalität",
     "cut": "Ausschneiden",
     "delete": "Löschen",
     "deleteConfirm": "Bedrohungsmodell löschen",
@@ -385,6 +387,7 @@
     "save": "Speichern",
     "saveAndClose": "Speichern & Schließen",
     "score": "Bewertung",
+    "sensitivity": "Sensibilität",
     "sessionRoles": {
       "host": "Gastgeber",
       "participant": "Teilnehmer",
@@ -401,6 +404,7 @@
     "threatId": "Bedrohungs-ID",
     "threatName": "Bedrohungsname",
     "threatType": "Bedrohungstyp",
+    "thumbnail": "Vorschaubild",
     "type": "Typ",
     "unsavedChangesWarning": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie schließen möchten?",
     "userId": "Benutzer-ID",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "Diagrammbeschreibung eingeben",
+    "diagramNamePlaceholder": "Diagrammname eingeben",
     "diagramPrefix": "Diagramm:",
+    "editDiagramDescription": "Klicken, um die Diagrammbeschreibung zu bearbeiten",
+    "editDiagramName": "Klicken, um den Diagrammnamen zu bearbeiten",
+    "editDisabledDuringCollaboration": "Bearbeitung während der Zusammenarbeit deaktiviert",
     "embedding": {
       "cannotEmbedIntoTextBox": "Formen können nicht in Textfelder eingebettet werden",
       "cannotEmbedTextBox": "Textfelder können nicht in andere Formen eingebettet werden",
@@ -512,8 +522,7 @@
         "undo": "Rückgängig",
         "zoomToFit": "An Bildschirmgröße anpassen"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "Validierungsfehler"
@@ -868,8 +877,33 @@
     },
     "colorBlindMode": "Farbenblindmodus aktivieren",
     "credentials": {
-      "comingSoon": "Kommt bald",
-      "description": "Mit dieser Funktion können Sie API-Anmeldedaten für Webhooks, externe Integrationen und programmatischen Zugriff auf Ihre Bedrohungsmodelle verwalten.",
+      "add": "Hinzufügen",
+      "clientId": "Client-ID",
+      "clientSecret": "Client-Geheimnis",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "Optional: Beschreiben Sie, wofür diese Anmeldedaten verwendet werden",
+        "descriptionPlaceholder": "Verwendet für CI/CD-Pipeline-Integration",
+        "descriptionTooLong": "Die Beschreibung darf maximal 500 Zeichen lang sein",
+        "expiresAt": "Ablaufdatum",
+        "expiresAtHint": "Optional: Leer lassen für unbegrenzte Gültigkeit",
+        "name": "{{common.name}}",
+        "nameHint": "Ein beschreibender Name für diese Anmeldedaten",
+        "namePlaceholder": "Meine API-Anmeldedaten",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "Der Name darf maximal 100 Zeichen lang sein",
+        "title": "Client-Anmeldedaten erstellen"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "Zuletzt verwendet",
+      "noCredentials": "Noch keine Client-Anmeldedaten",
+      "noCredentialsDescription": "Erstellen Sie Anmeldedaten, um programmatisch auf die TMI-API zuzugreifen.",
+      "secretDialog": {
+        "title": "Client-Anmeldedaten erstellt",
+        "warning": "Speichern Sie diese Anmeldedaten jetzt. Das Client-Geheimnis wird nicht erneut angezeigt."
+      },
+      "status": "{{common.status}}",
       "title": "API-Anmeldedaten"
     },
     "deleteMyData": {

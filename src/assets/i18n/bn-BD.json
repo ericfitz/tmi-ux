@@ -313,6 +313,7 @@
     "addons": "অ্যাডঅন",
     "cancel": "বাতিল",
     "cellId": "সেল আইডি",
+    "classification": "শ্রেণীবিভাগ",
     "clear": "পরিষ্কার",
     "close": "বন্ধ করুন",
     "confirmDelete": "আপনি কি নিশ্চিত যে আপনি {{item}} \"{{name}}\" মুছতে চান? এই ক্রিয়া পূর্বাবস্থায় ফেরানো যাবে না।",
@@ -320,6 +321,7 @@
     "copyToClipboard": "ক্লিপবোর্ডে কপি করুন",
     "create": "তৈরি করুন",
     "created": "তৈরি হয়েছে",
+    "criticality": "গুরুত্বপূর্ণতা",
     "cut": "কাট",
     "delete": "মুছুন",
     "deleteConfirm": "থ্রেট মডেল মুছুন",
@@ -385,6 +387,7 @@
     "save": "সংরক্ষণ করুন",
     "saveAndClose": "সংরক্ষণ করুন এবং বন্ধ করুন",
     "score": "স্কোর",
+    "sensitivity": "সংবেদনশীলতা",
     "sessionRoles": {
       "host": "হোস্ট",
       "participant": "অংশগ্রহণকারী",
@@ -401,6 +404,7 @@
     "threatId": "হুমকি আইডি",
     "threatName": "হুমকির নাম",
     "threatType": "হুমকির ধরন",
+    "thumbnail": "থাম্বনেইল",
     "type": "ধরন",
     "unsavedChangesWarning": "আপনার অসংরক্ষিত পরিবর্তন আছে। আপনি কি নিশ্চিত যে আপনি বন্ধ করতে চান?",
     "userId": "ব্যবহারকারী আইডি",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "ডায়াগ্রামের বিবরণ লিখুন",
+    "diagramNamePlaceholder": "ডায়াগ্রামের নাম লিখুন",
     "diagramPrefix": "ডায়াগ্রাম:",
+    "editDiagramDescription": "ডায়াগ্রামের বিবরণ সম্পাদনা করতে ক্লিক করুন",
+    "editDiagramName": "ডায়াগ্রামের নাম সম্পাদনা করতে ক্লিক করুন",
+    "editDisabledDuringCollaboration": "সহযোগিতার সময় সম্পাদনা অক্ষম",
     "embedding": {
       "cannotEmbedIntoTextBox": "টেক্সট বক্সে আকৃতি এম্বেড করা যাবে না",
       "cannotEmbedTextBox": "টেক্সট বক্স অন্য আকৃতিতে এম্বেড করা যাবে না",
@@ -512,8 +522,7 @@
         "undo": "আনডু",
         "zoomToFit": "ফিট করে জুম করুন"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "যাচাইকরণ ত্রুটি"
@@ -868,8 +877,33 @@
     },
     "colorBlindMode": "কালার ব্লাইন্ড মোড সক্রিয় করুন",
     "credentials": {
-      "comingSoon": "শীঘ্রই আসছে",
-      "description": "এই বৈশিষ্ট্যটি আপনাকে ওয়েবহুক, বাহ্যিক ইন্টিগ্রেশন এবং আপনার হুমকি মডেলগুলিতে প্রোগ্রামেটিক অ্যাক্সেসের জন্য API শংসাপত্র পরিচালনা করতে দেবে।",
+      "add": "যোগ করুন",
+      "clientId": "ক্লায়েন্ট আইডি",
+      "clientSecret": "ক্লায়েন্ট সিক্রেট",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "ঐচ্ছিক: এই ক্রেডেনশিয়ালটি কিসের জন্য ব্যবহৃত হয় তা বর্ণনা করুন",
+        "descriptionPlaceholder": "CI/CD পাইপলাইন ইন্টিগ্রেশনের জন্য ব্যবহৃত",
+        "descriptionTooLong": "বিবরণ ৫০০ অক্ষর বা তার কম হতে হবে",
+        "expiresAt": "মেয়াদ শেষের তারিখ",
+        "expiresAtHint": "ঐচ্ছিক: মেয়াদ না থাকলে খালি রাখুন",
+        "name": "{{common.name}}",
+        "nameHint": "এই ক্রেডেনশিয়ালের জন্য একটি বর্ণনামূলক নাম",
+        "namePlaceholder": "আমার API ক্রেডেনশিয়াল",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "নাম ১০০ অক্ষর বা তার কম হতে হবে",
+        "title": "ক্লায়েন্ট ক্রেডেনশিয়াল তৈরি করুন"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "সর্বশেষ ব্যবহৃত",
+      "noCredentials": "এখনো কোনো ক্লায়েন্ট ক্রেডেনশিয়াল নেই",
+      "noCredentialsDescription": "প্রোগ্রামগতভাবে TMI API অ্যাক্সেস করতে ক্রেডেনশিয়াল তৈরি করুন।",
+      "secretDialog": {
+        "title": "ক্লায়েন্ট ক্রেডেনশিয়াল তৈরি হয়েছে",
+        "warning": "এই ক্রেডেনশিয়ালগুলো এখনই সংরক্ষণ করুন। ক্লায়েন্ট সিক্রেট আর দেখানো হবে না।"
+      },
+      "status": "{{common.status}}",
       "title": "API শংসাপত্র"
     },
     "deleteMyData": {

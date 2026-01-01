@@ -313,6 +313,7 @@
     "addons": "アドオン",
     "cancel": "キャンセル",
     "cellId": "セルID",
+    "classification": "分類",
     "clear": "クリア",
     "close": "閉じる",
     "confirmDelete": "{{item}}「{{name}}」を削除してもよろしいですか？この操作は元に戻せません。",
@@ -320,6 +321,7 @@
     "copyToClipboard": "クリップボードにコピー",
     "create": "作成",
     "created": "作成日時",
+    "criticality": "重要度",
     "cut": "切り取り",
     "delete": "削除",
     "deleteConfirm": "脅威モデルを削除",
@@ -385,6 +387,7 @@
     "save": "保存",
     "saveAndClose": "保存して閉じる",
     "score": "スコア",
+    "sensitivity": "機密度",
     "sessionRoles": {
       "host": "ホスト",
       "participant": "参加者",
@@ -401,6 +404,7 @@
     "threatId": "脅威ID",
     "threatName": "脅威名",
     "threatType": "脅威タイプ",
+    "thumbnail": "サムネイル",
     "type": "タイプ",
     "unsavedChangesWarning": "保存されていない変更があります。閉じてもよろしいですか？",
     "userId": "ユーザーID",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "図の説明を入力",
+    "diagramNamePlaceholder": "図の名前を入力",
     "diagramPrefix": "ダイアグラム:",
+    "editDiagramDescription": "クリックして図の説明を編集",
+    "editDiagramName": "クリックして図の名前を編集",
+    "editDisabledDuringCollaboration": "共同作業中は編集できません",
     "embedding": {
       "cannotEmbedIntoTextBox": "テキストボックスに図形を埋め込むことはできません",
       "cannotEmbedTextBox": "テキストボックスは他の図形に埋め込むことができません",
@@ -512,8 +522,7 @@
         "undo": "元に戻す",
         "zoomToFit": "全体を表示"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "バリデーションエラー"
@@ -868,8 +877,33 @@
     },
     "colorBlindMode": "色覚補助モードを有効にする",
     "credentials": {
-      "comingSoon": "近日公開予定",
-      "description": "この機能を使用すると、ウェブフック、外部統合、および脅威モデルへのプログラムによるアクセスのためのAPI認証情報を管理できます。",
+      "add": "追加",
+      "clientId": "クライアントID",
+      "clientSecret": "クライアントシークレット",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "任意: この資格情報の用途を記述してください",
+        "descriptionPlaceholder": "CI/CDパイプライン統合に使用",
+        "descriptionTooLong": "説明は500文字以内で入力してください",
+        "expiresAt": "有効期限",
+        "expiresAtHint": "任意: 空白のままにすると無期限になります",
+        "name": "{{common.name}}",
+        "nameHint": "この資格情報のわかりやすい名前",
+        "namePlaceholder": "API資格情報",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "名前は100文字以内で入力してください",
+        "title": "クライアント資格情報の作成"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "最終使用日時",
+      "noCredentials": "クライアント資格情報がありません",
+      "noCredentialsDescription": "TMI APIにプログラムからアクセスするための資格情報を作成してください。",
+      "secretDialog": {
+        "title": "クライアント資格情報が作成されました",
+        "warning": "これらの資格情報を今すぐ保存してください。クライアントシークレットは再度表示されません。"
+      },
+      "status": "{{common.status}}",
       "title": "API認証情報"
     },
     "deleteMyData": {

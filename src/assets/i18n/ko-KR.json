@@ -313,6 +313,7 @@
     "addons": "애드온",
     "cancel": "취소",
     "cellId": "셀 ID",
+    "classification": "분류",
     "clear": "지우기",
     "close": "닫기",
     "confirmDelete": "{{item}} \"{{name}}\"을(를) 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
@@ -320,6 +321,7 @@
     "copyToClipboard": "클립보드에 복사",
     "create": "생성",
     "created": "생성됨",
+    "criticality": "중요도",
     "cut": "잘라내기",
     "delete": "삭제",
     "deleteConfirm": "위협 모델 삭제",
@@ -385,6 +387,7 @@
     "save": "저장",
     "saveAndClose": "저장 및 닫기",
     "score": "점수",
+    "sensitivity": "민감도",
     "sessionRoles": {
       "host": "호스트",
       "participant": "참가자",
@@ -401,6 +404,7 @@
     "threatId": "위협 ID",
     "threatName": "위협 이름",
     "threatType": "위협 유형",
+    "thumbnail": "썸네일",
     "type": "유형",
     "unsavedChangesWarning": "저장되지 않은 변경 사항이 있습니다. 닫으시겠습니까?",
     "userId": "사용자 ID",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "다이어그램 설명 입력",
+    "diagramNamePlaceholder": "다이어그램 이름 입력",
     "diagramPrefix": "다이어그램:",
+    "editDiagramDescription": "다이어그램 설명을 편집하려면 클릭하세요",
+    "editDiagramName": "다이어그램 이름을 편집하려면 클릭하세요",
+    "editDisabledDuringCollaboration": "공동 작업 중에는 편집이 비활성화됩니다",
     "embedding": {
       "cannotEmbedIntoTextBox": "텍스트 상자에 도형을 포함할 수 없습니다",
       "cannotEmbedTextBox": "텍스트 상자는 다른 도형에 포함될 수 없습니다",
@@ -512,8 +522,7 @@
         "undo": "실행 취소",
         "zoomToFit": "화면에 맞게 확대/축소"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "유효성 검사 오류"
@@ -868,8 +877,33 @@
     },
     "colorBlindMode": "색맹 모드 활성화",
     "credentials": {
-      "comingSoon": "곧 출시 예정",
-      "description": "이 기능을 통해 웹훅, 외부 통합 및 위협 모델에 대한 프로그래밍 방식 액세스를 위한 API 자격증명을 관리할 수 있습니다.",
+      "add": "추가",
+      "clientId": "클라이언트 ID",
+      "clientSecret": "클라이언트 시크릿",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "선택 사항: 이 자격 증명의 용도를 설명하세요",
+        "descriptionPlaceholder": "CI/CD 파이프라인 통합에 사용",
+        "descriptionTooLong": "설명은 500자 이하여야 합니다",
+        "expiresAt": "만료 날짜",
+        "expiresAtHint": "선택 사항: 만료 없음으로 하려면 비워두세요",
+        "name": "{{common.name}}",
+        "nameHint": "이 자격 증명의 설명적인 이름",
+        "namePlaceholder": "내 API 자격 증명",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "이름은 100자 이하여야 합니다",
+        "title": "클라이언트 자격 증명 생성"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "마지막 사용",
+      "noCredentials": "클라이언트 자격 증명이 없습니다",
+      "noCredentialsDescription": "TMI API에 프로그래밍 방식으로 접근하려면 자격 증명을 생성하세요.",
+      "secretDialog": {
+        "title": "클라이언트 자격 증명 생성됨",
+        "warning": "지금 이 자격 증명을 저장하세요. 클라이언트 시크릿은 다시 표시되지 않습니다."
+      },
+      "status": "{{common.status}}",
       "title": "API 자격증명"
     },
     "deleteMyData": {

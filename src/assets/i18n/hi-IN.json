@@ -313,6 +313,7 @@
     "addons": "ऐडऑन",
     "cancel": "रद्द करें",
     "cellId": "सेल आईडी",
+    "classification": "वर्गीकरण",
     "clear": "साफ़ करें",
     "close": "बंद करें",
     "confirmDelete": "क्या आप वाकई {{item}} \"{{name}}\" को हटाना चाहते हैं? यह कार्य पूर्ववत नहीं किया जा सकता।",
@@ -320,6 +321,7 @@
     "copyToClipboard": "क्लिपबोर्ड पर कॉपी करें",
     "create": "बनाएं",
     "created": "बनाया गया",
+    "criticality": "गंभीरता",
     "cut": "काटें",
     "delete": "हटाएं",
     "deleteConfirm": "थ्रेट मॉडल हटाएं",
@@ -385,6 +387,7 @@
     "save": "सहेजें",
     "saveAndClose": "सहेजें और बंद करें",
     "score": "स्कोर",
+    "sensitivity": "संवेदनशीलता",
     "sessionRoles": {
       "host": "होस्ट",
       "participant": "प्रतिभागी",
@@ -401,6 +404,7 @@
     "threatId": "खतरा आईडी",
     "threatName": "खतरे का नाम",
     "threatType": "खतरे का प्रकार",
+    "thumbnail": "थंबनेल",
     "type": "प्रकार",
     "unsavedChangesWarning": "आपके पास सहेजे न गए परिवर्तन हैं। क्या आप वाकई बंद करना चाहते हैं?",
     "userId": "उपयोगकर्ता आईडी",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "आरेख विवरण दर्ज करें",
+    "diagramNamePlaceholder": "आरेख का नाम दर्ज करें",
     "diagramPrefix": "डायग्राम:",
+    "editDiagramDescription": "आरेख विवरण संपादित करने के लिए क्लिक करें",
+    "editDiagramName": "आरेख का नाम संपादित करने के लिए क्लिक करें",
+    "editDisabledDuringCollaboration": "सहयोग के दौरान संपादन अक्षम है",
     "embedding": {
       "cannotEmbedIntoTextBox": "टेक्स्ट बॉक्स में आकृतियां एम्बेड नहीं की जा सकतीं",
       "cannotEmbedTextBox": "टेक्स्ट बॉक्स को अन्य आकृतियों में एम्बेड नहीं किया जा सकता",
@@ -512,8 +522,7 @@
         "undo": "पूर्ववत करें",
         "zoomToFit": "फ़िट करने के लिए ज़ूम करें"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "सत्यापन त्रुटि"
@@ -868,8 +877,33 @@
     },
     "colorBlindMode": "कलर ब्लाइंड मोड सक्षम करें",
     "credentials": {
-      "comingSoon": "जल्द आ रहा है",
-      "description": "यह सुविधा आपको वेबहुक, बाहरी एकीकरण, और अपने खतरे के मॉडल तक प्रोग्रामेटिक पहुंच के लिए API क्रेडेंशियल प्रबंधित करने की अनुमति देगी।",
+      "add": "जोड़ें",
+      "clientId": "क्लाइंट ID",
+      "clientSecret": "क्लाइंट सीक्रेट",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "वैकल्पिक: बताएं कि यह क्रेडेंशियल किसके लिए उपयोग होता है",
+        "descriptionPlaceholder": "CI/CD पाइपलाइन एकीकरण के लिए उपयोग किया जाता है",
+        "descriptionTooLong": "विवरण 500 अक्षर या उससे कम होना चाहिए",
+        "expiresAt": "समाप्ति तिथि",
+        "expiresAtHint": "वैकल्पिक: कोई समाप्ति नहीं के लिए खाली छोड़ें",
+        "name": "{{common.name}}",
+        "nameHint": "इस क्रेडेंशियल के लिए एक वर्णनात्मक नाम",
+        "namePlaceholder": "मेरा API क्रेडेंशियल",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "नाम 100 अक्षर या उससे कम होना चाहिए",
+        "title": "क्लाइंट क्रेडेंशियल बनाएं"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "अंतिम उपयोग",
+      "noCredentials": "अभी कोई क्लाइंट क्रेडेंशियल नहीं है",
+      "noCredentialsDescription": "TMI API को प्रोग्रामेटिक रूप से एक्सेस करने के लिए क्रेडेंशियल बनाएं।",
+      "secretDialog": {
+        "title": "क्लाइंट क्रेडेंशियल बनाया गया",
+        "warning": "इन क्रेडेंशियल को अभी सहेजें। क्लाइंट सीक्रेट दोबारा नहीं दिखाया जाएगा।"
+      },
+      "status": "{{common.status}}",
       "title": "API क्रेडेंशियल"
     },
     "deleteMyData": {

@@ -313,6 +313,7 @@
     "addons": "Modules",
     "cancel": "Annuler",
     "cellId": "ID de Cellule",
+    "classification": "Classification",
     "clear": "Effacer",
     "close": "Fermer",
     "confirmDelete": "Etes-vous sur de vouloir supprimer {{item}} \"{{name}}\" ? Cette action est irreversible.",
@@ -320,6 +321,7 @@
     "copyToClipboard": "Copier dans le Presse-papiers",
     "create": "Creer",
     "created": "Cree",
+    "criticality": "Criticité",
     "cut": "Couper",
     "delete": "Supprimer",
     "deleteConfirm": "Supprimer le Modele de Menaces",
@@ -385,6 +387,7 @@
     "save": "Enregistrer",
     "saveAndClose": "Enregistrer et Fermer",
     "score": "Score",
+    "sensitivity": "Sensibilité",
     "sessionRoles": {
       "host": "Hote",
       "participant": "Participant",
@@ -401,6 +404,7 @@
     "threatId": "ID de Menace",
     "threatName": "Nom de la Menace",
     "threatType": "Type de Menace",
+    "thumbnail": "Miniature",
     "type": "Type",
     "unsavedChangesWarning": "Vous avez des modifications non enregistrees. Etes-vous sur de vouloir fermer ?",
     "userId": "ID Utilisateur",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "Saisir la description du diagramme",
+    "diagramNamePlaceholder": "Saisir le nom du diagramme",
     "diagramPrefix": "Diagramme :",
+    "editDiagramDescription": "Cliquer pour modifier la description du diagramme",
+    "editDiagramName": "Cliquer pour modifier le nom du diagramme",
+    "editDisabledDuringCollaboration": "Modification désactivée pendant la collaboration",
     "embedding": {
       "cannotEmbedIntoTextBox": "Impossible d'incorporer des formes dans les zones de texte",
       "cannotEmbedTextBox": "Les zones de texte ne peuvent pas etre incorporees dans d'autres formes",
@@ -512,8 +522,7 @@
         "undo": "Annuler",
         "zoomToFit": "Ajuster le zoom"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "Erreur de validation"
@@ -687,7 +696,7 @@
   "threatModels": {
     "addPermission": "Ajouter une permission",
     "branch": "Branche",
-    "commit": "Commit",
+    "commit": "Valider",
     "confirmDeleteNote": "Etes-vous sur de vouloir supprimer la note '{{name}}' ?",
     "createFirstButton": "Creer Votre Premier Modele de Menaces",
     "createNewDiagram": "Creer un nouveau diagramme",
@@ -737,7 +746,7 @@
     "permissionsIdp": "{{common.identityProvider}}",
     "permissionsPrincipalId": "ID du principal",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "Role",
+    "permissionsRole": "Rôle",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsSubjectPlaceholder": "Sujet (ID utilisateur, adresse e-mail ou nom de groupe)",
     "permissionsSubjectType": "{{common.type}}",
@@ -788,7 +797,7 @@
     },
     "statusChipPlaceholder": "Entrez le statut et appuyez sur Entree",
     "statusLastUpdated": "Derniere mise a jour du statut",
-    "tag": "Tag",
+    "tag": "Étiquette",
     "threatModelFramework": "Framework de modelisation des menaces",
     "threatModelPrefix": "Modele de menaces :",
     "tooltips": {
@@ -868,8 +877,33 @@
     },
     "colorBlindMode": "Activer le mode daltonien",
     "credentials": {
-      "comingSoon": "À venir",
-      "description": "Cette fonctionnalité vous permettra de gérer les identifiants API pour les webhooks, les intégrations externes et l'accès programmatique à vos modèles de menace.",
+      "add": "Ajouter",
+      "clientId": "Identifiant client",
+      "clientSecret": "Secret client",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "Facultatif : Décrivez l'utilisation de cet identifiant",
+        "descriptionPlaceholder": "Utilisé pour l'intégration du pipeline CI/CD",
+        "descriptionTooLong": "La description doit contenir 500 caractères ou moins",
+        "expiresAt": "Date d'expiration",
+        "expiresAtHint": "Facultatif : Laissez vide pour aucune expiration",
+        "name": "{{common.name}}",
+        "nameHint": "Un nom descriptif pour cet identifiant",
+        "namePlaceholder": "Mon identifiant API",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "Le nom doit contenir 100 caractères ou moins",
+        "title": "Créer un identifiant client"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "Dernière utilisation",
+      "noCredentials": "Aucun identifiant client",
+      "noCredentialsDescription": "Créez des identifiants pour accéder à l'API TMI de manière programmatique.",
+      "secretDialog": {
+        "title": "Identifiant client créé",
+        "warning": "Enregistrez ces identifiants maintenant. Le secret client ne sera plus affiché."
+      },
+      "status": "{{common.status}}",
       "title": "Identifiants API"
     },
     "deleteMyData": {
@@ -910,7 +944,7 @@
       "profile": "Profil",
       "reports": "Rapports"
     },
-    "theme": "Theme",
+    "theme": "Thème",
     "themeMode": {
       "automatic": "Automatique (Systeme)",
       "dark": "Sombre",

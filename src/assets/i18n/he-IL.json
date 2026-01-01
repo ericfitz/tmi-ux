@@ -313,6 +313,7 @@
     "addons": "תוספים",
     "cancel": "ביטול",
     "cellId": "מזהה תא",
+    "classification": "סיווג",
     "clear": "נקה",
     "close": "סגור",
     "confirmDelete": "האם אתה בטוח שברצונך למחוק את {{item}} \"{{name}}\"? פעולה זו אינה ניתנת לביטול.",
@@ -320,6 +321,7 @@
     "copyToClipboard": "העתק ללוח",
     "create": "צור",
     "created": "נוצר",
+    "criticality": "קריטיות",
     "cut": "גזור",
     "delete": "מחק",
     "deleteConfirm": "מחק מודל איומים",
@@ -385,6 +387,7 @@
     "save": "שמור",
     "saveAndClose": "שמור וסגור",
     "score": "ציון",
+    "sensitivity": "רגישות",
     "sessionRoles": {
       "host": "מארח",
       "participant": "משתתף",
@@ -401,6 +404,7 @@
     "threatId": "מזהה איום",
     "threatName": "שם האיום",
     "threatType": "סוג איום",
+    "thumbnail": "תמונה ממוזערת",
     "type": "סוג",
     "unsavedChangesWarning": "יש לך שינויים שלא נשמרו. האם אתה בטוח שברצונך לסגור?",
     "userId": "מזהה משתמש",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "הזן תיאור דיאגרמה",
+    "diagramNamePlaceholder": "הזן שם דיאגרמה",
     "diagramPrefix": "דיאגרמה:",
+    "editDiagramDescription": "לחץ לעריכת תיאור הדיאגרמה",
+    "editDiagramName": "לחץ לעריכת שם הדיאגרמה",
+    "editDisabledDuringCollaboration": "עריכה מושבתת במהלך שיתוף פעולה",
     "embedding": {
       "cannotEmbedIntoTextBox": "לא ניתן לשבץ צורות בתוך תיבות טקסט",
       "cannotEmbedTextBox": "לא ניתן לשבץ תיבות טקסט בתוך צורות אחרות",
@@ -512,8 +522,7 @@
         "undo": "בטל",
         "zoomToFit": "התאם לתצוגה"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "שגיאת אימות"
@@ -687,7 +696,7 @@
   "threatModels": {
     "addPermission": "הוסף הרשאה",
     "branch": "ענף",
-    "commit": "Commit",
+    "commit": "קומיט",
     "confirmDeleteNote": "האם אתה בטוח שברצונך למחוק את ההערה '{{name}}'?",
     "createFirstButton": "צור את מודל האיומים הראשון שלך",
     "createNewDiagram": "צור דיאגרמה חדשה",
@@ -868,8 +877,33 @@
     },
     "colorBlindMode": "הפעל מצב עיוורון צבעים",
     "credentials": {
-      "comingSoon": "בקרוב",
-      "description": "תכונה זו תאפשר לך לנהל אישורי API עבור webhooks, שילובים חיצוניים וגישה תכנותית למודלי האיום שלך.",
+      "add": "הוסף",
+      "clientId": "מזהה לקוח",
+      "clientSecret": "סוד לקוח",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "אופציונלי: תאר למה אישור זה משמש",
+        "descriptionPlaceholder": "משמש לשילוב עם צינור CI/CD",
+        "descriptionTooLong": "התיאור חייב להיות 500 תווים או פחות",
+        "expiresAt": "תאריך תפוגה",
+        "expiresAtHint": "אופציונלי: השאר ריק ללא תפוגה",
+        "name": "{{common.name}}",
+        "nameHint": "שם תיאורי לאישור זה",
+        "namePlaceholder": "אישור ה-API שלי",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "השם חייב להיות 100 תווים או פחות",
+        "title": "צור אישור לקוח"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "שימוש אחרון",
+      "noCredentials": "אין עדיין אישורי לקוח",
+      "noCredentialsDescription": "צור אישורים לגישה ל-API של TMI באופן תכנותי.",
+      "secretDialog": {
+        "title": "אישור לקוח נוצר",
+        "warning": "שמור אישורים אלה עכשיו. סוד הלקוח לא יוצג שוב."
+      },
+      "status": "{{common.status}}",
       "title": "אישורי API"
     },
     "deleteMyData": {

@@ -329,15 +329,17 @@
     "addons": "Addons",
     "cancel": "Cancel",
     "cellId": "Cell ID",
+    "classification": "Classification",
+    "classification.comment": "Used in the sense of the category that something is placed in.",
     "clear": "Clear",
     "close": "Close",
-    "classification": "Classification",
     "confirmDelete": "Are you sure you want to delete the {{item}} \"{{name}}\"? This action cannot be undone.",
     "copy": "Copy",
     "copyToClipboard": "Copy to Clipboard",
     "create": "Create",
     "created": "Created",
     "criticality": "Criticality",
+    "criticality.comment": "Used in the sense of how important something is, or how much impact would occur.",
     "cut": "Cut",
     "delete": "Delete",
     "deleteConfirm": "Delete Threat Model",
@@ -405,6 +407,7 @@
     "saveAndClose": "Save & Close",
     "score": "Score",
     "sensitivity": "Sensitivity",
+    "sensitivity.comment": "Used in the sense of how damaging something would be if it were discovered, not in the sense of the keenness of senses.",
     "sessionRoles": {
       "host": "Host",
       "participant": "Participant",
@@ -435,10 +438,7 @@
     "view.comment": "View is used as a verb here.",
     "viewMetadata": "View Metadata",
     "viewPermissions": "View Permissions",
-    "viewThreat": "View Threat",
-    "classification.comment": "Used in the sense of the category that something is placed in.",
-    "criticality.comment": "Used in the sense of how important something is, or how much impact would occur.",
-    "sensitivity.comment": "Used in the sense of how damaging something would be if it were discovered, not in the sense of the keenness of senses."
+    "viewThreat": "View Threat"
   },
   "contextMenu": {
     "addInverseConnection": "Add Inverse Connection",
@@ -495,7 +495,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "Enter diagram description",
+    "diagramNamePlaceholder": "Enter diagram name",
     "diagramPrefix": "Diagram:",
+    "editDiagramDescription": "Click to edit diagram description",
+    "editDiagramName": "Click to edit diagram name",
+    "editDisabledDuringCollaboration": "Editing disabled during collaboration",
     "embedding": {
       "cannotEmbedIntoTextBox": "Cannot embed shapes into text boxes",
       "cannotEmbedTextBox": "Text boxes cannot be embedded into other shapes",
@@ -517,12 +523,6 @@
       "textbox": "Text"
     },
     "pageTitle": "Data Flow Diagram Editor",
-    "description": "{{common.description}}",
-    "diagramNamePlaceholder": "Enter diagram name",
-    "diagramDescriptionPlaceholder": "Enter diagram description",
-    "editDiagramName": "Click to edit diagram name",
-    "editDiagramDescription": "Click to edit diagram description",
-    "editDisabledDuringCollaboration": "Editing disabled during collaboration",
     "toolbar": {
       "exportMenu": {
         "exportAsJpeg": "Export as JPEG",
@@ -905,7 +905,6 @@
       "add": "Add",
       "clientId": "Client ID",
       "clientSecret": "Client Secret",
-      "created": "{{common.created}}",
       "createDialog": {
         "create": "{{common.create}}",
         "description": "{{common.description}}",
@@ -921,6 +920,7 @@
         "nameTooLong": "Name must be 100 characters or less",
         "title": "Create Client Credential"
       },
+      "created": "{{common.created}}",
       "lastUsed": "Last Used",
       "noCredentials": "No client credentials yet",
       "noCredentialsDescription": "Create credentials to access the TMI API programmatically.",

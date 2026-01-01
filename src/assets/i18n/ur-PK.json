@@ -95,7 +95,7 @@
         "groupName": "گروپ شناخت کنندہ",
         "groupNameHint": "صرف حروف تہجی، ہائفن، اور انڈر سکور",
         "groupNamePattern": "صرف حروف تہجی، ہائفن، اور انڈر سکور کی اجازت ہے",
-        "groupNamePlaceholder": "my-custom-group",
+        "groupNamePlaceholder": "میرا-حسب-ضرورت-گروپ",
         "groupNameRequired": "گروپ شناخت کنندہ ضروری ہے",
         "save": "گروپ بنائیں",
         "title": "گروپ شامل کریں"
@@ -313,6 +313,7 @@
     "addons": "ایڈ آنز",
     "cancel": "منسوخ کریں",
     "cellId": "سیل ID",
+    "classification": "درجہ بندی",
     "clear": "صاف کریں",
     "close": "بند کریں",
     "confirmDelete": "کیا آپ واقعی {{item}} \"{{name}}\" کو حذف کرنا چاہتے ہیں؟ یہ عمل واپس نہیں ہو سکتا۔",
@@ -320,6 +321,7 @@
     "copyToClipboard": "کلپ بورڈ پر کاپی کریں",
     "create": "بنائیں",
     "created": "بنایا گیا",
+    "criticality": "اہمیت",
     "cut": "کاٹیں",
     "delete": "حذف کریں",
     "deleteConfirm": "خطرے کا ماڈل حذف کریں",
@@ -385,6 +387,7 @@
     "save": "محفوظ کریں",
     "saveAndClose": "محفوظ کریں اور بند کریں",
     "score": "سکور",
+    "sensitivity": "حساسیت",
     "sessionRoles": {
       "host": "میزبان",
       "participant": "شریک",
@@ -401,6 +404,7 @@
     "threatId": "خطرہ ID",
     "threatName": "خطرے کا نام",
     "threatType": "خطرے کی قسم",
+    "thumbnail": "تھمب نیل",
     "type": "قسم",
     "unsavedChangesWarning": "آپ کے پاس غیر محفوظ شدہ تبدیلیاں ہیں۔ کیا آپ واقعی بند کرنا چاہتے ہیں؟",
     "userId": "صارف ID",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "ڈایاگرام کی تفصیل درج کریں",
+    "diagramNamePlaceholder": "ڈایاگرام کا نام درج کریں",
     "diagramPrefix": "ڈایاگرام:",
+    "editDiagramDescription": "ڈایاگرام کی تفصیل میں ترمیم کے لیے کلک کریں",
+    "editDiagramName": "ڈایاگرام کے نام میں ترمیم کے لیے کلک کریں",
+    "editDisabledDuringCollaboration": "تعاون کے دوران ترمیم غیر فعال ہے",
     "embedding": {
       "cannotEmbedIntoTextBox": "ٹیکسٹ باکس میں شکلیں نہیں ڈال سکتے",
       "cannotEmbedTextBox": "ٹیکسٹ باکس دوسری شکلوں میں نہیں ڈالے جا سکتے",
@@ -512,8 +522,7 @@
         "undo": "واپس کریں",
         "zoomToFit": "فٹ کرنے کے لیے زوم کریں"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "توثیق کی خرابی"
@@ -868,8 +877,33 @@
     },
     "colorBlindMode": "کلر بلائنڈ موڈ فعال کریں",
     "credentials": {
-      "comingSoon": "جلد آرہا ہے",
-      "description": "یہ خصوصیت آپ کو ویب ہُکس، بیرونی انضمام، اور اپنے دھمکی کے ماڈلز تک پروگرام کی رسائی کے لیے API اعتبارات کو منظم کرنے کی اجازت دے گی۔",
+      "add": "شامل کریں",
+      "clientId": "کلائنٹ ID",
+      "clientSecret": "کلائنٹ سیکریٹ",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "اختیاری: بیان کریں کہ یہ اسناد کس لیے استعمال ہوں گی",
+        "descriptionPlaceholder": "CI/CD پائپ لائن انضمام کے لیے استعمال",
+        "descriptionTooLong": "تفصیل 500 حروف یا اس سے کم ہونی چاہیے",
+        "expiresAt": "میعاد ختم ہونے کی تاریخ",
+        "expiresAtHint": "اختیاری: بغیر میعاد کے لیے خالی چھوڑیں",
+        "name": "{{common.name}}",
+        "nameHint": "اس اسناد کے لیے وضاحتی نام",
+        "namePlaceholder": "میری API اسناد",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "نام 100 حروف یا اس سے کم ہونا چاہیے",
+        "title": "کلائنٹ اسناد بنائیں"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "آخری استعمال",
+      "noCredentials": "ابھی تک کوئی کلائنٹ اسناد نہیں",
+      "noCredentialsDescription": "TMI API تک پروگرامی طور پر رسائی کے لیے اسناد بنائیں۔",
+      "secretDialog": {
+        "title": "کلائنٹ اسناد بنائی گئیں",
+        "warning": "ان اسناد کو ابھی محفوظ کریں۔ کلائنٹ سیکریٹ دوبارہ نہیں دکھایا جائے گا۔"
+      },
+      "status": "{{common.status}}",
       "title": "API اعتبارات"
     },
     "deleteMyData": {

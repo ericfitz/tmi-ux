@@ -313,6 +313,7 @@
     "addons": "Дополнения",
     "cancel": "Отмена",
     "cellId": "ID Ячейки",
+    "classification": "Классификация",
     "clear": "Очистить",
     "close": "Закрыть",
     "confirmDelete": "Вы уверены, что хотите удалить {{item}} \"{{name}}\"? Это действие нельзя отменить.",
@@ -320,6 +321,7 @@
     "copyToClipboard": "Копировать в Буфер Обмена",
     "create": "Создать",
     "created": "Создано",
+    "criticality": "Критичность",
     "cut": "Вырезать",
     "delete": "Удалить",
     "deleteConfirm": "Удалить Модель Угроз",
@@ -385,6 +387,7 @@
     "save": "Сохранить",
     "saveAndClose": "Сохранить и Закрыть",
     "score": "Оценка",
+    "sensitivity": "Конфиденциальность",
     "sessionRoles": {
       "host": "Хост",
       "participant": "Участник",
@@ -401,6 +404,7 @@
     "threatId": "ID Угрозы",
     "threatName": "Название Угрозы",
     "threatType": "Тип Угрозы",
+    "thumbnail": "Миниатюра",
     "type": "Тип",
     "unsavedChangesWarning": "У вас есть несохранённые изменения. Вы уверены, что хотите закрыть?",
     "userId": "ID Пользователя",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "Введите описание диаграммы",
+    "diagramNamePlaceholder": "Введите название диаграммы",
     "diagramPrefix": "Диаграмма:",
+    "editDiagramDescription": "Нажмите для редактирования описания диаграммы",
+    "editDiagramName": "Нажмите для редактирования названия диаграммы",
+    "editDisabledDuringCollaboration": "Редактирование отключено во время совместной работы",
     "embedding": {
       "cannotEmbedIntoTextBox": "Невозможно встроить фигуры в текстовые блоки",
       "cannotEmbedTextBox": "Текстовые блоки нельзя встраивать в другие фигуры",
@@ -512,8 +522,7 @@
         "undo": "Отменить",
         "zoomToFit": "Масштабировать по размеру"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "Ошибка валидации"
@@ -868,8 +877,33 @@
     },
     "colorBlindMode": "Включить режим для дальтоников",
     "credentials": {
-      "comingSoon": "Скоро будет доступно",
-      "description": "Эта функция позволит вам управлять учетными данными API для вебхуков, внешних интеграций и программного доступа к вашим моделям угроз.",
+      "add": "Добавить",
+      "clientId": "Идентификатор клиента",
+      "clientSecret": "Секретный ключ клиента",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "Необязательно: опишите назначение этих учётных данных",
+        "descriptionPlaceholder": "Используется для интеграции CI/CD конвейера",
+        "descriptionTooLong": "Описание должно содержать не более 500 символов",
+        "expiresAt": "Дата истечения срока действия",
+        "expiresAtHint": "Необязательно: оставьте пустым для бессрочного действия",
+        "name": "{{common.name}}",
+        "nameHint": "Понятное название для этих учётных данных",
+        "namePlaceholder": "Мои учётные данные API",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "Название должно содержать не более 100 символов",
+        "title": "Создать учётные данные клиента"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "Последнее использование",
+      "noCredentials": "Учётные данные клиента отсутствуют",
+      "noCredentialsDescription": "Создайте учётные данные для программного доступа к API TMI.",
+      "secretDialog": {
+        "title": "Учётные данные клиента созданы",
+        "warning": "Сохраните эти учётные данные сейчас. Секретный ключ клиента больше не будет показан."
+      },
+      "status": "{{common.status}}",
       "title": "API учетные данные"
     },
     "deleteMyData": {

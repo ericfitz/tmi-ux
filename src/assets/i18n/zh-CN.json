@@ -95,7 +95,7 @@
         "groupName": "组标识符",
         "groupNameHint": "仅限字母数字、连字符和下划线",
         "groupNamePattern": "仅允许字母数字、连字符和下划线",
-        "groupNamePlaceholder": "my-custom-group",
+        "groupNamePlaceholder": "我的自定义组",
         "groupNameRequired": "组标识符为必填项",
         "save": "创建用户组",
         "title": "添加用户组"
@@ -313,6 +313,7 @@
     "addons": "插件",
     "cancel": "取消",
     "cellId": "单元格ID",
+    "classification": "分类",
     "clear": "清除",
     "close": "关闭",
     "confirmDelete": "您确定要删除{{item}}\"{{name}}\"吗？此操作无法撤销。",
@@ -320,6 +321,7 @@
     "copyToClipboard": "复制到剪贴板",
     "create": "创建",
     "created": "已创建",
+    "criticality": "关键性",
     "cut": "剪切",
     "delete": "删除",
     "deleteConfirm": "删除威胁模型",
@@ -385,6 +387,7 @@
     "save": "保存",
     "saveAndClose": "保存并关闭",
     "score": "评分",
+    "sensitivity": "敏感性",
     "sessionRoles": {
       "host": "主持人",
       "participant": "参与者",
@@ -401,6 +404,7 @@
     "threatId": "威胁ID",
     "threatName": "威胁名称",
     "threatType": "威胁类型",
+    "thumbnail": "缩略图",
     "type": "类型",
     "unsavedChangesWarning": "您有未保存的更改。确定要关闭吗？",
     "userId": "User ID",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "输入图表描述",
+    "diagramNamePlaceholder": "输入图表名称",
     "diagramPrefix": "图表:",
+    "editDiagramDescription": "点击编辑图表描述",
+    "editDiagramName": "点击编辑图表名称",
+    "editDisabledDuringCollaboration": "协作期间禁用编辑",
     "embedding": {
       "cannotEmbedIntoTextBox": "无法将形状嵌入文本框中",
       "cannotEmbedTextBox": "文本框无法嵌入其他形状中",
@@ -512,8 +522,7 @@
         "undo": "撤销",
         "zoomToFit": "缩放至适合大小"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "验证错误"
@@ -868,8 +877,33 @@
     },
     "colorBlindMode": "启用色盲模式",
     "credentials": {
-      "comingSoon": "即将推出",
-      "description": "此功能将允许您管理用于webhooks、外部集成以及对威胁模型的编程访问的API凭证。",
+      "add": "添加",
+      "clientId": "客户端ID",
+      "clientSecret": "客户端密钥",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "可选：描述此凭证的用途",
+        "descriptionPlaceholder": "用于CI/CD流水线集成",
+        "descriptionTooLong": "描述不能超过500个字符",
+        "expiresAt": "过期日期",
+        "expiresAtHint": "可选：留空表示永不过期",
+        "name": "{{common.name}}",
+        "nameHint": "此凭证的描述性名称",
+        "namePlaceholder": "我的API凭证",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "名称不能超过100个字符",
+        "title": "创建客户端凭证"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "上次使用",
+      "noCredentials": "暂无客户端凭证",
+      "noCredentialsDescription": "创建凭证以编程方式访问TMI API。",
+      "secretDialog": {
+        "title": "客户端凭证已创建",
+        "warning": "请立即保存这些凭证。客户端密钥不会再次显示。"
+      },
+      "status": "{{common.status}}",
       "title": "API凭证"
     },
     "deleteMyData": {

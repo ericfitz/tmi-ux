@@ -313,6 +313,7 @@
     "addons": "الوظائف الإضافية",
     "cancel": "إلغاء",
     "cellId": "معرف الخلية",
+    "classification": "التصنيف",
     "clear": "مسح",
     "close": "إغلاق",
     "confirmDelete": "هل أنت متأكد أنك تريد حذف {{item}} \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
@@ -320,6 +321,7 @@
     "copyToClipboard": "نسخ إلى الحافظة",
     "create": "إنشاء",
     "created": "تم الإنشاء",
+    "criticality": "الحرجية",
     "cut": "قص",
     "delete": "حذف",
     "deleteConfirm": "حذف نموذج التهديد",
@@ -385,6 +387,7 @@
     "save": "حفظ",
     "saveAndClose": "حفظ وإغلاق",
     "score": "النتيجة",
+    "sensitivity": "الحساسية",
     "sessionRoles": {
       "host": "مضيف",
       "participant": "مشارك",
@@ -401,6 +404,7 @@
     "threatId": "معرف التهديد",
     "threatName": "اسم التهديد",
     "threatType": "نوع التهديد",
+    "thumbnail": "صورة مصغرة",
     "type": "النوع",
     "unsavedChangesWarning": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد الإغلاق؟",
     "userId": "معرف المستخدم",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "أدخل وصف المخطط",
+    "diagramNamePlaceholder": "أدخل اسم المخطط",
     "diagramPrefix": "مخطط:",
+    "editDiagramDescription": "انقر لتحرير وصف المخطط",
+    "editDiagramName": "انقر لتحرير اسم المخطط",
+    "editDisabledDuringCollaboration": "التحرير معطل أثناء التعاون",
     "embedding": {
       "cannotEmbedIntoTextBox": "لا يمكن تضمين الأشكال في مربعات النص",
       "cannotEmbedTextBox": "لا يمكن تضمين مربعات النص في أشكال أخرى",
@@ -512,8 +522,7 @@
         "undo": "تراجع",
         "zoomToFit": "تكبير لملائمة العرض"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "خطأ في التحقق"
@@ -868,9 +877,34 @@
     },
     "colorBlindMode": "تفعيل وضع عمى الألوان",
     "credentials": {
-      "comingSoon": "قريباً",
-      "description": "ستتيح لك هذه الميزة إدارة بيانات اعتماد واجهة برمجة التطبيقات للخوادم الخارجية والتكاملات الخارجية والوصول البرمجي إلى نماذج التهديدات الخاصة بك.",
-      "title": "بيانات اعتماد واجهة برمجة التطبيقات"
+      "add": "إضافة",
+      "clientId": "معرف العميل",
+      "clientSecret": "سر العميل",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "اختياري: اوصف الاستخدام المقصود لهذه بيانات الاعتماد",
+        "descriptionPlaceholder": "يُستخدم لتكامل خط أنابيب CI/CD",
+        "descriptionTooLong": "يجب أن يكون الوصف 500 حرف أو أقل",
+        "expiresAt": "تاريخ انتهاء الصلاحية",
+        "expiresAtHint": "اختياري: اترك فارغاً لعدم وجود تاريخ انتهاء",
+        "name": "{{common.name}}",
+        "nameHint": "اسم وصفي لهذه بيانات الاعتماد",
+        "namePlaceholder": "بيانات اعتماد API الخاصة بي",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "يجب أن يكون الاسم 100 حرف أو أقل",
+        "title": "إنشاء بيانات اعتماد العميل"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "آخر استخدام",
+      "noCredentials": "لا توجد بيانات اعتماد عميل حتى الآن",
+      "noCredentialsDescription": "أنشئ بيانات اعتماد للوصول إلى TMI API برمجياً.",
+      "secretDialog": {
+        "title": "تم إنشاء بيانات اعتماد العميل",
+        "warning": "احفظ هذه بيانات الاعتماد الآن. سر العميل لن يتم عرضه مرة أخرى."
+      },
+      "status": "{{common.status}}",
+      "title": "بيانات اعتماد العميل"
     },
     "deleteMyData": {
       "confirmation": "هل أنت متأكد من أنك تريد حذف جميع بياناتك؟",

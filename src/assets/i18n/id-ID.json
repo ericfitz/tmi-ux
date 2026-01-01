@@ -313,6 +313,7 @@
     "addons": "Addon",
     "cancel": "Batal",
     "cellId": "ID Sel",
+    "classification": "Klasifikasi",
     "clear": "Bersihkan",
     "close": "Tutup",
     "confirmDelete": "Apakah Anda yakin ingin menghapus {{item}} \"{{name}}\"? Tindakan ini tidak dapat dibatalkan.",
@@ -320,6 +321,7 @@
     "copyToClipboard": "Salin ke Papan Klip",
     "create": "Buat",
     "created": "Dibuat",
+    "criticality": "Kekritisan",
     "cut": "Potong",
     "delete": "Hapus",
     "deleteConfirm": "Hapus Model Ancaman",
@@ -385,6 +387,7 @@
     "save": "Simpan",
     "saveAndClose": "Simpan & Tutup",
     "score": "Skor",
+    "sensitivity": "Sensitivitas",
     "sessionRoles": {
       "host": "Host",
       "participant": "Peserta",
@@ -401,6 +404,7 @@
     "threatId": "ID Ancaman",
     "threatName": "Nama Ancaman",
     "threatType": "Jenis Ancaman",
+    "thumbnail": "Gambar Mini",
     "type": "Jenis",
     "unsavedChangesWarning": "Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin menutup?",
     "userId": "ID Pengguna",
@@ -470,7 +474,13 @@
     }
   },
   "editor": {
+    "description": "{{common.description}}",
+    "diagramDescriptionPlaceholder": "Masukkan deskripsi diagram",
+    "diagramNamePlaceholder": "Masukkan nama diagram",
     "diagramPrefix": "Diagram:",
+    "editDiagramDescription": "Klik untuk mengedit deskripsi diagram",
+    "editDiagramName": "Klik untuk mengedit nama diagram",
+    "editDisabledDuringCollaboration": "Pengeditan dinonaktifkan selama kolaborasi",
     "embedding": {
       "cannotEmbedIntoTextBox": "Tidak dapat menyematkan bentuk ke dalam kotak teks",
       "cannotEmbedTextBox": "Kotak teks tidak dapat disematkan ke dalam bentuk lain",
@@ -512,8 +522,7 @@
         "undo": "Batalkan",
         "zoomToFit": "Perbesar Sesuai Layar"
       }
-    },
-    "description": "{{common.description}}"
+    }
   },
   "errors": {
     "validationError": "Kesalahan Validasi"
@@ -868,8 +877,33 @@
     },
     "colorBlindMode": "Aktifkan Mode Buta Warna",
     "credentials": {
-      "comingSoon": "Segera hadir",
-      "description": "Fitur ini akan memungkinkan Anda mengelola kredensial API untuk webhook, integrasi eksternal, dan akses terprogram ke model ancaman Anda.",
+      "add": "Tambah",
+      "clientId": "ID Klien",
+      "clientSecret": "Rahasia Klien",
+      "createDialog": {
+        "create": "{{common.create}}",
+        "description": "{{common.description}}",
+        "descriptionHint": "Opsional: Jelaskan untuk apa kredensial ini digunakan",
+        "descriptionPlaceholder": "Digunakan untuk integrasi pipeline CI/CD",
+        "descriptionTooLong": "Deskripsi harus 500 karakter atau kurang",
+        "expiresAt": "Tanggal Kedaluwarsa",
+        "expiresAtHint": "Opsional: Biarkan kosong untuk tanpa kedaluwarsa",
+        "name": "{{common.name}}",
+        "nameHint": "Nama deskriptif untuk kredensial ini",
+        "namePlaceholder": "Kredensial API Saya",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "nameTooLong": "Nama harus 100 karakter atau kurang",
+        "title": "Buat Kredensial Klien"
+      },
+      "created": "{{common.created}}",
+      "lastUsed": "Terakhir Digunakan",
+      "noCredentials": "Belum ada kredensial klien",
+      "noCredentialsDescription": "Buat kredensial untuk mengakses API TMI secara terprogram.",
+      "secretDialog": {
+        "title": "Kredensial Klien Dibuat",
+        "warning": "Simpan kredensial ini sekarang. Rahasia klien tidak akan ditampilkan lagi."
+      },
+      "status": "{{common.status}}",
       "title": "Kredensial API"
     },
     "deleteMyData": {
