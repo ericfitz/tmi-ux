@@ -4,7 +4,7 @@
       @if (isNewThreatModel) {
         {{ 'threatModels.newThreatModel' | transloco }}
       } @else {
-        <span class="title-prefix">{{ 'threatModels.threatModelPrefix' | transloco }}</span>
+        <span class="title-prefix">{{ 'threatModels.threatModelPrefix' | transloco }}:</span>
         {{ ' ' }}
         <span class="title-name">{{ threatModel?.name }}</span>
       }
@@ -97,11 +97,11 @@
                   }}</span>
                 </div>
                 <div class="info-field">
-                  <span class="info-label">{{ 'threatModels.createdBy' | transloco }}</span>
+                  <span class="info-label">{{ 'threatModels.createdBy' | transloco }}:</span>
                   <span class="info-value">{{ threatModel.created_by.display_name }}</span>
                 </div>
                 <div class="info-field">
-                  <span class="info-label">{{ 'threatModels.created' | transloco }}</span>
+                  <span class="info-label">{{ 'threatModels.created' | transloco }}:</span>
                   <span class="info-value">{{
                     threatModel.created_at | date: 'short' : undefined : currentLocale
                   }}</span>
