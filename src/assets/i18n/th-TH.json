@@ -425,7 +425,8 @@
     "moveBackward": "เลื่อนไปข้างหลัง",
     "moveForward": "เลื่อนไปข้างหน้า",
     "moveToBack": "เลื่อนไปด้านหลัง",
-    "moveToFront": "เลื่อนไปด้านหน้า"
+    "moveToFront": "เลื่อนไปด้านหน้า",
+    "showObject": "แสดงอ็อบเจกต์"
   },
   "dataAssetDialog": {
     "selectAsset": "ทรัพย์สินข้อมูล",
@@ -519,6 +520,9 @@
         "help": "ความช่วยเหลือ",
         "redo": "ทำซ้ำ",
         "share": "แชร์",
+        "showClipboard": "แสดงคลิปบอร์ด",
+        "showGraphData": "แสดงข้อมูลกราฟ",
+        "showHistory": "แสดงประวัติ",
         "undo": "เลิกทำ",
         "zoomToFit": "ซูมให้พอดีหน้าจอ"
       }
@@ -938,6 +942,7 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "การตั้งค่ารายงาน",
+    "showDeveloperTools": "แสดงเครื่องมือนักพัฒนา",
     "tabs": {
       "credentials": "ข้อมูลประจำตัว",
       "danger": "อันตราย",

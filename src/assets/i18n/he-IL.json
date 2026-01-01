@@ -425,7 +425,8 @@
     "moveBackward": "הזז אחורה",
     "moveForward": "הזז קדימה",
     "moveToBack": "הזז לאחור",
-    "moveToFront": "הזז לקדמה"
+    "moveToFront": "הזז לקדמה",
+    "showObject": "הצג אובייקט"
   },
   "dataAssetDialog": {
     "selectAsset": "נכס נתונים",
@@ -519,6 +520,9 @@
         "help": "עזרה",
         "redo": "בצע שוב",
         "share": "שתף",
+        "showClipboard": "הצג לוח גזירים",
+        "showGraphData": "הצג נתוני גרף",
+        "showHistory": "הצג היסטוריה",
         "undo": "בטל",
         "zoomToFit": "התאם לתצוגה"
       }
@@ -938,6 +942,7 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "העדפות דוחות",
+    "showDeveloperTools": "הצג כלי פיתוח",
     "tabs": {
       "credentials": "אישורים",
       "danger": "סכנה",

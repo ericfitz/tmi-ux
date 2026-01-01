@@ -446,7 +446,8 @@
     "moveBackward": "Move Backward",
     "moveForward": "Move Forward",
     "moveToBack": "Move to Back",
-    "moveToFront": "Move to Front"
+    "moveToFront": "Move to Front",
+    "showObject": "Show Object"
   },
   "dataAssetDialog": {
     "selectAsset": "Data Asset",
@@ -540,6 +541,9 @@
         "help": "Help",
         "redo": "Redo",
         "share": "Share",
+        "showClipboard": "Show Clipboard",
+        "showGraphData": "Show Graph Data",
+        "showHistory": "Show History",
         "undo": "Undo",
         "zoomToFit": "Zoom to Fit"
       }
@@ -967,6 +971,7 @@
       "usLetter.comment": "This is a proper name and should not be translated."
     },
     "reportPreferences": "Report Preferences",
+    "showDeveloperTools": "Show Developer Tools",
     "tabs": {
       "credentials": "Credentials",
       "danger": "Danger",

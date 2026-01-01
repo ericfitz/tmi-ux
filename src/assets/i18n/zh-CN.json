@@ -425,7 +425,8 @@
     "moveBackward": "向后移动",
     "moveForward": "向前移动",
     "moveToBack": "移到最后",
-    "moveToFront": "移到最前"
+    "moveToFront": "移到最前",
+    "showObject": "显示对象"
   },
   "dataAssetDialog": {
     "selectAsset": "数据资产",
@@ -519,6 +520,9 @@
         "help": "帮助",
         "redo": "重做",
         "share": "分享",
+        "showClipboard": "显示剪贴板",
+        "showGraphData": "显示图表数据",
+        "showHistory": "显示历史",
         "undo": "撤销",
         "zoomToFit": "缩放至适合大小"
       }
@@ -938,6 +942,7 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "报告首选项",
+    "showDeveloperTools": "显示开发者工具",
     "tabs": {
       "credentials": "凭证",
       "danger": "危险区域",

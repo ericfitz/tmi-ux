@@ -225,6 +225,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // Environment flags for dev-only features
   isProduction = environment.production;
 
+  // User preference for showing developer tools
+  showDeveloperTools = false;
+
   constructor(
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
@@ -252,6 +255,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     // this.logger.info('DfdComponent v2 ngOnInit called');
+
+    // Load user preferences for developer tools visibility
+    this.loadDeveloperToolsPreference();
 
     // Get route parameters
     this.threatModelId = this.route.snapshot.paramMap.get('id');
@@ -2099,6 +2105,19 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Helper Methods
+
+  private loadDeveloperToolsPreference(): void {
+    try {
+      const stored = localStorage.getItem('tmi_user_preferences');
+      if (stored) {
+        const prefs = JSON.parse(stored);
+        this.showDeveloperTools = prefs.showDeveloperTools ?? false;
+      }
+    } catch (e) {
+      this.logger.error('Error loading developer tools preference:', e);
+      this.showDeveloperTools = false;
+    }
+  }
 
   private updateSelectionState(): void {
     if (!this.appDfdOrchestrator.getState().initialized) {

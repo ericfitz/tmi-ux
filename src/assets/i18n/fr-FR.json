@@ -425,7 +425,8 @@
     "moveBackward": "Reculer",
     "moveForward": "Avancer",
     "moveToBack": "Mettre a l'arriere-plan",
-    "moveToFront": "Mettre au premier plan"
+    "moveToFront": "Mettre au premier plan",
+    "showObject": "Afficher l'objet"
   },
   "dataAssetDialog": {
     "selectAsset": "Actif de donnees",
@@ -519,6 +520,9 @@
         "help": "Aide",
         "redo": "Retablir",
         "share": "Partager",
+        "showClipboard": "Afficher le presse-papiers",
+        "showGraphData": "Afficher les données du graphe",
+        "showHistory": "Afficher l'historique",
         "undo": "Annuler",
         "zoomToFit": "Ajuster le zoom"
       }
@@ -938,6 +942,7 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Preferences de rapport",
+    "showDeveloperTools": "Afficher les outils de développement",
     "tabs": {
       "credentials": "Identifiants",
       "danger": "Danger",

@@ -425,7 +425,8 @@
     "moveBackward": "تحريك للخلف",
     "moveForward": "تحريك للأمام",
     "moveToBack": "نقل إلى الخلف",
-    "moveToFront": "نقل إلى المقدمة"
+    "moveToFront": "نقل إلى المقدمة",
+    "showObject": "عرض الكائن"
   },
   "dataAssetDialog": {
     "selectAsset": "أصل البيانات",
@@ -519,6 +520,9 @@
         "help": "مساعدة",
         "redo": "إعادة",
         "share": "مشاركة",
+        "showClipboard": "عرض الحافظة",
+        "showGraphData": "عرض بيانات الرسم البياني",
+        "showHistory": "عرض السجل",
         "undo": "تراجع",
         "zoomToFit": "تكبير لملائمة العرض"
       }
@@ -938,6 +942,7 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "تفضيلات التقرير",
+    "showDeveloperTools": "عرض أدوات المطور",
     "tabs": {
       "credentials": "بيانات الاعتماد",
       "danger": "خطر",

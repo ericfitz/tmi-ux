@@ -425,7 +425,8 @@
     "moveBackward": "背面へ移動",
     "moveForward": "前面へ移動",
     "moveToBack": "最背面へ移動",
-    "moveToFront": "最前面へ移動"
+    "moveToFront": "最前面へ移動",
+    "showObject": "オブジェクトを表示"
   },
   "dataAssetDialog": {
     "selectAsset": "データアセット",
@@ -519,6 +520,9 @@
         "help": "ヘルプ",
         "redo": "やり直し",
         "share": "共有",
+        "showClipboard": "クリップボードを表示",
+        "showGraphData": "グラフデータを表示",
+        "showHistory": "履歴を表示",
         "undo": "元に戻す",
         "zoomToFit": "全体を表示"
       }
@@ -938,6 +942,7 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "レポート設定",
+    "showDeveloperTools": "開発者ツールを表示",
     "tabs": {
       "credentials": "認証情報",
       "danger": "危険",

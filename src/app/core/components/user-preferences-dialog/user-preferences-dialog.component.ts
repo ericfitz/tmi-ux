@@ -32,6 +32,7 @@ export interface UserPreferences {
   colorBlindMode: boolean;
   pageSize: 'usLetter' | 'A4';
   marginSize: 'narrow' | 'standard' | 'wide';
+  showDeveloperTools: boolean;
 }
 
 interface CheckboxChangeEvent {
@@ -166,6 +167,17 @@ interface CheckboxChangeEvent {
               >
                 <span [transloco]="'userPreferences.colorBlindMode'">
                   Color Blind Safe Palette
+                </span>
+              </mat-checkbox>
+            </div>
+
+            <div class="preference-item">
+              <mat-checkbox
+                [(ngModel)]="preferences.showDeveloperTools"
+                (change)="onShowDeveloperToolsChange($event)"
+              >
+                <span [transloco]="'userPreferences.showDeveloperTools'">
+                  Show Developer Tools
                 </span>
               </mat-checkbox>
             </div>
@@ -408,19 +420,19 @@ interface CheckboxChangeEvent {
       }
 
       .section-header {
-        margin: 0 0 16px 0;
+        margin: 0 0 8px 0;
         font-size: 16px;
         font-weight: 500;
         color: var(--theme-text-primary);
       }
 
       .preference-item {
-        margin: 16px 0;
+        margin: 8px 0;
       }
 
       .preference-label {
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 4px;
         font-weight: 500;
         color: var(--theme-text-primary);
       }
@@ -428,7 +440,7 @@ interface CheckboxChangeEvent {
       .radio-group {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 2px;
         margin-left: 8px;
       }
 
@@ -697,6 +709,7 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
       colorBlindMode: false,
       pageSize: 'usLetter',
       marginSize: 'standard',
+      showDeveloperTools: false,
     };
     this.savePreferences(defaultPrefs);
     return defaultPrefs;
@@ -730,6 +743,11 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
   }
 
   onMarginSizeChange(): void {
+    this.savePreferences(this.preferences);
+  }
+
+  onShowDeveloperToolsChange(event: CheckboxChangeEvent): void {
+    this.preferences.showDeveloperTools = event.checked;
     this.savePreferences(this.preferences);
   }
 

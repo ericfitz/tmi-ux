@@ -425,7 +425,8 @@
     "moveBackward": "پیچھے منتقل کریں",
     "moveForward": "آگے منتقل کریں",
     "moveToBack": "سب سے پیچھے منتقل کریں",
-    "moveToFront": "سب سے آگے منتقل کریں"
+    "moveToFront": "سب سے آگے منتقل کریں",
+    "showObject": "آبجیکٹ دکھائیں"
   },
   "dataAssetDialog": {
     "selectAsset": "ڈیٹا اثاثہ",
@@ -519,6 +520,9 @@
         "help": "مدد",
         "redo": "دوبارہ کریں",
         "share": "شیئر کریں",
+        "showClipboard": "کلپ بورڈ دکھائیں",
+        "showGraphData": "گراف ڈیٹا دکھائیں",
+        "showHistory": "تاریخ دکھائیں",
         "undo": "واپس کریں",
         "zoomToFit": "فٹ کرنے کے لیے زوم کریں"
       }
@@ -938,6 +942,7 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "رپورٹ کی ترجیحات",
+    "showDeveloperTools": "ڈویلپر ٹولز دکھائیں",
     "tabs": {
       "credentials": "اعتبارات",
       "danger": "خطرناک",

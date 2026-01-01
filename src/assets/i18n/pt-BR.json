@@ -425,7 +425,8 @@
     "moveBackward": "Mover para Tras",
     "moveForward": "Mover para Frente",
     "moveToBack": "Mover para o Fundo",
-    "moveToFront": "Mover para a Frente"
+    "moveToFront": "Mover para a Frente",
+    "showObject": "Mostrar Objeto"
   },
   "dataAssetDialog": {
     "selectAsset": "Ativo de Dados",
@@ -519,6 +520,9 @@
         "help": "Ajuda",
         "redo": "Refazer",
         "share": "Compartilhar",
+        "showClipboard": "Mostrar Área de Transferência",
+        "showGraphData": "Mostrar Dados do Gráfico",
+        "showHistory": "Mostrar Histórico",
         "undo": "Desfazer",
         "zoomToFit": "Ajustar ao Tamanho"
       }
@@ -938,6 +942,7 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Preferencias de Relatorio",
+    "showDeveloperTools": "Mostrar Ferramentas do Desenvolvedor",
     "tabs": {
       "credentials": "Credenciais",
       "danger": "Perigo",

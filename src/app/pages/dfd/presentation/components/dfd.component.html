@@ -177,20 +177,32 @@
     </div>
 
     <div class="toolbar-group">
-      @if (!isProduction) {
-        <button mat-icon-button (click)="showGraphData()" [matTooltip]="'Show Graph Data'">
+      @if (showDeveloperTools) {
+        <button
+          mat-icon-button
+          (click)="showGraphData()"
+          [matTooltip]="'editor.toolbar.tooltips.showGraphData' | transloco"
+        >
           <mat-icon>data_object</mat-icon>
         </button>
       }
 
-      @if (!isProduction) {
-        <button mat-icon-button (click)="showHistory()" [matTooltip]="'Show History'">
+      @if (showDeveloperTools) {
+        <button
+          mat-icon-button
+          (click)="showHistory()"
+          [matTooltip]="'editor.toolbar.tooltips.showHistory' | transloco"
+        >
           <mat-icon>history</mat-icon>
         </button>
       }
 
-      @if (!isProduction) {
-        <button mat-icon-button (click)="showClipboard()" [matTooltip]="'Show X6 Clipboard'">
+      @if (showDeveloperTools) {
+        <button
+          mat-icon-button
+          (click)="showClipboard()"
+          [matTooltip]="'editor.toolbar.tooltips.showClipboard' | transloco"
+        >
           <mat-icon>assignment</mat-icon>
         </button>
       }
@@ -438,11 +450,13 @@
         </span>
         <span>{{ 'common.addThreat' | transloco }}</span>
       </button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item (click)="showCellProperties()">
-        <mat-icon>visibility</mat-icon>
-        <span>Show object</span>
-      </button>
+      @if (showDeveloperTools) {
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="showCellProperties()">
+          <mat-icon>visibility</mat-icon>
+          <span>{{ 'contextMenu.showObject' | transloco }}</span>
+        </button>
+      }
     </mat-menu>
   </div>
 </div>

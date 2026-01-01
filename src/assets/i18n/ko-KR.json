@@ -425,7 +425,8 @@
     "moveBackward": "뒤로 이동",
     "moveForward": "앞으로 이동",
     "moveToBack": "맨 뒤로 이동",
-    "moveToFront": "맨 앞으로 이동"
+    "moveToFront": "맨 앞으로 이동",
+    "showObject": "객체 표시"
   },
   "dataAssetDialog": {
     "selectAsset": "데이터 자산",
@@ -519,6 +520,9 @@
         "help": "도움말",
         "redo": "다시 실행",
         "share": "공유",
+        "showClipboard": "클립보드 표시",
+        "showGraphData": "그래프 데이터 표시",
+        "showHistory": "기록 표시",
         "undo": "실행 취소",
         "zoomToFit": "화면에 맞게 확대/축소"
       }
@@ -938,6 +942,7 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "보고서 설정",
+    "showDeveloperTools": "개발자 도구 표시",
     "tabs": {
       "credentials": "자격증명",
       "danger": "위험",

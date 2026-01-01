@@ -425,7 +425,8 @@
     "moveBackward": "Переместить назад",
     "moveForward": "Переместить вперёд",
     "moveToBack": "На задний план",
-    "moveToFront": "На передний план"
+    "moveToFront": "На передний план",
+    "showObject": "Показать объект"
   },
   "dataAssetDialog": {
     "selectAsset": "Актив данных",
@@ -519,6 +520,9 @@
         "help": "Справка",
         "redo": "Повторить",
         "share": "Поделиться",
+        "showClipboard": "Показать буфер обмена",
+        "showGraphData": "Показать данные графа",
+        "showHistory": "Показать историю",
         "undo": "Отменить",
         "zoomToFit": "Масштабировать по размеру"
       }
@@ -938,6 +942,7 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Настройки отчётов",
+    "showDeveloperTools": "Показать инструменты разработчика",
     "tabs": {
       "credentials": "Учетные данные",
       "danger": "Опасная зона",

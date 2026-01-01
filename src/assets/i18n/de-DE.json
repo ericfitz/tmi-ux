@@ -425,7 +425,8 @@
     "moveBackward": "Nach hinten bewegen",
     "moveForward": "Nach vorne bewegen",
     "moveToBack": "In den Hintergrund",
-    "moveToFront": "In den Vordergrund"
+    "moveToFront": "In den Vordergrund",
+    "showObject": "Objekt anzeigen"
   },
   "dataAssetDialog": {
     "selectAsset": "Daten-Asset",
@@ -519,6 +520,9 @@
         "help": "Hilfe",
         "redo": "Wiederholen",
         "share": "Teilen",
+        "showClipboard": "Zwischenablage anzeigen",
+        "showGraphData": "Graph-Daten anzeigen",
+        "showHistory": "Verlauf anzeigen",
         "undo": "Rückgängig",
         "zoomToFit": "An Bildschirmgröße anpassen"
       }
@@ -938,6 +942,7 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Berichtseinstellungen",
+    "showDeveloperTools": "Entwicklertools anzeigen",
     "tabs": {
       "credentials": "Anmeldedaten",
       "danger": "Gefahr",

@@ -425,7 +425,8 @@
     "moveBackward": "পেছনে সরান",
     "moveForward": "সামনে সরান",
     "moveToBack": "সবার পেছনে সরান",
-    "moveToFront": "সবার সামনে সরান"
+    "moveToFront": "সবার সামনে সরান",
+    "showObject": "অবজেক্ট দেখান"
   },
   "dataAssetDialog": {
     "selectAsset": "ডেটা অ্যাসেট",
@@ -519,6 +520,9 @@
         "help": "সাহায্য",
         "redo": "রিডু",
         "share": "শেয়ার",
+        "showClipboard": "ক্লিপবোর্ড দেখান",
+        "showGraphData": "গ্রাফ ডেটা দেখান",
+        "showHistory": "ইতিহাস দেখান",
         "undo": "আনডু",
         "zoomToFit": "ফিট করে জুম করুন"
       }
@@ -938,6 +942,7 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "রিপোর্ট পছন্দ",
+    "showDeveloperTools": "ডেভেলপার টুলস দেখান",
     "tabs": {
       "credentials": "শংসাপত্র",
       "danger": "বিপদ",

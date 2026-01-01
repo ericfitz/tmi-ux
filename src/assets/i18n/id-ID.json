@@ -425,7 +425,8 @@
     "moveBackward": "Pindah ke Belakang",
     "moveForward": "Pindah ke Depan",
     "moveToBack": "Pindah ke Paling Belakang",
-    "moveToFront": "Pindah ke Paling Depan"
+    "moveToFront": "Pindah ke Paling Depan",
+    "showObject": "Tampilkan Objek"
   },
   "dataAssetDialog": {
     "selectAsset": "Aset Data",
@@ -519,6 +520,9 @@
         "help": "Bantuan",
         "redo": "Ulangi",
         "share": "Bagikan",
+        "showClipboard": "Tampilkan Papan Klip",
+        "showGraphData": "Tampilkan Data Grafik",
+        "showHistory": "Tampilkan Riwayat",
         "undo": "Batalkan",
         "zoomToFit": "Perbesar Sesuai Layar"
       }
@@ -938,6 +942,7 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Preferensi Laporan",
+    "showDeveloperTools": "Tampilkan Alat Pengembang",
     "tabs": {
       "credentials": "Kredensial",
       "danger": "Bahaya",
