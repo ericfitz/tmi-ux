@@ -274,8 +274,12 @@ interface CheckboxChangeEvent {
         padding: 0 24px;
       }
 
-      mat-tab-group {
-        min-height: 300px;
+      ::ng-deep .mat-mdc-tab-body-wrapper {
+        height: 320px;
+      }
+
+      ::ng-deep .mat-mdc-tab-body-content {
+        overflow-y: auto;
       }
 
       .tab-content {
