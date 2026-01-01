@@ -21,7 +21,7 @@
   }
 
   .title-name {
-    color: #0097a7; // Cyan 700 - matches DFD diagram/threat model names
+    color: var(--color-theme-cyan);
   }
 }
 
@@ -404,7 +404,7 @@ mat-card-header {
 
 .mat-mdc-header-cell {
   font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
+  color: var(--theme-text-secondary);
   text-align: left;
   font-family: var(--font-family-primary);
   padding: 0 6px;
@@ -420,7 +420,7 @@ mat-card-header {
 }
 
 .no-items-message {
-  color: var(--color-text-secondary);
+  color: var(--theme-text-secondary);
   font-style: italic;
   padding: 12px 0;
   text-align: center;
@@ -511,23 +511,19 @@ mat-card-header {
 
 .classification-chips mat-chip {
   background-color: var(--color-info) !important;
-  opacity: 0.85;
-  color: var(--color-background-white) !important;
+  color: #fff !important;
 
   .mdc-evolution-chip__text-label {
-    color: var(--color-background-white) !important;
-    opacity: 1 !important;
+    color: #fff !important;
   }
 }
 
 .sensitivity-chips mat-chip {
   background-color: var(--color-warning) !important;
-  opacity: 0.85;
-  color: var(--color-background-white) !important;
+  color: #fff !important;
 
   .mdc-evolution-chip__text-label {
-    color: var(--color-background-white) !important;
-    opacity: 1 !important;
+    color: #fff !important;
   }
 }
 
@@ -590,7 +586,7 @@ mat-card-header {
 
   // Vertical centering for icons
   mat-icon {
-    color: var(--color-text-secondary);
+    color: var(--theme-text-secondary);
     display: flex !important;
     align-items: center;
     justify-content: center;
@@ -606,7 +602,7 @@ mat-card-header {
 
   .entity-name {
     font-weight: 500;
-    color: var(--color-text-primary);
+    color: var(--theme-text-primary);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -616,7 +612,7 @@ mat-card-header {
 .column-description {
   flex: 1;
   min-width: 150px;
-  color: var(--color-text-secondary);
+  color: var(--theme-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
