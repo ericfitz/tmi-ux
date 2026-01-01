@@ -1,0 +1,25 @@
+@if (isEditing) {
+  <input
+    #inputField
+    type="text"
+    class="inline-edit-input"
+    [(ngModel)]="editValue"
+    (blur)="onBlur()"
+    (keydown)="onKeyDown($event)"
+  />
+} @else {
+  <span
+    class="inline-edit-display"
+    [class]="displayClass"
+    [class.editable]="!disabled"
+    [class.empty]="!value"
+    (click)="startEditing()"
+    [matTooltip]="disabled ? disabledTooltip : editTooltip"
+    [matTooltipDisabled]="!disabled && !editTooltip"
+  >
+    {{ value || placeholder }}
+    @if (!disabled) {
+      <mat-icon class="edit-icon">edit</mat-icon>
+    }
+  </span>
+}

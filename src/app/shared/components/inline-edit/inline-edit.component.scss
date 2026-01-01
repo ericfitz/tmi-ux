@@ -1,0 +1,59 @@
+/* stylelint-disable no-descending-specificity */
+@use '../../../../styles/colors' as colors;
+
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+
+.edit-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: var(--theme-primary, colors.$primary-color);
+}
+
+.inline-edit-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: default;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+
+  &.editable {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgb(0 0 0 / 4%);
+
+      .edit-icon {
+        opacity: 1;
+      }
+    }
+  }
+
+  &.empty {
+    color: var(--color-disabled-text, rgb(0 0 0 / 54%));
+    font-style: italic;
+  }
+}
+
+.inline-edit-input {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--theme-primary, colors.$primary-color);
+  border-radius: 4px;
+  padding: 2px 4px;
+  outline: none;
+  min-width: 100px;
+
+  &:focus {
+    border-color: var(--theme-primary, colors.$primary-color);
+    box-shadow: 0 0 0 1px var(--theme-primary, colors.$primary-color);
+  }
+}

@@ -32,19 +32,29 @@
 }
 
 .subtitle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   margin: 2px 0;
   font-size: 0.9em;
   line-height: 1.4;
 
-  .label {
-    color: colors.$primary-color;
+  .title-prefix {
+    color: var(--theme-primary);
     font-weight: 500;
   }
 
-  .value {
-    color: colors.$theme-cyan;
+  .title-name {
+    color: var(--color-theme-cyan);
     font-weight: 400;
-    margin-left: 4px;
+  }
+
+  .description-text {
+    font-style: normal;
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

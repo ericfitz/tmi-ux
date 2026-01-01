@@ -115,6 +115,7 @@ import { HelpDialogComponent } from './help-dialog/help-dialog.component';
 
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
+import { InlineEditComponent } from '../../../../shared/components/inline-edit/inline-edit.component';
 import {
   ThreatEditorDialogComponent,
   ThreatEditorDialogData,
@@ -138,6 +139,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     MatTooltipModule,
     TranslocoModule,
     DfdCollaborationComponent,
+    InlineEditComponent,
   ],
   providers: [
     // DFD v2 Architecture - Component-scoped services
@@ -198,6 +200,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Diagram data
   diagramName: string | null = null;
+  diagramDescription: string | null = null;
   threatModelName: string | null = null;
   threatModelPermission: 'reader' | 'writer' | null = null;
 
@@ -603,9 +606,13 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.isSystemInitialized = state.initialized;
 
-        // Update diagram name and threat model name from orchestrator state
+        // Update diagram name, description, and threat model name from orchestrator state
         if (state.diagramName) {
           this.diagramName = state.diagramName;
+        }
+        // Description can be empty string, so check for undefined specifically
+        if (state.diagramDescription !== undefined) {
+          this.diagramDescription = state.diagramDescription ?? null;
         }
         if (state.threatModelName) {
           this.threatModelName = state.threatModelName;
@@ -619,6 +626,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             isSystemInitialized: this.isSystemInitialized,
             isReadOnlyMode: this.isReadOnlyMode,
             diagramName: this.diagramName,
+            diagramDescription: this.diagramDescription,
             threatModelName: this.threatModelName,
           },
         );
@@ -1186,6 +1194,65 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
             this.logger.error('Error during manual save', { error: saveError });
           },
         });
+      });
+  }
+
+  onDiagramNameChange(newName: string): void {
+    if (!this.threatModelId || !this.dfdId || this.isReadOnlyMode || this.isCollaborating) {
+      return;
+    }
+
+    // Don't save if name is empty or unchanged
+    if (!newName || newName === this.diagramName) {
+      return;
+    }
+
+    this.logger.info('Updating diagram name', { oldName: this.diagramName, newName });
+
+    this.threatModelService
+      .patchDiagramProperties(this.threatModelId, this.dfdId, { name: newName })
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: updatedDiagram => {
+          this.diagramName = updatedDiagram.name;
+          this.cdr.detectChanges();
+          this.logger.info('Diagram name updated successfully', { name: updatedDiagram.name });
+        },
+        error: error => {
+          this.logger.error('Failed to update diagram name', { error });
+        },
+      });
+  }
+
+  onDiagramDescriptionChange(newDescription: string): void {
+    if (!this.threatModelId || !this.dfdId || this.isReadOnlyMode || this.isCollaborating) {
+      return;
+    }
+
+    // Don't save if description is unchanged
+    if (newDescription === (this.diagramDescription ?? '')) {
+      return;
+    }
+
+    this.logger.info('Updating diagram description', {
+      oldDescription: this.diagramDescription,
+      newDescription,
+    });
+
+    this.threatModelService
+      .patchDiagramProperties(this.threatModelId, this.dfdId, { description: newDescription })
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: updatedDiagram => {
+          this.diagramDescription = updatedDiagram.description ?? null;
+          this.cdr.detectChanges();
+          this.logger.info('Diagram description updated successfully', {
+            description: updatedDiagram.description,
+          });
+        },
+        error: error => {
+          this.logger.error('Failed to update diagram description', { error });
+        },
       });
   }
 

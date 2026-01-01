@@ -23,6 +23,7 @@ import { normalizeCellsFormatAndValidateRelationships } from '../../utils/cell-f
 export interface DiagramData {
   id: string;
   name: string;
+  description?: string;
   threatModelId?: string;
   threatModelName?: string;
   cells?: any[]; // Full diagram cells data for rendering
@@ -94,6 +95,7 @@ export class AppDiagramService {
             const diagramData: DiagramData = {
               id: diagramId,
               name: diagram.name,
+              description: diagram.description,
               threatModelId,
               threatModelName: threatModel?.name,
               cells: diagram.cells || [], // Use the diagram cells directly from the diagram endpoint

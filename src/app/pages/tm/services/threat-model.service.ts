@@ -1124,6 +1124,50 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
+   * Patch diagram properties (name, description) using JSON Patch operations.
+   * Used to update diagram metadata from the DFD editor header.
+   */
+  patchDiagramProperties(
+    threatModelId: string,
+    diagramId: string,
+    properties: { name?: string; description?: string },
+  ): Observable<Diagram> {
+    const operations: { op: 'replace'; path: string; value: string }[] = [];
+
+    if (properties.name !== undefined) {
+      operations.push({
+        op: 'replace' as const,
+        path: '/name',
+        value: properties.name,
+      });
+    }
+
+    if (properties.description !== undefined) {
+      operations.push({
+        op: 'replace' as const,
+        path: '/description',
+        value: properties.description,
+      });
+    }
+
+    if (operations.length === 0) {
+      return throwError(() => new Error('No properties to update'));
+    }
+
+    return this.apiService
+      .patch<Diagram>(`threat_models/${threatModelId}/diagrams/${diagramId}`, operations)
+      .pipe(
+        catchError(error => {
+          this.logger.error(
+            `Error patching diagram properties for diagram ID: ${diagramId}`,
+            error,
+          );
+          throw error;
+        }),
+      );
+  }
+
+  /**
    * Delete a diagram from a threat model
    */
   deleteDiagram(threatModelId: string, diagramId: string): Observable<boolean> {

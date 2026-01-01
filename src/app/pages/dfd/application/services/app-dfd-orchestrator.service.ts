@@ -70,6 +70,7 @@ export interface DfdState {
   readonly diagramId?: string;
   readonly threatModelId?: string;
   readonly diagramName?: string;
+  readonly diagramDescription?: string;
   readonly threatModelName?: string;
 }
 
@@ -1232,6 +1233,7 @@ export class AppDfdOrchestrator {
             hasUnsavedChanges: false,
             lastSaved: new Date(),
             diagramName: result.data.name,
+            diagramDescription: result.data.description,
             threatModelName: result.data.threatModelName,
           });
         }

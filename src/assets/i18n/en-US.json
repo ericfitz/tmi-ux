@@ -517,6 +517,12 @@
       "textbox": "Text"
     },
     "pageTitle": "Data Flow Diagram Editor",
+    "description": "Description",
+    "diagramNamePlaceholder": "Enter diagram name",
+    "diagramDescriptionPlaceholder": "Enter diagram description",
+    "editDiagramName": "Click to edit diagram name",
+    "editDiagramDescription": "Click to edit diagram description",
+    "editDisabledDuringCollaboration": "Editing disabled during collaboration",
     "toolbar": {
       "exportMenu": {
         "exportAsJpeg": "Export as JPEG",

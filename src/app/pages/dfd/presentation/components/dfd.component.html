@@ -12,16 +12,36 @@
           >
         }
       </h1>
-      <div class="subtitle diagram-name">
-        <span class="label">{{ 'common.objectTypes.diagram' | transloco }}:</span>
-        <span class="value">{{ diagramName }}</span>
-      </div>
       @if (threatModelName) {
         <div class="subtitle threat-model-name">
-          <span class="label">{{ 'common.objectTypes.threatModel' | transloco }}:</span>
-          <span class="value">{{ threatModelName }}</span>
+          <span class="title-prefix">{{ 'common.objectTypes.threatModel' | transloco }}:</span>
+          <span class="title-name">{{ threatModelName }}</span>
         </div>
       }
+      <div class="subtitle diagram-name">
+        <span class="title-prefix">{{ 'common.objectTypes.diagram' | transloco }}:</span>
+        <app-inline-edit
+          [value]="diagramName"
+          [disabled]="isReadOnlyMode || isCollaborating"
+          [placeholder]="'editor.diagramNamePlaceholder' | transloco"
+          [editTooltip]="'editor.editDiagramName' | transloco"
+          [disabledTooltip]="'editor.editDisabledDuringCollaboration' | transloco"
+          displayClass="title-name"
+          (valueChange)="onDiagramNameChange($event)"
+        ></app-inline-edit>
+      </div>
+      <div class="subtitle diagram-description">
+        <span class="title-prefix">{{ 'editor.description' | transloco }}:</span>
+        <app-inline-edit
+          [value]="diagramDescription"
+          [disabled]="isReadOnlyMode || isCollaborating"
+          [placeholder]="'editor.diagramDescriptionPlaceholder' | transloco"
+          [editTooltip]="'editor.editDiagramDescription' | transloco"
+          [disabledTooltip]="'editor.editDisabledDuringCollaboration' | transloco"
+          displayClass="title-name description-text"
+          (valueChange)="onDiagramDescriptionChange($event)"
+        ></app-inline-edit>
+      </div>
     </div>
     <div class="collaboration-controls">
       <app-dfd-collaboration></app-dfd-collaboration>
