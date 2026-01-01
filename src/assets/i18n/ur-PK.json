@@ -896,6 +896,7 @@
         "title": "کلائنٹ اسناد بنائیں"
       },
       "created": "{{common.created}}",
+      "expires": "میعاد ختم",
       "lastUsed": "آخری استعمال",
       "noCredentials": "ابھی تک کوئی کلائنٹ اسناد نہیں",
       "noCredentialsDescription": "TMI API تک پروگرامی طور پر رسائی کے لیے اسناد بنائیں۔",
@@ -903,7 +904,6 @@
         "title": "کلائنٹ اسناد بنائی گئیں",
         "warning": "ان اسناد کو ابھی محفوظ کریں۔ کلائنٹ سیکریٹ دوبارہ نہیں دکھایا جائے گا۔"
       },
-      "status": "{{common.status}}",
       "title": "API اعتبارات"
     },
     "deleteMyData": {

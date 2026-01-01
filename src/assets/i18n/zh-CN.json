@@ -896,6 +896,7 @@
         "title": "创建客户端凭证"
       },
       "created": "{{common.created}}",
+      "expires": "到期",
       "lastUsed": "上次使用",
       "noCredentials": "暂无客户端凭证",
       "noCredentialsDescription": "创建凭证以编程方式访问TMI API。",
@@ -903,7 +904,6 @@
         "title": "客户端凭证已创建",
         "warning": "请立即保存这些凭证。客户端密钥不会再次显示。"
       },
-      "status": "{{common.status}}",
       "title": "API凭证"
     },
     "deleteMyData": {

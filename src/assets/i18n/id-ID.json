@@ -896,6 +896,7 @@
         "title": "Buat Kredensial Klien"
       },
       "created": "{{common.created}}",
+      "expires": "Kedaluwarsa",
       "lastUsed": "Terakhir Digunakan",
       "noCredentials": "Belum ada kredensial klien",
       "noCredentialsDescription": "Buat kredensial untuk mengakses API TMI secara terprogram.",
@@ -903,7 +904,6 @@
         "title": "Kredensial Klien Dibuat",
         "warning": "Simpan kredensial ini sekarang. Rahasia klien tidak akan ditampilkan lagi."
       },
-      "status": "{{common.status}}",
       "title": "Kredensial API"
     },
     "deleteMyData": {

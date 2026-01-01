@@ -896,6 +896,7 @@
         "title": "Client-Anmeldedaten erstellen"
       },
       "created": "{{common.created}}",
+      "expires": "Läuft ab",
       "lastUsed": "Zuletzt verwendet",
       "noCredentials": "Noch keine Client-Anmeldedaten",
       "noCredentialsDescription": "Erstellen Sie Anmeldedaten, um programmatisch auf die TMI-API zuzugreifen.",
@@ -903,7 +904,6 @@
         "title": "Client-Anmeldedaten erstellt",
         "warning": "Speichern Sie diese Anmeldedaten jetzt. Das Client-Geheimnis wird nicht erneut angezeigt."
       },
-      "status": "{{common.status}}",
       "title": "API-Anmeldedaten"
     },
     "deleteMyData": {

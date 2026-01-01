@@ -896,6 +896,7 @@
         "title": "צור אישור לקוח"
       },
       "created": "{{common.created}}",
+      "expires": "פג תוקף",
       "lastUsed": "שימוש אחרון",
       "noCredentials": "אין עדיין אישורי לקוח",
       "noCredentialsDescription": "צור אישורים לגישה ל-API של TMI באופן תכנותי.",
@@ -903,7 +904,6 @@
         "title": "אישור לקוח נוצר",
         "warning": "שמור אישורים אלה עכשיו. סוד הלקוח לא יוצג שוב."
       },
-      "status": "{{common.status}}",
       "title": "אישורי API"
     },
     "deleteMyData": {

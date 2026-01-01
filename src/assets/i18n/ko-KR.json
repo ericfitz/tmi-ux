@@ -896,6 +896,7 @@
         "title": "클라이언트 자격 증명 생성"
       },
       "created": "{{common.created}}",
+      "expires": "만료",
       "lastUsed": "마지막 사용",
       "noCredentials": "클라이언트 자격 증명이 없습니다",
       "noCredentialsDescription": "TMI API에 프로그래밍 방식으로 접근하려면 자격 증명을 생성하세요.",
@@ -903,7 +904,6 @@
         "title": "클라이언트 자격 증명 생성됨",
         "warning": "지금 이 자격 증명을 저장하세요. 클라이언트 시크릿은 다시 표시되지 않습니다."
       },
-      "status": "{{common.status}}",
       "title": "API 자격증명"
     },
     "deleteMyData": {

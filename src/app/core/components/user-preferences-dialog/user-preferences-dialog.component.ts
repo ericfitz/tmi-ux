@@ -296,22 +296,16 @@ interface CheckboxChangeEvent {
                     </td>
                   </ng-container>
 
-                  <ng-container matColumnDef="status">
+                  <ng-container matColumnDef="expires">
                     <th
                       mat-header-cell
                       *matHeaderCellDef
-                      [transloco]="'userPreferences.credentials.status'"
+                      [transloco]="'userPreferences.credentials.expires'"
                     >
-                      Status
+                      Expires
                     </th>
                     <td mat-cell *matCellDef="let credential">
-                      <span
-                        class="status-badge"
-                        [class.active]="getCredentialStatus(credential) === 'active'"
-                        [class.expired]="getCredentialStatus(credential) === 'expired'"
-                      >
-                        {{ getCredentialStatus(credential) === 'active' ? 'Active' : 'Expired' }}
-                      </span>
+                      {{ formatExpires(credential.expires_at) }}
                     </td>
                   </ng-container>
 
@@ -607,25 +601,6 @@ interface CheckboxChangeEvent {
         word-break: break-all;
       }
 
-      .status-badge {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-size: 11px;
-        font-weight: 500;
-        text-transform: uppercase;
-      }
-
-      .status-badge.active {
-        background-color: rgba(76, 175, 80, 0.15);
-        color: #2e7d32;
-      }
-
-      .status-badge.expired {
-        background-color: rgba(244, 67, 54, 0.15);
-        color: #c62828;
-      }
-
       .credentials-actions {
         margin-top: 16px;
       }
@@ -658,7 +633,7 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
   // Credentials tab
   credentials: ClientCredentialInfo[] = [];
   credentialsLoading = false;
-  credentialColumns = ['name', 'clientId', 'created', 'lastUsed', 'status', 'actions'];
+  credentialColumns = ['name', 'clientId', 'created', 'lastUsed', 'expires', 'actions'];
 
   constructor(
     public dialogRef: MatDialogRef<UserPreferencesDialogComponent>,
@@ -896,16 +871,15 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  getCredentialStatus(credential: ClientCredentialInfo): 'active' | 'expired' {
-    if (!credential.is_active) {
-      return 'expired';
+  formatExpires(dateString: string | null | undefined): string {
+    if (!dateString) {
+      return 'Never';
     }
-    if (credential.expires_at) {
-      const expiresAt = new Date(credential.expires_at);
-      if (expiresAt < new Date()) {
-        return 'expired';
-      }
+    const date = new Date(dateString);
+    const now = new Date();
+    if (date < now) {
+      return 'Expired';
     }
-    return 'active';
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 }

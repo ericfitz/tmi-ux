@@ -896,6 +896,7 @@
         "title": "Criar Credencial de Cliente"
       },
       "created": "{{common.created}}",
+      "expires": "Expira",
       "lastUsed": "Último Uso",
       "noCredentials": "Nenhuma credencial de cliente ainda",
       "noCredentialsDescription": "Crie credenciais para acessar a API do TMI programaticamente.",
@@ -903,7 +904,6 @@
         "title": "Credencial de Cliente Criada",
         "warning": "Salve estas credenciais agora. O segredo do cliente não será exibido novamente."
       },
-      "status": "{{common.status}}",
       "title": "Credenciais de API"
     },
     "deleteMyData": {

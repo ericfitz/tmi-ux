@@ -896,6 +896,7 @@
         "title": "สร้างข้อมูลรับรองไคลเอนต์"
       },
       "created": "{{common.created}}",
+      "expires": "หมดอายุ",
       "lastUsed": "ใช้ล่าสุด",
       "noCredentials": "ยังไม่มีข้อมูลรับรองไคลเอนต์",
       "noCredentialsDescription": "สร้างข้อมูลรับรองเพื่อเข้าถึง TMI API ผ่านโปรแกรม",
@@ -903,7 +904,6 @@
         "title": "สร้างข้อมูลรับรองไคลเอนต์แล้ว",
         "warning": "บันทึกข้อมูลรับรองเหล่านี้ตอนนี้ Client secret จะไม่แสดงอีก"
       },
-      "status": "{{common.status}}",
       "title": "ข้อมูลประจำตัว API"
     },
     "deleteMyData": {

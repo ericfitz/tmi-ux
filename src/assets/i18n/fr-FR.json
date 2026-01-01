@@ -896,6 +896,7 @@
         "title": "Créer un identifiant client"
       },
       "created": "{{common.created}}",
+      "expires": "Expire",
       "lastUsed": "Dernière utilisation",
       "noCredentials": "Aucun identifiant client",
       "noCredentialsDescription": "Créez des identifiants pour accéder à l'API TMI de manière programmatique.",
@@ -903,7 +904,6 @@
         "title": "Identifiant client créé",
         "warning": "Enregistrez ces identifiants maintenant. Le secret client ne sera plus affiché."
       },
-      "status": "{{common.status}}",
       "title": "Identifiants API"
     },
     "deleteMyData": {

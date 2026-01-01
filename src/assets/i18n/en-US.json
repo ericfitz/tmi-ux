@@ -921,6 +921,8 @@
         "title": "Create Client Credential"
       },
       "created": "{{common.created}}",
+      "expires": "Expires",
+      "expires.comment": "This is the date and time that the credential expires, e.g. it's no longer usable after this time.",
       "lastUsed": "Last Used",
       "noCredentials": "No client credentials yet",
       "noCredentialsDescription": "Create credentials to access the TMI API programmatically.",
@@ -928,7 +930,6 @@
         "title": "Client Credential Created",
         "warning": "Save these credentials now. The client secret will not be shown again."
       },
-      "status": "{{common.status}}",
       "title": "Client Credentials"
     },
     "deleteMyData": {

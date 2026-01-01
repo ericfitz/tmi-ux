@@ -896,6 +896,7 @@
         "title": "クライアント資格情報の作成"
       },
       "created": "{{common.created}}",
+      "expires": "有効期限",
       "lastUsed": "最終使用日時",
       "noCredentials": "クライアント資格情報がありません",
       "noCredentialsDescription": "TMI APIにプログラムからアクセスするための資格情報を作成してください。",
@@ -903,7 +904,6 @@
         "title": "クライアント資格情報が作成されました",
         "warning": "これらの資格情報を今すぐ保存してください。クライアントシークレットは再度表示されません。"
       },
-      "status": "{{common.status}}",
       "title": "API認証情報"
     },
     "deleteMyData": {
