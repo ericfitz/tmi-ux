@@ -492,39 +492,24 @@ mat-card-header {
   }
 }
 
-// Asset chip styles (used in assets table)
-.asset-chips {
-  display: inline-flex;
-
-  mat-chip {
-    height: 24px;
-    font-size: 12px;
-    padding: 0 10px;
-    min-height: 24px;
-
-    // Override disabled state styling for better visibility
-    &.mat-mdc-chip-disabled {
-      opacity: 1 !important;
-    }
-  }
+// Classification badges container
+.classification-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
-.classification-chips mat-chip {
-  background-color: var(--color-info) !important;
-  color: #fff !important;
-
-  .mdc-evolution-chip__text-label {
-    color: #fff !important;
-  }
-}
-
-.sensitivity-chips mat-chip {
-  background-color: var(--color-warning) !important;
-  color: #fff !important;
-
-  .mdc-evolution-chip__text-label {
-    color: #fff !important;
-  }
+// Classification badge styling
+.classification-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
+  background-color: var(--color-info);
+  color: var(--color-background-white);
 }
 
 // ============================================
@@ -809,9 +794,8 @@ mat-card-header {
   }
 }
 
-// Criticality/Sensitivity badge styling
-.criticality-badge,
-.sensitivity-badge {
+// Criticality badge styling
+.criticality-badge {
   display: inline-block;
   padding: 2px 8px;
   border-radius: 8px;
@@ -825,30 +809,17 @@ mat-card-header {
   color: var(--color-background-white);
 }
 
-// Classification chips in table
-.table-classification-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-
-  mat-chip {
-    height: 20px;
-    font-size: 11px;
-    padding: 0 8px;
-    min-height: 20px;
-    background-color: var(--color-info) !important;
-    opacity: 0.85;
-    color: var(--color-background-white) !important;
-
-    &.mat-mdc-chip-disabled {
-      opacity: 1 !important;
-    }
-
-    .mdc-evolution-chip__text-label {
-      color: var(--color-background-white) !important;
-      opacity: 1 !important;
-    }
-  }
+// Sensitivity badge styling (warning color)
+.sensitivity-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
+  background-color: var(--color-warning);
+  color: var(--color-background-white);
 }
 
 // Thumbnail in table
