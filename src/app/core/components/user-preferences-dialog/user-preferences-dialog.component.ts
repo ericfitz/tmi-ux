@@ -330,7 +330,7 @@ interface CheckboxChangeEvent {
             }
 
             <div class="credentials-actions">
-              <button mat-stroked-button (click)="onAddCredential()">
+              <button mat-raised-button color="primary" (click)="onAddCredential()">
                 <mat-icon>add</mat-icon>
                 <span [transloco]="'userPreferences.credentials.add'">Add</span>
               </button>
