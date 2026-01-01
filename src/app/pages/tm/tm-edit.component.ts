@@ -1,10 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { MatListModule } from '@angular/material/list';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThreatModelAuthorizationService } from './services/threat-model-authorization.service';
@@ -50,7 +51,6 @@ import {
   MetadataDialogComponent,
   MetadataDialogData,
 } from './components/metadata-dialog/metadata-dialog.component';
-import { RenameDiagramDialogComponent } from './components/rename-diagram-dialog/rename-diagram-dialog.component';
 import {
   ThreatEditorDialogComponent,
   ThreatEditorDialogData,
@@ -112,15 +112,16 @@ interface RepositoryFormResult {
     ...FORM_MATERIAL_IMPORTS,
     ...DATA_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
-    MatListModule,
     MatGridListModule,
     MatChipsModule,
+    MatTableModule,
+    MatSortModule,
     TranslocoModule,
   ],
   templateUrl: './tm-edit.component.html',
   styleUrls: ['./tm-edit.component.scss'],
 })
-export class TmEditComponent implements OnInit, OnDestroy {
+export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   threatModel: ThreatModel | undefined;
   threatModelForm: FormGroup;
   isNewThreatModel = false;
@@ -149,73 +150,53 @@ export class TmEditComponent implements OnInit, OnDestroy {
   // Status dropdown options
   statusOptions: FieldOption[] = [];
 
+  // Table data sources
+  assetsDataSource = new MatTableDataSource<Asset>([]);
+  threatsDataSource = new MatTableDataSource<Threat>([]);
+  diagramsDataSource = new MatTableDataSource<Diagram>([]);
+  notesDataSource = new MatTableDataSource<Note>([]);
+  documentsDataSource = new MatTableDataSource<Document>([]);
+  repositoriesDataSource = new MatTableDataSource<Repository>([]);
+
+  // Table sort ViewChildren
+  @ViewChild('assetsSort') assetsSort!: MatSort;
+  @ViewChild('threatsSort') threatsSort!: MatSort;
+  @ViewChild('diagramsSort') diagramsSort!: MatSort;
+  @ViewChild('notesSort') notesSort!: MatSort;
+  @ViewChild('documentsSort') documentsSort!: MatSort;
+  @ViewChild('repositoriesSort') repositoriesSort!: MatSort;
+
+  // Displayed columns for each table
+  assetsDisplayedColumns: string[] = [
+    'icon',
+    'name',
+    'criticality',
+    'sensitivity',
+    'classification',
+    'actions',
+  ];
+  threatsDisplayedColumns: string[] = [
+    'icon',
+    'name',
+    'status',
+    'severity',
+    'description',
+    'hyperlink',
+    'actions',
+  ];
+  diagramsDisplayedColumns: string[] = ['icon', 'name', 'description', 'thumbnail', 'actions'];
+  notesDisplayedColumns: string[] = ['icon', 'name', 'description', 'actions'];
+  documentsDisplayedColumns: string[] = ['icon', 'name', 'description', 'hyperlink', 'actions'];
+  repositoriesDisplayedColumns: string[] = ['icon', 'name', 'description', 'hyperlink', 'actions'];
+
   get diagrams(): Diagram[] {
     return this._diagrams;
   }
 
   set diagrams(value: Diagram[]) {
     this._diagrams = value;
+    this.diagramsDataSource.data = value;
     this.computeDiagramSvgData();
-  }
-
-  // Sorted list getters
-  get sortedDiagrams(): Diagram[] {
-    if (!this._diagrams) return [];
-    return [...this._diagrams].sort((a, b) =>
-      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
-    );
-  }
-
-  get sortedAssets(): Asset[] {
-    if (!this.threatModel?.assets) return [];
-    return [...this.threatModel.assets].sort((a, b) =>
-      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
-    );
-  }
-
-  get sortedThreats(): Threat[] {
-    if (!this.threatModel?.threats) return [];
-    const severityOrder: Record<string, number> = {
-      critical: 4,
-      high: 3,
-      medium: 2,
-      low: 1,
-    };
-
-    return [...this.threatModel.threats].sort((a, b) => {
-      const aSeverity = a.severity ? severityOrder[a.severity] || 0 : 0;
-      const bSeverity = b.severity ? severityOrder[b.severity] || 0 : 0;
-
-      // Sort by severity descending (higher values first)
-      // null/undefined (0) will be at the top
-      if (aSeverity !== bSeverity) {
-        return bSeverity - aSeverity;
-      }
-
-      // If severity is the same, sort by name ascending
-      return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
-    });
-  }
-
-  get sortedNotes(): Note[] {
-    if (!this.threatModel?.notes) return [];
-    return [...this.threatModel.notes].sort((a, b) =>
-      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
-    );
-  }
-
-  get sortedDocuments(): Document[] {
-    if (!this.threatModel?.documents) return [];
-    return [...this.threatModel.documents].sort((a, b) =>
-      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
-    );
-  }
-
-  get sortedRepositories(): Repository[] {
-    if (!this.threatModel?.repositories) return [];
-    return [...this.threatModel.repositories].sort((a, b) =>
-      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
-    );
   }
 
   // Enhanced save behavior properties
@@ -429,12 +410,14 @@ export class TmEditComponent implements OnInit, OnDestroy {
    */
   private migrateThreatSeverityValues(): void {
     if (!this.threatModel?.threats) {
+      this.threatsDataSource.data = [];
       return;
     }
 
     this.threatModel.threats = this.threatModel.threats.map(threat =>
       this.migrateThreatFieldValues(threat),
     );
+    this.threatsDataSource.data = this.threatModel.threats;
   }
 
   /**
@@ -630,6 +613,53 @@ export class TmEditComponent implements OnInit, OnDestroy {
     } else {
       this.threatModelForm.disable();
     }
+  }
+
+  ngAfterViewInit(): void {
+    // Connect sort to data sources
+    if (this.assetsSort) {
+      this.assetsDataSource.sort = this.assetsSort;
+    }
+    if (this.threatsSort) {
+      this.threatsDataSource.sort = this.threatsSort;
+      // Custom sorting for threats - severity ordering
+      this.threatsDataSource.sortingDataAccessor = (
+        threat: Threat,
+        property: string,
+      ): string | number => {
+        switch (property) {
+          case 'severity':
+            return this.getSeverityOrder(threat.severity);
+          case 'status':
+            return threat.status ? parseInt(threat.status, 10) : 999;
+          case 'name':
+            return threat.name?.toLowerCase() ?? '';
+          default:
+            return (threat as unknown as Record<string, string>)[property] ?? '';
+        }
+      };
+    }
+    if (this.diagramsSort) {
+      this.diagramsDataSource.sort = this.diagramsSort;
+    }
+    if (this.notesSort) {
+      this.notesDataSource.sort = this.notesSort;
+    }
+    if (this.documentsSort) {
+      this.documentsDataSource.sort = this.documentsSort;
+    }
+    if (this.repositoriesSort) {
+      this.repositoriesDataSource.sort = this.repositoriesSort;
+    }
+  }
+
+  /**
+   * Get numeric order for severity (lower = more severe)
+   */
+  private getSeverityOrder(severity: string | null): number {
+    if (!severity) return 999;
+    const order = parseInt(severity, 10);
+    return isNaN(order) ? 999 : order;
   }
 
   ngOnDestroy(): void {
@@ -1126,108 +1156,6 @@ export class TmEditComponent implements OnInit, OnDestroy {
             );
           }
         }),
-    );
-  }
-
-  /**
-   * Opens a dialog to rename a diagram
-   * If the user confirms, updates the diagram name
-   * @param diagram The diagram to rename
-   * @param event The click event
-   */
-  renameDiagram(diagram: Diagram, event: Event): void {
-    // Prevent event propagation to avoid navigating to the diagram
-    event.stopPropagation();
-    // Remove focus from the button to restore non-focused state
-    (event.target as HTMLElement)?.blur();
-
-    if (!this.threatModel) {
-      return;
-    }
-
-    const dialogRef = this.dialog.open(RenameDiagramDialogComponent, {
-      width: '400px',
-      data: {
-        id: diagram.id,
-        name: diagram.name,
-        isReadOnly: !this.canEdit,
-      },
-    });
-
-    this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((newName: string | undefined) => {
-        if (newName && this.threatModel) {
-          // Create updated diagram object
-          const updatedDiagram: Diagram = {
-            ...diagram,
-            name: newName,
-            modified_at: new Date().toISOString(),
-          };
-
-          // Update the diagram in the local array
-          const index = this.diagrams.findIndex(d => d.id === diagram.id);
-          if (index !== -1) {
-            this.diagrams[index] = updatedDiagram;
-            // Force change detection by creating a new array reference
-            this.diagrams = [...this.diagrams];
-          }
-
-          // Update the diagram in the threat model's diagrams array
-          if (this.threatModel.diagrams) {
-            const tmIndex = this.threatModel.diagrams.findIndex(d => d.id === diagram.id);
-            if (tmIndex !== -1) {
-              this.threatModel.diagrams[tmIndex] = updatedDiagram;
-            }
-          }
-
-          // Update the diagram in the map for backward compatibility
-          DIAGRAMS_BY_ID.set(diagram.id, updatedDiagram);
-
-          // Update the diagram using PATCH to only update the name
-          // Create JSON Patch operations for the name update
-          const patchOperations = [
-            {
-              op: 'replace' as const,
-              path: '/name',
-              value: newName,
-            },
-          ];
-
-          this._subscriptions.add(
-            this.apiService
-              .patch<Diagram>(
-                `threat_models/${this.threatModel.id}/diagrams/${diagram.id}`,
-                patchOperations,
-              )
-              .subscribe({
-                next: result => {
-                  if (result) {
-                    // Update all references to the diagram with server response
-                    const index = this.diagrams.findIndex(d => d.id === result.id);
-                    if (index !== -1) {
-                      this.diagrams[index] = result;
-                      this.diagrams = [...this.diagrams];
-                    }
-
-                    // Update the diagram in the threat model's diagrams array
-                    if (this.threatModel?.diagrams) {
-                      const tmIndex = this.threatModel.diagrams.findIndex(d => d.id === result.id);
-                      if (tmIndex !== -1) {
-                        this.threatModel.diagrams[tmIndex] = result;
-                      }
-                    }
-
-                    // Update the map with server response data
-                    DIAGRAMS_BY_ID.set(result.id, result);
-                  }
-                },
-                error: error => {
-                  this.logger.error('Failed to update diagram', error);
-                },
-              }),
-          );
-        }
-      }),
     );
   }
 
@@ -2889,6 +2817,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
       this.threatModelService.getDocumentsForThreatModel(threatModelId).subscribe(documents => {
         if (this.threatModel) {
           this.threatModel.documents = documents;
+          this.documentsDataSource.data = documents;
         }
       }),
     );
@@ -2904,6 +2833,7 @@ export class TmEditComponent implements OnInit, OnDestroy {
         .subscribe(repositories => {
           if (this.threatModel) {
             this.threatModel.repositories = repositories;
+            this.repositoriesDataSource.data = repositories;
           }
         }),
     );
@@ -2943,21 +2873,16 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       this.threatModelService.getAssetsForThreatModel(threatModelId).subscribe({
         next: assets => {
-          // this.logger.debugComponent('TmEditComponent', 'Assets loaded from API', {
-          //   count: assets.length,
-          //   assets: assets.map(a => ({ id: a.id, name: a.name })),
-          // });
           if (this.threatModel) {
             this.threatModel.assets = assets;
-            // this.logger.debugComponent('TmEditComponent', 'Assets assigned to threat model', {
-            //   assignedCount: this.threatModel.assets.length,
-            // });
+            this.assetsDataSource.data = assets;
           }
         },
         error: error => {
           this.logger.error('Failed to load assets', error);
           if (this.threatModel) {
             this.threatModel.assets = [];
+            this.assetsDataSource.data = [];
           }
         },
       }),
@@ -3136,6 +3061,62 @@ export class TmEditComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Opens the addons dialog for a specific asset (placeholder)
+   */
+  openAssetAddonsDialog(asset: Asset, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+    this.logger.info('Asset addons dialog not yet implemented', { assetId: asset.id });
+  }
+
+  /**
+   * Opens the addons dialog for a specific threat (placeholder)
+   */
+  openThreatAddonsDialog(threat: Threat, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+    this.logger.info('Threat addons dialog not yet implemented', { threatId: threat.id });
+  }
+
+  /**
+   * Opens the addons dialog for a specific diagram (placeholder)
+   */
+  openDiagramAddonsDialog(diagram: Diagram, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+    this.logger.info('Diagram addons dialog not yet implemented', { diagramId: diagram.id });
+  }
+
+  /**
+   * Opens the addons dialog for a specific note (placeholder)
+   */
+  openNoteAddonsDialog(note: Note, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+    this.logger.info('Note addons dialog not yet implemented', { noteId: note.id });
+  }
+
+  /**
+   * Opens the addons dialog for a specific document (placeholder)
+   */
+  openDocumentAddonsDialog(document: Document, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+    this.logger.info('Document addons dialog not yet implemented', { documentId: document.id });
+  }
+
+  /**
+   * Opens the addons dialog for a specific repository (placeholder)
+   */
+  openRepositoryAddonsDialog(repository: Repository, event: Event): void {
+    event.stopPropagation();
+    (event.target as HTMLElement)?.blur();
+    this.logger.info('Repository addons dialog not yet implemented', {
+      repositoryId: repository.id,
+    });
+  }
+
+  /**
    * Opens the metadata dialog for a specific asset
    */
   openAssetMetadataDialog(asset: Asset, event: Event): void {
@@ -3193,21 +3174,16 @@ export class TmEditComponent implements OnInit, OnDestroy {
     this._subscriptions.add(
       this.threatModelService.getNotesForThreatModel(threatModelId).subscribe({
         next: notes => {
-          // this.logger.debugComponent('TmEditComponent', 'Notes loaded from API', {
-          //   count: notes.length,
-          //   notes: notes.map(n => ({ id: n.id, name: n.name })),
-          // });
           if (this.threatModel) {
             this.threatModel.notes = notes;
-            // this.logger.debugComponent('TmEditComponent', 'Notes assigned to threat model', {
-            //   assignedCount: this.threatModel.notes.length,
-            // });
+            this.notesDataSource.data = notes;
           }
         },
         error: error => {
           this.logger.error('Failed to load notes', error);
           if (this.threatModel) {
             this.threatModel.notes = [];
+            this.notesDataSource.data = [];
           }
         },
       }),

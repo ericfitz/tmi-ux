@@ -427,348 +427,10 @@ mat-card-header {
   font-family: var(--font-family-primary);
 }
 
-.asset-item,
-.diagram-item,
-.document-item,
-.note-item,
-.clickable-item {
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  min-width: 0; /* Allow list items to shrink */
-  overflow: hidden; /* Prevent content overflow */
-
-  &:hover {
-    background-color: var(--theme-hover);
-  }
-}
-
-// Specific styling for diagram items to ensure vertical centering and proper height
-.diagram-item {
-  // Override Material Design defaults with maximum specificity
-  &.mat-mdc-list-item {
-    min-height: 128px !important;
-    height: auto !important;
-  }
-
-  ::ng-deep {
-    &.mat-mdc-list-item,
-    .mat-mdc-list-item {
-      min-height: 128px !important;
-      height: auto !important;
-    }
-
-    .mdc-list-item__content {
-      display: flex !important;
-      align-items: center !important;
-      min-height: 96px !important;
-    }
-
-    .mat-mdc-list-item-meta {
-      align-self: center !important;
-    }
-
-    .mdc-list-item__start {
-      align-self: center !important;
-    }
-
-    // Target specific Material Design classes that might override height
-    .mdc-list-item,
-    .mdc-list-item--with-leading-avatar,
-    .mdc-list-item--with-leading-icon,
-    .mdc-list-item--with-leading-thumbnail {
-      min-height: 128px !important;
-      height: auto !important;
-    }
-  }
-}
-
-// Diagram title with thumbnail layout
-.diagram-title-with-thumbnail {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-
-  .diagram-name {
-    flex: 1;
-    font-weight: 500;
-    color: var(--color-text-primary);
-  }
-
-  .diagram-thumbnail-container {
-    flex-shrink: 0;
-
-    .diagram-thumbnail {
-      width: 96px; // 2x larger horizontally (48px -> 96px)
-      height: 64px; // 2x larger vertically (32px -> 64px)
-      border-radius: 8px;
-      border: 1px solid var(--color-border-material);
-      background-color: var(--color-background-white);
-      display: block;
-
-      // Use background-image approach for better SVG scaling control
-      background-size: contain; // Scale to fit while maintaining aspect ratio
-      background-position: center; // Center the image in the container
-      background-repeat: no-repeat; // Don't repeat the image
-
-      // Ensure the container is properly sized
-      flex-shrink: 0;
-      min-width: 96px;
-      min-height: 64px;
-
-      &:hover {
-        border-color: var(--color-shadow-strong);
-      }
-    }
-  }
-}
-
-.document-actions {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  align-self: center; /* Center the buttons vertically within the list item */
-
-  button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    mat-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  }
-}
-
-// Tooltip styling for document items
+// Custom tooltip styling for entity descriptions
+::ng-deep .entity-description-tooltip,
+::ng-deep .threat-description-tooltip,
 ::ng-deep .document-tooltip {
-  max-width: 400px;
-  white-space: pre-line;
-  font-size: 12px;
-  line-height: 1.4;
-}
-
-// Style for the action buttons container
-[matListItemMeta] {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  align-self: center; /* Center the buttons vertically within the list item */
-
-  button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    mat-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  }
-}
-
-// Specific styling for threats list items to ensure proper vertical centering
-.threats-card mat-list-item {
-  ::ng-deep .mdc-list-item__content {
-    display: flex;
-    align-items: center;
-    min-height: 56px; /* Reduced height for single-line items */
-  }
-
-  ::ng-deep .mat-mdc-list-item-meta {
-    align-self: center;
-  }
-}
-
-// Removed: Now using shared .external-link-icon class
-
-// Styling for the new threat list layout
-.threat-list-item {
-  .threat-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    overflow: hidden;
-
-    .threat-name {
-      font-weight: 500;
-      color: var(--color-text-primary);
-      cursor: pointer;
-      flex: 1; /* Take up available space */
-      min-width: 0; /* Allow flexbox to shrink if needed */
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      margin-left: 8px;
-
-      &:hover {
-        color: var(--color-primary);
-      }
-    }
-
-    .threat-severity {
-      padding: 4px 8px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      flex-shrink: 0;
-      min-width: 105px; // Wide enough for "Informational"
-      text-align: center;
-      display: inline-block;
-
-      // Numeric severity classes (new format)
-      // Mapping: Critical=0, High=1, Medium=2, Low=3, Informational=4, Unknown=5
-      &.severity-0 {
-        background-color: var(--color-severity-critical);
-        color: var(--color-background-white);
-      }
-
-      &.severity-1 {
-        background-color: var(--color-severity-high);
-        color: var(--color-background-white);
-      }
-
-      &.severity-2 {
-        background-color: var(--color-severity-medium);
-        color: var(--color-text-primary);
-      }
-
-      &.severity-3 {
-        background-color: var(--color-severity-low);
-        color: var(--color-background-white);
-      }
-
-      &.severity-4,
-      &.severity-5 {
-        background-color: var(--color-severity-none);
-        color: var(--color-background-white);
-      }
-
-      // Legacy string-based severity classes (for backward compatibility)
-      &.severity-critical {
-        background-color: var(--color-severity-critical);
-        color: var(--color-background-white);
-      }
-
-      &.severity-high {
-        background-color: var(--color-severity-high);
-        color: var(--color-background-white);
-      }
-
-      &.severity-medium {
-        background-color: var(--color-severity-medium);
-        color: var(--color-text-primary);
-      }
-
-      &.severity-low {
-        background-color: var(--color-severity-low);
-        color: var(--color-background-white);
-      }
-
-      &.severity-none {
-        background-color: var(--color-severity-none);
-        color: var(--color-background-white);
-      }
-
-      &.severity-unknown {
-        background-color: var(--color-severity-none);
-        color: var(--color-background-white);
-      }
-    }
-
-    // Removed: Now using shared .external-link-icon class
-  }
-}
-
-// Custom tooltip styling for threat descriptions
-::ng-deep .threat-description-tooltip {
-  max-width: 400px;
-  white-space: pre-line;
-  font-size: 12px;
-  line-height: 1.4;
-}
-
-// Styling for note list layout
-.note-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  overflow: hidden;
-
-  .note-name {
-    font-weight: 500;
-    color: var(--color-text-primary);
-    cursor: pointer;
-    flex: 1; /* Take up available space */
-    min-width: 0; /* Allow flexbox to shrink if needed */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    &:hover {
-      color: var(--color-primary);
-    }
-  }
-}
-
-// Styling for source code and document list layout
-.repository-content,
-.document-content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  overflow: hidden;
-
-  .repository-name,
-  .document-name {
-    font-weight: 500;
-    color: var(--color-text-primary);
-    cursor: pointer;
-    flex: 1; /* Take up available space */
-    min-width: 0; /* Allow flexbox to shrink if needed */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    &:hover {
-      color: var(--color-primary);
-    }
-  }
-
-  // Removed: Now using shared .external-link-icon class
-}
-
-// Ensure action buttons in source code items have centered icons
-.repository-actions {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  align-self: center;
-
-  button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    mat-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  }
-}
-
-// Custom tooltip styling for note, source code and document descriptions
-::ng-deep .note-description-tooltip,
-::ng-deep .repository-description-tooltip,
-::ng-deep .document-description-tooltip {
   max-width: 400px;
   white-space: pre-line;
   font-size: 12px;
@@ -830,39 +492,7 @@ mat-card-header {
   }
 }
 
-// Asset-specific styles
-.asset-content {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 100%;
-  min-width: 0;
-}
-
-.asset-name-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  width: 100%;
-  min-width: 0;
-}
-
-.asset-name {
-  font-weight: 500;
-  color: var(--color-text-primary);
-  flex-shrink: 0;
-}
-
-.asset-chips-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  flex: 1;
-  min-width: 0;
-}
-
+// Asset chip styles (used in assets table)
 .asset-chips {
   display: inline-flex;
 
@@ -880,12 +510,10 @@ mat-card-header {
 }
 
 .classification-chips mat-chip {
-  // Use CSS variable with opacity
   background-color: var(--color-info) !important;
   opacity: 0.85;
   color: var(--color-background-white) !important;
 
-  // Full opacity white text for maximum contrast and readability
   .mdc-evolution-chip__text-label {
     color: var(--color-background-white) !important;
     opacity: 1 !important;
@@ -893,30 +521,468 @@ mat-card-header {
 }
 
 .sensitivity-chips mat-chip {
-  // Use CSS variable with opacity
   background-color: var(--color-warning) !important;
   opacity: 0.85;
   color: var(--color-background-white) !important;
 
-  // Full opacity white text for maximum contrast and readability
   .mdc-evolution-chip__text-label {
     color: var(--color-background-white) !important;
     opacity: 1 !important;
   }
 }
 
-.asset-actions {
-  display: flex;
-  gap: 4px;
-  align-items: center;
+// ============================================
+// Entity Table Styles
+// ============================================
 
-  button {
-    display: flex;
+.entity-table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.entity-table {
+  width: 100%;
+  min-width: 400px;
+
+  // Make table background transparent to inherit card background
+  background: transparent;
+
+  // Dense row styling
+  .mat-mdc-row {
+    min-height: 40px !important;
+    background: transparent;
+  }
+
+  .mat-mdc-header-row {
+    min-height: 40px !important;
+    background: transparent;
+  }
+
+  .mat-mdc-cell,
+  .mat-mdc-header-cell {
+    padding: 4px 8px;
+    vertical-align: middle;
+    background: transparent;
+    box-sizing: border-box;
+  }
+
+  .mat-mdc-header-cell {
+    font-weight: 500;
+  }
+}
+
+// Clickable row styling
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--theme-hover);
+  }
+}
+
+// Column sizing
+.column-icon {
+  width: 56px;
+  min-width: 56px;
+  max-width: 56px;
+  text-align: center;
+
+  // Vertical centering for icons
+  mat-icon {
+    color: var(--color-text-secondary);
+    display: flex !important;
     align-items: center;
     justify-content: center;
+    vertical-align: middle;
+  }
+}
+
+// Fixed column widths for Notes/Documents/Repositories alignment
+.column-name {
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+
+  .entity-name {
+    font-weight: 500;
+    color: var(--color-text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.column-description {
+  flex: 1;
+  min-width: 150px;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.column-status {
+  width: 100px;
+  min-width: 100px;
+  text-align: left;
+}
+
+.column-severity {
+  width: 120px;
+  min-width: 120px;
+  text-align: left;
+}
+
+.column-criticality,
+.column-sensitivity {
+  width: 100px;
+  min-width: 100px;
+  text-align: left;
+}
+
+.column-classification {
+  min-width: 120px;
+  flex: 1;
+}
+
+.column-thumbnail {
+  width: 120px;
+  min-width: 120px;
+  text-align: center;
+
+  .diagram-thumbnail-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .diagram-thumbnail {
+      width: 96px;
+      height: 64px;
+      border-radius: 8px;
+      border: 1px solid var(--color-border-material);
+      background-color: var(--color-background-white);
+      cursor: pointer;
+      transition: border-color 0.15s ease;
+
+      &:hover {
+        border-color: var(--color-shadow-strong);
+      }
+    }
+  }
+}
+
+.column-hyperlink {
+  width: 48px;
+  min-width: 48px;
+  max-width: 48px;
+  text-align: center;
+  padding: 4px !important;
+
+  // Vertical centering for hyperlink icons
+  .mat-mdc-icon-button {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
 
     mat-icon {
-      vertical-align: middle;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
     }
+  }
+}
+
+.column-actions {
+  width: 160px;
+  min-width: 160px;
+  text-align: right;
+  padding-right: 8px !important;
+}
+
+// Action buttons in table (matches HTML class="action-buttons")
+.action-buttons {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  justify-content: flex-end;
+
+  .mat-mdc-icon-button {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+
+    mat-icon {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+// Hyperlink button in table
+.table-hyperlink-button {
+  color: var(--color-primary);
+
+  &:hover {
+    color: var(--color-primary-dark);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+  }
+}
+
+// Status badge styling
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
+
+  &.status-open {
+    background-color: var(--color-info);
+    color: var(--color-background-white);
+  }
+
+  &.status-in-progress,
+  &.status-in_progress {
+    background-color: var(--color-warning);
+    color: var(--color-text-primary);
+  }
+
+  &.status-resolved {
+    background-color: var(--color-success);
+    color: var(--color-background-white);
+  }
+
+  &.status-closed {
+    background-color: var(--color-text-secondary);
+    color: var(--color-background-white);
+  }
+
+  &.status-wont-fix,
+  &.status-wont_fix {
+    background-color: var(--color-text-disabled);
+    color: var(--color-background-white);
+  }
+}
+
+// Severity badge styling (table version - extends threat-severity from list)
+.severity-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  min-width: 90px;
+  text-align: center;
+  white-space: nowrap;
+
+  // Numeric severity classes
+  &.severity-0 {
+    background-color: var(--color-severity-critical);
+    color: var(--color-background-white);
+  }
+
+  &.severity-1 {
+    background-color: var(--color-severity-high);
+    color: var(--color-background-white);
+  }
+
+  &.severity-2 {
+    background-color: var(--color-severity-medium);
+    color: var(--color-text-primary);
+  }
+
+  &.severity-3 {
+    background-color: var(--color-severity-low);
+    color: var(--color-background-white);
+  }
+
+  &.severity-4,
+  &.severity-5 {
+    background-color: var(--color-severity-none);
+    color: var(--color-background-white);
+  }
+}
+
+// Criticality/Sensitivity badge styling
+.criticality-badge,
+.sensitivity-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: capitalize;
+  min-width: 60px;
+  text-align: center;
+  white-space: nowrap;
+  background-color: var(--color-text-secondary);
+  color: var(--color-background-white);
+}
+
+// Classification chips in table
+.table-classification-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+
+  mat-chip {
+    height: 20px;
+    font-size: 11px;
+    padding: 0 8px;
+    min-height: 20px;
+    background-color: var(--color-info) !important;
+    opacity: 0.85;
+    color: var(--color-background-white) !important;
+
+    &.mat-mdc-chip-disabled {
+      opacity: 1 !important;
+    }
+
+    .mdc-evolution-chip__text-label {
+      color: var(--color-background-white) !important;
+      opacity: 1 !important;
+    }
+  }
+}
+
+// Thumbnail in table
+.table-thumbnail-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .table-thumbnail {
+    width: 80px;
+    height: 50px;
+    border-radius: 4px;
+    border: 1px solid var(--color-border-material);
+    background-color: var(--color-background-white);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+
+    &:hover {
+      border-color: var(--color-shadow-strong);
+    }
+  }
+}
+
+// ============================================
+// Responsive Column Hiding
+// ============================================
+
+// Tablet breakpoint (768px) - Hide icon columns
+@media (width <= 768px) {
+  .column-icon {
+    display: none !important;
+  }
+
+  // Reduce action column width
+  .column-actions {
+    width: 120px;
+    min-width: 120px;
+  }
+
+  // Reduce name column width
+  .column-name {
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+  }
+}
+
+// Mobile breakpoint (480px) - Progressive column hiding
+@media (width <= 480px) {
+  // All tables: hide icon and actions
+  .column-icon,
+  .column-actions {
+    display: none !important;
+  }
+
+  // Allow name column to flex on mobile
+  .column-name {
+    width: auto;
+    min-width: 100px;
+    max-width: none;
+    flex: 1;
+  }
+
+  // Assets: hide classification, sensitivity, criticality (keep name)
+  .assets-card {
+    .column-classification,
+    .column-sensitivity,
+    .column-criticality {
+      display: none !important;
+    }
+  }
+
+  // Threats: hide severity, status, description (keep name, hyperlink)
+  .threats-card {
+    .column-severity,
+    .column-status,
+    .column-description {
+      display: none !important;
+    }
+
+    // Never hide hyperlink
+    .column-hyperlink {
+      display: table-cell !important;
+    }
+  }
+
+  // Diagrams: hide description, thumbnail (keep name)
+  .diagrams-card {
+    .column-description,
+    .column-thumbnail {
+      display: none !important;
+    }
+  }
+
+  // Notes: hide description (keep name)
+  .notes-card {
+    .column-description {
+      display: none !important;
+    }
+  }
+
+  // Documents: hide description (keep name, hyperlink)
+  .documents-card {
+    .column-description {
+      display: none !important;
+    }
+
+    // Never hide hyperlink
+    .column-hyperlink {
+      display: table-cell !important;
+    }
+  }
+
+  // Repositories: hide description (keep name, hyperlink)
+  .repository-card {
+    .column-description {
+      display: none !important;
+    }
+
+    // Never hide hyperlink
+    .column-hyperlink {
+      display: table-cell !important;
+    }
+  }
+
+  // Adjust table minimum width for mobile
+  .entity-table {
+    min-width: 200px;
   }
 }

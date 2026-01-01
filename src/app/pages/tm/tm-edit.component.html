@@ -300,82 +300,146 @@
           }
         </mat-card-header>
         <mat-card-content>
-          <mat-list>
-            <mat-list-item
-              *ngFor="let asset of sortedAssets"
-              class="asset-item clickable"
-              (click)="editAsset(asset, $event)"
+          <div class="table-container">
+            <table
+              mat-table
+              [dataSource]="assetsDataSource"
+              class="entity-table assets-table"
+              matSort
+              #assetsSort="matSort"
+              matSortActive="name"
+              matSortDirection="asc"
             >
-              <mat-icon
-                matListItemIcon
-                class="material-symbols-outlined"
-                [matTooltip]="asset.type ? ('assetEditor.types.' + asset.type | transloco) : ''"
-                matTooltipPosition="above"
-              >
-                {{ getAssetTypeIcon(asset.type) }}
-              </mat-icon>
-              <div matListItemTitle class="asset-content">
-                <div class="asset-name-row">
-                  <span
-                    class="asset-name"
-                    [matTooltip]="asset.description"
-                    matTooltipClass="asset-description-tooltip"
+              <!-- Icon Column -->
+              <ng-container matColumnDef="icon">
+                <th mat-header-cell *matHeaderCellDef class="column-icon"></th>
+                <td mat-cell *matCellDef="let asset" class="column-icon">
+                  <mat-icon
+                    class="material-symbols-outlined"
+                    [matTooltip]="asset.type ? ('assetEditor.types.' + asset.type | transloco) : ''"
                     matTooltipPosition="above"
                   >
-                    {{ asset.name }}
-                  </span>
-                  <div class="asset-chips-container">
-                    @if (asset.classification && asset.classification.length > 0) {
-                      <mat-chip-set class="asset-chips classification-chips">
-                        <mat-chip *ngFor="let item of asset.classification" disabled>
-                          {{ item }}
-                        </mat-chip>
-                      </mat-chip-set>
-                    }
+                    {{ getAssetTypeIcon(asset.type) }}
+                  </mat-icon>
+                </td>
+              </ng-container>
 
-                    @if (asset.sensitivity && asset.sensitivity.length > 0) {
-                      <mat-chip-set class="asset-chips sensitivity-chips">
-                        <mat-chip disabled>
-                          {{ asset.sensitivity }}
-                        </mat-chip>
-                      </mat-chip-set>
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="column-name">
+                  {{ 'common.name' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let asset" class="column-name">
+                  {{ asset.name }}
+                </td>
+              </ng-container>
+
+              <!-- Criticality Column -->
+              <ng-container matColumnDef="criticality">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="column-criticality">
+                  {{ 'common.criticality' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let asset" class="column-criticality">
+                  {{ asset.criticality || '-' }}
+                </td>
+              </ng-container>
+
+              <!-- Sensitivity Column -->
+              <ng-container matColumnDef="sensitivity">
+                <th mat-header-cell *matHeaderCellDef class="column-sensitivity">
+                  {{ 'common.sensitivity' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let asset" class="column-sensitivity">
+                  @if (asset.sensitivity) {
+                    <mat-chip-set class="asset-chips sensitivity-chips">
+                      <mat-chip disabled>{{ asset.sensitivity }}</mat-chip>
+                    </mat-chip-set>
+                  } @else {
+                    -
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Classification Column -->
+              <ng-container matColumnDef="classification">
+                <th mat-header-cell *matHeaderCellDef class="column-classification">
+                  {{ 'common.classification' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let asset" class="column-classification">
+                  @if (asset.classification?.length) {
+                    <mat-chip-set class="asset-chips classification-chips">
+                      @for (item of asset.classification; track item) {
+                        <mat-chip disabled>{{ item }}</mat-chip>
+                      }
+                    </mat-chip-set>
+                  } @else {
+                    -
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="column-actions">
+                  {{ 'common.actions' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let asset" class="column-actions">
+                  <div class="action-buttons">
+                    @if (canEdit) {
+                      <button
+                        mat-icon-button
+                        color="primary"
+                        (click)="openAssetAddonsDialog(asset, $event)"
+                        [matTooltip]="'common.addons' | transloco"
+                        [attr.aria-label]="'common.addons' | transloco"
+                      >
+                        <mat-icon>extension</mat-icon>
+                      </button>
+                    }
+                    <button
+                      mat-icon-button
+                      (click)="openAssetMetadataDialog(asset, $event)"
+                      [matTooltip]="
+                        canEdit
+                          ? ('common.manageMetadata' | transloco)
+                          : ('common.viewMetadata' | transloco)
+                      "
+                      [attr.aria-label]="
+                        canEdit
+                          ? ('common.manageMetadata' | transloco)
+                          : ('common.viewMetadata' | transloco)
+                      "
+                    >
+                      <mat-icon>list</mat-icon>
+                    </button>
+                    @if (canEdit) {
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        (click)="deleteAsset(asset, $event)"
+                        [matTooltip]="'common.delete' | transloco"
+                        [attr.aria-label]="'common.delete' | transloco"
+                      >
+                        <mat-icon>delete</mat-icon>
+                      </button>
                     }
                   </div>
-                </div>
-              </div>
-              <div matListItemMeta class="asset-actions">
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="openAssetMetadataDialog(asset, $event)"
-                  [matTooltip]="
-                    canEdit
-                      ? ('common.manageMetadata' | transloco)
-                      : ('common.viewMetadata' | transloco)
-                  "
-                  [attr.aria-label]="
-                    canEdit
-                      ? ('common.manageMetadata' | transloco)
-                      : ('common.viewMetadata' | transloco)
-                  "
-                >
-                  <mat-icon>list</mat-icon>
-                </button>
-                @if (canEdit) {
-                  <button
-                    mat-icon-button
-                    color="warn"
-                    (click)="deleteAsset(asset, $event)"
-                    [matTooltip]="'common.delete' | transloco"
-                    [attr.aria-label]="'common.delete' | transloco"
-                  >
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                }
-              </div>
-            </mat-list-item>
-          </mat-list>
-          @if (!threatModel.assets?.length) {
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="assetsDisplayedColumns"></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: assetsDisplayedColumns"
+                class="clickable-row"
+                [matTooltip]="row.description"
+                matTooltipClass="entity-description-tooltip"
+                matTooltipPosition="above"
+                (click)="editAsset(row, $event)"
+              ></tr>
+            </table>
+          </div>
+          @if (!assetsDataSource.data.length) {
             <div class="no-items-message">
               {{ 'threatModels.noAssets' | transloco }}
             </div>
@@ -414,85 +478,171 @@
           }
         </mat-card-header>
         <mat-card-content>
-          <mat-list>
-            <mat-list-item
-              *ngFor="let threat of sortedThreats"
-              (click)="openThreatEditor(threat)"
-              class="clickable-item threat-list-item"
+          <div class="table-container">
+            <table
+              mat-table
+              [dataSource]="threatsDataSource"
+              class="entity-table threats-table"
+              matSort
+              #threatsSort="matSort"
+              matSortActive="severity"
+              matSortDirection="asc"
             >
-              <mat-icon
-                matListItemIcon
-                fontSet="material-symbols-outlined"
-                fontWeight="100"
-                style="font-variation-settings: 'FILL' 0"
-                [matTooltip]="
-                  threat.threat_type && threat.threat_type.length > 0
-                    ? threat.threat_type.join('\n')
-                    : ''
-                "
-                >skull</mat-icon
-              >
-              <div matListItemTitle class="threat-content">
-                @if (threat.severity) {
-                  <span class="threat-severity" [ngClass]="'severity-' + threat.severity">
-                    {{ 'threatEditor.threatSeverity.' + threat.severity | transloco }}
-                  </span>
-                } @else {
-                  <span class="threat-severity severity-unknown">
-                    {{ 'common.none' | transloco }}
-                  </span>
-                }
-                <span
-                  class="threat-name"
-                  [matTooltip]="threat.description"
-                  matTooltipClass="threat-description-tooltip"
-                  matTooltipPosition="above"
-                >
-                  {{ threat.name }}
-                </span>
-                @if (
-                  threat.issue_uri && threat.issue_uri !== 'n/a' && threat.issue_uri.trim() !== ''
-                ) {
-                  <a
-                    [href]="threat.issue_uri"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="external-link-icon"
-                    (click)="$event.stopPropagation()"
-                    [matTooltip]="threat.issue_uri"
+              <!-- Icon Column -->
+              <ng-container matColumnDef="icon">
+                <th mat-header-cell *matHeaderCellDef class="column-icon"></th>
+                <td mat-cell *matCellDef="let threat" class="column-icon">
+                  <mat-icon
+                    class="material-symbols-outlined"
+                    [matTooltip]="
+                      threat.threat_type && threat.threat_type.length > 0
+                        ? threat.threat_type.join('\n')
+                        : ''
+                    "
                     matTooltipPosition="above"
+                    >skull</mat-icon
                   >
-                    <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
-                  </a>
-                }
-              </div>
-              <div matListItemMeta>
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="openThreatMetadataDialog(threat, $event)"
-                  [matTooltip]="
-                    canEdit
-                      ? ('common.manageMetadata' | transloco)
-                      : ('common.viewMetadata' | transloco)
-                  "
-                >
-                  <mat-icon>list</mat-icon>
-                </button>
-                @if (canEdit) {
-                  <button
-                    mat-icon-button
-                    color="warn"
-                    (click)="deleteThreat(threat, $event)"
-                    [matTooltip]="'threatModels.tooltips.deleteThreat' | transloco"
-                  >
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                }
-              </div>
-            </mat-list-item>
-          </mat-list>
-          @if (!threatModel.threats?.length) {
+                </td>
+              </ng-container>
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="column-name">
+                  {{ 'common.name' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let threat" class="column-name">
+                  {{ threat.name }}
+                </td>
+              </ng-container>
+
+              <!-- Status Column -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="column-status">
+                  {{ 'common.status' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let threat" class="column-status">
+                  @if (threat.status) {
+                    <span class="status-badge">
+                      {{ 'threatEditor.threatStatus.' + threat.status | transloco }}
+                    </span>
+                  } @else {
+                    -
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Severity Column -->
+              <ng-container matColumnDef="severity">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="column-severity">
+                  {{ 'common.severity' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let threat" class="column-severity">
+                  @if (threat.severity) {
+                    <span class="severity-badge" [ngClass]="'severity-' + threat.severity">
+                      {{ 'threatEditor.threatSeverity.' + threat.severity | transloco }}
+                    </span>
+                  } @else {
+                    <span class="severity-badge severity-unknown">
+                      {{ 'common.none' | transloco }}
+                    </span>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Description Column -->
+              <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef class="column-description">
+                  {{ 'common.description' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let threat" class="column-description">
+                  {{ threat.description || '-' }}
+                </td>
+              </ng-container>
+
+              <!-- Hyperlink Column -->
+              <ng-container matColumnDef="hyperlink">
+                <th mat-header-cell *matHeaderCellDef class="column-hyperlink"></th>
+                <td mat-cell *matCellDef="let threat" class="column-hyperlink">
+                  @if (
+                    threat.issue_uri && threat.issue_uri !== 'n/a' && threat.issue_uri.trim() !== ''
+                  ) {
+                    <a
+                      [href]="threat.issue_uri"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="external-link-icon"
+                      (click)="$event.stopPropagation()"
+                      [matTooltip]="threat.issue_uri"
+                      matTooltipPosition="above"
+                    >
+                      <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
+                    </a>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="column-actions">
+                  {{ 'common.actions' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let threat" class="column-actions">
+                  <div class="action-buttons">
+                    @if (canEdit) {
+                      <button
+                        mat-icon-button
+                        color="primary"
+                        (click)="openThreatAddonsDialog(threat, $event)"
+                        [matTooltip]="'common.addons' | transloco"
+                        [attr.aria-label]="'common.addons' | transloco"
+                      >
+                        <mat-icon>extension</mat-icon>
+                      </button>
+                    }
+                    <button
+                      mat-icon-button
+                      (click)="openThreatMetadataDialog(threat, $event)"
+                      [matTooltip]="
+                        canEdit
+                          ? ('common.manageMetadata' | transloco)
+                          : ('common.viewMetadata' | transloco)
+                      "
+                      [attr.aria-label]="
+                        canEdit
+                          ? ('common.manageMetadata' | transloco)
+                          : ('common.viewMetadata' | transloco)
+                      "
+                    >
+                      <mat-icon>list</mat-icon>
+                    </button>
+                    @if (canEdit) {
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        (click)="deleteThreat(threat, $event)"
+                        [matTooltip]="'common.delete' | transloco"
+                        [attr.aria-label]="'common.delete' | transloco"
+                      >
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="threatsDisplayedColumns"></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: threatsDisplayedColumns"
+                class="clickable-row"
+                [matTooltip]="row.description"
+                matTooltipClass="entity-description-tooltip"
+                matTooltipPosition="above"
+                (click)="openThreatEditor(row)"
+              ></tr>
+            </table>
+          </div>
+          @if (!threatsDataSource.data.length) {
             <div class="no-items-message">
               {{ 'threatModels.noThreats' | transloco }}
             </div>
@@ -531,83 +681,144 @@
           }
         </mat-card-header>
         <mat-card-content>
-          <mat-list>
-            <mat-list-item
-              *ngFor="let diagram of sortedDiagrams"
-              class="diagram-item"
-              [routerLink]="['/tm', threatModel.id, 'dfd', diagram.id]"
+          <div class="table-container">
+            <table
+              mat-table
+              [dataSource]="diagramsDataSource"
+              class="entity-table diagrams-table"
+              matSort
+              #diagramsSort="matSort"
+              matSortActive="name"
+              matSortDirection="asc"
             >
-              <mat-icon
-                matListItemIcon
-                class="material-symbols-outlined"
-                [matTooltip]="getDiagramTooltip(diagram)"
-                matTooltipPosition="above"
-              >
-                {{ getDiagramIcon(diagram) }}
-              </mat-icon>
-              <div matListItemTitle class="diagram-title-with-thumbnail">
-                <div class="diagram-name">{{ diagram.name }}</div>
-                @if (hasSvgImage(diagram)) {
-                  <div class="diagram-thumbnail-container">
-                    <div
-                      class="diagram-thumbnail"
-                      [matTooltip]="
-                        hoveredDiagramId === diagram.id
-                          ? ''
-                          : ('threatModels.diagramPreview' | transloco)
-                      "
-                      matTooltipPosition="above"
-                      [matTooltipDisabled]="hoveredDiagramId === diagram.id"
-                      [attr.aria-label]="'Thumbnail of ' + diagram.name"
-                      (mouseenter)="onThumbnailHover(diagram.id)"
-                      (mouseleave)="onThumbnailLeave()"
-                    >
-                      <svg style="width: 100%; height: 100%" preserveAspectRatio="xMidYMid meet">
-                        <image
-                          [attr.xlink:href]="getSvgDataUrl(diagram)"
-                          width="100%"
-                          height="100%"
-                        />
-                      </svg>
+              <!-- Icon Column -->
+              <ng-container matColumnDef="icon">
+                <th mat-header-cell *matHeaderCellDef class="column-icon"></th>
+                <td mat-cell *matCellDef="let diagram" class="column-icon">
+                  <mat-icon
+                    class="material-symbols-outlined"
+                    [matTooltip]="getDiagramTooltip(diagram)"
+                    matTooltipPosition="above"
+                  >
+                    {{ getDiagramIcon(diagram) }}
+                  </mat-icon>
+                </td>
+              </ng-container>
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="column-name">
+                  {{ 'common.name' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let diagram" class="column-name">
+                  {{ diagram.name }}
+                </td>
+              </ng-container>
+
+              <!-- Description Column -->
+              <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef class="column-description">
+                  {{ 'common.description' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let diagram" class="column-description">
+                  {{ diagram.description || '-' }}
+                </td>
+              </ng-container>
+
+              <!-- Thumbnail Column -->
+              <ng-container matColumnDef="thumbnail">
+                <th mat-header-cell *matHeaderCellDef class="column-thumbnail"></th>
+                <td mat-cell *matCellDef="let diagram" class="column-thumbnail">
+                  @if (hasSvgImage(diagram)) {
+                    <div class="diagram-thumbnail-container">
+                      <div
+                        class="diagram-thumbnail"
+                        [matTooltip]="
+                          hoveredDiagramId === diagram.id
+                            ? ''
+                            : ('threatModels.diagramPreview' | transloco)
+                        "
+                        matTooltipPosition="above"
+                        [matTooltipDisabled]="hoveredDiagramId === diagram.id"
+                        [attr.aria-label]="'Thumbnail of ' + diagram.name"
+                        (mouseenter)="onThumbnailHover(diagram.id)"
+                        (mouseleave)="onThumbnailLeave()"
+                      >
+                        <svg style="width: 100%; height: 100%" preserveAspectRatio="xMidYMid meet">
+                          <image
+                            [attr.xlink:href]="getSvgDataUrl(diagram)"
+                            width="100%"
+                            height="100%"
+                          />
+                        </svg>
+                      </div>
                     </div>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="column-actions">
+                  {{ 'common.actions' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let diagram" class="column-actions">
+                  <div class="action-buttons">
+                    @if (canEdit) {
+                      <button
+                        mat-icon-button
+                        color="primary"
+                        (click)="openDiagramAddonsDialog(diagram, $event)"
+                        [matTooltip]="'common.addons' | transloco"
+                        [attr.aria-label]="'common.addons' | transloco"
+                      >
+                        <mat-icon>extension</mat-icon>
+                      </button>
+                    }
+                    <button
+                      mat-icon-button
+                      (click)="openDiagramMetadataDialog(diagram, $event)"
+                      [matTooltip]="
+                        canEdit
+                          ? ('common.manageMetadata' | transloco)
+                          : ('common.viewMetadata' | transloco)
+                      "
+                      [attr.aria-label]="
+                        canEdit
+                          ? ('common.manageMetadata' | transloco)
+                          : ('common.viewMetadata' | transloco)
+                      "
+                    >
+                      <mat-icon>list</mat-icon>
+                    </button>
+                    @if (canEdit) {
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        (click)="deleteDiagram(diagram, $event)"
+                        [matTooltip]="'common.delete' | transloco"
+                        [attr.aria-label]="'common.delete' | transloco"
+                      >
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    }
                   </div>
-                }
-              </div>
-              <div matListItemMeta>
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="openDiagramMetadataDialog(diagram, $event)"
-                  [matTooltip]="
-                    canEdit
-                      ? ('common.manageMetadata' | transloco)
-                      : ('common.viewMetadata' | transloco)
-                  "
-                >
-                  <mat-icon>list</mat-icon>
-                </button>
-                @if (canEdit) {
-                  <button
-                    mat-icon-button
-                    color="primary"
-                    (click)="renameDiagram(diagram, $event)"
-                    [matTooltip]="'threatModels.renameDiagram' | transloco"
-                  >
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                  <button
-                    mat-icon-button
-                    color="warn"
-                    (click)="deleteDiagram(diagram, $event)"
-                    [matTooltip]="'threatModels.tooltips.deleteDiagram' | transloco"
-                  >
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                }
-              </div>
-            </mat-list-item>
-          </mat-list>
-          @if (!threatModel.diagrams?.length) {
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="diagramsDisplayedColumns"></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: diagramsDisplayedColumns"
+                class="clickable-row"
+                [matTooltip]="row.description"
+                matTooltipClass="entity-description-tooltip"
+                matTooltipPosition="above"
+                [routerLink]="['/tm', threatModel.id, 'dfd', row.id]"
+              ></tr>
+            </table>
+          </div>
+          @if (!diagramsDataSource.data.length) {
             <div class="no-items-message">
               {{ 'threatModels.noDiagrams' | transloco }}
             </div>
@@ -647,73 +858,114 @@
           }
         </mat-card-header>
         <mat-card-content>
-          <mat-list>
-            <mat-list-item
-              *ngFor="let note of sortedNotes"
-              class="note-item clickable"
-              (click)="editNote(note, $event)"
+          <div class="table-container">
+            <table
+              mat-table
+              [dataSource]="notesDataSource"
+              class="entity-table notes-table"
+              matSort
+              #notesSort="matSort"
+              matSortActive="name"
+              matSortDirection="asc"
             >
-              <mat-icon matListItemIcon class="material-symbols-outlined">article</mat-icon>
-              <div matListItemTitle class="note-content">
-                <span
-                  class="note-name"
-                  [matTooltip]="note.description"
-                  matTooltipClass="note-description-tooltip"
-                  matTooltipPosition="above"
-                >
+              <!-- Icon Column -->
+              <ng-container matColumnDef="icon">
+                <th mat-header-cell *matHeaderCellDef class="column-icon"></th>
+                <td mat-cell *matCellDef="let note" class="column-icon">
+                  <mat-icon class="material-symbols-outlined">article</mat-icon>
+                </td>
+              </ng-container>
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="column-name">
+                  {{ 'common.name' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let note" class="column-name">
                   {{ note.name }}
-                </span>
-              </div>
-              <div matListItemMeta class="action-buttons">
-                <button
-                  mat-icon-button
-                  (click)="downloadNote(note, $event)"
-                  [matTooltip]="'common.download' | transloco"
-                  [attr.aria-label]="'common.download' | transloco"
-                >
-                  <mat-icon>download</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  (click)="openNoteMetadataDialog(note, $event)"
-                  [matTooltip]="
-                    canEdit
-                      ? ('common.manageMetadata' | transloco)
-                      : ('common.viewMetadata' | transloco)
-                  "
-                  [attr.aria-label]="
-                    canEdit
-                      ? ('common.manageMetadata' | transloco)
-                      : ('common.viewMetadata' | transloco)
-                  "
-                >
-                  <mat-icon>list</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  (click)="editNote(note, $event)"
-                  [matTooltip]="canEdit ? ('common.edit' | transloco) : ('common.view' | transloco)"
-                  [attr.aria-label]="
-                    canEdit ? ('common.edit' | transloco) : ('common.view' | transloco)
-                  "
-                >
-                  <mat-icon>{{ canEdit ? 'edit' : 'visibility' }}</mat-icon>
-                </button>
-                @if (canEdit) {
-                  <button
-                    mat-icon-button
-                    color="warn"
-                    (click)="deleteNote(note, $event)"
-                    [matTooltip]="'common.delete' | transloco"
-                    [attr.aria-label]="'common.delete' | transloco"
-                  >
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                }
-              </div>
-            </mat-list-item>
-          </mat-list>
-          @if (!threatModel.notes?.length) {
+                </td>
+              </ng-container>
+
+              <!-- Description Column -->
+              <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef class="column-description">
+                  {{ 'common.description' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let note" class="column-description">
+                  {{ note.description || '-' }}
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="column-actions">
+                  {{ 'common.actions' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let note" class="column-actions">
+                  <div class="action-buttons">
+                    <button
+                      mat-icon-button
+                      (click)="downloadNote(note, $event)"
+                      [matTooltip]="'common.download' | transloco"
+                      [attr.aria-label]="'common.download' | transloco"
+                    >
+                      <mat-icon>download</mat-icon>
+                    </button>
+                    @if (canEdit) {
+                      <button
+                        mat-icon-button
+                        color="primary"
+                        (click)="openNoteAddonsDialog(note, $event)"
+                        [matTooltip]="'common.addons' | transloco"
+                        [attr.aria-label]="'common.addons' | transloco"
+                      >
+                        <mat-icon>extension</mat-icon>
+                      </button>
+                    }
+                    <button
+                      mat-icon-button
+                      (click)="openNoteMetadataDialog(note, $event)"
+                      [matTooltip]="
+                        canEdit
+                          ? ('common.manageMetadata' | transloco)
+                          : ('common.viewMetadata' | transloco)
+                      "
+                      [attr.aria-label]="
+                        canEdit
+                          ? ('common.manageMetadata' | transloco)
+                          : ('common.viewMetadata' | transloco)
+                      "
+                    >
+                      <mat-icon>list</mat-icon>
+                    </button>
+                    @if (canEdit) {
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        (click)="deleteNote(note, $event)"
+                        [matTooltip]="'common.delete' | transloco"
+                        [attr.aria-label]="'common.delete' | transloco"
+                      >
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="notesDisplayedColumns"></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: notesDisplayedColumns"
+                class="clickable-row"
+                [matTooltip]="row.description"
+                matTooltipClass="entity-description-tooltip"
+                matTooltipPosition="above"
+                (click)="editNote(row, $event)"
+              ></tr>
+            </table>
+          </div>
+          @if (!notesDataSource.data.length) {
             <div class="no-items-message">
               {{ 'threatModels.noNotes' | transloco }}
             </div>
@@ -752,63 +1004,126 @@
           }
         </mat-card-header>
         <mat-card-content>
-          <mat-list>
-            <mat-list-item
-              *ngFor="let document of sortedDocuments"
-              class="document-item clickable"
-              (click)="editDocument(document, $event)"
+          <div class="table-container">
+            <table
+              mat-table
+              [dataSource]="documentsDataSource"
+              class="entity-table documents-table"
+              matSort
+              #documentsSort="matSort"
+              matSortActive="name"
+              matSortDirection="asc"
             >
-              <mat-icon matListItemIcon class="material-symbols-outlined">description</mat-icon>
-              <div matListItemTitle class="document-content">
-                <span
-                  class="document-name"
-                  [matTooltip]="document.description"
-                  matTooltipClass="document-description-tooltip"
-                  matTooltipPosition="above"
-                >
+              <!-- Icon Column -->
+              <ng-container matColumnDef="icon">
+                <th mat-header-cell *matHeaderCellDef class="column-icon"></th>
+                <td mat-cell *matCellDef="let document" class="column-icon">
+                  <mat-icon class="material-symbols-outlined">description</mat-icon>
+                </td>
+              </ng-container>
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="column-name">
+                  {{ 'common.name' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let document" class="column-name">
                   {{ document.name }}
-                </span>
-                @if (document.uri && document.uri.trim() !== '') {
-                  <a
-                    [href]="document.uri"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="external-link-icon"
-                    (click)="$event.stopPropagation()"
-                    [matTooltip]="document.uri"
-                    matTooltipPosition="above"
-                  >
-                    <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
-                  </a>
-                }
-              </div>
-              <div matListItemMeta class="document-actions">
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="openDocumentMetadataDialog(document, $event)"
-                  [matTooltip]="
-                    canEdit
-                      ? ('common.manageMetadata' | transloco)
-                      : ('common.viewMetadata' | transloco)
-                  "
-                >
-                  <mat-icon>list</mat-icon>
-                </button>
-                @if (canEdit) {
-                  <button
-                    mat-icon-button
-                    color="warn"
-                    (click)="deleteDocument(document, $event)"
-                    [matTooltip]="'threatModels.tooltips.deleteDocument' | transloco"
-                  >
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                }
-              </div>
-            </mat-list-item>
-          </mat-list>
-          @if (!threatModel.documents?.length) {
+                </td>
+              </ng-container>
+
+              <!-- Description Column -->
+              <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef class="column-description">
+                  {{ 'common.description' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let document" class="column-description">
+                  {{ document.description || '-' }}
+                </td>
+              </ng-container>
+
+              <!-- Hyperlink Column -->
+              <ng-container matColumnDef="hyperlink">
+                <th mat-header-cell *matHeaderCellDef class="column-hyperlink"></th>
+                <td mat-cell *matCellDef="let document" class="column-hyperlink">
+                  @if (document.uri && document.uri.trim() !== '') {
+                    <a
+                      [href]="document.uri"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="external-link-icon"
+                      (click)="$event.stopPropagation()"
+                      [matTooltip]="document.uri"
+                      matTooltipPosition="above"
+                    >
+                      <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
+                    </a>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="column-actions">
+                  {{ 'common.actions' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let document" class="column-actions">
+                  <div class="action-buttons">
+                    @if (canEdit) {
+                      <button
+                        mat-icon-button
+                        color="primary"
+                        (click)="openDocumentAddonsDialog(document, $event)"
+                        [matTooltip]="'common.addons' | transloco"
+                        [attr.aria-label]="'common.addons' | transloco"
+                      >
+                        <mat-icon>extension</mat-icon>
+                      </button>
+                    }
+                    <button
+                      mat-icon-button
+                      (click)="openDocumentMetadataDialog(document, $event)"
+                      [matTooltip]="
+                        canEdit
+                          ? ('common.manageMetadata' | transloco)
+                          : ('common.viewMetadata' | transloco)
+                      "
+                      [attr.aria-label]="
+                        canEdit
+                          ? ('common.manageMetadata' | transloco)
+                          : ('common.viewMetadata' | transloco)
+                      "
+                    >
+                      <mat-icon>list</mat-icon>
+                    </button>
+                    @if (canEdit) {
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        (click)="deleteDocument(document, $event)"
+                        [matTooltip]="'common.delete' | transloco"
+                        [attr.aria-label]="'common.delete' | transloco"
+                      >
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="documentsDisplayedColumns"></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: documentsDisplayedColumns"
+                class="clickable-row"
+                [matTooltip]="row.description"
+                matTooltipClass="entity-description-tooltip"
+                matTooltipPosition="above"
+                (click)="editDocument(row, $event)"
+              ></tr>
+            </table>
+          </div>
+          @if (!documentsDataSource.data.length) {
             <div class="no-items-message">
               {{ 'threatModels.noDocuments' | transloco }}
             </div>
@@ -847,63 +1162,126 @@
           }
         </mat-card-header>
         <mat-card-content>
-          <mat-list>
-            <mat-list-item
-              *ngFor="let repository of sortedRepositories"
-              class="repository-item"
-              (click)="editRepository(repository, $event)"
+          <div class="table-container">
+            <table
+              mat-table
+              [dataSource]="repositoriesDataSource"
+              class="entity-table repositories-table"
+              matSort
+              #repositoriesSort="matSort"
+              matSortActive="name"
+              matSortDirection="asc"
             >
-              <mat-icon matListItemIcon class="material-symbols-outlined">code</mat-icon>
-              <div matListItemTitle class="repository-content">
-                <span
-                  class="repository-name"
-                  [matTooltip]="repository.description"
-                  matTooltipClass="repository-description-tooltip"
-                  matTooltipPosition="above"
-                >
+              <!-- Icon Column -->
+              <ng-container matColumnDef="icon">
+                <th mat-header-cell *matHeaderCellDef class="column-icon"></th>
+                <td mat-cell *matCellDef="let repository" class="column-icon">
+                  <mat-icon class="material-symbols-outlined">code</mat-icon>
+                </td>
+              </ng-container>
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="column-name">
+                  {{ 'common.name' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let repository" class="column-name">
                   {{ repository.name }}
-                </span>
-                @if (repository.uri && repository.uri.trim() !== '') {
-                  <a
-                    [href]="repository.uri"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="external-link-icon"
-                    (click)="$event.stopPropagation()"
-                    [matTooltip]="repository.uri"
-                    matTooltipPosition="above"
-                  >
-                    <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
-                  </a>
-                }
-              </div>
-              <div matListItemMeta class="repository-actions">
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="openRepositoryMetadataDialog(repository, $event)"
-                  [matTooltip]="
-                    canEdit
-                      ? ('common.manageMetadata' | transloco)
-                      : ('common.viewMetadata' | transloco)
-                  "
-                >
-                  <mat-icon>list</mat-icon>
-                </button>
-                @if (canEdit) {
-                  <button
-                    mat-icon-button
-                    color="warn"
-                    (click)="deleteRepository(repository, $event)"
-                    [matTooltip]="'threatModels.tooltips.deleteRepository' | transloco"
-                  >
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                }
-              </div>
-            </mat-list-item>
-          </mat-list>
-          @if (!threatModel.repositories?.length) {
+                </td>
+              </ng-container>
+
+              <!-- Description Column -->
+              <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef class="column-description">
+                  {{ 'common.description' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let repository" class="column-description">
+                  {{ repository.description || '-' }}
+                </td>
+              </ng-container>
+
+              <!-- Hyperlink Column -->
+              <ng-container matColumnDef="hyperlink">
+                <th mat-header-cell *matHeaderCellDef class="column-hyperlink"></th>
+                <td mat-cell *matCellDef="let repository" class="column-hyperlink">
+                  @if (repository.uri && repository.uri.trim() !== '') {
+                    <a
+                      [href]="repository.uri"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="external-link-icon"
+                      (click)="$event.stopPropagation()"
+                      [matTooltip]="repository.uri"
+                      matTooltipPosition="above"
+                    >
+                      <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
+                    </a>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="column-actions">
+                  {{ 'common.actions' | transloco }}
+                </th>
+                <td mat-cell *matCellDef="let repository" class="column-actions">
+                  <div class="action-buttons">
+                    @if (canEdit) {
+                      <button
+                        mat-icon-button
+                        color="primary"
+                        (click)="openRepositoryAddonsDialog(repository, $event)"
+                        [matTooltip]="'common.addons' | transloco"
+                        [attr.aria-label]="'common.addons' | transloco"
+                      >
+                        <mat-icon>extension</mat-icon>
+                      </button>
+                    }
+                    <button
+                      mat-icon-button
+                      (click)="openRepositoryMetadataDialog(repository, $event)"
+                      [matTooltip]="
+                        canEdit
+                          ? ('common.manageMetadata' | transloco)
+                          : ('common.viewMetadata' | transloco)
+                      "
+                      [attr.aria-label]="
+                        canEdit
+                          ? ('common.manageMetadata' | transloco)
+                          : ('common.viewMetadata' | transloco)
+                      "
+                    >
+                      <mat-icon>list</mat-icon>
+                    </button>
+                    @if (canEdit) {
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        (click)="deleteRepository(repository, $event)"
+                        [matTooltip]="'common.delete' | transloco"
+                        [attr.aria-label]="'common.delete' | transloco"
+                      >
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="repositoriesDisplayedColumns"></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: repositoriesDisplayedColumns"
+                class="clickable-row"
+                [matTooltip]="row.description"
+                matTooltipClass="entity-description-tooltip"
+                matTooltipPosition="above"
+                (click)="editRepository(row, $event)"
+              ></tr>
+            </table>
+          </div>
+          @if (!repositoriesDataSource.data.length) {
             <div class="no-items-message">
               {{ 'threatModels.noRepositories' | transloco }}
             </div>
