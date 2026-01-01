@@ -1275,19 +1275,13 @@ export class ThreatModelService implements OnDestroy {
     diagramId: string,
     format: 'json' | 'yaml' | 'graphml',
   ): Observable<string> {
-    return this.apiService
-      .get<string | object>(`threat_models/${threatModelId}/diagrams/${diagramId}/model`, {
-        format,
-      })
-      .pipe(
-        map(response => {
-          // For JSON format, the API returns an object; convert to string
-          if (format === 'json' && typeof response === 'object') {
-            return JSON.stringify(response, null, 2);
-          }
-          // For YAML and GraphML, the API returns a string
-          return response as string;
-        }),
+    const endpoint = `threat_models/${threatModelId}/diagrams/${diagramId}/model`;
+
+    // For JSON, use the standard get method and stringify the response
+    // For YAML and GraphML, use getText to avoid JSON parsing
+    if (format === 'json') {
+      return this.apiService.get<object>(endpoint, { format }).pipe(
+        map(response => JSON.stringify(response, null, 2)),
         catchError(error => {
           this.logger.error(
             `Error getting diagram model for diagram ID: ${diagramId} in format: ${format}`,
@@ -1296,6 +1290,18 @@ export class ThreatModelService implements OnDestroy {
           throw error;
         }),
       );
+    }
+
+    // YAML and GraphML return text content
+    return this.apiService.getText(endpoint, { format }).pipe(
+      catchError(error => {
+        this.logger.error(
+          `Error getting diagram model for diagram ID: ${diagramId} in format: ${format}`,
+          error,
+        );
+        throw error;
+      }),
+    );
   }
 
   /**

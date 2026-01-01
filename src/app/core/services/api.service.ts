@@ -88,6 +88,23 @@ export class ApiService {
   }
 
   /**
+   * GET request that returns text response (for non-JSON content types)
+   * @param endpoint The API endpoint (without the base URL)
+   * @param params Optional query parameters
+   */
+  getText(
+    endpoint: string,
+    params?: Record<string, string | number | boolean>,
+  ): Observable<string> {
+    const url = this.buildUrl(endpoint);
+
+    return this.http.get(url, { params, responseType: 'text' }).pipe(
+      retry(1),
+      catchError((error: HttpErrorResponse) => this.handleError(error, 'GET', endpoint)),
+    );
+  }
+
+  /**
    * Generic POST request
    * @param endpoint The API endpoint (without the base URL)
    * @param body The request body
