@@ -2,11 +2,8 @@ import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatChipInputEvent } from '@angular/material/chips';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThreatModelAuthorizationService } from './services/threat-model-authorization.service';
 import { AuthorizationPrepareService } from './services/providers/authorization-prepare.service';
@@ -113,7 +110,6 @@ interface RepositoryFormResult {
     ...DATA_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
     MatGridListModule,
-    MatChipsModule,
     MatTableModule,
     MatSortModule,
     TranslocoModule,
@@ -143,9 +139,6 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   // Hover preview state
   hoveredDiagramId: string | null = null;
   private hoverTimeout: ReturnType<typeof setTimeout> | null = null;
-
-  // Chip input configuration for status field
-  readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
   // Status dropdown options
   statusOptions: FieldOption[] = [];
@@ -206,6 +199,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   private _autoSaveSubject = new Subject<void>();
   private _isLoadingInitialData = false;
   private _originalFormValues?: ThreatModelFormValues;
+  private _isSaving = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -247,57 +241,6 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       .catch(err => {
         this.logger.error('Could not copy text: ', err);
       });
-  }
-
-  /**
-   * Add a status value to the status array
-   * @param event Chip input event
-   */
-  addStatus(event: MatChipInputEvent): void {
-    if (!this.canEdit) {
-      this.logger.warn('Cannot add status - insufficient permissions');
-      event.chipInput.clear();
-      return;
-    }
-
-    const value = (event.value || '').trim();
-
-    if (value) {
-      const currentStatus = this.threatModelForm.get('status')?.value as string[];
-      if (!currentStatus.includes(value)) {
-        this.threatModelForm.patchValue({
-          status: [...currentStatus, value],
-        });
-        this.threatModelForm.markAsDirty();
-        // Trigger auto-save for status changes
-        this._autoSaveSubject.next();
-      }
-    }
-
-    event.chipInput.clear();
-  }
-
-  /**
-   * Remove a status value from the status array
-   * @param status Status value to remove
-   */
-  removeStatus(status: string): void {
-    if (!this.canEdit) {
-      this.logger.warn('Cannot remove status - insufficient permissions');
-      return;
-    }
-
-    const currentStatus = this.threatModelForm.get('status')?.value as string[];
-    const index = currentStatus.indexOf(status);
-
-    if (index >= 0) {
-      const updated = [...currentStatus];
-      updated.splice(index, 1);
-      this.threatModelForm.patchValue({ status: updated });
-      this.threatModelForm.markAsDirty();
-      // Trigger auto-save for status changes
-      this._autoSaveSubject.next();
-    }
   }
 
   /**
@@ -713,10 +656,8 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   private hasFormChanged(formValue: ThreatModelFormValues): boolean {
     if (!this._originalFormValues) return false;
 
-    // Compare status arrays
-    const statusChanged =
-      JSON.stringify(formValue.status || []) !==
-      JSON.stringify(this._originalFormValues.status || []);
+    // Compare status values (single string or null, not an array)
+    const statusChanged = (formValue.status ?? null) !== (this._originalFormValues.status ?? null);
 
     return (
       formValue.name !== this._originalFormValues.name ||
@@ -2849,13 +2790,15 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       !this.threatModel ||
       this.threatModelForm.invalid ||
       this._isLoadingInitialData ||
-      !this.canEdit
+      !this.canEdit ||
+      this._isSaving
     ) {
       this.logger.debugComponent('TmEdit', 'Auto-save skipped due to conditions', {
         threatModelExists: !!this.threatModel,
         formValid: this.threatModelForm.valid,
         isLoadingInitialData: this._isLoadingInitialData,
         canEdit: this.canEdit,
+        isSaving: this._isSaving,
       });
       return;
     }
@@ -2885,11 +2828,8 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     if (formValues.issue_uri !== this._originalFormValues!.issue_uri) {
       updates.issue_uri = formValues.issue_uri;
     }
-    // Compare status arrays
-    const statusChanged =
-      JSON.stringify(formValues.status || []) !==
-      JSON.stringify(this._originalFormValues!.status || []);
-    if (statusChanged) {
+    // Compare status values (single string or null, not an array)
+    if ((formValues.status ?? null) !== (this._originalFormValues!.status ?? null)) {
       updates.status = formValues.status;
     }
 
@@ -2915,10 +2855,14 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       updateKeys: Object.keys(safeUpdates),
     });
 
+    // Set saving flag to prevent concurrent saves
+    this._isSaving = true;
+
     // Save to server with PATCH (only changed fields)
     this._subscriptions.add(
       this.threatModelService.patchThreatModel(this.threatModel.id, safeUpdates).subscribe({
         next: result => {
+          this._isSaving = false;
           if (result && this.threatModel) {
             // Update the threat model with server response
             Object.keys(updates).forEach(key => {
@@ -2932,8 +2876,16 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
               this.threatModel.status_updated = result.status_updated;
             }
 
-            // Update original form values after successful save
+            // Update original form values with what we just saved
             this.updateOriginalFormValues(formValues);
+
+            // Check if user made additional changes while save was in flight
+            // If so, trigger another save cycle
+            const currentFormValues = this.threatModelForm.getRawValue() as ThreatModelFormValues;
+            if (this.hasFormChanged(currentFormValues)) {
+              this.logger.info('Detected changes made during save, triggering follow-up save');
+              this._autoSaveSubject.next();
+            }
 
             // Reset form dirty state so save button dims/disables
             this.threatModelForm.markAsPristine();
@@ -2946,6 +2898,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         },
         error: error => {
+          this._isSaving = false;
           this.logger.error('Auto-save failed for threat model', error, {
             threatModelId: this.threatModel?.id,
             attemptedUpdates: updates,
