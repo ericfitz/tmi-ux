@@ -188,15 +188,15 @@ export class LoginComponent implements OnInit {
   }
 
   /**
-   * Sort providers alphabetically by name, with 'test' provider last
+   * Sort providers alphabetically by name, with 'tmi' provider last
    */
   private sortProviders<T extends { id: string; name: string }>(providers: T[]): T[] {
     const sorted = [...providers];
 
     return sorted.sort((a, b) => {
-      // Test provider goes last
-      if (a.id === 'test') return 1;
-      if (b.id === 'test') return -1;
+      // TMI provider goes last
+      if (a.id === 'tmi') return 1;
+      if (b.id === 'tmi') return -1;
 
       // All other providers are sorted alphabetically by name
       return a.name.localeCompare(b.name);
@@ -333,7 +333,7 @@ export class LoginComponent implements OnInit {
     img.onerror = () => {
       // Failed to load from server, use fallback from tmi-ux server
       let fallback: string;
-      if (providerId === 'test') {
+      if (providerId === 'tmi') {
         fallback = 'assets/signin-logos/tmi.svg';
       } else {
         fallback =
@@ -374,7 +374,7 @@ export class LoginComponent implements OnInit {
     if (logo?.type === 'image') return logo.value;
 
     // Fallback logic
-    if (providerId === 'test') return 'assets/signin-logos/tmi.svg';
+    if (providerId === 'tmi') return 'assets/signin-logos/tmi.svg';
     return type === 'oauth' ? 'assets/signin-logos/oauth.svg' : 'assets/signin-logos/saml.svg';
   }
 

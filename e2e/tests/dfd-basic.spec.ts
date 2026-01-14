@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
-import { loginWithTestProvider } from '../helpers/auth';
+import { loginWithTmiProvider } from '../helpers/auth';
 import {
   getGraphContainer,
   getGraphNodes,
@@ -59,7 +59,7 @@ test.describe('DFD Basic Functionality', () => {
   }
 
   test.beforeEach(async ({ page }) => {
-    await loginWithTestProvider(page);
+    await loginWithTmiProvider(page);
   });
 
   test('should load DFD editor', async ({ page }) => {

@@ -26,7 +26,7 @@ async function getOAuthProviders(): Promise<any[]> {
 }
 
 /**
- * Get fresh OAuth credentials using the test provider
+ * Get fresh OAuth credentials using the TMI provider
  * This performs the full OAuth flow in a headless manner
  */
 export async function getFreshOAuthCredentials(page: Page): Promise<OAuthCredentials> {

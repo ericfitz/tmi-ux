@@ -10,7 +10,7 @@
  */
 export interface User {
   principal_type: 'user'; // Always "user" for User objects
-  provider: string; // Identity provider (e.g., "google", "github", "microsoft", "test")
+  provider: string; // Identity provider (e.g., "google", "github", "microsoft", "tmi")
   provider_id: string; // Provider-assigned unique identifier from JWT 'sub' claim (primary key)
   email: string; // User email address from JWT 'email' claim
   display_name: string; // User display name from JWT 'name' claim
@@ -228,7 +228,7 @@ export interface RedoRequestMessage {
 export interface Participant {
   user: {
     principal_type?: 'user'; // Always "user" for participants
-    provider?: string; // Identity provider (e.g., "google", "github", "microsoft", "test") - optional per AsyncAPI spec
+    provider?: string; // Identity provider (e.g., "google", "github", "microsoft", "tmi") - optional per AsyncAPI spec
     provider_id: string; // Provider-specific user ID (primary key for user identity)
     email: string; // Email address (required)
     name?: string; // Display name for UI (JSON serialization of display_name)

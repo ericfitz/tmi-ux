@@ -17,10 +17,10 @@ export interface MockUserProfile {
 }
 
 /**
- * Login using the test OAuth provider
- * This uses the actual OAuth flow with the test provider
+ * Login using the TMI OAuth provider
+ * This uses the actual OAuth flow with the TMI provider
  */
-export async function loginWithTestProvider(page: Page): Promise<void> {
+export async function loginWithTmiProvider(page: Page): Promise<void> {
   // Navigate to login page
   await page.goto(`${testConfig.appUrl}/login`);
 

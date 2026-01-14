@@ -34,7 +34,7 @@ export interface JwtToken {
  */
 export interface UserProfile {
   /**
-   * Identity provider name (e.g., "google", "github", "microsoft", "test")
+   * Identity provider name (e.g., "google", "github", "microsoft", "tmi")
    */
   provider: string;
 
@@ -72,7 +72,7 @@ export interface UserProfile {
  */
 export interface UserMeResponse {
   /**
-   * Identity provider name (e.g., "google", "github", "microsoft", "test")
+   * Identity provider name (e.g., "google", "github", "microsoft", "tmi")
    */
   provider: string;
 

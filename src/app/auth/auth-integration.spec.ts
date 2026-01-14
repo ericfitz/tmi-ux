@@ -237,7 +237,7 @@ describe('Authentication Integration', () => {
       };
 
       const userProfile: UserProfile = {
-        provider: 'test',
+        provider: 'tmi',
         provider_id: testEmail,
         display_name: 'test',
         email: testEmail,
@@ -267,7 +267,7 @@ describe('Authentication Integration', () => {
       };
 
       const userProfile: UserProfile = {
-        provider: 'test',
+        provider: 'tmi',
         provider_id: 'test@example.com',
         display_name: 'test',
         email: 'test@example.com',

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { loginWithTestProvider } from '../helpers/auth';
+import { loginWithTmiProvider } from '../helpers/auth';
 
 /**
  * Smoke tests - Quick validation that the application loads and core functionality works
@@ -20,7 +20,7 @@ test.describe('Smoke Tests', () => {
   });
 
   test('should load threat models page when authenticated', async ({ page }) => {
-    await loginWithTestProvider(page);
+    await loginWithTmiProvider(page);
     await page.goto('/dashboard');
     await expect(page).toHaveURL(/\/tm/);
     await expect(page.locator('body')).toBeVisible();

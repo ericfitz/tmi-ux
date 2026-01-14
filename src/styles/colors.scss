@@ -43,8 +43,8 @@ $border-light: #e0e0e0;
 $border-material: rgb(0 0 0 / 12%);
 
 // OAuth Provider Colors
-$test-color: #dc3545;
-$test-color-hover: #c82333;
+$tmi-color: #dc3545;
+$tmi-color-hover: #c82333;
 
 // DFD-Specific Colors
 $dfd-selection-color: rgb(255 0 0 / 80%);
@@ -104,8 +104,8 @@ $role-host-color: #ffc107; // Gold color for session host
   --color-border-material: var(--theme-divider, #{$border-material});
 
   // OAuth Provider Colors
-  --color-test: #{$test-color};
-  --color-test-hover: #{$test-color-hover};
+  --color-tmi: #{$tmi-color};
+  --color-tmi-hover: #{$tmi-color-hover};
 
   // DFD-Specific Colors
   --color-dfd-selection: #{$dfd-selection-color};

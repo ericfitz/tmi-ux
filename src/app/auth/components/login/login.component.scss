@@ -150,15 +150,15 @@
   }
 }
 
-// Test provider specific styles - placed after base styles to maintain specificity order
-.provider-button[data-provider='test'],
-.single-provider-button[data-provider='test'] {
-  background-color: colors.$test-color !important;
+// TMI provider specific styles - placed after base styles to maintain specificity order
+.provider-button[data-provider='tmi'],
+.single-provider-button[data-provider='tmi'] {
+  background-color: colors.$tmi-color !important;
   color: white !important;
-  border: 1px solid colors.$test-color-hover !important;
+  border: 1px solid colors.$tmi-color-hover !important;
 
   &:hover:not(:disabled) {
-    background-color: colors.$test-color-hover !important;
+    background-color: colors.$tmi-color-hover !important;
   }
 
   .provider-logo {

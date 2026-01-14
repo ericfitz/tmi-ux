@@ -44,7 +44,7 @@ vi.mock('../../../environments/environment', () => ({
     authTokenExpiryMinutes: 60,
     operatorName: 'TMI Operator (Test)',
     operatorContact: 'test@example.com',
-    defaultAuthProvider: 'test', // Set to test provider for server-mode tests
+    defaultAuthProvider: 'tmi', // Set to tmi provider for server-mode tests
   },
 }));
 
@@ -87,7 +87,7 @@ describe('AuthService', () => {
     sub: '12345678-1234-1234-1234-123456789abc',
     email: 'test@example.com',
     name: 'Test User',
-    providers: [{ provider: 'test', is_primary: true }],
+    providers: [{ provider: 'tmi', is_primary: true }],
     iat: Math.floor(Date.now() / 1000),
     exp: Math.floor(Date.now() / 1000) + 3600,
   };
@@ -104,7 +104,7 @@ describe('AuthService', () => {
   };
 
   const mockUserProfile: UserProfile = {
-    provider: 'test',
+    provider: 'tmi',
     provider_id: 'test@example.com',
     display_name: 'Test User',
     email: 'test@example.com',
@@ -126,10 +126,10 @@ describe('AuthService', () => {
   const mockProvidersResponse: ProvidersResponse = {
     providers: [
       {
-        id: 'test',
-        name: 'Test Provider',
+        id: 'tmi',
+        name: 'TMI Provider',
         icon: 'science',
-        auth_url: 'http://localhost:8080/oauth2/authorize/test',
+        auth_url: 'http://localhost:8080/oauth2/authorize/tmi',
         redirect_uri: 'http://localhost:8080/oauth2/callback',
         client_id: 'mock-client-id',
       },
@@ -395,8 +395,8 @@ describe('AuthService', () => {
       });
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_state', expect.any(String));
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_provider', 'test');
-      expect(window.location.href).toContain('http://localhost:8080/oauth2/authorize/test');
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('oauth_provider', 'tmi');
+      expect(window.location.href).toContain('http://localhost:8080/oauth2/authorize/tmi');
       expect(window.location.href).toContain('state=');
       expect(window.location.href).toContain('client_callback=');
       expect(window.location.href).toContain('scope=openid%20profile%20email');
@@ -587,7 +587,7 @@ describe('AuthService', () => {
 
       // Mock GET /users/me call that happens after successful token exchange
       const johnUserProfile: UserProfile = {
-        provider: 'test',
+        provider: 'tmi',
         provider_id: '1234567890',
         display_name: 'John Doe',
         email: 'john@example.com',
@@ -709,7 +709,7 @@ describe('AuthService', () => {
       };
 
       const userProfile: UserProfile = {
-        provider: 'test',
+        provider: 'tmi',
         provider_id: testEmail,
         display_name: 'Demo User',
         email: testEmail,

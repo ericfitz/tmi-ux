@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { clearAuth, loginWithTestProvider, verifyAuthenticated } from '../helpers/auth';
+import { clearAuth, loginWithTmiProvider, verifyAuthenticated } from '../helpers/auth';
 
 /**
  * Authentication flow tests
- * NOTE: These tests require a running backend server with a properly configured test OAuth provider
+ * NOTE: These tests require a running backend server with a properly configured TMI OAuth provider
  *
  * KNOWN LIMITATION: The OAuth callback route (/oauth2/callback) loads successfully in tests but does not
  * automatically redirect to the final destination as it does in manual testing. The LoginComponent receives
@@ -20,8 +20,8 @@ test.describe.skip('Authentication', () => {
     await clearAuth(page);
   });
 
-  test('should login with test provider', async ({ page }) => {
-    await loginWithTestProvider(page);
+  test('should login with tmi provider', async ({ page }) => {
+    await loginWithTmiProvider(page);
 
     // Should be redirected to home or threat models page
     await expect(page).not.toHaveURL(/\/login/);
@@ -42,7 +42,7 @@ test.describe.skip('Authentication', () => {
   });
 
   test('should persist authentication across page reloads', async ({ page }) => {
-    await loginWithTestProvider(page);
+    await loginWithTmiProvider(page);
 
     // Navigate to threat models
     await page.goto('/dashboard');
@@ -58,7 +58,7 @@ test.describe.skip('Authentication', () => {
   });
 
   test('should handle session expiration', async ({ page }) => {
-    await loginWithTestProvider(page);
+    await loginWithTmiProvider(page);
     await page.goto('/dashboard');
     await expect(page).toHaveURL(/\/tm/);
 

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { loginWithTestProvider } from '../helpers/auth';
+import { loginWithTmiProvider } from '../helpers/auth';
 import {
   navigateToThreatModels,
   navigateToThreatModel,
@@ -12,7 +12,7 @@ import {
 
 test.describe('Threat Models', () => {
   test.beforeEach(async ({ page }) => {
-    await loginWithTestProvider(page);
+    await loginWithTmiProvider(page);
   });
 
   test('should display threat model list or empty state', async ({ page }) => {

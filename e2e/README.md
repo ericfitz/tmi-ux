@@ -105,7 +105,7 @@ The e2e tests can be configured using environment variables:
 - `E2E_APP_PORT` - Frontend application port (default: `4200`)
 - `E2E_API_URL` - Backend API URL (default: `http://localhost:8080`)
 - `E2E_API_PORT` - Backend API port (default: `8080`)
-- `E2E_OAUTH_PROVIDER` - OAuth provider to use for tests (default: `test`)
+- `E2E_OAUTH_PROVIDER` - OAuth provider to use for tests (default: `tmi`)
 
 ### Configuration Files
 
@@ -136,7 +136,7 @@ The test suite includes a **global setup** that verifies both services are avail
 All tests use fresh OAuth credentials obtained through the configured test provider:
 
 1. Before each test, `clearAuth()` clears all authentication state
-2. Tests that require authentication call `loginWithTestProvider()` which:
+2. Tests that require authentication call `loginWithTmiProvider()` which:
    - Navigates to the login page
    - Clicks the configured OAuth provider button
    - Waits for the OAuth flow to complete

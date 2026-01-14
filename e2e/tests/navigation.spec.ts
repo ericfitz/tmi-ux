@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { loginWithTestProvider } from '../helpers/auth';
+import { loginWithTmiProvider } from '../helpers/auth';
 import { navigateToHome, navigateToAbout, navigateToThreatModels } from '../helpers/navigation';
 
 /**
@@ -19,13 +19,13 @@ test.describe('Navigation', () => {
   });
 
   test('should navigate to threat models page when authenticated', async ({ page }) => {
-    await loginWithTestProvider(page);
+    await loginWithTmiProvider(page);
     await navigateToThreatModels(page);
     await expect(page).toHaveURL(/\/tm/);
   });
 
   test('should navigate using browser back button', async ({ page }) => {
-    await loginWithTestProvider(page);
+    await loginWithTmiProvider(page);
 
     // Navigate to threat models
     await navigateToThreatModels(page);
@@ -41,7 +41,7 @@ test.describe('Navigation', () => {
   });
 
   test('should navigate using browser forward button', async ({ page }) => {
-    await loginWithTestProvider(page);
+    await loginWithTmiProvider(page);
 
     // Navigate to threat models
     await navigateToThreatModels(page);

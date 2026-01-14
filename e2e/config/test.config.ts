@@ -37,5 +37,5 @@ export const testConfig: E2ETestConfig = {
   apiPort: parseInt(process.env.E2E_API_PORT || '8080', 10),
   serviceAvailabilityTimeout: 30000, // 30 seconds
   authTimeout: 15000, // 15 seconds
-  testOAuthProvider: process.env.E2E_OAUTH_PROVIDER || 'test',
+  testOAuthProvider: process.env.E2E_OAUTH_PROVIDER || 'tmi',
 };
