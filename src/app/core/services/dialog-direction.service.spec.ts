@@ -84,11 +84,17 @@ describe('DialogDirectionService', () => {
       expect(service['subscription']).toBeTruthy();
     });
 
-    it('should not update document on initial subscription', () => {
+    it('should update document direction on initial subscription', () => {
       // The BehaviorSubject emits immediately, but we start with 'ltr'
       // Since we created the service in beforeEach, check that it was called once
       expect(mockDocument.documentElement.setAttribute).toHaveBeenCalledWith('dir', 'ltr');
       expect(mockDocument.body.setAttribute).toHaveBeenCalledWith('dir', 'ltr');
+    });
+
+    it('should not close dialogs on initial subscription', () => {
+      // The initial emission should not close dialogs since there's no previous direction
+      // The service was created in beforeEach, so check the call count
+      expect(mockDialog.closeAll).not.toHaveBeenCalled();
     });
   });
 
@@ -146,10 +152,25 @@ describe('DialogDirectionService', () => {
       mockLanguageService.direction$.next('ltr');
       mockLanguageService.direction$.next('rtl');
 
-      // Should have been called for initial + 3 changes = 4 times total
+      // Document attributes should be updated for initial + 3 changes = 4 times total
       expect(mockDocument.documentElement.setAttribute).toHaveBeenCalledTimes(4);
       expect(mockDocument.body.setAttribute).toHaveBeenCalledTimes(4);
-      expect(mockDialog.closeAll).toHaveBeenCalledTimes(4);
+      // Dialogs should only be closed for actual direction changes (3 times, not initial)
+      expect(mockDialog.closeAll).toHaveBeenCalledTimes(3);
+    });
+
+    it('should not close dialogs when same direction is emitted again', () => {
+      mockLanguageService.direction$.next('rtl');
+      vi.clearAllMocks();
+
+      // Emit the same direction again
+      mockLanguageService.direction$.next('rtl');
+
+      // Document attributes should still be updated
+      expect(mockDocument.documentElement.setAttribute).toHaveBeenCalledWith('dir', 'rtl');
+      expect(mockDocument.body.setAttribute).toHaveBeenCalledWith('dir', 'rtl');
+      // But dialogs should NOT be closed since direction didn't change
+      expect(mockDialog.closeAll).not.toHaveBeenCalled();
     });
   });
 
@@ -200,10 +221,12 @@ describe('DialogDirectionService', () => {
 
       mockLanguageService.direction$.next('rtl');
 
-      expect(calls).toEqual(['documentElement', 'body']);
+      // Filter to only the calls from this emission (skip the initial ltr calls)
+      const rtlCalls = calls.slice(-2);
+      expect(rtlCalls).toEqual(['documentElement', 'body']);
     });
 
-    it('should close dialogs after updating direction attributes', () => {
+    it('should close dialogs after updating direction attributes when direction changes', () => {
       const calls: string[] = [];
 
       mockDocument.documentElement.setAttribute.mockImplementation(() => {
@@ -213,6 +236,7 @@ describe('DialogDirectionService', () => {
         calls.push('closeAll');
       });
 
+      // Direction change from ltr to rtl should trigger closeAll
       mockLanguageService.direction$.next('rtl');
 
       expect(calls[calls.length - 1]).toBe('closeAll');

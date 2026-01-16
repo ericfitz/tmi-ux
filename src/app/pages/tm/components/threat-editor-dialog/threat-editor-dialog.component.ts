@@ -568,8 +568,9 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         if (currentLang !== 'en-US') {
           this.translocoService.load(currentLang).subscribe({
             next: () => {
-              // Force translation update
-              this.translocoService.setActiveLang(currentLang);
+              // Note: We don't call setActiveLang here since it's already the active language.
+              // Calling setActiveLang triggers LanguageService.langChanges$ which can cause
+              // unintended side effects like closing dialogs via DialogDirectionService.
               this.logger.debugComponent(
                 'ThreatEditorDialog',
                 'Translations loaded successfully for language: ' + currentLang,
