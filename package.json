@@ -95,23 +95,23 @@
     "zone.js": "~0.15.1"
   },
   "devDependencies": {
-    "@analogjs/vite-plugin-angular": "^2.2.1",
-    "@angular-devkit/build-angular": "^20.3.12",
+    "@analogjs/vite-plugin-angular": "^2.2.2",
+    "@angular-devkit/build-angular": "^20.3.14",
     "@angular-eslint/builder": "^20.7.0",
     "@angular-eslint/eslint-plugin": "^20.7.0",
     "@angular-eslint/eslint-plugin-template": "^20.7.0",
     "@angular-eslint/schematics": "^20.7.0",
     "@angular-eslint/template-parser": "^20.7.0",
-    "@angular/cli": "^20.3.12",
+    "@angular/cli": "^20.3.14",
     "@angular/compiler-cli": "^20.3.16",
     "@eslint/js": "^9.39.2",
     "@material/material-color-utilities": "^0.3.0",
     "@playwright/test": "^1.57.0",
     "@testing-library/angular": "^18.1.1",
     "@types/jsdom": "^27.0.0",
-    "@types/node": "^25.0.6",
-    "@typescript-eslint/eslint-plugin": "^8.52.0",
-    "@typescript-eslint/parser": "^8.52.0",
+    "@types/node": "^25.0.8",
+    "@typescript-eslint/eslint-plugin": "^8.53.0",
+    "@typescript-eslint/parser": "^8.53.0",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "angular-eslint": "^20.7.0",
@@ -119,7 +119,7 @@
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-unused-imports": "^4.3.0",
     "glob": "^13.0.0",
     "globals": "^17.0.0",
@@ -130,7 +130,7 @@
     "stylelint-config-standard-scss": "^16.0.0",
     "tsx": "^4.21.0",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.52.0",
+    "typescript-eslint": "^8.53.0",
     "vite": "^7.3.1",
     "vitest": "^3.2.4"
   },
@@ -150,7 +150,8 @@
       "body-parser": ">=2.2.1",
       "@modelcontextprotocol/sdk": "^1.25.2",
       "qs": "^6.14.1",
-      "hono": "4.11.4"
+      "hono": "4.11.4",
+      "tar": ">=7.5.3"
     },
     "peerDependencyRules": {
       "ignoreMissing": [
