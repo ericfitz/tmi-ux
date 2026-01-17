@@ -64,10 +64,23 @@
         and use it only for the purposes we specify.
       </li>
       <li [transloco]="'privacy.dataSharingList2'">
-        Extensibility Features: The application supports optional websockets and addons that extend
-        functionality by passing selected information to third-party services for processing. Data
-        is shared with these services only when you actively use features that require them, and
-        only the specific information necessary for the requested functionality is transmitted.
+        Extensibility Features: The application supports optional extensibility features (such as
+        websockets and addons) that may extend functionality by passing selected information to
+        third-party services for processing. Data is shared with these services only when you
+        actively use a feature that requires such transmission, and only the specific information
+        necessary for the requested functionality is transmitted.
+        <ul>
+          <li [transloco]="'privacy.dataSharingList2a'">
+            AI Processing Features: When you actively request features powered by large language
+            models (LLMs) or similar AI services, selected data may be transmitted to third-party AI
+            providers (such as OpenAI, Anthropic, or equivalent services) for processing and
+            response generation. Only the specific information necessary for the requested
+            functionality is shared, and such sharing occurs solely at your direction. These
+            providers are bound by contractual obligations — including data processing agreements
+            where applicable — to use the data exclusively for providing the requested service, with
+            restrictions on retention, training, or other uses.
+          </li>
+        </ul>
       </li>
       <li [transloco]="'privacy.dataSharingList3'">
         Legal Compliance: We may disclose information if required by law, such as in response to a
