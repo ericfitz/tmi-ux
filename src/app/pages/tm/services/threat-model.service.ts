@@ -524,9 +524,17 @@ export class ThreatModelService implements OnDestroy {
         // Threat Model creation
         createThreatModel: tmData => {
           const { filtered } = this.fieldFilter.filterThreatModel(tmData);
+          // For import, also exclude owner and authorization - the server will set
+          // the current user as owner and create default authorization.
+          // These fields reference users/groups that may not exist in the target system.
+          const {
+            owner: _owner,
+            authorization: _auth,
+            ...importFiltered
+          } = filtered;
           // Ensure required fields have defaults
           const body = {
-            ...filtered,
+            ...importFiltered,
             name: tmData['name'] || 'Untitled',
             description: (tmData['description'] as string) || '',
             threat_model_framework:

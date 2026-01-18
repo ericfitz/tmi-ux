@@ -12,13 +12,13 @@ import type { Metadata } from '../../models/threat-model.model';
 export class ReadonlyFieldFilterService {
   /**
    * Read-only fields on ThreatModel that should be stripped before POST/PUT
-   * Note: 'owner' is NOT read-only - it's a required writable field per OpenAPI ThreatModelBase
    */
   private readonly _threatModelReadOnlyFields = [
     'id',
     'created_at',
     'modified_at',
     'created_by',
+    'owner',
     'documents',
     'repositories',
     'diagrams',
