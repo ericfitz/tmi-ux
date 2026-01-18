@@ -8,6 +8,39 @@ import { ThreatModelValidatorService } from './threat-model-validator.service';
 import { ValidationConfig } from './types';
 import { createMockLoggerService } from '../../../../testing/mocks/mock-logger.service';
 
+// Helper to create Principal objects for test fixtures
+const createTestPrincipal = (
+  email: string,
+  type: 'user' | 'group' = 'user',
+): { principal_type: 'user' | 'group'; provider: string; provider_id: string; email: string; display_name: string } => ({
+  principal_type: type,
+  provider: 'test',
+  provider_id: email,
+  email,
+  display_name: email.split('@')[0],
+});
+
+// Helper to create Authorization objects for test fixtures
+const createTestAuthorization = (
+  email: string,
+  role: 'owner' | 'writer' | 'reader',
+  type: 'user' | 'group' = 'user',
+): {
+  principal_type: 'user' | 'group';
+  provider: string;
+  provider_id: string;
+  email: string;
+  display_name: string;
+  role: 'owner' | 'writer' | 'reader';
+} => ({
+  principal_type: type,
+  provider: 'test',
+  provider_id: email,
+  email,
+  display_name: email.split('@')[0],
+  role,
+});
+
 describe('ThreatModel Validation Integration', () => {
   let service: ThreatModelValidatorService;
   let mockLogger: any;
@@ -24,10 +57,10 @@ describe('ThreatModel Validation Integration', () => {
       name: 'Test Threat Model',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: 'test@example.com',
-      created_by: 'test@example.com',
+      owner: createTestPrincipal('test@example.com'),
+      created_by: createTestPrincipal('test@example.com'),
       threat_model_framework: 'STRIDE',
-      authorization: [{ subject: 'test@example.com', role: 'owner' }],
+      authorization: [createTestAuthorization('test@example.com', 'owner')],
     };
 
     const result = service.validate(validThreatModel);
@@ -59,8 +92,8 @@ describe('ThreatModel Validation Integration', () => {
       name: 123, // Should be string
       created_at: 'invalid-date',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: 'test@example.com',
-      created_by: 'test@example.com',
+      owner: createTestPrincipal('test@example.com'),
+      created_by: createTestPrincipal('test@example.com'),
       threat_model_framework: 'INVALID_FRAMEWORK',
       authorization: 'not-an-array',
     };
@@ -82,10 +115,10 @@ describe('ThreatModel Validation Integration', () => {
       name: 'Test Threat Model',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: 'test@example.com',
-      created_by: 'test@example.com',
+      owner: createTestPrincipal('test@example.com'),
+      created_by: createTestPrincipal('test@example.com'),
       threat_model_framework: 'STRIDE',
-      authorization: [{ subject: 'test@example.com', role: 'owner' }],
+      authorization: [createTestAuthorization('test@example.com', 'owner')],
       diagrams: [
         {
           id: 'diagram-1',
@@ -126,10 +159,10 @@ describe('ThreatModel Validation Integration', () => {
       name: 'Test Threat Model',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: 'test@example.com',
-      created_by: 'test@example.com',
+      owner: createTestPrincipal('test@example.com'),
+      created_by: createTestPrincipal('test@example.com'),
       threat_model_framework: 'STRIDE',
-      authorization: [{ subject: 'test@example.com', role: 'owner' }],
+      authorization: [createTestAuthorization('test@example.com', 'owner')],
       diagrams: [
         {
           id: 'diagram-1',
@@ -185,10 +218,10 @@ describe('ThreatModel Validation Integration', () => {
       name: 'Test Threat Model',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-01T00:00:00Z',
-      owner: 'test@example.com',
-      created_by: 'test@example.com',
+      owner: createTestPrincipal('test@example.com'),
+      created_by: createTestPrincipal('test@example.com'),
       threat_model_framework: 'STRIDE',
-      authorization: [{ subject: 'test@example.com', role: 'owner' }],
+      authorization: [createTestAuthorization('test@example.com', 'owner')],
       diagrams: [
         {
           id: '123e4567-e89b-12d3-a456-426614174000',
@@ -212,7 +245,7 @@ describe('ThreatModel Validation Integration', () => {
     const threatModel = {
       id: '550e8400-e29b-41d4-a716-446655440000',
       name: 'Test Threat Model',
-      authorization: [{ subject: 'test@example.com', role: 'owner' }],
+      authorization: [createTestAuthorization('test@example.com', 'owner')],
       diagrams: [
         {
           id: 'diagram-1',
@@ -282,13 +315,13 @@ describe('ThreatModel Validation Integration', () => {
       description: 'A comprehensive threat model for testing',
       created_at: '2025-01-01T00:00:00Z',
       modified_at: '2025-01-02T00:00:00Z',
-      owner: 'owner@example.com',
-      created_by: 'creator@example.com',
+      owner: createTestPrincipal('owner@example.com'),
+      created_by: createTestPrincipal('creator@example.com'),
       threat_model_framework: 'STRIDE',
       issue_uri: 'https://example.com/issues/123',
       authorization: [
-        { subject: 'owner@example.com', role: 'owner' },
-        { subject: 'user@example.com', role: 'writer' },
+        createTestAuthorization('owner@example.com', 'owner'),
+        createTestAuthorization('user@example.com', 'writer'),
       ],
       metadata: [
         { key: 'version', value: '1.0' },

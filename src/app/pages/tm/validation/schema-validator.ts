@@ -62,8 +62,9 @@ export class SchemaValidator extends BaseValidator {
     { field: 'name', required: true, type: 'string', maxLength: 256 },
     { field: 'created_at', required: true, type: 'date-time', maxLength: 24 },
     { field: 'modified_at', required: true, type: 'date-time', maxLength: 24 },
-    { field: 'owner', required: true, type: 'string' },
-    { field: 'created_by', required: true, type: 'string', maxLength: 256 },
+    // owner and created_by are Principal objects, not strings - validated separately
+    { field: 'owner', required: true, type: 'object' },
+    { field: 'created_by', required: true, type: 'object' },
     // Note: threat_model_framework is conditionally required (see validateThreatModel)
     {
       field: 'threat_model_framework',
@@ -84,8 +85,39 @@ export class SchemaValidator extends BaseValidator {
     { field: 'threats', required: false, type: 'array' },
   ];
 
+  /**
+   * Principal validation rules (for owner, created_by, and base of Authorization)
+   * Based on OpenAPI Principal schema
+   */
+  private static readonly PRINCIPAL_RULES: FieldValidationRule[] = [
+    {
+      field: 'principal_type',
+      required: true,
+      type: 'string',
+      enum: ['user', 'group'],
+    },
+    { field: 'provider', required: true, type: 'string', maxLength: 100 },
+    { field: 'provider_id', required: true, type: 'string', maxLength: 500 },
+    { field: 'display_name', required: false, type: 'string', maxLength: 256 },
+    { field: 'email', required: false, type: 'string', maxLength: 320 },
+  ];
+
+  /**
+   * Authorization extends Principal with a role field
+   */
   private static readonly AUTHORIZATION_RULES: FieldValidationRule[] = [
-    { field: 'subject', required: true, type: 'string' },
+    // Principal fields
+    {
+      field: 'principal_type',
+      required: true,
+      type: 'string',
+      enum: ['user', 'group'],
+    },
+    { field: 'provider', required: true, type: 'string', maxLength: 100 },
+    { field: 'provider_id', required: true, type: 'string', maxLength: 500 },
+    { field: 'display_name', required: false, type: 'string', maxLength: 256 },
+    { field: 'email', required: false, type: 'string', maxLength: 320 },
+    // Authorization-specific field
     { field: 'role', required: true, type: 'string', enum: ['reader', 'writer', 'owner'] },
   ];
 
@@ -112,12 +144,11 @@ export class SchemaValidator extends BaseValidator {
       required: true,
       type: 'array',
     },
-    {
-      field: 'severity',
-      required: true,
-      type: 'string',
-      enum: ['Unknown', 'None', 'Low', 'Medium', 'High', 'Critical'],
-    },
+    // severity is a freeform string per OpenAPI (maxLength: 50)
+    // The app uses numeric keys ('0'-'5') internally which map to translations:
+    // 0=Critical, 1=High, 2=Medium, 3=Low, 4=Informational, 5=Unknown
+    // We validate as string, not enum, to allow flexibility
+    { field: 'severity', required: true, type: 'string', maxLength: 50 },
     { field: 'created_at', required: true, type: 'date-time' },
     { field: 'modified_at', required: true, type: 'date-time' },
 
@@ -170,6 +201,10 @@ export class SchemaValidator extends BaseValidator {
     // Validate top-level fields
     this.validateFields(threatModel, SchemaValidator.THREAT_MODEL_RULES, context);
 
+    // Validate Principal objects (owner, created_by)
+    this.validatePrincipal(threatModel.owner, 'owner', context);
+    this.validatePrincipal(threatModel.created_by, 'created_by', context);
+
     // Conditional validation: framework is required if there are threats
     if (hasThreats) {
       if (!threatModel.threat_model_framework || threatModel.threat_model_framework.trim() === '') {
@@ -192,6 +227,34 @@ export class SchemaValidator extends BaseValidator {
     this.validateDiagramArray(threatModel.diagrams, context);
 
     return this.getResults().errors;
+  }
+
+  /**
+   * Validate a Principal object (owner or created_by)
+   */
+  private validatePrincipal(
+    principal: unknown,
+    fieldName: string,
+    context: ValidationContext,
+  ): void {
+    if (!principal) return;
+
+    if (typeof principal !== 'object') {
+      this.addError(
+        ValidationUtils.createError(
+          'INVALID_TYPE',
+          `Field '${fieldName}' must be a Principal object`,
+          ValidationUtils.buildPath(context.currentPath, fieldName),
+        ),
+      );
+      return;
+    }
+
+    const principalContext = {
+      ...context,
+      currentPath: ValidationUtils.buildPath(context.currentPath, fieldName),
+    };
+    this.validateFields(principal, SchemaValidator.PRINCIPAL_RULES, principalContext);
   }
 
   /**
