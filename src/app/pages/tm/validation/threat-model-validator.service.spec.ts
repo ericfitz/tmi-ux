@@ -20,7 +20,13 @@ import { createTypedMockLoggerService, type MockLoggerService } from '../../../.
 const createTestPrincipal = (
   email: string,
   type: 'user' | 'group' = 'user',
-): { principal_type: 'user' | 'group'; provider: string; provider_id: string; email: string; display_name: string } => ({
+): {
+  principal_type: 'user' | 'group';
+  provider: string;
+  provider_id: string;
+  email: string;
+  display_name: string;
+} => ({
   principal_type: type,
   provider: 'test',
   provider_id: email,

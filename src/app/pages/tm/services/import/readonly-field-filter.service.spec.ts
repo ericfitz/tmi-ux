@@ -26,7 +26,7 @@ describe('ReadonlyFieldFilterService', () => {
   });
 
   describe('filterThreatModel()', () => {
-    it('should filter read-only fields from threat model', () => {
+    it('should filter read-only fields from threat model but preserve owner', () => {
       const data = {
         id: 'tm-123',
         name: 'My Threat Model',
@@ -46,9 +46,11 @@ describe('ReadonlyFieldFilterService', () => {
 
       const { filtered, metadata } = service.filterThreatModel(data);
 
+      // owner is NOT read-only - it's a required writable field per OpenAPI ThreatModelBase
       expect(filtered).toEqual({
         name: 'My Threat Model',
         description: 'Test description',
+        owner: { provider: 'google', provider_id: 'google-123' },
       });
       expect(metadata).toBeUndefined();
     });
