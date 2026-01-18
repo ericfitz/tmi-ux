@@ -522,28 +522,32 @@ export class ThreatModelService implements OnDestroy {
     return this.importOrchestrator
       .orchestrateImport(data as Record<string, unknown>, {
         // Threat Model creation
+        // Per OpenAPI ThreatModelInput, only these fields are allowed:
+        // name (required), description, threat_model_framework, authorization, metadata, issue_uri
+        // For import, we exclude authorization (server sets current user as owner)
         createThreatModel: tmData => {
-          const { filtered } = this.fieldFilter.filterThreatModel(tmData);
-          // For import, also exclude owner and authorization - the server will set
-          // the current user as owner and create default authorization.
-          // These fields reference users/groups that may not exist in the target system.
-          const {
-            owner: _owner,
-            authorization: _auth,
-            ...importFiltered
-          } = filtered;
-          // Ensure required fields have defaults
-          const body = {
-            ...importFiltered,
-            name: tmData['name'] || 'Untitled',
-            description: (tmData['description'] as string) || '',
-            threat_model_framework:
-              tmData['threat_model_framework'] &&
-              typeof tmData['threat_model_framework'] === 'string' &&
-              tmData['threat_model_framework'].trim() !== ''
-                ? tmData['threat_model_framework']
-                : 'STRIDE',
+          const body: Record<string, unknown> = {
+            name: (tmData['name'] as string) || 'Untitled',
           };
+          // Add optional fields only if present
+          if (tmData['description'] && typeof tmData['description'] === 'string') {
+            body['description'] = tmData['description'];
+          }
+          if (
+            tmData['threat_model_framework'] &&
+            typeof tmData['threat_model_framework'] === 'string' &&
+            tmData['threat_model_framework'].trim() !== ''
+          ) {
+            body['threat_model_framework'] = tmData['threat_model_framework'];
+          } else {
+            body['threat_model_framework'] = 'STRIDE';
+          }
+          if (tmData['issue_uri'] && typeof tmData['issue_uri'] === 'string') {
+            body['issue_uri'] = tmData['issue_uri'];
+          }
+          // Note: authorization and metadata are intentionally not included
+          // - authorization: server sets current user as owner with default permissions
+          // - metadata: will be imported separately via metadata endpoint
           return this.apiService.post<ThreatModel>('threat_models', body);
         },
 
