@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
 import type { Metadata } from '../../models/threat-model.model';
+import { LoggerService } from '../../../../core/services/logger.service';
+import {
+  sanitizeCellsForApi,
+  sanitizeCellForApi,
+} from '../../../dfd/utils/cell-property-filter.util';
+import type { Cell } from '../../../../core/types/websocket-message.types';
 
 /**
  * Service for filtering read-only fields from objects before sending to the server.
@@ -10,6 +16,8 @@ import type { Metadata } from '../../models/threat-model.model';
   providedIn: 'root',
 })
 export class ReadonlyFieldFilterService {
+  constructor(private readonly _logger: LoggerService) {}
+
   /**
    * Read-only fields on ThreatModel that should be stripped before POST/PUT
    */
@@ -227,41 +235,38 @@ export class ReadonlyFieldFilterService {
 
   /**
    * Filters cell-specific fields to match API schema requirements.
-   * Handles differences between nodes and edges:
-   * - Edges: Ensures 'shape' field is set to 'edge'
-   * - Nodes: Keeps 'shape' field as-is (required for node type discrimination)
+   *
+   * Uses the centralized cell-property-filter utility which:
+   * - Removes known-transient properties (tools, children, visible, zIndex, markup, etc.)
+   * - Filters attrs to match NodeAttrs/EdgeAttrs schema
+   * - Warns about unknown properties being removed
+   * - Ensures edge shape is set correctly for discriminator
    *
    * @param cell The cell object to filter
    * @returns Filtered cell object ready for API submission
    */
   filterCell(cell: Record<string, unknown>): Record<string, unknown> {
-    const filtered = { ...cell };
-
-    // Determine if this is an edge based on type or shape
-    const isEdge = filtered['type'] === 'edge' || filtered['shape'] === 'edge';
-
-    if (isEdge) {
-      // Ensure edges have shape='edge' for discriminator validation
-      // The discriminator requires this field to route to Edge schema
-      filtered['shape'] = 'edge';
-    }
-
-    return filtered;
+    return sanitizeCellForApi(cell as Cell, this._logger) as Record<string, unknown>;
   }
 
   /**
-   * Filters an array of cells, applying cell-specific filtering to each.
+   * Filters an array of cells, applying API schema compliance filtering to each.
+   *
+   * This method:
+   * - Converts 'children' arrays to 'parent' references on child cells
+   * - Filters each cell to match the OpenAPI Cell/Node/Edge schemas
+   * - Logs warnings for unknown properties being removed
    *
    * @param cells Array of cells to filter
-   * @returns Array of filtered cells
+   * @returns Array of filtered cells ready for API submission
    */
   filterCells(cells: unknown[]): unknown[] {
-    return cells.map(cell => {
-      if (typeof cell === 'object' && cell !== null) {
-        return this.filterCell(cell as Record<string, unknown>);
-      }
-      return cell;
-    });
+    // Filter out non-object cells and cast to Cell[]
+    const validCells = cells.filter(
+      (cell): cell is Cell => typeof cell === 'object' && cell !== null,
+    );
+
+    return sanitizeCellsForApi(validCells, this._logger);
   }
 
   /**

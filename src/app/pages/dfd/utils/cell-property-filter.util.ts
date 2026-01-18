@@ -409,3 +409,339 @@ export function isPropertyExcludedFromTriggers(propertyPath: string): boolean {
 export function isPropertySanitized(propertyPath: string): boolean {
   return JSONPathMatcher.matchesAny(propertyPath, SANITIZE_FROM_CELLS);
 }
+
+// =============================================================================
+// API Schema Compliance Filtering
+// =============================================================================
+// These functions filter cells to match the OpenAPI schema requirements.
+// Unlike the persistence sanitization above, this is about strict schema compliance.
+
+/**
+ * Properties allowed on base Cell (per OpenAPI schema).
+ * Note: visible, markup, and zIndex are excluded because:
+ * - visible: auto-calculated by DFD editor
+ * - zIndex: auto-calculated by DFD editor
+ * - markup: potential security concern (allows arbitrary SVG/HTML)
+ */
+const CELL_ALLOWED_FIELDS = ['id', 'shape', 'data'] as const;
+
+/**
+ * Properties allowed on Node cells (extends Cell).
+ * Per OpenAPI schema: position, size, x, y, width, height, angle, attrs, ports, parent
+ */
+const NODE_ALLOWED_FIELDS = [
+  ...CELL_ALLOWED_FIELDS,
+  'position',
+  'size',
+  'x',
+  'y',
+  'width',
+  'height',
+  'angle',
+  'attrs',
+  'ports',
+  'parent',
+] as const;
+
+/**
+ * Properties allowed on Edge cells (extends Cell).
+ * Per OpenAPI schema: source, target, attrs, labels, vertices, router, connector, defaultLabel
+ */
+const EDGE_ALLOWED_FIELDS = [
+  ...CELL_ALLOWED_FIELDS,
+  'source',
+  'target',
+  'attrs',
+  'labels',
+  'vertices',
+  'router',
+  'connector',
+  'defaultLabel',
+] as const;
+
+/**
+ * Properties that are known-transient and should be silently filtered without warning.
+ * These are expected in X6 exports but not part of the API schema.
+ */
+const KNOWN_TRANSIENT_FIELDS = [
+  'children', // API uses 'parent' on child nodes, not 'children' on parent
+  'tools', // X6 runtime UI state
+  'type', // X6 internal, redundant with 'shape'
+  'selected', // UI state
+  'highlighted', // UI state
+  'visible', // auto-calculated by DFD editor
+  'zIndex', // auto-calculated by DFD editor
+  'markup', // potential security concern (allows arbitrary SVG/HTML)
+] as const;
+
+/**
+ * Allowed properties within NodeAttrs per OpenAPI schema.
+ * NodeAttrs has additionalProperties: false
+ */
+const NODE_ATTRS_SCHEMA: Record<string, readonly string[]> = {
+  body: ['fill', 'stroke', 'strokeWidth', 'strokeDasharray'],
+  text: ['text', 'fontSize', 'fill', 'fontFamily'],
+};
+
+/**
+ * Allowed properties within EdgeAttrs per OpenAPI schema.
+ * EdgeAttrs has additionalProperties: false
+ */
+const EDGE_ATTRS_SCHEMA: Record<string, readonly string[] | Record<string, readonly string[]>> = {
+  line: {
+    _direct: ['stroke', 'strokeWidth', 'strokeDasharray'],
+    targetMarker: ['name', 'size'],
+    sourceMarker: ['name', 'size'],
+  },
+};
+
+/**
+ * Logger interface for warning about unknown properties.
+ */
+export interface ApiSanitizationLogger {
+  warn(message: string, context?: Record<string, unknown>): void;
+}
+
+/**
+ * Filter an attrs object to match NodeAttrs schema.
+ * Removes any properties not in the schema.
+ */
+function filterNodeAttrs(
+  attrs: Record<string, unknown>,
+  logger?: ApiSanitizationLogger,
+  cellId?: string,
+): Record<string, unknown> {
+  const filtered: Record<string, unknown> = {};
+
+  for (const [selectorKey, selectorValue] of Object.entries(attrs)) {
+    if (!(selectorKey in NODE_ATTRS_SCHEMA)) {
+      // Unknown selector - log warning
+      if (logger) {
+        logger.warn(`Unknown attrs selector '${selectorKey}' removed from node`, {
+          cellId,
+          selector: selectorKey,
+        });
+      }
+      continue;
+    }
+
+    if (typeof selectorValue !== 'object' || selectorValue === null) {
+      continue;
+    }
+
+    const allowedProps = NODE_ATTRS_SCHEMA[selectorKey];
+    const filteredSelector: Record<string, unknown> = {};
+
+    for (const [propKey, propValue] of Object.entries(selectorValue as Record<string, unknown>)) {
+      if (allowedProps.includes(propKey)) {
+        filteredSelector[propKey] = propValue;
+      } else if (propKey !== 'filter') {
+        // 'filter' is silently removed (known transient), others get warnings
+        if (logger) {
+          logger.warn(`Unknown attrs property '${selectorKey}.${propKey}' removed from node`, {
+            cellId,
+            selector: selectorKey,
+            property: propKey,
+          });
+        }
+      }
+    }
+
+    if (Object.keys(filteredSelector).length > 0) {
+      filtered[selectorKey] = filteredSelector;
+    }
+  }
+
+  return filtered;
+}
+
+/**
+ * Filter an attrs object to match EdgeAttrs schema.
+ * Removes any properties not in the schema.
+ */
+function filterEdgeAttrs(
+  attrs: Record<string, unknown>,
+  logger?: ApiSanitizationLogger,
+  cellId?: string,
+): Record<string, unknown> {
+  const filtered: Record<string, unknown> = {};
+
+  for (const [selectorKey, selectorValue] of Object.entries(attrs)) {
+    if (selectorKey !== 'line') {
+      // Unknown selector - log warning
+      if (logger) {
+        logger.warn(`Unknown attrs selector '${selectorKey}' removed from edge`, {
+          cellId,
+          selector: selectorKey,
+        });
+      }
+      continue;
+    }
+
+    if (typeof selectorValue !== 'object' || selectorValue === null) {
+      continue;
+    }
+
+    const lineSchema = EDGE_ATTRS_SCHEMA['line'] as Record<
+      string,
+      readonly string[] | Record<string, readonly string[]>
+    >;
+    const directProps = lineSchema['_direct'] as readonly string[];
+    const filteredLine: Record<string, unknown> = {};
+
+    for (const [propKey, propValue] of Object.entries(selectorValue as Record<string, unknown>)) {
+      if (directProps.includes(propKey)) {
+        filteredLine[propKey] = propValue;
+      } else if (propKey === 'targetMarker' || propKey === 'sourceMarker') {
+        // Handle marker objects
+        if (typeof propValue === 'object' && propValue !== null) {
+          const markerAllowed = lineSchema[propKey] as readonly string[];
+          const filteredMarker: Record<string, unknown> = {};
+
+          for (const [markerKey, markerValue] of Object.entries(
+            propValue as Record<string, unknown>,
+          )) {
+            if (markerAllowed.includes(markerKey)) {
+              filteredMarker[markerKey] = markerValue;
+            } else if (logger) {
+              logger.warn(
+                `Unknown marker property '${propKey}.${markerKey}' removed from edge attrs`,
+                { cellId, property: `${propKey}.${markerKey}` },
+              );
+            }
+          }
+
+          if (Object.keys(filteredMarker).length > 0) {
+            filteredLine[propKey] = filteredMarker;
+          }
+        }
+      } else if (propKey !== 'filter') {
+        // 'filter' is silently removed (known transient), others get warnings
+        if (logger) {
+          logger.warn(`Unknown attrs property 'line.${propKey}' removed from edge`, {
+            cellId,
+            property: propKey,
+          });
+        }
+      }
+    }
+
+    if (Object.keys(filteredLine).length > 0) {
+      filtered['line'] = filteredLine;
+    }
+  }
+
+  return filtered;
+}
+
+/**
+ * Sanitize a single cell for API submission.
+ *
+ * This function:
+ * 1. Filters top-level properties to only those allowed by the schema
+ * 2. Silently removes known-transient properties (tools, type, children, etc.)
+ * 3. Logs warnings for unknown properties being removed
+ * 4. Deep-filters attrs to match NodeAttrs/EdgeAttrs schema
+ *
+ * @param cell The cell to sanitize
+ * @param logger Optional logger for warning about unknown properties
+ * @returns Sanitized cell ready for API submission
+ */
+export function sanitizeCellForApi(cell: Cell, logger?: ApiSanitizationLogger): Cell {
+  const cellId = cell.id;
+  const isEdge = cell.shape === 'edge';
+  const allowedFields = isEdge ? EDGE_ALLOWED_FIELDS : NODE_ALLOWED_FIELDS;
+
+  const sanitized: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(cell)) {
+    // Check if this is an allowed field
+    if ((allowedFields as readonly string[]).includes(key)) {
+      // Special handling for attrs - deep filter
+      if (key === 'attrs' && typeof value === 'object' && value !== null) {
+        const filteredAttrs = isEdge
+          ? filterEdgeAttrs(value as Record<string, unknown>, logger, cellId)
+          : filterNodeAttrs(value as Record<string, unknown>, logger, cellId);
+
+        if (Object.keys(filteredAttrs).length > 0) {
+          sanitized[key] = filteredAttrs;
+        }
+      } else {
+        sanitized[key] = value;
+      }
+    } else if ((KNOWN_TRANSIENT_FIELDS as readonly string[]).includes(key)) {
+      // Silently skip known transient fields
+      continue;
+    } else {
+      // Unknown field - log warning
+      if (logger) {
+        logger.warn(`Unknown property '${key}' removed from ${isEdge ? 'edge' : 'node'}`, {
+          cellId,
+          property: key,
+        });
+      }
+    }
+  }
+
+  // Ensure edge shape is set correctly for discriminator
+  if (isEdge) {
+    sanitized['shape'] = 'edge';
+  }
+
+  return sanitized as Cell;
+}
+
+/**
+ * Convert children arrays to parent references.
+ *
+ * X6 may export cells with a 'children' array on parent nodes.
+ * The API expects child nodes to have a 'parent' reference instead.
+ * This function builds a parent lookup and sets parent references on child cells.
+ *
+ * @param cells Array of cells to process
+ * @returns Cells with children converted to parent references
+ */
+function convertChildrenToParent(cells: Cell[]): Cell[] {
+  // Build a map of cell ID -> parent ID from children arrays
+  const parentMap = new Map<string, string>();
+
+  for (const cell of cells) {
+    const children = (cell as Record<string, unknown>)['children'] as string[] | undefined;
+    if (Array.isArray(children)) {
+      for (const childId of children) {
+        if (typeof childId === 'string') {
+          parentMap.set(childId, cell.id);
+        }
+      }
+    }
+  }
+
+  // Apply parent references to child cells
+  return cells.map(cell => {
+    const parentId = parentMap.get(cell.id);
+    if (parentId && !cell['parent']) {
+      // Only set parent if not already set
+      return { ...cell, parent: parentId };
+    }
+    return cell;
+  });
+}
+
+/**
+ * Sanitize an array of cells for API submission with children-to-parent conversion.
+ *
+ * This function:
+ * 1. Converts 'children' arrays on parent cells to 'parent' references on child cells
+ * 2. Applies sanitizeCellForApi() to each cell
+ *
+ * @param cells Array of cells to sanitize
+ * @param logger Optional logger for warning about unknown properties
+ * @returns Array of sanitized cells ready for API submission
+ */
+export function sanitizeCellsForApi(cells: Cell[], logger?: ApiSanitizationLogger): Cell[] {
+  // First convert children to parent references
+  const withParentRefs = convertChildrenToParent(cells);
+
+  // Then sanitize each cell
+  return withParentRefs.map(cell => sanitizeCellForApi(cell, logger));
+}

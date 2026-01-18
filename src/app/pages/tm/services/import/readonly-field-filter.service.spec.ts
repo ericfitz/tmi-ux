@@ -5,18 +5,24 @@
 // Execute this test only using:  "pnpm run test" followed by the relative path to this test file from the project root.
 // Do not disable or skip failing tests, ask the user what to do
 
-import '@angular/compiler';
-
 import { vi, expect, beforeEach, describe, it } from 'vitest';
-import { ReadonlyFieldFilterService } from './readonly-field-filter.service';
 import type { Metadata } from '../../models/threat-model.model';
+import { ReadonlyFieldFilterService } from './readonly-field-filter.service';
+import type { LoggerService } from '../../../../core/services/logger.service';
 
 describe('ReadonlyFieldFilterService', () => {
   let service: ReadonlyFieldFilterService;
+  let mockLogger: LoggerService;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    service = new ReadonlyFieldFilterService();
+    mockLogger = {
+      warn: vi.fn(),
+      debug: vi.fn(),
+      info: vi.fn(),
+      error: vi.fn(),
+    } as unknown as LoggerService;
+    service = new ReadonlyFieldFilterService(mockLogger);
   });
 
   describe('Service Initialization', () => {
@@ -467,19 +473,6 @@ describe('ReadonlyFieldFilterService', () => {
     it('should set shape to "edge" for edge cells', () => {
       const edgeCell = {
         id: 'edge-1',
-        type: 'edge',
-        source: { cell: 'node-1' },
-        target: { cell: 'node-2' },
-      };
-
-      const filtered = service.filterCell(edgeCell);
-
-      expect(filtered.shape).toBe('edge');
-    });
-
-    it('should set shape to "edge" when shape is already "edge"', () => {
-      const edgeCell = {
-        id: 'edge-1',
         shape: 'edge',
         source: { cell: 'node-1' },
         target: { cell: 'node-2' },
@@ -494,7 +487,7 @@ describe('ReadonlyFieldFilterService', () => {
       const nodeCell = {
         id: 'node-1',
         shape: 'process',
-        type: 'node',
+        position: { x: 100, y: 200 },
       };
 
       const filtered = service.filterCell(nodeCell);
@@ -502,13 +495,43 @@ describe('ReadonlyFieldFilterService', () => {
       expect(filtered.shape).toBe('process');
     });
 
-    it('should preserve all other cell properties', () => {
+    it('should remove known transient properties', () => {
+      const cell = {
+        id: 'node-1',
+        shape: 'process',
+        children: ['child-1'],
+        tools: [{ name: 'button' }],
+        type: 'node',
+        visible: true,
+        zIndex: 10,
+        markup: [{ tagName: 'rect' }],
+      };
+
+      const filtered = service.filterCell(cell);
+
+      expect(filtered.id).toBe('node-1');
+      expect(filtered.shape).toBe('process');
+      expect(filtered['children']).toBeUndefined();
+      expect(filtered['tools']).toBeUndefined();
+      expect(filtered['type']).toBeUndefined();
+      expect(filtered['visible']).toBeUndefined();
+      expect(filtered['zIndex']).toBeUndefined();
+      expect(filtered['markup']).toBeUndefined();
+    });
+
+    it('should filter edge attrs to match EdgeAttrs schema', () => {
       const cell = {
         id: 'edge-1',
-        type: 'edge',
+        shape: 'edge',
         source: { cell: 'node-1', port: 'out' },
         target: { cell: 'node-2', port: 'in' },
-        attrs: { line: { stroke: '#000' } },
+        attrs: {
+          line: {
+            stroke: '#000',
+            strokeWidth: 2,
+            filter: 'blur(5px)', // Known transient - should be removed
+          },
+        },
       };
 
       const filtered = service.filterCell(cell);
@@ -516,41 +539,91 @@ describe('ReadonlyFieldFilterService', () => {
       expect(filtered.id).toBe('edge-1');
       expect(filtered.source).toEqual({ cell: 'node-1', port: 'out' });
       expect(filtered.target).toEqual({ cell: 'node-2', port: 'in' });
-      expect(filtered.attrs).toEqual({ line: { stroke: '#000' } });
+      expect(filtered.attrs).toEqual({ line: { stroke: '#000', strokeWidth: 2 } });
+    });
+
+    it('should filter node attrs to match NodeAttrs schema', () => {
+      const cell = {
+        id: 'node-1',
+        shape: 'process',
+        attrs: {
+          body: {
+            fill: '#fff',
+            stroke: '#333',
+            filter: 'blur(5px)', // Known transient - should be removed
+          },
+          text: {
+            text: 'Process',
+            fontSize: 14,
+          },
+        },
+      };
+
+      const filtered = service.filterCell(cell);
+
+      expect(filtered.attrs).toEqual({
+        body: { fill: '#fff', stroke: '#333' },
+        text: { text: 'Process', fontSize: 14 },
+      });
     });
   });
 
   describe('filterCells()', () => {
     it('should filter array of cells', () => {
       const cells = [
-        { id: 'edge-1', type: 'edge' },
+        { id: 'edge-1', shape: 'edge', source: { cell: 'n1' }, target: { cell: 'n2' } },
         { id: 'node-1', shape: 'process' },
-        { id: 'edge-2', shape: 'edge' },
+        { id: 'edge-2', shape: 'edge', source: { cell: 'n3' }, target: { cell: 'n4' } },
       ];
 
       const filtered = service.filterCells(cells);
 
       expect(filtered).toHaveLength(3);
-      expect(filtered[0]).toEqual({ id: 'edge-1', type: 'edge', shape: 'edge' });
-      expect(filtered[1]).toEqual({ id: 'node-1', shape: 'process' });
-      expect(filtered[2]).toEqual({ id: 'edge-2', shape: 'edge' });
+      expect((filtered[0] as any).shape).toBe('edge');
+      expect((filtered[1] as any).shape).toBe('process');
+      expect((filtered[2] as any).shape).toBe('edge');
     });
 
-    it('should handle non-object items in array', () => {
-      const cells = [{ id: 'edge-1', type: 'edge' }, null, 'string-value'];
+    it('should convert children arrays to parent references', () => {
+      const cells = [
+        { id: 'boundary-1', shape: 'security-boundary', children: ['node-1', 'node-2'] },
+        { id: 'node-1', shape: 'process' },
+        { id: 'node-2', shape: 'store' },
+      ];
 
       const filtered = service.filterCells(cells);
 
-      expect(filtered).toHaveLength(3);
-      expect(filtered[0]).toEqual({ id: 'edge-1', type: 'edge', shape: 'edge' });
-      expect(filtered[1]).toBeNull();
-      expect(filtered[2]).toBe('string-value');
+      // Boundary should not have children
+      expect((filtered[0] as any).children).toBeUndefined();
+
+      // Child nodes should have parent set
+      expect((filtered[1] as any).parent).toBe('boundary-1');
+      expect((filtered[2] as any).parent).toBe('boundary-1');
+    });
+
+    it('should filter out non-object items from array', () => {
+      const cells = [{ id: 'node-1', shape: 'process' }, null, 'string-value'];
+
+      const filtered = service.filterCells(cells);
+
+      // Only valid object cells are kept
+      expect(filtered).toHaveLength(1);
+      expect((filtered[0] as any).id).toBe('node-1');
     });
 
     it('should handle empty array', () => {
       const filtered = service.filterCells([]);
 
       expect(filtered).toEqual([]);
+    });
+
+    it('should warn about unknown properties', () => {
+      const cells = [{ id: 'node-1', shape: 'process', unknownProp: 'value' }];
+
+      service.filterCells(cells);
+
+      expect(mockLogger.warn).toHaveBeenCalled();
+      expect(mockLogger.warn.mock.calls[0][0]).toContain('unknownProp');
     });
   });
 
