@@ -475,6 +475,27 @@ const KNOWN_TRANSIENT_FIELDS = [
 ] as const;
 
 /**
+ * Shape values that indicate an X6 Edge.
+ * - 'flow' is the canonical TMI shape for data flows (preferred)
+ * - 'edge' is the legacy X6 shape (supported for backwards compatibility)
+ */
+const EDGE_SHAPES = ['edge', 'flow'] as const;
+
+/**
+ * The canonical shape value for edges in TMI.
+ * All edges should use this shape; 'edge' is only for backwards compatibility.
+ */
+export const CANONICAL_EDGE_SHAPE = 'flow' as const;
+
+/**
+ * Check if a shape value represents an edge (X6 Edge).
+ * Returns true for both 'flow' (canonical) and 'edge' (legacy).
+ */
+export function isEdgeShape(shape: string | undefined): boolean {
+  return shape !== undefined && (EDGE_SHAPES as readonly string[]).includes(shape);
+}
+
+/**
  * Allowed properties within NodeAttrs per OpenAPI schema.
  * NodeAttrs has additionalProperties: false
  */
@@ -649,7 +670,7 @@ function filterEdgeAttrs(
  */
 export function sanitizeCellForApi(cell: Cell, logger?: ApiSanitizationLogger): Cell {
   const cellId = cell.id;
-  const isEdge = cell.shape === 'edge';
+  const isEdge = isEdgeShape(cell.shape);
   const allowedFields = isEdge ? EDGE_ALLOWED_FIELDS : NODE_ALLOWED_FIELDS;
 
   const sanitized: Record<string, unknown> = {};
@@ -683,9 +704,9 @@ export function sanitizeCellForApi(cell: Cell, logger?: ApiSanitizationLogger): 
     }
   }
 
-  // Ensure edge shape is set correctly for discriminator
+  // Normalize edge shape to canonical 'flow' (convert legacy 'edge' to 'flow')
   if (isEdge) {
-    sanitized['shape'] = 'edge';
+    sanitized['shape'] = CANONICAL_EDGE_SHAPE;
   }
 
   return sanitized as Cell;
@@ -744,4 +765,29 @@ export function sanitizeCellsForApi(cells: Cell[], logger?: ApiSanitizationLogge
 
   // Then sanitize each cell
   return withParentRefs.map(cell => sanitizeCellForApi(cell, logger));
+}
+
+/**
+ * Normalize a cell's edge shape from legacy 'edge' to canonical 'flow'.
+ * Use this when receiving cells from the server or during import.
+ *
+ * @param cell The cell to normalize
+ * @returns Cell with normalized shape (edge → flow)
+ */
+export function normalizeEdgeShape<T extends { shape?: string }>(cell: T): T {
+  if (cell.shape === 'edge') {
+    return { ...cell, shape: CANONICAL_EDGE_SHAPE };
+  }
+  return cell;
+}
+
+/**
+ * Normalize edge shapes for an array of cells.
+ * Converts legacy 'edge' shape to canonical 'flow'.
+ *
+ * @param cells Array of cells to normalize
+ * @returns Array of cells with normalized shapes
+ */
+export function normalizeCellShapes<T extends { shape?: string }>(cells: T[]): T[] {
+  return cells.map(normalizeEdgeShape);
 }

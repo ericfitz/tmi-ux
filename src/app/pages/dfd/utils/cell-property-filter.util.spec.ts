@@ -13,6 +13,10 @@ import {
   isPropertySanitized,
   sanitizeCellForApi,
   sanitizeCellsForApi,
+  isEdgeShape,
+  CANONICAL_EDGE_SHAPE,
+  normalizeEdgeShape,
+  normalizeCellShapes,
   EXCLUDE_FROM_HISTORY_TRIGGERS,
   SANITIZE_FROM_CELLS,
 } from './cell-property-filter.util';
@@ -696,7 +700,7 @@ describe('Cell Property Filter Utility', () => {
         const sanitized = sanitizeCellForApi(edge);
 
         expect(sanitized.id).toBe('edge-1');
-        expect(sanitized.shape).toBe('edge');
+        expect(sanitized.shape).toBe('flow'); // Normalized to canonical 'flow'
         expect(sanitized.source).toEqual({ cell: 'node-1', port: 'port-out' });
         expect(sanitized.target).toEqual({ cell: 'node-2', port: 'port-in' });
         expect((sanitized as any).labels).toEqual([
@@ -707,17 +711,30 @@ describe('Cell Property Filter Utility', () => {
         expect((sanitized as any).connector).toEqual({ name: 'rounded' });
       });
 
-      it('should ensure edge shape is set to "edge"', () => {
+      it('should normalize edge shape to canonical "flow"', () => {
         const edge: Cell = {
           id: 'edge-1',
-          shape: 'edge',
+          shape: 'edge', // Legacy shape
           source: { cell: 'node-1' },
           target: { cell: 'node-2' },
         };
 
         const sanitized = sanitizeCellForApi(edge);
 
-        expect(sanitized.shape).toBe('edge');
+        expect(sanitized.shape).toBe('flow'); // Normalized to canonical shape
+      });
+
+      it('should preserve "flow" shape for edges', () => {
+        const edge: Cell = {
+          id: 'edge-1',
+          shape: 'flow', // Canonical shape
+          source: { cell: 'node-1' },
+          target: { cell: 'node-2' },
+        };
+
+        const sanitized = sanitizeCellForApi(edge);
+
+        expect(sanitized.shape).toBe('flow');
       });
 
       it('should filter edge attrs to match EdgeAttrs schema', () => {
@@ -825,7 +842,7 @@ describe('Cell Property Filter Utility', () => {
       expect((sanitized[0] as any).zIndex).toBeUndefined();
       expect((sanitized[0] as any).tools).toBeUndefined();
       expect((sanitized[1] as any).children).toBeUndefined();
-      expect(sanitized[1].shape).toBe('edge');
+      expect(sanitized[1].shape).toBe('flow'); // Normalized from 'edge' to 'flow'
     });
 
     it('should convert children arrays to parent references', () => {
@@ -903,6 +920,102 @@ describe('Cell Property Filter Utility', () => {
 
       expect(warnings.length).toBeGreaterThan(0);
       expect(warnings.some(w => w.message.includes('unknownProp'))).toBe(true);
+    });
+  });
+
+  describe('Edge Shape Utilities', () => {
+    describe('CANONICAL_EDGE_SHAPE', () => {
+      it('should be "flow"', () => {
+        expect(CANONICAL_EDGE_SHAPE).toBe('flow');
+      });
+    });
+
+    describe('isEdgeShape()', () => {
+      it('should return true for "edge" (legacy)', () => {
+        expect(isEdgeShape('edge')).toBe(true);
+      });
+
+      it('should return true for "flow" (canonical)', () => {
+        expect(isEdgeShape('flow')).toBe(true);
+      });
+
+      it('should return false for node shapes', () => {
+        expect(isEdgeShape('process')).toBe(false);
+        expect(isEdgeShape('actor')).toBe(false);
+        expect(isEdgeShape('store')).toBe(false);
+        expect(isEdgeShape('security-boundary')).toBe(false);
+        expect(isEdgeShape('text-box')).toBe(false);
+      });
+
+      it('should return false for undefined', () => {
+        expect(isEdgeShape(undefined)).toBe(false);
+      });
+
+      it('should return false for empty string', () => {
+        expect(isEdgeShape('')).toBe(false);
+      });
+    });
+
+    describe('normalizeEdgeShape()', () => {
+      it('should convert "edge" to "flow"', () => {
+        const cell = { id: '1', shape: 'edge' };
+        const normalized = normalizeEdgeShape(cell);
+        expect(normalized.shape).toBe('flow');
+      });
+
+      it('should preserve "flow" shape', () => {
+        const cell = { id: '1', shape: 'flow' };
+        const normalized = normalizeEdgeShape(cell);
+        expect(normalized.shape).toBe('flow');
+      });
+
+      it('should not modify node shapes', () => {
+        const cell = { id: '1', shape: 'process' };
+        const normalized = normalizeEdgeShape(cell);
+        expect(normalized.shape).toBe('process');
+        expect(normalized).toBe(cell); // Same reference - not copied
+      });
+
+      it('should preserve other cell properties', () => {
+        const cell = { id: '1', shape: 'edge', source: { cell: 'a' }, target: { cell: 'b' } };
+        const normalized = normalizeEdgeShape(cell);
+        expect(normalized.id).toBe('1');
+        expect(normalized.source).toEqual({ cell: 'a' });
+        expect(normalized.target).toEqual({ cell: 'b' });
+      });
+    });
+
+    describe('normalizeCellShapes()', () => {
+      it('should normalize all edge shapes in an array', () => {
+        const cells = [
+          { id: '1', shape: 'edge' },
+          { id: '2', shape: 'process' },
+          { id: '3', shape: 'flow' },
+          { id: '4', shape: 'edge' },
+        ];
+
+        const normalized = normalizeCellShapes(cells);
+
+        expect(normalized[0].shape).toBe('flow');
+        expect(normalized[1].shape).toBe('process');
+        expect(normalized[2].shape).toBe('flow');
+        expect(normalized[3].shape).toBe('flow');
+      });
+
+      it('should handle empty array', () => {
+        const normalized = normalizeCellShapes([]);
+        expect(normalized).toEqual([]);
+      });
+
+      it('should not mutate original array', () => {
+        const cells = [{ id: '1', shape: 'edge' }];
+        const original = cells[0];
+
+        normalizeCellShapes(cells);
+
+        expect(cells[0]).toBe(original);
+        expect(cells[0].shape).toBe('edge');
+      });
     });
   });
 });

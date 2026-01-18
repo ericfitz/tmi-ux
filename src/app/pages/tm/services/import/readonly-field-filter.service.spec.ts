@@ -470,17 +470,17 @@ describe('ReadonlyFieldFilterService', () => {
   });
 
   describe('filterCell()', () => {
-    it('should set shape to "edge" for edge cells', () => {
+    it('should normalize edge shape to "flow"', () => {
       const edgeCell = {
         id: 'edge-1',
-        shape: 'edge',
+        shape: 'edge', // Legacy shape
         source: { cell: 'node-1' },
         target: { cell: 'node-2' },
       };
 
       const filtered = service.filterCell(edgeCell);
 
-      expect(filtered.shape).toBe('edge');
+      expect(filtered.shape).toBe('flow'); // Normalized to canonical 'flow'
     });
 
     it('should preserve shape for node cells', () => {
@@ -569,7 +569,7 @@ describe('ReadonlyFieldFilterService', () => {
   });
 
   describe('filterCells()', () => {
-    it('should filter array of cells', () => {
+    it('should filter array of cells and normalize edge shapes', () => {
       const cells = [
         { id: 'edge-1', shape: 'edge', source: { cell: 'n1' }, target: { cell: 'n2' } },
         { id: 'node-1', shape: 'process' },
@@ -579,9 +579,9 @@ describe('ReadonlyFieldFilterService', () => {
       const filtered = service.filterCells(cells);
 
       expect(filtered).toHaveLength(3);
-      expect((filtered[0] as any).shape).toBe('edge');
+      expect((filtered[0] as any).shape).toBe('flow'); // Normalized from 'edge'
       expect((filtered[1] as any).shape).toBe('process');
-      expect((filtered[2] as any).shape).toBe('edge');
+      expect((filtered[2] as any).shape).toBe('flow'); // Normalized from 'edge'
     });
 
     it('should convert children arrays to parent references', () => {
