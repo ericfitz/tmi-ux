@@ -4,7 +4,9 @@
       <div class="callback-content">
         <mat-spinner diameter="48"></mat-spinner>
         @if (providerName) {
-          <p class="signing-in-message">{{ 'login.signingInWith' | transloco: { provider: providerName } }}</p>
+          <p class="signing-in-message">
+            {{ 'login.signingInWith' | transloco: { provider: providerName } }}
+          </p>
         } @else {
           <p class="signing-in-message">{{ 'login.signingIn' | transloco }}</p>
         }

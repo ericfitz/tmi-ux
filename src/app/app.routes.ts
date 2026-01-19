@@ -39,9 +39,9 @@ export const routes: Routes = [
   {
     path: 'oauth2/callback',
     loadComponent: () =>
-      import(/* webpackChunkName: "login" */ './auth/components/login/login.component').then(
-        c => c.LoginComponent,
-      ),
+      import(
+        /* webpackChunkName: "auth-callback" */ './auth/components/auth-callback/auth-callback.component'
+      ).then(c => c.AuthCallbackComponent),
   },
   {
     path: 'unauthorized',

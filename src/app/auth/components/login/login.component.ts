@@ -8,27 +8,10 @@ import { MatCardModule } from '@angular/material/card';
 import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../services/auth.service';
 import { LoggerService } from '../../../core/services/logger.service';
-import {
-  AuthError,
-  OAuthResponse,
-  OAuthProviderInfo,
-  SAMLProviderInfo,
-} from '../../models/auth.models';
+import { AuthError, OAuthProviderInfo, SAMLProviderInfo } from '../../models/auth.models';
 import { take } from 'rxjs';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-
-interface LoginFragmentParams {
-  returnUrl?: string;
-  code?: string;
-  state?: string;
-  access_token?: string;
-  refresh_token?: string;
-  expires_in?: string;
-  token_type?: string;
-  error?: string;
-  error_description?: string;
-}
 
 @Component({
   selector: 'app-login',
@@ -61,95 +44,25 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // this.logger.info('LoginComponent initialized');
+    // Check for error from callback redirect (stored in sessionStorage)
+    const storedError = sessionStorage.getItem('auth_error');
+    if (storedError) {
+      try {
+        const authError = JSON.parse(storedError) as AuthError;
+        this.error = authError.message;
+        this.logger.error('Login error from callback:', authError);
+      } catch {
+        this.error = 'Authentication failed';
+      }
+      sessionStorage.removeItem('auth_error');
+    }
 
     // Load available providers from TMI server
     this.loadProviders();
 
-    // Check query params FIRST for PKCE flow (RFC 7636 compliant)
-    // Then fall back to fragments for backward compatibility
+    // Get returnUrl from query params
     this.route.queryParams.pipe(take(1)).subscribe(queryParams => {
-      const code = queryParams['code'] as string | undefined;
-      const state = queryParams['state'] as string | undefined;
-      const error = queryParams['error'] as string | undefined;
-      const errorDescription = queryParams['error_description'] as string | undefined;
       this.returnUrl = (queryParams['returnUrl'] as string | undefined) || '/dashboard';
-
-      // PKCE flow: authorization code in query params
-      if (code || error) {
-        if (error) {
-          this.handleLoginError({
-            code: error,
-            message: errorDescription || 'Authentication failed',
-            retryable: true,
-          });
-        } else if (code) {
-          // this.logger.info('Detected OAuth authorization code callback (PKCE)', { code, state });
-          this.handleOAuthCallback({ code, state });
-        }
-        // Clear query params from URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-        return; // PKCE flow handled, skip fragment parsing
-      }
-
-      // Fall back to fragment parsing for backward compatibility (direct token delivery)
-      this.route.fragment.pipe(take(1)).subscribe((fragment: string | null) => {
-        // this.logger.debug('LoginComponent received fragment', fragment);
-
-        // Parse fragment into key-value pairs
-        const params: LoginFragmentParams = {};
-        if (fragment) {
-          const fragmentPairs = fragment.split('&');
-          for (const pair of fragmentPairs) {
-            const [key, value] = pair.split('=');
-            if (key && value !== undefined) {
-              params[key as keyof LoginFragmentParams] = decodeURIComponent(value);
-            }
-          }
-        }
-
-        // Update returnUrl if provided in fragment
-        if (params.returnUrl) {
-          this.returnUrl = params.returnUrl;
-        }
-
-        const fragmentCode = params.code;
-        const fragmentState = params.state;
-        const accessToken = params.access_token;
-        const refreshToken = params.refresh_token;
-        const expiresIn = params.expires_in;
-        const fragmentError = params.error;
-        const fragmentErrorDescription = params.error_description;
-
-        // Handle TMI OAuth callback with tokens (direct token delivery)
-        if (accessToken) {
-          this.handleOAuthCallback({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-            expires_in: expiresIn ? parseInt(expiresIn) : undefined,
-            state: fragmentState,
-          });
-          // Clear fragment from URL to prevent token exposure (security best practice)
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-        // Handle authorization code flow callback (fragment-based, legacy)
-        else if (fragmentCode && fragmentState) {
-          // this.logger.info('Detected OAuth authorization code callback (fragment)', { code: fragmentCode, state: fragmentState });
-          this.handleOAuthCallback({ code: fragmentCode, state: fragmentState });
-          // Clear fragment from URL
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-        // Handle OAuth errors in fragment
-        else if (fragmentError) {
-          this.handleLoginError({
-            code: fragmentError,
-            message: fragmentErrorDescription || 'Authentication failed',
-            retryable: true,
-          });
-          // Clear fragment even on error to prevent information leakage
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-      });
     });
   }
 
@@ -205,22 +118,42 @@ export class LoginComponent implements OnInit {
 
   /**
    * Initiate OAuth login with specified provider
+   * Navigates to the interstitial page which will handle the OAuth flow
    */
   loginWithOAuth(providerId: string): void {
-    this.isLoading = true;
-    this.error = null;
+    const provider = this.oauthProviders.find(p => p.id === providerId);
+    if (!provider) return;
 
-    this.authService.initiateLogin(providerId, this.returnUrl || undefined);
+    // Navigate to interstitial which will initiate the OAuth flow
+    void this.router.navigate(['/oauth2/callback'], {
+      queryParams: {
+        action: 'login',
+        providerId: provider.id,
+        providerName: provider.name,
+        providerType: 'oauth',
+        returnUrl: this.returnUrl || '/dashboard',
+      },
+    });
   }
 
   /**
    * Initiate SAML login with specified provider
+   * Navigates to the interstitial page which will handle the SAML flow
    */
   loginWithSAML(providerId: string): void {
-    this.isLoading = true;
-    this.error = null;
+    const provider = this.samlProviders.find(p => p.id === providerId);
+    if (!provider) return;
 
-    this.authService.initiateSAMLLogin(providerId, this.returnUrl || undefined);
+    // Navigate to interstitial which will initiate the SAML flow
+    void this.router.navigate(['/oauth2/callback'], {
+      queryParams: {
+        action: 'login',
+        providerId: provider.id,
+        providerName: provider.name,
+        providerType: 'saml',
+        returnUrl: this.returnUrl || '/dashboard',
+      },
+    });
   }
 
   /**
@@ -228,42 +161,6 @@ export class LoginComponent implements OnInit {
    */
   cancel(): void {
     void this.router.navigate(['/']);
-  }
-
-  private handleOAuthCallback(response: OAuthResponse): void {
-    this.isLoading = true;
-    this.authService.handleOAuthCallback(response).subscribe({
-      next: success => {
-        this.isLoading = false;
-        if (success) {
-          // this.logger.info('OAuth callback successful');
-          // Navigation is now handled by AuthService which has the decoded returnUrl
-        } else {
-          this.handleLoginError({
-            code: 'oauth_failed',
-            message: 'login.oauthFailed',
-            retryable: true,
-          });
-        }
-      },
-      error: (err: unknown) => {
-        this.isLoading = false;
-        const authError: AuthError = {
-          code: 'oauth_error',
-          message: err instanceof Error ? err.message : 'login.unexpectedError',
-          retryable: true,
-        };
-        this.authService.handleAuthError(authError); // Propagate error through auth service
-        this.handleLoginError(authError);
-      },
-    });
-  }
-
-  private handleLoginError(authError: AuthError): void {
-    this.isLoading = false;
-    this.error = authError.message;
-    this.logger.error('Login error:', authError);
-    this.authService.handleAuthError(authError); // Propagate error through auth service
   }
 
   /**

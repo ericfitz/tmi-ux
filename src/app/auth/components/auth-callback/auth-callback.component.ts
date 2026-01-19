@@ -107,7 +107,9 @@ export class AuthCallbackComponent implements OnInit {
         }
 
         // No recognized params - redirect to login
-        this.logger.warn('AuthCallbackComponent: No valid callback parameters found, redirecting to login');
+        this.logger.warn(
+          'AuthCallbackComponent: No valid callback parameters found, redirecting to login',
+        );
         void this.router.navigate(['/login']);
       });
     });
@@ -127,7 +129,11 @@ export class AuthCallbackComponent implements OnInit {
     return params;
   }
 
-  private initiateLogin(providerId: string, providerType: 'oauth' | 'saml', returnUrl?: string): void {
+  private initiateLogin(
+    providerId: string,
+    providerType: 'oauth' | 'saml',
+    returnUrl?: string,
+  ): void {
     if (providerType === 'saml') {
       this.authService.initiateSAMLLogin(providerId, returnUrl);
     } else {
