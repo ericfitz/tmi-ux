@@ -689,6 +689,37 @@ describe('Cell Property Filter Utility', () => {
         // Should NOT have warning for filter
         expect(warnings.some(w => w.message.includes('filter'))).toBe(false);
       });
+
+      it('should preserve text positioning properties in node attrs', () => {
+        const node: Cell = {
+          id: 'node-1',
+          shape: 'process',
+          attrs: {
+            text: {
+              text: 'Label',
+              fontSize: 14,
+              fill: '#000000',
+              fontFamily: 'Arial',
+              refX: 0.5,
+              refY: 1,
+              refDx: 0,
+              refDy: 10,
+              textAnchor: 'middle',
+              textVerticalAnchor: 'top',
+            },
+          },
+        };
+
+        const sanitized = sanitizeCellForApi(node);
+
+        expect(sanitized.attrs?.text?.text).toBe('Label');
+        expect(sanitized.attrs?.text?.refX).toBe(0.5);
+        expect(sanitized.attrs?.text?.refY).toBe(1);
+        expect(sanitized.attrs?.text?.refDx).toBe(0);
+        expect(sanitized.attrs?.text?.refDy).toBe(10);
+        expect(sanitized.attrs?.text?.textAnchor).toBe('middle');
+        expect(sanitized.attrs?.text?.textVerticalAnchor).toBe('top');
+      });
     });
 
     describe('edge filtering', () => {

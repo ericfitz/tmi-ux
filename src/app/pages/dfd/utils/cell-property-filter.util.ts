@@ -499,10 +499,24 @@ export function isEdgeShape(shape: string | undefined): boolean {
 /**
  * Allowed properties within NodeAttrs per OpenAPI schema.
  * NodeAttrs has additionalProperties: false
+ *
+ * Text positioning properties (refX, refY, refDx, refDy, textAnchor, textVerticalAnchor)
+ * are included to preserve label positioning during import/export.
  */
 const NODE_ATTRS_SCHEMA: Record<string, readonly string[]> = {
   body: ['fill', 'stroke', 'strokeWidth', 'strokeDasharray'],
-  text: ['text', 'fontSize', 'fill', 'fontFamily'],
+  text: [
+    'text',
+    'fontSize',
+    'fill',
+    'fontFamily',
+    'refX',
+    'refY',
+    'refDx',
+    'refDy',
+    'textAnchor',
+    'textVerticalAnchor',
+  ],
 };
 
 /**
