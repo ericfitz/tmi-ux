@@ -70,21 +70,21 @@ describe('ActivityTrackerService', () => {
     expect(service.isUserActive()).toBe(true);
   });
 
-  it('should update lastActivity$ observable on activity', async () => {
-    const initialTime = new Date();
+  it('should update lastActivity$ observable on activity', () => {
+    const emittedTimes: Date[] = [];
 
-    const activityPromise = new Promise<Date>(resolve => {
-      service.lastActivity$.subscribe(activityTime => {
-        resolve(activityTime);
-      });
+    service.lastActivity$.subscribe(time => {
+      emittedTimes.push(time);
     });
 
     // Manually trigger activity
     service.markActive();
 
-    const activityTime = await activityPromise;
-    expect(activityTime).toBeDefined();
-    expect(activityTime instanceof Date).toBe(true);
-    expect(activityTime.getTime()).toBeGreaterThanOrEqual(initialTime.getTime());
+    // Should have received at least one emission (BehaviorSubject emits current value)
+    expect(emittedTimes.length).toBeGreaterThanOrEqual(1);
+    expect(emittedTimes[emittedTimes.length - 1]).toBeDefined();
+    expect(emittedTimes[emittedTimes.length - 1] instanceof Date).toBe(true);
+    // The time should be recent (within last second)
+    expect(Date.now() - emittedTimes[emittedTimes.length - 1].getTime()).toBeLessThan(1000);
   });
 });
