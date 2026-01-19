@@ -136,23 +136,27 @@ export class ReadonlyFieldFilterService {
 
   /**
    * Filters read-only fields from a Diagram object for CREATE operations.
-   * Extracts metadata and cells for separate handling.
+   * Extracts metadata, cells, description, and image for separate handling.
    * CreateDiagramRequest only accepts 'name' and 'type' fields.
-   * Cells must be added via a subsequent PUT/PATCH operation.
+   * Other fields must be added via a subsequent PUT/PATCH operation.
    */
   filterDiagram(data: Record<string, unknown>): {
     filtered: Record<string, unknown>;
     metadata: Metadata[] | undefined;
     cells: unknown[] | undefined;
+    description: string | undefined;
+    image: Record<string, unknown> | undefined;
   } {
     const metadata = data['metadata'] as Metadata[] | undefined;
     const cells = data['cells'] as unknown[] | undefined;
+    const description = data['description'] as string | undefined;
+    const image = data['image'] as Record<string, unknown> | undefined;
 
     // Combine both readonly and create-only fields for filtering
     const allFieldsToFilter = [...this._diagramReadOnlyFields, ...this._diagramCreateOnlyFields];
     const filtered = this._filterFields(data, allFieldsToFilter);
 
-    return { filtered, metadata, cells };
+    return { filtered, metadata, cells, description, image };
   }
 
   /**

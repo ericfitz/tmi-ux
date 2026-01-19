@@ -604,7 +604,8 @@ export class ImportOrchestratorService {
     deps: ImportDependencies,
   ): Observable<ImportResult<Diagram>> {
     const originalId = diagram['id'] as string | undefined;
-    const { filtered, metadata, cells } = this._fieldFilter.filterDiagram(diagram);
+    const { filtered, metadata, cells, description, image } =
+      this._fieldFilter.filterDiagram(diagram);
     const rewritten = this._referenceRewriter.rewriteDiagramReferences(filtered);
 
     return deps.createDiagram(threatModelId, rewritten).pipe(
@@ -614,20 +615,30 @@ export class ImportOrchestratorService {
           this._idTranslation.setDiagramId(originalId, created.id);
         }
 
-        // Update diagram with cells if present
-        // Cells must be added via PUT after creation since CreateDiagramRequest doesn't accept them
-        if (cells && cells.length > 0) {
-          // Filter cells to match API schema (ensure edge 'shape' field is present)
-          const filteredCells = this._fieldFilter.filterCells(cells);
+        // Determine if we need to update the diagram with additional fields
+        // (cells, description, image) that couldn't be set in the CREATE request
+        const hasCells = cells && cells.length > 0;
+        const hasDescription = description !== undefined;
+        const hasImage = image !== undefined;
 
+        if (hasCells || hasDescription || hasImage) {
+          // Build update payload with all available fields
           const diagramUpdate: Record<string, unknown> = {
             name: created.name,
             type: created.type,
-            cells: filteredCells,
           };
 
-          if (created.description) {
-            diagramUpdate['description'] = created.description;
+          if (hasCells) {
+            // Filter cells to match API schema (ensure edge 'shape' field is present)
+            diagramUpdate['cells'] = this._fieldFilter.filterCells(cells);
+          }
+
+          if (hasDescription) {
+            diagramUpdate['description'] = description;
+          }
+
+          if (hasImage) {
+            diagramUpdate['image'] = image;
           }
 
           return deps.updateDiagram(threatModelId, created.id, diagramUpdate).pipe(
@@ -645,14 +656,14 @@ export class ImportOrchestratorService {
               return of({ success: true, data: updatedDiagram, originalId });
             }),
             catchError(error => {
-              this._logger.warn(`Failed to update diagram cells for ${created.id}`, error);
-              // Still consider it a success since diagram was created, just without cells
+              this._logger.warn(`Failed to update diagram for ${created.id}`, error);
+              // Still consider it a success since diagram was created, just without additional fields
               return of({ success: true, data: created, originalId });
             }),
           );
         }
 
-        // No cells to add, just update metadata if present
+        // No additional fields to add, just update metadata if present
         if (metadata && metadata.length > 0) {
           return deps.updateDiagramMetadata(threatModelId, created.id, metadata).pipe(
             map(() => ({ success: true, data: created, originalId })),
