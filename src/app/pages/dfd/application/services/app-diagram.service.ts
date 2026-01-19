@@ -16,6 +16,7 @@ import { DfdCollaborationService } from '../../../../core/services/dfd-collabora
 import { InfraWebsocketCollaborationAdapter } from '../../infrastructure/adapters/infra-websocket-collaboration.adapter';
 import { CellOperation } from '../../../../core/types/websocket-message.types';
 import { normalizeCellsFormatAndValidateRelationships } from '../../utils/cell-format-normalization.util';
+import { isEdgeShape } from '../../utils/cell-property-filter.util';
 
 /**
  * Interface for diagram data
@@ -217,7 +218,8 @@ export class AppDiagramService {
           convertedCells.push(convertedCell);
 
           // Separate nodes and edges for proper ordering
-          if (cell.shape === 'edge' || cell['edge'] === true) {
+          // Use isEdgeShape to handle both 'edge' (legacy) and 'flow' (canonical) shapes
+          if (isEdgeShape(cell.shape) || cell['edge'] === true) {
             edges.push(convertedCell);
           } else {
             nodes.push(convertedCell);
@@ -406,8 +408,8 @@ export class AppDiagramService {
    * Handles both nodes and edges with proper conversion logic
    */
   private convertMockCellToX6Format(mockCell: any, infraNodeConfigurationService: any): any {
-    // Handle edges
-    if (mockCell.shape === 'edge' || mockCell.edge === true) {
+    // Handle edges - use isEdgeShape to handle both 'edge' (legacy) and 'flow' (canonical) shapes
+    if (isEdgeShape(mockCell.shape) || mockCell.edge === true) {
       return this.convertMockEdgeToX6Format(mockCell);
     }
 
