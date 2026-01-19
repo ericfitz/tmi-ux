@@ -495,7 +495,7 @@ describe('ReadonlyFieldFilterService', () => {
       expect(filtered.shape).toBe('process');
     });
 
-    it('should remove known transient properties', () => {
+    it('should remove known transient properties but preserve children', () => {
       const cell = {
         id: 'node-1',
         shape: 'process',
@@ -511,7 +511,8 @@ describe('ReadonlyFieldFilterService', () => {
 
       expect(filtered.id).toBe('node-1');
       expect(filtered.shape).toBe('process');
-      expect(filtered['children']).toBeUndefined();
+      // children is now preserved for API schema (pending server update)
+      expect(filtered['children']).toEqual(['child-1']);
       expect(filtered['tools']).toBeUndefined();
       expect(filtered['type']).toBeUndefined();
       expect(filtered['visible']).toBeUndefined();
@@ -584,7 +585,7 @@ describe('ReadonlyFieldFilterService', () => {
       expect((filtered[2] as any).shape).toBe('flow'); // Normalized from 'edge'
     });
 
-    it('should convert children arrays to parent references', () => {
+    it('should convert children arrays to parent references while preserving children', () => {
       const cells = [
         { id: 'boundary-1', shape: 'security-boundary', children: ['node-1', 'node-2'] },
         { id: 'node-1', shape: 'process' },
@@ -593,10 +594,10 @@ describe('ReadonlyFieldFilterService', () => {
 
       const filtered = service.filterCells(cells);
 
-      // Boundary should not have children
-      expect((filtered[0] as any).children).toBeUndefined();
+      // Boundary should retain children property (now preserved for API schema)
+      expect((filtered[0] as any).children).toEqual(['node-1', 'node-2']);
 
-      // Child nodes should have parent set
+      // Child nodes should have parent set (derived from children array)
       expect((filtered[1] as any).parent).toBe('boundary-1');
       expect((filtered[2] as any).parent).toBe('boundary-1');
     });

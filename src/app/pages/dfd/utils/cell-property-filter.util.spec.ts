@@ -585,7 +585,6 @@ describe('Cell Property Filter Utility', () => {
         const node: Cell = {
           id: 'node-1',
           shape: 'process',
-          children: ['child-1', 'child-2'],
           tools: [{ name: 'button-remove' }],
           type: 'node',
           selected: true,
@@ -597,7 +596,6 @@ describe('Cell Property Filter Utility', () => {
 
         const sanitized = sanitizeCellForApi(node);
 
-        expect((sanitized as any).children).toBeUndefined();
         expect((sanitized as any).tools).toBeUndefined();
         expect((sanitized as any).type).toBeUndefined();
         expect((sanitized as any).selected).toBeUndefined();
@@ -605,6 +603,18 @@ describe('Cell Property Filter Utility', () => {
         expect((sanitized as any).visible).toBeUndefined();
         expect((sanitized as any).zIndex).toBeUndefined();
         expect((sanitized as any).markup).toBeUndefined();
+      });
+
+      it('should preserve children property on nodes', () => {
+        const node: Cell = {
+          id: 'boundary-1',
+          shape: 'security-boundary',
+          children: ['node-1', 'node-2'],
+        } as Cell;
+
+        const sanitized = sanitizeCellForApi(node);
+
+        expect((sanitized as any).children).toEqual(['node-1', 'node-2']);
       });
 
       it('should warn about unknown properties', () => {
@@ -832,7 +842,6 @@ describe('Cell Property Filter Utility', () => {
           shape: 'edge',
           source: { cell: 'node-1' },
           target: { cell: 'node-2' },
-          children: ['orphan'],
         },
       ];
 
@@ -841,11 +850,10 @@ describe('Cell Property Filter Utility', () => {
       expect(sanitized).toHaveLength(2);
       expect((sanitized[0] as any).zIndex).toBeUndefined();
       expect((sanitized[0] as any).tools).toBeUndefined();
-      expect((sanitized[1] as any).children).toBeUndefined();
       expect(sanitized[1].shape).toBe('flow'); // Normalized from 'edge' to 'flow'
     });
 
-    it('should convert children arrays to parent references', () => {
+    it('should convert children arrays to parent references while preserving children', () => {
       const cells: Cell[] = [
         {
           id: 'boundary-1',
@@ -871,10 +879,10 @@ describe('Cell Property Filter Utility', () => {
 
       const sanitized = sanitizeCellsForApi(cells);
 
-      // Boundary should not have children property
-      expect((sanitized[0] as any).children).toBeUndefined();
+      // Boundary should retain children property (now preserved for API schema)
+      expect((sanitized[0] as any).children).toEqual(['node-1', 'node-2']);
 
-      // Child nodes should have parent set
+      // Child nodes should have parent set (derived from children array)
       expect(sanitized[1].parent).toBe('boundary-1');
       expect(sanitized[2].parent).toBe('boundary-1');
 

@@ -428,6 +428,7 @@ const CELL_ALLOWED_FIELDS = ['id', 'shape', 'data'] as const;
 /**
  * Properties allowed on Node cells (extends Cell).
  * Per OpenAPI schema: position, size, x, y, width, height, angle, attrs, ports, parent
+ * Note: 'children' is included for X6 parent-child relationships (pending API schema update)
  */
 const NODE_ALLOWED_FIELDS = [
   ...CELL_ALLOWED_FIELDS,
@@ -441,6 +442,7 @@ const NODE_ALLOWED_FIELDS = [
   'attrs',
   'ports',
   'parent',
+  'children',
 ] as const;
 
 /**
@@ -464,7 +466,6 @@ const EDGE_ALLOWED_FIELDS = [
  * These are expected in X6 exports but not part of the API schema.
  */
 const KNOWN_TRANSIENT_FIELDS = [
-  'children', // API uses 'parent' on child nodes, not 'children' on parent
   'tools', // X6 runtime UI state
   'type', // X6 internal, redundant with 'shape'
   'selected', // UI state
