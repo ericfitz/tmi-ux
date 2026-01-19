@@ -552,7 +552,10 @@
     "oauthFailed": "OAuth 인증에 실패했습니다. 다시 시도해 주세요.",
     "oauthProvidersTitle": "OAuth 로그인 제공자",
     "pleaseSignIn": "계속하려면 로그인하세요.",
+    "redirectingToLogin": "로그인 페이지로 리디렉션하는 중...",
     "samlProvidersTitle": "SAML 로그인 제공자",
+    "signingIn": "로그인 중...",
+    "signingInWith": "{{provider}}(으)로 로그인 중...",
     "title": "TMI 로그인",
     "unexpectedError": "OAuth 중 예기치 않은 오류가 발생했습니다."
   },

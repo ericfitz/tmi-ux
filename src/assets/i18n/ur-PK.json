@@ -552,7 +552,10 @@
     "oauthFailed": "OAuth توثیق ناکام ہو گئی۔ براہ کرم دوبارہ کوشش کریں۔",
     "oauthProvidersTitle": "OAuth سائن ان فراہم کنندگان",
     "pleaseSignIn": "جاری رکھنے کے لیے براہ کرم سائن ان کریں۔",
+    "redirectingToLogin": "سائن ان کے صفحہ پر بھیجا جا رہا ہے...",
     "samlProvidersTitle": "SAML سائن ان فراہم کنندگان",
+    "signingIn": "سائن ان ہو رہے ہیں...",
+    "signingInWith": "{{provider}} کے ساتھ سائن ان ہو رہے ہیں...",
     "title": "TMI میں سائن ان کریں",
     "unexpectedError": "OAuth کے دوران ایک غیر متوقع خرابی ہوئی۔"
   },

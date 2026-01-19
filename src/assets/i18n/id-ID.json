@@ -552,7 +552,10 @@
     "oauthFailed": "Autentikasi OAuth gagal. Silakan coba lagi.",
     "oauthProvidersTitle": "Penyedia Masuk OAuth",
     "pleaseSignIn": "Silakan masuk untuk melanjutkan.",
+    "redirectingToLogin": "Mengalihkan ke halaman masuk...",
     "samlProvidersTitle": "Penyedia Masuk SAML",
+    "signingIn": "Sedang masuk...",
+    "signingInWith": "Sedang masuk dengan {{provider}}...",
     "title": "Masuk ke TMI",
     "unexpectedError": "Terjadi kesalahan yang tidak terduga selama OAuth."
   },

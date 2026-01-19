@@ -552,7 +552,10 @@
     "oauthFailed": "La autenticación OAuth ha fallado. Por favor, inténtelo de nuevo.",
     "oauthProvidersTitle": "Proveedores de Inicio de Sesión OAuth",
     "pleaseSignIn": "Por favor, inicie sesión para continuar.",
+    "redirectingToLogin": "Redirigiendo a la página de inicio de sesión...",
     "samlProvidersTitle": "Proveedores de Inicio de Sesión SAML",
+    "signingIn": "Iniciando sesión...",
+    "signingInWith": "Iniciando sesión con {{provider}}...",
     "title": "Iniciar Sesión en TMI",
     "unexpectedError": "Se ha producido un error inesperado durante la autenticación OAuth."
   },

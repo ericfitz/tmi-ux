@@ -552,7 +552,10 @@
     "oauthFailed": "OAuth प्रमाणीकरण विफल। कृपया पुनः प्रयास करें।",
     "oauthProvidersTitle": "OAuth साइन-इन प्रदाता",
     "pleaseSignIn": "कृपया जारी रखने के लिए साइन इन करें।",
+    "redirectingToLogin": "साइन इन पेज पर रीडायरेक्ट किया जा रहा है...",
     "samlProvidersTitle": "SAML साइन-इन प्रदाता",
+    "signingIn": "साइन इन किया जा रहा है...",
+    "signingInWith": "{{provider}} से साइन इन किया जा रहा है...",
     "title": "TMI में साइन इन करें",
     "unexpectedError": "OAuth के दौरान एक अप्रत्याशित त्रुटि हुई।"
   },

@@ -552,7 +552,10 @@
     "oauthFailed": "OAuth身份验证失败。请重试。",
     "oauthProvidersTitle": "OAuth登录提供商",
     "pleaseSignIn": "请登录以继续。",
+    "redirectingToLogin": "正在重定向到登录页面...",
     "samlProvidersTitle": "SAML登录提供商",
+    "signingIn": "正在登录...",
+    "signingInWith": "正在使用 {{provider}} 登录...",
     "title": "登录到TMI",
     "unexpectedError": "OAuth身份验证过程中发生意外错误。"
   },

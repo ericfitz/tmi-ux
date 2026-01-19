@@ -552,7 +552,10 @@
     "oauthFailed": "Ошибка аутентификации OAuth. Пожалуйста, попробуйте снова.",
     "oauthProvidersTitle": "Провайдеры Входа OAuth",
     "pleaseSignIn": "Пожалуйста, войдите для продолжения.",
+    "redirectingToLogin": "Перенаправление на страницу входа...",
     "samlProvidersTitle": "Провайдеры Входа SAML",
+    "signingIn": "Вход в систему...",
+    "signingInWith": "Вход с помощью {{provider}}...",
     "title": "Вход в TMI",
     "unexpectedError": "Произошла непредвиденная ошибка во время OAuth."
   },

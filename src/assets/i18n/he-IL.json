@@ -552,7 +552,10 @@
     "oauthFailed": "אימות OAuth נכשל. אנא נסה שוב.",
     "oauthProvidersTitle": "ספקי כניסה OAuth",
     "pleaseSignIn": "אנא התחבר כדי להמשיך.",
+    "redirectingToLogin": "מעבר לדף ההתחברות...",
     "samlProvidersTitle": "ספקי כניסה SAML",
+    "signingIn": "מתחבר...",
+    "signingInWith": "מתחבר דרך {{provider}}...",
     "title": "כניסה ל-TMI",
     "unexpectedError": "אירעה שגיאה בלתי צפויה במהלך OAuth."
   },

@@ -552,7 +552,10 @@
     "oauthFailed": "Falha na autenticacao OAuth. Por favor, tente novamente.",
     "oauthProvidersTitle": "Provedores de Login OAuth",
     "pleaseSignIn": "Por favor, faca login para continuar.",
+    "redirectingToLogin": "Redirecionando para página de login...",
     "samlProvidersTitle": "Provedores de Login SAML",
+    "signingIn": "Entrando na conta...",
+    "signingInWith": "Entrando com {{provider}}...",
     "title": "Entrar no TMI",
     "unexpectedError": "Ocorreu um erro inesperado durante o OAuth."
   },

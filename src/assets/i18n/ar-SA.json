@@ -552,7 +552,10 @@
     "oauthFailed": "فشل في مصادقة OAuth. يرجى المحاولة مرة أخرى.",
     "oauthProvidersTitle": "موفرو تسجيل الدخول OAuth",
     "pleaseSignIn": "يرجى تسجيل الدخول للمتابعة.",
+    "redirectingToLogin": "إعادة توجيه إلى صفحة تسجيل الدخول...",
     "samlProvidersTitle": "موفرو تسجيل الدخول SAML",
+    "signingIn": "جارٍ تسجيل الدخول...",
+    "signingInWith": "جارٍ تسجيل الدخول باستخدام {{provider}}...",
     "title": "تسجيل الدخول إلى تي إم آي",
     "unexpectedError": "حدث خطأ غير متوقع أثناء مصادقة OAuth."
   },

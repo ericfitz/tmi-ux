@@ -552,7 +552,10 @@
     "oauthFailed": "OAuth-Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "oauthProvidersTitle": "OAuth-Anmeldeanbieter",
     "pleaseSignIn": "Bitte melden Sie sich an, um fortzufahren.",
+    "redirectingToLogin": "Weiterleitung zur Anmeldeseite...",
     "samlProvidersTitle": "SAML-Anmeldeanbieter",
+    "signingIn": "Anmeldung läuft...",
+    "signingInWith": "Anmeldung mit {{provider}}...",
     "title": "Bei TMI Anmelden",
     "unexpectedError": "Ein unerwarteter Fehler ist während der OAuth-Authentifizierung aufgetreten."
   },

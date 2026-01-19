@@ -573,7 +573,10 @@
     "oauthFailed": "OAuth authentication failed. Please try again.",
     "oauthProvidersTitle": "OAuth Sign-in Providers",
     "pleaseSignIn": "Please sign in to continue.",
+    "redirectingToLogin": "Redirecting to sign in page...",
     "samlProvidersTitle": "SAML Sign-in Providers",
+    "signingIn": "Signing in...",
+    "signingInWith": "Signing in with {{provider}}...",
     "title": "Sign In to TMI",
     "unexpectedError": "An unexpected error occurred during OAuth."
   },

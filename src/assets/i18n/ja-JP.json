@@ -552,7 +552,10 @@
     "oauthFailed": "OAuth認証に失敗しました。もう一度お試しください。",
     "oauthProvidersTitle": "OAuthサインインプロバイダー",
     "pleaseSignIn": "続行するにはサインインしてください。",
+    "redirectingToLogin": "ログインページにリダイレクト中...",
     "samlProvidersTitle": "SAMLサインインプロバイダー",
+    "signingIn": "ログイン中...",
+    "signingInWith": "{{provider}} でサインイン中...",
     "title": "TMIにサインイン",
     "unexpectedError": "OAuth中に予期しないエラーが発生しました。"
   },

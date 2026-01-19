@@ -552,7 +552,10 @@
     "oauthFailed": "L'authentification OAuth a echoue. Veuillez reessayer.",
     "oauthProvidersTitle": "Fournisseurs de Connexion OAuth",
     "pleaseSignIn": "Veuillez vous connecter pour continuer.",
+    "redirectingToLogin": "Redirection vers la page de connexion...",
     "samlProvidersTitle": "Fournisseurs de Connexion SAML",
+    "signingIn": "Connexion en cours...",
+    "signingInWith": "Connexion avec {{provider}} en cours...",
     "title": "Connexion a TMI",
     "unexpectedError": "Une erreur inattendue s'est produite lors de l'authentification OAuth."
   },

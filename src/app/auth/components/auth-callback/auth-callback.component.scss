@@ -1,0 +1,27 @@
+.callback-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 40px 20px;
+}
+
+.callback-card {
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.callback-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 40px 20px;
+}
+
+.signing-in-message {
+  font-size: 18px;
+  color: var(--theme-text-primary);
+  margin: 0;
+}
