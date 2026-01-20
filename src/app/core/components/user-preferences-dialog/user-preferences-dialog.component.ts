@@ -752,7 +752,7 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
   }
 
   onAdminClick(): void {
-    this.logger.debug('Administration button clicked');
+    this.logger.debugComponent('UserPreferences', 'Administration button clicked');
     // Close the preferences dialog
     this.dialogRef.close();
     // Navigate to admin page

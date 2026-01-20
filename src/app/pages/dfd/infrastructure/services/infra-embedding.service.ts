@@ -87,7 +87,7 @@ export class InfraEmbeddingService {
     // Don't update color for text-box nodes (they should remain transparent)
     const shouldUpdateColor = nodeType !== 'text-box';
 
-    this.logger.info('Calculated embedding configuration', {
+    this.logger.debugComponent('Embedding', 'Calculated embedding configuration', {
       nodeId: node.id,
       nodeType,
       embeddingDepth: depth,

@@ -260,13 +260,17 @@ describe('InfraEmbeddingService', () => {
         fillColor: '#FFFFFF',
         shouldUpdateColor: true,
       });
-      expect(mockLogger.info).toHaveBeenCalledWith('Calculated embedding configuration', {
-        nodeId: 'node1',
-        nodeType: 'process',
-        embeddingDepth: 0,
-        fillColor: '#FFFFFF',
-        shouldUpdateColor: true,
-      });
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+        'Embedding',
+        'Calculated embedding configuration',
+        {
+          nodeId: 'node1',
+          nodeType: 'process',
+          embeddingDepth: 0,
+          fillColor: '#FFFFFF',
+          shouldUpdateColor: true,
+        },
+      );
     });
 
     it('should return configuration for embedded process node', () => {
@@ -306,7 +310,8 @@ describe('InfraEmbeddingService', () => {
       const config = service.getEmbeddingConfiguration(node);
 
       expect(config.shouldUpdateColor).toBe(true); // Default to process type
-      expect(mockLogger.info).toHaveBeenCalledWith(
+      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
+        'Embedding',
         'Calculated embedding configuration',
         expect.objectContaining({
           nodeType: 'process',

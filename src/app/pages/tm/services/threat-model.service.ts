@@ -697,20 +697,26 @@ export class ThreatModelService implements OnDestroy {
               // This prevents it from being accidentally included in subsequent PATCH requests
               delete (transformed as { display_name?: string }).display_name;
               if (hasDisplayName) {
-                this.logger.debug(`Filtered display_name from PATCH response authorization entry`, {
-                  threatModelId,
-                });
+                this.logger.debugComponent(
+                  'ThreatModel',
+                  'Filtered display_name from PATCH response authorization entry',
+                  { threatModelId },
+                );
               }
               return transformed;
             });
             if (beforeFilter > 0) {
-              this.logger.debug(`PATCH response authorization filtering complete`, {
-                threatModelId,
-                authCount: beforeFilter,
-                hasDisplayName: updatedModel.authorization.some(
-                  a => 'display_name' in (a as object),
-                ),
-              });
+              this.logger.debugComponent(
+                'ThreatModel',
+                'PATCH response authorization filtering complete',
+                {
+                  threatModelId,
+                  authCount: beforeFilter,
+                  hasDisplayName: updatedModel.authorization.some(
+                    a => 'display_name' in (a as object),
+                  ),
+                },
+              );
             }
           }
         }

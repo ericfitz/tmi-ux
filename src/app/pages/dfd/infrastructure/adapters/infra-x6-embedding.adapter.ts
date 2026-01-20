@@ -320,7 +320,7 @@ export class InfraX6EmbeddingAdapter {
           }
         }
 
-        this.logger.info('Node parent changed', {
+        this.logger.debugComponent('X6Embedding', 'Node parent changed', {
           nodeId: node.id,
           previousParentId,
           currentParentId,
@@ -767,7 +767,7 @@ export class InfraX6EmbeddingAdapter {
     // Apply visual changes
     this.applyEmbeddingVisualEffects(node, fillColor, config.depth);
 
-    this.logger.info('Updated embedding appearance', {
+    this.logger.debugComponent('X6Embedding', 'Updated embedding appearance', {
       nodeId: node.id,
       parentId: parent.id,
       depth: config.depth,
