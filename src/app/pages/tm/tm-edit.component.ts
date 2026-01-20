@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -217,6 +224,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private authorizationService: ThreatModelAuthorizationService,
     private cellDataExtractionService: CellDataExtractionService,
     private authorizationPrepare: AuthorizationPrepareService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -928,11 +936,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
                 .createThreat(this.threatModel.id, newThreatData)
                 .subscribe(newThreat => {
                   // Add the new threat to local state (check for duplicates first)
-                  if (!this.threatModel?.threats) {
-                    this.threatModel!.threats = [];
-                  }
-                  if (!this.threatModel!.threats.find(t => t.id === newThreat.id)) {
-                    this.threatModel!.threats.push(newThreat);
+                  // Use spread to create new array and update data source for immediate UI refresh
+                  if (!this.threatModel!.threats?.find(t => t.id === newThreat.id)) {
+                    this.threatModel!.threats = [...(this.threatModel!.threats || []), newThreat];
+                    this.threatsDataSource.data = this.threatModel!.threats;
                   }
 
                   // Update framework control state since we added a threat
@@ -1021,14 +1028,13 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this._subscriptions.add(
         this.threatModelService.deleteThreat(this.threatModel.id, threat.id).subscribe(success => {
           if (success) {
-            // Remove the threat from local state
-            const index = this.threatModel!.threats!.findIndex(t => t.id === threat.id);
-            if (index !== -1) {
-              this.threatModel!.threats!.splice(index, 1);
+            // Remove the threat from local state using filter (immutable)
+            // and update data source for immediate UI refresh
+            this.threatModel!.threats = this.threatModel!.threats!.filter(t => t.id !== threat.id);
+            this.threatsDataSource.data = this.threatModel!.threats;
 
-              // Update framework control state since we removed a threat
-              this.updateFrameworkControlState();
-            }
+            // Update framework control state since we removed a threat
+            this.updateFrameworkControlState();
           }
         }),
       );
@@ -1087,8 +1093,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
                   }
 
                   // Add the new diagram to the diagrams array for display (check for duplicates first)
+                  // Use spread to trigger setter which updates diagramsDataSource.data
                   if (!this.diagrams.find(d => d.id === newDiagram.id)) {
-                    this.diagrams.push(newDiagram);
+                    this.diagrams = [...this.diagrams, newDiagram];
                   }
                 },
                 error: error => {
@@ -1131,19 +1138,14 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
           .deleteDiagram(this.threatModel.id, diagram.id)
           .subscribe(success => {
             if (success && this.threatModel && this.threatModel.diagrams) {
-              // Remove the diagram from local state
-              const index = this.threatModel.diagrams.findIndex(
-                (d: string | Diagram) => (typeof d === 'string' ? d : d.id) === diagram.id,
+              // Remove the diagram from local state using filter (immutable)
+              this.threatModel.diagrams = this.threatModel.diagrams.filter(
+                (d: string | Diagram) => (typeof d === 'string' ? d : d.id) !== diagram.id,
               );
-              if (index !== -1) {
-                this.threatModel.diagrams.splice(index, 1);
-              }
 
-              // Remove the diagram from the local array
-              const diagramIndex = this.diagrams.findIndex(d => d.id === diagram.id);
-              if (diagramIndex !== -1) {
-                this.diagrams.splice(diagramIndex, 1);
-              }
+              // Remove the diagram from the display array using filter
+              // This triggers the setter which updates diagramsDataSource.data
+              this.diagrams = this.diagrams.filter(d => d.id !== diagram.id);
 
               // Remove from DIAGRAMS_BY_ID map
               DIAGRAMS_BY_ID.delete(diagram.id);
@@ -1187,11 +1189,13 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
               .createDocument(this.threatModel.id, newDocumentData)
               .subscribe(newDocument => {
                 // Add the new document to local state (check for duplicates first)
-                if (!this.threatModel?.documents) {
-                  this.threatModel!.documents = [];
-                }
-                if (!this.threatModel!.documents.find(d => d.id === newDocument.id)) {
-                  this.threatModel!.documents.push(newDocument);
+                // Use spread to create new array and update data source for immediate UI refresh
+                if (!this.threatModel!.documents?.find(d => d.id === newDocument.id)) {
+                  this.threatModel!.documents = [
+                    ...(this.threatModel!.documents || []),
+                    newDocument,
+                  ];
+                  this.documentsDataSource.data = this.threatModel!.documents;
                 }
               }),
           );
@@ -1289,11 +1293,12 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
           .deleteDocument(this.threatModel.id, document.id)
           .subscribe(success => {
             if (success && this.threatModel && this.threatModel.documents) {
-              // Remove the document from local state
-              const index = this.threatModel.documents.findIndex(d => d.id === document.id);
-              if (index !== -1) {
-                this.threatModel.documents.splice(index, 1);
-              }
+              // Remove the document from local state using filter (immutable)
+              // and update data source for immediate UI refresh
+              this.threatModel.documents = this.threatModel.documents.filter(
+                d => d.id !== document.id,
+              );
+              this.documentsDataSource.data = this.threatModel.documents;
             }
           }),
       );
@@ -1350,11 +1355,13 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
               .createRepository(this.threatModel.id, newRepositoryData)
               .subscribe(newRepository => {
                 // Add the new repository to local state (check for duplicates first)
-                if (!this.threatModel?.repositories) {
-                  this.threatModel!.repositories = [];
-                }
-                if (!this.threatModel!.repositories.find(r => r.id === newRepository.id)) {
-                  this.threatModel!.repositories.push(newRepository);
+                // Use spread to create new array and update data source for immediate UI refresh
+                if (!this.threatModel!.repositories?.find(r => r.id === newRepository.id)) {
+                  this.threatModel!.repositories = [
+                    ...(this.threatModel!.repositories || []),
+                    newRepository,
+                  ];
+                  this.repositoriesDataSource.data = this.threatModel!.repositories;
                 }
               }),
           );
@@ -1456,11 +1463,12 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
           .deleteRepository(this.threatModel.id, repository.id)
           .subscribe(success => {
             if (success && this.threatModel && this.threatModel.repositories) {
-              // Remove the repository from local state
-              const index = this.threatModel.repositories.findIndex(r => r.id === repository.id);
-              if (index !== -1) {
-                this.threatModel.repositories.splice(index, 1);
-              }
+              // Remove the repository from local state using filter (immutable)
+              // and update data source for immediate UI refresh
+              this.threatModel.repositories = this.threatModel.repositories.filter(
+                r => r.id !== repository.id,
+              );
+              this.repositoriesDataSource.data = this.threatModel.repositories;
             }
           }),
       );
@@ -1566,11 +1574,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         this.threatModelService.createNote(this.threatModel.id, noteResult).subscribe(
           createdNote => {
             if (this.threatModel) {
-              if (!this.threatModel.notes) {
-                this.threatModel.notes = [];
-              }
-              if (!this.threatModel.notes.find(n => n.id === createdNote.id)) {
-                this.threatModel.notes.push(createdNote);
+              // Use spread to create new array and update data source for immediate UI refresh
+              if (!this.threatModel.notes?.find(n => n.id === createdNote.id)) {
+                this.threatModel.notes = [...(this.threatModel.notes || []), createdNote];
+                this.notesDataSource.data = this.threatModel.notes;
               }
               this.logger.info('Created note via API', { note: createdNote });
               // Notify the dialog that the note was created
@@ -1616,11 +1623,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
               this.threatModelService.createNote(this.threatModel.id, result.formValue).subscribe(
                 createdNote => {
                   if (this.threatModel) {
-                    if (!this.threatModel.notes) {
-                      this.threatModel.notes = [];
-                    }
-                    if (!this.threatModel.notes.find(n => n.id === createdNote.id)) {
-                      this.threatModel.notes.push(createdNote);
+                    // Use spread to create new array and update data source for immediate UI refresh
+                    if (!this.threatModel.notes?.find(n => n.id === createdNote.id)) {
+                      this.threatModel.notes = [...(this.threatModel.notes || []), createdNote];
+                      this.notesDataSource.data = this.threatModel.notes;
                     }
                     this.logger.info('Created note via API', { note: createdNote });
                   }
@@ -1729,10 +1735,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this._subscriptions.add(
         this.threatModelService.deleteNote(this.threatModel.id, note.id).subscribe(success => {
           if (success && this.threatModel && this.threatModel.notes) {
-            const index = this.threatModel.notes.findIndex(n => n.id === note.id);
-            if (index !== -1) {
-              this.threatModel.notes.splice(index, 1);
-            }
+            // Remove the note from local state using filter (immutable)
+            // and update data source for immediate UI refresh
+            this.threatModel.notes = this.threatModel.notes.filter(n => n.id !== note.id);
+            this.notesDataSource.data = this.threatModel.notes;
             this.logger.info('Deleted note', { noteId: note.id });
           }
         }),
@@ -2874,6 +2880,8 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
             // Update status_updated if the server returned it (only when status was changed)
             if (result.status_updated) {
               this.threatModel.status_updated = result.status_updated;
+              // Trigger change detection to ensure UI reflects the updated timestamp
+              this.cdr.detectChanges();
             }
 
             // Update original form values with what we just saved
@@ -3049,11 +3057,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
             this.threatModelService.createAsset(this.threatModel.id, result).subscribe(
               createdAsset => {
                 if (this.threatModel) {
-                  if (!this.threatModel.assets) {
-                    this.threatModel.assets = [];
-                  }
-                  if (!this.threatModel.assets.find(a => a.id === createdAsset.id)) {
-                    this.threatModel.assets.push(createdAsset);
+                  // Use spread to create new array and update data source for immediate UI refresh
+                  if (!this.threatModel.assets?.find(a => a.id === createdAsset.id)) {
+                    this.threatModel.assets = [...(this.threatModel.assets || []), createdAsset];
+                    this.assetsDataSource.data = this.threatModel.assets;
                   }
                   this.logger.info('Created asset via API', { asset: createdAsset });
                 }
@@ -3182,10 +3189,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this._subscriptions.add(
         this.threatModelService.deleteAsset(this.threatModel.id, asset.id).subscribe(success => {
           if (success && this.threatModel && this.threatModel.assets) {
-            const index = this.threatModel.assets.findIndex(a => a.id === asset.id);
-            if (index !== -1) {
-              this.threatModel.assets.splice(index, 1);
-            }
+            // Remove the asset from local state using filter (immutable)
+            // and update data source for immediate UI refresh
+            this.threatModel.assets = this.threatModel.assets.filter(a => a.id !== asset.id);
+            this.assetsDataSource.data = this.threatModel.assets;
             this.logger.info('Deleted asset', { assetId: asset.id });
           }
         }),
