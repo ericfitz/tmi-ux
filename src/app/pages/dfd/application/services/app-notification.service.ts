@@ -189,7 +189,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
     private _logger: LoggerService,
     private _transloco: TranslocoService,
   ) {
-    this._logger.info('AppNotificationService initialized');
+    this._logger.debug('AppNotificationService initialized');
   }
 
   /**
