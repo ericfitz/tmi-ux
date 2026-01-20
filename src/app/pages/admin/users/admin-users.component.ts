@@ -108,7 +108,7 @@ export class AdminUsersComponent implements OnInit, OnDestroy {
           this.totalUsers = response.total;
           this.applyFilter();
           this.loading = false;
-          this.logger.info('Users loaded', {
+          this.logger.debug('Users loaded', {
             count: response.users.length,
             total: response.total,
           });

@@ -1253,7 +1253,7 @@ export class AuthService {
    * @returns Observable that completes when profile is updated
    */
   refreshUserProfile(): Observable<UserProfile> {
-    this.logger.info('Fetching current user profile from server');
+    this.logger.debug('Fetching current user profile from server');
     return this.http.get<UserMeResponse>(`${environment.apiUrl}/users/me`).pipe(
       map(response => {
         // Transform API response to UserProfile format
@@ -1331,7 +1331,7 @@ export class AuthService {
         // Update the cached profile with merged data
         this.userProfileSubject.next(profile);
         void this.storeUserProfile(profile);
-        this.logger.info('User profile refreshed with admin status', {
+        this.logger.debug('User profile refreshed with admin status', {
           isAdmin: profile.is_admin,
         });
       }),
