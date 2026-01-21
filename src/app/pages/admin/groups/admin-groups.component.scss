@@ -124,11 +124,6 @@
       width: auto;
     }
 
-    &.members-column {
-      width: 80px;
-      text-align: center;
-    }
-
     &.usage-column {
       width: 100px;
     }
@@ -210,12 +205,6 @@
         color: rgb(255 152 0);
       }
     }
-  }
-
-  .muted {
-    color: var(--theme-text-secondary);
-    font-style: italic;
-    font-size: 14px;
   }
 
   .action-buttons {
