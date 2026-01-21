@@ -59,7 +59,8 @@
       "listTitle": "সিস্টেম অ্যাডঅন",
       "noAddons": "কোনো অ্যাডঅন পাওয়া যায়নি",
       "subtitle": "TMI কার্যকারিতা বাড়াতে অ্যাডঅন কনফিগার করুন",
-      "title": "অ্যাডঅন পরিচালনা করুন"
+      "title": "অ্যাডঅন পরিচালনা করুন",
+      "objectTypesTooltip": "এই অবজেক্ট টাইপগুলিতে প্রযোজ্য"
     },
     "administrators": {
       "addButton": "{{admin.administrators.addDialog.save}}",
@@ -417,7 +418,8 @@
     "view": "দেখুন",
     "viewMetadata": "মেটাডেটা দেখুন",
     "viewPermissions": "অনুমতি দেখুন",
-    "viewThreat": "হুমকি দেখুন"
+    "viewThreat": "হুমকি দেখুন",
+    "noAddonsAvailable": "কোনও অ্যাড-অন উপলব্ধ নেই"
   },
   "contextMenu": {
     "addInverseConnection": "বিপরীত সংযোগ যোগ করুন",
@@ -568,7 +570,9 @@
     "serverStatus": {
       "noServerConfigured": "কোনো সার্ভার কনফিগার করা নেই",
       "serverConnected": "সার্ভার সংযুক্ত",
-      "serverConnectionError": "সার্ভার সংযোগ ত্রুটি"
+      "serverDegraded": "সার্ভার কমজোরি হয়েছে",
+      "serverError": "সার্ভার ত্রুটি",
+      "serverOffline": "সার্ভার অফলাইন"
     }
   },
   "noteEditor": {
