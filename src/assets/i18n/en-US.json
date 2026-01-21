@@ -328,6 +328,7 @@
     "addMetadata": "Add Metadata",
     "addThreat": "Add Threat",
     "addons": "Addons",
+    "noAddonsAvailable": "No addons available",
     "cancel": "Cancel",
     "cellId": "Cell ID",
     "classification": "Classification",

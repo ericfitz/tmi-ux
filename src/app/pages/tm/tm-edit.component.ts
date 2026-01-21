@@ -21,6 +21,8 @@ import { LanguageService } from '../../i18n/language.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { SvgCacheService } from './services/svg-cache.service';
 import { ApiService } from '../../core/services/api.service';
+import { AddonService } from '../../core/services/addon.service';
+import { Addon, AddonObjectType } from '../../types/addon.types';
 
 import {
   COMMON_IMPORTS,
@@ -150,6 +152,15 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   // Status dropdown options
   statusOptions: FieldOption[] = [];
 
+  // Addon cache - filtered lists by object type
+  addonsForThreatModel: Addon[] = [];
+  addonsForAsset: Addon[] = [];
+  addonsForThreat: Addon[] = [];
+  addonsForDiagram: Addon[] = [];
+  addonsForNote: Addon[] = [];
+  addonsForDocument: Addon[] = [];
+  addonsForRepository: Addon[] = [];
+
   // Table data sources
   assetsDataSource = new MatTableDataSource<Asset>([]);
   threatsDataSource = new MatTableDataSource<Threat>([]);
@@ -225,6 +236,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private cellDataExtractionService: CellDataExtractionService,
     private authorizationPrepare: AuthorizationPrepareService,
     private cdr: ChangeDetectorRef,
+    private addonService: AddonService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -549,6 +561,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Load notes separately
     this.loadNotes(id);
+
+    // Load addons for menus
+    this.loadAddons();
 
     // Re-enable auto-save after initial population is complete
     setTimeout(() => {
@@ -3076,52 +3091,46 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Handles addons button click for details card
+   * Loads addons from server and caches filtered lists by object type
    */
-  onDetailsAddonsClick(): void {
-    // Placeholder for future addons functionality
+  private loadAddons(): void {
+    this._subscriptions.add(
+      this.addonService.list().subscribe({
+        next: addons => {
+          this.filterAndCacheAddons(addons);
+        },
+        error: error => {
+          this.logger.error('Failed to load addons', error);
+          this.filterAndCacheAddons([]);
+        },
+      }),
+    );
   }
 
   /**
-   * Handles addons button click for assets card
+   * Filters addons by object type and caches them
    */
-  onAssetsAddonsClick(): void {
-    // Placeholder for future addons functionality
+  private filterAndCacheAddons(addons: Addon[]): void {
+    const filterByType = (type: AddonObjectType): Addon[] =>
+      addons.filter(addon => addon.objects?.includes(type));
+
+    this.addonsForThreatModel = filterByType('threat_model');
+    this.addonsForAsset = filterByType('asset');
+    this.addonsForThreat = filterByType('threat');
+    this.addonsForDiagram = filterByType('diagram');
+    this.addonsForNote = filterByType('note');
+    this.addonsForDocument = filterByType('document');
+    this.addonsForRepository = filterByType('repository');
   }
 
   /**
-   * Handles addons button click for threats card
+   * Gets the icon name for display, handling material-symbols: prefix
    */
-  onThreatsAddonsClick(): void {
-    // Placeholder for future addons functionality
-  }
-
-  /**
-   * Handles addons button click for diagrams card
-   */
-  onDiagramsAddonsClick(): void {
-    // Placeholder for future addons functionality
-  }
-
-  /**
-   * Handles addons button click for notes card
-   */
-  onNotesAddonsClick(): void {
-    // Placeholder for future addons functionality
-  }
-
-  /**
-   * Handles addons button click for documents card
-   */
-  onDocumentsAddonsClick(): void {
-    // Placeholder for future addons functionality
-  }
-
-  /**
-   * Handles addons button click for repositories card
-   */
-  onRepositoriesAddonsClick(): void {
-    // Placeholder for future addons functionality
+  getAddonIcon(addon: Addon): string {
+    if (!addon.icon) {
+      return 'extension';
+    }
+    return addon.icon.replace('material-symbols:', '');
   }
 
   /**
@@ -3198,62 +3207,6 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         }),
       );
     }
-  }
-
-  /**
-   * Opens the addons dialog for a specific asset (placeholder)
-   */
-  openAssetAddonsDialog(asset: Asset, event: Event): void {
-    event.stopPropagation();
-    (event.target as HTMLElement)?.blur();
-    this.logger.info('Asset addons dialog not yet implemented', { assetId: asset.id });
-  }
-
-  /**
-   * Opens the addons dialog for a specific threat (placeholder)
-   */
-  openThreatAddonsDialog(threat: Threat, event: Event): void {
-    event.stopPropagation();
-    (event.target as HTMLElement)?.blur();
-    this.logger.info('Threat addons dialog not yet implemented', { threatId: threat.id });
-  }
-
-  /**
-   * Opens the addons dialog for a specific diagram (placeholder)
-   */
-  openDiagramAddonsDialog(diagram: Diagram, event: Event): void {
-    event.stopPropagation();
-    (event.target as HTMLElement)?.blur();
-    this.logger.info('Diagram addons dialog not yet implemented', { diagramId: diagram.id });
-  }
-
-  /**
-   * Opens the addons dialog for a specific note (placeholder)
-   */
-  openNoteAddonsDialog(note: Note, event: Event): void {
-    event.stopPropagation();
-    (event.target as HTMLElement)?.blur();
-    this.logger.info('Note addons dialog not yet implemented', { noteId: note.id });
-  }
-
-  /**
-   * Opens the addons dialog for a specific document (placeholder)
-   */
-  openDocumentAddonsDialog(document: Document, event: Event): void {
-    event.stopPropagation();
-    (event.target as HTMLElement)?.blur();
-    this.logger.info('Document addons dialog not yet implemented', { documentId: document.id });
-  }
-
-  /**
-   * Opens the addons dialog for a specific repository (placeholder)
-   */
-  openRepositoryAddonsDialog(repository: Repository, event: Event): void {
-    event.stopPropagation();
-    (event.target as HTMLElement)?.blur();
-    this.logger.info('Repository addons dialog not yet implemented', {
-      repositoryId: repository.id,
-    });
   }
 
   /**

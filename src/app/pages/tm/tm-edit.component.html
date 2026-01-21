@@ -39,7 +39,7 @@
               <button
                 mat-icon-button
                 color="primary"
-                (click)="onDetailsAddonsClick()"
+                [matMenuTriggerFor]="detailsAddonsMenu"
                 [matTooltip]="'common.addons' | transloco"
                 [attr.aria-label]="'common.addons' | transloco"
               >
@@ -277,7 +277,7 @@
               <button
                 mat-icon-button
                 color="primary"
-                (click)="onAssetsAddonsClick()"
+                [matMenuTriggerFor]="assetsAddonsMenu"
                 [matTooltip]="'common.addons' | transloco"
                 [attr.aria-label]="'common.addons' | transloco"
               >
@@ -393,9 +393,10 @@
                       <button
                         mat-icon-button
                         color="primary"
-                        (click)="openAssetAddonsDialog(asset, $event)"
+                        [matMenuTriggerFor]="assetRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
+                        (click)="$event.stopPropagation()"
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -464,7 +465,7 @@
               <button
                 mat-icon-button
                 color="primary"
-                (click)="onThreatsAddonsClick()"
+                [matMenuTriggerFor]="threatsAddonsMenu"
                 [matTooltip]="'common.addons' | transloco"
                 [attr.aria-label]="'common.addons' | transloco"
               >
@@ -596,9 +597,10 @@
                       <button
                         mat-icon-button
                         color="primary"
-                        (click)="openThreatAddonsDialog(threat, $event)"
+                        [matMenuTriggerFor]="threatRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
+                        (click)="$event.stopPropagation()"
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -667,7 +669,7 @@
               <button
                 mat-icon-button
                 color="primary"
-                (click)="onDiagramsAddonsClick()"
+                [matMenuTriggerFor]="diagramsAddonsMenu"
                 [matTooltip]="'common.addons' | transloco"
                 [attr.aria-label]="'common.addons' | transloco"
               >
@@ -772,9 +774,10 @@
                       <button
                         mat-icon-button
                         color="primary"
-                        (click)="openDiagramAddonsDialog(diagram, $event)"
+                        [matMenuTriggerFor]="diagramRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
+                        (click)="$event.stopPropagation()"
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -863,7 +866,7 @@
               <button
                 mat-icon-button
                 color="primary"
-                (click)="onNotesAddonsClick()"
+                [matMenuTriggerFor]="notesAddonsMenu"
                 [matTooltip]="'common.addons' | transloco"
                 [attr.aria-label]="'common.addons' | transloco"
               >
@@ -939,9 +942,10 @@
                       <button
                         mat-icon-button
                         color="primary"
-                        (click)="openNoteAddonsDialog(note, $event)"
+                        [matMenuTriggerFor]="noteRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
+                        (click)="$event.stopPropagation()"
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -1010,7 +1014,7 @@
               <button
                 mat-icon-button
                 color="primary"
-                (click)="onDocumentsAddonsClick()"
+                [matMenuTriggerFor]="documentsAddonsMenu"
                 [matTooltip]="'common.addons' | transloco"
                 [attr.aria-label]="'common.addons' | transloco"
               >
@@ -1097,9 +1101,10 @@
                       <button
                         mat-icon-button
                         color="primary"
-                        (click)="openDocumentAddonsDialog(document, $event)"
+                        [matMenuTriggerFor]="documentRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
+                        (click)="$event.stopPropagation()"
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -1168,7 +1173,7 @@
               <button
                 mat-icon-button
                 color="primary"
-                (click)="onRepositoriesAddonsClick()"
+                [matMenuTriggerFor]="repositoriesAddonsMenu"
                 [matTooltip]="'common.addons' | transloco"
                 [attr.aria-label]="'common.addons' | transloco"
               >
@@ -1255,9 +1260,10 @@
                       <button
                         mat-icon-button
                         color="primary"
-                        (click)="openRepositoryAddonsDialog(repository, $event)"
+                        [matMenuTriggerFor]="repositoryRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
+                        (click)="$event.stopPropagation()"
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -1323,4 +1329,227 @@
       </svg>
     </div>
   }
+
+  <!-- Addon Menus -->
+
+  <!-- Threat Model Details Addons Menu -->
+  <mat-menu #detailsAddonsMenu="matMenu">
+    @if (addonsForThreatModel.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForThreatModel; track addon.id) {
+        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+
+  <!-- Assets Card Addons Menu -->
+  <mat-menu #assetsAddonsMenu="matMenu">
+    @if (addonsForAsset.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForAsset; track addon.id) {
+        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+
+  <!-- Asset Row Addons Menu -->
+  <mat-menu #assetRowAddonsMenu="matMenu">
+    @if (addonsForAsset.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForAsset; track addon.id) {
+        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+
+  <!-- Threats Card Addons Menu -->
+  <mat-menu #threatsAddonsMenu="matMenu">
+    @if (addonsForThreat.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForThreat; track addon.id) {
+        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+
+  <!-- Threat Row Addons Menu -->
+  <mat-menu #threatRowAddonsMenu="matMenu">
+    @if (addonsForThreat.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForThreat; track addon.id) {
+        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+
+  <!-- Diagrams Card Addons Menu -->
+  <mat-menu #diagramsAddonsMenu="matMenu">
+    @if (addonsForDiagram.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForDiagram; track addon.id) {
+        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+
+  <!-- Diagram Row Addons Menu -->
+  <mat-menu #diagramRowAddonsMenu="matMenu">
+    @if (addonsForDiagram.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForDiagram; track addon.id) {
+        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+
+  <!-- Notes Card Addons Menu -->
+  <mat-menu #notesAddonsMenu="matMenu">
+    @if (addonsForNote.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForNote; track addon.id) {
+        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+
+  <!-- Note Row Addons Menu -->
+  <mat-menu #noteRowAddonsMenu="matMenu">
+    @if (addonsForNote.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForNote; track addon.id) {
+        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+
+  <!-- Documents Card Addons Menu -->
+  <mat-menu #documentsAddonsMenu="matMenu">
+    @if (addonsForDocument.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForDocument; track addon.id) {
+        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+
+  <!-- Document Row Addons Menu -->
+  <mat-menu #documentRowAddonsMenu="matMenu">
+    @if (addonsForDocument.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForDocument; track addon.id) {
+        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+
+  <!-- Repositories Card Addons Menu -->
+  <mat-menu #repositoriesAddonsMenu="matMenu">
+    @if (addonsForRepository.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForRepository; track addon.id) {
+        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+
+  <!-- Repository Row Addons Menu -->
+  <mat-menu #repositoryRowAddonsMenu="matMenu">
+    @if (addonsForRepository.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForRepository; track addon.id) {
+        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
 </div>
