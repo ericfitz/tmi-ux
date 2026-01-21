@@ -430,6 +430,24 @@
     "moveToFront": "সবার সামনে সরান",
     "showObject": "অবজেক্ট দেখান"
   },
+  "dashboard": {
+    "clearFilter": "ফিল্টার সাফ করুন",
+    "filterLabel": "থ্রেট মডেল ফিল্টার করুন",
+    "filterPlaceholder": "নাম, বিবরণ, মালিক, বা স্ট্যাটাস দিয়ে খুঁজুন",
+    "noMatchingThreatModels": "আপনার ফিল্টারের সাথে কোনো থ্রেট মডেল মেলে না।",
+    "tableHeaders": {
+      "actions": "কার্যক্রম",
+      "created": "তৈরি হয়েছে",
+      "description": "বিবরণ",
+      "lastModified": "সর্বশেষ পরিবর্তিত",
+      "name": "নাম",
+      "owner": "মালিক",
+      "status": "স্ট্যাটাস",
+      "statusLastChanged": "স্ট্যাটাস সর্বশেষ পরিবর্তিত"
+    },
+    "viewAsCards": "কার্ড হিসেবে দেখুন",
+    "viewAsList": "তালিকা হিসেবে দেখুন"
+  },
   "dataAssetDialog": {
     "selectAsset": "ডেটা অ্যাসেট",
     "title": {
@@ -921,6 +939,7 @@
       },
       "title": "API শংসাপত্র"
     },
+    "dashboardListView": "ড্যাশবোর্ড তালিকা ভিউ হিসেবে দেখান",
     "deleteMyData": {
       "confirmation": "আপনি কি নিশ্চিত যে আপনি আপনার সমস্ত ডেটা মুছতে চান?",
       "continue": "চালিয়ে যান",

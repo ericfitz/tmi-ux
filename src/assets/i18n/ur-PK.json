@@ -430,6 +430,24 @@
     "moveToFront": "سب سے آگے منتقل کریں",
     "showObject": "آبجیکٹ دکھائیں"
   },
+  "dashboard": {
+    "clearFilter": "فلٹر صاف کریں",
+    "filterLabel": "خطرے کے ماڈلز فلٹر کریں",
+    "filterPlaceholder": "نام، تفصیل، مالک، یا حالت سے تلاش کریں",
+    "noMatchingThreatModels": "آپ کے فلٹر سے کوئی خطرے کا ماڈل میل نہیں کھاتا۔",
+    "tableHeaders": {
+      "actions": "اقدامات",
+      "created": "تخلیق",
+      "description": "تفصیل",
+      "lastModified": "آخری ترمیم",
+      "name": "نام",
+      "owner": "مالک",
+      "status": "حالت",
+      "statusLastChanged": "حالت کی آخری تبدیلی"
+    },
+    "viewAsCards": "کارڈز کے طور پر دیکھیں",
+    "viewAsList": "فہرست کے طور پر دیکھیں"
+  },
   "dataAssetDialog": {
     "selectAsset": "ڈیٹا اثاثہ",
     "title": {
@@ -921,6 +939,7 @@
       },
       "title": "API اعتبارات"
     },
+    "dashboardListView": "ڈیش بورڈ کو فہرست کے نظارے کے طور پر دکھائیں",
     "deleteMyData": {
       "confirmation": "کیا آپ واقعی اپنا سارا ڈیٹا حذف کرنا چاہتے ہیں؟",
       "continue": "جاری رکھیں",

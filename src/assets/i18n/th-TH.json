@@ -430,6 +430,24 @@
     "moveToFront": "เลื่อนไปด้านหน้า",
     "showObject": "แสดงอ็อบเจกต์"
   },
+  "dashboard": {
+    "clearFilter": "ล้างตัวกรอง",
+    "filterLabel": "กรองโมเดลภัยคุกคาม",
+    "filterPlaceholder": "ค้นหาตามชื่อ คำอธิบาย เจ้าของ หรือสถานะ",
+    "noMatchingThreatModels": "ไม่พบโมเดลภัยคุกคามที่ตรงกับตัวกรองของคุณ",
+    "tableHeaders": {
+      "actions": "การดำเนินการ",
+      "created": "สร้างเมื่อ",
+      "description": "คำอธิบาย",
+      "lastModified": "แก้ไขล่าสุด",
+      "name": "ชื่อ",
+      "owner": "เจ้าของ",
+      "status": "สถานะ",
+      "statusLastChanged": "สถานะเปลี่ยนล่าสุด"
+    },
+    "viewAsCards": "ดูแบบการ์ด",
+    "viewAsList": "ดูแบบรายการ"
+  },
   "dataAssetDialog": {
     "selectAsset": "ทรัพย์สินข้อมูล",
     "title": {
@@ -921,6 +939,7 @@
       },
       "title": "ข้อมูลประจำตัว API"
     },
+    "dashboardListView": "แสดงแดชบอร์ดเป็นมุมมองรายการ",
     "deleteMyData": {
       "confirmation": "คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลทั้งหมดของคุณ?",
       "continue": "ดำเนินการต่อ",

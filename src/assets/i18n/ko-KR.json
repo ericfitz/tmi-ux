@@ -430,6 +430,24 @@
     "moveToFront": "맨 앞으로 이동",
     "showObject": "객체 표시"
   },
+  "dashboard": {
+    "clearFilter": "필터 지우기",
+    "filterLabel": "위협 모델 필터링",
+    "filterPlaceholder": "이름, 설명, 소유자 또는 상태로 검색",
+    "noMatchingThreatModels": "필터와 일치하는 위협 모델이 없습니다.",
+    "tableHeaders": {
+      "actions": "작업",
+      "created": "생성일",
+      "description": "설명",
+      "lastModified": "최종 수정일",
+      "name": "이름",
+      "owner": "소유자",
+      "status": "상태",
+      "statusLastChanged": "상태 마지막 변경일"
+    },
+    "viewAsCards": "카드로 보기",
+    "viewAsList": "목록으로 보기"
+  },
   "dataAssetDialog": {
     "selectAsset": "데이터 자산",
     "title": {
@@ -921,6 +939,7 @@
       },
       "title": "API 자격증명"
     },
+    "dashboardListView": "대시보드를 목록 보기로 표시",
     "deleteMyData": {
       "confirmation": "모든 데이터를 삭제하시겠습니까?",
       "continue": "계속",

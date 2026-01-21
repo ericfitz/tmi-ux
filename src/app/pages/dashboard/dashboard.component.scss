@@ -46,7 +46,24 @@
   }
 }
 
+// Filter field
+.filter-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+// Cards grid layout
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
 .threat-models-list,
+.collaboration-sessions-list {
+  display: block;
+}
+
 .collaboration-sessions-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -348,6 +365,93 @@ button.delete-button {
   margin: 0;
   font-size: 1rem;
   color: var(--theme-text-primary);
+}
+
+// Table view styles
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--theme-divider, rgb(0 0 0 / 12%));
+  border-radius: 4px;
+}
+
+.threat-models-table {
+  width: 100%;
+  table-layout: fixed;
+
+  th.mat-mdc-header-cell {
+    font-weight: 600;
+    color: var(--theme-text-secondary);
+  }
+
+  td.mat-mdc-cell {
+    font-size: 0.875rem;
+    vertical-align: middle;
+  }
+
+  // Column widths - description is the flexible column
+  .mat-column-name {
+    width: 180px;
+  }
+
+  .mat-column-description {
+    width: auto; // This column expands/compresses
+  }
+
+  .mat-column-lastModified {
+    width: 120px;
+  }
+
+  .mat-column-status {
+    width: 100px;
+  }
+
+  .mat-column-statusLastChanged {
+    width: 120px;
+  }
+
+  .mat-column-owner {
+    width: 140px;
+  }
+
+  .mat-column-created {
+    width: 120px;
+  }
+
+  .mat-column-actions {
+    width: 80px;
+    text-align: center;
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .tm-name {
+    display: block;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tm-description {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--theme-text-secondary);
+  }
+}
+
+.clickable-row {
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--theme-hover, rgb(0 0 0 / 4%));
+  }
 }
 
 // RTL support

@@ -18,11 +18,13 @@
  */
 
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   OnDestroy,
   OnInit,
+  ViewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -34,6 +36,7 @@ import {
   CORE_MATERIAL_IMPORTS,
   DATA_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
+  FORM_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
 import { LanguageService } from '../../i18n/language.service';
 import { ThreatModel } from '../tm/models/threat-model.model';
@@ -49,6 +52,8 @@ import { LoggerService } from '../../core/services/logger.service';
 import { SvgCacheService } from '../tm/services/svg-cache.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import {
   DeleteThreatModelDialogComponent,
   DeleteThreatModelDialogData,
@@ -63,14 +68,32 @@ import { AuthService } from '../../auth/services/auth.service';
     ...CORE_MATERIAL_IMPORTS,
     ...DATA_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
+    ...FORM_MATERIAL_IMPORTS,
     TranslocoModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   threatModels: TMListItem[] = [];
+  dataSource = new MatTableDataSource<TMListItem>([]);
+
+  @ViewChild(MatSort) sort!: MatSort;
+
+  // View mode and filtering
+  dashboardListView = false;
+  filterText = '';
+  displayedColumns: string[] = [
+    'name',
+    'description',
+    'lastModified',
+    'status',
+    'statusLastChanged',
+    'owner',
+    'created',
+    'actions',
+  ];
 
   // Observable streams
   collaborationSessions$!: Observable<CollaborationSession[]>;
@@ -105,6 +128,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // this.logger.debugComponent('Dashboard', 'DashboardComponent.ngOnInit called');
 
+    // Load view preference from localStorage
+    this.loadViewPreference();
+
     // Clear SVG caches when initializing dashboard to ensure fresh start
     this.svgCacheService.clearAllCaches();
 
@@ -126,6 +152,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subscription = this.threatModelService.getThreatModelList().subscribe(models => {
       // Ensure models is always an array
       this.threatModels = models || [];
+      this.applyFilter();
       this.isLoadingThreatModels = false;
       // this.logger.debugComponent('Dashboard', 'DashboardComponent received threat model list', {
       //   count: this.threatModels.length,
@@ -157,6 +184,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // Unsubscribe from collaboration session polling when leaving dashboard
     this.collaborationSessionService.unsubscribeFromSessionPolling();
+  }
+
+  ngAfterViewInit(): void {
+    // Set up sorting after view is initialized
+    this.dataSource.sort = this.sort;
+
+    // Custom sorting accessor to handle nested properties and date columns
+    this.dataSource.sortingDataAccessor = (item: TMListItem, property: string): string | number => {
+      switch (property) {
+        case 'name':
+          return item.name?.toLowerCase() || '';
+        case 'description':
+          return item.description?.toLowerCase() || '';
+        case 'lastModified':
+          return item.modified_at ? new Date(item.modified_at).getTime() : 0;
+        case 'status':
+          return item.status?.toLowerCase() || '';
+        case 'statusLastChanged':
+          return item.status_updated ? new Date(item.status_updated).getTime() : 0;
+        case 'owner':
+          return item.owner?.display_name?.toLowerCase() || item.owner?.email?.toLowerCase() || '';
+        case 'created':
+          return item.created_at ? new Date(item.created_at).getTime() : 0;
+        default:
+          return '';
+      }
+    };
   }
 
   createThreatModel(): void {
@@ -336,6 +390,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.isLoadingThreatModels = true;
     this.threatModelService.getThreatModelList().subscribe(models => {
       this.threatModels = models || [];
+      this.applyFilter();
       this.isLoadingThreatModels = false;
       // this.logger.info('Threat models refreshed', { count: this.threatModels.length });
       this.cdr.detectChanges();
@@ -520,5 +575,88 @@ export class DashboardComponent implements OnInit, OnDestroy {
       duration: 5000,
       panelClass: ['error-snackbar'],
     });
+  }
+
+  /**
+   * Load the dashboard view preference from localStorage
+   */
+  private loadViewPreference(): void {
+    const stored = localStorage.getItem('tmi_user_preferences');
+    if (stored) {
+      try {
+        const prefs = JSON.parse(stored) as { dashboardListView?: boolean };
+        this.dashboardListView = prefs.dashboardListView ?? false;
+      } catch {
+        this.dashboardListView = false;
+      }
+    }
+  }
+
+  /**
+   * Toggle between card and list view
+   */
+  toggleViewMode(): void {
+    this.dashboardListView = !this.dashboardListView;
+
+    // Save preference to localStorage
+    const stored = localStorage.getItem('tmi_user_preferences');
+    if (stored) {
+      try {
+        const prefs = JSON.parse(stored) as Record<string, unknown>;
+        prefs['dashboardListView'] = this.dashboardListView;
+        localStorage.setItem('tmi_user_preferences', JSON.stringify(prefs));
+      } catch {
+        // Ignore parse errors
+      }
+    }
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Handle filter input changes
+   */
+  onFilterChange(value: string): void {
+    this.filterText = value;
+    this.applyFilter();
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Clear the filter
+   */
+  clearFilter(): void {
+    this.filterText = '';
+    this.applyFilter();
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Apply the current filter to the threat models list
+   */
+  private applyFilter(): void {
+    const filter = this.filterText.toLowerCase().trim();
+    let filtered: TMListItem[];
+
+    if (!filter) {
+      filtered = [...this.threatModels];
+    } else {
+      filtered = this.threatModels.filter(
+        tm =>
+          tm.name?.toLowerCase().includes(filter) ||
+          tm.description?.toLowerCase().includes(filter) ||
+          tm.owner?.display_name?.toLowerCase().includes(filter) ||
+          tm.status?.toLowerCase().includes(filter),
+      );
+    }
+
+    // Update both the dataSource (for table) and filteredThreatModels (for cards)
+    this.dataSource.data = filtered;
+  }
+
+  /**
+   * Get filtered threat models for card view
+   */
+  get filteredThreatModels(): TMListItem[] {
+    return this.dataSource.data;
   }
 }

@@ -451,6 +451,24 @@
     "moveToFront": "Move to Front",
     "showObject": "Show Object"
   },
+  "dashboard": {
+    "clearFilter": "Clear Filter",
+    "filterLabel": "Filter Threat Models",
+    "filterPlaceholder": "Search by name, description, owner, or status",
+    "noMatchingThreatModels": "No threat models match your filter.",
+    "tableHeaders": {
+      "actions": "Actions",
+      "created": "Created",
+      "description": "Description",
+      "lastModified": "Last Modified",
+      "name": "Name",
+      "owner": "Owner",
+      "status": "Status",
+      "statusLastChanged": "Status Last Changed"
+    },
+    "viewAsCards": "View as Cards",
+    "viewAsList": "View as List"
+  },
   "dataAssetDialog": {
     "selectAsset": "Data Asset",
     "title": {
@@ -948,6 +966,7 @@
       },
       "title": "Client Credentials"
     },
+    "dashboardListView": "Show Dashboard as List View",
     "deleteMyData": {
       "confirmation": "Are you sure that you want to delete all your data?",
       "continue": "Continue",

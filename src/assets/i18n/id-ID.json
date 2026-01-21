@@ -430,6 +430,24 @@
     "moveToFront": "Pindah ke Paling Depan",
     "showObject": "Tampilkan Objek"
   },
+  "dashboard": {
+    "clearFilter": "Hapus Filter",
+    "filterLabel": "Filter Model Ancaman",
+    "filterPlaceholder": "Cari berdasarkan nama, deskripsi, pemilik, atau status",
+    "noMatchingThreatModels": "Tidak ada model ancaman yang cocok dengan filter Anda.",
+    "tableHeaders": {
+      "actions": "Tindakan",
+      "created": "Dibuat",
+      "description": "Deskripsi",
+      "lastModified": "Terakhir Diubah",
+      "name": "Nama",
+      "owner": "Pemilik",
+      "status": "Status",
+      "statusLastChanged": "Status Terakhir Diubah"
+    },
+    "viewAsCards": "Tampilkan sebagai Kartu",
+    "viewAsList": "Tampilkan sebagai Daftar"
+  },
   "dataAssetDialog": {
     "selectAsset": "Aset Data",
     "title": {
@@ -921,6 +939,7 @@
       },
       "title": "Kredensial API"
     },
+    "dashboardListView": "Tampilkan Dasbor sebagai Tampilan Daftar",
     "deleteMyData": {
       "confirmation": "Apakah Anda yakin ingin menghapus semua data Anda?",
       "continue": "Lanjutkan",

@@ -33,6 +33,7 @@ export interface UserPreferences {
   pageSize: 'usLetter' | 'A4';
   marginSize: 'narrow' | 'standard' | 'wide';
   showDeveloperTools: boolean;
+  dashboardListView: boolean;
 }
 
 interface CheckboxChangeEvent {
@@ -178,6 +179,17 @@ interface CheckboxChangeEvent {
               >
                 <span [transloco]="'userPreferences.showDeveloperTools'">
                   Show Developer Tools
+                </span>
+              </mat-checkbox>
+            </div>
+
+            <div class="preference-item">
+              <mat-checkbox
+                [(ngModel)]="preferences.dashboardListView"
+                (change)="onDashboardListViewChange($event)"
+              >
+                <span [transloco]="'userPreferences.dashboardListView'">
+                  Show Dashboard as List View
                 </span>
               </mat-checkbox>
             </div>
@@ -710,6 +722,7 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
       pageSize: 'usLetter',
       marginSize: 'standard',
       showDeveloperTools: false,
+      dashboardListView: false,
     };
     this.savePreferences(defaultPrefs);
     return defaultPrefs;
@@ -748,6 +761,11 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
 
   onShowDeveloperToolsChange(event: CheckboxChangeEvent): void {
     this.preferences.showDeveloperTools = event.checked;
+    this.savePreferences(this.preferences);
+  }
+
+  onDashboardListViewChange(event: CheckboxChangeEvent): void {
+    this.preferences.dashboardListView = event.checked;
     this.savePreferences(this.preferences);
   }
 

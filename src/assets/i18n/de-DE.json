@@ -430,6 +430,24 @@
     "moveToFront": "In den Vordergrund",
     "showObject": "Objekt anzeigen"
   },
+  "dashboard": {
+    "clearFilter": "Filter löschen",
+    "filterLabel": "Bedrohungsmodelle filtern",
+    "filterPlaceholder": "Nach Name, Beschreibung, Eigentümer oder Status suchen",
+    "noMatchingThreatModels": "Keine Bedrohungsmodelle entsprechen Ihrem Filter.",
+    "tableHeaders": {
+      "actions": "Aktionen",
+      "created": "Erstellt",
+      "description": "Beschreibung",
+      "lastModified": "Zuletzt geändert",
+      "name": "Name",
+      "owner": "Eigentümer",
+      "status": "Status",
+      "statusLastChanged": "Status zuletzt geändert"
+    },
+    "viewAsCards": "Als Karten anzeigen",
+    "viewAsList": "Als Liste anzeigen"
+  },
   "dataAssetDialog": {
     "selectAsset": "Daten-Asset",
     "title": {
@@ -921,6 +939,7 @@
       },
       "title": "API-Anmeldedaten"
     },
+    "dashboardListView": "Dashboard als Listenansicht anzeigen",
     "deleteMyData": {
       "confirmation": "Sind Sie sicher, dass Sie alle Ihre Daten löschen möchten?",
       "continue": "Weiter",

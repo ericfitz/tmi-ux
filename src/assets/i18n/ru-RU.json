@@ -430,6 +430,24 @@
     "moveToFront": "На передний план",
     "showObject": "Показать объект"
   },
+  "dashboard": {
+    "clearFilter": "Очистить фильтр",
+    "filterLabel": "Фильтр моделей угроз",
+    "filterPlaceholder": "Поиск по названию, описанию, владельцу или статусу",
+    "noMatchingThreatModels": "Нет моделей угроз, соответствующих вашему фильтру.",
+    "tableHeaders": {
+      "actions": "Действия",
+      "created": "Создано",
+      "description": "Описание",
+      "lastModified": "Последнее изменение",
+      "name": "Название",
+      "owner": "Владелец",
+      "status": "Статус",
+      "statusLastChanged": "Последнее изменение статуса"
+    },
+    "viewAsCards": "Отобразить в виде карточек",
+    "viewAsList": "Отобразить в виде списка"
+  },
   "dataAssetDialog": {
     "selectAsset": "Актив данных",
     "title": {
@@ -921,6 +939,7 @@
       },
       "title": "API учетные данные"
     },
+    "dashboardListView": "Показывать панель управления в виде списка",
     "deleteMyData": {
       "confirmation": "Вы уверены, что хотите удалить все свои данные?",
       "continue": "Продолжить",

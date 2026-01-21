@@ -430,6 +430,24 @@
     "moveToFront": "सबसे आगे ले जाएं",
     "showObject": "ऑब्जेक्ट दिखाएं"
   },
+  "dashboard": {
+    "clearFilter": "फ़िल्टर साफ़ करें",
+    "filterLabel": "थ्रेट मॉडल फ़िल्टर करें",
+    "filterPlaceholder": "नाम, विवरण, स्वामी, या स्थिति से खोजें",
+    "noMatchingThreatModels": "कोई थ्रेट मॉडल आपके फ़िल्टर से मेल नहीं खाता।",
+    "tableHeaders": {
+      "actions": "कार्रवाइयाँ",
+      "created": "बनाया गया",
+      "description": "विवरण",
+      "lastModified": "अंतिम संशोधित",
+      "name": "नाम",
+      "owner": "स्वामी",
+      "status": "स्थिति",
+      "statusLastChanged": "स्थिति अंतिम बार बदली गई"
+    },
+    "viewAsCards": "कार्ड के रूप में देखें",
+    "viewAsList": "सूची के रूप में देखें"
+  },
   "dataAssetDialog": {
     "selectAsset": "डेटा एसेट",
     "title": {
@@ -921,6 +939,7 @@
       },
       "title": "API क्रेडेंशियल"
     },
+    "dashboardListView": "डैशबोर्ड को सूची दृश्य के रूप में दिखाएं",
     "deleteMyData": {
       "confirmation": "क्या आप वाकई अपना सारा डेटा हटाना चाहते हैं?",
       "continue": "जारी रखें",

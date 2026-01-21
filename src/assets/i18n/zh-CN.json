@@ -430,6 +430,24 @@
     "moveToFront": "移到最前",
     "showObject": "显示对象"
   },
+  "dashboard": {
+    "clearFilter": "清除筛选",
+    "filterLabel": "筛选威胁模型",
+    "filterPlaceholder": "按名称、描述、所有者或状态搜索",
+    "noMatchingThreatModels": "没有与您的筛选条件匹配的威胁模型。",
+    "tableHeaders": {
+      "actions": "操作",
+      "created": "创建时间",
+      "description": "描述",
+      "lastModified": "最后修改",
+      "name": "名称",
+      "owner": "所有者",
+      "status": "状态",
+      "statusLastChanged": "状态最后更改"
+    },
+    "viewAsCards": "以卡片形式查看",
+    "viewAsList": "以列表形式查看"
+  },
   "dataAssetDialog": {
     "selectAsset": "数据资产",
     "title": {
@@ -921,6 +939,7 @@
       },
       "title": "API凭证"
     },
+    "dashboardListView": "将仪表板显示为列表视图",
     "deleteMyData": {
       "confirmation": "您确定要删除所有数据吗？",
       "continue": "继续",

@@ -430,6 +430,24 @@
     "moveToFront": "最前面へ移動",
     "showObject": "オブジェクトを表示"
   },
+  "dashboard": {
+    "clearFilter": "フィルターをクリア",
+    "filterLabel": "脅威モデルをフィルター",
+    "filterPlaceholder": "名前、説明、オーナー、またはステータスで検索",
+    "noMatchingThreatModels": "フィルターに一致する脅威モデルはありません。",
+    "tableHeaders": {
+      "actions": "アクション",
+      "created": "作成日",
+      "description": "説明",
+      "lastModified": "最終更新日",
+      "name": "名前",
+      "owner": "オーナー",
+      "status": "ステータス",
+      "statusLastChanged": "ステータス最終変更日"
+    },
+    "viewAsCards": "カード表示",
+    "viewAsList": "リスト表示"
+  },
   "dataAssetDialog": {
     "selectAsset": "データアセット",
     "title": {
@@ -921,6 +939,7 @@
       },
       "title": "API認証情報"
     },
+    "dashboardListView": "ダッシュボードをリストビューで表示",
     "deleteMyData": {
       "confirmation": "本当にすべてのデータを削除しますか？",
       "continue": "続行",

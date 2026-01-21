@@ -430,6 +430,24 @@
     "moveToFront": "Mettre au premier plan",
     "showObject": "Afficher l'objet"
   },
+  "dashboard": {
+    "clearFilter": "Effacer le filtre",
+    "filterLabel": "Filtrer les modèles de menaces",
+    "filterPlaceholder": "Rechercher par nom, description, propriétaire ou statut",
+    "noMatchingThreatModels": "Aucun modèle de menaces ne correspond à votre filtre.",
+    "tableHeaders": {
+      "actions": "Actions",
+      "created": "Créé",
+      "description": "Description",
+      "lastModified": "Dernière modification",
+      "name": "Nom",
+      "owner": "Propriétaire",
+      "status": "Statut",
+      "statusLastChanged": "Dernier changement de statut"
+    },
+    "viewAsCards": "Afficher en cartes",
+    "viewAsList": "Afficher en liste"
+  },
   "dataAssetDialog": {
     "selectAsset": "Actif de donnees",
     "title": {
@@ -921,6 +939,7 @@
       },
       "title": "Identifiants API"
     },
+    "dashboardListView": "Afficher le Tableau de Bord en Vue Liste",
     "deleteMyData": {
       "confirmation": "Etes-vous sur de vouloir supprimer toutes vos donnees ?",
       "continue": "Continuer",

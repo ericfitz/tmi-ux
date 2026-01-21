@@ -430,6 +430,24 @@
     "moveToFront": "نقل إلى المقدمة",
     "showObject": "عرض الكائن"
   },
+  "dashboard": {
+    "clearFilter": "مسح الفلتر",
+    "filterLabel": "تصفية نماذج التهديدات",
+    "filterPlaceholder": "البحث حسب الاسم أو الوصف أو المالك أو الحالة",
+    "noMatchingThreatModels": "لا توجد نماذج تهديدات تطابق الفلتر الخاص بك.",
+    "tableHeaders": {
+      "actions": "الإجراءات",
+      "created": "تاريخ الإنشاء",
+      "description": "الوصف",
+      "lastModified": "آخر تعديل",
+      "name": "الاسم",
+      "owner": "المالك",
+      "status": "الحالة",
+      "statusLastChanged": "آخر تغيير للحالة"
+    },
+    "viewAsCards": "عرض كبطاقات",
+    "viewAsList": "عرض كقائمة"
+  },
   "dataAssetDialog": {
     "selectAsset": "أصل البيانات",
     "title": {
@@ -921,6 +939,7 @@
       },
       "title": "بيانات اعتماد العميل"
     },
+    "dashboardListView": "عرض لوحة التحكم كقائمة",
     "deleteMyData": {
       "confirmation": "هل أنت متأكد من أنك تريد حذف جميع بياناتك؟",
       "continue": "متابعة",

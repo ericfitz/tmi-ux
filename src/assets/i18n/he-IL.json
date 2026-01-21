@@ -430,6 +430,24 @@
     "moveToFront": "הזז לקדמה",
     "showObject": "הצג אובייקט"
   },
+  "dashboard": {
+    "clearFilter": "נקה מסנן",
+    "filterLabel": "סנן מודלי איומים",
+    "filterPlaceholder": "חפש לפי שם, תיאור, בעלים או סטטוס",
+    "noMatchingThreatModels": "אין מודלי איומים התואמים את המסנן שלך.",
+    "tableHeaders": {
+      "actions": "פעולות",
+      "created": "נוצר",
+      "description": "תיאור",
+      "lastModified": "שינוי אחרון",
+      "name": "שם",
+      "owner": "בעלים",
+      "status": "סטטוס",
+      "statusLastChanged": "שינוי סטטוס אחרון"
+    },
+    "viewAsCards": "הצג ככרטיסים",
+    "viewAsList": "הצג כרשימה"
+  },
   "dataAssetDialog": {
     "selectAsset": "נכס נתונים",
     "title": {
@@ -921,6 +939,7 @@
       },
       "title": "אישורי API"
     },
+    "dashboardListView": "הצג לוח מחוונים כתצוגת רשימה",
     "deleteMyData": {
       "confirmation": "האם אתה בטוח שברצונך למחוק את כל הנתונים שלך?",
       "continue": "המשך",

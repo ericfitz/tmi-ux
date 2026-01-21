@@ -9,6 +9,18 @@
       <button
         mat-icon-button
         color="primary"
+        (click)="toggleViewMode()"
+        [matTooltip]="
+          dashboardListView
+            ? ('dashboard.viewAsCards' | transloco)
+            : ('dashboard.viewAsList' | transloco)
+        "
+      >
+        <mat-icon>{{ dashboardListView ? 'view_module' : 'list_alt' }}</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="primary"
         (click)="import()"
         [matTooltip]="'threatModels.tooltips.import' | transloco"
       >
@@ -25,6 +37,23 @@
     </div>
   </div>
 
+  <!-- Filter field -->
+  <mat-form-field class="filter-field" appearance="outline">
+    <mat-label [transloco]="'dashboard.filterLabel'">Filter Threat Models</mat-label>
+    <input
+      matInput
+      [value]="filterText"
+      (input)="onFilterChange($any($event.target).value)"
+      [placeholder]="'dashboard.filterPlaceholder' | transloco"
+    />
+    <mat-icon matPrefix>search</mat-icon>
+    @if (filterText) {
+      <button matSuffix mat-icon-button (click)="clearFilter()" aria-label="Clear filter">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+
   <div class="threat-models-list">
     @if (isLoadingThreatModels) {
       <div class="loading-container">
@@ -32,102 +61,228 @@
       </div>
     }
 
-    <mat-card
-      *ngFor="let threatModel of threatModels"
-      class="threat-model-card"
-      (click)="openThreatModel(threatModel.id)"
-    >
-      <mat-card-content>
-        <div class="threat-model-info">
-          <mat-icon class="threat-model-icon">security</mat-icon>
-          <div class="threat-model-details">
-            <h3 class="threat-model-title">
-              {{ threatModel.name }}
-            </h3>
-            @if (threatModel.description) {
-              <p class="threat-model-description">
-                {{ threatModel.description }}
-              </p>
-            }
-            <p class="threat-model-date">
-              <span class="date-label">{{ 'common.lastModified' | transloco }}:</span>
-              {{ formatDate(threatModel.modified_at) }}
-            </p>
-            <p class="threat-model-status">
-              <span class="status-label">{{ 'common.status' | transloco }}:</span>
-              {{
-                threatModel.status ? ('threatModels.status.' + threatModel.status | transloco) : '—'
-              }}
-            </p>
-            <p class="threat-model-status-updated">
-              <span class="status-label">{{ 'threatModels.statusLastUpdated' | transloco }}:</span>
-              {{ threatModel.status_updated ? formatDate(threatModel.status_updated) : '—' }}
-            </p>
+    <!-- Card View -->
+    @if (!dashboardListView && !isLoadingThreatModels) {
+      <div class="cards-grid">
+        <mat-card
+          *ngFor="let threatModel of filteredThreatModels"
+          class="threat-model-card"
+          (click)="openThreatModel(threatModel.id)"
+        >
+          <mat-card-content>
+            <div class="threat-model-info">
+              <mat-icon class="threat-model-icon">security</mat-icon>
+              <div class="threat-model-details">
+                <h3 class="threat-model-title">
+                  {{ threatModel.name }}
+                </h3>
+                @if (threatModel.description) {
+                  <p class="threat-model-description">
+                    {{ threatModel.description }}
+                  </p>
+                }
+                <p class="threat-model-date">
+                  <span class="date-label">{{ 'common.lastModified' | transloco }}:</span>
+                  {{ formatDate(threatModel.modified_at) }}
+                </p>
+                <p class="threat-model-status">
+                  <span class="status-label">{{ 'common.status' | transloco }}:</span>
+                  {{
+                    threatModel.status
+                      ? ('threatModels.status.' + threatModel.status | transloco)
+                      : '—'
+                  }}
+                </p>
+                <p class="threat-model-status-updated">
+                  <span class="status-label"
+                    >{{ 'threatModels.statusLastUpdated' | transloco }}:</span
+                  >
+                  {{ threatModel.status_updated ? formatDate(threatModel.status_updated) : '—' }}
+                </p>
 
-            <div class="threat-model-stats">
-              <div class="stats-row">
-                <span class="stat">
-                  <mat-icon
-                    fontSet="material-symbols-outlined"
-                    fontWeight="100"
-                    style="font-variation-settings: 'FILL' 0"
-                    >diamond</mat-icon
-                  >
-                  {{ threatModel.asset_count }} {{ 'common.objectTypes.assets' | transloco }}
-                </span>
-                <span class="stat">
-                  <mat-icon
-                    fontSet="material-symbols-outlined"
-                    fontWeight="100"
-                    style="font-variation-settings: 'FILL' 0"
-                    class="skull-icon"
-                    >skull</mat-icon
-                  >
-                  {{ threatModel.threat_count }} {{ 'common.objectTypes.threats' | transloco }}
-                </span>
-              </div>
-              <div class="stats-row">
-                <span class="stat">
-                  <mat-icon>account_tree</mat-icon>
-                  {{ threatModel.diagram_count }}
-                  {{ 'threatModels.diagrams' | transloco }}
-                </span>
-                <span class="stat">
-                  <mat-icon>note</mat-icon>
-                  {{ threatModel.note_count }} {{ 'common.objectTypes.notes' | transloco }}
-                </span>
-              </div>
-              <div class="stats-row">
-                <span class="stat">
-                  <mat-icon>description</mat-icon>
-                  {{ threatModel.document_count }} {{ 'common.objectTypes.documents' | transloco }}
-                </span>
-                <span class="stat">
-                  <mat-icon>code</mat-icon>
-                  {{ threatModel.repo_count }} {{ 'threatModels.sourcesCount' | transloco }}
-                </span>
+                <div class="threat-model-stats">
+                  <div class="stats-row">
+                    <span class="stat">
+                      <mat-icon
+                        fontSet="material-symbols-outlined"
+                        fontWeight="100"
+                        style="font-variation-settings: 'FILL' 0"
+                        >diamond</mat-icon
+                      >
+                      {{ threatModel.asset_count }} {{ 'common.objectTypes.assets' | transloco }}
+                    </span>
+                    <span class="stat">
+                      <mat-icon
+                        fontSet="material-symbols-outlined"
+                        fontWeight="100"
+                        style="font-variation-settings: 'FILL' 0"
+                        class="skull-icon"
+                        >skull</mat-icon
+                      >
+                      {{ threatModel.threat_count }} {{ 'common.objectTypes.threats' | transloco }}
+                    </span>
+                  </div>
+                  <div class="stats-row">
+                    <span class="stat">
+                      <mat-icon>account_tree</mat-icon>
+                      {{ threatModel.diagram_count }}
+                      {{ 'threatModels.diagrams' | transloco }}
+                    </span>
+                    <span class="stat">
+                      <mat-icon>note</mat-icon>
+                      {{ threatModel.note_count }} {{ 'common.objectTypes.notes' | transloco }}
+                    </span>
+                  </div>
+                  <div class="stats-row">
+                    <span class="stat">
+                      <mat-icon>description</mat-icon>
+                      {{ threatModel.document_count }}
+                      {{ 'common.objectTypes.documents' | transloco }}
+                    </span>
+                    <span class="stat">
+                      <mat-icon>code</mat-icon>
+                      {{ threatModel.repo_count }} {{ 'threatModels.sourcesCount' | transloco }}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-        <button
-          mat-icon-button
-          color="warn"
-          class="delete-button"
-          (click)="deleteThreatModel(threatModel.id, $event)"
-          [matTooltip]="'common.delete' | transloco"
-        >
-          <mat-icon>delete</mat-icon>
-        </button>
-      </mat-card-content>
-    </mat-card>
+            <button
+              mat-icon-button
+              color="warn"
+              class="delete-button"
+              (click)="deleteThreatModel(threatModel.id, $event)"
+              [matTooltip]="'common.delete' | transloco"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
 
+    <!-- Table/List View -->
+    @if (dashboardListView && !isLoadingThreatModels) {
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="threat-models-table">
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'dashboard.tableHeaders.name' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let tm">
+              <span class="tm-name" [matTooltip]="tm.name">{{ tm.name }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Description Column -->
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'dashboard.tableHeaders.description' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let tm">
+              <span class="tm-description" [matTooltip]="tm.description || ''">{{
+                tm.description || '—'
+              }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Last Modified Column -->
+          <ng-container matColumnDef="lastModified">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'dashboard.tableHeaders.lastModified' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let tm">
+              {{ formatDate(tm.modified_at) }}
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'dashboard.tableHeaders.status' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let tm">
+              {{ tm.status ? ('threatModels.status.' + tm.status | transloco) : '—' }}
+            </td>
+          </ng-container>
+
+          <!-- Status Last Changed Column -->
+          <ng-container matColumnDef="statusLastChanged">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'dashboard.tableHeaders.statusLastChanged' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let tm">
+              {{ tm.status_updated ? formatDate(tm.status_updated) : '—' }}
+            </td>
+          </ng-container>
+
+          <!-- Owner Column -->
+          <ng-container matColumnDef="owner">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'dashboard.tableHeaders.owner' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let tm">
+              {{ tm.owner?.display_name || tm.owner?.email || '—' }}
+            </td>
+          </ng-container>
+
+          <!-- Created Column -->
+          <ng-container matColumnDef="created">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'dashboard.tableHeaders.created' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let tm">
+              {{ formatDate(tm.created_at) }}
+            </td>
+          </ng-container>
+
+          <!-- Actions Column (not sortable) -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ 'dashboard.tableHeaders.actions' | transloco }}
+            </th>
+            <td mat-cell *matCellDef="let tm">
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteThreatModel(tm.id, $event)"
+                [matTooltip]="'common.delete' | transloco"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="clickable-row"
+            (click)="openThreatModel(row.id)"
+          ></tr>
+        </table>
+      </div>
+    }
+
+    <!-- Empty state: no threat models at all -->
     @if (!isLoadingThreatModels && threatModels.length === 0) {
       <div class="no-threat-models">
         <mat-icon class="empty-icon">sentiment_dissatisfied</mat-icon>
         <p [transloco]="'threatModels.noItemsMessage'">You don't have any threat models yet.</p>
         <button mat-raised-button color="primary" (click)="createThreatModel()">
           <span [transloco]="'threatModels.createFirstButton'">Create your first threat model</span>
+        </button>
+      </div>
+    }
+
+    <!-- Empty state: no matching threat models after filtering -->
+    @if (!isLoadingThreatModels && threatModels.length > 0 && filteredThreatModels.length === 0) {
+      <div class="no-threat-models">
+        <mat-icon class="empty-icon">search_off</mat-icon>
+        <p [transloco]="'dashboard.noMatchingThreatModels'">No threat models match your filter.</p>
+        <button mat-button (click)="clearFilter()">
+          {{ 'dashboard.clearFilter' | transloco }}
         </button>
       </div>
     }

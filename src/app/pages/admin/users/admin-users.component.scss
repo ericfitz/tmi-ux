@@ -86,6 +86,7 @@
 
   table {
     width: 100%;
+    table-layout: fixed;
   }
 
   th {
@@ -97,6 +98,34 @@
   td,
   th {
     padding: 12px 16px;
+    vertical-align: middle;
+  }
+
+  // Column widths - subject is the flexible column
+  .mat-column-provider {
+    width: 100px;
+  }
+
+  .mat-column-subject {
+    width: auto; // This column expands/compresses
+  }
+
+  .mat-column-lastLogin {
+    width: 140px;
+  }
+
+  .mat-column-groups {
+    width: 200px;
+  }
+
+  .mat-column-threatModels {
+    width: 80px;
+    text-align: center;
+  }
+
+  .mat-column-actions {
+    width: 80px;
+    text-align: center;
   }
 
   .subject-info {
