@@ -147,4 +147,22 @@ export class AdminAddonsComponent implements OnInit, OnDestroy {
       void this.router.navigate(['/dashboard']);
     }
   }
+
+  /**
+   * Returns the translation key for an object type.
+   * Falls back to the raw value for unknown types.
+   */
+  getObjectTypeKey(objectType: string): string {
+    const keyMap: Record<string, string> = {
+      threat_model: 'common.objectTypes.threatModel',
+      diagram: 'common.objectTypes.diagram',
+      asset: 'common.objectTypes.asset',
+      threat: 'common.objectTypes.threat',
+      document: 'common.objectTypes.document',
+      note: 'common.objectTypes.note',
+      repository: 'common.objectTypes.repository',
+      metadata: 'common.metadata',
+    };
+    return keyMap[objectType] || objectType;
+  }
 }

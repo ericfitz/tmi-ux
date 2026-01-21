@@ -85,7 +85,9 @@
                     >
                     <span class="object-chips">
                       @for (obj of addon.objects; track obj) {
-                        <mat-chip class="object-chip">{{ obj }}</mat-chip>
+                        <mat-chip class="object-chip">{{
+                          getObjectTypeKey(obj) | transloco
+                        }}</mat-chip>
                       }
                     </span>
                   </span>
