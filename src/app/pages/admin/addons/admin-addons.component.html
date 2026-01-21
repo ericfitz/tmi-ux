@@ -47,25 +47,35 @@
           <mat-spinner diameter="40"></mat-spinner>
         </div>
       } @else if (filteredAddons.length > 0) {
-        <mat-list>
+        <div class="addons-list">
           @for (addon of filteredAddons; track addon.id) {
-            <mat-list-item class="addon-item">
-              @if (addon.icon) {
-                <mat-icon matListItemIcon>{{
-                  addon.icon.replace('material-symbols:', '')
-                }}</mat-icon>
-              } @else {
-                <mat-icon matListItemIcon>extension</mat-icon>
-              }
-              <div matListItemTitle class="addon-title">
-                <span class="addon-name">{{ addon.name }}</span>
+            <div class="addon-item">
+              <div class="addon-icon">
+                @if (addon.icon) {
+                  <mat-icon>{{ addon.icon.replace('material-symbols:', '') }}</mat-icon>
+                } @else {
+                  <mat-icon>extension</mat-icon>
+                }
               </div>
+
+              <div class="addon-name">{{ addon.name }}</div>
+
+              <div class="addon-actions">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="onDeleteAddon(addon)"
+                  [matTooltip]="'admin.addons.deleteTooltip' | transloco"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+
               @if (addon.description) {
-                <div matListItemLine class="addon-description">
-                  {{ addon.description }}
-                </div>
+                <div class="addon-description">{{ addon.description }}</div>
               }
-              <div matListItemLine class="addon-metadata">
+
+              <div class="addon-metadata">
                 @if (addon.objects && addon.objects.length > 0) {
                   <span class="metadata-item">
                     <mat-icon class="inline-icon">category</mat-icon>
@@ -82,19 +92,9 @@
                   {{ addon.created_at | date: 'short' }}
                 </span>
               </div>
-              <div matListItemMeta class="addon-actions">
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="onDeleteAddon(addon)"
-                  [matTooltip]="'admin.addons.deleteTooltip' | transloco"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </mat-list-item>
+            </div>
           }
-        </mat-list>
+        </div>
       } @else {
         <div class="no-items-message">
           <mat-icon class="no-items-icon">extension</mat-icon>

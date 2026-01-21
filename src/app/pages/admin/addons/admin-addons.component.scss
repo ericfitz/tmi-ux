@@ -91,11 +91,20 @@
   padding: 48px 0;
 }
 
+.addons-list {
+  display: flex;
+  flex-direction: column;
+}
+
 .addon-item {
-  min-height: 96px;
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  grid-template-rows: auto auto auto;
+  gap: 4px 16px;
   padding: 16px;
   border-bottom: 1px solid var(--theme-divider);
   transition: background-color 0.2s ease;
+  align-items: start;
 
   &:last-child {
     border-bottom: none;
@@ -105,26 +114,51 @@
     background-color: var(--theme-hover);
   }
 
-  .addon-title {
+  .addon-icon {
+    grid-column: 1;
+    grid-row: 1 / 4;
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 4px;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      color: var(--theme-text-secondary);
+    }
   }
 
   .addon-name {
+    grid-column: 2;
+    grid-row: 1;
     font-weight: 500;
     color: var(--theme-text-primary);
     font-size: 16px;
+    display: flex;
+    align-items: center;
+  }
+
+  .addon-actions {
+    grid-column: 3;
+    grid-row: 1 / 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .addon-description {
+    grid-column: 2;
+    grid-row: 2;
     color: var(--theme-text-secondary);
     font-size: 14px;
-    margin-top: 4px;
+    line-height: 1.4;
   }
 
   .addon-metadata {
+    grid-column: 2;
+    grid-row: 3;
     display: flex;
     gap: 24px;
     margin-top: 8px;
@@ -144,25 +178,22 @@
     font-size: 16px;
     width: 16px;
     height: 16px;
+    flex-shrink: 0;
   }
 
   .object-chips {
     display: flex;
     gap: 4px;
     flex-wrap: wrap;
+    align-items: center;
   }
 
   .object-chip {
     font-size: 10px;
-    min-height: 20px;
-    padding: 0 6px;
+    min-height: 24px;
+    padding: 0 8px;
     background-color: var(--theme-primary-light, rgb(63 81 181 / 10%));
     color: var(--theme-primary, #3f51b5);
-  }
-
-  .addon-actions {
-    display: flex;
-    gap: 8px;
   }
 }
 
@@ -220,6 +251,17 @@
   }
 
   .addon-item {
+    grid-template-columns: 48px 1fr auto;
+    gap: 4px 12px;
+
+    .addon-icon {
+      mat-icon {
+        font-size: 40px;
+        width: 40px;
+        height: 40px;
+      }
+    }
+
     .addon-metadata {
       flex-direction: column;
       align-items: flex-start;
