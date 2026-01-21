@@ -58,6 +58,7 @@
       "filterPlaceholder": "按名称或描述搜索",
       "listTitle": "系统插件",
       "noAddons": "未找到插件",
+      "objectTypesTooltip": "适用于这些对象类型",
       "subtitle": "配置插件以扩展TMI功能",
       "title": "管理插件"
     },
@@ -349,6 +350,7 @@
     "mitigation": "缓解措施",
     "mitigationPlaceholder": "描述针对此威胁的推荐或计划缓解措施",
     "name": "名称",
+    "noAddonsAvailable": "没有可用的插件",
     "noDataAvailable": "无可用数据",
     "noMetadata": "无可用元数据",
     "noThreats": "无可用威胁",
@@ -568,7 +570,9 @@
     "serverStatus": {
       "noServerConfigured": "未配置服务器",
       "serverConnected": "服务器已连接",
-      "serverConnectionError": "服务器连接错误"
+      "serverDegraded": "服务器性能下降",
+      "serverError": "服务器错误",
+      "serverOffline": "服务器离线"
     }
   },
   "noteEditor": {

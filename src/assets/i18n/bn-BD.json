@@ -58,9 +58,9 @@
       "filterPlaceholder": "নাম বা বিবরণ দিয়ে খুঁজুন",
       "listTitle": "সিস্টেম অ্যাডঅন",
       "noAddons": "কোনো অ্যাডঅন পাওয়া যায়নি",
+      "objectTypesTooltip": "এই অবজেক্ট টাইপগুলিতে প্রযোজ্য",
       "subtitle": "TMI কার্যকারিতা বাড়াতে অ্যাডঅন কনফিগার করুন",
-      "title": "অ্যাডঅন পরিচালনা করুন",
-      "objectTypesTooltip": "এই অবজেক্ট টাইপগুলিতে প্রযোজ্য"
+      "title": "অ্যাডঅন পরিচালনা করুন"
     },
     "administrators": {
       "addButton": "{{admin.administrators.addDialog.save}}",
@@ -350,6 +350,7 @@
     "mitigation": "প্রশমন",
     "mitigationPlaceholder": "এই হুমকির জন্য প্রস্তাবিত বা পরিকল্পিত প্রশমনগুলি বর্ণনা করুন",
     "name": "নাম",
+    "noAddonsAvailable": "কোনও অ্যাড-অন উপলব্ধ নেই",
     "noDataAvailable": "কোনো ডেটা উপলব্ধ নেই",
     "noMetadata": "কোনো মেটাডেটা উপলব্ধ নেই",
     "noThreats": "কোনো হুমকি উপলব্ধ নেই",
@@ -418,8 +419,7 @@
     "view": "দেখুন",
     "viewMetadata": "মেটাডেটা দেখুন",
     "viewPermissions": "অনুমতি দেখুন",
-    "viewThreat": "হুমকি দেখুন",
-    "noAddonsAvailable": "কোনও অ্যাড-অন উপলব্ধ নেই"
+    "viewThreat": "হুমকি দেখুন"
   },
   "contextMenu": {
     "addInverseConnection": "বিপরীত সংযোগ যোগ করুন",

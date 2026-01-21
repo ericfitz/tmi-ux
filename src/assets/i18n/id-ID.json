@@ -58,6 +58,7 @@
       "filterPlaceholder": "Cari berdasarkan nama atau deskripsi",
       "listTitle": "Addon Sistem",
       "noAddons": "Tidak ada addon ditemukan",
+      "objectTypesTooltip": "Berlaku untuk Jenis Objek Ini",
       "subtitle": "Konfigurasikan addon untuk memperluas fungsionalitas TMI",
       "title": "Kelola Addon"
     },
@@ -349,6 +350,7 @@
     "mitigation": "Mitigasi",
     "mitigationPlaceholder": "Jelaskan mitigasi yang direkomendasikan atau direncanakan untuk ancaman ini",
     "name": "Nama",
+    "noAddonsAvailable": "Tidak ada addon tersedia",
     "noDataAvailable": "Tidak Ada Data Tersedia",
     "noMetadata": "Tidak Ada Metadata Tersedia",
     "noThreats": "Tidak Ada Ancaman Tersedia",
@@ -568,7 +570,9 @@
     "serverStatus": {
       "noServerConfigured": "Server Tidak Dikonfigurasi",
       "serverConnected": "Server Terhubung",
-      "serverConnectionError": "Kesalahan Koneksi Server"
+      "serverDegraded": "Server Berkinerja Buruk",
+      "serverError": "Kesalahan Server",
+      "serverOffline": "Server Offline"
     }
   },
   "noteEditor": {

@@ -58,6 +58,7 @@
       "filterPlaceholder": "Rechercher par nom ou description",
       "listTitle": "Modules Systeme",
       "noAddons": "Aucun addon trouve",
+      "objectTypesTooltip": "S'applique à Ces Types d'Objets",
       "subtitle": "Configurer les addons pour etendre les fonctionnalites de TMI",
       "title": "Gerer les Modules"
     },
@@ -349,6 +350,7 @@
     "mitigation": "Attenuation",
     "mitigationPlaceholder": "Decrivez les attenuations recommandees ou prevues pour cette menace",
     "name": "Nom",
+    "noAddonsAvailable": "Aucun module complémentaire disponible",
     "noDataAvailable": "Aucune Donnee Disponible",
     "noMetadata": "Aucune Metadonnee Disponible",
     "noThreats": "Aucune Menace Disponible",
@@ -568,7 +570,9 @@
     "serverStatus": {
       "noServerConfigured": "Aucun serveur configure",
       "serverConnected": "Serveur connecte",
-      "serverConnectionError": "Erreur de connexion au serveur"
+      "serverDegraded": "Serveur Dégradé",
+      "serverError": "Erreur du Serveur",
+      "serverOffline": "Serveur Hors Ligne"
     }
   },
   "noteEditor": {

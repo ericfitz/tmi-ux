@@ -58,6 +58,7 @@
       "filterPlaceholder": "Nach Name oder Beschreibung suchen",
       "listTitle": "System-Erweiterungen",
       "noAddons": "Keine Erweiterungen gefunden",
+      "objectTypesTooltip": "Gilt für diese Objekttypen",
       "subtitle": "Erweiterungen zur Erweiterung der TMI-Funktionalität konfigurieren",
       "title": "Erweiterungen verwalten"
     },
@@ -349,6 +350,7 @@
     "mitigation": "Schadensbegrenzung",
     "mitigationPlaceholder": "Beschreiben Sie empfohlene oder geplante Gegenmaßnahmen für diese Bedrohung",
     "name": "Name",
+    "noAddonsAvailable": "Keine Erweiterungen verfügbar",
     "noDataAvailable": "Keine Daten verfügbar",
     "noMetadata": "Keine Metadaten verfügbar",
     "noThreats": "Keine Bedrohungen verfügbar",
@@ -568,7 +570,9 @@
     "serverStatus": {
       "noServerConfigured": "Kein Server konfiguriert",
       "serverConnected": "Server verbunden",
-      "serverConnectionError": "Server-Verbindungsfehler"
+      "serverDegraded": "Server beeinträchtigt",
+      "serverError": "Serverfehler",
+      "serverOffline": "Server offline"
     }
   },
   "noteEditor": {

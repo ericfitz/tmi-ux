@@ -58,6 +58,7 @@
       "filterPlaceholder": "نام یا تفصیل سے تلاش کریں",
       "listTitle": "سسٹم ایڈ آنز",
       "noAddons": "کوئی ایڈ آنز نہیں ملے",
+      "objectTypesTooltip": "ان آبجیکٹ اقسام پر لاگو ہوتا ہے",
       "subtitle": "TMI کی فعالیت بڑھانے کے لیے ایڈ آنز ترتیب دیں",
       "title": "ایڈ آنز کا انتظام"
     },
@@ -349,6 +350,7 @@
     "mitigation": "تخفیف",
     "mitigationPlaceholder": "اس خطرے کے لیے تجویز کردہ یا منصوبہ بند تخفیف کی وضاحت کریں",
     "name": "نام",
+    "noAddonsAvailable": "کوئی ایڈ آنز دستیاب نہیں ہیں",
     "noDataAvailable": "کوئی ڈیٹا دستیاب نہیں",
     "noMetadata": "کوئی میٹا ڈیٹا دستیاب نہیں",
     "noThreats": "کوئی خطرات دستیاب نہیں",
@@ -568,7 +570,9 @@
     "serverStatus": {
       "noServerConfigured": "کوئی سرور ترتیب نہیں دیا گیا",
       "serverConnected": "سرور منسلک",
-      "serverConnectionError": "سرور کنکشن کی خرابی"
+      "serverDegraded": "سرور کمزور ہے",
+      "serverError": "سرور میں خرابی",
+      "serverOffline": "سرور آن لائن نہیں ہے"
     }
   },
   "noteEditor": {

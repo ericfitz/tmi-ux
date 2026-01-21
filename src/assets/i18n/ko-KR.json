@@ -58,6 +58,7 @@
       "filterPlaceholder": "이름 또는 설명으로 검색",
       "listTitle": "시스템 애드온",
       "noAddons": "애드온을 찾을 수 없습니다",
+      "objectTypesTooltip": "다음 개체 유형에 적용됨",
       "subtitle": "TMI 기능 확장을 위한 애드온 구성",
       "title": "애드온 관리"
     },
@@ -349,6 +350,7 @@
     "mitigation": "완화",
     "mitigationPlaceholder": "이 위협에 대한 권장 또는 계획된 완화 조치를 설명하세요",
     "name": "이름",
+    "noAddonsAvailable": "사용 가능한 애드온이 없습니다",
     "noDataAvailable": "사용 가능한 데이터 없음",
     "noMetadata": "사용 가능한 메타데이터 없음",
     "noThreats": "사용 가능한 위협 없음",
@@ -568,7 +570,9 @@
     "serverStatus": {
       "noServerConfigured": "서버 구성 안 됨",
       "serverConnected": "서버 연결됨",
-      "serverConnectionError": "서버 연결 오류"
+      "serverDegraded": "서버 성능 저하",
+      "serverError": "서버 오류",
+      "serverOffline": "서버 오프라인"
     }
   },
   "noteEditor": {

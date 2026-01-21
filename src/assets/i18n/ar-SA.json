@@ -51,7 +51,6 @@
       },
       "confirmDelete": "هل أنت متأكد من حذف الملحق \"{{name}}\"؟",
       "created": "{{common.created}}",
-      "objectTypesTooltip": "ينطبق على أنواع الكائنات هذه",
       "deleteTooltip": "حذف الملحق",
       "errorCreatingAddon": "فشل في إنشاء الملحق. يرجى المحاولة مرة أخرى.",
       "errorLoadingWebhooks": "فشل في تحميل Webhooks المتاحة",
@@ -59,6 +58,7 @@
       "filterPlaceholder": "البحث بالاسم أو الوصف",
       "listTitle": "ملحقات النظام",
       "noAddons": "لم يتم العثور على ملحقات",
+      "objectTypesTooltip": "ينطبق على أنواع الكائنات هذه",
       "subtitle": "تكوين الملحقات لتوسيع وظائف TMI",
       "title": "إدارة الملحقات"
     },

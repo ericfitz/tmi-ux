@@ -58,6 +58,7 @@
       "filterPlaceholder": "नाम या विवरण द्वारा खोजें",
       "listTitle": "सिस्टम ऐडऑन",
       "noAddons": "कोई ऐडऑन नहीं मिला",
+      "objectTypesTooltip": "इन ऑब्जेक्ट प्रकार पर लागू होता है",
       "subtitle": "TMI कार्यक्षमता बढ़ाने के लिए ऐडऑन कॉन्फ़िगर करें",
       "title": "ऐडऑन प्रबंधित करें"
     },
@@ -349,6 +350,7 @@
     "mitigation": "शमन",
     "mitigationPlaceholder": "इस खतरे के लिए अनुशंसित या नियोजित शमन का वर्णन करें",
     "name": "नाम",
+    "noAddonsAvailable": "कोई ऐडऑन उपलब्ध नहीं",
     "noDataAvailable": "कोई डेटा उपलब्ध नहीं",
     "noMetadata": "कोई मेटाडेटा उपलब्ध नहीं",
     "noThreats": "कोई खतरा उपलब्ध नहीं",
@@ -568,7 +570,9 @@
     "serverStatus": {
       "noServerConfigured": "कोई सर्वर कॉन्फ़िगर नहीं",
       "serverConnected": "सर्वर कनेक्टेड",
-      "serverConnectionError": "सर्वर कनेक्शन त्रुटि"
+      "serverDegraded": "सर्वर खराब है",
+      "serverError": "सर्वर त्रुटि",
+      "serverOffline": "सर्वर ऑफ़लाइन है"
     }
   },
   "noteEditor": {

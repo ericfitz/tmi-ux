@@ -58,6 +58,7 @@
       "filterPlaceholder": "חפש לפי שם או תיאור",
       "listTitle": "תוספי מערכת",
       "noAddons": "לא נמצאו תוספים",
+      "objectTypesTooltip": "חל על סוגי אובייקטים אלה",
       "subtitle": "הגדר תוספים להרחבת פונקציונליות TMI",
       "title": "ניהול תוספים"
     },
@@ -349,6 +350,7 @@
     "mitigation": "הפחתה",
     "mitigationPlaceholder": "תאר את ההפחתות המומלצות או המתוכננות לאיום זה",
     "name": "שם",
+    "noAddonsAvailable": "אין תוספים זמינים",
     "noDataAvailable": "אין נתונים זמינים",
     "noMetadata": "אין מטא-נתונים זמינים",
     "noThreats": "אין איומים זמינים",
@@ -568,7 +570,9 @@
     "serverStatus": {
       "noServerConfigured": "לא הוגדר שרת",
       "serverConnected": "השרת מחובר",
-      "serverConnectionError": "שגיאת חיבור לשרת"
+      "serverDegraded": "השרת מופחת",
+      "serverError": "שגיאת שרת",
+      "serverOffline": "השרת לא זמין"
     }
   },
   "noteEditor": {

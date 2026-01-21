@@ -58,6 +58,7 @@
       "filterPlaceholder": "名前または説明で検索",
       "listTitle": "システムアドオン",
       "noAddons": "アドオンが見つかりません",
+      "objectTypesTooltip": "これらのオブジェクト タイプに適用されます",
       "subtitle": "TMI機能を拡張するアドオンを設定",
       "title": "アドオンの管理"
     },
@@ -349,6 +350,7 @@
     "mitigation": "軽減策",
     "mitigationPlaceholder": "この脅威に対する推奨または計画された軽減策を記述してください",
     "name": "名前",
+    "noAddonsAvailable": "利用可能なアドオンがありません",
     "noDataAvailable": "データがありません",
     "noMetadata": "メタデータがありません",
     "noThreats": "脅威がありません",
@@ -568,7 +570,9 @@
     "serverStatus": {
       "noServerConfigured": "サーバー未設定",
       "serverConnected": "サーバー接続済み",
-      "serverConnectionError": "サーバー接続エラー"
+      "serverDegraded": "サーバーが低下しています",
+      "serverError": "サーバー エラー",
+      "serverOffline": "サーバーがオフラインです"
     }
   },
   "noteEditor": {

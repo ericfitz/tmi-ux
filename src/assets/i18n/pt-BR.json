@@ -58,6 +58,7 @@
       "filterPlaceholder": "Pesquisar por nome ou descricao",
       "listTitle": "Complementos do Sistema",
       "noAddons": "Nenhum complemento encontrado",
+      "objectTypesTooltip": "Aplicável a Esses Tipos de Objeto",
       "subtitle": "Configure complementos para estender a funcionalidade do TMI",
       "title": "Gerenciar Complementos"
     },
@@ -349,6 +350,7 @@
     "mitigation": "Mitigacao",
     "mitigationPlaceholder": "Descreva as mitigacoes recomendadas ou planejadas para esta ameaca",
     "name": "Nome",
+    "noAddonsAvailable": "Nenhum addon disponível",
     "noDataAvailable": "Nenhum Dado Disponivel",
     "noMetadata": "Nenhum Metadado Disponivel",
     "noThreats": "Nenhuma Ameaca Disponivel",
@@ -568,7 +570,9 @@
     "serverStatus": {
       "noServerConfigured": "Nenhum Servidor Configurado",
       "serverConnected": "Servidor Conectado",
-      "serverConnectionError": "Erro de Conexao com o Servidor"
+      "serverDegraded": "Servidor Degradado",
+      "serverError": "Erro no Servidor",
+      "serverOffline": "Servidor Offline"
     }
   },
   "noteEditor": {

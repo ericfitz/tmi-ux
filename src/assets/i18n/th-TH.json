@@ -58,6 +58,7 @@
       "filterPlaceholder": "ค้นหาตามชื่อหรือคำอธิบาย",
       "listTitle": "ส่วนเสริมของระบบ",
       "noAddons": "ไม่พบส่วนเสริม",
+      "objectTypesTooltip": "ใช้ได้กับประเภทวัตถุเหล่านี้",
       "subtitle": "กำหนดค่าส่วนเสริมเพื่อขยายความสามารถของ TMI",
       "title": "จัดการส่วนเสริม"
     },
@@ -349,6 +350,7 @@
     "mitigation": "การลดผลกระทบ",
     "mitigationPlaceholder": "อธิบายการลดผลกระทบที่แนะนำหรือวางแผนไว้สำหรับภัยคุกคามนี้",
     "name": "ชื่อ",
+    "noAddonsAvailable": "ไม่มีส่วนเสริมที่พร้อมใช้งาน",
     "noDataAvailable": "ไม่มีข้อมูล",
     "noMetadata": "ไม่มีข้อมูลเมตา",
     "noThreats": "ไม่มีภัยคุกคาม",
@@ -568,7 +570,9 @@
     "serverStatus": {
       "noServerConfigured": "ไม่มีการกำหนดค่าเซิร์ฟเวอร์",
       "serverConnected": "เซิร์ฟเวอร์เชื่อมต่อแล้ว",
-      "serverConnectionError": "ข้อผิดพลาดการเชื่อมต่อเซิร์ฟเวอร์"
+      "serverDegraded": "เซิร์ฟเวอร์อ่อนลง",
+      "serverError": "ข้อผิดพลาดของเซิร์ฟเวอร์",
+      "serverOffline": "เซิร์ฟเวอร์ออฟไลน์"
     }
   },
   "noteEditor": {
