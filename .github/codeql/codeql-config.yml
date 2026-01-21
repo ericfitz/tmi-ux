@@ -1,0 +1,40 @@
+name: "TMI-UX CodeQL Configuration"
+
+# Paths to analyze (relative to repository root)
+paths:
+  - src
+
+# Paths to exclude from analysis
+paths-ignore:
+  # Test files - typically don't need security analysis
+  - "**/*.spec.ts"
+  - "**/*.test.ts"
+  - "**/testing/**"
+  - "src/app/mocks/**"
+
+  # Build artifacts and dependencies
+  - "dist/**"
+  - "node_modules/**"
+  - ".angular/**"
+
+  # Configuration files
+  - "**/*.config.ts"
+  - "**/*.config.js"
+
+  # Assets that don't contain executable code
+  - "src/assets/i18n/**"
+  - "src/assets/fonts/**"
+  - "src/assets/images/**"
+
+  # Scripts directory (build/utility scripts, not production code)
+  - "scripts/**"
+
+  # E2E tests
+  - "cypress/**"
+  - "e2e/**"
+  - "playwright/**"
+
+# Query suites to run
+queries:
+  - uses: security-extended
+  - uses: security-and-quality
