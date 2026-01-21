@@ -49,28 +49,44 @@
 
 // Server connection status indicator styles
 .server-status-not-configured .mat-icon {
-  color: var(--color-server-not-configured);
+  color: var(--color-text-muted);
 }
 
-.server-status-error .mat-icon {
-  color: var(--color-server-error);
+.server-status-offline .mat-icon {
+  color: var(--color-error);
+}
+
+.server-status-degraded {
+  cursor: pointer;
+
+  .mat-icon {
+    color: var(--color-warning);
+  }
+}
+
+.server-status-error {
+  cursor: pointer;
+
+  .mat-icon {
+    color: var(--color-error);
+  }
 }
 
 .server-status-connected {
   cursor: pointer;
 
   .mat-icon {
-    color: var(--color-server-connected);
+    color: var(--color-success);
   }
 }
 
 // WebSocket connection status indicator styles
 .websocket-status-connected .mat-icon {
-  color: var(--color-server-connected);
+  color: var(--color-success);
 }
 
 .websocket-status-error .mat-icon {
-  color: var(--color-server-error);
+  color: var(--color-error);
 }
 
 // Feedback button styles

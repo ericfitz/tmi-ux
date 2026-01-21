@@ -58,13 +58,13 @@
       "confirmDelete": "Are you sure you want to delete the addon \"{{name}}\"?",
       "created": "{{common.created}}",
       "deleteTooltip": "Delete addon",
-      "objectTypesTooltip": "Applies to These Object Types",
       "errorCreatingAddon": "Failed to create addon. Please try again.",
       "errorLoadingWebhooks": "Failed to load available webhooks",
       "filterLabel": "Filter Addons",
       "filterPlaceholder": "Search by name or description",
       "listTitle": "System Addons",
       "noAddons": "No addons found",
+      "objectTypesTooltip": "Applies to These Object Types",
       "subtitle": "Configure addons for extending TMI functionality",
       "title": "Manage Addons"
     },
@@ -328,7 +328,6 @@
     "addMetadata": "Add Metadata",
     "addThreat": "Add Threat",
     "addons": "Addons",
-    "noAddonsAvailable": "No addons available",
     "cancel": "Cancel",
     "cellId": "Cell ID",
     "classification": "Classification",
@@ -370,6 +369,7 @@
     "mitigationPlaceholder": "Describe recommended or planned mitigation(s) for this threat",
     "name": "Name",
     "name.comment": "The German (de-DE) word for name is the same as the English word.",
+    "noAddonsAvailable": "No addons available",
     "noDataAvailable": "No Data Available",
     "noMetadata": "No Metadata Available",
     "noThreats": "No Threats Available",
@@ -591,7 +591,9 @@
     "serverStatus": {
       "noServerConfigured": "No Server Configured",
       "serverConnected": "Server Connected",
-      "serverConnectionError": "Server Connection Error"
+      "serverDegraded": "Server Degraded",
+      "serverError": "Server Error",
+      "serverOffline": "Server Offline"
     }
   },
   "noteEditor": {

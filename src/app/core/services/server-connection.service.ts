@@ -21,8 +21,10 @@ import { LoggerService } from './logger.service';
 
 export enum ServerConnectionStatus {
   NOT_CONFIGURED = 'NOT_CONFIGURED',
-  ERROR = 'ERROR',
-  CONNECTED = 'CONNECTED',
+  OFFLINE = 'OFFLINE', // Server unreachable (HTTP error)
+  DEGRADED = 'DEGRADED', // Server returns DEGRADED status
+  ERROR = 'ERROR', // Server returns ERROR status
+  CONNECTED = 'CONNECTED', // Server returns OK status
 }
 
 /**
@@ -43,7 +45,7 @@ export interface DetailedConnectionStatus {
  */
 interface ServerHealthResponse {
   status: {
-    code: 'OK' | 'ERROR';
+    code: 'OK' | 'DEGRADED' | 'ERROR';
     time: string;
   };
   service: {
@@ -356,14 +358,16 @@ export class ServerConnectionService implements OnDestroy {
 
     return this.http.get<ServerHealthResponse>(statusEndpoint).pipe(
       map(response => {
-        if (response.status?.code === 'OK') {
+        const statusCode = response.status?.code;
+
+        // Store server version from health response regardless of status
+        if (response.service?.build) {
+          this._serverVersion = response.service.build;
+        }
+
+        if (statusCode === 'OK') {
           // this.logger.debugComponent('ServerConnection', 'Server status check successful');
           this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
-
-          // Store server version from health response
-          if (response.service?.build) {
-            this._serverVersion = response.service.build;
-          }
 
           // Update detailed status as well
           const currentDetailed = this._detailedConnectionStatus$.value;
@@ -378,28 +382,47 @@ export class ServerConnectionService implements OnDestroy {
 
           // Reset backoff delay on successful connection
           this.resetBackoffDelay();
-        } else {
-          this.logger.warn(`Server status check returned non-OK status: ${response.status?.code}`);
-          this._connectionStatus$.next(ServerConnectionStatus.ERROR);
+        } else if (statusCode === 'DEGRADED') {
+          this.logger.warn('Server status check returned DEGRADED status');
+          this._connectionStatus$.next(ServerConnectionStatus.DEGRADED);
 
-          // Update detailed status
+          // Update detailed status - server is reachable but degraded
           const currentDetailed = this._detailedConnectionStatus$.value;
           this.updateDetailedConnectionStatus({
             ...currentDetailed,
-            isServerReachable: false,
-            lastServerError: new Date(),
-            consecutiveFailures: currentDetailed.consecutiveFailures + 1,
-            retryAttempt: currentDetailed.retryAttempt + 1,
+            isServerReachable: true,
+            lastServerPing: new Date(),
+            consecutiveFailures: 0,
+            retryAttempt: 0,
+            status: ServerConnectionStatus.DEGRADED,
+          });
+
+          // Reset backoff delay since server is reachable
+          this.resetBackoffDelay();
+        } else {
+          // ERROR status or unknown status code
+          this.logger.warn(`Server status check returned ERROR status: ${statusCode}`);
+          this._connectionStatus$.next(ServerConnectionStatus.ERROR);
+
+          // Update detailed status - server is reachable but returning error
+          const currentDetailed = this._detailedConnectionStatus$.value;
+          this.updateDetailedConnectionStatus({
+            ...currentDetailed,
+            isServerReachable: true,
+            lastServerPing: new Date(),
+            consecutiveFailures: 0,
+            retryAttempt: 0,
             status: ServerConnectionStatus.ERROR,
           });
 
-          // Increase backoff delay for next retry
-          this._currentBackoffDelay = this.getNextBackoffDelay();
+          // Reset backoff delay since server is reachable
+          this.resetBackoffDelay();
         }
       }),
       catchError((error: HttpErrorResponse) => {
-        this.logger.warn(`Server status check failed: ${error.status} ${error.statusText}`);
-        this._connectionStatus$.next(ServerConnectionStatus.ERROR);
+        // Server is unreachable (HTTP error)
+        this.logger.warn(`Server unreachable: ${error.status} ${error.statusText}`);
+        this._connectionStatus$.next(ServerConnectionStatus.OFFLINE);
 
         // Update detailed status
         const currentDetailed = this._detailedConnectionStatus$.value;
@@ -409,7 +432,7 @@ export class ServerConnectionService implements OnDestroy {
           lastServerError: new Date(),
           consecutiveFailures: currentDetailed.consecutiveFailures + 1,
           retryAttempt: currentDetailed.retryAttempt + 1,
-          status: ServerConnectionStatus.ERROR,
+          status: ServerConnectionStatus.OFFLINE,
         });
 
         // Increase backoff delay for next retry
@@ -475,7 +498,7 @@ export class ServerConnectionService implements OnDestroy {
           // this.logger.debugComponent('ServerConnection', 'Server ping successful');
         }),
         catchError((_error: HttpErrorResponse) => {
-          // Server is not reachable
+          // Server is not reachable (offline)
           const currentStatus = this._detailedConnectionStatus$.value;
           const consecutiveFailures = currentStatus.consecutiveFailures + 1;
 
@@ -485,11 +508,11 @@ export class ServerConnectionService implements OnDestroy {
             lastServerError: new Date(),
             consecutiveFailures,
             retryAttempt: currentStatus.retryAttempt + 1,
-            status: ServerConnectionStatus.ERROR,
+            status: ServerConnectionStatus.OFFLINE,
           });
 
           // Also update simple status
-          this._connectionStatus$.next(ServerConnectionStatus.ERROR);
+          this._connectionStatus$.next(ServerConnectionStatus.OFFLINE);
           this._currentBackoffDelay = this.getNextBackoffDelay();
 
           // this.logger.debugComponent('ServerConnection', 'Server ping failed', {

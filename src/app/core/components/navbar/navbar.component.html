@@ -69,7 +69,10 @@
         <button
           mat-icon-button
           [class]="getServerStatusIconClass()"
-          [disabled]="serverConnectionStatus !== ServerConnectionStatus.CONNECTED"
+          [disabled]="
+            serverConnectionStatus === ServerConnectionStatus.NOT_CONFIGURED ||
+            serverConnectionStatus === ServerConnectionStatus.OFFLINE
+          "
           (click)="openServerUrl()"
         >
           <mat-icon>{{ getServerStatusIcon() }}</mat-icon>

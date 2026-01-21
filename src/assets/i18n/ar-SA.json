@@ -51,6 +51,7 @@
       },
       "confirmDelete": "هل أنت متأكد من حذف الملحق \"{{name}}\"؟",
       "created": "{{common.created}}",
+      "objectTypesTooltip": "ينطبق على أنواع الكائنات هذه",
       "deleteTooltip": "حذف الملحق",
       "errorCreatingAddon": "فشل في إنشاء الملحق. يرجى المحاولة مرة أخرى.",
       "errorLoadingWebhooks": "فشل في تحميل Webhooks المتاحة",
@@ -349,6 +350,7 @@
     "mitigation": "التخفيف",
     "mitigationPlaceholder": "اوصف التخفيف الموصى به أو المخطط له لهذا التهديد",
     "name": "الاسم",
+    "noAddonsAvailable": "لا توجد وظائف إضافية متاحة",
     "noDataAvailable": "لا توجد بيانات متاحة",
     "noMetadata": "لا توجد بيانات وصفية متاحة",
     "noThreats": "لا توجد تهديدات متاحة",
@@ -568,7 +570,9 @@
     "serverStatus": {
       "noServerConfigured": "لم يتم تكوين خادم",
       "serverConnected": "الخادم متصل",
-      "serverConnectionError": "خطأ في اتصال الخادم"
+      "serverDegraded": "الخادم متدهور الحالة",
+      "serverError": "خطأ في الخادم",
+      "serverOffline": "الخادم في وضع عدم الاتصال"
     }
   },
   "noteEditor": {

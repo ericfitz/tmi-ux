@@ -162,7 +162,7 @@ describe('ServerConnectionService', () => {
       // Trigger initial health check
       await vi.advanceTimersByTimeAsync(1);
 
-      expect(service.currentStatus).toBe(ServerConnectionStatus.ERROR);
+      expect(service.currentStatus).toBe(ServerConnectionStatus.OFFLINE);
     });
 
     it('should update detailed status on successful check', async () => {

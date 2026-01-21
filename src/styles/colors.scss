@@ -132,11 +132,6 @@ $role-host-color: #ffc107; // Gold color for session host
   // Text uses black for maximum contrast on light backgrounds
   --logo-text-color: #000;
 
-  // Server Status Colors - Using palette-aligned colors
-  --color-server-not-configured: #666; // Neutral grey
-  --color-server-error: #f44336; // Material error color
-  --color-server-connected: #4caf50; // Green for connected status
-
   // Additional Color Categories
   // Severity Colors (for threat levels)
   --color-severity-critical: #d32f2f;
@@ -205,11 +200,6 @@ $role-host-color: #ffc107; // Gold color for session host
   --color-role-reader: #d55e00; // Vermilion (distinct from green)
   --color-role-presenter: #0072b2; // Blue
   --color-role-host: #f0e442; // Yellow (highly visible)
-
-  // Server Status Colors
-  --color-server-not-configured: #{$text-tertiary};
-  --color-server-error: #d55e00; // Vermilion
-  --color-server-connected: #009e73; // Bluish Green
 
   // Note: Background, text, border, hover, overlay, and shadow colors
   // remain the same as they are not reliant on color distinction

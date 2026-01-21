@@ -270,8 +270,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     switch (this.serverConnectionStatus) {
       case ServerConnectionStatus.NOT_CONFIGURED:
         return 'cloud';
+      case ServerConnectionStatus.OFFLINE:
       case ServerConnectionStatus.ERROR:
         return 'cloud_off';
+      case ServerConnectionStatus.DEGRADED:
+        return 'cloud_alert';
       case ServerConnectionStatus.CONNECTED:
         return 'cloud_done';
       default:
@@ -286,6 +289,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
     switch (this.serverConnectionStatus) {
       case ServerConnectionStatus.NOT_CONFIGURED:
         return 'server-status-not-configured';
+      case ServerConnectionStatus.OFFLINE:
+        return 'server-status-offline';
+      case ServerConnectionStatus.DEGRADED:
+        return 'server-status-degraded';
       case ServerConnectionStatus.ERROR:
         return 'server-status-error';
       case ServerConnectionStatus.CONNECTED:
@@ -305,8 +312,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     switch (this.serverConnectionStatus) {
       case ServerConnectionStatus.NOT_CONFIGURED:
         return baseText;
+      case ServerConnectionStatus.OFFLINE:
+      case ServerConnectionStatus.DEGRADED:
       case ServerConnectionStatus.ERROR:
-        return `${baseText}\n${environment.apiUrl}`;
       case ServerConnectionStatus.CONNECTED:
         return `${baseText}\n${environment.apiUrl}`;
       default:
@@ -321,8 +329,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
     switch (this.serverConnectionStatus) {
       case ServerConnectionStatus.NOT_CONFIGURED:
         return 'navbar.serverStatus.noServerConfigured';
+      case ServerConnectionStatus.OFFLINE:
+        return 'navbar.serverStatus.serverOffline';
+      case ServerConnectionStatus.DEGRADED:
+        return 'navbar.serverStatus.serverDegraded';
       case ServerConnectionStatus.ERROR:
-        return 'navbar.serverStatus.serverConnectionError';
+        return 'navbar.serverStatus.serverError';
       case ServerConnectionStatus.CONNECTED:
         return 'navbar.serverStatus.serverConnected';
       default:
