@@ -1231,7 +1231,9 @@ export class WebSocketAdapter {
       return data;
     }
 
-    const redacted = { ...(data as Record<string, unknown>) };
+    // Create a null-prototype object to prevent prototype pollution
+    const redacted: Record<string, unknown> = Object.create(null);
+    const source = data as Record<string, unknown>;
     const sensitiveKeys = [
       'bearer',
       'token',
@@ -1246,15 +1248,14 @@ export class WebSocketAdapter {
       'auth',
     ];
 
-    // Keys that could be used for prototype pollution attacks
-    const dangerousKeys = ['__proto__', 'constructor', 'prototype'];
-
-    for (const [key, value] of Object.entries(redacted as Record<string, unknown>)) {
-      // Skip keys that could be used for prototype pollution
-      if (dangerousKeys.includes(key)) {
+    // Use Object.keys to only iterate own enumerable properties (not inherited)
+    for (const key of Object.keys(source)) {
+      // Skip prototype-polluting keys as an extra safeguard
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
         continue;
       }
 
+      const value = source[key];
       const lowerKey = key.toLowerCase();
 
       // Check if the key contains sensitive information
@@ -1267,6 +1268,9 @@ export class WebSocketAdapter {
       } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
         // Recursively redact nested objects
         redacted[key] = this._redactSensitiveData(value);
+      } else {
+        // Copy non-sensitive, non-object values as-is
+        redacted[key] = value;
       }
     }
 

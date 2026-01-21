@@ -19,7 +19,15 @@ import { execFileSync } from 'child_process';
 const args = process.argv.slice(2);
 const isComponentTest = args.includes('--component');
 const isOpen = args.includes('--open');
-const specPattern = args.find(arg => arg.startsWith('--spec='))?.split('=')[1];
+const rawSpecPattern = args.find(arg => arg.startsWith('--spec='))?.split('=')[1];
+
+// Validate and sanitize spec pattern to prevent command injection
+// Only allow alphanumeric, dots, slashes, hyphens, underscores, asterisks, and brackets
+const specPattern = rawSpecPattern && /^[\w./*\-[\]]+$/.test(rawSpecPattern) ? rawSpecPattern : undefined;
+if (rawSpecPattern && !specPattern) {
+    console.error('Invalid spec pattern. Only alphanumeric characters, dots, slashes, hyphens, underscores, asterisks, and brackets are allowed.');
+    process.exit(1);
+}
 
 // Build the Cypress arguments array (avoids shell interpretation for security)
 const cypressArgs = ['cypress', isOpen ? 'open' : 'run'];

@@ -100,9 +100,10 @@ export class LoggerService {
   debugComponent(component: string, message: string, ...optionalParams: unknown[]): void {
     if (this.shouldLogComponent(component, LogLevel.DEBUG)) {
       const sanitizedComponent = this.sanitizeForLog(component);
+      const sanitizedMessage = this.sanitizeForLog(message);
       const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
       console.debug(
-        this.formatMessage(LogLevel.DEBUG, `[${sanitizedComponent}] ${message}`),
+        this.formatMessage(LogLevel.DEBUG, `[${sanitizedComponent}] ${sanitizedMessage}`),
         ...redactedParams,
       );
     }
