@@ -100,6 +100,7 @@ class JSONValidator {
     try {
       // Read file content directly to avoid TOCTOU race condition
       // If file doesn't exist or can't be read, readFileSync will throw
+      // lgtm[js/file-system-race] - single atomic read operation, no separate existence check
       let content;
       try {
         content = fs.readFileSync(filePath, 'utf8');

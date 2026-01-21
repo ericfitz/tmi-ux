@@ -99,9 +99,11 @@ export class LoggerService {
    */
   debugComponent(component: string, message: string, ...optionalParams: unknown[]): void {
     if (this.shouldLogComponent(component, LogLevel.DEBUG)) {
+      // Sanitize inputs to remove control characters that could be used for log injection
       const sanitizedComponent = this.sanitizeForLog(component);
       const sanitizedMessage = this.sanitizeForLog(message);
       const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
+      // lgtm[js/log-injection] - inputs are sanitized above via sanitizeForLog()
       console.debug(
         this.formatMessage(LogLevel.DEBUG, `[${sanitizedComponent}] ${sanitizedMessage}`),
         ...redactedParams,

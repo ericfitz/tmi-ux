@@ -46,6 +46,7 @@ console.log(`Running: npx ${cypressArgs.join(' ')}`);
 
 try {
     // Execute with argument array to avoid shell injection vulnerabilities
+    // lgtm[js/indirect-command-line-injection] - specPattern is validated via allowlist regex above
     execFileSync('npx', cypressArgs, {
         stdio: 'inherit',
         env: {
