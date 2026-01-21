@@ -98,24 +98,30 @@ class JSONValidator {
     const startTime = Date.now();
 
     try {
-      // Check if file exists
-      if (!fs.existsSync(filePath)) {
-        result.addError(`File not found: ${filePath}`);
+      // Read file content directly to avoid TOCTOU race condition
+      // If file doesn't exist or can't be read, readFileSync will throw
+      let content;
+      try {
+        content = fs.readFileSync(filePath, 'utf8');
+      } catch (readError) {
+        if (readError.code === 'ENOENT') {
+          result.addError(`File not found: ${filePath}`);
+        } else if (readError.code === 'EACCES') {
+          result.addError(`Permission denied: ${filePath}`);
+        } else {
+          result.addError(`Error reading file: ${readError.message}`);
+        }
         return result;
       }
 
-      // Get file stats
-      const stats = fs.statSync(filePath);
-      result.fileSize = stats.size;
+      // Get file size from content length (avoids separate stat call)
+      result.fileSize = Buffer.byteLength(content, 'utf8');
 
       // Check file size
       if (result.fileSize > this.options.maxSize) {
         result.addError(`File too large: ${this.formatFileSize(result.fileSize)} (max: ${this.formatFileSize(this.options.maxSize)})`);
         return result;
       }
-
-      // Read file content
-      const content = fs.readFileSync(filePath, 'utf8');
 
       // Pre-process content if needed
       const processedContent = this.preprocessContent(content, result);

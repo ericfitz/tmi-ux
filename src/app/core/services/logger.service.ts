@@ -99,9 +99,10 @@ export class LoggerService {
    */
   debugComponent(component: string, message: string, ...optionalParams: unknown[]): void {
     if (this.shouldLogComponent(component, LogLevel.DEBUG)) {
+      const sanitizedComponent = this.sanitizeForLog(component);
       const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
       console.debug(
-        this.formatMessage(LogLevel.DEBUG, `[${component}] ${message}`),
+        this.formatMessage(LogLevel.DEBUG, `[${sanitizedComponent}] ${message}`),
         ...redactedParams,
       );
     }
@@ -164,6 +165,16 @@ export class LoggerService {
   private formatMessage(level: LogLevel, message: string): string {
     const timestamp = new Date().toISOString();
     return `${timestamp} [${level}] ${message}`;
+  }
+
+  /**
+   * Sanitize a string to prevent log injection attacks
+   * Removes control characters that could be used to forge log entries
+   */
+  private sanitizeForLog(input: string): string {
+    // Remove ASCII control characters (0x00-0x1F and 0x7F) to prevent log injection
+    // eslint-disable-next-line no-control-regex
+    return input.replace(/[\u0000-\u001F\u007F]/g, '');
   }
 
   /**

@@ -1246,7 +1246,15 @@ export class WebSocketAdapter {
       'auth',
     ];
 
+    // Keys that could be used for prototype pollution attacks
+    const dangerousKeys = ['__proto__', 'constructor', 'prototype'];
+
     for (const [key, value] of Object.entries(redacted as Record<string, unknown>)) {
+      // Skip keys that could be used for prototype pollution
+      if (dangerousKeys.includes(key)) {
+        continue;
+      }
+
       const lowerKey = key.toLowerCase();
 
       // Check if the key contains sensitive information
