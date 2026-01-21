@@ -50,8 +50,8 @@
           <table mat-table [dataSource]="filteredGroups">
             <!-- Provider Column -->
             <ng-container matColumnDef="provider">
-              <th mat-header-cell *matHeaderCellDef>Provider</th>
-              <td mat-cell *matCellDef="let group">
+              <th mat-header-cell *matHeaderCellDef class="provider-column">Provider</th>
+              <td mat-cell *matCellDef="let group" class="provider-column">
                 <app-provider-display
                   [providerInfo]="getProviderInfo(group.provider === '*' ? 'tmi' : group.provider)"
                 />
@@ -60,15 +60,21 @@
 
             <!-- Group Column -->
             <ng-container matColumnDef="group">
-              <th mat-header-cell *matHeaderCellDef>Group</th>
-              <td mat-cell *matCellDef="let group">
+              <th mat-header-cell *matHeaderCellDef class="group-column">Group</th>
+              <td mat-cell *matCellDef="let group" class="group-column">
                 <div class="group-info">
                   @if (getGroupDisplayName(group)) {
-                    <div class="group-name">{{ getGroupDisplayName(group) }}</div>
+                    <div class="group-name" [matTooltip]="getGroupDisplayName(group)">
+                      {{ getGroupDisplayName(group) }}
+                    </div>
                   }
-                  <div class="group-identifier">{{ getGroupIdentifier(group) }}</div>
+                  <div class="group-identifier" [matTooltip]="getGroupIdentifier(group)">
+                    {{ getGroupIdentifier(group) }}
+                  </div>
                   @if (group.description) {
-                    <div class="group-description">{{ group.description }}</div>
+                    <div class="group-description" [matTooltip]="group.description">
+                      {{ group.description }}
+                    </div>
                   }
                 </div>
               </td>
@@ -76,8 +82,8 @@
 
             <!-- Members Column -->
             <ng-container matColumnDef="members">
-              <th mat-header-cell *matHeaderCellDef>Members</th>
-              <td mat-cell *matCellDef="let group">
+              <th mat-header-cell *matHeaderCellDef class="members-column">Members</th>
+              <td mat-cell *matCellDef="let group" class="members-column">
                 @if (group.member_count !== undefined && group.member_count !== null) {
                   {{ group.member_count }}
                 } @else {
@@ -88,8 +94,8 @@
 
             <!-- Usage Column -->
             <ng-container matColumnDef="usage">
-              <th mat-header-cell *matHeaderCellDef>Usage</th>
-              <td mat-cell *matCellDef="let group">
+              <th mat-header-cell *matHeaderCellDef class="usage-column">Usage</th>
+              <td mat-cell *matCellDef="let group" class="usage-column">
                 <div class="usage-info">
                   <div class="usage-count">{{ group.usage_count }} refs</div>
                   @if (group.used_in_authorizations) {
@@ -104,8 +110,8 @@
 
             <!-- Actions Column -->
             <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef>Actions</th>
-              <td mat-cell *matCellDef="let group">
+              <th mat-header-cell *matHeaderCellDef class="actions-column">Actions</th>
+              <td mat-cell *matCellDef="let group" class="actions-column">
                 <div class="action-buttons">
                   <button
                     mat-icon-button
