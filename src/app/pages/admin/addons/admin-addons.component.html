@@ -78,7 +78,11 @@
               <div class="addon-metadata">
                 @if (addon.objects && addon.objects.length > 0) {
                   <span class="metadata-item">
-                    <mat-icon class="inline-icon">category</mat-icon>
+                    <mat-icon
+                      class="inline-icon"
+                      [matTooltip]="'admin.addons.objectTypesTooltip' | transloco"
+                      >category</mat-icon
+                    >
                     <span class="object-chips">
                       @for (obj of addon.objects; track obj) {
                         <mat-chip class="object-chip">{{ obj }}</mat-chip>

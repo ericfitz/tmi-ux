@@ -58,6 +58,7 @@
       "confirmDelete": "Are you sure you want to delete the addon \"{{name}}\"?",
       "created": "{{common.created}}",
       "deleteTooltip": "Delete addon",
+      "objectTypesTooltip": "Applies to These Object Types",
       "errorCreatingAddon": "Failed to create addon. Please try again.",
       "errorLoadingWebhooks": "Failed to load available webhooks",
       "filterLabel": "Filter Addons",
