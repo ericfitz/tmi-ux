@@ -369,10 +369,8 @@ export class AppEventHandlersService {
                 cells = cellData.cells;
               } catch (error) {
                 this.logger.error('Error extracting cell data for threat editor', error);
-                // Fallback: create basic diagram option
-                if (dfdId && diagramName) {
-                  diagrams = [{ id: dfdId, name: diagramName }];
-                }
+                // Fallback: create basic diagram option (dfdId and diagramName are guaranteed by outer if)
+                diagrams = [{ id: dfdId, name: diagramName }];
               }
             }
 

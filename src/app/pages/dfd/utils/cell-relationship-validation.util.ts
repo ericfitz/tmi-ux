@@ -120,7 +120,7 @@ export function validateAndFixParentChildRelationships(
 function validateParentReferences(cells: Cell[], context: ValidationContext): void {
   cells.forEach(cell => {
     const parent = cell['parent'] as string | null | undefined;
-    if (!parent || parent === null) {
+    if (!parent) {
       return;
     }
 
@@ -300,7 +300,7 @@ function logValidationSummary(cells: Cell[], context: ValidationContext): void {
         totalCells: cells.length,
         cellsWithParents: cells.filter(c => {
           const parent = c['parent'] as string | null | undefined;
-          return parent && parent !== null;
+          return !!parent;
         }).length,
       },
     );
@@ -324,7 +324,7 @@ function hasCircularRelationship(
   let currentId: string | null = parentId;
 
   // Traverse up the parent chain
-  while (currentId && currentId !== null) {
+  while (currentId) {
     // If we've seen this cell before, we have a cycle
     if (visited.has(currentId)) {
       return true;

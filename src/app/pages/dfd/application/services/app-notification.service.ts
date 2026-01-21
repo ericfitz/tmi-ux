@@ -285,7 +285,6 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
   showWebSocketStatus(state: WebSocketState, retryCallback?: () => void): Observable<void> {
     let message: string;
     let presetKey: string;
-    let actionCallback: (() => void) | undefined = retryCallback;
 
     // Only show notifications for error states - success states are indicated by WebSocket icon
     switch (state) {
@@ -322,10 +321,9 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
             ? 'Connection failed after multiple attempts. Working in offline mode.'
             : 'Connection error. Working in offline mode.';
         presetKey = 'websocketFailed';
-        actionCallback = retryCallback;
 
         this._dismissWebSocketNotifications();
-        return this.showPreset(presetKey, message, { actionCallback });
+        return this.showPreset(presetKey, message, { actionCallback: retryCallback });
 
       default:
         this._logger.warn('Unknown WebSocket state', { state });

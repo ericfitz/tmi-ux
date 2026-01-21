@@ -415,28 +415,27 @@ export class InfraX6ZOrderAdapter {
    */
   applyNodeCreationZIndex(graph: Graph, node: Node): void {
     // Get node type using getNodeTypeInfo for reliable node type detection
-    let nodeType = 'unknown'; // Default fallback for nodes without type info
+    // Default to 'unknown' for nodes without type info or when getNodeTypeInfo fails
+    let nodeType = 'unknown';
 
     if (typeof (node as any).getNodeTypeInfo === 'function') {
       try {
         const nodeTypeInfo = (node as any).getNodeTypeInfo();
         nodeType = nodeTypeInfo?.type || 'unknown';
       } catch (error) {
-        // If getNodeTypeInfo call fails, default to 'unknown'
+        // If getNodeTypeInfo call fails, keep default 'unknown'
         this.logger.warn('Error calling getNodeTypeInfo extension', {
           nodeId: node.id,
           shape: node.shape,
           error,
         });
-        nodeType = 'unknown';
       }
     } else {
-      // If getNodeTypeInfo method doesn't exist, log warning and default to 'unknown'
+      // If getNodeTypeInfo method doesn't exist, log warning and keep default 'unknown'
       this.logger.warn('Node missing getNodeTypeInfo extension', {
         nodeId: node.id,
         shape: node.shape,
       });
-      nodeType = 'unknown';
     }
 
     // Use getDefaultZIndex for all node types
