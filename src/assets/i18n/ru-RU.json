@@ -58,6 +58,7 @@
       "filterPlaceholder": "Поиск по названию или описанию",
       "listTitle": "Системные Дополнения",
       "noAddons": "Дополнения не найдены",
+      "objectTypesTooltip": "Применяется к этим типам объектов",
       "subtitle": "Настройка дополнений для расширения функциональности TMI",
       "title": "Управление Дополнениями"
     },
@@ -349,6 +350,7 @@
     "mitigation": "Смягчение",
     "mitigationPlaceholder": "Опишите рекомендуемые или запланированные меры смягчения для этой угрозы",
     "name": "Название",
+    "noAddonsAvailable": "Дополнения недоступны",
     "noDataAvailable": "Данные Недоступны",
     "noMetadata": "Метаданные Недоступны",
     "noThreats": "Угрозы Недоступны",
@@ -568,7 +570,9 @@
     "serverStatus": {
       "noServerConfigured": "Сервер не настроен",
       "serverConnected": "Сервер подключён",
-      "serverConnectionError": "Ошибка подключения к серверу"
+      "serverDegraded": "Сервер деградирован",
+      "serverError": "Ошибка сервера",
+      "serverOffline": "Сервер не в сети"
     }
   },
   "noteEditor": {
