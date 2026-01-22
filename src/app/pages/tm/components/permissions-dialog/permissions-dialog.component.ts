@@ -386,8 +386,10 @@ export interface PermissionsDialogData {
       }
 
       .table-field .mat-mdc-form-field-infix {
-        min-height: 40px;
-        padding: 8px 0;
+        min-height: 36px;
+        padding: 6px 0;
+        display: flex;
+        align-items: center;
       }
 
       .table-field input,
@@ -395,18 +397,50 @@ export interface PermissionsDialogData {
         font-size: var(--font-size-base);
       }
 
+      .table-field mat-select ::ng-deep .mat-mdc-select-trigger {
+        display: flex;
+        align-items: center;
+        min-height: 24px;
+      }
+
+      .table-field mat-select ::ng-deep .mat-mdc-select-value {
+        display: flex;
+        align-items: center;
+      }
+
+      .table-field mat-select ::ng-deep .mat-mdc-select-value-text {
+        display: flex;
+        align-items: center;
+      }
+
+      /* Ensure provider display is properly aligned */
+      .table-field app-provider-display {
+        display: inline-flex;
+        align-items: center;
+      }
+
       .type-display,
       .type-option {
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 4px;
       }
 
-      .type-option mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
+      .type-option mat-icon,
+      .type-option app-principal-type-icon {
+        display: inline-flex;
+        align-items: center;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
         line-height: 1;
+      }
+
+      .type-option app-principal-type-icon ::ng-deep mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
       }
 
       /* Column widths */
@@ -436,39 +470,31 @@ export interface PermissionsDialogData {
         text-align: center;
       }
 
+      .mat-mdc-row {
+        min-height: 48px;
+      }
+
       .mat-mdc-cell,
       .mat-mdc-header-cell {
-        padding: 8px 4px;
+        padding: 4px 8px;
         vertical-align: middle;
       }
 
-      .mat-mdc-cell {
-        height: 56px;
+      /* Ensure actions cell aligns content to center */
+      .mat-column-actions.mat-mdc-cell {
+        vertical-align: middle;
       }
 
       .actions-container {
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 4px;
-        height: 100%;
-        min-height: 40px;
-      }
-
-      .actions-cell {
         vertical-align: middle;
       }
 
-      .actions-container mat-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
       .actions-container button[mat-icon-button] {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        vertical-align: middle;
       }
 
       .table-field .mat-mdc-form-field-wrapper {
