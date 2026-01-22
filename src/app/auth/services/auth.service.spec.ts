@@ -485,7 +485,7 @@ describe('AuthService', () => {
         return null;
       });
 
-      // Mock GET /users/me call that happens after successful token response
+      // Mock GET /me call that happens after successful token response
       vi.mocked(httpClient.get).mockReturnValue(of(mockUserProfile));
 
       const result$ = service.handleOAuthCallback(mockTMITokenResponse);
@@ -651,7 +651,7 @@ describe('AuthService', () => {
 
       router.navigate = vi.fn().mockResolvedValue(true);
 
-      // Mock GET /users/me call that happens after successful token response
+      // Mock GET /me call that happens after successful token response
       vi.mocked(httpClient.get).mockReturnValue(of(mockUserProfile));
 
       const result$ = service.handleOAuthCallback(responseWithBase64State);

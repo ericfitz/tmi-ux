@@ -1249,12 +1249,12 @@ export class AuthService {
   /**
    * Fetch current user profile from server and update cached profile with admin status
    * This should be called after login to get the is_admin flag
-   * Calls GET /users/me directly to avoid circular dependency
+   * Calls GET /me directly to avoid circular dependency
    * @returns Observable that completes when profile is updated
    */
   refreshUserProfile(): Observable<UserProfile> {
     this.logger.debugComponent('Auth', 'Fetching current user profile from server');
-    return this.http.get<UserMeResponse>(`${environment.apiUrl}/users/me`).pipe(
+    return this.http.get<UserMeResponse>(`${environment.apiUrl}/me`).pipe(
       map(response => {
         // Transform API response to UserProfile format
         const serverProfile: UserProfile = {
