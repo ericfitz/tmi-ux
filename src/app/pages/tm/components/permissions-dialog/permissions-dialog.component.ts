@@ -385,21 +385,19 @@ export interface PermissionsDialogData {
         padding-bottom: 0;
       }
 
-      .table-field .mat-mdc-form-field-infix {
-        min-height: 32px;
-        max-height: 32px;
-        padding: 4px 0;
-        display: flex;
-        align-items: center;
-      }
-
-      /* Constrain the text field wrapper height */
       .table-field .mat-mdc-text-field-wrapper {
-        height: 40px;
+        height: 32px;
       }
 
       .table-field .mat-mdc-form-field-flex {
-        height: 40px;
+        height: 32px;
+        align-items: center;
+      }
+
+      .table-field .mat-mdc-form-field-infix {
+        min-height: 24px;
+        padding: 2px 0;
+        display: flex;
         align-items: center;
       }
 
@@ -482,20 +480,19 @@ export interface PermissionsDialogData {
       }
 
       .mat-mdc-row {
-        min-height: 56px;
-        height: 56px;
+        height: 44px;
       }
 
       .mat-mdc-cell,
       .mat-mdc-header-cell {
-        padding: 8px;
+        padding: 6px 8px;
         vertical-align: middle;
-        height: 56px;
+        height: 44px;
       }
 
       /* Force all form fields to same height */
       .table-field {
-        height: 40px;
+        height: 32px;
       }
 
       /* Center actions buttons in the row */
@@ -508,7 +505,7 @@ export interface PermissionsDialogData {
         align-items: center;
         justify-content: center;
         gap: 4px;
-        height: 40px;
+        height: 32px;
       }
 
       .table-field .mat-mdc-form-field-wrapper {
