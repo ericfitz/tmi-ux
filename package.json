@@ -143,6 +143,7 @@
   },
   "pnpm": {
     "overrides": {
+      "lodash-es": "^4.17.23",
       "http-proxy-middleware": "^3.0.5",
       "wrap-ansi@9.0.1": "9.0.0",
       "slice-ansi@7.1.1": "7.1.0",
