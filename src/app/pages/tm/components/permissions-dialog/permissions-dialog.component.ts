@@ -387,18 +387,23 @@ export interface PermissionsDialogData {
 
       .table-field .mat-mdc-text-field-wrapper {
         height: 32px;
+        max-height: 32px;
+        overflow: hidden;
       }
 
       .table-field .mat-mdc-form-field-flex {
         height: 32px;
+        max-height: 32px;
         align-items: center;
       }
 
       .table-field .mat-mdc-form-field-infix {
         min-height: 20px;
+        max-height: 24px;
         padding: 0;
         display: flex;
         align-items: center;
+        overflow: hidden;
       }
 
       .table-field input,
