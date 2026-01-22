@@ -381,73 +381,39 @@ export interface PermissionsDialogData {
         min-width: 160px;
       }
 
-      /* Override Material form field heights aggressively with ng-deep */
-      ::ng-deep .permissions-table .table-field.mat-mdc-form-field {
-        height: 32px !important;
-        min-height: 32px !important;
-        max-height: 32px !important;
+      .table-field .mat-mdc-form-field-wrapper {
+        padding-bottom: 0;
       }
 
-      ::ng-deep .permissions-table .table-field .mat-mdc-form-field-wrapper {
-        height: 32px !important;
-        min-height: 32px !important;
-        max-height: 32px !important;
-        padding: 0 !important;
+      .table-field .mat-mdc-text-field-wrapper {
+        height: 32px;
+        max-height: 32px;
+        overflow: hidden;
       }
 
-      ::ng-deep .permissions-table .table-field .mat-mdc-text-field-wrapper {
-        padding: 0 4px !important;
-        margin: 0 !important;
-        height: 32px !important;
-        min-height: 32px !important;
-        max-height: 32px !important;
+      .table-field .mat-mdc-form-field-flex {
+        height: 32px;
+        max-height: 32px;
+        align-items: center;
       }
 
-      ::ng-deep .permissions-table .table-field .mat-mdc-form-field-flex {
-        padding: 0 !important;
-        margin: 0 !important;
-        height: 32px !important;
-        min-height: 32px !important;
-        max-height: 32px !important;
-        align-items: center !important;
+      .table-field .mat-mdc-form-field-infix {
+        min-height: 20px;
+        max-height: 24px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
       }
 
-      .table-field .mat-mdc-form-field-subscript-wrapper {
-        height: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        display: none !important;
-        line-height: 0 !important;
-      }
-
-      ::ng-deep .permissions-table .table-field .mat-mdc-form-field-infix {
-        min-height: 24px !important;
-        height: 24px !important;
-        max-height: 24px !important;
-        padding: 0 4px !important;
-        display: flex !important;
-        align-items: center !important;
-      }
-
-      /* Input element itself - minimize all spacing around text */
-      ::ng-deep .permissions-table .table-field input.mat-mdc-input-element {
-        padding: 0 !important;
-        margin: 0 !important;
-        height: 20px !important;
-        max-height: 20px !important;
-        line-height: 20px !important;
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
+      .table-field input,
+      .table-field mat-select {
+        font-size: var(--font-size-base);
+        padding: 2px 4px;
       }
 
       .table-field input {
-        font-size: var(--font-size-base);
-        vertical-align: top !important;
-      }
-
-      .table-field mat-select {
-        font-size: var(--font-size-base);
+        margin: 0;
       }
 
       .table-field mat-select ::ng-deep .mat-mdc-select-trigger {
@@ -531,41 +497,25 @@ export interface PermissionsDialogData {
         text-align: center;
       }
 
-      /* Ensure table rows are compact */
-      .permissions-table .mat-mdc-row,
-      .permissions-table .mat-mdc-header-row {
-        height: auto !important;
-        min-height: auto !important;
+      .mat-mdc-row {
+        height: 44px;
       }
 
-      .mat-mdc-cell {
-        height: 38px !important;
-        padding: 3px 8px !important;
-        vertical-align: middle !important;
-        border-bottom: 1px solid var(--theme-divider) !important;
-      }
-
+      .mat-mdc-cell,
       .mat-mdc-header-cell {
-        height: 36px !important;
-        padding: 4px 8px !important;
-        vertical-align: middle !important;
-        border-bottom: 1px solid var(--theme-divider) !important;
+        padding: 6px 8px;
+        vertical-align: middle;
+        height: 44px;
       }
 
+      /* Force all form fields to same height */
       .table-field {
-        width: 100%;
-        margin: 0 !important;
+        height: 32px;
       }
 
       /* Center actions buttons in the row */
-      .mat-column-actions .mat-mdc-icon-button {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        height: 32px !important;
-        width: 32px !important;
-        margin: 0 auto !important;
-        padding: 0 !important;
+      .mat-column-actions {
+        vertical-align: middle;
       }
 
       .actions-container {
@@ -573,6 +523,16 @@ export interface PermissionsDialogData {
         align-items: center;
         justify-content: center;
         gap: 4px;
+        height: 32px;
+      }
+
+      .table-field .mat-mdc-form-field-wrapper {
+        padding-bottom: 0;
+        margin-bottom: 0;
+      }
+
+      .table-field .mat-mdc-form-field-flex {
+        align-items: center;
       }
 
       .unavailable-provider {
