@@ -386,9 +386,20 @@ export interface PermissionsDialogData {
       }
 
       .table-field .mat-mdc-form-field-infix {
-        min-height: 36px;
-        padding: 6px 0;
+        min-height: 32px;
+        max-height: 32px;
+        padding: 4px 0;
         display: flex;
+        align-items: center;
+      }
+
+      /* Constrain the text field wrapper height */
+      .table-field .mat-mdc-text-field-wrapper {
+        height: 40px;
+      }
+
+      .table-field .mat-mdc-form-field-flex {
+        height: 40px;
         align-items: center;
       }
 
@@ -471,30 +482,33 @@ export interface PermissionsDialogData {
       }
 
       .mat-mdc-row {
-        min-height: 48px;
+        min-height: 56px;
+        height: 56px;
       }
 
       .mat-mdc-cell,
       .mat-mdc-header-cell {
-        padding: 4px 8px;
+        padding: 8px;
         vertical-align: middle;
+        height: 56px;
       }
 
-      /* Ensure actions cell aligns content to center */
-      .mat-column-actions.mat-mdc-cell {
+      /* Force all form fields to same height */
+      .table-field {
+        height: 40px;
+      }
+
+      /* Center actions buttons in the row */
+      .mat-column-actions {
         vertical-align: middle;
       }
 
       .actions-container {
-        display: inline-flex;
+        display: flex;
         align-items: center;
         justify-content: center;
         gap: 4px;
-        vertical-align: middle;
-      }
-
-      .actions-container button[mat-icon-button] {
-        vertical-align: middle;
+        height: 40px;
       }
 
       .table-field .mat-mdc-form-field-wrapper {
