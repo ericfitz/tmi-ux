@@ -395,8 +395,8 @@ export interface PermissionsDialogData {
       }
 
       .table-field .mat-mdc-form-field-infix {
-        min-height: 24px;
-        padding: 2px 0;
+        min-height: 20px;
+        padding: 0;
         display: flex;
         align-items: center;
       }
@@ -404,22 +404,35 @@ export interface PermissionsDialogData {
       .table-field input,
       .table-field mat-select {
         font-size: var(--font-size-base);
+        padding: 2px 4px;
+      }
+
+      .table-field input {
+        margin: 0;
       }
 
       .table-field mat-select ::ng-deep .mat-mdc-select-trigger {
         display: flex;
         align-items: center;
-        min-height: 24px;
+        min-height: 20px;
+        padding: 2px 4px;
       }
 
       .table-field mat-select ::ng-deep .mat-mdc-select-value {
         display: flex;
         align-items: center;
+        padding: 0;
       }
 
       .table-field mat-select ::ng-deep .mat-mdc-select-value-text {
         display: flex;
         align-items: center;
+        padding: 0;
+      }
+
+      /* Reduce padding on the outline border container */
+      .table-field ::ng-deep .mdc-text-field {
+        padding: 0 4px;
       }
 
       /* Ensure provider display is properly aligned */
