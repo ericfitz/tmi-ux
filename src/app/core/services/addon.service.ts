@@ -3,7 +3,14 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
-import { Addon, AddonFilter, CreateAddonRequest, ListAddonsResponse } from '@app/types/addon.types';
+import {
+  Addon,
+  AddonFilter,
+  CreateAddonRequest,
+  InvokeAddonRequest,
+  InvokeAddonResponse,
+  ListAddonsResponse,
+} from '@app/types/addon.types';
 
 /**
  * Service for managing addons
@@ -102,6 +109,33 @@ export class AddonService {
         throw error;
       }),
     );
+  }
+
+  /**
+   * Invoke an addon with the given parameters
+   * @param id The addon ID to invoke
+   * @param request The invocation request parameters
+   * @returns Observable with the invocation response (202 Accepted)
+   */
+  public invoke(id: string, request: InvokeAddonRequest): Observable<InvokeAddonResponse> {
+    return this.apiService
+      .post<InvokeAddonResponse>(
+        `addons/${id}/invoke`,
+        request as unknown as Record<string, unknown>,
+      )
+      .pipe(
+        tap(response => {
+          this.logger.info('Addon invoked', {
+            addon_id: id,
+            invocation_id: response.invocation_id,
+            status: response.status,
+          });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to invoke addon', error);
+          throw error;
+        }),
+      );
   }
 
   /**

@@ -1,0 +1,89 @@
+<h2 mat-dialog-title [transloco]="'addons.invokeDialog.title'">Invoke Addon</h2>
+
+<mat-dialog-content>
+  <div class="addon-info">
+    <!-- Addon Icon and Name -->
+    <div class="addon-header">
+      <mat-icon class="addon-icon">{{ getAddonIcon() }}</mat-icon>
+      <div class="addon-details">
+        <span class="addon-name">{{ data.addon.name }}</span>
+        <span class="addon-id">{{ data.addon.id }}</span>
+      </div>
+    </div>
+
+    @if (data.addon.description) {
+      <p class="addon-description">{{ data.addon.description }}</p>
+    }
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="context-info">
+    <!-- Object Type -->
+    <div class="info-row">
+      <span class="info-label" [transloco]="'common.type'">Type</span>
+      <span class="info-value">
+        <span [transloco]="getObjectTypeTranslationKey()">{{ data.objectType }}</span>
+        @if (data.isBulk) {
+          <span class="bulk-indicator" [transloco]="'addons.invokeDialog.allObjects'">(All)</span>
+        }
+      </span>
+    </div>
+
+    <!-- Object Name/ID (only for row-level) -->
+    @if (data.objectId) {
+      <div class="info-row">
+        <span class="info-label" [transloco]="'common.name'">Name</span>
+        <span class="info-value">
+          {{ data.objectName || data.objectId }}
+          @if (data.objectName) {
+            <span class="object-id-hint">({{ data.objectId }})</span>
+          }
+        </span>
+      </div>
+    }
+
+    <!-- Threat Model -->
+    <div class="info-row">
+      <span class="info-label" [transloco]="'common.objectTypes.threatModel'">Threat Model</span>
+      <span class="info-value">{{ data.threatModelName }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="form" class="payload-form">
+    <mat-form-field class="full-width payload-field">
+      <mat-label [transloco]="'addons.invokeDialog.payload'">Payload (Optional)</mat-label>
+      <textarea
+        matInput
+        formControlName="payload"
+        rows="6"
+        [maxlength]="MAX_PAYLOAD_LENGTH"
+        [placeholder]="'addons.invokeDialog.payloadPlaceholder' | transloco"
+        class="payload-textarea"
+      ></textarea>
+      <mat-hint>
+        <span [transloco]="'addons.invokeDialog.payloadHint'">JSON data to pass to the addon</span>
+        ({{ form.get('payload')?.value?.length || 0 }}/{{ MAX_PAYLOAD_LENGTH }})
+      </mat-hint>
+      @if (form.get('payload')?.hasError('jsonInvalid')) {
+        <mat-error [transloco]="'addons.invokeDialog.invalidJson'"> Invalid JSON format </mat-error>
+      }
+    </mat-form-field>
+  </form>
+
+  @if (errorMessage) {
+    <mat-error class="form-error">{{ errorMessage }}</mat-error>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">
+    <span [transloco]="'common.cancel'">Cancel</span>
+  </button>
+  <button mat-raised-button color="primary" (click)="onInvoke()" [disabled]="!canInvoke">
+    @if (invoking) {
+      <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+    }
+    <span [transloco]="'common.ok'">OK</span>
+  </button>
+</mat-dialog-actions>

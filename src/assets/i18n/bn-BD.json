@@ -26,6 +26,19 @@
     "wiki": "TMI উইকি",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "(সব)",
+      "errorInvoking": "অ্যাডঅন চালু করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
+      "invalidJson": "অবৈধ JSON ফরম্যাট",
+      "invocationQueued": "অ্যাডঅন কল সারিবদ্ধ হয়েছে",
+      "payload": "পেলোড (ঐচ্ছিক)",
+      "payloadHint": "অ্যাডঅনে পাঠানোর জন্য JSON ডেটা",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "অ্যাডঅন চালু করুন"
+    }
+  },
   "admin": {
     "addons": {
       "addButton": "{{admin.addons.addDialog.title}}",
@@ -362,6 +375,7 @@
       "diagram": "ডায়াগ্রাম",
       "document": "ডকুমেন্ট",
       "documents": "ডকুমেন্ট",
+      "metadata": "মেটাডেটা",
       "note": "নোট",
       "notes": "নোট",
       "report": "রিপোর্ট",

@@ -26,6 +26,19 @@
     "wiki": "TMI Wiki",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "（全部）",
+      "errorInvoking": "调用插件失败。请重试。",
+      "invalidJson": "无效的JSON格式",
+      "invocationQueued": "插件调用已排队",
+      "payload": "载荷（可选）",
+      "payloadHint": "传递给插件的JSON数据",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "调用插件"
+    }
+  },
   "admin": {
     "addons": {
       "addButton": "{{admin.addons.addDialog.title}}",
@@ -362,6 +375,7 @@
       "diagram": "图表",
       "document": "文档",
       "documents": "文档",
+      "metadata": "元数据",
       "note": "笔记",
       "notes": "笔记",
       "report": "报告",

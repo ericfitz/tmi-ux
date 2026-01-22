@@ -26,6 +26,19 @@
     "wiki": "Wiki de TMI",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "(Todos)",
+      "errorInvoking": "Error al invocar el complemento. Por favor, inténtelo de nuevo.",
+      "invalidJson": "Formato JSON no válido",
+      "invocationQueued": "Invocación del complemento en cola",
+      "payload": "Carga útil (Opcional)",
+      "payloadHint": "Datos JSON para pasar al complemento",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "Invocar complemento"
+    }
+  },
   "admin": {
     "addons": {
       "addButton": "{{admin.addons.addDialog.title}}",
@@ -362,6 +375,7 @@
       "diagram": "Diagrama",
       "document": "Documento",
       "documents": "Documentos",
+      "metadata": "Metadatos",
       "note": "Nota",
       "notes": "Notas",
       "report": "Informe",

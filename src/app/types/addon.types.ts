@@ -74,3 +74,34 @@ export interface AddonFilter {
 export interface ListAddonsResponse {
   addons: Addon[];
 }
+
+/**
+ * Request to invoke an addon
+ */
+export interface InvokeAddonRequest {
+  /** Threat model context for invocation (required) */
+  threat_model_id: string;
+  /** Optional: Specific object type to operate on */
+  object_type?: AddonObjectType;
+  /** Optional: Specific object ID to operate on */
+  object_id?: string;
+  /** Optional: User-provided data for the add-on (max 1KB JSON-serialized) */
+  payload?: Record<string, unknown>;
+}
+
+/**
+ * Invocation status values
+ */
+export type InvokeAddonStatus = 'pending' | 'in_progress' | 'completed' | 'failed';
+
+/**
+ * Response from invoking an addon
+ */
+export interface InvokeAddonResponse {
+  /** Invocation identifier for tracking */
+  invocation_id: string;
+  /** Current invocation status */
+  status: InvokeAddonStatus;
+  /** Invocation creation timestamp */
+  created_at: string;
+}

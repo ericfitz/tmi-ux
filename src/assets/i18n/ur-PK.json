@@ -26,6 +26,19 @@
     "wiki": "TMI ویکی",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "(سب)",
+      "errorInvoking": "ایڈ آن کو کال کرنے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔",
+      "invalidJson": "غلط JSON فارمیٹ",
+      "invocationQueued": "ایڈ آن کال قطار میں شامل ہو گئی",
+      "payload": "پے لوڈ (اختیاری)",
+      "payloadHint": "ایڈ آن کو بھیجنے کے لیے JSON ڈیٹا",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "ایڈ آن کو کال کریں"
+    }
+  },
   "admin": {
     "addons": {
       "addButton": "{{admin.addons.addDialog.title}}",
@@ -362,6 +375,7 @@
       "diagram": "ڈایاگرام",
       "document": "دستاویز",
       "documents": "دستاویزات",
+      "metadata": "میٹا ڈیٹا",
       "note": "نوٹ",
       "notes": "نوٹس",
       "report": "رپورٹ",

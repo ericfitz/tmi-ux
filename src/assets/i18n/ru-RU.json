@@ -26,6 +26,19 @@
     "wiki": "Вики TMI",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "(Все)",
+      "errorInvoking": "Не удалось вызвать дополнение. Пожалуйста, попробуйте снова.",
+      "invalidJson": "Неверный формат JSON",
+      "invocationQueued": "Вызов дополнения добавлен в очередь",
+      "payload": "Данные (Необязательно)",
+      "payloadHint": "JSON-данные для передачи дополнению",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "Вызвать дополнение"
+    }
+  },
   "admin": {
     "addons": {
       "addButton": "{{admin.addons.addDialog.title}}",
@@ -362,6 +375,7 @@
       "diagram": "Диаграмма",
       "document": "Документ",
       "documents": "Документы",
+      "metadata": "Метаданные",
       "note": "Заметка",
       "notes": "Заметки",
       "report": "Отчёт",

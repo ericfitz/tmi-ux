@@ -26,6 +26,19 @@
     "wiki": "ويكي تي إم آي",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "(الكل)",
+      "errorInvoking": "فشل في استدعاء التوسيع. يرجى المحاولة مرة أخرى.",
+      "invalidJson": "تنسيق JSON غير صالح",
+      "invocationQueued": "تم وضع استدعاء التوسيع في قائمة الانتظار",
+      "payload": "الحمولة (اختياري)",
+      "payloadHint": "بيانات JSON لتمريرها إلى التوسيع",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "استدعاء التوسيع"
+    }
+  },
   "admin": {
     "addons": {
       "addButton": "{{admin.addons.addDialog.title}}",
@@ -362,6 +375,7 @@
       "diagram": "مخطط",
       "document": "وثيقة",
       "documents": "وثائق",
+      "metadata": "البيانات الوصفية",
       "note": "ملاحظة",
       "notes": "ملاحظات",
       "report": "تقرير",

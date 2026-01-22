@@ -26,6 +26,19 @@
     "wiki": "TMI विकी",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "(सभी)",
+      "errorInvoking": "ऐडऑन को आमंत्रित करने में विफल। कृपया पुनः प्रयास करें।",
+      "invalidJson": "अमान्य JSON प्रारूप",
+      "invocationQueued": "ऐडऑन आमंत्रण कतार में है",
+      "payload": "पेलोड (वैकल्पिक)",
+      "payloadHint": "ऐडऑन को भेजने के लिए JSON डेटा",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "ऐडऑन आमंत्रित करें"
+    }
+  },
   "admin": {
     "addons": {
       "addButton": "{{admin.addons.addDialog.title}}",
@@ -362,6 +375,7 @@
       "diagram": "डायग्राम",
       "document": "दस्तावेज़",
       "documents": "दस्तावेज़",
+      "metadata": "मेटाडेटा",
       "note": "नोट",
       "notes": "नोट्स",
       "report": "रिपोर्ट",

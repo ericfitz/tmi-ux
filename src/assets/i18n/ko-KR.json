@@ -26,6 +26,19 @@
     "wiki": "TMI 위키",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "(모두)",
+      "errorInvoking": "애드온 호출에 실패했습니다. 다시 시도해 주세요.",
+      "invalidJson": "잘못된 JSON 형식",
+      "invocationQueued": "애드온 호출이 대기열에 추가되었습니다",
+      "payload": "페이로드 (선택 사항)",
+      "payloadHint": "애드온에 전달할 JSON 데이터",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "애드온 호출"
+    }
+  },
   "admin": {
     "addons": {
       "addButton": "{{admin.addons.addDialog.title}}",
@@ -362,6 +375,7 @@
       "diagram": "다이어그램",
       "document": "문서",
       "documents": "문서",
+      "metadata": "메타데이터",
       "note": "노트",
       "notes": "노트",
       "report": "보고서",

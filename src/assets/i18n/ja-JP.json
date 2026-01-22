@@ -26,6 +26,19 @@
     "wiki": "TMI Wiki",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "(すべて)",
+      "errorInvoking": "アドオンの呼び出しに失敗しました。もう一度お試しください。",
+      "invalidJson": "無効なJSON形式",
+      "invocationQueued": "アドオン呼び出しがキューに追加されました",
+      "payload": "ペイロード（オプション）",
+      "payloadHint": "アドオンに渡すJSONデータ",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "アドオンを呼び出す"
+    }
+  },
   "admin": {
     "addons": {
       "addButton": "{{admin.addons.addDialog.title}}",
@@ -362,6 +375,7 @@
       "diagram": "ダイアグラム",
       "document": "ドキュメント",
       "documents": "ドキュメント",
+      "metadata": "メタデータ",
       "note": "ノート",
       "notes": "ノート",
       "report": "レポート",
