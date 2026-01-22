@@ -99,7 +99,7 @@ export interface PermissionsDialogData {
                   [matTooltipDisabled]="isNewPermission(auth)"
                 >
                   @if (!data.isReadOnly) {
-                    <mat-form-field class="table-field type-field">
+                    <mat-form-field appearance="outline" class="table-field type-field">
                       <mat-select
                         [value]="auth.principal_type"
                         (selectionChange)="updatePermissionPrincipalType(i, $event)"
@@ -152,7 +152,7 @@ export interface PermissionsDialogData {
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
                   @if (!data.isReadOnly) {
-                    <mat-form-field class="table-field provider-field">
+                    <mat-form-field appearance="outline" class="table-field provider-field">
                       <mat-select
                         [value]="auth.provider"
                         (selectionChange)="updatePermissionProvider(i, $event)"
@@ -187,7 +187,7 @@ export interface PermissionsDialogData {
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
                   @if (!data.isReadOnly) {
-                    <mat-form-field class="table-field">
+                    <mat-form-field appearance="outline" class="table-field">
                       <input
                         matInput
                         [value]="getSubjectValue(auth)"
@@ -210,7 +210,7 @@ export interface PermissionsDialogData {
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
                   @if (!data.isReadOnly) {
-                    <mat-form-field class="table-field">
+                    <mat-form-field appearance="outline" class="table-field">
                       <mat-select
                         [value]="auth.role"
                         (selectionChange)="updatePermissionRole(i, $event)"
