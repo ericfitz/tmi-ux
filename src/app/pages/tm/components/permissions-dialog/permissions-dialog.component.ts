@@ -99,7 +99,7 @@ export interface PermissionsDialogData {
                   [matTooltipDisabled]="isNewPermission(auth)"
                 >
                   @if (!data.isReadOnly) {
-                    <mat-form-field appearance="outline" class="table-field type-field">
+                    <mat-form-field class="table-field type-field">
                       <mat-select
                         [value]="auth.principal_type"
                         (selectionChange)="updatePermissionPrincipalType(i, $event)"
@@ -152,7 +152,7 @@ export interface PermissionsDialogData {
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
                   @if (!data.isReadOnly) {
-                    <mat-form-field appearance="outline" class="table-field provider-field">
+                    <mat-form-field class="table-field provider-field">
                       <mat-select
                         [value]="auth.provider"
                         (selectionChange)="updatePermissionProvider(i, $event)"
@@ -187,7 +187,7 @@ export interface PermissionsDialogData {
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
                   @if (!data.isReadOnly) {
-                    <mat-form-field appearance="outline" class="table-field">
+                    <mat-form-field class="table-field">
                       <input
                         matInput
                         [value]="getSubjectValue(auth)"
@@ -210,7 +210,7 @@ export interface PermissionsDialogData {
                 </th>
                 <td mat-cell *matCellDef="let auth; let i = index">
                   @if (!data.isReadOnly) {
-                    <mat-form-field appearance="outline" class="table-field">
+                    <mat-form-field class="table-field">
                       <mat-select
                         [value]="auth.role"
                         (selectionChange)="updatePermissionRole(i, $event)"
@@ -381,63 +381,21 @@ export interface PermissionsDialogData {
         min-width: 160px;
       }
 
+      /* Simple form field styling - match quotas table approach */
+      .table-field {
+        font-size: var(--font-size-base);
+      }
+
       .table-field .mat-mdc-form-field-wrapper {
         padding-bottom: 0;
       }
 
-      .table-field .mat-mdc-text-field-wrapper {
-        height: 32px;
-        max-height: 32px;
-        overflow: hidden;
+      .table-field input {
+        font-size: var(--font-size-base);
       }
 
-      .table-field .mat-mdc-form-field-flex {
-        height: 32px;
-        max-height: 32px;
-        align-items: center;
-      }
-
-      .table-field .mat-mdc-form-field-infix {
-        min-height: 20px;
-        max-height: 24px;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        overflow: hidden;
-      }
-
-      .table-field input,
       .table-field mat-select {
         font-size: var(--font-size-base);
-        padding: 2px 4px;
-      }
-
-      .table-field input {
-        margin: 0;
-      }
-
-      .table-field mat-select ::ng-deep .mat-mdc-select-trigger {
-        display: flex;
-        align-items: center;
-        min-height: 20px;
-        padding: 2px 4px;
-      }
-
-      .table-field mat-select ::ng-deep .mat-mdc-select-value {
-        display: flex;
-        align-items: center;
-        padding: 0;
-      }
-
-      .table-field mat-select ::ng-deep .mat-mdc-select-value-text {
-        display: flex;
-        align-items: center;
-        padding: 0;
-      }
-
-      /* Reduce padding on the outline border container */
-      .table-field ::ng-deep .mdc-text-field {
-        padding: 0 4px;
       }
 
       /* Ensure provider display is properly aligned */
@@ -497,20 +455,10 @@ export interface PermissionsDialogData {
         text-align: center;
       }
 
-      .mat-mdc-row {
-        height: 44px;
-      }
-
       .mat-mdc-cell,
       .mat-mdc-header-cell {
-        padding: 6px 8px;
+        padding: 12px 16px;
         vertical-align: middle;
-        height: 44px;
-      }
-
-      /* Force all form fields to same height */
-      .table-field {
-        height: 32px;
       }
 
       /* Center actions buttons in the row */
