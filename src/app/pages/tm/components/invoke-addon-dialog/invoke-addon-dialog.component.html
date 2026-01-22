@@ -66,9 +66,7 @@
         ({{ form.get('payload')?.value?.length || 0 }}/{{ MAX_PAYLOAD_LENGTH }})
       </mat-hint>
       @if (form.get('payload')?.hasError('jsonInvalid')) {
-        <mat-error [transloco]="'addons.invokeDialog.invalidJson'">
-          Invalid JSON format
-        </mat-error>
+        <mat-error [transloco]="'addons.invokeDialog.invalidJson'"> Invalid JSON format </mat-error>
       }
     </mat-form-field>
   </form>
@@ -82,12 +80,7 @@
   <button mat-button (click)="onCancel()">
     <span [transloco]="'common.cancel'">Cancel</span>
   </button>
-  <button
-    mat-raised-button
-    color="primary"
-    (click)="onInvoke()"
-    [disabled]="!canInvoke"
-  >
+  <button mat-raised-button color="primary" (click)="onInvoke()" [disabled]="!canInvoke">
     @if (invoking) {
       <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
     }

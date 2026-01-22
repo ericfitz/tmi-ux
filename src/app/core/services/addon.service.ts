@@ -119,7 +119,10 @@ export class AddonService {
    */
   public invoke(id: string, request: InvokeAddonRequest): Observable<InvokeAddonResponse> {
     return this.apiService
-      .post<InvokeAddonResponse>(`addons/${id}/invoke`, request as unknown as Record<string, unknown>)
+      .post<InvokeAddonResponse>(
+        `addons/${id}/invoke`,
+        request as unknown as Record<string, unknown>,
+      )
       .pipe(
         tap(response => {
           this.logger.info('Addon invoked', {

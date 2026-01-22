@@ -396,7 +396,10 @@
                         [matMenuTriggerFor]="assetRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
-                        (click)="$event.stopPropagation(); setAddonRowContext('asset', asset.id, asset.name)"
+                        (click)="
+                          $event.stopPropagation();
+                          setAddonRowContext('asset', asset.id, asset.name)
+                        "
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -600,7 +603,10 @@
                         [matMenuTriggerFor]="threatRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
-                        (click)="$event.stopPropagation(); setAddonRowContext('threat', threat.id, threat.name)"
+                        (click)="
+                          $event.stopPropagation();
+                          setAddonRowContext('threat', threat.id, threat.name)
+                        "
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -777,7 +783,10 @@
                         [matMenuTriggerFor]="diagramRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
-                        (click)="$event.stopPropagation(); setAddonRowContext('diagram', diagram.id, diagram.name)"
+                        (click)="
+                          $event.stopPropagation();
+                          setAddonRowContext('diagram', diagram.id, diagram.name)
+                        "
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -945,7 +954,9 @@
                         [matMenuTriggerFor]="noteRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
-                        (click)="$event.stopPropagation(); setAddonRowContext('note', note.id, note.name)"
+                        (click)="
+                          $event.stopPropagation(); setAddonRowContext('note', note.id, note.name)
+                        "
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -1104,7 +1115,10 @@
                         [matMenuTriggerFor]="documentRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
-                        (click)="$event.stopPropagation(); setAddonRowContext('document', document.id, document.name)"
+                        (click)="
+                          $event.stopPropagation();
+                          setAddonRowContext('document', document.id, document.name)
+                        "
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -1263,7 +1277,10 @@
                         [matMenuTriggerFor]="repositoryRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
-                        (click)="$event.stopPropagation(); setAddonRowContext('repository', repository.id, repository.name)"
+                        (click)="
+                          $event.stopPropagation();
+                          setAddonRowContext('repository', repository.id, repository.name)
+                        "
                       >
                         <mat-icon>extension</mat-icon>
                       </button>

@@ -1,5 +1,11 @@
 import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  AbstractControl,
+  ValidationErrors,
+  ValidatorFn,
+} from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -10,7 +16,12 @@ import {
   CORE_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
-import { Addon, AddonObjectType, InvokeAddonRequest, InvokeAddonResponse } from '@app/types/addon.types';
+import {
+  Addon,
+  AddonObjectType,
+  InvokeAddonRequest,
+  InvokeAddonResponse,
+} from '@app/types/addon.types';
 import { AddonService } from '@app/core/services/addon.service';
 import { LoggerService } from '@app/core/services/logger.service';
 
