@@ -26,6 +26,19 @@
     "wiki": "TMI Wiki",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "(ทั้งหมด)",
+      "errorInvoking": "ไม่สามารถเรียกใช้ส่วนเสริมได้ โปรดลองอีกครั้ง",
+      "invalidJson": "รูปแบบ JSON ไม่ถูกต้อง",
+      "invocationQueued": "การเรียกใช้ส่วนเสริมอยู่ในคิว",
+      "payload": "ข้อมูล (ไม่บังคับ)",
+      "payloadHint": "ข้อมูล JSON ที่จะส่งไปยังส่วนเสริม",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "เรียกใช้ส่วนเสริม"
+    }
+  },
   "admin": {
     "addons": {
       "addButton": "{{admin.addons.addDialog.title}}",
@@ -362,6 +375,7 @@
       "diagram": "แผนภาพ",
       "document": "เอกสาร",
       "documents": "เอกสาร",
+      "metadata": "เมตาดาต้า",
       "note": "หมายเหตุ",
       "notes": "หมายเหตุ",
       "report": "รายงาน",

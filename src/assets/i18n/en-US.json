@@ -30,6 +30,19 @@
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki",
     "wikiUrl.comment": "This is a URL and should not be translated."
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "(All)",
+      "errorInvoking": "Failed to invoke addon. Please try again.",
+      "invalidJson": "Invalid JSON format",
+      "invocationQueued": "Addon invocation queued",
+      "payload": "Payload (Optional)",
+      "payloadHint": "JSON data to pass to the addon",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "Invoke Addon"
+    }
+  },
   "admin": {
     "addons": {
       "addButton": "{{admin.addons.addDialog.title}}",
@@ -237,19 +250,6 @@
       },
       "subtitle": "Configure webhook subscriptions for event notifications",
       "title": "Manage Webhooks"
-    }
-  },
-  "addons": {
-    "invokeDialog": {
-      "allObjects": "(All)",
-      "errorInvoking": "Failed to invoke addon. Please try again.",
-      "invalidJson": "Invalid JSON format",
-      "invocationQueued": "Addon invocation queued",
-      "payload": "Payload (Optional)",
-      "payloadHint": "JSON data to pass to the addon",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
-      "title": "Invoke Addon"
     }
   },
   "assetEditor": {

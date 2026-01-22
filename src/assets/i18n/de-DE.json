@@ -26,6 +26,19 @@
     "wiki": "TMI Wiki",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "(Alle)",
+      "errorInvoking": "Addon konnte nicht aufgerufen werden. Bitte versuchen Sie es erneut.",
+      "invalidJson": "Ungültiges JSON-Format",
+      "invocationQueued": "Addon-Aufruf in Warteschlange",
+      "payload": "Payload (Optional)",
+      "payloadHint": "JSON-Daten zum Übergeben an das Addon",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "Addon aufrufen"
+    }
+  },
   "admin": {
     "addons": {
       "addButton": "{{admin.addons.addDialog.title}}",
@@ -362,6 +375,7 @@
       "diagram": "Diagramm",
       "document": "Dokument",
       "documents": "Dokumente",
+      "metadata": "Metadaten",
       "note": "Notiz",
       "notes": "Notizen",
       "report": "Bericht",

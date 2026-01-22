@@ -26,6 +26,19 @@
     "wiki": "Wiki TMI",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "(Semua)",
+      "errorInvoking": "Gagal memanggil addon. Silakan coba lagi.",
+      "invalidJson": "Format JSON tidak valid",
+      "invocationQueued": "Pemanggilan addon dalam antrean",
+      "payload": "Payload (Opsional)",
+      "payloadHint": "Data JSON untuk dikirim ke addon",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "Panggil Addon"
+    }
+  },
   "admin": {
     "addons": {
       "addButton": "{{admin.addons.addDialog.title}}",
@@ -362,6 +375,7 @@
       "diagram": "Diagram",
       "document": "Dokumen",
       "documents": "Dokumen",
+      "metadata": "Metadata",
       "note": "Catatan",
       "notes": "Catatan",
       "report": "Laporan",

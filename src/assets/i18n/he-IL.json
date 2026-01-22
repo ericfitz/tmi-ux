@@ -26,6 +26,19 @@
     "wiki": "ויקי TMI",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "(הכל)",
+      "errorInvoking": "הפעלת התוסף נכשלה. אנא נסה שוב.",
+      "invalidJson": "פורמט JSON לא תקין",
+      "invocationQueued": "הפעלת התוסף בתור",
+      "payload": "מטען (אופציונלי)",
+      "payloadHint": "נתוני JSON להעברה לתוסף",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "הפעל תוסף"
+    }
+  },
   "admin": {
     "addons": {
       "addButton": "{{admin.addons.addDialog.title}}",
@@ -362,6 +375,7 @@
       "diagram": "דיאגרמה",
       "document": "מסמך",
       "documents": "מסמכים",
+      "metadata": "מטא-נתונים",
       "note": "הערה",
       "notes": "הערות",
       "report": "דוח",
