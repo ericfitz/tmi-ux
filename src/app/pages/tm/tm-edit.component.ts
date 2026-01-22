@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -61,6 +62,11 @@ import {
   ThreatEditorDialogComponent,
   ThreatEditorDialogData,
 } from './components/threat-editor-dialog/threat-editor-dialog.component';
+import {
+  InvokeAddonDialogComponent,
+  InvokeAddonDialogData,
+  InvokeAddonDialogResult,
+} from './components/invoke-addon-dialog/invoke-addon-dialog.component';
 import { Diagram, DIAGRAMS_BY_ID } from './models/diagram.model';
 import {
   Authorization,
@@ -161,6 +167,13 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   addonsForDocument: Addon[] = [];
   addonsForRepository: Addon[] = [];
 
+  // Addon row context for row-level invocations
+  private currentAddonRowContext: {
+    type: AddonObjectType;
+    id: string;
+    name: string;
+  } | null = null;
+
   // Table data sources
   assetsDataSource = new MatTableDataSource<Asset>([]);
   threatsDataSource = new MatTableDataSource<Threat>([]);
@@ -237,6 +250,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private authorizationPrepare: AuthorizationPrepareService,
     private cdr: ChangeDetectorRef,
     private addonService: AddonService,
+    private snackBar: MatSnackBar,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -3324,5 +3338,142 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const diagram = this.diagrams.find(d => d.id === this.hoveredDiagramId);
     return diagram ? this.getSvgDataUrl(diagram) : '';
+  }
+
+  // ========== Addon Invocation Methods ==========
+
+  /**
+   * Set the addon context for row-level invocation
+   * Called when a row-level addon menu trigger is clicked
+   */
+  setAddonRowContext(type: AddonObjectType, id: string, name: string): void {
+    this.currentAddonRowContext = { type, id, name };
+  }
+
+  /**
+   * Clear addon row context
+   * Called when a row-level addon menu is closed
+   */
+  clearAddonRowContext(): void {
+    this.currentAddonRowContext = null;
+  }
+
+  /**
+   * Opens the invoke addon dialog
+   * @param addon The addon to invoke
+   * @param objectType The object type for context
+   * @param isBulk True for card-level (all objects), false for row-level
+   * @param objectId Optional object ID (for row-level invocations)
+   * @param objectName Optional object name for display
+   */
+  private openInvokeAddonDialog(
+    addon: Addon,
+    objectType: AddonObjectType,
+    isBulk: boolean,
+    objectId?: string,
+    objectName?: string,
+  ): void {
+    if (!this.threatModel) {
+      this.logger.error('Cannot invoke addon: no threat model loaded');
+      return;
+    }
+
+    const dialogData: InvokeAddonDialogData = {
+      addon,
+      threatModelId: this.threatModel.id,
+      threatModelName: this.threatModel.name,
+      objectType,
+      isBulk,
+      objectId,
+      objectName,
+    };
+
+    const dialogRef = this.dialog.open(InvokeAddonDialogComponent, {
+      width: '550px',
+      maxHeight: '90vh',
+      data: dialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((result: InvokeAddonDialogResult | undefined) => {
+        if (result?.submitted && result.response) {
+          const message = this.transloco.translate('addons.invokeDialog.invocationQueued');
+          this.snackBar.open(message, '', { duration: 3000 });
+          this.logger.info('Addon invocation queued', {
+            addon_id: addon.id,
+            invocation_id: result.response.invocation_id,
+          });
+        }
+      }),
+    );
+  }
+
+  /**
+   * Invoke addon with current row context
+   * Called from row-level addon menu items
+   */
+  invokeAddonWithRowContext(addon: Addon): void {
+    if (!this.currentAddonRowContext) {
+      this.logger.warn('No row context set for addon invocation');
+      return;
+    }
+    this.openInvokeAddonDialog(
+      addon,
+      this.currentAddonRowContext.type,
+      false,
+      this.currentAddonRowContext.id,
+      this.currentAddonRowContext.name,
+    );
+  }
+
+  // Card-level addon invocation methods (bulk operations)
+
+  /**
+   * Invoke addon for the threat model (card-level)
+   */
+  invokeAddonForThreatModel(addon: Addon): void {
+    this.openInvokeAddonDialog(addon, 'threat_model', true);
+  }
+
+  /**
+   * Invoke addon for assets (card-level)
+   */
+  invokeAddonForAssets(addon: Addon): void {
+    this.openInvokeAddonDialog(addon, 'asset', true);
+  }
+
+  /**
+   * Invoke addon for threats (card-level)
+   */
+  invokeAddonForThreats(addon: Addon): void {
+    this.openInvokeAddonDialog(addon, 'threat', true);
+  }
+
+  /**
+   * Invoke addon for diagrams (card-level)
+   */
+  invokeAddonForDiagrams(addon: Addon): void {
+    this.openInvokeAddonDialog(addon, 'diagram', true);
+  }
+
+  /**
+   * Invoke addon for notes (card-level)
+   */
+  invokeAddonForNotes(addon: Addon): void {
+    this.openInvokeAddonDialog(addon, 'note', true);
+  }
+
+  /**
+   * Invoke addon for documents (card-level)
+   */
+  invokeAddonForDocuments(addon: Addon): void {
+    this.openInvokeAddonDialog(addon, 'document', true);
+  }
+
+  /**
+   * Invoke addon for repositories (card-level)
+   */
+  invokeAddonForRepositories(addon: Addon): void {
+    this.openInvokeAddonDialog(addon, 'repository', true);
   }
 }

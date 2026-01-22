@@ -239,6 +239,19 @@
       "title": "Manage Webhooks"
     }
   },
+  "addons": {
+    "invokeDialog": {
+      "allObjects": "(All)",
+      "errorInvoking": "Failed to invoke addon. Please try again.",
+      "invalidJson": "Invalid JSON format",
+      "invocationQueued": "Addon invocation queued",
+      "payload": "Payload (Optional)",
+      "payloadHint": "JSON data to pass to the addon",
+      "payloadPlaceholder": "{ \"key\": \"value\" }",
+      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "title": "Invoke Addon"
+    }
+  },
   "assetEditor": {
     "chipPlaceholder": "Enter value and press Enter",
     "chipPlaceholder.comment": "The first 'Enter' is an imperative verb.  The second is a reference to the enter/return key on the keyboard.",
@@ -381,6 +394,7 @@
       "diagram": "Diagram",
       "document": "Document",
       "documents": "Documents",
+      "metadata": "Metadata",
       "note": "Note",
       "notes": "Notes",
       "report": "Report",

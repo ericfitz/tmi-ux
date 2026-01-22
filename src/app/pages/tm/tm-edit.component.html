@@ -396,7 +396,7 @@
                         [matMenuTriggerFor]="assetRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
-                        (click)="$event.stopPropagation()"
+                        (click)="$event.stopPropagation(); setAddonRowContext('asset', asset.id, asset.name)"
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -600,7 +600,7 @@
                         [matMenuTriggerFor]="threatRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
-                        (click)="$event.stopPropagation()"
+                        (click)="$event.stopPropagation(); setAddonRowContext('threat', threat.id, threat.name)"
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -777,7 +777,7 @@
                         [matMenuTriggerFor]="diagramRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
-                        (click)="$event.stopPropagation()"
+                        (click)="$event.stopPropagation(); setAddonRowContext('diagram', diagram.id, diagram.name)"
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -945,7 +945,7 @@
                         [matMenuTriggerFor]="noteRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
-                        (click)="$event.stopPropagation()"
+                        (click)="$event.stopPropagation(); setAddonRowContext('note', note.id, note.name)"
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -1104,7 +1104,7 @@
                         [matMenuTriggerFor]="documentRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
-                        (click)="$event.stopPropagation()"
+                        (click)="$event.stopPropagation(); setAddonRowContext('document', document.id, document.name)"
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -1263,7 +1263,7 @@
                         [matMenuTriggerFor]="repositoryRowAddonsMenu"
                         [matTooltip]="'common.addons' | transloco"
                         [attr.aria-label]="'common.addons' | transloco"
-                        (click)="$event.stopPropagation()"
+                        (click)="$event.stopPropagation(); setAddonRowContext('repository', repository.id, repository.name)"
                       >
                         <mat-icon>extension</mat-icon>
                       </button>
@@ -1341,7 +1341,12 @@
       </button>
     } @else {
       @for (addon of addonsForThreatModel; track addon.id) {
-        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddonForThreatModel(addon)"
+        >
           <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
           <span>{{ addon.name }}</span>
         </button>
@@ -1358,7 +1363,12 @@
       </button>
     } @else {
       @for (addon of addonsForAsset; track addon.id) {
-        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddonForAssets(addon)"
+        >
           <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
           <span>{{ addon.name }}</span>
         </button>
@@ -1367,7 +1377,7 @@
   </mat-menu>
 
   <!-- Asset Row Addons Menu -->
-  <mat-menu #assetRowAddonsMenu="matMenu">
+  <mat-menu #assetRowAddonsMenu="matMenu" (closed)="clearAddonRowContext()">
     @if (addonsForAsset.length === 0) {
       <button mat-menu-item disabled>
         <mat-icon>info</mat-icon>
@@ -1375,7 +1385,12 @@
       </button>
     } @else {
       @for (addon of addonsForAsset; track addon.id) {
-        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddonWithRowContext(addon)"
+        >
           <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
           <span>{{ addon.name }}</span>
         </button>
@@ -1392,7 +1407,12 @@
       </button>
     } @else {
       @for (addon of addonsForThreat; track addon.id) {
-        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddonForThreats(addon)"
+        >
           <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
           <span>{{ addon.name }}</span>
         </button>
@@ -1401,7 +1421,7 @@
   </mat-menu>
 
   <!-- Threat Row Addons Menu -->
-  <mat-menu #threatRowAddonsMenu="matMenu">
+  <mat-menu #threatRowAddonsMenu="matMenu" (closed)="clearAddonRowContext()">
     @if (addonsForThreat.length === 0) {
       <button mat-menu-item disabled>
         <mat-icon>info</mat-icon>
@@ -1409,7 +1429,12 @@
       </button>
     } @else {
       @for (addon of addonsForThreat; track addon.id) {
-        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddonWithRowContext(addon)"
+        >
           <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
           <span>{{ addon.name }}</span>
         </button>
@@ -1426,7 +1451,12 @@
       </button>
     } @else {
       @for (addon of addonsForDiagram; track addon.id) {
-        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddonForDiagrams(addon)"
+        >
           <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
           <span>{{ addon.name }}</span>
         </button>
@@ -1435,7 +1465,7 @@
   </mat-menu>
 
   <!-- Diagram Row Addons Menu -->
-  <mat-menu #diagramRowAddonsMenu="matMenu">
+  <mat-menu #diagramRowAddonsMenu="matMenu" (closed)="clearAddonRowContext()">
     @if (addonsForDiagram.length === 0) {
       <button mat-menu-item disabled>
         <mat-icon>info</mat-icon>
@@ -1443,7 +1473,12 @@
       </button>
     } @else {
       @for (addon of addonsForDiagram; track addon.id) {
-        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddonWithRowContext(addon)"
+        >
           <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
           <span>{{ addon.name }}</span>
         </button>
@@ -1460,7 +1495,12 @@
       </button>
     } @else {
       @for (addon of addonsForNote; track addon.id) {
-        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddonForNotes(addon)"
+        >
           <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
           <span>{{ addon.name }}</span>
         </button>
@@ -1469,7 +1509,7 @@
   </mat-menu>
 
   <!-- Note Row Addons Menu -->
-  <mat-menu #noteRowAddonsMenu="matMenu">
+  <mat-menu #noteRowAddonsMenu="matMenu" (closed)="clearAddonRowContext()">
     @if (addonsForNote.length === 0) {
       <button mat-menu-item disabled>
         <mat-icon>info</mat-icon>
@@ -1477,7 +1517,12 @@
       </button>
     } @else {
       @for (addon of addonsForNote; track addon.id) {
-        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddonWithRowContext(addon)"
+        >
           <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
           <span>{{ addon.name }}</span>
         </button>
@@ -1494,7 +1539,12 @@
       </button>
     } @else {
       @for (addon of addonsForDocument; track addon.id) {
-        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddonForDocuments(addon)"
+        >
           <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
           <span>{{ addon.name }}</span>
         </button>
@@ -1503,7 +1553,7 @@
   </mat-menu>
 
   <!-- Document Row Addons Menu -->
-  <mat-menu #documentRowAddonsMenu="matMenu">
+  <mat-menu #documentRowAddonsMenu="matMenu" (closed)="clearAddonRowContext()">
     @if (addonsForDocument.length === 0) {
       <button mat-menu-item disabled>
         <mat-icon>info</mat-icon>
@@ -1511,7 +1561,12 @@
       </button>
     } @else {
       @for (addon of addonsForDocument; track addon.id) {
-        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddonWithRowContext(addon)"
+        >
           <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
           <span>{{ addon.name }}</span>
         </button>
@@ -1528,7 +1583,12 @@
       </button>
     } @else {
       @for (addon of addonsForRepository; track addon.id) {
-        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddonForRepositories(addon)"
+        >
           <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
           <span>{{ addon.name }}</span>
         </button>
@@ -1537,7 +1597,7 @@
   </mat-menu>
 
   <!-- Repository Row Addons Menu -->
-  <mat-menu #repositoryRowAddonsMenu="matMenu">
+  <mat-menu #repositoryRowAddonsMenu="matMenu" (closed)="clearAddonRowContext()">
     @if (addonsForRepository.length === 0) {
       <button mat-menu-item disabled>
         <mat-icon>info</mat-icon>
@@ -1545,7 +1605,12 @@
       </button>
     } @else {
       @for (addon of addonsForRepository; track addon.id) {
-        <button mat-menu-item [matTooltip]="addon.description || ''" matTooltipPosition="right">
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddonWithRowContext(addon)"
+        >
           <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
           <span>{{ addon.name }}</span>
         </button>
