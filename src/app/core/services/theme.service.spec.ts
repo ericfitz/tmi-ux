@@ -5,12 +5,13 @@
 // Execute this test only using:  "pnpm run test" followed by the relative path to this test file from the project root.
 // Do not disable or skip failing tests, ask the user what to do
 
-import '@angular/compiler';
-
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { RendererFactory2 } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
+import { BehaviorSubject } from 'rxjs';
 import { ThemeService, ThemePreferences } from './theme.service';
+import { UserPreferencesService } from './user-preferences.service';
+import type { UserPreferencesData } from './user-preferences.service';
 
 describe('ThemeService', () => {
   let service: ThemeService;
@@ -35,22 +36,15 @@ describe('ThemeService', () => {
     addEventListener: ReturnType<typeof vi.fn>;
     removeEventListener: ReturnType<typeof vi.fn>;
   };
-  let mockLocalStorage: {
-    getItem: ReturnType<typeof vi.fn>;
-    setItem: ReturnType<typeof vi.fn>;
-    removeItem: ReturnType<typeof vi.fn>;
+  let mockUserPreferencesService: {
+    preferences$: BehaviorSubject<UserPreferencesData>;
+    getPreferences: ReturnType<typeof vi.fn>;
+    updatePreferences: ReturnType<typeof vi.fn>;
+    getThemePreferences: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
-
-    // Mock localStorage
-    mockLocalStorage = {
-      getItem: vi.fn(),
-      setItem: vi.fn(),
-      removeItem: vi.fn(),
-    };
-    global.localStorage = mockLocalStorage as any;
 
     // Mock renderer
     mockRenderer = {
@@ -84,10 +78,38 @@ describe('ThemeService', () => {
     // Mock window.matchMedia
     global.window.matchMedia = vi.fn().mockReturnValue(mockMediaQueryList);
 
+    // Mock UserPreferencesService
+    mockUserPreferencesService = {
+      preferences$: new BehaviorSubject<UserPreferencesData>({
+        animations: true,
+        themeMode: 'automatic',
+        colorBlindMode: false,
+        showDeveloperTools: false,
+        dashboardListView: false,
+        pageSize: 'usLetter',
+        marginSize: 'standard',
+      }),
+      getPreferences: vi.fn().mockReturnValue({
+        animations: true,
+        themeMode: 'automatic',
+        colorBlindMode: false,
+        showDeveloperTools: false,
+        dashboardListView: false,
+        pageSize: 'usLetter',
+        marginSize: 'standard',
+      }),
+      updatePreferences: vi.fn(),
+      getThemePreferences: vi.fn().mockReturnValue({
+        mode: 'automatic',
+        palette: 'normal',
+      }),
+    };
+
     // Create service
     service = new ThemeService(
       mockRendererFactory as unknown as RendererFactory2,
       mockOverlayContainer as unknown as OverlayContainer,
+      mockUserPreferencesService as unknown as UserPreferencesService,
     );
   });
 
@@ -113,11 +135,18 @@ describe('ThemeService', () => {
     });
 
     it('should initialize with default preferences when no stored preferences exist', () => {
-      mockLocalStorage.getItem.mockReturnValue(null);
+      const mockPrefsService = {
+        ...mockUserPreferencesService,
+        getThemePreferences: vi.fn().mockReturnValue({
+          mode: 'automatic',
+          palette: 'normal',
+        }),
+      };
 
       const service2 = new ThemeService(
         mockRendererFactory as unknown as RendererFactory2,
         mockOverlayContainer as unknown as OverlayContainer,
+        mockPrefsService as unknown as UserPreferencesService,
       );
 
       expect(service2.getPreferences()).toEqual({
@@ -128,16 +157,21 @@ describe('ThemeService', () => {
       service2.ngOnDestroy();
     });
 
-    it('should load preferences from localStorage', () => {
+    it('should load preferences from UserPreferencesService', () => {
       const storedPrefs: ThemePreferences = {
         mode: 'dark',
         palette: 'colorblind',
       };
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(storedPrefs));
+
+      const mockPrefsService = {
+        ...mockUserPreferencesService,
+        getThemePreferences: vi.fn().mockReturnValue(storedPrefs),
+      };
 
       const service2 = new ThemeService(
         mockRendererFactory as unknown as RendererFactory2,
         mockOverlayContainer as unknown as OverlayContainer,
+        mockPrefsService as unknown as UserPreferencesService,
       );
 
       expect(service2.getPreferences()).toEqual(storedPrefs);
@@ -227,7 +261,7 @@ describe('ThemeService', () => {
       service.setThemeMode('dark');
 
       expect(service.getPreferences().mode).toBe('dark');
-      expect(mockLocalStorage.setItem).toHaveBeenCalled();
+      expect(mockUserPreferencesService.updatePreferences).toHaveBeenCalled();
     });
 
     it('should update mode to light', () => {
@@ -242,16 +276,13 @@ describe('ThemeService', () => {
       expect(service.getPreferences().mode).toBe('automatic');
     });
 
-    it('should persist preferences to localStorage', () => {
+    it('should persist preferences via UserPreferencesService', () => {
       service.setThemeMode('dark');
 
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-        'user-theme-preferences',
-        JSON.stringify({
-          mode: 'dark',
-          palette: 'normal',
-        }),
-      );
+      expect(mockUserPreferencesService.updatePreferences).toHaveBeenCalledWith({
+        themeMode: 'dark',
+        colorBlindMode: false,
+      });
     });
 
     it('should apply dark class when mode is dark', () => {
@@ -285,16 +316,13 @@ describe('ThemeService', () => {
       expect(service.getPreferences().palette).toBe('normal');
     });
 
-    it('should persist preferences to localStorage', () => {
+    it('should persist preferences via UserPreferencesService', () => {
       service.setPalette('colorblind');
 
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-        'user-theme-preferences',
-        JSON.stringify({
-          mode: 'automatic',
-          palette: 'colorblind',
-        }),
-      );
+      expect(mockUserPreferencesService.updatePreferences).toHaveBeenCalledWith({
+        themeMode: 'automatic',
+        colorBlindMode: true,
+      });
     });
 
     it('should apply colorblind class when palette is colorblind', () => {
@@ -425,22 +453,44 @@ describe('ThemeService', () => {
     });
   });
 
-  describe('Legacy Preferences Loading', () => {
-    it('should fall back to defaults when legacy format fails validation', () => {
-      // When a valid JSON is stored but doesn't match ThemePreferences schema,
-      // the service falls back to defaults since _isValidPreferences returns false
-      const legacyConfig = {
-        colorScheme: 'dark',
-        palette: 'colorblind',
+  describe('Preferences from UserPreferencesService', () => {
+    it('should load theme preferences from UserPreferencesService', () => {
+      const mockPrefsService = {
+        ...mockUserPreferencesService,
+        getThemePreferences: vi.fn().mockReturnValue({
+          mode: 'dark',
+          palette: 'colorblind',
+        }),
       };
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(legacyConfig));
 
       const service2 = new ThemeService(
         mockRendererFactory as unknown as RendererFactory2,
         mockOverlayContainer as unknown as OverlayContainer,
+        mockPrefsService as unknown as UserPreferencesService,
       );
 
-      // Falls back to defaults since legacy handling only works for parse errors
+      const prefs = service2.getPreferences();
+      expect(prefs.mode).toBe('dark');
+      expect(prefs.palette).toBe('colorblind');
+
+      service2.ngOnDestroy();
+    });
+
+    it('should use defaults when UserPreferencesService returns defaults', () => {
+      const mockPrefsService = {
+        ...mockUserPreferencesService,
+        getThemePreferences: vi.fn().mockReturnValue({
+          mode: 'automatic',
+          palette: 'normal',
+        }),
+      };
+
+      const service2 = new ThemeService(
+        mockRendererFactory as unknown as RendererFactory2,
+        mockOverlayContainer as unknown as OverlayContainer,
+        mockPrefsService as unknown as UserPreferencesService,
+      );
+
       const prefs = service2.getPreferences();
       expect(prefs.mode).toBe('automatic');
       expect(prefs.palette).toBe('normal');
@@ -448,57 +498,47 @@ describe('ThemeService', () => {
       service2.ngOnDestroy();
     });
 
-    it('should fall back to defaults for non-JSON string', () => {
-      // Non-JSON strings will fail to parse and fall back to defaults
-      mockLocalStorage.getItem.mockReturnValue('colorblind');
-
-      const service2 = new ThemeService(
-        mockRendererFactory as unknown as RendererFactory2,
-        mockOverlayContainer as unknown as OverlayContainer,
-      );
-
-      // Falls back to defaults since the string doesn't match expected legacy format
-      const prefs = service2.getPreferences();
-      expect(prefs.mode).toBe('automatic');
-      expect(prefs.palette).toBe('normal');
-
-      service2.ngOnDestroy();
-    });
-
-    it('should ignore invalid stored preferences', () => {
-      mockLocalStorage.getItem.mockReturnValue('invalid-json{');
-
-      const service2 = new ThemeService(
-        mockRendererFactory as unknown as RendererFactory2,
-        mockOverlayContainer as unknown as OverlayContainer,
-      );
-
-      // Should fall back to defaults
-      expect(service2.getPreferences()).toEqual({
-        mode: 'automatic',
-        palette: 'normal',
+    it('should react to preference changes from UserPreferencesService', () => {
+      const prefsSubject = new BehaviorSubject<UserPreferencesData>({
+        animations: true,
+        themeMode: 'automatic',
+        colorBlindMode: false,
+        showDeveloperTools: false,
+        dashboardListView: false,
+        pageSize: 'usLetter',
+        marginSize: 'standard',
       });
 
-      service2.ngOnDestroy();
-    });
-
-    it('should ignore preferences with invalid mode', () => {
-      const invalidPrefs = {
-        mode: 'invalid-mode',
-        palette: 'normal',
+      const mockPrefsService = {
+        ...mockUserPreferencesService,
+        preferences$: prefsSubject,
+        getThemePreferences: vi.fn().mockReturnValue({
+          mode: 'automatic',
+          palette: 'normal',
+        }),
       };
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(invalidPrefs));
 
       const service2 = new ThemeService(
         mockRendererFactory as unknown as RendererFactory2,
         mockOverlayContainer as unknown as OverlayContainer,
+        mockPrefsService as unknown as UserPreferencesService,
       );
 
-      // Should fall back to defaults
-      expect(service2.getPreferences()).toEqual({
-        mode: 'automatic',
-        palette: 'normal',
+      // Update preferences externally
+      prefsSubject.next({
+        animations: true,
+        themeMode: 'dark',
+        colorBlindMode: true,
+        showDeveloperTools: false,
+        dashboardListView: false,
+        pageSize: 'usLetter',
+        marginSize: 'standard',
       });
+
+      // ThemeService should react to the change
+      const prefs = service2.getPreferences();
+      expect(prefs.mode).toBe('dark');
+      expect(prefs.palette).toBe('colorblind');
 
       service2.ngOnDestroy();
     });

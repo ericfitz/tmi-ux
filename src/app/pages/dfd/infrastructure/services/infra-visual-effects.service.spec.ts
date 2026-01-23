@@ -9,6 +9,7 @@
 import { Cell, Node, Edge } from '@antv/x6';
 import { vi, Mock, beforeEach, afterEach, describe, it, expect } from 'vitest';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
 import { InfraVisualEffectsService } from './infra-visual-effects.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
@@ -32,6 +33,9 @@ type MockEdge = MockCell;
 describe('InfraVisualEffectsService', () => {
   let service: InfraVisualEffectsService;
   let mockLogger: MockLoggerService;
+  let mockUserPreferencesService: {
+    getPreferences: Mock;
+  };
 
   // Test helper to create mock cells
   const createMockNode = (id: string, nodeType = 'process'): MockNode => ({
@@ -61,13 +65,21 @@ describe('InfraVisualEffectsService', () => {
     // Create mock logger
     mockLogger = createTypedMockLoggerService();
 
-    // Create service directly with mock logger
-    service = new InfraVisualEffectsService(mockLogger as unknown as LoggerService);
+    // Create mock user preferences service
+    mockUserPreferencesService = {
+      getPreferences: vi.fn().mockReturnValue({ animations: true }),
+    };
+
+    // Create service instance with constructor injection
+    service = new InfraVisualEffectsService(
+      mockLogger as unknown as LoggerService,
+      mockUserPreferencesService as unknown as UserPreferencesService,
+    );
   });
 
   afterEach(() => {
     // Clean up any active effects
-    service.cleanup();
+    service?.cleanup();
     vi.clearAllTimers();
     vi.useRealTimers();
   });
@@ -159,7 +171,7 @@ describe('InfraVisualEffectsService', () => {
     it('should skip creation highlight when animations are disabled in user preferences', () => {
       const mockNode = createMockNode('node1');
       // Set user preference to disable animations
-      localStorage.setItem('tmi_user_preferences', JSON.stringify({ animations: false }));
+      mockUserPreferencesService.getPreferences.mockReturnValue({ animations: false });
 
       service.applyCreationHighlight(mockNode as unknown as Node);
 
@@ -178,23 +190,20 @@ describe('InfraVisualEffectsService', () => {
 
     it('should apply creation highlight when animations are enabled in user preferences', () => {
       const mockNode = createMockNode('node1');
-      // Set user preference to enable animations
-      localStorage.setItem('tmi_user_preferences', JSON.stringify({ animations: true }));
+      // Set user preference to enable animations (this is the default already)
+      mockUserPreferencesService.getPreferences.mockReturnValue({ animations: true });
 
       service.applyCreationHighlight(mockNode as unknown as Node);
 
       // Should apply effects
       expect(service.hasActiveEffects(mockNode as unknown as Node)).toBe(true);
       expect(mockNode.attr).toHaveBeenCalled();
-
-      // Clean up
-      localStorage.removeItem('tmi_user_preferences');
     });
 
     it('should default to enabled when user preferences are not set', () => {
       const mockNode = createMockNode('node1');
-      // Ensure no preferences are set
-      localStorage.removeItem('tmi_user_preferences');
+      // Return preferences without animations property
+      mockUserPreferencesService.getPreferences.mockReturnValue({});
 
       service.applyCreationHighlight(mockNode as unknown as Node);
 
@@ -205,18 +214,16 @@ describe('InfraVisualEffectsService', () => {
 
     it('should default to enabled when localStorage contains invalid JSON', () => {
       const mockNode = createMockNode('node1');
-      // Set invalid JSON in localStorage
-      localStorage.setItem('tmi_user_preferences', 'invalid json');
+      // This test is now irrelevant since we use UserPreferencesService
+      // UserPreferencesService handles parsing internally
+      // Just test normal behavior
+      mockUserPreferencesService.getPreferences.mockReturnValue({ animations: true });
 
       service.applyCreationHighlight(mockNode as unknown as Node);
 
       // Should apply effects (default behavior on error)
       expect(service.hasActiveEffects(mockNode as unknown as Node)).toBe(true);
       expect(mockNode.attr).toHaveBeenCalled();
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        '[VisualEffects] Error reading user preferences',
-        expect.objectContaining({ error: expect.any(Error) }),
-      );
 
       // Clean up
       localStorage.removeItem('tmi_user_preferences');

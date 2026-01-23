@@ -59,6 +59,7 @@ import {
   DeleteThreatModelDialogData,
 } from './components/delete-threat-model-dialog/delete-threat-model-dialog.component';
 import { AuthService } from '../../auth/services/auth.service';
+import { UserPreferencesService } from '../../core/services/user-preferences.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -123,6 +124,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private transloco: TranslocoService,
     private authService: AuthService,
+    private userPreferencesService: UserPreferencesService,
   ) {}
 
   ngOnInit(): void {
@@ -578,18 +580,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Load the dashboard view preference from localStorage
+   * Load the dashboard view preference from UserPreferencesService
    */
   private loadViewPreference(): void {
-    const stored = localStorage.getItem('tmi_user_preferences');
-    if (stored) {
-      try {
-        const prefs = JSON.parse(stored) as { dashboardListView?: boolean };
-        this.dashboardListView = prefs.dashboardListView ?? false;
-      } catch {
-        this.dashboardListView = false;
-      }
-    }
+    const prefs = this.userPreferencesService.getPreferences();
+    this.dashboardListView = prefs.dashboardListView;
   }
 
   /**
@@ -598,17 +593,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   toggleViewMode(): void {
     this.dashboardListView = !this.dashboardListView;
 
-    // Save preference to localStorage
-    const stored = localStorage.getItem('tmi_user_preferences');
-    if (stored) {
-      try {
-        const prefs = JSON.parse(stored) as Record<string, unknown>;
-        prefs['dashboardListView'] = this.dashboardListView;
-        localStorage.setItem('tmi_user_preferences', JSON.stringify(prefs));
-      } catch {
-        // Ignore parse errors
-      }
-    }
+    // Save preference via UserPreferencesService
+    this.userPreferencesService.updatePreferences({
+      dashboardListView: this.dashboardListView,
+    });
+
     this.cdr.detectChanges();
   }
 
