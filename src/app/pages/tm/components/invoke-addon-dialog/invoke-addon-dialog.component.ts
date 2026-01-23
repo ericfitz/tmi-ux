@@ -24,6 +24,7 @@ import {
 } from '@app/types/addon.types';
 import { AddonService } from '@app/core/services/addon.service';
 import { LoggerService } from '@app/core/services/logger.service';
+import { UserPreferencesService } from '@app/core/services/user-preferences.service';
 
 /**
  * Data passed to the InvokeAddonDialog
@@ -98,6 +99,7 @@ export class InvokeAddonDialogComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   invoking = false;
   errorMessage = '';
+  showDeveloperTools = false;
 
   /** Maximum characters allowed in payload */
   readonly MAX_PAYLOAD_LENGTH = 1000;
@@ -109,11 +111,17 @@ export class InvokeAddonDialogComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private logger: LoggerService,
     private transloco: TranslocoService,
+    private userPreferencesService: UserPreferencesService,
   ) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
       payload: ['', [jsonValidator()]],
+    });
+
+    // Subscribe to user preferences to get showDeveloperTools setting
+    this.userPreferencesService.preferences$.pipe(takeUntil(this.destroy$)).subscribe(prefs => {
+      this.showDeveloperTools = prefs.showDeveloperTools;
     });
   }
 

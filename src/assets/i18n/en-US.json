@@ -40,6 +40,7 @@
       "payloadHint": "JSON data to pass to the addon",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "threatModelId": "Threat Model ID",
       "title": "Invoke Addon"
     }
   },
@@ -365,6 +366,7 @@
     "editThreat": "Edit Threat",
     "emailLabel": "Email Address",
     "fonts": "Fonts",
+    "id": "ID",
     "identityProvider": "Identity Provider",
     "issueUri": "Issue URL",
     "language": "{{language}}",
