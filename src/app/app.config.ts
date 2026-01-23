@@ -321,16 +321,16 @@ export const appConfig: ApplicationConfig = {
       useFactory: mermaidOptionsFactory,
     },
     // Register HTTP interceptors (order matters - first registered runs first)
-    // 1. HttpLoggingInterceptor - logs all HTTP requests/responses and categorizes errors
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: HttpLoggingInterceptor,
-      multi: true,
-    },
-    // 2. JwtInterceptor - handles JWT token attachment and auth-specific errors
+    // 1. JwtInterceptor - adds Authorization header first so it's visible in logs
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,
+      multi: true,
+    },
+    // 2. HttpLoggingInterceptor - logs all HTTP requests/responses with auth header present
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpLoggingInterceptor,
       multi: true,
     },
     // Initialize security monitoring

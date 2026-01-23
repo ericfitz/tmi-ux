@@ -16,7 +16,7 @@
  */
 
 import { HttpClient, HttpErrorResponse, HttpContext } from '@angular/common/http';
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, retry, timeout } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -24,7 +24,6 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
-import { AUTH_SERVICE, IAuthService } from '../interfaces';
 import { SKIP_ERROR_HANDLING } from '../tokens/http-context.tokens';
 import {
   ValidationErrorDialogComponent,
@@ -48,7 +47,6 @@ export class ApiService {
     private http: HttpClient,
     private logger: LoggerService,
     private router: Router,
-    @Inject(AUTH_SERVICE) private authService: IAuthService,
     private dialog: MatDialog,
   ) {
     // this.logger.info(`API Service initialized with endpoint: ${this.apiUrl}`);
@@ -229,16 +227,11 @@ export class ApiService {
         this.logger.error(errorMessage, error);
 
         // Only handle specific error types if not skipped
+        // Note: 401 errors are handled exclusively by JwtInterceptor
         if (!skipErrorHandling) {
           if (error.status === 400) {
             // Handle validation errors
             this.handleValidationError(error);
-          } else if (error.status === 401) {
-            this.logger.warn('API returned 401 Unauthorized. Redirecting to login.');
-            this.authService.logout(); // Clear session
-            void this.router.navigate(['/login'], {
-              queryParams: { returnUrl: this.router.url, reason: 'unauthorized_api' },
-            });
           } else if (error.status === 403) {
             this.logger.warn('API returned 403 Forbidden. Redirecting to unauthorized page.');
             void this.router.navigate(['/unauthorized'], {

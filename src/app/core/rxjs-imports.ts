@@ -20,5 +20,6 @@ export { catchError } from 'rxjs/internal/operators/catchError';
 export { switchMap } from 'rxjs/internal/operators/switchMap';
 export { takeUntil } from 'rxjs/internal/operators/takeUntil';
 export { throwError } from 'rxjs/internal/observable/throwError';
+export { shareReplay } from 'rxjs/internal/operators/shareReplay';
 
 // Add more operators as needed
