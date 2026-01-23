@@ -568,31 +568,16 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
 
   /**
    * Load OAuth providers from the authentication service
-   * Also adds the built-in TMI provider
    */
   private loadProviders(): void {
     this.providersLoading = true;
     this._subscriptions.add(
       this.authService.getAvailableProviders().subscribe({
         next: providers => {
-          // Add hardcoded TMI provider at the beginning
-          const tmiProvider: OAuthProviderInfo = {
-            id: 'tmi',
-            name: 'TMI',
-            icon: 'TMI-Logo.svg',
-            auth_url: '',
-            redirect_uri: '',
-            client_id: '',
-          };
-
-          // Filter out any tmi provider from server response to avoid duplicates
-          const filteredProviders = providers.filter(p => p.id !== 'tmi');
-          this.availableProviders = [tmiProvider, ...filteredProviders];
+          this.availableProviders = providers;
           this.providersLoading = false;
         },
         error: () => {
-          // If providers fail to load, the server is down
-          // Leave providers list empty and keep loading state
           this.availableProviders = [];
           this.providersLoading = false;
         },
