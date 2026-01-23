@@ -585,7 +585,9 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
             client_id: '',
           };
 
-          this.availableProviders = [tmiProvider, ...providers];
+          // Filter out any tmi provider from server response to avoid duplicates
+          const filteredProviders = providers.filter(p => p.id !== 'tmi');
+          this.availableProviders = [tmiProvider, ...filteredProviders];
           this.providersLoading = false;
         },
         error: () => {
