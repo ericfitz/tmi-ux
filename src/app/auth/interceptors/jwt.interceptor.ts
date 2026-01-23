@@ -1,4 +1,5 @@
 import {
+  HttpContext,
   HttpErrorResponse,
   HttpEvent,
   HttpHandler,
@@ -6,10 +7,10 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { Observable, catchError, throwError, switchMap } from '../../core/rxjs-imports';
 
 import { LoggerService } from '../../core/services/logger.service';
+import { IS_AUTH_RETRY } from '../../core/tokens/http-context.tokens';
 import { AuthService } from '../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { AuthError } from '../models/auth.models';
@@ -32,22 +33,10 @@ export class JwtInterceptor implements HttpInterceptor {
     '/saml/providers',
   ];
 
-  // SessionManager service (will be injected if available)
-  private sessionManager: { onTokenRefreshed: () => void } | null = null;
-
   constructor(
     private authService: AuthService,
-    private router: Router,
     private logger: LoggerService,
-  ) {
-    // this.logger.info('JWT Interceptor initialized');
-    // Get SessionManager from AuthService (avoids circular dependency)
-    setTimeout(() => {
-      this.sessionManager = (
-        this.authService as unknown as { sessionManagerService: { onTokenRefreshed: () => void } }
-      ).sessionManagerService;
-    }, 0);
-  }
+  ) {}
 
   /**
    * Intercept HTTP requests to add JWT token and handle auth errors
@@ -120,15 +109,11 @@ export class JwtInterceptor implements HttpInterceptor {
       );
     }
 
-    // For public endpoints or non-API requests, just pass through with error handling
-    return next.handle(request).pipe(
-      catchError((error: HttpErrorResponse) => {
-        if (error.status === 401 && !this.isPublicEndpoint(request.url)) {
-          this.handleUnauthorizedError();
-        }
-        return this.handleError(error, request);
-      }),
-    );
+    // For public endpoints or non-API requests, just pass through
+    // Public endpoints shouldn't require auth, so no special 401 handling needed
+    return next
+      .handle(request)
+      .pipe(catchError((error: HttpErrorResponse) => this.handleError(error, request)));
   }
 
   /**
@@ -169,8 +154,9 @@ export class JwtInterceptor implements HttpInterceptor {
   }
 
   /**
-   * Handle 401 Unauthorized errors with reactive refresh
-   * Attempts to refresh the token and retry the original request
+   * Handle 401 Unauthorized errors with forced token refresh.
+   * Uses IS_AUTH_RETRY context to prevent infinite retry loops.
+   * Does NOT automatically logout - errors propagate to components for appropriate handling.
    * @param request Original request that failed
    * @param next HTTP handler
    * @returns Observable of the retried request or error
@@ -179,71 +165,85 @@ export class JwtInterceptor implements HttpInterceptor {
     request: HttpRequest<unknown>,
     next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
-    this.logger.warn('Received 401 Unauthorized - attempting reactive token refresh');
+    // Check if this request has already been retried (prevents infinite loops)
+    const isRetry = request.context.get(IS_AUTH_RETRY);
 
-    // Attempt to refresh the token
-    return this.authService.getValidTokenIfAvailable().pipe(
+    if (isRetry) {
+      // Already retried once - propagate error without retry or logout
+      this.logger.warn('401 on retry request - propagating error without logout', {
+        url: request.url,
+        method: request.method,
+      });
+
+      // Emit auth error for interested subscribers
+      const authError: AuthError = {
+        code: 'unauthorized_after_refresh',
+        message: 'Authentication failed after token refresh',
+        retryable: false,
+      };
+      this.authService.handleAuthError(authError);
+
+      return throwError(
+        () =>
+          new HttpErrorResponse({
+            status: 401,
+            statusText: 'Unauthorized',
+            url: request.url ?? undefined,
+            error: { message: 'Authentication failed after token refresh' },
+          }),
+      );
+    }
+
+    this.logger.warn('Received 401 Unauthorized - attempting forced token refresh');
+
+    // Force a token refresh (even if current token appears valid by expiry)
+    return this.authService.forceRefreshToken().pipe(
       switchMap(newToken => {
-        if (!newToken) {
-          // If no token available after refresh attempt, redirect to login
-          this.logger.warn('No token available after refresh attempt - redirecting to login');
-          this.handleUnauthorizedError();
-          return throwError(() => new Error('Token refresh failed - no token available'));
-        }
+        this.logger.info('Forced token refresh successful - retrying original request');
 
-        this.logger.info('Token refresh successful - retrying original request');
-
-        // Notify SessionManager if available (timers will be reset by AuthService.storeToken)
-        // No additional action needed here as token storage will trigger session manager
-
-        // Clone the original request with the new token
+        // Clone the request with new token AND mark as retry to prevent loops
+        const retryContext = new HttpContext().set(IS_AUTH_RETRY, true);
         const retryRequest = request.clone({
           setHeaders: {
             Authorization: `Bearer ${newToken.token}`,
           },
+          context: retryContext,
         });
 
-        // Retry the original request with new token
-        return next.handle(retryRequest).pipe();
+        return next.handle(retryRequest);
       }),
-      catchError(refreshError => {
-        // Token refresh failed - logout and redirect
-        this.logger.error('Token refresh failed during reactive refresh', refreshError);
-        this.handleUnauthorizedError();
-        return throwError(() => refreshError as Error);
+      catchError((refreshError: unknown) => {
+        // Token refresh failed - propagate error WITHOUT logout
+        // Let the component/service handle the error appropriately
+        this.logger.error('Forced token refresh failed - propagating error', refreshError);
+
+        // Emit auth error for interested subscribers (e.g., showing login prompt)
+        const authError: AuthError = {
+          code: 'token_refresh_failed',
+          message: 'Unable to refresh authentication token',
+          retryable: true,
+        };
+        this.authService.handleAuthError(authError);
+
+        return throwError(() => refreshError);
       }),
     );
   }
 
   /**
-   * Handle 401 Unauthorized errors (fallback when refresh fails)
-   * Redirects to login page
-   */
-  private handleUnauthorizedError(): void {
-    this.logger.warn('Unauthorized request - redirecting to login');
-
-    // Clear authentication data
-    this.authService.logout();
-
-    // Redirect to login page with return URL
-    void this.router.navigate(['/login'], {
-      queryParams: { returnUrl: this.router.url, reason: 'session_expired' },
-    });
-  }
-
-  /**
-   * Handle authentication errors (401/403 only)
+   * Handle authentication errors (401/403).
+   * Emits errors for subscribers but does NOT logout or redirect.
    * @param error HTTP error response
-   * @param request Original request
+   * @param _request Original request
    * @returns Observable that throws the error
    */
   private handleError(error: HttpErrorResponse, _request: HttpRequest<unknown>): Observable<never> {
-    // Only handle auth-related errors in JWT interceptor
+    // Emit auth errors for interested subscribers, but don't take destructive action
     if (error.status === 401) {
       const authError: AuthError = {
         code: 'unauthorized',
         message: 'Authentication required',
-        retryable: false,
+        retryable: true,
       };
       this.authService.handleAuthError(authError);
     } else if (error.status === 403) {
@@ -255,7 +255,7 @@ export class JwtInterceptor implements HttpInterceptor {
       this.authService.handleAuthError(authError);
     }
 
-    // Return the original error (logging is handled by HttpLoggingInterceptor)
+    // Return the original error - let components handle it
     return throwError(() => error);
   }
 }

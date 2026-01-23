@@ -25,6 +25,7 @@ import {
   from,
   map,
   of,
+  shareReplay,
   throwError,
   tap,
 } from '../../core/rxjs-imports';
@@ -97,6 +98,9 @@ export class AuthService {
   private cachedOAuthProviders: OAuthProviderInfo[] | null = null;
   private cachedSAMLProviders: SAMLProviderInfo[] | null = null;
   private providersCacheTime = 0;
+
+  // Refresh request deduplication - prevents concurrent refresh calls
+  private refreshInProgress$: Observable<JwtToken> | null = null;
 
   private get defaultProvider(): string {
     return environment.defaultAuthProvider || 'google';
@@ -1681,6 +1685,42 @@ export class AuthService {
           return throwError(() => new Error('Token refresh failed - please login again'));
         }),
       );
+  }
+
+  /**
+   * Force refresh token regardless of expiry time.
+   * Used when server rejects a valid-looking token (e.g., "Invalid authentication context").
+   * Deduplicates concurrent refresh requests - multiple callers share the same in-flight request.
+   * @returns Observable that resolves to a new JWT token
+   */
+  forceRefreshToken(): Observable<JwtToken> {
+    // If refresh already in progress, return the same observable (deduplication)
+    if (this.refreshInProgress$) {
+      this.logger.debugComponent('Auth', 'Refresh already in progress, reusing existing request');
+      return this.refreshInProgress$;
+    }
+
+    this.logger.warn('Forcing token refresh due to server rejection');
+
+    const currentToken = this.getStoredToken();
+    if (!currentToken?.refreshToken) {
+      return throwError(() => new Error('No refresh token available for forced refresh'));
+    }
+
+    this.refreshInProgress$ = this.refreshToken().pipe(
+      tap(newToken => {
+        this.storeToken(newToken);
+        this.refreshInProgress$ = null;
+      }),
+      catchError((error: unknown) => {
+        this.refreshInProgress$ = null;
+        this.logger.error('Forced token refresh failed', error);
+        return throwError(() => error);
+      }),
+      shareReplay(1),
+    );
+
+    return this.refreshInProgress$;
   }
 
   /**

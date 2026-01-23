@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
-import { IAuthService } from '../interfaces';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { throwError } from 'rxjs';
 import {
@@ -39,10 +38,6 @@ vi.mock('../../../environments/environment', () => ({
 import { environment } from '../../../environments/environment';
 
 // Mock interfaces for type safety
-interface MockAuthService extends Partial<IAuthService> {
-  logout: ReturnType<typeof vi.fn>;
-}
-
 interface MockMatDialog {
   open: ReturnType<typeof vi.fn>;
 }
@@ -52,7 +47,6 @@ describe('ApiService', () => {
   let httpClient: MockHttpClient;
   let loggerService: MockLoggerService;
   let router: MockRouter;
-  let authService: MockAuthService;
   let dialog: MockMatDialog;
 
   // Test data
@@ -71,20 +65,16 @@ describe('ApiService', () => {
     router = createTypedMockRouter('/current-route');
     httpClient = createTypedMockHttpClient(mockSuccessResponse);
 
-    authService = {
-      logout: vi.fn(),
-    };
-
     dialog = {
       open: vi.fn(),
     };
 
     // Create the service directly with mocked dependencies
+    // Note: authService removed - 401 handling now in JwtInterceptor
     service = new ApiService(
       httpClient as unknown as HttpClient,
       loggerService as unknown as LoggerService,
       router as unknown as Router,
-      authService as unknown as IAuthService,
       dialog as unknown as MatDialog,
     );
   });
@@ -292,7 +282,7 @@ describe('ApiService', () => {
       });
     });
 
-    it('should handle 401 unauthorized errors with logout and redirect', () => {
+    it('should propagate 401 unauthorized errors (JWT interceptor handles auth)', () => {
       const unauthorizedError = new HttpErrorResponse({
         error: mockErrorResponse,
         status: 401,
@@ -304,14 +294,12 @@ describe('ApiService', () => {
       const result$ = service.get<typeof mockSuccessResponse>(testEndpoint);
 
       result$.subscribe({
-        error: () => {
-          expect(loggerService.warn).toHaveBeenCalledWith(
-            'API returned 401 Unauthorized. Redirecting to login.',
-          );
-          expect(authService.logout).toHaveBeenCalled();
-          expect(router.navigate).toHaveBeenCalledWith(['/login'], {
-            queryParams: { returnUrl: router.url, reason: 'unauthorized_api' },
-          });
+        error: error => {
+          // 401 errors are passed through - JWT interceptor handles them
+          expect(error).toBeInstanceOf(HttpErrorResponse);
+          expect(error.status).toBe(401);
+          // Should NOT redirect - that's handled by JWT interceptor
+          expect(router.navigate).not.toHaveBeenCalled();
         },
       });
     });
