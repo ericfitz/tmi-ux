@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { PDFDocument, PDFPage, rgb, StandardFonts, PDFFont } from 'pdf-lib';
 import { TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '../../../core/services/logger.service';
 import { LanguageService } from '../../../i18n/language.service';
+import { UserPreferencesService } from '../../../core/services/user-preferences.service';
 import { ThreatModel, Threat, Document, Repository } from '../models/threat-model.model';
 import { getPrincipalDisplayName } from '../../../shared/utils/principal-display.utils';
 import * as fontkit from 'fontkit';
@@ -129,6 +130,8 @@ export class ThreatModelReportService {
   private currentFont: PDFFont | undefined = undefined;
   private currentItalicFont: PDFFont | undefined = undefined;
 
+  private readonly userPreferencesService = inject(UserPreferencesService);
+
   constructor(
     private logger: LoggerService,
     private transloco: TranslocoService,
@@ -136,38 +139,25 @@ export class ThreatModelReportService {
   ) {}
 
   /**
-   * Load user preferences for page size and margins from localStorage
+   * Load user preferences for page size and margins from UserPreferencesService
    */
   private loadUserPreferences(): void {
-    try {
-      const stored = localStorage.getItem('tmi_user_preferences');
-      if (stored) {
-        const preferences = JSON.parse(stored) as {
-          pageSize?: PageSize;
-          marginSize?: MarginSize;
-        };
+    const preferences = this.userPreferencesService.getPreferences();
 
-        // Update page size if valid preference exists
-        if (preferences.pageSize && PAGE_SIZES[preferences.pageSize]) {
-          this.pageSize = preferences.pageSize;
-        }
-
-        // Update margin size if valid preference exists
-        if (preferences.marginSize && MARGINS[preferences.marginSize]) {
-          this.marginSize = preferences.marginSize;
-        }
-
-        this.logger.info('Loaded user preferences for report generation', {
-          pageSize: this.pageSize,
-          marginSize: this.marginSize,
-        });
-      }
-    } catch (error) {
-      this.logger.warn('Failed to load user preferences, using defaults', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      // Keep default values if loading fails
+    // Update page size if valid preference exists
+    if (preferences.pageSize && PAGE_SIZES[preferences.pageSize]) {
+      this.pageSize = preferences.pageSize;
     }
+
+    // Update margin size if valid preference exists
+    if (preferences.marginSize && MARGINS[preferences.marginSize]) {
+      this.marginSize = preferences.marginSize;
+    }
+
+    this.logger.info('Loaded user preferences for report generation', {
+      pageSize: this.pageSize,
+      marginSize: this.marginSize,
+    });
   }
 
   /**

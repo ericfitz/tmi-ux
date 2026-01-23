@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 
 /**
@@ -21,13 +22,16 @@ interface ActiveEffect {
  */
 @Injectable()
 export class InfraVisualEffectsService {
+  constructor(
+    private readonly logger: LoggerService,
+    private readonly userPreferencesService: UserPreferencesService,
+  ) {}
+
   private readonly FADE_DURATION_MS = DFD_STYLING.CREATION.FADE_DURATION_MS;
   private readonly ANIMATION_FRAME_INTERVAL = DFD_STYLING.CREATION.ANIMATION_FRAME_INTERVAL;
 
   // Track active effects to prevent conflicts and memory leaks
   private activeEffects = new Map<string, ActiveEffect>();
-
-  constructor(private logger: LoggerService) {}
 
   /**
    * Apply creation highlight with fade-out effect to a newly created cell
@@ -500,18 +504,8 @@ export class InfraVisualEffectsService {
    * @returns true if animations are enabled or preference not set, false otherwise
    */
   private areAnimationsEnabled(): boolean {
-    try {
-      const stored = localStorage.getItem('tmi_user_preferences');
-      if (stored) {
-        const prefs = JSON.parse(stored) as { animations?: boolean };
-        // Return the preference value, defaulting to true if not set
-        return prefs.animations !== false;
-      }
-    } catch (error) {
-      this.logger.warn('[VisualEffects] Error reading user preferences', { error });
-    }
-    // Default to enabled if preference not found or error reading
-    return true;
+    const prefs = this.userPreferencesService.getPreferences();
+    return prefs.animations !== false;
   }
 
   /**

@@ -238,7 +238,7 @@ export class CollaborationSessionService implements OnDestroy {
    * Request sessions via HTTP API
    */
   private requestSessionsViaHttp(): Observable<CollaborationSession[]> {
-    const url = `${environment.apiUrl}/collaboration/sessions`;
+    const url = `${environment.apiUrl}/me/sessions`;
 
     return this.http.get<ServerCollaborationSession[]>(url).pipe(
       map(response => {

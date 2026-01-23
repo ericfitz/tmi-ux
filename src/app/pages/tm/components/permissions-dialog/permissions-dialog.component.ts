@@ -381,32 +381,51 @@ export interface PermissionsDialogData {
         min-width: 160px;
       }
 
+      /* Simple form field styling - match quotas table approach */
+      .table-field {
+        font-size: var(--font-size-base);
+      }
+
       .table-field .mat-mdc-form-field-wrapper {
         padding-bottom: 0;
       }
 
-      .table-field .mat-mdc-form-field-infix {
-        min-height: 40px;
-        padding: 8px 0;
+      .table-field input {
+        font-size: var(--font-size-base);
       }
 
-      .table-field input,
       .table-field mat-select {
         font-size: var(--font-size-base);
       }
 
+      /* Ensure provider display is properly aligned */
+      .table-field app-provider-display {
+        display: inline-flex;
+        align-items: center;
+      }
+
       .type-display,
       .type-option {
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 4px;
       }
 
-      .type-option mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
+      .type-option mat-icon,
+      .type-option app-principal-type-icon {
+        display: inline-flex;
+        align-items: center;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
         line-height: 1;
+      }
+
+      .type-option app-principal-type-icon ::ng-deep mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
       }
 
       /* Column widths */
@@ -438,12 +457,13 @@ export interface PermissionsDialogData {
 
       .mat-mdc-cell,
       .mat-mdc-header-cell {
-        padding: 8px 4px;
+        padding: 12px 16px;
         vertical-align: middle;
       }
 
-      .mat-mdc-cell {
-        height: 56px;
+      /* Center actions buttons in the row */
+      .mat-column-actions {
+        vertical-align: middle;
       }
 
       .actions-container {
@@ -451,24 +471,7 @@ export interface PermissionsDialogData {
         align-items: center;
         justify-content: center;
         gap: 4px;
-        height: 100%;
-        min-height: 40px;
-      }
-
-      .actions-cell {
-        vertical-align: middle;
-      }
-
-      .actions-container mat-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .actions-container button[mat-icon-button] {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        height: 32px;
       }
 
       .table-field .mat-mdc-form-field-wrapper {

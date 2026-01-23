@@ -59,6 +59,7 @@ import {
 import { AuthService } from './auth/services/auth.service';
 import { ThreatModelService } from './pages/tm/services/threat-model.service';
 import { ThemeService } from './core/services/theme.service';
+import { UserPreferencesService } from './core/services/user-preferences.service';
 import { WebSocketAdapter } from './core/services/websocket.adapter';
 import { AppNotificationService } from './pages/dfd/application/services/app-notification.service';
 
@@ -101,6 +102,13 @@ function initializeMaterialIcons(
     iconRegistry.registerFontClassAlias('material-symbols-outlined', 'material-symbols-outlined');
     iconRegistry.setDefaultFontSetClass('material-symbols-outlined');
   };
+}
+
+// User preferences initialization function
+function initializeUserPreferences(
+  userPreferencesService: UserPreferencesService,
+): () => Promise<void> {
+  return () => userPreferencesService.initialize();
 }
 
 // Theme initialization function
@@ -344,6 +352,13 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: initializeMaterialIcons,
       deps: [MatIconRegistry, DomSanitizer],
+      multi: true,
+    },
+    // Initialize user preferences (must run before theme service)
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeUserPreferences,
+      deps: [UserPreferencesService],
       multi: true,
     },
     // Initialize theme service

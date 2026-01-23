@@ -8,7 +8,8 @@ import {
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
 import { LoggerService } from '../../services/logger.service';
-import { ThemeService, ThemeMode, PaletteType } from '../../services/theme.service';
+import { ThemeService, ThemeMode } from '../../services/theme.service';
+import { UserPreferencesService } from '../../services/user-preferences.service';
 import { AUTH_SERVICE, IAuthService } from '../../interfaces';
 import {
   DeleteUserDataDialogComponent,
@@ -658,14 +659,11 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router,
     private themeService: ThemeService,
+    private userPreferencesService: UserPreferencesService,
     private threatModelAuthService: ThreatModelAuthorizationService,
     private clientCredentialService: ClientCredentialService,
   ) {
-    this.preferences = this.loadPreferences();
-    // Sync with current theme preferences from ThemeService
-    const themePrefs = this.themeService.getPreferences();
-    this.preferences.themeMode = themePrefs.mode;
-    this.preferences.colorBlindMode = themePrefs.palette === 'colorblind';
+    this.preferences = this.userPreferencesService.getPreferences();
   }
 
   ngOnInit(): void {
@@ -698,75 +696,36 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private loadPreferences(): UserPreferences {
-    const stored = localStorage.getItem('tmi_user_preferences');
-    if (stored) {
-      try {
-        const prefs = JSON.parse(stored) as Record<string, unknown>;
-        // Handle legacy format
-        if ('darkMode' in prefs && !('themeMode' in prefs)) {
-          prefs['themeMode'] = prefs['darkMode'] ? 'dark' : 'light';
-          delete prefs['darkMode'];
-        }
-        return prefs as unknown as UserPreferences;
-      } catch (e) {
-        this.logger.error('Error parsing user preferences:', e);
-      }
-    }
-
-    // Default preferences
-    const defaultPrefs: UserPreferences = {
-      animations: true,
-      themeMode: 'automatic',
-      colorBlindMode: false,
-      pageSize: 'usLetter',
-      marginSize: 'standard',
-      showDeveloperTools: false,
-      dashboardListView: false,
-    };
-    this.savePreferences(defaultPrefs);
-    return defaultPrefs;
-  }
-
-  private savePreferences(preferences: UserPreferences): void {
-    localStorage.setItem('tmi_user_preferences', JSON.stringify(preferences));
-  }
-
   onAnimationPreferenceChange(event: CheckboxChangeEvent): void {
     this.preferences.animations = event.checked;
-    this.savePreferences(this.preferences);
+    this.userPreferencesService.updatePreferences({ animations: event.checked });
   }
 
   onThemeModeChange(): void {
-    this.savePreferences(this.preferences);
-    // Apply the theme immediately
-    this.themeService.setThemeMode(this.preferences.themeMode);
+    this.userPreferencesService.updatePreferences({ themeMode: this.preferences.themeMode });
   }
 
   onColorBlindModeChange(event: CheckboxChangeEvent): void {
     this.preferences.colorBlindMode = event.checked;
-    this.savePreferences(this.preferences);
-    // Apply the palette immediately
-    const palette: PaletteType = event.checked ? 'colorblind' : 'normal';
-    this.themeService.setPalette(palette);
+    this.userPreferencesService.updatePreferences({ colorBlindMode: event.checked });
   }
 
   onPageSizeChange(): void {
-    this.savePreferences(this.preferences);
+    this.userPreferencesService.updatePreferences({ pageSize: this.preferences.pageSize });
   }
 
   onMarginSizeChange(): void {
-    this.savePreferences(this.preferences);
+    this.userPreferencesService.updatePreferences({ marginSize: this.preferences.marginSize });
   }
 
   onShowDeveloperToolsChange(event: CheckboxChangeEvent): void {
     this.preferences.showDeveloperTools = event.checked;
-    this.savePreferences(this.preferences);
+    this.userPreferencesService.updatePreferences({ showDeveloperTools: event.checked });
   }
 
   onDashboardListViewChange(event: CheckboxChangeEvent): void {
     this.preferences.dashboardListView = event.checked;
-    this.savePreferences(this.preferences);
+    this.userPreferencesService.updatePreferences({ dashboardListView: event.checked });
   }
 
   onAdminClick(): void {

@@ -1,6 +1,8 @@
 import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { UserPreferencesService } from './user-preferences.service';
 
 /**
  * Theme preference modes
@@ -44,6 +46,9 @@ export interface ThemeConfig {
  * 5. Dark + Normal
  * 6. Dark + Colorblind
  *
+ * Note: Theme preferences are now managed by UserPreferencesService and synced to server.
+ * This service handles theme application and system theme detection only.
+ *
  * @example
  * ```typescript
  * constructor(private themeService: ThemeService) {}
@@ -66,13 +71,13 @@ export interface ThemeConfig {
   providedIn: 'root',
 })
 export class ThemeService {
-  private readonly PREFERENCES_STORAGE_KEY = 'user-theme-preferences';
   private readonly DARK_CLASS = 'dark-theme';
   private readonly COLORBLIND_CLASS = 'colorblind-palette';
 
   private renderer: Renderer2;
   private mediaQueryList: MediaQueryList;
   private systemThemeListener: ((event: MediaQueryListEvent) => void) | null = null;
+  private destroy$ = new Subject<void>();
 
   private _preferences$ = new BehaviorSubject<ThemePreferences>({
     mode: 'automatic',
@@ -87,12 +92,14 @@ export class ThemeService {
   constructor(
     private rendererFactory: RendererFactory2,
     private overlayContainer: OverlayContainer,
+    private userPreferencesService: UserPreferencesService,
   ) {
     this.renderer = this.rendererFactory.createRenderer(null, null);
     this.mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
 
     this._loadPreferences();
     this._setupSystemThemeListener();
+    this._subscribeToUserPreferences();
   }
 
   /**
@@ -127,23 +134,32 @@ export class ThemeService {
    * Set the theme mode (automatic, light, or dark)
    */
   setThemeMode(mode: ThemeMode): void {
-    const currentPrefs = this._preferences$.value;
-    this._updatePreferences({ ...currentPrefs, mode });
+    const palette = this._preferences$.value.palette;
+    this.userPreferencesService.updatePreferences({
+      themeMode: mode,
+      colorBlindMode: palette === 'colorblind',
+    });
   }
 
   /**
    * Set the palette (normal or colorblind)
    */
   setPalette(palette: PaletteType): void {
-    const currentPrefs = this._preferences$.value;
-    this._updatePreferences({ ...currentPrefs, palette });
+    const mode = this._preferences$.value.mode;
+    this.userPreferencesService.updatePreferences({
+      themeMode: mode,
+      colorBlindMode: palette === 'colorblind',
+    });
   }
 
   /**
    * Update both theme mode and palette at once
    */
   setPreferences(preferences: ThemePreferences): void {
-    this._updatePreferences(preferences);
+    this.userPreferencesService.updatePreferences({
+      themeMode: preferences.mode,
+      colorBlindMode: preferences.palette === 'colorblind',
+    });
   }
 
   /**
@@ -161,83 +177,40 @@ export class ThemeService {
   }
 
   /**
-   * Clean up event listeners
+   * Clean up event listeners and subscriptions
    */
   ngOnDestroy(): void {
     if (this.systemThemeListener) {
       this.mediaQueryList.removeEventListener('change', this.systemThemeListener);
     }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
-   * Load preferences from localStorage and apply them
+   * Load preferences from UserPreferencesService and apply them
    */
   private _loadPreferences(): void {
-    const stored = localStorage.getItem(this.PREFERENCES_STORAGE_KEY);
-
-    if (stored) {
-      try {
-        const preferences = JSON.parse(stored) as ThemePreferences;
-        // Validate the loaded preferences
-        if (this._isValidPreferences(preferences)) {
-          this._preferences$.next(preferences);
-        }
-      } catch {
-        // If parsing fails, try legacy format
-        this._loadLegacyPreferences(stored);
-      }
-    }
+    const userPrefs = this.userPreferencesService.getThemePreferences();
+    this._preferences$.next(userPrefs);
 
     // Apply the initial theme
     this._applyTheme();
   }
 
   /**
-   * Handle legacy theme format for backwards compatibility
+   * Subscribe to user preferences changes from UserPreferencesService
    */
-  private _loadLegacyPreferences(stored: string): void {
-    try {
-      const legacy = JSON.parse(stored) as Record<string, unknown>;
-      if (legacy['colorScheme'] && legacy['palette']) {
-        // Old ThemeConfig format
-        const preferences: ThemePreferences = {
-          mode: legacy['colorScheme'] === 'dark' ? 'dark' : 'light',
-          palette: legacy['palette'] as PaletteType,
-        };
-        this._preferences$.next(preferences);
-      } else if (stored === 'colorblind') {
-        // Very old format
-        this._preferences$.next({
-          mode: 'light',
-          palette: 'colorblind',
-        });
-      }
-    } catch {
-      // Ignore invalid legacy data
-    }
-  }
+  private _subscribeToUserPreferences(): void {
+    this.userPreferencesService.preferences$.pipe(takeUntil(this.destroy$)).subscribe(prefs => {
+      const themePrefs: ThemePreferences = {
+        mode: prefs.themeMode,
+        palette: prefs.colorBlindMode ? 'colorblind' : 'normal',
+      };
 
-  /**
-   * Validate preferences object
-   */
-  private _isValidPreferences(prefs: unknown): prefs is ThemePreferences {
-    return (
-      typeof prefs === 'object' &&
-      prefs !== null &&
-      'mode' in prefs &&
-      'palette' in prefs &&
-      ['automatic', 'light', 'dark'].includes((prefs as ThemePreferences).mode) &&
-      ['normal', 'colorblind'].includes((prefs as ThemePreferences).palette)
-    );
-  }
-
-  /**
-   * Update preferences and apply theme
-   */
-  private _updatePreferences(preferences: ThemePreferences): void {
-    this._preferences$.next(preferences);
-    localStorage.setItem(this.PREFERENCES_STORAGE_KEY, JSON.stringify(preferences));
-    this._applyTheme();
+      this._preferences$.next(themePrefs);
+      this._applyTheme();
+    });
   }
 
   /**
