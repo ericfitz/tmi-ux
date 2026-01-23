@@ -6,6 +6,8 @@
 // Execute all tests for a component by using "pnpm run test:<componentname>"
 // Do not disable or skip failing tests, ask the user what to do
 
+import '@angular/compiler';
+
 import { Cell, Node, Edge } from '@antv/x6';
 import { vi, Mock, beforeEach, afterEach, describe, it, expect } from 'vitest';
 import { LoggerService } from '../../../../core/services/logger.service';

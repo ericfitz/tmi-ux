@@ -5,6 +5,8 @@
 // Execute this test only using:  "pnpm run test" followed by the relative path to this test file from the project root.
 // Do not disable or skip failing tests, ask the user what to do
 
+import '@angular/compiler';
+
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { RendererFactory2 } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
@@ -79,16 +81,18 @@ describe('ThemeService', () => {
     global.window.matchMedia = vi.fn().mockReturnValue(mockMediaQueryList);
 
     // Mock UserPreferencesService
+    const prefsSubject = new BehaviorSubject<UserPreferencesData>({
+      animations: true,
+      themeMode: 'automatic',
+      colorBlindMode: false,
+      showDeveloperTools: false,
+      dashboardListView: false,
+      pageSize: 'usLetter',
+      marginSize: 'standard',
+    });
+
     mockUserPreferencesService = {
-      preferences$: new BehaviorSubject<UserPreferencesData>({
-        animations: true,
-        themeMode: 'automatic',
-        colorBlindMode: false,
-        showDeveloperTools: false,
-        dashboardListView: false,
-        pageSize: 'usLetter',
-        marginSize: 'standard',
-      }),
+      preferences$: prefsSubject,
       getPreferences: vi.fn().mockReturnValue({
         animations: true,
         themeMode: 'automatic',
@@ -98,7 +102,12 @@ describe('ThemeService', () => {
         pageSize: 'usLetter',
         marginSize: 'standard',
       }),
-      updatePreferences: vi.fn(),
+      updatePreferences: vi.fn().mockImplementation((partial: Partial<UserPreferencesData>) => {
+        const current = prefsSubject.value;
+        const updated = { ...current, ...partial };
+        prefsSubject.next(updated);
+        mockUserPreferencesService.getPreferences.mockReturnValue(updated);
+      }),
       getThemePreferences: vi.fn().mockReturnValue({
         mode: 'automatic',
         palette: 'normal',
@@ -163,8 +172,28 @@ describe('ThemeService', () => {
         palette: 'colorblind',
       };
 
+      const prefsSubject = new BehaviorSubject<UserPreferencesData>({
+        animations: true,
+        themeMode: 'dark',
+        colorBlindMode: true,
+        showDeveloperTools: false,
+        dashboardListView: false,
+        pageSize: 'usLetter',
+        marginSize: 'standard',
+      });
+
       const mockPrefsService = {
-        ...mockUserPreferencesService,
+        preferences$: prefsSubject,
+        getPreferences: vi.fn().mockReturnValue({
+          animations: true,
+          themeMode: 'dark',
+          colorBlindMode: true,
+          showDeveloperTools: false,
+          dashboardListView: false,
+          pageSize: 'usLetter',
+          marginSize: 'standard',
+        }),
+        updatePreferences: vi.fn(),
         getThemePreferences: vi.fn().mockReturnValue(storedPrefs),
       };
 
@@ -378,6 +407,7 @@ describe('ThemeService', () => {
       const service2 = new ThemeService(
         mockRendererFactory as unknown as RendererFactory2,
         mockOverlayContainer as unknown as OverlayContainer,
+        mockUserPreferencesService as unknown as UserPreferencesService,
       );
 
       service2.setThemeMode('automatic');
@@ -455,8 +485,28 @@ describe('ThemeService', () => {
 
   describe('Preferences from UserPreferencesService', () => {
     it('should load theme preferences from UserPreferencesService', () => {
+      const prefsSubject = new BehaviorSubject<UserPreferencesData>({
+        animations: true,
+        themeMode: 'dark',
+        colorBlindMode: true,
+        showDeveloperTools: false,
+        dashboardListView: false,
+        pageSize: 'usLetter',
+        marginSize: 'standard',
+      });
+
       const mockPrefsService = {
-        ...mockUserPreferencesService,
+        preferences$: prefsSubject,
+        getPreferences: vi.fn().mockReturnValue({
+          animations: true,
+          themeMode: 'dark',
+          colorBlindMode: true,
+          showDeveloperTools: false,
+          dashboardListView: false,
+          pageSize: 'usLetter',
+          marginSize: 'standard',
+        }),
+        updatePreferences: vi.fn(),
         getThemePreferences: vi.fn().mockReturnValue({
           mode: 'dark',
           palette: 'colorblind',
