@@ -342,6 +342,8 @@
     "addMetadata": "Add Metadata",
     "addThreat": "Add Threat",
     "addons": "Addons",
+    "back": "Back",
+    "back.comment": "Used as a tooltip or label for buttons that allows a user to navigate to the previous page.",
     "cancel": "Cancel",
     "cellId": "Cell ID",
     "classification": "Classification",
