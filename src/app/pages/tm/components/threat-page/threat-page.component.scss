@@ -131,6 +131,18 @@
   .external-edit-button {
     flex-shrink: 0;
     margin-top: -8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .mat-icon {
+      font-size: var(--icon-size-lg);
+      width: var(--icon-size-lg);
+      height: var(--icon-size-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
 
