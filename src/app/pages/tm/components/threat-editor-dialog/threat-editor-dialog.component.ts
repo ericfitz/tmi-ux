@@ -287,16 +287,29 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
 
       // Filter threat types by shape type if provided
       if (this.data.shapeType) {
-        applicableThreatTypes = this.data.framework.threatTypes.filter(tt =>
+        const filteredTypes = this.data.framework.threatTypes.filter(tt =>
           tt.appliesTo.includes(this.data.shapeType!),
         );
 
         this.logger.debugComponent('ThreatEditorDialog', 'Filtering threat types by shape type', {
           framework: this.data.framework.name,
           shapeType: this.data.shapeType,
-          filteredThreatTypes: applicableThreatTypes.map(tt => tt.name),
+          filteredThreatTypes: filteredTypes.map(tt => tt.name),
           allThreatTypes: this.data.framework.threatTypes.map(tt => tt.name),
         });
+
+        // Only use filtered types if we found some matches, otherwise use all types
+        if (filteredTypes.length > 0) {
+          applicableThreatTypes = filteredTypes;
+        } else {
+          this.logger.debugComponent(
+            'ThreatEditorDialog',
+            'No threat types match shape type, using all framework threat types',
+            {
+              shapeType: this.data.shapeType,
+            },
+          );
+        }
       }
 
       this.threatTypeOptions = applicableThreatTypes.map(tt => tt.name);

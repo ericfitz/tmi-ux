@@ -43,11 +43,39 @@
       </mat-form-field>
     </div>
 
+    <!-- Diagram ID field -->
+    <div class="form-field-row">
+      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+        <mat-label>{{ 'common.diagramId' | transloco }}</mat-label>
+        <mat-select formControlName="diagram_id" tabindex="2">
+          <mat-option *ngFor="let diagram of diagramOptions" [value]="diagram.id">
+            {{
+              diagram.id === NOT_ASSOCIATED_VALUE
+                ? diagram.name
+                : diagram.name + ' (' + diagram.id + ')'
+            }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Cell ID field -->
+    <div class="form-field-row">
+      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+        <mat-label>{{ 'common.cellId' | transloco }}</mat-label>
+        <mat-select formControlName="cell_id" tabindex="3">
+          <mat-option *ngFor="let cell of cellOptions" [value]="cell.id">
+            {{ cell.id === NOT_ASSOCIATED_VALUE ? cell.label : cell.label + ' (' + cell.id + ')' }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
     <!-- Asset field -->
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'common.objectTypes.asset' | transloco }}</mat-label>
-        <mat-select formControlName="asset_id" tabindex="2">
+        <mat-select formControlName="asset_id" tabindex="4">
           <mat-option *ngFor="let asset of assetOptions" [value]="asset.id">
             {{
               asset.id === NOT_ASSOCIATED_VALUE ? asset.name : asset.name + ' (' + asset.type + ')'
@@ -64,7 +92,7 @@
           matInput
           formControlName="description"
           rows="3"
-          tabindex="3"
+          tabindex="5"
           placeholder="{{ 'common.threatDescriptionPlaceholder' | transloco }}"
         ></textarea>
         @if (threatForm.get('description')?.hasError('maxlength')) {
@@ -79,7 +107,7 @@
     <div class="form-field-row">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
         <mat-label>{{ 'common.threatType' | transloco }}</mat-label>
-        <mat-select formControlName="threat_type" tabindex="4" multiple>
+        <mat-select formControlName="threat_type" tabindex="6" multiple>
           <mat-option *ngFor="let threatType of threatTypeOptions" [value]="threatType">
             {{ threatType }}
           </mat-option>
@@ -92,7 +120,7 @@
       <!-- Severity field -->
       <mat-form-field appearance="outline" floatLabel="always">
         <mat-label>{{ 'common.severity' | transloco }}</mat-label>
-        <mat-select formControlName="severity" tabindex="5">
+        <mat-select formControlName="severity" tabindex="7">
           <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
           @for (option of severityOptions; track option.key) {
             <mat-option [value]="option.key" [matTooltip]="option.tooltip">
@@ -112,14 +140,14 @@
           min="0"
           max="10"
           step="0.1"
-          tabindex="6"
+          tabindex="8"
         />
       </mat-form-field>
 
       <!-- Priority field -->
       <mat-form-field appearance="outline" floatLabel="always">
         <mat-label>{{ 'common.priority' | transloco }}</mat-label>
-        <mat-select formControlName="priority" tabindex="7">
+        <mat-select formControlName="priority" tabindex="9">
           <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
           @for (option of priorityOptions; track option.key) {
             <mat-option [value]="option.key" [matTooltip]="option.tooltip">
@@ -128,69 +156,6 @@
           }
         </mat-select>
       </mat-form-field>
-    </div>
-
-    <!-- Issue URI field - on its own row -->
-    <div class="form-field-row">
-      <!-- Edit mode: Toggle between form input and hyperlink display -->
-      @if (!isViewOnly) {
-        <div class="issue-uri-container">
-          <mat-form-field appearance="outline" class="issue-uri-field" floatLabel="always">
-            <mat-label>{{ 'common.issueUri' | transloco }}</mat-label>
-
-            <!-- Use ng-container with if-else to ensure exactly one control is always present -->
-            @if (shouldShowIssueUriHyperlink()) {
-              <ng-container>
-                <input
-                  matInput
-                  readonly
-                  [value]="initialIssueUriValue"
-                  class="uri-view-content"
-                  (click)="openUriInNewTab(initialIssueUriValue)"
-                  style="cursor: pointer; color: #1976d2; text-decoration: underline"
-                />
-              </ng-container>
-            } @else {
-              <input
-                matInput
-                formControlName="issue_uri"
-                type="url"
-                tabindex="8"
-                (blur)="onIssueUriBlur()"
-              />
-            }
-          </mat-form-field>
-
-          <!-- Edit button outside the form field -->
-          @if (shouldShowIssueUriHyperlink()) {
-            <button
-              mat-icon-button
-              class="external-edit-button"
-              (click)="editIssueUri()"
-              [matTooltip]="'common.edit' | transloco"
-              [attr.aria-label]="'common.edit' | transloco"
-              tabindex="9"
-            >
-              <mat-icon>edit</mat-icon>
-            </button>
-          }
-        </div>
-      }
-
-      <!-- View-only mode: Show only hyperlink if URI exists -->
-      @if (isViewOnly && data.threat?.issue_uri) {
-        <div class="view-only-uri">
-          <span class="uri-label">{{ 'common.issueUri' | transloco }}:</span>
-          <a
-            [href]="data.threat?.issue_uri"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="issue-uri-link"
-          >
-            {{ data.threat?.issue_uri }}
-          </a>
-        </div>
-      }
     </div>
 
     <!-- Status and Mitigated row -->
@@ -219,6 +184,69 @@
       </div>
     </div>
 
+    <!-- Issue URI field - on its own row -->
+    <div class="form-field-row">
+      <!-- Edit mode: Toggle between form input and hyperlink display -->
+      @if (!isViewOnly) {
+        <div class="issue-uri-container">
+          <mat-form-field appearance="outline" class="issue-uri-field" floatLabel="always">
+            <mat-label>{{ 'common.issueUri' | transloco }}</mat-label>
+
+            <!-- Use ng-container with if-else to ensure exactly one control is always present -->
+            @if (shouldShowIssueUriHyperlink()) {
+              <ng-container>
+                <input
+                  matInput
+                  readonly
+                  [value]="initialIssueUriValue"
+                  class="uri-view-content"
+                  (click)="openUriInNewTab(initialIssueUriValue)"
+                  style="cursor: pointer; color: #1976d2; text-decoration: underline"
+                />
+              </ng-container>
+            } @else {
+              <input
+                matInput
+                formControlName="issue_uri"
+                type="url"
+                tabindex="12"
+                (blur)="onIssueUriBlur()"
+              />
+            }
+          </mat-form-field>
+
+          <!-- Edit button outside the form field -->
+          @if (shouldShowIssueUriHyperlink()) {
+            <button
+              mat-icon-button
+              class="external-edit-button"
+              (click)="editIssueUri()"
+              [matTooltip]="'common.edit' | transloco"
+              [attr.aria-label]="'common.edit' | transloco"
+              tabindex="13"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          }
+        </div>
+      }
+
+      <!-- View-only mode: Show only hyperlink if URI exists -->
+      @if (isViewOnly && data.threat?.issue_uri) {
+        <div class="view-only-uri">
+          <span class="uri-label">{{ 'common.issueUri' | transloco }}:</span>
+          <a
+            [href]="data.threat?.issue_uri"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="issue-uri-link"
+          >
+            {{ data.threat?.issue_uri }}
+          </a>
+        </div>
+      }
+    </div>
+
     <!-- Mitigation field - on its own row -->
     <div class="form-field-container">
       <mat-form-field appearance="outline" class="full-width" floatLabel="always">
@@ -227,7 +255,7 @@
           matInput
           formControlName="mitigation"
           rows="3"
-          tabindex="12"
+          tabindex="14"
           placeholder="{{ 'common.mitigationPlaceholder' | transloco }}"
         ></textarea>
         @if (threatForm.get('mitigation')?.hasError('maxlength')) {
@@ -235,34 +263,6 @@
             {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
           </mat-error>
         }
-      </mat-form-field>
-    </div>
-
-    <!-- Diagram ID field - on its own row -->
-    <div class="form-field-row">
-      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-        <mat-label>{{ 'common.diagramId' | transloco }}</mat-label>
-        <mat-select formControlName="diagram_id" tabindex="13">
-          <mat-option *ngFor="let diagram of diagramOptions" [value]="diagram.id">
-            {{
-              diagram.id === NOT_ASSOCIATED_VALUE
-                ? diagram.name
-                : diagram.name + ' (' + diagram.id + ')'
-            }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <!-- Cell ID field - on its own row -->
-    <div class="form-field-row">
-      <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-        <mat-label>{{ 'common.cellId' | transloco }}</mat-label>
-        <mat-select formControlName="cell_id" tabindex="14">
-          <mat-option *ngFor="let cell of cellOptions" [value]="cell.id">
-            {{ cell.id === NOT_ASSOCIATED_VALUE ? cell.label : cell.label + ' (' + cell.id + ')' }}
-          </mat-option>
-        </mat-select>
       </mat-form-field>
     </div>
   </form>
