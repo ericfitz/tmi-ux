@@ -25,13 +25,28 @@
       </h1>
     </div>
     <div class="header-actions">
+      @if (canEdit) {
+        <button
+          mat-icon-button
+          color="primary"
+          [matMenuTriggerFor]="threatAddonsMenu"
+          [matTooltip]="'common.addons' | transloco"
+          [attr.aria-label]="'common.addons' | transloco"
+        >
+          <mat-icon>extension</mat-icon>
+        </button>
+      }
       <button
         mat-icon-button
         (click)="openMetadataDialog()"
-        [matTooltip]="'common.metadata' | transloco"
-        [attr.aria-label]="'common.metadata' | transloco"
+        [matTooltip]="
+          canEdit ? ('common.manageMetadata' | transloco) : ('common.viewMetadata' | transloco)
+        "
+        [attr.aria-label]="
+          canEdit ? ('common.manageMetadata' | transloco) : ('common.viewMetadata' | transloco)
+        "
       >
-        <mat-icon>info</mat-icon>
+        <mat-icon>list</mat-icon>
       </button>
       @if (canEdit) {
         <button
@@ -318,4 +333,26 @@
       }
     </mat-card-actions>
   </mat-card>
+
+  <!-- Threat Addons Menu -->
+  <mat-menu #threatAddonsMenu="matMenu">
+    @if (addonsForThreat.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForThreat; track addon.id) {
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddon(addon)"
+        >
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
 </div>

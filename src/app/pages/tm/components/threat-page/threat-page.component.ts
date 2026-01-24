@@ -38,6 +38,13 @@ import {
   MetadataDialogComponent,
   MetadataDialogData,
 } from '../metadata-dialog/metadata-dialog.component';
+import {
+  InvokeAddonDialogComponent,
+  InvokeAddonDialogData,
+  InvokeAddonDialogResult,
+} from '../invoke-addon-dialog/invoke-addon-dialog.component';
+import { AddonService } from '../../../../core/services/addon.service';
+import { Addon } from '../../../../types/addon.types';
 
 /**
  * Interface for threat form values
@@ -125,6 +132,9 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   // Track if save is in progress
   isSaving = false;
 
+  // Addons for threat
+  addonsForThreat: Addon[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -138,6 +148,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     private authorizationService: ThreatModelAuthorizationService,
     private cellDataExtractionService: CellDataExtractionService,
     private frameworkService: FrameworkService,
+    private addonService: AddonService,
   ) {
     this.threatForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -211,6 +222,9 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
 
     // Load frameworks and initialize
     this.loadFrameworksAndInitialize();
+
+    // Load addons
+    this.loadAddons();
   }
 
   ngOnDestroy(): void {
@@ -688,5 +702,71 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     if (uri?.trim()) {
       window.open(uri, '_blank', 'noopener,noreferrer');
     }
+  }
+
+  /**
+   * Load addons from server and filter for threat type
+   */
+  private loadAddons(): void {
+    this.addonService
+      .list()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: addons => {
+          this.addonsForThreat = addons.filter(addon => addon.objects?.includes('threat'));
+        },
+        error: error => {
+          this.logger.error('Failed to load addons', error);
+          this.addonsForThreat = [];
+        },
+      });
+  }
+
+  /**
+   * Gets the icon name for display, handling material-symbols: prefix
+   */
+  getAddonIcon(addon: Addon): string {
+    if (!addon.icon) {
+      return 'extension';
+    }
+    return addon.icon.replace('material-symbols:', '');
+  }
+
+  /**
+   * Invoke addon for this threat
+   */
+  invokeAddon(addon: Addon): void {
+    if (!this.threatModel || !this.threat) {
+      this.logger.error('Cannot invoke addon: no threat model or threat loaded');
+      return;
+    }
+
+    const dialogData: InvokeAddonDialogData = {
+      addon,
+      threatModelId: this.threatModelId,
+      threatModelName: this.threatModel.name,
+      objectType: 'threat',
+      isBulk: false,
+      objectId: this.threatId,
+      objectName: this.threat.name,
+    };
+
+    const dialogRef = this.dialog.open(InvokeAddonDialogComponent, {
+      width: '550px',
+      maxHeight: '90vh',
+      data: dialogData,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((result: InvokeAddonDialogResult | undefined) => {
+        if (result?.submitted && result.response) {
+          this.logger.info('Addon invoked successfully', {
+            addonId: addon.id,
+            threatId: this.threatId,
+          });
+        }
+      });
   }
 }

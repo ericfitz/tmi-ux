@@ -62,6 +62,10 @@ interface MockFrameworkService {
   loadAllFrameworks: ReturnType<typeof vi.fn>;
 }
 
+interface MockAddonService {
+  list: ReturnType<typeof vi.fn>;
+}
+
 describe('ThreatPageComponent', () => {
   let component: ThreatPageComponent;
   let route: MockActivatedRoute;
@@ -76,6 +80,7 @@ describe('ThreatPageComponent', () => {
   let authorizationService: MockAuthorizationService;
   let cellDataExtractionService: MockCellDataExtractionService;
   let frameworkService: MockFrameworkService;
+  let addonService: MockAddonService;
 
   const mockThreat: Threat = {
     id: 'threat-1',
@@ -161,6 +166,9 @@ describe('ThreatPageComponent', () => {
         ]),
       ),
     };
+    addonService = {
+      list: vi.fn().mockReturnValue(of([])),
+    };
 
     component = new ThreatPageComponent(
       route as any,
@@ -175,6 +183,7 @@ describe('ThreatPageComponent', () => {
       authorizationService as any,
       cellDataExtractionService as any,
       frameworkService as any,
+      addonService as any,
     );
   });
 

@@ -43,7 +43,20 @@
 
 .header-actions {
   display: flex;
+  align-items: center;
   gap: 4px;
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 }
 
 // Info section styles
