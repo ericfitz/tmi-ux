@@ -495,8 +495,8 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   cancel(): void {
     if (this.threatForm.dirty) {
       const confirmed = window.confirm(
-        this.translocoService.translate('common.unsavedChangesMessage') ||
-          'You have unsaved changes. Are you sure you want to leave?',
+        this.translocoService.translate('common.unsavedChangesWarning') ||
+          'You have unsaved changes. Are you sure you want to close?',
       );
       if (confirmed) {
         this.navigateBack();
