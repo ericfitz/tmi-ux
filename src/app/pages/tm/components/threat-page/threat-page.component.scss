@@ -1,7 +1,7 @@
 .threat-page-container {
-  padding: 16px 24px;
-  max-width: 900px;
-  margin: 0 auto;
+  width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 // Header styles
@@ -39,11 +39,11 @@
   gap: 8px;
 
   .title-prefix {
-    color: var(--theme-text-secondary, var(--color-text-secondary));
+    color: var(--theme-primary);
   }
 
   .title-name {
-    color: var(--theme-text-primary, var(--color-text-primary));
+    color: var(--color-theme-cyan);
   }
 
   .read-only-indicator {
@@ -99,6 +99,7 @@
 
 // Form card styles
 .form-card {
+  width: 100%;
   margin-bottom: 24px;
 }
 

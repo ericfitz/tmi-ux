@@ -2,14 +2,6 @@
   <!-- Header -->
   <div class="page-header">
     <div class="header-left">
-      <button
-        mat-icon-button
-        (click)="navigateBack()"
-        [matTooltip]="'common.back' | transloco"
-        [attr.aria-label]="'common.back' | transloco"
-      >
-        <mat-icon>arrow_back</mat-icon>
-      </button>
       <h1 class="page-title">
         <span class="title-prefix">{{ 'common.objectTypes.threat' | transloco }}:</span>
         <span class="title-name">{{ threat?.name }}</span>
@@ -59,6 +51,26 @@
           <mat-icon>delete</mat-icon>
         </button>
       }
+      @if (canEdit) {
+        <button
+          mat-icon-button
+          color="primary"
+          [disabled]="threatForm.invalid || !threatForm.dirty || isSaving"
+          (click)="save()"
+          [matTooltip]="'common.save' | transloco"
+          [attr.aria-label]="'common.save' | transloco"
+        >
+          <mat-icon>save</mat-icon>
+        </button>
+      }
+      <button
+        mat-icon-button
+        (click)="cancel()"
+        [matTooltip]="'common.close' | transloco"
+        [attr.aria-label]="'common.close' | transloco"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
   </div>
 
@@ -99,36 +111,6 @@
                 {{ 'common.validation.maxLength' | transloco: { max: 100 } }}
               </mat-error>
             }
-          </mat-form-field>
-        </div>
-
-        <!-- Diagram ID field -->
-        <div class="form-field-row">
-          <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-            <mat-label>{{ 'common.diagramId' | transloco }}</mat-label>
-            <mat-select formControlName="diagram_id">
-              <mat-option *ngFor="let diagram of diagramOptions" [value]="diagram.id">
-                {{
-                  diagram.id === NOT_ASSOCIATED_VALUE
-                    ? diagram.name
-                    : diagram.name + ' (' + diagram.id + ')'
-                }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-
-        <!-- Cell ID field -->
-        <div class="form-field-row">
-          <mat-form-field appearance="outline" class="full-width" floatLabel="always">
-            <mat-label>{{ 'common.cellId' | transloco }}</mat-label>
-            <mat-select formControlName="cell_id">
-              <mat-option *ngFor="let cell of cellOptions" [value]="cell.id">
-                {{
-                  cell.id === NOT_ASSOCIATED_VALUE ? cell.label : cell.label + ' (' + cell.id + ')'
-                }}
-              </mat-option>
-            </mat-select>
           </mat-form-field>
         </div>
 
@@ -213,34 +195,6 @@
           </mat-form-field>
         </div>
 
-        <!-- Status and Mitigated row -->
-        <div class="form-field-row two-columns">
-          <!-- Status field -->
-          <mat-form-field appearance="outline" floatLabel="always">
-            <mat-label>{{ 'common.status' | transloco }}</mat-label>
-            <mat-select formControlName="status">
-              <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
-              @for (option of statusOptions; track option.key) {
-                <mat-option
-                  [value]="option.key"
-                  [matTooltip]="
-                    'threatEditor.threatStatus.' + option.key + '.description' | transloco
-                  "
-                >
-                  {{ 'threatEditor.threatStatus.' + option.key | transloco }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <!-- Mitigated field -->
-          <div class="checkbox-field">
-            <mat-checkbox formControlName="mitigated">
-              {{ 'common.mitigated' | transloco }}
-            </mat-checkbox>
-          </div>
-        </div>
-
         <!-- Issue URI field -->
         <div class="form-field-row">
           @if (canEdit) {
@@ -295,6 +249,34 @@
           }
         </div>
 
+        <!-- Status and Mitigated row -->
+        <div class="form-field-row two-columns">
+          <!-- Status field -->
+          <mat-form-field appearance="outline" floatLabel="always">
+            <mat-label>{{ 'common.status' | transloco }}</mat-label>
+            <mat-select formControlName="status">
+              <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+              @for (option of statusOptions; track option.key) {
+                <mat-option
+                  [value]="option.key"
+                  [matTooltip]="
+                    'threatEditor.threatStatus.' + option.key + '.description' | transloco
+                  "
+                >
+                  {{ 'threatEditor.threatStatus.' + option.key | transloco }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Mitigated field -->
+          <div class="checkbox-field">
+            <mat-checkbox formControlName="mitigated">
+              {{ 'common.mitigated' | transloco }}
+            </mat-checkbox>
+          </div>
+        </div>
+
         <!-- Mitigation field -->
         <div class="form-field-container">
           <mat-form-field appearance="outline" class="full-width" floatLabel="always">
@@ -312,26 +294,38 @@
             }
           </mat-form-field>
         </div>
+
+        <!-- Diagram ID field -->
+        <div class="form-field-row">
+          <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+            <mat-label>{{ 'common.diagramId' | transloco }}</mat-label>
+            <mat-select formControlName="diagram_id">
+              <mat-option *ngFor="let diagram of diagramOptions" [value]="diagram.id">
+                {{
+                  diagram.id === NOT_ASSOCIATED_VALUE
+                    ? diagram.name
+                    : diagram.name + ' (' + diagram.id + ')'
+                }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Cell ID field -->
+        <div class="form-field-row">
+          <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+            <mat-label>{{ 'common.cellId' | transloco }}</mat-label>
+            <mat-select formControlName="cell_id">
+              <mat-option *ngFor="let cell of cellOptions" [value]="cell.id">
+                {{
+                  cell.id === NOT_ASSOCIATED_VALUE ? cell.label : cell.label + ' (' + cell.id + ')'
+                }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
       </form>
     </mat-card-content>
-
-    <!-- Actions -->
-    <mat-card-actions align="end">
-      <button mat-button (click)="cancel()" [attr.aria-label]="'common.cancel' | transloco">
-        {{ 'common.cancel' | transloco }}
-      </button>
-      @if (canEdit) {
-        <button
-          mat-raised-button
-          color="primary"
-          [disabled]="threatForm.invalid || !threatForm.dirty || isSaving"
-          (click)="save()"
-          [attr.aria-label]="'common.save' | transloco"
-        >
-          {{ 'common.save' | transloco }}
-        </button>
-      }
-    </mat-card-actions>
   </mat-card>
 
   <!-- Threat Addons Menu -->
