@@ -1,0 +1,268 @@
+<div class="note-page-container" [dir]="currentDirection">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">
+        <span class="title-prefix">{{ 'common.objectTypes.note' | transloco }}:</span>
+        <span class="title-name">{{ note?.name }}</span>
+        @if (!canEdit) {
+          <mat-icon
+            class="read-only-indicator"
+            color="warn"
+            [matTooltip]="'common.readOnlyTooltip' | transloco"
+          >
+            edit_off
+          </mat-icon>
+        }
+      </h1>
+    </div>
+    <div class="header-actions">
+      @if (canEdit) {
+        <button
+          mat-icon-button
+          color="primary"
+          [matMenuTriggerFor]="noteAddonsMenu"
+          [matTooltip]="'common.addons' | transloco"
+          [attr.aria-label]="'common.addons' | transloco"
+        >
+          <mat-icon>extension</mat-icon>
+        </button>
+      }
+      <button
+        mat-icon-button
+        (click)="openMetadataDialog()"
+        [matTooltip]="
+          canEdit ? ('common.manageMetadata' | transloco) : ('common.viewMetadata' | transloco)
+        "
+        [attr.aria-label]="
+          canEdit ? ('common.manageMetadata' | transloco) : ('common.viewMetadata' | transloco)
+        "
+      >
+        <mat-icon>list</mat-icon>
+      </button>
+      @if (canEdit) {
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="deleteNote()"
+          [matTooltip]="'common.delete' | transloco"
+          [attr.aria-label]="'common.delete' | transloco"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      }
+      @if (canEdit) {
+        <button
+          mat-icon-button
+          color="primary"
+          [disabled]="noteForm.invalid || !noteForm.dirty || isSaving"
+          (click)="save()"
+          [matTooltip]="'common.save' | transloco"
+          [attr.aria-label]="'common.save' | transloco"
+        >
+          <mat-icon>save</mat-icon>
+        </button>
+      }
+      <button
+        mat-icon-button
+        (click)="cancel()"
+        [matTooltip]="'common.close' | transloco"
+        [attr.aria-label]="'common.close' | transloco"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Timestamps -->
+  @if (note) {
+    <div class="info-section">
+      <div class="info-field">
+        <span class="info-label">{{ 'common.created' | transloco }}:</span>
+        <span class="info-value">{{
+          note.created_at | date: 'short' : undefined : currentLocale
+        }}</span>
+      </div>
+      <div class="info-field">
+        <span class="info-label">{{ 'common.lastModified' | transloco }}:</span>
+        <span class="info-value">{{
+          note.modified_at | date: 'short' : undefined : currentLocale
+        }}</span>
+      </div>
+    </div>
+  }
+
+  <!-- Form -->
+  <mat-card class="form-card">
+    <mat-card-content>
+      <form [formGroup]="noteForm" class="note-form">
+        <!-- Name field -->
+        <div class="form-field-container">
+          <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+            <mat-label>{{ 'common.name' | transloco }}</mat-label>
+            <input
+              matInput
+              formControlName="name"
+              [placeholder]="'noteEditor.namePlaceholder' | transloco"
+            />
+            @if (noteForm.get('name')?.hasError('required')) {
+              <mat-error>
+                {{ 'common.validation.required' | transloco }}
+              </mat-error>
+            }
+            @if (noteForm.get('name')?.hasError('maxlength')) {
+              <mat-error>
+                {{ 'common.validation.maxLength' | transloco: { max: maxNameLength } }}
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Description field -->
+        <div class="form-field-container">
+          <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+            <mat-label>{{ 'common.description' | transloco }}</mat-label>
+            <input
+              matInput
+              formControlName="description"
+              [placeholder]="'noteEditor.descriptionPlaceholder' | transloco"
+            />
+            @if (noteForm.get('description')?.hasError('maxlength')) {
+              <mat-error>
+                {{ 'common.validation.maxLength' | transloco: { max: maxDescriptionLength } }}
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Markdown Toolbar -->
+        @if (canEdit) {
+          <div class="markdown-toolbar">
+            <div class="toolbar-left">
+              <button
+                mat-icon-button
+                type="button"
+                [class.active]="!previewMode"
+                (click)="previewMode = false"
+                [matTooltip]="'noteEditor.editMode' | transloco"
+                [attr.aria-label]="'noteEditor.editMode' | transloco"
+              >
+                <mat-icon fontSet="material-symbols-outlined">edit_note</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                type="button"
+                [class.active]="previewMode"
+                (click)="togglePreview()"
+                [matTooltip]="'noteEditor.previewMode' | transloco"
+                [attr.aria-label]="'noteEditor.previewMode' | transloco"
+              >
+                <mat-icon fontSet="material-symbols-outlined">preview</mat-icon>
+              </button>
+              <span class="toolbar-divider"></span>
+              <button
+                mat-icon-button
+                type="button"
+                [disabled]="previewMode || !hasSelection"
+                (click)="onCut()"
+                [matTooltip]="'common.cut' | transloco"
+                [attr.aria-label]="'common.cut' | transloco"
+              >
+                <mat-icon fontSet="material-symbols-outlined">content_cut</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                type="button"
+                [disabled]="!previewMode && !hasSelection"
+                (click)="onCopy()"
+                [matTooltip]="'common.copy' | transloco"
+                [attr.aria-label]="'common.copy' | transloco"
+              >
+                <mat-icon fontSet="material-symbols-outlined">content_copy</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                type="button"
+                [disabled]="previewMode"
+                (click)="onPaste()"
+                [matTooltip]="'common.paste' | transloco"
+                [attr.aria-label]="'common.paste' | transloco"
+              >
+                <mat-icon fontSet="material-symbols-outlined">content_paste</mat-icon>
+              </button>
+            </div>
+            <div class="toolbar-right">
+              <span class="character-count">
+                {{
+                  'noteEditor.characterCount'
+                    | transloco: { current: currentContentLength, max: maxContentLength }
+                }}
+              </span>
+            </div>
+          </div>
+        }
+
+        <!-- Content field (Edit mode) -->
+        @if (!previewMode) {
+          <div class="form-field-container content-field-container">
+            <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+              <mat-label>{{ 'noteEditor.content' | transloco }}</mat-label>
+              <textarea
+                #contentTextarea
+                matInput
+                formControlName="content"
+                rows="20"
+                class="markdown-editor-textarea"
+                [placeholder]="'noteEditor.contentPlaceholder' | transloco"
+                (select)="onTextareaSelect($event)"
+                (keyup)="onTextareaSelect($event)"
+                (mouseup)="onTextareaSelect($event)"
+              ></textarea>
+              @if (noteForm.get('content')?.hasError('required')) {
+                <mat-error>
+                  {{ 'common.validation.required' | transloco }}
+                </mat-error>
+              }
+              @if (noteForm.get('content')?.hasError('maxlength')) {
+                <mat-error>
+                  {{ 'common.validation.maxLength' | transloco: { max: maxContentLength } }}
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+        }
+
+        <!-- Preview mode -->
+        @if (previewMode) {
+          <div class="markdown-preview-container">
+            <div #markdownPreview class="markdown-preview">
+              <markdown [data]="markdownContent" mermaid></markdown>
+            </div>
+          </div>
+        }
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Note Addons Menu -->
+  <mat-menu #noteAddonsMenu="matMenu">
+    @if (addonsForNote.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForNote; track addon.id) {
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddon(addon)"
+        >
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+</div>

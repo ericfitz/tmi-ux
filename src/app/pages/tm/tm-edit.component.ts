@@ -1625,75 +1625,23 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Opens the dialog to edit an existing note
+   * Navigates to the full-page note editor for an existing note.
+   * For new notes, use addNote() which opens the dialog.
    */
   editNote(note: Note, event: Event): void {
     event.stopPropagation();
     (event.target as HTMLElement)?.blur();
 
-    const dialogData: NoteEditorDialogData = {
-      mode: 'edit',
-      note: { ...note },
-      isReadOnly: !this.canEdit,
-    };
+    if (!this.threatModel) {
+      return;
+    }
 
-    const dialogRef = this.dialog.open(NoteEditorDialogComponent, {
-      width: '90vw',
-      maxWidth: '900px',
-      minWidth: '600px',
-      maxHeight: '90vh',
-      data: dialogData,
+    // Navigate to full-page note editor (same pattern as openThreatEditor)
+    this.logger.info('Navigating to note page', {
+      threatModelId: this.threatModel.id,
+      noteId: note.id,
     });
-
-    // Subscribe to save events from the dialog
-    const saveSubscription = dialogRef.componentInstance.saveEvent.subscribe(noteResult => {
-      if (!this.threatModel) {
-        return;
-      }
-      this._subscriptions.add(
-        this.threatModelService.updateNote(this.threatModel.id, note.id, noteResult).subscribe(
-          updatedNote => {
-            if (this.threatModel && this.threatModel.notes) {
-              const index = this.threatModel.notes.findIndex(n => n.id === note.id);
-              if (index !== -1) {
-                this.threatModel.notes[index] = updatedNote;
-              }
-              this.logger.info('Updated note via API', { note: updatedNote });
-            }
-          },
-          error => {
-            this.logger.error('Failed to update note', error);
-          },
-        ),
-      );
-    });
-
-    this._subscriptions.add(saveSubscription);
-
-    this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: NoteEditorResult | undefined) => {
-        if (result && this.threatModel && result.noteId) {
-          this._subscriptions.add(
-            this.threatModelService
-              .updateNote(this.threatModel.id, result.noteId, result.formValue)
-              .subscribe(
-                updatedNote => {
-                  if (this.threatModel && this.threatModel.notes) {
-                    const index = this.threatModel.notes.findIndex(n => n.id === result.noteId);
-                    if (index !== -1) {
-                      this.threatModel.notes[index] = updatedNote;
-                    }
-                    this.logger.info('Updated note via API', { note: updatedNote });
-                  }
-                },
-                error => {
-                  this.logger.error('Failed to update note', error);
-                },
-              ),
-          );
-        }
-      }),
-    );
+    void this.router.navigate(['/tm', this.threatModel.id, 'note', note.id]);
   }
 
   /**

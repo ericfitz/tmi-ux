@@ -29,6 +29,17 @@ export const TM_ROUTES: Routes = [
     },
   },
   {
+    path: ':id/note/:noteId',
+    loadComponent: () =>
+      import(/* webpackChunkName: "note-page" */ './components/note-page/note-page.component').then(
+        c => c.NotePageComponent,
+      ),
+    canActivate: [authGuard],
+    resolve: {
+      threatModel: threatModelResolver,
+    },
+  },
+  {
     path: ':id/dfd/:dfdId',
     loadComponent: () =>
       import(/* webpackChunkName: "dfd" */ '../dfd/presentation/components/dfd.component').then(
