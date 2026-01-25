@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "0.12.1280",
+  "version": "0.12.1281",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -9,7 +9,6 @@
     "start:dev": "ng serve",
     "build": "ng build",
     "build:prod": "ng build --configuration=production",
-    "build:staging": "ng build --configuration=staging",
     "build:test": "ng build --configuration=test",
     "watch": "ng build --watch --configuration development",
     "test": "vitest run",
@@ -26,12 +25,8 @@
     "test:e2e:firefox": "playwright test --project=firefox",
     "test:e2e:webkit": "playwright test --project=webkit",
     "dev": "ng serve --open",
-    "dev:0": "ng serve --host 0.0.0.0 --port 4200 --open",
-    "dev:staging": "ng serve --configuration=staging --open",
     "dev:test": "ng serve --configuration=test --open",
     "dev:prod": "ng serve --configuration=production --open",
-    "dev:local": "ng serve --configuration=local --open",
-    "dev:custom": "ng serve --host=${TMI_INTERFACE:-0.0.0.0} --port=${TMI_PORT:-4200} --ssl=${TMI_SSL:-false} --ssl-key=${TMI_SSL_KEY:-} --ssl-cert=${TMI_SSL_CERT:-} --open",
     "lint": "eslint \"src/**/*.{ts,html}\" --fix",
     "lint:scss": "stylelint \"src/**/*.scss\" --fix",
     "lint:all": "pnpm run lint && pnpm run lint:scss",
@@ -54,8 +49,7 @@
     "check:security": "tsx scripts/check-security.ts",
     "build:hosted-container": "ng build --configuration=hosted-container",
     "heroku-postbuild": "ng build --configuration=hosted-container",
-    "deploy:heroku": "./scripts/push-heroku.sh",
-    "sync:docs-server": "node ./scripts/sync-server-docs.js"
+    "deploy:heroku": "./scripts/push-heroku.sh"
   },
   "private": true,
   "dependencies": {
