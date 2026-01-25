@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   COMMON_IMPORTS,
@@ -38,8 +39,8 @@ import { HmacSecretDialogComponent } from './hmac-secret-dialog/hmac-secret-dial
   templateUrl: './admin-webhooks.component.html',
   styleUrl: './admin-webhooks.component.scss',
 })
-export class AdminWebhooksComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class AdminWebhooksComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
 
   webhooks: WebhookSubscription[] = [];
@@ -58,21 +59,18 @@ export class AdminWebhooksComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadWebhooks();
 
-    this.filterSubject$.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe(() => {
-      this.applyFilter();
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.filterSubject$
+      .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.applyFilter();
+      });
   }
 
   loadWebhooks(): void {
     this.loading = true;
     this.webhookService
       .list()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: webhooks => {
           this.webhooks = webhooks;
@@ -113,7 +111,7 @@ export class AdminWebhooksComponent implements OnInit, OnDestroy {
 
     dialogRef
       .afterClosed()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((result: WebhookSubscription | undefined) => {
         if (result) {
           this.loadWebhooks();
@@ -139,7 +137,7 @@ export class AdminWebhooksComponent implements OnInit, OnDestroy {
     if (confirmed) {
       this.webhookService
         .delete(webhook.id)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.logger.info('Webhook deleted', { id: webhook.id });

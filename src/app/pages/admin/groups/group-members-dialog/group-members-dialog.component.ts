@@ -1,18 +1,13 @@
-import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
+import { Component, DestroyRef, inject, Inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
 } from '@angular/material/autocomplete';
-import { Subject, Observable } from 'rxjs';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  switchMap,
-  takeUntil,
-  startWith,
-} from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, startWith } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
@@ -52,8 +47,8 @@ import { ProviderDisplayComponent } from '@app/shared/components/provider-displa
   templateUrl: './group-members-dialog.component.html',
   styleUrl: './group-members-dialog.component.scss',
 })
-export class GroupMembersDialogComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class GroupMembersDialogComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
 
   members: GroupMember[] = [];
   totalMembers: number | null = null;
@@ -84,7 +79,7 @@ export class GroupMembersDialogComponent implements OnInit, OnDestroy {
   loadProviders(): void {
     this.authService
       .getAvailableProviders()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: providers => {
           // Add hardcoded TMI provider at the beginning
@@ -107,16 +102,11 @@ export class GroupMembersDialogComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   loadMembers(): void {
     this.loading = true;
     this.groupAdminService
       .listMembers(this.data.group.internal_uuid)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
           this.members = response.members;
@@ -142,7 +132,7 @@ export class GroupMembersDialogComponent implements OnInit, OnDestroy {
       switchMap(value => {
         if (typeof value === 'string' && value.length >= 2) {
           return this.userAdminService.list({ email: value, limit: 10 }).pipe(
-            takeUntil(this.destroy$),
+            takeUntilDestroyed(this.destroyRef),
             switchMap(response => [response.users]),
           );
         }
@@ -175,7 +165,7 @@ export class GroupMembersDialogComponent implements OnInit, OnDestroy {
 
     this.groupAdminService
       .addMember(this.data.group.internal_uuid, request)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.logger.info('Member added to group', { email: user.email });
@@ -196,7 +186,7 @@ export class GroupMembersDialogComponent implements OnInit, OnDestroy {
     if (confirmed) {
       this.groupAdminService
         .removeMember(this.data.group.internal_uuid, member.internal_uuid)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.logger.info('Member removed from group', { email: member.email });

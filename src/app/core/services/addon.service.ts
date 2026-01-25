@@ -11,6 +11,7 @@ import {
   InvokeAddonResponse,
   ListAddonsResponse,
 } from '@app/types/addon.types';
+import { buildHttpParams } from '@app/shared/utils/http-params.util';
 
 /**
  * Service for managing addons
@@ -32,7 +33,7 @@ export class AddonService {
    * List all addons with optional filtering
    */
   public list(filter?: AddonFilter): Observable<Addon[]> {
-    const params = this.buildParams(filter);
+    const params = buildHttpParams(filter);
     return this.apiService.get<ListAddonsResponse>('addons', params).pipe(
       map(response => response.addons),
       tap(addons => {
@@ -136,28 +137,5 @@ export class AddonService {
           throw error;
         }),
       );
-  }
-
-  /**
-   * Build query parameters from filter
-   */
-  private buildParams(filter?: AddonFilter): Record<string, string | number | boolean> | undefined {
-    if (!filter) {
-      return undefined;
-    }
-
-    const params: Record<string, string | number | boolean> = {};
-
-    if (filter.threat_model_id) {
-      params['threat_model_id'] = filter.threat_model_id;
-    }
-    if (filter.limit !== undefined) {
-      params['limit'] = filter.limit;
-    }
-    if (filter.offset !== undefined) {
-      params['offset'] = filter.offset;
-    }
-
-    return Object.keys(params).length > 0 ? params : undefined;
   }
 }

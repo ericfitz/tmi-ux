@@ -1,4 +1,5 @@
-import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, DestroyRef, inject, Inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
   FormGroup,
@@ -7,8 +8,6 @@ import {
   ValidatorFn,
 } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
@@ -93,8 +92,8 @@ function jsonValidator(): ValidatorFn {
   templateUrl: './invoke-addon-dialog.component.html',
   styleUrls: ['./invoke-addon-dialog.component.scss'],
 })
-export class InvokeAddonDialogComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class InvokeAddonDialogComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
 
   form!: FormGroup;
   invoking = false;
@@ -120,14 +119,11 @@ export class InvokeAddonDialogComponent implements OnInit, OnDestroy {
     });
 
     // Subscribe to user preferences to get showDeveloperTools setting
-    this.userPreferencesService.preferences$.pipe(takeUntil(this.destroy$)).subscribe(prefs => {
-      this.showDeveloperTools = prefs.showDeveloperTools;
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.userPreferencesService.preferences$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(prefs => {
+        this.showDeveloperTools = prefs.showDeveloperTools;
+      });
   }
 
   /**
@@ -207,7 +203,7 @@ export class InvokeAddonDialogComponent implements OnInit, OnDestroy {
 
     this.addonService
       .invoke(this.data.addon.id, request)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
           this.logger.info('Addon invocation accepted', {

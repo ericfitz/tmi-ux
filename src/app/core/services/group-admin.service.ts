@@ -12,6 +12,7 @@ import {
   ListGroupMembersResponse,
   AddGroupMemberRequest,
 } from '@app/types/group.types';
+import { buildHttpParams } from '@app/shared/utils/http-params.util';
 
 /**
  * Service for managing groups in the admin interface
@@ -33,7 +34,7 @@ export class GroupAdminService {
    * List all groups with optional filtering
    */
   public list(filter?: GroupFilter): Observable<ListGroupsResponse> {
-    const params = this.buildParams(filter);
+    const params = buildHttpParams(filter);
     return this.apiService.get<ListGroupsResponse>('admin/groups', params).pipe(
       tap(response => {
         this.groupsSubject$.next(response.groups);
@@ -91,19 +92,9 @@ export class GroupAdminService {
     limit?: number,
     offset?: number,
   ): Observable<ListGroupMembersResponse> {
-    const params: Record<string, number> = {};
-    if (limit !== undefined) {
-      params['limit'] = limit;
-    }
-    if (offset !== undefined) {
-      params['offset'] = offset;
-    }
-
+    const params = buildHttpParams({ limit, offset });
     return this.apiService
-      .get<ListGroupMembersResponse>(
-        `admin/groups/${internal_uuid}/members`,
-        Object.keys(params).length > 0 ? params : undefined,
-      )
+      .get<ListGroupMembersResponse>(`admin/groups/${internal_uuid}/members`, params)
       .pipe(
         tap(response => {
           this.logger.debug('Group members loaded', {
@@ -174,40 +165,5 @@ export class GroupAdminService {
         throw error;
       }),
     );
-  }
-
-  /**
-   * Build query parameters from filter
-   */
-  private buildParams(filter?: GroupFilter): Record<string, string | number | boolean> | undefined {
-    if (!filter) {
-      return undefined;
-    }
-
-    const params: Record<string, string | number | boolean> = {};
-
-    if (filter.provider) {
-      params['provider'] = filter.provider;
-    }
-    if (filter.group_name) {
-      params['group_name'] = filter.group_name;
-    }
-    if (filter.used_in_authorizations !== undefined) {
-      params['used_in_authorizations'] = filter.used_in_authorizations;
-    }
-    if (filter.limit !== undefined) {
-      params['limit'] = filter.limit;
-    }
-    if (filter.offset !== undefined) {
-      params['offset'] = filter.offset;
-    }
-    if (filter.sort_by) {
-      params['sort_by'] = filter.sort_by;
-    }
-    if (filter.sort_order) {
-      params['sort_order'] = filter.sort_order;
-    }
-
-    return Object.keys(params).length > 0 ? params : undefined;
   }
 }

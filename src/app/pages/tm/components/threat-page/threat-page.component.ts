@@ -1,12 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, Optional } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { Subject, Subscription } from 'rxjs';
-import { skip, takeUntil } from 'rxjs/operators';
+import { identity, MonoTypeOperatorFunction, Subscription } from 'rxjs';
+import { skip } from 'rxjs/operators';
 
 import {
   COMMON_IMPORTS,
@@ -86,6 +87,8 @@ interface ThreatFormValues {
   styleUrls: ['./threat-page.component.scss'],
 })
 export class ThreatPageComponent implements OnInit, OnDestroy {
+  private destroyRef: DestroyRef | null = null;
+
   // Route data
   threatModelId = '';
   threatId = '';
@@ -126,7 +129,6 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   private frameworks: FrameworkModel[] = [];
 
   // Subscriptions
-  private destroy$ = new Subject<void>();
   private diagramChangeSubscription: Subscription | null = null;
 
   // Track if save is in progress
@@ -149,7 +151,9 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     private cellDataExtractionService: CellDataExtractionService,
     private frameworkService: FrameworkService,
     private addonService: AddonService,
+    @Optional() destroyRef?: DestroyRef,
   ) {
+    this.destroyRef = destroyRef ?? null;
     this.threatForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
       asset_id: [''],
@@ -165,6 +169,14 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       mitigation: ['', Validators.maxLength(1024)],
       issue_uri: [''],
     });
+  }
+
+  /**
+   * Helper to conditionally apply takeUntilDestroyed
+   * Returns identity operator when destroyRef is not available (tests)
+   */
+  private untilDestroyed<T>(): MonoTypeOperatorFunction<T> {
+    return this.destroyRef ? takeUntilDestroyed<T>(this.destroyRef) : identity;
   }
 
   ngOnInit(): void {
@@ -202,21 +214,21 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     });
 
     // Subscribe to authorization
-    this.authorizationService.canEdit$.pipe(takeUntil(this.destroy$)).subscribe(canEdit => {
+    this.authorizationService.canEdit$.pipe(this.untilDestroyed()).subscribe(canEdit => {
       this.canEdit = canEdit;
       this.updateFormEditability();
     });
 
     // Subscribe to language changes
     this.languageService.currentLanguage$
-      .pipe(skip(1), takeUntil(this.destroy$))
+      .pipe(skip(1), this.untilDestroyed())
       .subscribe(language => {
         this.currentLocale = language.code;
         this.currentDirection = language.rtl ? 'rtl' : 'ltr';
         this.reinitializeDropdownOptions();
       });
 
-    this.languageService.direction$.pipe(takeUntil(this.destroy$)).subscribe(direction => {
+    this.languageService.direction$.pipe(this.untilDestroyed()).subscribe(direction => {
       this.currentDirection = direction;
     });
 
@@ -228,8 +240,6 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
     this.diagramChangeSubscription?.unsubscribe();
   }
 
@@ -239,7 +249,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   private loadFrameworksAndInitialize(): void {
     this.frameworkService
       .loadAllFrameworks()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(this.untilDestroyed())
       .subscribe({
         next: (frameworks: FrameworkModel[]) => {
           this.frameworks = frameworks;
@@ -410,7 +420,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     const diagramControl = this.threatForm.get('diagram_id');
     if (diagramControl) {
       this.diagramChangeSubscription = diagramControl.valueChanges
-        .pipe(takeUntil(this.destroy$))
+        .pipe(this.untilDestroyed())
         .subscribe((diagramId: string) => {
           this.filterCellOptions(diagramId);
 
@@ -558,7 +568,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
 
     this.threatModelService
       .updateThreat(this.threatModelId, this.threatId, threatData)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(this.untilDestroyed())
       .subscribe({
         next: () => {
           this.isSaving = false;
@@ -594,7 +604,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     if (confirmed) {
       this.threatModelService
         .deleteThreat(this.threatModelId, this.threatId)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(this.untilDestroyed())
         .subscribe({
           next: () => {
             this.snackBar.open(
@@ -710,7 +720,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   private loadAddons(): void {
     this.addonService
       .list()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(this.untilDestroyed())
       .subscribe({
         next: addons => {
           this.addonsForThreat = addons.filter(addon => addon.objects?.includes('threat'));
@@ -759,7 +769,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
 
     dialogRef
       .afterClosed()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(this.untilDestroyed())
       .subscribe((result: InvokeAddonDialogResult | undefined) => {
         if (result?.submitted && result.response) {
           this.logger.info('Addon invoked successfully', {

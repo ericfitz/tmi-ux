@@ -1,4 +1,5 @@
-import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, DestroyRef, inject, Inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -17,8 +18,6 @@ import {
 } from '../delete-user-data-dialog/delete-user-data-dialog.component';
 import { UserProfile } from '@app/auth/models/auth.models';
 import { ThreatModelAuthorizationService } from '@app/pages/tm/services/threat-model-authorization.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { ClientCredentialInfo, ClientCredentialResponse } from '@app/types/client-credential.types';
 import { ClientCredentialService } from '../../services/client-credential.service';
 import { CreateCredentialDialogComponent } from './create-credential-dialog/create-credential-dialog.component';
@@ -640,11 +639,12 @@ interface CheckboxChangeEvent {
     `,
   ],
 })
-export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
+export class UserPreferencesDialogComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   preferences: UserPreferences;
   userProfile: UserProfile | null = null;
   currentThreatModelRole: 'owner' | 'writer' | 'reader' | null = null;
-  private destroy$ = new Subject<void>();
 
   // Credentials tab
   credentials: ClientCredentialInfo[] = [];
@@ -673,7 +673,7 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
     // Refresh user profile to get latest admin status
     this.authService
       .refreshUserProfile()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: profile => {
           this.userProfile = profile;
@@ -682,18 +682,13 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
 
     // Get current threat model role if available
     this.threatModelAuthService.currentUserPermission$
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(role => {
         this.currentThreatModelRole = role;
       });
 
     // Load client credentials
     this.loadCredentials();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   onAnimationPreferenceChange(event: CheckboxChangeEvent): void {
@@ -767,7 +762,7 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
     this.credentialsLoading = true;
     this.clientCredentialService
       .list()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: credentials => {
           this.credentials = credentials;
@@ -787,7 +782,7 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
 
     dialogRef
       .afterClosed()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((result: ClientCredentialResponse | null) => {
         if (result) {
           // Show the secret dialog
@@ -818,7 +813,7 @@ export class UserPreferencesDialogComponent implements OnInit, OnDestroy {
     if (confirmed) {
       this.clientCredentialService
         .delete(credential.id)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.logger.info('Client credential deleted', { id: credential.id });

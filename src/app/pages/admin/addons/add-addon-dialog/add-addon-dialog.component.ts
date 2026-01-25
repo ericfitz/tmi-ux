@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
   FormGroup,
@@ -7,8 +8,6 @@ import {
   ValidationErrors,
 } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
@@ -261,8 +260,8 @@ function iconFormatValidator(control: AbstractControl): ValidationErrors | null 
     `,
   ],
 })
-export class AddAddonDialogComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class AddAddonDialogComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
 
   form!: FormGroup;
   availableWebhooks: WebhookSubscription[] = [];
@@ -299,7 +298,7 @@ export class AddAddonDialogComponent implements OnInit, OnDestroy {
 
     this.webhookService
       .list()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: webhooks => {
           this.availableWebhooks = webhooks.filter(w => w.status === 'active');
@@ -309,11 +308,6 @@ export class AddAddonDialogComponent implements OnInit, OnDestroy {
           this.errorMessage = this.transloco.translate('admin.addons.errorLoadingWebhooks');
         },
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   onSave(): void {
@@ -337,7 +331,7 @@ export class AddAddonDialogComponent implements OnInit, OnDestroy {
 
       this.addonService
         .create(request)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.logger.info('Addon created successfully');

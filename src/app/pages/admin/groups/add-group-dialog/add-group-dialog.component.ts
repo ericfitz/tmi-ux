@@ -1,8 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
@@ -147,8 +146,8 @@ import { LoggerService } from '@app/core/services/logger.service';
     `,
   ],
 })
-export class AddGroupDialogComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class AddGroupDialogComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private groupNameManuallyEdited = false;
 
   form!: FormGroup;
@@ -175,7 +174,7 @@ export class AddGroupDialogComponent implements OnInit, OnDestroy {
     // Auto-populate group_name from name until user manually edits it
     this.form
       .get('name')
-      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((name: unknown) => {
         if (!this.groupNameManuallyEdited) {
           const nameStr = typeof name === 'string' ? name : '';
@@ -192,11 +191,6 @@ export class AddGroupDialogComponent implements OnInit, OnDestroy {
 
   onGroupNameFocus(): void {
     this.groupNameManuallyEdited = true;
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   onSave(): void {
@@ -218,7 +212,7 @@ export class AddGroupDialogComponent implements OnInit, OnDestroy {
 
       this.groupAdminService
         .create(request)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.logger.info('Group created successfully');

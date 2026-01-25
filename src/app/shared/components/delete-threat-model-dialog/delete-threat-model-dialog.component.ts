@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
+import { ScrollIndicatorDirective } from '../../directives/scroll-indicator.directive';
 
 /**
  * Interface for the dialog data
@@ -16,7 +17,14 @@ export interface DeleteThreatModelDialogData {
 @Component({
   selector: 'app-delete-threat-model-dialog',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, TranslocoModule],
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    TranslocoModule,
+    ScrollIndicatorDirective,
+  ],
   templateUrl: './delete-threat-model-dialog.component.html',
   styleUrls: ['./delete-threat-model-dialog.component.scss'],
 })

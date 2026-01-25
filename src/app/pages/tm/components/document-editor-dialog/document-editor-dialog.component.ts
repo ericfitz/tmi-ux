@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 
 import { Document } from '../../models/threat-model.model';
 import { FormValidationService } from '../../../../shared/services/form-validation.service';
+import { getUriSuggestionFromControl } from '@app/shared/utils/form-validation.util';
 
 /**
  * Interface for document form values
@@ -93,16 +94,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
    * Get URI validation suggestion message (if any)
    */
   getUriSuggestion(): string | null {
-    const uriControl = this.documentForm.get('uri');
-    if (!uriControl) return null;
-
-    const uriSuggestionError = uriControl.errors?.['uriSuggestion'] as
-      | { message?: string; severity?: string }
-      | undefined;
-    if (uriSuggestionError && typeof uriSuggestionError === 'object') {
-      return uriSuggestionError.message || null;
-    }
-    return null;
+    return getUriSuggestionFromControl(this.documentForm.get('uri'));
   }
 
   /**

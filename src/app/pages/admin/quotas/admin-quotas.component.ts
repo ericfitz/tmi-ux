@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   COMMON_IMPORTS,
@@ -65,8 +66,8 @@ interface EditableWebhookQuota extends EnrichedWebhookQuota {
   templateUrl: './admin-quotas.component.html',
   styleUrl: './admin-quotas.component.scss',
 })
-export class AdminQuotasComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class AdminQuotasComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
 
   userAPIQuotas: EditableUserAPIQuota[] = [];
@@ -94,15 +95,17 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
     this.loadProviders();
     this.loadAllQuotas();
 
-    this.filterSubject$.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe(() => {
-      this.applyFilter();
-    });
+    this.filterSubject$
+      .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.applyFilter();
+      });
   }
 
   loadProviders(): void {
     this.authService
       .getAvailableProviders()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: providers => {
           // Add hardcoded TMI provider at the beginning
@@ -125,11 +128,6 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   loadAllQuotas(): void {
     this.loadUserAPIQuotas();
     this.loadWebhookQuotas();
@@ -139,7 +137,7 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
     this.loadingUserAPI = true;
     this.quotaService
       .listEnrichedUserAPIQuotas()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: quotas => {
           this.userAPIQuotas = quotas.map(quota => ({
@@ -162,7 +160,7 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
     this.loadingWebhook = true;
     this.quotaService
       .listEnrichedWebhookQuotas()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: quotas => {
           this.webhookQuotas = quotas.map(quota => ({
@@ -220,7 +218,7 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
 
     dialogRef
       .afterClosed()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(result => {
         if (result) {
           this.loadAllQuotas();
@@ -248,7 +246,7 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
     quota.saving = true;
     this.quotaService
       .updateUserAPIQuota(quota.user_id, quota.editValues)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: updated => {
           quota.max_requests_per_minute = updated.max_requests_per_minute;
@@ -274,7 +272,7 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
     if (confirmed) {
       this.quotaService
         .deleteUserAPIQuota(quota.user_id)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.logger.info('User API quota deleted', { userId: quota.user_id });
@@ -309,7 +307,7 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
     quota.saving = true;
     this.quotaService
       .updateWebhookQuota(quota.owner_id, quota.editValues)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: updated => {
           quota.max_subscriptions = updated.max_subscriptions;
@@ -337,7 +335,7 @@ export class AdminQuotasComponent implements OnInit, OnDestroy {
     if (confirmed) {
       this.quotaService
         .deleteWebhookQuota(quota.owner_id)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.logger.info('Webhook quota deleted', { userId: quota.owner_id });

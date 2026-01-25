@@ -360,15 +360,15 @@ describe('ThreatPageComponent', () => {
   });
 
   describe('ngOnDestroy', () => {
-    it('should complete destroy subject', () => {
+    it('should unsubscribe from diagram change subscription', () => {
       component.ngOnInit();
-      const destroySpy = vi.spyOn(component['destroy$'], 'next');
-      const completeSpy = vi.spyOn(component['destroy$'], 'complete');
+      // Set up a mock subscription
+      const mockSubscription = { unsubscribe: vi.fn() };
+      component['diagramChangeSubscription'] = mockSubscription as any;
 
       component.ngOnDestroy();
 
-      expect(destroySpy).toHaveBeenCalled();
-      expect(completeSpy).toHaveBeenCalled();
+      expect(mockSubscription.unsubscribe).toHaveBeenCalled();
     });
   });
 });
