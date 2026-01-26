@@ -39,3 +39,26 @@ Study the complete [overview.md](overview.md), examine [dfd-change-propagation/]
 - [Features Reference](../features/) - Feature implementation documentation
 - [Developer Setup](../../developer/setup/) - Environment and project setup
 - [Agent Context](../../agent/) - AI agent implementation guides
+
+<!--
+VERIFICATION SUMMARY
+Verified on: 2026-01-25
+Agent: verify-migrate-doc
+
+Verified items:
+- overview.md: File exists at docs/reference/architecture/overview.md
+- validation.md: File exists at docs/reference/architecture/validation.md
+- violations.md: File exists at docs/reference/architecture/violations.md
+- service-provisioning.md: File exists at docs/reference/architecture/service-provisioning.md
+- naming-conventions.md: File exists at docs/reference/architecture/naming-conventions.md
+- session-management.md: File exists at docs/reference/architecture/session-management.md
+- autosave-data-modeling.md: File exists at docs/reference/architecture/autosave-data-modeling.md
+- dfd-change-propagation/: Directory exists with 8 markdown files (count verified)
+- ../libraries/: Directory exists at docs/reference/libraries/
+- ../features/: Directory exists at docs/reference/features/
+- ../../developer/setup/: Directory exists at docs/developer/setup/
+- ../../agent/: Directory exists at docs/agent/
+
+Items needing review:
+- None - all references verified successfully
+-->
