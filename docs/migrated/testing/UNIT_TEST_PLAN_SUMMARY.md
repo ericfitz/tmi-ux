@@ -1,7 +1,12 @@
 # Unit Test Implementation Plan - Executive Summary
 
+> **MIGRATED**: This document has been migrated to the wiki. See the [Testing](https://github.com/ericfitz/tmi/wiki/Testing#tmi-ux-testing-utilities) page for current information.
+>
+> **Migration Date:** 2026-01-25
+> **Note:** The original plan (dated 2025-12-12) has been largely executed. Coverage improved from 42.9% to 91.7%. See wiki for current status.
+
 **Date:** 2025-12-12
-**Status:** Ready for Implementation
+**Status:** Largely Complete (see wiki for current status)
 **Estimated Duration:** 4 weeks
 
 ## Overview
