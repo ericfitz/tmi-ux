@@ -1,13 +1,15 @@
 # TM-Edit Page: Quick Reference Guide
 
+<!-- NEEDS-REVIEW: This document was created on 2025-11-03 and contains outdated line number references. Line numbers shift as code evolves; use method names for searches instead. -->
+
 ## File Locations
 
 | Component | Path |
 |-----------|------|
-| Main Component | `/Users/efitz/Projects/tmi-ux/src/app/pages/tm/tm-edit/tm-edit.component.ts` |
-| Template | `/Users/efitz/Projects/tmi-ux/src/app/pages/tm/tm-edit/tm-edit.component.html` |
-| Styles | `/Users/efitz/Projects/tmi-ux/src/app/pages/tm/tm-edit/tm-edit.component.scss` |
-| Auth Service | `/Users/efitz/Projects/tmi-ux/src/app/pages/tm/services/threat-model-authorization.service.ts` |
+| Main Component | `src/app/pages/tm/tm-edit.component.ts` |
+| Template | `src/app/pages/tm/tm-edit.component.html` |
+| Styles | `src/app/pages/tm/tm-edit.component.scss` |
+| Auth Service | `src/app/pages/tm/services/threat-model-authorization.service.ts` |
 
 ## Key Component Properties
 
@@ -30,7 +32,7 @@ canManagePermissions$: Observable<boolean>         // owner only
 
 ### Methods
 ```typescript
-setAuthorization(threatModelId, authorization)    // Set for threat model
+setAuthorization(threatModelId, authorization, owner)  // Set for threat model
 getCurrentUserPermission(): 'reader' | 'writer' | 'owner' | null
 canEdit(): boolean
 canManagePermissions(): boolean
@@ -44,38 +46,48 @@ canManagePermissions(): boolean
 | **Writer** | Create, read, update (except delete) |
 | **Reader** | Read only |
 
-## Main Methods Needing Permission Checks
+## Main Methods with Permission Checks
 
-### Add Methods (Line Numbers)
-- `addThreat()` - 559 ❌
-- `addAsset()` - 2762 ✓
-- `addNote()` - 1429 ✓
-- `addDiagram()` - 848 ✓
-- `addDocument()` - 1067 ✓
-- `addRepository()` - 1220 ❌
+<!-- Note: Line numbers are approximate and shift as code evolves. Use grep to find current locations. -->
+
+### Add Methods
+| Method | Has Permission Check |
+|--------|---------------------|
+| `addThreat()` | Yes |
+| `addAsset()` | Yes |
+| `addNote()` | Yes |
+| `addDiagram()` | Yes |
+| `addDocument()` | Yes |
+| `addRepository()` | Yes |
 
 ### Edit Methods
-- `editAsset()` - 2807 ❌
-- `editNote()` - 1529 ❌
-- `editDocument()` - 1115 ❌
-- `editRepository()` - 1266 ❌
+| Method | Has Permission Check |
+|--------|---------------------|
+| `editAsset()` | Yes (via isReadOnly in dialog) |
+| `editNote()` | Yes (via isReadOnly in dialog) |
+| `editDocument()` | Yes (via isReadOnly in dialog) |
+| `editRepository()` | Yes (via isReadOnly in dialog) |
 
 ### Delete Methods
-- `deleteThreat()` - 810 ❌
-- `deleteAsset()` - ❌ (method doesn't exist)
-- `deleteNote()` - 1600 ✓
-- `deleteDiagram()` - 1016 ✓
-- `deleteDocument()` - 1168 ❌
-- `deleteRepository()` - ❌ (method doesn't exist)
+| Method | Has Permission Check |
+|--------|---------------------|
+| `deleteThreat()` | Yes |
+| `deleteAsset()` | Yes |
+| `deleteNote()` | Yes |
+| `deleteDiagram()` | Yes |
+| `deleteDocument()` | Yes |
+| `deleteRepository()` | Yes |
 
-### Dialog Methods Needing isReadOnly
-- `openMetadataDialog()` - 1804 ❌
-- `openDiagramMetadataDialog()` - ❌
-- `openAssetMetadataDialog()` - ❌
-- `openThreatMetadataDialog()` - ❌
-- `openDocumentMetadataDialog()` - 1678 ❌
-- `openNoteMetadataDialog()` - 1632 ✓
-- `openRepositoryMetadataDialog()` - ❌
+### Dialog Methods with isReadOnly
+| Method | Has isReadOnly |
+|--------|----------------|
+| `openMetadataDialog()` | Yes |
+| `openDiagramMetadataDialog()` | Yes |
+| `openAssetMetadataDialog()` | Yes |
+| `openThreatMetadataDialog()` | Yes |
+| `openDocumentMetadataDialog()` | Yes |
+| `openNoteMetadataDialog()` | Yes |
+| `openRepositoryMetadataDialog()` | Yes |
 
 ## Permission Check Pattern
 
@@ -108,25 +120,36 @@ if (!this.canEdit) {
 ```typescript
 interface PermissionsDialogData {
   permissions: Authorization[];
-  owner: string;
+  owner: User;
   isReadOnly?: boolean;
+  onOwnerChange?: (newOwner: User) => void;
 }
 
 interface MetadataDialogData {
   metadata: Metadata[];
-  isReadOnly: boolean;  // Must set based on canEdit
-  objectType: string;
-  objectName: string;
+  isReadOnly?: boolean;
+  objectType?: string;
+  objectName?: string;
 }
 
 interface AssetEditorDialogData {
   asset?: Asset;
   mode: 'create' | 'edit';
+  isReadOnly?: boolean;
 }
 
 interface ThreatEditorDialogData {
   threat?: Threat;
-  mode: 'create' | 'edit' | 'view';  // 'view' = read-only
+  threatModelId: string;
+  mode: 'create' | 'edit' | 'view';
+  isReadOnly?: boolean;
+  diagramId?: string;
+  cellId?: string;
+  diagrams?: DiagramOption[];
+  cells?: CellOption[];
+  assets?: AssetOption[];
+  framework?: FrameworkModel;
+  shapeType?: string;
 }
 ```
 
@@ -134,9 +157,9 @@ interface ThreatEditorDialogData {
 
 | Service | Purpose |
 |---------|---------|
-| `ThreatModelAuthorizationService` | Permission calculation & tracking |
+| `ThreatModelAuthorizationService` | Permission calculation and tracking |
 | `ThreatModelService` | API calls for threat model data |
-| `AuthService` | User authentication & profile |
+| `AuthService` | User authentication and profile |
 | `TranslocoService` | i18n translation |
 | `LoggerService` | Application logging |
 
@@ -145,9 +168,9 @@ interface ThreatEditorDialogData {
 | Card | Add Button | Item Count | Actions |
 |------|-----------|-----------|---------|
 | Assets | addAsset() | assets.length | Metadata, Edit, Delete |
-| Threats | addThreat() | threats.length | Metadata, Delete |
-| Diagrams | addDiagram() | diagrams.length | Metadata, Rename, Delete |
-| Notes | addNote() | notes.length | Metadata, Edit, Delete |
+| Threats | openThreatEditor() | threats.length | Metadata, Delete |
+| Diagrams | addDiagram() | diagrams.length | Metadata, Download, Delete |
+| Notes | addNote() | notes.length | Download, Metadata, Delete |
 | Documents | addDocument() | documents.length | Metadata, Delete |
 | Repositories | addRepository() | repositories.length | Metadata, Delete |
 
@@ -159,27 +182,7 @@ interface ThreatEditorDialogData {
 | Description | Textarea | Max 500 | `description` |
 | Framework | Select | Required | `threat_model_framework` |
 | Issue URI | URL Input | URL format | `issue_uri` |
-| Status | Chips | - | `status` |
-
-## Template Sections to Update
-
-### High Priority
-1. Lines 13-41: Header buttons (Download, Report, Close) - Check if mutation
-2. Lines 50-68: Details card header buttons (Metadata, Permissions)
-3. Lines 251-259: Assets add button
-4. Lines 352-359: Threats add button
-5. Lines 443-450: Diagrams add button
-6. Lines 539-547: Notes add button
-7. Lines 612-619: Documents add button
-8. Lines 688-695: Repositories add button
-9. Lines 306-333: Asset action buttons (Metadata, Edit, Delete)
-10. Lines 407-424: Threat action buttons (Metadata, Delete)
-
-### Medium Priority
-11. Lines 496-520: Diagram action buttons (Metadata, Rename, Delete)
-12. Lines 567-593: Note action buttons (Metadata, Edit, Delete)
-13. Lines 652-669: Document action buttons (Metadata, Delete)
-14. Lines 728-745: Repository action buttons (Metadata, Delete)
+| Status | Select | - | `status` |
 
 ## Logger Usage
 
@@ -230,22 +233,22 @@ For each permission-gated method:
 ```
 1. Route resolver loads ThreatModel with authorization array
 2. Component ngOnInit() runs
-3. Subscribe to authorizationService.canEdit$ (line 366)
-4. Subscribe to authorizationService.canManagePermissions$ (line 372)
-5. Load threat model data from resolved data (line 351)
-6. updateFormEditability() enables/disables form (line 425-431)
+3. Subscribe to authorizationService.canEdit$
+4. Subscribe to authorizationService.canManagePermissions$
+5. Load threat model data from resolved data
+6. updateFormEditability() enables/disables form
 7. Form reflects user's permission level
 ```
 
 ## Quick Implementation Checklist
 
-- [ ] Add `if (!this.canEdit) return;` to all add* methods
-- [ ] Add `if (!this.canEdit) return;` to all edit* methods
-- [ ] Add `if (!this.canEdit) return;` to all delete* methods
-- [ ] Add `@if (canEdit)` conditionals to all action buttons
-- [ ] Add `isReadOnly: !this.canEdit` to all dialog data calls
-- [ ] Update dialog templates to respect isReadOnly
-- [ ] Add tooltips explaining read-only status
+- [x] Add `if (!this.canEdit) return;` to all add* methods
+- [x] Add `if (!this.canEdit) return;` to all edit* methods
+- [x] Add `if (!this.canEdit) return;` to all delete* methods
+- [x] Add `@if (canEdit)` conditionals to all action buttons
+- [x] Add `isReadOnly: !this.canEdit` to all dialog data calls
+- [x] Update dialog templates to respect isReadOnly
+- [x] Add tooltips explaining read-only status
 - [ ] Test with reader/writer/owner roles
 - [ ] Run linter and format checks
 - [ ] Run unit tests
@@ -255,22 +258,62 @@ For each permission-gated method:
 
 ```bash
 # Find all methods with permission checks
-grep -n "!this.canEdit" tm-edit.component.ts
+grep -n "!this.canEdit" src/app/pages/tm/tm-edit.component.ts
 
 # Find all dialog opens
-grep -n "this.dialog.open" tm-edit.component.ts
+grep -n "this.dialog.open" src/app/pages/tm/tm-edit.component.ts
 
 # Find all button elements
-grep -n "mat-icon-button\|mat-button" tm-edit.component.html
+grep -n "mat-icon-button\|mat-button" src/app/pages/tm/tm-edit.component.html
 
 # Find all form controls
-grep -n "formControlName=" tm-edit.component.html
+grep -n "formControlName=" src/app/pages/tm/tm-edit.component.html
 ```
 
 ---
 
 **Last Updated**: 2025-11-03
-**Files**: 
+**Files**:
 - TM_EDIT_READONLY_ANALYSIS.md (detailed analysis)
 - TM_EDIT_IMPLEMENTATION_EXAMPLES.md (code examples)
 - TM_EDIT_QUICK_REFERENCE.md (this file)
+
+<!--
+VERIFICATION SUMMARY
+Verified on: 2026-01-25
+Agent: verify-migrate-doc
+
+Verified items:
+- File paths: Corrected from absolute paths with subdirectory to relative paths without subdirectory
+  - Main component is at src/app/pages/tm/tm-edit.component.ts (not in tm-edit/ subdirectory)
+  - Template is at src/app/pages/tm/tm-edit.component.html
+  - Styles is at src/app/pages/tm/tm-edit.component.scss
+  - Auth service path verified at src/app/pages/tm/services/threat-model-authorization.service.ts
+- Authorization service observables: Verified all four observables exist (authorization$, currentUserPermission$, canEdit$, canManagePermissions$)
+- Authorization service methods: Verified setAuthorization (note: takes 3 params including owner), getCurrentUserPermission, canEdit, canManagePermissions
+- Component properties: Verified canEdit (line 147), canManagePermissions (line 148), threatModel (line 136), threatModelForm (line 137)
+- Add methods: All exist - addThreat (770), addAsset (2966), addNote (1531), addDiagram (1030), addDocument (1144), addRepository (1307)
+- Edit methods: All exist - editAsset (3054), editNote (1631), editDocument (1195), editRepository (1361)
+- Delete methods: All exist - deleteThreat (988), deleteAsset (3097), deleteNote (1650), deleteDiagram (1098), deleteDocument (1249), deleteRepository (1419)
+- Dialog methods: All exist with isReadOnly support
+- Related files: TM_EDIT_READONLY_ANALYSIS.md and TM_EDIT_IMPLEMENTATION_EXAMPLES.md both exist in docs/analysis/
+- Interface definitions: Verified and updated to match current source code
+
+Corrections made:
+- Removed absolute paths from file locations table (used relative paths)
+- Removed line number references (they become stale as code evolves)
+- Updated setAuthorization method signature to show 3 parameters
+- Updated PermissionsDialogData to include onOwnerChange callback
+- Updated ThreatEditorDialogData to include all current properties
+- Changed "deleteAsset - method doesn't exist" to show it now exists
+- Changed "deleteRepository - method doesn't exist" to show it now exists
+- Updated Collection Cards table to show correct method names (openThreatEditor vs addThreat)
+- Updated Collection Cards actions to match current implementation
+- Marked implementation checklist items as complete where verified in code
+- Updated grep commands to use relative paths
+- Changed Status field type from Chips to Select (current implementation)
+
+Items needing review:
+- Translation keys: Not verified if these specific keys exist in i18n files
+- Testing checklist: Cannot verify without running actual tests
+-->

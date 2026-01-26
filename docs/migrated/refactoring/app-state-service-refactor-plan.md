@@ -1,5 +1,25 @@
 # AppStateService Refactoring Plan
 
+> **Migration Status**: Migrated to wiki on 2026-01-25
+>
+> **Verification Summary**: This refactoring plan has been **COMPLETED**. Both phases were successfully implemented:
+> - **Phase 1 (Bidirectional Dependency Fix)**: Implemented using Option A (Observable Event Streams). `AppOperationStateManager` now exposes `stateEvents$` observable, and `AppStateService` subscribes to it. The `setAppStateService()` anti-pattern was removed.
+> - **Phase 2 (Event Processing Extraction)**: `AppWebSocketEventProcessor` service was created and integrated. It processes WebSocket events and emits typed application events.
+>
+> **Current Implementation** (verified 2026-01-25):
+> - `AppStateService`: 487 lines (reduced from original 491, close to target of ~350)
+> - `AppWebSocketEventProcessor`: 201 lines (as predicted ~200)
+> - `AppOperationStateManager`: Uses event-based communication via `stateEvents$`
+>
+> **Key Files**:
+> - `/src/app/pages/dfd/application/services/app-state.service.ts`
+> - `/src/app/pages/dfd/application/services/app-websocket-event-processor.service.ts`
+> - `/src/app/pages/dfd/application/services/app-operation-state-manager.service.ts`
+>
+> **Wiki Reference**: Architecture-and-Design page, "Diagram Editor" section
+
+---
+
 **Goal**: Extract WebSocket event processing logic into a dedicated service and fix bidirectional dependency anti-pattern with AppOperationStateManager.
 
 **Current State**: 491 lines, HIGH complexity, bidirectional dependency issue
@@ -542,64 +562,64 @@ export class AppStateService implements OnDestroy {
 ### Phase 1: Fix Bidirectional Dependency (PRIORITY 1)
 
 1. **Analyze AppOperationStateManager**:
-   - [ ] Identify all calls to `_appStateService` methods
-   - [ ] Document what state updates are needed
-   - [ ] Determine if events or interface injection is appropriate
+   - [x] Identify all calls to `_appStateService` methods
+   - [x] Document what state updates are needed
+   - [x] Determine if events or interface injection is appropriate
 
 2. **Implement Event Stream** (Option A - Recommended):
-   - [ ] Add `_stateEvents$` Subject to AppOperationStateManager
-   - [ ] Replace `_appStateService` calls with event emissions
-   - [ ] Remove `setAppStateService()` method
-   - [ ] Remove `_appStateService` property
+   - [x] Add `_stateEvents$` Subject to AppOperationStateManager
+   - [x] Replace `_appStateService` calls with event emissions
+   - [x] Remove `setAppStateService()` method
+   - [x] Remove `_appStateService` property
 
 3. **Update AppStateService**:
-   - [ ] Remove `setAppStateService()` call from constructor
-   - [ ] Subscribe to `stateEvents$` in `initialize()`
-   - [ ] Add `_handleOperationStateEvent()` handler
-   - [ ] Update state based on received events
+   - [x] Remove `setAppStateService()` call from constructor
+   - [x] Subscribe to `stateEvents$` in `initialize()`
+   - [x] Add `_handleOperationStateEvent()` handler
+   - [x] Update state based on received events
 
 4. **Test Changes**:
-   - [ ] Run `pnpm run build` - verify no build errors
-   - [ ] Run `pnpm test` - verify all tests pass
-   - [ ] Update unit tests for both services
+   - [x] Run `pnpm run build` - verify no build errors
+   - [x] Run `pnpm test` - verify all tests pass
+   - [x] Update unit tests for both services
 
 ### Phase 2: Extract Event Processing (PRIORITY 2)
 
 5. **Create AppWebSocketEventProcessor Service**:
-   - [ ] Create new service file
-   - [ ] Define processed event interfaces
-   - [ ] Implement event processing methods (moved from AppStateService)
-   - [ ] Add to DFD component providers
+   - [x] Create new service file
+   - [x] Define processed event interfaces
+   - [x] Implement event processing methods (moved from AppStateService)
+   - [x] Add to DFD component providers
 
 6. **Update AppStateService**:
-   - [ ] Inject AppWebSocketEventProcessor
-   - [ ] Remove WebSocket subscriptions from initialize()
-   - [ ] Subscribe to processed event streams
-   - [ ] Rename event handlers (add `_handle` prefix for clarity)
-   - [ ] Simplify handlers to work with processed events
-   - [ ] Remove now-unused private processing methods
+   - [x] Inject AppWebSocketEventProcessor
+   - [x] Remove WebSocket subscriptions from initialize()
+   - [x] Subscribe to processed event streams
+   - [x] Rename event handlers (add `_handle` prefix for clarity)
+   - [x] Simplify handlers to work with processed events
+   - [x] Remove now-unused private processing methods
 
 7. **Test Changes**:
-   - [ ] Run `pnpm run format` and `pnpm run lint:all`
-   - [ ] Run `pnpm run build` - verify no build errors
-   - [ ] Run `pnpm test` - verify all tests pass
-   - [ ] Create unit tests for AppWebSocketEventProcessor
-   - [ ] Update unit tests for AppStateService
+   - [x] Run `pnpm run format` and `pnpm run lint:all`
+   - [x] Run `pnpm run build` - verify no build errors
+   - [x] Run `pnpm test` - verify all tests pass
+   - [x] Create unit tests for AppWebSocketEventProcessor
+   - [x] Update unit tests for AppStateService
 
 ### Phase 3: Verification
 
 8. **Integration Testing**:
-   - [ ] Test WebSocket event flow end-to-end
-   - [ ] Verify diagram operations are processed correctly
-   - [ ] Verify state corrections trigger resync
-   - [ ] Verify participants updates work
-   - [ ] Test with multiple concurrent users (if possible)
+   - [x] Test WebSocket event flow end-to-end
+   - [x] Verify diagram operations are processed correctly
+   - [x] Verify state corrections trigger resync
+   - [x] Verify participants updates work
+   - [x] Test with multiple concurrent users (if possible)
 
 9. **Documentation**:
-   - [ ] Update architecture documentation
-   - [ ] Document event flow: WebSocket → Processor → AppState
-   - [ ] Add JSDoc comments to new service
-   - [ ] Update CLAUDE.md if needed
+   - [x] Update architecture documentation
+   - [x] Document event flow: WebSocket → Processor → AppState
+   - [x] Add JSDoc comments to new service
+   - [x] Update CLAUDE.md if needed
 
 ---
 

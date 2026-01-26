@@ -225,22 +225,24 @@ flowchart TD
 
 ## Key Services and Their Roles
 
+> **Note**: This section has been updated to reflect the current service names as of 2026-01-25. The Mermaid diagrams above use older service names for historical context.
+
 ### Primary Orchestrators
 
-- **DfdFacadeService**: Single entry point for most operations
-- **DfdEventHandlersService**: Handles keyboard and user interactions
-- **DiagramOperationBroadcaster**: Captures and broadcasts changes in collaborative mode
+- **AppDfdFacade**: Single entry point for most operations (formerly DfdFacadeService)
+- **AppEventHandlersService**: Handles keyboard and user interactions (formerly DfdEventHandlersService)
+- **InfraWebsocketCollaborationAdapter**: Captures and broadcasts changes in collaborative mode (formerly DiagramOperationBroadcaster)
 
 ### Change Processing
 
-- **GraphHistoryCoordinator**: Controls what gets added to history
-- **X6HistoryManager**: Manages X6's native history system
-- **DfdDiagramService**: Handles saving and loading diagram data
+- **AppOperationStateManager**: Controls operation state flags and coordinates with history (formerly GraphHistoryCoordinator)
+- **AppHistoryService**: Manages undo/redo stacks and history entries (replaces X6HistoryManager)
+- **AppDiagramService**: Handles saving and loading diagram data (formerly DfdDiagramService)
 
 ### State Management
 
-- **DfdStateStore**: Local component state
-- **DfdStateService**: Collaborative state and conflict resolution
+- **DfdStateStore**: Local component state (dfd.state.ts)
+- **AppStateService**: Collaborative state and conflict resolution (formerly DfdStateService)
 
 ## Performance Considerations
 
