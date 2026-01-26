@@ -313,5 +313,32 @@ If linting is slow:
 
 - [ESLint Documentation](https://eslint.org/)
 - [Madge - Module Dependency Checker](https://github.com/pahen/madge)
-- [Angular Style Guide](https://angular.io/guide/styleguide)
+- [Angular Style Guide](https://angular.dev/style-guide)
 - [Clean Architecture Principles](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+
+<!--
+VERIFICATION SUMMARY
+Verified on: 2026-01-25
+Agent: verify-migrate-doc
+
+Verified items:
+- pnpm run lint:all, pnpm run lint, pnpm run lint:all --fix: Confirmed in package.json (lines 30-35)
+- ESLint architecture rules for core layer isolation: Verified in eslint.config.js (lines 73-85)
+- ESLint architecture rules for domain layer purity: Verified in eslint.config.js (lines 87-134)
+- No NgModule import restrictions: Verified in eslint.config.js (lines 55-68)
+- src/app/core/** exists: Verified via glob (60+ files in core directory)
+- src/app/core/interfaces/ exists: Verified (4 interface files)
+- src/app/shared/imports.ts exists and exports COMMON_IMPORTS: Verified (lines 55-60)
+- Domain layer value objects are pure TypeScript: Verified by reading edge-info.ts (943 lines of pure TypeScript)
+- src/app/**/domain/**/*.ts files exist: Verified (19 domain files in dfd module)
+- providedIn: 'root' pattern used for services: Verified (60 services use this pattern)
+- Husky is configured: Verified (.husky directory exists with commit-msg, prepare-commit-msg, post-commit)
+- madge package and commands: Verified via npm (https://www.npmjs.com/package/madge) - supports --circular and --image flags
+- ESLint official site: Verified (https://eslint.org/)
+- Madge GitHub repo: Verified (https://github.com/pahen/madge)
+- Clean Architecture blog post: Verified (https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- Angular Style Guide: URL updated from angular.io to angular.dev (official Angular docs have moved)
+
+Items needing review:
+- Pre-commit hook example: The TMI-UX project uses post-commit hooks for version bumping, not pre-commit for linting. The example in the document shows a different setup than what the project actually uses.
+-->
