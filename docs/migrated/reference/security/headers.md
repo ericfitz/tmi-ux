@@ -52,8 +52,8 @@ The application dynamically generates and injects a CSP meta tag that:
 ```
 default-src 'self';
 script-src 'self' 'unsafe-inline' 'unsafe-eval';
-style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-font-src 'self' https://fonts.gstatic.com data:;
+style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:;
 img-src 'self' data: https: blob:;
 connect-src 'self' http://localhost:8080 wss: ws: https:;
 base-uri 'self';
@@ -389,7 +389,7 @@ curl -s https://tmi.example.com | grep -i "content-security-policy"
 Use the provided security check script:
 
 ```bash
-npm run check:security
+pnpm run check:security
 ```
 
 ## Troubleshooting
@@ -504,4 +504,42 @@ When deploying TMI-UX with security headers:
 - [MDN Web Security](https://developer.mozilla.org/en-US/docs/Web/Security)
 - [OWASP Secure Headers Project](https://owasp.org/www-project-secure-headers/)
 - [Content Security Policy Reference](https://content-security-policy.com/)
-- [Angular Security Guide](https://angular.io/guide/security)
+- [Angular Security Guide](https://angular.dev/best-practices/security)
+
+<!--
+VERIFICATION SUMMARY
+Verified on: 2026-01-25
+Agent: verify-migrate-doc
+
+Verified items:
+- SecurityConfigService exists: Verified at src/app/core/services/security-config.service.ts
+- injectDynamicCSP method: Verified in SecurityConfigService (line 218-299)
+- monitorSecurityViolations method: Verified in SecurityConfigService (line 205-216)
+- CSP dynamic injection on startup: Verified in app.config.ts via APP_INITIALIZER
+- API URL extraction for CSP: Verified in injectDynamicCSP() using environment.apiUrl
+- environment.dev.ts apiUrl: Verified as 'http://localhost:8080'
+- environment.prod.ts apiUrl: Verified as 'https://api.example.com/v1'
+- securityConfig in environment files: Verified in both dev and prod environment files
+- pnpm run check:security script: Verified in package.json (line 49)
+- check-security.ts script: Verified at scripts/check-security.ts
+- Dynamic CSP comment in index.html: Verified at src/index.html (line 8)
+- CSP frame-ancestors meta tag limitation: Verified via MDN documentation (2 sources)
+- X-XSS-Protection "0" recommendation: Verified via OWASP and MDN documentation (2+ sources)
+- nginx add_header always directive: Verified via official nginx documentation
+- securityheaders.com tool: Verified via multiple independent sources
+- Mozilla Observatory: Verified via Mozilla official documentation
+- CSP Evaluator by Google: Verified via Google GitHub repository and Chrome Web Store
+- MDN Web Security URL: Verified as https://developer.mozilla.org/en-US/docs/Web/Security
+- OWASP Secure Headers Project URL: Verified as https://owasp.org/www-project-secure-headers/
+- Content Security Policy Reference URL: Verified as https://content-security-policy.com/
+- Angular Security Guide URL: Updated from angular.io/guide/security to angular.dev/best-practices/security
+- CDN sources in CSP (cdnjs.cloudflare.com): Verified as used in index.html for FontAwesome
+
+Corrections made:
+- CSP example: Added cdnjs.cloudflare.com to style-src and font-src (matching actual implementation)
+- npm run check:security: Changed to pnpm run check:security (project uses pnpm)
+- Angular Security Guide URL: Updated to current URL (angular.dev/best-practices/security)
+
+Items needing review:
+- None identified
+-->
