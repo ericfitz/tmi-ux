@@ -107,5 +107,31 @@ The diagrams use Mermaid syntax and should render properly in GitHub, GitLab, or
 
 - [TMI-UX Architecture Guide](../overview.md) - Overall application architecture
 - [Collaborative Editing](../../features/collaborative-editing.md) - Collaborative editing implementation
-- [DFD Graph Interaction](../../features/dfd-graph-interaction.md) - User interaction patterns
-- [WebSocket API Specification](../../../../shared-api/api-specs/tmi-asyncapi.yaml) - WebSocket message definitions
+<!-- NEEDS-REVIEW: File not found: ../../features/dfd-graph-interaction.md - this file does not exist in the repository -->
+<!-- NEEDS-REVIEW: File not found: ../../../../shared-api/api-specs/tmi-asyncapi.yaml - this path does not exist. The AsyncAPI specification may be in a different location or not yet created -->
+
+<!--
+VERIFICATION SUMMARY
+Verified on: 2026-01-25
+Agent: verify-migrate-doc
+
+Verified items:
+- ../overview.md exists and is valid
+- ../../features/collaborative-editing.md exists and is valid
+- ./README.md, ./user-actions-flow.md, ./collaborative-operations-flow.md, ./autosave-decision-tree.md exist
+- ./visual-effects-pipeline.md, ./change-propagation-matrix.md, ./architectural-issues.md exist
+- DFD component has 2274 lines (supports "500+ lines of coordination logic" claim)
+- Architecture describes real patterns implemented in the codebase
+
+Items needing review:
+- ../../features/dfd-graph-interaction.md: File does not exist
+- ../../../../shared-api/api-specs/tmi-asyncapi.yaml: File/directory does not exist
+- README.md references 3 non-existent files: history-management-flow.md, decision-points-analysis.md, state-synchronization.md
+- Service names in documentation use conceptual names; actual implementation uses prefixed naming convention (App*, Infra*):
+  - DfdFacadeService -> AppDfdFacade
+  - DfdDiagramService -> AppDiagramService
+  - DfdStateService -> AppStateService
+  - GraphHistoryCoordinator -> AppHistoryService
+  - X6GraphAdapter -> InfraX6GraphAdapter
+  - VisualEffectsService -> InfraVisualEffectsService
+-->
