@@ -4,6 +4,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import { AdminUser, AdminUserFilter, ListAdminUsersResponse } from '@app/types/user.types';
+import { buildHttpParams } from '@app/shared/utils/http-params.util';
 
 /**
  * Service for managing users in the admin interface
@@ -25,7 +26,7 @@ export class UserAdminService {
    * List all users with optional filtering
    */
   public list(filter?: AdminUserFilter): Observable<ListAdminUsersResponse> {
-    const params = this.buildParams(filter);
+    const params = buildHttpParams(filter);
     return this.apiService.get<ListAdminUsersResponse>('admin/users', params).pipe(
       tap(response => {
         this.usersSubject$.next(response.users);
@@ -58,51 +59,5 @@ export class UserAdminService {
         throw error;
       }),
     );
-  }
-
-  /**
-   * Build query parameters from filter
-   */
-  private buildParams(
-    filter?: AdminUserFilter,
-  ): Record<string, string | number | boolean> | undefined {
-    if (!filter) {
-      return undefined;
-    }
-
-    const params: Record<string, string | number | boolean> = {};
-
-    if (filter.provider) {
-      params['provider'] = filter.provider;
-    }
-    if (filter.email) {
-      params['email'] = filter.email;
-    }
-    if (filter.created_after) {
-      params['created_after'] = filter.created_after;
-    }
-    if (filter.created_before) {
-      params['created_before'] = filter.created_before;
-    }
-    if (filter.last_login_after) {
-      params['last_login_after'] = filter.last_login_after;
-    }
-    if (filter.last_login_before) {
-      params['last_login_before'] = filter.last_login_before;
-    }
-    if (filter.limit !== undefined) {
-      params['limit'] = filter.limit;
-    }
-    if (filter.offset !== undefined) {
-      params['offset'] = filter.offset;
-    }
-    if (filter.sort_by) {
-      params['sort_by'] = filter.sort_by;
-    }
-    if (filter.sort_order) {
-      params['sort_order'] = filter.sort_order;
-    }
-
-    return Object.keys(params).length > 0 ? params : undefined;
   }
 }

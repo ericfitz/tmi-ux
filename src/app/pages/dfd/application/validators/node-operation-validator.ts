@@ -5,6 +5,7 @@
 import { Injectable } from '@angular/core';
 
 import { LoggerService } from '../../../../core/services/logger.service';
+import { isValidColor } from '@app/shared/utils/color-validation.util';
 import { BaseOperationValidator } from './base-operation-validator';
 import {
   GraphOperation,
@@ -263,13 +264,13 @@ export class NodeOperationValidator extends BaseOperationValidator {
 
   private validateNodeStyle(style: any, errors: string[], warnings: string[]): void {
     // Validate colors
-    if (style.fill && !this.isValidColor(style.fill)) {
+    if (style.fill && !isValidColor(style.fill)) {
       errors.push(`Invalid fill color: ${style.fill}`);
     }
-    if (style.stroke && !this.isValidColor(style.stroke)) {
+    if (style.stroke && !isValidColor(style.stroke)) {
       errors.push(`Invalid stroke color: ${style.stroke}`);
     }
-    if (style.textColor && !this.isValidColor(style.textColor)) {
+    if (style.textColor && !isValidColor(style.textColor)) {
       errors.push(`Invalid text color: ${style.textColor}`);
     }
 
@@ -294,32 +295,5 @@ export class NodeOperationValidator extends BaseOperationValidator {
         warnings.push('Very large font size may not fit well in node');
       }
     }
-  }
-
-  private isValidColor(color: string): boolean {
-    // Basic color validation - hex colors and common named colors
-    if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color)) {
-      return true; // Hex color
-    }
-
-    const namedColors = [
-      'red',
-      'green',
-      'blue',
-      'yellow',
-      'orange',
-      'purple',
-      'pink',
-      'brown',
-      'black',
-      'white',
-      'gray',
-      'grey',
-    ];
-    if (namedColors.includes(color.toLowerCase())) {
-      return true; // Named color
-    }
-
-    return false;
   }
 }

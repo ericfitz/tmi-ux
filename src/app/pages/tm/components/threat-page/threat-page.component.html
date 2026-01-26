@@ -1,0 +1,352 @@
+<div class="threat-page-container" [dir]="currentDirection">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">
+        <span class="title-prefix">{{ 'common.objectTypes.threat' | transloco }}:</span>
+        <span class="title-name">{{ threat?.name }}</span>
+        @if (!canEdit) {
+          <mat-icon
+            class="read-only-indicator"
+            color="warn"
+            [matTooltip]="'common.readOnlyTooltip' | transloco"
+          >
+            edit_off
+          </mat-icon>
+        }
+      </h1>
+    </div>
+    <div class="header-actions">
+      @if (canEdit) {
+        <button
+          mat-icon-button
+          color="primary"
+          [matMenuTriggerFor]="threatAddonsMenu"
+          [matTooltip]="'common.addons' | transloco"
+          [attr.aria-label]="'common.addons' | transloco"
+        >
+          <mat-icon>extension</mat-icon>
+        </button>
+      }
+      <button
+        mat-icon-button
+        (click)="openMetadataDialog()"
+        [matTooltip]="
+          canEdit ? ('common.manageMetadata' | transloco) : ('common.viewMetadata' | transloco)
+        "
+        [attr.aria-label]="
+          canEdit ? ('common.manageMetadata' | transloco) : ('common.viewMetadata' | transloco)
+        "
+      >
+        <mat-icon>list</mat-icon>
+      </button>
+      @if (canEdit) {
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="deleteThreat()"
+          [matTooltip]="'common.delete' | transloco"
+          [attr.aria-label]="'common.delete' | transloco"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      }
+      @if (canEdit) {
+        <button
+          mat-icon-button
+          color="primary"
+          [disabled]="threatForm.invalid || !threatForm.dirty || isSaving"
+          (click)="save()"
+          [matTooltip]="'common.save' | transloco"
+          [attr.aria-label]="'common.save' | transloco"
+        >
+          <mat-icon>save</mat-icon>
+        </button>
+      }
+      <button
+        mat-icon-button
+        (click)="cancel()"
+        [matTooltip]="'common.close' | transloco"
+        [attr.aria-label]="'common.close' | transloco"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Timestamps -->
+  @if (threat) {
+    <div class="info-section">
+      <div class="info-field">
+        <span class="info-label">{{ 'common.created' | transloco }}:</span>
+        <span class="info-value">{{
+          threat.created_at | date: 'short' : undefined : currentLocale
+        }}</span>
+      </div>
+      <div class="info-field">
+        <span class="info-label">{{ 'common.lastModified' | transloco }}:</span>
+        <span class="info-value">{{
+          threat.modified_at | date: 'short' : undefined : currentLocale
+        }}</span>
+      </div>
+    </div>
+  }
+
+  <!-- Form -->
+  <mat-card class="form-card">
+    <mat-card-content>
+      <form [formGroup]="threatForm" class="threat-form">
+        <!-- Name field -->
+        <div class="form-field-container">
+          <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+            <mat-label>{{ 'common.threatName' | transloco }}</mat-label>
+            <input matInput formControlName="name" />
+            @if (threatForm.get('name')?.hasError('required')) {
+              <mat-error>
+                {{ 'common.validation.required' | transloco }}
+              </mat-error>
+            }
+            @if (threatForm.get('name')?.hasError('maxlength')) {
+              <mat-error>
+                {{ 'common.validation.maxLength' | transloco: { max: 100 } }}
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Asset field -->
+        <div class="form-field-row">
+          <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+            <mat-label>{{ 'common.objectTypes.asset' | transloco }}</mat-label>
+            <mat-select formControlName="asset_id">
+              <mat-option *ngFor="let asset of assetOptions" [value]="asset.id">
+                {{
+                  asset.id === NOT_ASSOCIATED_VALUE
+                    ? asset.name
+                    : asset.name + ' (' + asset.type + ')'
+                }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Description field -->
+        <div class="form-field-container">
+          <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+            <mat-label>{{ 'common.threatDescription' | transloco }}</mat-label>
+            <textarea
+              matInput
+              formControlName="description"
+              rows="3"
+              [placeholder]="'common.threatDescriptionPlaceholder' | transloco"
+            ></textarea>
+            @if (threatForm.get('description')?.hasError('maxlength')) {
+              <mat-error>
+                {{ 'common.validation.maxLength' | transloco: { max: 500 } }}
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Threat Type field -->
+        <div class="form-field-row">
+          <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+            <mat-label>{{ 'common.threatType' | transloco }}</mat-label>
+            <mat-select formControlName="threat_type" multiple>
+              <mat-option *ngFor="let threatType of threatTypeOptions" [value]="threatType">
+                {{ threatType }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Severity, Score, Priority row -->
+        <div class="form-field-row three-columns">
+          <!-- Severity field -->
+          <mat-form-field appearance="outline" floatLabel="always">
+            <mat-label>{{ 'common.severity' | transloco }}</mat-label>
+            <mat-select formControlName="severity">
+              <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+              @for (option of severityOptions; track option.key) {
+                <mat-option [value]="option.key" [matTooltip]="option.tooltip">
+                  {{ option.label }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Score field -->
+          <mat-form-field appearance="outline" floatLabel="always">
+            <mat-label>{{ 'common.score' | transloco }}</mat-label>
+            <input matInput type="number" formControlName="score" min="0" max="10" step="0.1" />
+          </mat-form-field>
+
+          <!-- Priority field -->
+          <mat-form-field appearance="outline" floatLabel="always">
+            <mat-label>{{ 'common.priority' | transloco }}</mat-label>
+            <mat-select formControlName="priority">
+              <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+              @for (option of priorityOptions; track option.key) {
+                <mat-option [value]="option.key" [matTooltip]="option.tooltip">
+                  {{ option.label }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Issue URI field -->
+        <div class="form-field-row">
+          @if (canEdit) {
+            <div class="issue-uri-container">
+              <mat-form-field appearance="outline" class="issue-uri-field" floatLabel="always">
+                <mat-label>{{ 'common.issueUri' | transloco }}</mat-label>
+                @if (shouldShowIssueUriHyperlink()) {
+                  <input
+                    matInput
+                    readonly
+                    [value]="initialIssueUriValue"
+                    class="uri-view-content"
+                    (click)="openUriInNewTab(initialIssueUriValue)"
+                    style="cursor: pointer; color: #1976d2; text-decoration: underline"
+                  />
+                } @else {
+                  <input
+                    matInput
+                    formControlName="issue_uri"
+                    type="url"
+                    (blur)="onIssueUriBlur()"
+                  />
+                }
+              </mat-form-field>
+
+              @if (shouldShowIssueUriHyperlink()) {
+                <button
+                  mat-icon-button
+                  class="external-edit-button"
+                  (click)="editIssueUri()"
+                  [matTooltip]="'common.edit' | transloco"
+                  [attr.aria-label]="'common.edit' | transloco"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+              }
+            </div>
+          }
+
+          @if (!canEdit && threat?.issue_uri) {
+            <div class="view-only-uri">
+              <span class="uri-label">{{ 'common.issueUri' | transloco }}:</span>
+              <a
+                [href]="threat?.issue_uri"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="issue-uri-link"
+              >
+                {{ threat?.issue_uri }}
+              </a>
+            </div>
+          }
+        </div>
+
+        <!-- Status and Mitigated row -->
+        <div class="form-field-row two-columns">
+          <!-- Status field -->
+          <mat-form-field appearance="outline" floatLabel="always">
+            <mat-label>{{ 'common.status' | transloco }}</mat-label>
+            <mat-select formControlName="status">
+              <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+              @for (option of statusOptions; track option.key) {
+                <mat-option
+                  [value]="option.key"
+                  [matTooltip]="
+                    'threatEditor.threatStatus.' + option.key + '.description' | transloco
+                  "
+                >
+                  {{ 'threatEditor.threatStatus.' + option.key | transloco }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Mitigated field -->
+          <div class="checkbox-field">
+            <mat-checkbox formControlName="mitigated">
+              {{ 'common.mitigated' | transloco }}
+            </mat-checkbox>
+          </div>
+        </div>
+
+        <!-- Mitigation field -->
+        <div class="form-field-container">
+          <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+            <mat-label>{{ 'common.mitigation' | transloco }}</mat-label>
+            <textarea
+              matInput
+              formControlName="mitigation"
+              rows="3"
+              [placeholder]="'common.mitigationPlaceholder' | transloco"
+            ></textarea>
+            @if (threatForm.get('mitigation')?.hasError('maxlength')) {
+              <mat-error>
+                {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Diagram ID field -->
+        <div class="form-field-row">
+          <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+            <mat-label>{{ 'common.diagramId' | transloco }}</mat-label>
+            <mat-select formControlName="diagram_id">
+              <mat-option *ngFor="let diagram of diagramOptions" [value]="diagram.id">
+                {{
+                  diagram.id === NOT_ASSOCIATED_VALUE
+                    ? diagram.name
+                    : diagram.name + ' (' + diagram.id + ')'
+                }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Cell ID field -->
+        <div class="form-field-row">
+          <mat-form-field appearance="outline" class="full-width" floatLabel="always">
+            <mat-label>{{ 'common.cellId' | transloco }}</mat-label>
+            <mat-select formControlName="cell_id">
+              <mat-option *ngFor="let cell of cellOptions" [value]="cell.id">
+                {{
+                  cell.id === NOT_ASSOCIATED_VALUE ? cell.label : cell.label + ' (' + cell.id + ')'
+                }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Threat Addons Menu -->
+  <mat-menu #threatAddonsMenu="matMenu">
+    @if (addonsForThreat.length === 0) {
+      <button mat-menu-item disabled>
+        <mat-icon>info</mat-icon>
+        <span [transloco]="'common.noAddonsAvailable'">No addons available</span>
+      </button>
+    } @else {
+      @for (addon of addonsForThreat; track addon.id) {
+        <button
+          mat-menu-item
+          [matTooltip]="addon.description || ''"
+          matTooltipPosition="right"
+          (click)="invokeAddon(addon)"
+        >
+          <mat-icon>{{ getAddonIcon(addon) }}</mat-icon>
+          <span>{{ addon.name }}</span>
+        </button>
+      }
+    }
+  </mat-menu>
+</div>

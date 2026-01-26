@@ -7,7 +7,9 @@
       <mat-icon class="addon-icon">{{ getAddonIcon() }}</mat-icon>
       <div class="addon-details">
         <span class="addon-name">{{ data.addon.name }}</span>
-        <span class="addon-id">{{ data.addon.id }}</span>
+        @if (showDeveloperTools) {
+          <span class="addon-id">{{ data.addon.id }}</span>
+        }
       </div>
     </div>
 
@@ -30,46 +32,64 @@
       </span>
     </div>
 
-    <!-- Object Name/ID (only for row-level) -->
+    <!-- Object Name (only for row-level) -->
     @if (data.objectId) {
       <div class="info-row">
         <span class="info-label" [transloco]="'common.name'">Name</span>
-        <span class="info-value">
-          {{ data.objectName || data.objectId }}
-          @if (data.objectName) {
-            <span class="object-id-hint">({{ data.objectId }})</span>
-          }
-        </span>
+        <span class="info-value">{{ data.objectName || data.objectId }}</span>
       </div>
+      <!-- Object ID (only shown when showDeveloperTools is enabled) -->
+      @if (showDeveloperTools) {
+        <div class="info-row">
+          <span class="info-label" [transloco]="'common.id'">ID</span>
+          <span class="info-value id-value">{{ data.objectId }}</span>
+        </div>
+      }
     }
 
-    <!-- Threat Model -->
+    <!-- Threat Model Name -->
     <div class="info-row">
       <span class="info-label" [transloco]="'common.objectTypes.threatModel'">Threat Model</span>
       <span class="info-value">{{ data.threatModelName }}</span>
     </div>
+    <!-- Threat Model ID (only shown when showDeveloperTools is enabled) -->
+    @if (showDeveloperTools) {
+      <div class="info-row">
+        <span class="info-label" [transloco]="'addons.invokeDialog.threatModelId'"
+          >Threat Model ID</span
+        >
+        <span class="info-value id-value">{{ data.threatModelId }}</span>
+      </div>
+    }
   </div>
 
-  <form [formGroup]="form" class="payload-form">
-    <mat-form-field appearance="outline" class="full-width payload-field">
-      <mat-label [transloco]="'addons.invokeDialog.payload'">Payload (Optional)</mat-label>
-      <textarea
-        matInput
-        formControlName="payload"
-        rows="6"
-        [maxlength]="MAX_PAYLOAD_LENGTH"
-        [placeholder]="'addons.invokeDialog.payloadPlaceholder' | transloco"
-        class="payload-textarea"
-      ></textarea>
-      <mat-hint>
-        <span [transloco]="'addons.invokeDialog.payloadHint'">JSON data to pass to the addon</span>
-        ({{ form.get('payload')?.value?.length || 0 }}/{{ MAX_PAYLOAD_LENGTH }})
-      </mat-hint>
-      @if (form.get('payload')?.hasError('jsonInvalid')) {
-        <mat-error [transloco]="'addons.invokeDialog.invalidJson'"> Invalid JSON format </mat-error>
-      }
-    </mat-form-field>
-  </form>
+  <!-- Payload field (only shown when showDeveloperTools is enabled) -->
+  @if (showDeveloperTools) {
+    <form [formGroup]="form" class="payload-form">
+      <mat-form-field appearance="outline" class="full-width payload-field">
+        <mat-label [transloco]="'addons.invokeDialog.payload'">Payload (Optional)</mat-label>
+        <textarea
+          matInput
+          formControlName="payload"
+          rows="6"
+          [maxlength]="MAX_PAYLOAD_LENGTH"
+          [placeholder]="'addons.invokeDialog.payloadPlaceholder' | transloco"
+          class="payload-textarea"
+        ></textarea>
+        <mat-hint>
+          <span [transloco]="'addons.invokeDialog.payloadHint'"
+            >JSON data to pass to the addon</span
+          >
+          ({{ form.get('payload')?.value?.length || 0 }}/{{ MAX_PAYLOAD_LENGTH }})
+        </mat-hint>
+        @if (form.get('payload')?.hasError('jsonInvalid')) {
+          <mat-error [transloco]="'addons.invokeDialog.invalidJson'">
+            Invalid JSON format
+          </mat-error>
+        }
+      </mat-form-field>
+    </form>
+  }
 
   @if (errorMessage) {
     <mat-error class="form-error">{{ errorMessage }}</mat-error>

@@ -1,7 +1,7 @@
-import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+import { DestroyRef, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { UserPreferencesService } from './user-preferences.service';
 
 /**
@@ -74,10 +74,10 @@ export class ThemeService {
   private readonly DARK_CLASS = 'dark-theme';
   private readonly COLORBLIND_CLASS = 'colorblind-palette';
 
+  private destroyRef: DestroyRef | null = null;
   private renderer: Renderer2;
   private mediaQueryList: MediaQueryList;
   private systemThemeListener: ((event: MediaQueryListEvent) => void) | null = null;
-  private destroy$ = new Subject<void>();
 
   private _preferences$ = new BehaviorSubject<ThemePreferences>({
     mode: 'automatic',
@@ -93,7 +93,9 @@ export class ThemeService {
     private rendererFactory: RendererFactory2,
     private overlayContainer: OverlayContainer,
     private userPreferencesService: UserPreferencesService,
+    destroyRef?: DestroyRef,
   ) {
+    this.destroyRef = destroyRef ?? null;
     this.renderer = this.rendererFactory.createRenderer(null, null);
     this.mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -177,14 +179,12 @@ export class ThemeService {
   }
 
   /**
-   * Clean up event listeners and subscriptions
+   * Clean up event listeners
    */
   ngOnDestroy(): void {
     if (this.systemThemeListener) {
       this.mediaQueryList.removeEventListener('change', this.systemThemeListener);
     }
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   /**
@@ -202,7 +202,12 @@ export class ThemeService {
    * Subscribe to user preferences changes from UserPreferencesService
    */
   private _subscribeToUserPreferences(): void {
-    this.userPreferencesService.preferences$.pipe(takeUntil(this.destroy$)).subscribe(prefs => {
+    const source$ = this.userPreferencesService.preferences$;
+    const subscription$ = this.destroyRef
+      ? source$.pipe(takeUntilDestroyed(this.destroyRef))
+      : source$;
+
+    subscription$.subscribe(prefs => {
       const themePrefs: ThemePreferences = {
         mode: prefs.themeMode,
         palette: prefs.colorBlindMode ? 'colorblind' : 'normal',

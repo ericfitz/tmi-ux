@@ -5,6 +5,7 @@
 import { Injectable } from '@angular/core';
 
 import { LoggerService } from '../../../../core/services/logger.service';
+import { isValidColor } from '@app/shared/utils/color-validation.util';
 import { BaseOperationValidator } from './base-operation-validator';
 import {
   GraphOperation,
@@ -288,16 +289,16 @@ export class EdgeOperationValidator extends BaseOperationValidator {
 
   private validateEdgeStyle(style: any, errors: string[], warnings: string[]): void {
     // Validate colors
-    if (style.stroke && !this.isValidColor(style.stroke)) {
+    if (style.stroke && !isValidColor(style.stroke)) {
       errors.push(`Invalid stroke color: ${style.stroke}`);
     }
-    if (style.textColor && !this.isValidColor(style.textColor)) {
+    if (style.textColor && !isValidColor(style.textColor)) {
       errors.push(`Invalid text color: ${style.textColor}`);
     }
-    if (style.labelBackground && !this.isValidColor(style.labelBackground)) {
+    if (style.labelBackground && !isValidColor(style.labelBackground)) {
       errors.push(`Invalid label background color: ${style.labelBackground}`);
     }
-    if (style.labelBorder && !this.isValidColor(style.labelBorder)) {
+    if (style.labelBorder && !isValidColor(style.labelBorder)) {
       errors.push(`Invalid label border color: ${style.labelBorder}`);
     }
 
@@ -334,32 +335,5 @@ export class EdgeOperationValidator extends BaseOperationValidator {
         errors.push('Stroke dash array must be a string or null');
       }
     }
-  }
-
-  private isValidColor(color: string): boolean {
-    // Basic color validation - hex colors and common named colors
-    if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color)) {
-      return true; // Hex color
-    }
-
-    const namedColors = [
-      'red',
-      'green',
-      'blue',
-      'yellow',
-      'orange',
-      'purple',
-      'pink',
-      'brown',
-      'black',
-      'white',
-      'gray',
-      'grey',
-    ];
-    if (namedColors.includes(color.toLowerCase())) {
-      return true; // Named color
-    }
-
-    return false;
   }
 }

@@ -8,6 +8,7 @@ import {
   WebhookSubscription,
   WebhookSubscriptionInput,
 } from '@app/types/webhook.types';
+import { buildHttpParams } from '@app/shared/utils/http-params.util';
 
 /**
  * Service for managing webhook subscriptions
@@ -30,7 +31,7 @@ export class WebhookService {
    * Note: When user is admin, server will return all webhooks (future enhancement)
    */
   public list(filter?: WebhookFilter): Observable<WebhookSubscription[]> {
-    const params = this.buildParams(filter);
+    const params = buildHttpParams(filter);
     return this.apiService.get<WebhookSubscription[]>('webhooks/subscriptions', params).pipe(
       tap(webhooks => {
         this.webhooksSubject$.next(webhooks);
@@ -125,30 +126,5 @@ export class WebhookService {
         throw error;
       }),
     );
-  }
-
-  /**
-   * Build query parameters from filter
-   */
-  private buildParams(
-    filter?: WebhookFilter,
-  ): Record<string, string | number | boolean> | undefined {
-    if (!filter) {
-      return undefined;
-    }
-
-    const params: Record<string, string | number | boolean> = {};
-
-    if (filter.threat_model_id) {
-      params['threat_model_id'] = filter.threat_model_id;
-    }
-    if (filter.limit !== undefined) {
-      params['limit'] = filter.limit;
-    }
-    if (filter.offset !== undefined) {
-      params['offset'] = filter.offset;
-    }
-
-    return Object.keys(params).length > 0 ? params : undefined;
   }
 }

@@ -5,6 +5,7 @@ import { threatModelResolver } from './resolvers/threat-model.resolver';
 /**
  * Threat Model routes
  * /tm/:id - Threat model editor
+ * /tm/:id/threat/:threatId - Threat detail page
  * /tm/:id/dfd/:dfdId - Data flow diagram editor
  */
 export const TM_ROUTES: Routes = [
@@ -12,6 +13,28 @@ export const TM_ROUTES: Routes = [
     path: ':id',
     loadComponent: () =>
       import(/* webpackChunkName: "tm-edit" */ './tm-edit.component').then(c => c.TmEditComponent),
+    resolve: {
+      threatModel: threatModelResolver,
+    },
+  },
+  {
+    path: ':id/threat/:threatId',
+    loadComponent: () =>
+      import(
+        /* webpackChunkName: "threat-page" */ './components/threat-page/threat-page.component'
+      ).then(c => c.ThreatPageComponent),
+    canActivate: [authGuard],
+    resolve: {
+      threatModel: threatModelResolver,
+    },
+  },
+  {
+    path: ':id/note/:noteId',
+    loadComponent: () =>
+      import(/* webpackChunkName: "note-page" */ './components/note-page/note-page.component').then(
+        c => c.NotePageComponent,
+      ),
+    canActivate: [authGuard],
     resolve: {
       threatModel: threatModelResolver,
     },

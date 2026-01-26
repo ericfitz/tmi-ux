@@ -1,10 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
@@ -164,8 +163,8 @@ import {
     `,
   ],
 })
-export class CreateCredentialDialogComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class CreateCredentialDialogComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
 
   form!: FormGroup;
   saving = false;
@@ -187,11 +186,6 @@ export class CreateCredentialDialogComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   onSave(): void {
     if (this.form.valid && !this.saving) {
       this.saving = true;
@@ -211,7 +205,7 @@ export class CreateCredentialDialogComponent implements OnInit, OnDestroy {
 
       this.clientCredentialService
         .create(input)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (credential: ClientCredentialResponse) => {
             this.logger.info('Client credential created successfully');

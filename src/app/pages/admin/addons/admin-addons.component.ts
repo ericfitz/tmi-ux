@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   COMMON_IMPORTS,
@@ -37,8 +38,8 @@ import { AddAddonDialogComponent } from './add-addon-dialog/add-addon-dialog.com
   templateUrl: './admin-addons.component.html',
   styleUrl: './admin-addons.component.scss',
 })
-export class AdminAddonsComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class AdminAddonsComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
 
   addons: Addon[] = [];
@@ -58,21 +59,18 @@ export class AdminAddonsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadAddons();
 
-    this.filterSubject$.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe(() => {
-      this.applyFilter();
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.filterSubject$
+      .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.applyFilter();
+      });
   }
 
   loadAddons(): void {
     this.loading = true;
     this.addonService
       .list()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: addons => {
           this.addons = addons;
@@ -112,7 +110,7 @@ export class AdminAddonsComponent implements OnInit, OnDestroy {
 
     dialogRef
       .afterClosed()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(result => {
         if (result) {
           this.loadAddons();
@@ -127,7 +125,7 @@ export class AdminAddonsComponent implements OnInit, OnDestroy {
     if (confirmed) {
       this.addonService
         .delete(addon.id)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.logger.info('Addon deleted', { id: addon.id });

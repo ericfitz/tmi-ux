@@ -31,7 +31,15 @@ The following packages are **never** automatically updated:
 
 ## Process
 
-### Step 1: Check Current State
+### Step 1: Refresh Package Registry Cache
+
+Before checking for outdated packages, prune the pnpm store to ensure fresh registry metadata. Without this step, pnpm may use stale cached data and miss recent package updates.
+
+```bash
+pnpm store prune
+```
+
+### Step 2: Check Current State
 
 Run `pnpm outdated --format json` to get the current state of all dependencies:
 
@@ -58,7 +66,7 @@ This returns a JSON object with package information:
 - `wanted`: Latest version matching the semver range in package.json
 - `dependencyType`: "dependencies", "devDependencies", or "optionalDependencies"
 
-### Step 2: Categorize Updates
+### Step 3: Categorize Updates
 
 Parse the output and categorize each package:
 
@@ -90,7 +98,7 @@ function isExcludedPackage(name):
          name.startsWith('@antv/x6')
 ```
 
-### Step 3: Display Analysis
+### Step 4: Display Analysis
 
 Present the analysis to the user:
 
@@ -124,7 +132,7 @@ Total: 8 packages
 Proceed with safe updates? (Continuing automatically)
 ```
 
-### Step 4: Apply Safe Updates
+### Step 5: Apply Safe Updates
 
 For each safe update, use `pnpm update` with the specific package:
 
@@ -140,7 +148,7 @@ pnpm update <package1> <package2> <package3> ...
 
 **Important:** Use `pnpm update` without `--latest` to respect semver ranges and only apply wanted versions.
 
-### Step 5: Install and Lock
+### Step 6: Install and Lock
 
 After updates, ensure the lockfile is consistent:
 
@@ -148,7 +156,7 @@ After updates, ensure the lockfile is consistent:
 pnpm install
 ```
 
-### Step 6: Validate Build
+### Step 7: Validate Build
 
 Run the build to ensure no breaking changes:
 
@@ -162,7 +170,7 @@ If the build fails:
 3. Re-run the build
 4. Report which packages caused issues
 
-### Step 7: Run Tests
+### Step 8: Run Tests
 
 Run the test suite to validate functionality:
 
@@ -176,7 +184,7 @@ If tests fail:
 3. Re-run tests
 4. Report which packages caused test failures
 
-### Step 8: Lint Check
+### Step 9: Lint Check
 
 Run linting to ensure code style is maintained:
 
@@ -184,7 +192,7 @@ Run linting to ensure code style is maintained:
 pnpm run lint:all
 ```
 
-### Step 9: Display Final Report
+### Step 10: Display Final Report
 
 ```
 Dependency Update Complete

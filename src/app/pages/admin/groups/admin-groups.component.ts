@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   COMMON_IMPORTS,
@@ -41,8 +42,8 @@ import { GroupMembersDialogComponent } from './group-members-dialog/group-member
   templateUrl: './admin-groups.component.html',
   styleUrl: './admin-groups.component.scss',
 })
-export class AdminGroupsComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class AdminGroupsComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
 
   groups: AdminGroup[] = [];
@@ -65,15 +66,17 @@ export class AdminGroupsComponent implements OnInit, OnDestroy {
     this.loadProviders();
     this.loadGroups();
 
-    this.filterSubject$.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe(() => {
-      this.applyFilter();
-    });
+    this.filterSubject$
+      .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.applyFilter();
+      });
   }
 
   loadProviders(): void {
     this.authService
       .getAvailableProviders()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: providers => {
           // Add hardcoded TMI provider at the beginning
@@ -96,16 +99,11 @@ export class AdminGroupsComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   loadGroups(): void {
     this.loading = true;
     this.groupAdminService
       .list()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
           this.groups = response.groups;
@@ -152,7 +150,7 @@ export class AdminGroupsComponent implements OnInit, OnDestroy {
 
     dialogRef
       .afterClosed()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(result => {
         if (result) {
           this.loadGroups();
@@ -170,7 +168,7 @@ export class AdminGroupsComponent implements OnInit, OnDestroy {
 
     dialogRef
       .afterClosed()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         // Reload groups in case member count changed
         this.loadGroups();
@@ -186,7 +184,7 @@ This action cannot be undone.`);
     if (confirmed) {
       this.groupAdminService
         .delete(group.internal_uuid)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.logger.info('Group deleted', { group_name: group.group_name });

@@ -52,7 +52,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   DeleteThreatModelDialogComponent,
   DeleteThreatModelDialogData,
-} from './components/delete-threat-model-dialog/delete-threat-model-dialog.component';
+} from '@app/shared/components/delete-threat-model-dialog/delete-threat-model-dialog.component';
 
 @Component({
   selector: 'app-tm',

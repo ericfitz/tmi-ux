@@ -1232,7 +1232,7 @@ export class WebSocketAdapter {
     }
 
     // Create a null-prototype object to prevent prototype pollution
-    const redacted: Record<string, unknown> = Object.create(null);
+    const redacted = Object.create(null) as Record<string, unknown>;
     const source = data as Record<string, unknown>;
     const sensitiveKeys = [
       'bearer',

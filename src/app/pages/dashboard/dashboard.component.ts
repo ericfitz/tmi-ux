@@ -57,7 +57,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import {
   DeleteThreatModelDialogComponent,
   DeleteThreatModelDialogData,
-} from './components/delete-threat-model-dialog/delete-threat-model-dialog.component';
+} from '@app/shared/components/delete-threat-model-dialog/delete-threat-model-dialog.component';
 import { AuthService } from '../../auth/services/auth.service';
 import { UserPreferencesService } from '../../core/services/user-preferences.service';
 

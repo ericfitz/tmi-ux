@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   COMMON_IMPORTS,
@@ -40,8 +41,8 @@ import { AddAdministratorDialogComponent } from './add-administrator-dialog/add-
   templateUrl: './admin-administrators.component.html',
   styleUrl: './admin-administrators.component.scss',
 })
-export class AdminAdministratorsComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class AdminAdministratorsComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
 
   administrators: Administrator[] = [];
@@ -64,15 +65,17 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
     this.loadProviders();
     this.loadAdministrators();
 
-    this.filterSubject$.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe(() => {
-      this.applyFilter();
-    });
+    this.filterSubject$
+      .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.applyFilter();
+      });
   }
 
   loadProviders(): void {
     this.authService
       .getAvailableProviders()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: providers => {
           // Add hardcoded TMI provider at the beginning
@@ -95,16 +98,11 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   loadAdministrators(): void {
     this.loading = true;
     this.administratorService
       .list()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
           this.administrators = response.administrators;
@@ -152,7 +150,7 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
 
     dialogRef
       .afterClosed()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(result => {
         if (result) {
           this.loadAdministrators();
@@ -169,7 +167,7 @@ export class AdminAdministratorsComponent implements OnInit, OnDestroy {
     if (confirmed) {
       this.administratorService
         .delete(admin.id)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.logger.info('Administrator deleted', { id: admin.id });

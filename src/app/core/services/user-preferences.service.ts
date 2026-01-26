@@ -53,6 +53,27 @@ const LEGACY_KEYS = {
 } as const;
 
 /**
+ * Legacy format for user preferences (from tmi_user_preferences key)
+ */
+interface LegacyUserPreferences {
+  animations?: boolean;
+  themeMode?: ThemeMode;
+  colorBlindMode?: boolean;
+  pageSize?: 'usLetter' | 'A4';
+  marginSize?: 'narrow' | 'standard' | 'wide';
+  showDeveloperTools?: boolean;
+  dashboardListView?: boolean;
+}
+
+/**
+ * Legacy format for theme preferences (from user-theme-preferences key)
+ */
+interface LegacyThemePreferences {
+  mode?: ThemeMode;
+  palette?: PaletteType;
+}
+
+/**
  * User Preferences Service
  *
  * Manages user preferences with server sync and localStorage cache:
@@ -175,7 +196,8 @@ export class UserPreferencesService {
       // Try new storage key first
       const cached = localStorage.getItem(STORAGE_KEY);
       if (cached) {
-        return { ...DEFAULT_PREFERENCES, ...JSON.parse(cached) };
+        const parsed = JSON.parse(cached) as Partial<UserPreferencesData>;
+        return { ...DEFAULT_PREFERENCES, ...parsed };
       }
 
       // Try migrating from legacy keys
@@ -275,7 +297,7 @@ export class UserPreferencesService {
 
       // Migrate from tmi_user_preferences
       if (oldUserPrefs) {
-        const parsed = JSON.parse(oldUserPrefs);
+        const parsed = JSON.parse(oldUserPrefs) as LegacyUserPreferences;
         if (parsed.animations !== undefined) migrated.animations = parsed.animations;
         if (parsed.themeMode !== undefined) migrated.themeMode = parsed.themeMode;
         if (parsed.colorBlindMode !== undefined) migrated.colorBlindMode = parsed.colorBlindMode;
@@ -289,7 +311,7 @@ export class UserPreferencesService {
 
       // Migrate from user-theme-preferences
       if (oldThemePrefs) {
-        const parsed = JSON.parse(oldThemePrefs);
+        const parsed = JSON.parse(oldThemePrefs) as LegacyThemePreferences;
         if (parsed.mode !== undefined) migrated.themeMode = parsed.mode;
         if (parsed.palette !== undefined) {
           migrated.colorBlindMode = parsed.palette === 'colorblind';

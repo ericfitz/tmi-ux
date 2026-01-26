@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   COMMON_IMPORTS,
@@ -35,8 +36,8 @@ import { DEFAULT_USER_API_QUOTA, DEFAULT_WEBHOOK_QUOTA } from '@app/types/quota.
   templateUrl: './add-quota-dialog.component.html',
   styleUrl: './add-quota-dialog.component.scss',
 })
-export class AddQuotaDialogComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class AddQuotaDialogComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   private searchSubject$ = new Subject<string>();
 
   userSearchForm: FormGroup;
@@ -89,14 +90,11 @@ export class AddQuotaDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.searchSubject$.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe(searchText => {
-      this.searchUsers(searchText);
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.searchSubject$
+      .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
+      .subscribe(searchText => {
+        this.searchUsers(searchText);
+      });
   }
 
   onSearchChange(value: string): void {
@@ -112,7 +110,7 @@ export class AddQuotaDialogComponent implements OnInit, OnDestroy {
     this.searchingUsers = true;
     this.quotaService
       .listUsers({ email: searchText, limit: 20 })
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
           this.users = response.users;
@@ -167,9 +165,9 @@ export class AddQuotaDialogComponent implements OnInit, OnDestroy {
     });
 
     // Wait for both to complete
-    userAPIQuota$.pipe(takeUntil(this.destroy$)).subscribe({
+    userAPIQuota$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
-        webhookQuota$.pipe(takeUntil(this.destroy$)).subscribe({
+        webhookQuota$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: () => {
             this.logger.info('Quotas created successfully', {
               userId: this.selectedUser?.internal_uuid,

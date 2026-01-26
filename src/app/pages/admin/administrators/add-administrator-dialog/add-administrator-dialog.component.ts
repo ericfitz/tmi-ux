@@ -1,8 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
@@ -128,8 +127,8 @@ import { ProviderDisplayComponent } from '@app/shared/components/provider-displa
     `,
   ],
 })
-export class AddAdministratorDialogComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class AddAdministratorDialogComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
 
   form!: FormGroup;
   availableProviders: OAuthProviderInfo[] = [];
@@ -152,7 +151,7 @@ export class AddAdministratorDialogComponent implements OnInit, OnDestroy {
 
     this.authService
       .getAvailableProviders()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: providers => {
           this.availableProviders = providers;
@@ -162,11 +161,6 @@ export class AddAdministratorDialogComponent implements OnInit, OnDestroy {
           this.errorMessage = 'Failed to load available providers';
         },
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   onSave(): void {
@@ -190,7 +184,7 @@ export class AddAdministratorDialogComponent implements OnInit, OnDestroy {
 
       this.administratorService
         .create(request)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             this.logger.info('Administrator created successfully');

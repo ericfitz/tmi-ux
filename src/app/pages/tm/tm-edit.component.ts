@@ -772,76 +772,29 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Opens a dialog to create, edit, or view a threat
-   * If the user confirms, adds or updates the threat in the threat model
+   * Opens the threat page for editing an existing threat, or dialog for creating a new threat.
+   * For existing threats, navigates to the full-page threat editor at /tm/:id/threat/:threatId.
+   * For new threats, opens the dialog for quick creation.
    * @param threat Optional threat to edit or view
-   * @param shapeType Optional shape type to filter applicable threat types
+   * @param shapeType Optional shape type to filter applicable threat types (used for dialog creation)
    */
   openThreatEditor(threat?: Threat, shapeType?: string): void {
-    // Determine the mode based on whether a threat is provided
-    const mode: 'create' | 'edit' | 'view' = threat ? 'edit' : 'create';
     if (!this.threatModel) {
       return;
     }
 
-    // If editing a threat, refresh the threat model to get the latest threat data from server
-    if (mode === 'edit' && threat) {
-      this.logger.debugComponent(
-        'TmEditComponent',
-        'Refreshing threat model data before opening threat editor',
-        {
-          threatId: threat.id,
-          threatModelId: this.threatModel.id,
-        },
-      );
-
-      this._subscriptions.add(
-        this.threatModelService.getThreatModelById(this.threatModel.id, true).subscribe({
-          next: refreshedThreatModel => {
-            if (!refreshedThreatModel) {
-              this.logger.error('Failed to refresh threat model data');
-              return;
-            }
-
-            // Find the updated threat in the refreshed data
-            const updatedThreat = refreshedThreatModel.threats?.find(t => t.id === threat.id);
-            if (!updatedThreat) {
-              this.logger.warn('Threat not found in refreshed data, using original threat', {
-                threatId: threat.id,
-              });
-              // Migrate before opening dialog
-              const migratedThreat = this.migrateThreatFieldValues(threat);
-              this.openThreatEditorWithData(migratedThreat, shapeType, mode);
-            } else {
-              this.logger.debugComponent(
-                'TmEditComponent',
-                'Using refreshed threat data for editor',
-                {
-                  threatId: updatedThreat.id,
-                  hasAllProperties: !!(
-                    updatedThreat.priority &&
-                    updatedThreat.status &&
-                    updatedThreat.score
-                  ),
-                },
-              );
-              // Migrate before opening dialog
-              const migratedThreat = this.migrateThreatFieldValues(updatedThreat);
-              this.openThreatEditorWithData(migratedThreat, shapeType, mode);
-            }
-          },
-          error: error => {
-            this.logger.error('Failed to refresh threat model data, using cached threat', error);
-            // Migrate before opening dialog
-            const migratedThreat = this.migrateThreatFieldValues(threat);
-            this.openThreatEditorWithData(migratedThreat, shapeType, mode);
-          },
-        }),
-      );
-    } else {
-      // For create mode, use existing logic
-      this.openThreatEditorWithData(threat, shapeType, mode);
+    // For existing threats, navigate to the full page
+    if (threat?.id) {
+      this.logger.debugComponent('TmEditComponent', 'Navigating to threat page', {
+        threatId: threat.id,
+        threatModelId: this.threatModel.id,
+      });
+      void this.router.navigate(['/tm', this.threatModel.id, 'threat', threat.id]);
+      return;
     }
+
+    // For create mode, use dialog
+    this.openThreatEditorWithData(threat, shapeType, 'create');
   }
 
   /**
@@ -1672,75 +1625,23 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Opens the dialog to edit an existing note
+   * Navigates to the full-page note editor for an existing note.
+   * For new notes, use addNote() which opens the dialog.
    */
   editNote(note: Note, event: Event): void {
     event.stopPropagation();
     (event.target as HTMLElement)?.blur();
 
-    const dialogData: NoteEditorDialogData = {
-      mode: 'edit',
-      note: { ...note },
-      isReadOnly: !this.canEdit,
-    };
+    if (!this.threatModel) {
+      return;
+    }
 
-    const dialogRef = this.dialog.open(NoteEditorDialogComponent, {
-      width: '90vw',
-      maxWidth: '900px',
-      minWidth: '600px',
-      maxHeight: '90vh',
-      data: dialogData,
+    // Navigate to full-page note editor (same pattern as openThreatEditor)
+    this.logger.info('Navigating to note page', {
+      threatModelId: this.threatModel.id,
+      noteId: note.id,
     });
-
-    // Subscribe to save events from the dialog
-    const saveSubscription = dialogRef.componentInstance.saveEvent.subscribe(noteResult => {
-      if (!this.threatModel) {
-        return;
-      }
-      this._subscriptions.add(
-        this.threatModelService.updateNote(this.threatModel.id, note.id, noteResult).subscribe(
-          updatedNote => {
-            if (this.threatModel && this.threatModel.notes) {
-              const index = this.threatModel.notes.findIndex(n => n.id === note.id);
-              if (index !== -1) {
-                this.threatModel.notes[index] = updatedNote;
-              }
-              this.logger.info('Updated note via API', { note: updatedNote });
-            }
-          },
-          error => {
-            this.logger.error('Failed to update note', error);
-          },
-        ),
-      );
-    });
-
-    this._subscriptions.add(saveSubscription);
-
-    this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: NoteEditorResult | undefined) => {
-        if (result && this.threatModel && result.noteId) {
-          this._subscriptions.add(
-            this.threatModelService
-              .updateNote(this.threatModel.id, result.noteId, result.formValue)
-              .subscribe(
-                updatedNote => {
-                  if (this.threatModel && this.threatModel.notes) {
-                    const index = this.threatModel.notes.findIndex(n => n.id === result.noteId);
-                    if (index !== -1) {
-                      this.threatModel.notes[index] = updatedNote;
-                    }
-                    this.logger.info('Updated note via API', { note: updatedNote });
-                  }
-                },
-                error => {
-                  this.logger.error('Failed to update note', error);
-                },
-              ),
-          );
-        }
-      }),
-    );
+    void this.router.navigate(['/tm', this.threatModel.id, 'note', note.id]);
   }
 
   /**
