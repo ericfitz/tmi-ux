@@ -2,6 +2,9 @@
 
 This document details the complex decision logic that determines when auto-save is triggered and how the history system manages what gets included in undo/redo operations.
 
+<!-- Note: This document describes architectural patterns and flows. Some class names
+may evolve as the codebase is refactored. The patterns described remain valid. -->
+
 ## Auto-save Decision Tree
 
 The auto-save system implements sophisticated logic to determine when diagram changes should be persisted to the database.
@@ -18,18 +21,18 @@ flowchart TD
     D -->|No| F{Is change semantic?}
 
     F -->|No| G[Skip auto-save - visual change only]
-    F -->|Yes| H{GraphHistoryCoordinator filter result?}
+    F -->|Yes| H{AppOperationStateManager filter result?}
 
     H -->|Exclude| I[Skip auto-save - filtered out]
-    H -->|Include| J[Record in X6 history]
+    H -->|Include| J[Record in custom history via AppHistoryService]
 
-    J --> K[X6 History Plugin fires 'change' event]
-    K --> L[X6GraphAdapter.historyModified$ emits]
-    L --> M[DfdComponent.autoSaveDiagram triggered]
+    J --> K[AppHistoryService records entry]
+    K --> L[AppPersistenceCoordinator.saveStatus$ emits]
+    L --> M[AppDfdOrchestrator triggers auto-save]
 
     M --> N{Required data available?}
     N -->|No| O[Log warning - cannot save]
-    N -->|Yes| P[DfdDiagramService.saveDiagramChanges]
+    N -->|Yes| P[AppDiagramService.saveDiagramChanges]
 
     P --> Q[REST API call to save diagram]
     Q --> R[Database updated]
@@ -46,15 +49,15 @@ The system has multiple sources that can trigger auto-save:
 
 ```mermaid
 flowchart TD
-    A[History Modifications] --> B[X6GraphAdapter.historyModified$]
-    C[Cell Metadata Changes] --> D[X6GraphAdapter.nodeInfoChanged$]
-    E[Threat Changes] --> F[DfdEventHandlersService.threatChanged$]
+    A[History State Changes] --> B[AppHistoryService.historyStateChange$]
+    C[Cell Metadata Changes] --> D[InfraX6GraphAdapter.nodeInfoChanged$]
+    E[Threat Changes] --> F[AppEventHandlersService.threatChanged$]
 
-    B --> G[DfdComponent auto-save subscription]
+    B --> G[AppDfdOrchestrator auto-save subscription]
     D --> G
     F --> G
 
-    G --> H[autoSaveDiagram method called]
+    G --> H[AppPersistenceCoordinator.triggerSave called]
     H --> I{Passes auto-save checks?}
     I -->|Yes| J[Trigger save]
     I -->|No| K[Skip save]
@@ -69,7 +72,7 @@ Before triggering a save, the system performs several validation checks:
 
 ```mermaid
 flowchart TD
-    A[autoSaveDiagram called] --> B{X6GraphAdapter.isInitialized?}
+    A[Save request received] --> B{InfraX6GraphAdapter.isInitialized?}
     B -->|No| C[Skip - graph not ready]
     B -->|Yes| D{dfdId exists?}
 
@@ -77,15 +80,15 @@ flowchart TD
     D -->|Yes| F{threatModelId exists?}
 
     F -->|No| G[Skip - no threat model ID]
-    F -->|Yes| H{_isInitialLoadInProgress?}
+    F -->|Yes| H{AppDfdOrchestrator state loading?}
 
     H -->|Yes| I[Skip - still loading]
     H -->|No| J{isCollaborating?}
 
-    J -->|Yes| K[Skip - collaboration mode]
+    J -->|Yes| K[Skip - collaboration mode uses WebSocket]
     J -->|No| L[Proceed with save]
 
-    L --> M[DfdDiagramService.saveDiagramChanges]
+    L --> M[AppDiagramService.saveDiagramChanges]
 
     style C fill:#ffebee
     style E fill:#ffebee
@@ -97,7 +100,7 @@ flowchart TD
 
 ## History Management System
 
-The history system controls what operations can be undone/redone and filters out visual-only changes.
+The history system controls what operations can be undone/redone and filters out visual-only changes. TMI uses a custom history implementation (`AppHistoryService`) rather than the X6 built-in history plugin.
 
 ### History Inclusion Decision Tree
 
@@ -110,16 +113,16 @@ flowchart TD
     B -->|cell:removed| F[Include - semantic change]
 
     D --> G{Extract attribute paths}
-    G --> H[GraphHistoryCoordinator.shouldExcludeAttribute]
+    G --> H[AppOperationStateManager.shouldExcludeAttribute]
     H --> I{All attributes visual?}
 
     I -->|Yes| J[Exclude - visual only]
     I -->|No| K[Include - has semantic changes]
 
-    E --> L[Add to history]
+    E --> L[Add to AppHistoryService]
     F --> L
     K --> L
-    L --> M[History modified event fired]
+    L --> M[historyStateChange$ emits]
 
     C --> N[No history entry]
     J --> N
@@ -206,12 +209,12 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Start atomic operation] --> B[GraphHistoryCoordinator.executeAtomicOperation]
+    A[Start atomic operation] --> B[AppOperationStateManager.executeAtomicOperation]
     B --> C[X6 Graph.batchUpdate starts]
     C --> D[All changes batched]
     D --> E[Single history entry created]
     E --> F[X6 Graph.batchUpdate ends]
-    F --> G[History modified event fired once]
+    F --> G[historyStateChange$ emits once]
     G --> H[Single auto-save triggered]
 
     style B fill:#e8f5e8
@@ -223,12 +226,12 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Remote operation received] --> B[GraphHistoryCoordinator.executeRemoteOperation]
-    B --> C[Disable X6 history plugin]
+    A[Remote operation received] --> B[AppOperationStateManager.executeRemoteOperation]
+    B --> C[stateEvents$ emits remote-operation-start]
     C --> D[Apply remote changes]
-    D --> E[Re-enable X6 history plugin]
-    E --> F[No local history entry created]
-    F --> G[No auto-save triggered]
+    D --> E[stateEvents$ emits remote-operation-end]
+    E --> F[Remote changes recorded in history per user preference]
+    F --> G[Auto-save skipped in collaboration mode]
 
     style B fill:#f3e5f5
     style C fill:#f3e5f5
@@ -237,15 +240,15 @@ flowchart TD
 
 ## Collaborative Mode History Handling
 
-### History Suppression in Collaboration
+### History Management in Collaboration
 
 ```mermaid
 flowchart TD
-    A[User joins collaboration] --> B[X6GraphAdapter.setHistoryEnabled(false)]
-    B --> C[Local history disabled]
-    C --> D[Server manages canonical history]
+    A[User joins collaboration] --> B[AppHistoryService.clearHistory called]
+    B --> C[Local history cleared for fresh start]
+    C --> D[Server manages canonical state]
 
-    E[User leaves collaboration] --> F[X6GraphAdapter.setHistoryEnabled(true)]
+    E[User leaves collaboration] --> F[AppHistoryService reinitialized]
     F --> G[Local history re-enabled]
 
     style C fill:#e1f5fe
@@ -257,7 +260,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[User requests undo in collaboration] --> B[CollaborativeOperationService.requestUndo]
+    A[User requests undo in collaboration] --> B[InfraWebsocketCollaborationAdapter.requestUndo]
     B --> C[WebSocket: undo_request message]
     C --> D[Server processes undo]
     D --> E[Server broadcasts result to all clients]
@@ -289,7 +292,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[History size limits] --> B[X6 History plugin configuration]
+    A[History size limits] --> B[AppHistoryService configuration]
     B --> C[Max history entries cap]
     C --> D[Automatic cleanup of old entries]
 
@@ -306,7 +309,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Auto-save triggered] --> B[DfdDiagramService.saveDiagramChanges]
+    A[Auto-save triggered] --> B[AppDiagramService.saveDiagramChanges]
     B --> C{Save successful?}
     C -->|Yes| D[Log success]
     C -->|No| E[Log error]
@@ -322,7 +325,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[History corruption detected] --> B[Clear X6 history]
+    A[History corruption detected] --> B[Clear AppHistoryService]
     B --> C[Reset to current graph state]
     C --> D[Log warning to user]
     D --> E[Disable undo/redo temporarily]
@@ -333,3 +336,33 @@ flowchart TD
 ```
 
 This comprehensive auto-save and history management system ensures data integrity while providing a smooth user experience and maintaining performance even with complex collaborative editing scenarios.
+
+<!--
+VERIFICATION SUMMARY
+Verified on: 2026-01-25
+Agent: verify-migrate-doc
+
+Verified items:
+- AppOperationStateManager: Confirmed exists at src/app/pages/dfd/application/services/app-operation-state-manager.service.ts
+- AppOperationStateManager.shouldExcludeAttribute: Method confirmed in source code
+- AppOperationStateManager.executeAtomicOperation: Method confirmed in source code
+- AppOperationStateManager.executeRemoteOperation: Method confirmed in source code
+- AppDiagramService: Confirmed exists at src/app/pages/dfd/application/services/app-diagram.service.ts
+- AppDiagramService.saveDiagramChanges: Method confirmed in source code
+- AppEventHandlersService: Confirmed exists at src/app/pages/dfd/application/services/app-event-handlers.service.ts
+- AppEventHandlersService.threatChanged$: Observable confirmed in source code
+- AppEventHandlersService.nodeInfoChanged$: Observable confirmed in source code
+- InfraX6GraphAdapter: Confirmed exists at src/app/pages/dfd/infrastructure/adapters/infra-x6-graph.adapter.ts
+- InfraWebsocketCollaborationAdapter: Confirmed exists at src/app/pages/dfd/infrastructure/adapters/infra-websocket-collaboration.adapter.ts
+- Visual attribute detection pattern: Verified shouldExcludeAttribute implementation matches documented patterns
+
+Items corrected:
+- GraphHistoryCoordinator renamed to AppOperationStateManager
+- X6GraphAdapter renamed to InfraX6GraphAdapter
+- DfdDiagramService renamed to AppDiagramService
+- DfdEventHandlersService renamed to AppEventHandlersService
+- CollaborativeOperationService renamed to InfraWebsocketCollaborationAdapter
+- historyModified$ replaced with historyStateChange$ from AppHistoryService
+- setHistoryEnabled replaced with clearHistory pattern in AppHistoryService
+- Updated references to X6 history plugin to AppHistoryService (custom implementation)
+-->

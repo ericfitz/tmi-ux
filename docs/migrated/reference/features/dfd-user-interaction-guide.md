@@ -43,7 +43,6 @@ Users move nodes by **click-and-drag**:
 **Visual Feedback During Drag**:
 
 - Selected node shows stronger red glow (drop-shadow filter)
-- Stroke width increases to 3px while selected
 - Snap lines (red, 1px) show alignment with other nodes
 - No traditional selection box shown
 
@@ -292,7 +291,7 @@ When an edge is selected, X6 tools appear:
 
 - Click on node or edge → selects it
 - Previous selection is cleared
-- Visual feedback: Red glow (drop-shadow filter), stroke width increases to 3px
+- Visual feedback: Red glow (drop-shadow filter)
 
 **Multiple Selection**:
 
@@ -311,7 +310,7 @@ When an edge is selected, X6 tools appear:
 | ---------------------- | ------------------ | ------------ | ------------------------------------------------------ |
 | **Default**            | None               | 2px          | none                                                   |
 | **Hover** (unselected) | Subtle red glow    | 2px          | drop-shadow(0 0 4px rgba(255,0,0,0.6))                 |
-| **Selected**           | Strong red glow    | 3px          | drop-shadow(0 0 8px rgba(255,0,0,0.8))                 |
+| **Selected**           | Strong red glow    | 2px          | drop-shadow(0 0 8px rgba(255,0,0,0.8))                 |
 | **Creating**           | Blue fade-out glow | 2px          | drop-shadow(0 0 12px rgba(0,150,255,0.9→0)) over 500ms |
 | **Embedding Target**   | Orange border      | 3px          | X6 stroke highlighter                                  |
 | **Invalid Embedding**  | Red flash          | 3px          | Red stroke for 300ms, then removed                     |
@@ -377,8 +376,9 @@ When an edge is selected, X6 tools appear:
 **Behavior**:
 
 - Zoom factor: 1.1
-- Min zoom: 0.5× (50%)
-- Max zoom: 1.5× (150%)
+- Min zoom: 0.2× (20%)
+- Max zoom (automatic zoom-to-fit): 1.25× (125%)
+- Max zoom (manual Shift+Wheel): 3.0× (300%)
 - Zoom centers on mouse cursor position
 
 ### Grid and Guides
@@ -414,10 +414,13 @@ When an edge is selected, X6 tools appear:
 | --------------------------- | --------------------- | ---------------------------------------------- |
 | **Delete** or **Backspace** | Delete selected cells | Only when graph has focus, not in input fields |
 
-**Future** (not yet implemented):
+**Implemented**:
 
 - Ctrl+Z / Cmd+Z: Undo
 - Ctrl+Y / Cmd+Shift+Z: Redo
+
+**Not yet implemented**:
+
 - Ctrl+C / Cmd+C: Copy
 - Ctrl+V / Cmd+V: Paste
 - Ctrl+A / Cmd+A: Select All
@@ -479,9 +482,9 @@ Users can export diagrams via toolbar:
 - Export uses X6 export plugin
 - Exported diagram matches current view (zoom/pan)
 
-## Undo/Redo System (Future)
+## Undo/Redo System
 
-**Planned Behavior**:
+**Current Behavior**:
 
 History System tracks:
 
@@ -578,12 +581,12 @@ This ensures old or corrupted diagrams are automatically corrected to current st
 
 ## Known Limitations
 
-- Undo/Redo not yet implemented (toolbar buttons disabled)
-- Save functionality not implemented (button disabled)
 - Port label editing not available
-- Limited keyboard shortcuts
+- Limited keyboard shortcuts (only Delete/Backspace and Undo/Redo)
 - No minimap for large diagrams
 - Self-connections don't create circular paths (renders as straight line)
+- Shift+Enter for newlines in label editing not yet implemented
+- Label repositioning within/around nodes not yet implemented
 
 ## Technical Notes
 
@@ -617,3 +620,42 @@ X6 plugins used:
 - **Highlighting**: Visual feedback for embedding and connections
 
 This guide represents the complete current and intended behavior of the DFD graph interaction system.
+
+<!--
+VERIFICATION SUMMARY
+Verified on: 2026-01-25
+Agent: verify-migrate-doc
+
+Verified items (against source code):
+- AntV X6 library: Confirmed in package.json (@antv/x6: 2.19.2)
+- Node shapes: Verified in infra-x6-shape-definitions.ts (Actor=Rectangle, Process=Ellipse, Store=custom rect with top/bottom borders, Security Boundary=dashed rect, Text Box=transparent)
+- Default stroke #000, 2px: Verified in styling-constants.ts (DEFAULT_STROKE: '#000000', DEFAULT_STROKE_WIDTH: 2)
+- Font Roboto Condensed: Verified in styling-constants.ts (TEXT_FONT_FAMILY)
+- Minimum size 40x30px: Verified in styling-constants.ts (MIN_WIDTH: 40, MIN_HEIGHT: 30)
+- Grid size 10px: Verified in styling-constants.ts (GRID.SIZE: 10)
+- Zoom factor 1.1: Verified in styling-constants.ts (VIEWPORT.ZOOM_FACTOR: 1.1)
+- Port radius 5px: Verified in styling-constants.ts (PORTS.RADIUS: 5)
+- Selection glow rgba(255,0,0,0.8): Verified in styling-constants.ts (SELECTION.GLOW_COLOR)
+- Hover glow rgba(255,0,0,0.6): Verified in styling-constants.ts (HOVER.GLOW_COLOR)
+- Embedding orange border #ff6b00: Verified in styling-constants.ts (HIGHLIGHTING.EMBEDDING.STROKE_COLOR)
+- Invalid embedding red flash 300ms: Verified in styling-constants.ts (HIGHLIGHTING.INVALID_EMBEDDING.DURATION_MS)
+- Z-order values (security boundary=1, node=10, text-box=20): Verified in styling-constants.ts and infra-z-order.service.ts
+- Edge default label "Flow": Verified in styling-constants.ts (EDGES.DEFAULT_LABEL)
+- Snap radius 20px: Verified in infra-x6-graph.adapter.ts (snap: { radius: 20 })
+- X6 plugins (Selection, Snapline, Transform, Export, Clipboard): Verified in infra-x6-graph.adapter.ts
+- Undo/Redo keyboard shortcuts: Verified in infra-x6-keyboard.adapter.ts (Cmd+Z/Ctrl+Z for undo, Cmd+Shift+Z/Ctrl+Y for redo)
+- Embedding validation rules: Verified in infra-embedding.service.ts (circular prevention, text-box restrictions, security boundary rules)
+- Z-order recalculation: Verified in infra-z-order.service.ts (iterative algorithm for cascading violations)
+- Creation effect colors (blue local, green remote): Verified in styling-constants.ts (CREATION.GLOW_COLOR_RGB, REMOTE_GLOW_COLOR_RGB)
+- Creation effect duration 500ms: Verified in styling-constants.ts (CREATION.FADE_DURATION_MS: 500)
+- Grid colors (#666, #888): Verified in styling-constants.ts (GRID.PRIMARY_COLOR, SECONDARY_COLOR)
+
+Corrections made:
+- Removed incorrect claim about stroke width increasing to 3px on selection (code shows 2px)
+- Fixed zoom values: min 0.2x, auto-max 1.25x, manual-max 3.0x (was incorrectly stated as 0.5x-1.5x)
+- Updated undo/redo from "Future" to "Implemented" based on keyboard adapter code
+- Updated Known Limitations to reflect current state
+
+Items needing review:
+- None identified
+-->
