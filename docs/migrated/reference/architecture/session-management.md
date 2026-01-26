@@ -13,7 +13,7 @@ The TMI-UX application implements a comprehensive session management system that
   - `getValidToken()`: Returns valid token, refreshing if necessary
   - `refreshToken()`: Exchanges refresh token for new access token
   - `isTokenValid()`: Checks if token is not expired
-  - `shouldRefreshToken()`: Checks if token expires within 1 minute
+  - `shouldRefreshToken()`: Checks if token expires within 15 minutes
   - `logout()`: Clears all authentication data and redirects to home
 
 ### 2. SessionManagerService (`src/app/auth/services/session-manager.service.ts`)
@@ -220,8 +220,9 @@ sequenceDiagram
 
 ### Timer Settings (SessionManagerService)
 
-- `warningTime`: 5 minutes (300,000ms) before expiry warning
-- `checkInterval`: 1 minute (60,000ms) for legacy compatibility
+- `warningTime`: 5 minutes (300,000ms) before expiry to show warning for inactive users
+- `proactiveRefreshTime`: 15 minutes (900,000ms) before expiry for proactive refresh of active users
+- `activityCheckInterval`: 1 minute (60,000ms) for checking user activity and proactive refresh
 
 ## Security Considerations
 
