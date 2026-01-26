@@ -68,16 +68,30 @@ export const threatModelResolver: ResolveFn<ThreatModel | null> = (
     catchError((error: unknown) => {
       logger.error('Failed to resolve threat model', error);
 
-      // Check if it's an authorization error
       const httpError = error as { status?: number };
-      if (httpError.status === 403 || httpError.status === 401) {
-        logger.warn('User does not have access to threat model', {
+
+      if (httpError.status === 403) {
+        // User doesn't have permission to access this threat model
+        logger.warn('User does not have permission to access threat model', {
           threatModelId,
           status: httpError.status,
         });
         void router.navigate(['/dashboard'], {
           queryParams: {
             error: 'access_denied',
+            threat_model_id: threatModelId,
+          },
+        });
+      } else if (httpError.status === 401) {
+        // Authentication error - JWT interceptor already attempted refresh
+        // Navigate to dashboard; user may need to log in again
+        logger.warn('Authentication error while loading threat model', {
+          threatModelId,
+          status: httpError.status,
+        });
+        void router.navigate(['/dashboard'], {
+          queryParams: {
+            error: 'auth_required',
             threat_model_id: threatModelId,
           },
         });
