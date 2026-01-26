@@ -34,4 +34,4 @@ Guides and documentation for developers working on TMI-UX.
 
 ## Quick Links
 
-For complete development workflow, see the main [CLAUDE.md](../../CLAUDE.md) file.
+For complete development workflow, see the main [CLAUDE.md](../../.claude/CLAUDE.md) file.
