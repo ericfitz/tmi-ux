@@ -16,14 +16,14 @@ Use the specific import constants defined in `src/app/shared/imports.ts` for all
 ### Feature-Specific Imports
 
 - **FORM_MATERIAL_IMPORTS**: FormField, Input, Select, Checkbox, Radio, SlideToggle
-- **DATA_MATERIAL_IMPORTS**: Table, Paginator, Sort, Card, List, GridList, Badge
+- **DATA_MATERIAL_IMPORTS**: Table, Paginator, Sort, Card, List, GridList, Badge, Chips
 - **FEEDBACK_MATERIAL_IMPORTS**: ProgressSpinner, SnackBar, Dialog
 
 ### Pre-configured Combinations
 
 - **COMMON_STANDALONE_IMPORTS**: Common + Core Material + Forms
 - **DATA_DISPLAY_IMPORTS**: Common + Core Material + Data Display
-- **DIALOG_IMPORTS**: Common + Core Material + Forms + Dialog
+- **DIALOG_IMPORTS**: Common + Core Material + Forms + Dialog + Tabs + ScrollIndicatorDirective
 
 ## Usage Examples
 
