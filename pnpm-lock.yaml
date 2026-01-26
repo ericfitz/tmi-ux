@@ -72,8 +72,8 @@ importers:
         specifier: ^2.1.8
         version: 2.1.8(@antv/x6@2.19.2)
       '@jsverse/transloco':
-        specifier: ^8.2.0
-        version: 8.2.0(@angular/core@20.3.16(@angular/compiler@20.3.16)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2)(typescript@5.9.3)
+        specifier: ^8.2.1
+        version: 8.2.1(@angular/core@20.3.16(@angular/compiler@20.3.16)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2)(typescript@5.9.3)
       '@types/prismjs':
         specifier: ^1.26.5
         version: 1.26.5
@@ -1825,12 +1825,12 @@ packages:
     peerDependencies:
       tslib: '2'
 
-  '@jsverse/transloco-utils@8.2.0':
-    resolution: {integrity: sha512-rDactF2Qmu4JKBpecyYLzD3spPZ0U+6wgoQS2OIcVraq5riV8eE3sPYb5dgL2wxMgGtJRuT8PgMMAD7LUOcCNw==}
+  '@jsverse/transloco-utils@8.2.1':
+    resolution: {integrity: sha512-sAKJQuGgAYRYwndM8X1xVbwOrjENBxKxOwhXE7gFnS8fWUEwBGMswp3wbAOS5jZlLDhyaReesU16ToXLegBCjg==}
     engines: {node: '>=18'}
 
-  '@jsverse/transloco@8.2.0':
-    resolution: {integrity: sha512-5SU9mjmKHlTraW/GKSUsWEjt7ATBLzKcKd6w+mTbRrnU38ZyYdCJoR2W/ii8lWiRwhfgbXTFCsTUueW5Ak61WA==}
+  '@jsverse/transloco@8.2.1':
+    resolution: {integrity: sha512-uuapT1vNi/P9wqklO2VY/sIj8HPVQJ1h+IJFhPbiQvk1FP/vgn2LLwGz/iIcet2bAMJVKKxO8FXytdrwRXXyvg==}
     peerDependencies:
       '@angular/core': '>=16.0.0'
       rxjs: '>=6.0.0'
@@ -8340,17 +8340,17 @@ snapshots:
       '@jsonjoy.com/codegen': 1.0.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@jsverse/transloco-utils@8.2.0(typescript@5.9.3)':
+  '@jsverse/transloco-utils@8.2.1(typescript@5.9.3)':
     dependencies:
       cosmiconfig: 8.3.6(typescript@5.9.3)
       tslib: 2.8.1
     transitivePeerDependencies:
       - typescript
 
-  '@jsverse/transloco@8.2.0(@angular/core@20.3.16(@angular/compiler@20.3.16)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2)(typescript@5.9.3)':
+  '@jsverse/transloco@8.2.1(@angular/core@20.3.16(@angular/compiler@20.3.16)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2)(typescript@5.9.3)':
     dependencies:
       '@angular/core': 20.3.16(@angular/compiler@20.3.16)(rxjs@7.8.2)(zone.js@0.16.0)
-      '@jsverse/transloco-utils': 8.2.0(typescript@5.9.3)
+      '@jsverse/transloco-utils': 8.2.1(typescript@5.9.3)
       '@jsverse/utils': 1.0.0-beta.5
       rxjs: 7.8.2
       tslib: 2.8.1
