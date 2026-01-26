@@ -1,6 +1,36 @@
 # Architectural Issues and Improvement Recommendations
 
+<!-- Wiki Migration Status: VERIFIED on 2026-01-25
+This document has been verified against the current source code. Many of the recommendations
+have been implemented (see Implementation Status below). The content is referenced from the
+Architecture-and-Design wiki page's "Source Repository Reference Materials" section.
+
+Key findings from verification:
+- Service naming has changed (DfdFacadeService -> AppDfdFacade, DfdDiagramService -> AppDiagramLoadingService)
+- DfdStateService mentioned in the doc doesn't exist; AppStateService handles collaborative state
+- Many recommendations have been implemented (orchestrator pattern, operation manager, persistence coordinator)
+- Some concerns remain valid (multiple code paths, visual effects complexity)
+-->
+
 This document identifies key architectural issues in the DFD change propagation system and provides specific recommendations for improvement.
+
+## Implementation Status
+
+**As of January 2026, the following recommendations have been IMPLEMENTED:**
+
+| Recommendation | Implementation | Status |
+|---------------|----------------|--------|
+| GraphOperationManager | `AppGraphOperationManager` | Implemented |
+| DfdOrchestrator | `AppDfdOrchestrator` | Implemented |
+| PersistenceCoordinator | `AppPersistenceCoordinator` | Implemented |
+| Consolidated auto-save logic | `AppDfdOrchestrator._triggerAutoSave()` | Implemented |
+| DfdComponent extraction | Orchestrator handles most coordination | Partially Implemented |
+
+**The following concerns REMAIN RELEVANT:**
+
+- Multiple code paths for similar operations (e.g., `addGraphNode()` vs `createNodeFromRemoteOperation()`)
+- Visual effects filtering complexity (scattered across multiple methods)
+- DfdStateStore and AppStateService have some overlapping concerns
 
 ## Executive Summary
 
@@ -32,6 +62,10 @@ flowchart TD
     style I fill:#ffebee
     style J fill:#ffebee
 ```
+
+**Note (2026-01):** Service names have changed:
+- `DfdFacadeService` is now `AppDfdFacade`
+- `DfdDiagramService` is now `AppDiagramLoadingService`
 
 **Specific Examples**:
 
@@ -72,9 +106,16 @@ flowchart TD
     style K fill:#e8f5e8
 ```
 
+**Update (2026-01):** This has been largely addressed. The `AppDfdOrchestrator` service now handles:
+- Auto-save decision making (`_triggerAutoSave()`)
+- Collaboration coordination (via `DfdCollaborationService`)
+- State synchronization (via `AppStateService`)
+
+The DfdComponent is now much leaner, primarily handling view logic.
+
 **Specific Problems**:
 
-- DfdComponent has 500+ lines handling coordination
+- ~~DfdComponent has 500+ lines handling coordination~~ (Reduced via orchestrator pattern)
 - No single place to understand the complete operation flow
 - Error handling scattered across multiple layers
 - Difficult to test orchestration logic in isolation
@@ -108,9 +149,13 @@ flowchart TD
     style M fill:#ffebee
 ```
 
+**Note (2026-01):** `DfdStateService` doesn't exist. The actual services are:
+- `DfdStateStore` - Local UI state (root-scoped)
+- `AppStateService` - Collaborative state management (component-scoped)
+
 **Specific Issues**:
 
-- DfdStateStore and DfdStateService have overlapping concerns
+- DfdStateStore and ~~DfdStateService~~ AppStateService have overlapping concerns
 - No clear data flow hierarchy
 - Synchronization logic scattered across components
 - Potential for state inconsistencies
@@ -217,6 +262,8 @@ flowchart TD
     style I fill:#ffebee
 ```
 
+**Update (2026-01):** Auto-save logic has been consolidated in `AppDfdOrchestrator._triggerAutoSave()`.
+
 ## Improvement Recommendations
 
 ### 1. Consolidate Operation Pathways
@@ -245,8 +292,8 @@ flowchart TD
 
 **Implementation Steps**:
 
-1. Create `GraphOperationManager` service
-2. Define common `GraphOperation` interface
+1. Create `GraphOperationManager` service - **IMPLEMENTED as `AppGraphOperationManager`**
+2. Define common `GraphOperation` interface - **IMPLEMENTED in `graph-operation.types.ts`**
 3. Implement operation visitors for different contexts
 4. Migrate existing pathways to use the manager
 
@@ -284,11 +331,11 @@ flowchart TD
 
 **Implementation Steps**:
 
-1. Create `DfdOrchestrator` service to coordinate high-level operations
-2. Create `StateCoordinator` to manage state synchronization
-3. Create `CollaborationCoordinator` for collaboration-specific logic
-4. Create `PersistenceCoordinator` for auto-save management
-5. Refactor DfdComponent to use orchestrator
+1. Create `DfdOrchestrator` service - **IMPLEMENTED as `AppDfdOrchestrator`**
+2. Create `StateCoordinator` - **Partially implemented in `AppStateService`**
+3. Create `CollaborationCoordinator` - **Uses existing `DfdCollaborationService`**
+4. Create `PersistenceCoordinator` - **IMPLEMENTED as `AppPersistenceCoordinator`**
+5. Refactor DfdComponent to use orchestrator - **IMPLEMENTED**
 
 ### 3. Unify State Management
 
@@ -379,7 +426,7 @@ flowchart TD
 **Implementation Steps**:
 
 1. Define visual effect policies declaratively
-2. Create `VisualEffectManager` to coordinate all visual changes
+2. Create `VisualEffectManager` to coordinate all visual changes - **Partially implemented in `InfraVisualEffectsService`**
 3. Implement effect composition and conflict resolution
 4. Separate visual attribute handling from semantic attribute handling
 5. Add visual effect testing framework
@@ -411,33 +458,33 @@ flowchart TD
 
 **Implementation Steps**:
 
-1. Create `AutoSaveManager` service
-2. Consolidate all auto-save triggering logic
-3. Implement unified change detection and filtering
+1. Create `AutoSaveManager` service - **IMPLEMENTED in `AppDfdOrchestrator`**
+2. Consolidate all auto-save triggering logic - **IMPLEMENTED**
+3. Implement unified change detection and filtering - **IMPLEMENTED via history service**
 4. Add configurable auto-save policies
 5. Provide auto-save status observables for UI
 
 ## Migration Strategy
 
-### Phase 1: Foundation (2-3 weeks)
+### Phase 1: Foundation (2-3 weeks) - COMPLETED
 
 1. Create new service interfaces without changing existing behavior
 2. Add comprehensive test coverage for current behavior
 3. Implement `GraphOperationManager` alongside existing pathways
 
-### Phase 2: Orchestration (2-3 weeks)
+### Phase 2: Orchestration (2-3 weeks) - COMPLETED
 
 1. Implement `DfdOrchestrator` and related coordination services
 2. Begin migrating DfdComponent logic to orchestrator
 3. Add new state management architecture alongside existing stores
 
-### Phase 3: Consolidation (3-4 weeks)
+### Phase 3: Consolidation (3-4 weeks) - IN PROGRESS
 
 1. Migrate all operation pathways to use `GraphOperationManager`
 2. Replace scattered auto-save logic with `AutoSaveManager`
 3. Implement unified permission system
 
-### Phase 4: Cleanup (1-2 weeks)
+### Phase 4: Cleanup (1-2 weeks) - PENDING
 
 1. Remove deprecated services and code paths
 2. Update documentation and architectural guides
