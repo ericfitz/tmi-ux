@@ -1,5 +1,7 @@
 # OpenAPI Schema Normalization for X6 Compatibility
 
+> **STATUS: OBSOLETE** - This document describes changes that have already been implemented. The convenience properties (`label`, `style`) described here were never added to the actual schema, or have already been removed. The Edge schema description still incorrectly references them and should be updated.
+
 ## Executive Summary
 
 This document provides prescriptive instructions for updating the TMI OpenAPI specification (`tmi-openapi.json`) to remove convenience properties and achieve full X6 graph library compatibility with minimal transformation overhead.
@@ -13,6 +15,8 @@ This document provides prescriptive instructions for updating the TMI OpenAPI sp
 ## Background
 
 ### Current State
+
+<!-- NEEDS-REVIEW: The description below is outdated. As of 2026-01-25 verification, the OpenAPI schema does NOT contain `label` or `style` convenience properties on Node or Edge schemas. The only remaining issue is that the Edge description still incorrectly mentions "convenience properties (label, style)". -->
 
 The OpenAPI specification currently includes "convenience properties" (`label`, `style`) on Node and Edge schemas that are **not part** of the X6 graph library's native format. These properties were intended to simplify API usage but create several problems:
 
@@ -33,6 +37,8 @@ After this change:
 
 ## Required Schema Changes
 
+<!-- NEEDS-REVIEW: The OpenAPI spec is located in the `tmi` repository at `api-schema/tmi-openapi.json`, NOT at `docs-server/reference/apis/tmi-openapi.json` as referenced in this document and CLAUDE.md. -->
+
 ### 1. Cell Schema (Base)
 
 **Location**: `components.schemas.Cell`
@@ -48,6 +54,8 @@ After this change:
    "description": "Base schema for all diagram cells (nodes and edges) in AntV X6 native format. This schema matches X6's toJSON() output exactly, enabling zero-transformation persistence. X6-specific properties like markup, tools, router, and connector are fully supported."
    ```
 
+<!-- VERIFIED 2026-01-25: The current Cell description (line 759) is: "Base schema for all diagram cells (nodes and edges). Contains common properties shared by Node and Edge types." - This does NOT mention convenience properties, so no change is needed. -->
+
 **No property changes needed** - the base Cell schema doesn't have convenience properties.
 
 ---
@@ -59,6 +67,8 @@ After this change:
 **Changes**:
 
 #### 2.1 Remove `label` Property
+
+<!-- VERIFIED 2026-01-25: The Node schema does NOT contain a `label` property. This change has already been completed or was never implemented. -->
 
 **Find and DELETE** (approximately lines 1040-1043):
 ```json
@@ -75,6 +85,8 @@ After this change:
 - Removes ambiguity about which property takes precedence
 
 #### 2.2 Remove `style` Property
+
+<!-- VERIFIED 2026-01-25: The Node schema does NOT contain a `style` property. This change has already been completed or was never implemented. -->
 
 **Find and DELETE** (approximately lines 1044-1064):
 ```json
@@ -131,6 +143,8 @@ After this change:
 }
 ```
 
+<!-- VERIFIED 2026-01-25: The `parent` property at line 908-915 has `"nullable": true` set correctly. -->
+
 **Verify** the following is present:
 - `"nullable": true` must be set
 - Type should be `"string"` (not an array with null)
@@ -146,6 +160,8 @@ After this change:
 ```json
 "description": "A diagram node representing an entity, process, store, or boundary. Fully compatible with X6 Node objects using X6's native toJSON/fromJSON format with position and size objects."
 ```
+
+<!-- VERIFIED 2026-01-25: The current Node description (line 833) is: "A diagram node representing an entity, process, store, or boundary. Supports both X6 position/size object format and flat x/y/width/height format. Input accepts either format. Output always uses flat format (x, y, width, height)." - This does NOT mention convenience properties. -->
 
 **Verify** - no changes needed, already correct.
 
@@ -180,6 +196,8 @@ After this change:
 
 #### 3.1 Remove `label` Property
 
+<!-- VERIFIED 2026-01-25: The Edge schema does NOT contain a `label` property. This change has already been completed or was never implemented. -->
+
 **Find and DELETE** (approximately lines 1200-1203):
 ```json
 "label": {
@@ -195,6 +213,8 @@ After this change:
 - Simple text labels should use: `labels: [{ attrs: { text: { text: "My Label" } } }]`
 
 #### 3.2 Remove `style` Property
+
+<!-- VERIFIED 2026-01-25: The Edge schema does NOT contain a `style` property. This change has already been completed or was never implemented. -->
 
 **Find and DELETE** (approximately lines 1204-1224):
 ```json
@@ -238,6 +258,8 @@ After this change:
 - X6 provides full control through attrs, making simplified `style` unnecessary
 
 #### 3.3 Update Edge Description
+
+<!-- ACTION REQUIRED: The Edge description at line 965 still incorrectly mentions "convenience properties (label, style)". This should be updated. -->
 
 **Find** (line ~848):
 ```json
@@ -357,14 +379,17 @@ After making these changes, verify:
 
 ### Quick Verification Checklist
 
-- [ ] Search entire schema for `"Convenience property"` - should return 0 results in Cell/Node/Edge
-- [ ] Node schema has NO `label` property
-- [ ] Node schema has NO `style` property
-- [ ] Edge schema has NO `label` property
-- [ ] Edge schema has NO `style` property
-- [ ] All examples use `attrs.text.text` instead of `label`
-- [ ] All examples use `attrs.body.*` and `attrs.line.*` instead of `style`
-- [ ] `parent` property has `"nullable": true`
+<!-- VERIFIED 2026-01-25: All items below are complete EXCEPT the Edge description update -->
+
+- [x] Search entire schema for `"Convenience property"` - should return 0 results in Cell/Node/Edge
+- [x] Node schema has NO `label` property
+- [x] Node schema has NO `style` property
+- [x] Edge schema has NO `label` property
+- [x] Edge schema has NO `style` property
+- [x] All examples use `attrs.text.text` instead of `label`
+- [x] All examples use `attrs.body.*` and `attrs.line.*` instead of `style`
+- [x] `parent` property has `"nullable": true`
+- [ ] Edge description does not mention "convenience properties" (STILL NEEDS UPDATE - line 965)
 
 ---
 
@@ -423,10 +448,10 @@ After making these changes, verify:
 
 ## References
 
-- **X6 Node Documentation**: https://x6.antv.antgroup.com/en/docs/api/model/node
-- **X6 Edge Documentation**: https://x6.antv.antgroup.com/en/docs/api/model/edge
-- **X6 Attrs Documentation**: https://x6.antv.antgroup.com/en/docs/api/registry/attr
-- **Current OpenAPI Spec**: `docs-server/reference/apis/tmi-openapi.json`
+- **X6 Node Documentation**: https://x6.antv.vision/en/docs/api/model/node/
+- **X6 Edge Documentation**: https://x6.antv.vision/zh/docs/api/model/edge/ (English: https://x6.antv.vision/en/docs/api/model/edge/)
+- **X6 Attrs Documentation**: https://x6.antv.vision/en/docs/tutorial/intermediate/attrs/
+- **Current OpenAPI Spec**: Located in `tmi` repository at `api-schema/tmi-openapi.json`
 - **Frontend X6 Types**: `src/app/pages/dfd/domain/value-objects/x6-types.ts`
 
 ---
@@ -437,3 +462,32 @@ For questions about this change:
 - **Frontend Impact**: [Your Team]
 - **X6 Integration**: See `docs/reference/architecture/overview.md`
 - **Cell Format**: See `src/app/pages/dfd/domain/value-objects/` for X6 native structure examples
+
+<!--
+VERIFICATION SUMMARY
+Verified on: 2026-01-25
+Agent: verify-migrate-doc
+
+Verified items:
+- OpenAPI spec location: Located at `/Users/efitz/Projects/tmi/api-schema/tmi-openapi.json` (NOT at docs-server path)
+- Node schema label property: DOES NOT EXIST (already removed or never added)
+- Node schema style property: DOES NOT EXIST (already removed or never added)
+- Edge schema label property: DOES NOT EXIST (already removed or never added)
+- Edge schema style property: DOES NOT EXIST (already removed or never added)
+- Cell description: Does NOT mention convenience properties
+- Node description: Does NOT mention convenience properties
+- parent property nullable: VERIFIED - has "nullable": true at line 912
+- Frontend X6 Types path: VERIFIED - exists at src/app/pages/dfd/domain/value-objects/x6-types.ts
+- Architecture overview path: VERIFIED - exists at docs/reference/architecture/overview.md
+
+Items needing review:
+- Edge description (line 965 in OpenAPI): Still mentions "convenience properties (label, style)" - NEEDS UPDATE
+- OpenAPI file path references: Document and CLAUDE.md reference non-existent `docs-server/reference/apis/tmi-openapi.json`
+- X6 documentation URLs: All URLs in original document used incorrect domain (x6.antv.antgroup.com instead of x6.antv.vision)
+- Line number references: All specific line numbers are outdated due to schema changes
+
+External URL Verification:
+- https://x6.antv.vision/en/docs/api/model/node/ - Confirmed via web search (official X6 documentation)
+- https://x6.antv.vision/zh/docs/api/model/edge/ - Confirmed via web search (official X6 documentation)
+- https://x6.antv.vision/en/docs/tutorial/intermediate/attrs/ - Confirmed via web search (official X6 attrs tutorial)
+-->
