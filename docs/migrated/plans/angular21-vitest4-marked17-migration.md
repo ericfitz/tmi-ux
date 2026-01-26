@@ -150,10 +150,10 @@ pnpm install
 
 **File:** [src/app/app.config.ts](../../src/app/app.config.ts)
 
-**Current code (lines 304-306):**
+**Current code (lines 312-314):**
 ```typescript
 provideMarkdown({
-  sanitize: SecurityContext.NONE,
+  sanitize: SecurityContext.NONE, // We handle sanitization via DOMPurify in the renderer
 }),
 ```
 
@@ -169,7 +169,7 @@ provideMarkdown(),
 },
 ```
 
-Note: The project uses DOMPurify in the custom renderer (lines 168-249), so the SANITIZE provider just passes through. The actual sanitization happens in `markedOptionsFactory`.
+Note: The project uses DOMPurify in the custom renderer (`markedOptionsFactory`, lines 133-265), so the SANITIZE provider just passes through. The actual sanitization happens in `markedOptionsFactory`.
 
 **Verify:**
 ```bash
@@ -346,7 +346,7 @@ The migration branch can be preserved for debugging.
 ## Future: Zoneless Migration (Deferred)
 
 Angular 21 defaults to zoneless for new apps. This codebase will continue using zone.js for now due to:
-- 32 `detectChanges()` calls across 10 components (heavy in DFD/collaboration)
+- 33 `detectChanges()` calls across 9 components (heavy in DFD/collaboration)
 - 4 NgZone usages for performance optimization (activity tracking, session timers)
 - AntV/X6 graph events fire outside Angular context
 - Test infrastructure depends on zone.js
