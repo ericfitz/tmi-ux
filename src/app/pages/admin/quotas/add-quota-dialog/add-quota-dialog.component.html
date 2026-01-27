@@ -7,7 +7,7 @@
 
     @if (!selectedUser) {
       <form [formGroup]="userSearchForm">
-        <mat-form-field class="search-field">
+        <mat-form-field appearance="outline" class="search-field">
           <mat-label [transloco]="'admin.quotas.addDialog.searchLabel'">Search by email</mat-label>
           <input
             matInput
