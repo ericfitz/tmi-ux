@@ -28,6 +28,14 @@ export const SESSION_CONFIG = {
    * Default: 2 minutes
    */
   ACTIVITY_WINDOW_MS: 2 * 60 * 1000,
+
+  /**
+   * Grace period after token expiry before forcing logout.
+   * This allows in-flight refresh requests to complete before triggering logout.
+   * If a refresh succeeds during this window, new timers are set from the new token.
+   * Default: 30 seconds
+   */
+  LOGOUT_GRACE_PERIOD_MS: 30 * 1000,
 } as const;
 
 /**

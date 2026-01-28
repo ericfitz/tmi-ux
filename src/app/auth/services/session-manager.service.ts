@@ -16,6 +16,14 @@ import {
  * Service for managing user sessions.
  * Handles token expiration with activity-based proactive refresh and warnings.
  *
+ * DESIGN: Token-driven timer management with grace period
+ * - When a new token is received, ALL existing timers are cancelled and new timers are set
+ *   based on the new token's expiry time
+ * - The logout timer fires at (token expiry + 30 second grace period) to allow in-flight
+ *   refresh requests to complete
+ * - If a refresh succeeds before the grace period ends, new timers replace the old ones
+ * - If refresh fails or exceeds the grace period, automatic logout occurs
+ *
  * KNOWN LIMITATION: Multi-tab coordination is not implemented.
  * Each browser tab runs its own SessionManagerService instance, which means:
  * - Multiple tabs may show their own warning dialogs independently
@@ -32,7 +40,7 @@ export class SessionManagerService {
   // Timer for showing warning dialog (fires 5 minutes before expiry for inactive users)
   private warningTimer: Subscription | null = null;
 
-  // Timer for automatic logout (fires at token expiry)
+  // Timer for automatic logout (fires at token expiry + grace period)
   private logoutTimer: Subscription | null = null;
 
   // Timer for checking activity and proactively refreshing token
@@ -49,6 +57,9 @@ export class SessionManagerService {
 
   // Interval for checking user activity (in milliseconds)
   private readonly activityCheckInterval = SESSION_CONFIG.ACTIVITY_CHECK_INTERVAL_MS;
+
+  // Grace period after token expiry before forcing logout (allows in-flight refreshes to complete)
+  private readonly logoutGracePeriod = SESSION_CONFIG.LOGOUT_GRACE_PERIOD_MS;
 
   constructor(
     private authService: AuthService,
@@ -145,18 +156,24 @@ export class SessionManagerService {
       });
     }
 
-    // Set logout timer
+    // Set logout timer with grace period to allow in-flight refresh requests to complete.
+    // If a refresh succeeds before this timer fires, storeToken() triggers onTokenRefreshed()
+    // which calls startExpiryTimers() and cancels this timer via stopExpiryTimers().
+    const logoutDelay = timeToExpiry + this.logoutGracePeriod;
     this.ngZone.runOutsideAngular(() => {
-      this.logoutTimer = timer(timeToExpiry).subscribe(() => {
+      this.logoutTimer = timer(logoutDelay).subscribe(() => {
         this.ngZone.run(() => {
-          this.logger.warn('Token expired, forcing logout');
+          this.logger.warn('Token expired (past grace period), forcing logout');
           this.handleSessionTimeout();
         });
       });
     });
 
+    const logoutTime = new Date(now.getTime() + logoutDelay);
     this.logger.debugComponent('SessionManager', 'Logout timer set', {
-      logoutTime: token.expiresAt.toISOString(),
+      tokenExpiry: token.expiresAt.toISOString(),
+      logoutTime: logoutTime.toISOString(),
+      gracePeriodMs: this.logoutGracePeriod,
     });
   }
 
@@ -297,22 +314,17 @@ export class SessionManagerService {
 
   /**
    * Handle user requesting session extension
-   * Forces a token refresh to extend the session and restart timers
+   * Forces a token refresh to extend the session and restart timers.
    *
-   * IMPORTANT: Cancels all timers BEFORE starting the HTTP refresh to prevent
-   * race conditions where the old logout timer fires while the refresh is in-flight.
-   * New timers will be set when storeToken() triggers onTokenRefreshed().
+   * Note: We do NOT cancel timers here. The logout timer includes a grace period
+   * (see startExpiryTimers) that allows this refresh request to complete. If the
+   * refresh succeeds, storeToken() triggers onTokenRefreshed() which sets new timers
+   * and cancels the old ones. If refresh fails, handleSessionTimeout() is called.
    */
   private handleExtendSession(): void {
     this.logger.info('User requested session extension');
 
-    // CRITICAL: Cancel all timers immediately to prevent race condition
-    // The old logout timer could fire while the refresh HTTP request is in-flight.
-    // New timers will be set when storeToken() triggers onTokenRefreshed().
-    // Keep dialog open to show "Extending..." state until we know the result.
-    this.cancelTimersOnly();
-
-    // Force a token refresh to get a new token with extended expiry
+    // Force a token refresh to get a new token with extended expiry.
     // Note: We call refreshToken() directly instead of getValidToken() because getValidToken()
     // will return the existing token if it's still valid (doesn't expire within 1 minute).
     // Since the warning appears 5 minutes before expiry, the token would still be considered
