@@ -109,7 +109,6 @@ import {
   ClipboardDialogData,
 } from './clipboard-dialog/clipboard-dialog.component';
 
-
 import { HelpDialogComponent } from './help-dialog/help-dialog.component';
 
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
