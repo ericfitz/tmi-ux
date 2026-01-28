@@ -437,11 +437,13 @@
   },
   "contextMenu": {
     "addInverseConnection": "Tambah Koneksi Terbalik",
+    "dataAssets": "Aset Data...",
     "editText": "Edit Teks",
     "moveBackward": "Pindah ke Belakang",
     "moveForward": "Pindah ke Depan",
     "moveToBack": "Pindah ke Paling Belakang",
     "moveToFront": "Pindah ke Paling Depan",
+    "noDataAssetsAvailable": "Tidak ada aset data yang tersedia",
     "showObject": "Tampilkan Objek"
   },
   "dashboard": {

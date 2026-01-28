@@ -437,11 +437,13 @@
   },
   "contextMenu": {
     "addInverseConnection": "Ajouter une connexion inverse",
+    "dataAssets": "Actifs de données...",
     "editText": "Modifier le texte",
     "moveBackward": "Reculer",
     "moveForward": "Avancer",
     "moveToBack": "Mettre a l'arriere-plan",
     "moveToFront": "Mettre au premier plan",
+    "noDataAssetsAvailable": "Aucun actif de données disponible",
     "showObject": "Afficher l'objet"
   },
   "dashboard": {

@@ -402,9 +402,16 @@
           <mat-icon>swap_horiz</mat-icon>
           <span>{{ 'contextMenu.addInverseConnection' | transloco }}</span>
         </button>
-        <button mat-menu-item (click)="selectDataAsset()" [disabled]="!threatModelId">
+      }
+      <!-- Data Assets sub-menu - only for data flow components (not text boxes or security boundaries) -->
+      @if (!selectedCellIsTextBox && !selectedCellIsSecurityBoundary) {
+        <button
+          mat-menu-item
+          [matMenuTriggerFor]="dataAssetsSubMenu"
+          [disabled]="!threatModelId || isReadOnlyMode"
+        >
           <mat-icon>storage</mat-icon>
-          <span>{{ 'dataAssetDialog.title.select' | transloco }}</span>
+          <span>{{ 'contextMenu.dataAssets' | transloco }}</span>
         </button>
       }
 
@@ -456,6 +463,28 @@
           <mat-icon>visibility</mat-icon>
           <span>{{ 'contextMenu.showObject' | transloco }}</span>
         </button>
+      }
+    </mat-menu>
+
+    <!-- Data Assets sub-menu -->
+    <mat-menu #dataAssetsSubMenu="matMenu" (menuOpened)="loadDataAssetsForMenu()">
+      @if (dataAssets.length === 0) {
+        <button mat-menu-item disabled>
+          <mat-icon>info</mat-icon>
+          <span>{{ 'contextMenu.noDataAssetsAvailable' | transloco }}</span>
+        </button>
+      } @else {
+        @for (asset of dataAssets; track asset.id) {
+          <button mat-menu-item (click)="toggleDataAsset(asset.id, $event)">
+            <mat-checkbox
+              [checked]="isDataAssetChecked(asset.id)"
+              [indeterminate]="isDataAssetIndeterminate(asset.id)"
+              (click)="$event.stopPropagation()"
+            >
+              {{ asset.name }}
+            </mat-checkbox>
+          </button>
+        }
       }
     </mat-menu>
   </div>

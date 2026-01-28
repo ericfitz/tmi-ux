@@ -437,11 +437,13 @@
   },
   "contextMenu": {
     "addInverseConnection": "الٹا کنکشن شامل کریں",
+    "dataAssets": "ڈیٹا اثاثے...",
     "editText": "متن میں ترمیم کریں",
     "moveBackward": "پیچھے منتقل کریں",
     "moveForward": "آگے منتقل کریں",
     "moveToBack": "سب سے پیچھے منتقل کریں",
     "moveToFront": "سب سے آگے منتقل کریں",
+    "noDataAssetsAvailable": "کوئی ڈیٹا اثاثے دستیاب نہیں ہیں",
     "showObject": "آبجیکٹ دکھائیں"
   },
   "dashboard": {

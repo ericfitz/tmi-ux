@@ -437,11 +437,13 @@
   },
   "contextMenu": {
     "addInverseConnection": "เพิ่มการเชื่อมต่อแบบกลับกัน",
+    "dataAssets": "สินทรัพย์ข้อมูล...",
     "editText": "แก้ไขข้อความ",
     "moveBackward": "เลื่อนไปข้างหลัง",
     "moveForward": "เลื่อนไปข้างหน้า",
     "moveToBack": "เลื่อนไปด้านหลัง",
     "moveToFront": "เลื่อนไปด้านหน้า",
+    "noDataAssetsAvailable": "ไม่มีสินทรัพย์ข้อมูลที่พร้อมใช้งาน",
     "showObject": "แสดงอ็อบเจกต์"
   },
   "dashboard": {

@@ -437,11 +437,13 @@
   },
   "contextMenu": {
     "addInverseConnection": "Добавить обратное соединение",
+    "dataAssets": "Активы данных...",
     "editText": "Редактировать текст",
     "moveBackward": "Переместить назад",
     "moveForward": "Переместить вперёд",
     "moveToBack": "На задний план",
     "moveToFront": "На передний план",
+    "noDataAssetsAvailable": "Нет доступных активов данных",
     "showObject": "Показать объект"
   },
   "dashboard": {

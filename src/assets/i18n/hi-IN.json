@@ -437,11 +437,13 @@
   },
   "contextMenu": {
     "addInverseConnection": "उलटा कनेक्शन जोड़ें",
+    "dataAssets": "डेटा एसेट्स...",
     "editText": "टेक्स्ट संपादित करें",
     "moveBackward": "पीछे ले जाएं",
     "moveForward": "आगे ले जाएं",
     "moveToBack": "सबसे पीछे ले जाएं",
     "moveToFront": "सबसे आगे ले जाएं",
+    "noDataAssetsAvailable": "कोई डेटा एसेट उपलब्ध नहीं है",
     "showObject": "ऑब्जेक्ट दिखाएं"
   },
   "dashboard": {

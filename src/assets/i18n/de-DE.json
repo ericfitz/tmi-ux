@@ -437,11 +437,13 @@
   },
   "contextMenu": {
     "addInverseConnection": "Umgekehrte Verbindung hinzufügen",
+    "dataAssets": "Datenbestände...",
     "editText": "Text bearbeiten",
     "moveBackward": "Nach hinten bewegen",
     "moveForward": "Nach vorne bewegen",
     "moveToBack": "In den Hintergrund",
     "moveToFront": "In den Vordergrund",
+    "noDataAssetsAvailable": "Keine Datenbestände verfügbar",
     "showObject": "Objekt anzeigen"
   },
   "dashboard": {

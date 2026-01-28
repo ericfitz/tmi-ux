@@ -55,12 +55,68 @@ export class ReferenceRewriterService {
   /**
    * Rewrites ID references in a Diagram object.
    * Diagrams contain cells with IDs that should be preserved (client-managed).
-   * No ID rewriting needed for diagrams currently.
+   * Rewrites data asset references in cell data.
    */
   rewriteDiagramReferences(diagram: Record<string, unknown>): Record<string, unknown> {
-    // Cell IDs are client-managed and preserved as-is
-    // No cross-references to rewrite in diagrams currently
-    return { ...diagram };
+    const rewritten = { ...diagram };
+
+    // Process cells if present
+    if (Array.isArray(rewritten['cells'])) {
+      rewritten['cells'] = (rewritten['cells'] as Record<string, unknown>[]).map(cell => {
+        if (cell['data'] && typeof cell['data'] === 'object') {
+          return {
+            ...cell,
+            data: this.rewriteCellDataAssetReferences(cell['data'] as Record<string, unknown>),
+          };
+        }
+        return { ...cell };
+      });
+    }
+
+    return rewritten;
+  }
+
+  /**
+   * Rewrites data asset references in cell data.
+   * Handles both new data_assets[] array format and legacy dataAssetId format.
+   * Translates original asset IDs to new server-assigned IDs.
+   */
+  rewriteCellDataAssetReferences(cellData: Record<string, unknown>): Record<string, unknown> {
+    const rewritten = { ...cellData };
+
+    // Handle new data_assets array format
+    if (Array.isArray(rewritten['data_assets'])) {
+      const translatedIds = (rewritten['data_assets'] as string[])
+        .map(assetId => this._idTranslation.getAssetId(assetId))
+        .filter((id): id is string => id !== undefined);
+
+      if (translatedIds.length > 0) {
+        rewritten['data_assets'] = translatedIds;
+      } else {
+        // All asset IDs were unmapped - remove the field
+        delete rewritten['data_assets'];
+      }
+    }
+
+    // Handle legacy dataAssetId format - migrate to new format during import
+    if (typeof rewritten['dataAssetId'] === 'string' && rewritten['dataAssetId']) {
+      const newId = this._idTranslation.getAssetId(rewritten['dataAssetId']);
+      if (newId) {
+        // Migrate to new format
+        if (Array.isArray(rewritten['data_assets'])) {
+          // Append to existing array if not already present
+          if (!(rewritten['data_assets'] as string[]).includes(newId)) {
+            rewritten['data_assets'] = [...(rewritten['data_assets'] as string[]), newId];
+          }
+        } else {
+          rewritten['data_assets'] = [newId];
+        }
+      }
+      // Always remove legacy field during import
+      delete rewritten['dataAssetId'];
+    }
+
+    return rewritten;
   }
 
   /**

@@ -462,11 +462,13 @@
   },
   "contextMenu": {
     "addInverseConnection": "Add Inverse Connection",
+    "dataAssets": "Data Assets...",
     "editText": "Edit Text",
     "moveBackward": "Move Backward",
     "moveForward": "Move Forward",
     "moveToBack": "Move to Back",
     "moveToFront": "Move to Front",
+    "noDataAssetsAvailable": "No data assets available",
     "showObject": "Show Object"
   },
   "dashboard": {

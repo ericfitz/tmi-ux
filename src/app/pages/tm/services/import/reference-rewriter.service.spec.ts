@@ -265,7 +265,7 @@ describe('ReferenceRewriterService', () => {
   });
 
   describe('rewriteDiagramReferences()', () => {
-    it('should return a copy of the diagram unchanged', () => {
+    it('should return a copy of the diagram', () => {
       const diagram = {
         id: 'diagram-1',
         name: 'Architecture Diagram',
@@ -277,7 +277,6 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteDiagramReferences(diagram);
 
-      expect(result).toEqual(diagram);
       expect(result).not.toBe(diagram); // Should be a copy
     });
 
@@ -292,10 +291,180 @@ describe('ReferenceRewriterService', () => {
 
       const result = service.rewriteDiagramReferences(diagram);
 
-      expect(result.cells).toEqual([
-        { id: 'client-cell-123', shape: 'rect' },
-        { id: 'client-cell-456', shape: 'edge' },
-      ]);
+      expect((result.cells as any[])[0].id).toBe('client-cell-123');
+      expect((result.cells as any[])[1].id).toBe('client-cell-456');
+    });
+
+    it('should rewrite data_assets in cell data when translations exist', () => {
+      mockIdTranslation.getAssetId.mockImplementation((id: string) => {
+        const map: Record<string, string> = {
+          'old-asset-1': 'new-asset-1',
+          'old-asset-2': 'new-asset-2',
+        };
+        return map[id];
+      });
+
+      const diagram = {
+        id: 'diagram-1',
+        cells: [
+          {
+            id: 'cell-1',
+            shape: 'rect',
+            data: { data_assets: ['old-asset-1', 'old-asset-2'] },
+          },
+        ],
+      };
+
+      const result = service.rewriteDiagramReferences(diagram);
+
+      expect((result.cells as any[])[0].data.data_assets).toEqual(['new-asset-1', 'new-asset-2']);
+    });
+
+    it('should handle cells without data property', () => {
+      const diagram = {
+        id: 'diagram-1',
+        cells: [{ id: 'cell-1', shape: 'rect' }],
+      };
+
+      const result = service.rewriteDiagramReferences(diagram);
+
+      expect((result.cells as any[])[0]).toEqual({ id: 'cell-1', shape: 'rect' });
+    });
+  });
+
+  describe('rewriteCellDataAssetReferences()', () => {
+    it('should rewrite data_assets array when translations exist', () => {
+      mockIdTranslation.getAssetId.mockImplementation((id: string) => {
+        const map: Record<string, string> = {
+          'old-asset-1': 'new-asset-1',
+          'old-asset-2': 'new-asset-2',
+        };
+        return map[id];
+      });
+
+      const cellData = {
+        nodeType: 'process',
+        data_assets: ['old-asset-1', 'old-asset-2'],
+      };
+
+      const result = service.rewriteCellDataAssetReferences(cellData);
+
+      expect(result.data_assets).toEqual(['new-asset-1', 'new-asset-2']);
+      expect(result.nodeType).toBe('process');
+    });
+
+    it('should filter out unmapped asset IDs from data_assets', () => {
+      mockIdTranslation.getAssetId.mockImplementation((id: string) => {
+        if (id === 'old-asset-1') return 'new-asset-1';
+        return undefined; // old-asset-2 not mapped
+      });
+
+      const cellData = {
+        data_assets: ['old-asset-1', 'old-asset-2'],
+      };
+
+      const result = service.rewriteCellDataAssetReferences(cellData);
+
+      expect(result.data_assets).toEqual(['new-asset-1']);
+    });
+
+    it('should remove data_assets when all IDs are unmapped', () => {
+      mockIdTranslation.getAssetId.mockReturnValue(undefined);
+
+      const cellData = {
+        nodeType: 'store',
+        data_assets: ['unmapped-1', 'unmapped-2'],
+      };
+
+      const result = service.rewriteCellDataAssetReferences(cellData);
+
+      expect(result.data_assets).toBeUndefined();
+      expect(result.nodeType).toBe('store');
+    });
+
+    it('should migrate legacy dataAssetId to data_assets format', () => {
+      mockIdTranslation.getAssetId.mockReturnValue('new-asset-123');
+
+      const cellData = {
+        dataAssetId: 'old-asset-123',
+      };
+
+      const result = service.rewriteCellDataAssetReferences(cellData);
+
+      expect(result.data_assets).toEqual(['new-asset-123']);
+      expect(result.dataAssetId).toBeUndefined();
+    });
+
+    it('should remove legacy dataAssetId even when translation not found', () => {
+      mockIdTranslation.getAssetId.mockReturnValue(undefined);
+
+      const cellData = {
+        dataAssetId: 'unmapped-asset',
+        nodeType: 'actor',
+      };
+
+      const result = service.rewriteCellDataAssetReferences(cellData);
+
+      expect(result.dataAssetId).toBeUndefined();
+      expect(result.data_assets).toBeUndefined();
+      expect(result.nodeType).toBe('actor');
+    });
+
+    it('should merge legacy dataAssetId into existing data_assets', () => {
+      mockIdTranslation.getAssetId.mockImplementation((id: string) => {
+        const map: Record<string, string> = {
+          'old-asset-1': 'new-asset-1',
+          'legacy-asset': 'new-legacy-asset',
+        };
+        return map[id];
+      });
+
+      const cellData = {
+        data_assets: ['old-asset-1'],
+        dataAssetId: 'legacy-asset',
+      };
+
+      const result = service.rewriteCellDataAssetReferences(cellData);
+
+      expect(result.data_assets).toEqual(['new-asset-1', 'new-legacy-asset']);
+      expect(result.dataAssetId).toBeUndefined();
+    });
+
+    it('should not duplicate when legacy dataAssetId already in data_assets', () => {
+      mockIdTranslation.getAssetId.mockReturnValue('same-asset-id');
+
+      const cellData = {
+        data_assets: ['old-asset'],
+        dataAssetId: 'old-asset',
+      };
+
+      const result = service.rewriteCellDataAssetReferences(cellData);
+
+      expect(result.data_assets).toEqual(['same-asset-id']);
+      expect(result.dataAssetId).toBeUndefined();
+    });
+
+    it('should handle empty data_assets array', () => {
+      const cellData = {
+        data_assets: [],
+        nodeType: 'process',
+      };
+
+      const result = service.rewriteCellDataAssetReferences(cellData);
+
+      expect(result.data_assets).toBeUndefined();
+      expect(result.nodeType).toBe('process');
+    });
+
+    it('should handle cell data without asset references', () => {
+      const cellData = {
+        nodeType: 'process',
+        customField: 'value',
+      };
+
+      const result = service.rewriteCellDataAssetReferences(cellData);
+
+      expect(result).toEqual(cellData);
     });
   });
 

@@ -26,6 +26,7 @@ import {
   ChangeDetectorRef,
   HostListener,
 } from '@angular/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuTrigger } from '@angular/material/menu';
@@ -107,10 +108,8 @@ import {
   ClipboardDialogComponent,
   ClipboardDialogData,
 } from './clipboard-dialog/clipboard-dialog.component';
-import {
-  DataAssetDialogComponent,
-  DataAssetDialogData,
-} from './data-asset-dialog/data-asset-dialog.component';
+
+
 import { HelpDialogComponent } from './help-dialog/help-dialog.component';
 
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
@@ -135,6 +134,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     ...COMMON_IMPORTS,
     ...CORE_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
+    MatCheckboxModule,
     MatMenuModule,
     MatTooltipModule,
     TranslocoModule,
@@ -221,6 +221,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // Context menu state
   contextMenuPosition = { x: '0px', y: '0px' };
   private _rightClickedCell: any = null;
+
+  // Data assets sub-menu state
+  dataAssets: Array<{ id: string; name: string }> = [];
+  private _selectedCellDataAssets: Map<string, Set<string>> = new Map(); // cellId -> assetIds
 
   // Environment flags for dev-only features
   isProduction = environment.production;
@@ -1726,97 +1730,186 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Open the data asset selection dialog for the right-clicked edge
+   * Load data assets from the threat model when the sub-menu opens
    */
-  selectDataAsset(): void {
-    const edge = this._rightClickedCell;
-    if (!edge || !edge.isEdge()) {
-      this.logger.info('Select data asset requires an edge');
-      return;
-    }
-
+  loadDataAssetsForMenu(): void {
     if (!this.threatModelId) {
-      this.logger.warn('Cannot open data asset dialog: No threat model ID available');
+      this.logger.warn('Cannot load data assets: No threat model ID available');
+      this.dataAssets = [];
       return;
     }
 
-    // Get current data asset ID from cell data
-    const cellData = edge.getData() || {};
-    const currentDataAssetId = cellData.dataAssetId;
+    // Load current data asset associations for selected/right-clicked cells
+    this._loadSelectedCellDataAssets();
 
-    // Load threat model to get assets
+    // Load threat model to get data assets
     this._subscriptions.add(
       this.threatModelService.getThreatModelById(this.threatModelId).subscribe({
         next: threatModel => {
           if (!threatModel) {
             this.logger.error('Threat model not found', { id: this.threatModelId });
+            this.dataAssets = [];
             return;
           }
 
+          // Filter to only data assets and sort alphabetically
           const assets = threatModel.assets || [];
+          this.dataAssets = assets
+            .filter(asset => asset.type === 'data')
+            .map(asset => ({ id: asset.id, name: asset.name }))
+            .sort((a, b) => a.name.localeCompare(b.name));
 
-          // Determine if dialog should be read-only based on authorization
-          const isReadOnly = this.isReadOnlyMode;
-
-          const dialogData: DataAssetDialogData = {
-            cellId: edge.id,
-            currentDataAssetId: currentDataAssetId,
-            assets: assets,
-            isReadOnly: isReadOnly,
-          };
-
-          const dialogRef = this.dialog.open(DataAssetDialogComponent, {
-            width: '500px',
-            data: dialogData,
-          });
-
-          dialogRef.afterClosed().subscribe(result => {
-            if (result !== undefined) {
-              this._updateCellDataAsset(edge.id, result);
-            }
-          });
+          this.cdr.detectChanges();
         },
         error: error => {
-          this.logger.error('Failed to load threat model for data asset dialog', error);
+          this.logger.error('Failed to load threat model for data assets menu', error);
+          this.dataAssets = [];
         },
       }),
     );
   }
 
   /**
-   * Update the data asset ID for a cell
-   * @param cellId The ID of the cell to update
-   * @param dataAssetId The new data asset ID (null to remove)
+   * Load current data asset associations for selected/right-clicked cells
    */
-  private _updateCellDataAsset(cellId: string, dataAssetId: string | null): void {
+  private _loadSelectedCellDataAssets(): void {
+    this._selectedCellDataAssets.clear();
+
     const graph = this.appDfdOrchestrator.getGraph;
-    if (!graph) {
-      this.logger.error('Cannot update cell data asset: graph not available');
-      return;
+    if (!graph) return;
+
+    // Get target cells: either the right-clicked cell or all selected cells
+    const targetCells = this._rightClickedCell
+      ? [this._rightClickedCell]
+      : this.appDfdOrchestrator.getSelectedCells();
+
+    for (const cell of targetCells) {
+      const assetIds = this._getCellDataAssets(cell);
+      this._selectedCellDataAssets.set(cell.id, new Set(assetIds));
+    }
+  }
+
+  /**
+   * Get data assets from a cell, handling both new and legacy formats
+   */
+  private _getCellDataAssets(cell: any): string[] {
+    const data = cell.getData() || {};
+
+    // New format: data_assets array
+    if (data.data_assets && Array.isArray(data.data_assets)) {
+      return data.data_assets;
     }
 
-    const cell = graph.getCellById(cellId);
-    if (!cell) {
-      this.logger.error('Cannot update cell data asset: cell not found', { cellId });
-      return;
+    // Legacy format: single dataAssetId
+    if (data.dataAssetId && typeof data.dataAssetId === 'string') {
+      return [data.dataAssetId];
     }
 
+    return [];
+  }
+
+  /**
+   * Set data assets on a cell using the new format
+   */
+  private _setCellDataAssets(cell: any, assetIds: string[]): void {
     const currentData = cell.getData() || {};
     const updatedData = { ...currentData };
 
-    // If dataAssetId is null, delete the property; otherwise set it
-    if (dataAssetId === null) {
-      delete updatedData.dataAssetId;
+    // Remove legacy format if present
+    delete updatedData.dataAssetId;
+
+    // Set new format (or remove if empty)
+    if (assetIds.length > 0) {
+      updatedData.data_assets = assetIds;
     } else {
-      updatedData.dataAssetId = dataAssetId;
+      delete updatedData.data_assets;
     }
 
     cell.setData(updatedData);
+  }
 
-    this.logger.info('Updated cell data asset', {
-      cellId,
-      dataAssetId: dataAssetId || 'none',
+  /**
+   * Check if a data asset is associated with ALL selected/right-clicked cells
+   */
+  isDataAssetChecked(assetId: string): boolean {
+    if (this._selectedCellDataAssets.size === 0) return false;
+
+    for (const assetSet of this._selectedCellDataAssets.values()) {
+      if (!assetSet.has(assetId)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Check if a data asset is associated with SOME (but not all) selected cells
+   */
+  isDataAssetIndeterminate(assetId: string): boolean {
+    if (this._selectedCellDataAssets.size <= 1) return false;
+
+    let hasAsset = false;
+    let missingAsset = false;
+
+    for (const assetSet of this._selectedCellDataAssets.values()) {
+      if (assetSet.has(assetId)) {
+        hasAsset = true;
+      } else {
+        missingAsset = true;
+      }
+
+      // If we found both states, it's indeterminate
+      if (hasAsset && missingAsset) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Toggle a data asset association for all selected/right-clicked cells
+   */
+  toggleDataAsset(assetId: string, event: Event): void {
+    event.stopPropagation();
+
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) {
+      this.logger.error('Cannot toggle data asset: graph not available');
+      return;
+    }
+
+    // Determine if we should add or remove the asset
+    // If checked (associated with all), remove it; otherwise add it
+    const shouldAdd = !this.isDataAssetChecked(assetId);
+
+    // Get target cells
+    const targetCells = this._rightClickedCell
+      ? [this._rightClickedCell]
+      : this.appDfdOrchestrator.getSelectedCells();
+
+    for (const cell of targetCells) {
+      const currentAssets = new Set(this._getCellDataAssets(cell));
+
+      if (shouldAdd) {
+        currentAssets.add(assetId);
+      } else {
+        currentAssets.delete(assetId);
+      }
+
+      this._setCellDataAssets(cell, Array.from(currentAssets));
+
+      // Update our tracking map
+      this._selectedCellDataAssets.set(cell.id, currentAssets);
+    }
+
+    this.logger.info('Toggled data asset association', {
+      assetId,
+      action: shouldAdd ? 'added' : 'removed',
+      cellCount: targetCells.length,
     });
+
+    this.cdr.detectChanges();
 
     // The existing auto-save mechanism will handle persistence
   }

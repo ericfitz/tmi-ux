@@ -437,11 +437,13 @@
   },
   "contextMenu": {
     "addInverseConnection": "הוסף חיבור הפוך",
+    "dataAssets": "נכסי נתונים...",
     "editText": "ערוך טקסט",
     "moveBackward": "הזז אחורה",
     "moveForward": "הזז קדימה",
     "moveToBack": "הזז לאחור",
     "moveToFront": "הזז לקדמה",
+    "noDataAssetsAvailable": "אין נכסי נתונים זמינים",
     "showObject": "הצג אובייקט"
   },
   "dashboard": {

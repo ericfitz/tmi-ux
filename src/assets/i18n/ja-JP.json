@@ -437,11 +437,13 @@
   },
   "contextMenu": {
     "addInverseConnection": "逆接続を追加",
+    "dataAssets": "データ資産...",
     "editText": "テキストを編集",
     "moveBackward": "背面へ移動",
     "moveForward": "前面へ移動",
     "moveToBack": "最背面へ移動",
     "moveToFront": "最前面へ移動",
+    "noDataAssetsAvailable": "データ資産がありません",
     "showObject": "オブジェクトを表示"
   },
   "dashboard": {

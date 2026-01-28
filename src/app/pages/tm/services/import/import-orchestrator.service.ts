@@ -629,8 +629,19 @@ export class ImportOrchestratorService {
           };
 
           if (hasCells) {
-            // Filter cells to match API schema (ensure edge 'shape' field is present)
-            diagramUpdate['cells'] = this._fieldFilter.filterCells(cells);
+            // Filter cells to match API schema and rewrite data asset references
+            const filteredCells = this._fieldFilter.filterCells(cells) as Record<string, unknown>[];
+            diagramUpdate['cells'] = filteredCells.map(cell => {
+              if (cell['data'] && typeof cell['data'] === 'object') {
+                return {
+                  ...cell,
+                  data: this._referenceRewriter.rewriteCellDataAssetReferences(
+                    cell['data'] as Record<string, unknown>,
+                  ),
+                };
+              }
+              return cell;
+            });
           }
 
           if (hasDescription) {

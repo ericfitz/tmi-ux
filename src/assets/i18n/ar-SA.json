@@ -437,11 +437,13 @@
   },
   "contextMenu": {
     "addInverseConnection": "إضافة اتصال عكسي",
+    "dataAssets": "أصول البيانات...",
     "editText": "تحرير النص",
     "moveBackward": "تحريك للخلف",
     "moveForward": "تحريك للأمام",
     "moveToBack": "نقل إلى الخلف",
     "moveToFront": "نقل إلى المقدمة",
+    "noDataAssetsAvailable": "لا توجد أصول بيانات متاحة",
     "showObject": "عرض الكائن"
   },
   "dashboard": {
