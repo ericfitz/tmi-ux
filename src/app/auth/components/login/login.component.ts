@@ -30,6 +30,7 @@ import { environment } from '../../../../environments/environment';
 export class LoginComponent implements OnInit {
   isLoading = false;
   error: string | null = null;
+  sessionExpired = false;
   oauthProviders: OAuthProviderInfo[] = [];
   samlProviders: SAMLProviderInfo[] = [];
   providersLoading = true;
@@ -60,9 +61,15 @@ export class LoginComponent implements OnInit {
     // Load available providers from TMI server
     this.loadProviders();
 
-    // Get returnUrl from query params
+    // Get returnUrl and reason from query params
     this.route.queryParams.pipe(take(1)).subscribe(queryParams => {
       this.returnUrl = (queryParams['returnUrl'] as string | undefined) || '/dashboard';
+
+      // Check if user was redirected due to session expiry
+      const reason = queryParams['reason'] as string | undefined;
+      if (reason === 'session_expired') {
+        this.sessionExpired = true;
+      }
     });
   }
 

@@ -4,15 +4,26 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 import { LoggerService } from '../../core/services/logger.service';
 import { ActivityTrackerService } from '../../core/services/activity-tracker.service';
+import { NotificationService } from '../../shared/services/notification.service';
 import { AuthService } from './auth.service';
+import { SESSION_CONFIG } from '../config/session.config';
 import {
   SessionExpiryDialogComponent,
   SessionExpiryDialogData,
 } from '../../core/components/session-expiry-dialog/session-expiry-dialog.component';
 
 /**
- * Service for managing user sessions
- * Handles token expiration with activity-based proactive refresh and warnings
+ * Service for managing user sessions.
+ * Handles token expiration with activity-based proactive refresh and warnings.
+ *
+ * KNOWN LIMITATION: Multi-tab coordination is not implemented.
+ * Each browser tab runs its own SessionManagerService instance, which means:
+ * - Multiple tabs may show their own warning dialogs independently
+ * - User may extend session in one tab while another still shows expiring countdown
+ * - No cross-tab synchronization of timer state
+ *
+ * Future enhancement: Use BroadcastChannel API or localStorage events to
+ * coordinate session state across tabs.
  */
 @Injectable({
   providedIn: 'root',
@@ -31,13 +42,13 @@ export class SessionManagerService {
   private warningDialog: MatDialogRef<SessionExpiryDialogComponent, string> | null = null;
 
   // Time before expiration to show warning for inactive users (in milliseconds)
-  private readonly warningTime = 5 * 60 * 1000; // 5 minutes
+  private readonly warningTime = SESSION_CONFIG.WARNING_TIME_MS;
 
   // Time before expiration to proactively refresh for active users (in milliseconds)
-  private readonly proactiveRefreshTime = 15 * 60 * 1000; // 15 minutes
+  private readonly proactiveRefreshTime = SESSION_CONFIG.PROACTIVE_REFRESH_MS;
 
   // Interval for checking user activity (in milliseconds)
-  private readonly activityCheckInterval = 60 * 1000; // 1 minute
+  private readonly activityCheckInterval = SESSION_CONFIG.ACTIVITY_CHECK_INTERVAL_MS;
 
   constructor(
     private authService: AuthService,
@@ -45,6 +56,7 @@ export class SessionManagerService {
     private ngZone: NgZone,
     private dialog: MatDialog,
     private activityTracker: ActivityTrackerService,
+    private notificationService: NotificationService,
   ) {
     // this.logger.info('Session Manager Service initialized');
     // Register with AuthService to avoid circular dependency
@@ -200,8 +212,37 @@ export class SessionManagerService {
         error: error => {
           this.logger.error('Proactive token refresh failed', error);
           // Don't force logout on proactive refresh failure - let normal expiry flow handle it
+          // But notify the user so they can save their work
+          this.notificationService.showWarning(
+            'Session refresh failed. Please save your work to avoid data loss.',
+            8000,
+          );
         },
       });
+    }
+  }
+
+  /**
+   * Cancel all timers without closing the warning dialog
+   * Used when starting a refresh operation to prevent race conditions
+   */
+  private cancelTimersOnly(): void {
+    if (this.warningTimer) {
+      this.logger.debugComponent('SessionManager', 'Cancelling warning timer');
+      this.warningTimer.unsubscribe();
+      this.warningTimer = null;
+    }
+
+    if (this.logoutTimer) {
+      this.logger.debugComponent('SessionManager', 'Cancelling logout timer');
+      this.logoutTimer.unsubscribe();
+      this.logoutTimer = null;
+    }
+
+    if (this.activityCheckTimer) {
+      this.logger.debugComponent('SessionManager', 'Cancelling activity check timer');
+      this.activityCheckTimer.unsubscribe();
+      this.activityCheckTimer = null;
     }
   }
 
@@ -210,23 +251,7 @@ export class SessionManagerService {
    * Made public so AuthService can call it during logout
    */
   stopExpiryTimers(): void {
-    if (this.warningTimer) {
-      this.logger.debugComponent('SessionManager', 'Stopping warning timer');
-      this.warningTimer.unsubscribe();
-      this.warningTimer = null;
-    }
-
-    if (this.logoutTimer) {
-      this.logger.debugComponent('SessionManager', 'Stopping logout timer');
-      this.logoutTimer.unsubscribe();
-      this.logoutTimer = null;
-    }
-
-    if (this.activityCheckTimer) {
-      this.logger.debugComponent('SessionManager', 'Stopping activity check timer');
-      this.activityCheckTimer.unsubscribe();
-      this.activityCheckTimer = null;
-    }
+    this.cancelTimersOnly();
 
     // Close warning dialog if open
     if (this.warningDialog) {
@@ -273,9 +298,19 @@ export class SessionManagerService {
   /**
    * Handle user requesting session extension
    * Forces a token refresh to extend the session and restart timers
+   *
+   * IMPORTANT: Cancels all timers BEFORE starting the HTTP refresh to prevent
+   * race conditions where the old logout timer fires while the refresh is in-flight.
+   * New timers will be set when storeToken() triggers onTokenRefreshed().
    */
   private handleExtendSession(): void {
     this.logger.info('User requested session extension');
+
+    // CRITICAL: Cancel all timers immediately to prevent race condition
+    // The old logout timer could fire while the refresh HTTP request is in-flight.
+    // New timers will be set when storeToken() triggers onTokenRefreshed().
+    // Keep dialog open to show "Extending..." state until we know the result.
+    this.cancelTimersOnly();
 
     // Force a token refresh to get a new token with extended expiry
     // Note: We call refreshToken() directly instead of getValidToken() because getValidToken()
@@ -287,7 +322,7 @@ export class SessionManagerService {
         this.logger.info('Session extension successful', {
           newExpiry: newToken.expiresAt.toISOString(),
         });
-        // Store the new token - this will trigger onTokenRefreshed() and restart timers
+        // Store the new token - this triggers onTokenRefreshed() which sets new timers
         this.authService.storeToken(newToken);
         // Close the warning dialog since session was extended
         if (this.warningDialog) {
@@ -296,7 +331,7 @@ export class SessionManagerService {
       },
       error: error => {
         this.logger.error('Session extension failed', error);
-        // If refresh fails, handle session timeout
+        // Refresh failed - token is likely invalid, proceed to logout
         this.handleSessionTimeout();
       },
     });

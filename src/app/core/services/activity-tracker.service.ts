@@ -1,7 +1,8 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, fromEvent, merge } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, fromEvent, merge } from 'rxjs';
 import { throttleTime, tap } from 'rxjs/operators';
 import { LoggerService } from './logger.service';
+import { SESSION_CONFIG } from '../../auth/config/session.config';
 
 /**
  * Service for tracking user activity
@@ -11,8 +12,8 @@ import { LoggerService } from './logger.service';
   providedIn: 'root',
 })
 export class ActivityTrackerService implements OnDestroy {
-  // Time window for considering user "active" (2 minutes)
-  private readonly activityWindow = 2 * 60 * 1000;
+  // Time window for considering user "active"
+  private readonly activityWindow = SESSION_CONFIG.ACTIVITY_WINDOW_MS;
 
   // Throttle time for activity events (1 second - prevents excessive updates)
   private readonly eventThrottleTime = 1000;
@@ -26,6 +27,9 @@ export class ActivityTrackerService implements OnDestroy {
 
   // Whether tracking is currently enabled
   private isTracking = false;
+
+  // Subscription for activity events (stored for cleanup)
+  private activitySubscription: Subscription | null = null;
 
   // Track the current activity state to detect state changes
   private currentActiveState = true; // Start as active since we just loaded
@@ -64,7 +68,7 @@ export class ActivityTrackerService implements OnDestroy {
       );
 
       // Throttle events and update last activity time
-      activityEvents$
+      this.activitySubscription = activityEvents$
         .pipe(
           throttleTime(this.eventThrottleTime),
           tap(() => {
@@ -88,6 +92,13 @@ export class ActivityTrackerService implements OnDestroy {
     }
 
     this.logger.debugComponent('ActivityTracker', 'Stopping activity tracking');
+
+    // Unsubscribe from activity events to prevent memory leak
+    if (this.activitySubscription) {
+      this.activitySubscription.unsubscribe();
+      this.activitySubscription = null;
+    }
+
     this.isTracking = false;
   }
 

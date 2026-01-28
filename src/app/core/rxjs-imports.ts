@@ -18,6 +18,7 @@ export { filter } from 'rxjs/internal/operators/filter';
 export { tap } from 'rxjs/internal/operators/tap';
 export { catchError } from 'rxjs/internal/operators/catchError';
 export { switchMap } from 'rxjs/internal/operators/switchMap';
+export { take } from 'rxjs/internal/operators/take';
 export { takeUntil } from 'rxjs/internal/operators/takeUntil';
 export { throwError } from 'rxjs/internal/observable/throwError';
 export { shareReplay } from 'rxjs/internal/operators/shareReplay';

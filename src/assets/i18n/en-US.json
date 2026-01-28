@@ -613,6 +613,7 @@
     "pleaseSignIn": "Please sign in to continue.",
     "redirectingToLogin": "Redirecting to sign in page...",
     "samlProvidersTitle": "SAML Sign-in Providers",
+    "sessionExpired": "Your session has expired. Please sign in again.",
     "signingIn": "Signing in...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Sign In to TMI",

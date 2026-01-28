@@ -4,6 +4,14 @@
       <mat-card-title>{{ 'login.title' | transloco }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
+      <!-- Session expired message -->
+      @if (sessionExpired) {
+        <div class="session-expired-message">
+          <span class="material-symbols-outlined info-icon">info</span>
+          <span>{{ 'login.sessionExpired' | transloco }}</span>
+        </div>
+      }
+
       <!-- Explanatory text -->
       <p class="login-explanation">{{ 'login.explanation' | transloco }}</p>
 

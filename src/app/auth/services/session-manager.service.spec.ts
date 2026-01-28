@@ -16,6 +16,7 @@ describe('SessionManagerService', () => {
   let mockDialog: any;
   let mockNgZone: any;
   let mockActivityTracker: any;
+  let mockNotificationService: any;
   let mockIsAuthenticated$: Subject<boolean>;
 
   beforeEach(() => {
@@ -56,6 +57,14 @@ describe('SessionManagerService', () => {
       lastActivity$: of(new Date()),
     };
 
+    mockNotificationService = {
+      showWarning: vi.fn(),
+      showSuccess: vi.fn(),
+      showSaveError: vi.fn(),
+      showConnectionError: vi.fn(),
+      dismissAll: vi.fn(),
+    };
+
     mockIsAuthenticated$ = new Subject<boolean>();
     mockAuthService.isAuthenticated$ = mockIsAuthenticated$.asObservable();
 
@@ -66,6 +75,7 @@ describe('SessionManagerService', () => {
       mockNgZone,
       mockDialog,
       mockActivityTracker,
+      mockNotificationService,
     );
   });
 
@@ -334,6 +344,27 @@ describe('SessionManagerService', () => {
 
       // Should not logout on proactive refresh failure
       expect(mockAuthService.logout).not.toHaveBeenCalled();
+    });
+
+    it('should show warning notification if proactive refresh fails', () => {
+      mockActivityTracker.isUserActive.mockReturnValue(true);
+
+      const mockToken: JwtToken = {
+        token: 'mock.jwt.token',
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes from now
+        expiresIn: 600,
+      };
+      mockAuthService.getStoredToken.mockReturnValue(mockToken);
+      mockAuthService.refreshToken.mockReturnValue(throwError(() => new Error('Refresh failed')));
+
+      // Trigger activity check
+      (service as any).checkActivityAndRefreshIfNeeded();
+
+      // Should show warning notification on proactive refresh failure
+      expect(mockNotificationService.showWarning).toHaveBeenCalledWith(
+        'Session refresh failed. Please save your work to avoid data loss.',
+        8000,
+      );
     });
   });
 });

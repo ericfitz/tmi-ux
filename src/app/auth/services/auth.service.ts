@@ -22,10 +22,13 @@ import {
   BehaviorSubject,
   Observable,
   catchError,
+  filter,
   from,
   map,
   of,
   shareReplay,
+  switchMap,
+  take,
   throwError,
   tap,
 } from '../../core/rxjs-imports';
@@ -80,11 +83,18 @@ export class AuthService {
   private userProfileSubject = new BehaviorSubject<UserProfile | null>(null);
   private jwtTokenSubject = new BehaviorSubject<JwtToken | null>(null);
   private authErrorSubject = new BehaviorSubject<AuthError | null>(null);
+  private tokenReadySubject = new BehaviorSubject<boolean>(false);
 
   // Public observables
   isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
   userProfile$ = this.userProfileSubject.asObservable();
   authError$ = this.authErrorSubject.asObservable();
+
+  /**
+   * Observable that emits true when initial token loading/decryption is complete.
+   * Use this to wait before making API calls that require authentication.
+   */
+  tokenReady$ = this.tokenReadySubject.asObservable();
 
   // Backward compatibility for existing components
   username$ = this.userProfileSubject.pipe(map(profile => profile?.display_name || ''));
@@ -286,17 +296,49 @@ export class AuthService {
   }
 
   /**
-   * Get a valid access token, refreshing if necessary
+   * Get a valid access token, refreshing if necessary.
+   * If token decryption is still in progress, waits for it to complete.
    * @returns Observable that resolves to a valid JWT token
    */
   getValidToken(): Observable<JwtToken> {
     // this.logger.debugComponent('Auth', 'getValidToken called');
+
+    // Check if we have a token in cache
     const token = this.getStoredToken();
-    if (!token) {
-      // this.logger.debugComponent('Auth', 'getValidToken: No token available');
-      return throwError(() => new Error('No token available'));
+
+    if (token) {
+      // Token is available, validate and potentially refresh it
+      return this.processValidToken(token);
     }
 
+    // No token in cache - check if we need to wait for decryption
+    if (!this.tokenReadySubject.value) {
+      // Token initialization is still in progress, wait for it
+      return this.tokenReady$.pipe(
+        filter(ready => ready),
+        take(1),
+        switchMap(() => {
+          // Now check for token again after initialization complete
+          const decryptedToken = this.getStoredToken();
+          if (!decryptedToken) {
+            return throwError(() => new Error('No token available'));
+          }
+          return this.processValidToken(decryptedToken);
+        }),
+      );
+    }
+
+    // Token initialization complete but no token found
+    // this.logger.debugComponent('Auth', 'getValidToken: No token available');
+    return throwError(() => new Error('No token available'));
+  }
+
+  /**
+   * Process a valid token - validate and refresh if needed
+   * @param token JWT token to process
+   * @returns Observable that resolves to a valid JWT token
+   */
+  private processValidToken(token: JwtToken): Observable<JwtToken> {
     // Use the retrieved token for validation to avoid multiple storage calls
     const isValid = this.isTokenValid(token);
     const shouldRefresh = this.shouldRefreshToken(token);
@@ -369,6 +411,7 @@ export class AuthService {
   /**
    * Check auth status from local storage
    * Loads JWT token and user profile if available
+   * Sets tokenReady$ to true when complete (even on error)
    */
   async checkAuthStatus(): Promise<void> {
     try {
@@ -412,6 +455,9 @@ export class AuthService {
     } catch (error) {
       this.logger.error('Error checking auth status', error);
       this.clearAuthData();
+    } finally {
+      // Signal that token initialization is complete (success or failure)
+      this.tokenReadySubject.next(true);
     }
   }
 
@@ -1667,6 +1713,14 @@ export class AuthService {
             expiresAt,
           };
 
+          // Check for refresh token rotation (security audit logging)
+          if (currentToken.refreshToken === response.refresh_token) {
+            this.logger.debug(
+              'Refresh token was not rotated by server (same token returned). ' +
+                'This may indicate the server does not support refresh token rotation.',
+            );
+          }
+
           // this.logger.debugComponent('Auth', 'Token refresh successful', {
           //   newExpiry: newToken.expiresAt.toISOString(),
           //   hasNewRefreshToken: !!newToken.refreshToken,
@@ -1823,8 +1877,16 @@ export class AuthService {
   }
 
   /**
-   * Generate encryption key for token storage based on browser fingerprint
-   * This provides some protection against token theft while remaining recoverable
+   * Generate encryption key for token storage based on browser fingerprint.
+   *
+   * SECURITY NOTE: This provides defense-in-depth only, not strong protection.
+   * The fingerprint components (user agent, language, screen size, timezone) are
+   * easily enumerable by an attacker with localStorage access. The session salt
+   * in sessionStorage is lost on tab close, making tokens unrecoverable.
+   *
+   * Future enhancement: Consider using Web Crypto API to generate a random key
+   * stored in IndexedDB for stronger protection, while accepting the trade-off
+   * that tokens become unrecoverable if IndexedDB is cleared.
    */
   private getTokenEncryptionKey(): string {
     // Get or create session-specific salt
@@ -1914,7 +1976,10 @@ export class AuthService {
     } catch (error) {
       // Decryption failure is expected when browser session context changes
       // (different fingerprint/salt makes the encryption key invalid)
-      this.logger.debug('Token decryption failed - session context may have changed', error);
+      this.logger.debug('Token decryption failed - clearing stale encrypted data', error);
+      // Clear stale encrypted data to prevent confusion and ensure clean state
+      localStorage.removeItem(this.tokenStorageKey);
+      localStorage.removeItem(this.profileStorageKey);
       return null;
     }
   }
