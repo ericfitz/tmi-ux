@@ -59,6 +59,12 @@ describe('AppEventHandlersService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
+    // Mock crypto.randomUUID for threat creation
+    vi.stubGlobal('crypto', {
+      ...globalThis.crypto,
+      randomUUID: vi.fn(() => 'test-uuid-1234'),
+    });
+
     mockLogger = {
       debugComponent: vi.fn(),
       error: vi.fn(),
