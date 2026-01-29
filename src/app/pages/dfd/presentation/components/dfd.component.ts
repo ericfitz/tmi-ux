@@ -2142,7 +2142,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
               timestamp: Date.now(),
               edgeId: cell.id,
               updates: {
-                properties: { metadata: result },
+                properties: { _metadata: result },
               },
             }
           : {
@@ -2153,7 +2153,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
               timestamp: Date.now(),
               nodeId: cell.id,
               updates: {
-                properties: { metadata: result },
+                properties: { _metadata: result },
               },
             };
 
