@@ -430,7 +430,7 @@ export class AppDfdFacade {
       style: node.getAttrs(),
       properties: {
         zIndex: node.getZIndex(),
-        metadata: node.getData()?._metadata || [],
+        _metadata: node.getData()?._metadata || [],
         parent: node.getParent()?.id,
       },
     };
