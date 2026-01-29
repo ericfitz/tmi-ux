@@ -1741,27 +1741,22 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // Load current data asset associations for selected/right-clicked cells
     this._loadSelectedCellDataAssets();
 
-    // Load threat model to get data assets
+    // Fetch assets directly from the assets endpoint
+    // (the GET /threat_models/{id} endpoint does not include assets)
     this._subscriptions.add(
-      this.threatModelService.getThreatModelById(this.threatModelId).subscribe({
-        next: threatModel => {
-          if (!threatModel) {
-            this.logger.error('Threat model not found', { id: this.threatModelId });
-            this.dataAssets = [];
-            return;
-          }
-
+      this.threatModelService.getAssetsForThreatModel(this.threatModelId).subscribe({
+        next: assets => {
           // Filter to only data assets and sort alphabetically
-          const assets = threatModel.assets || [];
           this.dataAssets = assets
             .filter(asset => asset.type === 'data')
             .map(asset => ({ id: asset.id, name: asset.name }))
             .sort((a, b) => a.name.localeCompare(b.name));
 
+          this.cdr.markForCheck();
           this.cdr.detectChanges();
         },
         error: error => {
-          this.logger.error('Failed to load threat model for data assets menu', error);
+          this.logger.error('Failed to load assets for data assets menu', error);
           this.dataAssets = [];
         },
       }),
@@ -1896,10 +1891,59 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         currentAssets.delete(assetId);
       }
 
-      this._setCellDataAssets(cell, Array.from(currentAssets));
+      const newAssetIds = Array.from(currentAssets);
 
       // Update our tracking map
       this._selectedCellDataAssets.set(cell.id, currentAssets);
+
+      // Use executeOperation to properly trigger history and auto-save
+      const isEdge = cell.isEdge && cell.isEdge();
+      const operation = isEdge
+        ? {
+            id: `update-data-assets-${Date.now()}-${cell.id}`,
+            type: 'update-edge' as const,
+            source: 'user-interaction' as const,
+            priority: 'high' as const,
+            timestamp: Date.now(),
+            edgeId: cell.id,
+            updates: {
+              properties: { data_assets: newAssetIds.length > 0 ? newAssetIds : undefined },
+            },
+          }
+        : {
+            id: `update-data-assets-${Date.now()}-${cell.id}`,
+            type: 'update-node' as const,
+            source: 'user-interaction' as const,
+            priority: 'high' as const,
+            timestamp: Date.now(),
+            nodeId: cell.id,
+            updates: {
+              properties: { data_assets: newAssetIds.length > 0 ? newAssetIds : undefined },
+            },
+          };
+
+      this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+        next: operationResult => {
+          if (operationResult.success) {
+            this.logger.debugComponent(
+              'DfdComponent',
+              'Data asset association updated successfully',
+              {
+                cellId: cell.id,
+                assetId,
+                action: shouldAdd ? 'added' : 'removed',
+              },
+            );
+          } else {
+            this.logger.error('Failed to update data asset association', {
+              error: operationResult.error,
+            });
+          }
+        },
+        error: error => {
+          this.logger.error('Error updating data asset association', { error });
+        },
+      });
     }
 
     this.logger.info('Toggled data asset association', {
@@ -1909,8 +1953,6 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.cdr.detectChanges();
-
-    // The existing auto-save mechanism will handle persistence
   }
 
   isRightClickedCellEdge(): boolean {
@@ -2074,6 +2116,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       graph.select(cell);
       this.updateSelectionState();
     }
+
+    // Pre-load data assets for the sub-menu (the menuOpened event on nested menus is unreliable)
+    this.loadDataAssetsForMenu();
 
     // Open the context menu
     if (this.contextMenuTrigger) {
