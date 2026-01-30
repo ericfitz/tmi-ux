@@ -113,6 +113,7 @@ import { HelpDialogComponent } from './help-dialog/help-dialog.component';
 
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
+import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
 import { InlineEditComponent } from '../../../../shared/components/inline-edit/inline-edit.component';
 import {
   ThreatEditorDialogComponent,
@@ -248,6 +249,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     private frameworkService: FrameworkService,
     private websocketCollaborationAdapter: InfraWebsocketCollaborationAdapter,
     private authService: AuthService,
+    private userPreferencesService: UserPreferencesService,
   ) {
     // this.logger.info('DfdComponent v2 constructor called');
 
@@ -2244,16 +2246,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // Helper Methods
 
   private loadDeveloperToolsPreference(): void {
-    try {
-      const stored = localStorage.getItem('tmi_user_preferences');
-      if (stored) {
-        const prefs = JSON.parse(stored);
-        this.showDeveloperTools = prefs.showDeveloperTools ?? false;
-      }
-    } catch (e) {
-      this.logger.error('Error loading developer tools preference:', e);
-      this.showDeveloperTools = false;
-    }
+    this.userPreferencesService.preferences$.pipe(takeUntil(this._destroy$)).subscribe(prefs => {
+      this.showDeveloperTools = prefs.showDeveloperTools;
+      this.cdr.markForCheck();
+    });
   }
 
   private updateSelectionState(): void {
