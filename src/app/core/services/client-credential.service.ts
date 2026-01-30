@@ -26,7 +26,7 @@ export class ClientCredentialService {
    * List all client credentials for the current user
    */
   public list(): Observable<ClientCredentialInfo[]> {
-    return this.apiService.get<ClientCredentialInfo[]>('users/me/client_credentials').pipe(
+    return this.apiService.get<ClientCredentialInfo[]>('me/client_credentials').pipe(
       tap(credentials => {
         this.logger.debug('Client credentials loaded', { count: credentials.length });
       }),
@@ -44,7 +44,7 @@ export class ClientCredentialService {
   public create(input: CreateClientCredentialRequest): Observable<ClientCredentialResponse> {
     return this.apiService
       .post<ClientCredentialResponse>(
-        'users/me/client_credentials',
+        'me/client_credentials',
         input as unknown as Record<string, unknown>,
       )
       .pipe(
@@ -62,7 +62,7 @@ export class ClientCredentialService {
    * Delete a client credential
    */
   public delete(id: string): Observable<void> {
-    return this.apiService.delete<void>(`users/me/client_credentials/${id}`).pipe(
+    return this.apiService.delete<void>(`me/client_credentials/${id}`).pipe(
       tap(() => {
         this.logger.info('Client credential deleted', { id });
       }),

@@ -1,6 +1,6 @@
 /**
  * Client credential type definitions
- * Based on TMI API /users/me/client_credentials endpoints
+ * Based on TMI API /me/client_credentials endpoints
  */
 
 /**
