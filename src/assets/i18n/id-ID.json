@@ -29,7 +29,6 @@
   "addons": {
     "invokeDialog": {
       "allObjects": "(Semua)",
-      "threatModelId": "ID Model Ancaman",
       "errorInvoking": "Gagal memanggil addon. Silakan coba lagi.",
       "invalidJson": "Format JSON tidak valid",
       "invocationQueued": "Pemanggilan addon dalam antrean",
@@ -37,6 +36,7 @@
       "payloadHint": "Data JSON untuk dikirim ke addon",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "threatModelId": "ID Model Ancaman",
       "title": "Panggil Addon"
     }
   },
@@ -300,10 +300,10 @@
   "common": {
     "about": "Tentang",
     "actions": "Tindakan",
-    "back": "Kembali",
     "addMetadata": "Tambah Metadata",
     "addThreat": "Tambah Ancaman",
     "addons": "Addon",
+    "back": "Kembali",
     "cancel": "Batal",
     "cellId": "ID Sel",
     "classification": "Klasifikasi",
@@ -562,8 +562,8 @@
     "noProvidersConfigured": "Tidak ada penyedia autentikasi yang dikonfigurasi.",
     "oauthFailed": "Autentikasi OAuth gagal. Silakan coba lagi.",
     "oauthProvidersTitle": "Penyedia Masuk OAuth",
-    "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk kembali.",
     "samlProvidersTitle": "Penyedia Masuk SAML",
+    "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk kembali.",
     "signingIn": "Sedang masuk...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Masuk ke TMI",
