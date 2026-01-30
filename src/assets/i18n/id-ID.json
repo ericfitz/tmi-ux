@@ -29,6 +29,7 @@
   "addons": {
     "invokeDialog": {
       "allObjects": "(Semua)",
+      "threatModelId": "ID Model Ancaman",
       "errorInvoking": "Gagal memanggil addon. Silakan coba lagi.",
       "invalidJson": "Format JSON tidak valid",
       "invocationQueued": "Pemanggilan addon dalam antrean",
@@ -87,7 +88,6 @@
         "subjectRequired": "Subjek wajib diisi",
         "title": "{{admin.administrators.addDialog.save}}"
       },
-      "createdAt": "Ditambahkan pada",
       "filterLabel": "Filter Administrator",
       "filterPlaceholder": "Cari berdasarkan email atau nama grup",
       "listTitle": "Administrator Sistem",
@@ -261,20 +261,6 @@
     }
   },
   "auth": {
-    "actions": {
-      "log_in_again": "Masuk Lagi",
-      "try_again": "Coba Lagi"
-    },
-    "errors": {
-      "pkce_exchange_failed": "Gagal masuk",
-      "pkce_exchange_failed_detail": "Tidak dapat menyelesaikan proses masuk. Silakan coba lagi.",
-      "pkce_generation_failed": "Pengaturan autentikasi gagal",
-      "pkce_generation_failed_detail": "Tidak dapat menginisialisasi proses masuk yang aman. Silakan coba lagi.",
-      "pkce_verifier_expired": "Sesi masuk habis waktu",
-      "pkce_verifier_expired_detail": "Sesi masuk Anda telah kedaluwarsa. Silakan coba lagi.",
-      "pkce_verifier_not_found": "Sesi hilang",
-      "pkce_verifier_not_found_detail": "Sesi masuk Anda hilang. Ini dapat terjadi jika browser Anda ditutup atau halaman disegarkan. Silakan masuk lagi."
-    },
     "unauthorized": {
       "401": "401 Tidak Sah",
       "403": "403 Terlarang",
@@ -289,16 +275,11 @@
     "availableCollaborationSessions": "Sesi Kolaborasi yang Tersedia",
     "collaboratorsHeader": "Peserta",
     "copyLink": "Salin Tautan",
-    "currentPresenter": "Presenter Saat Ini",
     "denyPresenterRequest": "Tolak Permintaan Presenter",
-    "endCollaboration": "Akhiri Kolaborasi",
     "hostedBy": "Diselenggarakan oleh",
     "isRequestingPresenterPrivileges": "meminta hak akses presenter",
     "joinSession": "Gabung Sesi",
     "justNow": "baru saja",
-    "leaveSession": "Tinggalkan Sesi",
-    "makePresenter": "Jadikan Presenter",
-    "manageCollaboration": "Kelola Kolaborasi",
     "manageParticipants": "Kelola Peserta",
     "noActiveSessions": "Tidak Ada Sesi Kolaborasi Aktif",
     "participantRequestsPresenterRole": "Peserta Meminta Peran Presenter",
@@ -306,13 +287,10 @@
     "removeFromSession": "Keluarkan dari Sesi",
     "requestPresenter": "Minta Presenter",
     "sessionStarted": "Dimulai",
-    "shareLinkHeader": "Bagikan Tautan Kolaborasi",
-    "startCollaboration": "Mulai Kolaborasi",
     "takeBackPresenter": "Ambil Kembali Presenter",
     "title": "Peserta Sesi Kolaborasi",
     "userJoined": "{{user}} bergabung ke kolaborasi",
     "userLeft": "{{user}} meninggalkan kolaborasi",
-    "viewParticipants": "Lihat Peserta",
     "websocketStatus": {
       "connected": "Websocket Terhubung",
       "noSession": "Tidak Ada Sesi Kolaborasi Aktif",
@@ -322,6 +300,7 @@
   "common": {
     "about": "Tentang",
     "actions": "Tindakan",
+    "back": "Kembali",
     "addMetadata": "Tambah Metadata",
     "addThreat": "Tambah Ancaman",
     "addons": "Addon",
@@ -331,6 +310,7 @@
     "clear": "Bersihkan",
     "close": "Tutup",
     "confirmDelete": "Apakah Anda yakin ingin menghapus {{item}} \"{{name}}\"? Tindakan ini tidak dapat dibatalkan.",
+    "confirmDeleteMessage": "Apakah Anda yakin ingin menghapus {{objectType}} \"{{name}}\"?",
     "copy": "Salin",
     "copyToClipboard": "Salin ke Papan Klip",
     "create": "Buat",
@@ -339,6 +319,14 @@
     "cut": "Potong",
     "delete": "Hapus",
     "deleteConfirm": "Hapus Model Ancaman",
+    "deleteWarningConfirmationField": "Konfirmasi Penghapusan",
+    "deleteWarningConfirmationMatch": "Teks konfirmasi cocok",
+    "deleteWarningConfirmationMismatch": "Teks konfirmasi tidak cocok",
+    "deleteWarningConfirmationValue": "hilang selamanya",
+    "deleteWarningPermanent": "Tindakan ini tidak dapat dibatalkan dan akan menghapus secara permanen {{objectType}} beserta semua metadata yang terkait dengannya.",
+    "deleteWarningReferenceOnly": "Untuk objek yang disimpan di luar TMI seperti Dokumen dan Repositori, hanya referensi TMI ke objek tersebut yang akan dihapus.",
+    "deleteWarningSubEntities": "Semua entitas TMI terkait seperti diagram, ancaman, dan catatan juga akan dihapus secara permanen.",
+    "deleteWarningTypeConfirmation": "Untuk mengonfirmasi, silakan ketik \"{{confirmValue}}\" di bidang di bawah ini.",
     "description": "Deskripsi",
     "diagramId": "ID Diagram",
     "done": "Selesai",
@@ -347,11 +335,11 @@
     "editThreat": "Edit Ancaman",
     "emailLabel": "Alamat Email",
     "fonts": "Font",
+    "id": "ID",
     "identityProvider": "Penyedia Identitas",
     "issueUri": "URL Isu",
     "language": "{{language}}",
     "lastModified": "Terakhir Diubah",
-    "lastModifiedDate": "{{common.lastModified}}",
     "lastUpdated": "Terakhir diperbarui",
     "manage": "Kelola",
     "manageMetadata": "Kelola Metadata",
@@ -394,7 +382,6 @@
     "provider": "Penyedia",
     "readOnly": "Hanya Baca",
     "readOnlyTooltip": "Anda memiliki akses hanya baca ke model ancaman ini. Hubungi pemilik untuk meminta izin edit.",
-    "refresh": "Segarkan",
     "roles": {
       "owner": "Pemilik",
       "reader": "Pembaca",
@@ -417,10 +404,8 @@
     },
     "threatDescription": "Deskripsi Ancaman",
     "threatDescriptionPlaceholder": "Jelaskan Ancaman Secara Detail",
-    "threatId": "ID Ancaman",
     "threatName": "Nama Ancaman",
     "threatType": "Jenis Ancaman",
-    "thumbnail": "Gambar Mini",
     "type": "Jenis",
     "unsavedChangesWarning": "Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin menutup?",
     "userId": "ID Pengguna",
@@ -473,10 +458,8 @@
   },
   "debugDialogs": {
     "clipboardDialog": {
-      "cellCount": "Jumlah Sel",
       "clearClipboard": "Bersihkan Papan Klip",
       "clipboardJson": "JSON Papan Klip",
-      "isEmpty": "Kosong",
       "title": "Data Papan Klip"
     },
     "common": {
@@ -514,13 +497,11 @@
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "Masukkan deskripsi diagram",
     "diagramNamePlaceholder": "Masukkan nama diagram",
-    "diagramPrefix": "{{common.objectTypes.diagram}}",
     "editDiagramDescription": "Klik untuk mengedit deskripsi diagram",
     "editDiagramName": "Klik untuk mengedit nama diagram",
     "editDisabledDuringCollaboration": "Pengeditan dinonaktifkan selama kolaborasi",
     "embedding": {
       "cannotEmbedIntoTextBox": "Tidak dapat menyematkan bentuk ke dalam kotak teks",
-      "cannotEmbedTextBox": "Kotak teks tidak dapat disematkan ke dalam bentuk lain",
       "circularEmbeddingPrevented": "Penyematan melingkar tidak diizinkan",
       "securityBoundaryRestriction": "Batas keamanan hanya dapat disematkan ke dalam batas keamanan lainnya"
     },
@@ -555,7 +536,6 @@
         "export": "Ekspor...",
         "help": "Bantuan",
         "redo": "Ulangi",
-        "share": "Bagikan",
         "showClipboard": "Tampilkan Papan Klip",
         "showGraphData": "Tampilkan Data Grafik",
         "showHistory": "Tampilkan Riwayat",
@@ -575,20 +555,14 @@
     "explanation": "Masuk dengan akun yang ada dari penyedia identitas terpercaya. Ini menghilangkan kebutuhan akan kata sandi terpisah, menyederhanakan pengalaman Anda sambil tetap aman. Kami tidak pernah menyimpan atau mengelola kata sandi—kredensial Anda tetap bersama penyedia Anda dan tidak dapat dikompromikan melalui kami.",
     "loadingProviders": "Memuat penyedia autentikasi...",
     "local": {
-      "emailInvalid": "Harap masukkan alamat email yang valid",
-      "emailRequired": "Alamat email wajib diisi",
-      "loginButton": "Masuk",
-      "subtitle": "Masukkan alamat email Anda untuk pengujian",
-      "title": "Masuk Pengembangan Lokal",
-      "userName": "Pengguna Lokal"
+      "title": "Masuk Pengembangan Lokal"
     },
     "loggingInWith": "Masuk dengan {{provider}}...",
     "loginWith": "Masuk dengan",
     "noProvidersConfigured": "Tidak ada penyedia autentikasi yang dikonfigurasi.",
     "oauthFailed": "Autentikasi OAuth gagal. Silakan coba lagi.",
     "oauthProvidersTitle": "Penyedia Masuk OAuth",
-    "pleaseSignIn": "Silakan masuk untuk melanjutkan.",
-    "redirectingToLogin": "Mengalihkan ke halaman masuk...",
+    "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk kembali.",
     "samlProvidersTitle": "Penyedia Masuk SAML",
     "signingIn": "Sedang masuk...",
     "signingInWith": "{{login.loggingInWith}}",
@@ -606,7 +580,7 @@
       "serverConnected": "Server Terhubung",
       "serverDegraded": "Server Berkinerja Buruk",
       "serverError": "Kesalahan Server",
-      "serverOffline": "Server Offline"
+      "serverOffline": "Server Tidak Tersedia"
     }
   },
   "noteEditor": {
@@ -617,16 +591,10 @@
     "descriptionPlaceholder": "Deskripsi opsional",
     "editMode": "Mode Edit",
     "errors": {
-      "clipboardAccessDenied": "Akses papan klip ditolak",
-      "contentTooLong": "Konten melebihi panjang maksimum",
-      "dataUrlsNotAllowed": "URL data tidak diizinkan",
-      "eventHandlersNotAllowed": "Event handler tidak diizinkan",
-      "javascriptProtocolNotAllowed": "Protokol JavaScript tidak diizinkan",
-      "scriptTagsNotAllowed": "Tag script tidak diizinkan"
+      "clipboardAccessDenied": "Akses papan klip ditolak"
     },
     "namePlaceholder": "Masukkan nama catatan",
     "previewMode": "Mode Pratinjau",
-    "saveFailed": "Gagal menyimpan catatan",
     "savedSuccessfully": "Catatan berhasil disimpan",
     "title": {
       "create": "Buat Catatan",
@@ -745,17 +713,13 @@
     "addPermission": "Tambah Izin",
     "branch": "Cabang",
     "commit": "Commit",
-    "confirmDeleteNote": "Apakah Anda yakin ingin menghapus catatan '{{name}}'?",
     "createFirstButton": "Buat Model Ancaman Pertama Anda",
     "createNewDiagram": "Buat Diagram Baru",
-    "createNewDocument": "Tambah Referensi Dokumen",
     "createNewRepository": "Tambah Referensi Repositori",
     "created": "{{common.created}}",
     "createdBy": "Dibuat Oleh",
     "dashboard": "Dasbor",
     "dataFlowDiagram": "Diagram Aliran Data",
-    "deleteConfirmationMessage": "Apakah Anda yakin ingin menghapus model ancaman \"{{name}}\"?",
-    "deleteWarningDownload": "Pertimbangkan untuk mengunduh salinan lokal terlebih dahulu untuk menyimpan pekerjaan Anda.",
     "deleteWarningPermanent": "Tindakan ini tidak dapat dibatalkan dan akan menghapus secara permanen semua diagram, ancaman, dan metadata terkait.",
     "descriptionPlaceholder": "Jelaskan Tujuan dan Ruang Lingkup Model Ancaman Ini",
     "details": "Detail Model Ancaman",
@@ -788,18 +752,10 @@
     "noRepositories": "Belum Ada Repositori Ditambahkan",
     "noThreats": "Belum Ada Ancaman Ditambahkan",
     "pageTitle": "Model Ancaman",
-    "permissionsDisplayName": "{{admin.groups.addDialog.displayName}}",
-    "permissionsEmail": "Email",
-    "permissionsGroupId": "ID Grup",
-    "permissionsIdp": "{{common.identityProvider}}",
-    "permissionsPrincipalId": "ID Prinsipal",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Peran",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
-    "permissionsSubjectPlaceholder": "Subjek (ID Pengguna, Alamat Email Pengguna, atau Nama Grup)",
-    "permissionsSubjectType": "{{common.type}}",
     "permissionsTooltip": "Kelola Izin",
-    "permissionsUserId": "{{common.userId}}",
     "rename": "Ubah Nama",
     "renameDiagram": "Ubah Nama Diagram",
     "repositoryDescriptionPlaceholder": "Jelaskan repositori atau tujuannya",
@@ -843,7 +799,6 @@
       "9": "Ditutup",
       "9.tooltip": "Tinjauan telah sepenuhnya selesai dan diarsipkan, tanpa tindakan lebih lanjut yang diperlukan."
     },
-    "statusChipPlaceholder": "Masukkan status dan tekan Enter",
     "statusLastUpdated": "Status Terakhir Diperbarui",
     "tag": "Tag",
     "threatModelFramework": "Framework Model Ancaman",
@@ -854,11 +809,6 @@
       "addDocument": "Tambah Dokumen",
       "addNote": "Tambah Catatan",
       "assetsCardTitle": "Aset adalah sumber daya berharga dalam sistem yang memerlukan perlindungan, seperti data, perangkat keras, perangkat lunak, infrastruktur, layanan, atau personel.",
-      "deleteAsset": "Hapus Aset",
-      "deleteDiagram": "Hapus Diagram",
-      "deleteDocument": "Hapus Dokumen",
-      "deleteRepository": "Hapus Referensi Repositori",
-      "deleteThreat": "Hapus Ancaman",
       "diagramsCardTitle": "Diagram di TMI adalah representasi yang dapat dibaca mesin dari pergerakan data dan proses dalam sistem, memungkinkan analisis keamanan manual dan otomatis.",
       "documentsCardTitle": "Referensi dokumen adalah tautan ke dokumen yang disimpan di luar TMI. Dokumen yang relevan menjelaskan sistem yang akan dianalisis, dan dapat digunakan oleh analis keamanan dan proses analisis otomatis.",
       "downloadModel": "Unduh Model",
@@ -1005,10 +955,8 @@
     "userProfile": {
       "currentRole": "Peran Model Ancaman Saat Ini",
       "groups": "Grup",
-      "primary": "Utama",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID Penyedia",
-      "providers": "Penyedia Terhubung",
       "title": "Profil Pengguna",
       "userId": "{{common.userId}}"
     }
