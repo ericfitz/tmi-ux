@@ -782,16 +782,12 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(httpClient.post).toHaveBeenCalledWith(
-        `${environment.apiUrl}/me/logout`,
-        null,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${mockJwtToken.token}`,
-          },
+      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/me/logout`, null, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${mockJwtToken.token}`,
         },
-      );
+      });
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token');
@@ -881,16 +877,12 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(httpClient.post).toHaveBeenCalledWith(
-        `${environment.apiUrl}/me/logout`,
-        null,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${mockJwtToken.token}`,
-          },
+      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/me/logout`, null, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${mockJwtToken.token}`,
         },
-      );
+      });
     });
 
     it('should exclude Authorization header when no token is available', () => {
@@ -905,15 +897,11 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(httpClient.post).toHaveBeenCalledWith(
-        `${environment.apiUrl}/me/logout`,
-        null,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/me/logout`, null, {
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+      });
     });
 
     it('should handle malformed token gracefully', () => {
@@ -928,15 +916,11 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(httpClient.post).toHaveBeenCalledWith(
-        `${environment.apiUrl}/me/logout`,
-        null,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/me/logout`, null, {
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+      });
     });
 
     it('should skip server logout for test users', () => {
