@@ -205,7 +205,8 @@ describe('EdgeInfo', () => {
       expect(edgeInfo.id).toBe('edge-1');
       expect(edgeInfo.source.cell).toBe('source');
       expect(edgeInfo.target.cell).toBe('target');
-      expect(edgeInfo.attrs?.text?.text).toBe('Data Flow');
+      // Labels are stored in labels array (X6 native format), not attrs.text.text
+      expect(edgeInfo.labels[0]?.attrs?.text?.text).toBe('Data Flow');
       expect(edgeInfo.source.port).toBe('right');
       expect(edgeInfo.target.port).toBe('left');
     });
@@ -227,7 +228,8 @@ describe('EdgeInfo', () => {
       expect(edgeInfo.target.cell).toBe('target');
       expect(edgeInfo.source.port).toBe('out-port');
       expect(edgeInfo.target.port).toBe('in-port');
-      expect(edgeInfo.attrs?.text?.text).toBe('Data Flow');
+      // Labels are stored in labels array (X6 native format), not attrs.text.text
+      expect(edgeInfo.labels[0]?.attrs?.text?.text).toBe('Data Flow');
     });
   });
 
@@ -264,9 +266,11 @@ describe('EdgeInfo', () => {
 
       // Assert
       expect(updated).not.toBe(originalEdgeInfo);
-      expect(updated.attrs?.text?.text).toBe(newLabel);
+      // Labels are stored in labels array (X6 native format)
+      expect(updated.labels[0]?.attrs?.text?.text).toBe(newLabel);
       expect(updated.id).toBe(originalEdgeInfo.id);
-      expect(originalEdgeInfo.attrs?.text?.text).toBe('Original Label'); // Original unchanged
+      // Original attrs remain unchanged (legacy format preserved)
+      expect(originalEdgeInfo.attrs?.text?.text).toBe('Original Label');
     });
 
     it('should create new EdgeInfo with updated vertices', () => {
@@ -729,7 +733,8 @@ describe('EdgeInfo', () => {
       expect(updatedEdgeInfo.tools).toEqual(tools);
       expect(updatedEdgeInfo.router).toEqual(router);
       expect(updatedEdgeInfo.connector).toEqual(connector);
-      expect(updatedEdgeInfo.attrs?.text?.text).toBe('Updated Label');
+      // Labels are stored in labels array (X6 native format)
+      expect(updatedEdgeInfo.labels[0]?.attrs?.text?.text).toBe('Updated Label');
     });
 
     it('should handle X6 native attrs for edge styling', () => {

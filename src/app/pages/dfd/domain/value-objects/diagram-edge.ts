@@ -60,9 +60,19 @@ export class DiagramEdge {
   }
 
   /**
-   * Gets the edge label
+   * Gets the edge label from the labels array (X6 native format)
+   * Falls back to attrs.text.text for backward compatibility with legacy data
    */
   get label(): string | undefined {
+    // Primary: Check labels array (X6 native edge format)
+    if (this._data.labels && this._data.labels.length > 0) {
+      const firstLabel = this._data.labels[0];
+      const labelText = firstLabel?.attrs?.text?.text;
+      if (labelText) {
+        return labelText;
+      }
+    }
+    // Fallback: Check attrs.text.text (legacy format, for backward compatibility)
     return this._data.attrs?.text?.text;
   }
 

@@ -165,7 +165,8 @@ export class EdgeInfo {
       port: targetPortId,
     };
 
-    const attrs: EdgeAttrs = data.label ? { text: { text: data.label } } : {};
+    // Use labels array for edge labels (X6 native format)
+    const labels: EdgeLabel[] = data.label ? [EdgeInfo.createDefaultLabel(data.label)] : [];
 
     const vertices = (data.vertices || []).map(v => new Point(v.x, v.y));
 
@@ -187,8 +188,8 @@ export class EdgeInfo {
       target,
       1,
       true,
-      attrs,
-      [],
+      {}, // attrs - keep empty, labels are in labels array
+      labels,
       vertices,
       hybridData,
       undefined,
@@ -196,6 +197,26 @@ export class EdgeInfo {
       data.router,
       data.connector,
     );
+  }
+
+  /**
+   * Creates a default edge label with standard styling (X6 native format)
+   * @param text - The label text
+   * @param position - Position along the edge (0-1), defaults to 0.5 (middle)
+   */
+  static createDefaultLabel(text: string, position: number = 0.5): EdgeLabel {
+    return {
+      position,
+      attrs: {
+        text: {
+          text,
+          fontSize: 12, // DFD_STYLING.DEFAULT_FONT_SIZE
+          fill: '#333',
+          fontFamily: "'Roboto Condensed', Arial, sans-serif", // DFD_STYLING.TEXT_FONT_FAMILY
+          textAnchor: 'middle',
+        },
+      },
+    };
   }
 
   /**
@@ -207,11 +228,12 @@ export class EdgeInfo {
     targetNodeId: string,
     label?: string,
   ): EdgeInfo {
-    const attrs: EdgeAttrs = label ? { text: { text: label } } : {};
+    // Use labels array for edge labels (X6 native format)
+    const labels: EdgeLabel[] = label ? [EdgeInfo.createDefaultLabel(label)] : [];
     // Assign default ports for simple edges
     const source: EdgeTerminal = { cell: sourceNodeId, port: 'right' };
     const target: EdgeTerminal = { cell: targetNodeId, port: 'left' };
-    return new EdgeInfo(id, 'edge', source, target, 1, true, attrs);
+    return new EdgeInfo(id, 'edge', source, target, 1, true, {}, labels);
   }
 
   /**
@@ -227,18 +249,36 @@ export class EdgeInfo {
   ): EdgeInfo {
     const source: EdgeTerminal = { cell: sourceNodeId, port: sourcePortId };
     const target: EdgeTerminal = { cell: targetNodeId, port: targetPortId };
-    const attrs: EdgeAttrs = label ? { text: { text: label } } : {};
-    return new EdgeInfo(id, 'edge', source, target, 1, true, attrs);
+    // Use labels array for edge labels (X6 native format)
+    const labels: EdgeLabel[] = label ? [EdgeInfo.createDefaultLabel(label)] : [];
+    return new EdgeInfo(id, 'edge', source, target, 1, true, {}, labels);
   }
 
   /**
-   * Creates a new EdgeInfo with updated label
+   * Creates a new EdgeInfo with updated label (uses labels array - X6 native format)
    */
   withLabel(label: string): EdgeInfo {
-    const newAttrs: EdgeAttrs = {
-      ...this.attrs,
-      text: { ...this.attrs.text, text: label },
-    };
+    // Update labels array (X6 native format for edge labels)
+    let newLabels: EdgeLabel[];
+    if (this.labels && this.labels.length > 0) {
+      // Update the first label, preserving position and other styling
+      const existingLabel = this.labels[0];
+      const updatedLabel: EdgeLabel = {
+        ...existingLabel,
+        attrs: {
+          ...existingLabel.attrs,
+          text: {
+            ...existingLabel.attrs?.text,
+            text: label,
+          },
+        },
+      };
+      newLabels = [updatedLabel, ...this.labels.slice(1)];
+    } else {
+      // No existing labels, create a new one
+      newLabels = [EdgeInfo.createDefaultLabel(label)];
+    }
+
     return new EdgeInfo(
       this.id,
       this.shape,
@@ -246,8 +286,8 @@ export class EdgeInfo {
       this.target,
       this.zIndex,
       this.visible,
-      newAttrs,
-      this.labels,
+      this.attrs, // Keep attrs unchanged (for line styling, etc.)
+      newLabels,
       this.vertices,
       this.data,
       this.markup,

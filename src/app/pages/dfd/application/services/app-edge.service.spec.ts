@@ -431,11 +431,16 @@ describe('AppEdgeService - Comprehensive Tests', () => {
             cell: targetNode.id,
             port: 'left',
           }),
-          attrs: expect.objectContaining({
-            text: expect.objectContaining({
-              text: 'Flow',
+          // Labels are stored in labels array (X6 native format)
+          labels: expect.arrayContaining([
+            expect.objectContaining({
+              attrs: expect.objectContaining({
+                text: expect.objectContaining({
+                  text: 'Flow',
+                }),
+              }),
             }),
-          }),
+          ]),
         }),
         expect.objectContaining({
           ensureVisualRendering: true,
@@ -487,11 +492,16 @@ describe('AppEdgeService - Comprehensive Tests', () => {
             cell: targetNode.id,
             port: 'bottom',
           }),
-          attrs: expect.objectContaining({
-            text: expect.objectContaining({
-              text: 'Custom Flow',
+          // Labels are stored in labels array (X6 native format)
+          labels: expect.arrayContaining([
+            expect.objectContaining({
+              attrs: expect.objectContaining({
+                text: expect.objectContaining({
+                  text: 'Custom Flow',
+                }),
+              }),
             }),
-          }),
+          ]),
         }),
         expect.any(Object),
       );
