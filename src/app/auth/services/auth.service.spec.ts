@@ -783,8 +783,8 @@ describe('AuthService', () => {
       service.logout();
 
       expect(httpClient.post).toHaveBeenCalledWith(
-        `${environment.apiUrl}/oauth2/revoke`,
-        {},
+        `${environment.apiUrl}/me/logout`,
+        null,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -882,8 +882,8 @@ describe('AuthService', () => {
       service.logout();
 
       expect(httpClient.post).toHaveBeenCalledWith(
-        `${environment.apiUrl}/oauth2/revoke`,
-        {},
+        `${environment.apiUrl}/me/logout`,
+        null,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -906,8 +906,8 @@ describe('AuthService', () => {
       service.logout();
 
       expect(httpClient.post).toHaveBeenCalledWith(
-        `${environment.apiUrl}/oauth2/revoke`,
-        {},
+        `${environment.apiUrl}/me/logout`,
+        null,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -929,8 +929,8 @@ describe('AuthService', () => {
       service.logout();
 
       expect(httpClient.post).toHaveBeenCalledWith(
-        `${environment.apiUrl}/oauth2/revoke`,
-        {},
+        `${environment.apiUrl}/me/logout`,
+        null,
         {
           headers: {
             'Content-Type': 'application/json',

@@ -1833,7 +1833,7 @@ export class AuthService {
       }
 
       this.http
-        .post(`${environment.apiUrl}/oauth2/revoke`, {}, { headers })
+        .post(`${environment.apiUrl}/me/logout`, null, { headers })
         .pipe(
           catchError((error: HttpErrorResponse) => {
             // Log the error but don't fail the logout process
