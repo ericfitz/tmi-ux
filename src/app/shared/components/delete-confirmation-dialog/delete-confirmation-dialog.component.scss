@@ -15,14 +15,15 @@
 }
 
 .delete-dialog-content {
-  min-width: 650px;
   padding: 0 24px 20px;
+  box-sizing: border-box;
 
   .confirmation-message {
     font-size: 16px;
     font-weight: 500;
     margin-bottom: 20px;
     color: rgb(0 0 0 / 87%);
+    overflow-wrap: break-word;
   }
 
   .warning-box {
@@ -33,6 +34,7 @@
     border-left: 4px solid var(--color-warning);
     border-radius: 8px;
     margin-bottom: 16px;
+    box-sizing: border-box;
 
     [dir='rtl'] & {
       border-left: none;
@@ -49,11 +51,13 @@
 
     .warning-text {
       flex: 1;
+      min-width: 0; // Allow text to wrap within flex container
 
       p {
         margin: 0 0 8px;
         color: rgb(0 0 0 / 87%);
         line-height: 1.5;
+        overflow-wrap: break-word;
 
         &:last-child {
           margin-bottom: 0;
@@ -65,9 +69,11 @@
 
 .confirmation-input-section {
   margin-top: 20px;
+  box-sizing: border-box;
 
   .confirmation-input {
     width: 100%;
+    box-sizing: border-box;
 
     .error-hint {
       color: var(--color-error-dark);
