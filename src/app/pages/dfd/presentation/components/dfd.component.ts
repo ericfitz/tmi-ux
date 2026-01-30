@@ -2356,54 +2356,30 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    // Build the threat data for the API (server assigns id, timestamps)
+    const newThreatData = {
+      name: threatData.name,
+      description: threatData.description,
+      diagram_id: threatData.diagram_id,
+      cell_id: threatData.cell_id,
+      severity: threatData.severity,
+      score: threatData.score,
+      priority: threatData.priority,
+      mitigated: threatData.mitigated,
+      status: threatData.status,
+      threat_type: threatData.threat_type,
+      asset_id: threatData.asset_id,
+      issue_uri: threatData.issue_uri,
+    };
+
+    // Use the dedicated createThreat endpoint
     this._subscriptions.add(
-      this.threatModelService.getThreatModelById(this.threatModelId).subscribe({
-        next: threatModel => {
-          if (!threatModel) {
-            this.logger.error('Threat model not found for threat creation', {
-              id: this.threatModelId,
-            });
-            return;
-          }
-
-          // Generate a unique ID for the new threat
-          const newThreat = {
-            id: `threat-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-            threat_model_id: this.threatModelId!,
-            name: threatData.name,
-            description: threatData.description,
-            created_at: new Date().toISOString(),
-            modified_at: new Date().toISOString(),
-            diagram_id: threatData.diagram_id,
-            cell_id: threatData.cell_id,
-            severity: threatData.severity,
-            score: threatData.score,
-            priority: threatData.priority,
-            mitigated: threatData.mitigated,
-            status: threatData.status,
-            threat_type: threatData.threat_type,
-            issue_uri: threatData.issue_uri,
-            metadata: threatData.metadata || [],
-          };
-
-          // Add the new threat to the threat model
-          const updatedThreats = [...(threatModel.threats || []), newThreat];
-          const updatedThreatModel = { ...threatModel, threats: updatedThreats };
-
-          // Save the updated threat model
-          this._subscriptions.add(
-            this.threatModelService.updateThreatModel(updatedThreatModel).subscribe({
-              next: () => {
-                this.logger.info('Threat created successfully', { threatId: newThreat.id });
-              },
-              error: error => {
-                this.logger.error('Failed to create threat', error);
-              },
-            }),
-          );
+      this.threatModelService.createThreat(this.threatModelId, newThreatData).subscribe({
+        next: newThreat => {
+          this.logger.info('Threat created successfully', { threatId: newThreat.id });
         },
         error: error => {
-          this.logger.error('Failed to load threat model for threat creation', error);
+          this.logger.error('Failed to create threat', error);
         },
       }),
     );
