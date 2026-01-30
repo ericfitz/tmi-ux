@@ -479,7 +479,7 @@
             <mat-checkbox
               [checked]="isDataAssetChecked(asset.id)"
               [indeterminate]="isDataAssetIndeterminate(asset.id)"
-              (click)="$event.stopPropagation()"
+              (click)="toggleDataAsset(asset.id, $event)"
             >
               {{ asset.name }}
             </mat-checkbox>
