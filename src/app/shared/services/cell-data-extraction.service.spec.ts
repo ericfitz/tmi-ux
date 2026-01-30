@@ -176,6 +176,109 @@ describe('CellDataExtractionService', () => {
       expect(result.cells[0].label).toBe('Correct Label');
     });
 
+    it('should extract edge labels from labels[].attrs.text.text (X6 native edge format)', () => {
+      const threatModel: ThreatModel = {
+        id: 'tm1',
+        name: 'Test',
+        diagrams: [
+          {
+            id: 'diag1',
+            name: 'Diagram 1',
+            cells: [
+              {
+                id: 'edge1',
+                shape: 'edge',
+                source: { cell: 'node1', port: 'out' },
+                target: { cell: 'node2', port: 'in' },
+                labels: [{ attrs: { text: { text: 'Data Flow' } }, position: 0.5 }],
+              },
+            ],
+          },
+        ],
+      } as any;
+
+      const result = service.extractFromThreatModel(threatModel);
+
+      expect(result.cells[0].label).toBe('Data Flow');
+    });
+
+    it('should handle edges with multiple labels (use first)', () => {
+      const threatModel: ThreatModel = {
+        id: 'tm1',
+        name: 'Test',
+        diagrams: [
+          {
+            id: 'diag1',
+            name: 'Diagram 1',
+            cells: [
+              {
+                id: 'edge1',
+                shape: 'edge',
+                labels: [
+                  { attrs: { text: { text: 'First Label' } } },
+                  { attrs: { text: { text: 'Second Label' } } },
+                ],
+              },
+            ],
+          },
+        ],
+      } as any;
+
+      const result = service.extractFromThreatModel(threatModel);
+
+      expect(result.cells[0].label).toBe('First Label');
+    });
+
+    it('should handle edges with empty labels array', () => {
+      const threatModel: ThreatModel = {
+        id: 'tm1',
+        name: 'Test',
+        diagrams: [
+          {
+            id: 'diag1',
+            name: 'Diagram 1',
+            cells: [
+              {
+                id: 'edge1',
+                shape: 'edge',
+                labels: [],
+              },
+            ],
+          },
+        ],
+      } as any;
+
+      const result = service.extractFromThreatModel(threatModel);
+
+      // Should fallback to truncated ID
+      expect(result.cells[0].label).toBe('edge1');
+    });
+
+    it('should prefer labels array over attrs.text.text for edges', () => {
+      const threatModel: ThreatModel = {
+        id: 'tm1',
+        name: 'Test',
+        diagrams: [
+          {
+            id: 'diag1',
+            name: 'Diagram 1',
+            cells: [
+              {
+                id: 'edge1',
+                shape: 'edge',
+                labels: [{ attrs: { text: { text: 'Correct Edge Label' } } }],
+                attrs: { text: { text: 'Wrong Label' } },
+              },
+            ],
+          },
+        ],
+      } as any;
+
+      const result = service.extractFromThreatModel(threatModel);
+
+      expect(result.cells[0].label).toBe('Correct Edge Label');
+    });
+
     it('should extract cell labels from value field (legacy format)', () => {
       const threatModel: ThreatModel = {
         id: 'tm1',

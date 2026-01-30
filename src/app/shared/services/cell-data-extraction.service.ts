@@ -33,8 +33,23 @@ interface X6CellLabel {
 }
 
 /**
+ * Interface for stored edge label (X6 native format)
+ * Edge labels are stored in a labels array, with text at labels[].attrs.text.text
+ */
+interface StoredEdgeLabel {
+  attrs?: {
+    text?: { text?: string };
+    [key: string]: unknown;
+  };
+  position?: number;
+}
+
+/**
  * Interface for stored cell data from threat models
- * Supports both X6 format (attrs.text.text) and legacy mxGraph format (value/style)
+ * Supports both X6 format and legacy mxGraph format:
+ * - Nodes: attrs.text.text
+ * - Edges: labels[].attrs.text.text (X6 native format)
+ * - Legacy: value/style fields
  */
 interface StoredCell {
   id: string;
@@ -43,6 +58,8 @@ interface StoredCell {
     text?: { text?: string };
     [key: string]: unknown;
   };
+  // X6 edge labels array (edges store labels here, not in attrs.text.text)
+  labels?: StoredEdgeLabel[];
   // Legacy mxGraph format properties (kept for backward compatibility)
   value?: string;
   style?: string | { [key: string]: unknown };
@@ -245,13 +262,29 @@ export class CellDataExtractionService {
 
         // Try multiple approaches to get a meaningful label from stored data
 
-        // 1. Primary: Check attrs.text.text (X6 format - where labels actually live)
-        const attrsText = storedCell.attrs?.text;
-        if (attrsText?.text && typeof attrsText.text === 'string' && attrsText.text.trim()) {
-          label = attrsText.text.trim();
+        // 1. Primary for edges: Check labels[].attrs.text.text (X6 native edge format)
+        // Edge labels in X6 are stored in a labels array, not in attrs.text.text
+        if (
+          storedCell.shape === 'edge' &&
+          Array.isArray(storedCell.labels) &&
+          storedCell.labels.length > 0
+        ) {
+          const firstLabel = storedCell.labels[0];
+          const labelText = firstLabel?.attrs?.text?.text;
+          if (labelText && typeof labelText === 'string' && labelText.trim()) {
+            label = labelText.trim();
+          }
         }
 
-        // 2. Fallback: Check if value contains actual text (legacy mxGraph format)
+        // 2. Primary for nodes: Check attrs.text.text (X6 format for node labels)
+        if (label === storedCell.id) {
+          const attrsText = storedCell.attrs?.text;
+          if (attrsText?.text && typeof attrsText.text === 'string' && attrsText.text.trim()) {
+            label = attrsText.text.trim();
+          }
+        }
+
+        // 3. Fallback: Check if value contains actual text (legacy mxGraph format)
         if (label === storedCell.id && storedCell.value && typeof storedCell.value === 'string') {
           let cleanValue = storedCell.value;
           let previousValue;
@@ -265,7 +298,7 @@ export class CellDataExtractionService {
           }
         }
 
-        // 3. Fallback: Check style field (legacy mxGraph format)
+        // 4. Fallback: Check style field (legacy mxGraph format)
         if (label === storedCell.id) {
           if (storedCell.style && typeof storedCell.style === 'string') {
             // Enhanced style parsing for different text encodings and formats
@@ -303,7 +336,7 @@ export class CellDataExtractionService {
           }
         }
 
-        // 4. Last resort: Generate friendly label from ID
+        // 5. Last resort: Generate friendly label from ID
         if (!label || label === storedCell.id) {
           label = this.generateFriendlyLabel(storedCell);
         }
