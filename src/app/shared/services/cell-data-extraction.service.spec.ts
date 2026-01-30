@@ -128,7 +128,55 @@ describe('CellDataExtractionService', () => {
       expect(result.cells).toEqual([]);
     });
 
-    it('should extract cell labels from value field', () => {
+    it('should extract cell labels from attrs.text.text (X6 format)', () => {
+      const threatModel: ThreatModel = {
+        id: 'tm1',
+        name: 'Test',
+        diagrams: [
+          {
+            id: 'diag1',
+            name: 'Diagram 1',
+            cells: [
+              {
+                id: 'cell1',
+                shape: 'process',
+                attrs: { text: { text: 'My Process Label' } },
+              },
+            ],
+          },
+        ],
+      } as any;
+
+      const result = service.extractFromThreatModel(threatModel);
+
+      expect(result.cells[0].label).toBe('My Process Label');
+    });
+
+    it('should prefer attrs.text.text over value field', () => {
+      const threatModel: ThreatModel = {
+        id: 'tm1',
+        name: 'Test',
+        diagrams: [
+          {
+            id: 'diag1',
+            name: 'Diagram 1',
+            cells: [
+              {
+                id: 'cell1',
+                attrs: { text: { text: 'Correct Label' } },
+                value: 'Wrong Label',
+              },
+            ],
+          },
+        ],
+      } as any;
+
+      const result = service.extractFromThreatModel(threatModel);
+
+      expect(result.cells[0].label).toBe('Correct Label');
+    });
+
+    it('should extract cell labels from value field (legacy format)', () => {
       const threatModel: ThreatModel = {
         id: 'tm1',
         name: 'Test',

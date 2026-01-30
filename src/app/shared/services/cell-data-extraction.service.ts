@@ -34,9 +34,16 @@ interface X6CellLabel {
 
 /**
  * Interface for stored cell data from threat models
+ * Supports both X6 format (attrs.text.text) and legacy mxGraph format (value/style)
  */
 interface StoredCell {
   id: string;
+  shape?: string;
+  attrs?: {
+    text?: { text?: string };
+    [key: string]: unknown;
+  };
+  // Legacy mxGraph format properties (kept for backward compatibility)
   value?: string;
   style?: string | { [key: string]: unknown };
   data?: {
@@ -235,13 +242,17 @@ export class CellDataExtractionService {
         const storedCell = cell as StoredCell;
         // For stored cells from threat model data
         // Note: This handles the basic Cell interface from diagram.model.ts
-        // The stored cells may not have the same label structure as X6 runtime cells
-        // TODO: We should ensure that stored cells have EXACTLY the same label structure as X6 runtime cells
 
         // Try multiple approaches to get a meaningful label from stored data
 
-        // 1. Check if value contains actual text (not just whitespace or HTML)
-        if (storedCell.value && typeof storedCell.value === 'string') {
+        // 1. Primary: Check attrs.text.text (X6 format - where labels actually live)
+        const attrsText = storedCell.attrs?.text;
+        if (attrsText?.text && typeof attrsText.text === 'string' && attrsText.text.trim()) {
+          label = attrsText.text.trim();
+        }
+
+        // 2. Fallback: Check if value contains actual text (legacy mxGraph format)
+        if (label === storedCell.id && storedCell.value && typeof storedCell.value === 'string') {
           let cleanValue = storedCell.value;
           let previousValue;
           do {
@@ -254,10 +265,8 @@ export class CellDataExtractionService {
           }
         }
 
-        // 2. If the cell has additional properties that might contain label info
-        // Check if cell has any text-related properties (this is for future extensibility)
-        if (!label || label === storedCell.id) {
-          // Try to extract from style or other properties if they exist
+        // 3. Fallback: Check style field (legacy mxGraph format)
+        if (label === storedCell.id) {
           if (storedCell.style && typeof storedCell.style === 'string') {
             // Enhanced style parsing for different text encodings and formats
 
@@ -294,13 +303,10 @@ export class CellDataExtractionService {
           }
         }
 
-        // 3. As a last resort, if we still only have the ID, try to make it more user-friendly
+        // 4. Last resort: Generate friendly label from ID
         if (!label || label === storedCell.id) {
           label = this.generateFriendlyLabel(storedCell);
         }
-
-        // Note: Stored cells have limitations in label preservation
-        // For better label display, the frontend should ideally store richer cell metadata
       }
 
       // Clean up the label
