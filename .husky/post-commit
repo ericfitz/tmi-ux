@@ -4,6 +4,10 @@
 # Bumps version based on conventional commit message format
 # - feat:, refactor: → minor version bump (0.x.0)
 # - fix:, chore:, docs:, perf:, test:, ci:, build: → patch version bump (0.0.x)
+#
+# Only bumps version when relevant files are modified:
+# - Files in src/ (excluding tests, testing utilities, and environment configs)
+# - package.json
 
 # Prevent infinite loop - skip if we're already in a version bump
 if [ "$SKIP_VERSION_BUMP" = "1" ]; then
@@ -46,6 +50,28 @@ if echo "$COMMIT_MSG" | grep -qE "^(feat|fix|docs|refactor|perf|test|build|ci|ch
   esac
 
   if [ -n "$BUMP_TYPE" ]; then
+    # Check if relevant files were modified in this commit
+    # Get list of changed files (excluding deletions for simplicity, but including all changes)
+    CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD)
+
+    # Filter for version-relevant files:
+    # - package.json (root level)
+    # - Files in src/ but NOT:
+    #   - *.spec.ts (test files)
+    #   - src/testing/* (testing utilities)
+    #   - src/environments/* (environment configs)
+    RELEVANT_FILES=$(echo "$CHANGED_FILES" | grep -E "^(package\.json|src/)" | \
+      grep -v "\.spec\.ts$" | \
+      grep -v "^src/testing/" | \
+      grep -v "^src/environments/")
+
+    if [ -z "$RELEVANT_FILES" ]; then
+      echo ""
+      echo "ℹ️  Skipping version bump - no version-relevant files modified"
+      echo "   (Only tests, configs, or non-src files were changed)"
+      exit 0
+    fi
+
     echo ""
     echo "🔖 Bumping $BUMP_TYPE version for commit type: $COMMIT_TYPE"
 
