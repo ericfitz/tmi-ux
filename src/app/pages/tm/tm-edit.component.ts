@@ -85,6 +85,11 @@ import { FrameworkService } from '../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../shared/models/framework.model';
 import { FieldOption, getFieldOptions } from '../../shared/utils/field-value-helpers';
+import {
+  DeleteConfirmationDialogComponent,
+  DeleteConfirmationDialogData,
+  DeleteConfirmationDialogResult,
+} from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 // Define form value interface
 interface ThreatModelFormValues {
@@ -1000,27 +1005,41 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    // Confirm deletion
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete the threat "${threat.name}"? This action cannot be undone.`,
-    );
+    // Show confirmation dialog
+    const dialogData: DeleteConfirmationDialogData = {
+      id: threat.id,
+      name: threat.name,
+      objectType: 'threat',
+    };
 
-    if (confirmDelete) {
-      // Delete the threat via API
-      this._subscriptions.add(
-        this.threatModelService.deleteThreat(this.threatModel.id, threat.id).subscribe(success => {
-          if (success) {
-            // Remove the threat from local state using filter (immutable)
-            // and update data source for immediate UI refresh
-            this.threatModel!.threats = this.threatModel!.threats!.filter(t => t.id !== threat.id);
-            this.threatsDataSource.data = this.threatModel!.threats;
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      width: '600px',
+      data: dialogData,
+      disableClose: true,
+    });
 
-            // Update framework control state since we removed a threat
-            this.updateFrameworkControlState();
-          }
-        }),
-      );
-    }
+    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
+      if (result?.confirmed) {
+        // Delete the threat via API
+        this._subscriptions.add(
+          this.threatModelService
+            .deleteThreat(this.threatModel!.id, threat.id)
+            .subscribe(success => {
+              if (success) {
+                // Remove the threat from local state using filter (immutable)
+                // and update data source for immediate UI refresh
+                this.threatModel!.threats = this.threatModel!.threats!.filter(
+                  t => t.id !== threat.id,
+                );
+                this.threatsDataSource.data = this.threatModel!.threats;
+
+                // Update framework control state since we removed a threat
+                this.updateFrameworkControlState();
+              }
+            }),
+        );
+      }
+    });
   }
 
   /**
@@ -1108,33 +1127,43 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    // Confirm deletion
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete the diagram "${diagram.name}"? This action cannot be undone.`,
-    );
+    // Show confirmation dialog
+    const dialogData: DeleteConfirmationDialogData = {
+      id: diagram.id,
+      name: diagram.name,
+      objectType: 'diagram',
+    };
 
-    if (confirmDelete) {
-      // Delete the diagram via API
-      this._subscriptions.add(
-        this.threatModelService
-          .deleteDiagram(this.threatModel.id, diagram.id)
-          .subscribe(success => {
-            if (success && this.threatModel && this.threatModel.diagrams) {
-              // Remove the diagram from local state using filter (immutable)
-              this.threatModel.diagrams = this.threatModel.diagrams.filter(
-                (d: string | Diagram) => (typeof d === 'string' ? d : d.id) !== diagram.id,
-              );
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      width: '600px',
+      data: dialogData,
+      disableClose: true,
+    });
 
-              // Remove the diagram from the display array using filter
-              // This triggers the setter which updates diagramsDataSource.data
-              this.diagrams = this.diagrams.filter(d => d.id !== diagram.id);
+    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
+      if (result?.confirmed) {
+        // Delete the diagram via API
+        this._subscriptions.add(
+          this.threatModelService
+            .deleteDiagram(this.threatModel!.id, diagram.id)
+            .subscribe(success => {
+              if (success && this.threatModel && this.threatModel.diagrams) {
+                // Remove the diagram from local state using filter (immutable)
+                this.threatModel.diagrams = this.threatModel.diagrams.filter(
+                  (d: string | Diagram) => (typeof d === 'string' ? d : d.id) !== diagram.id,
+                );
 
-              // Remove from DIAGRAMS_BY_ID map
-              DIAGRAMS_BY_ID.delete(diagram.id);
-            }
-          }),
-      );
-    }
+                // Remove the diagram from the display array using filter
+                // This triggers the setter which updates diagramsDataSource.data
+                this.diagrams = this.diagrams.filter(d => d.id !== diagram.id);
+
+                // Remove from DIAGRAMS_BY_ID map
+                DIAGRAMS_BY_ID.delete(diagram.id);
+              }
+            }),
+        );
+      }
+    });
   }
 
   /**
@@ -1261,30 +1290,38 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    // Confirm deletion
-    const confirmMessage = this.transloco.translate('common.confirmDelete', {
-      item: this.transloco.translate('common.objectTypes.documents').toLowerCase(),
+    // Show confirmation dialog (no typed confirmation for documents - reference only)
+    const dialogData: DeleteConfirmationDialogData = {
+      id: document.id,
       name: document.name,
-    });
-    const confirmDelete = window.confirm(confirmMessage);
+      objectType: 'document',
+    };
 
-    if (confirmDelete) {
-      // Delete the document via API
-      this._subscriptions.add(
-        this.threatModelService
-          .deleteDocument(this.threatModel.id, document.id)
-          .subscribe(success => {
-            if (success && this.threatModel && this.threatModel.documents) {
-              // Remove the document from local state using filter (immutable)
-              // and update data source for immediate UI refresh
-              this.threatModel.documents = this.threatModel.documents.filter(
-                d => d.id !== document.id,
-              );
-              this.documentsDataSource.data = this.threatModel.documents;
-            }
-          }),
-      );
-    }
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      width: '600px',
+      data: dialogData,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
+      if (result?.confirmed) {
+        // Delete the document via API
+        this._subscriptions.add(
+          this.threatModelService
+            .deleteDocument(this.threatModel!.id, document.id)
+            .subscribe(success => {
+              if (success && this.threatModel && this.threatModel.documents) {
+                // Remove the document from local state using filter (immutable)
+                // and update data source for immediate UI refresh
+                this.threatModel.documents = this.threatModel.documents.filter(
+                  d => d.id !== document.id,
+                );
+                this.documentsDataSource.data = this.threatModel.documents;
+              }
+            }),
+        );
+      }
+    });
   }
 
   /**
@@ -1431,30 +1468,38 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    // Confirm deletion
-    const confirmMessage = this.transloco.translate('common.confirmDelete', {
-      item: this.transloco.translate('common.objectTypes.repository').toLowerCase(),
+    // Show confirmation dialog (no typed confirmation for repositories - reference only)
+    const dialogData: DeleteConfirmationDialogData = {
+      id: repository.id,
       name: repository.name,
-    });
-    const confirmDelete = window.confirm(confirmMessage);
+      objectType: 'repository',
+    };
 
-    if (confirmDelete) {
-      // Delete the repository via API
-      this._subscriptions.add(
-        this.threatModelService
-          .deleteRepository(this.threatModel.id, repository.id)
-          .subscribe(success => {
-            if (success && this.threatModel && this.threatModel.repositories) {
-              // Remove the repository from local state using filter (immutable)
-              // and update data source for immediate UI refresh
-              this.threatModel.repositories = this.threatModel.repositories.filter(
-                r => r.id !== repository.id,
-              );
-              this.repositoriesDataSource.data = this.threatModel.repositories;
-            }
-          }),
-      );
-    }
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      width: '600px',
+      data: dialogData,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
+      if (result?.confirmed) {
+        // Delete the repository via API
+        this._subscriptions.add(
+          this.threatModelService
+            .deleteRepository(this.threatModel!.id, repository.id)
+            .subscribe(success => {
+              if (success && this.threatModel && this.threatModel.repositories) {
+                // Remove the repository from local state using filter (immutable)
+                // and update data source for immediate UI refresh
+                this.threatModel.repositories = this.threatModel.repositories.filter(
+                  r => r.id !== repository.id,
+                );
+                this.repositoriesDataSource.data = this.threatModel.repositories;
+              }
+            }),
+        );
+      }
+    });
   }
 
   /**
@@ -1656,24 +1701,34 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    const confirmMessage = this.transloco.translate('threatModels.confirmDeleteNote', {
+    // Show confirmation dialog
+    const dialogData: DeleteConfirmationDialogData = {
+      id: note.id,
       name: note.name,
-    });
-    const confirmDelete = window.confirm(confirmMessage);
+      objectType: 'note',
+    };
 
-    if (confirmDelete) {
-      this._subscriptions.add(
-        this.threatModelService.deleteNote(this.threatModel.id, note.id).subscribe(success => {
-          if (success && this.threatModel && this.threatModel.notes) {
-            // Remove the note from local state using filter (immutable)
-            // and update data source for immediate UI refresh
-            this.threatModel.notes = this.threatModel.notes.filter(n => n.id !== note.id);
-            this.notesDataSource.data = this.threatModel.notes;
-            this.logger.info('Deleted note', { noteId: note.id });
-          }
-        }),
-      );
-    }
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      width: '600px',
+      data: dialogData,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
+      if (result?.confirmed) {
+        this._subscriptions.add(
+          this.threatModelService.deleteNote(this.threatModel!.id, note.id).subscribe(success => {
+            if (success && this.threatModel && this.threatModel.notes) {
+              // Remove the note from local state using filter (immutable)
+              // and update data source for immediate UI refresh
+              this.threatModel.notes = this.threatModel.notes.filter(n => n.id !== note.id);
+              this.notesDataSource.data = this.threatModel.notes;
+              this.logger.info('Deleted note', { noteId: note.id });
+            }
+          }),
+        );
+      }
+    });
   }
 
   /**
@@ -3103,25 +3158,34 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    const confirmMessage = this.transloco.translate('common.confirmDelete', {
-      item: this.transloco.translate('common.objectTypes.asset').toLowerCase(),
+    // Show confirmation dialog
+    const dialogData: DeleteConfirmationDialogData = {
+      id: asset.id,
       name: asset.name,
-    });
-    const confirmDelete = window.confirm(confirmMessage);
+      objectType: 'asset',
+    };
 
-    if (confirmDelete) {
-      this._subscriptions.add(
-        this.threatModelService.deleteAsset(this.threatModel.id, asset.id).subscribe(success => {
-          if (success && this.threatModel && this.threatModel.assets) {
-            // Remove the asset from local state using filter (immutable)
-            // and update data source for immediate UI refresh
-            this.threatModel.assets = this.threatModel.assets.filter(a => a.id !== asset.id);
-            this.assetsDataSource.data = this.threatModel.assets;
-            this.logger.info('Deleted asset', { assetId: asset.id });
-          }
-        }),
-      );
-    }
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      width: '600px',
+      data: dialogData,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
+      if (result?.confirmed) {
+        this._subscriptions.add(
+          this.threatModelService.deleteAsset(this.threatModel!.id, asset.id).subscribe(success => {
+            if (success && this.threatModel && this.threatModel.assets) {
+              // Remove the asset from local state using filter (immutable)
+              // and update data source for immediate UI refresh
+              this.threatModel.assets = this.threatModel.assets.filter(a => a.id !== asset.id);
+              this.assetsDataSource.data = this.threatModel.assets;
+              this.logger.info('Deleted asset', { assetId: asset.id });
+            }
+          }),
+        );
+      }
+    });
   }
 
   /**

@@ -249,28 +249,37 @@ describe('NotePageComponent', () => {
   describe('deleteNote', () => {
     beforeEach(() => {
       component.ngOnInit();
-      // Mock window.confirm
-      vi.spyOn(window, 'confirm').mockReturnValue(true);
     });
 
     it('should not delete if user cannot edit', () => {
       authorizationService.canEdit$.next(false);
       component.deleteNote();
+      expect(dialog.open).not.toHaveBeenCalled();
       expect(threatModelService.deleteNote).not.toHaveBeenCalled();
     });
 
     it('should delete note and navigate back when confirmed', () => {
+      const mockDialogRef = {
+        afterClosed: vi.fn().mockReturnValue(of({ confirmed: true })),
+      };
+      dialog.open = vi.fn().mockReturnValue(mockDialogRef);
+
       component.deleteNote();
 
-      expect(window.confirm).toHaveBeenCalled();
+      expect(dialog.open).toHaveBeenCalled();
       expect(threatModelService.deleteNote).toHaveBeenCalledWith('tm-1', 'note-1');
       expect(router.navigate).toHaveBeenCalledWith(['/tm', 'tm-1']);
     });
 
     it('should not delete when user cancels confirmation', () => {
-      vi.spyOn(window, 'confirm').mockReturnValue(false);
+      const mockDialogRef = {
+        afterClosed: vi.fn().mockReturnValue(of({ confirmed: false })),
+      };
+      dialog.open = vi.fn().mockReturnValue(mockDialogRef);
+
       component.deleteNote();
 
+      expect(dialog.open).toHaveBeenCalled();
       expect(threatModelService.deleteNote).not.toHaveBeenCalled();
     });
   });

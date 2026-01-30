@@ -10,4 +10,5 @@ export * from './services/notification.service';
 export * from './services/form-validation.service';
 
 // Export shared components
-export * from './components/delete-threat-model-dialog/delete-threat-model-dialog.component';
+export * from './components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+export * from './components/delete-confirmation-dialog/delete-confirmation-dialog.types';

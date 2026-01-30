@@ -50,9 +50,10 @@ import { SvgCacheService } from './services/svg-cache.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
-  DeleteThreatModelDialogComponent,
-  DeleteThreatModelDialogData,
-} from '@app/shared/components/delete-threat-model-dialog/delete-threat-model-dialog.component';
+  DeleteConfirmationDialogComponent,
+  DeleteConfirmationDialogData,
+  DeleteConfirmationDialogResult,
+} from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @Component({
   selector: 'app-tm',
@@ -265,19 +266,20 @@ export class TmComponent implements OnInit, OnDestroy {
     }
 
     // Show confirmation dialog
-    const dialogData: DeleteThreatModelDialogData = {
+    const dialogData: DeleteConfirmationDialogData = {
       id: threatModel.id,
       name: threatModel.name,
+      objectType: 'threatModel',
     };
 
-    const dialogRef = this.dialog.open(DeleteThreatModelDialogComponent, {
-      width: '500px',
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      width: '600px',
       data: dialogData,
       disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
-      if (confirmed) {
+    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
+      if (result?.confirmed) {
         // User confirmed deletion
         this.threatModelService.deleteThreatModel(id).subscribe({
           next: success => {

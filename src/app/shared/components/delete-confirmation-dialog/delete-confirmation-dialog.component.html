@@ -1,0 +1,114 @@
+<h2 mat-dialog-title class="delete-dialog-title">
+  <mat-icon class="warning-icon">warning</mat-icon>
+  {{ 'common.deleteConfirm' | transloco }}
+</h2>
+
+<mat-dialog-content appScrollIndicator>
+  <div class="delete-dialog-content">
+    <!-- Main confirmation message with object type and name -->
+    <p class="confirmation-message">
+      {{
+        'common.confirmDeleteMessage'
+          | transloco: { objectType: (objectTypeTranslationKey | transloco), name: data.name }
+      }}
+    </p>
+
+    <!-- Warning box with contextual warnings -->
+    <div class="warning-box">
+      <mat-icon class="warning-icon-small">info</mat-icon>
+      <div class="warning-text">
+        <!-- Permanent deletion warning (always shown) -->
+        <p>
+          {{
+            'common.deleteWarningPermanent'
+              | transloco: { objectType: (objectTypeTranslationKey | transloco) }
+          }}
+        </p>
+
+        <!-- Sub-entities warning (threat models only) -->
+        @if (showSubEntitiesWarning) {
+          <p>{{ 'common.deleteWarningSubEntities' | transloco }}</p>
+        }
+
+        <!-- Reference-only warning (documents/repositories only) -->
+        @if (showReferenceOnlyWarning) {
+          <p>{{ 'common.deleteWarningReferenceOnly' | transloco }}</p>
+        }
+
+        <!-- Typed confirmation instruction -->
+        @if (requiresTypedConfirmation) {
+          <p>
+            {{
+              'common.deleteWarningTypeConfirmation'
+                | transloco: { confirmValue: ('common.deleteWarningConfirmationValue' | transloco) }
+            }}
+          </p>
+        }
+      </div>
+    </div>
+
+    <!-- Typed confirmation input (conditional) -->
+    @if (requiresTypedConfirmation) {
+      <div class="confirmation-input-section">
+        <mat-form-field appearance="outline" class="confirmation-input">
+          <mat-label>{{ 'common.deleteWarningConfirmationField' | transloco }}</mat-label>
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="confirmationInput"
+            [placeholder]="'common.deleteWarningConfirmationValue' | transloco"
+            autocomplete="off"
+            tabindex="1"
+            cdkFocusInitial
+          />
+          @if (confirmationInput && !isConfirmationValid) {
+            <mat-hint class="error-hint">
+              {{ 'common.deleteWarningConfirmationMismatch' | transloco }}
+            </mat-hint>
+          }
+          @if (isConfirmationValid) {
+            <mat-hint class="success-hint">
+              {{ 'common.deleteWarningConfirmationMatch' | transloco }}
+            </mat-hint>
+          }
+        </mat-form-field>
+      </div>
+    }
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @if (requiresTypedConfirmation) {
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onCancel()"
+      tabindex="2"
+      [attr.aria-label]="'common.cancel' | transloco"
+    >
+      {{ 'common.cancel' | transloco }}
+    </button>
+  } @else {
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onCancel()"
+      cdkFocusInitial
+      tabindex="1"
+      [attr.aria-label]="'common.cancel' | transloco"
+    >
+      {{ 'common.cancel' | transloco }}
+    </button>
+  }
+  <button
+    mat-button
+    color="warn"
+    (click)="onConfirmDelete()"
+    [disabled]="!canDelete"
+    [tabindex]="requiresTypedConfirmation ? 3 : 2"
+    [attr.aria-label]="'common.delete' | transloco"
+  >
+    <mat-icon>delete</mat-icon>
+    {{ 'common.delete' | transloco }}
+  </button>
+</mat-dialog-actions>

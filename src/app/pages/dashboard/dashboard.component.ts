@@ -55,9 +55,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import {
-  DeleteThreatModelDialogComponent,
-  DeleteThreatModelDialogData,
-} from '@app/shared/components/delete-threat-model-dialog/delete-threat-model-dialog.component';
+  DeleteConfirmationDialogComponent,
+  DeleteConfirmationDialogData,
+  DeleteConfirmationDialogResult,
+} from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { AuthService } from '../../auth/services/auth.service';
 import { UserPreferencesService } from '../../core/services/user-preferences.service';
 
@@ -334,19 +335,20 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     // Show confirmation dialog
-    const dialogData: DeleteThreatModelDialogData = {
+    const dialogData: DeleteConfirmationDialogData = {
       id: threatModel.id,
       name: threatModel.name,
+      objectType: 'threatModel',
     };
 
-    const dialogRef = this.dialog.open(DeleteThreatModelDialogComponent, {
-      width: '500px',
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      width: '600px',
       data: dialogData,
       disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
-      if (confirmed) {
+    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
+      if (result?.confirmed) {
         // User confirmed deletion
         this.threatModelService.deleteThreatModel(id).subscribe({
           next: success => {

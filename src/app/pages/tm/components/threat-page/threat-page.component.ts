@@ -46,6 +46,11 @@ import {
 } from '../invoke-addon-dialog/invoke-addon-dialog.component';
 import { AddonService } from '../../../../core/services/addon.service';
 import { Addon } from '../../../../types/addon.types';
+import {
+  DeleteConfirmationDialogComponent,
+  DeleteConfirmationDialogData,
+  DeleteConfirmationDialogResult,
+} from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 /**
  * Interface for threat form values
@@ -597,34 +602,45 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   deleteThreat(): void {
     if (!this.canEdit || !this.threat) return;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to delete the threat "${this.threat.name}"? This action cannot be undone.`,
-    );
+    // Show confirmation dialog
+    const dialogData: DeleteConfirmationDialogData = {
+      id: this.threat.id,
+      name: this.threat.name,
+      objectType: 'threat',
+    };
 
-    if (confirmed) {
-      this.threatModelService
-        .deleteThreat(this.threatModelId, this.threatId)
-        .pipe(this.untilDestroyed())
-        .subscribe({
-          next: () => {
-            this.snackBar.open(
-              this.translocoService.translate('common.deletedSuccessfully') ||
-                'Deleted successfully',
-              this.translocoService.translate('common.close') || 'Close',
-              { duration: 3000 },
-            );
-            this.navigateBack();
-          },
-          error: err => {
-            this.logger.error('Failed to delete threat', err);
-            this.snackBar.open(
-              this.translocoService.translate('common.deleteFailed') || 'Delete failed',
-              this.translocoService.translate('common.close') || 'Close',
-              { duration: 5000 },
-            );
-          },
-        });
-    }
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      width: '600px',
+      data: dialogData,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
+      if (result?.confirmed) {
+        this.threatModelService
+          .deleteThreat(this.threatModelId, this.threatId)
+          .pipe(this.untilDestroyed())
+          .subscribe({
+            next: () => {
+              this.snackBar.open(
+                this.translocoService.translate('common.deletedSuccessfully') ||
+                  'Deleted successfully',
+                this.translocoService.translate('common.close') || 'Close',
+                { duration: 3000 },
+              );
+              this.navigateBack();
+            },
+            error: err => {
+              this.logger.error('Failed to delete threat', err);
+              this.snackBar.open(
+                this.translocoService.translate('common.deleteFailed') || 'Delete failed',
+                this.translocoService.translate('common.close') || 'Close',
+                { duration: 5000 },
+              );
+            },
+          });
+      }
+    });
   }
 
   /**

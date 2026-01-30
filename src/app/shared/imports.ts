@@ -42,6 +42,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTabsModule } from '@angular/material/tabs';
+import { A11yModule } from '@angular/cdk/a11y';
 
 // Shared directives
 import { ScrollIndicatorDirective } from './directives/scroll-indicator.directive';
@@ -143,5 +144,6 @@ export const DIALOG_IMPORTS = [
   ...FORM_MATERIAL_IMPORTS,
   MatDialogModule,
   MatTabsModule,
+  A11yModule,
   ScrollIndicatorDirective,
 ] as const;

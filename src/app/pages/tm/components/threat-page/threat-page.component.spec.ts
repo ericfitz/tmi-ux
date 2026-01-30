@@ -263,28 +263,37 @@ describe('ThreatPageComponent', () => {
   describe('deleteThreat', () => {
     beforeEach(() => {
       component.ngOnInit();
-      // Mock window.confirm
-      vi.spyOn(window, 'confirm').mockReturnValue(true);
     });
 
     it('should not delete if user cannot edit', () => {
       authorizationService.canEdit$.next(false);
       component.deleteThreat();
+      expect(dialog.open).not.toHaveBeenCalled();
       expect(threatModelService.deleteThreat).not.toHaveBeenCalled();
     });
 
     it('should delete threat and navigate back when confirmed', () => {
+      const mockDialogRef = {
+        afterClosed: vi.fn().mockReturnValue(of({ confirmed: true })),
+      };
+      dialog.open = vi.fn().mockReturnValue(mockDialogRef);
+
       component.deleteThreat();
 
-      expect(window.confirm).toHaveBeenCalled();
+      expect(dialog.open).toHaveBeenCalled();
       expect(threatModelService.deleteThreat).toHaveBeenCalledWith('tm-1', 'threat-1');
       expect(router.navigate).toHaveBeenCalledWith(['/tm', 'tm-1']);
     });
 
     it('should not delete when user cancels confirmation', () => {
-      vi.spyOn(window, 'confirm').mockReturnValue(false);
+      const mockDialogRef = {
+        afterClosed: vi.fn().mockReturnValue(of({ confirmed: false })),
+      };
+      dialog.open = vi.fn().mockReturnValue(mockDialogRef);
+
       component.deleteThreat();
 
+      expect(dialog.open).toHaveBeenCalled();
       expect(threatModelService.deleteThreat).not.toHaveBeenCalled();
     });
   });
