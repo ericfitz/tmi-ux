@@ -33,17 +33,22 @@ const EXCLUDE_PATTERNS = [
  */
 function extractKeysFromObject(obj, prefix = '') {
   const keys = [];
-  
+
   for (const [key, value] of Object.entries(obj)) {
     const fullKey = prefix ? `${prefix}.${key}` : key;
-    
+
+    // Skip .comment keys (translator comments)
+    if (key === 'comment' || key.endsWith('.comment')) {
+      continue;
+    }
+
     if (typeof value === 'object' && value !== null) {
       keys.push(...extractKeysFromObject(value, fullKey));
     } else {
       keys.push(fullKey);
     }
   }
-  
+
   return keys;
 }
 
