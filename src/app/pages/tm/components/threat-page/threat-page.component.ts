@@ -610,7 +610,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
     };
 
     const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      width: '600px',
+      width: '700px',
       data: dialogData,
       disableClose: true,
     });

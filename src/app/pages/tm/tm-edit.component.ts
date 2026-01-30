@@ -1013,7 +1013,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      width: '600px',
+      width: '700px',
       data: dialogData,
       disableClose: true,
     });
@@ -1135,7 +1135,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      width: '600px',
+      width: '700px',
       data: dialogData,
       disableClose: true,
     });
@@ -1298,7 +1298,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      width: '600px',
+      width: '700px',
       data: dialogData,
       disableClose: true,
     });
@@ -1476,7 +1476,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      width: '600px',
+      width: '700px',
       data: dialogData,
       disableClose: true,
     });
@@ -1709,7 +1709,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      width: '600px',
+      width: '700px',
       data: dialogData,
       disableClose: true,
     });
@@ -3166,7 +3166,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      width: '600px',
+      width: '700px',
       data: dialogData,
       disableClose: true,
     });

@@ -347,7 +347,7 @@ export class NotePageComponent implements OnInit, OnDestroy, AfterViewChecked {
     };
 
     const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      width: '600px',
+      width: '700px',
       data: dialogData,
       disableClose: true,
     });
