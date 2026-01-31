@@ -1075,28 +1075,36 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
                   // Add the diagram to the DIAGRAMS_BY_ID map for backward compatibility
                   DIAGRAMS_BY_ID.set(newDiagram.id, newDiagram);
 
-                  // Add the new diagram to local state
-                  if (!this.threatModel?.diagrams) {
-                    this.threatModel!.diagrams = [];
+                  // Add the new diagram to local state (check for duplicates first)
+                  // Use spread to create new array and update data source for immediate UI refresh
+                  const isDuplicate = this.threatModel?.diagrams?.find(d => {
+                    if (typeof d === 'string') return d === newDiagram.id;
+                    return d.id === newDiagram.id;
+                  });
+
+                  if (!isDuplicate) {
+                    // Handle both string ID arrays and Diagram object arrays
+                    if (
+                      this.threatModel!.diagrams?.length &&
+                      typeof this.threatModel!.diagrams[0] === 'string'
+                    ) {
+                      this.threatModel!.diagrams = [
+                        ...((this.threatModel!.diagrams || []) as unknown as string[]),
+                        newDiagram.id,
+                      ] as unknown as Diagram[];
+                    } else {
+                      this.threatModel!.diagrams = [
+                        ...(this.threatModel!.diagrams || []),
+                        newDiagram,
+                      ];
+                    }
                   }
 
-                  // The API returns diagram objects, but threat model stores IDs or objects
-                  if (
-                    this.threatModel &&
-                    this.threatModel.diagrams &&
-                    Array.isArray(this.threatModel.diagrams) &&
-                    this.threatModel.diagrams.length > 0 &&
-                    typeof this.threatModel.diagrams[0] === 'string'
-                  ) {
-                    (this.threatModel.diagrams as unknown as string[]).push(newDiagram.id);
-                  } else if (this.threatModel && this.threatModel.diagrams) {
-                    (this.threatModel.diagrams as unknown as Diagram[]).push(newDiagram);
-                  }
-
-                  // Add the new diagram to the diagrams array for display (check for duplicates first)
-                  // Use spread to trigger setter which updates diagramsDataSource.data
-                  if (!this.diagrams.find(d => d.id === newDiagram.id)) {
-                    this.diagrams = [...this.diagrams, newDiagram];
+                  // Always update the display diagrams array (these are always Diagram objects)
+                  if (!this._diagrams.find(d => d.id === newDiagram.id)) {
+                    this._diagrams = [...this._diagrams, newDiagram];
+                    this.diagramsDataSource.data = this._diagrams;
+                    this.computeDiagramSvgData();
                   }
                 },
                 error: error => {
