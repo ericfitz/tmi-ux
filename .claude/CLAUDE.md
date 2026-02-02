@@ -97,9 +97,8 @@ TMI-UX is an Angular-based threat modeling application with real-time collaborat
 
 ## API and Backend
 
-- API specs: `docs-server/reference/apis/tmi-openapi.json` (REST), `tmi-asyncapi.yaml` (WebSocket)
-- Integration: `docs-server/developer/integration/CLIENT_*.md`
-- Authorization: `docs-server/reference/architecture/AUTHORIZATION.md` (Owner/Writer/Reader RBAC)
+- API specs: `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json` (REST), `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-asyncapi.yaml` (WebSocket)
+- Integration: `https://github.com/ericfitz/tmi/wiki/API-Integration`
 
 ## Development Commands
 
@@ -109,14 +108,16 @@ Key commands: `pnpm run dev`, `pnpm test`, `pnpm run build`, `pnpm run lint:all`
 
 ## Architecture
 
-See [docs/reference/architecture/overview.md](docs/reference/architecture/overview.md) for complete architecture documentation.
+See the [Architecture and Design](https://github.com/ericfitz/tmi/wiki/Architecture-and-Design) on the TMI wiki for complete architecture documentation.
 
 **Key Principles:**
+
 - Standalone components (no NgModules), domain-driven design, reactive programming
 - Import constants from `src/app/shared/imports.ts` (COMMON_IMPORTS, MATERIAL_IMPORTS, etc.)
 - Always unsubscribe using `takeUntil(destroy$)` pattern
 
 **Key Modules:**
+
 - Authentication (`/auth`) - OAuth/JWT
 - Threat Modeling (`/pages/tm`) - List, edit, diagram management
 - Data Flow Diagrams (`/pages/dfd`) - Layered DDD architecture with AntV X6 graphing
@@ -127,6 +128,7 @@ See [docs/reference/architecture/overview.md](docs/reference/architecture/overvi
 ## Testing
 
 **Unit Tests (Vitest):** NOT Jasmine/Jest. Use `describe.only()` and `it.only()` to focus tests.
+
 - Config: `vitest.config.ts`, mocks in `src/app/mocks/`, utilities in `src/testing/`
 - Tests alongside source: `*.spec.ts`
 
@@ -135,6 +137,7 @@ See [docs/reference/architecture/overview.md](docs/reference/architecture/overvi
 ## Versioning
 
 Automatic semantic versioning via git hooks using [Conventional Commits](https://www.conventionalcommits.org/):
+
 - `feat:`/`refactor:` → minor bump (0.x.0)
 - `fix:`/`chore:`/`docs:`/`perf:`/`test:`/`ci:`/`build:` → patch bump (0.0.x)
 - Version bumps happen on commit, not build
