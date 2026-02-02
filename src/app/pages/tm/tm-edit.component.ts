@@ -3406,7 +3406,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
               this.totalNotes = 0;
             }
           },
-      }),
+        }),
     );
   }
 

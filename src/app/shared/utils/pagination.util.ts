@@ -69,7 +69,10 @@ export function parsePaginationFromUrl(
   const pageParam = params[PAGINATION_QUERY_PARAMS.PAGE];
   const sizeParam = params[PAGINATION_QUERY_PARAMS.SIZE];
   const pageIndex = parseInt(typeof pageParam === 'string' ? pageParam : '0', 10);
-  const pageSize = parseInt(typeof sizeParam === 'string' ? sizeParam : String(defaultPageSize), 10);
+  const pageSize = parseInt(
+    typeof sizeParam === 'string' ? sizeParam : String(defaultPageSize),
+    10,
+  );
 
   return {
     pageIndex: isNaN(pageIndex) || pageIndex < 0 ? 0 : pageIndex,
