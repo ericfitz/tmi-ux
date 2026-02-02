@@ -4,6 +4,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import {
+  ListWebhookSubscriptionsResponse,
   WebhookFilter,
   WebhookSubscription,
   WebhookSubscriptionInput,
@@ -30,18 +31,20 @@ export class WebhookService {
    * List all webhook subscriptions with optional filtering
    * Note: When user is admin, server will return all webhooks (future enhancement)
    */
-  public list(filter?: WebhookFilter): Observable<WebhookSubscription[]> {
+  public list(filter?: WebhookFilter): Observable<ListWebhookSubscriptionsResponse> {
     const params = buildHttpParams(filter);
-    return this.apiService.get<WebhookSubscription[]>('webhooks/subscriptions', params).pipe(
-      tap(webhooks => {
-        this.webhooksSubject$.next(webhooks);
-        this.logger.debug('Webhooks loaded', { count: webhooks.length });
-      }),
-      catchError(error => {
-        this.logger.error('Failed to list webhooks', error);
-        throw error;
-      }),
-    );
+    return this.apiService
+      .get<ListWebhookSubscriptionsResponse>('webhooks/subscriptions', params)
+      .pipe(
+        tap(response => {
+          this.webhooksSubject$.next(response.subscriptions);
+          this.logger.debug('Webhooks loaded', { count: response.subscriptions.length });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to list webhooks', error);
+          throw error;
+        }),
+      );
   }
 
   /**

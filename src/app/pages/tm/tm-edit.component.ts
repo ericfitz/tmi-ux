@@ -2926,8 +2926,8 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       // Fallback to separate API call if diagrams not included in threat model
       this._subscriptions.add(
-        this.threatModelService.getDiagramsForThreatModel(threatModelId).subscribe(diagrams => {
-          this.diagrams = diagrams;
+        this.threatModelService.getDiagramsForThreatModel(threatModelId).subscribe(response => {
+          this.diagrams = response.diagrams;
 
           // Update DIAGRAMS_BY_ID map with real diagram data
           this.diagrams.forEach(diagram => {
@@ -2936,7 +2936,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
           // Update threat model diagrams property for consistency
           if (this.threatModel) {
-            this.threatModel.diagrams = diagrams;
+            this.threatModel.diagrams = response.diagrams;
           }
         }),
       );
@@ -2948,10 +2948,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   private loadDocuments(threatModelId: string): void {
     this._subscriptions.add(
-      this.threatModelService.getDocumentsForThreatModel(threatModelId).subscribe(documents => {
+      this.threatModelService.getDocumentsForThreatModel(threatModelId).subscribe(response => {
         if (this.threatModel) {
-          this.threatModel.documents = documents;
-          this.documentsDataSource.data = documents;
+          this.threatModel.documents = response.documents;
+          this.documentsDataSource.data = response.documents;
         }
       }),
     );
@@ -2962,14 +2962,12 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   private loadRepositories(threatModelId: string): void {
     this._subscriptions.add(
-      this.threatModelService
-        .getRepositoriesForThreatModel(threatModelId)
-        .subscribe(repositories => {
-          if (this.threatModel) {
-            this.threatModel.repositories = repositories;
-            this.repositoriesDataSource.data = repositories;
-          }
-        }),
+      this.threatModelService.getRepositoriesForThreatModel(threatModelId).subscribe(response => {
+        if (this.threatModel) {
+          this.threatModel.repositories = response.repositories;
+          this.repositoriesDataSource.data = response.repositories;
+        }
+      }),
     );
   }
 
@@ -3006,10 +3004,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this._subscriptions.add(
       this.threatModelService.getAssetsForThreatModel(threatModelId).subscribe({
-        next: assets => {
+        next: response => {
           if (this.threatModel) {
-            this.threatModel.assets = assets;
-            this.assetsDataSource.data = assets;
+            this.threatModel.assets = response.assets;
+            this.assetsDataSource.data = response.assets;
           }
         },
         error: error => {
@@ -3074,8 +3072,8 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   private loadAddons(): void {
     this._subscriptions.add(
       this.addonService.list().subscribe({
-        next: addons => {
-          this.filterAndCacheAddons(addons);
+        next: response => {
+          this.filterAndCacheAddons(response.addons);
         },
         error: error => {
           this.logger.error('Failed to load addons', error);
@@ -3253,10 +3251,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this._subscriptions.add(
       this.threatModelService.getNotesForThreatModel(threatModelId).subscribe({
-        next: notes => {
+        next: response => {
           if (this.threatModel) {
-            this.threatModel.notes = notes;
-            this.notesDataSource.data = notes;
+            this.threatModel.notes = response.notes;
+            this.notesDataSource.data = response.notes;
           }
         },
         error: error => {

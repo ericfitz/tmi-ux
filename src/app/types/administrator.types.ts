@@ -63,4 +63,6 @@ export interface AdministratorFilter {
 export interface ListAdministratorsResponse {
   administrators: Administrator[];
   total: number;
+  limit: number;
+  offset: number;
 }

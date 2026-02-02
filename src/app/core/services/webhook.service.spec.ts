@@ -54,6 +54,13 @@ describe('WebhookService', () => {
     enabled: true,
   };
 
+  const mockResponse = {
+    subscriptions: [mockWebhook],
+    total: 1,
+    limit: 100,
+    offset: 0,
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -92,16 +99,16 @@ describe('WebhookService', () => {
 
   describe('list()', () => {
     it('should call API with no parameters when filter is not provided', () => {
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
-      service.list().subscribe(webhooks => {
+      service.list().subscribe(response => {
         expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', undefined);
-        expect(webhooks).toEqual([mockWebhook]);
+        expect(response.subscriptions).toEqual([mockWebhook]);
       });
     });
 
     it('should update webhooks$ observable with response data', () => {
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.list().subscribe(() => {
         service.webhooks$.subscribe(webhooks => {
@@ -111,7 +118,7 @@ describe('WebhookService', () => {
     });
 
     it('should log debug message with webhook count', () => {
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.list().subscribe(() => {
         expect(mockLoggerService.debug).toHaveBeenCalledWith('Webhooks loaded', { count: 1 });
@@ -123,7 +130,7 @@ describe('WebhookService', () => {
         threat_model_id: 'tm-123',
       };
 
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.list(filter).subscribe(() => {
         expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', {
@@ -138,7 +145,7 @@ describe('WebhookService', () => {
         offset: 20,
       };
 
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.list(filter).subscribe(() => {
         expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', {
@@ -155,7 +162,7 @@ describe('WebhookService', () => {
         offset: 20,
       };
 
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.list(filter).subscribe(() => {
         expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', {
@@ -171,7 +178,7 @@ describe('WebhookService', () => {
         limit: 0,
       };
 
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.list(filter).subscribe(() => {
         expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', {
@@ -183,7 +190,7 @@ describe('WebhookService', () => {
     it('should return undefined params for empty filter object', () => {
       const filter: WebhookFilter = {};
 
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.list(filter).subscribe(() => {
         expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', undefined);
@@ -239,7 +246,7 @@ describe('WebhookService', () => {
   describe('create()', () => {
     it('should call API with correct endpoint and data', () => {
       mockApiService.post.mockReturnValue(of(mockWebhook));
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.create(mockWebhookInput).subscribe(webhook => {
         expect(mockApiService.post).toHaveBeenCalledWith(
@@ -252,7 +259,7 @@ describe('WebhookService', () => {
 
     it('should log info message on success', () => {
       mockApiService.post.mockReturnValue(of(mockWebhook));
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.create(mockWebhookInput).subscribe(() => {
         expect(mockLoggerService.info).toHaveBeenCalledWith('Webhook created', {
@@ -263,7 +270,7 @@ describe('WebhookService', () => {
 
     it('should refresh webhook list after creation', () => {
       mockApiService.post.mockReturnValue(of(mockWebhook));
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.create(mockWebhookInput).subscribe(() => {
         expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', undefined);
@@ -299,7 +306,7 @@ describe('WebhookService', () => {
 
     it('should call API with correct endpoint and data', () => {
       mockApiService.put.mockReturnValue(of(mockWebhook));
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.update(testId, mockWebhookInput).subscribe(webhook => {
         expect(mockApiService.put).toHaveBeenCalledWith(
@@ -312,7 +319,7 @@ describe('WebhookService', () => {
 
     it('should log info message on success', () => {
       mockApiService.put.mockReturnValue(of(mockWebhook));
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.update(testId, mockWebhookInput).subscribe(() => {
         expect(mockLoggerService.info).toHaveBeenCalledWith('Webhook updated', {
@@ -323,7 +330,7 @@ describe('WebhookService', () => {
 
     it('should refresh webhook list after update', () => {
       mockApiService.put.mockReturnValue(of(mockWebhook));
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.update(testId, mockWebhookInput).subscribe(() => {
         expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', undefined);
@@ -359,7 +366,7 @@ describe('WebhookService', () => {
 
     it('should call API with correct endpoint', () => {
       mockApiService.delete.mockReturnValue(of(undefined));
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.delete(testId).subscribe(() => {
         expect(mockApiService.delete).toHaveBeenCalledWith('webhooks/subscriptions/webhook-123');
@@ -368,7 +375,7 @@ describe('WebhookService', () => {
 
     it('should log info message on success', () => {
       mockApiService.delete.mockReturnValue(of(undefined));
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.delete(testId).subscribe(() => {
         expect(mockLoggerService.info).toHaveBeenCalledWith('Webhook deleted', { id: testId });
@@ -377,7 +384,7 @@ describe('WebhookService', () => {
 
     it('should refresh webhook list after deletion', () => {
       mockApiService.delete.mockReturnValue(of(undefined));
-      mockApiService.get.mockReturnValue(of([mockWebhook]));
+      mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.delete(testId).subscribe(() => {
         expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', undefined);

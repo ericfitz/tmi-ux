@@ -148,7 +148,9 @@ describe('ThreatModelService', () => {
         note_count: tm.notes?.length || 0,
       }));
 
-      vi.mocked(apiService.get).mockReturnValue(of(mockListItems));
+      vi.mocked(apiService.get).mockReturnValue(
+        of({ threat_models: mockListItems, total: mockListItems.length, limit: 100, offset: 0 }),
+      );
     });
 
     it('should return threat model list from API', waitForAsync(() => {
@@ -238,15 +240,21 @@ describe('ThreatModelService', () => {
     }));
 
     it('should return diagrams for a threat model from API', waitForAsync(() => {
-      // Mock API to return diagrams
-      vi.mocked(apiService.get).mockReturnValue(of(testThreatModel1.diagrams || []));
+      // Mock API to return wrapped response
+      const mockResponse = {
+        diagrams: testThreatModel1.diagrams || [],
+        total: (testThreatModel1.diagrams || []).length,
+        limit: 100,
+        offset: 0,
+      };
+      vi.mocked(apiService.get).mockReturnValue(of(mockResponse));
 
       return new Promise<void>((resolve, reject) => {
         service.getDiagramsForThreatModel(testThreatModel1.id).subscribe({
-          next: diagrams => {
+          next: response => {
             try {
-              expect(diagrams).toBeDefined();
-              expect(Array.isArray(diagrams)).toBe(true);
+              expect(response).toBeDefined();
+              expect(Array.isArray(response.diagrams)).toBe(true);
               resolve();
             } catch (error) {
               reject(error instanceof Error ? error : new Error(String(error)));
@@ -260,16 +268,22 @@ describe('ThreatModelService', () => {
     }));
 
     it('should return documents for a threat model from API', waitForAsync(() => {
-      // Mock API to return documents
-      vi.mocked(apiService.get).mockReturnValue(of(testThreatModel1.documents || []));
+      // Mock API to return wrapped response
+      const mockResponse = {
+        documents: testThreatModel1.documents || [],
+        total: (testThreatModel1.documents || []).length,
+        limit: 100,
+        offset: 0,
+      };
+      vi.mocked(apiService.get).mockReturnValue(of(mockResponse));
 
       return new Promise<void>((resolve, reject) => {
         service.getDocumentsForThreatModel(testThreatModel1.id).subscribe({
-          next: documents => {
+          next: response => {
             try {
-              expect(documents).toBeDefined();
-              expect(Array.isArray(documents)).toBe(true);
-              expect(documents.length).toBe(testThreatModel1.documents?.length || 0);
+              expect(response).toBeDefined();
+              expect(Array.isArray(response.documents)).toBe(true);
+              expect(response.documents.length).toBe(testThreatModel1.documents?.length || 0);
               resolve();
             } catch (error) {
               reject(error instanceof Error ? error : new Error(String(error)));
@@ -283,16 +297,22 @@ describe('ThreatModelService', () => {
     }));
 
     it('should return repositories for a threat model from API', waitForAsync(() => {
-      // Mock API to return repositories
-      vi.mocked(apiService.get).mockReturnValue(of(testThreatModel1.repositories || []));
+      // Mock API to return wrapped response
+      const mockResponse = {
+        repositories: testThreatModel1.repositories || [],
+        total: (testThreatModel1.repositories || []).length,
+        limit: 100,
+        offset: 0,
+      };
+      vi.mocked(apiService.get).mockReturnValue(of(mockResponse));
 
       return new Promise<void>((resolve, reject) => {
         service.getRepositoriesForThreatModel(testThreatModel1.id).subscribe({
-          next: repositories => {
+          next: response => {
             try {
-              expect(repositories).toBeDefined();
-              expect(Array.isArray(repositories)).toBe(true);
-              expect(repositories.length).toBe(testThreatModel1.repositories?.length || 0);
+              expect(response).toBeDefined();
+              expect(Array.isArray(response.repositories)).toBe(true);
+              expect(response.repositories.length).toBe(testThreatModel1.repositories?.length || 0);
               resolve();
             } catch (error) {
               reject(error instanceof Error ? error : new Error(String(error)));
@@ -314,25 +334,27 @@ describe('ThreatModelService', () => {
 
     it('should make API calls for diagrams when mock data is disabled', waitForAsync(() => {
       const mockDiagrams = [{ id: 'diag1', name: 'Test Diagram' }];
-      vi.spyOn(apiService, 'get').mockReturnValue(of(mockDiagrams));
+      const mockResponse = { diagrams: mockDiagrams, total: 1, limit: 100, offset: 0 };
+      vi.spyOn(apiService, 'get').mockReturnValue(of(mockResponse));
 
-      service.getDiagramsForThreatModel(testThreatModel1.id).subscribe(diagrams => {
+      service.getDiagramsForThreatModel(testThreatModel1.id).subscribe(response => {
         expect(apiService.get).toHaveBeenCalledWith(
           `threat_models/${testThreatModel1.id}/diagrams`,
         );
-        expect(diagrams).toEqual(mockDiagrams);
+        expect(response.diagrams).toEqual(mockDiagrams);
       });
     }));
 
     it('should make API calls for documents when mock data is disabled', waitForAsync(() => {
       const mockDocuments = [{ id: 'doc1', name: 'Test Document', url: 'http://example.com' }];
-      vi.spyOn(apiService, 'get').mockReturnValue(of(mockDocuments));
+      const mockResponse = { documents: mockDocuments, total: 1, limit: 100, offset: 0 };
+      vi.spyOn(apiService, 'get').mockReturnValue(of(mockResponse));
 
-      service.getDocumentsForThreatModel(testThreatModel1.id).subscribe(documents => {
+      service.getDocumentsForThreatModel(testThreatModel1.id).subscribe(response => {
         expect(apiService.get).toHaveBeenCalledWith(
           `threat_models/${testThreatModel1.id}/documents`,
         );
-        expect(documents).toEqual(mockDocuments);
+        expect(response.documents).toEqual(mockDocuments);
       });
     }));
 
@@ -340,13 +362,14 @@ describe('ThreatModelService', () => {
       const mockRepositories = [
         { id: 'repo1', name: 'Test Repository', uri: 'http://github.com/example' },
       ];
-      vi.spyOn(apiService, 'get').mockReturnValue(of(mockRepositories));
+      const mockResponse = { repositories: mockRepositories, total: 1, limit: 100, offset: 0 };
+      vi.spyOn(apiService, 'get').mockReturnValue(of(mockResponse));
 
-      service.getRepositoriesForThreatModel(testThreatModel1.id).subscribe(repositories => {
+      service.getRepositoriesForThreatModel(testThreatModel1.id).subscribe(response => {
         expect(apiService.get).toHaveBeenCalledWith(
           `threat_models/${testThreatModel1.id}/repositories`,
         );
-        expect(repositories).toEqual(mockRepositories);
+        expect(response.repositories).toEqual(mockRepositories);
       });
     }));
   });

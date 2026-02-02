@@ -8,6 +8,8 @@ import {
   WebhookQuota,
   EnrichedUserAPIQuota,
   EnrichedWebhookQuota,
+  ListUserAPIQuotasResponse,
+  ListWebhookQuotasResponse,
 } from '@app/types/quota.types';
 import { AdminUser, AdminUserFilter, ListAdminUsersResponse } from '@app/types/user.types';
 
@@ -77,21 +79,21 @@ export class QuotaService {
   /**
    * List all user API quotas (only returns users with custom quotas)
    */
-  listUserAPIQuotas(limit?: number, offset?: number): Observable<UserAPIQuota[]> {
+  listUserAPIQuotas(limit?: number, offset?: number): Observable<ListUserAPIQuotasResponse> {
     const params: Record<string, string> = {};
     if (limit !== undefined) params['limit'] = limit.toString();
     if (offset !== undefined) params['offset'] = offset.toString();
-    return this.apiService.get<UserAPIQuota[]>('/admin/quotas/users', params);
+    return this.apiService.get<ListUserAPIQuotasResponse>('/admin/quotas/users', params);
   }
 
   /**
    * List all webhook quotas (only returns users with custom quotas)
    */
-  listWebhookQuotas(limit?: number, offset?: number): Observable<WebhookQuota[]> {
+  listWebhookQuotas(limit?: number, offset?: number): Observable<ListWebhookQuotasResponse> {
     const params: Record<string, string> = {};
     if (limit !== undefined) params['limit'] = limit.toString();
     if (offset !== undefined) params['offset'] = offset.toString();
-    return this.apiService.get<WebhookQuota[]>('/admin/quotas/webhooks', params);
+    return this.apiService.get<ListWebhookQuotasResponse>('/admin/quotas/webhooks', params);
   }
 
   /**
@@ -166,7 +168,8 @@ export class QuotaService {
    */
   listEnrichedUserAPIQuotas(limit?: number, offset?: number): Observable<EnrichedUserAPIQuota[]> {
     return this.listUserAPIQuotas(limit, offset).pipe(
-      switchMap(quotas => {
+      switchMap(response => {
+        const quotas = response.quotas;
         if (!quotas || quotas.length === 0) {
           return of([]);
         }
@@ -186,7 +189,8 @@ export class QuotaService {
    */
   listEnrichedWebhookQuotas(limit?: number, offset?: number): Observable<EnrichedWebhookQuota[]> {
     return this.listWebhookQuotas(limit, offset).pipe(
-      switchMap(quotas => {
+      switchMap(response => {
+        const quotas = response.quotas;
         if (!quotas || quotas.length === 0) {
           return of([]);
         }

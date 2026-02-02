@@ -415,8 +415,8 @@ export class NotePageComponent implements OnInit, OnDestroy, AfterViewChecked {
       .list()
       .pipe(this.untilDestroyed())
       .subscribe({
-        next: addons => {
-          this.addonsForNote = addons.filter(addon => addon.objects?.includes('note'));
+        next: response => {
+          this.addonsForNote = response.addons.filter(addon => addon.objects?.includes('note'));
         },
         error: error => {
           this.logger.error('Failed to load addons', error);

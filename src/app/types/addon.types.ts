@@ -73,6 +73,9 @@ export interface AddonFilter {
  */
 export interface ListAddonsResponse {
   addons: Addon[];
+  total: number;
+  limit: number;
+  offset: number;
 }
 
 /**

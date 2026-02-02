@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import {
@@ -32,13 +32,12 @@ export class AddonService {
   /**
    * List all addons with optional filtering
    */
-  public list(filter?: AddonFilter): Observable<Addon[]> {
+  public list(filter?: AddonFilter): Observable<ListAddonsResponse> {
     const params = buildHttpParams(filter);
     return this.apiService.get<ListAddonsResponse>('addons', params).pipe(
-      map(response => response.addons),
-      tap(addons => {
-        this.addonsSubject$.next(addons);
-        this.logger.debug('Addons loaded', { count: addons.length });
+      tap(response => {
+        this.addonsSubject$.next(response.addons);
+        this.logger.debug('Addons loaded', { count: response.addons.length });
       }),
       catchError(error => {
         this.logger.error('Failed to list addons', error);

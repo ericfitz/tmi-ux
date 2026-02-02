@@ -300,8 +300,8 @@ export class AddAddonDialogComponent implements OnInit {
       .list()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: webhooks => {
-          this.availableWebhooks = webhooks.filter(w => w.status === 'active');
+        next: response => {
+          this.availableWebhooks = response.subscriptions.filter(w => w.status === 'active');
         },
         error: error => {
           this.logger.error('Failed to load webhooks', error);

@@ -337,7 +337,7 @@ describe('QuotaService', () => {
 
   describe('listEnrichedUserAPIQuotas()', () => {
     it('should return empty array when no quotas exist', () => {
-      mockApiService.get.mockReturnValue(of([]));
+      mockApiService.get.mockReturnValue(of({ quotas: [], total: 0, limit: 0, offset: 0 }));
 
       service.listEnrichedUserAPIQuotas().subscribe(enrichedQuotas => {
         expect(enrichedQuotas).toEqual([]);
@@ -347,7 +347,7 @@ describe('QuotaService', () => {
     it('should enrich all quotas with user data', () => {
       mockApiService.get.mockImplementation((endpoint: string) => {
         if (endpoint === '/admin/quotas/users') {
-          return of([mockUserAPIQuota]);
+          return of({ quotas: [mockUserAPIQuota], total: 1, limit: 100, offset: 0 });
         }
         if (endpoint === '/admin/quotas/users/user-123') {
           return of(mockUserAPIQuota);
@@ -372,7 +372,7 @@ describe('QuotaService', () => {
 
   describe('listEnrichedWebhookQuotas()', () => {
     it('should return empty array when no quotas exist', () => {
-      mockApiService.get.mockReturnValue(of([]));
+      mockApiService.get.mockReturnValue(of({ quotas: [], total: 0, limit: 0, offset: 0 }));
 
       service.listEnrichedWebhookQuotas().subscribe(enrichedQuotas => {
         expect(enrichedQuotas).toEqual([]);
@@ -382,7 +382,7 @@ describe('QuotaService', () => {
     it('should enrich all quotas with user data', () => {
       mockApiService.get.mockImplementation((endpoint: string) => {
         if (endpoint === '/admin/quotas/webhooks') {
-          return of([mockWebhookQuota]);
+          return of({ quotas: [mockWebhookQuota], total: 1, limit: 100, offset: 0 });
         }
         if (endpoint === '/admin/quotas/webhooks/user-123') {
           return of(mockWebhookQuota);

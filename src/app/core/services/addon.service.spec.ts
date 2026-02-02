@@ -95,17 +95,17 @@ describe('AddonService', () => {
     it('should call API with no parameters when filter is not provided', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
-      service.list().subscribe(addons => {
+      service.list().subscribe(response => {
         expect(mockApiService.get).toHaveBeenCalledWith('addons', undefined);
-        expect(addons).toEqual(mockListResponse.addons);
+        expect(response.addons).toEqual(mockListResponse.addons);
       });
     });
 
     it('should return addons from API response', () => {
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
-      service.list().subscribe(addons => {
-        expect(addons).toEqual([mockAddon]);
+      service.list().subscribe(response => {
+        expect(response.addons).toEqual([mockAddon]);
       });
     });
 

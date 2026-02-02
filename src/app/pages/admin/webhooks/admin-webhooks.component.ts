@@ -72,8 +72,8 @@ export class AdminWebhooksComponent implements OnInit {
       .list()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: webhooks => {
-          this.webhooks = webhooks;
+        next: response => {
+          this.webhooks = response.subscriptions;
           this.applyFilter();
           this.loading = false;
         },

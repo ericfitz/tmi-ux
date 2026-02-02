@@ -72,8 +72,8 @@ export class AdminAddonsComponent implements OnInit {
       .list()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: addons => {
-          this.addons = addons;
+        next: response => {
+          this.addons = response.addons;
           this.applyFilter();
           this.loading = false;
         },

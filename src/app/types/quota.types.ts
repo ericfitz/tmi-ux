@@ -4,6 +4,8 @@
  * Types for user API quotas and webhook quotas
  */
 
+import { PaginationMetadata } from './api-responses.types';
+
 /**
  * User API Quota
  * Rate limits for API requests per user
@@ -59,3 +61,17 @@ export const DEFAULT_WEBHOOK_QUOTA = {
   max_subscription_requests_per_minute: 10,
   max_subscription_requests_per_day: 20,
 } as const;
+
+/**
+ * Response from GET /admin/quotas/users
+ */
+export interface ListUserAPIQuotasResponse extends PaginationMetadata {
+  quotas: UserAPIQuota[];
+}
+
+/**
+ * Response from GET /admin/quotas/webhooks
+ */
+export interface ListWebhookQuotasResponse extends PaginationMetadata {
+  quotas: WebhookQuota[];
+}

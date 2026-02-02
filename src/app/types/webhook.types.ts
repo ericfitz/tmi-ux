@@ -3,6 +3,8 @@
  * Based on TMI API /webhooks/subscriptions endpoints
  */
 
+import { PaginationMetadata } from './api-responses.types';
+
 /**
  * Webhook subscription status
  */
@@ -66,4 +68,11 @@ export interface WebhookFilter {
   limit?: number;
   /** Number of results to skip */
   offset?: number;
+}
+
+/**
+ * Response from GET /webhooks/subscriptions
+ */
+export interface ListWebhookSubscriptionsResponse extends PaginationMetadata {
+  subscriptions: WebhookSubscription[];
 }

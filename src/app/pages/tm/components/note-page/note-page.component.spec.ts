@@ -140,7 +140,7 @@ describe('NotePageComponent', () => {
       canEdit$: new BehaviorSubject(true),
     };
     addonService = {
-      list: vi.fn().mockReturnValue(of([])),
+      list: vi.fn().mockReturnValue(of({ addons: [], total: 0, limit: 0, offset: 0 })),
     };
 
     component = new NotePageComponent(

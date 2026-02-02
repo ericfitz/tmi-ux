@@ -1747,9 +1747,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     // (the GET /threat_models/{id} endpoint does not include assets)
     this._subscriptions.add(
       this.threatModelService.getAssetsForThreatModel(this.threatModelId).subscribe({
-        next: assets => {
+        next: response => {
           // Filter to only data assets and sort alphabetically
-          this.dataAssets = assets
+          this.dataAssets = response.assets
             .filter(asset => asset.type === 'data')
             .map(asset => ({ id: asset.id, name: asset.name }))
             .sort((a, b) => a.name.localeCompare(b.name));

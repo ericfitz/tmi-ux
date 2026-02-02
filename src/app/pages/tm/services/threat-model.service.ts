@@ -33,6 +33,14 @@ import {
 } from '../models/threat-model.model';
 import { TMListItem } from '../models/tm-list-item.model';
 import { Diagram, Cell } from '../models/diagram.model';
+import {
+  ListThreatModelsResponse,
+  ListDiagramsResponse,
+  ListDocumentsResponse,
+  ListRepositoriesResponse,
+  ListNotesResponse,
+  ListAssetsResponse,
+} from '../models/api-responses.model';
 
 /**
  * User information from the API (Principal-based)
@@ -108,25 +116,37 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
+   * Fetch threat models with pagination support
+   * Returns the full API response including pagination metadata
+   */
+  fetchThreatModels(limit?: number, offset?: number): Observable<ListThreatModelsResponse> {
+    const params: Record<string, string> = {};
+    if (limit !== undefined) params['limit'] = limit.toString();
+    if (offset !== undefined) params['offset'] = offset.toString();
+
+    return this.apiService.get<ListThreatModelsResponse>('threat_models', params).pipe(
+      tap(response => {
+        // Update internal cache with fetched items
+        const threatModelList = response.threat_models || [];
+        this._threatModelList = threatModelList;
+        this._threatModelListSubject.next(threatModelList);
+      }),
+      catchError(error => {
+        this.logger.error('Error fetching threat model list', error);
+        return of({ threat_models: [], total: 0, limit: 0, offset: 0 });
+      }),
+    );
+  }
+
+  /**
    * Get threat model list items (lightweight data for dashboard)
    * Always fetches fresh data from API to minimize stale data issues
+   * @deprecated Use fetchThreatModels() for pagination support
    */
   getThreatModelList(_forceRefresh: boolean = false): Observable<TMListItem[]> {
-    // this.logger.debugComponent(
-    //   'ThreatModelService',
-    //   'ThreatModelService.getThreatModelList called',
-    //   {
-    //     threatModelListCount: this._threatModelList.length,
-    //     forceRefresh: forceRefresh,
-    //     models: this._threatModelList.map(tm => ({ id: tm.id, name: tm.name })),
-    //   },
-    // );
-
-    // Always fetch fresh data to ensure up-to-date information
-    // this.logger.debugComponent('ThreatModelService', 'Fetching fresh threat model list from API');
-    this.fetchThreatModelListFromAPI();
-
-    // Always return the reactive subject for consistent behavior
+    // Trigger a fetch and update the internal subject
+    this.fetchThreatModels().subscribe();
+    // Return the reactive subject for backward compatibility
     return this._threatModelListSubject.asObservable();
   }
 
@@ -134,52 +154,7 @@ export class ThreatModelService implements OnDestroy {
    * Force refresh the threat model list from the API
    */
   refreshThreatModelList(): void {
-    // this.logger.debugComponent('ThreatModelService', 'Force refreshing threat model list');
-    this.fetchThreatModelListFromAPI();
-  }
-
-  /**
-   * Private method to fetch threat model list from API
-   */
-  private fetchThreatModelListFromAPI(): void {
-    this.apiService
-      .get<unknown>('threat_models')
-      .pipe(
-        tap(response => {
-          let threatModelList: TMListItem[] = [];
-
-          // Handle different possible response formats
-          if (response && typeof response === 'object') {
-            if ('data' in response && Array.isArray((response as { data: unknown }).data)) {
-              // Paginated response with data property
-              threatModelList = (response as { data: TMListItem[] }).data;
-            } else if (Array.isArray(response)) {
-              // Direct array response
-              threatModelList = response as TMListItem[];
-            }
-          }
-
-          this._threatModelList = threatModelList;
-          this._threatModelListSubject.next(threatModelList);
-          // this.logger.debugComponent('ThreatModelService', 'Updated threat model list from API', {
-          //   count: threatModelList.length,
-          //   items: threatModelList.map(tm => ({ id: tm.id, name: tm.name })),
-          // });
-        }),
-        catchError(error => {
-          this.logger.error('Error fetching threat model list', error);
-          this._threatModelListSubject.next([]);
-          return of([]);
-        }),
-      )
-      .subscribe({
-        next: () => {
-          // this.logger.debugComponent('ThreatModelService', 'Threat model list fetch completed');
-        },
-        error: error => {
-          this.logger.error('Unexpected error in threat model list subscription', error);
-        },
-      });
+    this.fetchThreatModels().subscribe();
   }
 
   /**
@@ -317,21 +292,23 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get diagrams for a threat model
    */
-  getDiagramsForThreatModel(threatModelId: string): Observable<Diagram[]> {
+  getDiagramsForThreatModel(threatModelId: string): Observable<ListDiagramsResponse> {
     // In a real implementation, this would call the API
     // this.logger.debugComponent(
     // 'ThreatModelService',
     // `Fetching diagrams for threat model with ID: ${threatModelId} from API`,
     // );
-    return this.apiService.get<Diagram[]>(`threat_models/${threatModelId}/diagrams`).pipe(
-      catchError(error => {
-        this.logger.error(
-          `Error fetching diagrams for threat model with ID: ${threatModelId}`,
-          error,
-        );
-        return of([]);
-      }),
-    );
+    return this.apiService
+      .get<ListDiagramsResponse>(`threat_models/${threatModelId}/diagrams`)
+      .pipe(
+        catchError(error => {
+          this.logger.error(
+            `Error fetching diagrams for threat model with ID: ${threatModelId}`,
+            error,
+          );
+          return of({ diagrams: [], total: 0, limit: 0, offset: 0 });
+        }),
+      );
   }
 
   /**
@@ -356,53 +333,57 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get documents for a threat model
    */
-  getDocumentsForThreatModel(threatModelId: string): Observable<TMDocument[]> {
+  getDocumentsForThreatModel(threatModelId: string): Observable<ListDocumentsResponse> {
     // this.logger.debugComponent(
     // 'ThreatModelService',
     // `Fetching documents for threat model with ID: ${threatModelId} from API`,
     // );
-    return this.apiService.get<TMDocument[]>(`threat_models/${threatModelId}/documents`).pipe(
-      catchError(error => {
-        this.logger.error(
-          `Error fetching documents for threat model with ID: ${threatModelId}`,
-          error,
-        );
-        return of([]);
-      }),
-    );
+    return this.apiService
+      .get<ListDocumentsResponse>(`threat_models/${threatModelId}/documents`)
+      .pipe(
+        catchError(error => {
+          this.logger.error(
+            `Error fetching documents for threat model with ID: ${threatModelId}`,
+            error,
+          );
+          return of({ documents: [], total: 0, limit: 0, offset: 0 });
+        }),
+      );
   }
 
   /**
    * Get repository references for a threat model
    */
-  getRepositoriesForThreatModel(threatModelId: string): Observable<Repository[]> {
+  getRepositoriesForThreatModel(threatModelId: string): Observable<ListRepositoriesResponse> {
     // this.logger.debugComponent(
     // 'ThreatModelService',
     // `Fetching repositories for threat model with ID: ${threatModelId} from API`,
     // );
-    return this.apiService.get<Repository[]>(`threat_models/${threatModelId}/repositories`).pipe(
-      catchError(error => {
-        this.logger.error(
-          `Error fetching repositories for threat model with ID: ${threatModelId}`,
-          error,
-        );
-        return of([]);
-      }),
-    );
+    return this.apiService
+      .get<ListRepositoriesResponse>(`threat_models/${threatModelId}/repositories`)
+      .pipe(
+        catchError(error => {
+          this.logger.error(
+            `Error fetching repositories for threat model with ID: ${threatModelId}`,
+            error,
+          );
+          return of({ repositories: [], total: 0, limit: 0, offset: 0 });
+        }),
+      );
   }
 
   /**
    * Get notes for a threat model
    */
-  getNotesForThreatModel(threatModelId: string): Observable<Note[]> {
+  getNotesForThreatModel(threatModelId: string): Observable<ListNotesResponse> {
     // this.logger.debugComponent(
     // 'ThreatModelService',
     // `Fetching notes for threat model with ID: ${threatModelId} from API`,
     // );
-    return this.apiService.get<Note[]>(`threat_models/${threatModelId}/notes`).pipe(
+    return this.apiService.get<ListNotesResponse>(`threat_models/${threatModelId}/notes`).pipe(
       catchError(error => {
         this.logger.error(`Error fetching notes for threat model with ID: ${threatModelId}`, error);
-        return of([]);
+        return of({ notes: [], total: 0, limit: 0, offset: 0 });
       }),
     );
   }
@@ -1551,18 +1532,18 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Get assets for a threat model
    */
-  getAssetsForThreatModel(threatModelId: string): Observable<Asset[]> {
+  getAssetsForThreatModel(threatModelId: string): Observable<ListAssetsResponse> {
     // this.logger.debugComponent(
     // 'ThreatModelService',
     // `Fetching assets for threat model with ID: ${threatModelId} from API`,
     // );
-    return this.apiService.get<Asset[]>(`threat_models/${threatModelId}/assets`).pipe(
+    return this.apiService.get<ListAssetsResponse>(`threat_models/${threatModelId}/assets`).pipe(
       catchError(error => {
         this.logger.error(
           `Error fetching assets for threat model with ID: ${threatModelId}`,
           error,
         );
-        return of([]);
+        return of({ assets: [], total: 0, limit: 0, offset: 0 });
       }),
     );
   }
