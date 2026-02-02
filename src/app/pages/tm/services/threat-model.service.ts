@@ -1502,6 +1502,18 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
+   * Get a single note by ID with full content
+   */
+  getNoteById(threatModelId: string, noteId: string): Observable<Note | undefined> {
+    return this.apiService.get<Note>(`threat_models/${threatModelId}/notes/${noteId}`).pipe(
+      catchError(error => {
+        this.logger.error(`Error fetching note with ID: ${noteId}`, error);
+        return of(undefined);
+      }),
+    );
+  }
+
+  /**
    * Update an existing note
    */
   updateNote(threatModelId: string, noteId: string, note: Partial<Note>): Observable<Note> {

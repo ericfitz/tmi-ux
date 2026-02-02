@@ -163,33 +163,59 @@ export class NotePageComponent implements OnInit, OnDestroy, AfterViewChecked {
       return;
     }
 
-    // Find note in threat model
-    this.note = this.threatModel.notes?.find(n => n.id === this.noteId) || null;
+    // Try to find note in threat model's cached notes
+    const cachedNote = this.threatModel.notes?.find(n => n.id === this.noteId);
 
-    if (!this.note) {
-      this.logger.warn('Note not found', {
-        threatModelId: this.threatModelId,
-        noteId: this.noteId,
+    // The list endpoint returns NoteListItem which excludes content for performance.
+    // We must fetch the full note from the API to get the content.
+    this.threatModelService
+      .getNoteById(this.threatModelId, this.noteId)
+      .pipe(this.untilDestroyed())
+      .subscribe({
+        next: note => {
+          if (!note) {
+            this.logger.warn('Note not found from API', {
+              threatModelId: this.threatModelId,
+              noteId: this.noteId,
+            });
+            // Fall back to cached note if available (though content may be missing)
+            if (cachedNote) {
+              this.note = cachedNote;
+              this.initializeAfterNoteLoaded();
+            } else {
+              void this.router.navigate(['/tm', this.threatModelId], {
+                queryParams: { error: 'note_not_found' },
+              });
+            }
+            return;
+          }
+
+          this.note = note;
+          this.initializeAfterNoteLoaded();
+        },
+        error: () => {
+          // On API error, try using cached note if available
+          if (cachedNote) {
+            this.logger.warn('Failed to fetch note from API, using cached data', {
+              threatModelId: this.threatModelId,
+              noteId: this.noteId,
+            });
+            this.note = cachedNote;
+            this.initializeAfterNoteLoaded();
+          } else {
+            void this.router.navigate(['/tm', this.threatModelId], {
+              queryParams: { error: 'note_not_found' },
+            });
+          }
+        },
       });
-      void this.router.navigate(['/tm', this.threatModelId], {
-        queryParams: { error: 'note_not_found' },
-      });
-      return;
-    }
 
-    this.logger.info('Note page loaded', {
-      threatModelId: this.threatModelId,
-      noteId: this.noteId,
-      noteName: this.note.name,
-    });
-
-    // Subscribe to authorization
+    // Set up subscriptions that don't depend on note data
     this.authorizationService.canEdit$.pipe(this.untilDestroyed()).subscribe(canEdit => {
       this.canEdit = canEdit;
       this.updateFormEditability();
     });
 
-    // Subscribe to language changes
     this.languageService.currentLanguage$
       .pipe(skip(1), this.untilDestroyed())
       .subscribe(language => {
@@ -201,17 +227,29 @@ export class NotePageComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.currentDirection = direction;
     });
 
-    // Populate form with note data
-    this.populateForm();
-
-    // Update form editability
-    this.updateFormEditability();
-
     // Load addons
     this.loadAddons();
 
     // Check clipboard permissions
     void this.checkClipboardPermissions();
+  }
+
+  /**
+   * Initialize component after note data is loaded
+   */
+  private initializeAfterNoteLoaded(): void {
+    this.logger.info('Note page loaded', {
+      threatModelId: this.threatModelId,
+      noteId: this.noteId,
+      noteName: this.note?.name,
+      hasContent: !!this.note?.content,
+    });
+
+    // Populate form with note data
+    this.populateForm();
+
+    // Update form editability
+    this.updateFormEditability();
   }
 
   ngAfterViewChecked(): void {

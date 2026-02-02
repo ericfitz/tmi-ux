@@ -46,6 +46,7 @@ interface MockTranslocoService {
 }
 
 interface MockThreatModelService {
+  getNoteById: ReturnType<typeof vi.fn>;
   updateNote: ReturnType<typeof vi.fn>;
   deleteNote: ReturnType<typeof vi.fn>;
 }
@@ -133,6 +134,7 @@ describe('NotePageComponent', () => {
       load: vi.fn().mockReturnValue(of({})),
     };
     threatModelService = {
+      getNoteById: vi.fn().mockReturnValue(of(mockNote)),
       updateNote: vi.fn().mockReturnValue(of(mockNote)),
       deleteNote: vi.fn().mockReturnValue(of(true)),
     };
@@ -180,6 +182,8 @@ describe('NotePageComponent', () => {
     });
 
     it('should navigate to threat model page if note is not found', () => {
+      // Mock API returning undefined (note not found)
+      threatModelService.getNoteById.mockReturnValue(of(undefined));
       route.snapshot.data = {
         threatModel: { ...mockThreatModel, notes: [] },
       };
