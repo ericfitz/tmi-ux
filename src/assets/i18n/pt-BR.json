@@ -602,6 +602,16 @@
       "view": "Visualizar Nota"
     }
   },
+  "pagination": {
+    "ariaLabel": "Selecionar página de itens",
+    "firstPage": "Primeira página",
+    "itemsPerPage": "Itens por página",
+    "lastPage": "Última página",
+    "nextPage": "Próxima página",
+    "previousPage": "Página anterior",
+    "rangeEmpty": "0 de {{length}}",
+    "rangeLabel": "{{startIndex}} - {{endIndex}} de {{length}}"
+  },
   "presenter": {
     "startPresenting": "Iniciar Apresentacao",
     "stopPresenting": "Parar Apresentacao"
