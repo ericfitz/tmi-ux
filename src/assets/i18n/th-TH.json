@@ -602,6 +602,16 @@
       "view": "ดูหมายเหตุ"
     }
   },
+  "pagination": {
+    "ariaLabel": "เลือกหน้าของรายการ",
+    "firstPage": "หน้าแรก",
+    "itemsPerPage": "รายการต่อหน้า",
+    "lastPage": "หน้าสุดท้าย",
+    "nextPage": "หน้าถัดไป",
+    "previousPage": "หน้าก่อนหน้า",
+    "rangeEmpty": "0 จาก {{length}}",
+    "rangeLabel": "{{startIndex}} - {{endIndex}} จาก {{length}}"
+  },
   "presenter": {
     "startPresenting": "เริ่มการนำเสนอ",
     "stopPresenting": "หยุดการนำเสนอ"
