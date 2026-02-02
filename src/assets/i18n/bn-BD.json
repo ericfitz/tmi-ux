@@ -602,6 +602,16 @@
       "view": "নোট দেখুন"
     }
   },
+  "pagination": {
+    "ariaLabel": "আইটেমের পৃষ্ঠা নির্বাচন করুন",
+    "firstPage": "প্রথম পৃষ্ঠা",
+    "itemsPerPage": "প্রতি পৃষ্ঠায় আইটেম",
+    "lastPage": "শেষ পৃষ্ঠা",
+    "nextPage": "পরবর্তী পৃষ্ঠা",
+    "previousPage": "পূর্ববর্তী পৃষ্ঠা",
+    "rangeEmpty": "{{length}} এর মধ্যে ০",
+    "rangeLabel": "{{length}} এর মধ্যে {{startIndex}} - {{endIndex}}"
+  },
   "presenter": {
     "startPresenting": "উপস্থাপনা শুরু করুন",
     "stopPresenting": "উপস্থাপনা বন্ধ করুন"
