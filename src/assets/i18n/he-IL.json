@@ -602,6 +602,16 @@
       "view": "צפה בהערה"
     }
   },
+  "pagination": {
+    "ariaLabel": "בחר עמוד של פריטים",
+    "firstPage": "עמוד ראשון",
+    "itemsPerPage": "פריטים בעמוד",
+    "lastPage": "עמוד אחרון",
+    "nextPage": "עמוד הבא",
+    "previousPage": "עמוד קודם",
+    "rangeEmpty": "0 מתוך {{length}}",
+    "rangeLabel": "{{startIndex}} - {{endIndex}} מתוך {{length}}"
+  },
   "presenter": {
     "startPresenting": "התחל להציג",
     "stopPresenting": "הפסק להציג"
