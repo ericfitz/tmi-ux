@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import {
   ClientCredentialInfo,
   ClientCredentialResponse,
   CreateClientCredentialRequest,
+  ListClientCredentialsResponse,
 } from '@app/types/client-credential.types';
 
 /**
@@ -26,7 +27,8 @@ export class ClientCredentialService {
    * List all client credentials for the current user
    */
   public list(): Observable<ClientCredentialInfo[]> {
-    return this.apiService.get<ClientCredentialInfo[]>('me/client_credentials').pipe(
+    return this.apiService.get<ListClientCredentialsResponse>('me/client_credentials').pipe(
+      map(response => response.client_credentials || []),
       tap(credentials => {
         this.logger.debug('Client credentials loaded', { count: credentials.length });
       }),

@@ -59,3 +59,17 @@ export interface CreateClientCredentialRequest {
   /** Optional expiration date (ISO 8601 format) */
   expires_at?: string | null;
 }
+
+/**
+ * Response from GET /me/client_credentials (paginated list)
+ */
+export interface ListClientCredentialsResponse {
+  /** Array of client credentials */
+  client_credentials: ClientCredentialInfo[];
+  /** Total number of credentials */
+  total: number;
+  /** Maximum items per page */
+  limit: number;
+  /** Current offset */
+  offset: number;
+}
