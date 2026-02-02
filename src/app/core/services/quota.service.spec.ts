@@ -336,11 +336,14 @@ describe('QuotaService', () => {
   });
 
   describe('listEnrichedUserAPIQuotas()', () => {
-    it('should return empty array when no quotas exist', () => {
+    it('should return empty response when no quotas exist', () => {
       mockApiService.get.mockReturnValue(of({ quotas: [], total: 0, limit: 0, offset: 0 }));
 
-      service.listEnrichedUserAPIQuotas().subscribe(enrichedQuotas => {
-        expect(enrichedQuotas).toEqual([]);
+      service.listEnrichedUserAPIQuotas().subscribe(response => {
+        expect(response.quotas).toEqual([]);
+        expect(response.total).toBe(0);
+        expect(response.limit).toBe(0);
+        expect(response.offset).toBe(0);
       });
     });
 
@@ -358,24 +361,30 @@ describe('QuotaService', () => {
         return of(null);
       });
 
-      service.listEnrichedUserAPIQuotas().subscribe(enrichedQuotas => {
-        expect(enrichedQuotas).toHaveLength(1);
-        expect(enrichedQuotas[0]).toEqual({
+      service.listEnrichedUserAPIQuotas().subscribe(response => {
+        expect(response.quotas).toHaveLength(1);
+        expect(response.quotas[0]).toEqual({
           ...mockUserAPIQuota,
           provider: 'google',
           user_name: 'Test User',
           user_email: 'test@example.com',
         } as EnrichedUserAPIQuota);
+        expect(response.total).toBe(1);
+        expect(response.limit).toBe(100);
+        expect(response.offset).toBe(0);
       });
     });
   });
 
   describe('listEnrichedWebhookQuotas()', () => {
-    it('should return empty array when no quotas exist', () => {
+    it('should return empty response when no quotas exist', () => {
       mockApiService.get.mockReturnValue(of({ quotas: [], total: 0, limit: 0, offset: 0 }));
 
-      service.listEnrichedWebhookQuotas().subscribe(enrichedQuotas => {
-        expect(enrichedQuotas).toEqual([]);
+      service.listEnrichedWebhookQuotas().subscribe(response => {
+        expect(response.quotas).toEqual([]);
+        expect(response.total).toBe(0);
+        expect(response.limit).toBe(0);
+        expect(response.offset).toBe(0);
       });
     });
 
@@ -393,14 +402,17 @@ describe('QuotaService', () => {
         return of(null);
       });
 
-      service.listEnrichedWebhookQuotas().subscribe(enrichedQuotas => {
-        expect(enrichedQuotas).toHaveLength(1);
-        expect(enrichedQuotas[0]).toEqual({
+      service.listEnrichedWebhookQuotas().subscribe(response => {
+        expect(response.quotas).toHaveLength(1);
+        expect(response.quotas[0]).toEqual({
           ...mockWebhookQuota,
           provider: 'google',
           user_name: 'Test User',
           user_email: 'test@example.com',
         } as EnrichedWebhookQuota);
+        expect(response.total).toBe(1);
+        expect(response.limit).toBe(100);
+        expect(response.offset).toBe(0);
       });
     });
   });

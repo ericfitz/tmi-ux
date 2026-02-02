@@ -340,6 +340,7 @@ describe('ThreatModelService', () => {
       service.getDiagramsForThreatModel(testThreatModel1.id).subscribe(response => {
         expect(apiService.get).toHaveBeenCalledWith(
           `threat_models/${testThreatModel1.id}/diagrams`,
+          {},
         );
         expect(response.diagrams).toEqual(mockDiagrams);
       });
@@ -353,6 +354,7 @@ describe('ThreatModelService', () => {
       service.getDocumentsForThreatModel(testThreatModel1.id).subscribe(response => {
         expect(apiService.get).toHaveBeenCalledWith(
           `threat_models/${testThreatModel1.id}/documents`,
+          {},
         );
         expect(response.documents).toEqual(mockDocuments);
       });
@@ -368,6 +370,7 @@ describe('ThreatModelService', () => {
       service.getRepositoriesForThreatModel(testThreatModel1.id).subscribe(response => {
         expect(apiService.get).toHaveBeenCalledWith(
           `threat_models/${testThreatModel1.id}/repositories`,
+          {},
         );
         expect(response.repositories).toEqual(mockRepositories);
       });

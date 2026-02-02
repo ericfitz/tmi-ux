@@ -624,6 +624,16 @@
       "view": "View Note"
     }
   },
+  "pagination": {
+    "ariaLabel": "Select page of items",
+    "firstPage": "First page",
+    "itemsPerPage": "Items per page",
+    "lastPage": "Last page",
+    "nextPage": "Next page",
+    "previousPage": "Previous page",
+    "rangeEmpty": "0 of {{length}}",
+    "rangeLabel": "{{startIndex}} - {{endIndex}} of {{length}}"
+  },
   "presenter": {
     "startPresenting": "Start Presenting",
     "stopPresenting": "Stop Presenting"

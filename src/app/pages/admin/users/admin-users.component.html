@@ -149,8 +149,18 @@
         </div>
       }
 
-      @if (totalUsers !== null) {
-        <div class="total-count">Total users: {{ totalUsers }}</div>
+      <!-- Paginator -->
+      @if (!loading && totalUsers > 0) {
+        <mat-paginator
+          [length]="totalUsers"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="onPageChange($event)"
+          showFirstLastButtons
+          [attr.aria-label]="'pagination.ariaLabel' | transloco"
+        >
+        </mat-paginator>
       }
     </mat-card-content>
   </mat-card>

@@ -114,6 +114,20 @@
           <p [transloco]="'admin.webhooks.noWebhooks'">No webhooks found</p>
         </div>
       }
+
+      <!-- Paginator -->
+      @if (!loading && totalWebhooks > 0) {
+        <mat-paginator
+          [length]="totalWebhooks"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="onPageChange($event)"
+          showFirstLastButtons
+          [attr.aria-label]="'pagination.ariaLabel' | transloco"
+        >
+        </mat-paginator>
+      }
     </mat-card-content>
   </mat-card>
 </div>

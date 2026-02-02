@@ -452,6 +452,20 @@
               {{ 'threatModels.noAssets' | transloco }}
             </div>
           }
+
+          <!-- Assets Paginator -->
+          @if (totalAssets > assetsPageSize) {
+            <mat-paginator
+              #assetsPaginator
+              [length]="totalAssets"
+              [pageSize]="assetsPageSize"
+              [pageIndex]="assetsPageIndex"
+              [pageSizeOptions]="subtablePageSizeOptions"
+              (page)="onAssetsPageChange($event)"
+              [attr.aria-label]="'pagination.ariaLabel' | transloco"
+            >
+            </mat-paginator>
+          }
         </mat-card-content>
       </mat-card>
 
@@ -659,6 +673,20 @@
               {{ 'threatModels.noThreats' | transloco }}
             </div>
           }
+
+          <!-- Threats Paginator -->
+          @if (totalThreats > threatsPageSize) {
+            <mat-paginator
+              #threatsPaginator
+              [length]="totalThreats"
+              [pageSize]="threatsPageSize"
+              [pageIndex]="threatsPageIndex"
+              [pageSizeOptions]="subtablePageSizeOptions"
+              (page)="onThreatsPageChange($event)"
+              [attr.aria-label]="'pagination.ariaLabel' | transloco"
+            >
+            </mat-paginator>
+          }
         </mat-card-content>
       </mat-card>
 
@@ -859,6 +887,20 @@
               {{ 'threatModels.noDiagrams' | transloco }}
             </div>
           }
+
+          <!-- Diagrams Paginator -->
+          @if (totalDiagrams > diagramsPageSize) {
+            <mat-paginator
+              #diagramsPaginator
+              [length]="totalDiagrams"
+              [pageSize]="diagramsPageSize"
+              [pageIndex]="diagramsPageIndex"
+              [pageSizeOptions]="subtablePageSizeOptions"
+              (page)="onDiagramsPageChange($event)"
+              [attr.aria-label]="'pagination.ariaLabel' | transloco"
+            >
+            </mat-paginator>
+          }
         </mat-card-content>
       </mat-card>
 
@@ -1008,6 +1050,20 @@
             <div class="no-items-message">
               {{ 'threatModels.noNotes' | transloco }}
             </div>
+          }
+
+          <!-- Notes Paginator -->
+          @if (totalNotes > notesPageSize) {
+            <mat-paginator
+              #notesPaginator
+              [length]="totalNotes"
+              [pageSize]="notesPageSize"
+              [pageIndex]="notesPageIndex"
+              [pageSizeOptions]="subtablePageSizeOptions"
+              (page)="onNotesPageChange($event)"
+              [attr.aria-label]="'pagination.ariaLabel' | transloco"
+            >
+            </mat-paginator>
           }
         </mat-card-content>
       </mat-card>
@@ -1171,6 +1227,19 @@
               {{ 'threatModels.noDocuments' | transloco }}
             </div>
           }
+          <!-- Documents Paginator -->
+          @if (totalDocuments > documentsPageSize) {
+            <mat-paginator
+              #documentsPaginator
+              [length]="totalDocuments"
+              [pageSize]="documentsPageSize"
+              [pageIndex]="documentsPageIndex"
+              [pageSizeOptions]="subtablePageSizeOptions"
+              (page)="onDocumentsPageChange($event)"
+              [attr.aria-label]="'pagination.ariaLabel' | transloco"
+            >
+            </mat-paginator>
+          }
         </mat-card-content>
       </mat-card>
 
@@ -1332,6 +1401,19 @@
             <div class="no-items-message">
               {{ 'threatModels.noRepositories' | transloco }}
             </div>
+          }
+          <!-- Repositories Paginator -->
+          @if (totalRepositories > repositoriesPageSize) {
+            <mat-paginator
+              #repositoriesPaginator
+              [length]="totalRepositories"
+              [pageSize]="repositoriesPageSize"
+              [pageIndex]="repositoriesPageIndex"
+              [pageSizeOptions]="subtablePageSizeOptions"
+              (page)="onRepositoriesPageChange($event)"
+              [attr.aria-label]="'pagination.ariaLabel' | transloco"
+            >
+            </mat-paginator>
           }
         </mat-card-content>
       </mat-card>

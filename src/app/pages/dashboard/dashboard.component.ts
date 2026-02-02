@@ -26,10 +26,19 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { Observable, Subscription } from 'rxjs';
-import { take, map, filter, switchMap } from 'rxjs/operators';
+import { Observable, Subject, Subscription } from 'rxjs';
+import {
+  take,
+  map,
+  filter,
+  switchMap,
+  debounceTime,
+  distinctUntilChanged,
+  takeUntil,
+} from 'rxjs/operators';
+import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 
 import {
   COMMON_IMPORTS,
@@ -61,6 +70,18 @@ import {
 } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { AuthService } from '../../auth/services/auth.service';
 import { UserPreferencesService } from '../../core/services/user-preferences.service';
+import { PaginatorIntlService } from '../../shared/services/paginator-intl.service';
+import {
+  DEFAULT_PAGE_SIZE,
+  PAGE_SIZE_OPTIONS,
+  PAGINATION_QUERY_PARAMS,
+} from '../../types/pagination.types';
+import {
+  calculateOffset,
+  parsePaginationFromUrl,
+  buildPaginationQueryParams,
+  adjustPageAfterDeletion,
+} from '../../shared/utils/pagination.util';
 
 @Component({
   selector: 'app-dashboard',
@@ -76,16 +97,26 @@ import { UserPreferencesService } from '../../core/services/user-preferences.ser
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
 export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   threatModels: TMListItem[] = [];
   dataSource = new MatTableDataSource<TMListItem>([]);
 
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  // Pagination state
+  pageIndex = 0;
+  pageSize = DEFAULT_PAGE_SIZE;
+  totalItems = 0;
+  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
 
   // View mode and filtering
   dashboardListView = false;
   filterText = '';
+  private filterChanged$ = new Subject<string>();
+  private destroy$ = new Subject<void>();
   displayedColumns: string[] = [
     'name',
     'description',
@@ -113,6 +144,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private threatModelService: ThreatModelService,
     private validator: ThreatModelValidatorService,
     private languageService: LanguageService,
@@ -150,20 +182,26 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.cdr.detectChanges();
     });
 
-    // Force refresh on dashboard load to ensure we have the latest data
-    this.isLoadingThreatModels = true;
-    this.subscription = this.threatModelService.getThreatModelList().subscribe(models => {
-      // Ensure models is always an array
-      this.threatModels = models || [];
-      this.applyFilter();
-      this.isLoadingThreatModels = false;
-      // this.logger.debugComponent('Dashboard', 'DashboardComponent received threat model list', {
-      //   count: this.threatModels.length,
-      //   models: this.threatModels.map(tm => ({ id: tm.id, name: tm.name })),
-      // });
-      // Trigger change detection to update the view
-      this.cdr.detectChanges();
+    // Initialize pagination state from URL query params
+    this.route.queryParams.pipe(take(1)).subscribe(params => {
+      const paginationState = parsePaginationFromUrl(params, DEFAULT_PAGE_SIZE);
+      this.pageIndex = paginationState.pageIndex;
+      this.pageSize = paginationState.pageSize;
+      this.filterText = params[PAGINATION_QUERY_PARAMS.FILTER] || '';
+
+      // Load data with pagination
+      this.loadData();
     });
+
+    // Set up debounced filter changes
+    this.filterChanged$
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(filterValue => {
+        this.filterText = filterValue;
+        this.pageIndex = 0; // Reset to first page on filter change
+        this.loadData();
+        this.updateUrl();
+      });
 
     // Subscribe to language changes to refresh date formatting
     this.languageSubscription = this.languageService.currentLanguage$.subscribe(language => {
@@ -175,6 +213,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
@@ -353,16 +394,23 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         this.threatModelService.deleteThreatModel(id).subscribe({
           next: success => {
             if (success) {
-              // No need to manually refresh - the reactive subscription will update automatically
-              // this.logger.debugComponent('TM', 'Threat model deleted successfully', {
-              //   id,
-              //   name: threatModel.name,
-              // });
-
               // Show success message
               this.snackBar.open(`Threat model "${threatModel.name}" has been deleted.`, 'Close', {
                 duration: 3000,
               });
+
+              // Adjust page if we deleted the last item on the current page
+              const itemsOnPageAfterDelete = this.threatModels.length - 1;
+              const newTotal = this.totalItems - 1;
+              this.pageIndex = adjustPageAfterDeletion(
+                this.pageIndex,
+                itemsOnPageAfterDelete,
+                newTotal,
+              );
+
+              // Reload data to reflect deletion
+              this.loadData();
+              this.updateUrl();
             }
           },
           error: error => {
@@ -391,13 +439,52 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   refreshThreatModels(): void {
     // this.logger.info('Manually refreshing threat models');
+    this.loadData();
+  }
+
+  /**
+   * Load threat models data with pagination
+   */
+  private loadData(): void {
     this.isLoadingThreatModels = true;
-    this.threatModelService.getThreatModelList().subscribe(models => {
-      this.threatModels = models || [];
+    this.cdr.detectChanges();
+
+    const offset = calculateOffset(this.pageIndex, this.pageSize);
+
+    this.threatModelService.fetchThreatModels(this.pageSize, offset).subscribe(response => {
+      this.threatModels = response.threat_models || [];
+      this.totalItems = response.total;
       this.applyFilter();
       this.isLoadingThreatModels = false;
-      // this.logger.info('Threat models refreshed', { count: this.threatModels.length });
       this.cdr.detectChanges();
+    });
+  }
+
+  /**
+   * Handle page change events from the paginator
+   */
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadData();
+    this.updateUrl();
+  }
+
+  /**
+   * Update the URL query parameters to reflect current pagination state
+   */
+  private updateUrl(): void {
+    const queryParams = buildPaginationQueryParams(
+      { pageIndex: this.pageIndex, pageSize: this.pageSize, total: this.totalItems },
+      this.filterText,
+      DEFAULT_PAGE_SIZE,
+    );
+
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: '', // Replace all query params
+      replaceUrl: true, // Don't add to browser history for pagination changes
     });
   }
 
@@ -607,9 +694,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
    * Handle filter input changes
    */
   onFilterChange(value: string): void {
-    this.filterText = value;
-    this.applyFilter();
-    this.cdr.detectChanges();
+    this.filterChanged$.next(value);
   }
 
   /**
@@ -617,8 +702,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   clearFilter(): void {
     this.filterText = '';
-    this.applyFilter();
-    this.cdr.detectChanges();
+    this.pageIndex = 0;
+    this.loadData();
+    this.updateUrl();
   }
 
   /**

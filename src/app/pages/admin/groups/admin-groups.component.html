@@ -134,8 +134,18 @@
         </div>
       }
 
-      @if (totalGroups !== null) {
-        <div class="total-count">Total groups: {{ totalGroups }}</div>
+      <!-- Paginator -->
+      @if (!loading && totalGroups > 0) {
+        <mat-paginator
+          [length]="totalGroups"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="onPageChange($event)"
+          showFirstLastButtons
+          [attr.aria-label]="'pagination.ariaLabel' | transloco"
+        >
+        </mat-paginator>
       }
     </mat-card-content>
   </mat-card>

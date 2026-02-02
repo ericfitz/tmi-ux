@@ -583,16 +583,6 @@
       "serverOffline": "Server Tidak Tersedia"
     }
   },
-  "pagination": {
-    "ariaLabel": "Pilih halaman item",
-    "firstPage": "Halaman pertama",
-    "itemsPerPage": "Item per halaman",
-    "lastPage": "Halaman terakhir",
-    "nextPage": "Halaman berikutnya",
-    "previousPage": "Halaman sebelumnya",
-    "rangeEmpty": "0 dari {{length}}",
-    "rangeLabel": "{{startIndex}} - {{endIndex}} dari {{length}}"
-  },
   "noteEditor": {
     "characterCount": "{{current}} / {{max}} karakter",
     "content": "Konten",
@@ -611,6 +601,16 @@
       "edit": "Edit Catatan",
       "view": "Lihat Catatan"
     }
+  },
+  "pagination": {
+    "ariaLabel": "Pilih halaman item",
+    "firstPage": "Halaman pertama",
+    "itemsPerPage": "Item per halaman",
+    "lastPage": "Halaman terakhir",
+    "nextPage": "Halaman berikutnya",
+    "previousPage": "Halaman sebelumnya",
+    "rangeEmpty": "0 dari {{length}}",
+    "rangeLabel": "{{startIndex}} - {{endIndex}} dari {{length}}"
   },
   "presenter": {
     "startPresenting": "Mulai Presentasi",

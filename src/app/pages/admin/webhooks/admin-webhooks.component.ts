@@ -1,10 +1,11 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, take } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
+import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -18,6 +19,18 @@ import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
 import { AddWebhookDialogComponent } from './add-webhook-dialog/add-webhook-dialog.component';
 import { HmacSecretDialogComponent } from './hmac-secret-dialog/hmac-secret-dialog.component';
+import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
+import {
+  DEFAULT_PAGE_SIZE,
+  PAGE_SIZE_OPTIONS,
+  PAGINATION_QUERY_PARAMS,
+} from '@app/types/pagination.types';
+import {
+  calculateOffset,
+  parsePaginationFromUrl,
+  buildPaginationQueryParams,
+  adjustPageAfterDeletion,
+} from '@app/shared/utils/pagination.util';
 
 /**
  * Webhooks Management Component
@@ -38,54 +51,106 @@ import { HmacSecretDialogComponent } from './hmac-secret-dialog/hmac-secret-dial
   ],
   templateUrl: './admin-webhooks.component.html',
   styleUrl: './admin-webhooks.component.scss',
+  providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
 export class AdminWebhooksComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   webhooks: WebhookSubscription[] = [];
   filteredWebhooks: WebhookSubscription[] = [];
+  totalWebhooks = 0;
+
+  // Pagination state
+  pageIndex = 0;
+  pageSize = DEFAULT_PAGE_SIZE;
+  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
+
   filterText = '';
   loading = false;
 
   constructor(
     private webhookService: WebhookService,
     private router: Router,
+    private route: ActivatedRoute,
     private dialog: MatDialog,
     private logger: LoggerService,
     private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
-    this.loadWebhooks();
+    // Initialize pagination state from URL query params
+    this.route.queryParams.pipe(take(1)).subscribe(params => {
+      const paginationState = parsePaginationFromUrl(params, DEFAULT_PAGE_SIZE);
+      this.pageIndex = paginationState.pageIndex;
+      this.pageSize = paginationState.pageSize;
+      this.filterText = params[PAGINATION_QUERY_PARAMS.FILTER] || '';
+      this.loadWebhooks();
+    });
 
+    // Set up debounced filter changes
     this.filterSubject$
       .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.applyFilter();
+      .subscribe(filterValue => {
+        this.filterText = filterValue;
+        this.pageIndex = 0;
+        this.loadWebhooks();
+        this.updateUrl();
       });
   }
 
   loadWebhooks(): void {
     this.loading = true;
+    const offset = calculateOffset(this.pageIndex, this.pageSize);
+
     this.webhookService
-      .list()
+      .list({ limit: this.pageSize, offset })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
           this.webhooks = response.subscriptions;
+          this.totalWebhooks = response.total;
           this.applyFilter();
           this.loading = false;
+          this.logger.debug('Webhooks loaded', {
+            count: response.subscriptions.length,
+            total: response.total,
+            page: this.pageIndex,
+          });
         },
-        error: () => {
+        error: error => {
+          this.logger.error('Failed to load webhooks', error);
           this.loading = false;
         },
       });
   }
 
   onFilterChange(value: string): void {
-    this.filterText = value;
     this.filterSubject$.next(value);
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadWebhooks();
+    this.updateUrl();
+  }
+
+  private updateUrl(): void {
+    const queryParams = buildPaginationQueryParams(
+      { pageIndex: this.pageIndex, pageSize: this.pageSize, total: this.totalWebhooks },
+      this.filterText,
+      DEFAULT_PAGE_SIZE,
+    );
+
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: '',
+      replaceUrl: true,
+    });
   }
 
   applyFilter(): void {
@@ -141,7 +206,18 @@ export class AdminWebhooksComponent implements OnInit {
         .subscribe({
           next: () => {
             this.logger.info('Webhook deleted', { id: webhook.id });
+
+            // Adjust page if we deleted the last item on the current page
+            const itemsOnPageAfterDelete = this.webhooks.length - 1;
+            const newTotal = this.totalWebhooks - 1;
+            this.pageIndex = adjustPageAfterDeletion(
+              this.pageIndex,
+              itemsOnPageAfterDelete,
+              newTotal,
+            );
+
             this.loadWebhooks();
+            this.updateUrl();
           },
           error: error => {
             this.logger.error('Failed to delete webhook', error);

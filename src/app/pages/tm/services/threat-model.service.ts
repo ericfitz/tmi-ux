@@ -40,6 +40,7 @@ import {
   ListRepositoriesResponse,
   ListNotesResponse,
   ListAssetsResponse,
+  ListThreatsResponse,
 } from '../models/api-responses.model';
 
 /**
@@ -290,16 +291,19 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Get diagrams for a threat model
+   * Get diagrams for a threat model with optional pagination
    */
-  getDiagramsForThreatModel(threatModelId: string): Observable<ListDiagramsResponse> {
-    // In a real implementation, this would call the API
-    // this.logger.debugComponent(
-    // 'ThreatModelService',
-    // `Fetching diagrams for threat model with ID: ${threatModelId} from API`,
-    // );
+  getDiagramsForThreatModel(
+    threatModelId: string,
+    limit?: number,
+    offset?: number,
+  ): Observable<ListDiagramsResponse> {
+    const params: Record<string, string> = {};
+    if (limit !== undefined) params['limit'] = limit.toString();
+    if (offset !== undefined) params['offset'] = offset.toString();
+
     return this.apiService
-      .get<ListDiagramsResponse>(`threat_models/${threatModelId}/diagrams`)
+      .get<ListDiagramsResponse>(`threat_models/${threatModelId}/diagrams`, params)
       .pipe(
         catchError(error => {
           this.logger.error(
@@ -331,15 +335,19 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Get documents for a threat model
+   * Get documents for a threat model with optional pagination
    */
-  getDocumentsForThreatModel(threatModelId: string): Observable<ListDocumentsResponse> {
-    // this.logger.debugComponent(
-    // 'ThreatModelService',
-    // `Fetching documents for threat model with ID: ${threatModelId} from API`,
-    // );
+  getDocumentsForThreatModel(
+    threatModelId: string,
+    limit?: number,
+    offset?: number,
+  ): Observable<ListDocumentsResponse> {
+    const params: Record<string, string> = {};
+    if (limit !== undefined) params['limit'] = limit.toString();
+    if (offset !== undefined) params['offset'] = offset.toString();
+
     return this.apiService
-      .get<ListDocumentsResponse>(`threat_models/${threatModelId}/documents`)
+      .get<ListDocumentsResponse>(`threat_models/${threatModelId}/documents`, params)
       .pipe(
         catchError(error => {
           this.logger.error(
@@ -352,15 +360,19 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Get repository references for a threat model
+   * Get repository references for a threat model with optional pagination
    */
-  getRepositoriesForThreatModel(threatModelId: string): Observable<ListRepositoriesResponse> {
-    // this.logger.debugComponent(
-    // 'ThreatModelService',
-    // `Fetching repositories for threat model with ID: ${threatModelId} from API`,
-    // );
+  getRepositoriesForThreatModel(
+    threatModelId: string,
+    limit?: number,
+    offset?: number,
+  ): Observable<ListRepositoriesResponse> {
+    const params: Record<string, string> = {};
+    if (limit !== undefined) params['limit'] = limit.toString();
+    if (offset !== undefined) params['offset'] = offset.toString();
+
     return this.apiService
-      .get<ListRepositoriesResponse>(`threat_models/${threatModelId}/repositories`)
+      .get<ListRepositoriesResponse>(`threat_models/${threatModelId}/repositories`, params)
       .pipe(
         catchError(error => {
           this.logger.error(
@@ -373,19 +385,28 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Get notes for a threat model
+   * Get notes for a threat model with optional pagination
    */
-  getNotesForThreatModel(threatModelId: string): Observable<ListNotesResponse> {
-    // this.logger.debugComponent(
-    // 'ThreatModelService',
-    // `Fetching notes for threat model with ID: ${threatModelId} from API`,
-    // );
-    return this.apiService.get<ListNotesResponse>(`threat_models/${threatModelId}/notes`).pipe(
-      catchError(error => {
-        this.logger.error(`Error fetching notes for threat model with ID: ${threatModelId}`, error);
-        return of({ notes: [], total: 0, limit: 0, offset: 0 });
-      }),
-    );
+  getNotesForThreatModel(
+    threatModelId: string,
+    limit?: number,
+    offset?: number,
+  ): Observable<ListNotesResponse> {
+    const params: Record<string, string> = {};
+    if (limit !== undefined) params['limit'] = limit.toString();
+    if (offset !== undefined) params['offset'] = offset.toString();
+
+    return this.apiService
+      .get<ListNotesResponse>(`threat_models/${threatModelId}/notes`, params)
+      .pipe(
+        catchError(error => {
+          this.logger.error(
+            `Error fetching notes for threat model with ID: ${threatModelId}`,
+            error,
+          );
+          return of({ notes: [], total: 0, limit: 0, offset: 0 });
+        }),
+      );
   }
 
   /**
@@ -825,6 +846,32 @@ export class ThreatModelService implements OnDestroy {
     }
 
     return migratedThreat;
+  }
+
+  /**
+   * Get threats for a threat model with optional pagination
+   */
+  getThreatsForThreatModel(
+    threatModelId: string,
+    limit?: number,
+    offset?: number,
+  ): Observable<ListThreatsResponse> {
+    const params: Record<string, string> = {};
+    if (limit !== undefined) params['limit'] = limit.toString();
+    if (offset !== undefined) params['offset'] = offset.toString();
+
+    return this.apiService
+      .get<ListThreatsResponse>(`threat_models/${threatModelId}/threats`, params)
+      .pipe(
+        map(response => ({
+          ...response,
+          threats: response.threats.map(threat => this.migrateLegacyThreatFieldValues(threat)),
+        })),
+        catchError(error => {
+          this.logger.error(`Error fetching threats for threat model ID: ${threatModelId}`, error);
+          return of({ threats: [], total: 0, limit: 0, offset: 0 });
+        }),
+      );
   }
 
   /**
@@ -1530,22 +1577,28 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Get assets for a threat model
+   * Get assets for a threat model with optional pagination
    */
-  getAssetsForThreatModel(threatModelId: string): Observable<ListAssetsResponse> {
-    // this.logger.debugComponent(
-    // 'ThreatModelService',
-    // `Fetching assets for threat model with ID: ${threatModelId} from API`,
-    // );
-    return this.apiService.get<ListAssetsResponse>(`threat_models/${threatModelId}/assets`).pipe(
-      catchError(error => {
-        this.logger.error(
-          `Error fetching assets for threat model with ID: ${threatModelId}`,
-          error,
-        );
-        return of({ assets: [], total: 0, limit: 0, offset: 0 });
-      }),
-    );
+  getAssetsForThreatModel(
+    threatModelId: string,
+    limit?: number,
+    offset?: number,
+  ): Observable<ListAssetsResponse> {
+    const params: Record<string, string> = {};
+    if (limit !== undefined) params['limit'] = limit.toString();
+    if (offset !== undefined) params['offset'] = offset.toString();
+
+    return this.apiService
+      .get<ListAssetsResponse>(`threat_models/${threatModelId}/assets`, params)
+      .pipe(
+        catchError(error => {
+          this.logger.error(
+            `Error fetching assets for threat model with ID: ${threatModelId}`,
+            error,
+          );
+          return of({ assets: [], total: 0, limit: 0, offset: 0 });
+        }),
+      );
   }
 
   /**

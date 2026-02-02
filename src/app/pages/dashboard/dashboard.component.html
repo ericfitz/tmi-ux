@@ -286,6 +286,20 @@
         </button>
       </div>
     }
+
+    <!-- Paginator -->
+    @if (!isLoadingThreatModels && totalItems > 0) {
+      <mat-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        [attr.aria-label]="'pagination.ariaLabel' | transloco"
+      >
+      </mat-paginator>
+    }
   </div>
 </div>
 

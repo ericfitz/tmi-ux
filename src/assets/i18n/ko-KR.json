@@ -602,6 +602,16 @@
       "view": "노트 보기"
     }
   },
+  "pagination": {
+    "ariaLabel": "항목 페이지 선택",
+    "firstPage": "첫 페이지",
+    "itemsPerPage": "페이지당 항목 수",
+    "lastPage": "마지막 페이지",
+    "nextPage": "다음 페이지",
+    "previousPage": "이전 페이지",
+    "rangeEmpty": "{{length}}개 중 0개",
+    "rangeLabel": "{{length}}개 중 {{startIndex}} - {{endIndex}}"
+  },
   "presenter": {
     "startPresenting": "발표 시작",
     "stopPresenting": "발표 중지"

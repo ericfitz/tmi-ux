@@ -117,8 +117,18 @@
         </div>
       }
 
-      @if (totalAdministrators !== null) {
-        <div class="total-count">Total administrators: {{ totalAdministrators }}</div>
+      <!-- Paginator -->
+      @if (!loading && totalAdministrators > 0) {
+        <mat-paginator
+          [length]="totalAdministrators"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="onPageChange($event)"
+          showFirstLastButtons
+          [attr.aria-label]="'pagination.ariaLabel' | transloco"
+        >
+        </mat-paginator>
       }
     </mat-card-content>
   </mat-card>

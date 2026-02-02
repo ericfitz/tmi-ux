@@ -107,6 +107,20 @@
           <p [transloco]="'admin.addons.noAddons'">No addons found</p>
         </div>
       }
+
+      <!-- Paginator -->
+      @if (!loading && totalAddons > 0) {
+        <mat-paginator
+          [length]="totalAddons"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="onPageChange($event)"
+          showFirstLastButtons
+          [attr.aria-label]="'pagination.ariaLabel' | transloco"
+        >
+        </mat-paginator>
+      }
     </mat-card-content>
   </mat-card>
 </div>

@@ -1,10 +1,11 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, take } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
+import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -19,6 +20,18 @@ import { Administrator } from '@app/types/administrator.types';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
 import { AddAdministratorDialogComponent } from './add-administrator-dialog/add-administrator-dialog.component';
+import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
+import {
+  DEFAULT_PAGE_SIZE,
+  PAGE_SIZE_OPTIONS,
+  PAGINATION_QUERY_PARAMS,
+} from '@app/types/pagination.types';
+import {
+  calculateOffset,
+  parsePaginationFromUrl,
+  buildPaginationQueryParams,
+  adjustPageAfterDeletion,
+} from '@app/shared/utils/pagination.util';
 
 /**
  * Administrators Management Component
@@ -40,15 +53,23 @@ import { AddAdministratorDialogComponent } from './add-administrator-dialog/add-
   ],
   templateUrl: './admin-administrators.component.html',
   styleUrl: './admin-administrators.component.scss',
+  providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
 export class AdminAdministratorsComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   administrators: Administrator[] = [];
   filteredAdministrators: Administrator[] = [];
-  totalAdministrators: number | null = null;
+  totalAdministrators = 0;
   availableProviders: OAuthProviderInfo[] = [];
+
+  // Pagination state
+  pageIndex = 0;
+  pageSize = DEFAULT_PAGE_SIZE;
+  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
 
   filterText = '';
   loading = false;
@@ -56,6 +77,7 @@ export class AdminAdministratorsComponent implements OnInit {
   constructor(
     private administratorService: AdministratorService,
     private router: Router,
+    private route: ActivatedRoute,
     private dialog: MatDialog,
     private logger: LoggerService,
     private authService: AuthService,
@@ -63,12 +85,24 @@ export class AdminAdministratorsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProviders();
-    this.loadAdministrators();
 
+    // Initialize pagination state from URL query params
+    this.route.queryParams.pipe(take(1)).subscribe(params => {
+      const paginationState = parsePaginationFromUrl(params, DEFAULT_PAGE_SIZE);
+      this.pageIndex = paginationState.pageIndex;
+      this.pageSize = paginationState.pageSize;
+      this.filterText = params[PAGINATION_QUERY_PARAMS.FILTER] || '';
+      this.loadAdministrators();
+    });
+
+    // Set up debounced filter changes
     this.filterSubject$
       .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.applyFilter();
+      .subscribe(filterValue => {
+        this.filterText = filterValue;
+        this.pageIndex = 0;
+        this.loadAdministrators();
+        this.updateUrl();
       });
   }
 
@@ -100,8 +134,10 @@ export class AdminAdministratorsComponent implements OnInit {
 
   loadAdministrators(): void {
     this.loading = true;
+    const offset = calculateOffset(this.pageIndex, this.pageSize);
+
     this.administratorService
-      .list()
+      .list({ limit: this.pageSize, offset })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
@@ -112,6 +148,7 @@ export class AdminAdministratorsComponent implements OnInit {
           this.logger.info('Administrators loaded', {
             count: response.administrators.length,
             total: response.total,
+            page: this.pageIndex,
           });
         },
         error: error => {
@@ -122,8 +159,29 @@ export class AdminAdministratorsComponent implements OnInit {
   }
 
   onFilterChange(value: string): void {
-    this.filterText = value;
     this.filterSubject$.next(value);
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadAdministrators();
+    this.updateUrl();
+  }
+
+  private updateUrl(): void {
+    const queryParams = buildPaginationQueryParams(
+      { pageIndex: this.pageIndex, pageSize: this.pageSize, total: this.totalAdministrators },
+      this.filterText,
+      DEFAULT_PAGE_SIZE,
+    );
+
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: '',
+      replaceUrl: true,
+    });
   }
 
   applyFilter(): void {
@@ -171,7 +229,18 @@ export class AdminAdministratorsComponent implements OnInit {
         .subscribe({
           next: () => {
             this.logger.info('Administrator deleted', { id: admin.id });
+
+            // Adjust page if we deleted the last item on the current page
+            const itemsOnPageAfterDelete = this.administrators.length - 1;
+            const newTotal = this.totalAdministrators - 1;
+            this.pageIndex = adjustPageAfterDeletion(
+              this.pageIndex,
+              itemsOnPageAfterDelete,
+              newTotal,
+            );
+
             this.loadAdministrators();
+            this.updateUrl();
           },
           error: error => {
             this.logger.error('Failed to delete administrator', error);

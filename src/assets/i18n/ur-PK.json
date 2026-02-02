@@ -583,16 +583,6 @@
       "serverOffline": "سرور آن لائن نہیں ہے"
     }
   },
-  "pagination": {
-    "ariaLabel": "آئٹمز کا صفحہ منتخب کریں",
-    "firstPage": "پہلا صفحہ",
-    "itemsPerPage": "آئٹمز فی صفحہ",
-    "lastPage": "آخری صفحہ",
-    "nextPage": "اگلا صفحہ",
-    "previousPage": "پچھلا صفحہ",
-    "rangeEmpty": "{{length}} میں سے 0",
-    "rangeLabel": "{{length}} میں سے {{startIndex}} - {{endIndex}}"
-  },
   "noteEditor": {
     "characterCount": "{{current}} / {{max}} حروف",
     "content": "مواد",
@@ -611,6 +601,16 @@
       "edit": "نوٹ میں ترمیم کریں",
       "view": "نوٹ دیکھیں"
     }
+  },
+  "pagination": {
+    "ariaLabel": "آئٹمز کا صفحہ منتخب کریں",
+    "firstPage": "پہلا صفحہ",
+    "itemsPerPage": "آئٹمز فی صفحہ",
+    "lastPage": "آخری صفحہ",
+    "nextPage": "اگلا صفحہ",
+    "previousPage": "پچھلا صفحہ",
+    "rangeEmpty": "{{length}} میں سے 0",
+    "rangeLabel": "{{length}} میں سے {{startIndex}} - {{endIndex}}"
   },
   "presenter": {
     "startPresenting": "پیش کرنا شروع کریں",

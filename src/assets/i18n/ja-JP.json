@@ -583,16 +583,6 @@
       "serverOffline": "サーバーがオフラインです"
     }
   },
-  "pagination": {
-    "ariaLabel": "アイテムのページを選択",
-    "firstPage": "最初のページ",
-    "itemsPerPage": "ページあたりのアイテム数",
-    "lastPage": "最後のページ",
-    "nextPage": "次のページ",
-    "previousPage": "前のページ",
-    "rangeEmpty": "{{length}} 件中 0 件",
-    "rangeLabel": "{{length}} 件中 {{startIndex}} - {{endIndex}} 件"
-  },
   "noteEditor": {
     "characterCount": "{{current}} / {{max}} 文字",
     "content": "内容",
@@ -611,6 +601,16 @@
       "edit": "ノートを編集",
       "view": "ノートを表示"
     }
+  },
+  "pagination": {
+    "ariaLabel": "アイテムのページを選択",
+    "firstPage": "最初のページ",
+    "itemsPerPage": "ページあたりのアイテム数",
+    "lastPage": "最後のページ",
+    "nextPage": "次のページ",
+    "previousPage": "前のページ",
+    "rangeEmpty": "{{length}} 件中 0 件",
+    "rangeLabel": "{{length}} 件中 {{startIndex}} - {{endIndex}} 件"
   },
   "presenter": {
     "startPresenting": "プレゼンテーションを開始",

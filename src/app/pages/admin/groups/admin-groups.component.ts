@@ -1,10 +1,11 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, take } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
+import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -20,6 +21,18 @@ import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
 import { AddGroupDialogComponent } from './add-group-dialog/add-group-dialog.component';
 import { GroupMembersDialogComponent } from './group-members-dialog/group-members-dialog.component';
+import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
+import {
+  DEFAULT_PAGE_SIZE,
+  PAGE_SIZE_OPTIONS,
+  PAGINATION_QUERY_PARAMS,
+} from '@app/types/pagination.types';
+import {
+  calculateOffset,
+  parsePaginationFromUrl,
+  buildPaginationQueryParams,
+  adjustPageAfterDeletion,
+} from '@app/shared/utils/pagination.util';
 
 /**
  * Groups Management Component
@@ -41,15 +54,23 @@ import { GroupMembersDialogComponent } from './group-members-dialog/group-member
   ],
   templateUrl: './admin-groups.component.html',
   styleUrl: './admin-groups.component.scss',
+  providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
 export class AdminGroupsComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   groups: AdminGroup[] = [];
   filteredGroups: AdminGroup[] = [];
-  totalGroups: number | null = null;
+  totalGroups = 0;
   availableProviders: OAuthProviderInfo[] = [];
+
+  // Pagination state
+  pageIndex = 0;
+  pageSize = DEFAULT_PAGE_SIZE;
+  readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
 
   filterText = '';
   loading = false;
@@ -57,6 +78,7 @@ export class AdminGroupsComponent implements OnInit {
   constructor(
     private groupAdminService: GroupAdminService,
     private router: Router,
+    private route: ActivatedRoute,
     private dialog: MatDialog,
     private logger: LoggerService,
     private authService: AuthService,
@@ -64,12 +86,24 @@ export class AdminGroupsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProviders();
-    this.loadGroups();
 
+    // Initialize pagination state from URL query params
+    this.route.queryParams.pipe(take(1)).subscribe(params => {
+      const paginationState = parsePaginationFromUrl(params, DEFAULT_PAGE_SIZE);
+      this.pageIndex = paginationState.pageIndex;
+      this.pageSize = paginationState.pageSize;
+      this.filterText = params[PAGINATION_QUERY_PARAMS.FILTER] || '';
+      this.loadGroups();
+    });
+
+    // Set up debounced filter changes
     this.filterSubject$
       .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.applyFilter();
+      .subscribe(filterValue => {
+        this.filterText = filterValue;
+        this.pageIndex = 0;
+        this.loadGroups();
+        this.updateUrl();
       });
   }
 
@@ -101,8 +135,10 @@ export class AdminGroupsComponent implements OnInit {
 
   loadGroups(): void {
     this.loading = true;
+    const offset = calculateOffset(this.pageIndex, this.pageSize);
+
     this.groupAdminService
-      .list()
+      .list({ limit: this.pageSize, offset })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
@@ -113,6 +149,7 @@ export class AdminGroupsComponent implements OnInit {
           this.logger.info('Groups loaded', {
             count: response.groups.length,
             total: response.total,
+            page: this.pageIndex,
           });
         },
         error: error => {
@@ -123,8 +160,29 @@ export class AdminGroupsComponent implements OnInit {
   }
 
   onFilterChange(value: string): void {
-    this.filterText = value;
     this.filterSubject$.next(value);
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadGroups();
+    this.updateUrl();
+  }
+
+  private updateUrl(): void {
+    const queryParams = buildPaginationQueryParams(
+      { pageIndex: this.pageIndex, pageSize: this.pageSize, total: this.totalGroups },
+      this.filterText,
+      DEFAULT_PAGE_SIZE,
+    );
+
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: '',
+      replaceUrl: true,
+    });
   }
 
   applyFilter(): void {
@@ -188,7 +246,18 @@ This action cannot be undone.`);
         .subscribe({
           next: () => {
             this.logger.info('Group deleted', { group_name: group.group_name });
+
+            // Adjust page if we deleted the last item on the current page
+            const itemsOnPageAfterDelete = this.groups.length - 1;
+            const newTotal = this.totalGroups - 1;
+            this.pageIndex = adjustPageAfterDeletion(
+              this.pageIndex,
+              itemsOnPageAfterDelete,
+              newTotal,
+            );
+
             this.loadGroups();
+            this.updateUrl();
           },
           error: (error: { status?: number; error?: { message?: string } }) => {
             if (error.status === 501) {

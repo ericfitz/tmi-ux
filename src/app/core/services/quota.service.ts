@@ -10,6 +10,8 @@ import {
   EnrichedWebhookQuota,
   ListUserAPIQuotasResponse,
   ListWebhookQuotasResponse,
+  ListEnrichedUserAPIQuotasResponse,
+  ListEnrichedWebhookQuotasResponse,
 } from '@app/types/quota.types';
 import { AdminUser, AdminUserFilter, ListAdminUsersResponse } from '@app/types/user.types';
 
@@ -165,13 +167,22 @@ export class QuotaService {
 
   /**
    * List all enriched user API quotas (includes user information)
+   * Returns pagination metadata along with enriched quotas
    */
-  listEnrichedUserAPIQuotas(limit?: number, offset?: number): Observable<EnrichedUserAPIQuota[]> {
+  listEnrichedUserAPIQuotas(
+    limit?: number,
+    offset?: number,
+  ): Observable<ListEnrichedUserAPIQuotasResponse> {
     return this.listUserAPIQuotas(limit, offset).pipe(
       switchMap(response => {
         const quotas = response.quotas;
         if (!quotas || quotas.length === 0) {
-          return of([]);
+          return of({
+            quotas: [],
+            total: response.total,
+            limit: response.limit,
+            offset: response.offset,
+          });
         }
         const enrichedQuotas$ = quotas.map(quota =>
           forkJoin({
@@ -179,20 +190,36 @@ export class QuotaService {
             user: this.getUser(quota.user_id),
           }).pipe(map(({ quota: q, user }) => this.enrichUserAPIQuota(q, user))),
         );
-        return forkJoin(enrichedQuotas$);
+        return forkJoin(enrichedQuotas$).pipe(
+          map(enrichedQuotas => ({
+            quotas: enrichedQuotas,
+            total: response.total,
+            limit: response.limit,
+            offset: response.offset,
+          })),
+        );
       }),
     );
   }
 
   /**
    * List all enriched webhook quotas (includes user information)
+   * Returns pagination metadata along with enriched quotas
    */
-  listEnrichedWebhookQuotas(limit?: number, offset?: number): Observable<EnrichedWebhookQuota[]> {
+  listEnrichedWebhookQuotas(
+    limit?: number,
+    offset?: number,
+  ): Observable<ListEnrichedWebhookQuotasResponse> {
     return this.listWebhookQuotas(limit, offset).pipe(
       switchMap(response => {
         const quotas = response.quotas;
         if (!quotas || quotas.length === 0) {
-          return of([]);
+          return of({
+            quotas: [],
+            total: response.total,
+            limit: response.limit,
+            offset: response.offset,
+          });
         }
         const enrichedQuotas$ = quotas.map(quota =>
           forkJoin({
@@ -200,7 +227,14 @@ export class QuotaService {
             user: this.getUser(quota.owner_id),
           }).pipe(map(({ quota: q, user }) => this.enrichWebhookQuota(q, user))),
         );
-        return forkJoin(enrichedQuotas$);
+        return forkJoin(enrichedQuotas$).pipe(
+          map(enrichedQuotas => ({
+            quotas: enrichedQuotas,
+            total: response.total,
+            limit: response.limit,
+            offset: response.offset,
+          })),
+        );
       }),
     );
   }

@@ -583,16 +583,6 @@
       "serverOffline": "Servidor sin conexión"
     }
   },
-  "pagination": {
-    "ariaLabel": "Seleccionar página de elementos",
-    "firstPage": "Primera página",
-    "itemsPerPage": "Elementos por página",
-    "lastPage": "Última página",
-    "nextPage": "Página siguiente",
-    "previousPage": "Página anterior",
-    "rangeEmpty": "0 de {{length}}",
-    "rangeLabel": "{{startIndex}} - {{endIndex}} de {{length}}"
-  },
   "noteEditor": {
     "characterCount": "{{current}} / {{max}} caracteres",
     "content": "Contenido",
@@ -611,6 +601,16 @@
       "edit": "Editar Nota",
       "view": "Ver Nota"
     }
+  },
+  "pagination": {
+    "ariaLabel": "Seleccionar página de elementos",
+    "firstPage": "Primera página",
+    "itemsPerPage": "Elementos por página",
+    "lastPage": "Última página",
+    "nextPage": "Página siguiente",
+    "previousPage": "Página anterior",
+    "rangeEmpty": "0 de {{length}}",
+    "rangeLabel": "{{startIndex}} - {{endIndex}} de {{length}}"
   },
   "presenter": {
     "startPresenting": "Iniciar Presentación",

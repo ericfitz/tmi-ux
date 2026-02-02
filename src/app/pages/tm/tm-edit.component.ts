@@ -10,8 +10,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
+import {
+  DEFAULT_SUBTABLE_PAGE_SIZE,
+  SUBTABLE_PAGE_SIZE_OPTIONS,
+} from '@app/types/pagination.types';
+import { calculateOffset } from '@app/shared/utils/pagination.util';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ThreatModelAuthorizationService } from './services/threat-model-authorization.service';
 import { AuthorizationPrepareService } from './services/providers/authorization-prepare.service';
@@ -136,6 +143,7 @@ interface RepositoryFormResult {
   ],
   templateUrl: './tm-edit.component.html',
   styleUrls: ['./tm-edit.component.scss'],
+  providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
 export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   threatModel: ThreatModel | undefined;
@@ -194,6 +202,41 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('notesSort') notesSort!: MatSort;
   @ViewChild('documentsSort') documentsSort!: MatSort;
   @ViewChild('repositoriesSort') repositoriesSort!: MatSort;
+
+  // Table paginator ViewChildren
+  @ViewChild('assetsPaginator') assetsPaginator!: MatPaginator;
+  @ViewChild('threatsPaginator') threatsPaginator!: MatPaginator;
+  @ViewChild('diagramsPaginator') diagramsPaginator!: MatPaginator;
+  @ViewChild('notesPaginator') notesPaginator!: MatPaginator;
+  @ViewChild('documentsPaginator') documentsPaginator!: MatPaginator;
+  @ViewChild('repositoriesPaginator') repositoriesPaginator!: MatPaginator;
+
+  // Pagination state for sub-tables
+  assetsPageIndex = 0;
+  assetsPageSize = DEFAULT_SUBTABLE_PAGE_SIZE;
+  totalAssets = 0;
+
+  threatsPageIndex = 0;
+  threatsPageSize = DEFAULT_SUBTABLE_PAGE_SIZE;
+  totalThreats = 0;
+
+  diagramsPageIndex = 0;
+  diagramsPageSize = DEFAULT_SUBTABLE_PAGE_SIZE;
+  totalDiagrams = 0;
+
+  notesPageIndex = 0;
+  notesPageSize = DEFAULT_SUBTABLE_PAGE_SIZE;
+  totalNotes = 0;
+
+  documentsPageIndex = 0;
+  documentsPageSize = DEFAULT_SUBTABLE_PAGE_SIZE;
+  totalDocuments = 0;
+
+  repositoriesPageIndex = 0;
+  repositoriesPageSize = DEFAULT_SUBTABLE_PAGE_SIZE;
+  totalRepositories = 0;
+
+  readonly subtablePageSizeOptions = SUBTABLE_PAGE_SIZE_OPTIONS;
 
   // Displayed columns for each table
   assetsDisplayedColumns: string[] = [
@@ -526,8 +569,8 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this.threatModel = threatModel;
     this.isNewThreatModel = false; // Resolved threat models are not new
 
-    // Migrate old severity values to new numeric keys
-    this.migrateThreatSeverityValues();
+    // Load threats via API with pagination (migration happens in service)
+    this.loadThreats(id);
 
     // Subscribe to authorization changes
     this._subscriptions.add(
@@ -2910,24 +2953,18 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Load diagrams for the threat model - use diagrams already included in threat model data
+   * Load diagrams for the threat model with pagination
+   * Always uses API call for server-side pagination
    */
   private loadDiagrams(threatModelId: string): void {
-    // Use diagrams that are already loaded with the threat model instead of making separate API call
-    // This preserves metadata that might not be included in the separate diagrams endpoint
-    if (this.threatModel?.diagrams && Array.isArray(this.threatModel.diagrams)) {
-      // The threat model already contains the diagrams with metadata
-      this.diagrams = this.threatModel.diagrams;
+    const offset = calculateOffset(this.diagramsPageIndex, this.diagramsPageSize);
 
-      // Update DIAGRAMS_BY_ID map with real diagram data
-      this.diagrams.forEach(diagram => {
-        DIAGRAMS_BY_ID.set(diagram.id, diagram);
-      });
-    } else {
-      // Fallback to separate API call if diagrams not included in threat model
-      this._subscriptions.add(
-        this.threatModelService.getDiagramsForThreatModel(threatModelId).subscribe(response => {
+    this._subscriptions.add(
+      this.threatModelService
+        .getDiagramsForThreatModel(threatModelId, this.diagramsPageSize, offset)
+        .subscribe(response => {
           this.diagrams = response.diagrams;
+          this.totalDiagrams = response.total;
 
           // Update DIAGRAMS_BY_ID map with real diagram data
           this.diagrams.forEach(diagram => {
@@ -2939,36 +2976,78 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
             this.threatModel.diagrams = response.diagrams;
           }
         }),
-      );
+    );
+  }
+
+  /**
+   * Handle diagrams page change
+   */
+  onDiagramsPageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.diagramsPageIndex = event.pageIndex;
+    this.diagramsPageSize = event.pageSize;
+    if (this.threatModel) {
+      this.loadDiagrams(this.threatModel.id);
     }
   }
 
   /**
-   * Load documents for the threat model using separate API call
+   * Load documents for the threat model using separate API call with pagination
    */
   private loadDocuments(threatModelId: string): void {
+    const offset = calculateOffset(this.documentsPageIndex, this.documentsPageSize);
+
     this._subscriptions.add(
-      this.threatModelService.getDocumentsForThreatModel(threatModelId).subscribe(response => {
-        if (this.threatModel) {
-          this.threatModel.documents = response.documents;
-          this.documentsDataSource.data = response.documents;
-        }
-      }),
+      this.threatModelService
+        .getDocumentsForThreatModel(threatModelId, this.documentsPageSize, offset)
+        .subscribe(response => {
+          if (this.threatModel) {
+            this.threatModel.documents = response.documents;
+            this.documentsDataSource.data = response.documents;
+            this.totalDocuments = response.total;
+          }
+        }),
     );
   }
 
   /**
-   * Load repositories for the threat model using separate API call
+   * Handle documents page change
+   */
+  onDocumentsPageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.documentsPageIndex = event.pageIndex;
+    this.documentsPageSize = event.pageSize;
+    if (this.threatModel) {
+      this.loadDocuments(this.threatModel.id);
+    }
+  }
+
+  /**
+   * Load repositories for the threat model using separate API call with pagination
    */
   private loadRepositories(threatModelId: string): void {
+    const offset = calculateOffset(this.repositoriesPageIndex, this.repositoriesPageSize);
+
     this._subscriptions.add(
-      this.threatModelService.getRepositoriesForThreatModel(threatModelId).subscribe(response => {
-        if (this.threatModel) {
-          this.threatModel.repositories = response.repositories;
-          this.repositoriesDataSource.data = response.repositories;
-        }
-      }),
+      this.threatModelService
+        .getRepositoriesForThreatModel(threatModelId, this.repositoriesPageSize, offset)
+        .subscribe(response => {
+          if (this.threatModel) {
+            this.threatModel.repositories = response.repositories;
+            this.repositoriesDataSource.data = response.repositories;
+            this.totalRepositories = response.total;
+          }
+        }),
     );
+  }
+
+  /**
+   * Handle repositories page change
+   */
+  onRepositoriesPageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.repositoriesPageIndex = event.pageIndex;
+    this.repositoriesPageSize = event.pageSize;
+    if (this.threatModel) {
+      this.loadRepositories(this.threatModel.id);
+    }
   }
 
   /**
@@ -2994,7 +3073,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Load assets for the threat model using separate API call
+   * Load assets for the threat model using separate API call with pagination
    */
   private loadAssets(threatModelId: string): void {
     // Initialize assets array to empty array to ensure it exists
@@ -3002,23 +3081,80 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this.threatModel.assets = [];
     }
 
+    const offset = calculateOffset(this.assetsPageIndex, this.assetsPageSize);
+
     this._subscriptions.add(
-      this.threatModelService.getAssetsForThreatModel(threatModelId).subscribe({
-        next: response => {
-          if (this.threatModel) {
-            this.threatModel.assets = response.assets;
-            this.assetsDataSource.data = response.assets;
-          }
-        },
-        error: error => {
-          this.logger.error('Failed to load assets', error);
-          if (this.threatModel) {
-            this.threatModel.assets = [];
-            this.assetsDataSource.data = [];
-          }
-        },
-      }),
+      this.threatModelService
+        .getAssetsForThreatModel(threatModelId, this.assetsPageSize, offset)
+        .subscribe({
+          next: response => {
+            if (this.threatModel) {
+              this.threatModel.assets = response.assets;
+              this.assetsDataSource.data = response.assets;
+              this.totalAssets = response.total;
+            }
+          },
+          error: error => {
+            this.logger.error('Failed to load assets', error);
+            if (this.threatModel) {
+              this.threatModel.assets = [];
+              this.assetsDataSource.data = [];
+              this.totalAssets = 0;
+            }
+          },
+        }),
     );
+  }
+
+  /**
+   * Handle assets page change
+   */
+  onAssetsPageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.assetsPageIndex = event.pageIndex;
+    this.assetsPageSize = event.pageSize;
+    if (this.threatModel) {
+      this.loadAssets(this.threatModel.id);
+    }
+  }
+
+  /**
+   * Load threats for the threat model using separate API call with pagination
+   */
+  private loadThreats(threatModelId: string): void {
+    const offset = calculateOffset(this.threatsPageIndex, this.threatsPageSize);
+
+    this._subscriptions.add(
+      this.threatModelService
+        .getThreatsForThreatModel(threatModelId, this.threatsPageSize, offset)
+        .subscribe({
+          next: response => {
+            if (this.threatModel) {
+              this.threatModel.threats = response.threats;
+              this.threatsDataSource.data = response.threats;
+              this.totalThreats = response.total;
+            }
+          },
+          error: error => {
+            this.logger.error('Failed to load threats', error);
+            if (this.threatModel) {
+              this.threatModel.threats = [];
+              this.threatsDataSource.data = [];
+              this.totalThreats = 0;
+            }
+          },
+        }),
+    );
+  }
+
+  /**
+   * Handle threats page change
+   */
+  onThreatsPageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.threatsPageIndex = event.pageIndex;
+    this.threatsPageSize = event.pageSize;
+    if (this.threatModel) {
+      this.loadThreats(this.threatModel.id);
+    }
   }
 
   /**
@@ -3241,7 +3377,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Load notes for the threat model using separate API call
+   * Load notes for the threat model using separate API call with pagination
    */
   private loadNotes(threatModelId: string): void {
     // Initialize notes array to empty array to ensure it exists
@@ -3249,23 +3385,40 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this.threatModel.notes = [];
     }
 
+    const offset = calculateOffset(this.notesPageIndex, this.notesPageSize);
+
     this._subscriptions.add(
-      this.threatModelService.getNotesForThreatModel(threatModelId).subscribe({
-        next: response => {
-          if (this.threatModel) {
-            this.threatModel.notes = response.notes;
-            this.notesDataSource.data = response.notes;
-          }
-        },
-        error: error => {
-          this.logger.error('Failed to load notes', error);
-          if (this.threatModel) {
-            this.threatModel.notes = [];
-            this.notesDataSource.data = [];
-          }
-        },
+      this.threatModelService
+        .getNotesForThreatModel(threatModelId, this.notesPageSize, offset)
+        .subscribe({
+          next: response => {
+            if (this.threatModel) {
+              this.threatModel.notes = response.notes;
+              this.notesDataSource.data = response.notes;
+              this.totalNotes = response.total;
+            }
+          },
+          error: error => {
+            this.logger.error('Failed to load notes', error);
+            if (this.threatModel) {
+              this.threatModel.notes = [];
+              this.notesDataSource.data = [];
+              this.totalNotes = 0;
+            }
+          },
       }),
     );
+  }
+
+  /**
+   * Handle notes page change
+   */
+  onNotesPageChange(event: { pageIndex: number; pageSize: number }): void {
+    this.notesPageIndex = event.pageIndex;
+    this.notesPageSize = event.pageSize;
+    if (this.threatModel) {
+      this.loadNotes(this.threatModel.id);
+    }
   }
 
   /**

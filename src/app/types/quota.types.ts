@@ -75,3 +75,14 @@ export interface ListUserAPIQuotasResponse extends PaginationMetadata {
 export interface ListWebhookQuotasResponse extends PaginationMetadata {
   quotas: WebhookQuota[];
 }
+
+/**
+ * Enriched response with user information and pagination metadata
+ */
+export interface ListEnrichedUserAPIQuotasResponse extends PaginationMetadata {
+  quotas: EnrichedUserAPIQuota[];
+}
+
+export interface ListEnrichedWebhookQuotasResponse extends PaginationMetadata {
+  quotas: EnrichedWebhookQuota[];
+}

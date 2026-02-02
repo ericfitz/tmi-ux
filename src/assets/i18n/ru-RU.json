@@ -602,6 +602,16 @@
       "view": "Просмотр Заметки"
     }
   },
+  "pagination": {
+    "ariaLabel": "Выбор страницы элементов",
+    "firstPage": "Первая страница",
+    "itemsPerPage": "Элементов на странице",
+    "lastPage": "Последняя страница",
+    "nextPage": "Следующая страница",
+    "previousPage": "Предыдущая страница",
+    "rangeEmpty": "0 из {{length}}",
+    "rangeLabel": "{{startIndex}} - {{endIndex}} из {{length}}"
+  },
   "presenter": {
     "startPresenting": "Начать презентацию",
     "stopPresenting": "Остановить презентацию"

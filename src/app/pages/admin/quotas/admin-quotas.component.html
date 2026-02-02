@@ -203,6 +203,21 @@
           <p [transloco]="'admin.quotas.noUserAPIQuotas'">No custom API quotas found</p>
         </div>
       }
+
+      <!-- User API Quota Paginator -->
+      @if (!loadingUserAPI && totalUserAPIQuotas > 0) {
+        <mat-paginator
+          #userAPIPaginator
+          [length]="totalUserAPIQuotas"
+          [pageSize]="userAPIPageSize"
+          [pageIndex]="userAPIPageIndex"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="onUserAPIPageChange($event)"
+          showFirstLastButtons
+          [attr.aria-label]="'pagination.ariaLabel' | transloco"
+        >
+        </mat-paginator>
+      }
     </mat-card-content>
   </mat-card>
 
@@ -417,6 +432,21 @@
           <mat-icon class="no-items-icon">webhook</mat-icon>
           <p [transloco]="'admin.quotas.noWebhookQuotas'">No custom webhook quotas found</p>
         </div>
+      }
+
+      <!-- Webhook Quota Paginator -->
+      @if (!loadingWebhook && totalWebhookQuotas > 0) {
+        <mat-paginator
+          #webhookPaginator
+          [length]="totalWebhookQuotas"
+          [pageSize]="webhookPageSize"
+          [pageIndex]="webhookPageIndex"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="onWebhookPageChange($event)"
+          showFirstLastButtons
+          [attr.aria-label]="'pagination.ariaLabel' | transloco"
+        >
+        </mat-paginator>
       }
     </mat-card-content>
   </mat-card>
