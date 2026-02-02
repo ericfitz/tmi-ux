@@ -602,6 +602,16 @@
       "view": "नोट देखें"
     }
   },
+  "pagination": {
+    "ariaLabel": "आइटम का पेज चुनें",
+    "firstPage": "पहला पेज",
+    "itemsPerPage": "प्रति पेज आइटम",
+    "lastPage": "अंतिम पेज",
+    "nextPage": "अगला पेज",
+    "previousPage": "पिछला पेज",
+    "rangeEmpty": "{{length}} में से 0",
+    "rangeLabel": "{{length}} में से {{startIndex}} - {{endIndex}}"
+  },
   "presenter": {
     "startPresenting": "प्रस्तुति शुरू करें",
     "stopPresenting": "प्रस्तुति बंद करें"
