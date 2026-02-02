@@ -583,6 +583,16 @@
       "serverOffline": "الخادم في وضع عدم الاتصال"
     }
   },
+  "pagination": {
+    "ariaLabel": "اختر صفحة العناصر",
+    "firstPage": "الصفحة الأولى",
+    "itemsPerPage": "العناصر في الصفحة",
+    "lastPage": "الصفحة الأخيرة",
+    "nextPage": "الصفحة التالية",
+    "previousPage": "الصفحة السابقة",
+    "rangeEmpty": "٠ من {{length}}",
+    "rangeLabel": "{{startIndex}} - {{endIndex}} من {{length}}"
+  },
   "noteEditor": {
     "characterCount": "{{current}} / {{max}} حرف",
     "content": "المحتوى",
