@@ -32,11 +32,14 @@ if [ -d ".git/rebase-merge" ] || [ -d ".git/rebase-apply" ] || [ -f ".git/CHERRY
   exit 0
 fi
 
+# Get only the first line of the commit message for parsing
+COMMIT_MSG_FIRST_LINE=$(echo "$COMMIT_MSG" | head -n 1)
+
 # Parse conventional commit format
 # Pattern: type(optional-scope): description
-if echo "$COMMIT_MSG" | grep -qE "^(feat|fix|docs|refactor|perf|test|build|ci|chore)(\(.+\))?\s*:.+"; then
-  # Extract the commit type
-  COMMIT_TYPE=$(echo "$COMMIT_MSG" | sed -E 's/^([a-z]+)(\(.+\))?\s*:.*/\1/')
+if echo "$COMMIT_MSG_FIRST_LINE" | grep -qE "^(feat|fix|docs|refactor|perf|test|build|ci|chore)(\(.+\))?\s*:.+"; then
+  # Extract the commit type from first line only
+  COMMIT_TYPE=$(echo "$COMMIT_MSG_FIRST_LINE" | sed -E 's/^([a-z]+)(\(.+\))?\s*:.*/\1/')
 
   # Determine bump type
   BUMP_TYPE=""
