@@ -583,6 +583,16 @@
       "serverOffline": "服务器离线"
     }
   },
+  "pagination": {
+    "ariaLabel": "选择项目页面",
+    "firstPage": "第一页",
+    "itemsPerPage": "每页项目数",
+    "lastPage": "最后一页",
+    "nextPage": "下一页",
+    "previousPage": "上一页",
+    "rangeEmpty": "{{length}} 中的 0",
+    "rangeLabel": "{{length}} 中的 {{startIndex}} - {{endIndex}}"
+  },
   "noteEditor": {
     "characterCount": "{{current}} / {{max}} 个字符",
     "content": "内容",
