@@ -175,18 +175,6 @@
             </td>
           </ng-container>
 
-          <!-- Description Column -->
-          <ng-container matColumnDef="description">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{ 'dashboard.tableHeaders.description' | transloco }}
-            </th>
-            <td mat-cell *matCellDef="let tm">
-              <span class="tm-description" [matTooltip]="tm.description || ''">{{
-                tm.description || '—'
-              }}</span>
-            </td>
-          </ng-container>
-
           <!-- Last Modified Column -->
           <ng-container matColumnDef="lastModified">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -260,6 +248,8 @@
             *matRowDef="let row; columns: displayedColumns"
             class="clickable-row"
             (click)="openThreatModel(row.id)"
+            [matTooltip]="row.description || ''"
+            matTooltipShowDelay="500"
           ></tr>
         </table>
       </div>
@@ -287,8 +277,8 @@
       </div>
     }
 
-    <!-- Paginator -->
-    @if (!isLoadingThreatModels && totalItems > 0) {
+    <!-- Paginator (hidden when all items fit on one page) -->
+    @if (!isLoadingThreatModels && totalItems > pageSize) {
       <mat-paginator
         [length]="totalItems"
         [pageSize]="pageSize"

@@ -119,7 +119,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   private destroy$ = new Subject<void>();
   displayedColumns: string[] = [
     'name',
-    'description',
     'lastModified',
     'status',
     'statusLastChanged',
