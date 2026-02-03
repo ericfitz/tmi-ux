@@ -2913,12 +2913,13 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
               )[key];
             });
             this.threatModel.modified_at = result.modified_at;
-            // Update status_updated if the server returned it (only when status was changed)
-            if (result.status_updated) {
+            // Always sync status_updated with server (server manages this timestamp field)
+            // This ensures the UI reflects the latest timestamp after any status change
+            if ('status_updated' in result) {
               this.threatModel.status_updated = result.status_updated;
-              // Trigger change detection to ensure UI reflects the updated timestamp
-              this.cdr.detectChanges();
             }
+            // Trigger change detection to ensure UI reflects updated timestamps
+            this.cdr.detectChanges();
 
             // Update original form values with what we just saved
             this.updateOriginalFormValues(formValues);
