@@ -618,13 +618,24 @@ export class ThreatModelService implements OnDestroy {
    * Update a threat model
    */
   updateThreatModel(threatModel: ThreatModel): Observable<ThreatModel> {
-    // In a real implementation, this would call the API
-    // this.logger.debugComponent(
-    // 'ThreatModelService',
-    // `Updating threat model with ID: ${threatModel.id} via API`,
-    // );
-    // Remove server-managed fields from threat model data before sending to API
-    const { created_at, modified_at, ...threatModelData } = threatModel;
+    // Remove all read-only and server-managed fields before sending to API
+    // Per OpenAPI ThreatModelInput schema, only these fields are allowed:
+    // name (required), description, threat_model_framework, authorization, metadata, issue_uri
+    const {
+      id,
+      created_at,
+      modified_at,
+      created_by,
+      owner,
+      status_updated,
+      documents,
+      repositories,
+      diagrams,
+      threats,
+      notes,
+      assets,
+      ...threatModelData
+    } = threatModel;
 
     return this.apiService
       .put<ThreatModel>(
@@ -878,8 +889,10 @@ export class ThreatModelService implements OnDestroy {
    * Create a new threat in a threat model
    */
   createThreat(threatModelId: string, threat: Partial<Threat>): Observable<Threat> {
-    // Remove id, created_at, and modified_at fields from threat data before sending to API
-    const { id, created_at, modified_at, ...threatData } = threat as Threat;
+    // Remove all read-only and server-managed fields before sending to API
+    // Per OpenAPI ThreatInput schema, these fields are NOT allowed:
+    // id, threat_model_id, created_at, modified_at
+    const { id, threat_model_id, created_at, modified_at, ...threatData } = threat as Threat;
 
     return this.apiService
       .post<Threat>(
@@ -902,8 +915,10 @@ export class ThreatModelService implements OnDestroy {
     threatId: string,
     threat: Partial<Threat>,
   ): Observable<Threat> {
-    // Remove server-managed fields from threat data before sending to API
-    const { created_at, modified_at, ...threatData } = threat as Threat;
+    // Remove all read-only and server-managed fields before sending to API
+    // Per OpenAPI ThreatInput schema, these fields are NOT allowed:
+    // id, threat_model_id, created_at, modified_at
+    const { id, threat_model_id, created_at, modified_at, ...threatData } = threat as Threat;
 
     return this.apiService
       .put<Threat>(
@@ -935,8 +950,10 @@ export class ThreatModelService implements OnDestroy {
    * Create a new document in a threat model
    */
   createDocument(threatModelId: string, document: Partial<TMDocument>): Observable<TMDocument> {
-    // Remove id field from document data before sending to API (documents don't have timestamp fields)
-    const { id, ...documentData } = document as TMDocument;
+    // Remove all read-only and server-managed fields before sending to API
+    // Per OpenAPI DocumentInput schema, these fields are NOT allowed:
+    // id, threat_model_id, created_at, modified_at
+    const { id, created_at, modified_at, ...documentData } = document as TMDocument;
 
     return this.apiService
       .post<TMDocument>(
@@ -959,10 +976,15 @@ export class ThreatModelService implements OnDestroy {
     documentId: string,
     document: Partial<TMDocument>,
   ): Observable<TMDocument> {
+    // Remove all read-only and server-managed fields before sending to API
+    // Per OpenAPI DocumentInput schema, these fields are NOT allowed:
+    // id, threat_model_id, created_at, modified_at
+    const { id, created_at, modified_at, ...documentData } = document as TMDocument;
+
     return this.apiService
       .put<TMDocument>(
         `threat_models/${threatModelId}/documents/${documentId}`,
-        document as unknown as Record<string, unknown>,
+        documentData as unknown as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -989,8 +1011,10 @@ export class ThreatModelService implements OnDestroy {
    * Create a new repository in a threat model
    */
   createRepository(threatModelId: string, repository: Partial<Repository>): Observable<Repository> {
-    // Remove id field from repository data before sending to API (repositories don't have timestamp fields)
-    const { id, ...repositoryData } = repository as Repository;
+    // Remove all read-only and server-managed fields before sending to API
+    // Per OpenAPI RepositoryInput schema, these fields are NOT allowed:
+    // id, threat_model_id, created_at, modified_at
+    const { id, created_at, modified_at, ...repositoryData } = repository as Repository;
 
     return this.apiService
       .post<Repository>(
@@ -1016,10 +1040,15 @@ export class ThreatModelService implements OnDestroy {
     repositoryId: string,
     repository: Partial<Repository>,
   ): Observable<Repository> {
+    // Remove all read-only and server-managed fields before sending to API
+    // Per OpenAPI RepositoryInput schema, these fields are NOT allowed:
+    // id, threat_model_id, created_at, modified_at
+    const { id, created_at, modified_at, ...repositoryData } = repository as Repository;
+
     return this.apiService
       .put<Repository>(
         `threat_models/${threatModelId}/repositories/${repositoryId}`,
-        repository as unknown as Record<string, unknown>,
+        repositoryData as unknown as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -1048,8 +1077,10 @@ export class ThreatModelService implements OnDestroy {
    * Create a new diagram in a threat model
    */
   createDiagram(threatModelId: string, diagram: Partial<Diagram>): Observable<Diagram> {
-    // Remove id, created_at, and modified_at fields from diagram data before sending to API
-    const { id, created_at, modified_at, ...diagramData } = diagram as Diagram;
+    // Remove all read-only and server-managed fields before sending to API
+    // Per OpenAPI DfdDiagramInput schema, these fields are NOT allowed:
+    // id, created_at, modified_at, update_vector
+    const { id, created_at, modified_at, update_vector, ...diagramData } = diagram as Diagram;
 
     return this.apiService
       .post<Diagram>(
@@ -1073,10 +1104,15 @@ export class ThreatModelService implements OnDestroy {
     diagramId: string,
     diagram: Partial<Diagram>,
   ): Observable<Diagram> {
+    // Remove all read-only and server-managed fields before sending to API
+    // Per OpenAPI DfdDiagramInput schema, these fields are NOT allowed:
+    // id, created_at, modified_at, update_vector
+    const { id, created_at, modified_at, update_vector, ...diagramData } = diagram as Diagram;
+
     return this.apiService
       .put<Diagram>(
         `threat_models/${threatModelId}/diagrams/${diagramId}`,
-        diagram as unknown as Record<string, unknown>,
+        diagramData as unknown as Record<string, unknown>,
       )
       .pipe(
         catchError(error => {
@@ -1486,7 +1522,10 @@ export class ThreatModelService implements OnDestroy {
    * Create a new note for a threat model
    */
   createNote(threatModelId: string, note: Partial<Note>): Observable<Note> {
-    const { id, ...noteData } = note as Note;
+    // Remove all read-only and server-managed fields before sending to API
+    // Per OpenAPI NoteInput schema, these fields are NOT allowed:
+    // id, threat_model_id, created_at, modified_at
+    const { id, created_at, modified_at, ...noteData } = note as Note;
 
     return this.apiService
       .post<Note>(
@@ -1517,7 +1556,10 @@ export class ThreatModelService implements OnDestroy {
    * Update an existing note
    */
   updateNote(threatModelId: string, noteId: string, note: Partial<Note>): Observable<Note> {
-    const { id, ...noteData } = note as Note;
+    // Remove all read-only and server-managed fields before sending to API
+    // Per OpenAPI NoteInput schema, these fields are NOT allowed:
+    // id, threat_model_id, created_at, modified_at
+    const { id, created_at, modified_at, ...noteData } = note as Note;
 
     return this.apiService
       .put<Note>(
@@ -1617,7 +1659,10 @@ export class ThreatModelService implements OnDestroy {
    * Create a new asset for a threat model
    */
   createAsset(threatModelId: string, asset: Partial<Asset>): Observable<Asset> {
-    const { id, ...assetData } = asset as Asset;
+    // Remove all read-only and server-managed fields before sending to API
+    // Per OpenAPI AssetInput schema, these fields are NOT allowed:
+    // id, threat_model_id, created_at, modified_at
+    const { id, created_at, modified_at, ...assetData } = asset as Asset;
 
     return this.apiService
       .post<Asset>(
@@ -1636,7 +1681,10 @@ export class ThreatModelService implements OnDestroy {
    * Update an existing asset
    */
   updateAsset(threatModelId: string, assetId: string, asset: Partial<Asset>): Observable<Asset> {
-    const { id, ...assetData } = asset as Asset;
+    // Remove all read-only and server-managed fields before sending to API
+    // Per OpenAPI AssetInput schema, these fields are NOT allowed:
+    // id, threat_model_id, created_at, modified_at
+    const { id, created_at, modified_at, ...assetData } = asset as Asset;
 
     return this.apiService
       .put<Asset>(
