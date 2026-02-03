@@ -66,8 +66,8 @@ export function parsePaginationFromUrl(
   params: Params,
   defaultPageSize: number = DEFAULT_PAGE_SIZE,
 ): Pick<PaginationState, 'pageIndex' | 'pageSize'> {
-  const pageParam = params[PAGINATION_QUERY_PARAMS.PAGE];
-  const sizeParam = params[PAGINATION_QUERY_PARAMS.SIZE];
+  const pageParam = params[PAGINATION_QUERY_PARAMS.PAGE] as string | undefined;
+  const sizeParam = params[PAGINATION_QUERY_PARAMS.SIZE] as string | undefined;
   const pageIndex = parseInt(typeof pageParam === 'string' ? pageParam : '0', 10);
   const pageSize = parseInt(
     typeof sizeParam === 'string' ? sizeParam : String(defaultPageSize),

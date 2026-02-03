@@ -88,7 +88,7 @@ export class AdminUsersComponent implements OnInit {
       const paginationState = parsePaginationFromUrl(params, DEFAULT_PAGE_SIZE);
       this.pageIndex = paginationState.pageIndex;
       this.pageSize = paginationState.pageSize;
-      this.filterText = params[PAGINATION_QUERY_PARAMS.FILTER] || '';
+      this.filterText = (params[PAGINATION_QUERY_PARAMS.FILTER] as string | undefined) || '';
       this.loadUsers();
     });
 

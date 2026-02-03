@@ -131,7 +131,7 @@ export class AdminQuotasComponent implements OnInit {
       this.userAPIPageSize = paginationState.pageSize;
       // Webhook quotas share the same page size but start at page 0
       this.webhookPageSize = paginationState.pageSize;
-      this.filterText = params[PAGINATION_QUERY_PARAMS.FILTER] || '';
+      this.filterText = (params[PAGINATION_QUERY_PARAMS.FILTER] as string | undefined) || '';
       this.loadAllQuotas();
     });
 
