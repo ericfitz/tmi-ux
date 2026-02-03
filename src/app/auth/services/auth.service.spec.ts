@@ -82,6 +82,12 @@ describe('AuthService', () => {
   let cryptoMock: MockCrypto;
   let mockPkceService: any;
 
+  // Store original globals for restoration after tests
+  const originalCrypto = global.crypto;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalWindowLocation = global.window?.location;
+
   // Test data
   const mockJwtPayload = {
     sub: '12345678-1234-1234-1234-123456789abc',
@@ -289,6 +295,47 @@ describe('AuthService', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+
+    // Restore original globals to prevent test pollution
+    Object.defineProperty(global, 'crypto', {
+      value: originalCrypto,
+      configurable: true,
+      writable: true,
+    });
+    Object.defineProperty(global, 'localStorage', {
+      value: originalLocalStorage,
+      configurable: true,
+      writable: true,
+    });
+    Object.defineProperty(global, 'sessionStorage', {
+      value: originalSessionStorage,
+      configurable: true,
+      writable: true,
+    });
+    if (global.window) {
+      Object.defineProperty(global.window, 'crypto', {
+        value: originalCrypto,
+        configurable: true,
+        writable: true,
+      });
+      Object.defineProperty(global.window, 'localStorage', {
+        value: originalLocalStorage,
+        configurable: true,
+        writable: true,
+      });
+      Object.defineProperty(global.window, 'sessionStorage', {
+        value: originalSessionStorage,
+        configurable: true,
+        writable: true,
+      });
+      if (originalWindowLocation) {
+        Object.defineProperty(global.window, 'location', {
+          value: originalWindowLocation,
+          writable: true,
+          configurable: true,
+        });
+      }
+    }
   });
 
   describe('Service Initialization', () => {

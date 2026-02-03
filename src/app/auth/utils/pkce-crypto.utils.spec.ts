@@ -148,7 +148,11 @@ describe('PKCE Crypto Utils', () => {
     });
 
     it('should be cryptographically random', () => {
-      // Generate 100 verifiers and ensure they're all unique
+      // Generate 100 verifiers and ensure they're all unique.
+      // Note: This test is technically non-deterministic, but the probability of
+      // collision among 100 cryptographically random 43-character base64url strings
+      // is approximately 1 in 10^51 (birthday paradox with 256-bit entropy),
+      // which is far lower than hardware failure rates.
       const verifiers = new Set<string>();
       for (let i = 0; i < 100; i++) {
         verifiers.add(generateCodeVerifier());

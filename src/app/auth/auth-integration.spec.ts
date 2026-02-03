@@ -10,7 +10,7 @@ import '@angular/compiler';
 
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { vi, expect, beforeEach, describe, it } from 'vitest';
+import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { AuthService } from './services/auth.service';
@@ -63,6 +63,13 @@ describe('Authentication Integration', () => {
   let cryptoMock: MockCrypto;
   let serverConnectionService: { currentStatus: string };
   let mockPkceService: any;
+
+  // Store original globals for restoration after tests
+  const originalCrypto = global.crypto;
+  const originalLocalStorage = global.localStorage;
+  const originalSessionStorage = global.sessionStorage;
+  const originalNavigator = global.navigator;
+  const originalScreen = global.screen;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -181,6 +188,35 @@ describe('Authentication Integration', () => {
       serverConnectionService as unknown as ServerConnectionService,
       mockPkceService,
     );
+  });
+
+  afterEach(() => {
+    // Restore original globals to prevent test pollution
+    Object.defineProperty(global, 'crypto', {
+      value: originalCrypto,
+      configurable: true,
+      writable: true,
+    });
+    Object.defineProperty(global, 'localStorage', {
+      value: originalLocalStorage,
+      configurable: true,
+      writable: true,
+    });
+    Object.defineProperty(global, 'sessionStorage', {
+      value: originalSessionStorage,
+      configurable: true,
+      writable: true,
+    });
+    Object.defineProperty(global, 'navigator', {
+      value: originalNavigator,
+      configurable: true,
+      writable: true,
+    });
+    Object.defineProperty(global, 'screen', {
+      value: originalScreen,
+      configurable: true,
+      writable: true,
+    });
   });
 
   describe('AuthService', () => {

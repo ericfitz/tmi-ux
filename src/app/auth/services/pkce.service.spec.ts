@@ -13,7 +13,14 @@ describe('PkceService', () => {
   let service: PkceService;
   let mockLogger: any;
 
+  // Fixed timestamp for deterministic testing
+  const FIXED_TIMESTAMP = new Date('2024-06-15T12:00:00Z').getTime();
+
   beforeEach(() => {
+    // Use fake timers for deterministic time-based tests
+    vi.useFakeTimers();
+    vi.setSystemTime(FIXED_TIMESTAMP);
+
     // Clear sessionStorage before each test
     sessionStorage.clear();
 
@@ -29,6 +36,8 @@ describe('PkceService', () => {
 
   afterEach(() => {
     sessionStorage.clear();
+    // Restore real timers before restoring mocks
+    vi.useRealTimers();
     // Restore all mocks to ensure sessionStorage methods aren't mocked in subsequent tests
     vi.restoreAllMocks();
   });
@@ -79,12 +88,10 @@ describe('PkceService', () => {
     });
 
     it('should set generatedAt to current timestamp', async () => {
-      const before = Date.now();
       const params = await service.generatePkceParameters();
-      const after = Date.now();
 
-      expect(params.generatedAt).toBeGreaterThanOrEqual(before);
-      expect(params.generatedAt).toBeLessThanOrEqual(after);
+      // With fake timers, timestamp should be exactly the fixed time
+      expect(params.generatedAt).toBe(FIXED_TIMESTAMP);
     });
 
     it('should log debug message on success', async () => {
@@ -119,20 +126,16 @@ describe('PkceService', () => {
     });
 
     it('should throw PkceError if sessionStorage is unavailable', async () => {
-      const originalSetItem = Storage.prototype.setItem;
-      Storage.prototype.setItem = vi.fn(() => {
+      // Use vi.spyOn which integrates with vi.restoreAllMocks() in afterEach
+      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
         throw new DOMException('QuotaExceededError');
       });
 
-      try {
-        await expect(service.generatePkceParameters()).rejects.toMatchObject({
-          code: PkceErrorCode.GENERATION_FAILED,
-          message: 'Failed to store PKCE verifier - sessionStorage unavailable',
-          retryable: false,
-        });
-      } finally {
-        Storage.prototype.setItem = originalSetItem;
-      }
+      await expect(service.generatePkceParameters()).rejects.toMatchObject({
+        code: PkceErrorCode.GENERATION_FAILED,
+        message: 'Failed to store PKCE verifier - sessionStorage unavailable',
+        retryable: false,
+      });
     });
 
     it('should generate unique parameters on each call', async () => {
@@ -212,36 +215,28 @@ describe('PkceService', () => {
     it('should throw VERIFIER_EXPIRED if verifier is older than 5 minutes', async () => {
       await service.generatePkceParameters();
 
-      // Manually update timestamp to 6 minutes ago
-      const stored = sessionStorage.getItem('pkce_verifier');
-      const params = JSON.parse(stored!);
-      params.generatedAt = Date.now() - 6 * 60 * 1000; // 6 minutes ago
-      sessionStorage.setItem('pkce_verifier', JSON.stringify(params));
+      // Advance time by 6 minutes (deterministic with fake timers)
+      vi.advanceTimersByTime(6 * 60 * 1000);
 
       expect(() => service.retrieveVerifier()).toThrow(
         expect.objectContaining({
           code: PkceErrorCode.VERIFIER_EXPIRED,
-          message: expect.stringMatching(/^PKCE verifier expired after \d+ seconds$/),
+          message: 'PKCE verifier expired after 360 seconds',
           retryable: true,
         }),
       );
 
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'PKCE verifier expired',
-        expect.objectContaining({
-          age: expect.stringMatching(/^\d+s$/),
-          maxAge: '300s',
-        }),
-      );
+      expect(mockLogger.warn).toHaveBeenCalledWith('PKCE verifier expired', {
+        age: '360s',
+        maxAge: '300s',
+      });
     });
 
     it('should clear expired verifier', async () => {
       await service.generatePkceParameters();
 
-      const stored = sessionStorage.getItem('pkce_verifier');
-      const params = JSON.parse(stored!);
-      params.generatedAt = Date.now() - 6 * 60 * 1000;
-      sessionStorage.setItem('pkce_verifier', JSON.stringify(params));
+      // Advance time by 6 minutes
+      vi.advanceTimersByTime(6 * 60 * 1000);
 
       try {
         service.retrieveVerifier();
@@ -252,27 +247,34 @@ describe('PkceService', () => {
       expect(sessionStorage.getItem('pkce_verifier')).toBeNull();
     });
 
-    it('should accept verifier that is exactly 5 minutes old', async () => {
+    it('should accept verifier that is exactly at the 5-minute boundary', async () => {
       await service.generatePkceParameters();
 
-      // Set to exactly 5 minutes in the past minus 1ms to account for execution time
-      const fiveMinutesAgo = Date.now() - (5 * 60 * 1000 - 1);
-
-      const stored = sessionStorage.getItem('pkce_verifier');
-      const params = JSON.parse(stored!);
-      params.generatedAt = fiveMinutesAgo;
-      sessionStorage.setItem('pkce_verifier', JSON.stringify(params));
+      // Advance time to exactly 5 minutes (boundary case - should still be valid)
+      // The check is `age > VERIFIER_MAX_AGE_MS`, so exactly 5 minutes is NOT expired
+      vi.advanceTimersByTime(5 * 60 * 1000);
 
       expect(() => service.retrieveVerifier()).not.toThrow();
+    });
+
+    it('should reject verifier that is 1ms over 5 minutes', async () => {
+      await service.generatePkceParameters();
+
+      // Advance time to 5 minutes + 1ms (just over the boundary)
+      vi.advanceTimersByTime(5 * 60 * 1000 + 1);
+
+      expect(() => service.retrieveVerifier()).toThrow(
+        expect.objectContaining({
+          code: PkceErrorCode.VERIFIER_EXPIRED,
+        }),
+      );
     });
 
     it('should accept verifier that is 4 minutes old', async () => {
       await service.generatePkceParameters();
 
-      const stored = sessionStorage.getItem('pkce_verifier');
-      const params = JSON.parse(stored!);
-      params.generatedAt = Date.now() - 4 * 60 * 1000;
-      sessionStorage.setItem('pkce_verifier', JSON.stringify(params));
+      // Advance time by 4 minutes
+      vi.advanceTimersByTime(4 * 60 * 1000);
 
       expect(() => service.retrieveVerifier()).not.toThrow();
     });
@@ -342,11 +344,10 @@ describe('PkceService', () => {
     it('should return true even if verifier is expired', async () => {
       await service.generatePkceParameters();
 
-      const stored = sessionStorage.getItem('pkce_verifier');
-      const params = JSON.parse(stored!);
-      params.generatedAt = Date.now() - 10 * 60 * 1000; // 10 minutes ago
-      sessionStorage.setItem('pkce_verifier', JSON.stringify(params));
+      // Advance time by 10 minutes (verifier is now expired)
+      vi.advanceTimersByTime(10 * 60 * 1000);
 
+      // hasStoredVerifier only checks existence, not validity
       expect(service.hasStoredVerifier()).toBe(true);
     });
   });
@@ -398,10 +399,7 @@ describe('PkceService', () => {
       await service.generatePkceParameters();
 
       // Simulate 4 minutes 50 seconds delay
-      const stored = sessionStorage.getItem('pkce_verifier');
-      const params = JSON.parse(stored!);
-      params.generatedAt = Date.now() - (4 * 60 + 50) * 1000;
-      sessionStorage.setItem('pkce_verifier', JSON.stringify(params));
+      vi.advanceTimersByTime((4 * 60 + 50) * 1000);
 
       // Should still work (within 5-minute window)
       expect(() => service.retrieveVerifier()).not.toThrow();
@@ -411,10 +409,7 @@ describe('PkceService', () => {
       await service.generatePkceParameters();
 
       // Simulate 5 minutes 10 seconds delay
-      const stored = sessionStorage.getItem('pkce_verifier');
-      const params = JSON.parse(stored!);
-      params.generatedAt = Date.now() - (5 * 60 + 10) * 1000;
-      sessionStorage.setItem('pkce_verifier', JSON.stringify(params));
+      vi.advanceTimersByTime((5 * 60 + 10) * 1000);
 
       // Should be expired
       expect(() => service.retrieveVerifier()).toThrow(
@@ -437,18 +432,14 @@ describe('PkceService', () => {
     });
 
     it('should handle sessionStorage quota exceeded', async () => {
-      const originalSetItem = Storage.prototype.setItem;
-      Storage.prototype.setItem = vi.fn(() => {
+      // Use vi.spyOn which integrates with vi.restoreAllMocks() in afterEach
+      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
         throw new DOMException('QuotaExceededError');
       });
 
-      try {
-        await expect(service.generatePkceParameters()).rejects.toMatchObject({
-          code: PkceErrorCode.GENERATION_FAILED,
-        });
-      } finally {
-        Storage.prototype.setItem = originalSetItem;
-      }
+      await expect(service.generatePkceParameters()).rejects.toMatchObject({
+        code: PkceErrorCode.GENERATION_FAILED,
+      });
     });
   });
 });
