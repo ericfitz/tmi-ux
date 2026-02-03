@@ -62,6 +62,7 @@ import { ThemeService } from './core/services/theme.service';
 import { UserPreferencesService } from './core/services/user-preferences.service';
 import { WebSocketAdapter } from './core/services/websocket.adapter';
 import { AppNotificationService } from './pages/dfd/application/services/app-notification.service';
+import { TokenValidityGuardService } from './auth/services/token-validity-guard.service';
 
 // We still need LOCALE_ID for date formatting with Angular's pipes
 function getBasicLocale(): string {
@@ -126,6 +127,14 @@ function initializeWebSocketAuth(
   return () => {
     // Wire up WebSocketAdapter with AuthService for activity-based token refresh
     websocketAdapter.setAuthService(authService);
+  };
+}
+
+// Token validity guard initialization function
+function initializeTokenValidityGuard(tokenValidityGuard: TokenValidityGuardService): () => void {
+  return () => {
+    // Start monitoring for token expiry across visibility changes, timer drift, and cross-tab events
+    tokenValidityGuard.startMonitoring();
   };
 }
 
@@ -373,6 +382,14 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: initializeWebSocketAuth,
       deps: [WebSocketAdapter, AuthService],
+      multi: true,
+    },
+    // Initialize token validity guard for zombie session prevention
+    // This monitors visibility changes, timer drift, and cross-tab logout events
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeTokenValidityGuard,
+      deps: [TokenValidityGuardService],
       multi: true,
     },
     // Provide services with interface tokens to satisfy DI requirements

@@ -6,6 +6,7 @@
  *
  * Key functionality:
  * - Uses Angular's functional guard pattern with dependency injection
+ * - Performs synchronous token expiry check before consulting observable (defense-in-depth)
  * - Checks authentication status reactively via AuthService observable
  * - Redirects unauthenticated users to login page with return URL
  * - Preserves the intended destination for post-login redirect
@@ -23,6 +24,12 @@ export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
   const logger = inject(LoggerService);
+
+  // Defense-in-depth: Synchronous token expiry check before consulting the observable.
+  // This ensures the isAuthenticated$ BehaviorSubject is updated if the token has expired
+  // (e.g., after returning from a backgrounded browser tab where timers were throttled).
+  // Without this, the guard might allow access based on stale BehaviorSubject state.
+  authService.validateAndUpdateAuthState();
 
   return authService.isAuthenticated$.pipe(
     take(1),

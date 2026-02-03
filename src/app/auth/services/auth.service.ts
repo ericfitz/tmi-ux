@@ -280,6 +280,37 @@ export class AuthService {
   }
 
   /**
+   * Validates token expiry and updates auth state if expired.
+   * Called by TokenValidityGuardService when browser resumes from background,
+   * and by authGuard as defense-in-depth before checking isAuthenticated$.
+   *
+   * This method is critical for preventing "zombie sessions" where the user
+   * appears authenticated but their token has actually expired (e.g., after
+   * returning from a backgrounded browser tab where timers were throttled).
+   */
+  validateAndUpdateAuthState(): void {
+    const token = this.getStoredToken();
+
+    // No token found but we think we're authenticated - clear state
+    if (!token) {
+      if (this.isAuthenticatedSubject.value) {
+        this.logger.warn('No token found but auth state was true, clearing auth state');
+        this.clearAuthData();
+      }
+      return;
+    }
+
+    // Token expired but we think we're authenticated - clear state
+    if (!this.isTokenValid(token) && this.isAuthenticatedSubject.value) {
+      this.logger.warn('Token expired during background period, clearing auth state', {
+        tokenExpiry: token.expiresAt.toISOString(),
+        currentTime: new Date().toISOString(),
+      });
+      this.clearAuthData();
+    }
+  }
+
+  /**
    * Check if token needs refreshing (expires within 15 minutes)
    * @param token Optional token to check, otherwise retrieves from storage
    * @returns True if token should be refreshed
@@ -1798,6 +1829,15 @@ export class AuthService {
     // Notify SessionManager to stop timers
     if (this.sessionManagerService) {
       this.sessionManagerService.stopExpiryTimers();
+    }
+
+    // Broadcast logout to other browser tabs for cross-tab synchronization
+    // The storage event only fires in OTHER tabs, not the one that made the change
+    try {
+      localStorage.setItem('auth_logout_broadcast', Date.now().toString());
+      localStorage.removeItem('auth_logout_broadcast');
+    } catch {
+      // Ignore storage errors (e.g., private browsing mode)
     }
 
     // this.logger.debugComponent('Auth', 'Cleared authentication data and provider cache');

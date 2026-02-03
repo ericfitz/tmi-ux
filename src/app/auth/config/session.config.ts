@@ -36,6 +36,20 @@ export const SESSION_CONFIG = {
    * Default: 30 seconds
    */
   LOGOUT_GRACE_PERIOD_MS: 30 * 1000,
+
+  /**
+   * Interval for heartbeat drift detection.
+   * Used to detect when browser timers were throttled (e.g., background tabs).
+   * Default: 1 minute
+   */
+  HEARTBEAT_INTERVAL_MS: 60 * 1000,
+
+  /**
+   * Multiplier for detecting significant timer drift.
+   * If elapsed time > interval * this multiplier, we assume timers were throttled.
+   * Default: 2 (triggers if 2+ minutes elapsed instead of expected 1 minute)
+   */
+  DRIFT_DETECTION_MULTIPLIER: 2,
 } as const;
 
 /**
