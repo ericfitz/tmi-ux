@@ -20,6 +20,7 @@ import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
 import { ServerConnectionService, ServerConnectionStatus } from './server-connection.service';
 import { WebSocketAdapter, MessageType } from './websocket.adapter';
+import { User } from '@app/pages/tm/models/threat-model.model';
 
 /**
  * Interface for collaboration session data
@@ -30,7 +31,7 @@ export interface CollaborationSession {
   threatModelName: string;
   diagramId: string;
   diagramName: string;
-  host: string;
+  host: User;
   startedAt: Date;
   activeUsers: number;
 }
@@ -50,7 +51,7 @@ interface ServerCollaborationSession {
     permissions?: 'reader' | 'writer';
   }>;
   websocket_url: string;
-  host?: string;
+  host?: User;
   started_at?: string;
 }
 
@@ -262,6 +263,14 @@ export class CollaborationSessionService implements OnDestroy {
     //   serverSession,
     // );
 
+    // Create a fallback User object if host is not provided
+    const fallbackHost: User = {
+      principal_type: 'user',
+      provider: 'unknown',
+      provider_id: serverSession.participants[0]?.user_id || 'unknown',
+      email: serverSession.participants[0]?.user_id,
+    };
+
     const session: CollaborationSession = {
       id: serverSession.session_id,
       threatModelId: serverSession.threat_model_id,
@@ -269,7 +278,7 @@ export class CollaborationSessionService implements OnDestroy {
         serverSession.threat_model_name || `TM ${serverSession.threat_model_id.slice(0, 8)}`,
       diagramId: serverSession.diagram_id,
       diagramName: serverSession.diagram_name || `Diagram ${serverSession.diagram_id.slice(0, 8)}`,
-      host: serverSession.host || serverSession.participants[0]?.user_id || 'Unknown User',
+      host: serverSession.host || fallbackHost,
       startedAt: new Date(
         serverSession.started_at || serverSession.participants[0]?.joined_at || Date.now(),
       ),

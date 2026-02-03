@@ -5,6 +5,10 @@ import { User } from './threat-model.model';
  *
  * This represents the lightweight version of threat model data returned by the list endpoint,
  * containing essential metadata and entity counts without full nested data.
+ *
+ * Identity Fields:
+ * - owner: User object representing the current owner
+ * - created_by: User object representing the creator
  */
 export interface TMListItem {
   id: string;

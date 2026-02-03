@@ -75,8 +75,8 @@ interface CollaborationSession {
   diagram_name: string;
   participants: ApiParticipant[];
   websocket_url: string;
-  host: string;
-  presenter?: string;
+  host: ApiUser;
+  presenter?: ApiUser;
 }
 import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
@@ -247,6 +247,7 @@ export class ThreatModelService implements OnDestroy {
    * Get basic threat model info (name, id, etc.) without loading full data
    * This is more efficient than getThreatModelById when you only need basic info
    */
+  // Note: This method is currently unused but kept for potential future use
   getThreatModelBasicInfo(
     threatModelId: string,
   ): Observable<
@@ -1765,6 +1766,8 @@ export class ThreatModelService implements OnDestroy {
 
   /**
    * Convert a full ThreatModel to a TMListItem
+   * Note: TMListItem uses string for owner/created_by (email addresses),
+   * Both ThreatModel and TMListItem now use User objects for owner/created_by.
    */
   private convertToListItem(threatModel: ThreatModel): TMListItem {
     return {

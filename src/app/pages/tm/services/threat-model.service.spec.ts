@@ -36,6 +36,15 @@ describe('ThreatModelService', () => {
   let testThreatModel3: any;
 
   beforeEach(() => {
+    // Create test user for mock data
+    const testUser = {
+      principal_type: 'user' as const,
+      provider: 'test',
+      provider_id: 'test-user-1',
+      display_name: 'Test User',
+      email: 'test@example.com',
+    };
+
     // Create test data
     testThreatModel1 = {
       id: '550e8400-e29b-41d4-a716-446655440000',
@@ -43,8 +52,8 @@ describe('ThreatModelService', () => {
       description: 'Test Description 1',
       created_at: new Date().toISOString(),
       modified_at: new Date().toISOString(),
-      owner: 'test@example.com',
-      created_by: 'test@example.com',
+      owner: testUser,
+      created_by: testUser,
       threat_model_framework: 'STRIDE',
       diagrams: [],
       threats: [],
@@ -55,8 +64,8 @@ describe('ThreatModelService', () => {
       description: 'Test Description 2',
       created_at: new Date().toISOString(),
       modified_at: new Date().toISOString(),
-      owner: 'test@example.com',
-      created_by: 'test@example.com',
+      owner: testUser,
+      created_by: testUser,
       threat_model_framework: 'STRIDE',
       diagrams: [],
       threats: [],
@@ -67,8 +76,8 @@ describe('ThreatModelService', () => {
       description: 'Test Description 3',
       created_at: new Date().toISOString(),
       modified_at: new Date().toISOString(),
-      owner: 'test@example.com',
-      created_by: 'test@example.com',
+      owner: testUser,
+      created_by: testUser,
       threat_model_framework: 'STRIDE',
       diagrams: [],
       threats: [],

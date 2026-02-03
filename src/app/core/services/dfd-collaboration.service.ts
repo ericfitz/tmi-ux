@@ -74,8 +74,8 @@ export interface CollaborationSession {
   diagram_name: string;
   participants: ApiParticipant[];
   websocket_url: string;
-  host: string;
-  presenter?: string;
+  host: ApiUser;
+  presenter?: ApiUser;
 }
 
 /**
@@ -494,7 +494,7 @@ export class DfdCollaborationService implements OnDestroy {
       return false;
     }
     const currentUserEmail = this.getCurrentUserEmail();
-    return currentUserEmail === existingSession.host;
+    return currentUserEmail === existingSession.host?.email;
   }
 
   /**
@@ -537,7 +537,7 @@ export class DfdCollaborationService implements OnDestroy {
     const currentUserEmail = this.getCurrentUserEmail();
     const currentUserProvider = this._authService.userIdp;
     const currentUserProviderId = this._authService.providerId;
-    const isCurrentUserPresenter = currentUserEmail === existingSession.presenter;
+    const isCurrentUserPresenter = currentUserEmail === existingSession.presenter?.email;
     const initialUser: CollaborationUser = {
       provider: currentUserProvider,
       provider_id: currentUserProviderId,
@@ -545,7 +545,7 @@ export class DfdCollaborationService implements OnDestroy {
       email: currentUserEmail || '',
       permission: 'writer', // Will be updated from WebSocket messages
       status: 'active',
-      isHost: currentUserEmail === existingSession.host,
+      isHost: currentUserEmail === existingSession.host?.email,
       isPresenter: isCurrentUserPresenter,
       lastActivity: new Date(),
       presenterRequestState: isCurrentUserPresenter ? 'presenter' : 'hand_down',
@@ -557,7 +557,7 @@ export class DfdCollaborationService implements OnDestroy {
       users: [initialUser],
       sessionInfo: existingSession,
       existingSessionAvailable: null,
-      currentPresenterEmail: existingSession.presenter || null,
+      currentPresenterEmail: existingSession.presenter?.email || null,
     });
 
     // Set up WebSocket listeners before connecting
@@ -619,7 +619,7 @@ export class DfdCollaborationService implements OnDestroy {
           const currentUserEmail = this.getCurrentUserEmail();
           const currentUserProvider = this._authService.userIdp;
           const currentUserProviderId = this._authService.providerId;
-          const isCurrentUserPresenter = currentUserEmail === session.presenter;
+          const isCurrentUserPresenter = currentUserEmail === session.presenter?.email;
           const initialUser: CollaborationUser = {
             provider: currentUserProvider,
             provider_id: currentUserProviderId,
@@ -627,7 +627,7 @@ export class DfdCollaborationService implements OnDestroy {
             email: currentUserEmail || '',
             permission: 'writer',
             status: 'active',
-            isHost: currentUserEmail === session.host, // Check if current user is the host from session data
+            isHost: currentUserEmail === session.host?.email, // Check if current user is the host from session data
             isPresenter: isCurrentUserPresenter, // Check if current user is the presenter from session data
             lastActivity: new Date(),
             presenterRequestState: isCurrentUserPresenter ? 'presenter' : 'hand_down',
@@ -639,7 +639,7 @@ export class DfdCollaborationService implements OnDestroy {
             users: [initialUser],
             sessionInfo: session,
             existingSessionAvailable: null,
-            currentPresenterEmail: session.presenter || null,
+            currentPresenterEmail: session.presenter?.email || null,
           });
 
           // Set up WebSocket listeners before connecting

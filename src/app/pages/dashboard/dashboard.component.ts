@@ -49,7 +49,7 @@ import {
 } from '@app/shared/imports';
 import { LanguageService } from '../../i18n/language.service';
 import { ThreatModel } from '../tm/models/threat-model.model';
-import { TMListItem } from './models/tm-list-item.model';
+import { TMListItem } from '../tm/models/tm-list-item.model';
 import { ThreatModelService } from '../tm/services/threat-model.service';
 import { ThreatModelValidatorService } from '../tm/validation/threat-model-validator.service';
 import { DfdCollaborationService } from '../../core/services/dfd-collaboration.service';
@@ -721,6 +721,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           tm.name?.toLowerCase().includes(filter) ||
           tm.description?.toLowerCase().includes(filter) ||
           tm.owner?.display_name?.toLowerCase().includes(filter) ||
+          tm.owner?.email?.toLowerCase().includes(filter) ||
           tm.status?.toLowerCase().includes(filter),
       );
     }
