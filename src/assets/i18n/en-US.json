@@ -409,6 +409,7 @@
     },
     "save": "Save",
     "saveAndClose": "Save and Close",
+    "savedSuccessfully": "Saved successfully",
     "score": "Score",
     "sensitivity": "Sensitivity",
     "sensitivity.comment": "Used in the sense of how damaging something would be if it were discovered, not in the sense of the keenness of senses.",
@@ -617,7 +618,7 @@
     },
     "namePlaceholder": "Enter note name",
     "previewMode": "Preview Mode",
-    "savedSuccessfully": "Note saved successfully",
+    "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
       "create": "Create Note",
       "edit": "Edit Note",
