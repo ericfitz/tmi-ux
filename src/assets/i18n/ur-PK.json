@@ -389,6 +389,7 @@
     },
     "save": "محفوظ کریں",
     "saveAndClose": "محفوظ کریں اور بند کریں",
+    "savedSuccessfully": "کامیابی سے محفوظ ہو گیا",
     "score": "سکور",
     "sensitivity": "حساسیت",
     "sessionRoles": {
@@ -595,7 +596,7 @@
     },
     "namePlaceholder": "نوٹ کا نام درج کریں",
     "previewMode": "پیش نظارہ موڈ",
-    "savedSuccessfully": "نوٹ کامیابی سے محفوظ ہو گیا",
+    "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
       "create": "نوٹ بنائیں",
       "edit": "نوٹ میں ترمیم کریں",

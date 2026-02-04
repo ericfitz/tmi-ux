@@ -389,6 +389,7 @@
     },
     "save": "सहेजें",
     "saveAndClose": "सहेजें और बंद करें",
+    "savedSuccessfully": "सफलतापूर्वक सहेजा गया",
     "score": "स्कोर",
     "sensitivity": "संवेदनशीलता",
     "sessionRoles": {
@@ -595,7 +596,7 @@
     },
     "namePlaceholder": "नोट का नाम दर्ज करें",
     "previewMode": "पूर्वावलोकन मोड",
-    "savedSuccessfully": "नोट सफलतापूर्वक सहेजा गया",
+    "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
       "create": "नोट बनाएं",
       "edit": "नोट संपादित करें",

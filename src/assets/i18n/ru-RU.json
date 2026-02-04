@@ -389,6 +389,7 @@
     },
     "save": "Сохранить",
     "saveAndClose": "Сохранить и Закрыть",
+    "savedSuccessfully": "Успешно сохранено",
     "score": "Оценка",
     "sensitivity": "Конфиденциальность",
     "sessionRoles": {
@@ -595,7 +596,7 @@
     },
     "namePlaceholder": "Введите название заметки",
     "previewMode": "Режим предпросмотра",
-    "savedSuccessfully": "Заметка успешно сохранена",
+    "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
       "create": "Создать Заметку",
       "edit": "Редактировать Заметку",

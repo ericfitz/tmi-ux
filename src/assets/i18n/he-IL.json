@@ -389,6 +389,7 @@
     },
     "save": "שמור",
     "saveAndClose": "שמור וסגור",
+    "savedSuccessfully": "נשמר בהצלחה",
     "score": "ציון",
     "sensitivity": "רגישות",
     "sessionRoles": {
@@ -595,7 +596,7 @@
     },
     "namePlaceholder": "הזן שם הערה",
     "previewMode": "מצב תצוגה מקדימה",
-    "savedSuccessfully": "ההערה נשמרה בהצלחה",
+    "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
       "create": "צור הערה",
       "edit": "ערוך הערה",

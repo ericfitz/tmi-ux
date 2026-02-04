@@ -389,6 +389,7 @@
     },
     "save": "保存",
     "saveAndClose": "保存并关闭",
+    "savedSuccessfully": "保存成功",
     "score": "评分",
     "sensitivity": "敏感性",
     "sessionRoles": {
@@ -595,7 +596,7 @@
     },
     "namePlaceholder": "输入笔记名称",
     "previewMode": "预览模式",
-    "savedSuccessfully": "笔记保存成功",
+    "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
       "create": "创建笔记",
       "edit": "编辑笔记",

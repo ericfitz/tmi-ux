@@ -389,6 +389,7 @@
     },
     "save": "حفظ",
     "saveAndClose": "حفظ وإغلاق",
+    "savedSuccessfully": "تم الحفظ بنجاح",
     "score": "النتيجة",
     "sensitivity": "الحساسية",
     "sessionRoles": {
@@ -595,7 +596,7 @@
     },
     "namePlaceholder": "أدخل اسم الملاحظة",
     "previewMode": "وضع المعاينة",
-    "savedSuccessfully": "تم حفظ الملاحظة بنجاح",
+    "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
       "create": "إنشاء ملاحظة",
       "edit": "تحرير الملاحظة",

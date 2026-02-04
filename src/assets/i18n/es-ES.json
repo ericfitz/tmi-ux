@@ -389,6 +389,7 @@
     },
     "save": "Guardar",
     "saveAndClose": "Guardar y Cerrar",
+    "savedSuccessfully": "Guardado correctamente",
     "score": "Puntuación",
     "sensitivity": "Sensibilidad",
     "sessionRoles": {
@@ -595,7 +596,7 @@
     },
     "namePlaceholder": "Introduzca el nombre de la nota",
     "previewMode": "Modo Vista Previa",
-    "savedSuccessfully": "Nota guardada correctamente",
+    "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
       "create": "Crear Nota",
       "edit": "Editar Nota",

@@ -389,6 +389,7 @@
     },
     "save": "Simpan",
     "saveAndClose": "Simpan dan Tutup",
+    "savedSuccessfully": "Berhasil disimpan",
     "score": "Skor",
     "sensitivity": "Sensitivitas",
     "sessionRoles": {
@@ -595,7 +596,7 @@
     },
     "namePlaceholder": "Masukkan nama catatan",
     "previewMode": "Mode Pratinjau",
-    "savedSuccessfully": "Catatan berhasil disimpan",
+    "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
       "create": "Buat Catatan",
       "edit": "Edit Catatan",

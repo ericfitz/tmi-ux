@@ -389,6 +389,7 @@
     },
     "save": "저장",
     "saveAndClose": "저장 및 닫기",
+    "savedSuccessfully": "저장되었습니다",
     "score": "점수",
     "sensitivity": "민감도",
     "sessionRoles": {
@@ -595,7 +596,7 @@
     },
     "namePlaceholder": "노트 이름을 입력하세요",
     "previewMode": "미리보기 모드",
-    "savedSuccessfully": "노트가 저장되었습니다",
+    "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
       "create": "노트 생성",
       "edit": "노트 편집",

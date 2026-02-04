@@ -389,6 +389,7 @@
     },
     "save": "Speichern",
     "saveAndClose": "Speichern und Schließen",
+    "savedSuccessfully": "Erfolgreich gespeichert",
     "score": "Bewertung",
     "sensitivity": "Sensibilität",
     "sessionRoles": {
@@ -595,7 +596,7 @@
     },
     "namePlaceholder": "Notizname eingeben",
     "previewMode": "Vorschaumodus",
-    "savedSuccessfully": "Notiz erfolgreich gespeichert",
+    "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
       "create": "Notiz erstellen",
       "edit": "Notiz bearbeiten",

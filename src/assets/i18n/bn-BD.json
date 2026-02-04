@@ -389,6 +389,7 @@
     },
     "save": "সংরক্ষণ করুন",
     "saveAndClose": "সংরক্ষণ করুন এবং বন্ধ করুন",
+    "savedSuccessfully": "সফলভাবে সংরক্ষিত",
     "score": "স্কোর",
     "sensitivity": "সংবেদনশীলতা",
     "sessionRoles": {
@@ -595,7 +596,7 @@
     },
     "namePlaceholder": "নোটের নাম লিখুন",
     "previewMode": "প্রিভিউ মোড",
-    "savedSuccessfully": "নোট সফলভাবে সংরক্ষিত",
+    "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
       "create": "নোট তৈরি করুন",
       "edit": "নোট সম্পাদনা করুন",

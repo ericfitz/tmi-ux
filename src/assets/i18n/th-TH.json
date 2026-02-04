@@ -389,6 +389,7 @@
     },
     "save": "บันทึก",
     "saveAndClose": "บันทึกและปิด",
+    "savedSuccessfully": "บันทึกสำเร็จ",
     "score": "คะแนน",
     "sensitivity": "ความอ่อนไหว",
     "sessionRoles": {
@@ -595,7 +596,7 @@
     },
     "namePlaceholder": "ป้อนชื่อหมายเหตุ",
     "previewMode": "โหมดแสดงตัวอย่าง",
-    "savedSuccessfully": "บันทึกหมายเหตุสำเร็จ",
+    "savedSuccessfully": "{{common.savedSuccessfully}}",
     "title": {
       "create": "สร้างหมายเหตุ",
       "edit": "แก้ไขหมายเหตุ",
