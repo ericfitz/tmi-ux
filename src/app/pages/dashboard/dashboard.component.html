@@ -328,8 +328,8 @@
               </p>
               <p class="collaboration-session-host">
                 <mat-icon>person</mat-icon> {{ 'collaboration.hostedBy' | transloco }}
-                <span [matTooltip]="session.host?.email || ''">
-                  {{ session.host?.display_name || session.host?.email || '—' }}
+                <span [matTooltip]="session.host.email || ''">
+                  {{ session.host.display_name || session.host.email || '—' }}
                 </span>
               </p>
               <p class="collaboration-session-time">
