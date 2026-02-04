@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.4.5",
+  "version": "1.5.0",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -49,7 +49,9 @@
     "check:security": "tsx scripts/check-security.ts",
     "build:hosted-container": "ng build --configuration=hosted-container",
     "heroku-postbuild": "ng build --configuration=hosted-container",
-    "deploy:heroku": "./scripts/push-heroku.sh"
+    "deploy:heroku": "./scripts/push-heroku.sh",
+    "build:oci": "ng build --configuration=oci",
+    "deploy:oci": "./scripts/push-oci.sh"
   },
   "private": true,
   "dependencies": {

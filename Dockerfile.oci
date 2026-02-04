@@ -1,0 +1,72 @@
+# Multi-stage build for TMI-UX on Oracle Cloud Infrastructure (OCI) Container Instances
+# Uses oci configuration (environment.oci.ts)
+# Runtime: Oracle Linux 10
+
+# Stage 1: Build the Angular application
+# Using Alpine for build stage (not deployed, just for compilation)
+FROM node:22-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Install pnpm globally
+RUN npm install -g pnpm@10.18.3
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Copy application source
+COPY . .
+
+# Build the application with OCI configuration
+RUN pnpm run build:oci
+
+# Stage 2: Production server on Oracle Linux 10
+FROM oraclelinux:10-slim
+
+# Install Node.js 22 LTS
+# Oracle Linux 10 slim uses microdnf instead of dnf
+RUN microdnf install -y nodejs npm && \
+    microdnf clean all && \
+    rm -rf /var/cache/yum
+
+# Set working directory
+WORKDIR /app
+
+# Create non-root user for security
+RUN useradd -r -u 1001 -g root appuser
+
+# Create minimal package.json for runtime dependencies only
+RUN echo '{"name":"tmi-ux-server","version":"1.0.0","type":"module","dependencies":{"express":"^5.1.0","express-rate-limit":"^8.1.0"}}' > package.json
+
+# Install only runtime dependencies
+RUN npm install --omit=dev --production
+
+# Copy built application from builder stage
+COPY --from=builder /app/dist ./dist
+
+# Copy server file
+COPY server.js ./
+
+# Change ownership to non-root user
+RUN chown -R appuser:root /app
+
+# Switch to non-root user
+USER appuser
+
+# Expose port 8080 (OCI Container Instances default)
+EXPOSE 8080
+
+# Set environment variables
+ENV PORT=8080
+ENV NODE_ENV=production
+
+# Health check for OCI Container Instances
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:8080/', (r) => process.exit(r.statusCode === 200 ? 0 : 1))" || exit 1
+
+# Start the server
+CMD ["node", "server.js"]
