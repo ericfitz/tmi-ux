@@ -250,10 +250,11 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   ];
   threatsDisplayedColumns: string[] = [
     'icon',
+    'severity',
     'name',
     'description',
     'status',
-    'severity',
+    'mitigated',
     'hyperlink',
     'actions',
   ];

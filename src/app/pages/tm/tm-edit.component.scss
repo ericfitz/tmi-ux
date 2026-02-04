@@ -615,6 +615,18 @@ mat-card-header {
   text-align: left;
 }
 
+.column-mitigated {
+  width: 80px;
+  min-width: 80px;
+  text-align: center;
+
+  .mitigated-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 .column-severity {
   width: 120px;
   min-width: 120px;
@@ -901,10 +913,11 @@ mat-card-header {
     }
   }
 
-  // Threats: hide severity, status, description (keep name, hyperlink)
+  // Threats: hide severity, status, mitigated, description (keep name, hyperlink)
   .threats-card {
     .column-severity,
     .column-status,
+    .column-mitigated,
     .column-description {
       display: none !important;
     }
