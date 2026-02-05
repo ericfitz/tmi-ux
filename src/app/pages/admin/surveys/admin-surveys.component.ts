@@ -1,4 +1,11 @@
-import { Component, OnInit, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  DestroyRef,
+  inject,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
@@ -58,6 +65,7 @@ export class AdminSurveysComponent implements OnInit {
     private router: Router,
     private dialog: MatDialog,
     private logger: LoggerService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -79,11 +87,13 @@ export class AdminSurveysComponent implements OnInit {
           this.templates = response.templates;
           this.applyFilters();
           this.loading = false;
+          this.cdr.markForCheck();
         },
         error: error => {
           this.error = 'Failed to load templates';
           this.loading = false;
           this.logger.error('Failed to load survey templates', error);
+          this.cdr.markForCheck();
         },
       });
   }
@@ -150,6 +160,7 @@ export class AdminSurveysComponent implements OnInit {
         },
         error: error => {
           this.logger.error('Failed to clone template', error);
+          this.cdr.markForCheck();
         },
       });
   }
@@ -169,6 +180,7 @@ export class AdminSurveysComponent implements OnInit {
         },
         error: error => {
           this.logger.error('Failed to update template status', error);
+          this.cdr.markForCheck();
         },
       });
   }
@@ -186,6 +198,7 @@ export class AdminSurveysComponent implements OnInit {
         },
         error: error => {
           this.logger.error('Failed to archive template', error);
+          this.cdr.markForCheck();
         },
       });
   }

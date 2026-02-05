@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { catchError, delay, map, tap } from 'rxjs/operators';
 import { ApiService } from '@app/core/services/api.service';
 import { LoggerService } from '@app/core/services/logger.service';
@@ -294,11 +294,7 @@ export class SurveyTemplateService {
   private mockGetById(templateId: string): Observable<SurveyTemplate> {
     const template = this.mockTemplates.find(t => t.id === templateId);
     if (!template) {
-      return of(null as unknown as SurveyTemplate).pipe(
-        tap(() => {
-          throw new Error(`Template not found: ${templateId}`);
-        }),
-      );
+      return throwError(() => new Error(`Template not found: ${templateId}`)).pipe(delay(100));
     }
     return of(template).pipe(delay(100));
   }
@@ -306,7 +302,7 @@ export class SurveyTemplateService {
   private mockGetVersionJson(templateId: string, version?: number): Observable<SurveyJsonSchema> {
     const template = this.mockTemplates.find(t => t.id === templateId);
     if (!template) {
-      throw new Error(`Template not found: ${templateId}`);
+      return throwError(() => new Error(`Template not found: ${templateId}`)).pipe(delay(100));
     }
 
     const targetVersion = version ?? template.current_version;
@@ -315,7 +311,9 @@ export class SurveyTemplateService {
     );
 
     if (!surveyVersion) {
-      throw new Error(`Version not found: ${templateId} v${targetVersion}`);
+      return throwError(() => new Error(`Version not found: ${templateId} v${targetVersion}`)).pipe(
+        delay(100),
+      );
     }
 
     return of(surveyVersion.survey_json).pipe(delay(100));
@@ -327,7 +325,9 @@ export class SurveyTemplateService {
     );
 
     if (!surveyVersion) {
-      throw new Error(`Version not found: ${templateId} v${version}`);
+      return throwError(() => new Error(`Version not found: ${templateId} v${version}`)).pipe(
+        delay(100),
+      );
     }
 
     return of(surveyVersion).pipe(delay(100));
@@ -380,7 +380,7 @@ export class SurveyTemplateService {
   ): Observable<SurveyTemplate> {
     const index = this.mockTemplates.findIndex(t => t.id === templateId);
     if (index === -1) {
-      throw new Error(`Template not found: ${templateId}`);
+      return throwError(() => new Error(`Template not found: ${templateId}`)).pipe(delay(100));
     }
 
     const now = new Date().toISOString();
@@ -422,7 +422,7 @@ export class SurveyTemplateService {
   private mockArchive(templateId: string): Observable<void> {
     const index = this.mockTemplates.findIndex(t => t.id === templateId);
     if (index === -1) {
-      throw new Error(`Template not found: ${templateId}`);
+      return throwError(() => new Error(`Template not found: ${templateId}`)).pipe(delay(100));
     }
 
     this.mockTemplates[index].status = 'archived';
@@ -437,7 +437,7 @@ export class SurveyTemplateService {
   private mockClone(templateId: string, newName: string): Observable<SurveyTemplate> {
     const original = this.mockTemplates.find(t => t.id === templateId);
     if (!original) {
-      throw new Error(`Template not found: ${templateId}`);
+      return throwError(() => new Error(`Template not found: ${templateId}`)).pipe(delay(100));
     }
 
     const latestVersion = this.mockVersions.find(
@@ -445,7 +445,9 @@ export class SurveyTemplateService {
     );
 
     if (!latestVersion) {
-      throw new Error(`Version not found for template: ${templateId}`);
+      return throwError(() => new Error(`Version not found for template: ${templateId}`)).pipe(
+        delay(100),
+      );
     }
 
     return this.mockCreate({

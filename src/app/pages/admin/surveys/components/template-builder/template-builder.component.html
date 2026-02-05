@@ -101,6 +101,24 @@
               }
             </mat-card-title>
             <div class="canvas-actions">
+              @if (surveyJson.pages && surveyJson.pages.length > 1) {
+                <button
+                  mat-icon-button
+                  (click)="previousPage()"
+                  [disabled]="selectedPageIndex === 0"
+                  matTooltip="Previous page"
+                >
+                  <mat-icon>chevron_left</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  (click)="nextPage()"
+                  [disabled]="selectedPageIndex === surveyJson.pages.length - 1"
+                  matTooltip="Next page"
+                >
+                  <mat-icon>chevron_right</mat-icon>
+                </button>
+              }
               <button mat-icon-button (click)="addPage()" matTooltip="Add page">
                 <mat-icon>add_box</mat-icon>
               </button>
@@ -118,7 +136,7 @@
                 @for (question of currentPageElements; track question.name; let i = $index) {
                   <div
                     class="question-item"
-                    [class.selected]="selectedQuestionIndex === i"
+                    [class.selected]="selectedQuestion === question"
                     (click)="selectQuestion(question, i)"
                   >
                     <mat-icon class="question-icon">{{ getQuestionIcon(question.type) }}</mat-icon>
@@ -143,6 +161,93 @@
                       </button>
                     </div>
                   </div>
+                  <!-- Panel children -->
+                  @if (question.type === 'panel' && question.elements?.length) {
+                    <div class="panel-children">
+                      @for (child of question.elements; track child.name; let j = $index) {
+                        <div
+                          class="question-item nested"
+                          [class.selected]="selectedQuestion === child"
+                          (click)="selectQuestion(child, j, question)"
+                        >
+                          <mat-icon class="question-icon">{{
+                            getQuestionIcon(child.type)
+                          }}</mat-icon>
+                          <div class="question-info">
+                            <span class="question-name">{{ child.name }}</span>
+                            <span class="question-title">{{ child.title }}</span>
+                          </div>
+                          <div class="question-actions">
+                            <button
+                              mat-icon-button
+                              (click)="
+                                selectQuestion(child, j, question);
+                                moveQuestionUp();
+                                $event.stopPropagation()
+                              "
+                              [disabled]="j === 0"
+                            >
+                              <mat-icon>arrow_upward</mat-icon>
+                            </button>
+                            <button
+                              mat-icon-button
+                              (click)="
+                                selectQuestion(child, j, question);
+                                moveQuestionDown();
+                                $event.stopPropagation()
+                              "
+                              [disabled]="j === question.elements!.length - 1"
+                            >
+                              <mat-icon>arrow_downward</mat-icon>
+                            </button>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                  @if (question.type === 'paneldynamic' && question.templateElements?.length) {
+                    <div class="panel-children">
+                      @for (child of question.templateElements; track child.name; let j = $index) {
+                        <div
+                          class="question-item nested"
+                          [class.selected]="selectedQuestion === child"
+                          (click)="selectQuestion(child, j, question)"
+                        >
+                          <mat-icon class="question-icon">{{
+                            getQuestionIcon(child.type)
+                          }}</mat-icon>
+                          <div class="question-info">
+                            <span class="question-name">{{ child.name }}</span>
+                            <span class="question-title">{{ child.title }}</span>
+                          </div>
+                          <div class="question-actions">
+                            <button
+                              mat-icon-button
+                              (click)="
+                                selectQuestion(child, j, question);
+                                moveQuestionUp();
+                                $event.stopPropagation()
+                              "
+                              [disabled]="j === 0"
+                            >
+                              <mat-icon>arrow_upward</mat-icon>
+                            </button>
+                            <button
+                              mat-icon-button
+                              (click)="
+                                selectQuestion(child, j, question);
+                                moveQuestionDown();
+                                $event.stopPropagation()
+                              "
+                              [disabled]="j === question.templateElements!.length - 1"
+                            >
+                              <mat-icon>arrow_downward</mat-icon>
+                            </button>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
                 }
               </div>
             }

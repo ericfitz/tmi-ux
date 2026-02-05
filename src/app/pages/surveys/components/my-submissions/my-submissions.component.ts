@@ -1,4 +1,11 @@
-import { Component, OnInit, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  DestroyRef,
+  inject,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -56,6 +63,7 @@ export class MySubmissionsComponent implements OnInit {
     private submissionService: SurveySubmissionService,
     private router: Router,
     private logger: LoggerService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -77,11 +85,13 @@ export class MySubmissionsComponent implements OnInit {
           this.submissions = response.submissions;
           this.applyFilter();
           this.loading = false;
+          this.cdr.markForCheck();
         },
         error: error => {
           this.error = 'Failed to load submissions';
           this.loading = false;
           this.logger.error('Failed to load submissions', error);
+          this.cdr.markForCheck();
         },
       });
   }
@@ -140,6 +150,7 @@ export class MySubmissionsComponent implements OnInit {
         },
         error: error => {
           this.logger.error('Failed to delete draft', error);
+          this.cdr.markForCheck();
         },
       });
   }

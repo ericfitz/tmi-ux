@@ -1,4 +1,11 @@
-import { Component, OnInit, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  DestroyRef,
+  inject,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -44,6 +51,7 @@ export class SurveyListComponent implements OnInit {
     private submissionService: SurveySubmissionService,
     private router: Router,
     private logger: LoggerService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -70,6 +78,7 @@ export class SurveyListComponent implements OnInit {
           this.error = 'Failed to load surveys';
           this.loading = false;
           this.logger.error('Failed to load survey templates', error);
+          this.cdr.markForCheck();
         },
       });
   }
@@ -91,10 +100,12 @@ export class SurveyListComponent implements OnInit {
             this.drafts.set(draft.template_id, existing);
           }
           this.loading = false;
+          this.cdr.markForCheck();
         },
         error: error => {
           this.logger.error('Failed to load drafts', error);
           this.loading = false;
+          this.cdr.markForCheck();
         },
       });
   }

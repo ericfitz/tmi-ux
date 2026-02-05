@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Subject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject, Observable, Subscription, EMPTY } from 'rxjs';
 import { debounceTime, switchMap, catchError } from 'rxjs/operators';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveySubmissionService } from './survey-submission.service';
@@ -149,19 +149,22 @@ export class SurveyDraftService implements OnDestroy {
         switchMap(({ submissionId, data, uiState }) => {
           this.isSavingSubject$.next(true);
           this.saveErrorSubject$.next(null);
-          return this.submissionService.updateDraft(submissionId, data, uiState);
-        }),
-        catchError((error, caught) => {
-          this.isSavingSubject$.next(false);
-          this.saveErrorSubject$.next('Failed to save draft');
-          this.logger.error('Auto-save failed', error);
-          // Return to the caught observable to keep the subscription alive
-          return caught;
+          return this.submissionService.updateDraft(submissionId, data, uiState).pipe(
+            catchError(error => {
+              this.isSavingSubject$.next(false);
+              this.saveErrorSubject$.next('Failed to save draft');
+              this.logger.error('Auto-save failed', error);
+              // Return EMPTY to swallow the error without completing the outer chain.
+              // The next queueSave() call will trigger a new save attempt.
+              return EMPTY;
+            }),
+          );
         }),
       )
       .subscribe({
         next: () => {
           this.isSavingSubject$.next(false);
+          this.saveErrorSubject$.next(null);
           this.lastSavedSubject$.next(new Date());
           this.hasUnsavedChangesSubject$.next(false);
           this.logger.debug('Draft auto-saved');

@@ -60,8 +60,11 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
   /** Currently selected question for editing */
   selectedQuestion: SurveyQuestion | null = null;
 
-  /** Index of selected question */
+  /** Index of selected question within its parent container */
   selectedQuestionIndex: number = -1;
+
+  /** Parent panel of the selected question (null if top-level) */
+  selectedParentPanel: SurveyQuestion | null = null;
 
   /** Selected page index */
   selectedPageIndex: number = 0;
@@ -101,7 +104,6 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
       icon: 'arrow_drop_down_circle',
       description: 'Dropdown selection',
     },
-    { type: 'rating', label: 'Rating', icon: 'star_rate', description: 'Numeric rating scale' },
     { type: 'panel', label: 'Panel', icon: 'dashboard', description: 'Group questions in a panel' },
     {
       type: 'paneldynamic',
@@ -177,17 +179,23 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Add a new question to the current page
+   * Add a new question. If a panel is selected, adds as a child of that panel.
+   * Otherwise adds to the current page's top-level elements.
    */
   addQuestion(type: QuestionType): void {
     const currentPage = this.surveyJson.pages?.[this.selectedPageIndex];
     if (!currentPage) return;
 
-    const questionCount = currentPage.elements?.length ?? 0;
+    // Determine the target container: a selected panel or the page
+    const targetPanel = this.getSelectedPanel();
+    const targetContainer = targetPanel ? this.getPanelChildren(targetPanel) : currentPage.elements;
+
+    if (!targetContainer) return;
+
     const newQuestion: SurveyQuestion = {
       type,
-      name: `question${questionCount + 1}`,
-      title: `Question ${questionCount + 1}`,
+      name: this.generateQuestionName(),
+      title: `New ${this.getQuestionTypeLabel(type)}`,
     };
 
     // Add default choices for choice-based questions
@@ -195,23 +203,92 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
       newQuestion.choices = ['Option 1', 'Option 2', 'Option 3'];
     }
 
-    if (!currentPage.elements) {
-      currentPage.elements = [];
+    // Initialize child array for panel types
+    if (type === 'panel') {
+      newQuestion.elements = [];
     }
-    currentPage.elements.push(newQuestion);
+    if (type === 'paneldynamic') {
+      newQuestion.templateElements = [];
+    }
+
+    targetContainer.push(newQuestion);
 
     // Select the new question
     this.selectedQuestion = newQuestion;
-    this.selectedQuestionIndex = currentPage.elements.length - 1;
+    this.selectedQuestionIndex = targetContainer.length - 1;
+    this.selectedParentPanel = targetPanel;
     this.hasUnsavedChanges = true;
+  }
+
+  /**
+   * Get the selected panel if the current selection is a panel type,
+   * or the parent panel if a child question is selected.
+   */
+  private getSelectedPanel(): SurveyQuestion | null {
+    if (!this.selectedQuestion) return null;
+    if (this.selectedQuestion.type === 'panel' || this.selectedQuestion.type === 'paneldynamic') {
+      return this.selectedQuestion;
+    }
+    return this.selectedParentPanel;
+  }
+
+  /**
+   * Get the children array of a panel question
+   */
+  private getPanelChildren(panel: SurveyQuestion): SurveyQuestion[] {
+    if (panel.type === 'paneldynamic') {
+      if (!panel.templateElements) panel.templateElements = [];
+      return panel.templateElements;
+    }
+    if (!panel.elements) panel.elements = [];
+    return panel.elements;
+  }
+
+  /**
+   * Generate a unique question name
+   */
+  private generateQuestionName(): string {
+    const existingNames = new Set<string>();
+    this.collectQuestionNames(this.surveyJson, existingNames);
+    let counter = existingNames.size + 1;
+    while (existingNames.has(`question${counter}`)) {
+      counter++;
+    }
+    return `question${counter}`;
+  }
+
+  /**
+   * Collect all question names recursively
+   */
+  private collectQuestionNames(schema: SurveyJsonSchema, names: Set<string>): void {
+    for (const page of schema.pages ?? []) {
+      this.collectElementNames(page.elements ?? [], names);
+    }
+  }
+
+  private collectElementNames(elements: SurveyQuestion[], names: Set<string>): void {
+    for (const el of elements) {
+      names.add(el.name);
+      if (el.elements) this.collectElementNames(el.elements, names);
+      if (el.templateElements) this.collectElementNames(el.templateElements, names);
+    }
+  }
+
+  /**
+   * Get label for a question type
+   */
+  private getQuestionTypeLabel(type: QuestionType): string {
+    const config = this.questionTypes.find(q => q.type === type);
+    return config?.label ?? type;
   }
 
   /**
    * Select a question for editing
    */
-  selectQuestion(question: SurveyQuestion, index: number): void {
+  selectQuestion(question: SurveyQuestion, index: number, parent?: SurveyQuestion): void {
     this.selectedQuestion = question;
     this.selectedQuestionIndex = index;
+    this.selectedParentPanel = parent ?? null;
   }
 
   /**
@@ -220,13 +297,25 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
   deleteSelectedQuestion(): void {
     if (this.selectedQuestionIndex < 0) return;
 
-    const currentPage = this.surveyJson.pages?.[this.selectedPageIndex];
-    if (!currentPage?.elements) return;
+    const container = this.getSelectedContainer();
+    if (!container) return;
 
-    currentPage.elements.splice(this.selectedQuestionIndex, 1);
+    container.splice(this.selectedQuestionIndex, 1);
     this.selectedQuestion = null;
     this.selectedQuestionIndex = -1;
+    this.selectedParentPanel = null;
     this.hasUnsavedChanges = true;
+  }
+
+  /**
+   * Get the elements array containing the currently selected question
+   */
+  private getSelectedContainer(): SurveyQuestion[] | null {
+    if (this.selectedParentPanel) {
+      return this.getPanelChildren(this.selectedParentPanel);
+    }
+    const currentPage = this.surveyJson.pages?.[this.selectedPageIndex];
+    return currentPage?.elements ?? null;
   }
 
   /**
@@ -235,13 +324,12 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
   moveQuestionUp(): void {
     if (this.selectedQuestionIndex <= 0) return;
 
-    const currentPage = this.surveyJson.pages?.[this.selectedPageIndex];
-    if (!currentPage?.elements) return;
+    const container = this.getSelectedContainer();
+    if (!container) return;
 
-    const questions = currentPage.elements;
-    const temp = questions[this.selectedQuestionIndex - 1];
-    questions[this.selectedQuestionIndex - 1] = questions[this.selectedQuestionIndex];
-    questions[this.selectedQuestionIndex] = temp;
+    const temp = container[this.selectedQuestionIndex - 1];
+    container[this.selectedQuestionIndex - 1] = container[this.selectedQuestionIndex];
+    container[this.selectedQuestionIndex] = temp;
     this.selectedQuestionIndex--;
     this.hasUnsavedChanges = true;
   }
@@ -250,17 +338,46 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
    * Move question down in the list
    */
   moveQuestionDown(): void {
-    const currentPage = this.surveyJson.pages?.[this.selectedPageIndex];
-    if (!currentPage?.elements) return;
+    const container = this.getSelectedContainer();
+    if (!container) return;
 
-    if (this.selectedQuestionIndex >= currentPage.elements.length - 1) return;
+    if (this.selectedQuestionIndex >= container.length - 1) return;
 
-    const questions = currentPage.elements;
-    const temp = questions[this.selectedQuestionIndex + 1];
-    questions[this.selectedQuestionIndex + 1] = questions[this.selectedQuestionIndex];
-    questions[this.selectedQuestionIndex] = temp;
+    const temp = container[this.selectedQuestionIndex + 1];
+    container[this.selectedQuestionIndex + 1] = container[this.selectedQuestionIndex];
+    container[this.selectedQuestionIndex] = temp;
     this.selectedQuestionIndex++;
     this.hasUnsavedChanges = true;
+  }
+
+  /**
+   * Navigate to the previous page
+   */
+  previousPage(): void {
+    if (this.selectedPageIndex > 0) {
+      this.selectedPageIndex--;
+      this.clearSelection();
+    }
+  }
+
+  /**
+   * Navigate to the next page
+   */
+  nextPage(): void {
+    const pageCount = this.surveyJson.pages?.length ?? 0;
+    if (this.selectedPageIndex < pageCount - 1) {
+      this.selectedPageIndex++;
+      this.clearSelection();
+    }
+  }
+
+  /**
+   * Clear the current question selection
+   */
+  private clearSelection(): void {
+    this.selectedQuestion = null;
+    this.selectedQuestionIndex = -1;
+    this.selectedParentPanel = null;
   }
 
   /**
@@ -277,8 +394,7 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
       elements: [],
     });
     this.selectedPageIndex = this.surveyJson.pages.length - 1;
-    this.selectedQuestion = null;
-    this.selectedQuestionIndex = -1;
+    this.clearSelection();
     this.hasUnsavedChanges = true;
   }
 
@@ -359,12 +475,9 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
    * Check if we can move the selected question down
    */
   get canMoveDown(): boolean {
-    const currentPage = this.surveyJson.pages?.[this.selectedPageIndex];
-    if (!currentPage?.elements) return false;
-    return (
-      this.selectedQuestionIndex >= 0 &&
-      this.selectedQuestionIndex < currentPage.elements.length - 1
-    );
+    const container = this.getSelectedContainer();
+    if (!container) return false;
+    return this.selectedQuestionIndex >= 0 && this.selectedQuestionIndex < container.length - 1;
   }
 
   /**

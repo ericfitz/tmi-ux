@@ -70,7 +70,6 @@ export type QuestionType =
   | 'checkbox'
   | 'boolean'
   | 'dropdown'
-  | 'rating'
   | 'panel'
   | 'paneldynamic';
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { catchError, delay, map, tap } from 'rxjs/operators';
 import { ApiService } from '@app/core/services/api.service';
 import { LoggerService } from '@app/core/services/logger.service';
@@ -348,7 +348,7 @@ export class SurveySubmissionService {
   private mockGetById(submissionId: string): Observable<SurveySubmission> {
     const submission = this.mockSubmissions.find(s => s.id === submissionId);
     if (!submission) {
-      throw new Error(`Submission not found: ${submissionId}`);
+      return throwError(() => new Error(`Submission not found: ${submissionId}`)).pipe(delay(100));
     }
     return of(submission).pipe(delay(100));
   }
@@ -387,12 +387,12 @@ export class SurveySubmissionService {
   ): Observable<SurveySubmission> {
     const index = this.mockSubmissions.findIndex(s => s.id === submissionId);
     if (index === -1) {
-      throw new Error(`Submission not found: ${submissionId}`);
+      return throwError(() => new Error(`Submission not found: ${submissionId}`)).pipe(delay(100));
     }
 
     const submission = this.mockSubmissions[index];
     if (submission.status !== 'draft') {
-      throw new Error('Can only update draft submissions');
+      return throwError(() => new Error('Can only update draft submissions')).pipe(delay(100));
     }
 
     submission.data = data;
@@ -409,12 +409,12 @@ export class SurveySubmissionService {
   private mockSubmit(submissionId: string): Observable<SurveySubmission> {
     const index = this.mockSubmissions.findIndex(s => s.id === submissionId);
     if (index === -1) {
-      throw new Error(`Submission not found: ${submissionId}`);
+      return throwError(() => new Error(`Submission not found: ${submissionId}`)).pipe(delay(100));
     }
 
     const submission = this.mockSubmissions[index];
     if (submission.status !== 'draft') {
-      throw new Error('Can only submit draft submissions');
+      return throwError(() => new Error('Can only submit draft submissions')).pipe(delay(100));
     }
 
     const now = new Date().toISOString();
@@ -434,12 +434,12 @@ export class SurveySubmissionService {
   private mockDeleteDraft(submissionId: string): Observable<void> {
     const index = this.mockSubmissions.findIndex(s => s.id === submissionId);
     if (index === -1) {
-      throw new Error(`Submission not found: ${submissionId}`);
+      return throwError(() => new Error(`Submission not found: ${submissionId}`)).pipe(delay(100));
     }
 
     const submission = this.mockSubmissions[index];
     if (submission.status !== 'draft') {
-      throw new Error('Can only delete draft submissions');
+      return throwError(() => new Error('Can only delete draft submissions')).pipe(delay(100));
     }
 
     this.mockSubmissions.splice(index, 1);
@@ -456,7 +456,7 @@ export class SurveySubmissionService {
   ): Observable<SurveySubmission> {
     const index = this.mockSubmissions.findIndex(s => s.id === submissionId);
     if (index === -1) {
-      throw new Error(`Submission not found: ${submissionId}`);
+      return throwError(() => new Error(`Submission not found: ${submissionId}`)).pipe(delay(100));
     }
 
     const submission = this.mockSubmissions[index];
@@ -483,7 +483,7 @@ export class SurveySubmissionService {
   ): Observable<SurveySubmission> {
     const index = this.mockSubmissions.findIndex(s => s.id === submissionId);
     if (index === -1) {
-      throw new Error(`Submission not found: ${submissionId}`);
+      return throwError(() => new Error(`Submission not found: ${submissionId}`)).pipe(delay(100));
     }
 
     const submission = this.mockSubmissions[index];
