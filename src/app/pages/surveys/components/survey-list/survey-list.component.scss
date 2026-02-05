@@ -1,0 +1,139 @@
+.survey-list-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .page-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+  }
+}
+
+.loading-container,
+.error-container,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  text-align: center;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+  }
+
+  p {
+    margin: 8px 0 16px;
+    color: var(--color-text-secondary);
+  }
+}
+
+.error-container mat-icon {
+  color: var(--color-error);
+}
+
+.survey-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+.survey-card {
+  display: flex;
+  flex-direction: column;
+
+  mat-card-header {
+    mat-icon[mat-card-avatar] {
+      background: var(--color-primary);
+      color: white;
+      border-radius: 50%;
+      padding: 8px;
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  mat-card-content {
+    flex: 1;
+    padding-top: 16px;
+  }
+
+  .template-description {
+    color: var(--color-text-secondary);
+    margin: 0 0 16px;
+    line-height: 1.5;
+  }
+
+  .drafts-section {
+    background: var(--color-surface-variant);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 16px;
+
+    h4 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    mat-list {
+      padding: 0;
+
+      .draft-item {
+        cursor: pointer;
+        border-radius: 4px;
+        margin: 4px 0;
+
+        &:hover {
+          background: var(--color-surface-hover);
+        }
+      }
+    }
+  }
+
+  mat-card-actions {
+    padding: 8px 16px 16px;
+    gap: 8px;
+  }
+}
+
+// Responsive adjustments
+@media (width <= 600px) {
+  .survey-list-container {
+    padding: 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .survey-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -135,11 +135,51 @@ export const routes: Routes = [
             /* webpackChunkName: "admin-addons" */ './pages/admin/addons/admin-addons.component'
           ).then(c => c.AdminAddonsComponent),
       },
+      {
+        path: 'surveys',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-surveys" */ './pages/admin/surveys/admin-surveys.component'
+          ).then(c => c.AdminSurveysComponent),
+        canActivate: [adminGuard],
+      },
+      {
+        path: 'surveys/new',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-survey-builder" */ './pages/admin/surveys/components/template-builder/template-builder.component'
+          ).then(c => c.TemplateBuilderComponent),
+        canActivate: [adminGuard],
+      },
+      {
+        path: 'surveys/:templateId',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-survey-builder" */ './pages/admin/surveys/components/template-builder/template-builder.component'
+          ).then(c => c.TemplateBuilderComponent),
+        canActivate: [adminGuard],
+      },
     ],
   },
   {
     path: 'tm',
     loadChildren: () => import('./pages/tm/tm.routes').then(m => m.TM_ROUTES),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'surveys',
+    loadChildren: () =>
+      import(/* webpackChunkName: "surveys" */ './pages/surveys/surveys.routes').then(
+        m => m.SURVEY_ROUTES,
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'triage',
+    loadChildren: () =>
+      import(/* webpackChunkName: "triage" */ './pages/triage/triage.routes').then(
+        m => m.TRIAGE_ROUTES,
+      ),
     canActivate: [authGuard],
   },
   {

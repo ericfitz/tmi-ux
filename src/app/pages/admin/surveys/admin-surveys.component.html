@@ -1,0 +1,157 @@
+<div class="admin-surveys-container">
+  <div class="page-header">
+    <h1 class="page-title">Survey Templates</h1>
+    <button mat-flat-button color="primary" (click)="createTemplate()">
+      <mat-icon>add</mat-icon>
+      Create Template
+    </button>
+  </div>
+
+  <div class="filters-row">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search templates</mat-label>
+      <input
+        matInput
+        [(ngModel)]="searchText"
+        (input)="onFilterChange()"
+        placeholder="Search by name..."
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="status-filter">
+      <mat-label>Status</mat-label>
+      <mat-select [(value)]="statusFilter" (selectionChange)="onFilterChange()">
+        @for (option of statusOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading templates...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-stroked-button (click)="loadTemplates()">
+        <mat-icon>refresh</mat-icon>
+        Retry
+      </button>
+    </div>
+  } @else if (filteredTemplates.length === 0) {
+    <div class="empty-state">
+      <mat-icon>assignment</mat-icon>
+      @if (templates.length === 0) {
+        <h2>No Templates Yet</h2>
+        <p>Create your first survey template to get started.</p>
+        <button mat-flat-button color="primary" (click)="createTemplate()">
+          <mat-icon>add</mat-icon>
+          Create Template
+        </button>
+      } @else {
+        <h2>No Matching Templates</h2>
+        <p>Try adjusting your filters.</p>
+      }
+    </div>
+  } @else {
+    <div class="templates-table-container">
+      <table mat-table [dataSource]="filteredTemplates" class="templates-table">
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let template">
+            <div class="template-info">
+              <span class="template-name">{{ template.name }}</span>
+              @if (template.description) {
+                <span class="template-description">{{ template.description }}</span>
+              }
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let template">
+            <mat-chip [highlighted]="template.status === 'active'">
+              <mat-icon matChipIcon>{{ getStatusInfo(template.status).icon }}</mat-icon>
+              {{ getStatusInfo(template.status).label }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Version Column -->
+        <ng-container matColumnDef="version">
+          <th mat-header-cell *matHeaderCellDef>Version</th>
+          <td mat-cell *matCellDef="let template">v{{ template.current_version }}</td>
+        </ng-container>
+
+        <!-- Modified Column -->
+        <ng-container matColumnDef="modified">
+          <th mat-header-cell *matHeaderCellDef>Last Modified</th>
+          <td mat-cell *matCellDef="let template">
+            {{ formatDate(template.modified_at) }}
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let template">
+            <button mat-icon-button (click)="editTemplate(template)" matTooltip="Edit template">
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            @if (template.status !== 'archived') {
+              <button
+                mat-icon-button
+                (click)="toggleStatus(template)"
+                [matTooltip]="template.status === 'active' ? 'Deactivate' : 'Activate'"
+              >
+                <mat-icon>{{ template.status === 'active' ? 'pause' : 'play_arrow' }}</mat-icon>
+              </button>
+            }
+
+            <button mat-icon-button [matMenuTriggerFor]="moreMenu" matTooltip="More actions">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+
+            <mat-menu #moreMenu="matMenu">
+              <button mat-menu-item (click)="cloneTemplate(template)">
+                <mat-icon>content_copy</mat-icon>
+                <span>Clone</span>
+              </button>
+              @if (template.status !== 'archived') {
+                <button mat-menu-item (click)="archiveTemplate(template)">
+                  <mat-icon>archive</mat-icon>
+                  <span>Archive</span>
+                </button>
+              }
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          class="template-row"
+          (click)="editTemplate(row)"
+        ></tr>
+      </table>
+    </div>
+
+    <div class="templates-summary">
+      <span
+        >{{ filteredTemplates.length }} template{{
+          filteredTemplates.length !== 1 ? 's' : ''
+        }}</span
+      >
+    </div>
+  }
+</div>

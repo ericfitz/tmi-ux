@@ -55,6 +55,12 @@ export class AdminComponent {
       icon: 'extension',
       action: 'addons',
     },
+    {
+      title: 'admin.sections.surveys.title',
+      description: 'admin.sections.surveys.description',
+      icon: 'assignment',
+      action: 'surveys',
+    },
   ];
 
   onSectionClick(action: string): void {

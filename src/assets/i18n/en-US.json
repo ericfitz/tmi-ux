@@ -189,6 +189,10 @@
         "description": "View and manage user accounts",
         "title": "{{admin.users.title}}"
       },
+      "surveys": {
+        "description": "Create and manage survey templates",
+        "title": "Survey Templates"
+      },
       "webhooks": {
         "description": "Install and configure webhook integrations",
         "title": "{{admin.webhooks.title}}"
@@ -689,6 +693,39 @@
     },
     "title": "Session Expiring Soon"
   },
+  "surveys": {
+    "title": "Surveys",
+    "browse": "Browse Surveys",
+    "mySubmissions": "My Submissions",
+    "startNew": "Start Survey",
+    "continueDraft": "Continue Draft",
+    "submitSurvey": "Submit Survey",
+    "saveDraft": "Save Draft",
+    "viewSubmission": "View Submission",
+    "noSurveys": "No surveys available",
+    "noSubmissions": "You haven't submitted any surveys yet",
+    "status": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "inReview": "In Review",
+      "pendingTriage": "Pending Triage"
+    },
+    "autoSave": {
+      "saving": "Saving...",
+      "saved": "Saved",
+      "error": "Save failed"
+    },
+    "confirmation": {
+      "title": "Survey Submitted",
+      "message": "Your survey has been submitted successfully.",
+      "viewSubmissions": "View My Submissions",
+      "backToSurveys": "Back to Surveys"
+    },
+    "fill": {
+      "title": "Fill Survey",
+      "submitConfirm": "Are you sure you want to submit? You won't be able to edit your responses after submitting."
+    }
+  },
   "threatEditor": {
     "createNewThreat": "Create New Threat",
     "notAssociatedWithAsset": "Not associated with an asset",
@@ -907,6 +944,30 @@
       "title": "8. Governing Law"
     },
     "title": "Terms of Service"
+  },
+  "triage": {
+    "title": "Triage",
+    "submissions": "Submissions",
+    "queue": "Triage Queue",
+    "viewDetails": "View Details",
+    "changeStatus": "Change Status",
+    "createTm": "Create Threat Model",
+    "markInReview": "Mark In Review",
+    "markPendingTriage": "Mark Pending Triage",
+    "returnToSubmitted": "Return to Submitted",
+    "noSubmissions": "No submissions to triage",
+    "bulkActions": "Bulk Actions",
+    "filters": {
+      "allStatuses": "All Statuses",
+      "allTemplates": "All Templates",
+      "clearFilters": "Clear Filters"
+    },
+    "detail": {
+      "submissionDetails": "Submission Details",
+      "surveyResponses": "Survey Responses",
+      "noResponses": "No responses recorded",
+      "statusTimeline": "Status Timeline"
+    }
   },
   "userPreferences": {
     "administration": {

@@ -1,0 +1,190 @@
+<div class="triage-detail-container">
+  @if (isLoading) {
+    <div class="loading-container">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Loading submission...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-container">
+      <mat-icon>error_outline</mat-icon>
+      <h2>Error</h2>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" (click)="goBack()">Back to Triage</button>
+    </div>
+  } @else if (submission) {
+    <!-- Header -->
+    <div class="detail-header">
+      <button mat-icon-button (click)="goBack()" matTooltip="Back to triage">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-title">
+        <h1>{{ submission.template_name }}</h1>
+        <span class="submission-meta">
+          Submitted by {{ submission.user_display_name || submission.user_email }}
+        </span>
+      </div>
+      <div class="header-actions">
+        @for (status of availableStatuses; track status.value) {
+          <button
+            mat-stroked-button
+            (click)="updateStatus(status.value)"
+            [disabled]="isUpdatingStatus"
+          >
+            <mat-icon>{{ status.icon }}</mat-icon>
+            {{ status.label }}
+          </button>
+        }
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="createThreatModel()"
+          [disabled]="submission.status === 'draft'"
+        >
+          <mat-icon>security</mat-icon>
+          Create Threat Model
+        </button>
+      </div>
+    </div>
+
+    <div class="detail-content">
+      <!-- Main content -->
+      <div class="content-main">
+        <!-- Status Timeline -->
+        <mat-card class="timeline-card">
+          <mat-card-content>
+            <div class="status-timeline">
+              @for (entry of statusTimeline; track entry.status) {
+                <div
+                  class="timeline-entry"
+                  [class.active]="entry.isActive"
+                  [class.completed]="entry.isCompleted"
+                >
+                  <div class="timeline-dot">
+                    @if (entry.isCompleted) {
+                      <mat-icon>check_circle</mat-icon>
+                    } @else if (entry.isActive) {
+                      <mat-icon>radio_button_checked</mat-icon>
+                    } @else {
+                      <mat-icon>radio_button_unchecked</mat-icon>
+                    }
+                  </div>
+                  <div class="timeline-label">
+                    <span class="timeline-status">{{ entry.label }}</span>
+                    @if (entry.timestamp) {
+                      <span class="timeline-timestamp">{{ entry.timestamp | date: 'short' }}</span>
+                    }
+                  </div>
+                </div>
+                @if (!$last) {
+                  <div class="timeline-connector" [class.completed]="entry.isCompleted"></div>
+                }
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Survey Responses -->
+        <mat-card class="responses-card">
+          <mat-card-header>
+            <mat-card-title>Survey Responses</mat-card-title>
+            <mat-card-subtitle
+              >{{ submission.template_name }} v{{ submission.template_version }}</mat-card-subtitle
+            >
+          </mat-card-header>
+          <mat-card-content>
+            @if (formattedResponses.length === 0) {
+              <div class="empty-responses">
+                <mat-icon>quiz</mat-icon>
+                <p>No responses recorded</p>
+              </div>
+            } @else {
+              <div class="responses-list">
+                @for (response of formattedResponses; track response.name) {
+                  <div class="response-item">
+                    <div class="response-question">{{ response.question }}</div>
+                    <div class="response-answer">{{ response.answer }}</div>
+                  </div>
+                }
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="content-sidebar">
+        <!-- Submission Info -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>Submission Details</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Status</span>
+                <mat-chip [ngClass]="getStatusClass(submission.status)">
+                  {{ getStatusLabel(submission.status) }}
+                </mat-chip>
+              </div>
+
+              <div class="info-item">
+                <span class="info-label">Submitter</span>
+                <span class="info-value">
+                  {{ submission.user_display_name || submission.user_email }}
+                </span>
+              </div>
+
+              @if (submission.user_display_name) {
+                <div class="info-item">
+                  <span class="info-label">Email</span>
+                  <span class="info-value">{{ submission.user_email }}</span>
+                </div>
+              }
+
+              <div class="info-item">
+                <span class="info-label">Template</span>
+                <span class="info-value">{{ submission.template_name }}</span>
+              </div>
+
+              <div class="info-item">
+                <span class="info-label">Version</span>
+                <span class="info-value">v{{ submission.template_version }}</span>
+              </div>
+
+              <div class="info-item">
+                <span class="info-label">Created</span>
+                <span class="info-value">{{ submission.created_at | date: 'medium' }}</span>
+              </div>
+
+              @if (submission.submitted_at) {
+                <div class="info-item">
+                  <span class="info-label">Submitted</span>
+                  <span class="info-value">{{ submission.submitted_at | date: 'medium' }}</span>
+                </div>
+              }
+
+              <div class="info-item">
+                <span class="info-label">Last Modified</span>
+                <span class="info-value">{{ submission.modified_at | date: 'medium' }}</span>
+              </div>
+
+              @if (submission.threat_model_id) {
+                <div class="info-item">
+                  <span class="info-label">Threat Model</span>
+                  <a [routerLink]="['/tm', submission.threat_model_id]" class="tm-link">
+                    View Threat Model
+                  </a>
+                </div>
+              }
+
+              <div class="info-item">
+                <span class="info-label">Submission ID</span>
+                <span class="info-value monospace">{{ submission.id }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  }
+</div>

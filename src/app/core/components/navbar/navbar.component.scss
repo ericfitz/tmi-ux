@@ -31,6 +31,30 @@
   font-size: var(--font-size-md);
 }
 
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 16px;
+
+  .nav-link {
+    font-size: var(--font-size-sm);
+    opacity: 0.85;
+
+    mat-icon {
+      margin-right: 4px;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    &.active-link {
+      opacity: 1;
+      font-weight: var(--font-weight-medium);
+    }
+  }
+}
+
 .language-selector {
   margin-left: 8px;
 

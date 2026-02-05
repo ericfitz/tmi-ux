@@ -1,0 +1,204 @@
+.survey-fill-container {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 64px); // Account for toolbar
+  background: var(--color-surface);
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 48px;
+  text-align: center;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin: 8px 0 24px;
+    color: var(--color-text-secondary);
+  }
+}
+
+.success-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 48px;
+  text-align: center;
+
+  .success-icon {
+    font-size: 72px;
+    width: 72px;
+    height: 72px;
+    color: var(--color-success, #4caf50);
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    margin: 0 0 16px;
+    font-size: 28px;
+    font-weight: 500;
+  }
+
+  p {
+    margin: 0 0 32px;
+    color: var(--color-text-secondary);
+    max-width: 400px;
+  }
+
+  .success-actions {
+    display: flex;
+    gap: 16px;
+  }
+}
+
+.survey-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 24px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-divider);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  .survey-title {
+    flex: 1;
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 500;
+    }
+
+    .survey-description {
+      margin: 4px 0 0;
+      font-size: 14px;
+      color: var(--color-text-secondary);
+    }
+  }
+
+  .save-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+
+    .error-text {
+      color: var(--color-error);
+    }
+  }
+}
+
+.survey-content {
+  flex: 1;
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+
+  // SurveyJS customizations
+  :host ::ng-deep {
+    .sd-root-modern {
+      // Ensure survey fills the container
+      min-height: auto;
+    }
+
+    .sd-body {
+      padding: 0;
+    }
+
+    .sd-page {
+      padding: 0;
+    }
+
+    // Style the navigation buttons
+    .sd-btn {
+      border-radius: 4px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .sd-btn--action {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    // Progress bar styling
+    .sd-progress {
+      background: var(--color-surface-variant);
+    }
+
+    .sd-progress__bar {
+      background: var(--color-primary);
+    }
+  }
+}
+
+.survey-footer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-divider);
+}
+
+// Responsive adjustments
+@media (width <= 600px) {
+  .survey-header {
+    flex-wrap: wrap;
+    padding: 12px 16px;
+
+    .survey-title {
+      order: 2;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .save-status {
+      order: 1;
+      margin-left: auto;
+    }
+  }
+
+  .survey-content {
+    padding: 16px;
+  }
+
+  .survey-footer {
+    padding: 12px 16px;
+  }
+
+  .success-container .success-actions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 300px;
+
+    button {
+      width: 100%;
+    }
+  }
+}

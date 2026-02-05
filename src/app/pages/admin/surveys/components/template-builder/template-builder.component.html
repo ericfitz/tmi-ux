@@ -1,0 +1,238 @@
+<div class="template-builder-container">
+  <!-- Header -->
+  <div class="builder-header">
+    <button mat-icon-button (click)="goBack()" matTooltip="Back to templates">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="header-title">
+      <h1>{{ templateId ? 'Edit Template' : 'Create Template' }}</h1>
+      @if (template) {
+        <span class="template-status">{{ template.status }}</span>
+      }
+    </div>
+    <div class="header-actions">
+      @if (hasUnsavedChanges) {
+        <span class="unsaved-indicator">Unsaved changes</span>
+      }
+      <button mat-raised-button color="primary" (click)="save()" [disabled]="isSaving">
+        @if (isSaving) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          <ng-container>
+            <mat-icon>save</mat-icon>
+            Save
+          </ng-container>
+        }
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading-container">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Loading template...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-container">
+      <mat-icon>error_outline</mat-icon>
+      <h2>Error</h2>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" (click)="goBack()">Back to Templates</button>
+    </div>
+  } @else {
+    <div class="builder-content">
+      <!-- Survey Metadata -->
+      <mat-card class="metadata-card">
+        <mat-card-content>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Survey Title</mat-label>
+            <input
+              matInput
+              [value]="surveyJson.title ?? ''"
+              (input)="updateSurveyTitle($any($event.target).value)"
+              placeholder="Enter survey title"
+            />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea
+              matInput
+              [value]="surveyJson.description ?? ''"
+              (input)="updateSurveyDescription($any($event.target).value)"
+              placeholder="Enter survey description"
+              rows="2"
+            ></textarea>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="builder-main">
+        <!-- Question Palette -->
+        <mat-card class="palette-card">
+          <mat-card-header>
+            <mat-card-title>Question Types</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="question-palette">
+              @for (qType of questionTypes; track qType.type) {
+                <button
+                  mat-stroked-button
+                  class="palette-item"
+                  (click)="addQuestion(qType.type)"
+                  [matTooltip]="qType.description"
+                >
+                  <mat-icon>{{ qType.icon }}</mat-icon>
+                  <span>{{ qType.label }}</span>
+                </button>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Canvas / Question List -->
+        <mat-card class="canvas-card">
+          <mat-card-header>
+            <mat-card-title>
+              Questions
+              @if (surveyJson.pages && surveyJson.pages.length > 1) {
+                <span class="page-indicator">
+                  (Page {{ selectedPageIndex + 1 }} of {{ surveyJson.pages.length }})
+                </span>
+              }
+            </mat-card-title>
+            <div class="canvas-actions">
+              <button mat-icon-button (click)="addPage()" matTooltip="Add page">
+                <mat-icon>add_box</mat-icon>
+              </button>
+            </div>
+          </mat-card-header>
+          <mat-card-content>
+            @if (currentPageElements.length === 0) {
+              <div class="empty-canvas">
+                <mat-icon>add_circle_outline</mat-icon>
+                <p>No questions yet</p>
+                <p class="hint">Click a question type from the palette to add it</p>
+              </div>
+            } @else {
+              <div class="question-list">
+                @for (question of currentPageElements; track question.name; let i = $index) {
+                  <div
+                    class="question-item"
+                    [class.selected]="selectedQuestionIndex === i"
+                    (click)="selectQuestion(question, i)"
+                  >
+                    <mat-icon class="question-icon">{{ getQuestionIcon(question.type) }}</mat-icon>
+                    <div class="question-info">
+                      <span class="question-name">{{ question.name }}</span>
+                      <span class="question-title">{{ question.title }}</span>
+                    </div>
+                    <div class="question-actions">
+                      <button
+                        mat-icon-button
+                        (click)="moveQuestionUp(); $event.stopPropagation()"
+                        [disabled]="i === 0"
+                      >
+                        <mat-icon>arrow_upward</mat-icon>
+                      </button>
+                      <button
+                        mat-icon-button
+                        (click)="moveQuestionDown(); $event.stopPropagation()"
+                        [disabled]="i === currentPageElements.length - 1"
+                      >
+                        <mat-icon>arrow_downward</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Question Editor -->
+        <mat-card class="editor-card">
+          <mat-card-header>
+            <mat-card-title>Question Properties</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @if (selectedQuestion) {
+              <div class="question-editor">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Name (ID)</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="selectedQuestion.name"
+                    (ngModelChange)="hasUnsavedChanges = true"
+                  />
+                  <mat-hint>Unique identifier for this question</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Title</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="selectedQuestion.title"
+                    (ngModelChange)="hasUnsavedChanges = true"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Description</mat-label>
+                  <textarea
+                    matInput
+                    [(ngModel)]="selectedQuestion.description"
+                    (ngModelChange)="hasUnsavedChanges = true"
+                    rows="2"
+                  ></textarea>
+                </mat-form-field>
+
+                <div class="checkbox-row">
+                  <mat-checkbox
+                    [(ngModel)]="selectedQuestion.isRequired"
+                    (ngModelChange)="hasUnsavedChanges = true"
+                  >
+                    Required
+                  </mat-checkbox>
+                </div>
+
+                @if (['radiogroup', 'checkbox', 'dropdown'].includes(selectedQuestion.type)) {
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Choices (one per line)</mat-label>
+                    <textarea
+                      matInput
+                      [ngModel]="getChoicesText()"
+                      (ngModelChange)="updateChoicesFromText($event)"
+                      rows="4"
+                    ></textarea>
+                  </mat-form-field>
+                }
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Visible If</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="selectedQuestion.visibleIf"
+                    (ngModelChange)="hasUnsavedChanges = true"
+                  />
+                  <mat-hint>e.g., {{ '{' }}questionName{{ '}' }} = 'value'</mat-hint>
+                </mat-form-field>
+
+                <div class="editor-actions">
+                  <button mat-raised-button color="warn" (click)="deleteSelectedQuestion()">
+                    <mat-icon>delete</mat-icon>
+                    Delete Question
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <div class="no-selection">
+                <mat-icon>touch_app</mat-icon>
+                <p>Select a question to edit its properties</p>
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  }
+</div>

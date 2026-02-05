@@ -32,6 +32,20 @@
       </mat-menu>
     </div>
 
+    <!-- Center: Navigation links -->
+    @if (isAuthenticated) {
+      <div class="navbar-nav">
+        <button mat-button routerLink="/surveys" routerLinkActive="active-link" class="nav-link">
+          <mat-icon>assignment</mat-icon>
+          <span [transloco]="'surveys.title'">Surveys</span>
+        </button>
+        <button mat-button routerLink="/triage" routerLinkActive="active-link" class="nav-link">
+          <mat-icon>inbox</mat-icon>
+          <span [transloco]="'triage.title'">Triage</span>
+        </button>
+      </div>
+    }
+
     <!-- Right side: Server status, User info and logout button -->
     <div class="navbar-right">
       <!-- Feedback button -->

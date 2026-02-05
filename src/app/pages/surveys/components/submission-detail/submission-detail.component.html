@@ -1,0 +1,89 @@
+<div class="submission-detail-container">
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading submission...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-stroked-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Submissions
+      </button>
+    </div>
+  } @else if (submission) {
+    <!-- Header -->
+    <div class="detail-header">
+      <div class="header-left">
+        <button mat-icon-button (click)="goBack()" matTooltip="Back to submissions">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div class="header-info">
+          <h1>{{ surveyJson?.title || submission.template_name || 'Survey Submission' }}</h1>
+          <div class="header-meta">
+            <mat-chip [highlighted]="submission.status !== 'draft'">
+              <mat-icon matChipIcon>{{ getStatusInfo(submission.status).icon }}</mat-icon>
+              {{ getStatusInfo(submission.status).label }}
+            </mat-chip>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submission info card -->
+    <mat-card class="submission-info-card">
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Submitted By</span>
+            <span class="info-value">{{
+              submission.user_display_name || submission.user_email
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Created</span>
+            <span class="info-value">{{ formatDate(submission.created_at) }}</span>
+          </div>
+          @if (submission.submitted_at) {
+            <div class="info-item">
+              <span class="info-label">Submitted</span>
+              <span class="info-value">{{ formatDate(submission.submitted_at) }}</span>
+            </div>
+          }
+          @if (submission.reviewed_at) {
+            <div class="info-item">
+              <span class="info-label">Review Started</span>
+              <span class="info-value">{{ formatDate(submission.reviewed_at) }}</span>
+            </div>
+          }
+          @if (submission.threat_model_id) {
+            <div class="info-item">
+              <span class="info-label">Threat Model</span>
+              <a [routerLink]="['/tm', submission.threat_model_id]" class="info-link">
+                <mat-icon>open_in_new</mat-icon>
+                View Threat Model
+              </a>
+            </div>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Survey responses -->
+    <mat-card class="responses-card">
+      <mat-card-header>
+        <mat-card-title>Survey Responses</mat-card-title>
+        <mat-card-subtitle>Version {{ submission.template_version }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (surveyModel) {
+          <div class="survey-display">
+            <survey [model]="surveyModel"></survey>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>
