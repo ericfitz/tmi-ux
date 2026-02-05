@@ -345,6 +345,22 @@ button:not([mat-icon-button]) mat-icon {
     gap: 16px;
   }
 
+  .tm-field-mapping {
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-divider);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    h4 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+    }
+  }
+
   .editor-actions {
     margin-top: 16px;
     padding-top: 16px;

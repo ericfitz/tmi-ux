@@ -11,6 +11,7 @@ import {
   SurveyJsonSchema,
   SurveyQuestion,
   QuestionType,
+  TmFieldPath,
 } from '@app/types/survey.types';
 
 /**
@@ -111,6 +112,21 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
       icon: 'dynamic_form',
       description: 'Repeatable panel group',
     },
+  ];
+
+  /** Available TM field paths for question mapping */
+  tmFieldOptions: { value: TmFieldPath; label: string }[] = [
+    { value: 'name', label: 'Threat Model Name' },
+    { value: 'description', label: 'Threat Model Description' },
+    { value: 'issue_uri', label: 'Issue Tracking URL' },
+    { value: 'metadata.{key}', label: 'Custom Metadata' },
+    { value: 'assets[].name', label: 'Asset Name' },
+    { value: 'assets[].description', label: 'Asset Description' },
+    { value: 'assets[].type', label: 'Asset Type' },
+    { value: 'documents[].name', label: 'Document Name' },
+    { value: 'documents[].uri', label: 'Document URL' },
+    { value: 'repositories[].name', label: 'Repository Name' },
+    { value: 'repositories[].uri', label: 'Repository URL' },
   ];
 
   constructor(
@@ -517,6 +533,41 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
   updateChoicesFromText(text: string): void {
     if (!this.selectedQuestion) return;
     this.selectedQuestion.choices = text.split('\n').filter(c => c.trim());
+    this.hasUnsavedChanges = true;
+  }
+
+  /**
+   * Get the currently selected TM field path, or empty string for "None"
+   */
+  getSelectedTmFieldPath(): string {
+    return this.selectedQuestion?.mapsToTmField?.path ?? '';
+  }
+
+  /**
+   * Update the TM field mapping when the dropdown changes
+   */
+  updateTmFieldPath(path: string): void {
+    if (!this.selectedQuestion) return;
+
+    if (!path) {
+      delete this.selectedQuestion.mapsToTmField;
+    } else {
+      this.selectedQuestion.mapsToTmField = {
+        path: path as TmFieldPath,
+        ...(path === 'metadata.{key}'
+          ? { metadataKey: this.selectedQuestion.mapsToTmField?.metadataKey ?? '' }
+          : {}),
+      };
+    }
+    this.hasUnsavedChanges = true;
+  }
+
+  /**
+   * Update the metadata key for metadata.{key} mappings
+   */
+  updateTmFieldMetadataKey(key: string): void {
+    if (!this.selectedQuestion?.mapsToTmField) return;
+    this.selectedQuestion.mapsToTmField.metadataKey = key;
     this.hasUnsavedChanges = true;
   }
 }

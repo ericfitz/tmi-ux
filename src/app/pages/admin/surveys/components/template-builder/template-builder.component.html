@@ -331,6 +331,35 @@
                   <mat-hint>e.g., {{ '{' }}questionName{{ '}' }} = 'value'</mat-hint>
                 </mat-form-field>
 
+                <div class="tm-field-mapping">
+                  <h4>Threat Model Field Mapping</h4>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Maps to TM Field</mat-label>
+                    <mat-select
+                      [ngModel]="getSelectedTmFieldPath()"
+                      (ngModelChange)="updateTmFieldPath($event)"
+                    >
+                      <mat-option value="">None</mat-option>
+                      @for (option of tmFieldOptions; track option.value) {
+                        <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                      }
+                    </mat-select>
+                    <mat-hint>Link this answer to a threat model field</mat-hint>
+                  </mat-form-field>
+
+                  @if (selectedQuestion.mapsToTmField?.path === 'metadata.{key}') {
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>Metadata Key</mat-label>
+                      <input
+                        matInput
+                        [ngModel]="selectedQuestion.mapsToTmField?.metadataKey ?? ''"
+                        (ngModelChange)="updateTmFieldMetadataKey($event)"
+                      />
+                      <mat-hint>Key name for the metadata entry</mat-hint>
+                    </mat-form-field>
+                  }
+                </div>
+
                 <div class="editor-actions">
                   <button mat-raised-button color="warn" (click)="deleteSelectedQuestion()">
                     <mat-icon>delete</mat-icon>
