@@ -198,6 +198,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
       isCompleted: false,
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- SurveyJS Model.data is typed as any
     this.draftService.queueSave(this.submissionId, this.surveyModel.data, uiState);
   }
 
@@ -218,6 +219,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
 
     // Save immediately, then submit
     this.draftService
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- SurveyJS Model.data is typed as any
       .saveNow(this.submissionId, this.surveyModel.data, uiState)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -268,6 +270,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
     };
 
     this.draftService
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- SurveyJS Model.data is typed as any
       .saveNow(this.submissionId, this.surveyModel.data, uiState)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
