@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -86,6 +86,8 @@
     "pdf-lib": "^1.17.1",
     "prismjs": "^1.30.0",
     "rxjs": "~7.8.2",
+    "survey-angular-ui": "^2.5.9",
+    "survey-core": "^2.5.9",
     "svgo": "^4.0.0",
     "tslib": "^2.8.1",
     "uuid": "^13.0.0",
