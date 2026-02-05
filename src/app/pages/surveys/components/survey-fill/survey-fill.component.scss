@@ -65,7 +65,7 @@
 
 .survey-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 16px;
   padding: 16px 24px;
   background: var(--color-surface);
@@ -164,6 +164,13 @@
   padding: 16px 24px;
   background: var(--color-surface);
   border-top: 1px solid var(--color-divider);
+}
+
+// Button icon alignment
+/* stylelint-disable-next-line no-descending-specificity */
+button mat-icon {
+  vertical-align: middle;
+  margin-right: 4px;
 }
 
 // Responsive adjustments

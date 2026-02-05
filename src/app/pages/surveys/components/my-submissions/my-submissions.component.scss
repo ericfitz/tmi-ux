@@ -130,6 +130,13 @@
   color: var(--color-text-secondary);
 }
 
+// Button icon alignment
+/* stylelint-disable-next-line no-descending-specificity */
+button mat-icon {
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
 // Responsive adjustments
 @media (width <= 768px) {
   .my-submissions-container {

@@ -34,7 +34,7 @@
 
   .header-left {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
   }
 
@@ -165,6 +165,13 @@
       }
     }
   }
+}
+
+// Button icon alignment
+/* stylelint-disable-next-line no-descending-specificity */
+button mat-icon {
+  vertical-align: middle;
+  margin-right: 4px;
 }
 
 // Responsive adjustments

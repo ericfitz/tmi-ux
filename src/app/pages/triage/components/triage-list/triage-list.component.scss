@@ -33,7 +33,7 @@
   display: flex;
   gap: 16px;
   margin-bottom: 24px;
-  align-items: flex-start;
+  align-items: center;
 
   .search-field {
     flex: 1;
@@ -167,6 +167,13 @@
     --mdc-chip-label-text-color: #2e7d32;
     --mdc-chip-elevated-container-color: #e8f5e9;
   }
+}
+
+// Button icon alignment
+/* stylelint-disable-next-line no-descending-specificity */
+button mat-icon {
+  vertical-align: middle;
+  margin-right: 4px;
 }
 
 .loading-overlay {
