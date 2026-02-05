@@ -91,6 +91,58 @@ export const SECURITY_INTAKE_SURVEY: SurveyJsonSchema = {
       ],
     },
     {
+      name: 'port_matrix',
+      title: 'Port Matrix',
+      elements: [
+        {
+          type: 'paneldynamic',
+          name: 'network_flows',
+          title: 'Network Flows',
+          description: 'Document the network flows for your project',
+          panelAddText: 'Add Network Flow',
+          panelRemoveText: 'Remove',
+          minPanelCount: 1,
+          maxPanelCount: 50,
+          templateElements: [
+            {
+              type: 'text',
+              name: 'flow_number',
+              title: 'Network Flow Number',
+              inputType: 'number',
+              isRequired: true,
+            },
+            {
+              type: 'text',
+              name: 'purpose',
+              title: 'Purpose',
+              isRequired: true,
+            },
+            {
+              type: 'text',
+              name: 'security_rule_name',
+              title: 'Security Rule Name',
+              isRequired: true,
+            },
+            {
+              type: 'boolean',
+              name: 'internet_routable',
+              title: 'Internet Routable',
+            },
+            {
+              type: 'radiogroup',
+              name: 'direction',
+              title: 'Direction',
+              isRequired: true,
+              choices: [
+                { value: 'ingress', text: 'Ingress' },
+                { value: 'egress', text: 'Egress' },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
       name: 'technical_details',
       title: 'Technical Details',
       elements: [
