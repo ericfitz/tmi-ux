@@ -46,8 +46,8 @@
   }
 }
 
-// Button icon alignment
-button mat-icon {
+// Button icon alignment (exclude icon-only buttons)
+button:not([mat-icon-button]) mat-icon {
   vertical-align: middle;
   margin-right: 4px;
 }
@@ -172,6 +172,25 @@ button mat-icon {
     }
   }
 
+  .canvas-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+
+    .mat-mdc-icon-button {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+
+      mat-icon {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+
   mat-card-content {
     padding: 16px;
   }
@@ -273,15 +292,26 @@ button mat-icon {
 
   .question-actions {
     display: flex;
+    align-items: center;
     gap: 4px;
 
-    button {
+    .mat-mdc-icon-button {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
       opacity: 0;
       transition: opacity 0.2s ease;
+
+      mat-icon {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+      }
     }
   }
 
-  &:hover .question-actions button {
+  &:hover .question-actions .mat-mdc-icon-button {
     opacity: 1;
   }
 }

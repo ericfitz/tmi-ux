@@ -381,6 +381,21 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Delete the current page from the survey
+   */
+  deletePage(): void {
+    const pages = this.surveyJson.pages;
+    if (!pages || pages.length <= 1) return;
+
+    pages.splice(this.selectedPageIndex, 1);
+    if (this.selectedPageIndex >= pages.length) {
+      this.selectedPageIndex = pages.length - 1;
+    }
+    this.clearSelection();
+    this.hasUnsavedChanges = true;
+  }
+
+  /**
    * Add a new page to the survey
    */
   addPage(): void {

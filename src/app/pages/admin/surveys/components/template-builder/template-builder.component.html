@@ -122,6 +122,15 @@
               <button mat-icon-button (click)="addPage()" matTooltip="Add page">
                 <mat-icon>add_box</mat-icon>
               </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deletePage()"
+                [disabled]="!surveyJson.pages || surveyJson.pages.length <= 1"
+                matTooltip="Delete page"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
             </div>
           </mat-card-header>
           <mat-card-content>
