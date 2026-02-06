@@ -8,27 +8,27 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
-import { SurveySubmissionService } from '../../../surveys/services/survey-submission.service';
+import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
 import { SurveyTemplateService } from '../../../surveys/services/survey-template.service';
 import {
-  SurveySubmission,
-  SurveyTemplate,
-  SubmissionStatus,
-  SurveySubmissionFilter,
+  SurveyResponseListItem,
+  SurveyTemplateListItem,
+  ResponseStatus,
+  SurveyResponseFilter,
 } from '@app/types/survey.types';
 
 /**
  * Filter state for triage list
  */
 interface TriageFilters {
-  status: SubmissionStatus | 'all';
+  status: ResponseStatus | 'all';
   templateId: string | null;
   searchTerm: string;
 }
 
 /**
- * Triage list component for viewing and managing all survey submissions
- * Used by triage team to review and process submissions
+ * Triage list component for viewing and managing all survey responses
+ * Used by triage team to review and process responses
  */
 @Component({
   selector: 'app-triage-list',
@@ -44,16 +44,16 @@ export class TriageListComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   /** Table data source */
-  dataSource = new MatTableDataSource<SurveySubmission>([]);
+  dataSource = new MatTableDataSource<SurveyResponseListItem>([]);
 
   /** Selection model for bulk actions */
-  selection = new SelectionModel<SurveySubmission>(true, []);
+  selection = new SelectionModel<SurveyResponseListItem>(true, []);
 
   /** Displayed columns */
   displayedColumns = ['select', 'submitter', 'template', 'submitted_at', 'status', 'actions'];
 
   /** Available templates for filtering */
-  templates: SurveyTemplate[] = [];
+  templates: SurveyTemplateListItem[] = [];
 
   /** Current filters */
   filters: TriageFilters = {
@@ -63,16 +63,17 @@ export class TriageListComponent implements OnInit, OnDestroy {
   };
 
   /** Status options for filtering */
-  statusOptions: { value: SubmissionStatus | 'all'; label: string }[] = [
+  statusOptions: { value: ResponseStatus | 'all'; label: string }[] = [
     { value: 'all', label: 'All Statuses' },
     { value: 'submitted', label: 'Submitted' },
-    { value: 'in_review', label: 'In Review' },
-    { value: 'pending_triage', label: 'Pending Triage' },
+    { value: 'needs_revision', label: 'Needs Revision' },
+    { value: 'ready_for_review', label: 'Ready for Review' },
+    { value: 'review_created', label: 'Review Created' },
     { value: 'draft', label: 'Draft' },
   ];
 
   /** Pagination settings */
-  totalSubmissions = 0;
+  totalResponses = 0;
   pageSize = 25;
   pageIndex = 0;
 
@@ -84,14 +85,14 @@ export class TriageListComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private submissionService: SurveySubmissionService,
+    private responseService: SurveyResponseService,
     private templateService: SurveyTemplateService,
     private logger: LoggerService,
   ) {}
 
   ngOnInit(): void {
     this.loadTemplates();
-    this.loadSubmissions();
+    this.loadResponses();
   }
 
   ngOnDestroy(): void {
@@ -104,11 +105,11 @@ export class TriageListComponent implements OnInit, OnDestroy {
    */
   private loadTemplates(): void {
     this.templateService
-      .list()
+      .listAdmin()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: response => {
-          this.templates = response.templates;
+          this.templates = response.survey_templates;
         },
         error: err => {
           this.logger.error('Failed to load templates for filter', err);
@@ -117,13 +118,13 @@ export class TriageListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Load submissions with current filters
+   * Load responses with current filters
    */
-  loadSubmissions(): void {
+  loadResponses(): void {
     this.isLoading = true;
     this.error = null;
 
-    const filter: SurveySubmissionFilter = {
+    const filter: SurveyResponseFilter = {
       limit: this.pageSize,
       offset: this.pageIndex * this.pageSize,
     };
@@ -135,20 +136,20 @@ export class TriageListComponent implements OnInit, OnDestroy {
       filter.template_id = this.filters.templateId;
     }
 
-    this.submissionService
+    this.responseService
       .listAll(filter)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: response => {
-          this.dataSource.data = response.submissions;
-          this.totalSubmissions = response.total;
+          this.dataSource.data = response.survey_responses;
+          this.totalResponses = response.total;
           this.isLoading = false;
           this.selection.clear();
         },
         error: err => {
           this.isLoading = false;
-          this.error = 'Failed to load submissions';
-          this.logger.error('Failed to load triage submissions', err);
+          this.error = 'Failed to load responses';
+          this.logger.error('Failed to load triage responses', err);
         },
       });
   }
@@ -159,7 +160,7 @@ export class TriageListComponent implements OnInit, OnDestroy {
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadSubmissions();
+    this.loadResponses();
   }
 
   /**
@@ -167,7 +168,7 @@ export class TriageListComponent implements OnInit, OnDestroy {
    */
   onFilterChange(): void {
     this.pageIndex = 0;
-    this.loadSubmissions();
+    this.loadResponses();
   }
 
   /**
@@ -180,14 +181,14 @@ export class TriageListComponent implements OnInit, OnDestroy {
       searchTerm: '',
     };
     this.pageIndex = 0;
-    this.loadSubmissions();
+    this.loadResponses();
   }
 
   /**
-   * Navigate to submission detail
+   * Navigate to response detail
    */
-  viewSubmission(submission: SurveySubmission): void {
-    void this.router.navigate(['/triage', submission.id]);
+  viewResponse(response: SurveyResponseListItem): void {
+    void this.router.navigate(['/triage', response.id]);
   }
 
   /**
@@ -211,32 +212,31 @@ export class TriageListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Bulk update status for selected submissions
+   * Bulk approve selected responses
    */
-  bulkUpdateStatus(status: SubmissionStatus): void {
+  bulkApprove(): void {
     const selectedIds = this.selection.selected.map(s => s.id);
     if (selectedIds.length === 0) return;
 
     this.isLoading = true;
-
-    // Update each selected submission
     let completed = 0;
+
     selectedIds.forEach(id => {
-      this.submissionService
-        .updateStatus(id, status)
+      this.responseService
+        .approve(id)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
             completed++;
             if (completed === selectedIds.length) {
-              this.loadSubmissions();
+              this.loadResponses();
             }
           },
           error: err => {
-            this.logger.error(`Failed to update status for submission ${id}`, err);
+            this.logger.error(`Failed to approve response ${id}`, err);
             completed++;
             if (completed === selectedIds.length) {
-              this.loadSubmissions();
+              this.loadResponses();
             }
           },
         });
@@ -244,20 +244,20 @@ export class TriageListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Update status for a single submission
+   * Approve a single response
    */
-  updateStatus(submission: SurveySubmission, status: SubmissionStatus, event: Event): void {
+  approveResponse(response: SurveyResponseListItem, event: Event): void {
     event.stopPropagation();
 
-    this.submissionService
-      .updateStatus(submission.id, status)
+    this.responseService
+      .approve(response.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.loadSubmissions();
+          this.loadResponses();
         },
         error: err => {
-          this.logger.error('Failed to update submission status', err);
+          this.logger.error('Failed to approve response', err);
         },
       });
   }
@@ -265,12 +265,13 @@ export class TriageListComponent implements OnInit, OnDestroy {
   /**
    * Get the CSS class for a status chip
    */
-  getStatusClass(status: SubmissionStatus): string {
-    const statusClasses: Record<SubmissionStatus, string> = {
+  getStatusClass(status: ResponseStatus): string {
+    const statusClasses: Record<ResponseStatus, string> = {
       draft: 'status-draft',
       submitted: 'status-submitted',
-      in_review: 'status-in-review',
-      pending_triage: 'status-pending-triage',
+      needs_revision: 'status-needs-revision',
+      ready_for_review: 'status-ready-for-review',
+      review_created: 'status-review-created',
     };
     return statusClasses[status] ?? '';
   }
@@ -278,12 +279,13 @@ export class TriageListComponent implements OnInit, OnDestroy {
   /**
    * Get display label for a status
    */
-  getStatusLabel(status: SubmissionStatus): string {
-    const labels: Record<SubmissionStatus, string> = {
+  getStatusLabel(status: ResponseStatus): string {
+    const labels: Record<ResponseStatus, string> = {
       draft: 'Draft',
       submitted: 'Submitted',
-      in_review: 'In Review',
-      pending_triage: 'Pending Triage',
+      needs_revision: 'Needs Revision',
+      ready_for_review: 'Ready for Review',
+      review_created: 'Review Created',
     };
     return labels[status] ?? status;
   }

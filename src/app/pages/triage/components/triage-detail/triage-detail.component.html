@@ -2,7 +2,7 @@
   @if (isLoading) {
     <div class="loading-container">
       <mat-spinner diameter="48"></mat-spinner>
-      <p>Loading submission...</p>
+      <p>Loading response...</p>
     </div>
   } @else if (error) {
     <div class="error-container">
@@ -11,38 +11,40 @@
       <p>{{ error }}</p>
       <button mat-raised-button color="primary" (click)="goBack()">Back to Triage</button>
     </div>
-  } @else if (submission) {
+  } @else if (response) {
     <!-- Header -->
     <div class="detail-header">
       <button mat-icon-button (click)="goBack()" matTooltip="Back to triage">
         <mat-icon>arrow_back</mat-icon>
       </button>
       <div class="header-title">
-        <h1>{{ submission.template_name }}</h1>
+        <h1>{{ surveyJson?.title || 'Survey Response' }}</h1>
         <span class="submission-meta">
-          Submitted by {{ submission.user_display_name || submission.user_email }}
+          Submitted by {{ response.owner.display_name || response.owner.email }}
         </span>
       </div>
       <div class="header-actions">
-        @for (status of availableStatuses; track status.value) {
-          <button
-            mat-stroked-button
-            (click)="updateStatus(status.value)"
-            [disabled]="isUpdatingStatus"
-          >
-            <mat-icon>{{ status.icon }}</mat-icon>
-            {{ status.label }}
+        @if (response.status === 'submitted') {
+          <button mat-stroked-button (click)="approveResponse()" [disabled]="isUpdatingStatus">
+            <mat-icon>check_circle</mat-icon>
+            Approve
+          </button>
+          <button mat-stroked-button (click)="returnForRevision('')" [disabled]="isUpdatingStatus">
+            <mat-icon>rate_review</mat-icon>
+            Return for Revision
           </button>
         }
-        <button
-          mat-raised-button
-          color="primary"
-          (click)="createThreatModel()"
-          [disabled]="submission.status === 'draft'"
-        >
-          <mat-icon>security</mat-icon>
-          Create Threat Model
-        </button>
+        @if (response.status === 'ready_for_review') {
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="createThreatModel()"
+            [disabled]="isUpdatingStatus"
+          >
+            <mat-icon>security</mat-icon>
+            Create Threat Model
+          </button>
+        }
       </div>
     </div>
 
@@ -88,7 +90,9 @@
           <mat-card-header>
             <mat-card-title>Survey Responses</mat-card-title>
             <mat-card-subtitle
-              >{{ submission.template_name }} v{{ submission.template_version }}</mat-card-subtitle
+              >{{ surveyJson?.title || 'Survey' }} v{{
+                response.template_version
+              }}</mat-card-subtitle
             >
           </mat-card-header>
           <mat-card-content>
@@ -99,10 +103,10 @@
               </div>
             } @else {
               <div class="responses-list">
-                @for (response of formattedResponses; track response.name) {
+                @for (item of formattedResponses; track item.name) {
                   <div class="response-item">
-                    <div class="response-question">{{ response.question }}</div>
-                    <div class="response-answer">{{ response.answer }}</div>
+                    <div class="response-question">{{ item.question }}</div>
+                    <div class="response-answer">{{ item.answer }}</div>
                   </div>
                 }
               </div>
@@ -116,70 +120,65 @@
         <!-- Submission Info -->
         <mat-card class="info-card">
           <mat-card-header>
-            <mat-card-title>Submission Details</mat-card-title>
+            <mat-card-title>Response Details</mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <div class="info-grid">
               <div class="info-item">
                 <span class="info-label">Status</span>
-                <mat-chip [ngClass]="getStatusClass(submission.status)">
-                  {{ getStatusLabel(submission.status) }}
+                <mat-chip [ngClass]="getStatusClass(response.status)">
+                  {{ getStatusLabel(response.status) }}
                 </mat-chip>
               </div>
 
               <div class="info-item">
                 <span class="info-label">Submitter</span>
                 <span class="info-value">
-                  {{ submission.user_display_name || submission.user_email }}
+                  {{ response.owner.display_name || response.owner.email }}
                 </span>
               </div>
 
-              @if (submission.user_display_name) {
+              @if (response.owner.display_name) {
                 <div class="info-item">
                   <span class="info-label">Email</span>
-                  <span class="info-value">{{ submission.user_email }}</span>
+                  <span class="info-value">{{ response.owner.email }}</span>
                 </div>
               }
 
               <div class="info-item">
-                <span class="info-label">Template</span>
-                <span class="info-value">{{ submission.template_name }}</span>
-              </div>
-
-              <div class="info-item">
                 <span class="info-label">Version</span>
-                <span class="info-value">v{{ submission.template_version }}</span>
+                <span class="info-value">v{{ response.template_version }}</span>
               </div>
 
               <div class="info-item">
                 <span class="info-label">Created</span>
-                <span class="info-value">{{ submission.created_at | date: 'medium' }}</span>
+                <span class="info-value">{{ response.created_at | date: 'medium' }}</span>
               </div>
 
-              @if (submission.submitted_at) {
+              @if (response.submitted_at) {
                 <div class="info-item">
                   <span class="info-label">Submitted</span>
-                  <span class="info-value">{{ submission.submitted_at | date: 'medium' }}</span>
+                  <span class="info-value">{{ response.submitted_at | date: 'medium' }}</span>
                 </div>
               }
 
               <div class="info-item">
                 <span class="info-label">Last Modified</span>
-                <span class="info-value">{{ submission.modified_at | date: 'medium' }}</span>
+                <span class="info-value">{{ response.modified_at | date: 'medium' }}</span>
               </div>
 
-              @if (submission.threat_model_id) {
+              @if (response.created_threat_model_id) {
                 <div class="info-item">
                   <span class="info-label">Threat Model</span>
-                  <a [routerLink]="['/tm', submission.threat_model_id]" class="tm-link">
+                  <a [routerLink]="['/tm', response.created_threat_model_id]" class="tm-link">
                     View Threat Model
                   </a>
                 </div>
               }
 
               <div class="info-item">
-                <span class="info-label">Submission ID</span>
-                <span class="info-value monospace">{{ submission.id }}</span>
+                <span class="info-label">Response ID</span>
+                <span class="info-value monospace">{{ response.id }}</span>
               </div>
             </div>
           </mat-card-content>

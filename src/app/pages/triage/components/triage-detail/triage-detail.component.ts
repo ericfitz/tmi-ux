@@ -5,9 +5,9 @@ import { switchMap, takeUntil } from 'rxjs/operators';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
-import { SurveySubmissionService } from '../../../surveys/services/survey-submission.service';
+import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
 import { SurveyTemplateService } from '../../../surveys/services/survey-template.service';
-import { SurveySubmission, SurveyJsonSchema, SubmissionStatus } from '@app/types/survey.types';
+import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
 
 /**
  * Status timeline entry
@@ -21,7 +21,7 @@ interface StatusTimelineEntry {
 }
 
 /**
- * Triage detail component for viewing a single submission
+ * Triage detail component for viewing a single response
  * Allows status changes and TM creation from survey data
  */
 @Component({
@@ -35,8 +35,8 @@ interface StatusTimelineEntry {
 export class TriageDetailComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  /** Submission being viewed */
-  submission: SurveySubmission | null = null;
+  /** Response being viewed */
+  response: SurveyResponse | null = null;
 
   /** Survey JSON definition */
   surveyJson: SurveyJsonSchema | null = null;
@@ -50,9 +50,6 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /** Whether status update is in progress */
   isUpdatingStatus = false;
 
-  /** Available status transitions */
-  availableStatuses: { value: SubmissionStatus; label: string; icon: string }[] = [];
-
   /** Status timeline */
   statusTimeline: StatusTimelineEntry[] = [];
 
@@ -62,7 +59,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private submissionService: SurveySubmissionService,
+    private responseService: SurveyResponseService,
     private templateService: SurveyTemplateService,
     private logger: LoggerService,
   ) {}
@@ -71,27 +68,35 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
     this.route.paramMap
       .pipe(
         switchMap(params => {
-          const submissionId = params.get('submissionId');
-          if (!submissionId) {
-            throw new Error('No submission ID provided');
+          const responseId = params.get('submissionId');
+          if (!responseId) {
+            throw new Error('No response ID provided');
           }
           this.isLoading = true;
           this.error = null;
-          return this.submissionService.getById(submissionId);
+          return this.responseService.getByIdTriage(responseId);
         }),
         takeUntil(this.destroy$),
       )
       .subscribe({
-        next: submission => {
-          this.submission = submission;
-          this.updateAvailableStatuses(submission.status);
-          this.buildStatusTimeline(submission);
-          this.loadSurveyDefinition(submission.template_id, submission.template_version);
+        next: response => {
+          this.response = response;
+          this.buildStatusTimeline(response);
+
+          // Use the survey_json snapshot from the response if available
+          if (response.survey_json) {
+            this.surveyJson = response.survey_json;
+            this.formatResponses(response.survey_json);
+            this.isLoading = false;
+          } else {
+            // Fallback: fetch from template service
+            this.loadSurveyDefinition(response.template_id);
+          }
         },
         error: err => {
           this.isLoading = false;
-          this.error = 'Failed to load submission';
-          this.logger.error('Failed to load triage submission', err);
+          this.error = 'Failed to load response';
+          this.logger.error('Failed to load triage response', err);
         },
       });
   }
@@ -102,11 +107,11 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Load the survey JSON definition to render responses
+   * Fallback: load the survey JSON definition from template service
    */
-  private loadSurveyDefinition(templateId: string, version: number): void {
+  private loadSurveyDefinition(templateId: string): void {
     this.templateService
-      .getVersionJson(templateId, version)
+      .getSurveyJson(templateId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: surveyJson => {
@@ -117,7 +122,6 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
         error: err => {
           this.isLoading = false;
           this.logger.error('Failed to load survey definition', err);
-          // Still show submission data even without the definition
           this.formatResponsesWithoutDefinition();
         },
       });
@@ -127,22 +131,22 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
    * Format survey responses for display using survey definition
    */
   private formatResponses(surveyJson: SurveyJsonSchema): void {
-    if (!this.submission?.data) {
+    if (!this.response?.answers) {
       this.formattedResponses = [];
       return;
     }
 
     const responses: { question: string; answer: string; name: string }[] = [];
-    const data = this.submission.data;
+    const answers = this.response.answers;
 
     // Walk through all pages and elements to maintain order
     for (const page of surveyJson.pages ?? []) {
       for (const element of page.elements ?? []) {
-        if (element.name && data[element.name] !== undefined) {
+        if (element.name && answers[element.name] !== undefined) {
           responses.push({
             name: element.name,
             question: element.title ?? element.name,
-            answer: this.formatAnswer(data[element.name]),
+            answer: this.formatAnswer(answers[element.name]),
           });
         }
       }
@@ -155,12 +159,12 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
    * Format responses without a definition (raw key/value display)
    */
   private formatResponsesWithoutDefinition(): void {
-    if (!this.submission?.data) {
+    if (!this.response?.answers) {
       this.formattedResponses = [];
       return;
     }
 
-    this.formattedResponses = Object.entries(this.submission.data).map(([key, value]) => ({
+    this.formattedResponses = Object.entries(this.response.answers).map(([key, value]) => ({
       name: key,
       question: key,
       answer: this.formatAnswer(value),
@@ -180,112 +184,126 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Determine available status transitions
-   */
-  private updateAvailableStatuses(currentStatus: SubmissionStatus): void {
-    const transitions: Record<
-      SubmissionStatus,
-      { value: SubmissionStatus; label: string; icon: string }[]
-    > = {
-      draft: [],
-      submitted: [{ value: 'in_review', label: 'Mark In Review', icon: 'rate_review' }],
-      in_review: [
-        { value: 'pending_triage', label: 'Mark Pending Triage', icon: 'pending_actions' },
-        { value: 'submitted', label: 'Return to Submitted', icon: 'undo' },
-      ],
-      pending_triage: [{ value: 'in_review', label: 'Return to In Review', icon: 'undo' }],
-    };
-
-    this.availableStatuses = transitions[currentStatus] ?? [];
-  }
-
-  /**
    * Build status timeline
    */
-  private buildStatusTimeline(submission: SurveySubmission): void {
-    const statuses: { key: SubmissionStatus; label: string }[] = [
+  private buildStatusTimeline(response: SurveyResponse): void {
+    const statuses: { key: ResponseStatus; label: string }[] = [
       { key: 'draft', label: 'Draft' },
       { key: 'submitted', label: 'Submitted' },
-      { key: 'in_review', label: 'In Review' },
-      { key: 'pending_triage', label: 'Pending Triage' },
+      { key: 'ready_for_review', label: 'Ready for Review' },
+      { key: 'review_created', label: 'Review Created' },
     ];
 
-    const statusOrder: Record<SubmissionStatus, number> = {
+    const statusOrder: Record<ResponseStatus, number> = {
       draft: 0,
       submitted: 1,
-      in_review: 2,
-      pending_triage: 3,
+      needs_revision: 1,
+      ready_for_review: 2,
+      review_created: 3,
     };
 
-    const currentIndex = statusOrder[submission.status];
+    const currentIndex = statusOrder[response.status];
 
     this.statusTimeline = statuses.map((s, index) => ({
       status: s.key,
       label: s.label,
-      timestamp: this.getTimestampForStatus(submission, s.key),
+      timestamp: this.getTimestampForStatus(response, s.key),
       isActive: index === currentIndex,
       isCompleted: index < currentIndex,
     }));
   }
 
   /**
-   * Get timestamp for a status from the submission
+   * Get timestamp for a status from the response
    */
-  private getTimestampForStatus(
-    submission: SurveySubmission,
-    status: SubmissionStatus,
-  ): string | null {
+  private getTimestampForStatus(response: SurveyResponse, status: ResponseStatus): string | null {
     switch (status) {
       case 'draft':
-        return submission.created_at;
+        return response.created_at;
       case 'submitted':
-        return submission.submitted_at ?? null;
-      case 'in_review':
-        return submission.reviewed_at ?? null;
+        return response.submitted_at ?? null;
+      case 'ready_for_review':
+        return response.reviewed_at ?? null;
       default:
         return null;
     }
   }
 
   /**
-   * Update the submission status
+   * Approve a response (submitted → ready_for_review)
    */
-  updateStatus(newStatus: SubmissionStatus): void {
-    if (!this.submission) return;
+  approveResponse(): void {
+    if (!this.response) return;
 
     this.isUpdatingStatus = true;
 
-    this.submissionService
-      .updateStatus(this.submission.id, newStatus)
+    this.responseService
+      .approve(this.response.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: updatedSubmission => {
-          this.submission = updatedSubmission;
-          this.updateAvailableStatuses(updatedSubmission.status);
-          this.buildStatusTimeline(updatedSubmission);
+        next: updatedResponse => {
+          this.response = updatedResponse;
+          this.buildStatusTimeline(updatedResponse);
           this.isUpdatingStatus = false;
-          this.logger.info('Submission status updated', {
-            id: updatedSubmission.id,
-            status: newStatus,
-          });
+          this.logger.info('Response approved', { id: updatedResponse.id });
         },
         error: err => {
           this.isUpdatingStatus = false;
-          this.logger.error('Failed to update submission status', err);
+          this.logger.error('Failed to approve response', err);
         },
       });
   }
 
   /**
-   * Navigate to create a threat model from this submission
-   * For now, navigates to TM creation with prefilled data
+   * Return a response for revision
+   */
+  returnForRevision(notes: string): void {
+    if (!this.response) return;
+
+    this.isUpdatingStatus = true;
+
+    this.responseService
+      .returnForRevision(this.response.id, notes)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: updatedResponse => {
+          this.response = updatedResponse;
+          this.buildStatusTimeline(updatedResponse);
+          this.isUpdatingStatus = false;
+          this.logger.info('Response returned for revision', { id: updatedResponse.id });
+        },
+        error: err => {
+          this.isUpdatingStatus = false;
+          this.logger.error('Failed to return response for revision', err);
+        },
+      });
+  }
+
+  /**
+   * Create a threat model from this response
    */
   createThreatModel(): void {
-    if (!this.submission) return;
-    // For now, navigate to TM list. The full TM creation flow from survey data
-    // will be implemented when the TM creation API supports pre-population.
-    this.logger.info('Create TM from submission', { submissionId: this.submission.id });
-    void this.router.navigate(['/tm']);
+    if (!this.response) return;
+
+    this.isUpdatingStatus = true;
+
+    this.responseService
+      .createThreatModel(this.response.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: result => {
+          this.isUpdatingStatus = false;
+          this.logger.info('Threat model created from response', {
+            responseId: result.survey_response_id,
+            threatModelId: result.threat_model_id,
+          });
+          void this.router.navigate(['/tm', result.threat_model_id]);
+        },
+        error: err => {
+          this.isUpdatingStatus = false;
+          this.logger.error('Failed to create threat model from response', err);
+        },
+      });
   }
 
   /**
@@ -298,12 +316,13 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Get display label for a status
    */
-  getStatusLabel(status: SubmissionStatus): string {
-    const labels: Record<SubmissionStatus, string> = {
+  getStatusLabel(status: ResponseStatus): string {
+    const labels: Record<ResponseStatus, string> = {
       draft: 'Draft',
       submitted: 'Submitted',
-      in_review: 'In Review',
-      pending_triage: 'Pending Triage',
+      needs_revision: 'Needs Revision',
+      ready_for_review: 'Ready for Review',
+      review_created: 'Review Created',
     };
     return labels[status] ?? status;
   }
@@ -311,12 +330,13 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Get CSS class for a status
    */
-  getStatusClass(status: SubmissionStatus): string {
-    const statusClasses: Record<SubmissionStatus, string> = {
+  getStatusClass(status: ResponseStatus): string {
+    const statusClasses: Record<ResponseStatus, string> = {
       draft: 'status-draft',
       submitted: 'status-submitted',
-      in_review: 'status-in-review',
-      pending_triage: 'status-pending-triage',
+      needs_revision: 'status-needs-revision',
+      ready_for_review: 'status-ready-for-review',
+      review_created: 'status-review-created',
     };
     return statusClasses[status] ?? '';
   }

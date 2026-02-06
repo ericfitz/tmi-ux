@@ -13,7 +13,7 @@
         Back to Submissions
       </button>
     </div>
-  } @else if (submission) {
+  } @else if (response) {
     <!-- Header -->
     <div class="detail-header">
       <div class="header-left">
@@ -21,11 +21,11 @@
           <mat-icon>arrow_back</mat-icon>
         </button>
         <div class="header-info">
-          <h1>{{ surveyJson?.title || submission.template_name || 'Survey Submission' }}</h1>
+          <h1>{{ surveyJson?.title || 'Survey Submission' }}</h1>
           <div class="header-meta">
-            <mat-chip [highlighted]="submission.status !== 'draft'">
-              <mat-icon matChipIcon>{{ getStatusInfo(submission.status).icon }}</mat-icon>
-              {{ getStatusInfo(submission.status).label }}
+            <mat-chip [highlighted]="response.status !== 'draft'">
+              <mat-icon matChipIcon>{{ getStatusInfo(response.status).icon }}</mat-icon>
+              {{ getStatusInfo(response.status).label }}
             </mat-chip>
           </div>
         </div>
@@ -39,29 +39,29 @@
           <div class="info-item">
             <span class="info-label">Submitted By</span>
             <span class="info-value">{{
-              submission.user_display_name || submission.user_email
+              response.owner.display_name || response.owner.email
             }}</span>
           </div>
           <div class="info-item">
             <span class="info-label">Created</span>
-            <span class="info-value">{{ formatDate(submission.created_at) }}</span>
+            <span class="info-value">{{ formatDate(response.created_at) }}</span>
           </div>
-          @if (submission.submitted_at) {
+          @if (response.submitted_at) {
             <div class="info-item">
               <span class="info-label">Submitted</span>
-              <span class="info-value">{{ formatDate(submission.submitted_at) }}</span>
+              <span class="info-value">{{ formatDate(response.submitted_at) }}</span>
             </div>
           }
-          @if (submission.reviewed_at) {
+          @if (response.reviewed_at) {
             <div class="info-item">
               <span class="info-label">Review Started</span>
-              <span class="info-value">{{ formatDate(submission.reviewed_at) }}</span>
+              <span class="info-value">{{ formatDate(response.reviewed_at) }}</span>
             </div>
           }
-          @if (submission.threat_model_id) {
+          @if (response.created_threat_model_id) {
             <div class="info-item">
               <span class="info-label">Threat Model</span>
-              <a [routerLink]="['/tm', submission.threat_model_id]" class="info-link">
+              <a [routerLink]="['/tm', response.created_threat_model_id]" class="info-link">
                 <mat-icon>open_in_new</mat-icon>
                 View Threat Model
               </a>
@@ -75,7 +75,7 @@
     <mat-card class="responses-card">
       <mat-card-header>
         <mat-card-title>Survey Responses</mat-card-title>
-        <mat-card-subtitle>Version {{ submission.template_version }}</mat-card-subtitle>
+        <mat-card-subtitle>Version {{ response.template_version }}</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
         @if (surveyModel) {

@@ -17,8 +17,8 @@ import {
 } from '@app/shared/imports';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyTemplateService } from '../../services/survey-template.service';
-import { SurveySubmissionService } from '../../services/survey-submission.service';
-import { SurveyTemplate, SurveySubmission } from '@app/types/survey.types';
+import { SurveyResponseService } from '../../services/survey-response.service';
+import { SurveyTemplateListItem, SurveyResponseListItem } from '@app/types/survey.types';
 
 /**
  * Survey list component for respondents
@@ -41,14 +41,14 @@ import { SurveyTemplate, SurveySubmission } from '@app/types/survey.types';
 export class SurveyListComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
-  templates: SurveyTemplate[] = [];
-  drafts: Map<string, SurveySubmission[]> = new Map();
+  templates: SurveyTemplateListItem[] = [];
+  drafts: Map<string, SurveyResponseListItem[]> = new Map();
   loading = true;
   error: string | null = null;
 
   constructor(
     private templateService: SurveyTemplateService,
-    private submissionService: SurveySubmissionService,
+    private responseService: SurveyResponseService,
     private router: Router,
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
@@ -71,7 +71,7 @@ export class SurveyListComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
-          this.templates = response.templates;
+          this.templates = response.survey_templates;
           this.loadDrafts();
         },
         error: error => {
@@ -84,17 +84,17 @@ export class SurveyListComponent implements OnInit {
   }
 
   /**
-   * Load user's draft submissions
+   * Load user's draft responses
    */
   private loadDrafts(): void {
-    this.submissionService
+    this.responseService
       .listMine({ status: 'draft' })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
           // Group drafts by template
           this.drafts.clear();
-          for (const draft of response.submissions) {
+          for (const draft of response.survey_responses) {
             const existing = this.drafts.get(draft.template_id) ?? [];
             existing.push(draft);
             this.drafts.set(draft.template_id, existing);
@@ -113,20 +113,20 @@ export class SurveyListComponent implements OnInit {
   /**
    * Get drafts for a specific template
    */
-  getDrafts(templateId: string): SurveySubmission[] {
+  getDrafts(templateId: string): SurveyResponseListItem[] {
     return this.drafts.get(templateId) ?? [];
   }
 
   /**
    * Start a new survey
    */
-  startSurvey(template: SurveyTemplate): void {
-    this.submissionService
-      .createDraft(template.id)
+  startSurvey(template: SurveyTemplateListItem): void {
+    this.responseService
+      .createDraft({ template_id: template.id })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: submission => {
-          void this.router.navigate(['/surveys', 'fill', template.id, submission.id]);
+        next: response => {
+          void this.router.navigate(['/surveys', 'fill', template.id, response.id]);
         },
         error: error => {
           this.logger.error('Failed to create draft', error);
@@ -137,17 +137,17 @@ export class SurveyListComponent implements OnInit {
   /**
    * Continue an existing draft
    */
-  continueDraft(draft: SurveySubmission): void {
+  continueDraft(draft: SurveyResponseListItem): void {
     void this.router.navigate(['/surveys', 'fill', draft.template_id, draft.id]);
   }
 
   /**
    * Delete a draft
    */
-  deleteDraft(draft: SurveySubmission, event: Event): void {
+  deleteDraft(draft: SurveyResponseListItem, event: Event): void {
     event.stopPropagation();
 
-    this.submissionService
+    this.responseService
       .deleteDraft(draft.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

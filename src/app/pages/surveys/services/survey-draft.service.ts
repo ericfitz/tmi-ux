@@ -2,15 +2,15 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Subject, Observable, Subscription, EMPTY } from 'rxjs';
 import { debounceTime, switchMap, catchError } from 'rxjs/operators';
 import { LoggerService } from '@app/core/services/logger.service';
-import { SurveySubmissionService } from './survey-submission.service';
-import { SurveySubmission, SurveyUIState } from '@app/types/survey.types';
+import { SurveyResponseService } from './survey-response.service';
+import { SurveyResponse, SurveyUIState } from '@app/types/survey.types';
 
 /**
  * Payload for queued save operations
  */
 interface SavePayload {
-  submissionId: string;
-  data: Record<string, unknown>;
+  responseId: string;
+  answers: Record<string, unknown>;
   uiState: SurveyUIState;
 }
 
@@ -48,7 +48,7 @@ export class SurveyDraftService implements OnDestroy {
   public hasUnsavedChanges$: Observable<boolean> = this.hasUnsavedChangesSubject$.asObservable();
 
   constructor(
-    private submissionService: SurveySubmissionService,
+    private responseService: SurveyResponseService,
     private logger: LoggerService,
   ) {
     this.initAutoSave();
@@ -64,12 +64,12 @@ export class SurveyDraftService implements OnDestroy {
    * Multiple calls within the debounce window will only result in one save
    */
   public queueSave(
-    submissionId: string,
-    data: Record<string, unknown>,
+    responseId: string,
+    answers: Record<string, unknown>,
     uiState: SurveyUIState,
   ): void {
     this.hasUnsavedChangesSubject$.next(true);
-    this.saveSubject$.next({ submissionId, data, uiState });
+    this.saveSubject$.next({ responseId, answers, uiState });
   }
 
   /**
@@ -77,20 +77,20 @@ export class SurveyDraftService implements OnDestroy {
    * Use this when the user explicitly saves or before navigation
    */
   public saveNow(
-    submissionId: string,
-    data: Record<string, unknown>,
+    responseId: string,
+    answers: Record<string, unknown>,
     uiState: SurveyUIState,
-  ): Observable<SurveySubmission> {
+  ): Observable<SurveyResponse> {
     this.isSavingSubject$.next(true);
     this.saveErrorSubject$.next(null);
 
-    return this.submissionService.updateDraft(submissionId, data, uiState).pipe(
-      switchMap(submission => {
+    return this.responseService.updateDraft(responseId, answers, uiState).pipe(
+      switchMap(response => {
         this.isSavingSubject$.next(false);
         this.lastSavedSubject$.next(new Date());
         this.hasUnsavedChangesSubject$.next(false);
-        this.logger.debug('Draft saved immediately', { submissionId });
-        return [submission];
+        this.logger.debug('Draft saved immediately', { responseId });
+        return [response];
       }),
       catchError(error => {
         this.isSavingSubject$.next(false);
@@ -146,16 +146,14 @@ export class SurveyDraftService implements OnDestroy {
     this.saveSubscription = this.saveSubject$
       .pipe(
         debounceTime(this.autoSaveDebounceMs),
-        switchMap(({ submissionId, data, uiState }) => {
+        switchMap(({ responseId, answers, uiState }) => {
           this.isSavingSubject$.next(true);
           this.saveErrorSubject$.next(null);
-          return this.submissionService.updateDraft(submissionId, data, uiState).pipe(
+          return this.responseService.updateDraft(responseId, answers, uiState).pipe(
             catchError(error => {
               this.isSavingSubject$.next(false);
               this.saveErrorSubject$.next('Failed to save draft');
               this.logger.error('Auto-save failed', error);
-              // Return EMPTY to swallow the error without completing the outer chain.
-              // The next queueSave() call will trigger a new save attempt.
               return EMPTY;
             }),
           );

@@ -19,9 +19,9 @@ import {
 } from '@app/shared/imports';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyTemplateService } from '../../services/survey-template.service';
-import { SurveySubmissionService } from '../../services/survey-submission.service';
+import { SurveyResponseService } from '../../services/survey-response.service';
 import { SurveyDraftService } from '../../services/survey-draft.service';
-import { SurveySubmission, SurveyJsonSchema, SurveyUIState } from '@app/types/survey.types';
+import { SurveyResponse, SurveyJsonSchema, SurveyUIState } from '@app/types/survey.types';
 import { Observable } from 'rxjs';
 
 /**
@@ -47,7 +47,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   private draftService = inject(SurveyDraftService);
 
   surveyModel: Model | null = null;
-  submission: SurveySubmission | null = null;
+  response: SurveyResponse | null = null;
   surveyJson: SurveyJsonSchema | null = null;
 
   loading = true;
@@ -61,22 +61,22 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   saveError$: Observable<string | null> = this.draftService.saveError$;
 
   private templateId: string | null = null;
-  private submissionId: string | null = null;
+  private responseId: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private templateService: SurveyTemplateService,
-    private submissionService: SurveySubmissionService,
+    private responseService: SurveyResponseService,
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
     this.templateId = this.route.snapshot.paramMap.get('templateId');
-    this.submissionId = this.route.snapshot.paramMap.get('submissionId');
+    this.responseId = this.route.snapshot.paramMap.get('submissionId');
 
-    if (!this.templateId || !this.submissionId) {
+    if (!this.templateId || !this.responseId) {
       this.error = 'Invalid survey URL';
       this.loading = false;
       return;
@@ -90,46 +90,53 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Load the survey template and submission
+   * Load the survey response (which includes survey_json snapshot)
    */
   private loadSurvey(): void {
     this.loading = true;
     this.error = null;
 
-    // Load submission first to get the template version
-    this.submissionService
-      .getById(this.submissionId!)
+    this.responseService
+      .getById(this.responseId!)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: submission => {
-          this.submission = submission;
+        next: response => {
+          this.response = response;
 
-          // Check if already submitted
-          if (submission.status !== 'draft') {
+          // Only draft and needs_revision statuses are editable
+          if (response.status !== 'draft' && response.status !== 'needs_revision') {
             this.submitted = true;
             this.loading = false;
             this.cdr.markForCheck();
             return;
           }
 
-          // Load the survey JSON for the specific version
-          this.loadSurveyJson(submission.template_id, submission.template_version);
+          // Use the survey_json snapshot from the response if available
+          if (response.survey_json) {
+            this.surveyJson = response.survey_json;
+            this.initializeSurvey();
+            this.loading = false;
+            this.cdr.markForCheck();
+          } else {
+            // Fallback: fetch from template service
+            this.loadSurveyJson(response.template_id);
+          }
         },
         error: error => {
-          this.error = 'Failed to load submission';
+          this.error = 'Failed to load response';
           this.loading = false;
-          this.logger.error('Failed to load submission', error);
+          this.logger.error('Failed to load response', error);
           this.cdr.markForCheck();
         },
       });
   }
 
   /**
-   * Load the survey JSON schema
+   * Fallback: load survey JSON from template service
    */
-  private loadSurveyJson(templateId: string, version: number): void {
+  private loadSurveyJson(templateId: string): void {
     this.templateService
-      .getVersionJson(templateId, version)
+      .getSurveyJson(templateId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: surveyJson => {
@@ -151,19 +158,19 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
    * Initialize the SurveyJS model
    */
   private initializeSurvey(): void {
-    if (!this.surveyJson || !this.submission) return;
+    if (!this.surveyJson || !this.response) return;
 
     // Create the survey model
     this.surveyModel = new Model(this.surveyJson);
 
     // Restore draft data if exists
-    if (this.submission.data && Object.keys(this.submission.data).length > 0) {
-      this.surveyModel.data = this.submission.data;
+    if (this.response.answers && Object.keys(this.response.answers).length > 0) {
+      this.surveyModel.data = this.response.answers;
     }
 
     // Restore UI state if exists
-    if (this.submission.ui_state) {
-      this.surveyModel.currentPageNo = this.submission.ui_state.currentPageNo;
+    if (this.response.ui_state) {
+      this.surveyModel.currentPageNo = this.response.ui_state.currentPageNo;
     }
 
     // Set up auto-save on value changes
@@ -183,7 +190,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
 
     this.logger.debug('Survey initialized', {
       templateId: this.templateId,
-      submissionId: this.submissionId,
+      responseId: this.responseId,
     });
   }
 
@@ -191,7 +198,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
    * Queue an auto-save operation
    */
   private queueAutoSave(): void {
-    if (!this.surveyModel || !this.submissionId) return;
+    if (!this.surveyModel || !this.responseId) return;
 
     const uiState: SurveyUIState = {
       currentPageNo: this.surveyModel.currentPageNo,
@@ -199,14 +206,14 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- SurveyJS Model.data is typed as any
-    this.draftService.queueSave(this.submissionId, this.surveyModel.data, uiState);
+    this.draftService.queueSave(this.responseId, this.surveyModel.data, uiState);
   }
 
   /**
    * Handle survey completion (submit button clicked in survey)
    */
   private handleComplete(): void {
-    if (!this.surveyModel || !this.submissionId) return;
+    if (!this.surveyModel || !this.responseId) return;
 
     this.submitting = true;
     this.cdr.markForCheck();
@@ -220,7 +227,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
     // Save immediately, then submit
     this.draftService
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- SurveyJS Model.data is typed as any
-      .saveNow(this.submissionId, this.surveyModel.data, uiState)
+      .saveNow(this.responseId, this.surveyModel.data, uiState)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -238,8 +245,8 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
    * Submit the survey
    */
   private submitSurvey(): void {
-    this.submissionService
-      .submit(this.submissionId!)
+    this.responseService
+      .submit(this.responseId!)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -259,7 +266,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
    * Save and exit (without submitting)
    */
   saveAndExit(): void {
-    if (!this.surveyModel || !this.submissionId) {
+    if (!this.surveyModel || !this.responseId) {
       void this.router.navigate(['/surveys']);
       return;
     }
@@ -271,7 +278,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
 
     this.draftService
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- SurveyJS Model.data is typed as any
-      .saveNow(this.submissionId, this.surveyModel.data, uiState)
+      .saveNow(this.responseId, this.surveyModel.data, uiState)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -285,10 +292,10 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * View submission details after completion
+   * View response details after completion
    */
   viewSubmission(): void {
-    void this.router.navigate(['/surveys', 'submission', this.submissionId]);
+    void this.router.navigate(['/surveys', 'submission', this.responseId]);
   }
 
   /**

@@ -17,12 +17,12 @@ import {
   FORM_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
 import { LoggerService } from '@app/core/services/logger.service';
-import { SurveySubmissionService } from '../../services/survey-submission.service';
-import { SurveySubmission, SubmissionStatus } from '@app/types/survey.types';
+import { SurveyResponseService } from '../../services/survey-response.service';
+import { SurveyResponseListItem, ResponseStatus } from '@app/types/survey.types';
 
 /**
  * My submissions component
- * Displays the user's survey submissions with status tracking
+ * Displays the user's survey responses with status tracking
  */
 @Component({
   selector: 'app-my-submissions',
@@ -42,55 +42,56 @@ import { SurveySubmission, SubmissionStatus } from '@app/types/survey.types';
 export class MySubmissionsComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
-  submissions: SurveySubmission[] = [];
-  filteredSubmissions: SurveySubmission[] = [];
+  responses: SurveyResponseListItem[] = [];
+  filteredResponses: SurveyResponseListItem[] = [];
   loading = true;
   error: string | null = null;
 
-  statusFilter: SubmissionStatus | 'all' = 'all';
+  statusFilter: ResponseStatus | 'all' = 'all';
 
-  readonly statusOptions: { value: SubmissionStatus | 'all'; label: string }[] = [
+  readonly statusOptions: { value: ResponseStatus | 'all'; label: string }[] = [
     { value: 'all', label: 'All Statuses' },
     { value: 'draft', label: 'Draft' },
     { value: 'submitted', label: 'Submitted' },
-    { value: 'in_review', label: 'In Review' },
-    { value: 'pending_triage', label: 'Pending Triage' },
+    { value: 'needs_revision', label: 'Needs Revision' },
+    { value: 'ready_for_review', label: 'Ready for Review' },
+    { value: 'review_created', label: 'Review Created' },
   ];
 
   readonly displayedColumns = ['template', 'status', 'created', 'modified', 'actions'];
 
   constructor(
-    private submissionService: SurveySubmissionService,
+    private responseService: SurveyResponseService,
     private router: Router,
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
-    this.loadSubmissions();
+    this.loadResponses();
   }
 
   /**
-   * Load user's submissions
+   * Load user's responses
    */
-  loadSubmissions(): void {
+  loadResponses(): void {
     this.loading = true;
     this.error = null;
 
-    this.submissionService
+    this.responseService
       .listMine()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
-          this.submissions = response.submissions;
+          this.responses = response.survey_responses;
           this.applyFilter();
           this.loading = false;
           this.cdr.markForCheck();
         },
         error: error => {
-          this.error = 'Failed to load submissions';
+          this.error = 'Failed to load responses';
           this.loading = false;
-          this.logger.error('Failed to load submissions', error);
+          this.logger.error('Failed to load responses', error);
           this.cdr.markForCheck();
         },
       });
@@ -101,13 +102,13 @@ export class MySubmissionsComponent implements OnInit {
    */
   applyFilter(): void {
     if (this.statusFilter === 'all') {
-      this.filteredSubmissions = [...this.submissions];
+      this.filteredResponses = [...this.responses];
     } else {
-      this.filteredSubmissions = this.submissions.filter(s => s.status === this.statusFilter);
+      this.filteredResponses = this.responses.filter(s => s.status === this.statusFilter);
     }
 
     // Sort by modified date descending
-    this.filteredSubmissions.sort(
+    this.filteredResponses.sort(
       (a, b) => new Date(b.modified_at).getTime() - new Date(a.modified_at).getTime(),
     );
   }
@@ -120,33 +121,33 @@ export class MySubmissionsComponent implements OnInit {
   }
 
   /**
-   * View a submission
+   * View a response
    */
-  viewSubmission(submission: SurveySubmission): void {
-    if (submission.status === 'draft') {
-      void this.router.navigate(['/surveys', 'fill', submission.template_id, submission.id]);
+  viewResponse(response: SurveyResponseListItem): void {
+    if (response.status === 'draft' || response.status === 'needs_revision') {
+      void this.router.navigate(['/surveys', 'fill', response.template_id, response.id]);
     } else {
-      void this.router.navigate(['/surveys', 'submission', submission.id]);
+      void this.router.navigate(['/surveys', 'submission', response.id]);
     }
   }
 
   /**
    * Continue a draft
    */
-  continueDraft(submission: SurveySubmission): void {
-    void this.router.navigate(['/surveys', 'fill', submission.template_id, submission.id]);
+  continueDraft(response: SurveyResponseListItem): void {
+    void this.router.navigate(['/surveys', 'fill', response.template_id, response.id]);
   }
 
   /**
    * Delete a draft
    */
-  deleteDraft(submission: SurveySubmission): void {
-    this.submissionService
-      .deleteDraft(submission.id)
+  deleteDraft(response: SurveyResponseListItem): void {
+    this.responseService
+      .deleteDraft(response.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.loadSubmissions();
+          this.loadResponses();
         },
         error: error => {
           this.logger.error('Failed to delete draft', error);
@@ -165,12 +166,13 @@ export class MySubmissionsComponent implements OnInit {
   /**
    * Get status display info
    */
-  getStatusInfo(status: SubmissionStatus): { label: string; color: string; icon: string } {
-    const statusMap: Record<SubmissionStatus, { label: string; color: string; icon: string }> = {
+  getStatusInfo(status: ResponseStatus): { label: string; color: string; icon: string } {
+    const statusMap: Record<ResponseStatus, { label: string; color: string; icon: string }> = {
       draft: { label: 'Draft', color: 'default', icon: 'edit_note' },
       submitted: { label: 'Submitted', color: 'primary', icon: 'send' },
-      in_review: { label: 'In Review', color: 'accent', icon: 'rate_review' },
-      pending_triage: { label: 'Pending Triage', color: 'warn', icon: 'pending_actions' },
+      needs_revision: { label: 'Needs Revision', color: 'warn', icon: 'rate_review' },
+      ready_for_review: { label: 'Ready for Review', color: 'accent', icon: 'pending_actions' },
+      review_created: { label: 'Review Created', color: 'primary', icon: 'check_circle' },
     };
     return statusMap[status] ?? { label: status, color: 'default', icon: 'help' };
   }

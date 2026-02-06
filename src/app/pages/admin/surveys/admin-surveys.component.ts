@@ -20,7 +20,7 @@ import {
 import { AuthService } from '@app/auth/services/auth.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyTemplateService } from '@app/pages/surveys/services/survey-template.service';
-import { SurveyTemplate, SurveyStatus } from '@app/types/survey.types';
+import { SurveyTemplateListItem, SurveyStatus } from '@app/types/survey.types';
 
 /**
  * Admin surveys component
@@ -44,8 +44,8 @@ import { SurveyTemplate, SurveyStatus } from '@app/types/survey.types';
 export class AdminSurveysComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
-  templates: SurveyTemplate[] = [];
-  filteredTemplates: SurveyTemplate[] = [];
+  templates: SurveyTemplateListItem[] = [];
+  filteredTemplates: SurveyTemplateListItem[] = [];
   loading = true;
   error: string | null = null;
 
@@ -82,11 +82,11 @@ export class AdminSurveysComponent implements OnInit {
     this.error = null;
 
     this.templateService
-      .list()
+      .listAdmin()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
-          this.templates = response.templates;
+          this.templates = response.survey_templates;
           this.applyFilters();
           this.loading = false;
           this.cdr.markForCheck();
@@ -142,14 +142,14 @@ export class AdminSurveysComponent implements OnInit {
   /**
    * Edit a template
    */
-  editTemplate(template: SurveyTemplate): void {
+  editTemplate(template: SurveyTemplateListItem): void {
     void this.router.navigate(['/admin', 'surveys', template.id]);
   }
 
   /**
    * Clone a template
    */
-  cloneTemplate(template: SurveyTemplate): void {
+  cloneTemplate(template: SurveyTemplateListItem): void {
     const newName = `${template.name} (Copy)`;
 
     this.templateService
@@ -170,7 +170,7 @@ export class AdminSurveysComponent implements OnInit {
   /**
    * Toggle template status
    */
-  toggleStatus(template: SurveyTemplate): void {
+  toggleStatus(template: SurveyTemplateListItem): void {
     const newStatus: SurveyStatus = template.status === 'active' ? 'inactive' : 'active';
 
     this.templateService
@@ -190,7 +190,7 @@ export class AdminSurveysComponent implements OnInit {
   /**
    * Archive a template
    */
-  archiveTemplate(template: SurveyTemplate): void {
+  archiveTemplate(template: SurveyTemplateListItem): void {
     this.templateService
       .archive(template.id)
       .pipe(takeUntilDestroyed(this.destroyRef))

@@ -19,8 +19,8 @@ import {
 } from '@app/shared/imports';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyTemplateService } from '../../services/survey-template.service';
-import { SurveySubmissionService } from '../../services/survey-submission.service';
-import { SurveySubmission, SurveyJsonSchema, SubmissionStatus } from '@app/types/survey.types';
+import { SurveyResponseService } from '../../services/survey-response.service';
+import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
 
 /**
  * Submission detail component
@@ -45,65 +45,75 @@ export class SubmissionDetailComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   surveyModel: Model | null = null;
-  submission: SurveySubmission | null = null;
+  response: SurveyResponse | null = null;
   surveyJson: SurveyJsonSchema | null = null;
 
   loading = true;
   error: string | null = null;
 
-  private submissionId: string | null = null;
+  private responseId: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private templateService: SurveyTemplateService,
-    private submissionService: SurveySubmissionService,
+    private responseService: SurveyResponseService,
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
-    this.submissionId = this.route.snapshot.paramMap.get('submissionId');
+    this.responseId = this.route.snapshot.paramMap.get('submissionId');
 
-    if (!this.submissionId) {
+    if (!this.responseId) {
       this.error = 'Invalid submission URL';
       this.loading = false;
       return;
     }
 
-    this.loadSubmission();
+    this.loadResponse();
   }
 
   /**
-   * Load the submission and survey
+   * Load the response and survey
    */
-  private loadSubmission(): void {
+  private loadResponse(): void {
     this.loading = true;
     this.error = null;
 
-    this.submissionService
-      .getById(this.submissionId!)
+    this.responseService
+      .getById(this.responseId!)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: submission => {
-          this.submission = submission;
-          this.loadSurveyJson(submission.template_id, submission.template_version);
+        next: response => {
+          this.response = response;
+
+          // Use the survey_json snapshot from the response if available
+          if (response.survey_json) {
+            this.surveyJson = response.survey_json;
+            this.initializeSurvey();
+            this.loading = false;
+            this.cdr.markForCheck();
+          } else {
+            // Fallback: fetch from template service
+            this.loadSurveyJson(response.template_id);
+          }
         },
         error: error => {
-          this.error = 'Failed to load submission';
+          this.error = 'Failed to load response';
           this.loading = false;
-          this.logger.error('Failed to load submission', error);
+          this.logger.error('Failed to load response', error);
           this.cdr.markForCheck();
         },
       });
   }
 
   /**
-   * Load the survey JSON
+   * Fallback: load the survey JSON from template service
    */
-  private loadSurveyJson(templateId: string, version: number): void {
+  private loadSurveyJson(templateId: string): void {
     this.templateService
-      .getVersionJson(templateId, version)
+      .getSurveyJson(templateId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: surveyJson => {
@@ -125,13 +135,13 @@ export class SubmissionDetailComponent implements OnInit {
    * Initialize the SurveyJS model in read-only mode
    */
   private initializeSurvey(): void {
-    if (!this.surveyJson || !this.submission) return;
+    if (!this.surveyJson || !this.response) return;
 
     // Create the survey model
     this.surveyModel = new Model(this.surveyJson);
 
     // Set the data
-    this.surveyModel.data = this.submission.data;
+    this.surveyModel.data = this.response.answers;
 
     // Set to read-only/display mode
     this.surveyModel.mode = 'display';
@@ -141,7 +151,7 @@ export class SubmissionDetailComponent implements OnInit {
     this.surveyModel.questionsOnPageMode = 'singlePage';
 
     this.logger.debug('Survey initialized in display mode', {
-      submissionId: this.submissionId,
+      responseId: this.responseId,
     });
   }
 
@@ -155,12 +165,13 @@ export class SubmissionDetailComponent implements OnInit {
   /**
    * Get status display info
    */
-  getStatusInfo(status: SubmissionStatus): { label: string; color: string; icon: string } {
-    const statusMap: Record<SubmissionStatus, { label: string; color: string; icon: string }> = {
+  getStatusInfo(status: ResponseStatus): { label: string; color: string; icon: string } {
+    const statusMap: Record<ResponseStatus, { label: string; color: string; icon: string }> = {
       draft: { label: 'Draft', color: 'default', icon: 'edit_note' },
       submitted: { label: 'Submitted', color: 'primary', icon: 'send' },
-      in_review: { label: 'In Review', color: 'accent', icon: 'rate_review' },
-      pending_triage: { label: 'Pending Triage', color: 'warn', icon: 'pending_actions' },
+      needs_revision: { label: 'Needs Revision', color: 'warn', icon: 'rate_review' },
+      ready_for_review: { label: 'Ready for Review', color: 'accent', icon: 'pending_actions' },
+      review_created: { label: 'Review Created', color: 'primary', icon: 'check_circle' },
     };
     return statusMap[status] ?? { label: status, color: 'default', icon: 'help' };
   }

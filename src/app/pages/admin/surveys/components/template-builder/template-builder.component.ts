@@ -151,45 +151,26 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Load an existing template for editing
+   * Load an existing template for editing (single fetch — template includes survey_json)
    */
   private loadTemplate(templateId: string): void {
     this.isLoading = true;
     this.error = null;
 
     this.templateService
-      .getById(templateId)
+      .getByIdAdmin(templateId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (template: SurveyTemplate) => {
           this.template = template;
-          this.loadTemplateVersion(templateId, template.current_version);
+          this.surveyJson = template.survey_json;
+          this.isLoading = false;
+          this.logger.debug('Template loaded', { templateId, version: template.version });
         },
         error: (err: unknown) => {
           this.isLoading = false;
           this.error = 'Failed to load template';
           this.logger.error('Failed to load template', err);
-        },
-      });
-  }
-
-  /**
-   * Load the survey JSON for a specific version
-   */
-  private loadTemplateVersion(templateId: string, version: number): void {
-    this.templateService
-      .getVersionJson(templateId, version)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (surveyJson: SurveyJsonSchema) => {
-          this.surveyJson = surveyJson;
-          this.isLoading = false;
-          this.logger.debug('Template loaded', { templateId, version });
-        },
-        error: (err: unknown) => {
-          this.isLoading = false;
-          this.error = 'Failed to load survey definition';
-          this.logger.error('Failed to load survey JSON', err);
         },
       });
   }
@@ -451,11 +432,16 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
 
     const saveObservable = this.templateId
       ? this.templateService.update(this.templateId, {
+          name: this.template?.name ?? this.surveyJson.title ?? 'Untitled Survey',
+          version: this.template?.version ?? '1',
           survey_json: this.surveyJson,
-          change_summary: 'Updated via builder',
+          description: this.template?.description,
+          status: this.template?.status,
+          settings: this.template?.settings,
         })
       : this.templateService.create({
           name: this.surveyJson.title ?? 'Untitled Survey',
+          version: '1',
           description: this.surveyJson.description,
           survey_json: this.surveyJson,
         });
