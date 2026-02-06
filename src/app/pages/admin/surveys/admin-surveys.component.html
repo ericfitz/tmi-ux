@@ -1,9 +1,13 @@
 <div class="admin-surveys-container">
   <div class="page-header">
     <h1 class="page-title">Survey Templates</h1>
-    <button mat-flat-button color="primary" (click)="createTemplate()">
-      <mat-icon>add</mat-icon>
-      Create Template
+    <button
+      mat-icon-button
+      class="close-button"
+      (click)="onClose()"
+      [attr.aria-label]="'common.close' | transloco"
+    >
+      <mat-icon>close</mat-icon>
     </button>
   </div>
 
@@ -27,6 +31,11 @@
         }
       </mat-select>
     </mat-form-field>
+
+    <button mat-flat-button color="primary" class="create-button" (click)="createTemplate()">
+      <mat-icon>add</mat-icon>
+      Create Template
+    </button>
   </div>
 
   @if (loading) {

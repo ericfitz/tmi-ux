@@ -7,7 +7,7 @@
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 24px;
 
   .page-title {
@@ -15,10 +15,18 @@
     font-size: 24px;
     font-weight: 500;
   }
+
+  .close-button {
+    margin-left: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .filters-row {
   display: flex;
+  align-items: flex-start;
   gap: 16px;
   margin-bottom: 24px;
 
@@ -29,6 +37,11 @@
 
   .status-filter {
     width: 180px;
+  }
+
+  .create-button {
+    margin-left: auto;
+    align-self: center;
   }
 
   mat-form-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {

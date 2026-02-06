@@ -48,6 +48,9 @@
 
 // Button icon alignment (exclude icon-only buttons)
 button:not([mat-icon-button]) mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
   vertical-align: middle;
   margin-right: 4px;
 }

@@ -17,6 +17,7 @@ import {
   FEEDBACK_MATERIAL_IMPORTS,
   FORM_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
+import { AuthService } from '@app/auth/services/auth.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyTemplateService } from '@app/pages/surveys/services/survey-template.service';
 import { SurveyTemplate, SurveyStatus } from '@app/types/survey.types';
@@ -61,6 +62,7 @@ export class AdminSurveysComponent implements OnInit {
   readonly displayedColumns = ['name', 'status', 'version', 'modified', 'actions'];
 
   constructor(
+    private authService: AuthService,
     private templateService: SurveyTemplateService,
     private router: Router,
     private dialog: MatDialog,
@@ -225,5 +227,16 @@ export class AdminSurveysComponent implements OnInit {
       month: 'short',
       day: 'numeric',
     });
+  }
+
+  /**
+   * Navigate back to admin page
+   */
+  onClose(): void {
+    if (this.authService.isAdmin) {
+      void this.router.navigate(['/admin']);
+    } else {
+      void this.router.navigate(['/dashboard']);
+    }
   }
 }
