@@ -245,7 +245,6 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(نقل)",
-    "createTemplate": "ٹیمپلیٹ بنائیں",
     "editTemplate": "ٹیمپلیٹ ترمیم کریں",
     "errorLoadingTemplates": "ٹیمپلیٹس لوڈ کرنے میں ناکام",
     "loadingTemplates": "ٹیمپلیٹس لوڈ ہو رہے ہیں...",
@@ -256,7 +255,74 @@
     "searchByName": "نام سے تلاش کریں...",
     "searchTemplates": "ٹیمپلیٹس تلاش کریں",
     "templateCount": "{{count}} ٹیمپلیٹ",
-    "templateCountPlural": "{{count}} ٹیمپلیٹس"
+    "templateCountPlural": "{{count}} ٹیمپلیٹس",
+    "createSurvey": "سروے بنائیں",
+    "surveyDetails": "سروے کی تفصیلات",
+    "templateBuilder": {
+      "addPage": "صفحہ شامل کریں",
+      "backToTemplates": "ٹیمپلیٹس پر واپس جائیں",
+      "choicesPerLine": "انتخابات (ہر لائن میں ایک)",
+      "deletePage": "صفحہ حذف کریں",
+      "deleteQuestion": "سوال حذف کریں",
+      "enterSurveyDescription": "سروے کی تفصیل درج کریں",
+      "enterSurveyTitle": "سروے کا عنوان درج کریں",
+      "failedToLoadTemplate": "ٹیمپلیٹ لوڈ کرنے میں ناکامی",
+      "failedToSaveTemplate": "ٹیمپلیٹ محفوظ کرنے میں ناکامی",
+      "loadingTemplate": "ٹیمپلیٹ لوڈ ہو رہا ہے...",
+      "mapsToTmField": "TM فیلڈ سے منسلک",
+      "metadataKey": "میٹا ڈیٹا کی",
+      "metadataKeyHint": "میٹا ڈیٹا انٹری کے لیے کی کا نام",
+      "nameId": "نام (ID)",
+      "nameIdHint": "اس سوال کے لیے منفرد شناخت کنندہ",
+      "nextPage": "اگلا صفحہ",
+      "noQuestionsHint": "سوال شامل کرنے کے لیے پیلیٹ سے سوال کی قسم پر کلک کریں",
+      "noQuestionsYet": "ابھی تک کوئی سوالات نہیں",
+      "pageIndicator": "صفحہ {{current}} از {{total}}",
+      "previousPage": "پچھلا صفحہ",
+      "questionProperties": "سوال کی خصوصیات",
+      "questionTypeDescriptions": {
+        "boolean": "بولین ٹوگل",
+        "checkbox": "متعدد انتخاب",
+        "comment": "کثیر السطر ٹیکسٹ ایریا",
+        "dropdown": "ڈراپ ڈاؤن انتخاب",
+        "panel": "پینل میں سوالات گروپ کریں",
+        "paneldynamic": "قابل تکرار پینل گروپ",
+        "radiogroup": "اختیارات میں سے واحد انتخاب",
+        "text": "واحد لائن ٹیکسٹ ان پٹ"
+      },
+      "questionTypeLabels": {
+        "boolean": "ہاں/نہیں",
+        "checkbox": "چیک باکس",
+        "comment": "کثیر السطر",
+        "dropdown": "ڈراپ ڈاؤن",
+        "panel": "پینل",
+        "paneldynamic": "ڈائنامک پینل",
+        "radiogroup": "ریڈیو گروپ",
+        "text": "ٹیکسٹ"
+      },
+      "questionTypes": "سوالات کی اقسام",
+      "questions": "سوالات",
+      "required": "ضروری",
+      "selectQuestionHint": "اس کی خصوصیات میں ترمیم کرنے کے لیے سوال منتخب کریں",
+      "tmFieldLabels": {
+        "assetDescription": "اثاثہ کی تفصیل",
+        "assetName": "اثاثہ کا نام",
+        "assetType": "اثاثہ کی قسم",
+        "description": "خطرے کے ماڈل کی تفصیل",
+        "documentName": "دستاویز کا نام",
+        "documentUrl": "دستاویز کا URL",
+        "issueUri": "مسئلہ ٹریکنگ URL",
+        "metadataKey": "حسب ضرورت میٹا ڈیٹا",
+        "name": "خطرے کے ماڈل کا نام",
+        "repositoryName": "ریپوزٹری کا نام",
+        "repositoryUrl": "ریپوزٹری کا URL"
+      },
+      "tmFieldMapping": "خطرے کے ماڈل فیلڈ میپنگ",
+      "tmFieldMappingHint": "اس جواب کو خطرے کے ماڈل فیلڈ سے منسلک کریں",
+      "unsavedChanges": "غیر محفوظ شدہ تبدیلیاں",
+      "visibleIf": "اگر نظر آئے",
+      "visibleIfHint": "مثال، {questionName} = 'value'"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "قدر درج کریں اور Enter دبائیں",
@@ -463,7 +529,8 @@
     "view": "دیکھیں",
     "viewMetadata": "میٹا ڈیٹا دیکھیں",
     "viewPermissions": "اجازتیں دیکھیں",
-    "viewThreat": "خطرہ دیکھیں"
+    "viewThreat": "خطرہ دیکھیں",
+    "title": "عنوان"
   },
   "contextMenu": {
     "addInverseConnection": "الٹا کنکشن شامل کریں",
