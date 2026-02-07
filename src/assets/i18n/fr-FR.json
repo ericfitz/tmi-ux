@@ -243,6 +243,21 @@
       "title": "Gerer les Webhooks"
     }
   },
+  "adminSurveys": {
+    "cloneSuffix": "(Copie)",
+    "createTemplate": "Créer un modèle",
+    "editTemplate": "Modifier le modèle",
+    "errorLoadingTemplates": "Échec du chargement des modèles",
+    "loadingTemplates": "Chargement des modèles...",
+    "noMatchingTitle": "Aucun modèle correspondant",
+    "noTemplatesMessage": "Créez votre premier modèle d'enquête pour commencer.",
+    "noTemplatesTitle": "Aucun modèle pour l'instant",
+    "pageTitle": "Modèles d'enquêtes",
+    "searchByName": "Rechercher par nom...",
+    "searchTemplates": "Rechercher des modèles",
+    "templateCount": "{{count}} modèle",
+    "templateCountPlural": "{{count}} modèles"
+  },
   "assetEditor": {
     "chipPlaceholder": "Entrez une valeur et appuyez sur Entree",
     "classification": "{{common.classification}}",
@@ -304,14 +319,18 @@
   "common": {
     "about": "A Propos",
     "actions": "Actions",
+    "activate": "Activer",
     "addMetadata": "Ajouter des Metadonnees",
     "addThreat": "Ajouter une Menace",
     "addons": "Modules",
+    "allStatuses": "Tous les statuts",
+    "archive": "Archiver",
     "back": "Retour",
     "cancel": "Annuler",
     "cellId": "ID de Cellule",
     "classification": "Classification",
     "clear": "Effacer",
+    "clone": "Cloner",
     "close": "Fermer",
     "confirmDelete": "Etes-vous sur de vouloir supprimer {{item}} \"{{name}}\" ? Cette action est irreversible.",
     "confirmDeleteMessage": "Êtes-vous sûr de vouloir supprimer {{objectType}} « {{name}} » ?",
@@ -321,6 +340,7 @@
     "created": "Cree",
     "criticality": "Criticité",
     "cut": "Couper",
+    "deactivate": "Désactiver",
     "delete": "Supprimer",
     "deleteConfirm": "Supprimer le Modele de Menaces",
     "deleteWarningConfirmationField": "Confirmation de suppression",
@@ -338,6 +358,7 @@
     "edit": "Modifier",
     "editThreat": "Modifier la Menace",
     "emailLabel": "Adresse E-mail",
+    "error": "Erreur",
     "fonts": "Polices",
     "id": "ID",
     "identityProvider": "Fournisseur d'Identite",
@@ -345,6 +366,7 @@
     "language": "{{language}}",
     "lastModified": "Derniere Modification",
     "lastUpdated": "Derniere mise a jour",
+    "loading": "Chargement...",
     "manage": "Gerer",
     "manageMetadata": "Gerer les Metadonnees",
     "manageThreats": "Gerer les Menaces",
@@ -354,9 +376,11 @@
     "mitigated": "Attenue",
     "mitigation": "Attenuation",
     "mitigationPlaceholder": "Decrivez les attenuations recommandees ou prevues pour cette menace",
+    "moreActions": "Plus d'actions",
     "name": "Nom",
     "noAddonsAvailable": "Aucun module complémentaire disponible",
     "noDataAvailable": "Aucune Donnee Disponible",
+    "noMatchingResults": "Aucun résultat ne correspond à vos filtres.",
     "noMetadata": "Aucune Metadonnee Disponible",
     "noThreats": "Aucune Menace Disponible",
     "none": "Aucun",
@@ -396,6 +420,7 @@
     "provider": "Fournisseur",
     "readOnly": "Lecture Seule",
     "readOnlyTooltip": "Vous avez un acces en lecture seule a ce modele de menaces. Contactez le proprietaire pour demander des permissions de modification.",
+    "retry": "Réessayer",
     "roles": {
       "owner": "Proprietaire",
       "reader": "Lecteur",
@@ -405,6 +430,8 @@
     "saveAndClose": "Enregistrer et Fermer",
     "savedSuccessfully": "Enregistré avec succès",
     "score": "Score",
+    "search": "Rechercher",
+    "selected": "{{count}} sélectionné(s)",
     "sensitivity": "Sensibilité",
     "sessionRoles": {
       "host": "Hote",
@@ -417,10 +444,12 @@
       "group": "Groupe",
       "user": "Utilisateur"
     },
+    "template": "Modèle",
     "threatDescription": "Description de la Menace",
     "threatDescriptionPlaceholder": "Decrivez la Menace en Detail",
     "threatName": "Nom de la Menace",
     "threatType": "Type de Menace",
+    "tryAdjustingFilters": "Essayez d'ajuster vos filtres.",
     "type": "Type",
     "unsavedChangesWarning": "Vous avez des modifications non enregistrees. Etes-vous sur de vouloir fermer ?",
     "userId": "ID Utilisateur",
@@ -430,6 +459,7 @@
       "nameRequired": "Le nom est obligatoire",
       "required": "Ce champ est obligatoire"
     },
+    "version": "Version",
     "view": "Voir",
     "viewMetadata": "Voir les Metadonnees",
     "viewPermissions": "Voir les Permissions",
@@ -698,6 +728,18 @@
       "submitConfirm": "Êtes-vous sûr de vouloir soumettre ? Vous ne pourrez plus modifier vos réponses après la soumission.",
       "title": "Remplir l'enquête"
     },
+    "list": {
+      "deleteDraft": "Supprimer le brouillon",
+      "draftStarted": "Brouillon commencé {{time}}",
+      "errorLoadingSurveys": "Échec du chargement des enquêtes",
+      "lastModified": "Dernière modification {{time}}",
+      "loadingSurveys": "Chargement des enquêtes...",
+      "noSurveysMessage": "Il n'y a pas d'enquêtes actives pour le moment. Revenez plus tard.",
+      "noSurveysTitle": "Aucune enquête disponible",
+      "pageTitle": "Enquêtes disponibles",
+      "updated": "Mis à jour",
+      "yourDrafts": "Vos brouillons"
+    },
     "myResponses": "Mes réponses",
     "noResponses": "Vous n'avez encore soumis aucune réponse d'enquête",
     "noSurveys": "Aucune enquête disponible",
@@ -711,6 +753,11 @@
       "submitted": "Soumis"
     },
     "submitSurvey": "Soumettre l'enquête",
+    "templateStatus": {
+      "active": "Active",
+      "archived": "Archivée",
+      "inactive": "Inactive"
+    },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Voir la réponse"
   },
@@ -943,6 +990,20 @@
       "allStatuses": "Tous les statuts",
       "allTemplates": "Tous les modèles",
       "clearFilters": "Effacer les filtres"
+    },
+    "list": {
+      "allSurveys": "Toutes les enquêtes",
+      "approve": "Approuver",
+      "approveSelected": "Approuver la sélection",
+      "errorLoadingResponses": "Échec du chargement des réponses",
+      "loadingResponses": "Chargement des réponses...",
+      "noResponsesFiltered": "Aucune réponse ne correspond à vos filtres",
+      "noResponsesTitle": "Aucune réponse",
+      "noResponsesToTriage": "Il n'y a pas de réponses d'enquête à trier",
+      "notSubmitted": "Non soumise",
+      "searchPlaceholder": "Rechercher par soumetteur ou modèle...",
+      "submitted": "Soumise",
+      "submitter": "Soumetteur"
     },
     "markInReview": "Marquer en révision",
     "markPendingTriage": "Marquer en attente de triage",

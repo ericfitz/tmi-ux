@@ -9,7 +9,7 @@ import {
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -52,11 +52,11 @@ export class AdminSurveysComponent implements OnInit {
   statusFilter: SurveyStatus | 'all' = 'all';
   searchText = '';
 
-  readonly statusOptions: { value: SurveyStatus | 'all'; label: string }[] = [
-    { value: 'all', label: 'All Statuses' },
-    { value: 'active', label: 'Active' },
-    { value: 'inactive', label: 'Inactive' },
-    { value: 'archived', label: 'Archived' },
+  readonly statusOptions: { value: SurveyStatus | 'all'; labelKey: string }[] = [
+    { value: 'all', labelKey: 'common.allStatuses' },
+    { value: 'active', labelKey: 'surveys.templateStatus.active' },
+    { value: 'inactive', labelKey: 'surveys.templateStatus.inactive' },
+    { value: 'archived', labelKey: 'surveys.templateStatus.archived' },
   ];
 
   readonly displayedColumns = ['name', 'status', 'version', 'modified', 'actions'];
@@ -68,6 +68,7 @@ export class AdminSurveysComponent implements OnInit {
     private dialog: MatDialog,
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService,
   ) {}
 
   ngOnInit(): void {
@@ -92,7 +93,7 @@ export class AdminSurveysComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: error => {
-          this.error = 'Failed to load templates';
+          this.error = this.transloco.translate('adminSurveys.errorLoadingTemplates');
           this.loading = false;
           this.logger.error('Failed to load survey templates', error);
           this.cdr.markForCheck();
@@ -150,7 +151,7 @@ export class AdminSurveysComponent implements OnInit {
    * Clone a template
    */
   cloneTemplate(template: SurveyListItem): void {
-    const newName = `${template.name} (Copy)`;
+    const newName = `${template.name} ${this.transloco.translate('adminSurveys.cloneSuffix')}`;
 
     this.surveyService
       .clone(template.id, newName)
@@ -206,27 +207,15 @@ export class AdminSurveysComponent implements OnInit {
   }
 
   /**
-   * Get status display info
+   * Get status icon
    */
-  getStatusInfo(status: SurveyStatus): { label: string; color: string; icon: string } {
-    const statusMap: Record<SurveyStatus, { label: string; color: string; icon: string }> = {
-      active: { label: 'Active', color: 'primary', icon: 'check_circle' },
-      inactive: { label: 'Inactive', color: 'default', icon: 'pause_circle' },
-      archived: { label: 'Archived', color: 'warn', icon: 'archive' },
+  getStatusIcon(status: SurveyStatus): string {
+    const iconMap: Record<SurveyStatus, string> = {
+      active: 'check_circle',
+      inactive: 'pause_circle',
+      archived: 'archive',
     };
-    return statusMap[status] ?? { label: status, color: 'default', icon: 'help' };
-  }
-
-  /**
-   * Format date for display
-   */
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    return iconMap[status] ?? 'help';
   }
 
   /**

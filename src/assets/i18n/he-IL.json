@@ -243,6 +243,21 @@
       "title": "ניהול Webhooks"
     }
   },
+  "adminSurveys": {
+    "cloneSuffix": "(עותק)",
+    "createTemplate": "יצירת תבנית",
+    "editTemplate": "עריכת תבנית",
+    "errorLoadingTemplates": "טעינת התבניות נכשלה",
+    "loadingTemplates": "טוען תבניות...",
+    "noMatchingTitle": "אין תבניות תואמות",
+    "noTemplatesMessage": "צור את תבנית הסקר הראשונה שלך כדי להתחיל.",
+    "noTemplatesTitle": "אין עדיין תבניות",
+    "pageTitle": "תבניות סקרים",
+    "searchByName": "חיפוש לפי שם...",
+    "searchTemplates": "חיפוש תבניות",
+    "templateCount": "תבנית {{count}}",
+    "templateCountPlural": "{{count}} תבניות"
+  },
   "assetEditor": {
     "chipPlaceholder": "הזן ערך ולחץ Enter",
     "classification": "{{common.classification}}",
@@ -304,14 +319,18 @@
   "common": {
     "about": "אודות",
     "actions": "פעולות",
+    "activate": "הפעלה",
     "addMetadata": "הוסף מטא-נתונים",
     "addThreat": "הוסף איום",
     "addons": "תוספים",
+    "allStatuses": "כל הסטטוסים",
+    "archive": "ארכיון",
     "back": "חזרה",
     "cancel": "ביטול",
     "cellId": "מזהה תא",
     "classification": "סיווג",
     "clear": "נקה",
+    "clone": "שכפול",
     "close": "סגור",
     "confirmDelete": "האם אתה בטוח שברצונך למחוק את {{item}} \"{{name}}\"? פעולה זו אינה ניתנת לביטול.",
     "confirmDeleteMessage": "האם אתה בטוח שברצונך למחוק את {{objectType}} \"{{name}}\"?",
@@ -321,6 +340,7 @@
     "created": "נוצר",
     "criticality": "קריטיות",
     "cut": "גזור",
+    "deactivate": "השבתה",
     "delete": "מחק",
     "deleteConfirm": "מחק מודל איומים",
     "deleteWarningConfirmationField": "אישור מחיקה",
@@ -338,6 +358,7 @@
     "edit": "ערוך",
     "editThreat": "ערוך איום",
     "emailLabel": "כתובת דוא\"ל",
+    "error": "שגיאה",
     "fonts": "גופנים",
     "id": "מזהה",
     "identityProvider": "ספק זהות",
@@ -345,6 +366,7 @@
     "language": "{{language}}",
     "lastModified": "שונה לאחרונה",
     "lastUpdated": "עודכן לאחרונה",
+    "loading": "טוען...",
     "manage": "נהל",
     "manageMetadata": "נהל מטא-נתונים",
     "manageThreats": "נהל איומים",
@@ -354,9 +376,11 @@
     "mitigated": "הופחת",
     "mitigation": "הפחתה",
     "mitigationPlaceholder": "תאר את ההפחתות המומלצות או המתוכננות לאיום זה",
+    "moreActions": "פעולות נוספות",
     "name": "שם",
     "noAddonsAvailable": "אין תוספים זמינים",
     "noDataAvailable": "אין נתונים זמינים",
+    "noMatchingResults": "אין תוצאות התואמות למסננים שלך.",
     "noMetadata": "אין מטא-נתונים זמינים",
     "noThreats": "אין איומים זמינים",
     "none": "אין",
@@ -396,6 +420,7 @@
     "provider": "ספק",
     "readOnly": "קריאה בלבד",
     "readOnlyTooltip": "יש לך גישה לקריאה בלבד למודל איומים זה. פנה לבעלים לבקשת הרשאות עריכה.",
+    "retry": "נסה שוב",
     "roles": {
       "owner": "בעלים",
       "reader": "קורא",
@@ -405,6 +430,8 @@
     "saveAndClose": "שמור וסגור",
     "savedSuccessfully": "נשמר בהצלחה",
     "score": "ציון",
+    "search": "חיפוש",
+    "selected": "{{count}} נבחרו",
     "sensitivity": "רגישות",
     "sessionRoles": {
       "host": "מארח",
@@ -417,10 +444,12 @@
       "group": "קבוצה",
       "user": "משתמש"
     },
+    "template": "תבנית",
     "threatDescription": "תיאור האיום",
     "threatDescriptionPlaceholder": "תאר את האיום בפירוט",
     "threatName": "שם האיום",
     "threatType": "סוג איום",
+    "tryAdjustingFilters": "נסה להתאים את המסננים שלך.",
     "type": "סוג",
     "unsavedChangesWarning": "יש לך שינויים שלא נשמרו. האם אתה בטוח שברצונך לסגור?",
     "userId": "מזהה משתמש",
@@ -430,6 +459,7 @@
       "nameRequired": "השם נדרש",
       "required": "שדה זה נדרש"
     },
+    "version": "גרסה",
     "view": "צפה",
     "viewMetadata": "צפה במטא-נתונים",
     "viewPermissions": "צפה בהרשאות",
@@ -698,6 +728,18 @@
       "submitConfirm": "האם אתה בטוח שברצונך לשלוח? לא תוכל לערוך את התגובות שלך לאחר השליחה.",
       "title": "מילוי סקר"
     },
+    "list": {
+      "deleteDraft": "מחיקת טיוטה",
+      "draftStarted": "טיוטה התחילה {{time}}",
+      "errorLoadingSurveys": "טעינת הסקרים נכשלה",
+      "lastModified": "שונה לאחרונה {{time}}",
+      "loadingSurveys": "טוען סקרים...",
+      "noSurveysMessage": "אין סקרים פעילים כרגע. בדוק שוב מאוחר יותר.",
+      "noSurveysTitle": "אין סקרים זמינים",
+      "pageTitle": "סקרים זמינים",
+      "updated": "עודכן",
+      "yourDrafts": "הטיוטות שלך"
+    },
     "myResponses": "התגובות שלי",
     "noResponses": "עדיין לא שלחת תגובות לסקר",
     "noSurveys": "אין סקרים זמינים",
@@ -711,6 +753,11 @@
       "submitted": "נשלח"
     },
     "submitSurvey": "שלח סקר",
+    "templateStatus": {
+      "active": "פעיל",
+      "archived": "בארכיון",
+      "inactive": "לא פעיל"
+    },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "הצג תגובה"
   },
@@ -943,6 +990,20 @@
       "allStatuses": "כל הסטטוסים",
       "allTemplates": "כל התבניות",
       "clearFilters": "נקה מסננים"
+    },
+    "list": {
+      "allSurveys": "כל הסקרים",
+      "approve": "אישור",
+      "approveSelected": "אישור הנבחרים",
+      "errorLoadingResponses": "טעינת התגובות נכשלה",
+      "loadingResponses": "טוען תגובות...",
+      "noResponsesFiltered": "אין תגובות התואמות למסננים שלך",
+      "noResponsesTitle": "אין תגובות",
+      "noResponsesToTriage": "אין תגובות סקר למיון",
+      "notSubmitted": "לא הוגש",
+      "searchPlaceholder": "חיפוש לפי מגיש או תבנית...",
+      "submitted": "הוגש",
+      "submitter": "מגיש"
     },
     "markInReview": "סמן בבדיקה",
     "markPendingTriage": "סמן ממתין לטריאז'",

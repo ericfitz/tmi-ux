@@ -256,6 +256,21 @@
       "title": "Manage Webhooks"
     }
   },
+  "adminSurveys": {
+    "cloneSuffix": "(Copy)",
+    "createTemplate": "Create Template",
+    "editTemplate": "Edit template",
+    "errorLoadingTemplates": "Failed to load templates",
+    "loadingTemplates": "Loading templates...",
+    "noMatchingTitle": "No Matching Templates",
+    "noTemplatesMessage": "Create your first survey template to get started.",
+    "noTemplatesTitle": "No Templates Yet",
+    "pageTitle": "Survey Templates",
+    "searchByName": "Search by name...",
+    "searchTemplates": "Search templates",
+    "templateCount": "{{count}} template",
+    "templateCountPlural": "{{count}} templates"
+  },
   "assetEditor": {
     "chipPlaceholder": "Enter value and press Enter",
     "chipPlaceholder.comment": "The first 'Enter' is an imperative verb.  The second is a reference to the enter/return key on the keyboard.",
@@ -320,9 +335,12 @@
   "common": {
     "about": "About",
     "actions": "Actions",
+    "activate": "Activate",
     "addMetadata": "Add Metadata",
     "addThreat": "Add Threat",
     "addons": "Addons",
+    "allStatuses": "All Statuses",
+    "archive": "Archive",
     "back": "Back",
     "back.comment": "Used as a tooltip or label for buttons that allows a user to navigate to the previous page.",
     "cancel": "Cancel",
@@ -330,6 +348,7 @@
     "classification": "Classification",
     "classification.comment": "Used in the sense of the category that something is placed in.",
     "clear": "Clear",
+    "clone": "Clone",
     "close": "Close",
     "confirmDelete": "Are you sure you want to delete the {{item}} \"{{name}}\"? This action cannot be undone.",
     "confirmDeleteMessage": "Are you sure you want to delete the {{objectType}} \"{{name}}\"?",
@@ -340,6 +359,7 @@
     "criticality": "Criticality",
     "criticality.comment": "Used in the sense of how important something is, or how much impact would occur.",
     "cut": "Cut",
+    "deactivate": "Deactivate",
     "delete": "Delete",
     "deleteConfirm": "Confirm Deletion",
     "deleteWarningConfirmationField": "Delete Confirmation",
@@ -357,6 +377,7 @@
     "edit": "Edit",
     "editThreat": "Edit Threat",
     "emailLabel": "Email Address",
+    "error": "Error",
     "fonts": "Fonts",
     "id": "ID",
     "identityProvider": "Identity Provider",
@@ -364,6 +385,7 @@
     "language": "{{language}}",
     "lastModified": "Last Modified",
     "lastUpdated": "Last updated",
+    "loading": "Loading...",
     "manage": "Manage",
     "manageMetadata": "Manage Metadata",
     "manageThreats": "Manage Threats",
@@ -373,10 +395,12 @@
     "mitigated": "Mitigated",
     "mitigation": "Mitigation",
     "mitigationPlaceholder": "Describe recommended or planned mitigation(s) for this threat",
+    "moreActions": "More actions",
     "name": "Name",
     "name.comment": "The German (de-DE) word for name is the same as the English word.",
     "noAddonsAvailable": "No addons available",
     "noDataAvailable": "No Data Available",
+    "noMatchingResults": "No results match your filters.",
     "noMetadata": "No Metadata Available",
     "noThreats": "No Threats Available",
     "none": "None",
@@ -416,6 +440,7 @@
     "provider": "Provider",
     "readOnly": "Read-Only",
     "readOnlyTooltip": "You have read-only access to this threat model. Contact the owner to request edit permissions.",
+    "retry": "Retry",
     "roles": {
       "owner": "Owner",
       "reader": "Reader",
@@ -425,6 +450,8 @@
     "saveAndClose": "Save and Close",
     "savedSuccessfully": "Saved successfully",
     "score": "Score",
+    "search": "Search",
+    "selected": "{{count}} selected",
     "sensitivity": "Sensitivity",
     "sensitivity.comment": "Used in the sense of how damaging something would be if it were discovered, not in the sense of the keenness of senses.",
     "sessionRoles": {
@@ -438,10 +465,12 @@
       "group": "Group",
       "user": "User"
     },
+    "template": "Template",
     "threatDescription": "Threat Description",
     "threatDescriptionPlaceholder": "Describe the Threat in Detail",
     "threatName": "Threat Name",
     "threatType": "Threat Type",
+    "tryAdjustingFilters": "Try adjusting your filters.",
     "type": "Type",
     "unsavedChangesWarning": "You have unsaved changes. Are you sure you want to close?",
     "userId": "User ID",
@@ -451,6 +480,7 @@
       "nameRequired": "Name is required",
       "required": "This field is required"
     },
+    "version": "Version",
     "view": "View",
     "view.comment": "View is used as a verb here.",
     "viewMetadata": "View Metadata",
@@ -721,6 +751,18 @@
       "submitConfirm": "Are you sure you want to submit? You won't be able to edit your responses after submitting.",
       "title": "Fill Survey"
     },
+    "list": {
+      "deleteDraft": "Delete draft",
+      "draftStarted": "Draft started {{time}}",
+      "errorLoadingSurveys": "Failed to load surveys",
+      "lastModified": "Last modified {{time}}",
+      "loadingSurveys": "Loading surveys...",
+      "noSurveysMessage": "There are no active surveys at this time. Check back later.",
+      "noSurveysTitle": "No Surveys Available",
+      "pageTitle": "Available Surveys",
+      "updated": "Updated",
+      "yourDrafts": "Your Drafts"
+    },
     "myResponses": "My Responses",
     "noResponses": "You haven't submitted any survey responses yet",
     "noSurveys": "No surveys available",
@@ -734,6 +776,11 @@
       "submitted": "Submitted"
     },
     "submitSurvey": "Submit Survey",
+    "templateStatus": {
+      "active": "Active",
+      "archived": "Archived",
+      "inactive": "Inactive"
+    },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "View Response"
   },
@@ -970,6 +1017,20 @@
       "allStatuses": "All Statuses",
       "allTemplates": "All Templates",
       "clearFilters": "Clear Filters"
+    },
+    "list": {
+      "allSurveys": "All Surveys",
+      "approve": "Approve",
+      "approveSelected": "Approve Selected",
+      "errorLoadingResponses": "Failed to load responses",
+      "loadingResponses": "Loading responses...",
+      "noResponsesFiltered": "No responses match your filters",
+      "noResponsesTitle": "No Responses",
+      "noResponsesToTriage": "There are no survey responses to triage",
+      "notSubmitted": "Not submitted",
+      "searchPlaceholder": "Search by submitter or template...",
+      "submitted": "Submitted",
+      "submitter": "Submitter"
     },
     "markInReview": "Mark In Review",
     "markPendingTriage": "Mark Pending Triage",

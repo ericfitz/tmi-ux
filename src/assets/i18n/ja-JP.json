@@ -243,6 +243,21 @@
       "title": "Webhooksの管理"
     }
   },
+  "adminSurveys": {
+    "cloneSuffix": "（コピー）",
+    "createTemplate": "テンプレートを作成",
+    "editTemplate": "テンプレートを編集",
+    "errorLoadingTemplates": "テンプレートの読み込みに失敗しました",
+    "loadingTemplates": "テンプレートを読み込み中...",
+    "noMatchingTitle": "一致するテンプレートはありません",
+    "noTemplatesMessage": "最初のアンケートテンプレートを作成して始めましょう。",
+    "noTemplatesTitle": "テンプレートはまだありません",
+    "pageTitle": "アンケートテンプレート",
+    "searchByName": "名前で検索...",
+    "searchTemplates": "テンプレートを検索",
+    "templateCount": "{{count}} テンプレート",
+    "templateCountPlural": "{{count}} テンプレート"
+  },
   "assetEditor": {
     "chipPlaceholder": "値を入力してEnterを押してください",
     "classification": "{{common.classification}}",
@@ -304,14 +319,18 @@
   "common": {
     "about": "概要",
     "actions": "アクション",
+    "activate": "有効化",
     "addMetadata": "メタデータを追加",
     "addThreat": "脅威を追加",
     "addons": "アドオン",
+    "allStatuses": "すべてのステータス",
+    "archive": "アーカイブ",
     "back": "戻る",
     "cancel": "キャンセル",
     "cellId": "セルID",
     "classification": "分類",
     "clear": "クリア",
+    "clone": "複製",
     "close": "閉じる",
     "confirmDelete": "{{item}}「{{name}}」を削除してもよろしいですか？この操作は元に戻せません。",
     "confirmDeleteMessage": "{{objectType}}「{{name}}」を削除してもよろしいですか？",
@@ -321,6 +340,7 @@
     "created": "作成日時",
     "criticality": "重要度",
     "cut": "切り取り",
+    "deactivate": "無効化",
     "delete": "削除",
     "deleteConfirm": "脅威モデルを削除",
     "deleteWarningConfirmationField": "削除の確認",
@@ -338,6 +358,7 @@
     "edit": "編集",
     "editThreat": "脅威を編集",
     "emailLabel": "メールアドレス",
+    "error": "エラー",
     "fonts": "フォント",
     "id": "ID",
     "identityProvider": "IDプロバイダー",
@@ -345,6 +366,7 @@
     "language": "{{language}}",
     "lastModified": "最終更新日",
     "lastUpdated": "最終更新",
+    "loading": "読み込み中...",
     "manage": "管理",
     "manageMetadata": "メタデータを管理",
     "manageThreats": "脅威を管理",
@@ -354,9 +376,11 @@
     "mitigated": "軽減済み",
     "mitigation": "軽減策",
     "mitigationPlaceholder": "この脅威に対する推奨または計画された軽減策を記述してください",
+    "moreActions": "その他の操作",
     "name": "名前",
     "noAddonsAvailable": "利用可能なアドオンがありません",
     "noDataAvailable": "データがありません",
+    "noMatchingResults": "フィルターに一致する結果はありません。",
     "noMetadata": "メタデータがありません",
     "noThreats": "脅威がありません",
     "none": "なし",
@@ -396,6 +420,7 @@
     "provider": "プロバイダー",
     "readOnly": "読み取り専用",
     "readOnlyTooltip": "この脅威モデルへの読み取り専用アクセス権があります。編集権限についてはオーナーにお問い合わせください。",
+    "retry": "再試行",
     "roles": {
       "owner": "オーナー",
       "reader": "閲覧者",
@@ -405,6 +430,8 @@
     "saveAndClose": "保存して閉じる",
     "savedSuccessfully": "保存しました",
     "score": "スコア",
+    "search": "検索",
+    "selected": "{{count}} 件選択",
     "sensitivity": "機密度",
     "sessionRoles": {
       "host": "ホスト",
@@ -417,10 +444,12 @@
       "group": "グループ",
       "user": "ユーザー"
     },
+    "template": "テンプレート",
     "threatDescription": "脅威の説明",
     "threatDescriptionPlaceholder": "脅威を詳細に説明してください",
     "threatName": "脅威名",
     "threatType": "脅威タイプ",
+    "tryAdjustingFilters": "フィルターを調整してみてください。",
     "type": "タイプ",
     "unsavedChangesWarning": "保存されていない変更があります。閉じてもよろしいですか？",
     "userId": "ユーザーID",
@@ -430,6 +459,7 @@
       "nameRequired": "名前は必須です",
       "required": "このフィールドは必須です"
     },
+    "version": "バージョン",
     "view": "表示",
     "viewMetadata": "メタデータを表示",
     "viewPermissions": "権限を表示",
@@ -698,6 +728,18 @@
       "submitConfirm": "送信してもよろしいですか？送信後は回答を編集できなくなります。",
       "title": "調査に回答"
     },
+    "list": {
+      "deleteDraft": "下書きを削除",
+      "draftStarted": "下書き開始 {{time}}",
+      "errorLoadingSurveys": "アンケートの読み込みに失敗しました",
+      "lastModified": "最終更新 {{time}}",
+      "loadingSurveys": "アンケートを読み込み中...",
+      "noSurveysMessage": "現在アクティブなアンケートはありません。後でもう一度確認してください。",
+      "noSurveysTitle": "利用可能なアンケートはありません",
+      "pageTitle": "利用可能なアンケート",
+      "updated": "更新済み",
+      "yourDrafts": "下書き"
+    },
     "myResponses": "自分の回答",
     "noResponses": "まだ調査回答を送信していません",
     "noSurveys": "利用可能な調査がありません",
@@ -711,6 +753,11 @@
       "submitted": "送信済み"
     },
     "submitSurvey": "調査を送信",
+    "templateStatus": {
+      "active": "有効",
+      "archived": "アーカイブ済み",
+      "inactive": "無効"
+    },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "回答を表示"
   },
@@ -943,6 +990,20 @@
       "allStatuses": "すべてのステータス",
       "allTemplates": "すべてのテンプレート",
       "clearFilters": "フィルタをクリア"
+    },
+    "list": {
+      "allSurveys": "すべてのアンケート",
+      "approve": "承認",
+      "approveSelected": "選択を承認",
+      "errorLoadingResponses": "回答の読み込みに失敗しました",
+      "loadingResponses": "回答を読み込み中...",
+      "noResponsesFiltered": "フィルターに一致する回答はありません",
+      "noResponsesTitle": "回答なし",
+      "noResponsesToTriage": "トリアージするアンケート回答はありません",
+      "notSubmitted": "未提出",
+      "searchPlaceholder": "提出者またはテンプレートで検索...",
+      "submitted": "提出済み",
+      "submitter": "提出者"
     },
     "markInReview": "レビュー中に設定",
     "markPendingTriage": "トリアージ待ちに設定",

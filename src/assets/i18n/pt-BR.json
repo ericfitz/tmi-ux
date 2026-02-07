@@ -243,6 +243,21 @@
       "title": "Gerenciar Webhooks"
     }
   },
+  "adminSurveys": {
+    "cloneSuffix": "(Cópia)",
+    "createTemplate": "Criar Modelo",
+    "editTemplate": "Editar modelo",
+    "errorLoadingTemplates": "Falha ao carregar modelos",
+    "loadingTemplates": "Carregando modelos...",
+    "noMatchingTitle": "Nenhum Modelo Correspondente",
+    "noTemplatesMessage": "Crie seu primeiro modelo de pesquisa para começar.",
+    "noTemplatesTitle": "Nenhum Modelo Ainda",
+    "pageTitle": "Modelos de Pesquisa",
+    "searchByName": "Pesquisar por nome...",
+    "searchTemplates": "Pesquisar modelos",
+    "templateCount": "{{count}} modelo",
+    "templateCountPlural": "{{count}} modelos"
+  },
   "assetEditor": {
     "chipPlaceholder": "Digite o valor e pressione Enter",
     "classification": "{{common.classification}}",
@@ -304,14 +319,18 @@
   "common": {
     "about": "Sobre",
     "actions": "Acoes",
+    "activate": "Ativar",
     "addMetadata": "Adicionar Metadados",
     "addThreat": "Adicionar Ameaca",
     "addons": "Complementos",
+    "allStatuses": "Todos os Status",
+    "archive": "Arquivar",
     "back": "Voltar",
     "cancel": "Cancelar",
     "cellId": "ID da Celula",
     "classification": "Classificação",
     "clear": "Limpar",
+    "clone": "Clonar",
     "close": "Fechar",
     "confirmDelete": "Tem certeza de que deseja excluir {{item}} \"{{name}}\"? Esta acao nao pode ser desfeita.",
     "confirmDeleteMessage": "Tem certeza de que deseja excluir {{objectType}} \"{{name}}\"?",
@@ -321,6 +340,7 @@
     "created": "Criado",
     "criticality": "Criticidade",
     "cut": "Recortar",
+    "deactivate": "Desativar",
     "delete": "Excluir",
     "deleteConfirm": "Excluir Modelo de Ameacas",
     "deleteWarningConfirmationField": "Confirmação de Exclusão",
@@ -338,6 +358,7 @@
     "edit": "Editar",
     "editThreat": "Editar Ameaca",
     "emailLabel": "Endereco de E-mail",
+    "error": "Erro",
     "fonts": "Fontes",
     "id": "ID",
     "identityProvider": "Provedor de Identidade",
@@ -345,6 +366,7 @@
     "language": "{{language}}",
     "lastModified": "Ultima Modificacao",
     "lastUpdated": "Ultima atualizacao",
+    "loading": "Carregando...",
     "manage": "Gerenciar",
     "manageMetadata": "Gerenciar Metadados",
     "manageThreats": "Gerenciar Ameacas",
@@ -354,9 +376,11 @@
     "mitigated": "Mitigado",
     "mitigation": "Mitigacao",
     "mitigationPlaceholder": "Descreva as mitigacoes recomendadas ou planejadas para esta ameaca",
+    "moreActions": "Mais ações",
     "name": "Nome",
     "noAddonsAvailable": "Nenhum addon disponível",
     "noDataAvailable": "Nenhum Dado Disponivel",
+    "noMatchingResults": "Nenhum resultado corresponde aos seus filtros.",
     "noMetadata": "Nenhum Metadado Disponivel",
     "noThreats": "Nenhuma Ameaca Disponivel",
     "none": "Nenhum",
@@ -396,6 +420,7 @@
     "provider": "Provedor",
     "readOnly": "Somente Leitura",
     "readOnlyTooltip": "Voce tem acesso somente leitura a este modelo de ameacas. Entre em contato com o proprietario para solicitar permissoes de edicao.",
+    "retry": "Tentar novamente",
     "roles": {
       "owner": "Proprietario",
       "reader": "Leitor",
@@ -405,6 +430,8 @@
     "saveAndClose": "Salvar e Fechar",
     "savedSuccessfully": "Salvo com sucesso",
     "score": "Pontuacao",
+    "search": "Pesquisar",
+    "selected": "{{count}} selecionado(s)",
     "sensitivity": "Sensibilidade",
     "sessionRoles": {
       "host": "Anfitriao",
@@ -417,10 +444,12 @@
       "group": "Grupo",
       "user": "Usuario"
     },
+    "template": "Modelo",
     "threatDescription": "Descricao da Ameaca",
     "threatDescriptionPlaceholder": "Descreva a Ameaca em Detalhes",
     "threatName": "Nome da Ameaca",
     "threatType": "Tipo de Ameaca",
+    "tryAdjustingFilters": "Tente ajustar seus filtros.",
     "type": "Tipo",
     "unsavedChangesWarning": "Voce tem alteracoes nao salvas. Tem certeza de que deseja fechar?",
     "userId": "ID do Usuario",
@@ -430,6 +459,7 @@
       "nameRequired": "Nome e obrigatorio",
       "required": "Este campo e obrigatorio"
     },
+    "version": "Versão",
     "view": "Visualizar",
     "viewMetadata": "Visualizar Metadados",
     "viewPermissions": "Visualizar Permissoes",
@@ -698,6 +728,18 @@
       "submitConfirm": "Tem certeza que deseja enviar? Você não poderá editar suas respostas após o envio.",
       "title": "Preencher Pesquisa"
     },
+    "list": {
+      "deleteDraft": "Excluir rascunho",
+      "draftStarted": "Rascunho iniciado {{time}}",
+      "errorLoadingSurveys": "Falha ao carregar pesquisas",
+      "lastModified": "Última modificação {{time}}",
+      "loadingSurveys": "Carregando pesquisas...",
+      "noSurveysMessage": "Não há pesquisas ativas no momento. Verifique novamente mais tarde.",
+      "noSurveysTitle": "Nenhuma Pesquisa Disponível",
+      "pageTitle": "Pesquisas Disponíveis",
+      "updated": "Atualizado",
+      "yourDrafts": "Seus Rascunhos"
+    },
     "myResponses": "Minhas Respostas",
     "noResponses": "Você ainda não enviou nenhuma resposta de pesquisa",
     "noSurveys": "Nenhuma pesquisa disponível",
@@ -711,6 +753,11 @@
       "submitted": "Enviado"
     },
     "submitSurvey": "Enviar Pesquisa",
+    "templateStatus": {
+      "active": "Ativo",
+      "archived": "Arquivado",
+      "inactive": "Inativo"
+    },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Ver Resposta"
   },
@@ -943,6 +990,20 @@
       "allStatuses": "Todos os Status",
       "allTemplates": "Todos os Modelos",
       "clearFilters": "Limpar Filtros"
+    },
+    "list": {
+      "allSurveys": "Todas as Pesquisas",
+      "approve": "Aprovar",
+      "approveSelected": "Aprovar Selecionados",
+      "errorLoadingResponses": "Falha ao carregar respostas",
+      "loadingResponses": "Carregando respostas...",
+      "noResponsesFiltered": "Nenhuma resposta corresponde aos seus filtros",
+      "noResponsesTitle": "Nenhuma Resposta",
+      "noResponsesToTriage": "Não há respostas de pesquisa para triagem",
+      "notSubmitted": "Não enviada",
+      "searchPlaceholder": "Pesquisar por remetente ou modelo...",
+      "submitted": "Enviada",
+      "submitter": "Remetente"
     },
     "markInReview": "Marcar em Revisão",
     "markPendingTriage": "Marcar Triagem Pendente",

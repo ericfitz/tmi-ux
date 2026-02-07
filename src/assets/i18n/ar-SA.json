@@ -243,6 +243,21 @@
       "title": "إدارة Webhooks"
     }
   },
+  "adminSurveys": {
+    "cloneSuffix": "(نسخة)",
+    "createTemplate": "إنشاء قالب",
+    "editTemplate": "تعديل القالب",
+    "errorLoadingTemplates": "فشل تحميل القوالب",
+    "loadingTemplates": "جارٍ تحميل القوالب...",
+    "noMatchingTitle": "لا توجد قوالب مطابقة",
+    "noTemplatesMessage": "أنشئ أول قالب استبيان للبدء.",
+    "noTemplatesTitle": "لا توجد قوالب بعد",
+    "pageTitle": "قوالب الاستبيانات",
+    "searchByName": "البحث بالاسم...",
+    "searchTemplates": "البحث في القوالب",
+    "templateCount": "{{count}} قالب",
+    "templateCountPlural": "{{count}} قوالب"
+  },
   "assetEditor": {
     "chipPlaceholder": "أدخل القيمة واضغط Enter",
     "classification": "{{common.classification}}",
@@ -304,14 +319,18 @@
   "common": {
     "about": "حول",
     "actions": "الإجراءات",
+    "activate": "تفعيل",
     "addMetadata": "إضافة بيانات وصفية",
     "addThreat": "إضافة تهديد",
     "addons": "الوظائف الإضافية",
+    "allStatuses": "جميع الحالات",
+    "archive": "أرشفة",
     "back": "رجوع",
     "cancel": "إلغاء",
     "cellId": "معرف الخلية",
     "classification": "التصنيف",
     "clear": "مسح",
+    "clone": "استنساخ",
     "close": "إغلاق",
     "confirmDelete": "هل أنت متأكد أنك تريد حذف {{item}} \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
     "confirmDeleteMessage": "هل أنت متأكد أنك تريد حذف {{objectType}} \"{{name}}\"؟",
@@ -321,6 +340,7 @@
     "created": "تم الإنشاء",
     "criticality": "الحرجية",
     "cut": "قص",
+    "deactivate": "إلغاء التفعيل",
     "delete": "حذف",
     "deleteConfirm": "حذف نموذج التهديد",
     "deleteWarningConfirmationField": "تأكيد الحذف",
@@ -338,6 +358,7 @@
     "edit": "تحرير",
     "editThreat": "تحرير التهديد",
     "emailLabel": "عنوان البريد الإلكتروني",
+    "error": "خطأ",
     "fonts": "الخطوط",
     "id": "المعرّف",
     "identityProvider": "مزود الهوية",
@@ -345,6 +366,7 @@
     "language": "{{language}}",
     "lastModified": "آخر تعديل",
     "lastUpdated": "آخر تحديث",
+    "loading": "جارٍ التحميل...",
     "manage": "إدارة",
     "manageMetadata": "إدارة البيانات الوصفية",
     "manageThreats": "إدارة التهديدات",
@@ -354,9 +376,11 @@
     "mitigated": "تم التخفيف",
     "mitigation": "التخفيف",
     "mitigationPlaceholder": "اوصف التخفيف الموصى به أو المخطط له لهذا التهديد",
+    "moreActions": "إجراءات إضافية",
     "name": "الاسم",
     "noAddonsAvailable": "لا توجد وظائف إضافية متاحة",
     "noDataAvailable": "لا توجد بيانات متاحة",
+    "noMatchingResults": "لا توجد نتائج تطابق عوامل التصفية.",
     "noMetadata": "لا توجد بيانات وصفية متاحة",
     "noThreats": "لا توجد تهديدات متاحة",
     "none": "لا شيء",
@@ -396,6 +420,7 @@
     "provider": "المزود",
     "readOnly": "للقراءة فقط",
     "readOnlyTooltip": "لديك صلاحيات قراءة فقط لنموذج التهديد هذا. اتصل بالمالك لطلب صلاحيات التحرير.",
+    "retry": "إعادة المحاولة",
     "roles": {
       "owner": "مالك",
       "reader": "قارئ",
@@ -405,6 +430,8 @@
     "saveAndClose": "حفظ وإغلاق",
     "savedSuccessfully": "تم الحفظ بنجاح",
     "score": "النتيجة",
+    "search": "بحث",
+    "selected": "{{count}} محدد",
     "sensitivity": "الحساسية",
     "sessionRoles": {
       "host": "مضيف",
@@ -417,10 +444,12 @@
       "group": "مجموعة",
       "user": "مستخدم"
     },
+    "template": "قالب",
     "threatDescription": "وصف التهديد",
     "threatDescriptionPlaceholder": "وصف التهديد بالتفصيل",
     "threatName": "اسم التهديد",
     "threatType": "نوع التهديد",
+    "tryAdjustingFilters": "حاول تعديل عوامل التصفية.",
     "type": "النوع",
     "unsavedChangesWarning": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد الإغلاق؟",
     "userId": "معرف المستخدم",
@@ -430,6 +459,7 @@
       "nameRequired": "الاسم مطلوب",
       "required": "هذا الحقل مطلوب"
     },
+    "version": "الإصدار",
     "view": "عرض",
     "viewMetadata": "عرض البيانات الوصفية",
     "viewPermissions": "عرض الأذونات",
@@ -698,6 +728,18 @@
       "submitConfirm": "هل أنت متأكد من أنك تريد التقديم؟ لن تتمكن من تعديل ردودك بعد التقديم.",
       "title": "تعبئة الاستبيان"
     },
+    "list": {
+      "deleteDraft": "حذف المسودة",
+      "draftStarted": "بدأت المسودة {{time}}",
+      "errorLoadingSurveys": "فشل تحميل الاستبيانات",
+      "lastModified": "آخر تعديل {{time}}",
+      "loadingSurveys": "جارٍ تحميل الاستبيانات...",
+      "noSurveysMessage": "لا توجد استبيانات نشطة حالياً. تحقق لاحقاً.",
+      "noSurveysTitle": "لا توجد استبيانات متاحة",
+      "pageTitle": "الاستبيانات المتاحة",
+      "updated": "محدّث",
+      "yourDrafts": "مسوداتك"
+    },
     "myResponses": "ردودي",
     "noResponses": "لم تقدم أي ردود على الاستبيانات بعد",
     "noSurveys": "لا توجد استبيانات متاحة",
@@ -711,6 +753,11 @@
       "submitted": "تم التقديم"
     },
     "submitSurvey": "تقديم الاستبيان",
+    "templateStatus": {
+      "active": "نشط",
+      "archived": "مؤرشف",
+      "inactive": "غير نشط"
+    },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "عرض الرد"
   },
@@ -943,6 +990,20 @@
       "allStatuses": "جميع الحالات",
       "allTemplates": "جميع القوالب",
       "clearFilters": "مسح المرشحات"
+    },
+    "list": {
+      "allSurveys": "جميع الاستبيانات",
+      "approve": "موافقة",
+      "approveSelected": "الموافقة على المحدد",
+      "errorLoadingResponses": "فشل تحميل الردود",
+      "loadingResponses": "جارٍ تحميل الردود...",
+      "noResponsesFiltered": "لا توجد ردود تطابق عوامل التصفية",
+      "noResponsesTitle": "لا توجد ردود",
+      "noResponsesToTriage": "لا توجد ردود استبيانات للفرز",
+      "notSubmitted": "لم يتم الإرسال",
+      "searchPlaceholder": "البحث بالمرسل أو القالب...",
+      "submitted": "تم الإرسال",
+      "submitter": "المرسل"
     },
     "markInReview": "وضع علامة قيد المراجعة",
     "markPendingTriage": "وضع علامة في انتظار الفرز",

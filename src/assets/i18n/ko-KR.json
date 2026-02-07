@@ -243,6 +243,21 @@
       "title": "Webhooks 관리"
     }
   },
+  "adminSurveys": {
+    "cloneSuffix": "(복사본)",
+    "createTemplate": "템플릿 생성",
+    "editTemplate": "템플릿 편집",
+    "errorLoadingTemplates": "템플릿을 불러오지 못했습니다",
+    "loadingTemplates": "템플릿 로딩 중...",
+    "noMatchingTitle": "일치하는 템플릿 없음",
+    "noTemplatesMessage": "시작하려면 첫 번째 설문 템플릿을 만드세요.",
+    "noTemplatesTitle": "아직 템플릿이 없습니다",
+    "pageTitle": "설문 템플릿",
+    "searchByName": "이름으로 검색...",
+    "searchTemplates": "템플릿 검색",
+    "templateCount": "{{count}} 템플릿",
+    "templateCountPlural": "{{count}} 템플릿"
+  },
   "assetEditor": {
     "chipPlaceholder": "값을 입력하고 Enter를 누르세요",
     "classification": "{{common.classification}}",
@@ -304,14 +319,18 @@
   "common": {
     "about": "소개",
     "actions": "작업",
+    "activate": "활성화",
     "addMetadata": "메타데이터 추가",
     "addThreat": "위협 추가",
     "addons": "애드온",
+    "allStatuses": "모든 상태",
+    "archive": "보관",
     "back": "뒤로",
     "cancel": "취소",
     "cellId": "셀 ID",
     "classification": "분류",
     "clear": "지우기",
+    "clone": "복제",
     "close": "닫기",
     "confirmDelete": "{{item}} \"{{name}}\"을(를) 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
     "confirmDeleteMessage": "\"{{name}}\" {{objectType}}을(를) 삭제하시겠습니까?",
@@ -321,6 +340,7 @@
     "created": "생성됨",
     "criticality": "중요도",
     "cut": "잘라내기",
+    "deactivate": "비활성화",
     "delete": "삭제",
     "deleteConfirm": "위협 모델 삭제",
     "deleteWarningConfirmationField": "삭제 확인",
@@ -338,6 +358,7 @@
     "edit": "편집",
     "editThreat": "위협 편집",
     "emailLabel": "이메일 주소",
+    "error": "오류",
     "fonts": "글꼴",
     "id": "ID",
     "identityProvider": "ID 공급자",
@@ -345,6 +366,7 @@
     "language": "{{language}}",
     "lastModified": "마지막 수정",
     "lastUpdated": "마지막 업데이트",
+    "loading": "로딩 중...",
     "manage": "관리",
     "manageMetadata": "메타데이터 관리",
     "manageThreats": "위협 관리",
@@ -354,9 +376,11 @@
     "mitigated": "완화됨",
     "mitigation": "완화",
     "mitigationPlaceholder": "이 위협에 대한 권장 또는 계획된 완화 조치를 설명하세요",
+    "moreActions": "추가 작업",
     "name": "이름",
     "noAddonsAvailable": "사용 가능한 애드온이 없습니다",
     "noDataAvailable": "사용 가능한 데이터 없음",
+    "noMatchingResults": "필터와 일치하는 결과가 없습니다.",
     "noMetadata": "사용 가능한 메타데이터 없음",
     "noThreats": "사용 가능한 위협 없음",
     "none": "없음",
@@ -396,6 +420,7 @@
     "provider": "공급자",
     "readOnly": "읽기 전용",
     "readOnlyTooltip": "이 위협 모델에 대한 읽기 전용 액세스 권한이 있습니다. 편집 권한을 요청하려면 소유자에게 문의하세요.",
+    "retry": "재시도",
     "roles": {
       "owner": "소유자",
       "reader": "뷰어",
@@ -405,6 +430,8 @@
     "saveAndClose": "저장 및 닫기",
     "savedSuccessfully": "저장되었습니다",
     "score": "점수",
+    "search": "검색",
+    "selected": "{{count}}개 선택됨",
     "sensitivity": "민감도",
     "sessionRoles": {
       "host": "호스트",
@@ -417,10 +444,12 @@
       "group": "그룹",
       "user": "사용자"
     },
+    "template": "템플릿",
     "threatDescription": "위협 설명",
     "threatDescriptionPlaceholder": "위협을 자세히 설명하세요",
     "threatName": "위협 이름",
     "threatType": "위협 유형",
+    "tryAdjustingFilters": "필터를 조정해 보세요.",
     "type": "유형",
     "unsavedChangesWarning": "저장되지 않은 변경 사항이 있습니다. 닫으시겠습니까?",
     "userId": "사용자 ID",
@@ -430,6 +459,7 @@
       "nameRequired": "이름은 필수입니다",
       "required": "이 필드는 필수입니다"
     },
+    "version": "버전",
     "view": "보기",
     "viewMetadata": "메타데이터 보기",
     "viewPermissions": "권한 보기",
@@ -698,6 +728,18 @@
       "submitConfirm": "제출하시겠습니까? 제출 후에는 응답을 수정할 수 없습니다.",
       "title": "설문 작성"
     },
+    "list": {
+      "deleteDraft": "초안 삭제",
+      "draftStarted": "초안 시작 {{time}}",
+      "errorLoadingSurveys": "설문을 불러오지 못했습니다",
+      "lastModified": "마지막 수정 {{time}}",
+      "loadingSurveys": "설문 로딩 중...",
+      "noSurveysMessage": "현재 활성화된 설문이 없습니다. 나중에 다시 확인해 주세요.",
+      "noSurveysTitle": "이용 가능한 설문 없음",
+      "pageTitle": "이용 가능한 설문",
+      "updated": "업데이트됨",
+      "yourDrafts": "내 초안"
+    },
     "myResponses": "내 응답",
     "noResponses": "아직 제출한 설문 응답이 없습니다",
     "noSurveys": "사용 가능한 설문이 없습니다",
@@ -711,6 +753,11 @@
       "submitted": "제출됨"
     },
     "submitSurvey": "설문 제출",
+    "templateStatus": {
+      "active": "활성",
+      "archived": "보관됨",
+      "inactive": "비활성"
+    },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "응답 보기"
   },
@@ -943,6 +990,20 @@
       "allStatuses": "모든 상태",
       "allTemplates": "모든 템플릿",
       "clearFilters": "필터 지우기"
+    },
+    "list": {
+      "allSurveys": "모든 설문",
+      "approve": "승인",
+      "approveSelected": "선택 항목 승인",
+      "errorLoadingResponses": "응답을 불러오지 못했습니다",
+      "loadingResponses": "응답 로딩 중...",
+      "noResponsesFiltered": "필터와 일치하는 응답이 없습니다",
+      "noResponsesToTriage": "분류할 설문 응답이 없습니다",
+      "noResponsesTitle": "응답 없음",
+      "notSubmitted": "미제출",
+      "searchPlaceholder": "제출자 또는 템플릿으로 검색...",
+      "submitted": "제출됨",
+      "submitter": "제출자"
     },
     "markInReview": "검토 중으로 표시",
     "markPendingTriage": "트리아지 대기로 표시",

@@ -6,7 +6,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
 import { SurveyService } from '../../../surveys/services/survey.service';
@@ -63,13 +63,13 @@ export class TriageListComponent implements OnInit, OnDestroy {
   };
 
   /** Status options for filtering */
-  statusOptions: { value: ResponseStatus | 'all'; label: string }[] = [
-    { value: 'all', label: 'All Statuses' },
-    { value: 'submitted', label: 'Submitted' },
-    { value: 'needs_revision', label: 'Needs Revision' },
-    { value: 'ready_for_review', label: 'Ready for Review' },
-    { value: 'review_created', label: 'Review Created' },
-    { value: 'draft', label: 'Draft' },
+  statusOptions: { value: ResponseStatus | 'all'; labelKey: string }[] = [
+    { value: 'all', labelKey: 'common.allStatuses' },
+    { value: 'submitted', labelKey: 'surveys.status.submitted' },
+    { value: 'needs_revision', labelKey: 'surveys.status.needsRevision' },
+    { value: 'ready_for_review', labelKey: 'surveys.status.readyForReview' },
+    { value: 'review_created', labelKey: 'surveys.status.reviewCreated' },
+    { value: 'draft', labelKey: 'surveys.status.draft' },
   ];
 
   /** Pagination settings */
@@ -88,6 +88,7 @@ export class TriageListComponent implements OnInit, OnDestroy {
     private responseService: SurveyResponseService,
     private surveyService: SurveyService,
     private logger: LoggerService,
+    private transloco: TranslocoService,
   ) {}
 
   ngOnInit(): void {
@@ -148,7 +149,7 @@ export class TriageListComponent implements OnInit, OnDestroy {
         },
         error: err => {
           this.isLoading = false;
-          this.error = 'Failed to load responses';
+          this.error = this.transloco.translate('triage.list.errorLoadingResponses');
           this.logger.error('Failed to load triage responses', err);
         },
       });
@@ -277,17 +278,17 @@ export class TriageListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get display label for a status
+   * Convert snake_case status to camelCase i18n key
    */
-  getStatusLabel(status: ResponseStatus): string {
-    const labels: Record<ResponseStatus, string> = {
-      draft: 'Draft',
-      submitted: 'Submitted',
-      needs_revision: 'Needs Revision',
-      ready_for_review: 'Ready for Review',
-      review_created: 'Review Created',
+  getStatusKey(status: ResponseStatus): string {
+    const keyMap: Record<ResponseStatus, string> = {
+      draft: 'draft',
+      submitted: 'submitted',
+      needs_revision: 'needsRevision',
+      ready_for_review: 'readyForReview',
+      review_created: 'reviewCreated',
     };
-    return labels[status] ?? status;
+    return keyMap[status] ?? status;
   }
 
   /**

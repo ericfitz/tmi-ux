@@ -243,6 +243,21 @@
       "title": "Kelola Webhook"
     }
   },
+  "adminSurveys": {
+    "cloneSuffix": "(Salinan)",
+    "createTemplate": "Buat Templat",
+    "editTemplate": "Edit templat",
+    "errorLoadingTemplates": "Gagal memuat templat",
+    "loadingTemplates": "Memuat templat...",
+    "noMatchingTitle": "Tidak Ada Templat yang Cocok",
+    "noTemplatesMessage": "Buat templat survei pertama Anda untuk memulai.",
+    "noTemplatesTitle": "Belum Ada Templat",
+    "pageTitle": "Templat Survei",
+    "searchByName": "Cari berdasarkan nama...",
+    "searchTemplates": "Cari templat",
+    "templateCount": "{{count}} templat",
+    "templateCountPlural": "{{count}} templat"
+  },
   "assetEditor": {
     "chipPlaceholder": "Masukkan nilai dan tekan Enter",
     "classification": "{{common.classification}}",
@@ -304,14 +319,18 @@
   "common": {
     "about": "Tentang",
     "actions": "Tindakan",
+    "activate": "Aktifkan",
     "addMetadata": "Tambah Metadata",
     "addThreat": "Tambah Ancaman",
     "addons": "Addon",
+    "allStatuses": "Semua Status",
+    "archive": "Arsipkan",
     "back": "Kembali",
     "cancel": "Batal",
     "cellId": "ID Sel",
     "classification": "Klasifikasi",
     "clear": "Bersihkan",
+    "clone": "Duplikat",
     "close": "Tutup",
     "confirmDelete": "Apakah Anda yakin ingin menghapus {{item}} \"{{name}}\"? Tindakan ini tidak dapat dibatalkan.",
     "confirmDeleteMessage": "Apakah Anda yakin ingin menghapus {{objectType}} \"{{name}}\"?",
@@ -321,6 +340,7 @@
     "created": "Dibuat",
     "criticality": "Kekritisan",
     "cut": "Potong",
+    "deactivate": "Nonaktifkan",
     "delete": "Hapus",
     "deleteConfirm": "Hapus Model Ancaman",
     "deleteWarningConfirmationField": "Konfirmasi Penghapusan",
@@ -338,6 +358,7 @@
     "edit": "Sunting",
     "editThreat": "Edit Ancaman",
     "emailLabel": "Alamat Email",
+    "error": "Kesalahan",
     "fonts": "Font",
     "id": "ID",
     "identityProvider": "Penyedia Identitas",
@@ -345,6 +366,7 @@
     "language": "{{language}}",
     "lastModified": "Terakhir Diubah",
     "lastUpdated": "Terakhir diperbarui",
+    "loading": "Memuat...",
     "manage": "Kelola",
     "manageMetadata": "Kelola Metadata",
     "manageThreats": "Kelola Ancaman",
@@ -354,9 +376,11 @@
     "mitigated": "Dimitigasi",
     "mitigation": "Mitigasi",
     "mitigationPlaceholder": "Jelaskan mitigasi yang direkomendasikan atau direncanakan untuk ancaman ini",
+    "moreActions": "Tindakan lainnya",
     "name": "Nama",
     "noAddonsAvailable": "Tidak ada addon tersedia",
     "noDataAvailable": "Tidak Ada Data Tersedia",
+    "noMatchingResults": "Tidak ada hasil yang cocok dengan filter Anda.",
     "noMetadata": "Tidak Ada Metadata Tersedia",
     "noThreats": "Tidak Ada Ancaman Tersedia",
     "none": "Tidak Ada",
@@ -396,6 +420,7 @@
     "provider": "Penyedia",
     "readOnly": "Hanya Baca",
     "readOnlyTooltip": "Anda memiliki akses hanya baca ke model ancaman ini. Hubungi pemilik untuk meminta izin edit.",
+    "retry": "Coba lagi",
     "roles": {
       "owner": "Pemilik",
       "reader": "Pembaca",
@@ -405,6 +430,8 @@
     "saveAndClose": "Simpan dan Tutup",
     "savedSuccessfully": "Berhasil disimpan",
     "score": "Skor",
+    "search": "Cari",
+    "selected": "{{count}} dipilih",
     "sensitivity": "Sensitivitas",
     "sessionRoles": {
       "host": "Host",
@@ -417,10 +444,12 @@
       "group": "Grup",
       "user": "Pengguna"
     },
+    "template": "Templat",
     "threatDescription": "Deskripsi Ancaman",
     "threatDescriptionPlaceholder": "Jelaskan Ancaman Secara Detail",
     "threatName": "Nama Ancaman",
     "threatType": "Jenis Ancaman",
+    "tryAdjustingFilters": "Coba sesuaikan filter Anda.",
     "type": "Jenis",
     "unsavedChangesWarning": "Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin menutup?",
     "userId": "ID Pengguna",
@@ -430,6 +459,7 @@
       "nameRequired": "Nama wajib diisi",
       "required": "Bidang ini wajib diisi"
     },
+    "version": "Versi",
     "view": "Lihat",
     "viewMetadata": "Lihat Metadata",
     "viewPermissions": "Lihat Izin",
@@ -698,6 +728,18 @@
       "submitConfirm": "Apakah Anda yakin ingin mengirim? Anda tidak dapat mengedit respons setelah mengirim.",
       "title": "Isi Survei"
     },
+    "list": {
+      "deleteDraft": "Hapus draf",
+      "draftStarted": "Draf dimulai {{time}}",
+      "errorLoadingSurveys": "Gagal memuat survei",
+      "lastModified": "Terakhir diubah {{time}}",
+      "loadingSurveys": "Memuat survei...",
+      "noSurveysMessage": "Tidak ada survei aktif saat ini. Periksa kembali nanti.",
+      "noSurveysTitle": "Tidak Ada Survei Tersedia",
+      "pageTitle": "Survei Tersedia",
+      "updated": "Diperbarui",
+      "yourDrafts": "Draf Anda"
+    },
     "myResponses": "Respons Saya",
     "noResponses": "Anda belum mengirim respons survei apa pun",
     "noSurveys": "Tidak ada survei tersedia",
@@ -711,6 +753,11 @@
       "submitted": "Terkirim"
     },
     "submitSurvey": "Kirim Survei",
+    "templateStatus": {
+      "active": "Aktif",
+      "archived": "Diarsipkan",
+      "inactive": "Tidak Aktif"
+    },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Lihat Respons"
   },
@@ -943,6 +990,20 @@
       "allStatuses": "Semua Status",
       "allTemplates": "Semua Templat",
       "clearFilters": "Hapus Filter"
+    },
+    "list": {
+      "allSurveys": "Semua Survei",
+      "approve": "Setujui",
+      "approveSelected": "Setujui yang Dipilih",
+      "errorLoadingResponses": "Gagal memuat tanggapan",
+      "loadingResponses": "Memuat tanggapan...",
+      "noResponsesFiltered": "Tidak ada tanggapan yang cocok dengan filter Anda",
+      "noResponsesTitle": "Tidak Ada Tanggapan",
+      "noResponsesToTriage": "Tidak ada tanggapan survei untuk ditriase",
+      "notSubmitted": "Belum dikirim",
+      "searchPlaceholder": "Cari berdasarkan pengirim atau templat...",
+      "submitted": "Terkirim",
+      "submitter": "Pengirim"
     },
     "markInReview": "Tandai Sedang Ditinjau",
     "markPendingTriage": "Tandai Menunggu Triase",

@@ -1,16 +1,16 @@
 <div class="survey-list-container">
   <div class="page-header">
-    <h1 class="page-title">Available Surveys</h1>
+    <h1 class="page-title">{{ 'surveys.list.pageTitle' | transloco }}</h1>
     <button mat-stroked-button (click)="viewMyResponses()">
       <mat-icon>history</mat-icon>
-      My Responses
+      {{ 'surveys.myResponses' | transloco }}
     </button>
   </div>
 
   @if (loading) {
     <div class="loading-container">
       <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading surveys...</p>
+      <p>{{ 'surveys.list.loadingSurveys' | transloco }}</p>
     </div>
   } @else if (error) {
     <div class="error-container">
@@ -18,14 +18,14 @@
       <p>{{ error }}</p>
       <button mat-stroked-button (click)="loadData()">
         <mat-icon>refresh</mat-icon>
-        Retry
+        {{ 'common.retry' | transloco }}
       </button>
     </div>
   } @else if (surveys.length === 0) {
     <div class="empty-state">
       <mat-icon>assignment</mat-icon>
-      <h2>No Surveys Available</h2>
-      <p>There are no active surveys at this time. Check back later.</p>
+      <h2>{{ 'surveys.list.noSurveysTitle' | transloco }}</h2>
+      <p>{{ 'surveys.list.noSurveysMessage' | transloco }}</p>
     </div>
   } @else {
     <div class="survey-grid">
@@ -35,8 +35,9 @@
             <mat-icon mat-card-avatar>assignment</mat-icon>
             <mat-card-title>{{ survey.name }}</mat-card-title>
             <mat-card-subtitle>
-              Version {{ survey.version }} &middot; Updated
-              {{ formatDate(survey.modified_at) }}
+              {{ 'common.version' | transloco }} {{ survey.version }} &middot;
+              {{ 'surveys.list.updated' | transloco }}
+              {{ survey.modified_at | date: 'mediumDate' }}
             </mat-card-subtitle>
           </mat-card-header>
 
@@ -49,22 +50,28 @@
               <div class="drafts-section">
                 <h4>
                   <mat-icon>edit_note</mat-icon>
-                  Your Drafts
+                  {{ 'surveys.list.yourDrafts' | transloco }}
                 </h4>
                 <mat-list>
                   @for (draft of getDrafts(survey.id); track draft.id) {
                     <mat-list-item class="draft-item" (click)="continueDraft(draft)">
                       <span matListItemTitle>
-                        Draft started {{ formatRelativeTime(draft.created_at) }}
+                        {{
+                          'surveys.list.draftStarted'
+                            | transloco: { time: formatRelativeTime(draft.created_at) }
+                        }}
                       </span>
                       <span matListItemLine>
-                        Last modified {{ formatRelativeTime(draft.modified_at) }}
+                        {{
+                          'surveys.list.lastModified'
+                            | transloco: { time: formatRelativeTime(draft.modified_at) }
+                        }}
                       </span>
                       <button
                         mat-icon-button
                         matListItemMeta
                         (click)="deleteDraft(draft, $event)"
-                        matTooltip="Delete draft"
+                        [matTooltip]="'surveys.list.deleteDraft' | transloco"
                       >
                         <mat-icon>delete</mat-icon>
                       </button>
@@ -79,12 +86,12 @@
             @if (getDrafts(survey.id).length > 0) {
               <button mat-stroked-button (click)="continueDraft(getDrafts(survey.id)[0])">
                 <mat-icon>edit</mat-icon>
-                Continue Draft
+                {{ 'surveys.continueDraft' | transloco }}
               </button>
             }
             <button mat-flat-button color="primary" (click)="startSurvey(survey)">
               <mat-icon>add</mat-icon>
-              Start New
+              {{ 'surveys.startNew' | transloco }}
             </button>
           </mat-card-actions>
         </mat-card>

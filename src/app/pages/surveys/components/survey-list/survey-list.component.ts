@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -16,6 +16,7 @@ import {
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
 import { LoggerService } from '@app/core/services/logger.service';
+import { LanguageService } from '../../../../i18n/language.service';
 import { SurveyService } from '../../services/survey.service';
 import { SurveyResponseService } from '../../services/survey-response.service';
 import { SurveyListItem, SurveyResponseListItem } from '@app/types/survey.types';
@@ -40,6 +41,7 @@ import { SurveyListItem, SurveyResponseListItem } from '@app/types/survey.types'
 })
 export class SurveyListComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
+  private currentLocale = 'en-US';
 
   surveys: SurveyListItem[] = [];
   drafts: Map<string, SurveyResponseListItem[]> = new Map();
@@ -52,9 +54,18 @@ export class SurveyListComponent implements OnInit {
     private router: Router,
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService,
+    private languageService: LanguageService,
   ) {}
 
   ngOnInit(): void {
+    this.languageService.currentLanguage$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(language => {
+        this.currentLocale = language.code;
+        this.cdr.markForCheck();
+      });
+
     this.loadData();
   }
 
@@ -75,7 +86,7 @@ export class SurveyListComponent implements OnInit {
           this.loadDrafts();
         },
         error: error => {
-          this.error = 'Failed to load surveys';
+          this.error = this.transloco.translate('surveys.list.errorLoadingSurveys');
           this.loading = false;
           this.logger.error('Failed to load surveys', error);
           this.cdr.markForCheck();
@@ -168,36 +179,46 @@ export class SurveyListComponent implements OnInit {
   }
 
   /**
-   * Format date for display
-   */
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  }
-
-  /**
    * Format relative time for drafts
+   * Uses Intl.RelativeTimeFormat for proper internationalization
    */
   formatRelativeTime(dateString: string): string {
     const date = new Date(dateString);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
 
-    if (diffMins < 1) {
-      return 'just now';
-    } else if (diffMins < 60) {
-      return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+    if (diffMinutes < 1) {
+      return this.transloco.translate('collaboration.justNow');
+    } else if (diffMinutes < 60) {
+      return this.formatIntlRelativeTime(-diffMinutes, 'minute');
     } else if (diffHours < 24) {
-      return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+      return this.formatIntlRelativeTime(-diffHours, 'hour');
     } else {
-      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+      return this.formatIntlRelativeTime(-diffDays, 'day');
     }
+  }
+
+  /**
+   * Format relative time using Intl.RelativeTimeFormat with fallback
+   */
+  private formatIntlRelativeTime(value: number, unit: 'minute' | 'hour' | 'day'): string {
+    try {
+      if (typeof Intl !== 'undefined' && Intl.RelativeTimeFormat) {
+        const rtf = new Intl.RelativeTimeFormat(this.currentLocale, {
+          numeric: 'auto',
+          style: 'long',
+        });
+        return rtf.format(value, unit);
+      }
+    } catch {
+      // Fallback if RelativeTimeFormat fails
+    }
+
+    const absValue = Math.abs(value);
+    const pluralSuffix = absValue === 1 ? '' : 's';
+    return `${absValue} ${unit}${pluralSuffix} ago`;
   }
 }

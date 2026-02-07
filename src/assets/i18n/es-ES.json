@@ -243,6 +243,21 @@
       "title": "Gestionar Webhooks"
     }
   },
+  "adminSurveys": {
+    "cloneSuffix": "(Copia)",
+    "createTemplate": "Crear plantilla",
+    "editTemplate": "Editar plantilla",
+    "errorLoadingTemplates": "Error al cargar las plantillas",
+    "loadingTemplates": "Cargando plantillas...",
+    "noMatchingTitle": "No hay plantillas coincidentes",
+    "noTemplatesMessage": "Cree su primera plantilla de encuesta para comenzar.",
+    "noTemplatesTitle": "Aún no hay plantillas",
+    "pageTitle": "Plantillas de encuestas",
+    "searchByName": "Buscar por nombre...",
+    "searchTemplates": "Buscar plantillas",
+    "templateCount": "{{count}} plantilla",
+    "templateCountPlural": "{{count}} plantillas"
+  },
   "assetEditor": {
     "chipPlaceholder": "Introduzca un valor y pulse Intro",
     "classification": "{{common.classification}}",
@@ -304,14 +319,18 @@
   "common": {
     "about": "Acerca de",
     "actions": "Acciones",
+    "activate": "Activar",
     "addMetadata": "Agregar Metadatos",
     "addThreat": "Agregar Amenaza",
     "addons": "Complementos",
+    "allStatuses": "Todos los estados",
+    "archive": "Archivar",
     "back": "Volver",
     "cancel": "Cancelar",
     "cellId": "ID de Celda",
     "classification": "Clasificación",
     "clear": "Limpiar",
+    "clone": "Clonar",
     "close": "Cerrar",
     "confirmDelete": "¿Está seguro de que desea eliminar {{item}} \"{{name}}\"? Esta acción no se puede deshacer.",
     "confirmDeleteMessage": "¿Está seguro de que desea eliminar {{objectType}} \"{{name}}\"?",
@@ -321,6 +340,7 @@
     "created": "Creado",
     "criticality": "Criticidad",
     "cut": "Cortar",
+    "deactivate": "Desactivar",
     "delete": "Eliminar",
     "deleteConfirm": "Eliminar Modelo de Amenazas",
     "deleteWarningConfirmationField": "Confirmación de eliminación",
@@ -338,6 +358,7 @@
     "edit": "Editar",
     "editThreat": "Editar Amenaza",
     "emailLabel": "Dirección de Correo Electrónico",
+    "error": "Error",
     "fonts": "Fuentes",
     "id": "ID",
     "identityProvider": "Proveedor de Identidad",
@@ -345,6 +366,7 @@
     "language": "{{language}}",
     "lastModified": "Última Modificación",
     "lastUpdated": "Última actualización",
+    "loading": "Cargando...",
     "manage": "Gestionar",
     "manageMetadata": "Gestionar Metadatos",
     "manageThreats": "Gestionar Amenazas",
@@ -354,9 +376,11 @@
     "mitigated": "Mitigado",
     "mitigation": "Mitigación",
     "mitigationPlaceholder": "Describa las mitigaciones recomendadas o planificadas para esta amenaza",
+    "moreActions": "Más acciones",
     "name": "Nombre",
     "noAddonsAvailable": "No hay complementos disponibles",
     "noDataAvailable": "No Hay Datos Disponibles",
+    "noMatchingResults": "No hay resultados que coincidan con sus filtros.",
     "noMetadata": "No Hay Metadatos Disponibles",
     "noThreats": "No Hay Amenazas Disponibles",
     "none": "Ninguno",
@@ -396,6 +420,7 @@
     "provider": "Proveedor",
     "readOnly": "Solo Lectura",
     "readOnlyTooltip": "Tiene acceso de solo lectura a este modelo de amenazas. Contacte al propietario para solicitar permisos de edición.",
+    "retry": "Reintentar",
     "roles": {
       "owner": "Propietario",
       "reader": "Lector",
@@ -405,6 +430,8 @@
     "saveAndClose": "Guardar y Cerrar",
     "savedSuccessfully": "Guardado correctamente",
     "score": "Puntuación",
+    "search": "Buscar",
+    "selected": "{{count}} seleccionado(s)",
     "sensitivity": "Sensibilidad",
     "sessionRoles": {
       "host": "Anfitrión",
@@ -417,10 +444,12 @@
       "group": "Grupo",
       "user": "Usuario"
     },
+    "template": "Plantilla",
     "threatDescription": "Descripción de la Amenaza",
     "threatDescriptionPlaceholder": "Describa la Amenaza en Detalle",
     "threatName": "Nombre de la Amenaza",
     "threatType": "Tipo de Amenaza",
+    "tryAdjustingFilters": "Intente ajustar sus filtros.",
     "type": "Tipo",
     "unsavedChangesWarning": "Tiene cambios sin guardar. ¿Está seguro de que desea cerrar?",
     "userId": "ID de Usuario",
@@ -430,6 +459,7 @@
       "nameRequired": "El nombre es obligatorio",
       "required": "Este campo es obligatorio"
     },
+    "version": "Versión",
     "view": "Ver",
     "viewMetadata": "Ver Metadatos",
     "viewPermissions": "Ver Permisos",
@@ -698,6 +728,18 @@
       "submitConfirm": "¿Está seguro de que desea enviar? No podrá editar sus respuestas después de enviar.",
       "title": "Completar Encuesta"
     },
+    "list": {
+      "deleteDraft": "Eliminar borrador",
+      "draftStarted": "Borrador iniciado {{time}}",
+      "errorLoadingSurveys": "Error al cargar las encuestas",
+      "lastModified": "Última modificación {{time}}",
+      "loadingSurveys": "Cargando encuestas...",
+      "noSurveysMessage": "No hay encuestas activas en este momento. Vuelva a intentarlo más tarde.",
+      "noSurveysTitle": "No hay encuestas disponibles",
+      "pageTitle": "Encuestas disponibles",
+      "updated": "Actualizado",
+      "yourDrafts": "Sus borradores"
+    },
     "myResponses": "Mis Respuestas",
     "noResponses": "Aún no ha enviado ninguna respuesta de encuesta",
     "noSurveys": "No hay encuestas disponibles",
@@ -711,6 +753,11 @@
       "submitted": "Enviado"
     },
     "submitSurvey": "Enviar Encuesta",
+    "templateStatus": {
+      "active": "Activa",
+      "archived": "Archivada",
+      "inactive": "Inactiva"
+    },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Ver Respuesta"
   },
@@ -943,6 +990,20 @@
       "allStatuses": "Todos los Estados",
       "allTemplates": "Todas las Plantillas",
       "clearFilters": "Limpiar Filtros"
+    },
+    "list": {
+      "allSurveys": "Todas las encuestas",
+      "approve": "Aprobar",
+      "approveSelected": "Aprobar seleccionados",
+      "errorLoadingResponses": "Error al cargar las respuestas",
+      "loadingResponses": "Cargando respuestas...",
+      "noResponsesFiltered": "No hay respuestas que coincidan con sus filtros",
+      "noResponsesTitle": "No hay respuestas",
+      "noResponsesToTriage": "No hay respuestas de encuestas para clasificar",
+      "notSubmitted": "No enviada",
+      "searchPlaceholder": "Buscar por remitente o plantilla...",
+      "submitted": "Enviada",
+      "submitter": "Remitente"
     },
     "markInReview": "Marcar en Revisión",
     "markPendingTriage": "Marcar Pendiente de Clasificación",

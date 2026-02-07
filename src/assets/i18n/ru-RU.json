@@ -243,6 +243,21 @@
       "title": "Управление Webhooks"
     }
   },
+  "adminSurveys": {
+    "cloneSuffix": "(Копия)",
+    "createTemplate": "Создать шаблон",
+    "editTemplate": "Редактировать шаблон",
+    "errorLoadingTemplates": "Не удалось загрузить шаблоны",
+    "loadingTemplates": "Загрузка шаблонов...",
+    "noMatchingTitle": "Нет подходящих шаблонов",
+    "noTemplatesMessage": "Создайте первый шаблон опроса, чтобы начать.",
+    "noTemplatesTitle": "Шаблонов пока нет",
+    "pageTitle": "Шаблоны опросов",
+    "searchByName": "Поиск по названию...",
+    "searchTemplates": "Поиск шаблонов",
+    "templateCount": "{{count}} шаблон",
+    "templateCountPlural": "{{count}} шаблонов"
+  },
   "assetEditor": {
     "chipPlaceholder": "Введите значение и нажмите Enter",
     "classification": "{{common.classification}}",
@@ -304,14 +319,18 @@
   "common": {
     "about": "О Программе",
     "actions": "Действия",
+    "activate": "Активировать",
     "addMetadata": "Добавить Метаданные",
     "addThreat": "Добавить Угрозу",
     "addons": "Дополнения",
+    "allStatuses": "Все статусы",
+    "archive": "Архивировать",
     "back": "Назад",
     "cancel": "Отмена",
     "cellId": "ID Ячейки",
     "classification": "Классификация",
     "clear": "Очистить",
+    "clone": "Клонировать",
     "close": "Закрыть",
     "confirmDelete": "Вы уверены, что хотите удалить {{item}} \"{{name}}\"? Это действие нельзя отменить.",
     "confirmDeleteMessage": "Вы уверены, что хотите удалить {{objectType}} \"{{name}}\"?",
@@ -321,6 +340,7 @@
     "created": "Создано",
     "criticality": "Критичность",
     "cut": "Вырезать",
+    "deactivate": "Деактивировать",
     "delete": "Удалить",
     "deleteConfirm": "Удалить Модель Угроз",
     "deleteWarningConfirmationField": "Подтверждение удаления",
@@ -338,6 +358,7 @@
     "edit": "Редактировать",
     "editThreat": "Редактировать Угрозу",
     "emailLabel": "Адрес Электронной Почты",
+    "error": "Ошибка",
     "fonts": "Шрифты",
     "id": "Идентификатор",
     "identityProvider": "Поставщик удостоверений",
@@ -345,6 +366,7 @@
     "language": "{{language}}",
     "lastModified": "Последнее Изменение",
     "lastUpdated": "Последнее обновление",
+    "loading": "Загрузка...",
     "manage": "Управление",
     "manageMetadata": "Управление Метаданными",
     "manageThreats": "Управление Угрозами",
@@ -354,9 +376,11 @@
     "mitigated": "Смягчено",
     "mitigation": "Смягчение",
     "mitigationPlaceholder": "Опишите рекомендуемые или запланированные меры смягчения для этой угрозы",
+    "moreActions": "Дополнительные действия",
     "name": "Название",
     "noAddonsAvailable": "Дополнения недоступны",
     "noDataAvailable": "Данные Недоступны",
+    "noMatchingResults": "Нет результатов, соответствующих вашим фильтрам.",
     "noMetadata": "Метаданные Недоступны",
     "noThreats": "Угрозы Недоступны",
     "none": "Нет",
@@ -396,6 +420,7 @@
     "provider": "Поставщик",
     "readOnly": "Только Чтение",
     "readOnlyTooltip": "У вас есть доступ только для чтения к этой модели угроз. Свяжитесь с владельцем для запроса прав редактирования.",
+    "retry": "Повторить",
     "roles": {
       "owner": "Владелец",
       "reader": "Читатель",
@@ -405,6 +430,8 @@
     "saveAndClose": "Сохранить и Закрыть",
     "savedSuccessfully": "Успешно сохранено",
     "score": "Оценка",
+    "search": "Поиск",
+    "selected": "{{count}} выбрано",
     "sensitivity": "Конфиденциальность",
     "sessionRoles": {
       "host": "Хост",
@@ -417,10 +444,12 @@
       "group": "Группа",
       "user": "Пользователь"
     },
+    "template": "Шаблон",
     "threatDescription": "Описание Угрозы",
     "threatDescriptionPlaceholder": "Подробно опишите угрозу",
     "threatName": "Название Угрозы",
     "threatType": "Тип Угрозы",
+    "tryAdjustingFilters": "Попробуйте изменить фильтры.",
     "type": "Тип",
     "unsavedChangesWarning": "У вас есть несохранённые изменения. Вы уверены, что хотите закрыть?",
     "userId": "ID Пользователя",
@@ -430,6 +459,7 @@
       "nameRequired": "Название обязательно",
       "required": "Это поле обязательно"
     },
+    "version": "Версия",
     "view": "Просмотр",
     "viewMetadata": "Просмотр Метаданных",
     "viewPermissions": "Просмотр Разрешений",
@@ -698,6 +728,18 @@
       "submitConfirm": "Вы уверены, что хотите отправить? После отправки вы не сможете редактировать свои ответы.",
       "title": "Заполнить опрос"
     },
+    "list": {
+      "deleteDraft": "Удалить черновик",
+      "draftStarted": "Черновик начат {{time}}",
+      "errorLoadingSurveys": "Не удалось загрузить опросы",
+      "lastModified": "Последнее изменение {{time}}",
+      "loadingSurveys": "Загрузка опросов...",
+      "noSurveysMessage": "В настоящее время нет активных опросов. Проверьте позже.",
+      "noSurveysTitle": "Нет доступных опросов",
+      "pageTitle": "Доступные опросы",
+      "updated": "Обновлено",
+      "yourDrafts": "Ваши черновики"
+    },
     "myResponses": "Мои ответы",
     "noResponses": "Вы еще не отправили ни одного ответа на опрос",
     "noSurveys": "Нет доступных опросов",
@@ -711,6 +753,11 @@
       "submitted": "Отправлено"
     },
     "submitSurvey": "Отправить опрос",
+    "templateStatus": {
+      "active": "Активный",
+      "archived": "В архиве",
+      "inactive": "Неактивный"
+    },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Просмотреть ответ"
   },
@@ -943,6 +990,20 @@
       "allStatuses": "Все статусы",
       "allTemplates": "Все шаблоны",
       "clearFilters": "Очистить фильтры"
+    },
+    "list": {
+      "allSurveys": "Все опросы",
+      "approve": "Утвердить",
+      "approveSelected": "Утвердить выбранные",
+      "errorLoadingResponses": "Не удалось загрузить ответы",
+      "loadingResponses": "Загрузка ответов...",
+      "noResponsesFiltered": "Нет ответов, соответствующих вашим фильтрам",
+      "noResponsesTitle": "Нет ответов",
+      "noResponsesToTriage": "Нет ответов на опросы для сортировки",
+      "notSubmitted": "Не отправлено",
+      "searchPlaceholder": "Поиск по отправителю или шаблону...",
+      "submitted": "Отправлено",
+      "submitter": "Отправитель"
     },
     "markInReview": "Отметить на проверке",
     "markPendingTriage": "Отметить ожидающим сортировки",
