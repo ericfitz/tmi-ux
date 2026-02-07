@@ -245,7 +245,6 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(복사본)",
-    "createTemplate": "템플릿 생성",
     "editTemplate": "템플릿 편집",
     "errorLoadingTemplates": "템플릿을 불러오지 못했습니다",
     "loadingTemplates": "템플릿 로딩 중...",
@@ -256,7 +255,74 @@
     "searchByName": "이름으로 검색...",
     "searchTemplates": "템플릿 검색",
     "templateCount": "{{count}} 템플릿",
-    "templateCountPlural": "{{count}} 템플릿"
+    "templateCountPlural": "{{count}} 템플릿",
+    "createSurvey": "설문 생성",
+    "surveyDetails": "설문 세부정보",
+    "templateBuilder": {
+      "addPage": "페이지 추가",
+      "backToTemplates": "템플릿으로 돌아가기",
+      "choicesPerLine": "선택 항목 (한 줄에 하나)",
+      "deletePage": "페이지 삭제",
+      "deleteQuestion": "질문 삭제",
+      "enterSurveyDescription": "설문 설명 입력",
+      "enterSurveyTitle": "설문 제목 입력",
+      "failedToLoadTemplate": "템플릿을 불러오지 못했습니다",
+      "failedToSaveTemplate": "템플릿을 저장하지 못했습니다",
+      "loadingTemplate": "템플릿 로딩 중...",
+      "mapsToTmField": "TM 필드에 매핑",
+      "metadataKey": "메타데이터 키",
+      "metadataKeyHint": "메타데이터 항목의 키 이름",
+      "nameId": "이름 (ID)",
+      "nameIdHint": "이 질문의 고유 식별자",
+      "nextPage": "다음 페이지",
+      "noQuestionsHint": "팔레트에서 질문 유형을 클릭하여 추가하세요",
+      "noQuestionsYet": "아직 질문이 없습니다",
+      "pageIndicator": "페이지 {{current}} / {{total}}",
+      "previousPage": "이전 페이지",
+      "questionProperties": "질문 속성",
+      "questionTypeDescriptions": {
+        "boolean": "부울 토글",
+        "checkbox": "다중 선택",
+        "comment": "여러 줄 텍스트 영역",
+        "dropdown": "드롭다운 선택",
+        "panel": "패널에 질문 그룹화",
+        "paneldynamic": "반복 가능한 패널 그룹",
+        "radiogroup": "옵션 중 단일 선택",
+        "text": "한 줄 텍스트 입력"
+      },
+      "questionTypeLabels": {
+        "boolean": "예/아니오",
+        "checkbox": "체크박스",
+        "comment": "여러 줄",
+        "dropdown": "드롭다운",
+        "panel": "패널",
+        "paneldynamic": "동적 패널",
+        "radiogroup": "라디오 그룹",
+        "text": "텍스트"
+      },
+      "questionTypes": "질문 유형",
+      "questions": "질문",
+      "required": "필수",
+      "selectQuestionHint": "질문을 선택하여 속성을 편집하세요",
+      "tmFieldLabels": {
+        "assetDescription": "자산 설명",
+        "assetName": "자산 이름",
+        "assetType": "자산 유형",
+        "description": "위협 모델 설명",
+        "documentName": "문서 이름",
+        "documentUrl": "문서 URL",
+        "issueUri": "이슈 추적 URL",
+        "metadataKey": "사용자 정의 메타데이터",
+        "name": "위협 모델 이름",
+        "repositoryName": "저장소 이름",
+        "repositoryUrl": "저장소 URL"
+      },
+      "tmFieldMapping": "위협 모델 필드 매핑",
+      "tmFieldMappingHint": "이 답변을 위협 모델 필드에 연결하세요",
+      "unsavedChanges": "저장되지 않은 변경 사항",
+      "visibleIf": "표시 조건",
+      "visibleIfHint": "예: {questionName} = 'value'"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "값을 입력하고 Enter를 누르세요",
@@ -463,7 +529,8 @@
     "view": "보기",
     "viewMetadata": "메타데이터 보기",
     "viewPermissions": "권한 보기",
-    "viewThreat": "위협 보기"
+    "viewThreat": "위협 보기",
+    "title": "제목"
   },
   "contextMenu": {
     "addInverseConnection": "역방향 연결 추가",
