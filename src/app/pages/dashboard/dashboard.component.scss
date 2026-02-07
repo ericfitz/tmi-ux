@@ -1,14 +1,7 @@
-.tm-container,
-.collaboration-sessions-container {
+.tm-container {
   max-width: 1000px;
   margin: 0 auto;
   padding: 24px;
-}
-
-.collaboration-sessions-container {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid rgb(0 0 0 / 12%);
 }
 
 .header-row {
@@ -59,33 +52,23 @@
   gap: 20px;
 }
 
-.threat-models-list,
-.collaboration-sessions-list {
+.threat-models-list {
   display: block;
-}
-
-.collaboration-sessions-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 20px;
 }
 
 // Base styles for cards
 .threat-model-card {
   cursor: pointer;
   transition: all 0.2s ease;
+
+  &.has-active-session {
+    border-left: 4px solid var(--color-theme-teal);
+    background-color: var(--theme-selected);
+  }
 }
 
-// Collaboration session card base styles
-.collaboration-session-card {
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background-color: rgb(0 151 167 / 5%); // Light cyan background
-}
-
-// Hover styles for both card types
-.threat-model-card:hover,
-.collaboration-session-card:hover {
+// Hover styles
+.threat-model-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 6px 12px rgb(0 0 0 / 15%);
 }
@@ -96,15 +79,13 @@ mat-card-content {
   align-items: center;
 }
 
-.threat-model-info,
-.collaboration-session-info {
+.threat-model-info {
   display: flex;
   align-items: flex-start;
   width: calc(100% - 40px); // Account for icon on the right
 }
 
-.threat-model-icon,
-.collaboration-session-icon {
+.threat-model-icon {
   margin-right: 16px;
   color: #0097a7; // Cyan 700
   font-size: 32px;
@@ -113,18 +94,12 @@ mat-card-content {
   flex-shrink: 0;
 }
 
-.collaboration-session-icon {
-  color: #00796b; // Teal 700
-}
-
-.threat-model-details,
-.collaboration-session-details {
+.threat-model-details {
   flex: 1;
   min-width: 0; // Allow text to truncate
 }
 
-.threat-model-title,
-.collaboration-session-title {
+.threat-model-title {
   margin: 0 0 4px;
   font-weight: 500;
   white-space: nowrap;
@@ -224,8 +199,7 @@ button.delete-button {
   }
 }
 
-.no-threat-models,
-.no-collaboration-sessions {
+.no-threat-models {
   grid-column: 1 / -1;
   text-align: center;
   padding: 40px 0;
@@ -243,17 +217,29 @@ button.delete-button {
   }
 }
 
-// RTL support
-// Specific styles for collaboration sessions
-.collaboration-session-diagram,
-.collaboration-session-host,
-.collaboration-session-time,
-.collaboration-session-users {
+// Inline collaboration session info (card view and table expansion)
+.collaboration-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--theme-text-secondary);
+
+  mat-divider {
+    margin: 8px 0;
+  }
+}
+
+.collaboration-session-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.collab-detail {
   display: flex;
   align-items: center;
-  margin: 4px 0;
-  font-size: 0.9rem;
-  color: var(--theme-text-primary);
+  margin: 2px 0;
 
   mat-icon {
     font-size: 16px;
@@ -262,25 +248,11 @@ button.delete-button {
     margin-right: 4px;
     flex-shrink: 0;
   }
-
-  .session-text {
-    display: flex;
-    align-items: center;
-  }
 }
 
-.join-icon {
-  color: #00796b; // Teal 700
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-
-  &:hover {
-    opacity: 1;
-  }
+.join-session-button {
+  align-self: flex-start;
+  margin-top: 8px;
 }
 
 .section-title {
@@ -391,6 +363,11 @@ button.delete-button {
     padding: 8px;
   }
 
+  .mat-column-collaborationIndicator {
+    width: 48px;
+    padding: 0 4px;
+  }
+
   // Column widths - name is the flexible column
   .mat-column-name {
     width: auto; // This column expands/compresses
@@ -445,21 +422,53 @@ button.delete-button {
   }
 }
 
+// Table collaboration indicator
+.collab-indicator-button {
+  color: var(--color-theme-teal);
+}
+
+.collab-indicator-icon {
+  font-size: 20px;
+}
+
+// Expandable detail row
+.detail-row {
+  height: 0;
+}
+
+.expanded-session-detail {
+  overflow: hidden;
+  padding: 8px 16px 16px 56px;
+
+  mat-divider {
+    margin: 12px 0;
+  }
+}
+
+.session-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 // RTL support
 :host-context([dir='rtl']) {
-  .threat-model-icon,
-  .collaboration-session-icon {
+  .threat-model-icon {
     margin-right: 0;
     margin-left: 16px;
   }
 
-  .collaboration-session-diagram,
-  .collaboration-session-host,
-  .collaboration-session-time,
-  .collaboration-session-users {
-    mat-icon {
-      margin-right: 0;
-      margin-left: 4px;
-    }
+  .threat-model-card.has-active-session {
+    border-left: none;
+    border-right: 4px solid var(--color-theme-teal);
+  }
+
+  .collab-detail mat-icon {
+    margin-right: 0;
+    margin-left: 4px;
+  }
+
+  .expanded-session-detail {
+    padding: 8px 56px 16px 16px;
   }
 }

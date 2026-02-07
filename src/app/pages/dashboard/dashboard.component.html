@@ -67,6 +67,7 @@
         <mat-card
           *ngFor="let threatModel of filteredThreatModels"
           class="threat-model-card"
+          [class.has-active-session]="hasActiveSessions(threatModel.id)"
           (click)="openThreatModel(threatModel.id)"
         >
           <mat-card-content>
@@ -100,51 +101,99 @@
                   {{ threatModel.status_updated ? formatDate(threatModel.status_updated) : '—' }}
                 </p>
 
-                <div class="threat-model-stats">
-                  <div class="stats-row">
-                    <span class="stat">
-                      <mat-icon
-                        fontSet="material-symbols-outlined"
-                        fontWeight="100"
-                        style="font-variation-settings: 'FILL' 0"
-                        >diamond</mat-icon
-                      >
-                      {{ threatModel.asset_count }} {{ 'common.objectTypes.assets' | transloco }}
-                    </span>
-                    <span class="stat">
-                      <mat-icon
-                        fontSet="material-symbols-outlined"
-                        fontWeight="100"
-                        style="font-variation-settings: 'FILL' 0"
-                        class="skull-icon"
-                        >skull</mat-icon
-                      >
-                      {{ threatModel.threat_count }} {{ 'common.objectTypes.threats' | transloco }}
-                    </span>
+                @if (hasActiveSessions(threatModel.id)) {
+                  <div class="collaboration-info" (click)="$event.stopPropagation()">
+                    @for (
+                      session of getSessionsForTm(threatModel.id);
+                      track session.id;
+                      let last = $last
+                    ) {
+                      <div class="collaboration-session-entry">
+                        <p class="collab-detail">
+                          <mat-icon>account_tree</mat-icon> {{ session.diagramName }}
+                        </p>
+                        <p class="collab-detail">
+                          <mat-icon>person</mat-icon>
+                          {{ 'collaboration.hostedBy' | transloco }}
+                          <span [matTooltip]="session.host.email || ''">
+                            {{ session.host.display_name || session.host.email || '—' }}
+                          </span>
+                        </p>
+                        <p class="collab-detail">
+                          <mat-icon>schedule</mat-icon>
+                          {{ 'collaboration.sessionStarted' | transloco }}
+                          {{ formatSessionTime(session.startedAt) }}
+                        </p>
+                        <p class="collab-detail">
+                          <mat-icon>group</mat-icon>
+                          {{
+                            'collaboration.activeUsers' | transloco: { count: session.activeUsers }
+                          }}
+                        </p>
+                        <button
+                          mat-stroked-button
+                          color="primary"
+                          class="join-session-button"
+                          (click)="openCollaborationSession(session.diagramId)"
+                          [matTooltip]="'collaboration.joinSession' | transloco"
+                        >
+                          <mat-icon>login</mat-icon>
+                          {{ 'collaboration.joinSession' | transloco }}
+                        </button>
+                      </div>
+                      @if (!last) {
+                        <mat-divider></mat-divider>
+                      }
+                    }
                   </div>
-                  <div class="stats-row">
-                    <span class="stat">
-                      <mat-icon>account_tree</mat-icon>
-                      {{ threatModel.diagram_count }}
-                      {{ 'threatModels.diagrams' | transloco }}
-                    </span>
-                    <span class="stat">
-                      <mat-icon>note</mat-icon>
-                      {{ threatModel.note_count }} {{ 'common.objectTypes.notes' | transloco }}
-                    </span>
+                } @else {
+                  <div class="threat-model-stats">
+                    <div class="stats-row">
+                      <span class="stat">
+                        <mat-icon
+                          fontSet="material-symbols-outlined"
+                          fontWeight="100"
+                          style="font-variation-settings: 'FILL' 0"
+                          >diamond</mat-icon
+                        >
+                        {{ threatModel.asset_count }} {{ 'common.objectTypes.assets' | transloco }}
+                      </span>
+                      <span class="stat">
+                        <mat-icon
+                          fontSet="material-symbols-outlined"
+                          fontWeight="100"
+                          style="font-variation-settings: 'FILL' 0"
+                          class="skull-icon"
+                          >skull</mat-icon
+                        >
+                        {{ threatModel.threat_count }}
+                        {{ 'common.objectTypes.threats' | transloco }}
+                      </span>
+                    </div>
+                    <div class="stats-row">
+                      <span class="stat">
+                        <mat-icon>account_tree</mat-icon>
+                        {{ threatModel.diagram_count }}
+                        {{ 'threatModels.diagrams' | transloco }}
+                      </span>
+                      <span class="stat">
+                        <mat-icon>note</mat-icon>
+                        {{ threatModel.note_count }} {{ 'common.objectTypes.notes' | transloco }}
+                      </span>
+                    </div>
+                    <div class="stats-row">
+                      <span class="stat">
+                        <mat-icon>description</mat-icon>
+                        {{ threatModel.document_count }}
+                        {{ 'common.objectTypes.documents' | transloco }}
+                      </span>
+                      <span class="stat">
+                        <mat-icon>code</mat-icon>
+                        {{ threatModel.repo_count }} {{ 'threatModels.sourcesCount' | transloco }}
+                      </span>
+                    </div>
                   </div>
-                  <div class="stats-row">
-                    <span class="stat">
-                      <mat-icon>description</mat-icon>
-                      {{ threatModel.document_count }}
-                      {{ 'common.objectTypes.documents' | transloco }}
-                    </span>
-                    <span class="stat">
-                      <mat-icon>code</mat-icon>
-                      {{ threatModel.repo_count }} {{ 'threatModels.sourcesCount' | transloco }}
-                    </span>
-                  </div>
-                </div>
+                }
               </div>
             </div>
             <button
@@ -164,7 +213,30 @@
     <!-- Table/List View -->
     @if (dashboardListView && !isLoadingThreatModels) {
       <div class="table-container">
-        <table mat-table [dataSource]="dataSource" matSort class="threat-models-table">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          matSort
+          multiTemplateDataRows
+          class="threat-models-table"
+        >
+          <!-- Collaboration Indicator Column -->
+          <ng-container matColumnDef="collaborationIndicator">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let tm">
+              @if (hasActiveSessions(tm.id)) {
+                <button
+                  mat-icon-button
+                  class="collab-indicator-button"
+                  (click)="toggleRowExpansion(tm.id, $event)"
+                  [matTooltip]="'collaboration.joinSession' | transloco"
+                >
+                  <mat-icon class="collab-indicator-icon">groups</mat-icon>
+                </button>
+              }
+            </td>
+          </ng-container>
+
           <!-- Name Column -->
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -244,6 +316,53 @@
             </td>
           </ng-container>
 
+          <!-- Expandable Detail Row -->
+          <ng-container matColumnDef="expandedDetail">
+            <td mat-cell *matCellDef="let tm" [attr.colspan]="displayedColumns.length">
+              @if (expandedTmId === tm.id && hasActiveSessions(tm.id)) {
+                <div class="expanded-session-detail" [@detailExpand]>
+                  @for (session of getSessionsForTm(tm.id); track session.id; let last = $last) {
+                    <div class="session-detail-content">
+                      <p class="collab-detail">
+                        <mat-icon>account_tree</mat-icon> {{ session.diagramName }}
+                      </p>
+                      <p class="collab-detail">
+                        <mat-icon>person</mat-icon>
+                        {{ 'collaboration.hostedBy' | transloco }}
+                        {{ session.host.display_name || session.host.email || '—' }}
+                      </p>
+                      <p class="collab-detail">
+                        <mat-icon>schedule</mat-icon>
+                        {{ 'collaboration.sessionStarted' | transloco }}
+                        {{ formatSessionTime(session.startedAt) }}
+                      </p>
+                      <p class="collab-detail">
+                        <mat-icon>group</mat-icon>
+                        {{
+                          'collaboration.activeUsers' | transloco: { count: session.activeUsers }
+                        }}
+                      </p>
+                      <button
+                        mat-stroked-button
+                        color="primary"
+                        class="join-session-button"
+                        (click)="
+                          openCollaborationSession(session.diagramId); $event.stopPropagation()
+                        "
+                      >
+                        <mat-icon>login</mat-icon>
+                        {{ 'collaboration.joinSession' | transloco }}
+                      </button>
+                    </div>
+                    @if (!last) {
+                      <mat-divider></mat-divider>
+                    }
+                  }
+                </div>
+              }
+            </td>
+          </ng-container>
+
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr
             mat-row
@@ -252,6 +371,12 @@
             (click)="openThreatModel(row.id)"
             [matTooltip]="row.description || ''"
             matTooltipShowDelay="500"
+          ></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: ['expandedDetail']"
+            class="detail-row"
+            [class.expanded]="expandedTmId === row.id"
           ></tr>
         </table>
       </div>
@@ -294,77 +419,6 @@
     }
   </div>
 </div>
-
-@if (shouldShowCollaboration$ | async) {
-  <div class="collaboration-sessions-container">
-    <div class="header-row">
-      <h2 class="section-title" [transloco]="'collaboration.availableCollaborationSessions'">
-        Available Collaboration Sessions
-      </h2>
-      <div class="header-actions"></div>
-    </div>
-
-    <div class="collaboration-sessions-list">
-      @if (isLoadingCollaborationSessions) {
-        <div class="loading-container">
-          <div class="spinner"></div>
-        </div>
-      }
-
-      <mat-card
-        *ngFor="let session of collaborationSessions$ | async"
-        class="collaboration-session-card"
-        (click)="openCollaborationSession(session.diagramId)"
-      >
-        <mat-card-content>
-          <div class="collaboration-session-info">
-            <mat-icon class="collaboration-session-icon">groups</mat-icon>
-            <div class="collaboration-session-details">
-              <h3 class="collaboration-session-title">
-                {{ session.threatModelName }}
-              </h3>
-              <p class="collaboration-session-diagram">
-                <mat-icon>account_tree</mat-icon> {{ session.diagramName }}
-              </p>
-              <p class="collaboration-session-host">
-                <mat-icon>person</mat-icon> {{ 'collaboration.hostedBy' | transloco }}
-                <span [matTooltip]="session.host.email || ''">
-                  {{ session.host.display_name || session.host.email || '—' }}
-                </span>
-              </p>
-              <p class="collaboration-session-time">
-                <mat-icon>schedule</mat-icon>
-                <span class="session-text">
-                  {{ 'collaboration.sessionStarted' | transloco }}
-                  {{ formatSessionTime(session.startedAt) }}
-                </span>
-              </p>
-              <p class="collaboration-session-users">
-                <mat-icon>group</mat-icon>
-                <span class="session-text">
-                  {{ 'collaboration.activeUsers' | transloco: { count: session.activeUsers } }}
-                </span>
-              </p>
-            </div>
-          </div>
-          <mat-icon
-            class="join-icon"
-            [matTooltip]="'collaboration.joinSession' | transloco"
-            matTooltipPosition="left"
-            >login</mat-icon
-          >
-        </mat-card-content>
-      </mat-card>
-
-      @if (!isLoadingCollaborationSessions && (collaborationSessions$ | async)?.length === 0) {
-        <div class="no-collaboration-sessions">
-          <mat-icon class="empty-icon">groups_off</mat-icon>
-          <p>{{ 'collaboration.noActiveSessions' | transloco }}</p>
-        </div>
-      }
-    </div>
-  </div>
-}
 
 <!-- Import overlay spinner -->
 @if (isImporting) {

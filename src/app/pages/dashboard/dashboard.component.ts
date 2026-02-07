@@ -26,6 +26,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Observable, Subject, Subscription } from 'rxjs';
@@ -52,7 +53,6 @@ import { ThreatModel } from '../tm/models/threat-model.model';
 import { TMListItem } from '../tm/models/tm-list-item.model';
 import { ThreatModelService } from '../tm/services/threat-model.service';
 import { ThreatModelValidatorService } from '../tm/validation/threat-model-validator.service';
-import { DfdCollaborationService } from '../../core/services/dfd-collaboration.service';
 import {
   CollaborationSessionService,
   CollaborationSession,
@@ -98,6 +98,13 @@ import {
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
+  animations: [
+    trigger('detailExpand', [
+      state('void', style({ height: '0', opacity: '0', overflow: 'hidden' })),
+      state('*', style({ height: '*', opacity: '1' })),
+      transition('void <=> *', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   threatModels: TMListItem[] = [];
@@ -118,6 +125,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   private filterChanged$ = new Subject<string>();
   private destroy$ = new Subject<void>();
   displayedColumns: string[] = [
+    'collaborationIndicator',
     'name',
     'lastModified',
     'status',
@@ -127,13 +135,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     'actions',
   ];
 
+  // Collaboration session mapping
+  currentSessionMap = new Map<string, CollaborationSession[]>();
+  expandedTmId: string | null = null;
+
   // Observable streams
   collaborationSessions$!: Observable<CollaborationSession[]>;
-  shouldShowCollaboration$!: Observable<boolean>;
 
   // Loading state
   isLoadingThreatModels = true;
-  isLoadingCollaborationSessions = true;
   isImporting = false;
 
   private subscription: Subscription | null = null;
@@ -147,7 +157,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     private threatModelService: ThreatModelService,
     private validator: ThreatModelValidatorService,
     private languageService: LanguageService,
-    private collaborationService: DfdCollaborationService,
     private collaborationSessionService: CollaborationSessionService,
     private logger: LoggerService,
     private svgCacheService: SvgCacheService,
@@ -173,11 +182,16 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Initialize observable streams
     this.collaborationSessions$ = this.collaborationSessionService.sessions$;
-    this.shouldShowCollaboration$ = this.collaborationSessionService.shouldShowCollaboration$;
 
-    // Track collaboration sessions loading state
-    this.collaborationSessionsSubscription = this.collaborationSessions$.subscribe(() => {
-      this.isLoadingCollaborationSessions = false;
+    // Build session-to-TM map and re-sort when sessions change
+    this.collaborationSessionsSubscription = this.collaborationSessions$.subscribe(sessions => {
+      this.currentSessionMap = new Map<string, CollaborationSession[]>();
+      for (const session of sessions) {
+        const existing = this.currentSessionMap.get(session.threatModelId) || [];
+        existing.push(session);
+        this.currentSessionMap.set(session.threatModelId, existing);
+      }
+      this.applyFilter();
       this.cdr.detectChanges();
     });
 
@@ -253,6 +267,28 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         default:
           return '';
       }
+    };
+
+    // Override sortData to always float active-session TMs to the top
+    this.dataSource.sortData = (data: TMListItem[], sort: MatSort): TMListItem[] => {
+      if (!sort.active || sort.direction === '') {
+        return [...data].sort((a, b) => {
+          const aHas = this.currentSessionMap.has(a.id) ? 0 : 1;
+          const bHas = this.currentSessionMap.has(b.id) ? 0 : 1;
+          return aHas - bHas;
+        });
+      }
+
+      return [...data].sort((a, b) => {
+        const aHas = this.currentSessionMap.has(a.id) ? 0 : 1;
+        const bHas = this.currentSessionMap.has(b.id) ? 0 : 1;
+        if (aHas !== bHas) return aHas - bHas;
+
+        const aVal = this.dataSource.sortingDataAccessor(a, sort.active);
+        const bVal = this.dataSource.sortingDataAccessor(b, sort.active);
+        const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+        return sort.direction === 'asc' ? cmp : -cmp;
+      });
     };
   }
 
@@ -423,14 +459,17 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  /**
-   * Refresh the collaboration sessions list
-   */
-  refreshCollaborationSessions(): void {
-    // this.logger.info('Manually refreshing collaboration sessions');
-    this.isLoadingCollaborationSessions = true;
-    this.collaborationSessionService.refreshSessions();
-    // Loading state will be cleared by the subscription to collaborationSessions$
+  getSessionsForTm(tmId: string): CollaborationSession[] {
+    return this.currentSessionMap.get(tmId) || [];
+  }
+
+  hasActiveSessions(tmId: string): boolean {
+    return this.currentSessionMap.has(tmId);
+  }
+
+  toggleRowExpansion(tmId: string, event: MouseEvent): void {
+    event.stopPropagation();
+    this.expandedTmId = this.expandedTmId === tmId ? null : tmId;
   }
 
   /**
@@ -725,6 +764,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           tm.status?.toLowerCase().includes(filter),
       );
     }
+
+    // Sort: TMs with active sessions first, preserving relative order within groups
+    filtered.sort((a, b) => {
+      const aHasSession = this.currentSessionMap.has(a.id) ? 0 : 1;
+      const bHasSession = this.currentSessionMap.has(b.id) ? 0 : 1;
+      return aHasSession - bHasSession;
+    });
 
     // Update both the dataSource (for table) and filteredThreatModels (for cards)
     this.dataSource.data = filtered;
