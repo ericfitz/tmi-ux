@@ -3,6 +3,8 @@
     "admin.addons.addDialog.webhook",
     "admin.groups.addDialog.groupNamePlaceholder",
     "admin.webhooks.addDialog.url",
+    "common.id",
+    "common.version",
     "debugDialogs.historyDialog.id",
     "threatModels.idLabel"
   ],
@@ -10,6 +12,7 @@
   "bn-BD": [],
   "de-DE": [
     "about.opensourcetitle",
+    "triage.title",
     "about.server",
     "about.wiki",
     "assetEditor.types.hardware",
@@ -31,11 +34,13 @@
   "es-ES": [
     "assetEditor.types.hardware",
     "assetEditor.types.software",
+    "common.error",
     "editor.nodeLabels.actor",
     "threatModels.commit"
   ],
   "fr-FR": [
     "about.opensourcetitle",
+    "triage.title",
     "admin.title",
     "assetEditor.types.infrastructure",
     "assetEditor.types.personnel",

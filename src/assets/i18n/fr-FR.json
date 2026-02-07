@@ -754,9 +754,9 @@
     },
     "submitSurvey": "Soumettre l'enquête",
     "templateStatus": {
-      "active": "Active",
+      "active": "Actif",
       "archived": "Archivée",
-      "inactive": "Inactive"
+      "inactive": "Inactif"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Voir la réponse"
