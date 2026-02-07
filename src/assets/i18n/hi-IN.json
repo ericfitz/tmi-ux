@@ -480,7 +480,7 @@
     "common": {
       "affectedCells": "प्रभावित सेल",
       "cellIds": "सेल IDs",
-      "cells": "सेल",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "पूर्ण JSON कॉपी करें"
     },
     "graphDataDialog": {
@@ -563,7 +563,7 @@
     "validationError": "सत्यापन त्रुटि"
   },
   "getStarted": "शुरू करें",
-  "homeDescription": "एक सहयोगी थ्रेट मॉडलिंग टूल जो टीमों को उनके सिस्टम में सुरक्षा खतरों की पहचान, विश्लेषण और दस्तावेज़ीकरण में मदद करने के लिए डिज़ाइन किया गया है। अपने एप्लिकेशन सुरक्षा को बेहतर बनाने के लिए थ्रेट मॉडल और डायग्राम बनाएं, साझा करें और सहयोगी रूप से संपादित करें।",
+  "homeDescription": "TMI एक ऐसा उपकरण है जो आपके संगठन के लिए सुरक्षा समीक्षा और खतरा मॉडलिंग प्रक्रियाओं का प्रबंधन और सुधार करता है। यह सुरक्षा समीक्षा कार्यप्रवाह को संचालित करता है, सुरक्षा समीक्षाओं के लिए जानकारी व्यवस्थित करता है, सहयोगात्मक रूप से डेटा फ्लो डायग्राम बनाने में सक्षम बनाता है और समीक्षा प्रक्रिया में श्रम को कम करने तथा सुरक्षा खतरों का विश्लेषण करने के लिए स्वचालन को जोड़ने में सक्षम बनाता है।",
   "homeWelcomeTitle": "TMI में आपका स्वागत है: थ्रेट मॉडलिंग इम्प्रूव्ड",
   "login": {
     "chooseMethod": "अपनी साइन इन विधि चुनें:",
@@ -785,7 +785,7 @@
     "diagramName": "डायग्राम का नाम",
     "diagramPreview": "डायग्राम पूर्वावलोकन",
     "diagramType": "डायग्राम का प्रकार",
-    "diagrams": "डायग्राम",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "दस्तावेज़ के उद्देश्य या सामग्री का वर्णन करें",
     "documentEditor": {
       "title": {
@@ -810,7 +810,7 @@
     "noPermissions": "कोई अनुमति परिभाषित नहीं",
     "noRepositories": "अभी तक कोई रिपॉजिटरी नहीं जोड़ी गई",
     "noThreats": "अभी तक कोई खतरा नहीं जोड़ा गया",
-    "pageTitle": "थ्रेट मॉडल्स",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "भूमिका",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -1025,7 +1025,7 @@
       "danger": "खतरा",
       "display": "प्रदर्शन",
       "profile": "प्रोफ़ाइल",
-      "reports": "रिपोर्ट"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "थीम",
     "themeMode": {

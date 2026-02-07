@@ -480,7 +480,7 @@
     "common": {
       "affectedCells": "متاثرہ سیلز",
       "cellIds": "سیل IDs",
-      "cells": "سیلز",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "مکمل JSON کاپی کریں"
     },
     "graphDataDialog": {
@@ -563,7 +563,7 @@
     "validationError": "توثیق کی خرابی"
   },
   "getStarted": "شروع کریں",
-  "homeDescription": "ایک مشترکہ خطرے کی ماڈلنگ ٹول جو ٹیموں کو ان کے سسٹمز میں سیکیورٹی خطرات کی شناخت، تجزیہ اور دستاویز کرنے میں مدد کرنے کے لیے ڈیزائن کیا گیا ہے۔ اپنی ایپلیکیشن سیکیورٹی کو بہتر بنانے کے لیے خطرے کے ماڈلز اور ڈایاگرامز بنائیں، شیئر کریں اور مشترکہ طور پر ترمیم کریں۔",
+  "homeDescription": "TMI ایک ایسا ٹول ہے جو آپ کی تنظیم کے لیے سیکیورٹی جائزے اور خطرے کی ماڈلنگ کے عمل کو منظم اور بہتر بناتا ہے۔ یہ سیکیورٹی جائزے کے ورک فلو کو چلاتا ہے، سیکیورٹی جائزوں کے لیے معلومات کو منظم کرتا ہے، ڈیٹا فلو ڈایاگرام کو مشترکہ طور پر بنانے کے قابل بناتا ہے اور جائزے کے عمل میں محنت کو کم کرنے اور سیکیورٹی خطرات کا تجزیہ کرنے کے لیے آٹومیشن کو جوڑنے کے قابل بناتا ہے۔",
   "homeWelcomeTitle": "TMI میں خوش آمدید: Threat Modeling Improved",
   "login": {
     "chooseMethod": "اپنا سائن ان طریقہ منتخب کریں:",
@@ -785,7 +785,7 @@
     "diagramName": "ڈایاگرام کا نام",
     "diagramPreview": "ڈایاگرام کا پیش نظارہ",
     "diagramType": "ڈایاگرام کی قسم",
-    "diagrams": "ڈایاگرامز",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "دستاویز کا مقصد یا مواد بیان کریں",
     "documentEditor": {
       "title": {
@@ -810,7 +810,7 @@
     "noPermissions": "کوئی اجازتیں متعین نہیں",
     "noRepositories": "ابھی تک کوئی ریپوزٹریز شامل نہیں",
     "noThreats": "ابھی تک کوئی خطرات شامل نہیں",
-    "pageTitle": "خطرے کے ماڈلز",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "کردار",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -1025,7 +1025,7 @@
       "danger": "خطرناک",
       "display": "نمائش",
       "profile": "پروفائل",
-      "reports": "رپورٹس"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "تھیم",
     "themeMode": {

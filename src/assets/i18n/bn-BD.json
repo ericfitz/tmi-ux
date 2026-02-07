@@ -480,7 +480,7 @@
     "common": {
       "affectedCells": "প্রভাবিত সেল",
       "cellIds": "সেল আইডি",
-      "cells": "সেল",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "সম্পূর্ণ JSON কপি করুন"
     },
     "graphDataDialog": {
@@ -563,7 +563,7 @@
     "validationError": "যাচাইকরণ ত্রুটি"
   },
   "getStarted": "শুরু করুন",
-  "homeDescription": "একটি সহযোগিতামূলক থ্রেট মডেলিং টুল যা দলগুলোকে তাদের সিস্টেমে নিরাপত্তা হুমকি চিহ্নিত, বিশ্লেষণ এবং নথিভুক্ত করতে সাহায্য করে। আপনার অ্যাপ্লিকেশনের নিরাপত্তা উন্নত করতে থ্রেট মডেল এবং ডায়াগ্রাম তৈরি, শেয়ার এবং সহযোগিতামূলকভাবে সম্পাদনা করুন।",
+  "homeDescription": "TMI হলো এমন একটি টুল যা আপনার প্রতিষ্ঠানের নিরাপত্তা পর্যালোচনা এবং হুমকি মডেলিং প্রক্রিয়া পরিচালনা ও উন্নত করে। এটি নিরাপত্তা পর্যালোচনা কর্মপ্রবাহ পরিচালনা করে, নিরাপত্তা পর্যালোচনার জন্য তথ্য সংগঠিত করে, সহযোগিতামূলকভাবে ডেটা ফ্লো ডায়াগ্রাম তৈরি করতে সক্ষম করে এবং পর্যালোচনা প্রক্রিয়ায় পরিশ্রম কমাতে ও নিরাপত্তা হুমকি বিশ্লেষণ করতে অটোমেশন সংযুক্ত করতে সক্ষম করে।",
   "homeWelcomeTitle": "TMI-তে স্বাগতম: থ্রেট মডেলিং ইমপ্রুভড",
   "login": {
     "chooseMethod": "আপনার সাইন ইন পদ্ধতি বেছে নিন:",
@@ -785,7 +785,7 @@
     "diagramName": "ডায়াগ্রামের নাম",
     "diagramPreview": "ডায়াগ্রাম প্রিভিউ",
     "diagramType": "ডায়াগ্রামের ধরন",
-    "diagrams": "ডায়াগ্রাম",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "ডকুমেন্টের উদ্দেশ্য বা বিষয়বস্তু বর্ণনা করুন",
     "documentEditor": {
       "title": {
@@ -810,7 +810,7 @@
     "noPermissions": "কোনো অনুমতি সংজ্ঞায়িত নেই",
     "noRepositories": "এখনো কোনো রিপোজিটরি যোগ করা হয়নি",
     "noThreats": "এখনো কোনো হুমকি যোগ করা হয়নি",
-    "pageTitle": "থ্রেট মডেল",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "ভূমিকা",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -1025,7 +1025,7 @@
       "danger": "বিপদ",
       "display": "প্রদর্শন",
       "profile": "প্রোফাইল",
-      "reports": "প্রতিবেদন"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "থিম",
     "themeMode": {

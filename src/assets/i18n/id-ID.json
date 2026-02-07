@@ -480,7 +480,7 @@
     "common": {
       "affectedCells": "Sel yang Terpengaruh",
       "cellIds": "ID Sel",
-      "cells": "Sel",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "Salin JSON Lengkap"
     },
     "graphDataDialog": {
@@ -563,7 +563,7 @@
     "validationError": "Kesalahan Validasi"
   },
   "getStarted": "Mulai",
-  "homeDescription": "Alat pemodelan ancaman kolaboratif yang dirancang untuk membantu tim mengidentifikasi, menganalisis, dan mendokumentasikan ancaman keamanan dalam sistem mereka. Buat, bagikan, dan edit secara kolaboratif model ancaman dan diagram untuk meningkatkan keamanan aplikasi Anda.",
+  "homeDescription": "TMI adalah alat yang mengelola dan meningkatkan proses tinjauan keamanan dan pemodelan ancaman untuk organisasi Anda. Alat ini mengarahkan alur kerja tinjauan keamanan, mengorganisir informasi untuk tinjauan keamanan, memungkinkan pembuatan diagram alur data secara kolaboratif, dan memungkinkan penghubungan otomatisasi untuk mengurangi beban kerja dalam proses tinjauan dan menganalisis ancaman keamanan.",
   "homeWelcomeTitle": "Selamat Datang di TMI: Threat Modeling Improved",
   "login": {
     "chooseMethod": "Pilih metode masuk Anda:",
@@ -785,7 +785,7 @@
     "diagramName": "Nama Diagram",
     "diagramPreview": "Pratinjau Diagram",
     "diagramType": "Jenis Diagram",
-    "diagrams": "Diagram",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "Jelaskan Tujuan atau Konten Dokumen",
     "documentEditor": {
       "title": {
@@ -810,7 +810,7 @@
     "noPermissions": "Tidak Ada Izin Ditetapkan",
     "noRepositories": "Belum Ada Repositori Ditambahkan",
     "noThreats": "Belum Ada Ancaman Ditambahkan",
-    "pageTitle": "Model Ancaman",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Peran",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -1025,7 +1025,7 @@
       "danger": "Bahaya",
       "display": "Tampilan",
       "profile": "Profil",
-      "reports": "Laporan"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "Tema",
     "themeMode": {

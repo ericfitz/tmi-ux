@@ -480,7 +480,7 @@
     "common": {
       "affectedCells": "เซลล์ที่ได้รับผลกระทบ",
       "cellIds": "ID ของเซลล์",
-      "cells": "เซลล์",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "คัดลอก JSON ทั้งหมด"
     },
     "graphDataDialog": {
@@ -505,7 +505,7 @@
       "title": "ประวัติ",
       "undoStack": "สแต็กเลิกทำ",
       "undoStackSize": "ขนาดสแต็กเลิกทำ",
-      "userId": "ID ผู้ใช้"
+      "userId": "{{common.userId}}"
     }
   },
   "editor": {
@@ -563,7 +563,7 @@
     "validationError": "ข้อผิดพลาดในการตรวจสอบ"
   },
   "getStarted": "เริ่มต้นใช้งาน",
-  "homeDescription": "เครื่องมือสร้างแบบจำลองภัยคุกคามแบบการทำงานร่วมกันที่ออกแบบมาเพื่อช่วยทีมในการระบุ วิเคราะห์ และจัดทำเอกสารภัยคุกคามด้านความปลอดภัยในระบบของพวกเขา สร้าง แบ่งปัน และแก้ไขแบบจำลองภัยคุกคามและแผนภาพร่วมกันเพื่อปรับปรุงความปลอดภัยของแอปพลิเคชันของคุณ",
+  "homeDescription": "TMI เป็นเครื่องมือที่จัดการและยกระดับกระบวนการตรวจสอบความปลอดภัยและการจำลองภัยคุกคามสำหรับองค์กรของคุณ ขับเคลื่อนเวิร์กโฟลว์การตรวจสอบความปลอดภัย จัดระเบียบข้อมูลสำหรับการตรวจสอบความปลอดภัย เปิดใช้งานการสร้างไดอะแกรมการไหลของข้อมูลร่วมกัน และเปิดใช้งานการเชื่อมต่อระบบอัตโนมัติเพื่อลดภาระงานในกระบวนการตรวจสอบและวิเคราะห์ภัยคุกคามด้านความปลอดภัย",
   "homeWelcomeTitle": "ยินดีต้อนรับสู่ TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
   "login": {
     "chooseMethod": "เลือกวิธีการเข้าสู่ระบบของคุณ:",
@@ -785,7 +785,7 @@
     "diagramName": "ชื่อแผนภาพ",
     "diagramPreview": "ตัวอย่างแผนภาพ",
     "diagramType": "ประเภทแผนภาพ",
-    "diagrams": "แผนภาพ",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "อธิบายวัตถุประสงค์หรือเนื้อหาของเอกสาร",
     "documentEditor": {
       "title": {
@@ -810,8 +810,8 @@
     "noPermissions": "ไม่มีสิทธิ์การเข้าถึงที่กำหนดไว้",
     "noRepositories": "ยังไม่มีการเพิ่มที่เก็บ",
     "noThreats": "ยังไม่มีการเพิ่มภัยคุกคาม",
-    "pageTitle": "แบบจำลองภัยคุกคาม",
-    "permissionsProvider": "ผู้ให้บริการ",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
+    "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "บทบาท",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "จัดการสิทธิ์การเข้าถึง",
@@ -1025,7 +1025,7 @@
       "danger": "อันตราย",
       "display": "การแสดงผล",
       "profile": "โปรไฟล์",
-      "reports": "รายงาน"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "ธีม",
     "themeMode": {
@@ -1037,10 +1037,10 @@
     "userProfile": {
       "currentRole": "บทบาทโมเดลภัยคุกคามปัจจุบัน",
       "groups": "กลุ่ม",
-      "provider": "ผู้ให้บริการข้อมูลประจำตัว",
+      "provider": "{{common.identityProvider}}",
       "providerId": "รหัสผู้ให้บริการ",
       "title": "โปรไฟล์ผู้ใช้",
-      "userId": "รหัสผู้ใช้"
+      "userId": "{{common.userId}}"
     }
   }
 }

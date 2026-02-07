@@ -480,7 +480,7 @@
     "common": {
       "affectedCells": "תאים מושפעים",
       "cellIds": "מזהי תאים",
-      "cells": "תאים",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "העתק JSON מלא"
     },
     "graphDataDialog": {
@@ -563,7 +563,7 @@
     "validationError": "שגיאת אימות"
   },
   "getStarted": "התחל",
-  "homeDescription": "כלי מידול איומים שיתופי שנועד לעזור לצוותים לזהות, לנתח ולתעד איומי אבטחה במערכות שלהם. צור, שתף וערוך בשיתוף פעולה מודלי איומים ודיאגרמות לשיפור אבטחת היישום שלך.",
+  "homeDescription": "TMI הוא כלי שמנהל ומשפר את תהליכי סקירת האבטחה ומידול האיומים עבור הארגון שלך. הוא מניע את זרימת העבודה של סקירת אבטחה, מארגן את המידע לסקירות אבטחה, מאפשר בניית דיאגרמות זרימת נתונים בשיתוף פעולה ומאפשר חיבור אוטומציה להפחתת מאמץ בתהליך הסקירה ולניתוח איומי אבטחה.",
   "homeWelcomeTitle": "ברוכים הבאים ל-TMI: מידול איומים משופר",
   "login": {
     "chooseMethod": "בחר את שיטת הכניסה שלך:",
@@ -785,7 +785,7 @@
     "diagramName": "שם הדיאגרמה",
     "diagramPreview": "תצוגה מקדימה של הדיאגרמה",
     "diagramType": "סוג דיאגרמה",
-    "diagrams": "דיאגרמות",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "תאר את מטרת המסמך או תוכנו",
     "documentEditor": {
       "title": {
@@ -810,7 +810,7 @@
     "noPermissions": "לא הוגדרו הרשאות",
     "noRepositories": "טרם נוספו מאגרים",
     "noThreats": "טרם נוספו איומים",
-    "pageTitle": "מודלי איומים",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "תפקיד",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -1025,7 +1025,7 @@
       "danger": "סכנה",
       "display": "תצוגה",
       "profile": "פרופיל",
-      "reports": "דוחות"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "ערכת נושא",
     "themeMode": {

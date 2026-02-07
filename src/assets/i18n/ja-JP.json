@@ -480,7 +480,7 @@
     "common": {
       "affectedCells": "影響を受けるセル",
       "cellIds": "セルID",
-      "cells": "セル",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "完全なJSONをコピー"
     },
     "graphDataDialog": {
@@ -563,7 +563,7 @@
     "validationError": "バリデーションエラー"
   },
   "getStarted": "始める",
-  "homeDescription": "チームがシステムのセキュリティ脅威を特定、分析、文書化するための共同脅威モデリングツールです。脅威モデルとダイアグラムを作成、共有、共同編集して、アプリケーションのセキュリティを向上させましょう。",
+  "homeDescription": "TMIは、組織のセキュリティレビューと脅威モデリングのプロセスを管理・強化するツールです。セキュリティレビューのワークフローを推進し、セキュリティレビューに必要な情報を整理し、データフローダイアグラムの共同作成を可能にし、レビュープロセスの負担を軽減してセキュリティ脅威を分析するための自動化の連携を可能にします。",
   "homeWelcomeTitle": "TMIへようこそ: 脅威モデリング改善版",
   "login": {
     "chooseMethod": "サインイン方法を選択してください:",
@@ -785,7 +785,7 @@
     "diagramName": "ダイアグラム名",
     "diagramPreview": "ダイアグラムプレビュー",
     "diagramType": "ダイアグラムタイプ",
-    "diagrams": "ダイアグラム",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "ドキュメントの目的または内容を記述してください",
     "documentEditor": {
       "title": {
@@ -810,7 +810,7 @@
     "noPermissions": "権限が定義されていません",
     "noRepositories": "まだリポジトリが追加されていません",
     "noThreats": "まだ脅威が追加されていません",
-    "pageTitle": "脅威モデル",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "ロール",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -1025,7 +1025,7 @@
       "danger": "危険",
       "display": "表示",
       "profile": "プロフィール",
-      "reports": "レポート"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "テーマ",
     "themeMode": {

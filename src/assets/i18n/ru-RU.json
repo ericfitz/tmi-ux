@@ -480,7 +480,7 @@
     "common": {
       "affectedCells": "Затронутые ячейки",
       "cellIds": "ID ячеек",
-      "cells": "Ячейки",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "Копировать полный JSON"
     },
     "graphDataDialog": {
@@ -563,7 +563,7 @@
     "validationError": "Ошибка валидации"
   },
   "getStarted": "Начать",
-  "homeDescription": "Инструмент для совместного моделирования угроз, разработанный для помощи командам в выявлении, анализе и документировании угроз безопасности в их системах. Создавайте, делитесь и совместно редактируйте модели угроз и диаграммы для повышения безопасности ваших приложений.",
+  "homeDescription": "TMI — это инструмент, который управляет и совершенствует процессы проверки безопасности и моделирования угроз для вашей организации. Он обеспечивает рабочий процесс проверки безопасности, систематизирует информацию для проверок безопасности, позволяет совместно создавать диаграммы потоков данных и подключать автоматизацию для сокращения трудозатрат в процессе проверки и анализа угроз безопасности.",
   "homeWelcomeTitle": "Добро Пожаловать в TMI: Улучшенное Моделирование Угроз",
   "login": {
     "chooseMethod": "Выберите способ входа:",
@@ -785,7 +785,7 @@
     "diagramName": "Название диаграммы",
     "diagramPreview": "Предпросмотр диаграммы",
     "diagramType": "Тип диаграммы",
-    "diagrams": "Диаграммы",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "Опишите назначение или содержимое документа",
     "documentEditor": {
       "title": {
@@ -810,7 +810,7 @@
     "noPermissions": "Разрешения не определены",
     "noRepositories": "Репозитории ещё не добавлены",
     "noThreats": "Угрозы ещё не добавлены",
-    "pageTitle": "Модели Угроз",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Роль",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -1025,7 +1025,7 @@
       "danger": "Опасная зона",
       "display": "Отображение",
       "profile": "Профиль",
-      "reports": "Отчеты"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "Тема",
     "themeMode": {

@@ -480,7 +480,7 @@
     "common": {
       "affectedCells": "Betroffene Zellen",
       "cellIds": "Zellen-IDs",
-      "cells": "Zellen",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "Vollständiges JSON kopieren"
     },
     "graphDataDialog": {
@@ -505,7 +505,7 @@
       "title": "Verlauf",
       "undoStack": "Rückgängig-Stapel",
       "undoStackSize": "Größe des Rückgängig-Stapels",
-      "userId": "Benutzer-ID"
+      "userId": "{{common.userId}}"
     }
   },
   "editor": {
@@ -563,7 +563,7 @@
     "validationError": "Validierungsfehler"
   },
   "getStarted": "Loslegen",
-  "homeDescription": "Ein kollaboratives Tool zur Bedrohungsmodellierung, das Teams dabei hilft, Sicherheitsbedrohungen in ihren Systemen zu identifizieren, zu analysieren und zu dokumentieren. Erstellen, teilen und bearbeiten Sie gemeinsam Bedrohungsmodelle und Diagramme, um die Sicherheit Ihrer Anwendung zu verbessern.",
+  "homeDescription": "TMI ist ein Werkzeug, das die Sicherheitsüberprüfungs- und Bedrohungsmodellierungsprozesse für Ihre Organisation verwaltet und verbessert. Es steuert den Arbeitsablauf der Sicherheitsüberprüfung, organisiert die Informationen für Sicherheitsüberprüfungen, ermöglicht die gemeinsame Erstellung von Datenflussdiagrammen und ermöglicht die Anbindung von Automatisierung, um den Aufwand im Überprüfungsprozess zu reduzieren und Sicherheitsbedrohungen zu analysieren.",
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
   "login": {
     "chooseMethod": "Wählen Sie Ihre Anmeldemethode:",
@@ -785,7 +785,7 @@
     "diagramName": "Diagrammname",
     "diagramPreview": "Diagrammvorschau",
     "diagramType": "Diagrammtyp",
-    "diagrams": "Diagramme",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "Beschreiben Sie den Zweck oder Inhalt des Dokuments",
     "documentEditor": {
       "title": {
@@ -810,8 +810,8 @@
     "noPermissions": "Keine Berechtigungen definiert",
     "noRepositories": "Noch keine Repositories hinzugefügt",
     "noThreats": "Noch keine Bedrohungen hinzugefügt",
-    "pageTitle": "Bedrohungsmodelle",
-    "permissionsProvider": "Anbieter",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
+    "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Rolle",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "Berechtigungen verwalten",
@@ -1025,7 +1025,7 @@
       "danger": "Gefahr",
       "display": "Anzeige",
       "profile": "Profil",
-      "reports": "Berichte"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "Design",
     "themeMode": {
@@ -1037,10 +1037,10 @@
     "userProfile": {
       "currentRole": "Aktuelle Bedrohungsmodell-Rolle",
       "groups": "Gruppen",
-      "provider": "Identitätsanbieter",
+      "provider": "{{common.identityProvider}}",
       "providerId": "Anbieter-ID",
       "title": "Benutzerprofil",
-      "userId": "Benutzer-ID"
+      "userId": "{{common.userId}}"
     }
   }
 }

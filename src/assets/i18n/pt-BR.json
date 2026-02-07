@@ -480,7 +480,7 @@
     "common": {
       "affectedCells": "Celulas Afetadas",
       "cellIds": "IDs das Celulas",
-      "cells": "Celulas",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "Copiar JSON Completo"
     },
     "graphDataDialog": {
@@ -563,7 +563,7 @@
     "validationError": "Erro de Validacao"
   },
   "getStarted": "Comecar",
-  "homeDescription": "Uma ferramenta colaborativa de modelagem de ameacas projetada para ajudar equipes a identificar, analisar e documentar ameacas de seguranca em seus sistemas. Crie, compartilhe e edite colaborativamente modelos de ameacas e diagramas para melhorar a seguranca de suas aplicacoes.",
+  "homeDescription": "TMI é uma ferramenta que gerencia e aprimora os processos de revisão de segurança e modelagem de ameaças para sua organização. Ela conduz o fluxo de trabalho de revisão de segurança, organiza as informações para revisões de segurança, permite a construção colaborativa de diagramas de fluxo de dados e permite conectar automação para reduzir o esforço no processo de revisão e analisar ameaças de segurança.",
   "homeWelcomeTitle": "Bem-vindo ao TMI: Modelagem de Ameacas Aprimorada",
   "login": {
     "chooseMethod": "Escolha seu metodo de login:",
@@ -785,7 +785,7 @@
     "diagramName": "Nome do Diagrama",
     "diagramPreview": "Visualizacao do Diagrama",
     "diagramType": "Tipo de Diagrama",
-    "diagrams": "Diagramas",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "Descreva o Proposito ou Conteudo do Documento",
     "documentEditor": {
       "title": {
@@ -810,7 +810,7 @@
     "noPermissions": "Nenhuma Permissao Definida",
     "noRepositories": "Nenhum Repositorio Adicionado Ainda",
     "noThreats": "Nenhuma Ameaca Adicionada Ainda",
-    "pageTitle": "Modelos de Ameacas",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Funcao",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -1025,7 +1025,7 @@
       "danger": "Perigo",
       "display": "Exibição",
       "profile": "Perfil",
-      "reports": "Relatórios"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "Tema",
     "themeMode": {

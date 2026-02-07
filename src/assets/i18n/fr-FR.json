@@ -480,7 +480,7 @@
     "common": {
       "affectedCells": "Cellules affectees",
       "cellIds": "ID des cellules",
-      "cells": "Cellules",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "Copier le JSON complet"
     },
     "graphDataDialog": {
@@ -563,7 +563,7 @@
     "validationError": "Erreur de validation"
   },
   "getStarted": "Commencer",
-  "homeDescription": "Un outil collaboratif de modelisation des menaces concu pour aider les equipes a identifier, analyser et documenter les menaces de securite dans leurs systemes. Creez, partagez et modifiez collaborativement des modeles de menaces et des diagrammes pour ameliorer la securite de vos applications.",
+  "homeDescription": "TMI est un outil qui gère et améliore les processus de revue de sécurité et de modélisation des menaces pour votre organisation. Il pilote le flux de travail de revue de sécurité, organise les informations pour les revues de sécurité, permet de construire des diagrammes de flux de données de manière collaborative et permet de connecter l'automatisation pour réduire les efforts dans le processus de revue et analyser les menaces de sécurité.",
   "homeWelcomeTitle": "Bienvenue sur TMI : Modelisation des Menaces Amelioree",
   "login": {
     "chooseMethod": "Choisissez votre methode de connexion :",
@@ -785,7 +785,7 @@
     "diagramName": "Nom du diagramme",
     "diagramPreview": "Apercu du diagramme",
     "diagramType": "Type de diagramme",
-    "diagrams": "Diagrammes",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "Decrivez l'objectif ou le contenu du document",
     "documentEditor": {
       "title": {
@@ -810,7 +810,7 @@
     "noPermissions": "Aucune permission definie",
     "noRepositories": "Aucun depot ajoute pour le moment",
     "noThreats": "Aucune menace ajoutee pour le moment",
-    "pageTitle": "Modeles de Menaces",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Rôle",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -1025,7 +1025,7 @@
       "danger": "Danger",
       "display": "Affichage",
       "profile": "Profil",
-      "reports": "Rapports"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "Thème",
     "themeMode": {

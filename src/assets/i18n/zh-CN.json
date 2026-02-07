@@ -480,7 +480,7 @@
     "common": {
       "affectedCells": "受影响的单元格",
       "cellIds": "单元格ID",
-      "cells": "单元格",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "复制完整 JSON"
     },
     "graphDataDialog": {
@@ -505,7 +505,7 @@
       "title": "历史记录",
       "undoStack": "撤销堆栈",
       "undoStackSize": "撤销堆栈大小",
-      "userId": "用户ID"
+      "userId": "{{common.userId}}"
     }
   },
   "editor": {
@@ -563,7 +563,7 @@
     "validationError": "验证错误"
   },
   "getStarted": "开始使用",
-  "homeDescription": "一种协作威胁建模工具，旨在帮助团队识别、分析和记录其系统中的安全威胁。创建、共享和协作编辑威胁模型和图表，以提高应用程序安全性。",
+  "homeDescription": "TMI是一款管理和增强组织安全审查与威胁建模流程的工具。它驱动安全审查工作流程，整理安全审查所需的信息，支持协作构建数据流图，并支持连接自动化以减少审查过程中的繁琐工作和分析安全威胁。",
   "homeWelcomeTitle": "欢迎使用 TMI: 威胁建模改进",
   "login": {
     "chooseMethod": "选择您的登录方式：",
@@ -785,7 +785,7 @@
     "diagramName": "图表名称",
     "diagramPreview": "图表预览",
     "diagramType": "图表类型",
-    "diagrams": "图表",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "描述文档的目的或内容",
     "documentEditor": {
       "title": {
@@ -810,8 +810,8 @@
     "noPermissions": "未定义权限",
     "noRepositories": "尚未添加仓库",
     "noThreats": "尚未添加威胁",
-    "pageTitle": "威胁模型",
-    "permissionsProvider": "提供者",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
+    "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "角色",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "管理权限",
@@ -1025,7 +1025,7 @@
       "danger": "危险区域",
       "display": "显示",
       "profile": "个人资料",
-      "reports": "报告"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "主题",
     "themeMode": {
@@ -1037,10 +1037,10 @@
     "userProfile": {
       "currentRole": "当前威胁模型角色",
       "groups": "用户组",
-      "provider": "身份提供商",
+      "provider": "{{common.identityProvider}}",
       "providerId": "提供商ID",
       "title": "用户资料",
-      "userId": "用户ID"
+      "userId": "{{common.userId}}"
     }
   }
 }

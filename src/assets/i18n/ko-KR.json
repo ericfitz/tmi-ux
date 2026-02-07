@@ -480,7 +480,7 @@
     "common": {
       "affectedCells": "영향받은 셀",
       "cellIds": "셀 ID",
-      "cells": "셀",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "전체 JSON 복사"
     },
     "graphDataDialog": {
@@ -563,7 +563,7 @@
     "validationError": "유효성 검사 오류"
   },
   "getStarted": "시작하기",
-  "homeDescription": "시스템의 보안 위협을 식별, 분석 및 문서화하도록 설계된 협업 위협 모델링 도구입니다. 위협 모델과 다이어그램을 생성, 공유하고 공동으로 편집하여 애플리케이션 보안을 개선하세요.",
+  "homeDescription": "TMI는 조직의 보안 검토 및 위협 모델링 프로세스를 관리하고 강화하는 도구입니다. 보안 검토 워크플로를 주도하고, 보안 검토를 위한 정보를 체계화하며, 데이터 흐름 다이어그램을 협업으로 구축할 수 있게 하고, 검토 프로세스의 수고를 줄이고 보안 위협을 분석하기 위한 자동화 연결을 가능하게 합니다.",
   "homeWelcomeTitle": "TMI에 오신 것을 환영합니다: 향상된 위협 모델링",
   "login": {
     "chooseMethod": "로그인 방법을 선택하세요:",
@@ -785,7 +785,7 @@
     "diagramName": "다이어그램 이름",
     "diagramPreview": "다이어그램 미리보기",
     "diagramType": "다이어그램 유형",
-    "diagrams": "다이어그램",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "문서의 목적 또는 내용을 설명하세요",
     "documentEditor": {
       "title": {
@@ -810,7 +810,7 @@
     "noPermissions": "정의된 권한 없음",
     "noRepositories": "추가된 저장소 없음",
     "noThreats": "추가된 위협 없음",
-    "pageTitle": "위협 모델",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "역할",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -1025,7 +1025,7 @@
       "danger": "위험",
       "display": "표시",
       "profile": "프로필",
-      "reports": "보고서"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "테마",
     "themeMode": {

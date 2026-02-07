@@ -480,7 +480,7 @@
     "common": {
       "affectedCells": "الخلايا المتأثرة",
       "cellIds": "معرفات الخلايا",
-      "cells": "خلايا",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "نسخ JSON كامل"
     },
     "graphDataDialog": {
@@ -505,7 +505,7 @@
       "title": "السجل",
       "undoStack": "مكدس التراجع",
       "undoStackSize": "حجم مكدس التراجع",
-      "userId": "معرف المستخدم"
+      "userId": "{{common.userId}}"
     }
   },
   "editor": {
@@ -563,7 +563,7 @@
     "validationError": "خطأ في التحقق"
   },
   "getStarted": "ابدأ",
-  "homeDescription": "أداة تعاونية لنمذجة التهديدات مصممة لمساعدة الفرق على تحديد وتحليل وتوثيق التهديدات الأمنية في أنظمتهم. إنشاء ومشاركة وتحرير نماذج التهديدات والرسوم البيانية بشكل تعاوني لتحسين أمان التطبيق الخاص بك.",
+  "homeDescription": "TMI هو أداة تدير وتعزز عمليات المراجعة الأمنية ونمذجة التهديدات لمؤسستك. يقود سير عمل المراجعة الأمنية، وينظم المعلومات للمراجعات الأمنية، ويتيح بناء مخططات تدفق البيانات بشكل تعاوني، ويتيح ربط الأتمتة لتقليل الجهد في عملية المراجعة وتحليل التهديدات الأمنية.",
   "homeWelcomeTitle": "مرحبا بكم في تي إم آي: نمذجة التهديدات المحسنة",
   "login": {
     "chooseMethod": "اختر طريقة تسجيل الدخول:",
@@ -785,7 +785,7 @@
     "diagramName": "اسم المخطط",
     "diagramPreview": "معاينة المخطط",
     "diagramType": "نوع المخطط",
-    "diagrams": "المخططات",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "اوصف الغرض أو محتوى الوثيقة",
     "documentEditor": {
       "title": {
@@ -810,8 +810,8 @@
     "noPermissions": "لم يتم تحديد أي أذونات",
     "noRepositories": "لم تتم إضافة أي مستودعات بعد",
     "noThreats": "لم تتم إضافة أي تهديدات بعد",
-    "pageTitle": "نماذج التهديدات",
-    "permissionsProvider": "المزود",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
+    "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "الدور",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "إدارة الأذونات",
@@ -1025,7 +1025,7 @@
       "danger": "خطر",
       "display": "العرض",
       "profile": "الملف الشخصي",
-      "reports": "التقارير"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "المظهر",
     "themeMode": {
@@ -1037,10 +1037,10 @@
     "userProfile": {
       "currentRole": "دور نموذج التهديد الحالي",
       "groups": "المجموعات",
-      "provider": "موفر الهوية",
+      "provider": "{{common.identityProvider}}",
       "providerId": "معرف الموفر",
       "title": "ملف المستخدم",
-      "userId": "معرف المستخدم"
+      "userId": "{{common.userId}}"
     }
   }
 }

@@ -585,7 +585,7 @@
     "validationError": "Validation Error"
   },
   "getStarted": "Get Started",
-  "homeDescription": "A collaborative threat modeling tool designed to help teams identify, analyze, and document security threats in their systems. Create, share, and collaboratively edit threat models and diagrams to improve your application security.",
+  "homeDescription": "TMI is a tool that manages and enhances the security review and threat modeling processes for your organization.  It drives security review workflow, organizes the information for security reviews, enables building data flow diagrams collaboratively, and enables connecting automation to reduce toil in the review process and to analyze for security threats.",
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
   "login": {
     "chooseMethod": "Choose your sign in method:",
