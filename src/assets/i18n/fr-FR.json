@@ -245,7 +245,6 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Copie)",
-    "createTemplate": "Créer un modèle",
     "editTemplate": "Modifier le modèle",
     "errorLoadingTemplates": "Échec du chargement des modèles",
     "loadingTemplates": "Chargement des modèles...",
@@ -256,7 +255,74 @@
     "searchByName": "Rechercher par nom...",
     "searchTemplates": "Rechercher des modèles",
     "templateCount": "{{count}} modèle",
-    "templateCountPlural": "{{count}} modèles"
+    "templateCountPlural": "{{count}} modèles",
+    "createSurvey": "Créer une enquête",
+    "surveyDetails": "Détails de l'enquête",
+    "templateBuilder": {
+      "addPage": "Ajouter une page",
+      "backToTemplates": "Retour aux modèles",
+      "choicesPerLine": "Choix (un par ligne)",
+      "deletePage": "Supprimer la page",
+      "deleteQuestion": "Supprimer la question",
+      "enterSurveyDescription": "Saisir la description de l'enquête",
+      "enterSurveyTitle": "Saisir le titre de l'enquête",
+      "failedToLoadTemplate": "Échec du chargement du modèle",
+      "failedToSaveTemplate": "Échec de l'enregistrement du modèle",
+      "loadingTemplate": "Chargement du modèle...",
+      "mapsToTmField": "Associé au champ du modèle de menaces",
+      "metadataKey": "Clé de métadonnée",
+      "metadataKeyHint": "Nom de clé pour l'entrée de métadonnée",
+      "nameId": "Nom (ID)",
+      "nameIdHint": "Identifiant unique pour cette question",
+      "nextPage": "Page suivante",
+      "noQuestionsHint": "Cliquez sur un type de question dans la palette pour l'ajouter",
+      "noQuestionsYet": "Aucune question pour l'instant",
+      "pageIndicator": "Page {{current}} sur {{total}}",
+      "previousPage": "Page précédente",
+      "questionProperties": "Propriétés de la question",
+      "questionTypeDescriptions": {
+        "boolean": "Bouton Oui/Non",
+        "checkbox": "Sélection à choix multiples",
+        "comment": "Zone de texte multiligne",
+        "dropdown": "Sélection déroulante",
+        "panel": "Regrouper les questions dans un panneau",
+        "paneldynamic": "Groupe de panneaux répétable",
+        "radiogroup": "Choix unique parmi les options",
+        "text": "Saisie de texte sur une ligne"
+      },
+      "questionTypeLabels": {
+        "boolean": "Oui/Non",
+        "checkbox": "Case à cocher",
+        "comment": "Multiligne",
+        "dropdown": "Liste déroulante",
+        "panel": "Panneau",
+        "paneldynamic": "Panneau dynamique",
+        "radiogroup": "Groupe de boutons radio",
+        "text": "Texte"
+      },
+      "questionTypes": "Types de question",
+      "questions": "Questions",
+      "required": "Obligatoire",
+      "selectQuestionHint": "Sélectionnez une question pour modifier ses propriétés",
+      "tmFieldLabels": {
+        "assetDescription": "Description de l'actif",
+        "assetName": "Nom de l'actif",
+        "assetType": "Type d'actif",
+        "description": "Description du modèle de menaces",
+        "documentName": "Nom du document",
+        "documentUrl": "URL du document",
+        "issueUri": "URL de suivi des problèmes",
+        "metadataKey": "Métadonnée personnalisée",
+        "name": "Nom du modèle de menaces",
+        "repositoryName": "Nom du dépôt",
+        "repositoryUrl": "URL du dépôt"
+      },
+      "tmFieldMapping": "Mappage des champs du modèle de menaces",
+      "tmFieldMappingHint": "Lier cette réponse à un champ du modèle de menaces",
+      "unsavedChanges": "Modifications non enregistrées",
+      "visibleIf": "Visible si",
+      "visibleIfHint": "par ex., {questionName} = 'valeur'"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "Entrez une valeur et appuyez sur Entree",
@@ -463,7 +529,8 @@
     "view": "Voir",
     "viewMetadata": "Voir les Metadonnees",
     "viewPermissions": "Voir les Permissions",
-    "viewThreat": "Voir la Menace"
+    "viewThreat": "Voir la Menace",
+    "title": "Titre"
   },
   "contextMenu": {
     "addInverseConnection": "Ajouter une connexion inverse",
