@@ -2,14 +2,18 @@
   <!-- Header -->
   <div class="builder-header">
     <div class="header-title">
-      <h1>{{ surveyId ? 'Edit Template' : 'Create Template' }}</h1>
+      <h1>
+        {{ (surveyId ? 'adminSurveys.editTemplate' : 'adminSurveys.createSurvey') | transloco }}
+      </h1>
       @if (template) {
         <span class="template-status">{{ template.status }}</span>
       }
     </div>
     <div class="header-actions">
       @if (hasUnsavedChanges) {
-        <span class="unsaved-indicator">Unsaved changes</span>
+        <span class="unsaved-indicator">{{
+          'adminSurveys.templateBuilder.unsavedChanges' | transloco
+        }}</span>
       }
       <button
         mat-icon-button
@@ -40,36 +44,41 @@
   @if (isLoading) {
     <div class="loading-container">
       <mat-spinner diameter="48"></mat-spinner>
-      <p>Loading template...</p>
+      <p>{{ 'adminSurveys.templateBuilder.loadingTemplate' | transloco }}</p>
     </div>
   } @else if (error) {
     <div class="error-container">
       <mat-icon>error_outline</mat-icon>
-      <h2>Error</h2>
+      <h2>{{ 'common.error' | transloco }}</h2>
       <p>{{ error }}</p>
-      <button mat-raised-button color="primary" (click)="goBack()">Back to Templates</button>
+      <button mat-raised-button color="primary" (click)="goBack()">
+        {{ 'adminSurveys.templateBuilder.backToTemplates' | transloco }}
+      </button>
     </div>
   } @else {
     <div class="builder-content">
       <!-- Survey Metadata -->
       <mat-card class="metadata-card">
+        <mat-card-header>
+          <mat-card-title>{{ 'adminSurveys.surveyDetails' | transloco }}</mat-card-title>
+        </mat-card-header>
         <mat-card-content>
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Survey Title</mat-label>
+            <mat-label>{{ 'common.title' | transloco }}</mat-label>
             <input
               matInput
               [value]="surveyJson.title ?? ''"
               (input)="updateSurveyTitle($any($event.target).value)"
-              placeholder="Enter survey title"
+              [placeholder]="'adminSurveys.templateBuilder.enterSurveyTitle' | transloco"
             />
           </mat-form-field>
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Description</mat-label>
+            <mat-label>{{ 'common.description' | transloco }}</mat-label>
             <textarea
               matInput
               [value]="surveyJson.description ?? ''"
               (input)="updateSurveyDescription($any($event.target).value)"
-              placeholder="Enter survey description"
+              [placeholder]="'adminSurveys.templateBuilder.enterSurveyDescription' | transloco"
               rows="2"
             ></textarea>
           </mat-form-field>
@@ -80,7 +89,9 @@
         <!-- Question Palette -->
         <mat-card class="palette-card">
           <mat-card-header>
-            <mat-card-title>Question Types</mat-card-title>
+            <mat-card-title>{{
+              'adminSurveys.templateBuilder.questionTypes' | transloco
+            }}</mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <div class="question-palette">
@@ -89,10 +100,10 @@
                   mat-stroked-button
                   class="palette-item"
                   (click)="addQuestion(qType.type)"
-                  [matTooltip]="qType.description"
+                  [matTooltip]="qType.description | transloco"
                 >
                   <mat-icon>{{ qType.icon }}</mat-icon>
-                  <span>{{ qType.label }}</span>
+                  <span>{{ qType.label | transloco }}</span>
                 </button>
               }
             </div>
@@ -103,10 +114,14 @@
         <mat-card class="canvas-card">
           <mat-card-header>
             <mat-card-title>
-              Questions
+              {{ 'adminSurveys.templateBuilder.questions' | transloco }}
               @if (surveyJson.pages && surveyJson.pages.length > 1) {
                 <span class="page-indicator">
-                  (Page {{ selectedPageIndex + 1 }} of {{ surveyJson.pages.length }})
+                  ({{
+                    'adminSurveys.templateBuilder.pageIndicator'
+                      | transloco
+                        : { current: selectedPageIndex + 1, total: surveyJson.pages.length }
+                  }})
                 </span>
               }
             </mat-card-title>
@@ -116,7 +131,7 @@
                   mat-icon-button
                   (click)="previousPage()"
                   [disabled]="selectedPageIndex === 0"
-                  matTooltip="Previous page"
+                  [matTooltip]="'adminSurveys.templateBuilder.previousPage' | transloco"
                 >
                   <mat-icon>chevron_left</mat-icon>
                 </button>
@@ -124,12 +139,16 @@
                   mat-icon-button
                   (click)="nextPage()"
                   [disabled]="selectedPageIndex === surveyJson.pages.length - 1"
-                  matTooltip="Next page"
+                  [matTooltip]="'adminSurveys.templateBuilder.nextPage' | transloco"
                 >
                   <mat-icon>chevron_right</mat-icon>
                 </button>
               }
-              <button mat-icon-button (click)="addPage()" matTooltip="Add page">
+              <button
+                mat-icon-button
+                (click)="addPage()"
+                [matTooltip]="'adminSurveys.templateBuilder.addPage' | transloco"
+              >
                 <mat-icon>note_add</mat-icon>
               </button>
               <button
@@ -137,7 +156,7 @@
                 color="warn"
                 (click)="deletePage()"
                 [disabled]="!surveyJson.pages || surveyJson.pages.length <= 1"
-                matTooltip="Delete page"
+                [matTooltip]="'adminSurveys.templateBuilder.deletePage' | transloco"
               >
                 <mat-icon>scan_delete</mat-icon>
               </button>
@@ -147,8 +166,8 @@
             @if (currentPageElements.length === 0) {
               <div class="empty-canvas">
                 <mat-icon>add_circle_outline</mat-icon>
-                <p>No questions yet</p>
-                <p class="hint">Click a question type from the palette to add it</p>
+                <p>{{ 'adminSurveys.templateBuilder.noQuestionsYet' | transloco }}</p>
+                <p class="hint">{{ 'adminSurveys.templateBuilder.noQuestionsHint' | transloco }}</p>
               </div>
             } @else {
               <div class="question-list">
@@ -276,23 +295,25 @@
         <!-- Question Editor -->
         <mat-card class="editor-card">
           <mat-card-header>
-            <mat-card-title>Question Properties</mat-card-title>
+            <mat-card-title>{{
+              'adminSurveys.templateBuilder.questionProperties' | transloco
+            }}</mat-card-title>
           </mat-card-header>
           <mat-card-content>
             @if (selectedQuestion) {
               <div class="question-editor">
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Name (ID)</mat-label>
+                  <mat-label>{{ 'adminSurveys.templateBuilder.nameId' | transloco }}</mat-label>
                   <input
                     matInput
                     [(ngModel)]="selectedQuestion.name"
                     (ngModelChange)="hasUnsavedChanges = true"
                   />
-                  <mat-hint>Unique identifier for this question</mat-hint>
+                  <mat-hint>{{ 'adminSurveys.templateBuilder.nameIdHint' | transloco }}</mat-hint>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Title</mat-label>
+                  <mat-label>{{ 'common.title' | transloco }}</mat-label>
                   <input
                     matInput
                     [(ngModel)]="selectedQuestion.title"
@@ -301,7 +322,7 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Description</mat-label>
+                  <mat-label>{{ 'common.description' | transloco }}</mat-label>
                   <textarea
                     matInput
                     [(ngModel)]="selectedQuestion.description"
@@ -315,13 +336,15 @@
                     [(ngModel)]="selectedQuestion.isRequired"
                     (ngModelChange)="hasUnsavedChanges = true"
                   >
-                    Required
+                    {{ 'adminSurveys.templateBuilder.required' | transloco }}
                   </mat-checkbox>
                 </div>
 
                 @if (['radiogroup', 'checkbox', 'dropdown'].includes(selectedQuestion.type)) {
                   <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Choices (one per line)</mat-label>
+                    <mat-label>{{
+                      'adminSurveys.templateBuilder.choicesPerLine' | transloco
+                    }}</mat-label>
                     <textarea
                       matInput
                       [ngModel]="getChoicesText()"
@@ -332,40 +355,52 @@
                 }
 
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Visible If</mat-label>
+                  <mat-label>{{ 'adminSurveys.templateBuilder.visibleIf' | transloco }}</mat-label>
                   <input
                     matInput
                     [(ngModel)]="selectedQuestion.visibleIf"
                     (ngModelChange)="hasUnsavedChanges = true"
                   />
-                  <mat-hint>e.g., {{ '{' }}questionName{{ '}' }} = 'value'</mat-hint>
+                  <mat-hint>{{
+                    'adminSurveys.templateBuilder.visibleIfHint' | transloco
+                  }}</mat-hint>
                 </mat-form-field>
 
                 <div class="tm-field-mapping">
-                  <h4>Threat Model Field Mapping</h4>
+                  <h4>{{ 'adminSurveys.templateBuilder.tmFieldMapping' | transloco }}</h4>
                   <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Maps to TM Field</mat-label>
+                    <mat-label>{{
+                      'adminSurveys.templateBuilder.mapsToTmField' | transloco
+                    }}</mat-label>
                     <mat-select
                       [ngModel]="getSelectedTmFieldPath()"
                       (ngModelChange)="updateTmFieldPath($event)"
                     >
-                      <mat-option value="">None</mat-option>
+                      <mat-option value="">{{ 'common.none' | transloco }}</mat-option>
                       @for (option of tmFieldOptions; track option.value) {
-                        <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                        <mat-option [value]="option.value">{{
+                          option.label | transloco
+                        }}</mat-option>
                       }
                     </mat-select>
-                    <mat-hint>Link this answer to a threat model field</mat-hint>
+                    <mat-hint>{{
+                      'adminSurveys.templateBuilder.tmFieldMappingHint' | transloco
+                    }}</mat-hint>
                   </mat-form-field>
 
                   @if (selectedQuestion.mapsToTmField?.path === 'metadata.{key}') {
                     <mat-form-field appearance="outline" class="full-width">
-                      <mat-label>Metadata Key</mat-label>
+                      <mat-label>{{
+                        'adminSurveys.templateBuilder.metadataKey' | transloco
+                      }}</mat-label>
                       <input
                         matInput
                         [ngModel]="selectedQuestion.mapsToTmField?.metadataKey ?? ''"
                         (ngModelChange)="updateTmFieldMetadataKey($event)"
                       />
-                      <mat-hint>Key name for the metadata entry</mat-hint>
+                      <mat-hint>{{
+                        'adminSurveys.templateBuilder.metadataKeyHint' | transloco
+                      }}</mat-hint>
                     </mat-form-field>
                   }
                 </div>
@@ -373,14 +408,14 @@
                 <div class="editor-actions">
                   <button mat-raised-button color="warn" (click)="deleteSelectedQuestion()">
                     <mat-icon>delete</mat-icon>
-                    Delete Question
+                    {{ 'adminSurveys.templateBuilder.deleteQuestion' | transloco }}
                   </button>
                 </div>
               </div>
             } @else {
               <div class="no-selection">
                 <mat-icon>touch_app</mat-icon>
-                <p>Select a question to edit its properties</p>
+                <p>{{ 'adminSurveys.templateBuilder.selectQuestionHint' | transloco }}</p>
               </div>
             }
           </mat-card-content>

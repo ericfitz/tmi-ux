@@ -34,7 +34,7 @@
 
     <button mat-flat-button color="primary" class="create-button" (click)="createTemplate()">
       <mat-icon>add</mat-icon>
-      {{ 'adminSurveys.createTemplate' | transloco }}
+      {{ 'adminSurveys.createSurvey' | transloco }}
     </button>
   </div>
 
@@ -60,7 +60,7 @@
         <p>{{ 'adminSurveys.noTemplatesMessage' | transloco }}</p>
         <button mat-flat-button color="primary" (click)="createTemplate()">
           <mat-icon>add</mat-icon>
-          {{ 'adminSurveys.createTemplate' | transloco }}
+          {{ 'adminSurveys.createSurvey' | transloco }}
         </button>
       } @else {
         <h2>{{ 'adminSurveys.noMatchingTitle' | transloco }}</h2>

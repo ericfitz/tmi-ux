@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyService } from '@app/pages/surveys/services/survey.service';
 import {
@@ -82,51 +82,83 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
   /** Whether form has unsaved changes */
   hasUnsavedChanges = false;
 
-  /** Available question types for the palette */
+  /** Available question types for the palette (label/description are transloco keys) */
   questionTypes: QuestionTypeConfig[] = [
-    { type: 'text', label: 'Text', icon: 'short_text', description: 'Single line text input' },
-    { type: 'comment', label: 'Multiline', icon: 'notes', description: 'Multi-line text area' },
+    {
+      type: 'text',
+      label: 'adminSurveys.templateBuilder.questionTypeLabels.text',
+      icon: 'short_text',
+      description: 'adminSurveys.templateBuilder.questionTypeDescriptions.text',
+    },
+    {
+      type: 'comment',
+      label: 'adminSurveys.templateBuilder.questionTypeLabels.comment',
+      icon: 'notes',
+      description: 'adminSurveys.templateBuilder.questionTypeDescriptions.comment',
+    },
     {
       type: 'radiogroup',
-      label: 'Radio Group',
+      label: 'adminSurveys.templateBuilder.questionTypeLabels.radiogroup',
       icon: 'radio_button_checked',
-      description: 'Single choice from options',
+      description: 'adminSurveys.templateBuilder.questionTypeDescriptions.radiogroup',
     },
     {
       type: 'checkbox',
-      label: 'Checkbox',
+      label: 'adminSurveys.templateBuilder.questionTypeLabels.checkbox',
       icon: 'check_box',
-      description: 'Multiple choice selection',
+      description: 'adminSurveys.templateBuilder.questionTypeDescriptions.checkbox',
     },
-    { type: 'boolean', label: 'Yes/No', icon: 'toggle_on', description: 'Boolean toggle' },
+    {
+      type: 'boolean',
+      label: 'adminSurveys.templateBuilder.questionTypeLabels.boolean',
+      icon: 'toggle_on',
+      description: 'adminSurveys.templateBuilder.questionTypeDescriptions.boolean',
+    },
     {
       type: 'dropdown',
-      label: 'Dropdown',
+      label: 'adminSurveys.templateBuilder.questionTypeLabels.dropdown',
       icon: 'arrow_drop_down_circle',
-      description: 'Dropdown selection',
+      description: 'adminSurveys.templateBuilder.questionTypeDescriptions.dropdown',
     },
-    { type: 'panel', label: 'Panel', icon: 'dashboard', description: 'Group questions in a panel' },
+    {
+      type: 'panel',
+      label: 'adminSurveys.templateBuilder.questionTypeLabels.panel',
+      icon: 'dashboard',
+      description: 'adminSurveys.templateBuilder.questionTypeDescriptions.panel',
+    },
     {
       type: 'paneldynamic',
-      label: 'Dynamic Panel',
+      label: 'adminSurveys.templateBuilder.questionTypeLabels.paneldynamic',
       icon: 'dynamic_form',
-      description: 'Repeatable panel group',
+      description: 'adminSurveys.templateBuilder.questionTypeDescriptions.paneldynamic',
     },
   ];
 
-  /** Available TM field paths for question mapping */
+  /** Available TM field paths for question mapping (label values are transloco keys) */
   tmFieldOptions: { value: TmFieldPath; label: string }[] = [
-    { value: 'name', label: 'Threat Model Name' },
-    { value: 'description', label: 'Threat Model Description' },
-    { value: 'issue_uri', label: 'Issue Tracking URL' },
-    { value: 'metadata.{key}', label: 'Custom Metadata' },
-    { value: 'assets[].name', label: 'Asset Name' },
-    { value: 'assets[].description', label: 'Asset Description' },
-    { value: 'assets[].type', label: 'Asset Type' },
-    { value: 'documents[].name', label: 'Document Name' },
-    { value: 'documents[].uri', label: 'Document URL' },
-    { value: 'repositories[].name', label: 'Repository Name' },
-    { value: 'repositories[].uri', label: 'Repository URL' },
+    { value: 'name', label: 'adminSurveys.templateBuilder.tmFieldLabels.name' },
+    { value: 'description', label: 'adminSurveys.templateBuilder.tmFieldLabels.description' },
+    { value: 'issue_uri', label: 'adminSurveys.templateBuilder.tmFieldLabels.issueUri' },
+    { value: 'metadata.{key}', label: 'adminSurveys.templateBuilder.tmFieldLabels.metadataKey' },
+    { value: 'assets[].name', label: 'adminSurveys.templateBuilder.tmFieldLabels.assetName' },
+    {
+      value: 'assets[].description',
+      label: 'adminSurveys.templateBuilder.tmFieldLabels.assetDescription',
+    },
+    { value: 'assets[].type', label: 'adminSurveys.templateBuilder.tmFieldLabels.assetType' },
+    {
+      value: 'documents[].name',
+      label: 'adminSurveys.templateBuilder.tmFieldLabels.documentName',
+    },
+    { value: 'documents[].uri', label: 'adminSurveys.templateBuilder.tmFieldLabels.documentUrl' },
+    {
+      value: 'repositories[].name',
+      label: 'adminSurveys.templateBuilder.tmFieldLabels.repositoryName',
+    },
+    {
+      value: 'repositories[].uri',
+      label: 'adminSurveys.templateBuilder.tmFieldLabels.repositoryUrl',
+    },
   ];
 
   constructor(
@@ -134,6 +166,7 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
     private router: Router,
     private surveyService: SurveyService,
     private logger: LoggerService,
+    private translocoService: TranslocoService,
   ) {}
 
   ngOnInit(): void {
@@ -169,7 +202,9 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
         },
         error: (err: unknown) => {
           this.isLoading = false;
-          this.error = 'Failed to load template';
+          this.error = this.translocoService.translate(
+            'adminSurveys.templateBuilder.failedToLoadTemplate',
+          );
           this.logger.error('Failed to load template', err);
         },
       });
@@ -192,7 +227,7 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
     const newQuestion: SurveyQuestion = {
       type,
       name: this.generateQuestionName(),
-      title: `New ${this.getQuestionTypeLabel(type)}`,
+      title: `New ${this.translocoService.translate(this.getQuestionTypeLabel(type))}`,
     };
 
     // Add default choices for choice-based questions
@@ -461,7 +496,9 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
       },
       error: (err: unknown) => {
         this.isSaving = false;
-        this.error = 'Failed to save template';
+        this.error = this.translocoService.translate(
+          'adminSurveys.templateBuilder.failedToSaveTemplate',
+        );
         this.logger.error('Failed to save template', err);
       },
     });
