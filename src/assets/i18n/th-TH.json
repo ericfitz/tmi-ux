@@ -243,6 +243,21 @@
       "title": "จัดการ Webhooks"
     }
   },
+  "adminSurveys": {
+    "cloneSuffix": "(สำเนา)",
+    "createTemplate": "สร้างเทมเพลต",
+    "editTemplate": "แก้ไขเทมเพลต",
+    "errorLoadingTemplates": "ไม่สามารถโหลดเทมเพลตได้",
+    "loadingTemplates": "กำลังโหลดเทมเพลต...",
+    "noMatchingTitle": "ไม่มีเทมเพลตที่ตรงกัน",
+    "noTemplatesMessage": "สร้างเทมเพลตแบบสำรวจแรกของคุณเพื่อเริ่มต้น",
+    "noTemplatesTitle": "ยังไม่มีเทมเพลต",
+    "pageTitle": "เทมเพลตแบบสำรวจ",
+    "searchByName": "ค้นหาตามชื่อ...",
+    "searchTemplates": "ค้นหาเทมเพลต",
+    "templateCount": "{{count}} เทมเพลต",
+    "templateCountPlural": "{{count}} เทมเพลต"
+  },
   "assetEditor": {
     "chipPlaceholder": "ป้อนค่าและกด Enter",
     "classification": "{{common.classification}}",
@@ -304,14 +319,18 @@
   "common": {
     "about": "เกี่ยวกับ",
     "actions": "การกระทำ",
+    "activate": "เปิดใช้งาน",
     "addMetadata": "เพิ่มข้อมูลเมตา",
     "addThreat": "เพิ่มภัยคุกคาม",
     "addons": "ส่วนเสริม",
+    "allStatuses": "ทุกสถานะ",
+    "archive": "เก็บถาวร",
     "back": "ย้อนกลับ",
     "cancel": "ยกเลิก",
     "cellId": "รหัสเซลล์",
     "classification": "การจำแนกประเภท",
     "clear": "ล้าง",
+    "clone": "ทำสำเนา",
     "close": "ปิด",
     "confirmDelete": "คุณแน่ใจหรือไม่ว่าต้องการลบ {{item}} \"{{name}}\"? การกระทำนี้ไม่สามารถย้อนกลับได้",
     "confirmDeleteMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบ{{objectType}} \"{{name}}\"?",
@@ -321,6 +340,7 @@
     "created": "สร้างแล้ว",
     "criticality": "ความสำคัญ",
     "cut": "ตัด",
+    "deactivate": "ปิดใช้งาน",
     "delete": "ลบ",
     "deleteConfirm": "ลบโมเดลภัยคุกคาม",
     "deleteWarningConfirmationField": "ยืนยันการลบ",
@@ -338,6 +358,7 @@
     "edit": "แก้ไข",
     "editThreat": "แก้ไขภัยคุกคาม",
     "emailLabel": "ที่อยู่อีเมล",
+    "error": "ข้อผิดพลาด",
     "fonts": "แบบอักษร",
     "id": "รหัส",
     "identityProvider": "ผู้ให้บริการยืนยันตัวตน",
@@ -345,6 +366,7 @@
     "language": "{{language}}",
     "lastModified": "แก้ไขล่าสุด",
     "lastUpdated": "อัปเดตล่าสุด",
+    "loading": "กำลังโหลด...",
     "manage": "จัดการ",
     "manageMetadata": "จัดการข้อมูลเมตา",
     "manageThreats": "จัดการภัยคุกคาม",
@@ -354,9 +376,11 @@
     "mitigated": "ลดความรุนแรง",
     "mitigation": "การลดผลกระทบ",
     "mitigationPlaceholder": "อธิบายการลดผลกระทบที่แนะนำหรือวางแผนไว้สำหรับภัยคุกคามนี้",
+    "moreActions": "การดำเนินการเพิ่มเติม",
     "name": "ชื่อ",
     "noAddonsAvailable": "ไม่มีส่วนเสริมที่พร้อมใช้งาน",
     "noDataAvailable": "ไม่มีข้อมูล",
+    "noMatchingResults": "ไม่มีผลลัพธ์ที่ตรงกับตัวกรองของคุณ",
     "noMetadata": "ไม่มีข้อมูลเมตา",
     "noThreats": "ไม่มีภัยคุกคาม",
     "none": "ไม่มี",
@@ -396,6 +420,7 @@
     "provider": "ผู้ให้บริการ",
     "readOnly": "อ่านอย่างเดียว",
     "readOnlyTooltip": "คุณมีสิทธิ์เข้าถึงแบบอ่านอย่างเดียวสำหรับแบบจำลองภัยคุกคามนี้ ติดต่อเจ้าของเพื่อขอสิทธิ์การแก้ไข",
+    "retry": "ลองอีกครั้ง",
     "roles": {
       "owner": "เจ้าของ",
       "reader": "ผู้อ่าน",
@@ -405,6 +430,8 @@
     "saveAndClose": "บันทึกและปิด",
     "savedSuccessfully": "บันทึกสำเร็จ",
     "score": "คะแนน",
+    "search": "ค้นหา",
+    "selected": "เลือกแล้ว {{count}} รายการ",
     "sensitivity": "ความอ่อนไหว",
     "sessionRoles": {
       "host": "เจ้าภาพ",
@@ -417,10 +444,12 @@
       "group": "กลุ่ม",
       "user": "ผู้ใช้"
     },
+    "template": "เทมเพลต",
     "threatDescription": "คำอธิบายภัยคุกคาม",
     "threatDescriptionPlaceholder": "อธิบายภัยคุกคามโดยละเอียด",
     "threatName": "ชื่อภัยคุกคาม",
     "threatType": "ประเภทภัยคุกคาม",
+    "tryAdjustingFilters": "ลองปรับตัวกรองของคุณ",
     "type": "ประเภท",
     "unsavedChangesWarning": "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก คุณแน่ใจหรือไม่ว่าต้องการปิด?",
     "userId": "รหัสผู้ใช้",
@@ -430,6 +459,7 @@
       "nameRequired": "จำเป็นต้องระบุชื่อ",
       "required": "ฟิลด์นี้จำเป็น"
     },
+    "version": "เวอร์ชัน",
     "view": "ดู",
     "viewMetadata": "ดูข้อมูลเมตา",
     "viewPermissions": "ดูสิทธิ์การเข้าถึง",
@@ -698,6 +728,18 @@
       "submitConfirm": "คุณแน่ใจหรือไม่ว่าต้องการส่ง? คุณจะไม่สามารถแก้ไขคำตอบของคุณได้หลังจากส่งแล้ว",
       "title": "กรอกแบบสำรวจ"
     },
+    "list": {
+      "deleteDraft": "ลบฉบับร่าง",
+      "draftStarted": "ฉบับร่างเริ่มต้น {{time}}",
+      "errorLoadingSurveys": "ไม่สามารถโหลดแบบสำรวจได้",
+      "lastModified": "แก้ไขล่าสุด {{time}}",
+      "loadingSurveys": "กำลังโหลดแบบสำรวจ...",
+      "noSurveysMessage": "ขณะนี้ไม่มีแบบสำรวจที่ใช้งานอยู่ กรุณาตรวจสอบอีกครั้งในภายหลัง",
+      "noSurveysTitle": "ไม่มีแบบสำรวจที่พร้อมใช้งาน",
+      "pageTitle": "แบบสำรวจที่พร้อมใช้งาน",
+      "updated": "อัปเดตแล้ว",
+      "yourDrafts": "ฉบับร่างของคุณ"
+    },
     "myResponses": "คำตอบของฉัน",
     "noResponses": "คุณยังไม่ได้ส่งคำตอบแบบสำรวจใดๆ",
     "noSurveys": "ไม่มีแบบสำรวจที่พร้อมใช้งาน",
@@ -711,6 +753,11 @@
       "submitted": "ส่งแล้ว"
     },
     "submitSurvey": "ส่งแบบสำรวจ",
+    "templateStatus": {
+      "active": "ใช้งานอยู่",
+      "archived": "เก็บถาวรแล้ว",
+      "inactive": "ไม่ได้ใช้งาน"
+    },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "ดูคำตอบ"
   },
@@ -943,6 +990,20 @@
       "allStatuses": "สถานะทั้งหมด",
       "allTemplates": "แม่แบบทั้งหมด",
       "clearFilters": "ล้างตัวกรอง"
+    },
+    "list": {
+      "allSurveys": "แบบสำรวจทั้งหมด",
+      "approve": "อนุมัติ",
+      "approveSelected": "อนุมัติที่เลือก",
+      "errorLoadingResponses": "ไม่สามารถโหลดคำตอบได้",
+      "loadingResponses": "กำลังโหลดคำตอบ...",
+      "noResponsesFiltered": "ไม่มีคำตอบที่ตรงกับตัวกรองของคุณ",
+      "noResponsesTitle": "ไม่มีคำตอบ",
+      "noResponsesToTriage": "ไม่มีคำตอบแบบสำรวจที่ต้องคัดกรอง",
+      "notSubmitted": "ยังไม่ได้ส่ง",
+      "searchPlaceholder": "ค้นหาตามผู้ส่งหรือเทมเพลต...",
+      "submitted": "ส่งแล้ว",
+      "submitter": "ผู้ส่ง"
     },
     "markInReview": "ทำเครื่องหมายว่ากำลังตรวจสอบ",
     "markPendingTriage": "ทำเครื่องหมายว่ารอคัดกรอง",
