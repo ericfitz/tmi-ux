@@ -245,7 +245,6 @@
   },
   "adminSurveys": {
     "cloneSuffix": "（副本）",
-    "createTemplate": "创建模板",
     "editTemplate": "编辑模板",
     "errorLoadingTemplates": "加载模板失败",
     "loadingTemplates": "正在加载模板...",
@@ -256,7 +255,74 @@
     "searchByName": "按名称搜索...",
     "searchTemplates": "搜索模板",
     "templateCount": "{{count}} 个模板",
-    "templateCountPlural": "{{count}} 个模板"
+    "templateCountPlural": "{{count}} 个模板",
+    "createSurvey": "创建调查",
+    "surveyDetails": "调查详情",
+    "templateBuilder": {
+      "addPage": "添加页面",
+      "backToTemplates": "返回模板",
+      "choicesPerLine": "选项（每行一个）",
+      "deletePage": "删除页面",
+      "deleteQuestion": "删除问题",
+      "enterSurveyDescription": "输入调查描述",
+      "enterSurveyTitle": "输入调查标题",
+      "failedToLoadTemplate": "加载模板失败",
+      "failedToSaveTemplate": "保存模板失败",
+      "loadingTemplate": "正在加载模板...",
+      "mapsToTmField": "映射到TM字段",
+      "metadataKey": "元数据键",
+      "metadataKeyHint": "元数据条目的键名称",
+      "nameId": "名称（ID）",
+      "nameIdHint": "此问题的唯一标识符",
+      "nextPage": "下一页",
+      "noQuestionsHint": "从调色板点击问题类型以添加它",
+      "noQuestionsYet": "暂无问题",
+      "pageIndicator": "第 {{current}} 页，共 {{total}} 页",
+      "previousPage": "上一页",
+      "questionProperties": "问题属性",
+      "questionTypeDescriptions": {
+        "boolean": "布尔切换",
+        "checkbox": "多项选择",
+        "comment": "多行文本区域",
+        "dropdown": "下拉选择",
+        "panel": "在面板中分组问题",
+        "paneldynamic": "可重复面板组",
+        "radiogroup": "从选项中单选",
+        "text": "单行文本输入"
+      },
+      "questionTypeLabels": {
+        "boolean": "是/否",
+        "checkbox": "复选框",
+        "comment": "多行文本",
+        "dropdown": "下拉菜单",
+        "panel": "面板",
+        "paneldynamic": "动态面板",
+        "radiogroup": "单选组",
+        "text": "文本"
+      },
+      "questionTypes": "问题类型",
+      "questions": "问题",
+      "required": "必填",
+      "selectQuestionHint": "选择一个问题以编辑其属性",
+      "tmFieldLabels": {
+        "assetDescription": "资产描述",
+        "assetName": "资产名称",
+        "assetType": "资产类型",
+        "description": "威胁模型描述",
+        "documentName": "文档名称",
+        "documentUrl": "文档URL",
+        "issueUri": "问题跟踪URL",
+        "metadataKey": "自定义元数据",
+        "name": "威胁模型名称",
+        "repositoryName": "仓库名称",
+        "repositoryUrl": "仓库URL"
+      },
+      "tmFieldMapping": "威胁模型字段映射",
+      "tmFieldMappingHint": "将此答案链接到威胁模型字段",
+      "unsavedChanges": "未保存的更改",
+      "visibleIf": "可见条件",
+      "visibleIfHint": "例如：{questionName} = 'value'"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "输入值并按 Enter",
@@ -463,7 +529,8 @@
     "view": "查看",
     "viewMetadata": "查看元数据",
     "viewPermissions": "查看权限",
-    "viewThreat": "查看威胁"
+    "viewThreat": "查看威胁",
+    "title": "标题"
   },
   "contextMenu": {
     "addInverseConnection": "添加反向连接",
