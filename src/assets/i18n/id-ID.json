@@ -245,7 +245,6 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Salinan)",
-    "createTemplate": "Buat Templat",
     "editTemplate": "Edit templat",
     "errorLoadingTemplates": "Gagal memuat templat",
     "loadingTemplates": "Memuat templat...",
@@ -256,7 +255,74 @@
     "searchByName": "Cari berdasarkan nama...",
     "searchTemplates": "Cari templat",
     "templateCount": "{{count}} templat",
-    "templateCountPlural": "{{count}} templat"
+    "templateCountPlural": "{{count}} templat",
+    "createSurvey": "Buat Survei",
+    "surveyDetails": "Detail Survei",
+    "templateBuilder": {
+      "addPage": "Tambah halaman",
+      "backToTemplates": "Kembali ke Templat",
+      "choicesPerLine": "Pilihan (satu per baris)",
+      "deletePage": "Hapus halaman",
+      "deleteQuestion": "Hapus Pertanyaan",
+      "enterSurveyDescription": "Masukkan deskripsi survei",
+      "enterSurveyTitle": "Masukkan judul survei",
+      "failedToLoadTemplate": "Gagal memuat templat",
+      "failedToSaveTemplate": "Gagal menyimpan templat",
+      "loadingTemplate": "Memuat templat...",
+      "mapsToTmField": "Dipetakan ke Bidang TM",
+      "metadataKey": "Kunci Metadata",
+      "metadataKeyHint": "Nama kunci untuk entri metadata",
+      "nameId": "Nama (ID)",
+      "nameIdHint": "Pengenal unik untuk pertanyaan ini",
+      "nextPage": "Halaman berikutnya",
+      "noQuestionsHint": "Klik jenis pertanyaan dari palet untuk menambahkannya",
+      "noQuestionsYet": "Belum ada pertanyaan",
+      "pageIndicator": "Halaman {{current}} dari {{total}}",
+      "previousPage": "Halaman sebelumnya",
+      "questionProperties": "Properti Pertanyaan",
+      "questionTypeDescriptions": {
+        "boolean": "Tombol beralih boolean",
+        "checkbox": "Pilihan ganda",
+        "comment": "Area teks multi-baris",
+        "dropdown": "Pilihan dropdown",
+        "panel": "Kelompokkan pertanyaan dalam panel",
+        "paneldynamic": "Grup panel yang dapat diulang",
+        "radiogroup": "Pilihan tunggal dari opsi",
+        "text": "Input teks satu baris"
+      },
+      "questionTypeLabels": {
+        "boolean": "Ya/Tidak",
+        "checkbox": "Checkbox",
+        "comment": "Multiline",
+        "dropdown": "Dropdown",
+        "panel": "Panel",
+        "paneldynamic": "Panel Dinamis",
+        "radiogroup": "Grup Radio",
+        "text": "Teks"
+      },
+      "questionTypes": "Jenis Pertanyaan",
+      "questions": "Pertanyaan",
+      "required": "Wajib diisi",
+      "selectQuestionHint": "Pilih pertanyaan untuk mengedit propertinya",
+      "tmFieldLabels": {
+        "assetDescription": "Deskripsi Aset",
+        "assetName": "Nama Aset",
+        "assetType": "Jenis Aset",
+        "description": "Deskripsi Model Ancaman",
+        "documentName": "Nama Dokumen",
+        "documentUrl": "URL Dokumen",
+        "issueUri": "URL Pelacakan Isu",
+        "metadataKey": "Metadata Kustom",
+        "name": "Nama Model Ancaman",
+        "repositoryName": "Nama Repositori",
+        "repositoryUrl": "URL Repositori"
+      },
+      "tmFieldMapping": "Pemetaan Bidang Model Ancaman",
+      "tmFieldMappingHint": "Hubungkan jawaban ini ke bidang model ancaman",
+      "unsavedChanges": "Perubahan belum disimpan",
+      "visibleIf": "Terlihat Jika",
+      "visibleIfHint": "mis., {questionName} = 'value'"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "Masukkan nilai dan tekan Enter",
@@ -463,7 +529,8 @@
     "view": "Lihat",
     "viewMetadata": "Lihat Metadata",
     "viewPermissions": "Lihat Izin",
-    "viewThreat": "Lihat Ancaman"
+    "viewThreat": "Lihat Ancaman",
+    "title": "Judul"
   },
   "contextMenu": {
     "addInverseConnection": "Tambah Koneksi Terbalik",
