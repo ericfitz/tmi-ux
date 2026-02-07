@@ -245,7 +245,6 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(प्रतिलिपि)",
-    "createTemplate": "टेम्पलेट बनाएं",
     "editTemplate": "टेम्पलेट संपादित करें",
     "errorLoadingTemplates": "टेम्पलेट लोड करने में विफल",
     "loadingTemplates": "टेम्पलेट लोड हो रहे हैं...",
@@ -256,7 +255,74 @@
     "searchByName": "नाम से खोजें...",
     "searchTemplates": "टेम्पलेट खोजें",
     "templateCount": "{{count}} टेम्पलेट",
-    "templateCountPlural": "{{count}} टेम्पलेट"
+    "templateCountPlural": "{{count}} टेम्पलेट",
+    "createSurvey": "सर्वेक्षण बनाएं",
+    "surveyDetails": "सर्वेक्षण विवरण",
+    "templateBuilder": {
+      "addPage": "पृष्ठ जोड़ें",
+      "backToTemplates": "टेम्पलेट्स पर वापस जाएं",
+      "choicesPerLine": "विकल्प (प्रति पंक्ति एक)",
+      "deletePage": "पृष्ठ हटाएं",
+      "deleteQuestion": "प्रश्न हटाएं",
+      "enterSurveyDescription": "सर्वेक्षण विवरण दर्ज करें",
+      "enterSurveyTitle": "सर्वेक्षण शीर्षक दर्ज करें",
+      "failedToLoadTemplate": "टेम्पलेट लोड करने में विफल",
+      "failedToSaveTemplate": "टेम्पलेट सहेजने में विफल",
+      "loadingTemplate": "टेम्पलेट लोड हो रहा है...",
+      "mapsToTmField": "TM फील्ड से मैप करता है",
+      "metadataKey": "मेटाडेटा कुंजी",
+      "metadataKeyHint": "मेटाडेटा प्रविष्टि के लिए कुंजी नाम",
+      "nameId": "नाम (ID)",
+      "nameIdHint": "इस प्रश्न के लिए अद्वितीय पहचानकर्ता",
+      "nextPage": "अगला पृष्ठ",
+      "noQuestionsHint": "इसे जोड़ने के लिए पैलेट से एक प्रश्न प्रकार पर क्लिक करें",
+      "noQuestionsYet": "अभी तक कोई प्रश्न नहीं",
+      "pageIndicator": "पृष्ठ {{current}} / {{total}}",
+      "previousPage": "पिछला पृष्ठ",
+      "questionProperties": "प्रश्न गुण",
+      "questionTypeDescriptions": {
+        "boolean": "बूलियन टॉगल",
+        "checkbox": "बहुविकल्पीय चयन",
+        "comment": "बहुपंक्ति टेक्स्ट क्षेत्र",
+        "dropdown": "ड्रॉपडाउन चयन",
+        "panel": "पैनल में प्रश्न समूहित करें",
+        "paneldynamic": "दोहराने योग्य पैनल समूह",
+        "radiogroup": "विकल्पों में से एकल चयन",
+        "text": "एकल पंक्ति टेक्स्ट इनपुट"
+      },
+      "questionTypeLabels": {
+        "boolean": "हां/नहीं",
+        "checkbox": "चेकबॉक्स",
+        "comment": "बहुपंक्ति",
+        "dropdown": "ड्रॉपडाउन",
+        "panel": "पैनल",
+        "paneldynamic": "डायनामिक पैनल",
+        "radiogroup": "रेडियो समूह",
+        "text": "टेक्स्ट"
+      },
+      "questionTypes": "प्रश्न प्रकार",
+      "questions": "प्रश्न",
+      "required": "आवश्यक",
+      "selectQuestionHint": "इसके गुण संपादित करने के लिए एक प्रश्न चुनें",
+      "tmFieldLabels": {
+        "assetDescription": "एसेट विवरण",
+        "assetName": "एसेट नाम",
+        "assetType": "एसेट प्रकार",
+        "description": "थ्रेट मॉडल विवरण",
+        "documentName": "दस्तावेज़ नाम",
+        "documentUrl": "दस्तावेज़ URL",
+        "issueUri": "इश्यू ट्रैकिंग URL",
+        "metadataKey": "कस्टम मेटाडेटा",
+        "name": "थ्रेट मॉडल नाम",
+        "repositoryName": "रिपॉजिटरी नाम",
+        "repositoryUrl": "रिपॉजिटरी URL"
+      },
+      "tmFieldMapping": "थ्रेट मॉडल फील्ड मैपिंग",
+      "tmFieldMappingHint": "इस उत्तर को थ्रेट मॉडल फील्ड से लिंक करें",
+      "unsavedChanges": "असहेजे गए परिवर्तन",
+      "visibleIf": "दृश्यमान यदि",
+      "visibleIfHint": "उदाहरण, {questionName} = 'value'"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "मान दर्ज करें और Enter दबाएं",
@@ -463,7 +529,8 @@
     "view": "देखें",
     "viewMetadata": "मेटाडेटा देखें",
     "viewPermissions": "अनुमतियां देखें",
-    "viewThreat": "खतरा देखें"
+    "viewThreat": "खतरा देखें",
+    "title": "शीर्षक"
   },
   "contextMenu": {
     "addInverseConnection": "उलटा कनेक्शन जोड़ें",
