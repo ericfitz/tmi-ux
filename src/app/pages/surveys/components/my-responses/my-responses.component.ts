@@ -107,9 +107,11 @@ export class MyResponsesComponent implements OnInit {
       this.filteredResponses = this.responses.filter(s => s.status === this.statusFilter);
     }
 
-    // Sort by modified date descending
+    // Sort by modified date descending, falling back to created_at
     this.filteredResponses.sort(
-      (a, b) => new Date(b.modified_at).getTime() - new Date(a.modified_at).getTime(),
+      (a, b) =>
+        new Date(b.modified_at ?? b.created_at).getTime() -
+        new Date(a.modified_at ?? a.created_at).getTime(),
     );
   }
 

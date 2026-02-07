@@ -75,9 +75,9 @@ export interface SurveyListItem {
   /** Creation timestamp */
   created_at: string;
   /** Last modification timestamp */
-  modified_at: string;
+  modified_at?: string;
   /** User who created the survey */
-  created_by: User;
+  created_by?: User;
 }
 
 // ============================================
@@ -324,6 +324,8 @@ export interface SurveyResponse {
   reviewed_at?: string;
   /** Security engineer who last reviewed */
   reviewed_by?: User;
+  /** User who created the response (server-generated) */
+  created_by?: User;
 }
 
 /**
@@ -335,19 +337,19 @@ export interface SurveyResponseListItem {
   /** Survey identifier */
   survey_id: string;
   /** Survey name (denormalized for display) */
-  survey_name: string;
+  survey_name?: string;
   /** Survey version used */
-  survey_version: string;
+  survey_version?: string;
   /** Current status */
   status: ResponseStatus;
   /** Whether this is a confidential project */
-  is_confidential: boolean;
+  is_confidential?: boolean;
   /** User who created the response */
   owner: User;
   /** Creation timestamp */
   created_at: string;
   /** Last modification timestamp */
-  modified_at: string;
+  modified_at?: string;
   /** When the response was submitted */
   submitted_at?: string;
 }
@@ -362,8 +364,16 @@ export interface SurveyResponseListItem {
 export interface SurveyFilter {
   /** Filter by status */
   status?: SurveyStatus;
-  /** Search by name */
-  search?: string;
+  /** Sort order (e.g., "created_at:desc", "name:asc") */
+  sort?: string;
+  /** Filter surveys created after this timestamp (ISO 8601) */
+  created_after?: string;
+  /** Filter surveys created before this timestamp (ISO 8601) */
+  created_before?: string;
+  /** Filter surveys modified after this timestamp (ISO 8601) */
+  modified_after?: string;
+  /** Filter surveys modified before this timestamp (ISO 8601) */
+  modified_before?: string;
   /** Maximum results */
   limit?: number;
   /** Results offset */
@@ -423,11 +433,19 @@ export interface SurveyResponseFilter {
   /** Filter by survey */
   survey_id?: string;
   /** Filter by status */
-  status?: ResponseStatus | ResponseStatus[];
-  /** Filter by submitted date start */
-  submitted_after?: string;
-  /** Filter by submitted date end */
-  submitted_before?: string;
+  status?: ResponseStatus;
+  /** Filter by confidentiality (triage only) */
+  is_confidential?: boolean;
+  /** Sort order (e.g., "created_at:desc") */
+  sort?: string;
+  /** Filter responses created after this timestamp (ISO 8601) */
+  created_after?: string;
+  /** Filter responses created before this timestamp (ISO 8601) */
+  created_before?: string;
+  /** Filter responses modified after this timestamp (ISO 8601) */
+  modified_after?: string;
+  /** Filter responses modified before this timestamp (ISO 8601) */
+  modified_before?: string;
   /** Maximum results */
   limit?: number;
   /** Results offset */
@@ -461,21 +479,19 @@ export interface CreateSurveyResponseRequest {
 }
 
 /**
- * Request to update a survey response (save draft or status change)
+ * Request to update a survey response via PUT (full replacement of writable fields)
  */
 export interface UpdateSurveyResponseRequest {
+  /** Survey this response belongs to */
+  survey_id?: string;
   /** Updated answers */
   answers?: Record<string, unknown>;
   /** Updated UI state for draft restoration */
   ui_state?: SurveyUIState;
-  /** Updated status (for transitions) */
-  status?: ResponseStatus;
   /** Link to existing threat model */
   linked_threat_model_id?: string;
   /** Access control list */
   authorization?: Authorization[];
-  /** Revision notes (required when transitioning to needs_revision) */
-  revision_notes?: string;
 }
 
 /**

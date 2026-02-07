@@ -115,6 +115,20 @@ describe('SurveyDraftService', () => {
         'response-123',
         testAnswers,
         testUiState,
+        undefined,
+      );
+    });
+
+    it('should forward surveyId to updateDraft', () => {
+      service.queueSave('response-123', testAnswers, testUiState, 'template-456');
+
+      vi.advanceTimersByTime(2000);
+
+      expect(mockResponseService.updateDraft).toHaveBeenCalledWith(
+        'response-123',
+        testAnswers,
+        testUiState,
+        'template-456',
       );
     });
 
@@ -132,6 +146,7 @@ describe('SurveyDraftService', () => {
         'response-123',
         { q1: 'abc' },
         testUiState,
+        undefined,
       );
     });
 
@@ -166,6 +181,18 @@ describe('SurveyDraftService', () => {
         'response-123',
         testAnswers,
         testUiState,
+        undefined,
+      );
+    });
+
+    it('should forward surveyId to updateDraft', () => {
+      service.saveNow('response-123', testAnswers, testUiState, 'template-456').subscribe();
+
+      expect(mockResponseService.updateDraft).toHaveBeenCalledWith(
+        'response-123',
+        testAnswers,
+        testUiState,
+        'template-456',
       );
     });
 

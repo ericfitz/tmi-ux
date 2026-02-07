@@ -64,7 +64,8 @@
                       <span matListItemLine>
                         {{
                           'surveys.list.lastModified'
-                            | transloco: { time: formatRelativeTime(draft.modified_at) }
+                            | transloco
+                              : { time: formatRelativeTime(draft.modified_at ?? draft.created_at) }
                         }}
                       </span>
                       <button

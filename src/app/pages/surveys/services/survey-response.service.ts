@@ -143,10 +143,12 @@ export class SurveyResponseService {
     responseId: string,
     answers: Record<string, unknown>,
     uiState?: SurveyUIState,
+    surveyId?: string,
   ): Observable<SurveyResponse> {
     const request: UpdateSurveyResponseRequest = {
       answers,
       ui_state: uiState,
+      survey_id: surveyId,
     };
     return this.apiService
       .put<SurveyResponse>(

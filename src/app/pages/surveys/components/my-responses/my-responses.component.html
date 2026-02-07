@@ -54,8 +54,10 @@
           <th mat-header-cell *matHeaderCellDef>Survey</th>
           <td mat-cell *matCellDef="let row">
             <div class="template-info">
-              <span class="template-name">{{ row.survey_name || 'Unknown Survey' }}</span>
-              <span class="template-version">v{{ row.survey_version }}</span>
+              <span class="template-name">{{ row.survey_name ?? '' }}</span>
+              @if (row.survey_version) {
+                <span class="template-version">v{{ row.survey_version }}</span>
+              }
             </div>
           </td>
         </ng-container>
@@ -83,8 +85,8 @@
         <ng-container matColumnDef="modified">
           <th mat-header-cell *matHeaderCellDef>Last Modified</th>
           <td mat-cell *matCellDef="let row">
-            <span [matTooltip]="formatDateTime(row.modified_at)">
-              {{ formatDate(row.modified_at) }}
+            <span [matTooltip]="formatDateTime(row.modified_at ?? row.created_at)">
+              {{ formatDate(row.modified_at ?? row.created_at) }}
             </span>
           </td>
         </ng-container>

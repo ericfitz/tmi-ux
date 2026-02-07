@@ -350,8 +350,21 @@ describe('SurveyResponseService', () => {
         expect(mockApiService.put).toHaveBeenCalledWith('intake/survey_responses/response-123', {
           answers,
           ui_state: uiState,
+          survey_id: undefined,
         });
         expect(response).toEqual(mockResponse);
+      });
+    });
+
+    it('should include survey_id when provided', () => {
+      mockApiService.put.mockReturnValue(of(mockResponse));
+
+      service.updateDraft('response-123', answers, uiState, 'template-456').subscribe(() => {
+        expect(mockApiService.put).toHaveBeenCalledWith('intake/survey_responses/response-123', {
+          answers,
+          ui_state: uiState,
+          survey_id: 'template-456',
+        });
       });
     });
 
@@ -362,6 +375,7 @@ describe('SurveyResponseService', () => {
         expect(mockApiService.put).toHaveBeenCalledWith('intake/survey_responses/response-123', {
           answers,
           ui_state: undefined,
+          survey_id: undefined,
         });
       });
     });

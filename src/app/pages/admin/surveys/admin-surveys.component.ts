@@ -120,8 +120,12 @@ export class AdminSurveysComponent implements OnInit {
       );
     }
 
-    // Sort by modified date descending
-    filtered.sort((a, b) => new Date(b.modified_at).getTime() - new Date(a.modified_at).getTime());
+    // Sort by modified date descending, falling back to created_at
+    filtered.sort(
+      (a, b) =>
+        new Date(b.modified_at ?? b.created_at).getTime() -
+        new Date(a.modified_at ?? a.created_at).getTime(),
+    );
 
     this.filteredTemplates = filtered;
   }

@@ -12,6 +12,7 @@ interface SavePayload {
   responseId: string;
   answers: Record<string, unknown>;
   uiState: SurveyUIState;
+  surveyId?: string;
 }
 
 /**
@@ -67,9 +68,10 @@ export class SurveyDraftService implements OnDestroy {
     responseId: string,
     answers: Record<string, unknown>,
     uiState: SurveyUIState,
+    surveyId?: string,
   ): void {
     this.hasUnsavedChangesSubject$.next(true);
-    this.saveSubject$.next({ responseId, answers, uiState });
+    this.saveSubject$.next({ responseId, answers, uiState, surveyId });
   }
 
   /**
@@ -80,11 +82,12 @@ export class SurveyDraftService implements OnDestroy {
     responseId: string,
     answers: Record<string, unknown>,
     uiState: SurveyUIState,
+    surveyId?: string,
   ): Observable<SurveyResponse> {
     this.isSavingSubject$.next(true);
     this.saveErrorSubject$.next(null);
 
-    return this.responseService.updateDraft(responseId, answers, uiState).pipe(
+    return this.responseService.updateDraft(responseId, answers, uiState, surveyId).pipe(
       switchMap(response => {
         this.isSavingSubject$.next(false);
         this.lastSavedSubject$.next(new Date());
@@ -146,10 +149,10 @@ export class SurveyDraftService implements OnDestroy {
     this.saveSubscription = this.saveSubject$
       .pipe(
         debounceTime(this.autoSaveDebounceMs),
-        switchMap(({ responseId, answers, uiState }) => {
+        switchMap(({ responseId, answers, uiState, surveyId }) => {
           this.isSavingSubject$.next(true);
           this.saveErrorSubject$.next(null);
-          return this.responseService.updateDraft(responseId, answers, uiState).pipe(
+          return this.responseService.updateDraft(responseId, answers, uiState, surveyId).pipe(
             catchError(error => {
               this.isSavingSubject$.next(false);
               this.saveErrorSubject$.next('Failed to save draft');

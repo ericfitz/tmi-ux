@@ -128,8 +128,10 @@
           <th mat-header-cell *matHeaderCellDef>{{ 'common.template' | transloco }}</th>
           <td mat-cell *matCellDef="let row">
             <div class="template-info">
-              <span class="template-name">{{ row.survey_name }}</span>
-              <span class="template-version">v{{ row.survey_version }}</span>
+              <span class="template-name">{{ row.survey_name ?? '' }}</span>
+              @if (row.survey_version) {
+                <span class="template-version">v{{ row.survey_version }}</span>
+              }
             </div>
           </td>
         </ng-container>
