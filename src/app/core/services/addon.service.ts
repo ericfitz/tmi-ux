@@ -36,8 +36,12 @@ export class AddonService {
     const params = buildHttpParams(filter);
     return this.apiService.get<ListAddonsResponse>('addons', params).pipe(
       tap(response => {
-        this.addonsSubject$.next(response.addons);
-        this.logger.debug('Addons loaded', { count: response.addons.length });
+        const addons = response.addons ?? [];
+        if (!response.addons) {
+          this.logger.warn('API response missing addons array', { response });
+        }
+        this.addonsSubject$.next(addons);
+        this.logger.debug('Addons loaded', { count: addons.length });
       }),
       catchError(error => {
         this.logger.error('Failed to list addons', error);

@@ -25,6 +25,7 @@ describe('AddonService', () => {
   let mockLoggerService: {
     debug: ReturnType<typeof vi.fn>;
     info: ReturnType<typeof vi.fn>;
+    warn: ReturnType<typeof vi.fn>;
     error: ReturnType<typeof vi.fn>;
   };
 
@@ -69,6 +70,7 @@ describe('AddonService', () => {
     mockLoggerService = {
       debug: vi.fn(),
       info: vi.fn(),
+      warn: vi.fn(),
       error: vi.fn(),
     };
 
@@ -222,6 +224,35 @@ describe('AddonService', () => {
           expect(mockLoggerService.error).toHaveBeenCalledWith('Failed to list addons', error);
           expect(err).toBe(error);
         },
+      });
+    });
+
+    it('should handle response with missing addons array gracefully', () => {
+      const malformedResponse = { total: 0, limit: 50, offset: 0 };
+      mockApiService.get.mockReturnValue(of(malformedResponse));
+
+      service.list().subscribe(() => {
+        service.addons$.subscribe(addons => {
+          expect(addons).toEqual([]);
+        });
+        expect(mockLoggerService.warn).toHaveBeenCalledWith('API response missing addons array', {
+          response: malformedResponse,
+        });
+        expect(mockLoggerService.debug).toHaveBeenCalledWith('Addons loaded', { count: 0 });
+      });
+    });
+
+    it('should handle response with null addons array gracefully', () => {
+      const nullAddonsResponse = { addons: null, total: 0, limit: 50, offset: 0 };
+      mockApiService.get.mockReturnValue(of(nullAddonsResponse));
+
+      service.list().subscribe(() => {
+        service.addons$.subscribe(addons => {
+          expect(addons).toEqual([]);
+        });
+        expect(mockLoggerService.warn).toHaveBeenCalledWith('API response missing addons array', {
+          response: nullAddonsResponse,
+        });
       });
     });
   });

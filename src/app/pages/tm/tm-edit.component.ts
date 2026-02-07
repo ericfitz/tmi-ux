@@ -3211,7 +3211,12 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this._subscriptions.add(
       this.addonService.list().subscribe({
         next: response => {
-          this.filterAndCacheAddons(response.addons);
+          const addons = response.addons ?? [];
+          this.logger.debug('Addon API response', {
+            count: addons.length,
+            ids: addons.map(a => a.id),
+          });
+          this.filterAndCacheAddons(addons);
         },
         error: error => {
           this.logger.error('Failed to load addons', error);
