@@ -245,7 +245,6 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(สำเนา)",
-    "createTemplate": "สร้างเทมเพลต",
     "editTemplate": "แก้ไขเทมเพลต",
     "errorLoadingTemplates": "ไม่สามารถโหลดเทมเพลตได้",
     "loadingTemplates": "กำลังโหลดเทมเพลต...",
@@ -256,7 +255,74 @@
     "searchByName": "ค้นหาตามชื่อ...",
     "searchTemplates": "ค้นหาเทมเพลต",
     "templateCount": "{{count}} เทมเพลต",
-    "templateCountPlural": "{{count}} เทมเพลต"
+    "templateCountPlural": "{{count}} เทมเพลต",
+    "createSurvey": "สร้างแบบสำรวจ",
+    "surveyDetails": "รายละเอียดแบบสำรวจ",
+    "templateBuilder": {
+      "addPage": "เพิ่มหน้า",
+      "backToTemplates": "กลับไปที่เทมเพลต",
+      "choicesPerLine": "ตัวเลือก (หนึ่งตัวเลือกต่อบรรทัด)",
+      "deletePage": "ลบหน้า",
+      "deleteQuestion": "ลบคำถาม",
+      "enterSurveyDescription": "ป้อนคำอธิบายแบบสำรวจ",
+      "enterSurveyTitle": "ป้อนชื่อแบบสำรวจ",
+      "failedToLoadTemplate": "โหลดเทมเพลตไม่สำเร็จ",
+      "failedToSaveTemplate": "บันทึกเทมเพลตไม่สำเร็จ",
+      "loadingTemplate": "กำลังโหลดเทมเพลต...",
+      "mapsToTmField": "แมปกับฟิลด์ TM",
+      "metadataKey": "คีย์เมทาดาทา",
+      "metadataKeyHint": "ชื่อคีย์สำหรับรายการเมทาดาทา",
+      "nameId": "ชื่อ (ID)",
+      "nameIdHint": "ตัวระบุเฉพาะสำหรับคำถามนี้",
+      "nextPage": "หน้าถัดไป",
+      "noQuestionsHint": "คลิกประเภทคำถามจากพาเลทเพื่อเพิ่มคำถาม",
+      "noQuestionsYet": "ยังไม่มีคำถาม",
+      "pageIndicator": "หน้า {{current}} จาก {{total}}",
+      "previousPage": "หน้าก่อนหน้า",
+      "questionProperties": "คุณสมบัติคำถาม",
+      "questionTypeDescriptions": {
+        "boolean": "สวิตช์แบบบูลีน",
+        "checkbox": "การเลือกหลายตัวเลือก",
+        "comment": "พื้นที่ข้อความหลายบรรทัด",
+        "dropdown": "การเลือกแบบดรอปดาวน์",
+        "panel": "จัดกลุ่มคำถามในแผง",
+        "paneldynamic": "กลุ่มแผงที่สามารถทำซ้ำได้",
+        "radiogroup": "เลือกหนึ่งตัวเลือกจากรายการ",
+        "text": "การป้อนข้อความบรรทัดเดียว"
+      },
+      "questionTypeLabels": {
+        "boolean": "ใช่/ไม่ใช่",
+        "checkbox": "ช็อกบ็อกซ์",
+        "comment": "หลายบรรทัด",
+        "dropdown": "ดรอปดาวน์",
+        "panel": "แผง",
+        "paneldynamic": "แผงไดนามิก",
+        "radiogroup": "กลุ่มปุ่มวิทยุ",
+        "text": "ข้อความ"
+      },
+      "questionTypes": "ประเภทคำถาม",
+      "questions": "คำถาม",
+      "required": "จำเป็น",
+      "selectQuestionHint": "เลือกคำถามเพื่อแก้ไขคุณสมบัติ",
+      "tmFieldLabels": {
+        "assetDescription": "คำอธิบายสินทรัพย์",
+        "assetName": "ชื่อสินทรัพย์",
+        "assetType": "ประเภทสินทรัพย์",
+        "description": "คำอธิบายโมเดลภัยคุกคาม",
+        "documentName": "ชื่อเอกสาร",
+        "documentUrl": "URL เอกสาร",
+        "issueUri": "URL ติดตามปัญหา",
+        "metadataKey": "เมทาดาทาที่กำหนดเอง",
+        "name": "ชื่อโมเดลภัยคุกคาม",
+        "repositoryName": "ชื่อที่เก็บข้อมูล",
+        "repositoryUrl": "URL ที่เก็บข้อมูล"
+      },
+      "tmFieldMapping": "การแมปฟิลด์โมเดลภัยคุกคาม",
+      "tmFieldMappingHint": "เชื่อมโยงคำตอบนี้กับฟิลด์โมเดลภัยคุกคาม",
+      "unsavedChanges": "การเปลี่ยนแปลงที่ยังไม่ได้บันทึก",
+      "visibleIf": "แสดงถ้า",
+      "visibleIfHint": "เช่น {questionName} = 'value'"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "ป้อนค่าและกด Enter",
@@ -463,7 +529,8 @@
     "view": "ดู",
     "viewMetadata": "ดูข้อมูลเมตา",
     "viewPermissions": "ดูสิทธิ์การเข้าถึง",
-    "viewThreat": "ดูภัยคุกคาม"
+    "viewThreat": "ดูภัยคุกคาม",
+    "title": "ชื่อ"
   },
   "contextMenu": {
     "addInverseConnection": "เพิ่มการเชื่อมต่อแบบกลับกัน",
