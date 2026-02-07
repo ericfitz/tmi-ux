@@ -1,9 +1,6 @@
 <div class="template-builder-container">
   <!-- Header -->
   <div class="builder-header">
-    <button mat-icon-button (click)="goBack()" matTooltip="Back to templates">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
     <div class="header-title">
       <h1>{{ surveyId ? 'Edit Template' : 'Create Template' }}</h1>
       @if (template) {
@@ -27,6 +24,15 @@
         } @else {
           <mat-icon>save</mat-icon>
         }
+      </button>
+      <button
+        mat-icon-button
+        color="warn"
+        (click)="goBack()"
+        [matTooltip]="'common.close' | transloco"
+        [attr.aria-label]="'common.close' | transloco"
+      >
+        <mat-icon>close</mat-icon>
       </button>
     </div>
   </div>
