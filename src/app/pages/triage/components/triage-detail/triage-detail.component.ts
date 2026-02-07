@@ -68,7 +68,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
     this.route.paramMap
       .pipe(
         switchMap(params => {
-          const responseId = params.get('submissionId');
+          const responseId = params.get('responseId');
           if (!responseId) {
             throw new Error('No response ID provided');
           }

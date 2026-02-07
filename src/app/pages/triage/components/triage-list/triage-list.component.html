@@ -82,8 +82,8 @@
       }
     </div>
   } @else {
-    <div class="submissions-table-container">
-      <table mat-table [dataSource]="dataSource" class="submissions-table">
+    <div class="responses-table-container">
+      <table mat-table [dataSource]="dataSource" class="responses-table">
         <!-- Checkbox Column -->
         <ng-container matColumnDef="select">
           <th mat-header-cell *matHeaderCellDef>
@@ -180,7 +180,7 @@
         <tr
           mat-row
           *matRowDef="let row; columns: displayedColumns"
-          class="submission-row"
+          class="response-row"
           (click)="viewResponse(row)"
         ></tr>
       </table>

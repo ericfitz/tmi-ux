@@ -1,10 +1,10 @@
-<div class="my-submissions-container">
+<div class="my-responses-container">
   <div class="page-header">
     <div class="header-left">
       <button mat-icon-button (click)="goBack()" matTooltip="Back to surveys">
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <h1 class="page-title">My Submissions</h1>
+      <h1 class="page-title">My Survey Responses</h1>
     </div>
 
     <mat-form-field appearance="outline" class="status-filter">
@@ -20,7 +20,7 @@
   @if (loading) {
     <div class="loading-container">
       <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading submissions...</p>
+      <p>Loading responses...</p>
     </div>
   } @else if (error) {
     <div class="error-container">
@@ -35,11 +35,11 @@
     <div class="empty-state">
       <mat-icon>assignment</mat-icon>
       @if (statusFilter === 'all') {
-        <h2>No Submissions Yet</h2>
-        <p>You haven't submitted any surveys. Start one from the surveys page.</p>
+        <h2>No Responses Yet</h2>
+        <p>You haven't completed any surveys. Start one from the surveys page.</p>
       } @else {
-        <h2>No {{ getStatusInfo(statusFilter).label }} Submissions</h2>
-        <p>You don't have any submissions with this status.</p>
+        <h2>No {{ getStatusInfo(statusFilter).label }} Responses</h2>
+        <p>You don't have any responses with this status.</p>
       }
       <button mat-flat-button color="primary" (click)="goBack()">
         <mat-icon>assignment</mat-icon>
@@ -47,8 +47,8 @@
       </button>
     </div>
   } @else {
-    <div class="submissions-table-container">
-      <table mat-table [dataSource]="filteredResponses" class="submissions-table">
+    <div class="responses-table-container">
+      <table mat-table [dataSource]="filteredResponses" class="responses-table">
         <!-- Template Column -->
         <ng-container matColumnDef="template">
           <th mat-header-cell *matHeaderCellDef>Survey</th>
@@ -106,7 +106,7 @@
                 <mat-icon>delete</mat-icon>
               </button>
             } @else {
-              <button mat-icon-button (click)="viewResponse(row)" matTooltip="View submission">
+              <button mat-icon-button (click)="viewResponse(row)" matTooltip="View response">
                 <mat-icon>visibility</mat-icon>
               </button>
             }
@@ -117,15 +117,15 @@
         <tr
           mat-row
           *matRowDef="let row; columns: displayedColumns"
-          class="submission-row"
+          class="response-row"
           (click)="viewResponse(row)"
         ></tr>
       </table>
     </div>
 
-    <div class="submissions-summary">
+    <div class="responses-summary">
       <span
-        >{{ filteredResponses.length }} submission{{
+        >{{ filteredResponses.length }} response{{
           filteredResponses.length !== 1 ? 's' : ''
         }}</span
       >

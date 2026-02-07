@@ -191,7 +191,7 @@
       },
       "surveys": {
         "description": "Create and manage survey templates",
-        "title": "Survey Templates"
+        "title": "{{common.objectTypes.surveyTemplates}}"
       },
       "webhooks": {
         "description": "Install and configure webhook integrations",
@@ -502,7 +502,7 @@
     "common": {
       "affectedCells": "Affected Cells",
       "cellIds": "Cell IDs",
-      "cells": "Cells",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "Copy Full JSON"
     },
     "graphDataDialog": {
@@ -704,21 +704,22 @@
     "title": "Session Expiring Soon"
   },
   "surveys": {
-    "title": "Surveys",
+    "title": "{{common.objectTypes.surveys}}",
     "browse": "Browse Surveys",
-    "mySubmissions": "My Submissions",
+    "myResponses": "My Responses",
     "startNew": "Start Survey",
     "continueDraft": "Continue Draft",
     "submitSurvey": "Submit Survey",
     "saveDraft": "Save Draft",
-    "viewSubmission": "View Submission",
+    "viewResponse": "View Response",
     "noSurveys": "No surveys available",
-    "noSubmissions": "You haven't submitted any surveys yet",
+    "noResponses": "You haven't submitted any survey responses yet",
     "status": {
       "draft": "Draft",
       "submitted": "Submitted",
-      "inReview": "In Review",
-      "pendingTriage": "Pending Triage"
+      "needsRevision": "Needs Revision",
+      "readyForReview": "Ready for Review",
+      "reviewCreated": "Review Created"
     },
     "autoSave": {
       "saving": "Saving...",
@@ -728,7 +729,7 @@
     "confirmation": {
       "title": "Survey Submitted",
       "message": "Your survey has been submitted successfully.",
-      "viewSubmissions": "View My Submissions",
+      "viewResponses": "View My Responses",
       "backToSurveys": "Back to Surveys"
     },
     "fill": {
@@ -809,7 +810,7 @@
     "diagramName": "Diagram Name",
     "diagramPreview": "Diagram Preview",
     "diagramType": "Diagram Type",
-    "diagrams": "Diagrams",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "Describe the Document's Purpose or Content",
     "documentEditor": {
       "title": {
@@ -964,7 +965,7 @@
     "markInReview": "Mark In Review",
     "markPendingTriage": "Mark Pending Triage",
     "returnToSubmitted": "Return to Submitted",
-    "noSubmissions": "No submissions to triage",
+    "noResponses": "No responses to triage",
     "bulkActions": "Bulk Actions",
     "filters": {
       "allStatuses": "All Statuses",
@@ -972,7 +973,7 @@
       "clearFilters": "Clear Filters"
     },
     "detail": {
-      "submissionDetails": "Submission Details",
+      "responseDetails": "Response Details",
       "surveyResponses": "{{common.objectTypes.surveyResponses}}",
       "noResponses": "No responses recorded",
       "statusTimeline": "Status Timeline"
@@ -1054,7 +1055,7 @@
       "danger": "Danger",
       "display": "Display",
       "profile": "Profile",
-      "reports": "Reports"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "Theme",
     "theme.comment": "Theme is used as a noun here, to indicate visual styles applied in the UI.",

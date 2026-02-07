@@ -23,11 +23,11 @@ import { SurveyResponseService } from '../../services/survey-response.service';
 import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
 
 /**
- * Submission detail component
- * Read-only view of a submitted survey
+ * Response detail component
+ * Read-only view of a survey response
  */
 @Component({
-  selector: 'app-submission-detail',
+  selector: 'app-response-detail',
   standalone: true,
   imports: [
     ...COMMON_IMPORTS,
@@ -37,11 +37,11 @@ import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/sur
     SurveyModule,
     TranslocoModule,
   ],
-  templateUrl: './submission-detail.component.html',
-  styleUrl: './submission-detail.component.scss',
+  templateUrl: './response-detail.component.html',
+  styleUrl: './response-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SubmissionDetailComponent implements OnInit {
+export class ResponseDetailComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   surveyModel: Model | null = null;
@@ -63,10 +63,10 @@ export class SubmissionDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.responseId = this.route.snapshot.paramMap.get('submissionId');
+    this.responseId = this.route.snapshot.paramMap.get('responseId');
 
     if (!this.responseId) {
-      this.error = 'Invalid submission URL';
+      this.error = 'Invalid response URL';
       this.loading = false;
       return;
     }
@@ -156,10 +156,10 @@ export class SubmissionDetailComponent implements OnInit {
   }
 
   /**
-   * Navigate back to my submissions
+   * Navigate back to my responses
    */
   goBack(): void {
-    void this.router.navigate(['/surveys', 'my-submissions']);
+    void this.router.navigate(['/surveys', 'my-responses']);
   }
 
   /**

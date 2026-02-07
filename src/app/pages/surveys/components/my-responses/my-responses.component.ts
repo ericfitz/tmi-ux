@@ -21,11 +21,11 @@ import { SurveyResponseService } from '../../services/survey-response.service';
 import { SurveyResponseListItem, ResponseStatus } from '@app/types/survey.types';
 
 /**
- * My submissions component
+ * My responses component
  * Displays the user's survey responses with status tracking
  */
 @Component({
-  selector: 'app-my-submissions',
+  selector: 'app-my-responses',
   standalone: true,
   imports: [
     ...COMMON_IMPORTS,
@@ -35,11 +35,11 @@ import { SurveyResponseListItem, ResponseStatus } from '@app/types/survey.types'
     ...FORM_MATERIAL_IMPORTS,
     TranslocoModule,
   ],
-  templateUrl: './my-submissions.component.html',
-  styleUrl: './my-submissions.component.scss',
+  templateUrl: './my-responses.component.html',
+  styleUrl: './my-responses.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MySubmissionsComponent implements OnInit {
+export class MyResponsesComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   responses: SurveyResponseListItem[] = [];
@@ -127,7 +127,7 @@ export class MySubmissionsComponent implements OnInit {
     if (response.status === 'draft' || response.status === 'needs_revision') {
       void this.router.navigate(['/surveys', 'fill', response.template_id, response.id]);
     } else {
-      void this.router.navigate(['/surveys', 'submission', response.id]);
+      void this.router.navigate(['/surveys', 'response', response.id]);
     }
   }
 

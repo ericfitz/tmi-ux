@@ -10,22 +10,20 @@ export const SURVEY_ROUTES: Routes = [
       import('./components/survey-list/survey-list.component').then(c => c.SurveyListComponent),
   },
   {
-    path: 'my-submissions',
+    path: 'my-responses',
     loadComponent: () =>
-      import('./components/my-submissions/my-submissions.component').then(
-        c => c.MySubmissionsComponent,
-      ),
+      import('./components/my-responses/my-responses.component').then(c => c.MyResponsesComponent),
   },
   {
-    path: 'fill/:templateId/:submissionId',
+    path: 'fill/:templateId/:responseId',
     loadComponent: () =>
       import('./components/survey-fill/survey-fill.component').then(c => c.SurveyFillComponent),
   },
   {
-    path: 'submission/:submissionId',
+    path: 'response/:responseId',
     loadComponent: () =>
-      import('./components/submission-detail/submission-detail.component').then(
-        c => c.SubmissionDetailComponent,
+      import('./components/response-detail/response-detail.component').then(
+        c => c.ResponseDetailComponent,
       ),
   },
 ];

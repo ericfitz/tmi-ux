@@ -82,14 +82,14 @@
   }
 }
 
-.submissions-table-container {
+.responses-table-container {
   background: var(--color-surface);
   border-radius: 8px;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
 }
 
-.submissions-table {
+.responses-table {
   width: 100%;
 
   .submitter-info {
@@ -127,7 +127,7 @@
     font-style: italic;
   }
 
-  .submission-row {
+  .response-row {
     cursor: pointer;
 
     &:hover {
@@ -209,7 +209,7 @@ button mat-icon {
     }
   }
 
-  .submissions-table {
+  .responses-table {
     [matColumnDef='submitted_at'],
     [matColumnDef='select'] {
       display: none;

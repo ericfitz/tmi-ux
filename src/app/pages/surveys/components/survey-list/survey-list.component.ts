@@ -161,10 +161,10 @@ export class SurveyListComponent implements OnInit {
   }
 
   /**
-   * Navigate to my submissions
+   * Navigate to my responses
    */
-  viewMySubmissions(): void {
-    void this.router.navigate(['/surveys', 'my-submissions']);
+  viewMyResponses(): void {
+    void this.router.navigate(['/surveys', 'my-responses']);
   }
 
   /**

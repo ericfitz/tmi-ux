@@ -74,7 +74,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.templateId = this.route.snapshot.paramMap.get('templateId');
-    this.responseId = this.route.snapshot.paramMap.get('submissionId');
+    this.responseId = this.route.snapshot.paramMap.get('responseId');
 
     if (!this.templateId || !this.responseId) {
       this.error = 'Invalid survey URL';
@@ -294,8 +294,8 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   /**
    * View response details after completion
    */
-  viewSubmission(): void {
-    void this.router.navigate(['/surveys', 'submission', this.responseId]);
+  viewResponse(): void {
+    void this.router.navigate(['/surveys', 'response', this.responseId]);
   }
 
   /**

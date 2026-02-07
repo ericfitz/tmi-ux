@@ -1,8 +1,8 @@
-<div class="submission-detail-container">
+<div class="response-detail-container">
   @if (loading) {
     <div class="loading-container">
       <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading submission...</p>
+      <p>Loading response...</p>
     </div>
   } @else if (error) {
     <div class="error-container">
@@ -10,18 +10,18 @@
       <p>{{ error }}</p>
       <button mat-stroked-button (click)="goBack()">
         <mat-icon>arrow_back</mat-icon>
-        Back to Submissions
+        Back to Responses
       </button>
     </div>
   } @else if (response) {
     <!-- Header -->
     <div class="detail-header">
       <div class="header-left">
-        <button mat-icon-button (click)="goBack()" matTooltip="Back to submissions">
+        <button mat-icon-button (click)="goBack()" matTooltip="Back to responses">
           <mat-icon>arrow_back</mat-icon>
         </button>
         <div class="header-info">
-          <h1>{{ surveyJson?.title || 'Survey Submission' }}</h1>
+          <h1>{{ surveyJson?.title || 'Survey Response' }}</h1>
           <div class="header-meta">
             <mat-chip [highlighted]="response.status !== 'draft'">
               <mat-icon matChipIcon>{{ getStatusInfo(response.status).icon }}</mat-icon>
@@ -32,12 +32,12 @@
       </div>
     </div>
 
-    <!-- Submission info card -->
-    <mat-card class="submission-info-card">
+    <!-- Response info card -->
+    <mat-card class="response-info-card">
       <mat-card-content>
         <div class="info-grid">
           <div class="info-item">
-            <span class="info-label">Submitted By</span>
+            <span class="info-label">Responded By</span>
             <span class="info-value">{{
               response.owner.display_name || response.owner.email
             }}</span>

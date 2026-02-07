@@ -19,7 +19,7 @@
       </button>
       <div class="header-title">
         <h1>{{ surveyJson?.title || 'Survey Response' }}</h1>
-        <span class="submission-meta">
+        <span class="response-meta">
           Submitted by {{ response.owner.display_name || response.owner.email }}
         </span>
       </div>
@@ -117,7 +117,7 @@
 
       <!-- Sidebar -->
       <div class="content-sidebar">
-        <!-- Submission Info -->
+        <!-- Response Info -->
         <mat-card class="info-card">
           <mat-card-header>
             <mat-card-title>Response Details</mat-card-title>

@@ -10,7 +10,7 @@ export const TRIAGE_ROUTES: Routes = [
       import('./components/triage-list/triage-list.component').then(c => c.TriageListComponent),
   },
   {
-    path: ':submissionId',
+    path: ':responseId',
     loadComponent: () =>
       import('./components/triage-detail/triage-detail.component').then(
         c => c.TriageDetailComponent,

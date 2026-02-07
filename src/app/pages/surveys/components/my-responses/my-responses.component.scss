@@ -1,4 +1,4 @@
-.my-submissions-container {
+.my-responses-container {
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
@@ -61,14 +61,14 @@
   }
 }
 
-.submissions-table-container {
+.responses-table-container {
   background: var(--color-surface);
   border-radius: 8px;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
 }
 
-.submissions-table {
+.responses-table {
   width: 100%;
 
   .template-info {
@@ -86,7 +86,7 @@
     }
   }
 
-  .submission-row {
+  .response-row {
     cursor: pointer;
 
     &:hover {
@@ -123,7 +123,7 @@
   }
 }
 
-.submissions-summary {
+.responses-summary {
   padding: 16px;
   text-align: right;
   font-size: 14px;
@@ -139,7 +139,7 @@ button mat-icon {
 
 // Responsive adjustments
 @media (width <= 768px) {
-  .my-submissions-container {
+  .my-responses-container {
     padding: 16px;
   }
 
@@ -152,7 +152,7 @@ button mat-icon {
     }
   }
 
-  .submissions-table {
+  .responses-table {
     // Hide some columns on mobile
     [matColumnDef='created'],
     [matColumnDef='modified'] {

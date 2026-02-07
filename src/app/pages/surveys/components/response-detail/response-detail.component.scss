@@ -1,4 +1,4 @@
-.submission-detail-container {
+.response-detail-container {
   padding: 24px;
   max-width: 900px;
   margin: 0 auto;
@@ -59,7 +59,7 @@
   }
 }
 
-.submission-info-card {
+.response-info-card {
   margin-bottom: 24px;
 
   .info-grid {
@@ -176,7 +176,7 @@ button mat-icon {
 
 // Responsive adjustments
 @media (width <= 600px) {
-  .submission-detail-container {
+  .response-detail-container {
     padding: 16px;
   }
 
@@ -189,7 +189,7 @@ button mat-icon {
     }
   }
 
-  .submission-info-card .info-grid {
+  .response-info-card .info-grid {
     grid-template-columns: 1fr;
   }
 }

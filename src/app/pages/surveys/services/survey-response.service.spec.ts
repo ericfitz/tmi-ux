@@ -393,7 +393,7 @@ describe('SurveyResponseService', () => {
       });
     });
 
-    it('should refresh response list after submission', () => {
+    it('should refresh response list after submitting', () => {
       mockApiService.patch.mockReturnValue(of(mockResponse));
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
