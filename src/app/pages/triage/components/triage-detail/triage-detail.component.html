@@ -90,9 +90,7 @@
           <mat-card-header>
             <mat-card-title>Survey Responses</mat-card-title>
             <mat-card-subtitle
-              >{{ surveyJson?.title || 'Survey' }} v{{
-                response.template_version
-              }}</mat-card-subtitle
+              >{{ surveyJson?.title || 'Survey' }} v{{ response.survey_version }}</mat-card-subtitle
             >
           </mat-card-header>
           <mat-card-content>
@@ -147,7 +145,7 @@
 
               <div class="info-item">
                 <span class="info-label">Version</span>
-                <span class="info-value">v{{ response.template_version }}</span>
+                <span class="info-value">v{{ response.survey_version }}</span>
               </div>
 
               <div class="info-item">

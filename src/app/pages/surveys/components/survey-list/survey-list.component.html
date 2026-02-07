@@ -21,7 +21,7 @@
         Retry
       </button>
     </div>
-  } @else if (templates.length === 0) {
+  } @else if (surveys.length === 0) {
     <div class="empty-state">
       <mat-icon>assignment</mat-icon>
       <h2>No Surveys Available</h2>
@@ -29,30 +29,30 @@
     </div>
   } @else {
     <div class="survey-grid">
-      @for (template of templates; track template.id) {
+      @for (survey of surveys; track survey.id) {
         <mat-card class="survey-card">
           <mat-card-header>
             <mat-icon mat-card-avatar>assignment</mat-icon>
-            <mat-card-title>{{ template.name }}</mat-card-title>
+            <mat-card-title>{{ survey.name }}</mat-card-title>
             <mat-card-subtitle>
-              Version {{ template.version }} &middot; Updated
-              {{ formatDate(template.modified_at) }}
+              Version {{ survey.version }} &middot; Updated
+              {{ formatDate(survey.modified_at) }}
             </mat-card-subtitle>
           </mat-card-header>
 
           <mat-card-content>
-            @if (template.description) {
-              <p class="template-description">{{ template.description }}</p>
+            @if (survey.description) {
+              <p class="template-description">{{ survey.description }}</p>
             }
 
-            @if (getDrafts(template.id).length > 0) {
+            @if (getDrafts(survey.id).length > 0) {
               <div class="drafts-section">
                 <h4>
                   <mat-icon>edit_note</mat-icon>
                   Your Drafts
                 </h4>
                 <mat-list>
-                  @for (draft of getDrafts(template.id); track draft.id) {
+                  @for (draft of getDrafts(survey.id); track draft.id) {
                     <mat-list-item class="draft-item" (click)="continueDraft(draft)">
                       <span matListItemTitle>
                         Draft started {{ formatRelativeTime(draft.created_at) }}
@@ -76,13 +76,13 @@
           </mat-card-content>
 
           <mat-card-actions align="end">
-            @if (getDrafts(template.id).length > 0) {
-              <button mat-stroked-button (click)="continueDraft(getDrafts(template.id)[0])">
+            @if (getDrafts(survey.id).length > 0) {
+              <button mat-stroked-button (click)="continueDraft(getDrafts(survey.id)[0])">
                 <mat-icon>edit</mat-icon>
                 Continue Draft
               </button>
             }
-            <button mat-flat-button color="primary" (click)="startSurvey(template)">
+            <button mat-flat-button color="primary" (click)="startSurvey(survey)">
               <mat-icon>add</mat-icon>
               Start New
             </button>

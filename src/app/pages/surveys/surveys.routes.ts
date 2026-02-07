@@ -15,7 +15,7 @@ export const SURVEY_ROUTES: Routes = [
       import('./components/my-responses/my-responses.component').then(c => c.MyResponsesComponent),
   },
   {
-    path: 'fill/:templateId/:responseId',
+    path: 'fill/:surveyId/:responseId',
     loadComponent: () =>
       import('./components/survey-fill/survey-fill.component').then(c => c.SurveyFillComponent),
   },

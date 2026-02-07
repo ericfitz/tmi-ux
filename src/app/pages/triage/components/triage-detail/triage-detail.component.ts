@@ -6,7 +6,7 @@ import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
-import { SurveyTemplateService } from '../../../surveys/services/survey-template.service';
+import { SurveyService } from '../../../surveys/services/survey.service';
 import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
 
 /**
@@ -60,7 +60,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private responseService: SurveyResponseService,
-    private templateService: SurveyTemplateService,
+    private surveyService: SurveyService,
     private logger: LoggerService,
   ) {}
 
@@ -90,7 +90,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
             this.isLoading = false;
           } else {
             // Fallback: fetch from template service
-            this.loadSurveyDefinition(response.template_id);
+            this.loadSurveyDefinition(response.survey_id);
           }
         },
         error: err => {
@@ -109,9 +109,9 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /**
    * Fallback: load the survey JSON definition from template service
    */
-  private loadSurveyDefinition(templateId: string): void {
-    this.templateService
-      .getSurveyJson(templateId)
+  private loadSurveyDefinition(surveyId: string): void {
+    this.surveyService
+      .getSurveyJson(surveyId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: surveyJson => {

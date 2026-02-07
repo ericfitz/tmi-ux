@@ -29,8 +29,8 @@ describe('SurveyDraftService', () => {
   // Test data
   const mockResponse: SurveyResponse = {
     id: 'response-123',
-    template_id: 'template-456',
-    template_version: '2024-Q1',
+    survey_id: 'template-456',
+    survey_version: '2024-Q1',
     status: 'draft',
     is_confidential: false,
     answers: { question1: 'answer1' },

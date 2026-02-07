@@ -152,7 +152,7 @@ export const routes: Routes = [
         canActivate: [adminGuard],
       },
       {
-        path: 'surveys/:templateId',
+        path: 'surveys/:surveyId',
         loadComponent: () =>
           import(
             /* webpackChunkName: "admin-survey-builder" */ './pages/admin/surveys/components/template-builder/template-builder.component'

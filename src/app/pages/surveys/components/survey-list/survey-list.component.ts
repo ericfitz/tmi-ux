@@ -16,9 +16,9 @@ import {
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
 import { LoggerService } from '@app/core/services/logger.service';
-import { SurveyTemplateService } from '../../services/survey-template.service';
+import { SurveyService } from '../../services/survey.service';
 import { SurveyResponseService } from '../../services/survey-response.service';
-import { SurveyTemplateListItem, SurveyResponseListItem } from '@app/types/survey.types';
+import { SurveyListItem, SurveyResponseListItem } from '@app/types/survey.types';
 
 /**
  * Survey list component for respondents
@@ -41,13 +41,13 @@ import { SurveyTemplateListItem, SurveyResponseListItem } from '@app/types/surve
 export class SurveyListComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
-  templates: SurveyTemplateListItem[] = [];
+  surveys: SurveyListItem[] = [];
   drafts: Map<string, SurveyResponseListItem[]> = new Map();
   loading = true;
   error: string | null = null;
 
   constructor(
-    private templateService: SurveyTemplateService,
+    private surveyService: SurveyService,
     private responseService: SurveyResponseService,
     private router: Router,
     private logger: LoggerService,
@@ -65,19 +65,19 @@ export class SurveyListComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    // Load active templates
-    this.templateService
+    // Load active surveys
+    this.surveyService
       .listActive()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
-          this.templates = response.survey_templates;
+          this.surveys = response.surveys;
           this.loadDrafts();
         },
         error: error => {
           this.error = 'Failed to load surveys';
           this.loading = false;
-          this.logger.error('Failed to load survey templates', error);
+          this.logger.error('Failed to load surveys', error);
           this.cdr.markForCheck();
         },
       });
@@ -95,9 +95,9 @@ export class SurveyListComponent implements OnInit {
           // Group drafts by template
           this.drafts.clear();
           for (const draft of response.survey_responses) {
-            const existing = this.drafts.get(draft.template_id) ?? [];
+            const existing = this.drafts.get(draft.survey_id) ?? [];
             existing.push(draft);
-            this.drafts.set(draft.template_id, existing);
+            this.drafts.set(draft.survey_id, existing);
           }
           this.loading = false;
           this.cdr.markForCheck();
@@ -113,20 +113,20 @@ export class SurveyListComponent implements OnInit {
   /**
    * Get drafts for a specific template
    */
-  getDrafts(templateId: string): SurveyResponseListItem[] {
-    return this.drafts.get(templateId) ?? [];
+  getDrafts(surveyId: string): SurveyResponseListItem[] {
+    return this.drafts.get(surveyId) ?? [];
   }
 
   /**
    * Start a new survey
    */
-  startSurvey(template: SurveyTemplateListItem): void {
+  startSurvey(survey: SurveyListItem): void {
     this.responseService
-      .createDraft({ template_id: template.id })
+      .createDraft({ survey_id: survey.id })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
-          void this.router.navigate(['/surveys', 'fill', template.id, response.id]);
+          void this.router.navigate(['/surveys', 'fill', survey.id, response.id]);
         },
         error: error => {
           this.logger.error('Failed to create draft', error);
@@ -138,7 +138,7 @@ export class SurveyListComponent implements OnInit {
    * Continue an existing draft
    */
   continueDraft(draft: SurveyResponseListItem): void {
-    void this.router.navigate(['/surveys', 'fill', draft.template_id, draft.id]);
+    void this.router.navigate(['/surveys', 'fill', draft.survey_id, draft.id]);
   }
 
   /**

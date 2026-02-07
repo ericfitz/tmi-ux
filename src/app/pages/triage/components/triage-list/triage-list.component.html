@@ -42,10 +42,10 @@
 
     <mat-form-field appearance="outline" class="template-filter">
       <mat-label>Template</mat-label>
-      <mat-select [(ngModel)]="filters.templateId" (selectionChange)="onFilterChange()">
-        <mat-option [value]="null">All Templates</mat-option>
-        @for (template of templates; track template.id) {
-          <mat-option [value]="template.id">{{ template.name }}</mat-option>
+      <mat-select [(ngModel)]="filters.surveyId" (selectionChange)="onFilterChange()">
+        <mat-option [value]="null">All Surveys</mat-option>
+        @for (survey of surveys; track survey.id) {
+          <mat-option [value]="survey.id">{{ survey.name }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
@@ -122,8 +122,8 @@
           <th mat-header-cell *matHeaderCellDef>Template</th>
           <td mat-cell *matCellDef="let row">
             <div class="template-info">
-              <span class="template-name">{{ row.template_name }}</span>
-              <span class="template-version">v{{ row.template_version }}</span>
+              <span class="template-name">{{ row.survey_name }}</span>
+              <span class="template-version">v{{ row.survey_version }}</span>
             </div>
           </td>
         </ng-container>

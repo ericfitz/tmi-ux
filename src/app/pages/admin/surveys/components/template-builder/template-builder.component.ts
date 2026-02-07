@@ -5,9 +5,9 @@ import { takeUntil } from 'rxjs/operators';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
-import { SurveyTemplateService } from '@app/pages/surveys/services/survey-template.service';
+import { SurveyService } from '@app/pages/surveys/services/survey.service';
 import {
-  SurveyTemplate,
+  Survey,
   SurveyJsonSchema,
   SurveyQuestion,
   QuestionType,
@@ -40,10 +40,10 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   /** Template ID from route (null for new template) */
-  templateId: string | null = null;
+  surveyId: string | null = null;
 
   /** Current template being edited */
-  template: SurveyTemplate | null = null;
+  template: Survey | null = null;
 
   /** Survey JSON being built */
   surveyJson: SurveyJsonSchema = {
@@ -132,15 +132,15 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private templateService: SurveyTemplateService,
+    private surveyService: SurveyService,
     private logger: LoggerService,
   ) {}
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
-      this.templateId = params.get('templateId');
-      if (this.templateId) {
-        this.loadTemplate(this.templateId);
+      this.surveyId = params.get('surveyId');
+      if (this.surveyId) {
+        this.loadTemplate(this.surveyId);
       }
     });
   }
@@ -153,19 +153,19 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
   /**
    * Load an existing template for editing (single fetch — template includes survey_json)
    */
-  private loadTemplate(templateId: string): void {
+  private loadTemplate(surveyId: string): void {
     this.isLoading = true;
     this.error = null;
 
-    this.templateService
-      .getByIdAdmin(templateId)
+    this.surveyService
+      .getByIdAdmin(surveyId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (template: SurveyTemplate) => {
+        next: (template: Survey) => {
           this.template = template;
           this.surveyJson = template.survey_json;
           this.isLoading = false;
-          this.logger.debug('Template loaded', { templateId, version: template.version });
+          this.logger.debug('Template loaded', { surveyId, version: template.version });
         },
         error: (err: unknown) => {
           this.isLoading = false;
@@ -430,8 +430,8 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
     this.isSaving = true;
     this.error = null;
 
-    const saveObservable = this.templateId
-      ? this.templateService.update(this.templateId, {
+    const saveObservable = this.surveyId
+      ? this.surveyService.update(this.surveyId, {
           name: this.template?.name ?? this.surveyJson.title ?? 'Untitled Survey',
           version: this.template?.version ?? '1',
           survey_json: this.surveyJson,
@@ -439,7 +439,7 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
           status: this.template?.status,
           settings: this.template?.settings,
         })
-      : this.templateService.create({
+      : this.surveyService.create({
           name: this.surveyJson.title ?? 'Untitled Survey',
           version: '1',
           description: this.surveyJson.description,
@@ -447,15 +447,15 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
         });
 
     saveObservable.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (template: SurveyTemplate) => {
+      next: (template: Survey) => {
         this.isSaving = false;
         this.hasUnsavedChanges = false;
         this.template = template;
-        this.templateId = template.id;
+        this.surveyId = template.id;
         this.logger.info('Template saved', { id: template.id });
 
         // Navigate to edit URL if this was a new template
-        if (!this.route.snapshot.paramMap.get('templateId')) {
+        if (!this.route.snapshot.paramMap.get('surveyId')) {
           void this.router.navigate(['/admin/surveys', template.id], { replaceUrl: true });
         }
       },

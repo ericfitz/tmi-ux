@@ -18,7 +18,7 @@ import {
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
 import { LoggerService } from '@app/core/services/logger.service';
-import { SurveyTemplateService } from '../../services/survey-template.service';
+import { SurveyService } from '../../services/survey.service';
 import { SurveyResponseService } from '../../services/survey-response.service';
 import { SurveyDraftService } from '../../services/survey-draft.service';
 import { SurveyResponse, SurveyJsonSchema, SurveyUIState } from '@app/types/survey.types';
@@ -60,23 +60,23 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   lastSaved$: Observable<Date | null> = this.draftService.lastSaved$;
   saveError$: Observable<string | null> = this.draftService.saveError$;
 
-  private templateId: string | null = null;
+  private surveyId: string | null = null;
   private responseId: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private templateService: SurveyTemplateService,
+    private surveyService: SurveyService,
     private responseService: SurveyResponseService,
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
-    this.templateId = this.route.snapshot.paramMap.get('templateId');
+    this.surveyId = this.route.snapshot.paramMap.get('surveyId');
     this.responseId = this.route.snapshot.paramMap.get('responseId');
 
-    if (!this.templateId || !this.responseId) {
+    if (!this.surveyId || !this.responseId) {
       this.error = 'Invalid survey URL';
       this.loading = false;
       return;
@@ -118,8 +118,8 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
             this.loading = false;
             this.cdr.markForCheck();
           } else {
-            // Fallback: fetch from template service
-            this.loadSurveyJson(response.template_id);
+            // Fallback: fetch from survey service
+            this.loadSurveyJson(response.survey_id);
           }
         },
         error: error => {
@@ -134,9 +134,9 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   /**
    * Fallback: load survey JSON from template service
    */
-  private loadSurveyJson(templateId: string): void {
-    this.templateService
-      .getSurveyJson(templateId)
+  private loadSurveyJson(surveyId: string): void {
+    this.surveyService
+      .getSurveyJson(surveyId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: surveyJson => {
@@ -189,7 +189,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
     });
 
     this.logger.debug('Survey initialized', {
-      templateId: this.templateId,
+      surveyId: this.surveyId,
       responseId: this.responseId,
     });
   }

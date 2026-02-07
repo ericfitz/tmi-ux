@@ -1,36 +1,44 @@
 /**
  * Survey feature type definitions
- * Types for survey templates, responses, and SurveyJS JSON schema
+ * Types for surveys, responses, and SurveyJS JSON schema
  */
 
 import { User, Authorization } from '@app/pages/tm/models/threat-model.model';
 
 // ============================================
-// Survey Template Types
+// Survey Types
 // ============================================
 
 /**
- * Status of a survey template
+ * Status of a survey
  */
 export type SurveyStatus = 'active' | 'inactive' | 'archived';
 
 /**
- * Settings for a survey template
+ * Settings for a survey
  */
-export interface SurveyTemplateSettings {
+export interface SurveySettings {
   /** Whether responses can link to existing threat models for re-reviews */
   allow_threat_model_linking: boolean;
 }
 
 /**
- * Full survey template (returned from single-resource GET endpoints)
+ * Key-value metadata pair
  */
-export interface SurveyTemplate {
-  /** Template identifier */
+export interface Metadata {
+  key: string;
+  value: string;
+}
+
+/**
+ * Full survey (returned from single-resource GET endpoints)
+ */
+export interface Survey {
+  /** Survey identifier */
   id: string;
-  /** Template display name */
+  /** Survey display name */
   name: string;
-  /** Template description */
+  /** Survey description */
   description?: string;
   /** Current status */
   status: SurveyStatus;
@@ -38,25 +46,27 @@ export interface SurveyTemplate {
   version: string;
   /** Complete SurveyJS JSON definition */
   survey_json: SurveyJsonSchema;
-  /** Template settings */
-  settings?: SurveyTemplateSettings;
+  /** Survey settings */
+  settings?: SurveySettings;
+  /** Optional metadata key-value pairs */
+  metadata?: Metadata[] | null;
   /** Creation timestamp */
   created_at: string;
   /** Last modification timestamp */
   modified_at: string;
-  /** User who created the template */
+  /** User who created the survey */
   created_by: User;
 }
 
 /**
- * Survey template summary (returned from list endpoints)
+ * Survey summary (returned from list endpoints)
  */
-export interface SurveyTemplateListItem {
-  /** Template identifier */
+export interface SurveyListItem {
+  /** Survey identifier */
   id: string;
-  /** Template display name */
+  /** Survey display name */
   name: string;
-  /** Template description */
+  /** Survey description */
   description?: string;
   /** Custom version string */
   version: string;
@@ -66,25 +76,7 @@ export interface SurveyTemplateListItem {
   created_at: string;
   /** Last modification timestamp */
   modified_at: string;
-  /** User who created the template */
-  created_by: User;
-}
-
-/**
- * Historical version record for a survey template
- */
-export interface SurveyVersion {
-  /** Version identifier */
-  id: string;
-  /** Parent template identifier */
-  template_id: string;
-  /** Version string */
-  version: string;
-  /** SurveyJS JSON schema at this version */
-  survey_json: SurveyJsonSchema;
-  /** Creation timestamp */
-  created_at: string;
-  /** User who created this version */
+  /** User who created the survey */
   created_by: User;
 }
 
@@ -244,6 +236,8 @@ export interface SurveyPage {
  * Complete SurveyJS JSON schema
  */
 export interface SurveyJsonSchema {
+  /** ID of the survey this JSON belongs to */
+  survey_id?: string;
   /** Survey title */
   title?: string;
   /** Survey description */
@@ -294,10 +288,10 @@ export interface SurveyUIState {
 export interface SurveyResponse {
   /** Response identifier */
   id: string;
-  /** Template identifier */
-  template_id: string;
-  /** Template version captured at creation */
-  template_version: string;
+  /** Survey identifier */
+  survey_id: string;
+  /** Survey version captured at creation */
+  survey_version: string;
   /** Current status */
   status: ResponseStatus;
   /** Whether Security Reviewers group was excluded */
@@ -306,7 +300,7 @@ export interface SurveyResponse {
   answers: Record<string, unknown>;
   /** UI state for draft restoration */
   ui_state?: SurveyUIState;
-  /** Snapshot of the survey_json from the template version used at creation (read-only) */
+  /** Snapshot of the survey_json from the survey version used at creation (read-only) */
   survey_json?: SurveyJsonSchema;
   /** Link to existing threat model for re-reviews */
   linked_threat_model_id?: string;
@@ -314,6 +308,8 @@ export interface SurveyResponse {
   created_threat_model_id?: string;
   /** Notes from security reviewer when returned for revision */
   revision_notes?: string;
+  /** Optional metadata key-value pairs */
+  metadata?: Metadata[] | null;
   /** User who created the response */
   owner: User;
   /** Access control list */
@@ -336,12 +332,12 @@ export interface SurveyResponse {
 export interface SurveyResponseListItem {
   /** Response identifier */
   id: string;
-  /** Template identifier */
-  template_id: string;
-  /** Template name (denormalized for display) */
-  template_name: string;
-  /** Template version used */
-  template_version: string;
+  /** Survey identifier */
+  survey_id: string;
+  /** Survey name (denormalized for display) */
+  survey_name: string;
+  /** Survey version used */
+  survey_version: string;
   /** Current status */
   status: ResponseStatus;
   /** Whether this is a confidential project */
@@ -361,9 +357,9 @@ export interface SurveyResponseListItem {
 // ============================================
 
 /**
- * Filter parameters for listing survey templates
+ * Filter parameters for listing surveys
  */
-export interface SurveyTemplateFilter {
+export interface SurveyFilter {
   /** Filter by status */
   status?: SurveyStatus;
   /** Search by name */
@@ -375,57 +371,57 @@ export interface SurveyTemplateFilter {
 }
 
 /**
- * Response from list templates endpoint
+ * Response from list surveys endpoint
  */
-export interface ListSurveyTemplatesResponse {
-  survey_templates: SurveyTemplateListItem[];
+export interface ListSurveysResponse {
+  surveys: SurveyListItem[];
   total: number;
   limit: number;
   offset: number;
 }
 
 /**
- * Request to create a new survey template
+ * Request to create a new survey
  */
-export interface CreateSurveyTemplateRequest {
-  /** Template name */
+export interface CreateSurveyRequest {
+  /** Survey name */
   name: string;
   /** Custom version string */
   version: string;
   /** SurveyJS JSON definition */
   survey_json: SurveyJsonSchema;
-  /** Template description */
+  /** Survey description */
   description?: string;
   /** Initial status (defaults to inactive) */
   status?: SurveyStatus;
-  /** Template settings */
-  settings?: SurveyTemplateSettings;
+  /** Survey settings */
+  settings?: SurveySettings;
 }
 
 /**
- * Request to update a survey template (full PUT)
+ * Request to update a survey (full PUT)
  */
-export interface UpdateSurveyTemplateRequest {
-  /** Template name */
+export interface UpdateSurveyRequest {
+  /** Survey name */
   name: string;
   /** Custom version string */
   version: string;
   /** SurveyJS JSON definition */
   survey_json: SurveyJsonSchema;
-  /** Template description */
+  /** Survey description */
   description?: string;
   /** Status */
   status?: SurveyStatus;
-  /** Template settings */
-  settings?: SurveyTemplateSettings;
+  /** Survey settings */
+  settings?: SurveySettings;
 }
 
 /**
  * Filter parameters for listing survey responses
  */
 export interface SurveyResponseFilter {
-  /** Filter by template */
-  template_id?: string;
+  /** Filter by survey */
+  survey_id?: string;
   /** Filter by status */
   status?: ResponseStatus | ResponseStatus[];
   /** Filter by submitted date start */
@@ -452,8 +448,8 @@ export interface ListSurveyResponsesResponse {
  * Request to create a new survey response (draft)
  */
 export interface CreateSurveyResponseRequest {
-  /** Template to fill out */
-  template_id: string;
+  /** Survey to fill out */
+  survey_id: string;
   /** Initial answers */
   answers?: Record<string, unknown>;
   /** Link to existing threat model */

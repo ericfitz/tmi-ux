@@ -9,10 +9,10 @@ import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
-import { SurveyTemplateService } from '../../../surveys/services/survey-template.service';
+import { SurveyService } from '../../../surveys/services/survey.service';
 import {
   SurveyResponseListItem,
-  SurveyTemplateListItem,
+  SurveyListItem,
   ResponseStatus,
   SurveyResponseFilter,
 } from '@app/types/survey.types';
@@ -22,7 +22,7 @@ import {
  */
 interface TriageFilters {
   status: ResponseStatus | 'all';
-  templateId: string | null;
+  surveyId: string | null;
   searchTerm: string;
 }
 
@@ -53,12 +53,12 @@ export class TriageListComponent implements OnInit, OnDestroy {
   displayedColumns = ['select', 'submitter', 'template', 'submitted_at', 'status', 'actions'];
 
   /** Available templates for filtering */
-  templates: SurveyTemplateListItem[] = [];
+  surveys: SurveyListItem[] = [];
 
   /** Current filters */
   filters: TriageFilters = {
     status: 'all',
-    templateId: null,
+    surveyId: null,
     searchTerm: '',
   };
 
@@ -86,12 +86,12 @@ export class TriageListComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private responseService: SurveyResponseService,
-    private templateService: SurveyTemplateService,
+    private surveyService: SurveyService,
     private logger: LoggerService,
   ) {}
 
   ngOnInit(): void {
-    this.loadTemplates();
+    this.loadSurveys();
     this.loadResponses();
   }
 
@@ -103,16 +103,16 @@ export class TriageListComponent implements OnInit, OnDestroy {
   /**
    * Load available templates for filtering
    */
-  private loadTemplates(): void {
-    this.templateService
+  private loadSurveys(): void {
+    this.surveyService
       .listAdmin()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: response => {
-          this.templates = response.survey_templates;
+          this.surveys = response.surveys;
         },
         error: err => {
-          this.logger.error('Failed to load templates for filter', err);
+          this.logger.error('Failed to load surveys for filter', err);
         },
       });
   }
@@ -132,8 +132,8 @@ export class TriageListComponent implements OnInit, OnDestroy {
     if (this.filters.status !== 'all') {
       filter.status = this.filters.status;
     }
-    if (this.filters.templateId) {
-      filter.template_id = this.filters.templateId;
+    if (this.filters.surveyId) {
+      filter.survey_id = this.filters.surveyId;
     }
 
     this.responseService
@@ -177,7 +177,7 @@ export class TriageListComponent implements OnInit, OnDestroy {
   clearFilters(): void {
     this.filters = {
       status: 'all',
-      templateId: null,
+      surveyId: null,
       searchTerm: '',
     };
     this.pageIndex = 0;
@@ -294,6 +294,6 @@ export class TriageListComponent implements OnInit, OnDestroy {
    * Check if there are any active filters
    */
   get hasActiveFilters(): boolean {
-    return this.filters.status !== 'all' || !!this.filters.templateId || !!this.filters.searchTerm;
+    return this.filters.status !== 'all' || !!this.filters.surveyId || !!this.filters.searchTerm;
   }
 }

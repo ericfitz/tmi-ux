@@ -41,7 +41,7 @@ export class SurveyResponseService {
    */
   public listMine(filter?: SurveyResponseFilter): Observable<ListSurveyResponsesResponse> {
     const params = buildHttpParams(filter);
-    return this.apiService.get<ListSurveyResponsesResponse>('intake/responses', params).pipe(
+    return this.apiService.get<ListSurveyResponsesResponse>('intake/survey_responses', params).pipe(
       tap(response => {
         this.myResponsesSubject$.next(response.survey_responses);
         this.logger.debug('My responses loaded', {
@@ -61,28 +61,26 @@ export class SurveyResponseService {
    */
   public listAll(filter?: SurveyResponseFilter): Observable<ListSurveyResponsesResponse> {
     const params = buildHttpParams(filter);
-    return this.apiService
-      .get<ListSurveyResponsesResponse>('triage/surveys/responses', params)
-      .pipe(
-        tap(response => {
-          this.allResponsesSubject$.next(response.survey_responses);
-          this.logger.debug('All responses loaded', {
-            count: response.survey_responses.length,
-            total: response.total,
-          });
-        }),
-        catchError(error => {
-          this.logger.error('Failed to list all responses', error);
-          throw error;
-        }),
-      );
+    return this.apiService.get<ListSurveyResponsesResponse>('triage/survey_responses', params).pipe(
+      tap(response => {
+        this.allResponsesSubject$.next(response.survey_responses);
+        this.logger.debug('All responses loaded', {
+          count: response.survey_responses.length,
+          total: response.total,
+        });
+      }),
+      catchError(error => {
+        this.logger.error('Failed to list all responses', error);
+        throw error;
+      }),
+    );
   }
 
   /**
    * Get a specific response by ID
    */
   public getById(responseId: string): Observable<SurveyResponse> {
-    return this.apiService.get<SurveyResponse>(`intake/responses/${responseId}`).pipe(
+    return this.apiService.get<SurveyResponse>(`intake/survey_responses/${responseId}`).pipe(
       tap(response => {
         this.logger.debug('Response loaded', {
           id: response.id,
@@ -100,7 +98,7 @@ export class SurveyResponseService {
    * Get a response by ID (triage access)
    */
   public getByIdTriage(responseId: string): Observable<SurveyResponse> {
-    return this.apiService.get<SurveyResponse>(`triage/surveys/responses/${responseId}`).pipe(
+    return this.apiService.get<SurveyResponse>(`triage/survey_responses/${responseId}`).pipe(
       tap(response => {
         this.logger.debug('Response loaded (triage)', {
           id: response.id,
@@ -119,12 +117,15 @@ export class SurveyResponseService {
    */
   public createDraft(request: CreateSurveyResponseRequest): Observable<SurveyResponse> {
     return this.apiService
-      .post<SurveyResponse>('intake/responses', request as unknown as Record<string, unknown>)
+      .post<SurveyResponse>(
+        'intake/survey_responses',
+        request as unknown as Record<string, unknown>,
+      )
       .pipe(
         tap(response => {
           this.logger.info('Draft response created', {
             id: response.id,
-            templateId: request.template_id,
+            surveyId: request.survey_id,
           });
           this.listMine().subscribe();
         }),
@@ -149,7 +150,7 @@ export class SurveyResponseService {
     };
     return this.apiService
       .put<SurveyResponse>(
-        `intake/responses/${responseId}`,
+        `intake/survey_responses/${responseId}`,
         request as unknown as Record<string, unknown>,
       )
       .pipe(
@@ -168,7 +169,7 @@ export class SurveyResponseService {
    */
   public submit(responseId: string): Observable<SurveyResponse> {
     return this.apiService
-      .patch<SurveyResponse>(`intake/responses/${responseId}`, [
+      .patch<SurveyResponse>(`intake/survey_responses/${responseId}`, [
         { op: 'replace', path: '/status', value: 'submitted' },
       ])
       .pipe(
@@ -187,7 +188,7 @@ export class SurveyResponseService {
    * Delete a draft response (only drafts can be deleted)
    */
   public deleteDraft(responseId: string): Observable<void> {
-    return this.apiService.delete<void>(`intake/responses/${responseId}`).pipe(
+    return this.apiService.delete<void>(`intake/survey_responses/${responseId}`).pipe(
       tap(() => {
         this.logger.info('Draft deleted', { id: responseId });
         this.listMine().subscribe();
@@ -200,10 +201,10 @@ export class SurveyResponseService {
   }
 
   /**
-   * Get drafts for a specific template (current user)
+   * Get drafts for a specific survey (current user)
    */
-  public getDraftsForTemplate(templateId: string): Observable<SurveyResponseListItem[]> {
-    return this.listMine({ template_id: templateId, status: 'draft' }).pipe(
+  public getDraftsForSurvey(surveyId: string): Observable<SurveyResponseListItem[]> {
+    return this.listMine({ survey_id: surveyId, status: 'draft' }).pipe(
       map(response => response.survey_responses),
     );
   }
@@ -213,7 +214,7 @@ export class SurveyResponseService {
    */
   public approve(responseId: string): Observable<SurveyResponse> {
     return this.apiService
-      .patch<SurveyResponse>(`triage/surveys/responses/${responseId}`, [
+      .patch<SurveyResponse>(`triage/survey_responses/${responseId}`, [
         { op: 'replace', path: '/status', value: 'ready_for_review' },
       ])
       .pipe(
@@ -233,7 +234,7 @@ export class SurveyResponseService {
    */
   public returnForRevision(responseId: string, revisionNotes: string): Observable<SurveyResponse> {
     return this.apiService
-      .patch<SurveyResponse>(`triage/surveys/responses/${responseId}`, [
+      .patch<SurveyResponse>(`triage/survey_responses/${responseId}`, [
         { op: 'replace', path: '/status', value: 'needs_revision' },
         { op: 'replace', path: '/revision_notes', value: revisionNotes },
       ])
@@ -257,7 +258,7 @@ export class SurveyResponseService {
   public createThreatModel(responseId: string): Observable<CreateThreatModelFromResponseResult> {
     return this.apiService
       .post<CreateThreatModelFromResponseResult>(
-        `triage/surveys/responses/${responseId}/create_threat_model`,
+        `triage/survey_responses/${responseId}/create_threat_model`,
         {},
       )
       .pipe(
@@ -280,7 +281,7 @@ export class SurveyResponseService {
    */
   public linkToThreatModel(responseId: string, threatModelId: string): Observable<SurveyResponse> {
     return this.apiService
-      .patch<SurveyResponse>(`intake/responses/${responseId}`, [
+      .patch<SurveyResponse>(`intake/survey_responses/${responseId}`, [
         {
           op: 'replace',
           path: '/linked_threat_model_id',

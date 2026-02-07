@@ -18,7 +18,7 @@ import {
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
 import { LoggerService } from '@app/core/services/logger.service';
-import { SurveyTemplateService } from '../../services/survey-template.service';
+import { SurveyService } from '../../services/survey.service';
 import { SurveyResponseService } from '../../services/survey-response.service';
 import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
 
@@ -56,7 +56,7 @@ export class ResponseDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private templateService: SurveyTemplateService,
+    private surveyService: SurveyService,
     private responseService: SurveyResponseService,
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
@@ -96,7 +96,7 @@ export class ResponseDetailComponent implements OnInit {
             this.cdr.markForCheck();
           } else {
             // Fallback: fetch from template service
-            this.loadSurveyJson(response.template_id);
+            this.loadSurveyJson(response.survey_id);
           }
         },
         error: error => {
@@ -111,9 +111,9 @@ export class ResponseDetailComponent implements OnInit {
   /**
    * Fallback: load the survey JSON from template service
    */
-  private loadSurveyJson(templateId: string): void {
-    this.templateService
-      .getSurveyJson(templateId)
+  private loadSurveyJson(surveyId: string): void {
+    this.surveyService
+      .getSurveyJson(surveyId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: surveyJson => {
