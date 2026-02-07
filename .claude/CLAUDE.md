@@ -142,6 +142,10 @@ Automatic semantic versioning via git hooks using [Conventional Commits](https:/
 - `fix:`/`chore:`/`docs:`/`perf:`/`test:`/`ci:`/`build:` → patch bump (0.0.x)
 - Version bumps happen on commit, not build
 
+## UI Terminology
+
+- **Action button**: A `mat-icon-button` that displays only an icon (no text label) and uses `matTooltip` to show the button's localized label. Action buttons must not implement any button styling locally — centering and icon sizing are handled globally by the `.mat-mdc-icon-button` override in `src/styles/component-overrides.scss`.
+
 ## Code Style
 
 - 2 spaces, single quotes, max 100 chars, strict TypeScript
