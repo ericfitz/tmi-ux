@@ -29,14 +29,6 @@
   display: flex;
   align-items: center;
   gap: 12px;
-
-  // Ensure Material Symbols Outlined icons are properly centered
-  .mat-icon[fontSet='material-symbols-outlined'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-  }
 }
 
 .content-container {
@@ -159,31 +151,6 @@ mat-card-header {
     display: flex;
     align-items: center;
     gap: 4px;
-
-    button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      mat-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-    }
-  }
-
-  // Also apply to direct button children (for cards with single add button)
-  > button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    mat-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
   }
 }
 
@@ -323,27 +290,6 @@ mat-card-header {
   color: var(--theme-text-primary, var(--color-text-primary));
   flex: 1;
   font-family: var(--font-family-primary);
-}
-
-.copy-button {
-  width: 28px;
-  height: 28px;
-  line-height: 28px;
-  margin-inline-start: 2px; // Use logical property for RTL support
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
-
-  .mat-icon {
-    font-size: var(--icon-size-sm);
-    width: var(--icon-size-sm);
-    height: var(--icon-size-sm);
-    line-height: var(--icon-size-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 }
 
 // Specific styling for external edit button icons
@@ -677,20 +623,6 @@ mat-card-header {
   max-width: 48px;
   text-align: center;
   padding: 4px !important;
-
-  // Vertical centering for hyperlink icons
-  .mat-mdc-icon-button {
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    vertical-align: middle;
-
-    mat-icon {
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-    }
-  }
 }
 
 .column-actions {
@@ -706,19 +638,6 @@ mat-card-header {
   gap: 2px;
   align-items: center;
   justify-content: flex-end;
-
-  .mat-mdc-icon-button {
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    vertical-align: middle;
-
-    mat-icon {
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-    }
-  }
 }
 
 // Hyperlink button in table

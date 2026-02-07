@@ -183,19 +183,6 @@ button:not([mat-icon-button]) mat-icon {
     display: flex;
     align-items: center;
     gap: 2px;
-
-    .mat-mdc-icon-button {
-      display: inline-flex !important;
-      align-items: center;
-      justify-content: center;
-      vertical-align: middle;
-
-      mat-icon {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-      }
-    }
   }
 
   mat-card-content {
@@ -303,18 +290,8 @@ button:not([mat-icon-button]) mat-icon {
     gap: 4px;
 
     .mat-mdc-icon-button {
-      display: inline-flex !important;
-      align-items: center;
-      justify-content: center;
-      vertical-align: middle;
       opacity: 0;
       transition: opacity 0.2s ease;
-
-      mat-icon {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-      }
     }
   }
 

@@ -115,22 +115,6 @@
           align-self: center;
         }
 
-        .mat-mdc-icon-button {
-          display: inline-flex !important;
-          align-items: center;
-          justify-content: center;
-          vertical-align: middle;
-
-          mat-icon {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            width: 24px;
-            height: 24px;
-          }
-        }
-
         &:hover {
           background: var(--color-surface-hover);
         }
