@@ -176,6 +176,10 @@
         "description": "وسائل کے کوٹہ اور حدود ترتیب دیں",
         "title": "{{admin.quotas.title}}"
       },
+      "surveys": {
+        "description": "سروے ٹیمپلیٹس بنائیں اور ان کا انتظام کریں",
+        "title": "{{common.objectTypes.surveyTemplates}}"
+      },
       "users": {
         "description": "صارف اکاؤنٹس دیکھیں اور ان کا انتظام کریں",
         "title": "{{admin.users.title}}"
@@ -335,7 +339,7 @@
     "editThreat": "خطرے میں ترمیم کریں",
     "emailLabel": "ای میل ایڈریس",
     "fonts": "فونٹس",
-    "id": "ID",
+    "id": "شناخت",
     "identityProvider": "شناختی فراہم کنندہ",
     "issueUri": "مسئلہ URL",
     "language": "{{language}}",
@@ -360,17 +364,27 @@
       "asset": "اثاثہ",
       "assets": "اثاثے",
       "cell": "سیل",
+      "cells": "خلیے",
       "diagram": "ڈایاگرام",
+      "diagrams": "ڈایاگرامز",
       "document": "دستاویز",
       "documents": "دستاویزات",
       "metadata": "{{common.metadata}}",
       "note": "نوٹ",
       "notes": "نوٹس",
       "report": "رپورٹ",
+      "reports": "رپورٹس",
       "repositories": "ریپوزٹریز",
       "repository": "ریپوزٹری",
+      "survey": "سروے",
+      "surveyResponse": "سروے کا جواب",
+      "surveyResponses": "سروے کے جوابات",
+      "surveyTemplate": "سروے ٹیمپلیٹ",
+      "surveyTemplates": "سروے ٹیمپلیٹس",
+      "surveys": "سروے",
       "threat": "خطرہ",
       "threatModel": "خطرے کا ماڈل",
+      "threatModels": "خطرے کے ماڈلز",
       "threats": "خطرات"
     },
     "ok": "ٹھیک ہے",
@@ -666,6 +680,40 @@
     },
     "title": "سیشن جلد ختم ہونے والا ہے"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "محفوظ کرنا ناکام",
+      "saved": "محفوظ ہوگیا",
+      "saving": "محفوظ ہو رہا ہے..."
+    },
+    "browse": "سروے دیکھیں",
+    "confirmation": {
+      "backToSurveys": "سروے پر واپس جائیں",
+      "message": "آپ کا سروے کامیابی سے جمع ہوگیا ہے۔",
+      "title": "سروے جمع ہوگیا",
+      "viewResponses": "میرے جوابات دیکھیں"
+    },
+    "continueDraft": "مسودہ جاری رکھیں",
+    "fill": {
+      "submitConfirm": "کیا آپ واقعی جمع کرنا چاہتے ہیں؟ جمع کرنے کے بعد آپ اپنے جوابات میں ترمیم نہیں کر سکیں گے۔",
+      "title": "سروے بھریں"
+    },
+    "myResponses": "میرے جوابات",
+    "noResponses": "آپ نے ابھی تک کوئی سروے جواب جمع نہیں کیا",
+    "noSurveys": "کوئی سروے دستیاب نہیں",
+    "saveDraft": "مسودہ محفوظ کریں",
+    "startNew": "سروے شروع کریں",
+    "status": {
+      "draft": "مسودہ",
+      "needsRevision": "نظرثانی درکار",
+      "readyForReview": "جائزے کے لیے تیار",
+      "reviewCreated": "جائزہ بنایا گیا",
+      "submitted": "جمع شدہ"
+    },
+    "submitSurvey": "سروے جمع کریں",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "جواب دیکھیں"
+  },
   "threatEditor": {
     "createNewThreat": "نیا خطرہ بنائیں",
     "notAssociatedWithAsset": "کسی اثاثے سے منسلک نہیں",
@@ -880,6 +928,29 @@
       "title": "8. حکمران قانون"
     },
     "title": "سروس کی شرائط"
+  },
+  "triage": {
+    "bulkActions": "بلک ایکشنز",
+    "changeStatus": "حیثیت تبدیل کریں",
+    "createTm": "خطرے کا ماڈل بنائیں",
+    "detail": {
+      "noResponses": "کوئی جواب ریکارڈ نہیں",
+      "responseDetails": "جواب کی تفصیلات",
+      "statusTimeline": "حیثیت کی ٹائم لائن",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "تمام حیثیتیں",
+      "allTemplates": "تمام ٹیمپلیٹس",
+      "clearFilters": "فلٹرز صاف کریں"
+    },
+    "markInReview": "جائزے میں نشان زد کریں",
+    "markPendingTriage": "زیر التواء ٹرائیج نشان زد کریں",
+    "noResponses": "ٹرائیج کے لیے کوئی جواب نہیں",
+    "queue": "ٹرائیج قطار",
+    "returnToSubmitted": "جمع شدہ پر واپس جائیں",
+    "title": "ٹرائیج",
+    "viewDetails": "تفصیلات دیکھیں"
   },
   "userPreferences": {
     "administration": {

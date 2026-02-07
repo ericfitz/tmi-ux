@@ -176,6 +176,10 @@
         "description": "Ressourcenkontingente und -limits konfigurieren",
         "title": "{{admin.quotas.title}}"
       },
+      "surveys": {
+        "description": "Umfragevorlagen erstellen und verwalten",
+        "title": "{{common.objectTypes.surveyTemplates}}"
+      },
       "users": {
         "description": "Benutzerkonten anzeigen und verwalten",
         "title": "{{admin.users.title}}"
@@ -360,17 +364,27 @@
       "asset": "Asset",
       "assets": "Assets",
       "cell": "Zelle",
+      "cells": "Zellen",
       "diagram": "Diagramm",
+      "diagrams": "Diagramme",
       "document": "Dokument",
       "documents": "Dokumente",
       "metadata": "{{common.metadata}}",
       "note": "Notiz",
       "notes": "Notizen",
       "report": "Bericht",
+      "reports": "Berichte",
       "repositories": "Repositorys",
       "repository": "Repository",
+      "survey": "Umfrage",
+      "surveyResponse": "Umfrageantwort",
+      "surveyResponses": "Umfrageantworten",
+      "surveyTemplate": "Umfragevorlage",
+      "surveyTemplates": "Umfragevorlagen",
+      "surveys": "Umfragen",
       "threat": "Bedrohung",
       "threatModel": "Bedrohungsmodell",
+      "threatModels": "Bedrohungsmodelle",
       "threats": "Bedrohungen"
     },
     "ok": "OK",
@@ -666,6 +680,40 @@
     },
     "title": "Sitzung läuft bald ab"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "Speichern fehlgeschlagen",
+      "saved": "Gespeichert",
+      "saving": "Speichert..."
+    },
+    "browse": "Umfragen durchsuchen",
+    "confirmation": {
+      "backToSurveys": "Zurück zu Umfragen",
+      "message": "Ihre Umfrage wurde erfolgreich eingereicht.",
+      "title": "Umfrage eingereicht",
+      "viewResponses": "Meine Antworten anzeigen"
+    },
+    "continueDraft": "Entwurf fortsetzen",
+    "fill": {
+      "submitConfirm": "Möchten Sie wirklich absenden? Sie können Ihre Antworten nach dem Absenden nicht mehr bearbeiten.",
+      "title": "Umfrage ausfüllen"
+    },
+    "myResponses": "Meine Antworten",
+    "noResponses": "Sie haben noch keine Umfrageantworten eingereicht",
+    "noSurveys": "Keine Umfragen verfügbar",
+    "saveDraft": "Entwurf speichern",
+    "startNew": "Umfrage starten",
+    "status": {
+      "draft": "Entwurf",
+      "needsRevision": "Überarbeitung erforderlich",
+      "readyForReview": "Bereit zur Prüfung",
+      "reviewCreated": "Prüfung erstellt",
+      "submitted": "Eingereicht"
+    },
+    "submitSurvey": "Umfrage absenden",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "Antwort anzeigen"
+  },
   "threatEditor": {
     "createNewThreat": "Neue Bedrohung erstellen",
     "notAssociatedWithAsset": "Nicht mit einem Vermögenswert verknüpft",
@@ -880,6 +928,29 @@
       "title": "8. Geltendes Recht"
     },
     "title": "Nutzungsbedingungen"
+  },
+  "triage": {
+    "bulkActions": "Massenaktionen",
+    "changeStatus": "Status ändern",
+    "createTm": "Bedrohungsmodell erstellen",
+    "detail": {
+      "noResponses": "Keine Antworten erfasst",
+      "responseDetails": "Antwortdetails",
+      "statusTimeline": "Statusverlauf",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "Alle Status",
+      "allTemplates": "Alle Vorlagen",
+      "clearFilters": "Filter löschen"
+    },
+    "markInReview": "Als geprüft markieren",
+    "markPendingTriage": "Als ausstehend markieren",
+    "noResponses": "Keine Antworten zur Triage",
+    "queue": "Triage-Warteschlange",
+    "returnToSubmitted": "Zurück zu eingereicht",
+    "title": "Triage",
+    "viewDetails": "Details anzeigen"
   },
   "userPreferences": {
     "administration": {

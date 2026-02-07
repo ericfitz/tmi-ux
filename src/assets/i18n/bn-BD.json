@@ -176,6 +176,10 @@
         "description": "রিসোর্স কোটা এবং লিমিট কনফিগার করুন",
         "title": "{{admin.quotas.title}}"
       },
+      "surveys": {
+        "description": "জরিপ টেমপ্লেট তৈরি এবং পরিচালনা করুন",
+        "title": "{{common.objectTypes.surveyTemplates}}"
+      },
       "users": {
         "description": "ব্যবহারকারী অ্যাকাউন্ট দেখুন এবং পরিচালনা করুন",
         "title": "{{admin.users.title}}"
@@ -360,17 +364,27 @@
       "asset": "অ্যাসেট",
       "assets": "অ্যাসেট",
       "cell": "সেল",
+      "cells": "কোষ",
       "diagram": "ডায়াগ্রাম",
+      "diagrams": "চিত্র",
       "document": "ডকুমেন্ট",
       "documents": "ডকুমেন্ট",
       "metadata": "{{common.metadata}}",
       "note": "নোট",
       "notes": "নোট",
       "report": "রিপোর্ট",
+      "reports": "প্রতিবেদন",
       "repositories": "রিপোজিটরি",
       "repository": "রিপোজিটরি",
+      "survey": "জরিপ",
+      "surveyResponse": "জরিপ প্রতিক্রিয়া",
+      "surveyResponses": "জরিপ প্রতিক্রিয়া",
+      "surveyTemplate": "জরিপ টেমপ্লেট",
+      "surveyTemplates": "জরিপ টেমপ্লেট",
+      "surveys": "জরিপ",
       "threat": "হুমকি",
       "threatModel": "থ্রেট মডেল",
+      "threatModels": "হুমকি মডেল",
       "threats": "হুমকি"
     },
     "ok": "ঠিক আছে",
@@ -666,6 +680,40 @@
     },
     "title": "সেশন শীঘ্রই শেষ হবে"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "সংরক্ষণ ব্যর্থ হয়েছে",
+      "saved": "সংরক্ষিত",
+      "saving": "সংরক্ষণ করা হচ্ছে..."
+    },
+    "browse": "জরিপ ব্রাউজ করুন",
+    "confirmation": {
+      "backToSurveys": "জরিপে ফিরে যান",
+      "message": "আপনার জরিপ সফলভাবে জমা দেওয়া হয়েছে।",
+      "title": "জরিপ জমা দেওয়া হয়েছে",
+      "viewResponses": "আমার প্রতিক্রিয়া দেখুন"
+    },
+    "continueDraft": "খসড়া চালিয়ে যান",
+    "fill": {
+      "submitConfirm": "আপনি কি নিশ্চিত যে আপনি জমা দিতে চান? জমা দেওয়ার পরে আপনি আপনার প্রতিক্রিয়া সম্পাদনা করতে পারবেন না।",
+      "title": "জরিপ পূরণ করুন"
+    },
+    "myResponses": "আমার প্রতিক্রিয়া",
+    "noResponses": "আপনি এখনও কোনো জরিপ প্রতিক্রিয়া জমা দেননি",
+    "noSurveys": "কোনো জরিপ উপলব্ধ নেই",
+    "saveDraft": "খসড়া সংরক্ষণ করুন",
+    "startNew": "জরিপ শুরু করুন",
+    "status": {
+      "draft": "খসড়া",
+      "needsRevision": "সংশোধন প্রয়োজন",
+      "readyForReview": "পর্যালোচনার জন্য প্রস্তুত",
+      "reviewCreated": "পর্যালোচনা তৈরি হয়েছে",
+      "submitted": "জমা দেওয়া হয়েছে"
+    },
+    "submitSurvey": "জরিপ জমা দিন",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "প্রতিক্রিয়া দেখুন"
+  },
   "threatEditor": {
     "createNewThreat": "নতুন হুমকি তৈরি করুন",
     "notAssociatedWithAsset": "কোনো অ্যাসেটের সাথে সম্পর্কিত নয়",
@@ -880,6 +928,29 @@
       "title": "৮. প্রযোজ্য আইন"
     },
     "title": "সেবার শর্তাবলী"
+  },
+  "triage": {
+    "bulkActions": "বাল্ক কর্ম",
+    "changeStatus": "স্ট্যাটাস পরিবর্তন করুন",
+    "createTm": "হুমকি মডেল তৈরি করুন",
+    "detail": {
+      "noResponses": "কোনো প্রতিক্রিয়া রেকর্ড করা হয়নি",
+      "responseDetails": "প্রতিক্রিয়া বিবরণ",
+      "statusTimeline": "স্ট্যাটাস টাইমলাইন",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "সকল স্ট্যাটাস",
+      "allTemplates": "সকল টেমপ্লেট",
+      "clearFilters": "ফিল্টার সাফ করুন"
+    },
+    "markInReview": "পর্যালোচনায় চিহ্নিত করুন",
+    "markPendingTriage": "ট্রায়াজ মুলতুবি চিহ্নিত করুন",
+    "noResponses": "ট্রায়াজ করার জন্য কোনো প্রতিক্রিয়া নেই",
+    "queue": "ট্রায়াজ সারি",
+    "returnToSubmitted": "জমা দেওয়াতে ফিরে যান",
+    "title": "ট্রায়াজ",
+    "viewDetails": "বিবরণ দেখুন"
   },
   "userPreferences": {
     "administration": {

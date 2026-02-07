@@ -23,7 +23,7 @@
     "webApplication": "Web应用程序",
     "webApplicationSourceCode": "Web应用程序源代码",
     "webappSourceCodeUrl": "https://github.com/ericfitz/tmi-ux",
-    "wiki": "TMI Wiki",
+    "wiki": "TMI 维基",
     "wikiUrl": "https://github.com/ericfitz/tmi/wiki"
   },
   "addons": {
@@ -175,6 +175,10 @@
       "quotas": {
         "description": "配置资源配额和限制",
         "title": "{{admin.quotas.title}}"
+      },
+      "surveys": {
+        "description": "创建和管理调查模板",
+        "title": "{{common.objectTypes.surveyTemplates}}"
       },
       "users": {
         "description": "查看和管理用户账户",
@@ -360,17 +364,27 @@
       "asset": "资产",
       "assets": "资产",
       "cell": "单元格",
+      "cells": "单元格",
       "diagram": "图表",
+      "diagrams": "图表",
       "document": "文档",
       "documents": "文档",
       "metadata": "{{common.metadata}}",
       "note": "笔记",
       "notes": "笔记",
       "report": "报告",
+      "reports": "报告",
       "repositories": "代码仓库",
       "repository": "仓库",
+      "survey": "调查",
+      "surveyResponse": "调查回复",
+      "surveyResponses": "调查回复",
+      "surveyTemplate": "调查模板",
+      "surveyTemplates": "调查模板",
+      "surveys": "调查",
       "threat": "威胁",
       "threatModel": "威胁模型",
+      "threatModels": "威胁模型",
       "threats": "威胁"
     },
     "ok": "确定",
@@ -666,6 +680,40 @@
     },
     "title": "会话即将过期"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "保存失败",
+      "saved": "已保存",
+      "saving": "正在保存..."
+    },
+    "browse": "浏览调查",
+    "confirmation": {
+      "backToSurveys": "返回调查",
+      "message": "您的调查已成功提交。",
+      "title": "调查已提交",
+      "viewResponses": "查看我的回复"
+    },
+    "continueDraft": "继续草稿",
+    "fill": {
+      "submitConfirm": "确定要提交吗？提交后将无法编辑您的回复。",
+      "title": "填写调查"
+    },
+    "myResponses": "我的回复",
+    "noResponses": "您还没有提交任何调查回复",
+    "noSurveys": "暂无可用调查",
+    "saveDraft": "保存草稿",
+    "startNew": "开始调查",
+    "status": {
+      "draft": "草稿",
+      "needsRevision": "需要修订",
+      "readyForReview": "待审核",
+      "reviewCreated": "已创建审核",
+      "submitted": "已提交"
+    },
+    "submitSurvey": "提交调查",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "查看回复"
+  },
   "threatEditor": {
     "createNewThreat": "创建新威胁",
     "notAssociatedWithAsset": "未关联资产",
@@ -880,6 +928,29 @@
       "title": "8. 适用法律"
     },
     "title": "服务条款"
+  },
+  "triage": {
+    "bulkActions": "批量操作",
+    "changeStatus": "更改状态",
+    "createTm": "创建威胁模型",
+    "detail": {
+      "noResponses": "无回复记录",
+      "responseDetails": "回复详情",
+      "statusTimeline": "状态时间线",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "所有状态",
+      "allTemplates": "所有模板",
+      "clearFilters": "清除筛选"
+    },
+    "markInReview": "标记为审核中",
+    "markPendingTriage": "标记为待分诊",
+    "noResponses": "暂无待分诊回复",
+    "queue": "分诊队列",
+    "returnToSubmitted": "返回已提交",
+    "title": "分诊",
+    "viewDetails": "查看详情"
   },
   "userPreferences": {
     "administration": {

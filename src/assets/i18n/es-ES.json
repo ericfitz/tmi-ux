@@ -176,6 +176,10 @@
         "description": "Configurar cuotas y límites de recursos",
         "title": "{{admin.quotas.title}}"
       },
+      "surveys": {
+        "description": "Crear y gestionar plantillas de encuestas",
+        "title": "{{common.objectTypes.surveyTemplates}}"
+      },
       "users": {
         "description": "Ver y gestionar cuentas de usuario",
         "title": "{{admin.users.title}}"
@@ -360,17 +364,27 @@
       "asset": "Activo",
       "assets": "Activos",
       "cell": "Celda",
+      "cells": "Celdas",
       "diagram": "Diagrama",
+      "diagrams": "Diagramas",
       "document": "Documento",
       "documents": "Documentos",
       "metadata": "{{common.metadata}}",
       "note": "Nota",
       "notes": "Notas",
       "report": "Informe",
+      "reports": "Informes",
       "repositories": "Repositorios",
       "repository": "Repositorio",
+      "survey": "Encuesta",
+      "surveyResponse": "Respuesta de Encuesta",
+      "surveyResponses": "Respuestas de Encuesta",
+      "surveyTemplate": "Plantilla de Encuesta",
+      "surveyTemplates": "Plantillas de Encuesta",
+      "surveys": "Encuestas",
       "threat": "Amenaza",
       "threatModel": "Modelo de Amenazas",
+      "threatModels": "Modelos de Amenazas",
       "threats": "Amenazas"
     },
     "ok": "Aceptar",
@@ -666,6 +680,40 @@
     },
     "title": "La Sesión Expirará Pronto"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "Error al guardar",
+      "saved": "Guardado",
+      "saving": "Guardando..."
+    },
+    "browse": "Explorar Encuestas",
+    "confirmation": {
+      "backToSurveys": "Volver a Encuestas",
+      "message": "Su encuesta ha sido enviada correctamente.",
+      "title": "Encuesta Enviada",
+      "viewResponses": "Ver Mis Respuestas"
+    },
+    "continueDraft": "Continuar Borrador",
+    "fill": {
+      "submitConfirm": "¿Está seguro de que desea enviar? No podrá editar sus respuestas después de enviar.",
+      "title": "Completar Encuesta"
+    },
+    "myResponses": "Mis Respuestas",
+    "noResponses": "Aún no ha enviado ninguna respuesta de encuesta",
+    "noSurveys": "No hay encuestas disponibles",
+    "saveDraft": "Guardar Borrador",
+    "startNew": "Iniciar Encuesta",
+    "status": {
+      "draft": "Borrador",
+      "needsRevision": "Necesita Revisión",
+      "readyForReview": "Listo para Revisar",
+      "reviewCreated": "Revisión Creada",
+      "submitted": "Enviado"
+    },
+    "submitSurvey": "Enviar Encuesta",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "Ver Respuesta"
+  },
   "threatEditor": {
     "createNewThreat": "Crear Nueva Amenaza",
     "notAssociatedWithAsset": "No asociado con un activo",
@@ -880,6 +928,29 @@
       "title": "8. Ley Aplicable"
     },
     "title": "Términos de Servicio"
+  },
+  "triage": {
+    "bulkActions": "Acciones Masivas",
+    "changeStatus": "Cambiar Estado",
+    "createTm": "Crear Modelo de Amenazas",
+    "detail": {
+      "noResponses": "No hay respuestas registradas",
+      "responseDetails": "Detalles de Respuesta",
+      "statusTimeline": "Cronología de Estados",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "Todos los Estados",
+      "allTemplates": "Todas las Plantillas",
+      "clearFilters": "Limpiar Filtros"
+    },
+    "markInReview": "Marcar en Revisión",
+    "markPendingTriage": "Marcar Pendiente de Clasificación",
+    "noResponses": "No hay respuestas para clasificar",
+    "queue": "Cola de Clasificación",
+    "returnToSubmitted": "Devolver a Enviado",
+    "title": "Clasificación",
+    "viewDetails": "Ver Detalles"
   },
   "userPreferences": {
     "administration": {

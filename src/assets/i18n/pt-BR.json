@@ -176,6 +176,10 @@
         "description": "Configurar cotas de recursos e limites",
         "title": "{{admin.quotas.title}}"
       },
+      "surveys": {
+        "description": "Criar e gerenciar modelos de pesquisa",
+        "title": "{{common.objectTypes.surveyTemplates}}"
+      },
       "users": {
         "description": "Visualizar e gerenciar contas de usuarios",
         "title": "{{admin.users.title}}"
@@ -360,17 +364,27 @@
       "asset": "Ativo",
       "assets": "Ativos",
       "cell": "Celula",
+      "cells": "Células",
       "diagram": "Diagrama",
+      "diagrams": "Diagramas",
       "document": "Documento",
       "documents": "Documentos",
       "metadata": "{{common.metadata}}",
       "note": "Nota",
       "notes": "Notas",
       "report": "Relatorio",
+      "reports": "Relatórios",
       "repositories": "Repositorios",
       "repository": "Repositorio",
+      "survey": "Pesquisa",
+      "surveyResponse": "Resposta de Pesquisa",
+      "surveyResponses": "Respostas de Pesquisa",
+      "surveyTemplate": "Modelo de Pesquisa",
+      "surveyTemplates": "Modelos de Pesquisa",
+      "surveys": "Pesquisas",
       "threat": "Ameaca",
       "threatModel": "Modelo de Ameacas",
+      "threatModels": "Modelos de Ameaça",
       "threats": "Ameacas"
     },
     "ok": "OK",
@@ -666,6 +680,40 @@
     },
     "title": "Sessao Expirando em Breve"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "Falha ao salvar",
+      "saved": "Salvo",
+      "saving": "Salvando..."
+    },
+    "browse": "Navegar Pesquisas",
+    "confirmation": {
+      "backToSurveys": "Voltar para Pesquisas",
+      "message": "Sua pesquisa foi enviada com sucesso.",
+      "title": "Pesquisa Enviada",
+      "viewResponses": "Ver Minhas Respostas"
+    },
+    "continueDraft": "Continuar Rascunho",
+    "fill": {
+      "submitConfirm": "Tem certeza que deseja enviar? Você não poderá editar suas respostas após o envio.",
+      "title": "Preencher Pesquisa"
+    },
+    "myResponses": "Minhas Respostas",
+    "noResponses": "Você ainda não enviou nenhuma resposta de pesquisa",
+    "noSurveys": "Nenhuma pesquisa disponível",
+    "saveDraft": "Salvar Rascunho",
+    "startNew": "Iniciar Pesquisa",
+    "status": {
+      "draft": "Rascunho",
+      "needsRevision": "Precisa Revisão",
+      "readyForReview": "Pronto para Revisão",
+      "reviewCreated": "Revisão Criada",
+      "submitted": "Enviado"
+    },
+    "submitSurvey": "Enviar Pesquisa",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "Ver Resposta"
+  },
   "threatEditor": {
     "createNewThreat": "Criar Nova Ameaca",
     "notAssociatedWithAsset": "Nao associado a um ativo",
@@ -880,6 +928,29 @@
       "title": "8. Lei Aplicavel"
     },
     "title": "Termos de Servico"
+  },
+  "triage": {
+    "bulkActions": "Ações em Lote",
+    "changeStatus": "Alterar Status",
+    "createTm": "Criar Modelo de Ameaça",
+    "detail": {
+      "noResponses": "Nenhuma resposta registrada",
+      "responseDetails": "Detalhes da Resposta",
+      "statusTimeline": "Linha do Tempo de Status",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "Todos os Status",
+      "allTemplates": "Todos os Modelos",
+      "clearFilters": "Limpar Filtros"
+    },
+    "markInReview": "Marcar em Revisão",
+    "markPendingTriage": "Marcar Triagem Pendente",
+    "noResponses": "Nenhuma resposta para triagem",
+    "queue": "Fila de Triagem",
+    "returnToSubmitted": "Retornar para Enviado",
+    "title": "Triagem",
+    "viewDetails": "Ver Detalhes"
   },
   "userPreferences": {
     "administration": {

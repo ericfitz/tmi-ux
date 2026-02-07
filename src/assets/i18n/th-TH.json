@@ -176,6 +176,10 @@
         "description": "กำหนดค่าโควตาทรัพยากรและข้อจำกัด",
         "title": "{{admin.quotas.title}}"
       },
+      "surveys": {
+        "description": "สร้างและจัดการแม่แบบแบบสำรวจ",
+        "title": "{{common.objectTypes.surveyTemplates}}"
+      },
       "users": {
         "description": "ดูและจัดการบัญชีผู้ใช้",
         "title": "{{admin.users.title}}"
@@ -360,17 +364,27 @@
       "asset": "สินทรัพย์",
       "assets": "สินทรัพย์",
       "cell": "เซลล์",
+      "cells": "เซลล์",
       "diagram": "แผนภาพ",
+      "diagrams": "แผนภาพ",
       "document": "เอกสาร",
       "documents": "เอกสาร",
       "metadata": "{{common.metadata}}",
       "note": "หมายเหตุ",
       "notes": "หมายเหตุ",
       "report": "รายงาน",
+      "reports": "รายงาน",
       "repositories": "ที่เก็บ",
       "repository": "ที่เก็บ",
+      "survey": "แบบสำรวจ",
+      "surveyResponse": "คำตอบแบบสำรวจ",
+      "surveyResponses": "คำตอบแบบสำรวจ",
+      "surveyTemplate": "แม่แบบแบบสำรวจ",
+      "surveyTemplates": "แม่แบบแบบสำรวจ",
+      "surveys": "แบบสำรวจ",
       "threat": "ภัยคุกคาม",
       "threatModel": "โมเดลภัยคุกคาม",
+      "threatModels": "โมเดลภัยคุกคาม",
       "threats": "ภัยคุกคาม"
     },
     "ok": "ตกลง",
@@ -666,6 +680,40 @@
     },
     "title": "เซสชันกำลังจะหมดอายุ"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "บันทึกล้มเหลว",
+      "saved": "บันทึกแล้ว",
+      "saving": "กำลังบันทึก..."
+    },
+    "browse": "เรียกดูแบบสำรวจ",
+    "confirmation": {
+      "backToSurveys": "กลับไปยังแบบสำรวจ",
+      "message": "แบบสำรวจของคุณถูกส่งเรียบร้อยแล้ว",
+      "title": "ส่งแบบสำรวจแล้ว",
+      "viewResponses": "ดูคำตอบของฉัน"
+    },
+    "continueDraft": "ทำร่างต่อ",
+    "fill": {
+      "submitConfirm": "คุณแน่ใจหรือไม่ว่าต้องการส่ง? คุณจะไม่สามารถแก้ไขคำตอบของคุณได้หลังจากส่งแล้ว",
+      "title": "กรอกแบบสำรวจ"
+    },
+    "myResponses": "คำตอบของฉัน",
+    "noResponses": "คุณยังไม่ได้ส่งคำตอบแบบสำรวจใดๆ",
+    "noSurveys": "ไม่มีแบบสำรวจที่พร้อมใช้งาน",
+    "saveDraft": "บันทึกร่าง",
+    "startNew": "เริ่มแบบสำรวจ",
+    "status": {
+      "draft": "ร่าง",
+      "needsRevision": "ต้องแก้ไข",
+      "readyForReview": "พร้อมตรวจสอบ",
+      "reviewCreated": "สร้างการตรวจสอบแล้ว",
+      "submitted": "ส่งแล้ว"
+    },
+    "submitSurvey": "ส่งแบบสำรวจ",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "ดูคำตอบ"
+  },
   "threatEditor": {
     "createNewThreat": "สร้างภัยคุกคามใหม่",
     "notAssociatedWithAsset": "ไม่เชื่อมโยงกับสินทรัพย์",
@@ -880,6 +928,29 @@
       "title": "8. กฎหมายที่ใช้บังคับ"
     },
     "title": "เงื่อนไขการให้บริการ"
+  },
+  "triage": {
+    "bulkActions": "การดำเนินการเป็นชุด",
+    "changeStatus": "เปลี่ยนสถานะ",
+    "createTm": "สร้างโมเดลภัยคุกคาม",
+    "detail": {
+      "noResponses": "ไม่มีการบันทึกคำตอบ",
+      "responseDetails": "รายละเอียดคำตอบ",
+      "statusTimeline": "ไทม์ไลน์สถานะ",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "สถานะทั้งหมด",
+      "allTemplates": "แม่แบบทั้งหมด",
+      "clearFilters": "ล้างตัวกรอง"
+    },
+    "markInReview": "ทำเครื่องหมายว่ากำลังตรวจสอบ",
+    "markPendingTriage": "ทำเครื่องหมายว่ารอคัดกรอง",
+    "noResponses": "ไม่มีคำตอบที่ต้องคัดกรอง",
+    "queue": "คิวคัดกรอง",
+    "returnToSubmitted": "ส่งกลับไปยังสถานะที่ส่งแล้ว",
+    "title": "คัดกรอง",
+    "viewDetails": "ดูรายละเอียด"
   },
   "userPreferences": {
     "administration": {

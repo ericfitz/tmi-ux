@@ -176,6 +176,10 @@
         "description": "Настройка квот и лимитов ресурсов",
         "title": "{{admin.quotas.title}}"
       },
+      "surveys": {
+        "description": "Создание и управление шаблонами опросов",
+        "title": "{{common.objectTypes.surveyTemplates}}"
+      },
       "users": {
         "description": "Просмотр и управление учётными записями пользователей",
         "title": "{{admin.users.title}}"
@@ -360,17 +364,27 @@
       "asset": "Актив",
       "assets": "Активы",
       "cell": "Ячейка",
+      "cells": "Ячейки",
       "diagram": "Диаграмма",
+      "diagrams": "Диаграммы",
       "document": "Документ",
       "documents": "Документы",
       "metadata": "{{common.metadata}}",
       "note": "Заметка",
       "notes": "Заметки",
       "report": "Отчёт",
+      "reports": "Отчеты",
       "repositories": "Репозитории",
       "repository": "Репозиторий",
+      "survey": "Опрос",
+      "surveyResponse": "Ответ на опрос",
+      "surveyResponses": "Ответы на опросы",
+      "surveyTemplate": "Шаблон опроса",
+      "surveyTemplates": "Шаблоны опросов",
+      "surveys": "Опросы",
       "threat": "Угроза",
       "threatModel": "Модель Угроз",
+      "threatModels": "Модели угроз",
       "threats": "Угрозы"
     },
     "ok": "ОК",
@@ -666,6 +680,40 @@
     },
     "title": "Сеанс Скоро Истечёт"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "Ошибка сохранения",
+      "saved": "Сохранено",
+      "saving": "Сохранение..."
+    },
+    "browse": "Обзор опросов",
+    "confirmation": {
+      "backToSurveys": "Вернуться к опросам",
+      "message": "Ваш опрос успешно отправлен.",
+      "title": "Опрос отправлен",
+      "viewResponses": "Просмотреть мои ответы"
+    },
+    "continueDraft": "Продолжить черновик",
+    "fill": {
+      "submitConfirm": "Вы уверены, что хотите отправить? После отправки вы не сможете редактировать свои ответы.",
+      "title": "Заполнить опрос"
+    },
+    "myResponses": "Мои ответы",
+    "noResponses": "Вы еще не отправили ни одного ответа на опрос",
+    "noSurveys": "Нет доступных опросов",
+    "saveDraft": "Сохранить черновик",
+    "startNew": "Начать опрос",
+    "status": {
+      "draft": "Черновик",
+      "needsRevision": "Требуется доработка",
+      "readyForReview": "Готово к проверке",
+      "reviewCreated": "Проверка создана",
+      "submitted": "Отправлено"
+    },
+    "submitSurvey": "Отправить опрос",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "Просмотреть ответ"
+  },
   "threatEditor": {
     "createNewThreat": "Создать новую угрозу",
     "notAssociatedWithAsset": "Не связано с активом",
@@ -880,6 +928,29 @@
       "title": "8. Применимое Право"
     },
     "title": "Условия Использования"
+  },
+  "triage": {
+    "bulkActions": "Массовые действия",
+    "changeStatus": "Изменить статус",
+    "createTm": "Создать модель угроз",
+    "detail": {
+      "noResponses": "Ответы не записаны",
+      "responseDetails": "Детали ответа",
+      "statusTimeline": "Хронология статусов",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "Все статусы",
+      "allTemplates": "Все шаблоны",
+      "clearFilters": "Очистить фильтры"
+    },
+    "markInReview": "Отметить на проверке",
+    "markPendingTriage": "Отметить ожидающим сортировки",
+    "noResponses": "Нет ответов для сортировки",
+    "queue": "Очередь сортировки",
+    "returnToSubmitted": "Вернуть в отправленные",
+    "title": "Сортировка",
+    "viewDetails": "Просмотреть детали"
   },
   "userPreferences": {
     "administration": {

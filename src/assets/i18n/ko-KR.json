@@ -176,6 +176,10 @@
         "description": "리소스 할당량 및 제한 구성",
         "title": "{{admin.quotas.title}}"
       },
+      "surveys": {
+        "description": "설문 템플릿 생성 및 관리",
+        "title": "{{common.objectTypes.surveyTemplates}}"
+      },
       "users": {
         "description": "사용자 계정 보기 및 관리",
         "title": "{{admin.users.title}}"
@@ -360,17 +364,27 @@
       "asset": "자산",
       "assets": "자산",
       "cell": "셀",
+      "cells": "셀",
       "diagram": "다이어그램",
+      "diagrams": "다이어그램",
       "document": "문서",
       "documents": "문서",
       "metadata": "{{common.metadata}}",
       "note": "노트",
       "notes": "노트",
       "report": "보고서",
+      "reports": "보고서",
       "repositories": "저장소",
       "repository": "저장소",
+      "survey": "설문",
+      "surveyResponse": "설문 응답",
+      "surveyResponses": "설문 응답",
+      "surveyTemplate": "설문 템플릿",
+      "surveyTemplates": "설문 템플릿",
+      "surveys": "설문",
       "threat": "위협",
       "threatModel": "위협 모델",
+      "threatModels": "위협 모델",
       "threats": "위협"
     },
     "ok": "확인",
@@ -666,6 +680,40 @@
     },
     "title": "세션이 곧 만료됩니다"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "저장 실패",
+      "saved": "저장됨",
+      "saving": "저장 중..."
+    },
+    "browse": "설문 찾아보기",
+    "confirmation": {
+      "backToSurveys": "설문 목록으로",
+      "message": "설문이 성공적으로 제출되었습니다.",
+      "title": "설문 제출 완료",
+      "viewResponses": "내 응답 보기"
+    },
+    "continueDraft": "임시 저장본 계속하기",
+    "fill": {
+      "submitConfirm": "제출하시겠습니까? 제출 후에는 응답을 수정할 수 없습니다.",
+      "title": "설문 작성"
+    },
+    "myResponses": "내 응답",
+    "noResponses": "아직 제출한 설문 응답이 없습니다",
+    "noSurveys": "사용 가능한 설문이 없습니다",
+    "saveDraft": "임시 저장",
+    "startNew": "설문 시작",
+    "status": {
+      "draft": "임시 저장",
+      "needsRevision": "수정 필요",
+      "readyForReview": "검토 준비 완료",
+      "reviewCreated": "검토 생성됨",
+      "submitted": "제출됨"
+    },
+    "submitSurvey": "설문 제출",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "응답 보기"
+  },
   "threatEditor": {
     "createNewThreat": "새 위협 생성",
     "notAssociatedWithAsset": "자산과 연결되지 않음",
@@ -880,6 +928,29 @@
       "title": "8. 준거법"
     },
     "title": "서비스 약관"
+  },
+  "triage": {
+    "bulkActions": "일괄 작업",
+    "changeStatus": "상태 변경",
+    "createTm": "위협 모델 생성",
+    "detail": {
+      "noResponses": "기록된 응답 없음",
+      "responseDetails": "응답 세부 정보",
+      "statusTimeline": "상태 타임라인",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "모든 상태",
+      "allTemplates": "모든 템플릿",
+      "clearFilters": "필터 지우기"
+    },
+    "markInReview": "검토 중으로 표시",
+    "markPendingTriage": "트리아지 대기로 표시",
+    "noResponses": "트리아지할 응답이 없습니다",
+    "queue": "트리아지 대기열",
+    "returnToSubmitted": "제출됨으로 되돌리기",
+    "title": "트리아지",
+    "viewDetails": "세부 정보 보기"
   },
   "userPreferences": {
     "administration": {

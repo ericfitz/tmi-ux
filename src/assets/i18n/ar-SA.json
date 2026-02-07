@@ -176,6 +176,10 @@
         "description": "تكوين حصص الموارد والحدود",
         "title": "{{admin.quotas.title}}"
       },
+      "surveys": {
+        "description": "إنشاء وإدارة قوالب الاستبيانات",
+        "title": "{{common.objectTypes.surveyTemplates}}"
+      },
       "users": {
         "description": "عرض وإدارة حسابات المستخدمين",
         "title": "{{admin.users.title}}"
@@ -360,17 +364,27 @@
       "asset": "أصل",
       "assets": "أصول",
       "cell": "خلية",
+      "cells": "الخلايا",
       "diagram": "مخطط",
+      "diagrams": "المخططات",
       "document": "وثيقة",
       "documents": "وثائق",
       "metadata": "{{common.metadata}}",
       "note": "ملاحظة",
       "notes": "ملاحظات",
       "report": "تقرير",
+      "reports": "التقارير",
       "repositories": "مستودعات",
       "repository": "مستودع",
+      "survey": "استبيان",
+      "surveyResponse": "رد على الاستبيان",
+      "surveyResponses": "ردود الاستبيانات",
+      "surveyTemplate": "قالب الاستبيان",
+      "surveyTemplates": "قوالب الاستبيانات",
+      "surveys": "الاستبيانات",
       "threat": "تهديد",
       "threatModel": "نموذج التهديد",
+      "threatModels": "نماذج التهديدات",
       "threats": "التهديدات"
     },
     "ok": "موافق",
@@ -666,6 +680,40 @@
     },
     "title": "الجلسة على وشك الانتهاء"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "فشل الحفظ",
+      "saved": "تم الحفظ",
+      "saving": "جاري الحفظ..."
+    },
+    "browse": "تصفح الاستبيانات",
+    "confirmation": {
+      "backToSurveys": "العودة إلى الاستبيانات",
+      "message": "تم تقديم الاستبيان بنجاح.",
+      "title": "تم تقديم الاستبيان",
+      "viewResponses": "عرض ردودي"
+    },
+    "continueDraft": "متابعة المسودة",
+    "fill": {
+      "submitConfirm": "هل أنت متأكد من أنك تريد التقديم؟ لن تتمكن من تعديل ردودك بعد التقديم.",
+      "title": "تعبئة الاستبيان"
+    },
+    "myResponses": "ردودي",
+    "noResponses": "لم تقدم أي ردود على الاستبيانات بعد",
+    "noSurveys": "لا توجد استبيانات متاحة",
+    "saveDraft": "حفظ كمسودة",
+    "startNew": "بدء الاستبيان",
+    "status": {
+      "draft": "مسودة",
+      "needsRevision": "يحتاج إلى مراجعة",
+      "readyForReview": "جاهز للمراجعة",
+      "reviewCreated": "تم إنشاء المراجعة",
+      "submitted": "تم التقديم"
+    },
+    "submitSurvey": "تقديم الاستبيان",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "عرض الرد"
+  },
   "threatEditor": {
     "createNewThreat": "إنشاء تهديد جديد",
     "notAssociatedWithAsset": "غير مرتبط بأصل",
@@ -880,6 +928,29 @@
       "title": "8. القانون الحاكم"
     },
     "title": "شروط الخدمة"
+  },
+  "triage": {
+    "bulkActions": "إجراءات مجمعة",
+    "changeStatus": "تغيير الحالة",
+    "createTm": "إنشاء نموذج تهديد",
+    "detail": {
+      "noResponses": "لم يتم تسجيل أي ردود",
+      "responseDetails": "تفاصيل الرد",
+      "statusTimeline": "جدول الحالة الزمني",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "جميع الحالات",
+      "allTemplates": "جميع القوالب",
+      "clearFilters": "مسح المرشحات"
+    },
+    "markInReview": "وضع علامة قيد المراجعة",
+    "markPendingTriage": "وضع علامة في انتظار الفرز",
+    "noResponses": "لا توجد ردود للفرز",
+    "queue": "قائمة انتظار الفرز",
+    "returnToSubmitted": "الإرجاع إلى مقدم",
+    "title": "الفرز",
+    "viewDetails": "عرض التفاصيل"
   },
   "userPreferences": {
     "administration": {

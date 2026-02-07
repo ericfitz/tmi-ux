@@ -185,13 +185,13 @@
         "description": "Configure resource quotas and limits",
         "title": "{{admin.quotas.title}}"
       },
-      "users": {
-        "description": "View and manage user accounts",
-        "title": "{{admin.users.title}}"
-      },
       "surveys": {
         "description": "Create and manage survey templates",
         "title": "{{common.objectTypes.surveyTemplates}}"
+      },
+      "users": {
+        "description": "View and manage user accounts",
+        "title": "{{admin.users.title}}"
       },
       "webhooks": {
         "description": "Install and configure webhook integrations",
@@ -397,11 +397,11 @@
       "repositories": "Repositories",
       "repository": "Repository",
       "survey": "Survey",
-      "surveys": "Surveys",
-      "surveyTemplate": "Survey Template",
-      "surveyTemplates": "Survey Templates",
       "surveyResponse": "Survey Response",
       "surveyResponses": "Survey Responses",
+      "surveyTemplate": "Survey Template",
+      "surveyTemplates": "Survey Templates",
+      "surveys": "Surveys",
       "threat": "Threat",
       "threatModel": "Threat Model",
       "threatModels": "Threat Models",
@@ -704,38 +704,38 @@
     "title": "Session Expiring Soon"
   },
   "surveys": {
-    "title": "{{common.objectTypes.surveys}}",
+    "autoSave": {
+      "error": "Save failed",
+      "saved": "Saved",
+      "saving": "Saving..."
+    },
     "browse": "Browse Surveys",
-    "myResponses": "My Responses",
-    "startNew": "Start Survey",
+    "confirmation": {
+      "backToSurveys": "Back to Surveys",
+      "message": "Your survey has been submitted successfully.",
+      "title": "Survey Submitted",
+      "viewResponses": "View My Responses"
+    },
     "continueDraft": "Continue Draft",
-    "submitSurvey": "Submit Survey",
-    "saveDraft": "Save Draft",
-    "viewResponse": "View Response",
-    "noSurveys": "No surveys available",
+    "fill": {
+      "submitConfirm": "Are you sure you want to submit? You won't be able to edit your responses after submitting.",
+      "title": "Fill Survey"
+    },
+    "myResponses": "My Responses",
     "noResponses": "You haven't submitted any survey responses yet",
+    "noSurveys": "No surveys available",
+    "saveDraft": "Save Draft",
+    "startNew": "Start Survey",
     "status": {
       "draft": "Draft",
-      "submitted": "Submitted",
       "needsRevision": "Needs Revision",
       "readyForReview": "Ready for Review",
-      "reviewCreated": "Review Created"
+      "reviewCreated": "Review Created",
+      "submitted": "Submitted"
     },
-    "autoSave": {
-      "saving": "Saving...",
-      "saved": "Saved",
-      "error": "Save failed"
-    },
-    "confirmation": {
-      "title": "Survey Submitted",
-      "message": "Your survey has been submitted successfully.",
-      "viewResponses": "View My Responses",
-      "backToSurveys": "Back to Surveys"
-    },
-    "fill": {
-      "title": "Fill Survey",
-      "submitConfirm": "Are you sure you want to submit? You won't be able to edit your responses after submitting."
-    }
+    "submitSurvey": "Submit Survey",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "View Response"
   },
   "threatEditor": {
     "createNewThreat": "Create New Threat",
@@ -957,27 +957,27 @@
     "title": "Terms of Service"
   },
   "triage": {
-    "title": "Triage",
-    "queue": "Triage Queue",
-    "viewDetails": "View Details",
+    "bulkActions": "Bulk Actions",
     "changeStatus": "Change Status",
     "createTm": "Create Threat Model",
-    "markInReview": "Mark In Review",
-    "markPendingTriage": "Mark Pending Triage",
-    "returnToSubmitted": "Return to Submitted",
-    "noResponses": "No responses to triage",
-    "bulkActions": "Bulk Actions",
+    "detail": {
+      "noResponses": "No responses recorded",
+      "responseDetails": "Response Details",
+      "statusTimeline": "Status Timeline",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
     "filters": {
       "allStatuses": "All Statuses",
       "allTemplates": "All Templates",
       "clearFilters": "Clear Filters"
     },
-    "detail": {
-      "responseDetails": "Response Details",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
-      "noResponses": "No responses recorded",
-      "statusTimeline": "Status Timeline"
-    }
+    "markInReview": "Mark In Review",
+    "markPendingTriage": "Mark Pending Triage",
+    "noResponses": "No responses to triage",
+    "queue": "Triage Queue",
+    "returnToSubmitted": "Return to Submitted",
+    "title": "Triage",
+    "viewDetails": "View Details"
   },
   "userPreferences": {
     "administration": {

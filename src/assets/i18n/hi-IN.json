@@ -176,6 +176,10 @@
         "description": "संसाधन कोटा और सीमाएं कॉन्फ़िगर करें",
         "title": "{{admin.quotas.title}}"
       },
+      "surveys": {
+        "description": "सर्वेक्षण टेम्पलेट बनाएं और प्रबंधित करें",
+        "title": "{{common.objectTypes.surveyTemplates}}"
+      },
       "users": {
         "description": "उपयोगकर्ता खातों को देखें और प्रबंधित करें",
         "title": "{{admin.users.title}}"
@@ -322,7 +326,7 @@
     "deleteWarningConfirmationField": "हटाने की पुष्टि",
     "deleteWarningConfirmationMatch": "पुष्टि टेक्स्ट मेल खाता है",
     "deleteWarningConfirmationMismatch": "पुष्टि टेक्स्ट मेल नहीं खाता",
-    "deleteWarningConfirmationValue": "gone forever",
+    "deleteWarningConfirmationValue": "हमेशा के लिए चला गया",
     "deleteWarningPermanent": "यह क्रिया पूर्ववत नहीं की जा सकती और {{objectType}} तथा इससे जुड़े सभी मेटाडेटा को स्थायी रूप से हटा देगी।",
     "deleteWarningReferenceOnly": "TMI के बाहर संग्रहीत ऑब्जेक्ट्स जैसे डॉक्यूमेंट्स और रिपॉजिटरीज़ के लिए, केवल ऑब्जेक्ट का TMI संदर्भ हटाया जाएगा।",
     "deleteWarningSubEntities": "सभी संबंधित TMI एंटिटीज़ जैसे डायग्राम, थ्रेट्स और नोट्स भी स्थायी रूप से हटा दी जाएंगी।",
@@ -335,7 +339,7 @@
     "editThreat": "खतरा संपादित करें",
     "emailLabel": "ईमेल पता",
     "fonts": "फ़ॉन्ट्स",
-    "id": "ID",
+    "id": "आईडी",
     "identityProvider": "पहचान प्रदाता",
     "issueUri": "समस्या URL",
     "language": "{{language}}",
@@ -360,17 +364,27 @@
       "asset": "एसेट",
       "assets": "एसेट्स",
       "cell": "सेल",
+      "cells": "सेल",
       "diagram": "डायग्राम",
+      "diagrams": "आरेख",
       "document": "दस्तावेज़",
       "documents": "दस्तावेज़",
       "metadata": "{{common.metadata}}",
       "note": "नोट",
       "notes": "नोट्स",
       "report": "रिपोर्ट",
+      "reports": "रिपोर्ट",
       "repositories": "रिपॉजिटरीज",
       "repository": "रिपॉजिटरी",
+      "survey": "सर्वेक्षण",
+      "surveyResponse": "सर्वेक्षण प्रतिक्रिया",
+      "surveyResponses": "सर्वेक्षण प्रतिक्रियाएं",
+      "surveyTemplate": "सर्वेक्षण टेम्पलेट",
+      "surveyTemplates": "सर्वेक्षण टेम्पलेट",
+      "surveys": "सर्वेक्षण",
       "threat": "खतरा",
       "threatModel": "थ्रेट मॉडल",
+      "threatModels": "खतरा मॉडल",
       "threats": "खतरे"
     },
     "ok": "ठीक है",
@@ -666,6 +680,40 @@
     },
     "title": "सत्र जल्द समाप्त हो रहा है"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "सहेजना विफल",
+      "saved": "सहेजा गया",
+      "saving": "सहेजा जा रहा है..."
+    },
+    "browse": "सर्वेक्षण ब्राउज़ करें",
+    "confirmation": {
+      "backToSurveys": "सर्वेक्षण पर वापस जाएं",
+      "message": "आपका सर्वेक्षण सफलतापूर्वक सबमिट किया गया है।",
+      "title": "सर्वेक्षण सबमिट किया गया",
+      "viewResponses": "मेरी प्रतिक्रियाएं देखें"
+    },
+    "continueDraft": "ड्राफ्ट जारी रखें",
+    "fill": {
+      "submitConfirm": "क्या आप निश्चित हैं कि आप सबमिट करना चाहते हैं? सबमिट करने के बाद आप अपनी प्रतिक्रियाओं को संपादित नहीं कर पाएंगे।",
+      "title": "सर्वेक्षण भरें"
+    },
+    "myResponses": "मेरी प्रतिक्रियाएं",
+    "noResponses": "आपने अभी तक कोई सर्वेक्षण प्रतिक्रिया सबमिट नहीं की है",
+    "noSurveys": "कोई सर्वेक्षण उपलब्ध नहीं है",
+    "saveDraft": "ड्राफ्ट सहेजें",
+    "startNew": "सर्वेक्षण शुरू करें",
+    "status": {
+      "draft": "ड्राफ्ट",
+      "needsRevision": "संशोधन आवश्यक",
+      "readyForReview": "समीक्षा के लिए तैयार",
+      "reviewCreated": "समीक्षा बनाई गई",
+      "submitted": "सबमिट किया गया"
+    },
+    "submitSurvey": "सर्वेक्षण सबमिट करें",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "प्रतिक्रिया देखें"
+  },
   "threatEditor": {
     "createNewThreat": "नया खतरा बनाएं",
     "notAssociatedWithAsset": "किसी एसेट से संबद्ध नहीं",
@@ -880,6 +928,29 @@
       "title": "8. शासकीय कानून"
     },
     "title": "सेवा की शर्तें"
+  },
+  "triage": {
+    "bulkActions": "बल्क एक्शन",
+    "changeStatus": "स्थिति बदलें",
+    "createTm": "खतरा मॉडल बनाएं",
+    "detail": {
+      "noResponses": "कोई प्रतिक्रिया दर्ज नहीं की गई",
+      "responseDetails": "प्रतिक्रिया विवरण",
+      "statusTimeline": "स्थिति समयरेखा",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "सभी स्थितियां",
+      "allTemplates": "सभी टेम्पलेट",
+      "clearFilters": "फ़िल्टर साफ़ करें"
+    },
+    "markInReview": "समीक्षा में चिह्नित करें",
+    "markPendingTriage": "लंबित ट्राइएज चिह्नित करें",
+    "noResponses": "ट्राइएज करने के लिए कोई प्रतिक्रिया नहीं",
+    "queue": "ट्राइएज कतार",
+    "returnToSubmitted": "सबमिट किया गया पर वापस जाएं",
+    "title": "ट्राइएज",
+    "viewDetails": "विवरण देखें"
   },
   "userPreferences": {
     "administration": {

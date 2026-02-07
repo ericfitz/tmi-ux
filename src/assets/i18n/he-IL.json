@@ -176,6 +176,10 @@
         "description": "הגדר מכסות ומגבלות משאבים",
         "title": "{{admin.quotas.title}}"
       },
+      "surveys": {
+        "description": "צור ונהל תבניות סקר",
+        "title": "{{common.objectTypes.surveyTemplates}}"
+      },
       "users": {
         "description": "צפה ונהל חשבונות משתמשים",
         "title": "{{admin.users.title}}"
@@ -360,17 +364,27 @@
       "asset": "נכס",
       "assets": "נכסים",
       "cell": "תא",
+      "cells": "תאים",
       "diagram": "דיאגרמה",
+      "diagrams": "דיאגרמות",
       "document": "מסמך",
       "documents": "מסמכים",
       "metadata": "{{common.metadata}}",
       "note": "הערה",
       "notes": "הערות",
       "report": "דוח",
+      "reports": "דוחות",
       "repositories": "מאגרים",
       "repository": "מאגר",
+      "survey": "סקר",
+      "surveyResponse": "תגובת סקר",
+      "surveyResponses": "תגובות סקר",
+      "surveyTemplate": "תבנית סקר",
+      "surveyTemplates": "תבניות סקר",
+      "surveys": "סקרים",
       "threat": "איום",
       "threatModel": "מודל איומים",
+      "threatModels": "מודלי איום",
       "threats": "איומים"
     },
     "ok": "אישור",
@@ -666,6 +680,40 @@
     },
     "title": "ההפעלה עומדת לפוג בקרוב"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "השמירה נכשלה",
+      "saved": "נשמר",
+      "saving": "שומר..."
+    },
+    "browse": "עיון בסקרים",
+    "confirmation": {
+      "backToSurveys": "חזרה לסקרים",
+      "message": "הסקר שלך נשלח בהצלחה.",
+      "title": "הסקר נשלח",
+      "viewResponses": "הצג את התגובות שלי"
+    },
+    "continueDraft": "המשך טיוטה",
+    "fill": {
+      "submitConfirm": "האם אתה בטוח שברצונך לשלוח? לא תוכל לערוך את התגובות שלך לאחר השליחה.",
+      "title": "מילוי סקר"
+    },
+    "myResponses": "התגובות שלי",
+    "noResponses": "עדיין לא שלחת תגובות לסקר",
+    "noSurveys": "אין סקרים זמינים",
+    "saveDraft": "שמור טיוטה",
+    "startNew": "התחל סקר",
+    "status": {
+      "draft": "טיוטה",
+      "needsRevision": "דורש תיקון",
+      "readyForReview": "מוכן לבדיקה",
+      "reviewCreated": "בדיקה נוצרה",
+      "submitted": "נשלח"
+    },
+    "submitSurvey": "שלח סקר",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "הצג תגובה"
+  },
   "threatEditor": {
     "createNewThreat": "צור איום חדש",
     "notAssociatedWithAsset": "לא משויך לנכס",
@@ -880,6 +928,29 @@
       "title": "8. הדין החל"
     },
     "title": "תנאי שימוש"
+  },
+  "triage": {
+    "bulkActions": "פעולות מרובות",
+    "changeStatus": "שנה סטטוס",
+    "createTm": "צור מודל איום",
+    "detail": {
+      "noResponses": "לא נרשמו תגובות",
+      "responseDetails": "פרטי תגובה",
+      "statusTimeline": "ציר זמן סטטוס",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "כל הסטטוסים",
+      "allTemplates": "כל התבניות",
+      "clearFilters": "נקה מסננים"
+    },
+    "markInReview": "סמן בבדיקה",
+    "markPendingTriage": "סמן ממתין לטריאז'",
+    "noResponses": "אין תגובות לטריאז'",
+    "queue": "תור טריאז'",
+    "returnToSubmitted": "החזר לנשלח",
+    "title": "טריאז'",
+    "viewDetails": "הצג פרטים"
   },
   "userPreferences": {
     "administration": {

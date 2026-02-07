@@ -176,6 +176,10 @@
         "description": "リソースクォータと制限の設定",
         "title": "{{admin.quotas.title}}"
       },
+      "surveys": {
+        "description": "調査テンプレートの作成と管理",
+        "title": "{{common.objectTypes.surveyTemplates}}"
+      },
       "users": {
         "description": "ユーザーアカウントの表示と管理",
         "title": "{{admin.users.title}}"
@@ -360,17 +364,27 @@
       "asset": "アセット",
       "assets": "アセット",
       "cell": "セル",
+      "cells": "セル",
       "diagram": "ダイアグラム",
+      "diagrams": "図",
       "document": "ドキュメント",
       "documents": "ドキュメント",
       "metadata": "{{common.metadata}}",
       "note": "ノート",
       "notes": "ノート",
       "report": "レポート",
+      "reports": "レポート",
       "repositories": "リポジトリ",
       "repository": "リポジトリ",
+      "survey": "調査",
+      "surveyResponse": "調査回答",
+      "surveyResponses": "調査回答",
+      "surveyTemplate": "調査テンプレート",
+      "surveyTemplates": "調査テンプレート",
+      "surveys": "調査",
       "threat": "脅威",
       "threatModel": "脅威モデル",
+      "threatModels": "脅威モデル",
       "threats": "脅威"
     },
     "ok": "OK",
@@ -666,6 +680,40 @@
     },
     "title": "セッションがまもなく期限切れになります"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "保存に失敗しました",
+      "saved": "保存済み",
+      "saving": "保存中..."
+    },
+    "browse": "調査を閲覧",
+    "confirmation": {
+      "backToSurveys": "調査に戻る",
+      "message": "調査が正常に送信されました。",
+      "title": "調査を送信しました",
+      "viewResponses": "自分の回答を表示"
+    },
+    "continueDraft": "下書きを続ける",
+    "fill": {
+      "submitConfirm": "送信してもよろしいですか？送信後は回答を編集できなくなります。",
+      "title": "調査に回答"
+    },
+    "myResponses": "自分の回答",
+    "noResponses": "まだ調査回答を送信していません",
+    "noSurveys": "利用可能な調査がありません",
+    "saveDraft": "下書きを保存",
+    "startNew": "調査を開始",
+    "status": {
+      "draft": "下書き",
+      "needsRevision": "要修正",
+      "readyForReview": "レビュー待ち",
+      "reviewCreated": "レビュー作成済み",
+      "submitted": "送信済み"
+    },
+    "submitSurvey": "調査を送信",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "回答を表示"
+  },
   "threatEditor": {
     "createNewThreat": "新しい脅威を作成",
     "notAssociatedWithAsset": "アセットに関連付けられていません",
@@ -880,6 +928,29 @@
       "title": "8. 準拠法"
     },
     "title": "利用規約"
+  },
+  "triage": {
+    "bulkActions": "一括操作",
+    "changeStatus": "ステータスを変更",
+    "createTm": "脅威モデルを作成",
+    "detail": {
+      "noResponses": "記録された回答がありません",
+      "responseDetails": "回答の詳細",
+      "statusTimeline": "ステータスのタイムライン",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "すべてのステータス",
+      "allTemplates": "すべてのテンプレート",
+      "clearFilters": "フィルタをクリア"
+    },
+    "markInReview": "レビュー中に設定",
+    "markPendingTriage": "トリアージ待ちに設定",
+    "noResponses": "トリアージする回答がありません",
+    "queue": "トリアージキュー",
+    "returnToSubmitted": "送信済みに戻す",
+    "title": "トリアージ",
+    "viewDetails": "詳細を表示"
   },
   "userPreferences": {
     "administration": {

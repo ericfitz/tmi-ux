@@ -176,6 +176,10 @@
         "description": "Configurer les quotas et limites de ressources",
         "title": "{{admin.quotas.title}}"
       },
+      "surveys": {
+        "description": "Créer et gérer les modèles d'enquête",
+        "title": "{{common.objectTypes.surveyTemplates}}"
+      },
       "users": {
         "description": "Afficher et gerer les comptes utilisateurs",
         "title": "{{admin.users.title}}"
@@ -360,17 +364,27 @@
       "asset": "Actif",
       "assets": "Actifs",
       "cell": "Cellule",
+      "cells": "Cellules",
       "diagram": "Diagramme",
+      "diagrams": "Diagrammes",
       "document": "Document",
       "documents": "Documents",
       "metadata": "{{common.metadata}}",
       "note": "Note",
       "notes": "Notes",
       "report": "Rapport",
+      "reports": "Rapports",
       "repositories": "Depots",
       "repository": "Depot",
+      "survey": "Enquête",
+      "surveyResponse": "Réponse d'enquête",
+      "surveyResponses": "Réponses d'enquête",
+      "surveyTemplate": "Modèle d'enquête",
+      "surveyTemplates": "Modèles d'enquête",
+      "surveys": "Enquêtes",
       "threat": "Menace",
       "threatModel": "Modele de Menaces",
+      "threatModels": "Modèles de menace",
       "threats": "Menaces"
     },
     "ok": "OK",
@@ -666,6 +680,40 @@
     },
     "title": "La Session Expire Bientot"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "Échec de l'enregistrement",
+      "saved": "Enregistré",
+      "saving": "Enregistrement en cours..."
+    },
+    "browse": "Parcourir les enquêtes",
+    "confirmation": {
+      "backToSurveys": "Retour aux enquêtes",
+      "message": "Votre enquête a été soumise avec succès.",
+      "title": "Enquête soumise",
+      "viewResponses": "Voir mes réponses"
+    },
+    "continueDraft": "Continuer le brouillon",
+    "fill": {
+      "submitConfirm": "Êtes-vous sûr de vouloir soumettre ? Vous ne pourrez plus modifier vos réponses après la soumission.",
+      "title": "Remplir l'enquête"
+    },
+    "myResponses": "Mes réponses",
+    "noResponses": "Vous n'avez encore soumis aucune réponse d'enquête",
+    "noSurveys": "Aucune enquête disponible",
+    "saveDraft": "Enregistrer le brouillon",
+    "startNew": "Commencer l'enquête",
+    "status": {
+      "draft": "Brouillon",
+      "needsRevision": "Nécessite une révision",
+      "readyForReview": "Prêt pour révision",
+      "reviewCreated": "Révision créée",
+      "submitted": "Soumis"
+    },
+    "submitSurvey": "Soumettre l'enquête",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "Voir la réponse"
+  },
   "threatEditor": {
     "createNewThreat": "Creer une nouvelle menace",
     "notAssociatedWithAsset": "Non associe a un actif",
@@ -880,6 +928,29 @@
       "title": "8. Droit Applicable"
     },
     "title": "Conditions d'Utilisation"
+  },
+  "triage": {
+    "bulkActions": "Actions groupées",
+    "changeStatus": "Changer le statut",
+    "createTm": "Créer un modèle de menace",
+    "detail": {
+      "noResponses": "Aucune réponse enregistrée",
+      "responseDetails": "Détails de la réponse",
+      "statusTimeline": "Chronologie des statuts",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "Tous les statuts",
+      "allTemplates": "Tous les modèles",
+      "clearFilters": "Effacer les filtres"
+    },
+    "markInReview": "Marquer en révision",
+    "markPendingTriage": "Marquer en attente de triage",
+    "noResponses": "Aucune réponse à trier",
+    "queue": "File de triage",
+    "returnToSubmitted": "Retourner à soumis",
+    "title": "Triage",
+    "viewDetails": "Voir les détails"
   },
   "userPreferences": {
     "administration": {

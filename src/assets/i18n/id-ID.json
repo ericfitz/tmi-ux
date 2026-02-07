@@ -176,6 +176,10 @@
         "description": "Konfigurasikan kuota dan batas sumber daya",
         "title": "{{admin.quotas.title}}"
       },
+      "surveys": {
+        "description": "Buat dan kelola templat survei",
+        "title": "{{common.objectTypes.surveyTemplates}}"
+      },
       "users": {
         "description": "Lihat dan kelola akun pengguna",
         "title": "{{admin.users.title}}"
@@ -360,17 +364,27 @@
       "asset": "Aset",
       "assets": "Aset",
       "cell": "Sel",
+      "cells": "Sel",
       "diagram": "Diagram",
+      "diagrams": "Diagram",
       "document": "Dokumen",
       "documents": "Dokumen",
       "metadata": "{{common.metadata}}",
       "note": "Catatan",
       "notes": "Catatan",
       "report": "Laporan",
+      "reports": "Laporan",
       "repositories": "Repositori",
       "repository": "Repositori",
+      "survey": "Survei",
+      "surveyResponse": "Respons Survei",
+      "surveyResponses": "Respons Survei",
+      "surveyTemplate": "Templat Survei",
+      "surveyTemplates": "Templat Survei",
+      "surveys": "Survei",
       "threat": "Ancaman",
       "threatModel": "Model Ancaman",
+      "threatModels": "Model Ancaman",
       "threats": "Ancaman"
     },
     "ok": "OK",
@@ -666,6 +680,40 @@
     },
     "title": "Sesi Akan Segera Berakhir"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "Gagal menyimpan",
+      "saved": "Tersimpan",
+      "saving": "Menyimpan..."
+    },
+    "browse": "Jelajahi Survei",
+    "confirmation": {
+      "backToSurveys": "Kembali ke Survei",
+      "message": "Survei Anda berhasil dikirim.",
+      "title": "Survei Terkirim",
+      "viewResponses": "Lihat Respons Saya"
+    },
+    "continueDraft": "Lanjutkan Draf",
+    "fill": {
+      "submitConfirm": "Apakah Anda yakin ingin mengirim? Anda tidak dapat mengedit respons setelah mengirim.",
+      "title": "Isi Survei"
+    },
+    "myResponses": "Respons Saya",
+    "noResponses": "Anda belum mengirim respons survei apa pun",
+    "noSurveys": "Tidak ada survei tersedia",
+    "saveDraft": "Simpan Draf",
+    "startNew": "Mulai Survei",
+    "status": {
+      "draft": "Draf",
+      "needsRevision": "Perlu Revisi",
+      "readyForReview": "Siap Ditinjau",
+      "reviewCreated": "Tinjauan Dibuat",
+      "submitted": "Terkirim"
+    },
+    "submitSurvey": "Kirim Survei",
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "Lihat Respons"
+  },
   "threatEditor": {
     "createNewThreat": "Buat Ancaman Baru",
     "notAssociatedWithAsset": "Tidak terkait dengan aset",
@@ -880,6 +928,29 @@
       "title": "8. Hukum yang Berlaku"
     },
     "title": "Ketentuan Layanan"
+  },
+  "triage": {
+    "bulkActions": "Tindakan Massal",
+    "changeStatus": "Ubah Status",
+    "createTm": "Buat Model Ancaman",
+    "detail": {
+      "noResponses": "Tidak ada respons tercatat",
+      "responseDetails": "Detail Respons",
+      "statusTimeline": "Linimasa Status",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    },
+    "filters": {
+      "allStatuses": "Semua Status",
+      "allTemplates": "Semua Templat",
+      "clearFilters": "Hapus Filter"
+    },
+    "markInReview": "Tandai Sedang Ditinjau",
+    "markPendingTriage": "Tandai Menunggu Triase",
+    "noResponses": "Tidak ada respons untuk ditriase",
+    "queue": "Antrean Triase",
+    "returnToSubmitted": "Kembalikan ke Terkirim",
+    "title": "Triase",
+    "viewDetails": "Lihat Detail"
   },
   "userPreferences": {
     "administration": {
