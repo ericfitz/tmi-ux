@@ -245,7 +245,6 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Копия)",
-    "createTemplate": "Создать шаблон",
     "editTemplate": "Редактировать шаблон",
     "errorLoadingTemplates": "Не удалось загрузить шаблоны",
     "loadingTemplates": "Загрузка шаблонов...",
@@ -256,7 +255,74 @@
     "searchByName": "Поиск по названию...",
     "searchTemplates": "Поиск шаблонов",
     "templateCount": "{{count}} шаблон",
-    "templateCountPlural": "{{count}} шаблонов"
+    "templateCountPlural": "{{count}} шаблонов",
+    "createSurvey": "Создать опрос",
+    "surveyDetails": "Детали опроса",
+    "templateBuilder": {
+      "addPage": "Добавить страницу",
+      "backToTemplates": "Вернуться к шаблонам",
+      "choicesPerLine": "Варианты (по одному на строку)",
+      "deletePage": "Удалить страницу",
+      "deleteQuestion": "Удалить вопрос",
+      "enterSurveyDescription": "Введите описание опроса",
+      "enterSurveyTitle": "Введите название опроса",
+      "failedToLoadTemplate": "Не удалось загрузить шаблон",
+      "failedToSaveTemplate": "Не удалось сохранить шаблон",
+      "loadingTemplate": "Загрузка шаблона...",
+      "mapsToTmField": "Сопоставляется с полем модели угроз",
+      "metadataKey": "Ключ метаданных",
+      "metadataKeyHint": "Имя ключа для записи метаданных",
+      "nameId": "Название (ID)",
+      "nameIdHint": "Уникальный идентификатор для этого вопроса",
+      "nextPage": "Следующая страница",
+      "noQuestionsHint": "Нажмите на тип вопроса из палитры, чтобы добавить его",
+      "noQuestionsYet": "Вопросов пока нет",
+      "pageIndicator": "Страница {{current}} из {{total}}",
+      "previousPage": "Предыдущая страница",
+      "questionProperties": "Свойства вопроса",
+      "questionTypeDescriptions": {
+        "boolean": "Переключатель да/нет",
+        "checkbox": "Выбор нескольких вариантов",
+        "comment": "Многострочное текстовое поле",
+        "dropdown": "Выбор из выпадающего списка",
+        "panel": "Группировка вопросов в панель",
+        "paneldynamic": "Повторяющаяся группа панелей",
+        "radiogroup": "Выбор одного варианта",
+        "text": "Однострочный ввод текста"
+      },
+      "questionTypeLabels": {
+        "boolean": "Да/Нет",
+        "checkbox": "Флажок",
+        "comment": "Многострочный",
+        "dropdown": "Выпадающий список",
+        "panel": "Панель",
+        "paneldynamic": "Динамическая панель",
+        "radiogroup": "Группа переключателей",
+        "text": "Текст"
+      },
+      "questionTypes": "Типы вопросов",
+      "questions": "Вопросы",
+      "required": "Обязательно",
+      "selectQuestionHint": "Выберите вопрос для редактирования его свойств",
+      "tmFieldLabels": {
+        "assetDescription": "Описание актива",
+        "assetName": "Название актива",
+        "assetType": "Тип актива",
+        "description": "Описание модели угроз",
+        "documentName": "Название документа",
+        "documentUrl": "URL документа",
+        "issueUri": "URL отслеживания задач",
+        "metadataKey": "Пользовательские метаданные",
+        "name": "Название модели угроз",
+        "repositoryName": "Название репозитория",
+        "repositoryUrl": "URL репозитория"
+      },
+      "tmFieldMapping": "Сопоставление полей модели угроз",
+      "tmFieldMappingHint": "Связать этот ответ с полем модели угроз",
+      "unsavedChanges": "Несохранённые изменения",
+      "visibleIf": "Видимо, если",
+      "visibleIfHint": "например, {questionName} = 'значение'"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "Введите значение и нажмите Enter",
@@ -463,7 +529,8 @@
     "view": "Просмотр",
     "viewMetadata": "Просмотр Метаданных",
     "viewPermissions": "Просмотр Разрешений",
-    "viewThreat": "Просмотр Угрозы"
+    "viewThreat": "Просмотр Угрозы",
+    "title": "Название"
   },
   "contextMenu": {
     "addInverseConnection": "Добавить обратное соединение",

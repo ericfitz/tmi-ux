@@ -245,7 +245,6 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(עותק)",
-    "createTemplate": "יצירת תבנית",
     "editTemplate": "עריכת תבנית",
     "errorLoadingTemplates": "טעינת התבניות נכשלה",
     "loadingTemplates": "טוען תבניות...",
@@ -256,7 +255,74 @@
     "searchByName": "חיפוש לפי שם...",
     "searchTemplates": "חיפוש תבניות",
     "templateCount": "תבנית {{count}}",
-    "templateCountPlural": "{{count}} תבניות"
+    "templateCountPlural": "{{count}} תבניות",
+    "createSurvey": "צור סקר",
+    "surveyDetails": "פרטי סקר",
+    "templateBuilder": {
+      "addPage": "הוסף עמוד",
+      "backToTemplates": "חזרה לתבניות",
+      "choicesPerLine": "אפשרויות (אחת בכל שורה)",
+      "deletePage": "מחק עמוד",
+      "deleteQuestion": "מחק שאלה",
+      "enterSurveyDescription": "הזן תיאור סקר",
+      "enterSurveyTitle": "הזן כותרת סקר",
+      "failedToLoadTemplate": "טעינת התבנית נכשלה",
+      "failedToSaveTemplate": "שמירת התבנית נכשלה",
+      "loadingTemplate": "טוען תבנית...",
+      "mapsToTmField": "מתאים לשדה מודל איום",
+      "metadataKey": "מפתח מטא-נתונים",
+      "metadataKeyHint": "שם מפתח עבור ערך המטא-נתונים",
+      "nameId": "שם (ID)",
+      "nameIdHint": "מזהה ייחודי לשאלה זו",
+      "nextPage": "עמוד הבא",
+      "noQuestionsHint": "לחץ על סוג שאלה מהלוח כדי להוסיף אותו",
+      "noQuestionsYet": "אין עדיין שאלות",
+      "pageIndicator": "עמוד {{current}} מתוך {{total}}",
+      "previousPage": "עמוד קודם",
+      "questionProperties": "מאפייני שאלה",
+      "questionTypeDescriptions": {
+        "boolean": "מתג בוליאני",
+        "checkbox": "בחירה מרובה",
+        "comment": "תיבת טקסט רב-שורתי",
+        "dropdown": "בחירה מתפריט נפתח",
+        "panel": "קבוצת שאלות בפאנל",
+        "paneldynamic": "קבוצת פאנל חוזרת",
+        "radiogroup": "בחירה יחידה מאפשרויות",
+        "text": "קלט טקסט בשורה יחידה"
+      },
+      "questionTypeLabels": {
+        "boolean": "כן/לא",
+        "checkbox": "תיבת סימון",
+        "comment": "רב-שורתי",
+        "dropdown": "תפריט נפתח",
+        "panel": "פאנל",
+        "paneldynamic": "פאנל דינמי",
+        "radiogroup": "קבוצת רדיו",
+        "text": "טקסט"
+      },
+      "questionTypes": "סוגי שאלות",
+      "questions": "שאלות",
+      "required": "חובה",
+      "selectQuestionHint": "בחר שאלה כדי לערוך את מאפייניה",
+      "tmFieldLabels": {
+        "assetDescription": "תיאור נכס",
+        "assetName": "שם נכס",
+        "assetType": "סוג נכס",
+        "description": "תיאור מודל איום",
+        "documentName": "שם מסמך",
+        "documentUrl": "URL מסמך",
+        "issueUri": "URL למעקב אחר בעיות",
+        "metadataKey": "מטא-נתונים מותאמים אישית",
+        "name": "שם מודל איום",
+        "repositoryName": "שם מאגר",
+        "repositoryUrl": "URL מאגר"
+      },
+      "tmFieldMapping": "מיפוי שדה מודל איום",
+      "tmFieldMappingHint": "קשר תשובה זו לשדה מודל איום",
+      "unsavedChanges": "שינויים שלא נשמרו",
+      "visibleIf": "גלוי אם",
+      "visibleIfHint": "לדוגמה, {questionName} = 'value'"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "הזן ערך ולחץ Enter",
@@ -463,7 +529,8 @@
     "view": "צפה",
     "viewMetadata": "צפה במטא-נתונים",
     "viewPermissions": "צפה בהרשאות",
-    "viewThreat": "צפה באיום"
+    "viewThreat": "צפה באיום",
+    "title": "כותרת"
   },
   "contextMenu": {
     "addInverseConnection": "הוסף חיבור הפוך",

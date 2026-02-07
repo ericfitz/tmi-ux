@@ -245,7 +245,6 @@
   },
   "adminSurveys": {
     "cloneSuffix": "（コピー）",
-    "createTemplate": "テンプレートを作成",
     "editTemplate": "テンプレートを編集",
     "errorLoadingTemplates": "テンプレートの読み込みに失敗しました",
     "loadingTemplates": "テンプレートを読み込み中...",
@@ -256,7 +255,74 @@
     "searchByName": "名前で検索...",
     "searchTemplates": "テンプレートを検索",
     "templateCount": "{{count}} テンプレート",
-    "templateCountPlural": "{{count}} テンプレート"
+    "templateCountPlural": "{{count}} テンプレート",
+    "createSurvey": "調査を作成",
+    "surveyDetails": "調査詳細",
+    "templateBuilder": {
+      "addPage": "ページを追加",
+      "backToTemplates": "テンプレートに戻る",
+      "choicesPerLine": "選択肢（1行に1つ）",
+      "deletePage": "ページを削除",
+      "deleteQuestion": "質問を削除",
+      "enterSurveyDescription": "調査の説明を入力",
+      "enterSurveyTitle": "調査のタイトルを入力",
+      "failedToLoadTemplate": "テンプレートの読み込みに失敗しました",
+      "failedToSaveTemplate": "テンプレートの保存に失敗しました",
+      "loadingTemplate": "テンプレートを読み込み中...",
+      "mapsToTmField": "脅威モデルフィールドにマッピング",
+      "metadataKey": "メタデータキー",
+      "metadataKeyHint": "メタデータエントリのキー名",
+      "nameId": "名前（ID）",
+      "nameIdHint": "この質問の一意の識別子",
+      "nextPage": "次のページ",
+      "noQuestionsHint": "パレットから質問タイプをクリックして追加してください",
+      "noQuestionsYet": "まだ質問がありません",
+      "pageIndicator": "ページ {{current}} / {{total}}",
+      "previousPage": "前のページ",
+      "questionProperties": "質問のプロパティ",
+      "questionTypeDescriptions": {
+        "boolean": "真偽値トグル",
+        "checkbox": "複数選択",
+        "comment": "複数行テキストエリア",
+        "dropdown": "ドロップダウン選択",
+        "panel": "パネル内に質問をグループ化",
+        "paneldynamic": "繰り返し可能なパネルグループ",
+        "radiogroup": "選択肢から単一選択",
+        "text": "単一行テキスト入力"
+      },
+      "questionTypeLabels": {
+        "boolean": "はい/いいえ",
+        "checkbox": "チェックボックス",
+        "comment": "複数行",
+        "dropdown": "ドロップダウン",
+        "panel": "パネル",
+        "paneldynamic": "動的パネル",
+        "radiogroup": "ラジオグループ",
+        "text": "テキスト"
+      },
+      "questionTypes": "質問タイプ",
+      "questions": "質問",
+      "required": "必須",
+      "selectQuestionHint": "質問を選択してプロパティを編集してください",
+      "tmFieldLabels": {
+        "assetDescription": "アセットの説明",
+        "assetName": "アセット名",
+        "assetType": "アセットタイプ",
+        "description": "脅威モデルの説明",
+        "documentName": "ドキュメント名",
+        "documentUrl": "ドキュメントURL",
+        "issueUri": "課題追跡URL",
+        "metadataKey": "カスタムメタデータ",
+        "name": "脅威モデル名",
+        "repositoryName": "リポジトリ名",
+        "repositoryUrl": "リポジトリURL"
+      },
+      "tmFieldMapping": "脅威モデルフィールドマッピング",
+      "tmFieldMappingHint": "この回答を脅威モデルフィールドにリンク",
+      "unsavedChanges": "未保存の変更",
+      "visibleIf": "表示条件",
+      "visibleIfHint": "例: {questionName} = 'value'"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "値を入力してEnterを押してください",
@@ -463,7 +529,8 @@
     "view": "表示",
     "viewMetadata": "メタデータを表示",
     "viewPermissions": "権限を表示",
-    "viewThreat": "脅威を表示"
+    "viewThreat": "脅威を表示",
+    "title": "タイトル"
   },
   "contextMenu": {
     "addInverseConnection": "逆接続を追加",

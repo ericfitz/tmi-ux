@@ -245,7 +245,6 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Cópia)",
-    "createTemplate": "Criar Modelo",
     "editTemplate": "Editar modelo",
     "errorLoadingTemplates": "Falha ao carregar modelos",
     "loadingTemplates": "Carregando modelos...",
@@ -256,7 +255,74 @@
     "searchByName": "Pesquisar por nome...",
     "searchTemplates": "Pesquisar modelos",
     "templateCount": "{{count}} modelo",
-    "templateCountPlural": "{{count}} modelos"
+    "templateCountPlural": "{{count}} modelos",
+    "createSurvey": "Criar Pesquisa",
+    "surveyDetails": "Detalhes da Pesquisa",
+    "templateBuilder": {
+      "addPage": "Adicionar página",
+      "backToTemplates": "Voltar para Modelos",
+      "choicesPerLine": "Escolhas (uma por linha)",
+      "deletePage": "Excluir página",
+      "deleteQuestion": "Excluir Pergunta",
+      "enterSurveyDescription": "Insira a descrição da pesquisa",
+      "enterSurveyTitle": "Insira o título da pesquisa",
+      "failedToLoadTemplate": "Falha ao carregar modelo",
+      "failedToSaveTemplate": "Falha ao salvar modelo",
+      "loadingTemplate": "Carregando modelo...",
+      "mapsToTmField": "Mapeia para Campo do Modelo de Ameaças",
+      "metadataKey": "Chave de Metadados",
+      "metadataKeyHint": "Nome da chave para a entrada de metadados",
+      "nameId": "Nome (ID)",
+      "nameIdHint": "Identificador único para esta pergunta",
+      "nextPage": "Próxima página",
+      "noQuestionsHint": "Clique em um tipo de pergunta da paleta para adicioná-lo",
+      "noQuestionsYet": "Nenhuma pergunta ainda",
+      "pageIndicator": "Página {{current}} de {{total}}",
+      "previousPage": "Página anterior",
+      "questionProperties": "Propriedades da Pergunta",
+      "questionTypeDescriptions": {
+        "boolean": "Alternância booleana",
+        "checkbox": "Seleção de múltipla escolha",
+        "comment": "Área de texto multilinha",
+        "dropdown": "Seleção suspensa",
+        "panel": "Agrupar perguntas em um painel",
+        "paneldynamic": "Grupo de painéis repetível",
+        "radiogroup": "Escolha única entre opções",
+        "text": "Entrada de texto de linha única"
+      },
+      "questionTypeLabels": {
+        "boolean": "Sim/Não",
+        "checkbox": "Caixa de Seleção",
+        "comment": "Multilinha",
+        "dropdown": "Suspenso",
+        "panel": "Painel",
+        "paneldynamic": "Painel Dinâmico",
+        "radiogroup": "Grupo de Rádio",
+        "text": "Texto"
+      },
+      "questionTypes": "Tipos de Pergunta",
+      "questions": "Perguntas",
+      "required": "Obrigatório",
+      "selectQuestionHint": "Selecione uma pergunta para editar suas propriedades",
+      "tmFieldLabels": {
+        "assetDescription": "Descrição do Ativo",
+        "assetName": "Nome do Ativo",
+        "assetType": "Tipo de Ativo",
+        "description": "Descrição do Modelo de Ameaças",
+        "documentName": "Nome do Documento",
+        "documentUrl": "URL do Documento",
+        "issueUri": "URL de Rastreamento de Problemas",
+        "metadataKey": "Metadados Personalizados",
+        "name": "Nome do Modelo de Ameaças",
+        "repositoryName": "Nome do Repositório",
+        "repositoryUrl": "URL do Repositório"
+      },
+      "tmFieldMapping": "Mapeamento de Campo do Modelo de Ameaças",
+      "tmFieldMappingHint": "Vincule esta resposta a um campo do modelo de ameaças",
+      "unsavedChanges": "Alterações não salvas",
+      "visibleIf": "Visível Se",
+      "visibleIfHint": "ex: {questionName} = 'value'"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "Digite o valor e pressione Enter",
@@ -463,7 +529,8 @@
     "view": "Visualizar",
     "viewMetadata": "Visualizar Metadados",
     "viewPermissions": "Visualizar Permissoes",
-    "viewThreat": "Visualizar Ameaca"
+    "viewThreat": "Visualizar Ameaca",
+    "title": "Título"
   },
   "contextMenu": {
     "addInverseConnection": "Adicionar Conexao Inversa",

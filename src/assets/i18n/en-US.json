@@ -532,11 +532,11 @@
       "user": "User"
     },
     "template": "Template",
-    "title": "Title",
     "threatDescription": "Threat Description",
     "threatDescriptionPlaceholder": "Describe the Threat in Detail",
     "threatName": "Threat Name",
     "threatType": "Threat Type",
+    "title": "Title",
     "tryAdjustingFilters": "Try adjusting your filters.",
     "type": "Type",
     "unsavedChangesWarning": "You have unsaved changes. Are you sure you want to close?",

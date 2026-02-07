@@ -245,7 +245,6 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(نسخة)",
-    "createTemplate": "إنشاء قالب",
     "editTemplate": "تعديل القالب",
     "errorLoadingTemplates": "فشل تحميل القوالب",
     "loadingTemplates": "جارٍ تحميل القوالب...",
@@ -256,7 +255,74 @@
     "searchByName": "البحث بالاسم...",
     "searchTemplates": "البحث في القوالب",
     "templateCount": "{{count}} قالب",
-    "templateCountPlural": "{{count}} قوالب"
+    "templateCountPlural": "{{count}} قوالب",
+    "createSurvey": "إنشاء استبيان",
+    "surveyDetails": "تفاصيل الاستبيان",
+    "templateBuilder": {
+      "addPage": "إضافة صفحة",
+      "backToTemplates": "العودة إلى القوالب",
+      "choicesPerLine": "الخيارات (واحد لكل سطر)",
+      "deletePage": "حذف الصفحة",
+      "deleteQuestion": "حذف السؤال",
+      "enterSurveyDescription": "أدخل وصف الاستبيان",
+      "enterSurveyTitle": "أدخل عنوان الاستبيان",
+      "failedToLoadTemplate": "فشل تحميل القالب",
+      "failedToSaveTemplate": "فشل حفظ القالب",
+      "loadingTemplate": "جارٍ تحميل القالب...",
+      "mapsToTmField": "يُربط بحقل نموذج التهديد",
+      "metadataKey": "مفتاح البيانات الوصفية",
+      "metadataKeyHint": "اسم المفتاح لإدخال البيانات الوصفية",
+      "nameId": "الاسم (ID)",
+      "nameIdHint": "معرف فريد لهذا السؤال",
+      "nextPage": "الصفحة التالية",
+      "noQuestionsHint": "انقر على نوع سؤال من اللوحة لإضافته",
+      "noQuestionsYet": "لا توجد أسئلة بعد",
+      "pageIndicator": "الصفحة {{current}} من {{total}}",
+      "previousPage": "الصفحة السابقة",
+      "questionProperties": "خصائص السؤال",
+      "questionTypeDescriptions": {
+        "boolean": "تبديل منطقي",
+        "checkbox": "اختيار متعدد",
+        "comment": "منطقة نص متعددة الأسطر",
+        "dropdown": "اختيار من قائمة منسدلة",
+        "panel": "تجميع الأسئلة في لوحة",
+        "paneldynamic": "مجموعة لوحات قابلة للتكرار",
+        "radiogroup": "اختيار واحد من خيارات",
+        "text": "إدخال نص من سطر واحد"
+      },
+      "questionTypeLabels": {
+        "boolean": "نعم/لا",
+        "checkbox": "خانة اختيار",
+        "comment": "متعدد الأسطر",
+        "dropdown": "قائمة منسدلة",
+        "panel": "لوحة",
+        "paneldynamic": "لوحة ديناميكية",
+        "radiogroup": "مجموعة اختيار",
+        "text": "نص"
+      },
+      "questionTypes": "أنواع الأسئلة",
+      "questions": "الأسئلة",
+      "required": "مطلوب",
+      "selectQuestionHint": "حدد سؤالاً لتعديل خصائصه",
+      "tmFieldLabels": {
+        "assetDescription": "وصف الأصل",
+        "assetName": "اسم الأصل",
+        "assetType": "نوع الأصل",
+        "description": "وصف نموذج التهديد",
+        "documentName": "اسم المستند",
+        "documentUrl": "رابط المستند",
+        "issueUri": "رابط تتبع المشكلة",
+        "metadataKey": "بيانات وصفية مخصصة",
+        "name": "اسم نموذج التهديد",
+        "repositoryName": "اسم المستودع",
+        "repositoryUrl": "رابط المستودع"
+      },
+      "tmFieldMapping": "ربط حقل نموذج التهديد",
+      "tmFieldMappingHint": "ربط هذا الجواب بحقل نموذج التهديد",
+      "unsavedChanges": "تغييرات غير محفوظة",
+      "visibleIf": "مرئي إذا",
+      "visibleIfHint": "مثال: {questionName} = 'value'"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "أدخل القيمة واضغط Enter",
@@ -463,7 +529,8 @@
     "view": "عرض",
     "viewMetadata": "عرض البيانات الوصفية",
     "viewPermissions": "عرض الأذونات",
-    "viewThreat": "عرض التهديد"
+    "viewThreat": "عرض التهديد",
+    "title": "العنوان"
   },
   "contextMenu": {
     "addInverseConnection": "إضافة اتصال عكسي",

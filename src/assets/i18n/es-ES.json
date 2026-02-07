@@ -245,7 +245,6 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Copia)",
-    "createTemplate": "Crear plantilla",
     "editTemplate": "Editar plantilla",
     "errorLoadingTemplates": "Error al cargar las plantillas",
     "loadingTemplates": "Cargando plantillas...",
@@ -256,7 +255,74 @@
     "searchByName": "Buscar por nombre...",
     "searchTemplates": "Buscar plantillas",
     "templateCount": "{{count}} plantilla",
-    "templateCountPlural": "{{count}} plantillas"
+    "templateCountPlural": "{{count}} plantillas",
+    "createSurvey": "Crear Encuesta",
+    "surveyDetails": "Detalles de Encuesta",
+    "templateBuilder": {
+      "addPage": "Añadir página",
+      "backToTemplates": "Volver a Plantillas",
+      "choicesPerLine": "Opciones (una por línea)",
+      "deletePage": "Eliminar página",
+      "deleteQuestion": "Eliminar Pregunta",
+      "enterSurveyDescription": "Introduzca la descripción de la encuesta",
+      "enterSurveyTitle": "Introduzca el título de la encuesta",
+      "failedToLoadTemplate": "Error al cargar la plantilla",
+      "failedToSaveTemplate": "Error al guardar la plantilla",
+      "loadingTemplate": "Cargando plantilla...",
+      "mapsToTmField": "Mapea a Campo TM",
+      "metadataKey": "Clave de Metadatos",
+      "metadataKeyHint": "Nombre de clave para la entrada de metadatos",
+      "nameId": "Nombre (ID)",
+      "nameIdHint": "Identificador único para esta pregunta",
+      "nextPage": "Página siguiente",
+      "noQuestionsHint": "Haga clic en un tipo de pregunta de la paleta para añadirla",
+      "noQuestionsYet": "Aún no hay preguntas",
+      "pageIndicator": "Página {{current}} de {{total}}",
+      "previousPage": "Página anterior",
+      "questionProperties": "Propiedades de la Pregunta",
+      "questionTypeDescriptions": {
+        "boolean": "Interruptor booleano",
+        "checkbox": "Selección de opción múltiple",
+        "comment": "Área de texto multilínea",
+        "dropdown": "Selección desplegable",
+        "panel": "Agrupar preguntas en un panel",
+        "paneldynamic": "Grupo de panel repetible",
+        "radiogroup": "Opción única de varias opciones",
+        "text": "Entrada de texto de una línea"
+      },
+      "questionTypeLabels": {
+        "boolean": "Sí/No",
+        "checkbox": "Casilla de verificación",
+        "comment": "Multilínea",
+        "dropdown": "Desplegable",
+        "panel": "Panel",
+        "paneldynamic": "Panel Dinámico",
+        "radiogroup": "Grupo de Radio",
+        "text": "Texto"
+      },
+      "questionTypes": "Tipos de Pregunta",
+      "questions": "Preguntas",
+      "required": "Obligatorio",
+      "selectQuestionHint": "Seleccione una pregunta para editar sus propiedades",
+      "tmFieldLabels": {
+        "assetDescription": "Descripción del Activo",
+        "assetName": "Nombre del Activo",
+        "assetType": "Tipo de Activo",
+        "description": "Descripción del Modelo de Amenazas",
+        "documentName": "Nombre del Documento",
+        "documentUrl": "URL del Documento",
+        "issueUri": "URL de Seguimiento de Problemas",
+        "metadataKey": "Metadatos Personalizados",
+        "name": "Nombre del Modelo de Amenazas",
+        "repositoryName": "Nombre del Repositorio",
+        "repositoryUrl": "URL del Repositorio"
+      },
+      "tmFieldMapping": "Mapeo de Campos del Modelo de Amenazas",
+      "tmFieldMappingHint": "Vincular esta respuesta a un campo del modelo de amenazas",
+      "unsavedChanges": "Cambios sin guardar",
+      "visibleIf": "Visible Si",
+      "visibleIfHint": "p. ej., {questionName} = 'value'"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "Introduzca un valor y pulse Intro",
@@ -463,7 +529,8 @@
     "view": "Ver",
     "viewMetadata": "Ver Metadatos",
     "viewPermissions": "Ver Permisos",
-    "viewThreat": "Ver Amenaza"
+    "viewThreat": "Ver Amenaza",
+    "title": "Título"
   },
   "contextMenu": {
     "addInverseConnection": "Añadir Conexión Inversa",
