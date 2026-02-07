@@ -14,14 +14,18 @@
       @if (hasUnsavedChanges) {
         <span class="unsaved-indicator">Unsaved changes</span>
       }
-      <button mat-raised-button color="primary" (click)="save()" [disabled]="isSaving">
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="save()"
+        [disabled]="isSaving"
+        [matTooltip]="'common.save' | transloco"
+        [attr.aria-label]="'common.save' | transloco"
+      >
         @if (isSaving) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else {
-          <ng-container>
-            <mat-icon>save</mat-icon>
-            Save
-          </ng-container>
+          <mat-icon>save</mat-icon>
         }
       </button>
     </div>
