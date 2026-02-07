@@ -243,6 +243,21 @@
       "title": "Webhooks verwalten"
     }
   },
+  "adminSurveys": {
+    "cloneSuffix": "(Kopie)",
+    "createTemplate": "Vorlage erstellen",
+    "editTemplate": "Vorlage bearbeiten",
+    "errorLoadingTemplates": "Vorlagen konnten nicht geladen werden",
+    "loadingTemplates": "Vorlagen werden geladen...",
+    "noMatchingTitle": "Keine passenden Vorlagen",
+    "noTemplatesMessage": "Erstellen Sie Ihre erste Umfragevorlage, um zu beginnen.",
+    "noTemplatesTitle": "Noch keine Vorlagen",
+    "pageTitle": "Umfragevorlagen",
+    "searchByName": "Nach Name suchen...",
+    "searchTemplates": "Vorlagen durchsuchen",
+    "templateCount": "{{count}} Vorlage",
+    "templateCountPlural": "{{count}} Vorlagen"
+  },
   "assetEditor": {
     "chipPlaceholder": "Wert eingeben und Enter drücken",
     "classification": "{{common.classification}}",
@@ -304,14 +319,18 @@
   "common": {
     "about": "Über",
     "actions": "Aktionen",
+    "activate": "Aktivieren",
     "addMetadata": "Metadaten hinzufügen",
     "addThreat": "Bedrohung hinzufügen",
     "addons": "Erweiterungen",
+    "allStatuses": "Alle Status",
+    "archive": "Archivieren",
     "back": "Zurück",
     "cancel": "Abbrechen",
     "cellId": "Zellen-ID",
     "classification": "Klassifizierung",
     "clear": "Löschen",
+    "clone": "Klonen",
     "close": "Schließen",
     "confirmDelete": "Sind Sie sicher, dass Sie {{item}} \"{{name}}\" löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
     "confirmDeleteMessage": "Sind Sie sicher, dass Sie {{objectType}} \"{{name}}\" löschen möchten?",
@@ -321,6 +340,7 @@
     "created": "Erstellt",
     "criticality": "Kritikalität",
     "cut": "Ausschneiden",
+    "deactivate": "Deaktivieren",
     "delete": "Löschen",
     "deleteConfirm": "Bedrohungsmodell löschen",
     "deleteWarningConfirmationField": "Löschbestätigung",
@@ -338,6 +358,7 @@
     "edit": "Bearbeiten",
     "editThreat": "Bedrohung bearbeiten",
     "emailLabel": "E-Mail-Adresse",
+    "error": "Fehler",
     "fonts": "Schriftarten",
     "id": "ID",
     "identityProvider": "Identitätsanbieter",
@@ -345,6 +366,7 @@
     "language": "{{language}}",
     "lastModified": "Zuletzt geändert",
     "lastUpdated": "Zuletzt aktualisiert",
+    "loading": "Wird geladen...",
     "manage": "Verwalten",
     "manageMetadata": "Metadaten verwalten",
     "manageThreats": "Bedrohungen verwalten",
@@ -354,9 +376,11 @@
     "mitigated": "Gemildert",
     "mitigation": "Schadensbegrenzung",
     "mitigationPlaceholder": "Beschreiben Sie empfohlene oder geplante Gegenmaßnahmen für diese Bedrohung",
+    "moreActions": "Weitere Aktionen",
     "name": "Name",
     "noAddonsAvailable": "Keine Erweiterungen verfügbar",
     "noDataAvailable": "Keine Daten verfügbar",
+    "noMatchingResults": "Keine Ergebnisse stimmen mit Ihren Filtern überein.",
     "noMetadata": "Keine Metadaten verfügbar",
     "noThreats": "Keine Bedrohungen verfügbar",
     "none": "Keine",
@@ -396,6 +420,7 @@
     "provider": "Anbieter",
     "readOnly": "Schreibgeschützt",
     "readOnlyTooltip": "Sie haben schreibgeschützten Zugriff auf dieses Bedrohungsmodell. Kontaktieren Sie den Eigentümer, um Bearbeitungsrechte anzufordern.",
+    "retry": "Erneut versuchen",
     "roles": {
       "owner": "Eigentümer",
       "reader": "Leser",
@@ -405,6 +430,8 @@
     "saveAndClose": "Speichern und Schließen",
     "savedSuccessfully": "Erfolgreich gespeichert",
     "score": "Bewertung",
+    "search": "Suche",
+    "selected": "{{count}} ausgewählt",
     "sensitivity": "Sensibilität",
     "sessionRoles": {
       "host": "Gastgeber",
@@ -417,10 +444,12 @@
       "group": "Gruppe",
       "user": "Benutzer"
     },
+    "template": "Vorlage",
     "threatDescription": "Bedrohungsbeschreibung",
     "threatDescriptionPlaceholder": "Beschreiben Sie die Bedrohung im Detail",
     "threatName": "Bedrohungsname",
     "threatType": "Bedrohungstyp",
+    "tryAdjustingFilters": "Versuchen Sie, Ihre Filter anzupassen.",
     "type": "Typ",
     "unsavedChangesWarning": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie schließen möchten?",
     "userId": "Benutzer-ID",
@@ -430,6 +459,7 @@
       "nameRequired": "Name ist erforderlich",
       "required": "Dieses Feld ist erforderlich"
     },
+    "version": "Version",
     "view": "Ansicht",
     "viewMetadata": "Metadaten anzeigen",
     "viewPermissions": "Berechtigungen anzeigen",
@@ -698,6 +728,18 @@
       "submitConfirm": "Möchten Sie wirklich absenden? Sie können Ihre Antworten nach dem Absenden nicht mehr bearbeiten.",
       "title": "Umfrage ausfüllen"
     },
+    "list": {
+      "deleteDraft": "Entwurf löschen",
+      "draftStarted": "Entwurf begonnen {{time}}",
+      "errorLoadingSurveys": "Umfragen konnten nicht geladen werden",
+      "lastModified": "Zuletzt geändert {{time}}",
+      "loadingSurveys": "Umfragen werden geladen...",
+      "noSurveysMessage": "Derzeit sind keine aktiven Umfragen verfügbar. Schauen Sie später noch einmal vorbei.",
+      "noSurveysTitle": "Keine Umfragen verfügbar",
+      "pageTitle": "Verfügbare Umfragen",
+      "updated": "Aktualisiert",
+      "yourDrafts": "Ihre Entwürfe"
+    },
     "myResponses": "Meine Antworten",
     "noResponses": "Sie haben noch keine Umfrageantworten eingereicht",
     "noSurveys": "Keine Umfragen verfügbar",
@@ -711,6 +753,11 @@
       "submitted": "Eingereicht"
     },
     "submitSurvey": "Umfrage absenden",
+    "templateStatus": {
+      "active": "Aktiv",
+      "archived": "Archiviert",
+      "inactive": "Inaktiv"
+    },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Antwort anzeigen"
   },
@@ -943,6 +990,20 @@
       "allStatuses": "Alle Status",
       "allTemplates": "Alle Vorlagen",
       "clearFilters": "Filter löschen"
+    },
+    "list": {
+      "allSurveys": "Alle Umfragen",
+      "approve": "Genehmigen",
+      "approveSelected": "Ausgewählte genehmigen",
+      "errorLoadingResponses": "Antworten konnten nicht geladen werden",
+      "loadingResponses": "Antworten werden geladen...",
+      "noResponsesFiltered": "Keine Antworten stimmen mit Ihren Filtern überein",
+      "noResponsesTitle": "Keine Antworten",
+      "noResponsesToTriage": "Es gibt keine Umfrageantworten zur Sichtung",
+      "notSubmitted": "Nicht eingereicht",
+      "searchPlaceholder": "Nach Einreichendem oder Vorlage suchen...",
+      "submitted": "Eingereicht",
+      "submitter": "Einreichender"
     },
     "markInReview": "Als geprüft markieren",
     "markPendingTriage": "Als ausstehend markieren",
