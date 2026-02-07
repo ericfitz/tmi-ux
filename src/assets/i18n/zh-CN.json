@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "（副本）",
+    "createSurvey": "创建调查",
     "editTemplate": "编辑模板",
     "errorLoadingTemplates": "加载模板失败",
     "loadingTemplates": "正在加载模板...",
@@ -254,9 +255,6 @@
     "pageTitle": "调查模板",
     "searchByName": "按名称搜索...",
     "searchTemplates": "搜索模板",
-    "templateCount": "{{count}} 个模板",
-    "templateCountPlural": "{{count}} 个模板",
-    "createSurvey": "创建调查",
     "surveyDetails": "调查详情",
     "templateBuilder": {
       "addPage": "添加页面",
@@ -322,7 +320,9 @@
       "unsavedChanges": "未保存的更改",
       "visibleIf": "可见条件",
       "visibleIfHint": "例如：{questionName} = 'value'"
-    }
+    },
+    "templateCount": "{{count}} 个模板",
+    "templateCountPlural": "{{count}} 个模板"
   },
   "assetEditor": {
     "chipPlaceholder": "输入值并按 Enter",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "详细描述威胁",
     "threatName": "威胁名称",
     "threatType": "威胁类型",
+    "title": "标题",
     "tryAdjustingFilters": "请尝试调整您的筛选条件。",
     "type": "类型",
     "unsavedChangesWarning": "您有未保存的更改。确定要关闭吗？",
@@ -529,8 +530,7 @@
     "view": "查看",
     "viewMetadata": "查看元数据",
     "viewPermissions": "查看权限",
-    "viewThreat": "查看威胁",
-    "title": "标题"
+    "viewThreat": "查看威胁"
   },
   "contextMenu": {
     "addInverseConnection": "添加反向连接",

@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "（コピー）",
+    "createSurvey": "調査を作成",
     "editTemplate": "テンプレートを編集",
     "errorLoadingTemplates": "テンプレートの読み込みに失敗しました",
     "loadingTemplates": "テンプレートを読み込み中...",
@@ -254,9 +255,6 @@
     "pageTitle": "アンケートテンプレート",
     "searchByName": "名前で検索...",
     "searchTemplates": "テンプレートを検索",
-    "templateCount": "{{count}} テンプレート",
-    "templateCountPlural": "{{count}} テンプレート",
-    "createSurvey": "調査を作成",
     "surveyDetails": "調査詳細",
     "templateBuilder": {
       "addPage": "ページを追加",
@@ -322,7 +320,9 @@
       "unsavedChanges": "未保存の変更",
       "visibleIf": "表示条件",
       "visibleIfHint": "例: {questionName} = 'value'"
-    }
+    },
+    "templateCount": "{{count}} テンプレート",
+    "templateCountPlural": "{{count}} テンプレート"
   },
   "assetEditor": {
     "chipPlaceholder": "値を入力してEnterを押してください",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "脅威を詳細に説明してください",
     "threatName": "脅威名",
     "threatType": "脅威タイプ",
+    "title": "タイトル",
     "tryAdjustingFilters": "フィルターを調整してみてください。",
     "type": "タイプ",
     "unsavedChangesWarning": "保存されていない変更があります。閉じてもよろしいですか？",
@@ -529,8 +530,7 @@
     "view": "表示",
     "viewMetadata": "メタデータを表示",
     "viewPermissions": "権限を表示",
-    "viewThreat": "脅威を表示",
-    "title": "タイトル"
+    "viewThreat": "脅威を表示"
   },
   "contextMenu": {
     "addInverseConnection": "逆接続を追加",

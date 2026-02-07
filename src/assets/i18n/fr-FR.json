@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Copie)",
+    "createSurvey": "Créer une enquête",
     "editTemplate": "Modifier le modèle",
     "errorLoadingTemplates": "Échec du chargement des modèles",
     "loadingTemplates": "Chargement des modèles...",
@@ -254,9 +255,6 @@
     "pageTitle": "Modèles d'enquêtes",
     "searchByName": "Rechercher par nom...",
     "searchTemplates": "Rechercher des modèles",
-    "templateCount": "{{count}} modèle",
-    "templateCountPlural": "{{count}} modèles",
-    "createSurvey": "Créer une enquête",
     "surveyDetails": "Détails de l'enquête",
     "templateBuilder": {
       "addPage": "Ajouter une page",
@@ -322,7 +320,9 @@
       "unsavedChanges": "Modifications non enregistrées",
       "visibleIf": "Visible si",
       "visibleIfHint": "par ex., {questionName} = 'valeur'"
-    }
+    },
+    "templateCount": "{{count}} modèle",
+    "templateCountPlural": "{{count}} modèles"
   },
   "assetEditor": {
     "chipPlaceholder": "Entrez une valeur et appuyez sur Entree",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "Decrivez la Menace en Detail",
     "threatName": "Nom de la Menace",
     "threatType": "Type de Menace",
+    "title": "Titre",
     "tryAdjustingFilters": "Essayez d'ajuster vos filtres.",
     "type": "Type",
     "unsavedChangesWarning": "Vous avez des modifications non enregistrees. Etes-vous sur de vouloir fermer ?",
@@ -529,8 +530,7 @@
     "view": "Voir",
     "viewMetadata": "Voir les Metadonnees",
     "viewPermissions": "Voir les Permissions",
-    "viewThreat": "Voir la Menace",
-    "title": "Titre"
+    "viewThreat": "Voir la Menace"
   },
   "contextMenu": {
     "addInverseConnection": "Ajouter une connexion inverse",

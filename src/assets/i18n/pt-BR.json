@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Cópia)",
+    "createSurvey": "Criar Pesquisa",
     "editTemplate": "Editar modelo",
     "errorLoadingTemplates": "Falha ao carregar modelos",
     "loadingTemplates": "Carregando modelos...",
@@ -254,9 +255,6 @@
     "pageTitle": "Modelos de Pesquisa",
     "searchByName": "Pesquisar por nome...",
     "searchTemplates": "Pesquisar modelos",
-    "templateCount": "{{count}} modelo",
-    "templateCountPlural": "{{count}} modelos",
-    "createSurvey": "Criar Pesquisa",
     "surveyDetails": "Detalhes da Pesquisa",
     "templateBuilder": {
       "addPage": "Adicionar página",
@@ -322,7 +320,9 @@
       "unsavedChanges": "Alterações não salvas",
       "visibleIf": "Visível Se",
       "visibleIfHint": "ex: {questionName} = 'value'"
-    }
+    },
+    "templateCount": "{{count}} modelo",
+    "templateCountPlural": "{{count}} modelos"
   },
   "assetEditor": {
     "chipPlaceholder": "Digite o valor e pressione Enter",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "Descreva a Ameaca em Detalhes",
     "threatName": "Nome da Ameaca",
     "threatType": "Tipo de Ameaca",
+    "title": "Título",
     "tryAdjustingFilters": "Tente ajustar seus filtros.",
     "type": "Tipo",
     "unsavedChangesWarning": "Voce tem alteracoes nao salvas. Tem certeza de que deseja fechar?",
@@ -529,8 +530,7 @@
     "view": "Visualizar",
     "viewMetadata": "Visualizar Metadados",
     "viewPermissions": "Visualizar Permissoes",
-    "viewThreat": "Visualizar Ameaca",
-    "title": "Título"
+    "viewThreat": "Visualizar Ameaca"
   },
   "contextMenu": {
     "addInverseConnection": "Adicionar Conexao Inversa",

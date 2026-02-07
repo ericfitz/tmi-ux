@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(অনুলিপি)",
+    "createSurvey": "সার্ভে তৈরি করুন",
     "editTemplate": "টেমপ্লেট সম্পাদনা করুন",
     "errorLoadingTemplates": "টেমপ্লেট লোড করতে ব্যর্থ",
     "loadingTemplates": "টেমপ্লেট লোড হচ্ছে...",
@@ -254,9 +255,6 @@
     "pageTitle": "সার্ভে টেমপ্লেটসমূহ",
     "searchByName": "নাম দিয়ে খুঁজুন...",
     "searchTemplates": "টেমপ্লেট খুঁজুন",
-    "templateCount": "{{count}} টেমপ্লেট",
-    "templateCountPlural": "{{count}} টেমপ্লেট",
-    "createSurvey": "সার্ভে তৈরি করুন",
     "surveyDetails": "সার্ভে বিবরণ",
     "templateBuilder": {
       "addPage": "পৃষ্ঠা যোগ করুন",
@@ -322,7 +320,9 @@
       "unsavedChanges": "অসংরক্ষিত পরিবর্তন",
       "visibleIf": "দৃশ্যমান যদি",
       "visibleIfHint": "যেমন, {questionName} = 'value'"
-    }
+    },
+    "templateCount": "{{count}} টেমপ্লেট",
+    "templateCountPlural": "{{count}} টেমপ্লেট"
   },
   "assetEditor": {
     "chipPlaceholder": "মান লিখুন এবং Enter চাপুন",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "বিস্তারিতভাবে হুমকি বর্ণনা করুন",
     "threatName": "হুমকির নাম",
     "threatType": "হুমকির ধরন",
+    "title": "শিরোনাম",
     "tryAdjustingFilters": "আপনার ফিল্টার সমন্বয় করে দেখুন।",
     "type": "ধরন",
     "unsavedChangesWarning": "আপনার অসংরক্ষিত পরিবর্তন আছে। আপনি কি নিশ্চিত যে আপনি বন্ধ করতে চান?",
@@ -529,8 +530,7 @@
     "view": "দেখুন",
     "viewMetadata": "মেটাডেটা দেখুন",
     "viewPermissions": "অনুমতি দেখুন",
-    "viewThreat": "হুমকি দেখুন",
-    "title": "শিরোনাম"
+    "viewThreat": "হুমকি দেখুন"
   },
   "contextMenu": {
     "addInverseConnection": "বিপরীত সংযোগ যোগ করুন",

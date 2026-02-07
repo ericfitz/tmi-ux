@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Salinan)",
+    "createSurvey": "Buat Survei",
     "editTemplate": "Edit templat",
     "errorLoadingTemplates": "Gagal memuat templat",
     "loadingTemplates": "Memuat templat...",
@@ -254,9 +255,6 @@
     "pageTitle": "Templat Survei",
     "searchByName": "Cari berdasarkan nama...",
     "searchTemplates": "Cari templat",
-    "templateCount": "{{count}} templat",
-    "templateCountPlural": "{{count}} templat",
-    "createSurvey": "Buat Survei",
     "surveyDetails": "Detail Survei",
     "templateBuilder": {
       "addPage": "Tambah halaman",
@@ -322,7 +320,9 @@
       "unsavedChanges": "Perubahan belum disimpan",
       "visibleIf": "Terlihat Jika",
       "visibleIfHint": "mis., {questionName} = 'value'"
-    }
+    },
+    "templateCount": "{{count}} templat",
+    "templateCountPlural": "{{count}} templat"
   },
   "assetEditor": {
     "chipPlaceholder": "Masukkan nilai dan tekan Enter",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "Jelaskan Ancaman Secara Detail",
     "threatName": "Nama Ancaman",
     "threatType": "Jenis Ancaman",
+    "title": "Judul",
     "tryAdjustingFilters": "Coba sesuaikan filter Anda.",
     "type": "Jenis",
     "unsavedChangesWarning": "Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin menutup?",
@@ -529,8 +530,7 @@
     "view": "Lihat",
     "viewMetadata": "Lihat Metadata",
     "viewPermissions": "Lihat Izin",
-    "viewThreat": "Lihat Ancaman",
-    "title": "Judul"
+    "viewThreat": "Lihat Ancaman"
   },
   "contextMenu": {
     "addInverseConnection": "Tambah Koneksi Terbalik",

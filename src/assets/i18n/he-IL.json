@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(עותק)",
+    "createSurvey": "צור סקר",
     "editTemplate": "עריכת תבנית",
     "errorLoadingTemplates": "טעינת התבניות נכשלה",
     "loadingTemplates": "טוען תבניות...",
@@ -254,9 +255,6 @@
     "pageTitle": "תבניות סקרים",
     "searchByName": "חיפוש לפי שם...",
     "searchTemplates": "חיפוש תבניות",
-    "templateCount": "תבנית {{count}}",
-    "templateCountPlural": "{{count}} תבניות",
-    "createSurvey": "צור סקר",
     "surveyDetails": "פרטי סקר",
     "templateBuilder": {
       "addPage": "הוסף עמוד",
@@ -322,7 +320,9 @@
       "unsavedChanges": "שינויים שלא נשמרו",
       "visibleIf": "גלוי אם",
       "visibleIfHint": "לדוגמה, {questionName} = 'value'"
-    }
+    },
+    "templateCount": "תבנית {{count}}",
+    "templateCountPlural": "{{count}} תבניות"
   },
   "assetEditor": {
     "chipPlaceholder": "הזן ערך ולחץ Enter",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "תאר את האיום בפירוט",
     "threatName": "שם האיום",
     "threatType": "סוג איום",
+    "title": "כותרת",
     "tryAdjustingFilters": "נסה להתאים את המסננים שלך.",
     "type": "סוג",
     "unsavedChangesWarning": "יש לך שינויים שלא נשמרו. האם אתה בטוח שברצונך לסגור?",
@@ -529,8 +530,7 @@
     "view": "צפה",
     "viewMetadata": "צפה במטא-נתונים",
     "viewPermissions": "צפה בהרשאות",
-    "viewThreat": "צפה באיום",
-    "title": "כותרת"
+    "viewThreat": "צפה באיום"
   },
   "contextMenu": {
     "addInverseConnection": "הוסף חיבור הפוך",

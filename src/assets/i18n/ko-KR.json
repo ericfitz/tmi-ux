@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(복사본)",
+    "createSurvey": "설문 생성",
     "editTemplate": "템플릿 편집",
     "errorLoadingTemplates": "템플릿을 불러오지 못했습니다",
     "loadingTemplates": "템플릿 로딩 중...",
@@ -254,9 +255,6 @@
     "pageTitle": "설문 템플릿",
     "searchByName": "이름으로 검색...",
     "searchTemplates": "템플릿 검색",
-    "templateCount": "{{count}} 템플릿",
-    "templateCountPlural": "{{count}} 템플릿",
-    "createSurvey": "설문 생성",
     "surveyDetails": "설문 세부정보",
     "templateBuilder": {
       "addPage": "페이지 추가",
@@ -322,7 +320,9 @@
       "unsavedChanges": "저장되지 않은 변경 사항",
       "visibleIf": "표시 조건",
       "visibleIfHint": "예: {questionName} = 'value'"
-    }
+    },
+    "templateCount": "{{count}} 템플릿",
+    "templateCountPlural": "{{count}} 템플릿"
   },
   "assetEditor": {
     "chipPlaceholder": "값을 입력하고 Enter를 누르세요",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "위협을 자세히 설명하세요",
     "threatName": "위협 이름",
     "threatType": "위협 유형",
+    "title": "제목",
     "tryAdjustingFilters": "필터를 조정해 보세요.",
     "type": "유형",
     "unsavedChangesWarning": "저장되지 않은 변경 사항이 있습니다. 닫으시겠습니까?",
@@ -529,8 +530,7 @@
     "view": "보기",
     "viewMetadata": "메타데이터 보기",
     "viewPermissions": "권한 보기",
-    "viewThreat": "위협 보기",
-    "title": "제목"
+    "viewThreat": "위협 보기"
   },
   "contextMenu": {
     "addInverseConnection": "역방향 연결 추가",

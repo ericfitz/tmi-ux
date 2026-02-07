@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Kopie)",
+    "createSurvey": "Umfrage erstellen",
     "editTemplate": "Vorlage bearbeiten",
     "errorLoadingTemplates": "Vorlagen konnten nicht geladen werden",
     "loadingTemplates": "Vorlagen werden geladen...",
@@ -254,9 +255,6 @@
     "pageTitle": "Umfragevorlagen",
     "searchByName": "Nach Name suchen...",
     "searchTemplates": "Vorlagen durchsuchen",
-    "templateCount": "{{count}} Vorlage",
-    "templateCountPlural": "{{count}} Vorlagen",
-    "createSurvey": "Umfrage erstellen",
     "surveyDetails": "Umfragedetails",
     "templateBuilder": {
       "addPage": "Seite hinzufügen",
@@ -322,7 +320,9 @@
       "unsavedChanges": "Ungespeicherte Änderungen",
       "visibleIf": "Sichtbar wenn",
       "visibleIfHint": "z.B. {questionName} = 'Wert'"
-    }
+    },
+    "templateCount": "{{count}} Vorlage",
+    "templateCountPlural": "{{count}} Vorlagen"
   },
   "assetEditor": {
     "chipPlaceholder": "Wert eingeben und Enter drücken",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "Beschreiben Sie die Bedrohung im Detail",
     "threatName": "Bedrohungsname",
     "threatType": "Bedrohungstyp",
+    "title": "Titel",
     "tryAdjustingFilters": "Versuchen Sie, Ihre Filter anzupassen.",
     "type": "Typ",
     "unsavedChangesWarning": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie schließen möchten?",
@@ -529,8 +530,7 @@
     "view": "Ansicht",
     "viewMetadata": "Metadaten anzeigen",
     "viewPermissions": "Berechtigungen anzeigen",
-    "viewThreat": "Bedrohung anzeigen",
-    "title": "Titel"
+    "viewThreat": "Bedrohung anzeigen"
   },
   "contextMenu": {
     "addInverseConnection": "Umgekehrte Verbindung hinzufügen",

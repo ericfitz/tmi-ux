@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(نقل)",
+    "createSurvey": "سروے بنائیں",
     "editTemplate": "ٹیمپلیٹ ترمیم کریں",
     "errorLoadingTemplates": "ٹیمپلیٹس لوڈ کرنے میں ناکام",
     "loadingTemplates": "ٹیمپلیٹس لوڈ ہو رہے ہیں...",
@@ -254,9 +255,6 @@
     "pageTitle": "سروے ٹیمپلیٹس",
     "searchByName": "نام سے تلاش کریں...",
     "searchTemplates": "ٹیمپلیٹس تلاش کریں",
-    "templateCount": "{{count}} ٹیمپلیٹ",
-    "templateCountPlural": "{{count}} ٹیمپلیٹس",
-    "createSurvey": "سروے بنائیں",
     "surveyDetails": "سروے کی تفصیلات",
     "templateBuilder": {
       "addPage": "صفحہ شامل کریں",
@@ -322,7 +320,9 @@
       "unsavedChanges": "غیر محفوظ شدہ تبدیلیاں",
       "visibleIf": "اگر نظر آئے",
       "visibleIfHint": "مثال، {questionName} = 'value'"
-    }
+    },
+    "templateCount": "{{count}} ٹیمپلیٹ",
+    "templateCountPlural": "{{count}} ٹیمپلیٹس"
   },
   "assetEditor": {
     "chipPlaceholder": "قدر درج کریں اور Enter دبائیں",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "خطرے کی تفصیل بیان کریں",
     "threatName": "خطرے کا نام",
     "threatType": "خطرے کی قسم",
+    "title": "عنوان",
     "tryAdjustingFilters": "اپنے فلٹرز کو ایڈجسٹ کرنے کی کوشش کریں۔",
     "type": "قسم",
     "unsavedChangesWarning": "آپ کے پاس غیر محفوظ شدہ تبدیلیاں ہیں۔ کیا آپ واقعی بند کرنا چاہتے ہیں؟",
@@ -529,8 +530,7 @@
     "view": "دیکھیں",
     "viewMetadata": "میٹا ڈیٹا دیکھیں",
     "viewPermissions": "اجازتیں دیکھیں",
-    "viewThreat": "خطرہ دیکھیں",
-    "title": "عنوان"
+    "viewThreat": "خطرہ دیکھیں"
   },
   "contextMenu": {
     "addInverseConnection": "الٹا کنکشن شامل کریں",

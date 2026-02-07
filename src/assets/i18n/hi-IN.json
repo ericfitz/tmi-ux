@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(प्रतिलिपि)",
+    "createSurvey": "सर्वेक्षण बनाएं",
     "editTemplate": "टेम्पलेट संपादित करें",
     "errorLoadingTemplates": "टेम्पलेट लोड करने में विफल",
     "loadingTemplates": "टेम्पलेट लोड हो रहे हैं...",
@@ -254,9 +255,6 @@
     "pageTitle": "सर्वेक्षण टेम्पलेट",
     "searchByName": "नाम से खोजें...",
     "searchTemplates": "टेम्पलेट खोजें",
-    "templateCount": "{{count}} टेम्पलेट",
-    "templateCountPlural": "{{count}} टेम्पलेट",
-    "createSurvey": "सर्वेक्षण बनाएं",
     "surveyDetails": "सर्वेक्षण विवरण",
     "templateBuilder": {
       "addPage": "पृष्ठ जोड़ें",
@@ -322,7 +320,9 @@
       "unsavedChanges": "असहेजे गए परिवर्तन",
       "visibleIf": "दृश्यमान यदि",
       "visibleIfHint": "उदाहरण, {questionName} = 'value'"
-    }
+    },
+    "templateCount": "{{count}} टेम्पलेट",
+    "templateCountPlural": "{{count}} टेम्पलेट"
   },
   "assetEditor": {
     "chipPlaceholder": "मान दर्ज करें और Enter दबाएं",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "खतरे का विस्तार से वर्णन करें",
     "threatName": "खतरे का नाम",
     "threatType": "खतरे का प्रकार",
+    "title": "शीर्षक",
     "tryAdjustingFilters": "अपने फ़िल्टर समायोजित करने का प्रयास करें।",
     "type": "प्रकार",
     "unsavedChangesWarning": "आपके पास सहेजे न गए परिवर्तन हैं। क्या आप वाकई बंद करना चाहते हैं?",
@@ -529,8 +530,7 @@
     "view": "देखें",
     "viewMetadata": "मेटाडेटा देखें",
     "viewPermissions": "अनुमतियां देखें",
-    "viewThreat": "खतरा देखें",
-    "title": "शीर्षक"
+    "viewThreat": "खतरा देखें"
   },
   "contextMenu": {
     "addInverseConnection": "उलटा कनेक्शन जोड़ें",

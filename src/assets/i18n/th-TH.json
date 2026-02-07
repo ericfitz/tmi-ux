@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(สำเนา)",
+    "createSurvey": "สร้างแบบสำรวจ",
     "editTemplate": "แก้ไขเทมเพลต",
     "errorLoadingTemplates": "ไม่สามารถโหลดเทมเพลตได้",
     "loadingTemplates": "กำลังโหลดเทมเพลต...",
@@ -254,9 +255,6 @@
     "pageTitle": "เทมเพลตแบบสำรวจ",
     "searchByName": "ค้นหาตามชื่อ...",
     "searchTemplates": "ค้นหาเทมเพลต",
-    "templateCount": "{{count}} เทมเพลต",
-    "templateCountPlural": "{{count}} เทมเพลต",
-    "createSurvey": "สร้างแบบสำรวจ",
     "surveyDetails": "รายละเอียดแบบสำรวจ",
     "templateBuilder": {
       "addPage": "เพิ่มหน้า",
@@ -322,7 +320,9 @@
       "unsavedChanges": "การเปลี่ยนแปลงที่ยังไม่ได้บันทึก",
       "visibleIf": "แสดงถ้า",
       "visibleIfHint": "เช่น {questionName} = 'value'"
-    }
+    },
+    "templateCount": "{{count}} เทมเพลต",
+    "templateCountPlural": "{{count}} เทมเพลต"
   },
   "assetEditor": {
     "chipPlaceholder": "ป้อนค่าและกด Enter",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "อธิบายภัยคุกคามโดยละเอียด",
     "threatName": "ชื่อภัยคุกคาม",
     "threatType": "ประเภทภัยคุกคาม",
+    "title": "ชื่อ",
     "tryAdjustingFilters": "ลองปรับตัวกรองของคุณ",
     "type": "ประเภท",
     "unsavedChangesWarning": "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก คุณแน่ใจหรือไม่ว่าต้องการปิด?",
@@ -529,8 +530,7 @@
     "view": "ดู",
     "viewMetadata": "ดูข้อมูลเมตา",
     "viewPermissions": "ดูสิทธิ์การเข้าถึง",
-    "viewThreat": "ดูภัยคุกคาม",
-    "title": "ชื่อ"
+    "viewThreat": "ดูภัยคุกคาม"
   },
   "contextMenu": {
     "addInverseConnection": "เพิ่มการเชื่อมต่อแบบกลับกัน",

@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(نسخة)",
+    "createSurvey": "إنشاء استبيان",
     "editTemplate": "تعديل القالب",
     "errorLoadingTemplates": "فشل تحميل القوالب",
     "loadingTemplates": "جارٍ تحميل القوالب...",
@@ -254,9 +255,6 @@
     "pageTitle": "قوالب الاستبيانات",
     "searchByName": "البحث بالاسم...",
     "searchTemplates": "البحث في القوالب",
-    "templateCount": "{{count}} قالب",
-    "templateCountPlural": "{{count}} قوالب",
-    "createSurvey": "إنشاء استبيان",
     "surveyDetails": "تفاصيل الاستبيان",
     "templateBuilder": {
       "addPage": "إضافة صفحة",
@@ -322,7 +320,9 @@
       "unsavedChanges": "تغييرات غير محفوظة",
       "visibleIf": "مرئي إذا",
       "visibleIfHint": "مثال: {questionName} = 'value'"
-    }
+    },
+    "templateCount": "{{count}} قالب",
+    "templateCountPlural": "{{count}} قوالب"
   },
   "assetEditor": {
     "chipPlaceholder": "أدخل القيمة واضغط Enter",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "وصف التهديد بالتفصيل",
     "threatName": "اسم التهديد",
     "threatType": "نوع التهديد",
+    "title": "العنوان",
     "tryAdjustingFilters": "حاول تعديل عوامل التصفية.",
     "type": "النوع",
     "unsavedChangesWarning": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد الإغلاق؟",
@@ -529,8 +530,7 @@
     "view": "عرض",
     "viewMetadata": "عرض البيانات الوصفية",
     "viewPermissions": "عرض الأذونات",
-    "viewThreat": "عرض التهديد",
-    "title": "العنوان"
+    "viewThreat": "عرض التهديد"
   },
   "contextMenu": {
     "addInverseConnection": "إضافة اتصال عكسي",

@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Copia)",
+    "createSurvey": "Crear Encuesta",
     "editTemplate": "Editar plantilla",
     "errorLoadingTemplates": "Error al cargar las plantillas",
     "loadingTemplates": "Cargando plantillas...",
@@ -254,9 +255,6 @@
     "pageTitle": "Plantillas de encuestas",
     "searchByName": "Buscar por nombre...",
     "searchTemplates": "Buscar plantillas",
-    "templateCount": "{{count}} plantilla",
-    "templateCountPlural": "{{count}} plantillas",
-    "createSurvey": "Crear Encuesta",
     "surveyDetails": "Detalles de Encuesta",
     "templateBuilder": {
       "addPage": "Añadir página",
@@ -322,7 +320,9 @@
       "unsavedChanges": "Cambios sin guardar",
       "visibleIf": "Visible Si",
       "visibleIfHint": "p. ej., {questionName} = 'value'"
-    }
+    },
+    "templateCount": "{{count}} plantilla",
+    "templateCountPlural": "{{count}} plantillas"
   },
   "assetEditor": {
     "chipPlaceholder": "Introduzca un valor y pulse Intro",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "Describa la Amenaza en Detalle",
     "threatName": "Nombre de la Amenaza",
     "threatType": "Tipo de Amenaza",
+    "title": "Título",
     "tryAdjustingFilters": "Intente ajustar sus filtros.",
     "type": "Tipo",
     "unsavedChangesWarning": "Tiene cambios sin guardar. ¿Está seguro de que desea cerrar?",
@@ -529,8 +530,7 @@
     "view": "Ver",
     "viewMetadata": "Ver Metadatos",
     "viewPermissions": "Ver Permisos",
-    "viewThreat": "Ver Amenaza",
-    "title": "Título"
+    "viewThreat": "Ver Amenaza"
   },
   "contextMenu": {
     "addInverseConnection": "Añadir Conexión Inversa",

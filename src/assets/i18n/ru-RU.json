@@ -245,6 +245,7 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Копия)",
+    "createSurvey": "Создать опрос",
     "editTemplate": "Редактировать шаблон",
     "errorLoadingTemplates": "Не удалось загрузить шаблоны",
     "loadingTemplates": "Загрузка шаблонов...",
@@ -254,9 +255,6 @@
     "pageTitle": "Шаблоны опросов",
     "searchByName": "Поиск по названию...",
     "searchTemplates": "Поиск шаблонов",
-    "templateCount": "{{count}} шаблон",
-    "templateCountPlural": "{{count}} шаблонов",
-    "createSurvey": "Создать опрос",
     "surveyDetails": "Детали опроса",
     "templateBuilder": {
       "addPage": "Добавить страницу",
@@ -322,7 +320,9 @@
       "unsavedChanges": "Несохранённые изменения",
       "visibleIf": "Видимо, если",
       "visibleIfHint": "например, {questionName} = 'значение'"
-    }
+    },
+    "templateCount": "{{count}} шаблон",
+    "templateCountPlural": "{{count}} шаблонов"
   },
   "assetEditor": {
     "chipPlaceholder": "Введите значение и нажмите Enter",
@@ -515,6 +515,7 @@
     "threatDescriptionPlaceholder": "Подробно опишите угрозу",
     "threatName": "Название Угрозы",
     "threatType": "Тип Угрозы",
+    "title": "Название",
     "tryAdjustingFilters": "Попробуйте изменить фильтры.",
     "type": "Тип",
     "unsavedChangesWarning": "У вас есть несохранённые изменения. Вы уверены, что хотите закрыть?",
@@ -529,8 +530,7 @@
     "view": "Просмотр",
     "viewMetadata": "Просмотр Метаданных",
     "viewPermissions": "Просмотр Разрешений",
-    "viewThreat": "Просмотр Угрозы",
-    "title": "Название"
+    "viewThreat": "Просмотр Угрозы"
   },
   "contextMenu": {
     "addInverseConnection": "Добавить обратное соединение",
