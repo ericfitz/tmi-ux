@@ -74,11 +74,19 @@
             <div class="threat-model-info">
               <mat-icon class="threat-model-icon">security</mat-icon>
               <div class="threat-model-details">
-                <h3 class="threat-model-title">
+                <h3
+                  class="threat-model-title"
+                  [matTooltip]="threatModel.name"
+                  matTooltipShowDelay="500"
+                >
                   {{ threatModel.name }}
                 </h3>
                 @if (threatModel.description) {
-                  <p class="threat-model-description">
+                  <p
+                    class="threat-model-description"
+                    [matTooltip]="threatModel.description"
+                    matTooltipShowDelay="500"
+                  >
                     {{ threatModel.description }}
                   </p>
                 }

@@ -180,7 +180,7 @@
       },
       "surveys": {
         "description": "سروے بنائیں اور ان کا نظم کریں",
-        "title": "{{common.objectTypes.surveys}}"
+        "title": "سروے کا نظم کریں"
       },
       "users": {
         "description": "صارف اکاؤنٹس دیکھیں اور ان کا انتظام کریں",

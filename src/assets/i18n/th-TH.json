@@ -180,7 +180,7 @@
       },
       "surveys": {
         "description": "สร้างและจัดการแบบสำรวจ",
-        "title": "{{common.objectTypes.surveys}}"
+        "title": "จัดการแบบสำรวจ"
       },
       "users": {
         "description": "ดูและจัดการบัญชีผู้ใช้",

@@ -180,7 +180,7 @@
       },
       "surveys": {
         "description": "إنشاء وإدارة الاستبيانات",
-        "title": "{{common.objectTypes.surveys}}"
+        "title": "إدارة الاستبيانات"
       },
       "users": {
         "description": "عرض وإدارة حسابات المستخدمين",

@@ -55,11 +55,10 @@ export class AdminSurveysComponent implements OnInit, AfterViewInit {
   loading = true;
   error: string | null = null;
 
-  statusFilter: SurveyStatus | 'all' = 'all';
+  statusFilter: SurveyStatus[] = ['active', 'inactive'];
   searchText = '';
 
-  readonly statusOptions: { value: SurveyStatus | 'all'; labelKey: string }[] = [
-    { value: 'all', labelKey: 'common.allStatuses' },
+  readonly statusOptions: { value: SurveyStatus; labelKey: string }[] = [
     { value: 'active', labelKey: 'surveys.templateStatus.active' },
     { value: 'inactive', labelKey: 'surveys.templateStatus.inactive' },
     { value: 'archived', labelKey: 'surveys.templateStatus.archived' },
@@ -135,8 +134,8 @@ export class AdminSurveysComponent implements OnInit, AfterViewInit {
     let filtered = [...this.templates];
 
     // Status filter
-    if (this.statusFilter !== 'all') {
-      filtered = filtered.filter(t => t.status === this.statusFilter);
+    if (this.statusFilter.length > 0) {
+      filtered = filtered.filter(t => this.statusFilter.includes(t.status));
     }
 
     // Search filter

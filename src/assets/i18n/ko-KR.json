@@ -180,7 +180,7 @@
       },
       "surveys": {
         "description": "설문조사 생성 및 관리",
-        "title": "{{common.objectTypes.surveys}}"
+        "title": "설문조사 관리"
       },
       "users": {
         "description": "사용자 계정 보기 및 관리",

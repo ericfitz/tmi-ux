@@ -6,7 +6,9 @@
         {{ (surveyId ? 'adminSurveys.editTemplate' : 'adminSurveys.createSurvey') | transloco }}
       </h1>
       @if (template) {
-        <span class="template-status">{{ template.status }}</span>
+        <span class="template-status">{{
+          'surveys.templateStatus.' + template.status | transloco
+        }}</span>
       }
     </div>
     <div class="header-actions">

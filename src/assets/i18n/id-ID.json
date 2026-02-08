@@ -180,7 +180,7 @@
       },
       "surveys": {
         "description": "Buat dan kelola survei",
-        "title": "{{common.objectTypes.surveys}}"
+        "title": "Kelola Survei"
       },
       "users": {
         "description": "Lihat dan kelola akun pengguna",

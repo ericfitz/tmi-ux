@@ -180,7 +180,7 @@
       },
       "surveys": {
         "description": "יצירה וניהול של סקרים",
-        "title": "{{common.objectTypes.surveys}}"
+        "title": "ניהול סקרים"
       },
       "users": {
         "description": "צפה ונהל חשבונות משתמשים",

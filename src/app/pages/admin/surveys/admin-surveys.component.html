@@ -25,7 +25,7 @@
 
     <mat-form-field appearance="outline" class="status-filter">
       <mat-label>{{ 'common.status' | transloco }}</mat-label>
-      <mat-select [(value)]="statusFilter" (selectionChange)="onFilterChange()">
+      <mat-select multiple [(value)]="statusFilter" (selectionChange)="onFilterChange()">
         @for (option of statusOptions; track option.value) {
           <mat-option [value]="option.value">{{ option.labelKey | transloco }}</mat-option>
         }

@@ -189,7 +189,7 @@
       },
       "surveys": {
         "description": "Create and manage surveys",
-        "title": "{{common.objectTypes.surveys}}"
+        "title": "Manage Surveys"
       },
       "users": {
         "description": "View and manage user accounts",
@@ -261,7 +261,7 @@
   "adminSurveys": {
     "cloneSuffix": "(Copy)",
     "createSurvey": "Create Survey",
-    "editTemplate": "Edit survey",
+    "editTemplate": "Edit Survey",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
     "noMatchingTitle": "No Matching Surveys",

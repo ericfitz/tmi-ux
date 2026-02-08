@@ -290,6 +290,10 @@ This action cannot be undone.`);
     return group.group_name;
   }
 
+  isEveryoneGroup(group: AdminGroup): boolean {
+    return group.provider === '*' && group.group_name.toLowerCase() === 'everyone';
+  }
+
   getProviderInfo(providerId: string): OAuthProviderInfo | null {
     return this.availableProviders.find(p => p.id === providerId) || null;
   }

@@ -180,7 +180,7 @@
       },
       "surveys": {
         "description": "Создание и управление опросами",
-        "title": "{{common.objectTypes.surveys}}"
+        "title": "Управление опросами"
       },
       "users": {
         "description": "Просмотр и управление учётными записями пользователей",

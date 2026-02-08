@@ -180,7 +180,7 @@
       },
       "surveys": {
         "description": "調査を作成および管理",
-        "title": "{{common.objectTypes.surveys}}"
+        "title": "調査を管理"
       },
       "users": {
         "description": "ユーザーアカウントの表示と管理",

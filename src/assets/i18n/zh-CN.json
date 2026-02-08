@@ -180,7 +180,7 @@
       },
       "surveys": {
         "description": "创建和管理调查问卷",
-        "title": "{{common.objectTypes.surveys}}"
+        "title": "管理调查问卷"
       },
       "users": {
         "description": "查看和管理用户账户",

@@ -104,6 +104,7 @@
                   <button
                     mat-icon-button
                     (click)="onViewMembers(group)"
+                    [disabled]="isEveryoneGroup(group)"
                     [matTooltip]="'admin.groups.viewMembersTooltip' | transloco"
                   >
                     <mat-icon>people</mat-icon>
@@ -112,6 +113,7 @@
                     mat-icon-button
                     color="warn"
                     (click)="onDeleteGroup(group)"
+                    [disabled]="isEveryoneGroup(group)"
                     [matTooltip]="'admin.groups.deleteTooltip' | transloco"
                   >
                     <mat-icon>delete</mat-icon>

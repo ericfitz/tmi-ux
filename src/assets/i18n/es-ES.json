@@ -180,7 +180,7 @@
       },
       "surveys": {
         "description": "Crear y gestionar encuestas",
-        "title": "{{common.objectTypes.surveys}}"
+        "title": "Gestionar encuestas"
       },
       "users": {
         "description": "Ver y gestionar cuentas de usuario",

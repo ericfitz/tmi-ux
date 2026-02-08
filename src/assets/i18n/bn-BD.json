@@ -180,7 +180,7 @@
       },
       "surveys": {
         "description": "জরিপ তৈরি এবং পরিচালনা করুন",
-        "title": "{{common.objectTypes.surveys}}"
+        "title": "জরিপ পরিচালনা করুন"
       },
       "users": {
         "description": "ব্যবহারকারী অ্যাকাউন্ট দেখুন এবং পরিচালনা করুন",

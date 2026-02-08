@@ -180,7 +180,7 @@
       },
       "surveys": {
         "description": "Criar e gerenciar pesquisas",
-        "title": "{{common.objectTypes.surveys}}"
+        "title": "Gerenciar Pesquisas"
       },
       "users": {
         "description": "Visualizar e gerenciar contas de usuarios",
