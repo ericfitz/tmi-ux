@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "調査テンプレートの作成と管理",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "ユーザーアカウントの表示と管理",
@@ -458,8 +458,6 @@
       "survey": "調査",
       "surveyResponse": "調査回答",
       "surveyResponses": "調査回答",
-      "surveyTemplate": "調査テンプレート",
-      "surveyTemplates": "調査テンプレート",
       "surveys": "調査",
       "threat": "脅威",
       "threatModel": "脅威モデル",

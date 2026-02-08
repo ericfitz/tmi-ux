@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "إنشاء وإدارة قوالب الاستبيانات",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "عرض وإدارة حسابات المستخدمين",
@@ -458,8 +458,6 @@
       "survey": "استبيان",
       "surveyResponse": "رد على الاستبيان",
       "surveyResponses": "ردود الاستبيانات",
-      "surveyTemplate": "قالب الاستبيان",
-      "surveyTemplates": "قوالب الاستبيانات",
       "surveys": "الاستبيانات",
       "threat": "تهديد",
       "threatModel": "نموذج التهديد",

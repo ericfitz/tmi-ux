@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "জরিপ টেমপ্লেট তৈরি এবং পরিচালনা করুন",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "ব্যবহারকারী অ্যাকাউন্ট দেখুন এবং পরিচালনা করুন",
@@ -458,8 +458,6 @@
       "survey": "জরিপ",
       "surveyResponse": "জরিপ প্রতিক্রিয়া",
       "surveyResponses": "জরিপ প্রতিক্রিয়া",
-      "surveyTemplate": "জরিপ টেমপ্লেট",
-      "surveyTemplates": "জরিপ টেমপ্লেট",
       "surveys": "জরিপ",
       "threat": "হুমকি",
       "threatModel": "থ্রেট মডেল",

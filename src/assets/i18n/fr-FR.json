@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "Créer et gérer les modèles d'enquête",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "Afficher et gerer les comptes utilisateurs",
@@ -458,8 +458,6 @@
       "survey": "Enquête",
       "surveyResponse": "Réponse d'enquête",
       "surveyResponses": "Réponses d'enquête",
-      "surveyTemplate": "Modèle d'enquête",
-      "surveyTemplates": "Modèles d'enquête",
       "surveys": "Enquêtes",
       "threat": "Menace",
       "threatModel": "Modele de Menaces",

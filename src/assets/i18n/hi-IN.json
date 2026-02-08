@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "सर्वेक्षण टेम्पलेट बनाएं और प्रबंधित करें",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "उपयोगकर्ता खातों को देखें और प्रबंधित करें",
@@ -458,8 +458,6 @@
       "survey": "सर्वेक्षण",
       "surveyResponse": "सर्वेक्षण प्रतिक्रिया",
       "surveyResponses": "सर्वेक्षण प्रतिक्रियाएं",
-      "surveyTemplate": "सर्वेक्षण टेम्पलेट",
-      "surveyTemplates": "सर्वेक्षण टेम्पलेट",
       "surveys": "सर्वेक्षण",
       "threat": "खतरा",
       "threatModel": "थ्रेट मॉडल",

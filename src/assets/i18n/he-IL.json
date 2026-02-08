@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "צור ונהל תבניות סקר",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "צפה ונהל חשבונות משתמשים",
@@ -458,8 +458,6 @@
       "survey": "סקר",
       "surveyResponse": "תגובת סקר",
       "surveyResponses": "תגובות סקר",
-      "surveyTemplate": "תבנית סקר",
-      "surveyTemplates": "תבניות סקר",
       "surveys": "סקרים",
       "threat": "איום",
       "threatModel": "מודל איומים",

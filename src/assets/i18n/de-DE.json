@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "Umfragevorlagen erstellen und verwalten",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "Benutzerkonten anzeigen und verwalten",
@@ -458,8 +458,6 @@
       "survey": "Umfrage",
       "surveyResponse": "Umfrageantwort",
       "surveyResponses": "Umfrageantworten",
-      "surveyTemplate": "Umfragevorlage",
-      "surveyTemplates": "Umfragevorlagen",
       "surveys": "Umfragen",
       "threat": "Bedrohung",
       "threatModel": "Bedrohungsmodell",

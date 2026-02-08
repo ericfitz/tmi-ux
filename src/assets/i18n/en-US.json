@@ -187,7 +187,7 @@
       },
       "surveys": {
         "description": "Create and manage survey templates",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "View and manage user accounts",
@@ -490,8 +490,6 @@
       "survey": "Survey",
       "surveyResponse": "Survey Response",
       "surveyResponses": "Survey Responses",
-      "surveyTemplate": "Survey Template",
-      "surveyTemplates": "Survey Templates",
       "surveys": "Surveys",
       "threat": "Threat",
       "threatModel": "Threat Model",

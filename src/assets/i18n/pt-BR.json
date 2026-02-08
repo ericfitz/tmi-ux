@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "Criar e gerenciar modelos de pesquisa",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "Visualizar e gerenciar contas de usuarios",
@@ -458,8 +458,6 @@
       "survey": "Pesquisa",
       "surveyResponse": "Resposta de Pesquisa",
       "surveyResponses": "Respostas de Pesquisa",
-      "surveyTemplate": "Modelo de Pesquisa",
-      "surveyTemplates": "Modelos de Pesquisa",
       "surveys": "Pesquisas",
       "threat": "Ameaca",
       "threatModel": "Modelo de Ameacas",

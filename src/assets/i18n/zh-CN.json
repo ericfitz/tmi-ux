@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "创建和管理调查模板",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "查看和管理用户账户",
@@ -458,8 +458,6 @@
       "survey": "调查",
       "surveyResponse": "调查回复",
       "surveyResponses": "调查回复",
-      "surveyTemplate": "调查模板",
-      "surveyTemplates": "调查模板",
       "surveys": "调查",
       "threat": "威胁",
       "threatModel": "威胁模型",

@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "สร้างและจัดการแม่แบบแบบสำรวจ",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "ดูและจัดการบัญชีผู้ใช้",
@@ -458,8 +458,6 @@
       "survey": "แบบสำรวจ",
       "surveyResponse": "คำตอบแบบสำรวจ",
       "surveyResponses": "คำตอบแบบสำรวจ",
-      "surveyTemplate": "แม่แบบแบบสำรวจ",
-      "surveyTemplates": "แม่แบบแบบสำรวจ",
       "surveys": "แบบสำรวจ",
       "threat": "ภัยคุกคาม",
       "threatModel": "โมเดลภัยคุกคาม",

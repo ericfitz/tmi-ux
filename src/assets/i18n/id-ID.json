@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "Buat dan kelola templat survei",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "Lihat dan kelola akun pengguna",
@@ -458,8 +458,6 @@
       "survey": "Survei",
       "surveyResponse": "Respons Survei",
       "surveyResponses": "Respons Survei",
-      "surveyTemplate": "Templat Survei",
-      "surveyTemplates": "Templat Survei",
       "surveys": "Survei",
       "threat": "Ancaman",
       "threatModel": "Model Ancaman",

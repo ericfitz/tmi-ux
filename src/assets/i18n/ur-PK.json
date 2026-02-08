@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "سروے ٹیمپلیٹس بنائیں اور ان کا انتظام کریں",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "صارف اکاؤنٹس دیکھیں اور ان کا انتظام کریں",
@@ -458,8 +458,6 @@
       "survey": "سروے",
       "surveyResponse": "سروے کا جواب",
       "surveyResponses": "سروے کے جوابات",
-      "surveyTemplate": "سروے ٹیمپلیٹ",
-      "surveyTemplates": "سروے ٹیمپلیٹس",
       "surveys": "سروے",
       "threat": "خطرہ",
       "threatModel": "خطرے کا ماڈل",

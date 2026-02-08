@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "Crear y gestionar plantillas de encuestas",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "Ver y gestionar cuentas de usuario",
@@ -458,8 +458,6 @@
       "survey": "Encuesta",
       "surveyResponse": "Respuesta de Encuesta",
       "surveyResponses": "Respuestas de Encuesta",
-      "surveyTemplate": "Plantilla de Encuesta",
-      "surveyTemplates": "Plantillas de Encuesta",
       "surveys": "Encuestas",
       "threat": "Amenaza",
       "threatModel": "Modelo de Amenazas",

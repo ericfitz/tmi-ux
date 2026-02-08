@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "Создание и управление шаблонами опросов",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "Просмотр и управление учётными записями пользователей",
@@ -458,8 +458,6 @@
       "survey": "Опрос",
       "surveyResponse": "Ответ на опрос",
       "surveyResponses": "Ответы на опросы",
-      "surveyTemplate": "Шаблон опроса",
-      "surveyTemplates": "Шаблоны опросов",
       "surveys": "Опросы",
       "threat": "Угроза",
       "threatModel": "Модель Угроз",

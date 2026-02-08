@@ -178,7 +178,7 @@
       },
       "surveys": {
         "description": "설문 템플릿 생성 및 관리",
-        "title": "{{common.objectTypes.surveyTemplates}}"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
         "description": "사용자 계정 보기 및 관리",
@@ -458,8 +458,6 @@
       "survey": "설문",
       "surveyResponse": "설문 응답",
       "surveyResponses": "설문 응답",
-      "surveyTemplate": "설문 템플릿",
-      "surveyTemplates": "설문 템플릿",
       "surveys": "설문",
       "threat": "위협",
       "threatModel": "위협 모델",
