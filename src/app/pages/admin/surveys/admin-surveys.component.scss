@@ -140,10 +140,7 @@
     }
 
     td {
-      // Prevent row click when clicking actions
-      button {
-        z-index: 1;
-      }
+      white-space: nowrap;
     }
   }
 }
