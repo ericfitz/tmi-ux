@@ -235,7 +235,7 @@
       "noWebhooks": "Вебхуки не найдены",
       "secret": "Секрет HMAC",
       "status": {
-        "active": "Активен",
+        "active": "{{common.active}}",
         "pending_delete": "Ожидает удаления",
         "pending_verification": "Ожидает подтверждения"
       },
@@ -260,11 +260,11 @@
       "metadataKeyHint": "Имя ключа для записи метаданных",
       "nameId": "Название (ID)",
       "nameIdHint": "Уникальный идентификатор для этого вопроса",
-      "nextPage": "Следующая страница",
+      "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "Нажмите на тип вопроса из палитры, чтобы добавить его",
       "noQuestionsYet": "Вопросов пока нет",
       "pageIndicator": "Страница {{current}} из {{total}}",
-      "previousPage": "Предыдущая страница",
+      "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "Свойства вопроса",
       "questionTypeDescriptions": {
         "boolean": "Переключатель да/нет",
@@ -284,7 +284,7 @@
         "panel": "Панель",
         "paneldynamic": "Динамическая панель",
         "radiogroup": "Группа переключателей",
-        "text": "Текст"
+        "text": "{{editor.nodeLabels.textbox}}"
       },
       "questionTypes": "Типы вопросов",
       "questions": "Вопросы",
@@ -292,23 +292,26 @@
       "selectQuestionHint": "Выберите вопрос для редактирования его свойств",
       "tmFieldLabels": {
         "assetDescription": "Описание актива",
-        "assetName": "Название актива",
-        "assetType": "Тип актива",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
         "description": "Описание модели угроз",
-        "documentName": "Название документа",
-        "documentUrl": "URL документа",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
         "issueUri": "URL отслеживания задач",
         "metadataKey": "Пользовательские метаданные",
         "name": "Название модели угроз",
-        "repositoryName": "Название репозитория",
-        "repositoryUrl": "URL репозитория"
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
       "tmFieldMapping": "Сопоставление полей модели угроз",
       "tmFieldMappingHint": "Связать этот ответ с полем модели угроз",
       "unsavedChanges": "Несохранённые изменения",
       "visibleIf": "Видимо, если",
-      "visibleIfHint": "например, {questionName} = 'значение'"
-    }
+      "visibleIfHint": "например, {questionName} = 'значение'",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+    },
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
   },
   "assetEditor": {
     "chipPlaceholder": "Введите значение и нажмите Enter",
@@ -803,11 +806,11 @@
       "needsRevision": "Требуется доработка",
       "readyForReview": "Готово к проверке",
       "reviewCreated": "Проверка создана",
-      "submitted": "Отправлено"
+      "submitted": "{{triage.list.submitted}}"
     },
     "submitSurvey": "Отправить опрос",
     "templateStatus": {
-      "active": "Активный",
+      "active": "{{common.active}}",
       "archived": "В архиве",
       "inactive": "Неактивный"
     },
@@ -1040,7 +1043,7 @@
       "surveyResponses": "{{common.objectTypes.surveyResponses}}"
     },
     "filters": {
-      "allStatuses": "Все статусы",
+      "allStatuses": "{{common.allStatuses}}",
       "allTemplates": "Все шаблоны",
       "clearFilters": "Очистить фильтры"
     },

@@ -235,7 +235,7 @@
       "noWebhooks": "কোনো ওয়েবহুক পাওয়া যায়নি",
       "secret": "HMAC সিক্রেট",
       "status": {
-        "active": "সক্রিয়",
+        "active": "{{common.active}}",
         "pending_delete": "মুছে ফেলা মুলতুবি",
         "pending_verification": "যাচাই মুলতুবি"
       },
@@ -260,11 +260,11 @@
       "metadataKeyHint": "মেটাডেটা এন্ট্রির জন্য কী নাম",
       "nameId": "নাম (ID)",
       "nameIdHint": "এই প্রশ্নের জন্য অনন্য শনাক্তকারী",
-      "nextPage": "পরবর্তী পৃষ্ঠা",
+      "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "প্যালেট থেকে একটি প্রশ্ন প্রকার ক্লিক করুন যোগ করতে",
       "noQuestionsYet": "এখনও কোনো প্রশ্ন নেই",
       "pageIndicator": "পৃষ্ঠা {{current}}/{{total}}",
-      "previousPage": "পূর্ববর্তী পৃষ্ঠা",
+      "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "প্রশ্নের বৈশিষ্ট্য",
       "questionTypeDescriptions": {
         "boolean": "বুলিয়ান টগল",
@@ -284,7 +284,7 @@
         "panel": "প্যানেল",
         "paneldynamic": "ডায়নামিক প্যানেল",
         "radiogroup": "রেডিও গ্রুপ",
-        "text": "টেক্সট"
+        "text": "{{editor.nodeLabels.textbox}}"
       },
       "questionTypes": "প্রশ্নের প্রকার",
       "questions": "প্রশ্নসমূহ",
@@ -292,23 +292,26 @@
       "selectQuestionHint": "এর বৈশিষ্ট্য সম্পাদনা করতে একটি প্রশ্ন নির্বাচন করুন",
       "tmFieldLabels": {
         "assetDescription": "সম্পদ বিবরণ",
-        "assetName": "সম্পদ নাম",
-        "assetType": "সম্পদ প্রকার",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
         "description": "থ্রেট মডেল বিবরণ",
-        "documentName": "নথি নাম",
-        "documentUrl": "নথি URL",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
         "issueUri": "ইস্যু ট্র্যাকিং URL",
         "metadataKey": "কাস্টম মেটাডেটা",
         "name": "থ্রেট মডেল নাম",
-        "repositoryName": "রিপোজিটরি নাম",
-        "repositoryUrl": "রিপোজিটরি URL"
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
       "tmFieldMapping": "থ্রেট মডেল ক্ষেত্র ম্যাপিং",
       "tmFieldMappingHint": "এই উত্তরটি একটি থ্রেট মডেল ক্ষেত্রের সাথে লিংক করুন",
       "unsavedChanges": "অসংরক্ষিত পরিবর্তন",
       "visibleIf": "দৃশ্যমান যদি",
-      "visibleIfHint": "যেমন, {questionName} = 'value'"
-    }
+      "visibleIfHint": "যেমন, {questionName} = 'value'",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+    },
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
   },
   "assetEditor": {
     "chipPlaceholder": "মান লিখুন এবং Enter চাপুন",
@@ -803,11 +806,11 @@
       "needsRevision": "সংশোধন প্রয়োজন",
       "readyForReview": "পর্যালোচনার জন্য প্রস্তুত",
       "reviewCreated": "পর্যালোচনা তৈরি হয়েছে",
-      "submitted": "জমা দেওয়া হয়েছে"
+      "submitted": "{{triage.list.submitted}}"
     },
     "submitSurvey": "জরিপ জমা দিন",
     "templateStatus": {
-      "active": "সক্রিয়",
+      "active": "{{common.active}}",
       "archived": "আর্কাইভকৃত",
       "inactive": "নিষ্ক্রিয়"
     },
@@ -1040,7 +1043,7 @@
       "surveyResponses": "{{common.objectTypes.surveyResponses}}"
     },
     "filters": {
-      "allStatuses": "সকল স্ট্যাটাস",
+      "allStatuses": "{{common.allStatuses}}",
       "allTemplates": "সকল টেমপ্লেট",
       "clearFilters": "ফিল্টার সাফ করুন"
     },

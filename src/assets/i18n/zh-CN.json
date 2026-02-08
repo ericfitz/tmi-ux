@@ -235,7 +235,7 @@
       "noWebhooks": "未找到webhook",
       "secret": "HMAC密钥",
       "status": {
-        "active": "活跃",
+        "active": "{{common.active}}",
         "pending_delete": "待删除",
         "pending_verification": "待验证"
       },
@@ -260,11 +260,11 @@
       "metadataKeyHint": "元数据条目的键名称",
       "nameId": "名称（ID）",
       "nameIdHint": "此问题的唯一标识符",
-      "nextPage": "下一页",
+      "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "从调色板点击问题类型以添加它",
       "noQuestionsYet": "暂无问题",
       "pageIndicator": "第 {{current}} 页，共 {{total}} 页",
-      "previousPage": "上一页",
+      "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "问题属性",
       "questionTypeDescriptions": {
         "boolean": "布尔切换",
@@ -284,7 +284,7 @@
         "panel": "面板",
         "paneldynamic": "动态面板",
         "radiogroup": "单选组",
-        "text": "文本"
+        "text": "{{editor.nodeLabels.textbox}}"
       },
       "questionTypes": "问题类型",
       "questions": "问题",
@@ -292,23 +292,26 @@
       "selectQuestionHint": "选择一个问题以编辑其属性",
       "tmFieldLabels": {
         "assetDescription": "资产描述",
-        "assetName": "资产名称",
-        "assetType": "资产类型",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
         "description": "威胁模型描述",
-        "documentName": "文档名称",
-        "documentUrl": "文档URL",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
         "issueUri": "问题跟踪URL",
         "metadataKey": "自定义元数据",
         "name": "威胁模型名称",
-        "repositoryName": "仓库名称",
-        "repositoryUrl": "仓库URL"
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
       "tmFieldMapping": "威胁模型字段映射",
       "tmFieldMappingHint": "将此答案链接到威胁模型字段",
       "unsavedChanges": "未保存的更改",
       "visibleIf": "可见条件",
-      "visibleIfHint": "例如：{questionName} = 'value'"
-    }
+      "visibleIfHint": "例如：{questionName} = 'value'",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+    },
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
   },
   "assetEditor": {
     "chipPlaceholder": "输入值并按 Enter",
@@ -803,11 +806,11 @@
       "needsRevision": "需要修订",
       "readyForReview": "待审核",
       "reviewCreated": "已创建审核",
-      "submitted": "已提交"
+      "submitted": "{{triage.list.submitted}}"
     },
     "submitSurvey": "提交调查",
     "templateStatus": {
-      "active": "活跃",
+      "active": "{{common.active}}",
       "archived": "已归档",
       "inactive": "未激活"
     },
@@ -1040,7 +1043,7 @@
       "surveyResponses": "{{common.objectTypes.surveyResponses}}"
     },
     "filters": {
-      "allStatuses": "所有状态",
+      "allStatuses": "{{common.allStatuses}}",
       "allTemplates": "所有模板",
       "clearFilters": "清除筛选"
     },

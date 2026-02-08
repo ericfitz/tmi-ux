@@ -235,7 +235,7 @@
       "noWebhooks": "Tidak ada webhook ditemukan",
       "secret": "Rahasia HMAC",
       "status": {
-        "active": "Aktif",
+        "active": "{{common.active}}",
         "pending_delete": "Menunggu Penghapusan",
         "pending_verification": "Menunggu Verifikasi"
       },
@@ -260,11 +260,11 @@
       "metadataKeyHint": "Nama kunci untuk entri metadata",
       "nameId": "Nama (ID)",
       "nameIdHint": "Pengenal unik untuk pertanyaan ini",
-      "nextPage": "Halaman berikutnya",
+      "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "Klik jenis pertanyaan dari palet untuk menambahkannya",
       "noQuestionsYet": "Belum ada pertanyaan",
       "pageIndicator": "Halaman {{current}} dari {{total}}",
-      "previousPage": "Halaman sebelumnya",
+      "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "Properti Pertanyaan",
       "questionTypeDescriptions": {
         "boolean": "Tombol beralih boolean",
@@ -284,7 +284,7 @@
         "panel": "Panel",
         "paneldynamic": "Panel Dinamis",
         "radiogroup": "Grup Radio",
-        "text": "Teks"
+        "text": "{{editor.nodeLabels.textbox}}"
       },
       "questionTypes": "Jenis Pertanyaan",
       "questions": "Pertanyaan",
@@ -292,23 +292,26 @@
       "selectQuestionHint": "Pilih pertanyaan untuk mengedit propertinya",
       "tmFieldLabels": {
         "assetDescription": "Deskripsi Aset",
-        "assetName": "Nama Aset",
-        "assetType": "Jenis Aset",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
         "description": "Deskripsi Model Ancaman",
-        "documentName": "Nama Dokumen",
-        "documentUrl": "URL Dokumen",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
         "issueUri": "URL Pelacakan Isu",
         "metadataKey": "Metadata Kustom",
         "name": "Nama Model Ancaman",
-        "repositoryName": "Nama Repositori",
-        "repositoryUrl": "URL Repositori"
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
       "tmFieldMapping": "Pemetaan Bidang Model Ancaman",
       "tmFieldMappingHint": "Hubungkan jawaban ini ke bidang model ancaman",
       "unsavedChanges": "Perubahan belum disimpan",
       "visibleIf": "Terlihat Jika",
-      "visibleIfHint": "mis., {questionName} = 'value'"
-    }
+      "visibleIfHint": "mis., {questionName} = 'value'",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+    },
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
   },
   "assetEditor": {
     "chipPlaceholder": "Masukkan nilai dan tekan Enter",
@@ -803,11 +806,11 @@
       "needsRevision": "Perlu Revisi",
       "readyForReview": "Siap Ditinjau",
       "reviewCreated": "Tinjauan Dibuat",
-      "submitted": "Terkirim"
+      "submitted": "{{triage.list.submitted}}"
     },
     "submitSurvey": "Kirim Survei",
     "templateStatus": {
-      "active": "Aktif",
+      "active": "{{common.active}}",
       "archived": "Diarsipkan",
       "inactive": "Tidak Aktif"
     },
@@ -1040,7 +1043,7 @@
       "surveyResponses": "{{common.objectTypes.surveyResponses}}"
     },
     "filters": {
-      "allStatuses": "Semua Status",
+      "allStatuses": "{{common.allStatuses}}",
       "allTemplates": "Semua Templat",
       "clearFilters": "Hapus Filter"
     },

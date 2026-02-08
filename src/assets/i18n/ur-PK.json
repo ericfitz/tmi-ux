@@ -235,7 +235,7 @@
       "noWebhooks": "کوئی webhooks نہیں ملے",
       "secret": "HMAC راز",
       "status": {
-        "active": "فعال",
+        "active": "{{common.active}}",
         "pending_delete": "حذف زیر التواء",
         "pending_verification": "تصدیق زیر التواء"
       },
@@ -260,11 +260,11 @@
       "metadataKeyHint": "میٹا ڈیٹا انٹری کے لیے کی کا نام",
       "nameId": "نام (ID)",
       "nameIdHint": "اس سوال کے لیے منفرد شناخت کنندہ",
-      "nextPage": "اگلا صفحہ",
+      "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "سوال شامل کرنے کے لیے پیلیٹ سے سوال کی قسم پر کلک کریں",
       "noQuestionsYet": "ابھی تک کوئی سوالات نہیں",
       "pageIndicator": "صفحہ {{current}} از {{total}}",
-      "previousPage": "پچھلا صفحہ",
+      "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "سوال کی خصوصیات",
       "questionTypeDescriptions": {
         "boolean": "بولین ٹوگل",
@@ -284,7 +284,7 @@
         "panel": "پینل",
         "paneldynamic": "ڈائنامک پینل",
         "radiogroup": "ریڈیو گروپ",
-        "text": "ٹیکسٹ"
+        "text": "{{editor.nodeLabels.textbox}}"
       },
       "questionTypes": "سوالات کی اقسام",
       "questions": "سوالات",
@@ -292,23 +292,26 @@
       "selectQuestionHint": "اس کی خصوصیات میں ترمیم کرنے کے لیے سوال منتخب کریں",
       "tmFieldLabels": {
         "assetDescription": "اثاثہ کی تفصیل",
-        "assetName": "اثاثہ کا نام",
-        "assetType": "اثاثہ کی قسم",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
         "description": "خطرے کے ماڈل کی تفصیل",
-        "documentName": "دستاویز کا نام",
-        "documentUrl": "دستاویز کا URL",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
         "issueUri": "مسئلہ ٹریکنگ URL",
         "metadataKey": "حسب ضرورت میٹا ڈیٹا",
         "name": "خطرے کے ماڈل کا نام",
-        "repositoryName": "ریپوزٹری کا نام",
-        "repositoryUrl": "ریپوزٹری کا URL"
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
       "tmFieldMapping": "خطرے کے ماڈل فیلڈ میپنگ",
       "tmFieldMappingHint": "اس جواب کو خطرے کے ماڈل فیلڈ سے منسلک کریں",
       "unsavedChanges": "غیر محفوظ شدہ تبدیلیاں",
       "visibleIf": "اگر نظر آئے",
-      "visibleIfHint": "مثال، {questionName} = 'value'"
-    }
+      "visibleIfHint": "مثال، {questionName} = 'value'",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+    },
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
   },
   "assetEditor": {
     "chipPlaceholder": "قدر درج کریں اور Enter دبائیں",
@@ -803,11 +806,11 @@
       "needsRevision": "نظرثانی درکار",
       "readyForReview": "جائزے کے لیے تیار",
       "reviewCreated": "جائزہ بنایا گیا",
-      "submitted": "جمع شدہ"
+      "submitted": "{{triage.list.submitted}}"
     },
     "submitSurvey": "سروے جمع کریں",
     "templateStatus": {
-      "active": "فعال",
+      "active": "{{common.active}}",
       "archived": "آرکائیو شدہ",
       "inactive": "غیر فعال"
     },
@@ -1040,7 +1043,7 @@
       "surveyResponses": "{{common.objectTypes.surveyResponses}}"
     },
     "filters": {
-      "allStatuses": "تمام حیثیتیں",
+      "allStatuses": "{{common.allStatuses}}",
       "allTemplates": "تمام ٹیمپلیٹس",
       "clearFilters": "فلٹرز صاف کریں"
     },

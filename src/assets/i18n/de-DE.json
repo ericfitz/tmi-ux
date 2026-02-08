@@ -235,7 +235,7 @@
       "noWebhooks": "Keine Webhooks gefunden",
       "secret": "HMAC-Geheimnis",
       "status": {
-        "active": "Aktiv",
+        "active": "{{common.active}}",
         "pending_delete": "Löschung ausstehend",
         "pending_verification": "Überprüfung ausstehend"
       },
@@ -260,11 +260,11 @@
       "metadataKeyHint": "Schlüsselname für den Metadateneintrag",
       "nameId": "Name (ID)",
       "nameIdHint": "Eindeutige Kennung für diese Frage",
-      "nextPage": "Nächste Seite",
+      "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "Klicken Sie auf einen Fragetyp aus der Palette, um ihn hinzuzufügen",
       "noQuestionsYet": "Noch keine Fragen",
       "pageIndicator": "Seite {{current}} von {{total}}",
-      "previousPage": "Vorherige Seite",
+      "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "Frageeigenschaften",
       "questionTypeDescriptions": {
         "boolean": "Ja/Nein-Umschalter",
@@ -284,7 +284,7 @@
         "panel": "Panel",
         "paneldynamic": "Dynamisches Panel",
         "radiogroup": "Optionsgruppe",
-        "text": "Text"
+        "text": "{{editor.nodeLabels.textbox}}"
       },
       "questionTypes": "Fragetypen",
       "questions": "Fragen",
@@ -292,23 +292,26 @@
       "selectQuestionHint": "Wählen Sie eine Frage aus, um ihre Eigenschaften zu bearbeiten",
       "tmFieldLabels": {
         "assetDescription": "Asset-Beschreibung",
-        "assetName": "Asset-Name",
-        "assetType": "Asset-Typ",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
         "description": "Bedrohungsmodell-Beschreibung",
-        "documentName": "Dokumentname",
-        "documentUrl": "Dokument-URL",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
         "issueUri": "URL zur Problemverfolgung",
         "metadataKey": "Benutzerdefinierte Metadaten",
         "name": "Bedrohungsmodell-Name",
-        "repositoryName": "Repository-Name",
-        "repositoryUrl": "Repository-URL"
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
       "tmFieldMapping": "Bedrohungsmodell-Feldzuordnung",
       "tmFieldMappingHint": "Diese Antwort mit einem Bedrohungsmodell-Feld verknüpfen",
       "unsavedChanges": "Ungespeicherte Änderungen",
       "visibleIf": "Sichtbar wenn",
-      "visibleIfHint": "z.B. {questionName} = 'Wert'"
-    }
+      "visibleIfHint": "z.B. {questionName} = 'Wert'",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+    },
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
   },
   "assetEditor": {
     "chipPlaceholder": "Wert eingeben und Enter drücken",
@@ -803,11 +806,11 @@
       "needsRevision": "Überarbeitung erforderlich",
       "readyForReview": "Bereit zur Prüfung",
       "reviewCreated": "Prüfung erstellt",
-      "submitted": "Eingereicht"
+      "submitted": "{{triage.list.submitted}}"
     },
     "submitSurvey": "Umfrage absenden",
     "templateStatus": {
-      "active": "Aktiv",
+      "active": "{{common.active}}",
       "archived": "Archiviert",
       "inactive": "Inaktiv"
     },
@@ -1040,7 +1043,7 @@
       "surveyResponses": "{{common.objectTypes.surveyResponses}}"
     },
     "filters": {
-      "allStatuses": "Alle Status",
+      "allStatuses": "{{common.allStatuses}}",
       "allTemplates": "Alle Vorlagen",
       "clearFilters": "Filter löschen"
     },

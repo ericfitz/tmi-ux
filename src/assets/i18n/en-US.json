@@ -248,7 +248,7 @@
       "noWebhooks": "No webhooks found",
       "secret": "HMAC secret",
       "status": {
-        "active": "Active",
+        "active": "{{common.active}}",
         "pending_delete": "Pending Delete",
         "pending_verification": "Pending Verification"
       },
@@ -260,8 +260,8 @@
     "cloneSuffix": "(Copy)",
     "createSurvey": "Create Survey",
     "editTemplate": "Edit survey",
-    "errorLoadingTemplates": "Failed to load surveys",
-    "loadingTemplates": "Loading surveys...",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
     "noMatchingTitle": "No Matching Surveys",
     "noTemplatesMessage": "Create your first survey to get started.",
     "noTemplatesTitle": "No Surveys Yet",
@@ -271,7 +271,7 @@
     "surveyDetails": "Survey Details",
     "templateBuilder": {
       "addPage": "Add page",
-      "backToTemplates": "Back to Surveys",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "Choices (one per line)",
       "deletePage": "Delete page",
       "deleteQuestion": "Delete Question",
@@ -285,11 +285,11 @@
       "metadataKeyHint": "Key name for the metadata entry",
       "nameId": "Name (ID)",
       "nameIdHint": "Unique identifier for this question",
-      "nextPage": "Next page",
+      "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "Click a question type from the palette to add it",
       "noQuestionsYet": "No questions yet",
       "pageIndicator": "Page {{current}} of {{total}}",
-      "previousPage": "Previous page",
+      "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "Question Properties",
       "questionTypeDescriptions": {
         "boolean": "Boolean toggle",
@@ -309,7 +309,7 @@
         "panel": "Panel",
         "paneldynamic": "Dynamic Panel",
         "radiogroup": "Radio Group",
-        "text": "Text"
+        "text": "{{editor.nodeLabels.textbox}}"
       },
       "questionTypes": "Question Types",
       "questions": "Questions",
@@ -317,16 +317,16 @@
       "selectQuestionHint": "Select a question to edit its properties",
       "tmFieldLabels": {
         "assetDescription": "Asset Description",
-        "assetName": "Asset Name",
-        "assetType": "Asset Type",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
         "description": "Threat Model Description",
-        "documentName": "Document Name",
-        "documentUrl": "Document URL",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
         "issueUri": "Issue Tracking URL",
         "metadataKey": "Custom Metadata",
         "name": "Threat Model Name",
-        "repositoryName": "Repository Name",
-        "repositoryUrl": "Repository URL"
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
       "tmFieldMapping": "Threat Model Field Mapping",
       "tmFieldMappingHint": "Link this answer to a threat model field",
@@ -401,6 +401,7 @@
   "common": {
     "about": "About",
     "actions": "Actions",
+    "active": "Active",
     "activate": "Activate",
     "addMetadata": "Add Metadata",
     "addThreat": "Add Threat",
@@ -840,11 +841,11 @@
       "needsRevision": "Needs Revision",
       "readyForReview": "Ready for Review",
       "reviewCreated": "Review Created",
-      "submitted": "Submitted"
+      "submitted": "{{triage.list.submitted}}"
     },
     "submitSurvey": "Submit Survey",
     "templateStatus": {
-      "active": "Active",
+      "active": "{{common.active}}",
       "archived": "Archived",
       "inactive": "Inactive"
     },
@@ -1081,7 +1082,7 @@
       "surveyResponses": "{{common.objectTypes.surveyResponses}}"
     },
     "filters": {
-      "allStatuses": "All Statuses",
+      "allStatuses": "{{common.allStatuses}}",
       "allTemplates": "All Templates",
       "clearFilters": "Clear Filters"
     },

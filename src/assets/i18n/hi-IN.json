@@ -235,7 +235,7 @@
       "noWebhooks": "कोई webhook नहीं मिला",
       "secret": "HMAC सीक्रेट",
       "status": {
-        "active": "सक्रिय",
+        "active": "{{common.active}}",
         "pending_delete": "हटाने की प्रतीक्षा में",
         "pending_verification": "सत्यापन की प्रतीक्षा में"
       },
@@ -260,11 +260,11 @@
       "metadataKeyHint": "मेटाडेटा प्रविष्टि के लिए कुंजी नाम",
       "nameId": "नाम (ID)",
       "nameIdHint": "इस प्रश्न के लिए अद्वितीय पहचानकर्ता",
-      "nextPage": "अगला पृष्ठ",
+      "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "इसे जोड़ने के लिए पैलेट से एक प्रश्न प्रकार पर क्लिक करें",
       "noQuestionsYet": "अभी तक कोई प्रश्न नहीं",
       "pageIndicator": "पृष्ठ {{current}} / {{total}}",
-      "previousPage": "पिछला पृष्ठ",
+      "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "प्रश्न गुण",
       "questionTypeDescriptions": {
         "boolean": "बूलियन टॉगल",
@@ -284,7 +284,7 @@
         "panel": "पैनल",
         "paneldynamic": "डायनामिक पैनल",
         "radiogroup": "रेडियो समूह",
-        "text": "टेक्स्ट"
+        "text": "{{editor.nodeLabels.textbox}}"
       },
       "questionTypes": "प्रश्न प्रकार",
       "questions": "प्रश्न",
@@ -292,23 +292,26 @@
       "selectQuestionHint": "इसके गुण संपादित करने के लिए एक प्रश्न चुनें",
       "tmFieldLabels": {
         "assetDescription": "एसेट विवरण",
-        "assetName": "एसेट नाम",
-        "assetType": "एसेट प्रकार",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
         "description": "थ्रेट मॉडल विवरण",
-        "documentName": "दस्तावेज़ नाम",
-        "documentUrl": "दस्तावेज़ URL",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
         "issueUri": "इश्यू ट्रैकिंग URL",
         "metadataKey": "कस्टम मेटाडेटा",
         "name": "थ्रेट मॉडल नाम",
-        "repositoryName": "रिपॉजिटरी नाम",
-        "repositoryUrl": "रिपॉजिटरी URL"
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
       "tmFieldMapping": "थ्रेट मॉडल फील्ड मैपिंग",
       "tmFieldMappingHint": "इस उत्तर को थ्रेट मॉडल फील्ड से लिंक करें",
       "unsavedChanges": "असहेजे गए परिवर्तन",
       "visibleIf": "दृश्यमान यदि",
-      "visibleIfHint": "उदाहरण, {questionName} = 'value'"
-    }
+      "visibleIfHint": "उदाहरण, {questionName} = 'value'",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+    },
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
   },
   "assetEditor": {
     "chipPlaceholder": "मान दर्ज करें और Enter दबाएं",
@@ -803,11 +806,11 @@
       "needsRevision": "संशोधन आवश्यक",
       "readyForReview": "समीक्षा के लिए तैयार",
       "reviewCreated": "समीक्षा बनाई गई",
-      "submitted": "सबमिट किया गया"
+      "submitted": "{{triage.list.submitted}}"
     },
     "submitSurvey": "सर्वेक्षण सबमिट करें",
     "templateStatus": {
-      "active": "सक्रिय",
+      "active": "{{common.active}}",
       "archived": "संग्रहित",
       "inactive": "निष्क्रिय"
     },
@@ -1040,7 +1043,7 @@
       "surveyResponses": "{{common.objectTypes.surveyResponses}}"
     },
     "filters": {
-      "allStatuses": "सभी स्थितियां",
+      "allStatuses": "{{common.allStatuses}}",
       "allTemplates": "सभी टेम्पलेट",
       "clearFilters": "फ़िल्टर साफ़ करें"
     },

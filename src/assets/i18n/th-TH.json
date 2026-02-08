@@ -235,7 +235,7 @@
       "noWebhooks": "ไม่พบ webhooks",
       "secret": "ความลับ HMAC",
       "status": {
-        "active": "ใช้งานอยู่",
+        "active": "{{common.active}}",
         "pending_delete": "รอการลบ",
         "pending_verification": "รอการยืนยัน"
       },
@@ -260,11 +260,11 @@
       "metadataKeyHint": "ชื่อคีย์สำหรับรายการเมทาดาทา",
       "nameId": "ชื่อ (ID)",
       "nameIdHint": "ตัวระบุเฉพาะสำหรับคำถามนี้",
-      "nextPage": "หน้าถัดไป",
+      "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "คลิกประเภทคำถามจากพาเลทเพื่อเพิ่มคำถาม",
       "noQuestionsYet": "ยังไม่มีคำถาม",
       "pageIndicator": "หน้า {{current}} จาก {{total}}",
-      "previousPage": "หน้าก่อนหน้า",
+      "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "คุณสมบัติคำถาม",
       "questionTypeDescriptions": {
         "boolean": "สวิตช์แบบบูลีน",
@@ -284,7 +284,7 @@
         "panel": "แผง",
         "paneldynamic": "แผงไดนามิก",
         "radiogroup": "กลุ่มปุ่มวิทยุ",
-        "text": "ข้อความ"
+        "text": "{{editor.nodeLabels.textbox}}"
       },
       "questionTypes": "ประเภทคำถาม",
       "questions": "คำถาม",
@@ -292,23 +292,26 @@
       "selectQuestionHint": "เลือกคำถามเพื่อแก้ไขคุณสมบัติ",
       "tmFieldLabels": {
         "assetDescription": "คำอธิบายสินทรัพย์",
-        "assetName": "ชื่อสินทรัพย์",
-        "assetType": "ประเภทสินทรัพย์",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
         "description": "คำอธิบายโมเดลภัยคุกคาม",
-        "documentName": "ชื่อเอกสาร",
-        "documentUrl": "URL เอกสาร",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
         "issueUri": "URL ติดตามปัญหา",
         "metadataKey": "เมทาดาทาที่กำหนดเอง",
         "name": "ชื่อโมเดลภัยคุกคาม",
-        "repositoryName": "ชื่อที่เก็บข้อมูล",
-        "repositoryUrl": "URL ที่เก็บข้อมูล"
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
       "tmFieldMapping": "การแมปฟิลด์โมเดลภัยคุกคาม",
       "tmFieldMappingHint": "เชื่อมโยงคำตอบนี้กับฟิลด์โมเดลภัยคุกคาม",
       "unsavedChanges": "การเปลี่ยนแปลงที่ยังไม่ได้บันทึก",
       "visibleIf": "แสดงถ้า",
-      "visibleIfHint": "เช่น {questionName} = 'value'"
-    }
+      "visibleIfHint": "เช่น {questionName} = 'value'",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+    },
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
   },
   "assetEditor": {
     "chipPlaceholder": "ป้อนค่าและกด Enter",
@@ -803,11 +806,11 @@
       "needsRevision": "ต้องแก้ไข",
       "readyForReview": "พร้อมตรวจสอบ",
       "reviewCreated": "สร้างการตรวจสอบแล้ว",
-      "submitted": "ส่งแล้ว"
+      "submitted": "{{triage.list.submitted}}"
     },
     "submitSurvey": "ส่งแบบสำรวจ",
     "templateStatus": {
-      "active": "ใช้งานอยู่",
+      "active": "{{common.active}}",
       "archived": "เก็บถาวรแล้ว",
       "inactive": "ไม่ได้ใช้งาน"
     },
@@ -1040,7 +1043,7 @@
       "surveyResponses": "{{common.objectTypes.surveyResponses}}"
     },
     "filters": {
-      "allStatuses": "สถานะทั้งหมด",
+      "allStatuses": "{{common.allStatuses}}",
       "allTemplates": "แม่แบบทั้งหมด",
       "clearFilters": "ล้างตัวกรอง"
     },

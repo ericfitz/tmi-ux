@@ -235,7 +235,7 @@
       "noWebhooks": "לא נמצאו webhooks",
       "secret": "סוד HMAC",
       "status": {
-        "active": "פעיל",
+        "active": "{{common.active}}",
         "pending_delete": "ממתין למחיקה",
         "pending_verification": "ממתין לאימות"
       },
@@ -260,11 +260,11 @@
       "metadataKeyHint": "שם מפתח עבור ערך המטא-נתונים",
       "nameId": "שם (ID)",
       "nameIdHint": "מזהה ייחודי לשאלה זו",
-      "nextPage": "עמוד הבא",
+      "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "לחץ על סוג שאלה מהלוח כדי להוסיף אותו",
       "noQuestionsYet": "אין עדיין שאלות",
       "pageIndicator": "עמוד {{current}} מתוך {{total}}",
-      "previousPage": "עמוד קודם",
+      "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "מאפייני שאלה",
       "questionTypeDescriptions": {
         "boolean": "מתג בוליאני",
@@ -284,7 +284,7 @@
         "panel": "פאנל",
         "paneldynamic": "פאנל דינמי",
         "radiogroup": "קבוצת רדיו",
-        "text": "טקסט"
+        "text": "{{editor.nodeLabels.textbox}}"
       },
       "questionTypes": "סוגי שאלות",
       "questions": "שאלות",
@@ -292,23 +292,26 @@
       "selectQuestionHint": "בחר שאלה כדי לערוך את מאפייניה",
       "tmFieldLabels": {
         "assetDescription": "תיאור נכס",
-        "assetName": "שם נכס",
-        "assetType": "סוג נכס",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
         "description": "תיאור מודל איום",
-        "documentName": "שם מסמך",
-        "documentUrl": "URL מסמך",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
         "issueUri": "URL למעקב אחר בעיות",
         "metadataKey": "מטא-נתונים מותאמים אישית",
         "name": "שם מודל איום",
-        "repositoryName": "שם מאגר",
-        "repositoryUrl": "URL מאגר"
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
       "tmFieldMapping": "מיפוי שדה מודל איום",
       "tmFieldMappingHint": "קשר תשובה זו לשדה מודל איום",
       "unsavedChanges": "שינויים שלא נשמרו",
       "visibleIf": "גלוי אם",
-      "visibleIfHint": "לדוגמה, {questionName} = 'value'"
-    }
+      "visibleIfHint": "לדוגמה, {questionName} = 'value'",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+    },
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
   },
   "assetEditor": {
     "chipPlaceholder": "הזן ערך ולחץ Enter",
@@ -803,11 +806,11 @@
       "needsRevision": "דורש תיקון",
       "readyForReview": "מוכן לבדיקה",
       "reviewCreated": "בדיקה נוצרה",
-      "submitted": "נשלח"
+      "submitted": "{{triage.list.submitted}}"
     },
     "submitSurvey": "שלח סקר",
     "templateStatus": {
-      "active": "פעיל",
+      "active": "{{common.active}}",
       "archived": "בארכיון",
       "inactive": "לא פעיל"
     },
@@ -1040,7 +1043,7 @@
       "surveyResponses": "{{common.objectTypes.surveyResponses}}"
     },
     "filters": {
-      "allStatuses": "כל הסטטוסים",
+      "allStatuses": "{{common.allStatuses}}",
       "allTemplates": "כל התבניות",
       "clearFilters": "נקה מסננים"
     },

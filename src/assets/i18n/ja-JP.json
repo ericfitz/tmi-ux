@@ -235,7 +235,7 @@
       "noWebhooks": "Webhookが見つかりません",
       "secret": "HMACシークレット",
       "status": {
-        "active": "アクティブ",
+        "active": "{{common.active}}",
         "pending_delete": "削除保留中",
         "pending_verification": "検証保留中"
       },
@@ -260,11 +260,11 @@
       "metadataKeyHint": "メタデータエントリのキー名",
       "nameId": "名前（ID）",
       "nameIdHint": "この質問の一意の識別子",
-      "nextPage": "次のページ",
+      "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "パレットから質問タイプをクリックして追加してください",
       "noQuestionsYet": "まだ質問がありません",
       "pageIndicator": "ページ {{current}} / {{total}}",
-      "previousPage": "前のページ",
+      "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "質問のプロパティ",
       "questionTypeDescriptions": {
         "boolean": "真偽値トグル",
@@ -284,7 +284,7 @@
         "panel": "パネル",
         "paneldynamic": "動的パネル",
         "radiogroup": "ラジオグループ",
-        "text": "テキスト"
+        "text": "{{editor.nodeLabels.textbox}}"
       },
       "questionTypes": "質問タイプ",
       "questions": "質問",
@@ -292,23 +292,26 @@
       "selectQuestionHint": "質問を選択してプロパティを編集してください",
       "tmFieldLabels": {
         "assetDescription": "アセットの説明",
-        "assetName": "アセット名",
-        "assetType": "アセットタイプ",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
         "description": "脅威モデルの説明",
-        "documentName": "ドキュメント名",
-        "documentUrl": "ドキュメントURL",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
         "issueUri": "課題追跡URL",
         "metadataKey": "カスタムメタデータ",
         "name": "脅威モデル名",
-        "repositoryName": "リポジトリ名",
-        "repositoryUrl": "リポジトリURL"
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
       "tmFieldMapping": "脅威モデルフィールドマッピング",
       "tmFieldMappingHint": "この回答を脅威モデルフィールドにリンク",
       "unsavedChanges": "未保存の変更",
       "visibleIf": "表示条件",
-      "visibleIfHint": "例: {questionName} = 'value'"
-    }
+      "visibleIfHint": "例: {questionName} = 'value'",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+    },
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
   },
   "assetEditor": {
     "chipPlaceholder": "値を入力してEnterを押してください",
@@ -803,11 +806,11 @@
       "needsRevision": "要修正",
       "readyForReview": "レビュー待ち",
       "reviewCreated": "レビュー作成済み",
-      "submitted": "送信済み"
+      "submitted": "{{triage.list.submitted}}"
     },
     "submitSurvey": "調査を送信",
     "templateStatus": {
-      "active": "有効",
+      "active": "{{common.active}}",
       "archived": "アーカイブ済み",
       "inactive": "無効"
     },
@@ -1040,7 +1043,7 @@
       "surveyResponses": "{{common.objectTypes.surveyResponses}}"
     },
     "filters": {
-      "allStatuses": "すべてのステータス",
+      "allStatuses": "{{common.allStatuses}}",
       "allTemplates": "すべてのテンプレート",
       "clearFilters": "フィルタをクリア"
     },

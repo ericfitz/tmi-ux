@@ -235,7 +235,7 @@
       "noWebhooks": "لم يتم العثور على Webhooks",
       "secret": "مفتاح HMAC السري",
       "status": {
-        "active": "نشط",
+        "active": "{{common.active}}",
         "pending_delete": "في انتظار الحذف",
         "pending_verification": "في انتظار التحقق"
       },
@@ -260,11 +260,11 @@
       "metadataKeyHint": "اسم المفتاح لإدخال البيانات الوصفية",
       "nameId": "الاسم (ID)",
       "nameIdHint": "معرف فريد لهذا السؤال",
-      "nextPage": "الصفحة التالية",
+      "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "انقر على نوع سؤال من اللوحة لإضافته",
       "noQuestionsYet": "لا توجد أسئلة بعد",
       "pageIndicator": "الصفحة {{current}} من {{total}}",
-      "previousPage": "الصفحة السابقة",
+      "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "خصائص السؤال",
       "questionTypeDescriptions": {
         "boolean": "تبديل منطقي",
@@ -284,7 +284,7 @@
         "panel": "لوحة",
         "paneldynamic": "لوحة ديناميكية",
         "radiogroup": "مجموعة اختيار",
-        "text": "نص"
+        "text": "{{editor.nodeLabels.textbox}}"
       },
       "questionTypes": "أنواع الأسئلة",
       "questions": "الأسئلة",
@@ -292,23 +292,26 @@
       "selectQuestionHint": "حدد سؤالاً لتعديل خصائصه",
       "tmFieldLabels": {
         "assetDescription": "وصف الأصل",
-        "assetName": "اسم الأصل",
-        "assetType": "نوع الأصل",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
         "description": "وصف نموذج التهديد",
-        "documentName": "اسم المستند",
-        "documentUrl": "رابط المستند",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
         "issueUri": "رابط تتبع المشكلة",
         "metadataKey": "بيانات وصفية مخصصة",
         "name": "اسم نموذج التهديد",
-        "repositoryName": "اسم المستودع",
-        "repositoryUrl": "رابط المستودع"
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
       },
       "tmFieldMapping": "ربط حقل نموذج التهديد",
       "tmFieldMappingHint": "ربط هذا الجواب بحقل نموذج التهديد",
       "unsavedChanges": "تغييرات غير محفوظة",
       "visibleIf": "مرئي إذا",
-      "visibleIfHint": "مثال: {questionName} = 'value'"
-    }
+      "visibleIfHint": "مثال: {questionName} = 'value'",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+    },
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
   },
   "assetEditor": {
     "chipPlaceholder": "أدخل القيمة واضغط Enter",
@@ -803,11 +806,11 @@
       "needsRevision": "يحتاج إلى مراجعة",
       "readyForReview": "جاهز للمراجعة",
       "reviewCreated": "تم إنشاء المراجعة",
-      "submitted": "تم التقديم"
+      "submitted": "{{triage.list.submitted}}"
     },
     "submitSurvey": "تقديم الاستبيان",
     "templateStatus": {
-      "active": "نشط",
+      "active": "{{common.active}}",
       "archived": "مؤرشف",
       "inactive": "غير نشط"
     },
@@ -1040,7 +1043,7 @@
       "surveyResponses": "{{common.objectTypes.surveyResponses}}"
     },
     "filters": {
-      "allStatuses": "جميع الحالات",
+      "allStatuses": "{{common.allStatuses}}",
       "allTemplates": "جميع القوالب",
       "clearFilters": "مسح المرشحات"
     },
