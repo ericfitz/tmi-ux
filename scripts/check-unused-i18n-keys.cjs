@@ -53,6 +53,41 @@ function extractKeysFromObject(obj, prefix = '') {
 }
 
 /**
+ * Extracts {{key}} reference targets from JSON values.
+ * Returns a Map of refTarget -> Set of consumer keys.
+ * Only matches pure references where the entire value is "{{dotted.key}}"
+ * (not interpolation parameters like "Hello {{name}}").
+ * @param {Object} obj - The localization object
+ * @param {string} prefix - Current key prefix
+ * @returns {Map<string, Set<string>>} Map of ref target key -> consumer keys
+ */
+function extractRefTargets(obj, prefix = '') {
+  const refs = new Map();
+
+  for (const [key, value] of Object.entries(obj)) {
+    const fullKey = prefix ? `${prefix}.${key}` : key;
+    if (key === 'comment' || key.endsWith('.comment')) continue;
+
+    if (typeof value === 'object' && value !== null) {
+      const nested = extractRefTargets(value, fullKey);
+      for (const [target, consumers] of nested) {
+        if (!refs.has(target)) refs.set(target, new Set());
+        for (const c of consumers) refs.get(target).add(c);
+      }
+    } else if (typeof value === 'string') {
+      const match = value.match(/^\{\{([a-zA-Z][a-zA-Z0-9_.]+)\}\}$/);
+      if (match) {
+        const target = match[1];
+        if (!refs.has(target)) refs.set(target, new Set());
+        refs.get(target).add(fullKey);
+      }
+    }
+  }
+
+  return refs;
+}
+
+/**
  * Searches for key usage in source files
  * @param {string} key - The localization key to search for
  * @param {string[]} sourceFiles - Array of source file paths
@@ -86,6 +121,8 @@ function isKeyUsedInSources(key, sourceFiles) {
     new RegExp(`['"\`][^'"\`]*${escapeRegExp(key.split('.').pop())}[^'"\`]*['"\`]\\s*\\|\\s*transloco`),
     // Dynamic key construction: 'prefix.part.' + variable | transloco
     new RegExp(`['"\`]${escapeRegExp(key.substring(0, key.lastIndexOf('.') + 1))}['"\`]\\s*\\+[^|]*\\|\\s*transloco`),
+    // Generic function argument: anyMethod('key') - catches wrapper methods like showMessage()
+    new RegExp(`\\(\\s*['"\`]${escapeRegExp(key)}['"\`]`),
     // Object property assignments: property: 'key' (then used indirectly)
     new RegExp(`:\\s*['"\`]${escapeRegExp(key)}['"\`]`),
     // Ternary expressions: condition ? value : 'key'
@@ -189,22 +226,44 @@ function main() {
       }
     }
     
+    // Check for keys referenced via {{key}} within the JSON file itself.
+    // A ref target is considered "used" only if at least one of its consumers
+    // is transitively used (handles dead ref chains correctly).
+    const refTargets = extractRefTargets(localizationData);
+    const usedKeys = new Set(allKeys.filter(k => !unusedKeys.includes(k)));
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const [target, consumers] of refTargets) {
+        if (!usedKeys.has(target)) {
+          for (const consumer of consumers) {
+            if (usedKeys.has(consumer)) {
+              usedKeys.add(target);
+              changed = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+    const finalUnusedKeys = allKeys.filter(k => !usedKeys.has(k));
+
     // Report results
     console.log('\n' + '='.repeat(50));
     console.log('UNUSED LOCALIZATION KEYS REPORT');
     console.log('='.repeat(50));
     
-    if (unusedKeys.length === 0) {
+    if (finalUnusedKeys.length === 0) {
       console.log('✅ No unused keys found! All localization keys are being used.');
     } else {
-      console.log(`❌ Found ${unusedKeys.length} unused localization keys:\n`);
-      
+      console.log(`❌ Found ${finalUnusedKeys.length} unused localization keys:\n`);
+
       // Sort keys for better readability
-      unusedKeys.sort().forEach(key => {
+      finalUnusedKeys.sort().forEach(key => {
         console.log(`  ${key}`);
       });
-      
-      console.log(`\nSummary: ${unusedKeys.length}/${allKeys.length} keys are unused (${((unusedKeys.length / allKeys.length) * 100).toFixed(1)}%)`);
+
+      console.log(`\nSummary: ${finalUnusedKeys.length}/${allKeys.length} keys are unused (${((finalUnusedKeys.length / allKeys.length) * 100).toFixed(1)}%)`);
     }
     
   } catch (error) {
@@ -229,6 +288,7 @@ if (require.main === module) {
 
 module.exports = {
   extractKeysFromObject,
+  extractRefTargets,
   isKeyUsedInSources,
   getSourceFiles
 };
