@@ -186,6 +186,13 @@ export class TriageListComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Close triage and return to dashboard
+   */
+  onClose(): void {
+    void this.router.navigate(['/dashboard']);
+  }
+
+  /**
    * Navigate to response detail
    */
   viewResponse(response: SurveyResponseListItem): void {
