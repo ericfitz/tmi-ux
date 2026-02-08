@@ -177,7 +177,6 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
-        "description": "調査テンプレートの作成と管理",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {

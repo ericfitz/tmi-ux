@@ -177,7 +177,6 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
-        "description": "สร้างและจัดการแม่แบบแบบสำรวจ",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {

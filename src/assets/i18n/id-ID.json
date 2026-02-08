@@ -177,7 +177,6 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
-        "description": "Buat dan kelola templat survei",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {

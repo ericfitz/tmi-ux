@@ -177,7 +177,6 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
-        "description": "Crear y gestionar plantillas de encuestas",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {

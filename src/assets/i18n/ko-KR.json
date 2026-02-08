@@ -177,7 +177,6 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
-        "description": "설문 템플릿 생성 및 관리",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {

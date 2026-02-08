@@ -186,7 +186,7 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
-        "description": "Create and manage survey templates",
+        "description": "Create and manage surveys",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {

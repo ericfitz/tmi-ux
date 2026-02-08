@@ -177,7 +177,6 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
-        "description": "জরিপ টেমপ্লেট তৈরি এবং পরিচালনা করুন",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {

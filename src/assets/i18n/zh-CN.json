@@ -177,7 +177,6 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
-        "description": "创建和管理调查模板",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {

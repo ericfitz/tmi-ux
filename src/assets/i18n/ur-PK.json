@@ -177,7 +177,6 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
-        "description": "سروے ٹیمپلیٹس بنائیں اور ان کا انتظام کریں",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {

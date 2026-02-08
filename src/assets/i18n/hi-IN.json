@@ -177,7 +177,6 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
-        "description": "सर्वेक्षण टेम्पलेट बनाएं और प्रबंधित करें",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {

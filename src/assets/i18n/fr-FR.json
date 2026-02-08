@@ -177,7 +177,6 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
-        "description": "Créer et gérer les modèles d'enquête",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {

@@ -177,7 +177,6 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
-        "description": "Criar e gerenciar modelos de pesquisa",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {

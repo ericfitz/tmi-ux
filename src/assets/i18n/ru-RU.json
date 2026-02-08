@@ -177,7 +177,6 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
-        "description": "Создание и управление шаблонами опросов",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
