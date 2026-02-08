@@ -58,7 +58,7 @@
                 }
               </div>
 
-              <div class="addon-name">{{ addon.name }}</div>
+              <div class="addon-name" [matTooltip]="addon.name">{{ addon.name }}</div>
 
               <div class="addon-actions">
                 <button
@@ -72,7 +72,9 @@
               </div>
 
               @if (addon.description) {
-                <div class="addon-description">{{ addon.description }}</div>
+                <div class="addon-description" [matTooltip]="addon.description">
+                  {{ addon.description }}
+                </div>
               }
 
               <div class="addon-metadata">
