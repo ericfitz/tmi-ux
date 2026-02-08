@@ -135,21 +135,29 @@ export class GroupAdminService {
 
   /**
    * Remove a member from a group
-   *
-   * Uses the membership record id in the path. The server API currently defines
-   * this path param as {user_uuid}, which doesn't support removing nested groups.
-   * See docs/api-notes/group-member-removal.md for details.
    */
-  public removeMember(internal_uuid: string, member_id: string): Observable<void> {
-    return this.apiService.delete<void>(`admin/groups/${internal_uuid}/members/${member_id}`).pipe(
-      tap(() => {
-        this.logger.info('Member removed from group', { internal_uuid, member_id });
-      }),
-      catchError(error => {
-        this.logger.error('Failed to remove group member', error);
-        throw error;
-      }),
-    );
+  public removeMember(
+    internal_uuid: string,
+    member_uuid: string,
+    subject_type: 'user' | 'group',
+  ): Observable<void> {
+    return this.apiService
+      .deleteWithParams<void>(`admin/groups/${internal_uuid}/members/${member_uuid}`, {
+        subject_type,
+      })
+      .pipe(
+        tap(() => {
+          this.logger.info('Member removed from group', {
+            internal_uuid,
+            member_uuid,
+            subject_type,
+          });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to remove group member', error);
+          throw error;
+        }),
+      );
   }
 
   /**

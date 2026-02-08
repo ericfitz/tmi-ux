@@ -27,6 +27,7 @@ describe('GroupAdminService', () => {
     get: ReturnType<typeof vi.fn>;
     post: ReturnType<typeof vi.fn>;
     delete: ReturnType<typeof vi.fn>;
+    deleteWithParams: ReturnType<typeof vi.fn>;
   };
   let mockLoggerService: {
     debug: ReturnType<typeof vi.fn>;
@@ -81,6 +82,7 @@ describe('GroupAdminService', () => {
       get: vi.fn(),
       post: vi.fn(),
       delete: vi.fn(),
+      deleteWithParams: vi.fn(),
     };
 
     mockLoggerService = {
@@ -403,34 +405,48 @@ describe('GroupAdminService', () => {
 
   describe('removeMember()', () => {
     const groupUuid = '123e4567-e89b-12d3-a456-426614174000';
-    const memberId = 'a10eabcd-e89b-41d4-a716-446655440001';
+    const memberUuid = '987e6543-e21b-43d2-a654-426614174111';
 
-    it('should call API delete with group UUID and member id', () => {
-      mockApiService.delete.mockReturnValue(of(undefined));
+    it('should call deleteWithParams with group UUID, member UUID, and subject_type', () => {
+      mockApiService.deleteWithParams.mockReturnValue(of(undefined));
 
-      service.removeMember(groupUuid, memberId).subscribe(() => {
-        expect(mockApiService.delete).toHaveBeenCalledWith(
-          `admin/groups/${groupUuid}/members/${memberId}`,
+      service.removeMember(groupUuid, memberUuid, 'user').subscribe(() => {
+        expect(mockApiService.deleteWithParams).toHaveBeenCalledWith(
+          `admin/groups/${groupUuid}/members/${memberUuid}`,
+          { subject_type: 'user' },
+        );
+      });
+    });
+
+    it('should pass subject_type group when removing a group member', () => {
+      const groupMemberUuid = 'e50eabcd-e89b-41d4-a716-446655440014';
+      mockApiService.deleteWithParams.mockReturnValue(of(undefined));
+
+      service.removeMember(groupUuid, groupMemberUuid, 'group').subscribe(() => {
+        expect(mockApiService.deleteWithParams).toHaveBeenCalledWith(
+          `admin/groups/${groupUuid}/members/${groupMemberUuid}`,
+          { subject_type: 'group' },
         );
       });
     });
 
     it('should log info message on successful removal', () => {
-      mockApiService.delete.mockReturnValue(of(undefined));
+      mockApiService.deleteWithParams.mockReturnValue(of(undefined));
 
-      service.removeMember(groupUuid, memberId).subscribe(() => {
+      service.removeMember(groupUuid, memberUuid, 'user').subscribe(() => {
         expect(mockLoggerService.info).toHaveBeenCalledWith('Member removed from group', {
           internal_uuid: groupUuid,
-          member_id: memberId,
+          member_uuid: memberUuid,
+          subject_type: 'user',
         });
       });
     });
 
     it('should handle API errors and log them', () => {
       const error = new Error('Failed to remove member');
-      mockApiService.delete.mockReturnValue(throwError(() => error));
+      mockApiService.deleteWithParams.mockReturnValue(throwError(() => error));
 
-      service.removeMember(groupUuid, memberId).subscribe({
+      service.removeMember(groupUuid, memberUuid, 'user').subscribe({
         error: err => {
           expect(mockLoggerService.error).toHaveBeenCalledWith(
             'Failed to remove group member',

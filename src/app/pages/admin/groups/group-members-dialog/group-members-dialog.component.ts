@@ -191,12 +191,20 @@ export class GroupMembersDialogComponent implements OnInit {
     const confirmed = confirm(`Are you sure you want to remove ${displayName} from this group?`);
 
     if (confirmed) {
+      const memberUuid =
+        member.subject_type === 'group'
+          ? member.member_group_internal_uuid!
+          : member.user_internal_uuid!;
+
       this.groupAdminService
-        .removeMember(this.data.group.internal_uuid, member.id)
+        .removeMember(this.data.group.internal_uuid, memberUuid, member.subject_type)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
-            this.logger.info('Member removed from group', { member_id: member.id });
+            this.logger.info('Member removed from group', {
+              member_uuid: memberUuid,
+              subject_type: member.subject_type,
+            });
             this.loadMembers();
           },
           error: error => {
