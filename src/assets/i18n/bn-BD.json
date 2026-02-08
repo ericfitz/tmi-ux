@@ -177,6 +177,7 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
+        "description": "জরিপ তৈরি এবং পরিচালনা করুন",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
@@ -245,15 +246,27 @@
   "adminSurveys": {
     "cloneSuffix": "(অনুলিপি)",
     "createSurvey": "সার্ভে তৈরি করুন",
+    "editTemplate": "জরিপ সম্পাদনা করুন",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "কোনো মিলে যাওয়া জরিপ নেই",
+    "noTemplatesMessage": "শুরু করতে আপনার প্রথম জরিপ তৈরি করুন।",
+    "noTemplatesTitle": "এখনও কোনো জরিপ নেই",
+    "pageTitle": "জরিপ পরিচালনা করুন",
     "searchByName": "নাম দিয়ে খুঁজুন...",
+    "searchTemplates": "জরিপ অনুসন্ধান করুন",
     "surveyDetails": "সার্ভে বিবরণ",
     "templateBuilder": {
       "addPage": "পৃষ্ঠা যোগ করুন",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "পছন্দসমূহ (প্রতি লাইনে একটি)",
       "deletePage": "পৃষ্ঠা মুছুন",
       "deleteQuestion": "প্রশ্ন মুছুন",
       "enterSurveyDescription": "সার্ভে বিবরণ লিখুন",
       "enterSurveyTitle": "সার্ভে শিরোনাম লিখুন",
+      "failedToLoadTemplate": "জরিপ লোড করতে ব্যর্থ",
+      "failedToSaveTemplate": "জরিপ সংরক্ষণ করতে ব্যর্থ",
+      "loadingTemplate": "জরিপ লোড হচ্ছে...",
       "mapsToTmField": "TM ক্ষেত্রের সাথে ম্যাপ করে",
       "metadataKey": "মেটাডেটা কী",
       "metadataKeyHint": "মেটাডেটা এন্ট্রির জন্য কী নাম",
@@ -306,11 +319,10 @@
       "tmFieldMappingHint": "এই উত্তরটি একটি থ্রেট মডেল ক্ষেত্রের সাথে লিংক করুন",
       "unsavedChanges": "অসংরক্ষিত পরিবর্তন",
       "visibleIf": "দৃশ্যমান যদি",
-      "visibleIfHint": "যেমন, {questionName} = 'value'",
-      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+      "visibleIfHint": "যেমন, {questionName} = 'value'"
     },
-    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
-    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
+    "templateCount": "{{count}} জরিপ",
+    "templateCountPlural": "{{count}} জরিপ"
   },
   "assetEditor": {
     "chipPlaceholder": "মান লিখুন এবং Enter চাপুন",
@@ -374,6 +386,7 @@
     "about": "সম্পর্কে",
     "actions": "ক্রিয়াকলাপ",
     "activate": "সক্রিয় করুন",
+    "active": "সক্রিয়",
     "addMetadata": "মেটাডেটা যোগ করুন",
     "addThreat": "হুমকি যোগ করুন",
     "addons": "অ্যাডঅন",
@@ -646,6 +659,7 @@
     "validationError": "যাচাইকরণ ত্রুটি"
   },
   "getStarted": "শুরু করুন",
+  "homeDescription": "TMI এমন একটি টুল যা আপনার প্রতিষ্ঠানের জন্য নিরাপত্তা পর্যালোচনা এবং হুমকি মডেলিং প্রক্রিয়া পরিচালনা ও উন্নত করে। এটি নিরাপত্তা পর্যালোচনা ওয়ার্কফ্লো পরিচালনা করে, নিরাপত্তা পর্যালোচনার জন্য তথ্য সংগঠিত করে, সহযোগিতামূলকভাবে ডেটা ফ্লো ডায়াগ্রাম তৈরি করতে সক্ষম করে এবং পর্যালোচনা প্রক্রিয়ায় পরিশ্রম কমাতে এবং নিরাপত্তা হুমকি বিশ্লেষণ করতে অটোমেশন সংযোগ করতে সক্ষম করে।",
   "homeWelcomeTitle": "TMI-তে স্বাগতম: থ্রেট মডেলিং ইমপ্রুভড",
   "login": {
     "chooseMethod": "আপনার সাইন ইন পদ্ধতি বেছে নিন:",
@@ -1040,6 +1054,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "সকল জরিপ",
       "clearFilters": "ফিল্টার সাফ করুন"
     },
     "list": {
@@ -1052,6 +1067,7 @@
       "noResponsesTitle": "কোনো প্রতিক্রিয়া নেই",
       "noResponsesToTriage": "ফরজ করার জন্য কোনো সার্ভে প্রতিক্রিয়া নেই",
       "notSubmitted": "জমা দেওয়া হয়নি",
+      "searchPlaceholder": "জমাদাতা বা জরিপ দ্বারা অনুসন্ধান করুন...",
       "submitted": "জমা দেওয়া হয়েছে",
       "submitter": "জমাদানকারী"
     },

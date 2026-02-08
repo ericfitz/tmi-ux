@@ -177,6 +177,7 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
+        "description": "Umfragen erstellen und verwalten",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
@@ -245,15 +246,27 @@
   "adminSurveys": {
     "cloneSuffix": "(Kopie)",
     "createSurvey": "Umfrage erstellen",
+    "editTemplate": "Umfrage bearbeiten",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "Keine passenden Umfragen",
+    "noTemplatesMessage": "Erstellen Sie Ihre erste Umfrage, um zu beginnen.",
+    "noTemplatesTitle": "Noch keine Umfragen",
+    "pageTitle": "Umfragen verwalten",
     "searchByName": "Nach Name suchen...",
+    "searchTemplates": "Umfragen durchsuchen",
     "surveyDetails": "Umfragedetails",
     "templateBuilder": {
       "addPage": "Seite hinzufügen",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "Auswahlmöglichkeiten (eine pro Zeile)",
       "deletePage": "Seite löschen",
       "deleteQuestion": "Frage löschen",
       "enterSurveyDescription": "Umfragebeschreibung eingeben",
       "enterSurveyTitle": "Umfragetitel eingeben",
+      "failedToLoadTemplate": "Umfrage konnte nicht geladen werden",
+      "failedToSaveTemplate": "Umfrage konnte nicht gespeichert werden",
+      "loadingTemplate": "Umfrage wird geladen...",
       "mapsToTmField": "Wird zugeordnet zu Bedrohungsmodell-Feld",
       "metadataKey": "Metadatenschlüssel",
       "metadataKeyHint": "Schlüsselname für den Metadateneintrag",
@@ -306,11 +319,10 @@
       "tmFieldMappingHint": "Diese Antwort mit einem Bedrohungsmodell-Feld verknüpfen",
       "unsavedChanges": "Ungespeicherte Änderungen",
       "visibleIf": "Sichtbar wenn",
-      "visibleIfHint": "z.B. {questionName} = 'Wert'",
-      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+      "visibleIfHint": "z.B. {questionName} = 'Wert'"
     },
-    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
-    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
+    "templateCount": "{{count}} Umfrage",
+    "templateCountPlural": "{{count}} Umfragen"
   },
   "assetEditor": {
     "chipPlaceholder": "Wert eingeben und Enter drücken",
@@ -374,6 +386,7 @@
     "about": "Über",
     "actions": "Aktionen",
     "activate": "Aktivieren",
+    "active": "Aktiv",
     "addMetadata": "Metadaten hinzufügen",
     "addThreat": "Bedrohung hinzufügen",
     "addons": "Erweiterungen",
@@ -646,6 +659,7 @@
     "validationError": "Validierungsfehler"
   },
   "getStarted": "Loslegen",
+  "homeDescription": "TMI ist ein Werkzeug zur Verwaltung und Verbesserung der Sicherheitsüberprüfungs- und Bedrohungsmodellierungsprozesse in Ihrer Organisation. Es steuert den Workflow für Sicherheitsüberprüfungen, organisiert Informationen für Sicherheitsüberprüfungen, ermöglicht die gemeinsame Erstellung von Datenflussdiagrammen und erlaubt die Integration von Automatisierung, um Routineaufgaben im Überprüfungsprozess zu reduzieren und Sicherheitsbedrohungen zu analysieren.",
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
   "login": {
     "chooseMethod": "Wählen Sie Ihre Anmeldemethode:",
@@ -1040,6 +1054,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "Alle Umfragen",
       "clearFilters": "Filter löschen"
     },
     "list": {
@@ -1052,6 +1067,7 @@
       "noResponsesTitle": "Keine Antworten",
       "noResponsesToTriage": "Es gibt keine Umfrageantworten zur Sichtung",
       "notSubmitted": "Nicht eingereicht",
+      "searchPlaceholder": "Nach Einreicher oder Umfrage suchen...",
       "submitted": "Eingereicht",
       "submitter": "Einreichender"
     },

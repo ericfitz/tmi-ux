@@ -177,6 +177,7 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
+        "description": "설문조사 생성 및 관리",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
@@ -245,15 +246,27 @@
   "adminSurveys": {
     "cloneSuffix": "(복사본)",
     "createSurvey": "설문 생성",
+    "editTemplate": "설문조사 편집",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "일치하는 설문조사 없음",
+    "noTemplatesMessage": "첫 번째 설문조사를 생성하여 시작하세요.",
+    "noTemplatesTitle": "아직 설문조사 없음",
+    "pageTitle": "설문조사 관리",
     "searchByName": "이름으로 검색...",
+    "searchTemplates": "설문조사 검색",
     "surveyDetails": "설문 세부정보",
     "templateBuilder": {
       "addPage": "페이지 추가",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "선택 항목 (한 줄에 하나)",
       "deletePage": "페이지 삭제",
       "deleteQuestion": "질문 삭제",
       "enterSurveyDescription": "설문 설명 입력",
       "enterSurveyTitle": "설문 제목 입력",
+      "failedToLoadTemplate": "설문조사를 불러오지 못했습니다",
+      "failedToSaveTemplate": "설문조사를 저장하지 못했습니다",
+      "loadingTemplate": "설문조사 불러오는 중...",
       "mapsToTmField": "TM 필드에 매핑",
       "metadataKey": "메타데이터 키",
       "metadataKeyHint": "메타데이터 항목의 키 이름",
@@ -306,11 +319,10 @@
       "tmFieldMappingHint": "이 답변을 위협 모델 필드에 연결하세요",
       "unsavedChanges": "저장되지 않은 변경 사항",
       "visibleIf": "표시 조건",
-      "visibleIfHint": "예: {questionName} = 'value'",
-      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+      "visibleIfHint": "예: {questionName} = 'value'"
     },
-    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
-    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
+    "templateCount": "설문조사 {{count}}개",
+    "templateCountPlural": "설문조사 {{count}}개"
   },
   "assetEditor": {
     "chipPlaceholder": "값을 입력하고 Enter를 누르세요",
@@ -374,6 +386,7 @@
     "about": "소개",
     "actions": "작업",
     "activate": "활성화",
+    "active": "활성",
     "addMetadata": "메타데이터 추가",
     "addThreat": "위협 추가",
     "addons": "애드온",
@@ -646,6 +659,7 @@
     "validationError": "유효성 검사 오류"
   },
   "getStarted": "시작하기",
+  "homeDescription": "TMI는 조직의 보안 검토 및 위협 모델링 프로세스를 관리하고 향상시키는 도구입니다. 보안 검토 워크플로를 주도하고, 보안 검토를 위한 정보를 구성하며, 협업적으로 데이터 흐름 다이어그램을 구축하고, 검토 프로세스의 수고를 줄이고 보안 위협을 분석하기 위해 자동화를 연결할 수 있습니다.",
   "homeWelcomeTitle": "TMI에 오신 것을 환영합니다: 향상된 위협 모델링",
   "login": {
     "chooseMethod": "로그인 방법을 선택하세요:",
@@ -1040,6 +1054,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "모든 설문조사",
       "clearFilters": "필터 지우기"
     },
     "list": {
@@ -1052,6 +1067,7 @@
       "noResponsesTitle": "응답 없음",
       "noResponsesToTriage": "분류할 설문 응답이 없습니다",
       "notSubmitted": "미제출",
+      "searchPlaceholder": "제출자 또는 설문조사로 검색...",
       "submitted": "제출됨",
       "submitter": "제출자"
     },

@@ -177,6 +177,7 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
+        "description": "สร้างและจัดการแบบสำรวจ",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
@@ -245,15 +246,27 @@
   "adminSurveys": {
     "cloneSuffix": "(สำเนา)",
     "createSurvey": "สร้างแบบสำรวจ",
+    "editTemplate": "แก้ไขแบบสำรวจ",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "ไม่พบแบบสำรวจที่ตรงกัน",
+    "noTemplatesMessage": "สร้างแบบสำรวจแรกของคุณเพื่อเริ่มต้น",
+    "noTemplatesTitle": "ยังไม่มีแบบสำรวจ",
+    "pageTitle": "จัดการแบบสำรวจ",
     "searchByName": "ค้นหาตามชื่อ...",
+    "searchTemplates": "ค้นหาแบบสำรวจ",
     "surveyDetails": "รายละเอียดแบบสำรวจ",
     "templateBuilder": {
       "addPage": "เพิ่มหน้า",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "ตัวเลือก (หนึ่งตัวเลือกต่อบรรทัด)",
       "deletePage": "ลบหน้า",
       "deleteQuestion": "ลบคำถาม",
       "enterSurveyDescription": "ป้อนคำอธิบายแบบสำรวจ",
       "enterSurveyTitle": "ป้อนชื่อแบบสำรวจ",
+      "failedToLoadTemplate": "โหลดแบบสำรวจไม่สำเร็จ",
+      "failedToSaveTemplate": "บันทึกแบบสำรวจไม่สำเร็จ",
+      "loadingTemplate": "กำลังโหลดแบบสำรวจ...",
       "mapsToTmField": "แมปกับฟิลด์ TM",
       "metadataKey": "คีย์เมทาดาทา",
       "metadataKeyHint": "ชื่อคีย์สำหรับรายการเมทาดาทา",
@@ -306,11 +319,10 @@
       "tmFieldMappingHint": "เชื่อมโยงคำตอบนี้กับฟิลด์โมเดลภัยคุกคาม",
       "unsavedChanges": "การเปลี่ยนแปลงที่ยังไม่ได้บันทึก",
       "visibleIf": "แสดงถ้า",
-      "visibleIfHint": "เช่น {questionName} = 'value'",
-      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+      "visibleIfHint": "เช่น {questionName} = 'value'"
     },
-    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
-    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
+    "templateCount": "แบบสำรวจ {{count}} รายการ",
+    "templateCountPlural": "แบบสำรวจ {{count}} รายการ"
   },
   "assetEditor": {
     "chipPlaceholder": "ป้อนค่าและกด Enter",
@@ -374,6 +386,7 @@
     "about": "เกี่ยวกับ",
     "actions": "การกระทำ",
     "activate": "เปิดใช้งาน",
+    "active": "ใช้งานอยู่",
     "addMetadata": "เพิ่มข้อมูลเมตา",
     "addThreat": "เพิ่มภัยคุกคาม",
     "addons": "ส่วนเสริม",
@@ -646,6 +659,7 @@
     "validationError": "ข้อผิดพลาดในการตรวจสอบ"
   },
   "getStarted": "เริ่มต้นใช้งาน",
+  "homeDescription": "TMI เป็นเครื่องมือที่จัดการและปรับปรุงกระบวนการตรวจสอบความปลอดภัยและการสร้างแบบจำลองภัยคุกคามสำหรับองค์กรของคุณ ช่วยขับเคลื่อนขั้นตอนการตรวจสอบความปลอดภัย จัดระเบียบข้อมูลสำหรับการตรวจสอบความปลอดภัย ทำให้สามารถสร้างแผนภาพการไหลของข้อมูลร่วมกันได้ และเชื่อมต่อระบบอัตโนมัติเพื่อลดภาระงานในกระบวนการตรวจสอบและวิเคราะห์ภัยคุกคามด้านความปลอดภัย",
   "homeWelcomeTitle": "ยินดีต้อนรับสู่ TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
   "login": {
     "chooseMethod": "เลือกวิธีการเข้าสู่ระบบของคุณ:",
@@ -1040,6 +1054,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "แบบสำรวจทั้งหมด",
       "clearFilters": "ล้างตัวกรอง"
     },
     "list": {
@@ -1052,6 +1067,7 @@
       "noResponsesTitle": "ไม่มีคำตอบ",
       "noResponsesToTriage": "ไม่มีคำตอบแบบสำรวจที่ต้องคัดกรอง",
       "notSubmitted": "ยังไม่ได้ส่ง",
+      "searchPlaceholder": "ค้นหาตามผู้ส่งหรือแบบสำรวจ...",
       "submitted": "ส่งแล้ว",
       "submitter": "ผู้ส่ง"
     },

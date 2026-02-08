@@ -177,6 +177,7 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
+        "description": "إنشاء وإدارة الاستبيانات",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
@@ -245,15 +246,27 @@
   "adminSurveys": {
     "cloneSuffix": "(نسخة)",
     "createSurvey": "إنشاء استبيان",
+    "editTemplate": "تحرير الاستبيان",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "لا توجد استبيانات مطابقة",
+    "noTemplatesMessage": "قم بإنشاء استبيانك الأول للبدء.",
+    "noTemplatesTitle": "لا توجد استبيانات بعد",
+    "pageTitle": "إدارة الاستبيانات",
     "searchByName": "البحث بالاسم...",
+    "searchTemplates": "البحث في الاستبيانات",
     "surveyDetails": "تفاصيل الاستبيان",
     "templateBuilder": {
       "addPage": "إضافة صفحة",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "الخيارات (واحد لكل سطر)",
       "deletePage": "حذف الصفحة",
       "deleteQuestion": "حذف السؤال",
       "enterSurveyDescription": "أدخل وصف الاستبيان",
       "enterSurveyTitle": "أدخل عنوان الاستبيان",
+      "failedToLoadTemplate": "فشل تحميل الاستبيان",
+      "failedToSaveTemplate": "فشل حفظ الاستبيان",
+      "loadingTemplate": "جاري تحميل الاستبيان...",
       "mapsToTmField": "يُربط بحقل نموذج التهديد",
       "metadataKey": "مفتاح البيانات الوصفية",
       "metadataKeyHint": "اسم المفتاح لإدخال البيانات الوصفية",
@@ -306,11 +319,10 @@
       "tmFieldMappingHint": "ربط هذا الجواب بحقل نموذج التهديد",
       "unsavedChanges": "تغييرات غير محفوظة",
       "visibleIf": "مرئي إذا",
-      "visibleIfHint": "مثال: {questionName} = 'value'",
-      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+      "visibleIfHint": "مثال: {questionName} = 'value'"
     },
-    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
-    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
+    "templateCount": "{{count}} استبيان",
+    "templateCountPlural": "{{count}} استبيانات"
   },
   "assetEditor": {
     "chipPlaceholder": "أدخل القيمة واضغط Enter",
@@ -374,6 +386,7 @@
     "about": "حول",
     "actions": "الإجراءات",
     "activate": "تفعيل",
+    "active": "نشط",
     "addMetadata": "إضافة بيانات وصفية",
     "addThreat": "إضافة تهديد",
     "addons": "الوظائف الإضافية",
@@ -646,6 +659,7 @@
     "validationError": "خطأ في التحقق"
   },
   "getStarted": "ابدأ",
+  "homeDescription": "TMI هي أداة تدير وتعزز عمليات المراجعة الأمنية ونمذجة التهديدات لمؤسستك. تدير سير عمل المراجعة الأمنية، وتنظم المعلومات للمراجعات الأمنية، وتمكّن من بناء مخططات تدفق البيانات بشكل تعاوني، وتتيح ربط الأتمتة لتقليل الجهد في عملية المراجعة وتحليل التهديدات الأمنية.",
   "homeWelcomeTitle": "مرحبا بكم في تي إم آي: نمذجة التهديدات المحسنة",
   "login": {
     "chooseMethod": "اختر طريقة تسجيل الدخول:",
@@ -1040,6 +1054,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "كل الاستبيانات",
       "clearFilters": "مسح المرشحات"
     },
     "list": {
@@ -1052,6 +1067,7 @@
       "noResponsesTitle": "لا توجد ردود",
       "noResponsesToTriage": "لا توجد ردود استبيانات للفرز",
       "notSubmitted": "لم يتم الإرسال",
+      "searchPlaceholder": "البحث حسب مقدم الطلب أو الاستبيان...",
       "submitted": "تم الإرسال",
       "submitter": "المرسل"
     },

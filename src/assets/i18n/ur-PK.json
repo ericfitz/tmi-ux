@@ -177,6 +177,7 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
+        "description": "سروے بنائیں اور ان کا نظم کریں",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
@@ -245,15 +246,27 @@
   "adminSurveys": {
     "cloneSuffix": "(نقل)",
     "createSurvey": "سروے بنائیں",
+    "editTemplate": "سروے میں ترمیم کریں",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "کوئی مماثل سروے نہیں",
+    "noTemplatesMessage": "شروع کرنے کے لیے اپنا پہلا سروے بنائیں۔",
+    "noTemplatesTitle": "ابھی تک کوئی سروے نہیں",
+    "pageTitle": "سروے کا نظم کریں",
     "searchByName": "نام سے تلاش کریں...",
+    "searchTemplates": "سروے تلاش کریں",
     "surveyDetails": "سروے کی تفصیلات",
     "templateBuilder": {
       "addPage": "صفحہ شامل کریں",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "انتخابات (ہر لائن میں ایک)",
       "deletePage": "صفحہ حذف کریں",
       "deleteQuestion": "سوال حذف کریں",
       "enterSurveyDescription": "سروے کی تفصیل درج کریں",
       "enterSurveyTitle": "سروے کا عنوان درج کریں",
+      "failedToLoadTemplate": "سروے لوڈ کرنے میں ناکامی",
+      "failedToSaveTemplate": "سروے محفوظ کرنے میں ناکامی",
+      "loadingTemplate": "سروے لوڈ ہو رہا ہے...",
       "mapsToTmField": "TM فیلڈ سے منسلک",
       "metadataKey": "میٹا ڈیٹا کی",
       "metadataKeyHint": "میٹا ڈیٹا انٹری کے لیے کی کا نام",
@@ -306,11 +319,10 @@
       "tmFieldMappingHint": "اس جواب کو خطرے کے ماڈل فیلڈ سے منسلک کریں",
       "unsavedChanges": "غیر محفوظ شدہ تبدیلیاں",
       "visibleIf": "اگر نظر آئے",
-      "visibleIfHint": "مثال، {questionName} = 'value'",
-      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+      "visibleIfHint": "مثال، {questionName} = 'value'"
     },
-    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
-    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
+    "templateCount": "{{count}} سروے",
+    "templateCountPlural": "{{count}} سروے"
   },
   "assetEditor": {
     "chipPlaceholder": "قدر درج کریں اور Enter دبائیں",
@@ -374,6 +386,7 @@
     "about": "کے بارے میں",
     "actions": "کارروائیاں",
     "activate": "فعال کریں",
+    "active": "فعال",
     "addMetadata": "میٹا ڈیٹا شامل کریں",
     "addThreat": "خطرہ شامل کریں",
     "addons": "ایڈ آنز",
@@ -646,6 +659,7 @@
     "validationError": "توثیق کی خرابی"
   },
   "getStarted": "شروع کریں",
+  "homeDescription": "TMI ایک ٹول ہے جو آپ کی تنظیم کے لیے سیکیورٹی جائزے اور خطرے کی ماڈلنگ کے عمل کو منظم اور بہتر بناتا ہے۔ یہ سیکیورٹی جائزے کے ورک فلو کو چلاتا ہے، سیکیورٹی جائزوں کے لیے معلومات کو منظم کرتا ہے، مشترکہ طور پر ڈیٹا فلو ڈایاگرام بنانے کی سہولت فراہم کرتا ہے، اور جائزے کے عمل میں محنت کو کم کرنے اور سیکیورٹی خطرات کا تجزیہ کرنے کے لیے آٹومیشن سے منسلک ہونے کی اجازت دیتا ہے۔",
   "homeWelcomeTitle": "TMI میں خوش آمدید: Threat Modeling Improved",
   "login": {
     "chooseMethod": "اپنا سائن ان طریقہ منتخب کریں:",
@@ -1040,6 +1054,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "تمام سروے",
       "clearFilters": "فلٹرز صاف کریں"
     },
     "list": {
@@ -1052,6 +1067,7 @@
       "noResponsesTitle": "کوئی جوابات نہیں",
       "noResponsesToTriage": "ٹرائیج کے لیے کوئی سروے جوابات نہیں ہیں",
       "notSubmitted": "جمع نہیں کرایا",
+      "searchPlaceholder": "جمع کرانے والے یا سروے کے ذریعے تلاش کریں...",
       "submitted": "جمع کرایا گیا",
       "submitter": "جمع کرانے والا"
     },

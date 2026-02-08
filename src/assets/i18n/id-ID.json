@@ -177,6 +177,7 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
+        "description": "Buat dan kelola survei",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
@@ -245,15 +246,27 @@
   "adminSurveys": {
     "cloneSuffix": "(Salinan)",
     "createSurvey": "Buat Survei",
+    "editTemplate": "Edit survei",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "Tidak Ada Survei yang Cocok",
+    "noTemplatesMessage": "Buat survei pertama Anda untuk memulai.",
+    "noTemplatesTitle": "Belum Ada Survei",
+    "pageTitle": "Kelola Survei",
     "searchByName": "Cari berdasarkan nama...",
+    "searchTemplates": "Cari survei",
     "surveyDetails": "Detail Survei",
     "templateBuilder": {
       "addPage": "Tambah halaman",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "Pilihan (satu per baris)",
       "deletePage": "Hapus halaman",
       "deleteQuestion": "Hapus Pertanyaan",
       "enterSurveyDescription": "Masukkan deskripsi survei",
       "enterSurveyTitle": "Masukkan judul survei",
+      "failedToLoadTemplate": "Gagal memuat survei",
+      "failedToSaveTemplate": "Gagal menyimpan survei",
+      "loadingTemplate": "Memuat survei...",
       "mapsToTmField": "Dipetakan ke Bidang TM",
       "metadataKey": "Kunci Metadata",
       "metadataKeyHint": "Nama kunci untuk entri metadata",
@@ -277,9 +290,9 @@
       },
       "questionTypeLabels": {
         "boolean": "Ya/Tidak",
-        "checkbox": "Checkbox",
+        "checkbox": "Kotak centang",
         "comment": "Multiline",
-        "dropdown": "Dropdown",
+        "dropdown": "Menu dropdown",
         "panel": "Panel",
         "paneldynamic": "Panel Dinamis",
         "radiogroup": "Grup Radio",
@@ -306,11 +319,10 @@
       "tmFieldMappingHint": "Hubungkan jawaban ini ke bidang model ancaman",
       "unsavedChanges": "Perubahan belum disimpan",
       "visibleIf": "Terlihat Jika",
-      "visibleIfHint": "mis., {questionName} = 'value'",
-      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+      "visibleIfHint": "mis., {questionName} = 'value'"
     },
-    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
-    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
+    "templateCount": "{{count}} survei",
+    "templateCountPlural": "{{count}} survei"
   },
   "assetEditor": {
     "chipPlaceholder": "Masukkan nilai dan tekan Enter",
@@ -374,6 +386,7 @@
     "about": "Tentang",
     "actions": "Tindakan",
     "activate": "Aktifkan",
+    "active": "Aktif",
     "addMetadata": "Tambah Metadata",
     "addThreat": "Tambah Ancaman",
     "addons": "Addon",
@@ -646,6 +659,7 @@
     "validationError": "Kesalahan Validasi"
   },
   "getStarted": "Mulai",
+  "homeDescription": "TMI adalah alat yang mengelola dan meningkatkan proses tinjauan keamanan dan pemodelan ancaman untuk organisasi Anda. Alat ini menggerakkan alur kerja tinjauan keamanan, mengorganisir informasi untuk tinjauan keamanan, memungkinkan pembuatan diagram alur data secara kolaboratif, dan memungkinkan koneksi otomatisasi untuk mengurangi beban kerja dalam proses tinjauan dan menganalisis ancaman keamanan.",
   "homeWelcomeTitle": "Selamat Datang di TMI: Threat Modeling Improved",
   "login": {
     "chooseMethod": "Pilih metode masuk Anda:",
@@ -1040,6 +1054,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "Semua Survei",
       "clearFilters": "Hapus Filter"
     },
     "list": {
@@ -1052,6 +1067,7 @@
       "noResponsesTitle": "Tidak Ada Tanggapan",
       "noResponsesToTriage": "Tidak ada tanggapan survei untuk ditriase",
       "notSubmitted": "Belum dikirim",
+      "searchPlaceholder": "Cari berdasarkan pengirim atau survei...",
       "submitted": "Terkirim",
       "submitter": "Pengirim"
     },

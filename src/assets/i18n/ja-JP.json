@@ -177,6 +177,7 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
+        "description": "調査を作成および管理",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
@@ -245,15 +246,27 @@
   "adminSurveys": {
     "cloneSuffix": "（コピー）",
     "createSurvey": "調査を作成",
+    "editTemplate": "調査を編集",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "一致する調査がありません",
+    "noTemplatesMessage": "最初の調査を作成して開始してください。",
+    "noTemplatesTitle": "調査がまだありません",
+    "pageTitle": "調査を管理",
     "searchByName": "名前で検索...",
+    "searchTemplates": "調査を検索",
     "surveyDetails": "調査詳細",
     "templateBuilder": {
       "addPage": "ページを追加",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "選択肢（1行に1つ）",
       "deletePage": "ページを削除",
       "deleteQuestion": "質問を削除",
       "enterSurveyDescription": "調査の説明を入力",
       "enterSurveyTitle": "調査のタイトルを入力",
+      "failedToLoadTemplate": "調査の読み込みに失敗しました",
+      "failedToSaveTemplate": "調査の保存に失敗しました",
+      "loadingTemplate": "調査を読み込み中...",
       "mapsToTmField": "脅威モデルフィールドにマッピング",
       "metadataKey": "メタデータキー",
       "metadataKeyHint": "メタデータエントリのキー名",
@@ -306,11 +319,10 @@
       "tmFieldMappingHint": "この回答を脅威モデルフィールドにリンク",
       "unsavedChanges": "未保存の変更",
       "visibleIf": "表示条件",
-      "visibleIfHint": "例: {questionName} = 'value'",
-      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+      "visibleIfHint": "例: {questionName} = 'value'"
     },
-    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
-    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
+    "templateCount": "{{count}}件の調査",
+    "templateCountPlural": "{{count}}件の調査"
   },
   "assetEditor": {
     "chipPlaceholder": "値を入力してEnterを押してください",
@@ -374,6 +386,7 @@
     "about": "概要",
     "actions": "アクション",
     "activate": "有効化",
+    "active": "アクティブ",
     "addMetadata": "メタデータを追加",
     "addThreat": "脅威を追加",
     "addons": "アドオン",
@@ -646,6 +659,7 @@
     "validationError": "バリデーションエラー"
   },
   "getStarted": "始める",
+  "homeDescription": "TMIは、組織のセキュリティレビューと脅威モデリングプロセスを管理・強化するツールです。セキュリティレビューのワークフローを推進し、セキュリティレビューの情報を整理し、データフロー図を共同で作成し、自動化を接続してレビュープロセスの作業を削減し、セキュリティ脅威を分析します。",
   "homeWelcomeTitle": "TMIへようこそ: 脅威モデリング改善版",
   "login": {
     "chooseMethod": "サインイン方法を選択してください:",
@@ -1040,6 +1054,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "すべての調査",
       "clearFilters": "フィルタをクリア"
     },
     "list": {
@@ -1052,6 +1067,7 @@
       "noResponsesTitle": "回答なし",
       "noResponsesToTriage": "トリアージするアンケート回答はありません",
       "notSubmitted": "未提出",
+      "searchPlaceholder": "提出者または調査で検索...",
       "submitted": "提出済み",
       "submitter": "提出者"
     },

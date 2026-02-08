@@ -177,6 +177,7 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
+        "description": "יצירה וניהול של סקרים",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
@@ -245,15 +246,27 @@
   "adminSurveys": {
     "cloneSuffix": "(עותק)",
     "createSurvey": "צור סקר",
+    "editTemplate": "עריכת סקר",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "לא נמצאו סקרים תואמים",
+    "noTemplatesMessage": "צור את הסקר הראשון שלך כדי להתחיל.",
+    "noTemplatesTitle": "אין סקרים עדיין",
+    "pageTitle": "ניהול סקרים",
     "searchByName": "חיפוש לפי שם...",
+    "searchTemplates": "חיפוש סקרים",
     "surveyDetails": "פרטי סקר",
     "templateBuilder": {
       "addPage": "הוסף עמוד",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "אפשרויות (אחת בכל שורה)",
       "deletePage": "מחק עמוד",
       "deleteQuestion": "מחק שאלה",
       "enterSurveyDescription": "הזן תיאור סקר",
       "enterSurveyTitle": "הזן כותרת סקר",
+      "failedToLoadTemplate": "טעינת הסקר נכשלה",
+      "failedToSaveTemplate": "שמירת הסקר נכשלה",
+      "loadingTemplate": "טוען סקר...",
       "mapsToTmField": "מתאים לשדה מודל איום",
       "metadataKey": "מפתח מטא-נתונים",
       "metadataKeyHint": "שם מפתח עבור ערך המטא-נתונים",
@@ -306,11 +319,10 @@
       "tmFieldMappingHint": "קשר תשובה זו לשדה מודל איום",
       "unsavedChanges": "שינויים שלא נשמרו",
       "visibleIf": "גלוי אם",
-      "visibleIfHint": "לדוגמה, {questionName} = 'value'",
-      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+      "visibleIfHint": "לדוגמה, {questionName} = 'value'"
     },
-    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
-    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
+    "templateCount": "{{count}} סקר",
+    "templateCountPlural": "{{count}} סקרים"
   },
   "assetEditor": {
     "chipPlaceholder": "הזן ערך ולחץ Enter",
@@ -374,6 +386,7 @@
     "about": "אודות",
     "actions": "פעולות",
     "activate": "הפעלה",
+    "active": "פעיל",
     "addMetadata": "הוסף מטא-נתונים",
     "addThreat": "הוסף איום",
     "addons": "תוספים",
@@ -646,6 +659,7 @@
     "validationError": "שגיאת אימות"
   },
   "getStarted": "התחל",
+  "homeDescription": "TMI הוא כלי לניהול ושיפור תהליכי סקירת אבטחה ומודלים של איומים עבור הארגון שלך. הוא מניע את זרימת העבודה של סקירת אבטחה, מארגן את המידע לסקירות אבטחה, מאפשר בניית תרשימי זרימת נתונים באופן שיתופי, ומאפשר חיבור של אוטומציה כדי להפחית עבודה חוזרת בתהליך הסקירה ולנתח איומי אבטחה.",
   "homeWelcomeTitle": "ברוכים הבאים ל-TMI: מידול איומים משופר",
   "login": {
     "chooseMethod": "בחר את שיטת הכניסה שלך:",
@@ -1040,6 +1054,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "כל הסקרים",
       "clearFilters": "נקה מסננים"
     },
     "list": {
@@ -1052,6 +1067,7 @@
       "noResponsesTitle": "אין תגובות",
       "noResponsesToTriage": "אין תגובות סקר למיון",
       "notSubmitted": "לא הוגש",
+      "searchPlaceholder": "חיפוש לפי מגיש או סקר...",
       "submitted": "הוגש",
       "submitter": "מגיש"
     },

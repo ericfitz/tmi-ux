@@ -177,6 +177,7 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
+        "description": "Crear y gestionar encuestas",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
@@ -245,15 +246,27 @@
   "adminSurveys": {
     "cloneSuffix": "(Copia)",
     "createSurvey": "Crear Encuesta",
+    "editTemplate": "Editar encuesta",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "No hay encuestas coincidentes",
+    "noTemplatesMessage": "Crea tu primera encuesta para comenzar.",
+    "noTemplatesTitle": "Aún no hay encuestas",
+    "pageTitle": "Gestionar encuestas",
     "searchByName": "Buscar por nombre...",
+    "searchTemplates": "Buscar encuestas",
     "surveyDetails": "Detalles de Encuesta",
     "templateBuilder": {
       "addPage": "Añadir página",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "Opciones (una por línea)",
       "deletePage": "Eliminar página",
       "deleteQuestion": "Eliminar Pregunta",
       "enterSurveyDescription": "Introduzca la descripción de la encuesta",
       "enterSurveyTitle": "Introduzca el título de la encuesta",
+      "failedToLoadTemplate": "Error al cargar la encuesta",
+      "failedToSaveTemplate": "Error al guardar la encuesta",
+      "loadingTemplate": "Cargando encuesta...",
       "mapsToTmField": "Mapea a Campo TM",
       "metadataKey": "Clave de Metadatos",
       "metadataKeyHint": "Nombre de clave para la entrada de metadatos",
@@ -306,11 +319,10 @@
       "tmFieldMappingHint": "Vincular esta respuesta a un campo del modelo de amenazas",
       "unsavedChanges": "Cambios sin guardar",
       "visibleIf": "Visible Si",
-      "visibleIfHint": "p. ej., {questionName} = 'value'",
-      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+      "visibleIfHint": "p. ej., {questionName} = 'value'"
     },
-    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
-    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
+    "templateCount": "{{count}} encuesta",
+    "templateCountPlural": "{{count}} encuestas"
   },
   "assetEditor": {
     "chipPlaceholder": "Introduzca un valor y pulse Intro",
@@ -374,6 +386,7 @@
     "about": "Acerca de",
     "actions": "Acciones",
     "activate": "Activar",
+    "active": "Activo",
     "addMetadata": "Agregar Metadatos",
     "addThreat": "Agregar Amenaza",
     "addons": "Complementos",
@@ -646,6 +659,7 @@
     "validationError": "Error de Validación"
   },
   "getStarted": "Comenzar",
+  "homeDescription": "TMI es una herramienta que gestiona y mejora los procesos de revisión de seguridad y modelado de amenazas para su organización. Impulsa el flujo de trabajo de revisión de seguridad, organiza la información para las revisiones de seguridad, permite crear diagramas de flujo de datos de forma colaborativa y permite conectar automatización para reducir el trabajo repetitivo en el proceso de revisión y analizar amenazas de seguridad.",
   "homeWelcomeTitle": "Bienvenido a TMI: Modelado de Amenazas Mejorado",
   "login": {
     "chooseMethod": "Elija su método de inicio de sesión:",
@@ -1040,6 +1054,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "Todas las encuestas",
       "clearFilters": "Limpiar Filtros"
     },
     "list": {
@@ -1052,6 +1067,7 @@
       "noResponsesTitle": "No hay respuestas",
       "noResponsesToTriage": "No hay respuestas de encuestas para clasificar",
       "notSubmitted": "No enviada",
+      "searchPlaceholder": "Buscar por remitente o encuesta...",
       "submitted": "Enviada",
       "submitter": "Remitente"
     },

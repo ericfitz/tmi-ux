@@ -177,6 +177,7 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
+        "description": "创建和管理调查问卷",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
@@ -245,15 +246,27 @@
   "adminSurveys": {
     "cloneSuffix": "（副本）",
     "createSurvey": "创建调查",
+    "editTemplate": "编辑调查问卷",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "没有匹配的调查问卷",
+    "noTemplatesMessage": "创建您的第一个调查问卷以开始使用。",
+    "noTemplatesTitle": "还没有调查问卷",
+    "pageTitle": "管理调查问卷",
     "searchByName": "按名称搜索...",
+    "searchTemplates": "搜索调查问卷",
     "surveyDetails": "调查详情",
     "templateBuilder": {
       "addPage": "添加页面",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "选项（每行一个）",
       "deletePage": "删除页面",
       "deleteQuestion": "删除问题",
       "enterSurveyDescription": "输入调查描述",
       "enterSurveyTitle": "输入调查标题",
+      "failedToLoadTemplate": "加载调查问卷失败",
+      "failedToSaveTemplate": "保存调查问卷失败",
+      "loadingTemplate": "正在加载调查问卷...",
       "mapsToTmField": "映射到TM字段",
       "metadataKey": "元数据键",
       "metadataKeyHint": "元数据条目的键名称",
@@ -306,11 +319,10 @@
       "tmFieldMappingHint": "将此答案链接到威胁模型字段",
       "unsavedChanges": "未保存的更改",
       "visibleIf": "可见条件",
-      "visibleIfHint": "例如：{questionName} = 'value'",
-      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+      "visibleIfHint": "例如：{questionName} = 'value'"
     },
-    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
-    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
+    "templateCount": "{{count}} 个调查问卷",
+    "templateCountPlural": "{{count}} 个调查问卷"
   },
   "assetEditor": {
     "chipPlaceholder": "输入值并按 Enter",
@@ -374,6 +386,7 @@
     "about": "关于",
     "actions": "操作",
     "activate": "激活",
+    "active": "活跃",
     "addMetadata": "添加元数据",
     "addThreat": "添加威胁",
     "addons": "插件",
@@ -646,6 +659,7 @@
     "validationError": "验证错误"
   },
   "getStarted": "开始使用",
+  "homeDescription": "TMI 是一款管理和增强组织安全审查和威胁建模流程的工具。它驱动安全审查工作流程，组织安全审查信息，支持协作构建数据流图，并能连接自动化以减少审查过程中的繁琐工作和分析安全威胁。",
   "homeWelcomeTitle": "欢迎使用 TMI: 威胁建模改进",
   "login": {
     "chooseMethod": "选择您的登录方式：",
@@ -1040,6 +1054,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "所有调查问卷",
       "clearFilters": "清除筛选"
     },
     "list": {
@@ -1052,6 +1067,7 @@
       "noResponsesTitle": "没有回复",
       "noResponsesToTriage": "没有需要分类的调查回复",
       "notSubmitted": "未提交",
+      "searchPlaceholder": "按提交者或调查问卷搜索...",
       "submitted": "已提交",
       "submitter": "提交者"
     },

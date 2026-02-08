@@ -401,8 +401,8 @@
   "common": {
     "about": "About",
     "actions": "Actions",
-    "active": "Active",
     "activate": "Activate",
+    "active": "Active",
     "addMetadata": "Add Metadata",
     "addThreat": "Add Threat",
     "addons": "Addons",

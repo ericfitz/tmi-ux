@@ -177,6 +177,7 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
+        "description": "Создание и управление опросами",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
@@ -245,15 +246,27 @@
   "adminSurveys": {
     "cloneSuffix": "(Копия)",
     "createSurvey": "Создать опрос",
+    "editTemplate": "Редактировать опрос",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "Нет подходящих опросов",
+    "noTemplatesMessage": "Создайте свой первый опрос, чтобы начать работу.",
+    "noTemplatesTitle": "Пока нет опросов",
+    "pageTitle": "Управление опросами",
     "searchByName": "Поиск по названию...",
+    "searchTemplates": "Поиск опросов",
     "surveyDetails": "Детали опроса",
     "templateBuilder": {
       "addPage": "Добавить страницу",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "Варианты (по одному на строку)",
       "deletePage": "Удалить страницу",
       "deleteQuestion": "Удалить вопрос",
       "enterSurveyDescription": "Введите описание опроса",
       "enterSurveyTitle": "Введите название опроса",
+      "failedToLoadTemplate": "Не удалось загрузить опрос",
+      "failedToSaveTemplate": "Не удалось сохранить опрос",
+      "loadingTemplate": "Загрузка опроса...",
       "mapsToTmField": "Сопоставляется с полем модели угроз",
       "metadataKey": "Ключ метаданных",
       "metadataKeyHint": "Имя ключа для записи метаданных",
@@ -306,11 +319,10 @@
       "tmFieldMappingHint": "Связать этот ответ с полем модели угроз",
       "unsavedChanges": "Несохранённые изменения",
       "visibleIf": "Видимо, если",
-      "visibleIfHint": "например, {questionName} = 'значение'",
-      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+      "visibleIfHint": "например, {questionName} = 'значение'"
     },
-    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
-    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
+    "templateCount": "{{count}} опрос",
+    "templateCountPlural": "{{count}} опросов"
   },
   "assetEditor": {
     "chipPlaceholder": "Введите значение и нажмите Enter",
@@ -374,6 +386,7 @@
     "about": "О Программе",
     "actions": "Действия",
     "activate": "Активировать",
+    "active": "Активный",
     "addMetadata": "Добавить Метаданные",
     "addThreat": "Добавить Угрозу",
     "addons": "Дополнения",
@@ -646,6 +659,7 @@
     "validationError": "Ошибка валидации"
   },
   "getStarted": "Начать",
+  "homeDescription": "TMI — это инструмент для управления и улучшения процессов проверки безопасности и моделирования угроз в вашей организации. Он управляет рабочим процессом проверки безопасности, организует информацию для проверок безопасности, позволяет совместно создавать диаграммы потоков данных и подключать автоматизацию для снижения рутинной работы в процессе проверки и анализа угроз безопасности.",
   "homeWelcomeTitle": "Добро Пожаловать в TMI: Улучшенное Моделирование Угроз",
   "login": {
     "chooseMethod": "Выберите способ входа:",
@@ -1040,6 +1054,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "Все опросы",
       "clearFilters": "Очистить фильтры"
     },
     "list": {
@@ -1052,6 +1067,7 @@
       "noResponsesTitle": "Нет ответов",
       "noResponsesToTriage": "Нет ответов на опросы для сортировки",
       "notSubmitted": "Не отправлено",
+      "searchPlaceholder": "Поиск по отправителю или опросу...",
       "submitted": "Отправлено",
       "submitter": "Отправитель"
     },

@@ -177,6 +177,7 @@
         "title": "{{admin.quotas.title}}"
       },
       "surveys": {
+        "description": "Criar e gerenciar pesquisas",
         "title": "{{common.objectTypes.surveys}}"
       },
       "users": {
@@ -245,15 +246,27 @@
   "adminSurveys": {
     "cloneSuffix": "(Cópia)",
     "createSurvey": "Criar Pesquisa",
+    "editTemplate": "Editar pesquisa",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "Nenhuma Pesquisa Correspondente",
+    "noTemplatesMessage": "Crie sua primeira pesquisa para começar.",
+    "noTemplatesTitle": "Nenhuma Pesquisa Ainda",
+    "pageTitle": "Gerenciar Pesquisas",
     "searchByName": "Pesquisar por nome...",
+    "searchTemplates": "Buscar pesquisas",
     "surveyDetails": "Detalhes da Pesquisa",
     "templateBuilder": {
       "addPage": "Adicionar página",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "Escolhas (uma por linha)",
       "deletePage": "Excluir página",
       "deleteQuestion": "Excluir Pergunta",
       "enterSurveyDescription": "Insira a descrição da pesquisa",
       "enterSurveyTitle": "Insira o título da pesquisa",
+      "failedToLoadTemplate": "Falha ao carregar pesquisa",
+      "failedToSaveTemplate": "Falha ao salvar pesquisa",
+      "loadingTemplate": "Carregando pesquisa...",
       "mapsToTmField": "Mapeia para Campo do Modelo de Ameaças",
       "metadataKey": "Chave de Metadados",
       "metadataKeyHint": "Nome da chave para a entrada de metadados",
@@ -306,11 +319,10 @@
       "tmFieldMappingHint": "Vincule esta resposta a um campo do modelo de ameaças",
       "unsavedChanges": "Alterações não salvas",
       "visibleIf": "Visível Se",
-      "visibleIfHint": "ex: {questionName} = 'value'",
-      "backToTemplates": "{{surveys.confirmation.backToSurveys}}"
+      "visibleIfHint": "ex: {questionName} = 'value'"
     },
-    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
-    "loadingTemplates": "{{surveys.list.loadingSurveys}}"
+    "templateCount": "{{count}} pesquisa",
+    "templateCountPlural": "{{count}} pesquisas"
   },
   "assetEditor": {
     "chipPlaceholder": "Digite o valor e pressione Enter",
@@ -374,6 +386,7 @@
     "about": "Sobre",
     "actions": "Acoes",
     "activate": "Ativar",
+    "active": "Ativo",
     "addMetadata": "Adicionar Metadados",
     "addThreat": "Adicionar Ameaca",
     "addons": "Complementos",
@@ -646,6 +659,7 @@
     "validationError": "Erro de Validacao"
   },
   "getStarted": "Comecar",
+  "homeDescription": "TMI é uma ferramenta que gerencia e aprimora os processos de revisão de segurança e modelagem de ameaças para sua organização. Ela conduz o fluxo de trabalho de revisão de segurança, organiza as informações para revisões de segurança, permite a criação colaborativa de diagramas de fluxo de dados e possibilita a conexão de automação para reduzir esforços no processo de revisão e analisar ameaças de segurança.",
   "homeWelcomeTitle": "Bem-vindo ao TMI: Modelagem de Ameacas Aprimorada",
   "login": {
     "chooseMethod": "Escolha seu metodo de login:",
@@ -1040,6 +1054,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "Todas as Pesquisas",
       "clearFilters": "Limpar Filtros"
     },
     "list": {
@@ -1052,6 +1067,7 @@
       "noResponsesTitle": "Nenhuma Resposta",
       "noResponsesToTriage": "Não há respostas de pesquisa para triagem",
       "notSubmitted": "Não enviada",
+      "searchPlaceholder": "Buscar por autor ou pesquisa...",
       "submitted": "Enviada",
       "submitter": "Remetente"
     },
