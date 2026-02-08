@@ -2225,43 +2225,47 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     // Remove focus from the button to restore non-focused state
     (event.target as HTMLElement)?.blur();
 
-    const dialogData: MetadataDialogData = {
-      metadata: diagram.metadata || [],
-      isReadOnly: !this.canEdit,
-      objectType: 'Diagram',
-      objectName: `${this.transloco.translate('common.objectTypes.diagram')}: ${diagram.name} (${diagram.id})`,
-    };
+    if (!this.threatModel) return;
 
-    const dialogRef = this.dialog.open(MetadataDialogComponent, {
-      width: '90vw',
-      maxWidth: '800px',
-      minWidth: '500px',
-      maxHeight: '80vh',
-      data: dialogData,
-    });
-
+    // Fetch metadata from API since list endpoint doesn't include it
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
-        if (result && this.threatModel) {
+      this.threatModelService
+        .getDiagramMetadata(this.threatModel.id, diagram.id)
+        .subscribe(metadata => {
+          const dialogData: MetadataDialogData = {
+            metadata: metadata || [],
+            isReadOnly: !this.canEdit,
+            objectType: 'Diagram',
+            objectName: `${this.transloco.translate('common.objectTypes.diagram')}: ${diagram.name} (${diagram.id})`,
+          };
+
+          const dialogRef = this.dialog.open(MetadataDialogComponent, {
+            width: '90vw',
+            maxWidth: '800px',
+            minWidth: '500px',
+            maxHeight: '80vh',
+            data: dialogData,
+          });
+
           this._subscriptions.add(
-            this.threatModelService
-              .updateDiagramMetadata(this.threatModel.id, diagram.id, result)
-              .subscribe(updatedMetadata => {
-                if (updatedMetadata) {
-                  const diagramIndex = this.diagrams.findIndex(d => d.id === diagram.id);
-                  if (diagramIndex !== -1) {
-                    this.diagrams[diagramIndex].metadata = updatedMetadata;
-                    this.diagrams[diagramIndex].modified_at = new Date().toISOString();
-                  }
-                  this.logger.info('Updated diagram metadata via API', {
-                    diagramId: diagram.id,
-                    metadata: updatedMetadata,
-                  });
-                }
-              }),
+            dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
+              if (result && this.threatModel) {
+                this._subscriptions.add(
+                  this.threatModelService
+                    .updateDiagramMetadata(this.threatModel.id, diagram.id, result)
+                    .subscribe(updatedMetadata => {
+                      if (updatedMetadata) {
+                        this.logger.info('Updated diagram metadata via API', {
+                          diagramId: diagram.id,
+                          metadata: updatedMetadata,
+                        });
+                      }
+                    }),
+                );
+              }
+            }),
           );
-        }
-      }),
+        }),
     );
   }
 
