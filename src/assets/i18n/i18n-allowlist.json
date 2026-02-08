@@ -12,6 +12,9 @@
   "bn-BD": [],
   "de-DE": [
     "about.opensourcetitle",
+    "adminSurveys.templateBuilder.nameId",
+    "adminSurveys.templateBuilder.questionTypeLabels.dropdown",
+    "adminSurveys.templateBuilder.questionTypeLabels.panel",
     "triage.title",
     "about.server",
     "about.wiki",
@@ -24,6 +27,7 @@
     "common.ok",
     "common.status",
     "editor.nodeLabels.textbox",
+    "navbar.dashboard",
     "threatModels.branch",
     "threatModels.commit",
     "threatModels.dashboard",
@@ -32,6 +36,7 @@
     "userPreferences.marginSize.standard"
   ],
   "es-ES": [
+    "adminSurveys.templateBuilder.questionTypeLabels.panel",
     "assetEditor.types.hardware",
     "assetEditor.types.software",
     "common.error",
@@ -40,6 +45,7 @@
   ],
   "fr-FR": [
     "about.opensourcetitle",
+    "adminSurveys.templateBuilder.questions",
     "triage.title",
     "admin.title",
     "assetEditor.types.infrastructure",
@@ -58,6 +64,7 @@
     "common.score",
     "common.sessionRoles.participant",
     "common.type",
+    "navbar.admin",
     "privacy.introductionTitle",
     "userPreferences.marginSize.standard",
     "userPreferences.tabs.danger"
@@ -67,6 +74,7 @@
   "id-ID": [
     "about.contactoperator",
     "about.server",
+    "adminSurveys.templateBuilder.questionTypeLabels.panel",
     "assetEditor.types.data",
     "common.metadata",
     "common.objectTypes.diagram",
@@ -75,6 +83,7 @@
     "common.sessionRoles.presenter",
     "common.status",
     "editor.nodeLabels.node",
+    "navbar.admin",
     "navbar.appTitle",
     "threatModels.commit",
     "threatModels.repositorySubPath",
@@ -87,6 +96,7 @@
     "assetEditor.types.software",
     "common.ok",
     "common.status",
+    "navbar.admin",
     "threatModels.commit"
   ],
   "ru-RU": [],
