@@ -91,14 +91,6 @@ export const routes: Routes = [
         canActivate: [adminGuard],
       },
       {
-        path: 'administrators',
-        loadComponent: () =>
-          import(
-            /* webpackChunkName: "admin-administrators" */ './pages/admin/administrators/admin-administrators.component'
-          ).then(c => c.AdminAdministratorsComponent),
-        canActivate: [adminGuard],
-      },
-      {
         path: 'users',
         loadComponent: () =>
           import(

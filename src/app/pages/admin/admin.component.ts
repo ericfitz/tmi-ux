@@ -24,12 +24,6 @@ export class AdminComponent {
   ) {}
   adminSections = [
     {
-      title: 'admin.sections.administrators.title',
-      description: 'admin.sections.administrators.description',
-      icon: 'supervisor_account',
-      action: 'administrators',
-    },
-    {
       title: 'admin.sections.users.title',
       description: 'admin.sections.users.description',
       icon: 'person',
