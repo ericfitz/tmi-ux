@@ -647,7 +647,6 @@
     "validationError": "Erreur de validation"
   },
   "getStarted": "Commencer",
-  "homeDescription": "TMI est un outil qui gère et améliore les processus de revue de sécurité et de modélisation des menaces pour votre organisation. Il pilote le flux de travail de revue de sécurité, organise les informations pour les revues de sécurité, permet de construire des diagrammes de flux de données de manière collaborative et permet de connecter l'automatisation pour réduire les efforts dans le processus de revue et analyser les menaces de sécurité.",
   "homeWelcomeTitle": "Bienvenue sur TMI : Modelisation des Menaces Amelioree",
   "login": {
     "chooseMethod": "Choisissez votre methode de connexion :",

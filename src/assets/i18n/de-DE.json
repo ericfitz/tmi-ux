@@ -647,7 +647,6 @@
     "validationError": "Validierungsfehler"
   },
   "getStarted": "Loslegen",
-  "homeDescription": "TMI ist ein Werkzeug, das die Sicherheitsüberprüfungs- und Bedrohungsmodellierungsprozesse für Ihre Organisation verwaltet und verbessert. Es steuert den Arbeitsablauf der Sicherheitsüberprüfung, organisiert die Informationen für Sicherheitsüberprüfungen, ermöglicht die gemeinsame Erstellung von Datenflussdiagrammen und ermöglicht die Anbindung von Automatisierung, um den Aufwand im Überprüfungsprozess zu reduzieren und Sicherheitsbedrohungen zu analysieren.",
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
   "login": {
     "chooseMethod": "Wählen Sie Ihre Anmeldemethode:",
