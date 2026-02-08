@@ -1041,7 +1041,6 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allTemplates": "แม่แบบทั้งหมด",
       "clearFilters": "ล้างตัวกรอง"
     },
     "list": {

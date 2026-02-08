@@ -1041,7 +1041,6 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allTemplates": "تمام ٹیمپلیٹس",
       "clearFilters": "فلٹرز صاف کریں"
     },
     "list": {

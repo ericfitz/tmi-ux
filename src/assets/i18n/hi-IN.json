@@ -1041,7 +1041,6 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allTemplates": "सभी टेम्पलेट",
       "clearFilters": "फ़िल्टर साफ़ करें"
     },
     "list": {

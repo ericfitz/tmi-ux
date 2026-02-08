@@ -1041,7 +1041,6 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allTemplates": "Todas las Plantillas",
       "clearFilters": "Limpiar Filtros"
     },
     "list": {

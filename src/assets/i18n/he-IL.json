@@ -1041,7 +1041,6 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allTemplates": "כל התבניות",
       "clearFilters": "נקה מסננים"
     },
     "list": {

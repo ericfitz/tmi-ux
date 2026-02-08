@@ -1041,7 +1041,6 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allTemplates": "所有模板",
       "clearFilters": "清除筛选"
     },
     "list": {

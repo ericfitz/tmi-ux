@@ -1041,7 +1041,6 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allTemplates": "جميع القوالب",
       "clearFilters": "مسح المرشحات"
     },
     "list": {

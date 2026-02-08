@@ -1041,7 +1041,6 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allTemplates": "Semua Templat",
       "clearFilters": "Hapus Filter"
     },
     "list": {

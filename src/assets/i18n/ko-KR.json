@@ -1041,7 +1041,6 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allTemplates": "모든 템플릿",
       "clearFilters": "필터 지우기"
     },
     "list": {

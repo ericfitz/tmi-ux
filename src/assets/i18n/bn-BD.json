@@ -1041,7 +1041,6 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allTemplates": "সকল টেমপ্লেট",
       "clearFilters": "ফিল্টার সাফ করুন"
     },
     "list": {
