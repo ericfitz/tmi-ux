@@ -42,6 +42,13 @@ Also:
 2. **Test**: Run related tests and fix any failures
 3. **Never Skip Tests**: Always troubleshoot to root cause and fix, or ask what to do
 
+### For GitHub Issue-Related Changes
+
+When code changes are associated with a GitHub issue, also:
+
+1. **Reference the Commit**: Add a comment to the issue referencing the commit
+2. **Close the Issue**: Close the issue as "done"
+
 ### General Guidelines
 
 - Remove unused references rather than prefixing with underscore (unless placeholders)
