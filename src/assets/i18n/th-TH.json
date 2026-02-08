@@ -246,27 +246,15 @@
   "adminSurveys": {
     "cloneSuffix": "(สำเนา)",
     "createSurvey": "สร้างแบบสำรวจ",
-    "editTemplate": "แก้ไขเทมเพลต",
-    "errorLoadingTemplates": "ไม่สามารถโหลดเทมเพลตได้",
-    "loadingTemplates": "กำลังโหลดเทมเพลต...",
-    "noMatchingTitle": "ไม่มีเทมเพลตที่ตรงกัน",
-    "noTemplatesMessage": "สร้างเทมเพลตแบบสำรวจแรกของคุณเพื่อเริ่มต้น",
-    "noTemplatesTitle": "ยังไม่มีเทมเพลต",
-    "pageTitle": "เทมเพลตแบบสำรวจ",
     "searchByName": "ค้นหาตามชื่อ...",
-    "searchTemplates": "ค้นหาเทมเพลต",
     "surveyDetails": "รายละเอียดแบบสำรวจ",
     "templateBuilder": {
       "addPage": "เพิ่มหน้า",
-      "backToTemplates": "กลับไปที่เทมเพลต",
       "choicesPerLine": "ตัวเลือก (หนึ่งตัวเลือกต่อบรรทัด)",
       "deletePage": "ลบหน้า",
       "deleteQuestion": "ลบคำถาม",
       "enterSurveyDescription": "ป้อนคำอธิบายแบบสำรวจ",
       "enterSurveyTitle": "ป้อนชื่อแบบสำรวจ",
-      "failedToLoadTemplate": "โหลดเทมเพลตไม่สำเร็จ",
-      "failedToSaveTemplate": "บันทึกเทมเพลตไม่สำเร็จ",
-      "loadingTemplate": "กำลังโหลดเทมเพลต...",
       "mapsToTmField": "แมปกับฟิลด์ TM",
       "metadataKey": "คีย์เมทาดาทา",
       "metadataKeyHint": "ชื่อคีย์สำหรับรายการเมทาดาทา",
@@ -320,9 +308,7 @@
       "unsavedChanges": "การเปลี่ยนแปลงที่ยังไม่ได้บันทึก",
       "visibleIf": "แสดงถ้า",
       "visibleIfHint": "เช่น {questionName} = 'value'"
-    },
-    "templateCount": "{{count}} เทมเพลต",
-    "templateCountPlural": "{{count}} เทมเพลต"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "ป้อนค่าและกด Enter",

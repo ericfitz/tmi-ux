@@ -246,27 +246,15 @@
   "adminSurveys": {
     "cloneSuffix": "(Копия)",
     "createSurvey": "Создать опрос",
-    "editTemplate": "Редактировать шаблон",
-    "errorLoadingTemplates": "Не удалось загрузить шаблоны",
-    "loadingTemplates": "Загрузка шаблонов...",
-    "noMatchingTitle": "Нет подходящих шаблонов",
-    "noTemplatesMessage": "Создайте первый шаблон опроса, чтобы начать.",
-    "noTemplatesTitle": "Шаблонов пока нет",
-    "pageTitle": "Шаблоны опросов",
     "searchByName": "Поиск по названию...",
-    "searchTemplates": "Поиск шаблонов",
     "surveyDetails": "Детали опроса",
     "templateBuilder": {
       "addPage": "Добавить страницу",
-      "backToTemplates": "Вернуться к шаблонам",
       "choicesPerLine": "Варианты (по одному на строку)",
       "deletePage": "Удалить страницу",
       "deleteQuestion": "Удалить вопрос",
       "enterSurveyDescription": "Введите описание опроса",
       "enterSurveyTitle": "Введите название опроса",
-      "failedToLoadTemplate": "Не удалось загрузить шаблон",
-      "failedToSaveTemplate": "Не удалось сохранить шаблон",
-      "loadingTemplate": "Загрузка шаблона...",
       "mapsToTmField": "Сопоставляется с полем модели угроз",
       "metadataKey": "Ключ метаданных",
       "metadataKeyHint": "Имя ключа для записи метаданных",
@@ -320,9 +308,7 @@
       "unsavedChanges": "Несохранённые изменения",
       "visibleIf": "Видимо, если",
       "visibleIfHint": "например, {questionName} = 'значение'"
-    },
-    "templateCount": "{{count}} шаблон",
-    "templateCountPlural": "{{count}} шаблонов"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "Введите значение и нажмите Enter",

@@ -246,27 +246,15 @@
   "adminSurveys": {
     "cloneSuffix": "(עותק)",
     "createSurvey": "צור סקר",
-    "editTemplate": "עריכת תבנית",
-    "errorLoadingTemplates": "טעינת התבניות נכשלה",
-    "loadingTemplates": "טוען תבניות...",
-    "noMatchingTitle": "אין תבניות תואמות",
-    "noTemplatesMessage": "צור את תבנית הסקר הראשונה שלך כדי להתחיל.",
-    "noTemplatesTitle": "אין עדיין תבניות",
-    "pageTitle": "תבניות סקרים",
     "searchByName": "חיפוש לפי שם...",
-    "searchTemplates": "חיפוש תבניות",
     "surveyDetails": "פרטי סקר",
     "templateBuilder": {
       "addPage": "הוסף עמוד",
-      "backToTemplates": "חזרה לתבניות",
       "choicesPerLine": "אפשרויות (אחת בכל שורה)",
       "deletePage": "מחק עמוד",
       "deleteQuestion": "מחק שאלה",
       "enterSurveyDescription": "הזן תיאור סקר",
       "enterSurveyTitle": "הזן כותרת סקר",
-      "failedToLoadTemplate": "טעינת התבנית נכשלה",
-      "failedToSaveTemplate": "שמירת התבנית נכשלה",
-      "loadingTemplate": "טוען תבנית...",
       "mapsToTmField": "מתאים לשדה מודל איום",
       "metadataKey": "מפתח מטא-נתונים",
       "metadataKeyHint": "שם מפתח עבור ערך המטא-נתונים",
@@ -320,9 +308,7 @@
       "unsavedChanges": "שינויים שלא נשמרו",
       "visibleIf": "גלוי אם",
       "visibleIfHint": "לדוגמה, {questionName} = 'value'"
-    },
-    "templateCount": "תבנית {{count}}",
-    "templateCountPlural": "{{count}} תבניות"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "הזן ערך ולחץ Enter",

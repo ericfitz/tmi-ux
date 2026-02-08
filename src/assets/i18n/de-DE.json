@@ -246,27 +246,15 @@
   "adminSurveys": {
     "cloneSuffix": "(Kopie)",
     "createSurvey": "Umfrage erstellen",
-    "editTemplate": "Vorlage bearbeiten",
-    "errorLoadingTemplates": "Vorlagen konnten nicht geladen werden",
-    "loadingTemplates": "Vorlagen werden geladen...",
-    "noMatchingTitle": "Keine passenden Vorlagen",
-    "noTemplatesMessage": "Erstellen Sie Ihre erste Umfragevorlage, um zu beginnen.",
-    "noTemplatesTitle": "Noch keine Vorlagen",
-    "pageTitle": "Umfragevorlagen",
     "searchByName": "Nach Name suchen...",
-    "searchTemplates": "Vorlagen durchsuchen",
     "surveyDetails": "Umfragedetails",
     "templateBuilder": {
       "addPage": "Seite hinzufügen",
-      "backToTemplates": "Zurück zu Vorlagen",
       "choicesPerLine": "Auswahlmöglichkeiten (eine pro Zeile)",
       "deletePage": "Seite löschen",
       "deleteQuestion": "Frage löschen",
       "enterSurveyDescription": "Umfragebeschreibung eingeben",
       "enterSurveyTitle": "Umfragetitel eingeben",
-      "failedToLoadTemplate": "Vorlage konnte nicht geladen werden",
-      "failedToSaveTemplate": "Vorlage konnte nicht gespeichert werden",
-      "loadingTemplate": "Vorlage wird geladen...",
       "mapsToTmField": "Wird zugeordnet zu Bedrohungsmodell-Feld",
       "metadataKey": "Metadatenschlüssel",
       "metadataKeyHint": "Schlüsselname für den Metadateneintrag",
@@ -320,9 +308,7 @@
       "unsavedChanges": "Ungespeicherte Änderungen",
       "visibleIf": "Sichtbar wenn",
       "visibleIfHint": "z.B. {questionName} = 'Wert'"
-    },
-    "templateCount": "{{count}} Vorlage",
-    "templateCountPlural": "{{count}} Vorlagen"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "Wert eingeben und Enter drücken",

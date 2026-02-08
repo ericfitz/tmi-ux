@@ -246,27 +246,15 @@
   "adminSurveys": {
     "cloneSuffix": "(Cópia)",
     "createSurvey": "Criar Pesquisa",
-    "editTemplate": "Editar modelo",
-    "errorLoadingTemplates": "Falha ao carregar modelos",
-    "loadingTemplates": "Carregando modelos...",
-    "noMatchingTitle": "Nenhum Modelo Correspondente",
-    "noTemplatesMessage": "Crie seu primeiro modelo de pesquisa para começar.",
-    "noTemplatesTitle": "Nenhum Modelo Ainda",
-    "pageTitle": "Modelos de Pesquisa",
     "searchByName": "Pesquisar por nome...",
-    "searchTemplates": "Pesquisar modelos",
     "surveyDetails": "Detalhes da Pesquisa",
     "templateBuilder": {
       "addPage": "Adicionar página",
-      "backToTemplates": "Voltar para Modelos",
       "choicesPerLine": "Escolhas (uma por linha)",
       "deletePage": "Excluir página",
       "deleteQuestion": "Excluir Pergunta",
       "enterSurveyDescription": "Insira a descrição da pesquisa",
       "enterSurveyTitle": "Insira o título da pesquisa",
-      "failedToLoadTemplate": "Falha ao carregar modelo",
-      "failedToSaveTemplate": "Falha ao salvar modelo",
-      "loadingTemplate": "Carregando modelo...",
       "mapsToTmField": "Mapeia para Campo do Modelo de Ameaças",
       "metadataKey": "Chave de Metadados",
       "metadataKeyHint": "Nome da chave para a entrada de metadados",
@@ -320,9 +308,7 @@
       "unsavedChanges": "Alterações não salvas",
       "visibleIf": "Visível Se",
       "visibleIfHint": "ex: {questionName} = 'value'"
-    },
-    "templateCount": "{{count}} modelo",
-    "templateCountPlural": "{{count}} modelos"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "Digite o valor e pressione Enter",

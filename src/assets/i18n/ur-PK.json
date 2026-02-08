@@ -246,27 +246,15 @@
   "adminSurveys": {
     "cloneSuffix": "(نقل)",
     "createSurvey": "سروے بنائیں",
-    "editTemplate": "ٹیمپلیٹ ترمیم کریں",
-    "errorLoadingTemplates": "ٹیمپلیٹس لوڈ کرنے میں ناکام",
-    "loadingTemplates": "ٹیمپلیٹس لوڈ ہو رہے ہیں...",
-    "noMatchingTitle": "کوئی مماثل ٹیمپلیٹس نہیں",
-    "noTemplatesMessage": "شروع کرنے کے لیے اپنا پہلا سروے ٹیمپلیٹ بنائیں۔",
-    "noTemplatesTitle": "ابھی تک کوئی ٹیمپلیٹ نہیں",
-    "pageTitle": "سروے ٹیمپلیٹس",
     "searchByName": "نام سے تلاش کریں...",
-    "searchTemplates": "ٹیمپلیٹس تلاش کریں",
     "surveyDetails": "سروے کی تفصیلات",
     "templateBuilder": {
       "addPage": "صفحہ شامل کریں",
-      "backToTemplates": "ٹیمپلیٹس پر واپس جائیں",
       "choicesPerLine": "انتخابات (ہر لائن میں ایک)",
       "deletePage": "صفحہ حذف کریں",
       "deleteQuestion": "سوال حذف کریں",
       "enterSurveyDescription": "سروے کی تفصیل درج کریں",
       "enterSurveyTitle": "سروے کا عنوان درج کریں",
-      "failedToLoadTemplate": "ٹیمپلیٹ لوڈ کرنے میں ناکامی",
-      "failedToSaveTemplate": "ٹیمپلیٹ محفوظ کرنے میں ناکامی",
-      "loadingTemplate": "ٹیمپلیٹ لوڈ ہو رہا ہے...",
       "mapsToTmField": "TM فیلڈ سے منسلک",
       "metadataKey": "میٹا ڈیٹا کی",
       "metadataKeyHint": "میٹا ڈیٹا انٹری کے لیے کی کا نام",
@@ -320,9 +308,7 @@
       "unsavedChanges": "غیر محفوظ شدہ تبدیلیاں",
       "visibleIf": "اگر نظر آئے",
       "visibleIfHint": "مثال، {questionName} = 'value'"
-    },
-    "templateCount": "{{count}} ٹیمپلیٹ",
-    "templateCountPlural": "{{count}} ٹیمپلیٹس"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "قدر درج کریں اور Enter دبائیں",

@@ -246,27 +246,15 @@
   "adminSurveys": {
     "cloneSuffix": "(प्रतिलिपि)",
     "createSurvey": "सर्वेक्षण बनाएं",
-    "editTemplate": "टेम्पलेट संपादित करें",
-    "errorLoadingTemplates": "टेम्पलेट लोड करने में विफल",
-    "loadingTemplates": "टेम्पलेट लोड हो रहे हैं...",
-    "noMatchingTitle": "कोई मिलान टेम्पलेट नहीं",
-    "noTemplatesMessage": "शुरू करने के लिए अपना पहला सर्वेक्षण टेम्पलेट बनाएं।",
-    "noTemplatesTitle": "अभी तक कोई टेम्पलेट नहीं",
-    "pageTitle": "सर्वेक्षण टेम्पलेट",
     "searchByName": "नाम से खोजें...",
-    "searchTemplates": "टेम्पलेट खोजें",
     "surveyDetails": "सर्वेक्षण विवरण",
     "templateBuilder": {
       "addPage": "पृष्ठ जोड़ें",
-      "backToTemplates": "टेम्पलेट्स पर वापस जाएं",
       "choicesPerLine": "विकल्प (प्रति पंक्ति एक)",
       "deletePage": "पृष्ठ हटाएं",
       "deleteQuestion": "प्रश्न हटाएं",
       "enterSurveyDescription": "सर्वेक्षण विवरण दर्ज करें",
       "enterSurveyTitle": "सर्वेक्षण शीर्षक दर्ज करें",
-      "failedToLoadTemplate": "टेम्पलेट लोड करने में विफल",
-      "failedToSaveTemplate": "टेम्पलेट सहेजने में विफल",
-      "loadingTemplate": "टेम्पलेट लोड हो रहा है...",
       "mapsToTmField": "TM फील्ड से मैप करता है",
       "metadataKey": "मेटाडेटा कुंजी",
       "metadataKeyHint": "मेटाडेटा प्रविष्टि के लिए कुंजी नाम",
@@ -320,9 +308,7 @@
       "unsavedChanges": "असहेजे गए परिवर्तन",
       "visibleIf": "दृश्यमान यदि",
       "visibleIfHint": "उदाहरण, {questionName} = 'value'"
-    },
-    "templateCount": "{{count}} टेम्पलेट",
-    "templateCountPlural": "{{count}} टेम्पलेट"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "मान दर्ज करें और Enter दबाएं",

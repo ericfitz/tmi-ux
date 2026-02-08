@@ -246,27 +246,15 @@
   "adminSurveys": {
     "cloneSuffix": "(نسخة)",
     "createSurvey": "إنشاء استبيان",
-    "editTemplate": "تعديل القالب",
-    "errorLoadingTemplates": "فشل تحميل القوالب",
-    "loadingTemplates": "جارٍ تحميل القوالب...",
-    "noMatchingTitle": "لا توجد قوالب مطابقة",
-    "noTemplatesMessage": "أنشئ أول قالب استبيان للبدء.",
-    "noTemplatesTitle": "لا توجد قوالب بعد",
-    "pageTitle": "قوالب الاستبيانات",
     "searchByName": "البحث بالاسم...",
-    "searchTemplates": "البحث في القوالب",
     "surveyDetails": "تفاصيل الاستبيان",
     "templateBuilder": {
       "addPage": "إضافة صفحة",
-      "backToTemplates": "العودة إلى القوالب",
       "choicesPerLine": "الخيارات (واحد لكل سطر)",
       "deletePage": "حذف الصفحة",
       "deleteQuestion": "حذف السؤال",
       "enterSurveyDescription": "أدخل وصف الاستبيان",
       "enterSurveyTitle": "أدخل عنوان الاستبيان",
-      "failedToLoadTemplate": "فشل تحميل القالب",
-      "failedToSaveTemplate": "فشل حفظ القالب",
-      "loadingTemplate": "جارٍ تحميل القالب...",
       "mapsToTmField": "يُربط بحقل نموذج التهديد",
       "metadataKey": "مفتاح البيانات الوصفية",
       "metadataKeyHint": "اسم المفتاح لإدخال البيانات الوصفية",
@@ -320,9 +308,7 @@
       "unsavedChanges": "تغييرات غير محفوظة",
       "visibleIf": "مرئي إذا",
       "visibleIfHint": "مثال: {questionName} = 'value'"
-    },
-    "templateCount": "{{count}} قالب",
-    "templateCountPlural": "{{count}} قوالب"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "أدخل القيمة واضغط Enter",

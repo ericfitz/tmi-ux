@@ -246,27 +246,15 @@
   "adminSurveys": {
     "cloneSuffix": "（副本）",
     "createSurvey": "创建调查",
-    "editTemplate": "编辑模板",
-    "errorLoadingTemplates": "加载模板失败",
-    "loadingTemplates": "正在加载模板...",
-    "noMatchingTitle": "没有匹配的模板",
-    "noTemplatesMessage": "创建您的第一个调查模板以开始使用。",
-    "noTemplatesTitle": "暂无模板",
-    "pageTitle": "调查模板",
     "searchByName": "按名称搜索...",
-    "searchTemplates": "搜索模板",
     "surveyDetails": "调查详情",
     "templateBuilder": {
       "addPage": "添加页面",
-      "backToTemplates": "返回模板",
       "choicesPerLine": "选项（每行一个）",
       "deletePage": "删除页面",
       "deleteQuestion": "删除问题",
       "enterSurveyDescription": "输入调查描述",
       "enterSurveyTitle": "输入调查标题",
-      "failedToLoadTemplate": "加载模板失败",
-      "failedToSaveTemplate": "保存模板失败",
-      "loadingTemplate": "正在加载模板...",
       "mapsToTmField": "映射到TM字段",
       "metadataKey": "元数据键",
       "metadataKeyHint": "元数据条目的键名称",
@@ -320,9 +308,7 @@
       "unsavedChanges": "未保存的更改",
       "visibleIf": "可见条件",
       "visibleIfHint": "例如：{questionName} = 'value'"
-    },
-    "templateCount": "{{count}} 个模板",
-    "templateCountPlural": "{{count}} 个模板"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "输入值并按 Enter",

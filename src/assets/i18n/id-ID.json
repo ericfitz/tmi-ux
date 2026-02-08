@@ -246,27 +246,15 @@
   "adminSurveys": {
     "cloneSuffix": "(Salinan)",
     "createSurvey": "Buat Survei",
-    "editTemplate": "Edit templat",
-    "errorLoadingTemplates": "Gagal memuat templat",
-    "loadingTemplates": "Memuat templat...",
-    "noMatchingTitle": "Tidak Ada Templat yang Cocok",
-    "noTemplatesMessage": "Buat templat survei pertama Anda untuk memulai.",
-    "noTemplatesTitle": "Belum Ada Templat",
-    "pageTitle": "Templat Survei",
     "searchByName": "Cari berdasarkan nama...",
-    "searchTemplates": "Cari templat",
     "surveyDetails": "Detail Survei",
     "templateBuilder": {
       "addPage": "Tambah halaman",
-      "backToTemplates": "Kembali ke Templat",
       "choicesPerLine": "Pilihan (satu per baris)",
       "deletePage": "Hapus halaman",
       "deleteQuestion": "Hapus Pertanyaan",
       "enterSurveyDescription": "Masukkan deskripsi survei",
       "enterSurveyTitle": "Masukkan judul survei",
-      "failedToLoadTemplate": "Gagal memuat templat",
-      "failedToSaveTemplate": "Gagal menyimpan templat",
-      "loadingTemplate": "Memuat templat...",
       "mapsToTmField": "Dipetakan ke Bidang TM",
       "metadataKey": "Kunci Metadata",
       "metadataKeyHint": "Nama kunci untuk entri metadata",
@@ -320,9 +308,7 @@
       "unsavedChanges": "Perubahan belum disimpan",
       "visibleIf": "Terlihat Jika",
       "visibleIfHint": "mis., {questionName} = 'value'"
-    },
-    "templateCount": "{{count}} templat",
-    "templateCountPlural": "{{count}} templat"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "Masukkan nilai dan tekan Enter",

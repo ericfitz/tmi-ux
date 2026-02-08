@@ -246,27 +246,15 @@
   "adminSurveys": {
     "cloneSuffix": "(Copie)",
     "createSurvey": "Créer une enquête",
-    "editTemplate": "Modifier le modèle",
-    "errorLoadingTemplates": "Échec du chargement des modèles",
-    "loadingTemplates": "Chargement des modèles...",
-    "noMatchingTitle": "Aucun modèle correspondant",
-    "noTemplatesMessage": "Créez votre premier modèle d'enquête pour commencer.",
-    "noTemplatesTitle": "Aucun modèle pour l'instant",
-    "pageTitle": "Modèles d'enquêtes",
     "searchByName": "Rechercher par nom...",
-    "searchTemplates": "Rechercher des modèles",
     "surveyDetails": "Détails de l'enquête",
     "templateBuilder": {
       "addPage": "Ajouter une page",
-      "backToTemplates": "Retour aux modèles",
       "choicesPerLine": "Choix (un par ligne)",
       "deletePage": "Supprimer la page",
       "deleteQuestion": "Supprimer la question",
       "enterSurveyDescription": "Saisir la description de l'enquête",
       "enterSurveyTitle": "Saisir le titre de l'enquête",
-      "failedToLoadTemplate": "Échec du chargement du modèle",
-      "failedToSaveTemplate": "Échec de l'enregistrement du modèle",
-      "loadingTemplate": "Chargement du modèle...",
       "mapsToTmField": "Associé au champ du modèle de menaces",
       "metadataKey": "Clé de métadonnée",
       "metadataKeyHint": "Nom de clé pour l'entrée de métadonnée",
@@ -320,9 +308,7 @@
       "unsavedChanges": "Modifications non enregistrées",
       "visibleIf": "Visible si",
       "visibleIfHint": "par ex., {questionName} = 'valeur'"
-    },
-    "templateCount": "{{count}} modèle",
-    "templateCountPlural": "{{count}} modèles"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "Entrez une valeur et appuyez sur Entree",

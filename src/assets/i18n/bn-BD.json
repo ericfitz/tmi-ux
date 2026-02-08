@@ -246,27 +246,15 @@
   "adminSurveys": {
     "cloneSuffix": "(অনুলিপি)",
     "createSurvey": "সার্ভে তৈরি করুন",
-    "editTemplate": "টেমপ্লেট সম্পাদনা করুন",
-    "errorLoadingTemplates": "টেমপ্লেট লোড করতে ব্যর্থ",
-    "loadingTemplates": "টেমপ্লেট লোড হচ্ছে...",
-    "noMatchingTitle": "কোনো মিলিত টেমপ্লেট নেই",
-    "noTemplatesMessage": "শুরু করতে আপনার প্রথম সার্ভে টেমপ্লেট তৈরি করুন।",
-    "noTemplatesTitle": "এখনো কোনো টেমপ্লেট নেই",
-    "pageTitle": "সার্ভে টেমপ্লেটসমূহ",
     "searchByName": "নাম দিয়ে খুঁজুন...",
-    "searchTemplates": "টেমপ্লেট খুঁজুন",
     "surveyDetails": "সার্ভে বিবরণ",
     "templateBuilder": {
       "addPage": "পৃষ্ঠা যোগ করুন",
-      "backToTemplates": "টেমপ্লেটে ফিরে যান",
       "choicesPerLine": "পছন্দসমূহ (প্রতি লাইনে একটি)",
       "deletePage": "পৃষ্ঠা মুছুন",
       "deleteQuestion": "প্রশ্ন মুছুন",
       "enterSurveyDescription": "সার্ভে বিবরণ লিখুন",
       "enterSurveyTitle": "সার্ভে শিরোনাম লিখুন",
-      "failedToLoadTemplate": "টেমপ্লেট লোড করতে ব্যর্থ",
-      "failedToSaveTemplate": "টেমপ্লেট সংরক্ষণ করতে ব্যর্থ",
-      "loadingTemplate": "টেমপ্লেট লোড করা হচ্ছে...",
       "mapsToTmField": "TM ক্ষেত্রের সাথে ম্যাপ করে",
       "metadataKey": "মেটাডেটা কী",
       "metadataKeyHint": "মেটাডেটা এন্ট্রির জন্য কী নাম",
@@ -320,9 +308,7 @@
       "unsavedChanges": "অসংরক্ষিত পরিবর্তন",
       "visibleIf": "দৃশ্যমান যদি",
       "visibleIfHint": "যেমন, {questionName} = 'value'"
-    },
-    "templateCount": "{{count}} টেমপ্লেট",
-    "templateCountPlural": "{{count}} টেমপ্লেট"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "মান লিখুন এবং Enter চাপুন",

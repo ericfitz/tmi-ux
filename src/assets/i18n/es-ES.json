@@ -246,27 +246,15 @@
   "adminSurveys": {
     "cloneSuffix": "(Copia)",
     "createSurvey": "Crear Encuesta",
-    "editTemplate": "Editar plantilla",
-    "errorLoadingTemplates": "Error al cargar las plantillas",
-    "loadingTemplates": "Cargando plantillas...",
-    "noMatchingTitle": "No hay plantillas coincidentes",
-    "noTemplatesMessage": "Cree su primera plantilla de encuesta para comenzar.",
-    "noTemplatesTitle": "Aún no hay plantillas",
-    "pageTitle": "Plantillas de encuestas",
     "searchByName": "Buscar por nombre...",
-    "searchTemplates": "Buscar plantillas",
     "surveyDetails": "Detalles de Encuesta",
     "templateBuilder": {
       "addPage": "Añadir página",
-      "backToTemplates": "Volver a Plantillas",
       "choicesPerLine": "Opciones (una por línea)",
       "deletePage": "Eliminar página",
       "deleteQuestion": "Eliminar Pregunta",
       "enterSurveyDescription": "Introduzca la descripción de la encuesta",
       "enterSurveyTitle": "Introduzca el título de la encuesta",
-      "failedToLoadTemplate": "Error al cargar la plantilla",
-      "failedToSaveTemplate": "Error al guardar la plantilla",
-      "loadingTemplate": "Cargando plantilla...",
       "mapsToTmField": "Mapea a Campo TM",
       "metadataKey": "Clave de Metadatos",
       "metadataKeyHint": "Nombre de clave para la entrada de metadatos",
@@ -320,9 +308,7 @@
       "unsavedChanges": "Cambios sin guardar",
       "visibleIf": "Visible Si",
       "visibleIfHint": "p. ej., {questionName} = 'value'"
-    },
-    "templateCount": "{{count}} plantilla",
-    "templateCountPlural": "{{count}} plantillas"
+    }
   },
   "assetEditor": {
     "chipPlaceholder": "Introduzca un valor y pulse Intro",
