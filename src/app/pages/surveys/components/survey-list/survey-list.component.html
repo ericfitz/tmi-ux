@@ -7,6 +7,8 @@
     </button>
   </div>
 
+  <p class="page-description">{{ 'surveys.list.pageDescription' | transloco }}</p>
+
   @if (loading) {
     <div class="loading-container">
       <mat-spinner diameter="40"></mat-spinner>
@@ -33,11 +35,15 @@
         <mat-card class="survey-card">
           <mat-card-header>
             <mat-icon mat-card-avatar>assignment</mat-icon>
-            <mat-card-title>{{ survey.name }}</mat-card-title>
+            <mat-card-title class="survey-name">{{ survey.name }}</mat-card-title>
             <mat-card-subtitle>
-              {{ 'common.version' | transloco }} {{ survey.version }} &middot;
-              {{ 'surveys.list.updated' | transloco }}
-              {{ survey.modified_at | date: 'mediumDate' }}
+              <span class="survey-meta">
+                {{ 'common.version' | transloco }} {{ survey.version }}
+              </span>
+              <span class="survey-meta">
+                {{ 'surveys.list.updated' | transloco }}
+                {{ survey.modified_at | date: 'mediumDate' }}
+              </span>
             </mat-card-subtitle>
           </mat-card-header>
 

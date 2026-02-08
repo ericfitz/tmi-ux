@@ -8,13 +8,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
 
   .page-title {
     margin: 0;
     font-size: 24px;
     font-weight: 500;
   }
+}
+
+.page-description {
+  color: var(--color-text-secondary);
+  margin: 0 0 24px;
+  line-height: 1.5;
 }
 
 .loading-container,
@@ -56,6 +62,20 @@
   flex-direction: column;
 
   mat-card-header {
+    .survey-name {
+      color: var(--color-theme-cyan);
+    }
+
+    mat-card-subtitle {
+      display: flex;
+      flex-direction: column;
+
+      .survey-meta {
+        font-size: 12px;
+        color: var(--color-text-secondary);
+      }
+    }
+
     mat-icon[mat-card-avatar] {
       display: flex;
       align-items: center;
