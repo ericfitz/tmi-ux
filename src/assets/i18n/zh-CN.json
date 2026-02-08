@@ -125,7 +125,9 @@
         "removeTooltip": "从组中移除",
         "searchHint": "输入至少2个字符进行搜索",
         "searchPlaceholder": "开始输入电子邮件地址...",
-        "searchUser": "按电子邮件搜索用户"
+        "searchUser": "按电子邮件搜索用户",
+        "subjectTypeGroup": "群组",
+        "subjectTypeUser": "用户"
       },
       "noGroups": "未找到用户组",
       "subtitle": "查看和管理系统用户组",

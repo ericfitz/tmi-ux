@@ -125,7 +125,9 @@
         "removeTooltip": "گروپ سے ہٹائیں",
         "searchHint": "تلاش کے لیے کم از کم 2 حروف ٹائپ کریں",
         "searchPlaceholder": "ای میل ایڈریس ٹائپ کرنا شروع کریں...",
-        "searchUser": "ای میل سے صارف تلاش کریں"
+        "searchUser": "ای میل سے صارف تلاش کریں",
+        "subjectTypeGroup": "گروپ",
+        "subjectTypeUser": "صارف"
       },
       "noGroups": "کوئی گروپس نہیں ملے",
       "subtitle": "سسٹم گروپس دیکھیں اور ان کا انتظام کریں",

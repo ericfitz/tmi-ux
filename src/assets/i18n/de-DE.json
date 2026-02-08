@@ -125,7 +125,9 @@
         "removeTooltip": "Aus Gruppe entfernen",
         "searchHint": "Mindestens 2 Zeichen eingeben zum Suchen",
         "searchPlaceholder": "E-Mail-Adresse eingeben...",
-        "searchUser": "Benutzer per E-Mail suchen"
+        "searchUser": "Benutzer per E-Mail suchen",
+        "subjectTypeGroup": "Gruppe",
+        "subjectTypeUser": "Benutzer"
       },
       "noGroups": "Keine Gruppen gefunden",
       "subtitle": "Systemgruppen anzeigen und verwalten",

@@ -125,7 +125,9 @@
         "removeTooltip": "グループから削除",
         "searchHint": "検索するには2文字以上入力してください",
         "searchPlaceholder": "メールアドレスを入力...",
-        "searchUser": "メールでユーザーを検索"
+        "searchUser": "メールでユーザーを検索",
+        "subjectTypeGroup": "グループ",
+        "subjectTypeUser": "ユーザー"
       },
       "noGroups": "グループが見つかりません",
       "subtitle": "システムグループの表示と管理",

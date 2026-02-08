@@ -125,7 +125,9 @@
         "removeTooltip": "הסר מהקבוצה",
         "searchHint": "הקלד לפחות 2 תווים לחיפוש",
         "searchPlaceholder": "התחל להקליד כתובת דוא\"ל...",
-        "searchUser": "חפש משתמש לפי דוא\"ל"
+        "searchUser": "חפש משתמש לפי דוא\"ל",
+        "subjectTypeGroup": "קבוצה",
+        "subjectTypeUser": "משתמש"
       },
       "noGroups": "לא נמצאו קבוצות",
       "subtitle": "צפה ונהל קבוצות מערכת",

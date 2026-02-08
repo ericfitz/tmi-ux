@@ -125,7 +125,9 @@
         "removeTooltip": "ลบออกจากกลุ่ม",
         "searchHint": "พิมพ์อย่างน้อย 2 ตัวอักษรเพื่อค้นหา",
         "searchPlaceholder": "เริ่มพิมพ์ที่อยู่อีเมล...",
-        "searchUser": "ค้นหาผู้ใช้ด้วยอีเมล"
+        "searchUser": "ค้นหาผู้ใช้ด้วยอีเมล",
+        "subjectTypeGroup": "กลุ่ม",
+        "subjectTypeUser": "ผู้ใช้"
       },
       "noGroups": "ไม่พบกลุ่ม",
       "subtitle": "ดูและจัดการกลุ่มระบบ",

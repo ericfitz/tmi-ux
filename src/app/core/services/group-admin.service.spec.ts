@@ -57,11 +57,14 @@ describe('GroupAdminService', () => {
   };
 
   const mockMember: GroupMember = {
-    internal_uuid: '987e6543-e21b-43d2-a654-426614174111',
-    provider: 'google',
-    provider_user_id: 'google_12345',
-    email: 'member@example.com',
-    name: 'Group Member',
+    id: 'a10eabcd-e89b-41d4-a716-446655440001',
+    group_internal_uuid: '123e4567-e89b-12d3-a456-426614174000',
+    subject_type: 'user',
+    user_internal_uuid: '987e6543-e21b-43d2-a654-426614174111',
+    user_provider: 'google',
+    user_provider_user_id: 'google_12345',
+    user_email: 'member@example.com',
+    user_name: 'Group Member',
     added_at: '2024-01-01T00:00:00Z',
   };
 
@@ -359,8 +362,7 @@ describe('GroupAdminService', () => {
   describe('addMember()', () => {
     const groupUuid = '123e4567-e89b-12d3-a456-426614174000';
     const addRequest: AddGroupMemberRequest = {
-      provider: 'google',
-      provider_user_id: 'google_12345',
+      user_internal_uuid: '987e6543-e21b-43d2-a654-426614174111',
     };
 
     it('should call API post with group UUID and add request', () => {
@@ -381,7 +383,7 @@ describe('GroupAdminService', () => {
       service.addMember(groupUuid, addRequest).subscribe(() => {
         expect(mockLoggerService.info).toHaveBeenCalledWith('Member added to group', {
           internal_uuid: groupUuid,
-          user_uuid: mockMember.internal_uuid,
+          member_id: mockMember.id,
         });
       });
     });
@@ -401,14 +403,14 @@ describe('GroupAdminService', () => {
 
   describe('removeMember()', () => {
     const groupUuid = '123e4567-e89b-12d3-a456-426614174000';
-    const userUuid = '987e6543-e21b-43d2-a654-426614174111';
+    const memberId = 'a10eabcd-e89b-41d4-a716-446655440001';
 
-    it('should call API delete with group and user UUIDs', () => {
+    it('should call API delete with group UUID and member id', () => {
       mockApiService.delete.mockReturnValue(of(undefined));
 
-      service.removeMember(groupUuid, userUuid).subscribe(() => {
+      service.removeMember(groupUuid, memberId).subscribe(() => {
         expect(mockApiService.delete).toHaveBeenCalledWith(
-          `admin/groups/${groupUuid}/members/${userUuid}`,
+          `admin/groups/${groupUuid}/members/${memberId}`,
         );
       });
     });
@@ -416,10 +418,10 @@ describe('GroupAdminService', () => {
     it('should log info message on successful removal', () => {
       mockApiService.delete.mockReturnValue(of(undefined));
 
-      service.removeMember(groupUuid, userUuid).subscribe(() => {
+      service.removeMember(groupUuid, memberId).subscribe(() => {
         expect(mockLoggerService.info).toHaveBeenCalledWith('Member removed from group', {
           internal_uuid: groupUuid,
-          user_uuid: userUuid,
+          member_id: memberId,
         });
       });
     });
@@ -428,7 +430,7 @@ describe('GroupAdminService', () => {
       const error = new Error('Failed to remove member');
       mockApiService.delete.mockReturnValue(throwError(() => error));
 
-      service.removeMember(groupUuid, userUuid).subscribe({
+      service.removeMember(groupUuid, memberId).subscribe({
         error: err => {
           expect(mockLoggerService.error).toHaveBeenCalledWith(
             'Failed to remove group member',

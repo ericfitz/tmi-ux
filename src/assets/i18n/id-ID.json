@@ -125,7 +125,9 @@
         "removeTooltip": "Keluarkan dari grup",
         "searchHint": "Ketik minimal 2 karakter untuk mencari",
         "searchPlaceholder": "Mulai ketik alamat email...",
-        "searchUser": "Cari Pengguna berdasarkan Email"
+        "searchUser": "Cari Pengguna berdasarkan Email",
+        "subjectTypeGroup": "Grup",
+        "subjectTypeUser": "Pengguna"
       },
       "noGroups": "Tidak ada grup ditemukan",
       "subtitle": "Lihat dan kelola grup sistem",

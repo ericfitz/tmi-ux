@@ -125,7 +125,9 @@
         "removeTooltip": "Remover do grupo",
         "searchHint": "Digite pelo menos 2 caracteres para pesquisar",
         "searchPlaceholder": "Comece a digitar o endereco de e-mail...",
-        "searchUser": "Pesquisar Usuario por E-mail"
+        "searchUser": "Pesquisar Usuario por E-mail",
+        "subjectTypeGroup": "Grupo",
+        "subjectTypeUser": "Usuário"
       },
       "noGroups": "Nenhum grupo encontrado",
       "subtitle": "Visualizar e gerenciar grupos do sistema",

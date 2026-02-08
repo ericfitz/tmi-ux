@@ -125,7 +125,9 @@
         "removeTooltip": "Retirer du groupe",
         "searchHint": "Tapez au moins 2 caracteres pour rechercher",
         "searchPlaceholder": "Commencez a taper l'adresse email...",
-        "searchUser": "Rechercher un utilisateur par email"
+        "searchUser": "Rechercher un utilisateur par email",
+        "subjectTypeGroup": "Groupe",
+        "subjectTypeUser": "Utilisateur"
       },
       "noGroups": "Aucun groupe trouve",
       "subtitle": "Afficher et gerer les groupes systeme",

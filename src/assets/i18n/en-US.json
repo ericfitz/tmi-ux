@@ -133,7 +133,9 @@
         "removeTooltip": "Remove from group",
         "searchHint": "Type at least 2 characters to search",
         "searchPlaceholder": "Start typing email address...",
-        "searchUser": "Search User by Email"
+        "searchUser": "Search User by Email",
+        "subjectTypeGroup": "Group",
+        "subjectTypeUser": "User"
       },
       "noGroups": "No groups found",
       "subtitle": "View and manage system groups",

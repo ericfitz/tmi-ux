@@ -125,7 +125,9 @@
         "removeTooltip": "Удалить из группы",
         "searchHint": "Введите не менее 2 символов для поиска",
         "searchPlaceholder": "Начните вводить адрес email...",
-        "searchUser": "Поиск пользователя по Email"
+        "searchUser": "Поиск пользователя по Email",
+        "subjectTypeGroup": "Группа",
+        "subjectTypeUser": "Пользователь"
       },
       "noGroups": "Группы не найдены",
       "subtitle": "Просмотр и управление системными группами",
