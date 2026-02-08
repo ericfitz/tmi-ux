@@ -1,9 +1,13 @@
 <footer class="footer">
   <div class="footer-content">
     <div class="footer-links">
-      <a routerLink="/about" [transloco]="'common.about'">About</a>
-      <a routerLink="/privacy" [transloco]="'privacy.title'">Privacy Policy</a>
-      <a routerLink="/tos" [transloco]="'tos.title'">Terms of Service</a>
+      @if (showAboutLink) {
+        <a routerLink="/about" [transloco]="'common.about'">About</a>
+      }
+      @if (showPrivacyTosLinks) {
+        <a routerLink="/privacy" [transloco]="'privacy.title'">Privacy Policy</a>
+        <a routerLink="/tos" [transloco]="'tos.title'">Terms of Service</a>
+      }
     </div>
   </div>
 </footer>

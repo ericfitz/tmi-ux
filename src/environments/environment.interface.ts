@@ -74,6 +74,20 @@ export interface Environment {
   operatorJurisdiction: string;
 
   /**
+   * Suppress the "About" link in the application footer
+   * When true, the About link will not be displayed
+   * Default: false (About link is shown)
+   */
+  suppressAboutLink?: boolean;
+
+  /**
+   * Suppress the "Privacy Policy" and "Terms of Service" links in the application footer
+   * When true, the Privacy and ToS links will not be displayed
+   * Default: false (Privacy and ToS links are shown)
+   */
+  suppressPrivacyTosLinks?: boolean;
+
+  /**
    * Port on which the application server will listen
    * Default: 4200
    */

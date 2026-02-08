@@ -112,6 +112,24 @@ export const environment: Environment = {
   operatorJurisdiction: '',
 
   /**
+   * Suppress the "About" link in the application footer
+   * When true, the About link will not be displayed to users
+   *
+   * Allowed values: true, false
+   * Default: false (About link is shown)
+   */
+  suppressAboutLink: false,
+
+  /**
+   * Suppress the "Privacy Policy" and "Terms of Service" links in the application footer
+   * When true, the Privacy and ToS links will not be displayed to users
+   *
+   * Allowed values: true, false
+   * Default: false (Privacy and ToS links are shown)
+   */
+  suppressPrivacyTosLinks: false,
+
+  /**
    * Port on which the application server will listen
    * This controls the port number used by the Angular dev server
    *
