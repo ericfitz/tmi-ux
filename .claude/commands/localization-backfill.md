@@ -137,6 +137,8 @@ Return a JSON object with the translations:
 }
 ```
 
+IMPORTANT: Do NOT create any git commits. Only modify the localization files. The parent agent will handle committing.
+
 Now process all {{COUNT}} keys.
 ```
 
