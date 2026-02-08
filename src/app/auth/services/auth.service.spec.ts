@@ -649,7 +649,7 @@ describe('AuthService', () => {
         expect(service.isAuthenticated).toBe(true);
         expect(service.userProfile?.email).toBe('john@example.com');
         expect(router.navigateByUrl).not.toHaveBeenCalled();
-        expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+        expect(router.navigate).toHaveBeenCalledWith(['/intake']);
       });
     });
 
@@ -910,6 +910,93 @@ describe('AuthService', () => {
       expect(service.hasRole(UserRole.Reader)).toBe(false);
     });
   }); /* End of Role-based Authorization describe block */
+
+  describe('Security Reviewer and Landing Page', () => {
+    it('should return true for isSecurityReviewer when profile has is_security_reviewer', () => {
+      const reviewerProfile: UserProfile = {
+        provider: 'google',
+        provider_id: '123',
+        display_name: 'Reviewer',
+        email: 'reviewer@example.com',
+        groups: null,
+        is_security_reviewer: true,
+      };
+      service['userProfileSubject'].next(reviewerProfile);
+
+      expect(service.isSecurityReviewer).toBe(true);
+    });
+
+    it('should return false for isSecurityReviewer when not a reviewer', () => {
+      const regularProfile: UserProfile = {
+        provider: 'google',
+        provider_id: '456',
+        display_name: 'Regular',
+        email: 'regular@example.com',
+        groups: null,
+        is_security_reviewer: false,
+      };
+      service['userProfileSubject'].next(regularProfile);
+
+      expect(service.isSecurityReviewer).toBe(false);
+    });
+
+    it('should return /dashboard for security reviewers via getLandingPage', () => {
+      const reviewerProfile: UserProfile = {
+        provider: 'google',
+        provider_id: '123',
+        display_name: 'Reviewer',
+        email: 'reviewer@example.com',
+        groups: null,
+        is_security_reviewer: true,
+      };
+      service['userProfileSubject'].next(reviewerProfile);
+
+      expect(service.getLandingPage()).toBe('/dashboard');
+    });
+
+    it('should return /admin for administrators who are not reviewers', () => {
+      const adminProfile: UserProfile = {
+        provider: 'google',
+        provider_id: '456',
+        display_name: 'Admin',
+        email: 'admin@example.com',
+        groups: null,
+        is_admin: true,
+        is_security_reviewer: false,
+      };
+      service['userProfileSubject'].next(adminProfile);
+
+      expect(service.getLandingPage()).toBe('/admin');
+    });
+
+    it('should return /intake for users with no special roles', () => {
+      const regularProfile: UserProfile = {
+        provider: 'google',
+        provider_id: '789',
+        display_name: 'Regular',
+        email: 'regular@example.com',
+        groups: null,
+      };
+      service['userProfileSubject'].next(regularProfile);
+
+      expect(service.getLandingPage()).toBe('/intake');
+    });
+
+    it('should prioritize security_reviewer over administrator for landing page', () => {
+      const dualRoleProfile: UserProfile = {
+        provider: 'google',
+        provider_id: '101',
+        display_name: 'Both',
+        email: 'both@example.com',
+        groups: null,
+        is_admin: true,
+        is_security_reviewer: true,
+      };
+      service['userProfileSubject'].next(dualRoleProfile);
+
+      expect(service.getLandingPage()).toBe('/dashboard');
+    });
+  }); /* End of Security Reviewer and Landing Page describe block */
 
   describe('Enhanced Logout Functionality', () => {
     it('should include Authorization header when token is available', () => {

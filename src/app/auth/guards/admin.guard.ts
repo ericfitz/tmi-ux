@@ -30,7 +30,7 @@ export const adminGuard: CanActivateFn = () => {
         return true;
       } else {
         logger.warn('Admin access denied: User is not an administrator');
-        void router.navigate(['/dashboard'], {
+        void router.navigate([authService.getLandingPage()], {
           queryParams: {
             error: 'admin_required',
           },
@@ -40,7 +40,7 @@ export const adminGuard: CanActivateFn = () => {
     }),
     catchError(error => {
       logger.error('Failed to verify admin status', error);
-      void router.navigate(['/dashboard'], {
+      void router.navigate([authService.getLandingPage()], {
         queryParams: {
           error: 'admin_check_failed',
         },

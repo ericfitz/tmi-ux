@@ -683,10 +683,13 @@
     "unexpectedError": "OAuth کے دوران ایک غیر متوقع خرابی ہوئی۔"
   },
   "navbar": {
+    "admin": "ایڈمن",
     "appTitle": "TMI: خطرے کی ماڈلنگ میں بہتری",
     "copyUserEmail": "صارف کا ای میل کلپ بورڈ پر کاپی کریں",
+    "dashboard": "ڈیش بورڈ",
     "feedback": "بگ رپورٹ کریں، فیچر کی درخواست کریں یا تاثرات فراہم کریں",
     "home": "ہوم",
+    "intake": "انٹیک",
     "logoutButton": "سائن آؤٹ",
     "serverStatus": {
       "noServerConfigured": "کوئی سرور ترتیب نہیں دیا گیا",

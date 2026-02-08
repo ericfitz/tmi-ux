@@ -683,10 +683,13 @@
     "unexpectedError": "Terjadi kesalahan yang tidak terduga selama OAuth."
   },
   "navbar": {
+    "admin": "Admin",
     "appTitle": "TMI: Threat Modeling Improved",
     "copyUserEmail": "Salin Email Pengguna ke Papan Klip",
+    "dashboard": "Dasbor",
     "feedback": "Laporkan bug, minta fitur, atau berikan umpan balik",
     "home": "Beranda",
+    "intake": "Penerimaan",
     "logoutButton": "Keluar",
     "serverStatus": {
       "noServerConfigured": "Server Tidak Dikonfigurasi",

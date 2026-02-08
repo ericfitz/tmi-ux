@@ -137,7 +137,7 @@ export class SurveyListComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
-          void this.router.navigate(['/surveys', 'fill', survey.id, response.id]);
+          void this.router.navigate(['/intake', 'fill', survey.id, response.id]);
         },
         error: error => {
           this.logger.error('Failed to create draft', error);
@@ -149,7 +149,7 @@ export class SurveyListComponent implements OnInit {
    * Continue an existing draft
    */
   continueDraft(draft: SurveyResponseListItem): void {
-    void this.router.navigate(['/surveys', 'fill', draft.survey_id, draft.id]);
+    void this.router.navigate(['/intake', 'fill', draft.survey_id, draft.id]);
   }
 
   /**
@@ -175,7 +175,7 @@ export class SurveyListComponent implements OnInit {
    * Navigate to my responses
    */
   viewMyResponses(): void {
-    void this.router.navigate(['/surveys', 'my-responses']);
+    void this.router.navigate(['/intake', 'my-responses']);
   }
 
   /**

@@ -683,10 +683,13 @@
     "unexpectedError": "OAuth এর সময় একটি অপ্রত্যাশিত ত্রুটি ঘটেছে।"
   },
   "navbar": {
+    "admin": "অ্যাডমিন",
     "appTitle": "TMI: থ্রেট মডেলিং ইমপ্রুভড",
     "copyUserEmail": "ব্যবহারকারীর ইমেইল ক্লিপবোর্ডে কপি করুন",
+    "dashboard": "ড্যাশবোর্ড",
     "feedback": "একটি বাগ রিপোর্ট করুন, একটি ফিচার অনুরোধ করুন বা মতামত দিন",
     "home": "হোম",
+    "intake": "ইনটেক",
     "logoutButton": "সাইন আউট",
     "serverStatus": {
       "noServerConfigured": "কোনো সার্ভার কনফিগার করা নেই",

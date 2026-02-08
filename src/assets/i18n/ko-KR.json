@@ -683,10 +683,13 @@
     "unexpectedError": "OAuth 중 예기치 않은 오류가 발생했습니다."
   },
   "navbar": {
+    "admin": "관리",
     "appTitle": "TMI: 향상된 위협 모델링",
     "copyUserEmail": "사용자 이메일을 클립보드에 복사",
+    "dashboard": "대시보드",
     "feedback": "버그 신고, 기능 요청 또는 피드백 제공",
     "home": "홈",
+    "intake": "접수",
     "logoutButton": "로그아웃",
     "serverStatus": {
       "noServerConfigured": "서버 구성 안 됨",

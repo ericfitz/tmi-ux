@@ -159,7 +159,7 @@ export class ResponseDetailComponent implements OnInit {
    * Navigate back to my responses
    */
   goBack(): void {
-    void this.router.navigate(['/surveys', 'my-responses']);
+    void this.router.navigate(['/intake', 'my-responses']);
   }
 
   /**

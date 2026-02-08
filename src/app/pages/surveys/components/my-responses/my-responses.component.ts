@@ -127,9 +127,9 @@ export class MyResponsesComponent implements OnInit {
    */
   viewResponse(response: SurveyResponseListItem): void {
     if (response.status === 'draft' || response.status === 'needs_revision') {
-      void this.router.navigate(['/surveys', 'fill', response.survey_id, response.id]);
+      void this.router.navigate(['/intake', 'fill', response.survey_id, response.id]);
     } else {
-      void this.router.navigate(['/surveys', 'response', response.id]);
+      void this.router.navigate(['/intake', 'response', response.id]);
     }
   }
 
@@ -137,7 +137,7 @@ export class MyResponsesComponent implements OnInit {
    * Continue a draft
    */
   continueDraft(response: SurveyResponseListItem): void {
-    void this.router.navigate(['/surveys', 'fill', response.survey_id, response.id]);
+    void this.router.navigate(['/intake', 'fill', response.survey_id, response.id]);
   }
 
   /**
@@ -162,7 +162,7 @@ export class MyResponsesComponent implements OnInit {
    * Navigate back to surveys
    */
   goBack(): void {
-    void this.router.navigate(['/surveys']);
+    void this.router.navigate(['/intake']);
   }
 
   /**

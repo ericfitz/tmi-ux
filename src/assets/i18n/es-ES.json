@@ -683,10 +683,13 @@
     "unexpectedError": "Se ha producido un error inesperado durante la autenticación OAuth."
   },
   "navbar": {
+    "admin": "Admin",
     "appTitle": "TMI: Modelado de Amenazas Mejorado",
     "copyUserEmail": "Copiar Correo del Usuario al Portapapeles",
+    "dashboard": "Panel",
     "feedback": "Informar de un error, solicitar una funcionalidad o enviar comentarios",
     "home": "Inicio",
+    "intake": "Recepción",
     "logoutButton": "Cerrar Sesión",
     "serverStatus": {
       "noServerConfigured": "No Hay Servidor Configurado",

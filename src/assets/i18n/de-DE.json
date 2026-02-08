@@ -683,10 +683,13 @@
     "unexpectedError": "Ein unerwarteter Fehler ist während der OAuth-Authentifizierung aufgetreten."
   },
   "navbar": {
+    "admin": "Admin",
     "appTitle": "TMI: Verbesserte Bedrohungsmodellierung",
     "copyUserEmail": "Benutzer-E-Mail in Zwischenablage kopieren",
+    "dashboard": "Dashboard",
     "feedback": "Fehler melden, Funktion anfordern oder Feedback geben",
     "home": "Startseite",
+    "intake": "Aufnahme",
     "logoutButton": "Abmelden",
     "serverStatus": {
       "noServerConfigured": "Kein Server konfiguriert",

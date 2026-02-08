@@ -35,11 +35,31 @@
     <!-- Center: Navigation links -->
     @if (isAuthenticated) {
       <div class="navbar-nav">
-        <button mat-button routerLink="/surveys" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>assignment</mat-icon>
-          <span [transloco]="'surveys.title'">Surveys</span>
+        <button mat-button routerLink="/dashboard" routerLinkActive="active-link" class="nav-link">
+          <mat-icon>dashboard</mat-icon>
+          <span [transloco]="'navbar.dashboard'">Dashboard</span>
         </button>
-        <button mat-button routerLink="/triage" routerLinkActive="active-link" class="nav-link">
+        <button
+          mat-button
+          routerLink="/admin"
+          routerLinkActive="active-link"
+          class="nav-link"
+          [disabled]="!isAdmin"
+        >
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span [transloco]="'navbar.admin'">Admin</span>
+        </button>
+        <button mat-button routerLink="/intake" routerLinkActive="active-link" class="nav-link">
+          <mat-icon>assignment</mat-icon>
+          <span [transloco]="'navbar.intake'">Intake</span>
+        </button>
+        <button
+          mat-button
+          routerLink="/triage"
+          routerLinkActive="active-link"
+          class="nav-link"
+          [disabled]="!isSecurityReviewer"
+        >
           <mat-icon>inbox</mat-icon>
           <span [transloco]="'triage.title'">Triage</span>
         </button>

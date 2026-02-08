@@ -705,10 +705,13 @@
     "unexpectedError": "An unexpected error occurred during OAuth."
   },
   "navbar": {
+    "admin": "Admin",
     "appTitle": "TMI: Threat Modeling Improved",
     "copyUserEmail": "Copy User Email to Clipboard",
+    "dashboard": "Dashboard",
     "feedback": "Report a bug, request a feature or provide feedback",
     "home": "Home",
+    "intake": "Intake",
     "logoutButton": "Sign Out",
     "serverStatus": {
       "noServerConfigured": "No Server Configured",

@@ -683,10 +683,13 @@
     "unexpectedError": "Произошла непредвиденная ошибка во время OAuth."
   },
   "navbar": {
+    "admin": "Админ",
     "appTitle": "TMI: Улучшенное Моделирование Угроз",
     "copyUserEmail": "Копировать email пользователя в буфер обмена",
+    "dashboard": "Панель",
     "feedback": "Сообщить об ошибке, запросить функцию или оставить отзыв",
     "home": "Главная",
+    "intake": "Приём",
     "logoutButton": "Выйти",
     "serverStatus": {
       "noServerConfigured": "Сервер не настроен",

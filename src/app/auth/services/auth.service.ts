@@ -68,6 +68,8 @@ interface JwtPayload {
     provider: string;
     is_primary: boolean;
   }>;
+  tmi_is_administrator?: boolean;
+  tmi_is_security_reviewer?: boolean;
 }
 
 /**
@@ -261,6 +263,24 @@ export class AuthService {
    */
   get isAdmin(): boolean {
     return this.userProfile?.is_admin === true;
+  }
+
+  get isSecurityReviewer(): boolean {
+    return this.userProfile?.is_security_reviewer === true;
+  }
+
+  /**
+   * Get the role-based landing page for the current user.
+   * Rules (first match wins):
+   * 1. Security reviewer → /dashboard
+   * 2. Administrator (not reviewer) → /admin
+   * 3. Neither → /intake
+   */
+  getLandingPage(): string {
+    const profile = this.userProfile;
+    if (profile?.is_security_reviewer) return '/dashboard';
+    if (profile?.is_admin) return '/admin';
+    return '/intake';
   }
 
   /**
@@ -1061,11 +1081,11 @@ export class AuthService {
       // Fire and forget - don't block navigation on this
       this.refreshUserProfile().subscribe();
 
-      // Navigate to return URL if provided, otherwise to default
+      // Navigate to return URL if provided, otherwise to role-based landing page
       // Wait for navigation to complete before emitting success
       const navigationPromise = returnUrl
         ? this.router.navigateByUrl(returnUrl)
-        : this.router.navigate(['/dashboard']);
+        : this.router.navigate([this.getLandingPage()]);
 
       return from(navigationPromise).pipe(
         map(navigationSuccess => {
@@ -1220,13 +1240,13 @@ export class AuthService {
           // Fire and forget - don't block navigation on this
           this.refreshUserProfile().subscribe();
 
-          // Navigate to return URL if provided, otherwise to default
+          // Navigate to return URL if provided, otherwise to role-based landing page
           // Note: We can't use from() here because we're inside a map() - just fire and forget
           // The main navigation fix is in handleTMITokenResponse above
           if (returnUrl) {
             void this.router.navigateByUrl(returnUrl);
           } else {
-            void this.router.navigate(['/dashboard']);
+            void this.router.navigate([this.getLandingPage()]);
           }
 
           return true;
@@ -1320,6 +1340,8 @@ export class AuthService {
         display_name: decodedPayload.name,
         email: decodedPayload.email,
         groups: decodedPayload.groups || null,
+        is_admin: decodedPayload.tmi_is_administrator ?? false,
+        is_security_reviewer: decodedPayload.tmi_is_security_reviewer ?? false,
       };
     } catch (error) {
       this.logger.error('Error extracting user profile from token', error);
@@ -1345,6 +1367,7 @@ export class AuthService {
           email: response.email,
           groups: response.groups ?? null,
           is_admin: response.is_admin,
+          is_security_reviewer: response.is_security_reviewer,
         };
 
         // Get current JWT-derived profile
@@ -1382,8 +1405,10 @@ export class AuthService {
           email: serverProfile.email || currentProfile.email,
           groups: serverProfile.groups !== null ? serverProfile.groups : currentProfile.groups,
 
-          // Server-only fields
+          // Server-verified fields (prefer server values, fall back to JWT-derived values)
           is_admin: serverProfile.is_admin,
+          is_security_reviewer:
+            serverProfile.is_security_reviewer ?? currentProfile.is_security_reviewer,
         };
 
         // Warn about mismatched non-critical fields

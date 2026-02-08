@@ -19,6 +19,7 @@ import { Routes } from '@angular/router';
 import { adminGuard } from './auth/guards/admin.guard';
 import { authGuard } from './auth/guards/auth.guard';
 import { homeGuard } from './auth/guards/home.guard';
+import { reviewerGuard } from './auth/guards/reviewer.guard';
 
 export const routes: Routes = [
   {
@@ -167,9 +168,9 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'surveys',
+    path: 'intake',
     loadChildren: () =>
-      import(/* webpackChunkName: "surveys" */ './pages/surveys/surveys.routes').then(
+      import(/* webpackChunkName: "intake" */ './pages/surveys/surveys.routes').then(
         m => m.SURVEY_ROUTES,
       ),
     canActivate: [authGuard],
@@ -180,7 +181,7 @@ export const routes: Routes = [
       import(/* webpackChunkName: "triage" */ './pages/triage/triage.routes').then(
         m => m.TRIAGE_ROUTES,
       ),
-    canActivate: [authGuard],
+    canActivate: [authGuard, reviewerGuard],
   },
   {
     path: '**',

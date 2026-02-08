@@ -683,10 +683,13 @@
     "unexpectedError": "OAuth身份验证过程中发生意外错误。"
   },
   "navbar": {
+    "admin": "管理",
     "appTitle": "TMI: 威胁建模改进",
     "copyUserEmail": "复制用户邮箱到剪贴板",
+    "dashboard": "仪表盘",
     "feedback": "报告错误、请求功能或提供反馈",
     "home": "主页",
+    "intake": "受理",
     "logoutButton": "退出登录",
     "serverStatus": {
       "noServerConfigured": "未配置服务器",

@@ -683,10 +683,13 @@
     "unexpectedError": "حدث خطأ غير متوقع أثناء مصادقة OAuth."
   },
   "navbar": {
+    "admin": "المسؤول",
     "appTitle": "تي إم آي: نمذجة التهديدات المحسنة",
     "copyUserEmail": "نسخ البريد الإلكتروني للمستخدم إلى الحافظة",
+    "dashboard": "لوحة التحكم",
     "feedback": "الإبلاغ عن خطأ أو طلب ميزة أو تقديم ملاحظات",
     "home": "الصفحة الرئيسية",
+    "intake": "استقبال",
     "logoutButton": "تسجيل الخروج",
     "serverStatus": {
       "noServerConfigured": "لم يتم تكوين خادم",

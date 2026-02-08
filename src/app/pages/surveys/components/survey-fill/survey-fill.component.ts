@@ -273,7 +273,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
    */
   saveAndExit(): void {
     if (!this.surveyModel || !this.responseId) {
-      void this.router.navigate(['/surveys']);
+      void this.router.navigate(['/intake']);
       return;
     }
 
@@ -288,11 +288,11 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          void this.router.navigate(['/surveys']);
+          void this.router.navigate(['/intake']);
         },
         error: () => {
           // Navigate anyway, draft will auto-save next time
-          void this.router.navigate(['/surveys']);
+          void this.router.navigate(['/intake']);
         },
       });
   }
@@ -301,21 +301,21 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
    * View response details after completion
    */
   viewResponse(): void {
-    void this.router.navigate(['/surveys', 'response', this.responseId]);
+    void this.router.navigate(['/intake', 'response', this.responseId]);
   }
 
   /**
    * Start a new survey of the same type
    */
   startAnother(): void {
-    void this.router.navigate(['/surveys']);
+    void this.router.navigate(['/intake']);
   }
 
   /**
    * Go back to surveys list
    */
   goBack(): void {
-    void this.router.navigate(['/surveys']);
+    void this.router.navigate(['/intake']);
   }
 
   /**

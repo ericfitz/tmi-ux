@@ -253,7 +253,7 @@ export class AdminAdministratorsComponent implements OnInit {
     if (this.authService.isAdmin) {
       void this.router.navigate(['/admin']);
     } else {
-      void this.router.navigate(['/dashboard']);
+      void this.router.navigate([this.authService.getLandingPage()]);
     }
   }
 

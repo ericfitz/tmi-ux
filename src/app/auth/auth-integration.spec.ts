@@ -366,7 +366,7 @@ describe('Authentication Integration', () => {
           expect(success).toBe(true);
           expect(authService.isAuthenticated).toBe(true);
           expect(authService.userProfile).toBeTruthy();
-          expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+          expect(router.navigate).toHaveBeenCalledWith(['/intake']);
         });
 
         // Verify localStorage cleanup

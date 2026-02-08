@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, DATA_MATERIAL_IMPORTS } from '@app/shared/imports';
+import { AuthService } from '../../auth/services/auth.service';
 
 /**
  * Administration Page Component
@@ -17,7 +18,10 @@ import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS, DATA_MATERIAL_IMPORTS } from '@a
   styleUrl: './admin.component.scss',
 })
 export class AdminComponent {
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+  ) {}
   adminSections = [
     {
       title: 'admin.sections.administrators.title',
@@ -68,6 +72,6 @@ export class AdminComponent {
   }
 
   onClose(): void {
-    void this.router.navigate(['/dashboard']);
+    void this.router.navigate([this.authService.getLandingPage()]);
   }
 }

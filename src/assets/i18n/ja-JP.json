@@ -683,10 +683,13 @@
     "unexpectedError": "OAuth中に予期しないエラーが発生しました。"
   },
   "navbar": {
+    "admin": "管理",
     "appTitle": "TMI: 脅威モデリング改善版",
     "copyUserEmail": "ユーザーのメールアドレスをクリップボードにコピー",
+    "dashboard": "ダッシュボード",
     "feedback": "バグ報告、機能リクエスト、フィードバックを送信",
     "home": "ホーム",
+    "intake": "受付",
     "logoutButton": "サインアウト",
     "serverStatus": {
       "noServerConfigured": "サーバー未設定",

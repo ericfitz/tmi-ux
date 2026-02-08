@@ -61,9 +61,15 @@ export interface UserProfile {
 
   /**
    * Whether the user has administrator privileges
-   * Only populated when fetched from GET /users/me endpoint
+   * Populated from JWT tmi_is_administrator claim and verified via GET /users/me
    */
   is_admin?: boolean;
+
+  /**
+   * Whether the user has security reviewer privileges
+   * Populated from JWT tmi_is_security_reviewer claim and verified via GET /users/me
+   */
+  is_security_reviewer?: boolean;
 }
 
 /**
@@ -105,6 +111,11 @@ export interface UserMeResponse {
    * Whether the user has administrator privileges
    */
   is_admin: boolean;
+
+  /**
+   * Whether the user has security reviewer privileges
+   */
+  is_security_reviewer?: boolean;
 
   /**
    * Account creation timestamp
