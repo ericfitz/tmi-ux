@@ -1081,7 +1081,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allTemplates": "All Templates",
+      "allSurveys": "All Surveys",
       "clearFilters": "Clear Filters"
     },
     "list": {
@@ -1094,7 +1094,7 @@
       "noResponsesTitle": "No Responses",
       "noResponsesToTriage": "There are no survey responses to triage",
       "notSubmitted": "Not submitted",
-      "searchPlaceholder": "Search by submitter or template...",
+      "searchPlaceholder": "Search by submitter or survey...",
       "submitted": "Submitted",
       "submitter": "Submitter"
     },
