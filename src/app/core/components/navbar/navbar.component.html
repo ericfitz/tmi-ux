@@ -39,10 +39,6 @@
           <mat-icon>assignment</mat-icon>
           <span [transloco]="'navbar.intake'">Intake</span>
         </button>
-        <button mat-button routerLink="/dashboard" routerLinkActive="active-link" class="nav-link">
-          <mat-icon>dashboard</mat-icon>
-          <span [transloco]="'navbar.dashboard'">Dashboard</span>
-        </button>
         <button
           mat-button
           routerLink="/triage"
@@ -52,6 +48,10 @@
         >
           <mat-icon>inbox</mat-icon>
           <span [transloco]="'triage.title'">Triage</span>
+        </button>
+        <button mat-button routerLink="/dashboard" routerLinkActive="active-link" class="nav-link">
+          <mat-icon>dashboard</mat-icon>
+          <span [transloco]="'navbar.dashboard'">Dashboard</span>
         </button>
         <button
           mat-button
