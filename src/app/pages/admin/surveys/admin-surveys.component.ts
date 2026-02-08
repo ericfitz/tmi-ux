@@ -1,14 +1,18 @@
 import {
   Component,
   OnInit,
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   DestroyRef,
+  ViewChild,
   inject,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   COMMON_IMPORTS,
@@ -41,11 +45,13 @@ import { SurveyListItem, SurveyStatus } from '@app/types/survey.types';
   styleUrl: './admin-surveys.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminSurveysComponent implements OnInit {
+export class AdminSurveysComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
 
+  @ViewChild(MatSort) sort!: MatSort;
+
   templates: SurveyListItem[] = [];
-  filteredTemplates: SurveyListItem[] = [];
+  dataSource = new MatTableDataSource<SurveyListItem>([]);
   loading = true;
   error: string | null = null;
 
@@ -73,6 +79,27 @@ export class AdminSurveysComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadTemplates();
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (
+      item: SurveyListItem,
+      property: string,
+    ): string | number => {
+      switch (property) {
+        case 'name':
+          return item.name.toLowerCase();
+        case 'status':
+          return item.status.toLowerCase();
+        case 'version':
+          return item.version.toLowerCase();
+        case 'modified':
+          return new Date(item.modified_at ?? item.created_at).getTime();
+        default:
+          return '';
+      }
+    };
   }
 
   /**
@@ -120,14 +147,7 @@ export class AdminSurveysComponent implements OnInit {
       );
     }
 
-    // Sort by modified date descending, falling back to created_at
-    filtered.sort(
-      (a, b) =>
-        new Date(b.modified_at ?? b.created_at).getTime() -
-        new Date(a.modified_at ?? a.created_at).getTime(),
-    );
-
-    this.filteredTemplates = filtered;
+    this.dataSource.data = filtered;
   }
 
   /**
