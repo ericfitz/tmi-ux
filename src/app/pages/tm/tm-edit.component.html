@@ -98,7 +98,9 @@
                 </div>
                 <div class="info-field">
                   <span class="info-label">{{ 'threatModels.createdBy' | transloco }}:</span>
-                  <span class="info-value">{{ threatModel.created_by.display_name }}</span>
+                  <span class="info-value"
+                    ><app-user-display [user]="threatModel.created_by"
+                  /></span>
                 </div>
                 <div class="info-field">
                   <span class="info-label">{{ 'threatModels.created' | transloco }}:</span>

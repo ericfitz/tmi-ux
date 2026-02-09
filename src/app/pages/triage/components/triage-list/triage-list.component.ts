@@ -6,6 +6,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
+import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
@@ -33,7 +34,7 @@ interface TriageFilters {
 @Component({
   selector: 'app-triage-list',
   standalone: true,
-  imports: [...COMMON_IMPORTS, ...ALL_MATERIAL_IMPORTS, TranslocoModule],
+  imports: [...COMMON_IMPORTS, ...ALL_MATERIAL_IMPORTS, TranslocoModule, UserDisplayComponent],
   templateUrl: './triage-list.component.html',
   styleUrl: './triage-list.component.scss',
   changeDetection: ChangeDetectionStrategy.Default,

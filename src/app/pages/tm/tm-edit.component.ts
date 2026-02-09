@@ -97,6 +97,7 @@ import {
   DeleteConfirmationDialogData,
   DeleteConfirmationDialogResult,
 } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 
 // Define form value interface
 interface ThreatModelFormValues {
@@ -140,6 +141,7 @@ interface RepositoryFormResult {
     MatTableModule,
     MatSortModule,
     TranslocoModule,
+    UserDisplayComponent,
   ],
   templateUrl: './tm-edit.component.html',
   styleUrls: ['./tm-edit.component.scss'],

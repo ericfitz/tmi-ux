@@ -4,6 +4,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '../../../core/services/logger.service';
 import { LanguageService } from '../../../i18n/language.service';
 import { UserPreferencesService } from '../../../core/services/user-preferences.service';
+import { BrandingConfigService } from '../../../core/services/branding-config.service';
 import { ThreatModel, Threat, Document, Repository } from '../models/threat-model.model';
 import { getPrincipalDisplayName } from '../../../shared/utils/principal-display.utils';
 import * as fontkit from 'fontkit';
@@ -136,6 +137,7 @@ export class ThreatModelReportService {
     private logger: LoggerService,
     private transloco: TranslocoService,
     private languageService: LanguageService,
+    private brandingConfig: BrandingConfigService,
   ) {}
 
   /**
@@ -239,6 +241,12 @@ export class ThreatModelReportService {
       // Generate report content
       await this.generateReportContent(doc, threatModel);
 
+      // Add data classification footer to all pages
+      const dataClassification = this.brandingConfig.dataClassification;
+      if (dataClassification) {
+        this.addPageFooters(doc, dataClassification);
+      }
+
       // Save the PDF
       await this.savePdf(doc, threatModel.name);
 
@@ -338,8 +346,23 @@ export class ThreatModelReportService {
     let page = this.addNewPage(doc);
     let yPosition = this.getStartingYPosition();
 
+    // Logo on title page
+    yPosition = await this.addLogoToTitlePage(doc, page, yPosition);
+
     // Title
     yPosition = this.addTitle(page, threatModel.name, yPosition);
+
+    // Confidentiality warning on title page
+    const confidentialityWarning = this.brandingConfig.confidentialityWarning;
+    if (confidentialityWarning) {
+      yPosition = this.addConfidentialityWarning(page, confidentialityWarning, yPosition);
+    }
+
+    // Data classification on title page
+    const dataClassification = this.brandingConfig.dataClassification;
+    if (dataClassification) {
+      yPosition = this.addTitlePageClassification(page, dataClassification, yPosition);
+    }
 
     // Threat Model Summary
     yPosition = this.addThreatModelSummary(page, threatModel, yPosition);
@@ -991,6 +1014,120 @@ export class ThreatModelReportService {
       });
     } catch {
       return this.transloco.translate('common.noDataAvailable');
+    }
+  }
+
+  /**
+   * Add the branding logo to the title page
+   */
+  private async addLogoToTitlePage(
+    doc: PDFDocument,
+    page: PDFPage,
+    yPosition: number,
+  ): Promise<number> {
+    const logoPngData = this.brandingConfig.logoPngData;
+    if (!logoPngData) {
+      return yPosition;
+    }
+
+    try {
+      const image = await doc.embedPng(logoPngData);
+      const maxWidth = 150;
+      const maxHeight = 100;
+      const scale = Math.min(maxWidth / image.width, maxHeight / image.height, 1);
+      const drawWidth = image.width * scale;
+      const drawHeight = image.height * scale;
+      const x = (page.getWidth() - drawWidth) / 2;
+
+      page.drawImage(image, {
+        x,
+        y: yPosition - drawHeight,
+        width: drawWidth,
+        height: drawHeight,
+      });
+
+      return yPosition - drawHeight - 20;
+    } catch (error) {
+      this.logger.warn('Failed to embed logo in PDF', error);
+      return yPosition;
+    }
+  }
+
+  /**
+   * Add confidentiality warning text to the title page (centered, italic)
+   */
+  private addConfidentialityWarning(page: PDFPage, warning: string, yPosition: number): number {
+    const font = this.currentItalicFont || this.currentFont;
+    if (!font) {
+      return yPosition;
+    }
+
+    const fontSize = 14;
+    const textWidth = font.widthOfTextAtSize(warning, fontSize);
+    const x = (page.getWidth() - textWidth) / 2;
+
+    page.drawText(warning, {
+      x: Math.max(this.getMargin(), x),
+      y: yPosition,
+      size: fontSize,
+      font,
+      color: rgb(0.3, 0.3, 0.3),
+    });
+
+    return yPosition - 25;
+  }
+
+  /**
+   * Add data classification text to the title page (centered)
+   */
+  private addTitlePageClassification(
+    page: PDFPage,
+    classification: string,
+    yPosition: number,
+  ): number {
+    if (!this.currentFont) {
+      return yPosition;
+    }
+
+    const fontSize = 12;
+    const textWidth = this.currentFont.widthOfTextAtSize(classification, fontSize);
+    const x = (page.getWidth() - textWidth) / 2;
+
+    page.drawText(classification, {
+      x: Math.max(this.getMargin(), x),
+      y: yPosition,
+      size: fontSize,
+      font: this.currentFont,
+      color: rgb(0.4, 0.4, 0.4),
+    });
+
+    return yPosition - 25;
+  }
+
+  /**
+   * Add data classification footer to all pages in the document
+   */
+  private addPageFooters(doc: PDFDocument, footerText: string): void {
+    if (!this.currentFont) {
+      return;
+    }
+
+    const pages = doc.getPages();
+    const fontSize = 8;
+    const margin = this.getMargin();
+
+    for (const page of pages) {
+      const textWidth = this.currentFont.widthOfTextAtSize(footerText, fontSize);
+      const x = (page.getWidth() - textWidth) / 2;
+      const y = margin / 2;
+
+      page.drawText(footerText, {
+        x,
+        y,
+        size: fontSize,
+        font: this.currentFont,
+        color: rgb(0.4, 0.4, 0.4),
+      });
     }
   }
 

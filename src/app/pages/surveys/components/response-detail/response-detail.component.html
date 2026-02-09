@@ -38,9 +38,9 @@
         <div class="info-grid">
           <div class="info-item">
             <span class="info-label">Responded By</span>
-            <span class="info-value">{{
-              response.owner.display_name || response.owner.email
-            }}</span>
+            <span class="info-value">
+              <app-user-display [user]="response.owner" />
+            </span>
           </div>
           <div class="info-item">
             <span class="info-label">Created</span>

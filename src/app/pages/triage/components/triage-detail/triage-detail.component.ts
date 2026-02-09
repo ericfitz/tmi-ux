@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
+import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
@@ -27,7 +28,7 @@ interface StatusTimelineEntry {
 @Component({
   selector: 'app-triage-detail',
   standalone: true,
-  imports: [...COMMON_IMPORTS, ...ALL_MATERIAL_IMPORTS, TranslocoModule],
+  imports: [...COMMON_IMPORTS, ...ALL_MATERIAL_IMPORTS, TranslocoModule, UserDisplayComponent],
   templateUrl: './triage-detail.component.html',
   styleUrl: './triage-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.Default,

@@ -82,6 +82,7 @@ import {
   buildPaginationQueryParams,
   adjustPageAfterDeletion,
 } from '../../shared/utils/pagination.util';
+import { UserDisplayComponent } from '../../shared/components/user-display/user-display.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -93,6 +94,7 @@ import {
     ...FEEDBACK_MATERIAL_IMPORTS,
     ...FORM_MATERIAL_IMPORTS,
     TranslocoModule,
+    UserDisplayComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',

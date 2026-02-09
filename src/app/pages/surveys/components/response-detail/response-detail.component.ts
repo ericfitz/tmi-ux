@@ -21,6 +21,7 @@ import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyService } from '../../services/survey.service';
 import { SurveyResponseService } from '../../services/survey-response.service';
 import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
+import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 
 /**
  * Response detail component
@@ -36,6 +37,7 @@ import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/sur
     ...FEEDBACK_MATERIAL_IMPORTS,
     SurveyModule,
     TranslocoModule,
+    UserDisplayComponent,
   ],
   templateUrl: './response-detail.component.html',
   styleUrl: './response-detail.component.scss',

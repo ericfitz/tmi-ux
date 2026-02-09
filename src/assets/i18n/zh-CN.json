@@ -637,6 +637,9 @@
   "errors": {
     "validationError": "验证错误"
   },
+  "footer": {
+    "support": "支持"
+  },
   "getStarted": "开始使用",
   "homeDescription": "TMI 是一款管理和增强组织安全审查和威胁建模流程的工具。它驱动安全审查工作流程，组织安全审查信息，支持协作构建数据流图，并能连接自动化以减少审查过程中的繁琐工作和分析安全威胁。",
   "homeWelcomeTitle": "欢迎使用 TMI: 威胁建模改进",

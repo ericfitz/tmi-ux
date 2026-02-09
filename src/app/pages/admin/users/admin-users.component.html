@@ -56,7 +56,7 @@
               <td mat-cell *matCellDef="let user">
                 <div class="subject-info">
                   @if (user.name) {
-                    <div class="subject-name">{{ user.name }}</div>
+                    <div class="subject-name"><app-user-display [user]="user" /></div>
                   }
                   <div class="subject-identifier">{{ user.email }}</div>
                   @if (user.is_admin) {

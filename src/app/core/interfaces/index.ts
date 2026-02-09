@@ -2,6 +2,7 @@
 export * from './auth.interface';
 export * from './threat-model.interface';
 export * from './collaboration-notification.interface';
+export * from './server-config.interface';
 
 // Injection tokens
 import { InjectionToken } from '@angular/core';

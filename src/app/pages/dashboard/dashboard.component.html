@@ -122,11 +122,10 @@
                         </p>
                         <p class="collab-detail">
                           <mat-icon>person</mat-icon>
-                          {{ 'collaboration.hostedBy' | transloco }}&nbsp;<span
-                            [matTooltip]="session.host.email || ''"
-                          >
-                            {{ session.host.display_name || session.host.email || '—' }}
-                          </span>
+                          {{ 'collaboration.hostedBy' | transloco }}&nbsp;<app-user-display
+                            [user]="session.host"
+                            fallback="—"
+                          />
                         </p>
                         <p class="collab-detail">
                           <mat-icon>schedule</mat-icon>
@@ -292,9 +291,7 @@
               {{ 'dashboard.tableHeaders.owner' | transloco }}
             </th>
             <td mat-cell *matCellDef="let tm">
-              <span [matTooltip]="tm.owner?.email || ''">
-                {{ tm.owner?.display_name || tm.owner?.email || '—' }}
-              </span>
+              <app-user-display [user]="tm.owner" fallback="—" />
             </td>
           </ng-container>
 
@@ -337,9 +334,10 @@
                       </p>
                       <p class="collab-detail">
                         <mat-icon>person</mat-icon>
-                        {{ 'collaboration.hostedBy' | transloco }}&nbsp;{{
-                          session.host.display_name || session.host.email || '—'
-                        }}
+                        {{ 'collaboration.hostedBy' | transloco }}&nbsp;<app-user-display
+                          [user]="session.host"
+                          fallback="—"
+                        />
                       </p>
                       <p class="collab-detail">
                         <mat-icon>schedule</mat-icon>

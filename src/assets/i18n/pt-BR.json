@@ -637,6 +637,9 @@
   "errors": {
     "validationError": "Erro de Validacao"
   },
+  "footer": {
+    "support": "Suporte"
+  },
   "getStarted": "Comecar",
   "homeDescription": "TMI é uma ferramenta que gerencia e aprimora os processos de revisão de segurança e modelagem de ameaças para sua organização. Ela conduz o fluxo de trabalho de revisão de segurança, organiza as informações para revisões de segurança, permite a criação colaborativa de diagramas de fluxo de dados e possibilita a conexão de automação para reduzir esforços no processo de revisão e analisar ameaças de segurança.",
   "homeWelcomeTitle": "Bem-vindo ao TMI: Modelagem de Ameacas Aprimorada",

@@ -22,6 +22,7 @@ import {
   principalsEqual,
 } from '@app/shared/utils/principal-display.utils';
 import { ProviderAdapterService } from '../../services/providers/provider-adapter.service';
+import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 
 /**
  * Authorization with temporary _subject field for UI state management
@@ -48,6 +49,7 @@ export interface PermissionsDialogData {
     ScrollIndicatorDirective,
     PrincipalTypeIconComponent,
     ProviderDisplayComponent,
+    UserDisplayComponent,
   ],
   template: `
     <div class="permissions-dialog">
@@ -74,7 +76,7 @@ export interface PermissionsDialogData {
           <div class="info-section">
             <div class="info-field">
               <span class="info-label">{{ 'common.roles.owner' | transloco }}:</span>
-              <span class="info-value">{{ getPrincipalDisplayName(data.owner) }}</span>
+              <span class="info-value"><app-user-display [user]="data.owner" /></span>
             </div>
           </div>
 

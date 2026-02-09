@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subscription } from '../../core/rxjs-imports';
@@ -8,6 +8,7 @@ import { COMMON_IMPORTS, CORE_MATERIAL_IMPORTS } from '@app/shared/imports';
 
 // Services
 import { AuthService } from '../../auth/services/auth.service';
+import { BrandingConfigService } from '../../core/services/branding-config.service';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +18,10 @@ import { AuthService } from '../../auth/services/auth.service';
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit, OnDestroy {
+  private readonly brandingConfig = inject(BrandingConfigService);
+
   isAuthenticated = false;
+  readonly logoImageUrl$ = this.brandingConfig.logoImageUrl$;
   private authSubscription: Subscription | null = null;
 
   constructor(

@@ -18,6 +18,7 @@ import { AuthService } from '@app/auth/services/auth.service';
 import { AdminUser } from '@app/types/user.types';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
+import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
 import {
   DEFAULT_PAGE_SIZE,
@@ -48,6 +49,7 @@ import {
     ...FEEDBACK_MATERIAL_IMPORTS,
     TranslocoModule,
     ProviderDisplayComponent,
+    UserDisplayComponent,
   ],
   templateUrl: './admin-users.component.html',
   styleUrl: './admin-users.component.scss',

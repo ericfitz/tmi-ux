@@ -124,7 +124,7 @@
           <th mat-header-cell *matHeaderCellDef>{{ 'triage.list.submitter' | transloco }}</th>
           <td mat-cell *matCellDef="let row">
             <div class="submitter-info">
-              <span class="submitter-name">{{ row.owner.display_name || row.owner.email }}</span>
+              <span class="submitter-name"><app-user-display [user]="row.owner" /></span>
               @if (row.owner.display_name) {
                 <span class="submitter-email">{{ row.owner.email }}</span>
               }

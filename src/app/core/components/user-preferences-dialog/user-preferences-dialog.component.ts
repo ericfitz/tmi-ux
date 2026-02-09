@@ -24,6 +24,7 @@ import {
   CredentialSecretDialogComponent,
   CredentialSecretDialogData,
 } from './credential-secret-dialog/credential-secret-dialog.component';
+import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 
 export interface UserPreferences {
   animations: boolean;
@@ -47,6 +48,7 @@ interface CheckboxChangeEvent {
     ...DATA_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
     TranslocoModule,
+    UserDisplayComponent,
   ],
   template: `
     <h2 mat-dialog-title [transloco]="'userPreferences.title'">User Preferences</h2>
@@ -62,7 +64,9 @@ interface CheckboxChangeEvent {
             <div class="profile-info">
               <div class="profile-item">
                 <span class="profile-label" [transloco]="'common.name'">Name</span>
-                <span class="profile-value">{{ userProfile?.display_name || 'N/A' }}</span>
+                <span class="profile-value"
+                  ><app-user-display [user]="userProfile" fallback="N/A"
+                /></span>
               </div>
 
               <div class="profile-item">

@@ -9,7 +9,11 @@
         [matTooltip]="'navbar.home' | transloco"
         matTooltipPosition="below"
       >
-        <img src="/TMI-FullLogo-Transparent-512x512.png" alt="TMI Logo" class="tmi-logo" />
+        <img
+          [src]="logoImageUrl$ | async"
+          [alt]="(brandingOrgName$ | async) || 'TMI Logo'"
+          class="tmi-logo"
+        />
       </button>
       <span class="app-title" [transloco]="'navbar.appTitle'">TMI: Threat Modeling Improved</span>
 
