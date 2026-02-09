@@ -29,7 +29,7 @@
             <mat-icon>check_circle</mat-icon>
             Approve
           </button>
-          <button mat-stroked-button (click)="returnForRevision('')" [disabled]="isUpdatingStatus">
+          <button mat-stroked-button (click)="openRevisionDialog()" [disabled]="isUpdatingStatus">
             <mat-icon>rate_review</mat-icon>
             Return for Revision
           </button>

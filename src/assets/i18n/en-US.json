@@ -1223,6 +1223,14 @@
     "noResponses": "No responses to triage",
     "queue": "Triage Queue",
     "returnToSubmitted": "Return to Submitted",
+    "revisionDialog": {
+      "confirm": "Return for Revision",
+      "description": "Provide notes explaining what needs to be revised. The submitter will see these notes when they review their response.",
+      "hint": "Required — describe what changes are needed",
+      "label": "Revision Notes",
+      "placeholder": "Describe the revisions needed...",
+      "title": "Return for Revision"
+    },
     "title": "Triage",
     "viewDetails": "View Details"
   },

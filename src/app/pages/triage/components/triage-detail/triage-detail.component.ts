@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
@@ -9,6 +10,10 @@ import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
 import { SurveyService } from '../../../surveys/services/survey.service';
 import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
+import {
+  RevisionNotesDialogComponent,
+  RevisionNotesDialogResult,
+} from '../revision-notes-dialog/revision-notes-dialog.component';
 
 /**
  * Status timeline entry
@@ -60,6 +65,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private dialog: MatDialog,
     private responseService: SurveyResponseService,
     private surveyService: SurveyService,
     private logger: LoggerService,
@@ -256,9 +262,32 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Open the revision notes dialog, then return for revision if confirmed
+   */
+  openRevisionDialog(): void {
+    const dialogRef = this.dialog.open<
+      RevisionNotesDialogComponent,
+      void,
+      RevisionNotesDialogResult
+    >(RevisionNotesDialogComponent, {
+      width: '500px',
+      disableClose: true,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+          this.returnForRevision(result.notes);
+        }
+      });
+  }
+
+  /**
    * Return a response for revision
    */
-  returnForRevision(notes: string): void {
+  private returnForRevision(notes: string): void {
     if (!this.response) return;
 
     this.isUpdatingStatus = true;
