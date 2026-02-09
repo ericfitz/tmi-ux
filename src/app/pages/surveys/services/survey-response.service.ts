@@ -13,6 +13,7 @@ import {
   UpdateSurveyResponseRequest,
   CreateThreatModelFromResponseResult,
   SurveyUIState,
+  ResponseStatus,
 } from '@app/types/survey.types';
 
 /**
@@ -212,20 +213,20 @@ export class SurveyResponseService {
   }
 
   /**
-   * Approve a response (submitted → ready_for_review, triage only)
+   * Update the status of a response (triage only)
    */
-  public approve(responseId: string): Observable<SurveyResponse> {
+  public updateStatus(responseId: string, status: ResponseStatus): Observable<SurveyResponse> {
     return this.apiService
       .patch<SurveyResponse>(`triage/survey_responses/${responseId}`, [
-        { op: 'replace', path: '/status', value: 'ready_for_review' },
+        { op: 'replace', path: '/status', value: status },
       ])
       .pipe(
         tap(response => {
-          this.logger.info('Response approved', { id: response.id });
+          this.logger.info('Response status updated', { id: response.id, status });
           this.listAll().subscribe();
         }),
         catchError(error => {
-          this.logger.error('Failed to approve response', error);
+          this.logger.error('Failed to update response status', error);
           throw error;
         }),
       );

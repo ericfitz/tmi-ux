@@ -497,13 +497,13 @@ describe('SurveyResponseService', () => {
     });
   });
 
-  describe('approve()', () => {
+  describe('updateStatus()', () => {
     it('should call API with correct triage PATCH payload', () => {
-      const approvedResponse = { ...mockResponse, status: 'ready_for_review' as const };
-      mockApiService.patch.mockReturnValue(of(approvedResponse));
+      const updatedResponse = { ...mockResponse, status: 'ready_for_review' as const };
+      mockApiService.patch.mockReturnValue(of(updatedResponse));
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
-      service.approve('response-123').subscribe(response => {
+      service.updateStatus('response-123', 'ready_for_review').subscribe(response => {
         expect(mockApiService.patch).toHaveBeenCalledWith('triage/survey_responses/response-123', [
           { op: 'replace', path: '/status', value: 'ready_for_review' },
         ]);
@@ -511,22 +511,25 @@ describe('SurveyResponseService', () => {
       });
     });
 
-    it('should refresh all responses list after approval', () => {
+    it('should refresh all responses list after status update', () => {
       mockApiService.patch.mockReturnValue(of(mockResponse));
       mockApiService.get.mockReturnValue(of(mockListResponse));
 
-      service.approve('response-123').subscribe(() => {
+      service.updateStatus('response-123', 'submitted').subscribe(() => {
         expect(mockApiService.get).toHaveBeenCalledWith('triage/survey_responses', undefined);
       });
     });
 
     it('should handle API errors and log them', () => {
-      const error = new Error('Approve failed');
+      const error = new Error('Update status failed');
       mockApiService.patch.mockReturnValue(throwError(() => error));
 
-      service.approve('response-123').subscribe({
+      service.updateStatus('response-123', 'ready_for_review').subscribe({
         error: err => {
-          expect(mockLoggerService.error).toHaveBeenCalledWith('Failed to approve response', error);
+          expect(mockLoggerService.error).toHaveBeenCalledWith(
+            'Failed to update response status',
+            error,
+          );
           expect(err).toBe(error);
         },
       });

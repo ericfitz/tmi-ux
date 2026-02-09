@@ -17,17 +17,6 @@
     font-weight: 500;
   }
 
-  .bulk-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    .selection-count {
-      font-size: 14px;
-      color: var(--color-text-secondary);
-    }
-  }
-
   button.close-button {
     margin-left: 16px;
   }
@@ -71,7 +60,7 @@
   padding: 48px;
   text-align: center;
 
-  mat-icon {
+  > mat-icon {
     font-size: 48px;
     width: 48px;
     height: 48px;
@@ -159,34 +148,26 @@
     padding: 12px 16px;
   }
 
-  mat-chip {
-    font-size: 12px;
+  // Inline status dropdown in each row
+  .status-select {
+    width: 170px;
+
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
   }
 
-  .status-draft {
-    --mdc-chip-label-text-color: #666;
-    --mdc-chip-elevated-container-color: #f5f5f5;
-  }
-
-  .status-submitted {
-    --mdc-chip-label-text-color: #1565c0;
-    --mdc-chip-elevated-container-color: #e3f2fd;
-  }
-
-  .status-in-review {
-    --mdc-chip-label-text-color: #e65100;
-    --mdc-chip-elevated-container-color: #fff3e0;
-  }
-
-  .status-pending-triage {
-    --mdc-chip-label-text-color: #2e7d32;
-    --mdc-chip-elevated-container-color: #e8f5e9;
+  // Actions column
+  .row-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
 }
 
-// Button icon alignment
+// Button icon alignment (exclude icon-only buttons)
 /* stylelint-disable-next-line no-descending-specificity */
-button mat-icon {
+button:not([mat-icon-button]) mat-icon {
   vertical-align: middle;
   margin-right: 4px;
 }
@@ -226,8 +207,7 @@ button mat-icon {
   }
 
   .responses-table {
-    [matColumnDef='submitted_at'],
-    [matColumnDef='select'] {
+    [matColumnDef='submitted_at'] {
       display: none;
     }
   }

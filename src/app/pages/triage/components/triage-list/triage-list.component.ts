@@ -5,6 +5,7 @@ import {
   OnDestroy,
   ViewChild,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -12,7 +13,7 @@ import { takeUntil } from 'rxjs/operators';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { SelectionModel } from '@angular/cdk/collections';
+import { MatDialog } from '@angular/material/dialog';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -25,6 +26,10 @@ import {
   ResponseStatus,
   SurveyResponseFilter,
 } from '@app/types/survey.types';
+import {
+  RevisionNotesDialogComponent,
+  RevisionNotesDialogResult,
+} from '../revision-notes-dialog/revision-notes-dialog.component';
 import { environment } from '../../../../../environments/environment';
 
 /**
@@ -58,36 +63,41 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Table data source */
   dataSource = new MatTableDataSource<SurveyResponseListItem>([]);
 
-  /** Selection model for bulk actions */
-  selection = new SelectionModel<SurveyResponseListItem>(true, []);
-
   /** Whether confidential feature is enabled */
   readonly showConfidential = environment.enableConfidentialThreatModels ?? false;
 
   /** Displayed columns */
   displayedColumns = this.showConfidential
-    ? ['select', 'confidential', 'submitter', 'template', 'submitted_at', 'status', 'actions']
-    : ['select', 'submitter', 'template', 'submitted_at', 'status', 'actions'];
+    ? ['confidential', 'submitter', 'template', 'submitted_at', 'status', 'actions']
+    : ['submitter', 'template', 'submitted_at', 'status', 'actions'];
 
   /** Available templates for filtering */
   surveys: SurveyListItem[] = [];
 
   /** Current filters */
   filters: TriageFilters = {
-    status: 'all',
+    status: 'submitted',
     surveyId: null,
     searchTerm: '',
     isConfidential: null,
   };
 
-  /** Status options for filtering */
-  statusOptions: { value: ResponseStatus | 'all'; labelKey: string }[] = [
+  /** Status options for the filter dropdown */
+  filterStatusOptions: { value: ResponseStatus | 'all'; labelKey: string }[] = [
     { value: 'all', labelKey: 'common.allStatuses' },
     { value: 'submitted', labelKey: 'surveys.status.submitted' },
     { value: 'needs_revision', labelKey: 'surveys.status.needsRevision' },
     { value: 'ready_for_review', labelKey: 'surveys.status.readyForReview' },
     { value: 'review_created', labelKey: 'surveys.status.reviewCreated' },
     { value: 'draft', labelKey: 'surveys.status.draft' },
+  ];
+
+  /** Status options for the row status dropdown (excludes draft) */
+  readonly rowStatusOptions: { value: ResponseStatus; labelKey: string }[] = [
+    { value: 'submitted', labelKey: 'surveys.status.submitted' },
+    { value: 'needs_revision', labelKey: 'surveys.status.needsRevision' },
+    { value: 'ready_for_review', labelKey: 'surveys.status.readyForReview' },
+    { value: 'review_created', labelKey: 'surveys.status.reviewCreated' },
   ];
 
   /** Pagination settings */
@@ -107,6 +117,8 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
     private surveyService: SurveyService,
     private logger: LoggerService,
     private transloco: TranslocoService,
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngAfterViewInit(): void {
@@ -187,7 +199,6 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
           this.dataSource.data = response.survey_responses;
           this.totalResponses = response.total;
           this.isLoading = false;
-          this.selection.clear();
         },
         error: err => {
           this.isLoading = false;
@@ -243,88 +254,65 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Check if all visible items are selected
+   * Handle status change from the row dropdown.
+   * If changing to needs_revision, opens the revision notes dialog.
    */
-  isAllSelected(): boolean {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows && numRows > 0;
-  }
+  onStatusChange(response: SurveyResponseListItem, newStatus: ResponseStatus): void {
+    if (newStatus === response.status) return;
 
-  /**
-   * Toggle all selection
-   */
-  toggleAllRows(): void {
-    if (this.isAllSelected()) {
-      this.selection.clear();
-    } else {
-      this.dataSource.data.forEach(row => this.selection.select(row));
+    if (newStatus === 'needs_revision') {
+      this.openRevisionDialog(response);
+      return;
     }
-  }
-
-  /**
-   * Bulk approve selected responses
-   */
-  bulkApprove(): void {
-    const selectedIds = this.selection.selected.map(s => s.id);
-    if (selectedIds.length === 0) return;
-
-    this.isLoading = true;
-    let completed = 0;
-
-    selectedIds.forEach(id => {
-      this.responseService
-        .approve(id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            completed++;
-            if (completed === selectedIds.length) {
-              this.loadResponses();
-            }
-          },
-          error: err => {
-            this.logger.error(`Failed to approve response ${id}`, err);
-            completed++;
-            if (completed === selectedIds.length) {
-              this.loadResponses();
-            }
-          },
-        });
-    });
-  }
-
-  /**
-   * Approve a single response
-   */
-  approveResponse(response: SurveyResponseListItem, event: Event): void {
-    event.stopPropagation();
 
     this.responseService
-      .approve(response.id)
+      .updateStatus(response.id, newStatus)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.loadResponses();
         },
         error: err => {
-          this.logger.error('Failed to approve response', err);
+          this.logger.error('Failed to update response status', err);
+          this.cdr.markForCheck();
         },
       });
   }
 
   /**
-   * Get the CSS class for a status chip
+   * Open the revision notes dialog, then return for revision if confirmed
    */
-  getStatusClass(status: ResponseStatus): string {
-    const statusClasses: Record<ResponseStatus, string> = {
-      draft: 'status-draft',
-      submitted: 'status-submitted',
-      needs_revision: 'status-needs-revision',
-      ready_for_review: 'status-ready-for-review',
-      review_created: 'status-review-created',
-    };
-    return statusClasses[status] ?? '';
+  private openRevisionDialog(response: SurveyResponseListItem): void {
+    const dialogRef = this.dialog.open<
+      RevisionNotesDialogComponent,
+      void,
+      RevisionNotesDialogResult
+    >(RevisionNotesDialogComponent, {
+      width: '500px',
+      disableClose: true,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+          this.responseService
+            .returnForRevision(response.id, result.notes)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: () => {
+                this.loadResponses();
+              },
+              error: err => {
+                this.logger.error('Failed to return response for revision', err);
+              },
+            });
+        } else {
+          // User cancelled — reload to reset the dropdown display
+          this.loadResponses();
+        }
+      });
   }
 
   /**
@@ -346,7 +334,7 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   get hasActiveFilters(): boolean {
     return (
-      this.filters.status !== 'all' ||
+      this.filters.status !== 'submitted' ||
       !!this.filters.surveyId ||
       !!this.filters.searchTerm ||
       this.filters.isConfidential !== null

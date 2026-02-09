@@ -245,16 +245,16 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
     this.isUpdatingStatus = true;
 
     this.responseService
-      .approve(this.response.id)
+      .updateStatus(this.response.id, 'ready_for_review')
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: updatedResponse => {
+        next: (updatedResponse: SurveyResponse) => {
           this.response = updatedResponse;
           this.buildStatusTimeline(updatedResponse);
           this.isUpdatingStatus = false;
           this.logger.info('Response approved', { id: updatedResponse.id });
         },
-        error: err => {
+        error: (err: unknown) => {
           this.isUpdatingStatus = false;
           this.logger.error('Failed to approve response', err);
         },
