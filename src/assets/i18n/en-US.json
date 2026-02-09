@@ -84,11 +84,6 @@
     },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
-      "columns": {
-        "group": "{{common.subjectTypes.group}}",
-        "provider": "{{common.provider}}",
-        "usage": "Usage"
-      },
       "addDialog": {
         "description": "Description (Optional)",
         "descriptionHint": "Optional description of the group's purpose",
@@ -105,6 +100,11 @@
         "groupNameRequired": "Group identifier is required",
         "save": "Create Group",
         "title": "Add Group"
+      },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "Usage"
       },
       "deleteTooltip": "Delete group",
       "filterLabel": "Filter Groups",
@@ -128,13 +128,6 @@
     },
     "quotas": {
       "addButton": "Add Quota",
-      "columns": {
-        "modified": "{{common.lastModified}}",
-        "provider": "{{common.provider}}",
-        "user": "{{common.subjectTypes.user}}"
-      },
-      "default": "Default",
-      "default.comment": "Label shown before a default quota value, e.g. 'Default: 60'.",
       "addDialog": {
         "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "Configure Quotas",
@@ -144,6 +137,13 @@
         "title": "Add Custom Quotas",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "Default",
+      "default.comment": "Label shown before a default quota value, e.g. 'Default: 60'.",
       "deleteTooltip": "Remove custom quota (revert to defaults)",
       "eventsPerMinute": "Events per minute",
       "filterLabel": "Filter Quotas",
@@ -174,6 +174,10 @@
         "description": "Configure resource quotas and limits",
         "title": "{{admin.quotas.title}}"
       },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
       "surveys": {
         "description": "Create and manage surveys",
         "title": "Manage Surveys"
@@ -185,6 +189,57 @@
       "webhooks": {
         "description": "Install and configure webhook integrations",
         "title": "{{admin.webhooks.title}}"
+      }
+    },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "Optional description of this setting",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "Lowercase with dots and underscores (e.g., rate_limit.max_rpm)",
+        "keyInvalid": "Must start with lowercase letter, use only lowercase letters, numbers, dots, and underscores",
+        "keyRequired": "Key is required",
+        "save": "Create Setting",
+        "title": "Add Setting",
+        "type": "{{common.type}}",
+        "typeRequired": "Type is required",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "Value is required"
+      },
+      "cancelTooltip": "Cancel editing",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "Are you sure you want to delete the setting \"{{key}}\"?",
+      "deleteTooltip": "Delete setting",
+      "editTooltip": "Edit setting",
+      "filterLabel": "Filter",
+      "filterPlaceholder": "Filter by key, value, or description",
+      "listTitle": "System Settings",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "Import settings from the server's configuration file or environment variables into the database.",
+        "migrate": "Migrate",
+        "overwriteLabel": "Overwrite existing settings",
+        "overwriteWarning": "Warning: This will replace any settings in the database that were previously customized.",
+        "resultMigrated": "{{count}} settings migrated",
+        "resultSkipped": "{{count}} settings skipped",
+        "title": "Migrate Settings"
+      },
+      "noSettings": "No settings found",
+      "saveTooltip": "Save changes",
+      "subtitle": "View and manage system configuration settings",
+      "title": "Manage Settings",
+      "types": {
+        "bool": "Boolean",
+        "int": "Integer",
+        "json": "JSON",
+        "string": "String"
       }
     },
     "subtitle": "Manage system settings and configurations",

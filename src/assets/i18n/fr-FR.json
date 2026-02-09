@@ -94,6 +94,11 @@
         "save": "Creer le groupe",
         "title": "Ajouter un Groupe"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "Utilisation"
+      },
       "deleteTooltip": "Supprimer le groupe",
       "filterLabel": "Filtrer les groupes",
       "filterPlaceholder": "Rechercher par nom de groupe ou fournisseur",
@@ -125,6 +130,12 @@
         "title": "Ajouter des Quotas Personnalises",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "Par défaut",
       "deleteTooltip": "Supprimer le quota personnalise (revenir aux valeurs par defaut)",
       "eventsPerMinute": "Evenements par minute",
       "filterLabel": "Filtrer les quotas",
@@ -154,6 +165,10 @@
         "description": "Configurer les quotas et limites de ressources",
         "title": "{{admin.quotas.title}}"
       },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
       "surveys": {
         "description": "Créer et gérer des enquêtes",
         "title": "Gérer les enquêtes"
@@ -165,6 +180,57 @@
       "webhooks": {
         "description": "Installer et configurer les integrations webhook",
         "title": "{{admin.webhooks.title}}"
+      }
+    },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "Description optionnelle de ce paramètre",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "Minuscules avec points et underscores (ex : rate_limit.max_rpm)",
+        "keyInvalid": "Doit commencer par une lettre minuscule, utiliser uniquement des lettres minuscules, chiffres, points et underscores",
+        "keyRequired": "La clé est requise",
+        "save": "Créer le paramètre",
+        "title": "Ajouter un paramètre",
+        "type": "{{common.type}}",
+        "typeRequired": "Le type est requis",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "La valeur est requise"
+      },
+      "cancelTooltip": "Annuler la modification",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "Êtes-vous sûr de vouloir supprimer le paramètre \"{{key}}\" ?",
+      "deleteTooltip": "Supprimer le paramètre",
+      "editTooltip": "Modifier le paramètre",
+      "filterLabel": "Filtrer",
+      "filterPlaceholder": "Filtrer par clé, valeur ou description",
+      "listTitle": "Paramètres système",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "Importer les paramètres du fichier de configuration du serveur ou des variables d'environnement dans la base de données.",
+        "migrate": "Migrer",
+        "overwriteLabel": "Écraser les paramètres existants",
+        "overwriteWarning": "Attention : Cela remplacera tous les paramètres de la base de données qui ont été personnalisés précédemment.",
+        "resultMigrated": "{{count}} paramètres migrés",
+        "resultSkipped": "{{count}} paramètres ignorés",
+        "title": "Migrer les paramètres"
+      },
+      "noSettings": "Aucun paramètre trouvé",
+      "saveTooltip": "Enregistrer les modifications",
+      "subtitle": "Afficher et gérer les paramètres de configuration du système",
+      "title": "Gérer les paramètres",
+      "types": {
+        "bool": "Booléen",
+        "int": "Entier",
+        "json": "JSON",
+        "string": "Chaîne de caractères"
       }
     },
     "subtitle": "Gerer les parametres et configurations du systeme",

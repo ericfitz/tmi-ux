@@ -54,6 +54,12 @@ export class AdminComponent {
       action: 'addons',
     },
     {
+      title: 'admin.sections.settings.title',
+      description: 'admin.sections.settings.description',
+      icon: 'settings',
+      action: 'settings',
+    },
+    {
       title: 'admin.sections.surveys.title',
       description: 'admin.sections.surveys.description',
       icon: 'assignment',

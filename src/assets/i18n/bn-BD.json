@@ -94,6 +94,11 @@
         "save": "গ্রুপ তৈরি করুন",
         "title": "গ্রুপ যোগ করুন"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "ব্যবহার"
+      },
       "deleteTooltip": "গ্রুপ মুছুন",
       "filterLabel": "গ্রুপ ফিল্টার করুন",
       "filterPlaceholder": "গ্রুপের নাম বা প্রোভাইডার দিয়ে খুঁজুন",
@@ -125,6 +130,12 @@
         "title": "কাস্টম কোটা যোগ করুন",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "ডিফল্ট",
       "deleteTooltip": "কাস্টম কোটা সরান (ডিফল্টে ফিরে যান)",
       "eventsPerMinute": "প্রতি মিনিটে ইভেন্ট",
       "filterLabel": "কোটা ফিল্টার করুন",
@@ -154,6 +165,10 @@
         "description": "রিসোর্স কোটা এবং লিমিট কনফিগার করুন",
         "title": "{{admin.quotas.title}}"
       },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
       "surveys": {
         "description": "জরিপ তৈরি এবং পরিচালনা করুন",
         "title": "জরিপ পরিচালনা করুন"
@@ -165,6 +180,57 @@
       "webhooks": {
         "description": "ওয়েবহুক ইন্টিগ্রেশন ইনস্টল এবং কনফিগার করুন",
         "title": "{{admin.webhooks.title}}"
+      }
+    },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "এই সেটিংয়ের ঐচ্ছিক বিবরণ",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "ডট এবং আন্ডারস্কোর সহ লোয়ারকেস (উদাহরণ: rate_limit.max_rpm)",
+        "keyInvalid": "অবশ্যই লোয়ারকেস অক্ষর দিয়ে শুরু হতে হবে, শুধুমাত্র লোয়ারকেস অক্ষর, সংখ্যা, ডট এবং আন্ডারস্কোর ব্যবহার করুন",
+        "keyRequired": "কী প্রয়োজন",
+        "save": "সেটিং তৈরি করুন",
+        "title": "সেটিং যোগ করুন",
+        "type": "{{common.type}}",
+        "typeRequired": "ধরন প্রয়োজন",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "মান প্রয়োজন"
+      },
+      "cancelTooltip": "সম্পাদনা বাতিল করুন",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "আপনি কি নিশ্চিত যে \"{{key}}\" সেটিংটি মুছতে চান?",
+      "deleteTooltip": "সেটিং মুছুন",
+      "editTooltip": "সেটিং সম্পাদনা করুন",
+      "filterLabel": "ফিল্টার",
+      "filterPlaceholder": "কী, মান বা বিবরণ দিয়ে ফিল্টার করুন",
+      "listTitle": "সিস্টেম সেটিংস",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "সার্ভারের কনফিগারেশন ফাইল বা এনভায়রনমেন্ট ভেরিয়েবল থেকে ডাটাবেসে সেটিংস ইম্পোর্ট করুন।",
+        "migrate": "মাইগ্রেট করুন",
+        "overwriteLabel": "বিদ্যমান সেটিংস ওভাররাইট করুন",
+        "overwriteWarning": "সতর্কতা: এটি ডাটাবেসে পূর্বে কাস্টমাইজ করা যেকোনো সেটিংস প্রতিস্থাপন করবে।",
+        "resultMigrated": "{{count}} সেটিংস মাইগ্রেট করা হয়েছে",
+        "resultSkipped": "{{count}} সেটিংস এড়িয়ে যাওয়া হয়েছে",
+        "title": "সেটিংস মাইগ্রেট করুন"
+      },
+      "noSettings": "কোনো সেটিংস পাওয়া যায়নি",
+      "saveTooltip": "পরিবর্তনগুলি সংরক্ষণ করুন",
+      "subtitle": "সিস্টেম কনফিগারেশন সেটিংস দেখুন এবং পরিচালনা করুন",
+      "title": "সেটিংস পরিচালনা করুন",
+      "types": {
+        "bool": "বুলিয়ান",
+        "int": "ইন্টিজার",
+        "json": "JSON",
+        "string": "স্ট্রিং"
       }
     },
     "subtitle": "সিস্টেম সেটিংস এবং কনফিগারেশন পরিচালনা করুন",

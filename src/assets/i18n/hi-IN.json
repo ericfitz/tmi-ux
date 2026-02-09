@@ -94,6 +94,11 @@
         "save": "समूह बनाएं",
         "title": "समूह जोड़ें"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "उपयोग"
+      },
       "deleteTooltip": "समूह हटाएं",
       "filterLabel": "समूह फ़िल्टर करें",
       "filterPlaceholder": "समूह के नाम या प्रदाता द्वारा खोजें",
@@ -125,6 +130,12 @@
         "title": "कस्टम कोटा जोड़ें",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "डिफ़ॉल्ट",
       "deleteTooltip": "कस्टम कोटा हटाएं (डिफ़ॉल्ट पर वापस जाएं)",
       "eventsPerMinute": "प्रति मिनट इवेंट्स",
       "filterLabel": "कोटा फ़िल्टर करें",
@@ -154,6 +165,10 @@
         "description": "संसाधन कोटा और सीमाएं कॉन्फ़िगर करें",
         "title": "{{admin.quotas.title}}"
       },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
       "surveys": {
         "description": "सर्वेक्षण बनाएं और प्रबंधित करें",
         "title": "सर्वेक्षणों का प्रबंधन करें"
@@ -165,6 +180,57 @@
       "webhooks": {
         "description": "Webhook एकीकरण इंस्टॉल और कॉन्फ़िगर करें",
         "title": "{{admin.webhooks.title}}"
+      }
+    },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "इस सेटिंग का वैकल्पिक विवरण",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "डॉट और अंडरस्कोर के साथ लोअरकेस (उदा., rate_limit.max_rpm)",
+        "keyInvalid": "लोअरकेस अक्षर से शुरू होना चाहिए, केवल लोअरकेस अक्षर, संख्या, डॉट और अंडरस्कोर का उपयोग करें",
+        "keyRequired": "कुंजी आवश्यक है",
+        "save": "सेटिंग बनाएं",
+        "title": "सेटिंग जोड़ें",
+        "type": "{{common.type}}",
+        "typeRequired": "प्रकार आवश्यक है",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "मान आवश्यक है"
+      },
+      "cancelTooltip": "संपादन रद्द करें",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "क्या आप वाकई \"{{key}}\" सेटिंग को हटाना चाहते हैं?",
+      "deleteTooltip": "सेटिंग हटाएं",
+      "editTooltip": "सेटिंग संपादित करें",
+      "filterLabel": "फ़िल्टर",
+      "filterPlaceholder": "कुंजी, मान या विवरण द्वारा फ़िल्टर करें",
+      "listTitle": "सिस्टम सेटिंग्स",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "सर्वर की कॉन्फ़िगरेशन फ़ाइल या वातावरण चर से डेटाबेस में सेटिंग्स आयात करें।",
+        "migrate": "माइग्रेट करें",
+        "overwriteLabel": "मौजूदा सेटिंग्स को अधिलेखित करें",
+        "overwriteWarning": "चेतावनी: यह डेटाबेस में किसी भी सेटिंग्स को बदल देगा जो पहले कस्टमाइज़ की गई थीं।",
+        "resultMigrated": "{{count}} सेटिंग्स माइग्रेट की गईं",
+        "resultSkipped": "{{count}} सेटिंग्स छोड़ दी गईं",
+        "title": "सेटिंग्स माइग्रेट करें"
+      },
+      "noSettings": "कोई सेटिंग नहीं मिली",
+      "saveTooltip": "परिवर्तन सहेजें",
+      "subtitle": "सिस्टम कॉन्फ़िगरेशन सेटिंग्स देखें और प्रबंधित करें",
+      "title": "सेटिंग्स प्रबंधित करें",
+      "types": {
+        "bool": "बूलियन",
+        "int": "इंटीजर",
+        "json": "JSON",
+        "string": "स्ट्रिंग"
       }
     },
     "subtitle": "सिस्टम सेटिंग्स और कॉन्फ़िगरेशन प्रबंधित करें",

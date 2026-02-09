@@ -94,6 +94,11 @@
         "save": "إنشاء المجموعة",
         "title": "إضافة مجموعة"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "الاستخدام"
+      },
       "deleteTooltip": "حذف المجموعة",
       "filterLabel": "تصفية المجموعات",
       "filterPlaceholder": "البحث بالاسم أو المزود",
@@ -125,6 +130,12 @@
         "title": "إضافة حصص مخصصة",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "افتراضي",
       "deleteTooltip": "إزالة الحصة المخصصة (العودة للإعدادات الافتراضية)",
       "eventsPerMinute": "الأحداث في الدقيقة",
       "filterLabel": "تصفية الحصص",
@@ -154,6 +165,10 @@
         "description": "تكوين حصص الموارد والحدود",
         "title": "{{admin.quotas.title}}"
       },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
       "surveys": {
         "description": "إنشاء وإدارة الاستبيانات",
         "title": "إدارة الاستبيانات"
@@ -165,6 +180,57 @@
       "webhooks": {
         "description": "تثبيت وتكوين تكاملات الخطافات",
         "title": "{{admin.webhooks.title}}"
+      }
+    },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "وصف اختياري لهذا الإعداد",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "أحرف صغيرة مع نقاط وشرطات سفلية (مثل: rate_limit.max_rpm)",
+        "keyInvalid": "يجب أن يبدأ بحرف صغير، ويستخدم فقط الأحرف الصغيرة والأرقام والنقاط والشرطات السفلية",
+        "keyRequired": "المفتاح مطلوب",
+        "save": "إنشاء إعداد",
+        "title": "إضافة إعداد",
+        "type": "{{common.type}}",
+        "typeRequired": "النوع مطلوب",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "القيمة مطلوبة"
+      },
+      "cancelTooltip": "إلغاء التحرير",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "هل أنت متأكد من حذف الإعداد \"{{key}}\"؟",
+      "deleteTooltip": "حذف الإعداد",
+      "editTooltip": "تحرير الإعداد",
+      "filterLabel": "تصفية",
+      "filterPlaceholder": "تصفية حسب المفتاح أو القيمة أو الوصف",
+      "listTitle": "إعدادات النظام",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "استيراد الإعدادات من ملف تكوين الخادم أو متغيرات البيئة إلى قاعدة البيانات.",
+        "migrate": "ترحيل",
+        "overwriteLabel": "استبدال الإعدادات الموجودة",
+        "overwriteWarning": "تحذير: سيؤدي هذا إلى استبدال أي إعدادات في قاعدة البيانات تم تخصيصها مسبقاً.",
+        "resultMigrated": "تم ترحيل {{count}} من الإعدادات",
+        "resultSkipped": "تم تخطي {{count}} من الإعدادات",
+        "title": "ترحيل الإعدادات"
+      },
+      "noSettings": "لم يتم العثور على إعدادات",
+      "saveTooltip": "حفظ التغييرات",
+      "subtitle": "عرض وإدارة إعدادات تكوين النظام",
+      "title": "إدارة الإعدادات",
+      "types": {
+        "bool": "منطقي",
+        "int": "عدد صحيح",
+        "json": "JSON",
+        "string": "نص"
       }
     },
     "subtitle": "إدارة إعدادات النظام والتكوينات",

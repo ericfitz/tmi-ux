@@ -129,6 +129,14 @@ export const routes: Routes = [
           ).then(c => c.AdminAddonsComponent),
       },
       {
+        path: 'settings',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-settings" */ './pages/admin/settings/admin-settings.component'
+          ).then(c => c.AdminSettingsComponent),
+        canActivate: [adminGuard],
+      },
+      {
         path: 'surveys',
         loadComponent: () =>
           import(

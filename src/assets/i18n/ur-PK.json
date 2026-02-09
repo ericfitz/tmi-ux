@@ -94,6 +94,11 @@
         "save": "گروپ بنائیں",
         "title": "گروپ شامل کریں"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "استعمال"
+      },
       "deleteTooltip": "گروپ حذف کریں",
       "filterLabel": "گروپس فلٹر کریں",
       "filterPlaceholder": "گروپ کے نام یا فراہم کنندہ سے تلاش کریں",
@@ -125,6 +130,12 @@
         "title": "حسب ضرورت کوٹہ شامل کریں",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "ڈیفالٹ",
       "deleteTooltip": "حسب ضرورت کوٹہ ہٹائیں (ڈیفالٹس پر واپس جائیں)",
       "eventsPerMinute": "فی منٹ ایونٹس",
       "filterLabel": "کوٹہ فلٹر کریں",
@@ -154,6 +165,10 @@
         "description": "وسائل کے کوٹہ اور حدود ترتیب دیں",
         "title": "{{admin.quotas.title}}"
       },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
       "surveys": {
         "description": "سروے بنائیں اور ان کا نظم کریں",
         "title": "سروے کا نظم کریں"
@@ -165,6 +180,57 @@
       "webhooks": {
         "description": "webhook انضمام انسٹال اور ترتیب دیں",
         "title": "{{admin.webhooks.title}}"
+      }
+    },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "اس ترتیب کی اختیاری تفصیل",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "چھوٹے حروف کے ساتھ نقطوں اور انڈر سکور (مثلاً، rate_limit.max_rpm)",
+        "keyInvalid": "چھوٹے حرف سے شروع ہونا چاہیے، صرف چھوٹے حروف، نمبرز، نقطے، اور انڈر سکور استعمال کریں",
+        "keyRequired": "کی ضروری ہے",
+        "save": "ترتیب بنائیں",
+        "title": "ترتیب شامل کریں",
+        "type": "{{common.type}}",
+        "typeRequired": "قسم ضروری ہے",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "قدر ضروری ہے"
+      },
+      "cancelTooltip": "ترمیم منسوخ کریں",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "کیا آپ واقعی ترتیب \"{{key}}\" کو حذف کرنا چاہتے ہیں؟",
+      "deleteTooltip": "ترتیب حذف کریں",
+      "editTooltip": "ترتیب میں ترمیم کریں",
+      "filterLabel": "فلٹر",
+      "filterPlaceholder": "کی، قدر، یا تفصیل سے فلٹر کریں",
+      "listTitle": "سسٹم کی ترتیبات",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "سرور کی تشکیل فائل یا ماحولیاتی متغیرات سے ڈیٹا بیس میں ترتیبات درآمد کریں۔",
+        "migrate": "منتقل کریں",
+        "overwriteLabel": "موجودہ ترتیبات کو اوور رائٹ کریں",
+        "overwriteWarning": "انتباہ: یہ ڈیٹا بیس میں ان ترتیبات کو تبدیل کر دے گا جو پہلے حسب ضرورت کی گئی تھیں۔",
+        "resultMigrated": "{{count}} ترتیبات منتقل کی گئیں",
+        "resultSkipped": "{{count}} ترتیبات چھوڑی گئیں",
+        "title": "ترتیبات منتقل کریں"
+      },
+      "noSettings": "کوئی ترتیبات نہیں ملیں",
+      "saveTooltip": "تبدیلیاں محفوظ کریں",
+      "subtitle": "سسٹم کی تشکیل کی ترتیبات دیکھیں اور ان کا انتظام کریں",
+      "title": "ترتیبات کا انتظام",
+      "types": {
+        "bool": "بولین",
+        "int": "انٹیجر",
+        "json": "JSON",
+        "string": "اسٹرنگ"
       }
     },
     "subtitle": "سسٹم کی ترتیبات اور تشکیلات کا انتظام کریں",

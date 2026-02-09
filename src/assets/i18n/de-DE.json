@@ -94,6 +94,11 @@
         "save": "Gruppe erstellen",
         "title": "Gruppe hinzufügen"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "Verwendung"
+      },
       "deleteTooltip": "Gruppe löschen",
       "filterLabel": "Gruppen filtern",
       "filterPlaceholder": "Nach Gruppenname oder Anbieter suchen",
@@ -125,6 +130,12 @@
         "title": "Benutzerdefinierte Kontingente hinzufügen",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "Standard",
       "deleteTooltip": "Benutzerdefiniertes Kontingent entfernen (auf Standard zurücksetzen)",
       "eventsPerMinute": "Ereignisse pro Minute",
       "filterLabel": "Kontingente filtern",
@@ -154,6 +165,10 @@
         "description": "Ressourcenkontingente und -limits konfigurieren",
         "title": "{{admin.quotas.title}}"
       },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
       "surveys": {
         "description": "Umfragen erstellen und verwalten",
         "title": "Umfragen verwalten"
@@ -165,6 +180,57 @@
       "webhooks": {
         "description": "Webhook-Integrationen installieren und konfigurieren",
         "title": "{{admin.webhooks.title}}"
+      }
+    },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "Optionale Beschreibung dieser Einstellung",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "Kleinbuchstaben mit Punkten und Unterstrichen (z.B. rate_limit.max_rpm)",
+        "keyInvalid": "Muss mit einem Kleinbuchstaben beginnen, nur Kleinbuchstaben, Zahlen, Punkte und Unterstriche verwenden",
+        "keyRequired": "Schlüssel ist erforderlich",
+        "save": "Einstellung erstellen",
+        "title": "Einstellung hinzufügen",
+        "type": "{{common.type}}",
+        "typeRequired": "Typ ist erforderlich",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "Wert ist erforderlich"
+      },
+      "cancelTooltip": "Bearbeitung abbrechen",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "Sind Sie sicher, dass Sie die Einstellung \"{{key}}\" löschen möchten?",
+      "deleteTooltip": "Einstellung löschen",
+      "editTooltip": "Einstellung bearbeiten",
+      "filterLabel": "Filter",
+      "filterPlaceholder": "Nach Schlüssel, Wert oder Beschreibung filtern",
+      "listTitle": "Systemeinstellungen",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "Einstellungen aus der Konfigurationsdatei oder Umgebungsvariablen des Servers in die Datenbank importieren.",
+        "migrate": "Migrieren",
+        "overwriteLabel": "Bestehende Einstellungen überschreiben",
+        "overwriteWarning": "Warnung: Dies ersetzt alle Einstellungen in der Datenbank, die zuvor angepasst wurden.",
+        "resultMigrated": "{{count}} Einstellungen migriert",
+        "resultSkipped": "{{count}} Einstellungen übersprungen",
+        "title": "Einstellungen migrieren"
+      },
+      "noSettings": "Keine Einstellungen gefunden",
+      "saveTooltip": "Änderungen speichern",
+      "subtitle": "Systemkonfigurationseinstellungen anzeigen und verwalten",
+      "title": "Einstellungen verwalten",
+      "types": {
+        "bool": "Boolean",
+        "int": "Integer",
+        "json": "JSON",
+        "string": "String"
       }
     },
     "subtitle": "Systemeinstellungen und Konfigurationen verwalten",

@@ -94,6 +94,11 @@
         "save": "สร้างกลุ่ม",
         "title": "เพิ่มกลุ่ม"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "การใช้งาน"
+      },
       "deleteTooltip": "ลบกลุ่ม",
       "filterLabel": "กรองกลุ่ม",
       "filterPlaceholder": "ค้นหาตามชื่อกลุ่มหรือผู้ให้บริการ",
@@ -125,6 +130,12 @@
         "title": "เพิ่มโควตาที่กำหนดเอง",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "ค่าเริ่มต้น",
       "deleteTooltip": "ลบโควตาที่กำหนดเอง (กลับไปใช้ค่าเริ่มต้น)",
       "eventsPerMinute": "เหตุการณ์ต่อนาที",
       "filterLabel": "กรองโควตา",
@@ -154,6 +165,10 @@
         "description": "กำหนดค่าโควตาทรัพยากรและข้อจำกัด",
         "title": "{{admin.quotas.title}}"
       },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
       "surveys": {
         "description": "สร้างและจัดการแบบสำรวจ",
         "title": "จัดการแบบสำรวจ"
@@ -165,6 +180,57 @@
       "webhooks": {
         "description": "ติดตั้งและกำหนดค่าการรวม webhook",
         "title": "{{admin.webhooks.title}}"
+      }
+    },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "คำอธิบายเลือกเพิ่มเติมของการตั้งค่านี้",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "ตัวพิมพ์เล็กพร้อมจุดและขีดล่าง (เช่น rate_limit.max_rpm)",
+        "keyInvalid": "ต้องเริ่มต้นด้วยตัวพิมพ์เล็ก ใช้เฉพาะตัวพิมพ์เล็ก ตัวเลข จุด และขีดล่าง",
+        "keyRequired": "ต้องระบุคีย์",
+        "save": "สร้างการตั้งค่า",
+        "title": "เพิ่มการตั้งค่า",
+        "type": "{{common.type}}",
+        "typeRequired": "ต้องระบุประเภท",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "ต้องระบุค่า"
+      },
+      "cancelTooltip": "ยกเลิกการแก้ไข",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "คุณแน่ใจหรือไม่ว่าต้องการลบการตั้งค่า \"{{key}}\"?",
+      "deleteTooltip": "ลบการตั้งค่า",
+      "editTooltip": "แก้ไขการตั้งค่า",
+      "filterLabel": "กรอง",
+      "filterPlaceholder": "กรองตามคีย์ ค่า หรือคำอธิบาย",
+      "listTitle": "การตั้งค่าระบบ",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "นำเข้าการตั้งค่าจากไฟล์การกำหนดค่าของเซิร์ฟเวอร์หรือตัวแปรสภาพแวดล้อมเข้าสู่ฐานข้อมูล",
+        "migrate": "ย้ายข้อมูล",
+        "overwriteLabel": "เขียนทับการตั้งค่าที่มีอยู่",
+        "overwriteWarning": "คำเตือน: การดำเนินการนี้จะแทนที่การตั้งค่าใดๆ ในฐานข้อมูลที่ได้รับการปรับแต่งไว้ก่อนหน้านี้",
+        "resultMigrated": "ย้ายข้อมูลการตั้งค่า {{count}} รายการแล้ว",
+        "resultSkipped": "ข้ามการตั้งค่า {{count}} รายการ",
+        "title": "ย้ายข้อมูลการตั้งค่า"
+      },
+      "noSettings": "ไม่พบการตั้งค่า",
+      "saveTooltip": "บันทึกการเปลี่ยนแปลง",
+      "subtitle": "ดูและจัดการการตั้งค่าการกำหนดค่าระบบ",
+      "title": "จัดการการตั้งค่า",
+      "types": {
+        "bool": "บูลีน",
+        "int": "จำนวนเต็ม",
+        "json": "JSON",
+        "string": "สตริง"
       }
     },
     "subtitle": "จัดการการตั้งค่าระบบและการกำหนดค่า",

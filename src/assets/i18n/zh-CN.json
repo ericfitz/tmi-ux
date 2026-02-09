@@ -94,6 +94,11 @@
         "save": "创建用户组",
         "title": "添加用户组"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "用量"
+      },
       "deleteTooltip": "删除用户组",
       "filterLabel": "筛选用户组",
       "filterPlaceholder": "按组名或提供商搜索",
@@ -125,6 +130,12 @@
         "title": "添加自定义配额",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "默认值",
       "deleteTooltip": "移除自定义配额（恢复默认值）",
       "eventsPerMinute": "每分钟事件数",
       "filterLabel": "筛选配额",
@@ -154,6 +165,10 @@
         "description": "配置资源配额和限制",
         "title": "{{admin.quotas.title}}"
       },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
       "surveys": {
         "description": "创建和管理调查问卷",
         "title": "管理调查问卷"
@@ -165,6 +180,57 @@
       "webhooks": {
         "description": "安装和配置 webhook 集成",
         "title": "{{admin.webhooks.title}}"
+      }
+    },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "此设置的可选描述",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "小写字母加点和下划线（例如：rate_limit.max_rpm）",
+        "keyInvalid": "必须以小写字母开头，只能使用小写字母、数字、点和下划线",
+        "keyRequired": "键为必填项",
+        "save": "创建设置",
+        "title": "添加设置",
+        "type": "{{common.type}}",
+        "typeRequired": "类型为必填项",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "值为必填项"
+      },
+      "cancelTooltip": "取消编辑",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "您确定要删除设置\"{{key}}\"吗？",
+      "deleteTooltip": "删除设置",
+      "editTooltip": "编辑设置",
+      "filterLabel": "筛选",
+      "filterPlaceholder": "按键、值或描述筛选",
+      "listTitle": "系统设置",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "从服务器配置文件或环境变量导入设置到数据库。",
+        "migrate": "迁移",
+        "overwriteLabel": "覆盖现有设置",
+        "overwriteWarning": "警告：这将替换数据库中之前自定义的任何设置。",
+        "resultMigrated": "已迁移 {{count}} 个设置",
+        "resultSkipped": "已跳过 {{count}} 个设置",
+        "title": "迁移设置"
+      },
+      "noSettings": "未找到设置",
+      "saveTooltip": "保存更改",
+      "subtitle": "查看和管理系统配置设置",
+      "title": "管理设置",
+      "types": {
+        "bool": "布尔值",
+        "int": "整数",
+        "json": "JSON",
+        "string": "字符串"
       }
     },
     "subtitle": "管理系统设置和配置",

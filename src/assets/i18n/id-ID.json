@@ -94,6 +94,11 @@
         "save": "Buat Grup",
         "title": "Tambah Grup"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "Penggunaan"
+      },
       "deleteTooltip": "Hapus grup",
       "filterLabel": "Filter Grup",
       "filterPlaceholder": "Cari berdasarkan nama grup atau penyedia",
@@ -125,6 +130,12 @@
         "title": "Tambah Kuota Kustom",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "Default",
       "deleteTooltip": "Hapus kuota kustom (kembalikan ke default)",
       "eventsPerMinute": "Peristiwa per menit",
       "filterLabel": "Filter Kuota",
@@ -154,6 +165,10 @@
         "description": "Konfigurasikan kuota dan batas sumber daya",
         "title": "{{admin.quotas.title}}"
       },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
       "surveys": {
         "description": "Buat dan kelola survei",
         "title": "Kelola Survei"
@@ -165,6 +180,57 @@
       "webhooks": {
         "description": "Pasang dan konfigurasikan integrasi webhook",
         "title": "{{admin.webhooks.title}}"
+      }
+    },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "Deskripsi opsional dari pengaturan ini",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "Huruf kecil dengan titik dan garis bawah (contoh: rate_limit.max_rpm)",
+        "keyInvalid": "Harus dimulai dengan huruf kecil, hanya gunakan huruf kecil, angka, titik, dan garis bawah",
+        "keyRequired": "Kunci wajib diisi",
+        "save": "Buat Pengaturan",
+        "title": "Tambah Pengaturan",
+        "type": "{{common.type}}",
+        "typeRequired": "Jenis wajib diisi",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "Nilai wajib diisi"
+      },
+      "cancelTooltip": "Batalkan pengeditan",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "Apakah Anda yakin ingin menghapus pengaturan \"{{key}}\"?",
+      "deleteTooltip": "Hapus pengaturan",
+      "editTooltip": "Edit pengaturan",
+      "filterLabel": "Filter",
+      "filterPlaceholder": "Filter berdasarkan kunci, nilai, atau deskripsi",
+      "listTitle": "Pengaturan Sistem",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "Impor pengaturan dari file konfigurasi server atau variabel lingkungan ke dalam database.",
+        "migrate": "Migrasikan",
+        "overwriteLabel": "Timpa pengaturan yang ada",
+        "overwriteWarning": "Peringatan: Ini akan mengganti pengaturan apa pun dalam database yang sebelumnya disesuaikan.",
+        "resultMigrated": "{{count}} pengaturan dimigrasikan",
+        "resultSkipped": "{{count}} pengaturan dilewati",
+        "title": "Migrasikan Pengaturan"
+      },
+      "noSettings": "Tidak ada pengaturan ditemukan",
+      "saveTooltip": "Simpan perubahan",
+      "subtitle": "Lihat dan kelola pengaturan konfigurasi sistem",
+      "title": "Kelola Pengaturan",
+      "types": {
+        "bool": "Boolean",
+        "int": "Integer",
+        "json": "JSON",
+        "string": "String"
       }
     },
     "subtitle": "Kelola pengaturan dan konfigurasi sistem",

@@ -94,6 +94,11 @@
         "save": "Crear Grupo",
         "title": "Agregar Grupo"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "Uso"
+      },
       "deleteTooltip": "Eliminar grupo",
       "filterLabel": "Filtrar Grupos",
       "filterPlaceholder": "Buscar por nombre de grupo o proveedor",
@@ -125,6 +130,12 @@
         "title": "Agregar Cuotas Personalizadas",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "Predeterminado",
       "deleteTooltip": "Eliminar cuota personalizada (volver a valores predeterminados)",
       "eventsPerMinute": "Eventos por minuto",
       "filterLabel": "Filtrar Cuotas",
@@ -154,6 +165,10 @@
         "description": "Configurar cuotas y límites de recursos",
         "title": "{{admin.quotas.title}}"
       },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
       "surveys": {
         "description": "Crear y gestionar encuestas",
         "title": "Gestionar encuestas"
@@ -165,6 +180,57 @@
       "webhooks": {
         "description": "Instalar y configurar integraciones de webhooks",
         "title": "{{admin.webhooks.title}}"
+      }
+    },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "Descripción opcional de esta configuración",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "Minúsculas con puntos y guiones bajos (ej. rate_limit.max_rpm)",
+        "keyInvalid": "Debe comenzar con letra minúscula, usar solo letras minúsculas, números, puntos y guiones bajos",
+        "keyRequired": "La clave es obligatoria",
+        "save": "Crear Configuración",
+        "title": "Agregar Configuración",
+        "type": "{{common.type}}",
+        "typeRequired": "El tipo es obligatorio",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "El valor es obligatorio"
+      },
+      "cancelTooltip": "Cancelar edición",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "¿Está seguro de que desea eliminar la configuración \"{{key}}\"?",
+      "deleteTooltip": "Eliminar configuración",
+      "editTooltip": "Editar configuración",
+      "filterLabel": "Filtrar",
+      "filterPlaceholder": "Filtrar por clave, valor o descripción",
+      "listTitle": "Configuraciones del Sistema",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "Importar configuraciones desde el archivo de configuración del servidor o variables de entorno a la base de datos.",
+        "migrate": "Migrar",
+        "overwriteLabel": "Sobrescribir configuraciones existentes",
+        "overwriteWarning": "Advertencia: Esto reemplazará cualquier configuración en la base de datos que haya sido personalizada previamente.",
+        "resultMigrated": "{{count}} configuraciones migradas",
+        "resultSkipped": "{{count}} configuraciones omitidas",
+        "title": "Migrar Configuraciones"
+      },
+      "noSettings": "No se encontraron configuraciones",
+      "saveTooltip": "Guardar cambios",
+      "subtitle": "Ver y gestionar configuraciones del sistema",
+      "title": "Gestionar Configuraciones",
+      "types": {
+        "bool": "Booleano",
+        "int": "Entero",
+        "json": "JSON",
+        "string": "Cadena"
       }
     },
     "subtitle": "Gestionar configuraciones y ajustes del sistema",

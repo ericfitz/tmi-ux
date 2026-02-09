@@ -94,6 +94,11 @@
         "save": "צור קבוצה",
         "title": "הוסף קבוצה"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "שימוש"
+      },
       "deleteTooltip": "מחק קבוצה",
       "filterLabel": "סנן קבוצות",
       "filterPlaceholder": "חפש לפי שם קבוצה או ספק",
@@ -125,6 +130,12 @@
         "title": "הוסף מכסות מותאמות אישית",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "ברירת מחדל",
       "deleteTooltip": "הסר מכסה מותאמת אישית (חזור לברירות מחדל)",
       "eventsPerMinute": "אירועים לדקה",
       "filterLabel": "סנן מכסות",
@@ -154,6 +165,10 @@
         "description": "הגדר מכסות ומגבלות משאבים",
         "title": "{{admin.quotas.title}}"
       },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
       "surveys": {
         "description": "יצירה וניהול של סקרים",
         "title": "ניהול סקרים"
@@ -165,6 +180,57 @@
       "webhooks": {
         "description": "התקן והגדר שילובי webhook",
         "title": "{{admin.webhooks.title}}"
+      }
+    },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "תיאור אופציונלי של הגדרה זו",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "אותיות קטנות עם נקודות וקווים תחתיים (למשל, rate_limit.max_rpm)",
+        "keyInvalid": "חייב להתחיל באות קטנה, להשתמש רק באותיות קטנות, מספרים, נקודות וקווים תחתיים",
+        "keyRequired": "מפתח נדרש",
+        "save": "צור הגדרה",
+        "title": "הוסף הגדרה",
+        "type": "{{common.type}}",
+        "typeRequired": "סוג נדרש",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "ערך נדרש"
+      },
+      "cancelTooltip": "בטל עריכה",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "האם אתה בטוח שברצונך למחוק את ההגדרה \"{{key}}\"?",
+      "deleteTooltip": "מחק הגדרה",
+      "editTooltip": "ערוך הגדרה",
+      "filterLabel": "סנן",
+      "filterPlaceholder": "סנן לפי מפתח, ערך או תיאור",
+      "listTitle": "הגדרות מערכת",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "ייבא הגדרות מקובץ התצורה של השרת או ממשתני הסביבה למסד הנתונים.",
+        "migrate": "העבר",
+        "overwriteLabel": "החלף הגדרות קיימות",
+        "overwriteWarning": "אזהרה: זה יחליף כל הגדרה במסד הנתונים שהותאמה אישית בעבר.",
+        "resultMigrated": "{{count}} הגדרות הועברו",
+        "resultSkipped": "{{count}} הגדרות דולגו",
+        "title": "העבר הגדרות"
+      },
+      "noSettings": "לא נמצאו הגדרות",
+      "saveTooltip": "שמור שינויים",
+      "subtitle": "צפה ונהל הגדרות תצורת מערכת",
+      "title": "ניהול הגדרות",
+      "types": {
+        "bool": "בוליאני",
+        "int": "מספר שלם",
+        "json": "JSON",
+        "string": "מחרוזת"
       }
     },
     "subtitle": "נהל הגדרות מערכת ותצורות",

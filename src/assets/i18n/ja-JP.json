@@ -94,6 +94,11 @@
         "save": "グループを作成",
         "title": "グループを追加"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "使用状況"
+      },
       "deleteTooltip": "グループを削除",
       "filterLabel": "グループをフィルター",
       "filterPlaceholder": "グループ名またはプロバイダーで検索",
@@ -125,6 +130,12 @@
         "title": "カスタムクォータを追加",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "デフォルト",
       "deleteTooltip": "カスタムクォータを削除（デフォルトに戻す）",
       "eventsPerMinute": "1分あたりのイベント数",
       "filterLabel": "クォータをフィルター",
@@ -154,6 +165,10 @@
         "description": "リソースクォータと制限の設定",
         "title": "{{admin.quotas.title}}"
       },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
       "surveys": {
         "description": "調査を作成および管理",
         "title": "調査を管理"
@@ -165,6 +180,57 @@
       "webhooks": {
         "description": "Webhook統合のインストールと設定",
         "title": "{{admin.webhooks.title}}"
+      }
+    },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "この設定の説明（任意）",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "ドットとアンダースコアを含む小文字（例: rate_limit.max_rpm）",
+        "keyInvalid": "小文字で始まり、小文字、数字、ドット、アンダースコアのみを使用する必要があります",
+        "keyRequired": "キーは必須です",
+        "save": "設定を作成",
+        "title": "設定を追加",
+        "type": "{{common.type}}",
+        "typeRequired": "タイプは必須です",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "値は必須です"
+      },
+      "cancelTooltip": "編集をキャンセル",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "設定「{{key}}」を削除してもよろしいですか？",
+      "deleteTooltip": "設定を削除",
+      "editTooltip": "設定を編集",
+      "filterLabel": "フィルター",
+      "filterPlaceholder": "キー、値、または説明でフィルター",
+      "listTitle": "システム設定",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "サーバーの設定ファイルまたは環境変数から設定をデータベースにインポートします。",
+        "migrate": "マイグレート",
+        "overwriteLabel": "既存の設定を上書きする",
+        "overwriteWarning": "警告: これにより、以前にカスタマイズされたデータベース内の設定が置き換えられます。",
+        "resultMigrated": "{{count}}件の設定をマイグレートしました",
+        "resultSkipped": "{{count}}件の設定をスキップしました",
+        "title": "設定をマイグレート"
+      },
+      "noSettings": "設定が見つかりません",
+      "saveTooltip": "変更を保存",
+      "subtitle": "システム構成設定を表示および管理",
+      "title": "設定の管理",
+      "types": {
+        "bool": "Boolean",
+        "int": "Integer",
+        "json": "JSON",
+        "string": "String"
       }
     },
     "subtitle": "システム設定と構成の管理",

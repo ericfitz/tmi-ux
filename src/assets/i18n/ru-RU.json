@@ -94,6 +94,11 @@
         "save": "Создать группу",
         "title": "Добавить Группу"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "Использование"
+      },
       "deleteTooltip": "Удалить группу",
       "filterLabel": "Фильтр групп",
       "filterPlaceholder": "Поиск по названию группы или провайдеру",
@@ -125,6 +130,12 @@
         "title": "Добавить Пользовательские Квоты",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "По умолчанию",
       "deleteTooltip": "Удалить пользовательскую квоту (вернуть к значениям по умолчанию)",
       "eventsPerMinute": "Событий в минуту",
       "filterLabel": "Фильтр квот",
@@ -154,6 +165,10 @@
         "description": "Настройка квот и лимитов ресурсов",
         "title": "{{admin.quotas.title}}"
       },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
       "surveys": {
         "description": "Создание и управление опросами",
         "title": "Управление опросами"
@@ -165,6 +180,57 @@
       "webhooks": {
         "description": "Установка и настройка интеграций вебхуков",
         "title": "{{admin.webhooks.title}}"
+      }
+    },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "Необязательное описание этой настройки",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "Строчные буквы с точками и подчёркиваниями (например, rate_limit.max_rpm)",
+        "keyInvalid": "Должно начинаться со строчной буквы, использовать только строчные буквы, цифры, точки и подчёркивания",
+        "keyRequired": "Ключ обязателен",
+        "save": "Создать Настройку",
+        "title": "Добавить Настройку",
+        "type": "{{common.type}}",
+        "typeRequired": "Тип обязателен",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "Значение обязательно"
+      },
+      "cancelTooltip": "Отменить редактирование",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "Вы уверены, что хотите удалить настройку \"{{key}}\"?",
+      "deleteTooltip": "Удалить настройку",
+      "editTooltip": "Редактировать настройку",
+      "filterLabel": "Фильтр",
+      "filterPlaceholder": "Фильтр по ключу, значению или описанию",
+      "listTitle": "Системные Настройки",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "Импортировать настройки из конфигурационного файла сервера или переменных окружения в базу данных.",
+        "migrate": "Мигрировать",
+        "overwriteLabel": "Перезаписать существующие настройки",
+        "overwriteWarning": "Предупреждение: Это заменит любые настройки в базе данных, которые были ранее изменены.",
+        "resultMigrated": "Мигрировано настроек: {{count}}",
+        "resultSkipped": "Пропущено настроек: {{count}}",
+        "title": "Мигрировать Настройки"
+      },
+      "noSettings": "Настройки не найдены",
+      "saveTooltip": "Сохранить изменения",
+      "subtitle": "Просмотр и управление системными настройками конфигурации",
+      "title": "Управление Настройками",
+      "types": {
+        "bool": "Логический",
+        "int": "Целое число",
+        "json": "JSON",
+        "string": "Строка"
       }
     },
     "subtitle": "Управление системными настройками и конфигурациями",
