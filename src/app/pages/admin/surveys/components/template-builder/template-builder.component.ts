@@ -446,6 +446,26 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Update template name
+   */
+  updateTemplateName(name: string): void {
+    if (this.template) {
+      this.template.name = name;
+      this.hasUnsavedChanges = true;
+    }
+  }
+
+  /**
+   * Update template version
+   */
+  updateTemplateVersion(version: string): void {
+    if (this.template) {
+      this.template.version = version;
+      this.hasUnsavedChanges = true;
+    }
+  }
+
+  /**
    * Update survey metadata
    */
   updateSurveyTitle(title: string): void {

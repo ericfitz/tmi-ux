@@ -81,12 +81,23 @@
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'common.name' | transloco }}</th>
           <td mat-cell *matCellDef="let template">
-            <div class="template-info">
-              <span class="template-name">{{ template.name }}</span>
-              @if (template.description) {
-                <span class="template-description">{{ template.description }}</span>
-              }
-            </div>
+            @if (isEditing(template.id, 'name')) {
+              <input
+                class="inline-edit-input"
+                [value]="template.name"
+                (keydown)="onInlineEditKeydown($event, template, 'name')"
+                (blur)="saveInlineEdit(template, 'name', $any($event.target).value)"
+                (click)="$event.stopPropagation()"
+                #nameInput
+              />
+            } @else {
+              <div class="template-info" (click)="startInlineEdit(template, 'name', $event)">
+                <span class="template-name editable">{{ template.name }}</span>
+                @if (template.description) {
+                  <span class="template-description">{{ template.description }}</span>
+                }
+              </div>
+            }
           </td>
         </ng-container>
 
@@ -108,7 +119,22 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
             {{ 'common.version' | transloco }}
           </th>
-          <td mat-cell *matCellDef="let template">v{{ template.version }}</td>
+          <td mat-cell *matCellDef="let template">
+            @if (isEditing(template.id, 'version')) {
+              <input
+                class="inline-edit-input inline-edit-version"
+                [value]="template.version"
+                (keydown)="onInlineEditKeydown($event, template, 'version')"
+                (blur)="saveInlineEdit(template, 'version', $any($event.target).value)"
+                (click)="$event.stopPropagation()"
+                #versionInput
+              />
+            } @else {
+              <span class="editable" (click)="startInlineEdit(template, 'version', $event)"
+                >v{{ template.version }}</span
+              >
+            }
+          </td>
         </ng-container>
 
         <!-- Modified Column -->

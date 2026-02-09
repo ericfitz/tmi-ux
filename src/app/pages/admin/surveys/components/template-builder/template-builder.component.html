@@ -65,25 +65,49 @@
           <mat-card-title>{{ 'adminSurveys.surveyDetails' | transloco }}</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ 'common.title' | transloco }}</mat-label>
-            <input
-              matInput
-              [value]="surveyJson.title ?? ''"
-              (input)="updateSurveyTitle($any($event.target).value)"
-              [placeholder]="'adminSurveys.templateBuilder.enterSurveyTitle' | transloco"
-            />
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ 'common.description' | transloco }}</mat-label>
-            <textarea
-              matInput
-              [value]="surveyJson.description ?? ''"
-              (input)="updateSurveyDescription($any($event.target).value)"
-              [placeholder]="'adminSurveys.templateBuilder.enterSurveyDescription' | transloco"
-              rows="2"
-            ></textarea>
-          </mat-form-field>
+          @if (template) {
+            <div class="metadata-row">
+              <mat-form-field appearance="outline" class="name-field">
+                <mat-label>{{ 'adminSurveys.templateBuilder.surveyName' | transloco }}</mat-label>
+                <input
+                  matInput
+                  [value]="template.name"
+                  (input)="updateTemplateName($any($event.target).value)"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="version-field">
+                <mat-label>{{
+                  'adminSurveys.templateBuilder.surveyVersion' | transloco
+                }}</mat-label>
+                <input
+                  matInput
+                  [value]="template.version"
+                  (input)="updateTemplateVersion($any($event.target).value)"
+                />
+              </mat-form-field>
+            </div>
+          }
+          <div class="metadata-row">
+            <mat-form-field appearance="outline" class="title-field">
+              <mat-label>{{ 'common.title' | transloco }}</mat-label>
+              <input
+                matInput
+                [value]="surveyJson.title ?? ''"
+                (input)="updateSurveyTitle($any($event.target).value)"
+                [placeholder]="'adminSurveys.templateBuilder.enterSurveyTitle' | transloco"
+              />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="description-field">
+              <mat-label>{{ 'common.description' | transloco }}</mat-label>
+              <textarea
+                matInput
+                [value]="surveyJson.description ?? ''"
+                (input)="updateSurveyDescription($any($event.target).value)"
+                [placeholder]="'adminSurveys.templateBuilder.enterSurveyDescription' | transloco"
+                rows="2"
+              ></textarea>
+            </mat-form-field>
+          </div>
         </mat-card-content>
       </mat-card>
 

@@ -95,17 +95,29 @@ button:not([mat-icon-button]) mat-icon {
 
   mat-card-content {
     display: flex;
+    flex-direction: column;
     gap: 16px;
     padding-top: 16px;
+  }
+}
 
-    mat-form-field:first-child {
-      flex: 1;
-      max-width: 400px;
-    }
+.metadata-row {
+  display: flex;
+  gap: 16px;
 
-    mat-form-field:last-child {
-      flex: 2;
-    }
+  .name-field,
+  .title-field {
+    flex: 1;
+    max-width: 400px;
+  }
+
+  .version-field {
+    width: 150px;
+    flex-shrink: 0;
+  }
+
+  .description-field {
+    flex: 2;
   }
 }
 
@@ -409,11 +421,14 @@ button:not([mat-icon-button]) mat-icon {
     padding: 16px;
   }
 
-  .metadata-card mat-card-content {
+  .metadata-row {
     flex-direction: column;
 
-    mat-form-field {
-      max-width: none !important;
+    .name-field,
+    .title-field,
+    .version-field {
+      max-width: none;
+      width: 100%;
     }
   }
 }

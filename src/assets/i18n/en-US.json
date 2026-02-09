@@ -318,6 +318,16 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Copy)",
+    "createDialog": {
+      "nameLabel": "Survey Name",
+      "namePlaceholder": "Enter survey name",
+      "nameRequired": "Name is required",
+      "title": "Create Survey",
+      "versionHint": "Free-form version identifier",
+      "versionLabel": "Version",
+      "versionPlaceholder": "e.g., 1, v2-pilot, 2024-Q1",
+      "versionRequired": "Version is required"
+    },
     "createSurvey": "Create Survey",
     "editTemplate": "Edit Survey",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
@@ -375,6 +385,8 @@
       "questions": "Questions",
       "required": "Required",
       "selectQuestionHint": "Select a question to edit its properties",
+      "surveyName": "Survey Name",
+      "surveyVersion": "Version",
       "tmFieldLabels": {
         "assetDescription": "Asset Description",
         "assetName": "{{assetEditor.name}}",

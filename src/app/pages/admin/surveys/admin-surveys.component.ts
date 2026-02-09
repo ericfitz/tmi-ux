@@ -2,9 +2,11 @@ import {
   Component,
   OnInit,
   AfterViewInit,
+  AfterViewChecked,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   DestroyRef,
+  ElementRef,
   ViewChild,
   inject,
 } from '@angular/core';
@@ -25,6 +27,10 @@ import { AuthService } from '@app/auth/services/auth.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyService } from '@app/pages/surveys/services/survey.service';
 import { SurveyListItem, SurveyStatus } from '@app/types/survey.types';
+import {
+  CreateSurveyDialogComponent,
+  CreateSurveyDialogResult,
+} from './components/create-survey-dialog/create-survey-dialog.component';
 
 /**
  * Admin surveys component
@@ -45,8 +51,9 @@ import { SurveyListItem, SurveyStatus } from '@app/types/survey.types';
   styleUrl: './admin-surveys.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminSurveysComponent implements OnInit, AfterViewInit {
+export class AdminSurveysComponent implements OnInit, AfterViewInit, AfterViewChecked {
   private destroyRef = inject(DestroyRef);
+  private elementRef = inject(ElementRef);
 
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -65,6 +72,11 @@ export class AdminSurveysComponent implements OnInit, AfterViewInit {
   ];
 
   readonly displayedColumns = ['name', 'status', 'version', 'modified', 'actions'];
+
+  /** Tracks which cell is currently being inline-edited */
+  editingCell: { id: string; field: 'name' | 'version' } | null = null;
+  private editingOriginalValue = '';
+  private pendingInlineEditFocus = false;
 
   constructor(
     private authService: AuthService,
@@ -99,6 +111,18 @@ export class AdminSurveysComponent implements OnInit, AfterViewInit {
           return '';
       }
     };
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.pendingInlineEditFocus) {
+      const el = this.elementRef.nativeElement as HTMLElement;
+      const input = el.querySelector<HTMLInputElement>('.inline-edit-input');
+      if (input) {
+        input.focus();
+        input.select();
+        this.pendingInlineEditFocus = false;
+      }
+    }
   }
 
   /**
@@ -157,10 +181,120 @@ export class AdminSurveysComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Create a new template
+   * Create a new template via dialog
    */
   createTemplate(): void {
-    void this.router.navigate(['/admin', 'surveys', 'new']);
+    const dialogRef = this.dialog.open<CreateSurveyDialogComponent, void, CreateSurveyDialogResult>(
+      CreateSurveyDialogComponent,
+      {
+        width: '480px',
+      },
+    );
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
+        if (!result) return;
+
+        this.surveyService
+          .create({
+            name: result.name,
+            version: result.version,
+            description: '',
+            survey_json: {
+              title: result.name,
+              description: '',
+              pages: [{ name: 'page1', title: 'Page 1', elements: [] }],
+            },
+          })
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: survey => {
+              this.logger.info('Survey created via dialog', { id: survey.id });
+              void this.router.navigate(['/admin', 'surveys', survey.id]);
+            },
+            error: error => {
+              this.logger.error('Failed to create survey', error);
+              this.cdr.markForCheck();
+            },
+          });
+      });
+  }
+
+  /**
+   * Start inline editing of a cell
+   */
+  startInlineEdit(template: SurveyListItem, field: 'name' | 'version', event: Event): void {
+    event.stopPropagation();
+    this.editingOriginalValue = template[field];
+    this.editingCell = { id: template.id, field };
+    this.pendingInlineEditFocus = true;
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Save an inline edit
+   */
+  saveInlineEdit(template: SurveyListItem, field: 'name' | 'version', newValue: string): void {
+    const trimmed = newValue.trim();
+    if (!trimmed || trimmed === this.editingOriginalValue) {
+      this.cancelInlineEdit(template);
+      return;
+    }
+
+    template[field] = trimmed;
+    this.editingCell = null;
+
+    this.surveyService
+      .patchField(template.id, field, trimmed)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.logger.info('Survey field updated inline', { id: template.id, field });
+          this.cdr.markForCheck();
+        },
+        error: error => {
+          this.logger.error('Failed to update survey field', error);
+          template[field] = this.editingOriginalValue;
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
+  /**
+   * Cancel an inline edit and restore original value
+   */
+  cancelInlineEdit(template: SurveyListItem): void {
+    if (this.editingCell) {
+      template[this.editingCell.field] = this.editingOriginalValue;
+    }
+    this.editingCell = null;
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Handle keydown in inline edit input
+   */
+  onInlineEditKeydown(
+    event: KeyboardEvent,
+    template: SurveyListItem,
+    field: 'name' | 'version',
+  ): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.saveInlineEdit(template, field, (event.target as HTMLInputElement).value);
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      this.cancelInlineEdit(template);
+    }
+  }
+
+  /**
+   * Check if a cell is currently being edited
+   */
+  isEditing(templateId: string, field: 'name' | 'version'): boolean {
+    return this.editingCell?.id === templateId && this.editingCell?.field === field;
   }
 
   /**

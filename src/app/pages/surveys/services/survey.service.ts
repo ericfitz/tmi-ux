@@ -167,6 +167,24 @@ export class SurveyService {
   }
 
   /**
+   * Update a single field on a survey via JSON Patch (admin only)
+   */
+  public patchField(surveyId: string, field: string, value: string): Observable<Survey> {
+    return this.apiService
+      .patch<Survey>(`admin/surveys/${surveyId}`, [{ op: 'replace', path: `/${field}`, value }])
+      .pipe(
+        tap(survey => {
+          this.logger.info('Survey field updated', { id: survey.id, field });
+          this.listAdmin().subscribe();
+        }),
+        catchError(error => {
+          this.logger.error('Failed to update survey field', error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
    * Archive a survey (admin only)
    */
   public archive(surveyId: string): Observable<Survey> {
