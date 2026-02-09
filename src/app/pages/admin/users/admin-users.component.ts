@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -7,6 +7,8 @@ import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -62,14 +64,15 @@ import {
   styleUrl: './admin-users.component.scss',
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
-export class AdminUsersComponent implements OnInit {
+export class AdminUsersComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   users: AdminUser[] = [];
-  filteredUsers: AdminUser[] = [];
+  dataSource = new MatTableDataSource<AdminUser>([]);
   totalUsers = 0;
   availableProviders: OAuthProviderInfo[] = [];
 
@@ -93,6 +96,26 @@ export class AdminUsersComponent implements OnInit {
     private transloco: TranslocoService,
     private languageService: LanguageService,
   ) {}
+
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (item: AdminUser, property: string): string | number => {
+      switch (property) {
+        case 'provider':
+          return item.provider.toLowerCase();
+        case 'subject':
+          return (item.name || item.email || '').toLowerCase();
+        case 'lastLogin':
+          return item.last_login ? new Date(item.last_login).getTime() : 0;
+        case 'groups':
+          return (item.groups ?? []).join(', ').toLowerCase();
+        case 'threatModels':
+          return item.active_threat_models ?? 0;
+        default:
+          return '';
+      }
+    };
+  }
 
   ngOnInit(): void {
     this.languageService.currentLanguage$
@@ -204,11 +227,11 @@ export class AdminUsersComponent implements OnInit {
   applyFilter(): void {
     const filter = this.filterText.toLowerCase().trim();
     if (!filter) {
-      this.filteredUsers = [...this.users];
+      this.dataSource.data = [...this.users];
       return;
     }
 
-    this.filteredUsers = this.users.filter(
+    this.dataSource.data = this.users.filter(
       user =>
         user.email?.toLowerCase().includes(filter) ||
         user.name?.toLowerCase().includes(filter) ||

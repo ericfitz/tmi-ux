@@ -1,8 +1,16 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
@@ -41,10 +49,11 @@ interface TriageFilters {
   styleUrl: './triage-list.component.scss',
   changeDetection: ChangeDetectionStrategy.Default,
 })
-export class TriageListComponent implements OnInit, OnDestroy {
+export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   /** Table data source */
   dataSource = new MatTableDataSource<SurveyResponseListItem>([]);
@@ -99,6 +108,27 @@ export class TriageListComponent implements OnInit, OnDestroy {
     private logger: LoggerService,
     private transloco: TranslocoService,
   ) {}
+
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (
+      item: SurveyResponseListItem,
+      property: string,
+    ): string | number => {
+      switch (property) {
+        case 'submitter':
+          return (item.owner?.display_name || item.owner?.email || '').toLowerCase();
+        case 'template':
+          return (item.survey_name ?? '').toLowerCase();
+        case 'submitted_at':
+          return item.submitted_at ? new Date(item.submitted_at).getTime() : 0;
+        case 'status':
+          return item.status.toLowerCase();
+        default:
+          return '';
+      }
+    };
+  }
 
   ngOnInit(): void {
     this.loadSurveys();

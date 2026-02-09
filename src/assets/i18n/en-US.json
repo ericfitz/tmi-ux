@@ -84,6 +84,11 @@
     },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "Usage"
+      },
       "addDialog": {
         "description": "Description (Optional)",
         "descriptionHint": "Optional description of the group's purpose",
@@ -123,6 +128,13 @@
     },
     "quotas": {
       "addButton": "Add Quota",
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "Default",
+      "default.comment": "Label shown before a default quota value, e.g. 'Default: 60'.",
       "addDialog": {
         "apiQuotas": "{{admin.quotas.userAPITitle}}",
         "configureQuotas": "Configure Quotas",

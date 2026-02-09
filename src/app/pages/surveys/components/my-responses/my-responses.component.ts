@@ -1,14 +1,18 @@
 import {
+  AfterViewInit,
   Component,
   OnInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   DestroyRef,
+  ViewChild,
   inject,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -39,11 +43,13 @@ import { SurveyResponseListItem, ResponseStatus } from '@app/types/survey.types'
   styleUrl: './my-responses.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MyResponsesComponent implements OnInit {
+export class MyResponsesComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
 
+  @ViewChild(MatSort) sort!: MatSort;
+
   responses: SurveyResponseListItem[] = [];
-  filteredResponses: SurveyResponseListItem[] = [];
+  dataSource = new MatTableDataSource<SurveyResponseListItem>([]);
   loading = true;
   error: string | null = null;
 
@@ -72,6 +78,27 @@ export class MyResponsesComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private transloco: TranslocoService,
   ) {}
+
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (
+      item: SurveyResponseListItem,
+      property: string,
+    ): string | number => {
+      switch (property) {
+        case 'template':
+          return (item.survey_name ?? '').toLowerCase();
+        case 'status':
+          return item.status.toLowerCase();
+        case 'created':
+          return new Date(item.created_at).getTime();
+        case 'modified':
+          return new Date(item.modified_at ?? item.created_at).getTime();
+        default:
+          return '';
+      }
+    };
+  }
 
   ngOnInit(): void {
     this.loadResponses();
@@ -108,17 +135,10 @@ export class MyResponsesComponent implements OnInit {
    */
   applyFilter(): void {
     if (this.statusFilter.length === 0 || this.statusFilter.length === this.statusOptions.length) {
-      this.filteredResponses = [...this.responses];
+      this.dataSource.data = [...this.responses];
     } else {
-      this.filteredResponses = this.responses.filter(s => this.statusFilter.includes(s.status));
+      this.dataSource.data = this.responses.filter(s => this.statusFilter.includes(s.status));
     }
-
-    // Sort by modified date descending, falling back to created_at
-    this.filteredResponses.sort(
-      (a, b) =>
-        new Date(b.modified_at ?? b.created_at).getTime() -
-        new Date(a.modified_at ?? a.created_at).getTime(),
-    );
   }
 
   /**
