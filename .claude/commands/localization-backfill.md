@@ -5,14 +5,31 @@ Automatically translate missing and untranslated keys in all localization files 
 ## Overview
 
 This command performs a complete localization backfill:
-1. Analyzes all language files to identify missing translations AND potentially untranslated strings (values identical to English)
-2. Spawns parallel sub-agents to translate each language independently
-3. Validates all translations and updates the files
-4. Reports final coverage statistics
+1. Runs deduplication to consolidate duplicate translation values into references
+2. Analyzes all language files to identify missing translations AND potentially untranslated strings (values identical to English)
+3. Spawns parallel sub-agents to translate each language independently
+4. Validates all translations and updates the files
+5. Reports final coverage statistics
 
 ## Process
 
-### Step 1: Analyze Localization Files
+### Step 1: Run Deduplication
+
+Before analyzing for missing translations, consolidate duplicate values:
+
+1. Run `pnpm run loc-dedupe` to detect duplicate translation values across `en-US.json`
+2. Read the generated `localization_dedup_plan.txt`
+3. If the plan contains REFER recommendations:
+   a. Apply each REFER change to `en-US.json` — replace the literal value with the `{{reference}}` template
+   b. Propagate the same reference changes to all non-English locale files using a jq script:
+      - Back up all locale files first: `mkdir -p /tmp/i18n-dedup-backups && cp src/assets/i18n/*.json /tmp/i18n-dedup-backups/`
+      - Build a jq filter from the REFER entries (e.g., `.admin.groups.membersDialog.searchPlaceholder = "{{transfer.userPicker.searchPlaceholder}}"`)
+      - Run the jq filter against each non-English locale file
+   c. Run `pnpm run format` to normalize formatting
+   d. Run `pnpm run loc-dedupe` again to verify 0 duplicate groups remain
+4. If no duplicates are found, skip this step
+
+### Step 2: Analyze Localization Files
 
 Use the `analyze_localization_files` skill:
 
@@ -44,7 +61,7 @@ Language code to name mapping:
 | ur-PK | Urdu (Pakistan) |
 | zh-CN | Chinese (Simplified, China) |
 
-### Step 2: Display Analysis Summary
+### Step 3: Display Analysis Summary
 
 Present the analysis results to the user:
 
@@ -73,7 +90,7 @@ If no translations are needed, report that and exit:
 ✅ All localization files are complete! No missing or untranslated strings found.
 ```
 
-### Step 3: Spawn Translation Sub-Agents
+### Step 4: Spawn Translation Sub-Agents
 
 For each language with missing or untranslated strings, spawn a sub-agent using the Task tool:
 
@@ -142,7 +159,7 @@ IMPORTANT: Do NOT create any git commits. Only modify the localization files. Th
 Now process all {{COUNT}} keys.
 ```
 
-### Step 4: Collect Sub-Agent Results
+### Step 5: Collect Sub-Agent Results
 
 1. Wait for all sub-agents to complete
 2. Collect results from each:
@@ -151,7 +168,7 @@ Now process all {{COUNT}} keys.
    - Errors (if any)
 3. Track overall progress
 
-### Step 5: Update Localization Files
+### Step 6: Update Localization Files
 
 For each language with successful translations:
 
@@ -166,7 +183,7 @@ For each language with successful translations:
    - Keys updated
    - Any write errors
 
-### Step 6: Final Validation
+### Step 7: Final Validation
 
 Use the `validate_localization_coverage` skill:
 
@@ -174,7 +191,7 @@ Use the `validate_localization_coverage` skill:
 2. Parse output to generate coverage report
 3. Calculate final statistics
 
-### Step 7: Display Final Report
+### Step 8: Display Final Report
 
 ```
 ✅ Localization Backfill Complete

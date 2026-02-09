@@ -104,10 +104,10 @@
         "noMembers": "В этой группе нет участников",
         "removeTooltip": "Удалить из группы",
         "searchHint": "Введите не менее 2 символов для поиска",
-        "searchPlaceholder": "Начните вводить адрес email...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "Поиск пользователя по Email",
-        "subjectTypeGroup": "Группа",
-        "subjectTypeUser": "Пользователь"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "Группы не найдены",
       "subtitle": "Просмотр и управление системными группами",
@@ -170,10 +170,19 @@
     "subtitle": "Управление системными настройками и конфигурациями",
     "title": "Администрирование",
     "users": {
+      "administrator": "Администратор",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "Удалить учётную запись пользователя",
       "filterLabel": "Фильтр пользователей",
       "filterPlaceholder": "Поиск по email, имени, провайдеру или названию группы",
+      "lastLogin": "Последний вход",
       "listTitle": "Пользователи",
+      "never": "Никогда",
       "noUsers": "Пользователи не найдены",
       "subtitle": "Просмотр и управление системными пользователями",
       "title": "Управление Пользователями",
@@ -181,7 +190,7 @@
         "confirm": "Вы уверены, что хотите передать все данные от {{source}} к {{target}}?",
         "dialogTitle": "Передача данных пользователя",
         "error": "Не удалось передать право собственности. Пожалуйста, попробуйте снова.",
-        "success": "Передано {{tmCount}} моделей угроз и {{responseCount}} ответов на опросы.",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "Передать право собственности"
       }
     },
@@ -237,7 +246,7 @@
     "noMatchingTitle": "Нет подходящих опросов",
     "noTemplatesMessage": "Создайте свой первый опрос, чтобы начать работу.",
     "noTemplatesTitle": "Пока нет опросов",
-    "pageTitle": "Управление опросами",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "Поиск по названию...",
     "searchTemplates": "Поиск опросов",
     "surveyDetails": "Детали опроса",
@@ -415,6 +424,7 @@
     "emailLabel": "Адрес Электронной Почты",
     "error": "Ошибка",
     "fonts": "Шрифты",
+    "groups": "Группы",
     "id": "Идентификатор",
     "identityProvider": "Поставщик удостоверений",
     "issueUri": "URL Задачи",
@@ -533,7 +543,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "Конфиденциальные модели угроз не автоматически распределяются группе Security Reviewers. Эта настройка не может быть изменена после создания.",
-    "confidentialLabel": "Конфиденциально",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "Опишите цель и область применения этой модели угроз",
     "framework": "Фреймворк",
     "namePlaceholder": "Введите название модели угроз",
@@ -824,9 +834,9 @@
     "noSurveys": "Нет доступных опросов",
     "responses": {
       "continueEditing": "Продолжить редактирование",
-      "errorLoadingResponses": "Не удалось загрузить ответы",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "Фильтр по статусу",
-      "loadingResponses": "Загрузка ответов...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "Вы еще не заполнили ни одного опроса. Начните с страницы опросов.",
       "noResponsesTitle": "Пока нет ответов",
       "pageTitle": "Мои ответы на опросы",
@@ -914,7 +924,7 @@
     "createNewRepository": "Добавить ссылку на репозиторий",
     "created": "{{common.created}}",
     "createdBy": "Создал",
-    "dashboard": "Панель мониторинга",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Диаграмма потоков данных",
     "deleteWarningPermanent": "Это действие нельзя отменить, и оно безвозвратно удалит все связанные диаграммы, угрозы и метаданные.",
     "descriptionPlaceholder": "Опишите цель и область применения этой модели угроз",
@@ -1084,7 +1094,7 @@
     "columns": {
       "confidentialTooltip": "Конфиденциальная отправка"
     },
-    "createTm": "Создать модель угроз",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "Ответы не записаны",
       "responseDetails": "Детали ответа",
@@ -1093,7 +1103,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "Все опросы",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "Очистить фильтры",
       "confidential": "Конфиденциальность",
       "confidentialOnly": "Конфиденциальное",
@@ -1210,7 +1220,7 @@
     },
     "userProfile": {
       "currentRole": "Текущая роль в модели угроз",
-      "groups": "Группы",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID провайдера",
       "title": "Профиль Пользователя",

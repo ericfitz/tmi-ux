@@ -104,10 +104,10 @@
         "noMembers": "اس گروپ میں کوئی اراکین نہیں",
         "removeTooltip": "گروپ سے ہٹائیں",
         "searchHint": "تلاش کے لیے کم از کم 2 حروف ٹائپ کریں",
-        "searchPlaceholder": "ای میل ایڈریس ٹائپ کرنا شروع کریں...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "ای میل سے صارف تلاش کریں",
-        "subjectTypeGroup": "گروپ",
-        "subjectTypeUser": "صارف"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "کوئی گروپس نہیں ملے",
       "subtitle": "سسٹم گروپس دیکھیں اور ان کا انتظام کریں",
@@ -170,10 +170,19 @@
     "subtitle": "سسٹم کی ترتیبات اور تشکیلات کا انتظام کریں",
     "title": "انتظامیہ",
     "users": {
+      "administrator": "منتظم",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "صارف اکاؤنٹ حذف کریں",
       "filterLabel": "صارفین فلٹر کریں",
       "filterPlaceholder": "ای میل، نام، فراہم کنندہ، یا گروپ کے نام سے تلاش کریں",
+      "lastLogin": "آخری لاگ ان",
       "listTitle": "صارفین",
+      "never": "کبھی نہیں",
       "noUsers": "کوئی صارفین نہیں ملے",
       "subtitle": "سسٹم صارفین دیکھیں اور ان کا انتظام کریں",
       "title": "صارفین کا انتظام",
@@ -181,7 +190,7 @@
         "confirm": "کیا آپ واقعی {{source}} سے {{target}} تک تمام ڈیٹا منتقل کرنا چاہتے ہیں؟",
         "dialogTitle": "صارف ڈیٹا منتقل کریں",
         "error": "ملکیت منتقل کرنے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔",
-        "success": "{{tmCount}} خطرے کے ماڈلز اور {{responseCount}} سروے کے جوابات منتقل ہوگئے۔",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "ملکیت منتقل کریں"
       }
     },
@@ -237,7 +246,7 @@
     "noMatchingTitle": "کوئی مماثل سروے نہیں",
     "noTemplatesMessage": "شروع کرنے کے لیے اپنا پہلا سروے بنائیں۔",
     "noTemplatesTitle": "ابھی تک کوئی سروے نہیں",
-    "pageTitle": "سروے کا نظم کریں",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "نام سے تلاش کریں...",
     "searchTemplates": "سروے تلاش کریں",
     "surveyDetails": "سروے کی تفصیلات",
@@ -415,6 +424,7 @@
     "emailLabel": "ای میل ایڈریس",
     "error": "خرابی",
     "fonts": "فونٹس",
+    "groups": "گروپس",
     "id": "شناخت",
     "identityProvider": "شناختی فراہم کنندہ",
     "issueUri": "مسئلہ URL",
@@ -533,7 +543,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "رازداری والے خطرے کے ماڈلز خودکار طور پر سیکیورٹی ریویورز گروپ کے ساتھ شیئر نہیں کیے جاتے۔ یہ ترتیب تخلیق کے بعد تبدیل نہیں کی جا سکتی۔",
-    "confidentialLabel": "رازدارانہ",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "اس خطرے کے ماڈل کا مقصد اور دائرہ کار بیان کریں",
     "framework": "ڈھانچہ",
     "namePlaceholder": "خطرے کے ماڈل کا نام درج کریں",
@@ -824,9 +834,9 @@
     "noSurveys": "کوئی سروے دستیاب نہیں",
     "responses": {
       "continueEditing": "ترمیم جاری رکھیں",
-      "errorLoadingResponses": "جوابات لوڈ کرنے میں ناکامی",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "حیثیت کے مطابق فلٹر کریں",
-      "loadingResponses": "جوابات لوڈ ہو رہے ہیں...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "آپ نے ابھی تک کوئی سروے مکمل نہیں کیا۔ سروے کے صفحے سے شروع کریں۔",
       "noResponsesTitle": "ابھی تک کوئی جواب نہیں",
       "pageTitle": "میرے سروے کے جوابات",
@@ -914,7 +924,7 @@
     "createNewRepository": "ریپوزٹری حوالہ شامل کریں",
     "created": "{{common.created}}",
     "createdBy": "بنانے والا",
-    "dashboard": "ڈیش بورڈ",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "ڈیٹا فلو ڈایاگرام",
     "deleteWarningPermanent": "یہ عمل واپس نہیں ہو سکتا اور تمام متعلقہ ڈایاگرامز، خطرات، اور میٹا ڈیٹا کو مستقل طور پر حذف کر دے گا۔",
     "descriptionPlaceholder": "اس خطرے کے ماڈل کا مقصد اور دائرہ کار بیان کریں",
@@ -1084,7 +1094,7 @@
     "columns": {
       "confidentialTooltip": "رازدارانہ درخواست"
     },
-    "createTm": "خطرے کا ماڈل بنائیں",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "کوئی جواب ریکارڈ نہیں",
       "responseDetails": "جواب کی تفصیلات",
@@ -1093,7 +1103,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "تمام سروے",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "فلٹرز صاف کریں",
       "confidential": "رازداریت",
       "confidentialOnly": "رازدارانہ",
@@ -1210,7 +1220,7 @@
     },
     "userProfile": {
       "currentRole": "موجودہ خطرے کے ماڈل کا کردار",
-      "groups": "گروپس",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "فراہم کنندہ ID",
       "title": "صارف پروفائل",

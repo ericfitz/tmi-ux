@@ -104,10 +104,10 @@
         "noMembers": "Keine Mitglieder in dieser Gruppe",
         "removeTooltip": "Aus Gruppe entfernen",
         "searchHint": "Mindestens 2 Zeichen eingeben zum Suchen",
-        "searchPlaceholder": "E-Mail-Adresse eingeben...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "Benutzer per E-Mail suchen",
-        "subjectTypeGroup": "Gruppe",
-        "subjectTypeUser": "Benutzer"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "Keine Gruppen gefunden",
       "subtitle": "Systemgruppen anzeigen und verwalten",
@@ -170,10 +170,19 @@
     "subtitle": "Systemeinstellungen und Konfigurationen verwalten",
     "title": "Verwaltung",
     "users": {
+      "administrator": "Administrator",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "Benutzerkonto löschen",
       "filterLabel": "Benutzer filtern",
       "filterPlaceholder": "Nach E-Mail, Name, Anbieter oder Gruppenname suchen",
+      "lastLogin": "Letzte Anmeldung",
       "listTitle": "Benutzer",
+      "never": "Nie",
       "noUsers": "Keine Benutzer gefunden",
       "subtitle": "Systembenutzer anzeigen und verwalten",
       "title": "Benutzer verwalten",
@@ -181,7 +190,7 @@
         "confirm": "Sind Sie sicher, dass Sie alle Daten von {{source}} zu {{target}} übertragen möchten?",
         "dialogTitle": "Benutzerdaten übertragen",
         "error": "Fehler beim Übertragen des Eigentums. Bitte versuchen Sie es erneut.",
-        "success": "{{tmCount}} Bedrohungsmodelle und {{responseCount}} Umfrageantworten übertragen.",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "Eigentum übertragen"
       }
     },
@@ -237,7 +246,7 @@
     "noMatchingTitle": "Keine passenden Umfragen",
     "noTemplatesMessage": "Erstellen Sie Ihre erste Umfrage, um zu beginnen.",
     "noTemplatesTitle": "Noch keine Umfragen",
-    "pageTitle": "Umfragen verwalten",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "Nach Name suchen...",
     "searchTemplates": "Umfragen durchsuchen",
     "surveyDetails": "Umfragedetails",
@@ -415,6 +424,7 @@
     "emailLabel": "E-Mail-Adresse",
     "error": "Fehler",
     "fonts": "Schriftarten",
+    "groups": "Gruppen",
     "id": "ID",
     "identityProvider": "Identitätsanbieter",
     "issueUri": "Problem-URL",
@@ -533,7 +543,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "Vertrauliche Bedrohungsmodelle werden nicht automatisch mit der Gruppe \"Security Reviewers\" geteilt. Diese Einstellung kann nach der Erstellung nicht mehr geändert werden.",
-    "confidentialLabel": "Vertraulich",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "Beschreiben Sie den Zweck und Umfang dieses Bedrohungsmodells",
     "framework": "Framework",
     "namePlaceholder": "Geben Sie den Bedrohungsmodellnamen ein",
@@ -824,9 +834,9 @@
     "noSurveys": "Keine Umfragen verfügbar",
     "responses": {
       "continueEditing": "Bearbeitung fortsetzen",
-      "errorLoadingResponses": "Fehler beim Laden der Antworten",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "Nach Status filtern",
-      "loadingResponses": "Antworten werden geladen...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "Sie haben noch keine Umfragen abgeschlossen. Starten Sie eine auf der Umfragenseite.",
       "noResponsesTitle": "Noch keine Antworten",
       "pageTitle": "Meine Umfrageantworten",
@@ -914,7 +924,7 @@
     "createNewRepository": "Repository-Referenz hinzufügen",
     "created": "{{common.created}}",
     "createdBy": "Erstellt von",
-    "dashboard": "Dashboard",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Datenflussdiagramm",
     "deleteWarningPermanent": "Diese Aktion kann nicht rückgängig gemacht werden und löscht dauerhaft alle zugehörigen Diagramme, Bedrohungen und Metadaten.",
     "descriptionPlaceholder": "Beschreiben Sie den Zweck und Umfang dieses Bedrohungsmodells",
@@ -1084,7 +1094,7 @@
     "columns": {
       "confidentialTooltip": "Vertrauliche Einreichung"
     },
-    "createTm": "Bedrohungsmodell erstellen",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "Keine Antworten erfasst",
       "responseDetails": "Antwortdetails",
@@ -1093,7 +1103,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "Alle Umfragen",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "Filter löschen",
       "confidential": "Vertraulichkeit",
       "confidentialOnly": "Vertraulich",
@@ -1210,7 +1220,7 @@
     },
     "userProfile": {
       "currentRole": "Aktuelle Bedrohungsmodell-Rolle",
-      "groups": "Gruppen",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "Anbieter-ID",
       "title": "Benutzerprofil",

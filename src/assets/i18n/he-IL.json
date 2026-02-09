@@ -104,10 +104,10 @@
         "noMembers": "אין חברים בקבוצה זו",
         "removeTooltip": "הסר מהקבוצה",
         "searchHint": "הקלד לפחות 2 תווים לחיפוש",
-        "searchPlaceholder": "התחל להקליד כתובת דוא\"ל...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "חפש משתמש לפי דוא\"ל",
-        "subjectTypeGroup": "קבוצה",
-        "subjectTypeUser": "משתמש"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "לא נמצאו קבוצות",
       "subtitle": "צפה ונהל קבוצות מערכת",
@@ -170,10 +170,19 @@
     "subtitle": "נהל הגדרות מערכת ותצורות",
     "title": "ניהול",
     "users": {
+      "administrator": "מנהל מערכת",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "מחק חשבון משתמש",
       "filterLabel": "סנן משתמשים",
       "filterPlaceholder": "חפש לפי דוא\"ל, שם, ספק או שם קבוצה",
+      "lastLogin": "כניסה אחרונה",
       "listTitle": "משתמשים",
+      "never": "אף פעם",
       "noUsers": "לא נמצאו משתמשים",
       "subtitle": "צפה ונהל משתמשי מערכת",
       "title": "ניהול משתמשים",
@@ -181,7 +190,7 @@
         "confirm": "האם אתה בטוח שברצונך להעביר את כל הנתונים מ-{{source}} ל-{{target}}?",
         "dialogTitle": "העברת נתוני משתמש",
         "error": "ההעברה של הבעלות נכשלה. אנא נסה שוב.",
-        "success": "הועברו {{tmCount}} מודלי איום ו-{{responseCount}} תגובות סקר.",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "העבר בעלות"
       }
     },
@@ -237,7 +246,7 @@
     "noMatchingTitle": "לא נמצאו סקרים תואמים",
     "noTemplatesMessage": "צור את הסקר הראשון שלך כדי להתחיל.",
     "noTemplatesTitle": "אין סקרים עדיין",
-    "pageTitle": "ניהול סקרים",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "חיפוש לפי שם...",
     "searchTemplates": "חיפוש סקרים",
     "surveyDetails": "פרטי סקר",
@@ -415,6 +424,7 @@
     "emailLabel": "כתובת דוא\"ל",
     "error": "שגיאה",
     "fonts": "גופנים",
+    "groups": "קבוצות",
     "id": "מזהה",
     "identityProvider": "ספק זהות",
     "issueUri": "כתובת URL של הבעיה",
@@ -533,7 +543,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "מודלי איום סודיים אינם משותפים באופן אוטומטי עם קבוצת סוקרי האבטחה. לא ניתן לשנות הגדרה זו לאחר היצירה.",
-    "confidentialLabel": "סודי",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "תאר את המטרה והיקף מודל איום זה",
     "framework": "מסגרת",
     "namePlaceholder": "הזן שם מודל איום",
@@ -824,9 +834,9 @@
     "noSurveys": "אין סקרים זמינים",
     "responses": {
       "continueEditing": "המשך בעריכה",
-      "errorLoadingResponses": "נכשל בטעינת התגובות",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "סנן לפי סטטוס",
-      "loadingResponses": "טוען תגובות...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "לא השלמת אף סקר. התחל אחד מדף הסקרים.",
       "noResponsesTitle": "אין תגובות עדיין",
       "pageTitle": "התגובות שלי לסקרים",
@@ -914,7 +924,7 @@
     "createNewRepository": "הוסף הפניה למאגר",
     "created": "{{common.created}}",
     "createdBy": "נוצר על ידי",
-    "dashboard": "לוח בקרה",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "דיאגרמת זרימת נתונים",
     "deleteWarningPermanent": "פעולה זו אינה ניתנת לביטול ותמחק לצמיתות את כל הדיאגרמות, האיומים והמטא-נתונים המשויכים.",
     "descriptionPlaceholder": "תאר את המטרה והיקף מודל האיומים הזה",
@@ -1084,7 +1094,7 @@
     "columns": {
       "confidentialTooltip": "הגשה סודית"
     },
-    "createTm": "צור מודל איום",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "לא נרשמו תגובות",
       "responseDetails": "פרטי תגובה",
@@ -1093,7 +1103,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "כל הסקרים",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "נקה מסננים",
       "confidential": "סודיות",
       "confidentialOnly": "סודי",
@@ -1210,7 +1220,7 @@
     },
     "userProfile": {
       "currentRole": "תפקיד נוכחי במודל איומים",
-      "groups": "קבוצות",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "מזהה ספק",
       "title": "פרופיל משתמש",

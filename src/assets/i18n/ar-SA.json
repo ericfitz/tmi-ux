@@ -104,10 +104,10 @@
         "noMembers": "لا يوجد أعضاء في هذه المجموعة",
         "removeTooltip": "إزالة من المجموعة",
         "searchHint": "اكتب حرفين على الأقل للبحث",
-        "searchPlaceholder": "ابدأ بكتابة عنوان البريد الإلكتروني...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "البحث عن مستخدم بالبريد الإلكتروني",
-        "subjectTypeGroup": "مجموعة",
-        "subjectTypeUser": "مستخدم"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "لم يتم العثور على مجموعات",
       "subtitle": "عرض وإدارة مجموعات النظام",
@@ -170,10 +170,19 @@
     "subtitle": "إدارة إعدادات النظام والتكوينات",
     "title": "الإدارة",
     "users": {
+      "administrator": "مسؤول",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "حذف حساب المستخدم",
       "filterLabel": "تصفية المستخدمين",
       "filterPlaceholder": "البحث بالبريد الإلكتروني أو الاسم أو المزود أو اسم المجموعة",
+      "lastLogin": "آخر تسجيل دخول",
       "listTitle": "المستخدمون",
+      "never": "أبداً",
       "noUsers": "لم يتم العثور على مستخدمين",
       "subtitle": "عرض وإدارة مستخدمي النظام",
       "title": "إدارة المستخدمين",
@@ -181,7 +190,7 @@
         "confirm": "هل أنت متأكد من أنك تريد نقل جميع البيانات من {{source}} إلى {{target}}؟",
         "dialogTitle": "نقل بيانات المستخدم",
         "error": "فشل نقل الملكية. يرجى المحاولة مرة أخرى.",
-        "success": "تم نقل {{tmCount}} نماذج تهديدات و {{responseCount}} استجابات الاستبيان.",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "نقل الملكية"
       }
     },
@@ -237,7 +246,7 @@
     "noMatchingTitle": "لا توجد استبيانات مطابقة",
     "noTemplatesMessage": "قم بإنشاء استبيانك الأول للبدء.",
     "noTemplatesTitle": "لا توجد استبيانات بعد",
-    "pageTitle": "إدارة الاستبيانات",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "البحث بالاسم...",
     "searchTemplates": "البحث في الاستبيانات",
     "surveyDetails": "تفاصيل الاستبيان",
@@ -415,6 +424,7 @@
     "emailLabel": "عنوان البريد الإلكتروني",
     "error": "خطأ",
     "fonts": "الخطوط",
+    "groups": "المجموعات",
     "id": "المعرّف",
     "identityProvider": "مزود الهوية",
     "issueUri": "رابط المشكلة",
@@ -533,7 +543,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "نماذج التهديدات السرية لا تُشارك تلقائياً مع مجموعة مراجعي الأمان. لا يمكن تغيير هذا الإعداد بعد الإنشاء.",
-    "confidentialLabel": "سري",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "صف الغرض والنطاق من هذا النموذج",
     "framework": "الإطار",
     "namePlaceholder": "أدخل اسم نموذج التهديد",
@@ -824,9 +834,9 @@
     "noSurveys": "لا توجد استبيانات متاحة",
     "responses": {
       "continueEditing": "متابعة التحرير",
-      "errorLoadingResponses": "فشل تحميل الردود",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "تصفية حسب الحالة",
-      "loadingResponses": "جارٍ تحميل الردود...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "لم تكمل أي استبيانات بعد. ابدأ واحداً من صفحة الاستبيانات.",
       "noResponsesTitle": "لا توجد ردود بعد",
       "pageTitle": "ردودي على الاستبيانات",
@@ -914,7 +924,7 @@
     "createNewRepository": "إضافة مرجع مستودع",
     "created": "{{common.created}}",
     "createdBy": "تم إنشاؤه بواسطة",
-    "dashboard": "لوحة المعلومات",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "مخطط تدفق البيانات",
     "deleteWarningPermanent": "لا يمكن التراجع عن هذا الإجراء وسيحذف نهائياً جميع المخططات والتهديدات والبيانات الوصفية المرتبطة.",
     "descriptionPlaceholder": "صف الغرض ونطاق نموذج التهديد هذا",
@@ -1084,7 +1094,7 @@
     "columns": {
       "confidentialTooltip": "إجابة سرية"
     },
-    "createTm": "إنشاء نموذج تهديد",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "لم يتم تسجيل أي ردود",
       "responseDetails": "تفاصيل الرد",
@@ -1093,7 +1103,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "كل الاستبيانات",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "مسح المرشحات",
       "confidential": "السرية",
       "confidentialOnly": "سري",
@@ -1210,7 +1220,7 @@
     },
     "userProfile": {
       "currentRole": "دور نموذج التهديد الحالي",
-      "groups": "المجموعات",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "معرف الموفر",
       "title": "ملف المستخدم",

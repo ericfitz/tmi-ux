@@ -104,10 +104,10 @@
         "noMembers": "此组中没有成员",
         "removeTooltip": "从组中移除",
         "searchHint": "输入至少2个字符进行搜索",
-        "searchPlaceholder": "开始输入电子邮件地址...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "按电子邮件搜索用户",
-        "subjectTypeGroup": "群组",
-        "subjectTypeUser": "用户"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "未找到用户组",
       "subtitle": "查看和管理系统用户组",
@@ -170,10 +170,19 @@
     "subtitle": "管理系统设置和配置",
     "title": "系统管理",
     "users": {
+      "administrator": "管理员",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "删除用户账户",
       "filterLabel": "筛选用户",
       "filterPlaceholder": "按电子邮件、姓名、提供商或组名搜索",
+      "lastLogin": "最后登录",
       "listTitle": "用户",
+      "never": "从未",
       "noUsers": "未找到用户",
       "subtitle": "查看和管理系统用户",
       "title": "管理用户",
@@ -181,7 +190,7 @@
         "confirm": "您确定要将所有数据从 {{source}} 转移到 {{target}} 吗？",
         "dialogTitle": "转移用户数据",
         "error": "所有权转移失败。请重试。",
-        "success": "已转移 {{tmCount}} 个威胁模型和 {{responseCount}} 个调查响应。",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "转移所有权"
       }
     },
@@ -237,7 +246,7 @@
     "noMatchingTitle": "没有匹配的调查问卷",
     "noTemplatesMessage": "创建您的第一个调查问卷以开始使用。",
     "noTemplatesTitle": "还没有调查问卷",
-    "pageTitle": "管理调查问卷",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "按名称搜索...",
     "searchTemplates": "搜索调查问卷",
     "surveyDetails": "调查详情",
@@ -415,6 +424,7 @@
     "emailLabel": "电子邮件地址",
     "error": "错误",
     "fonts": "字体",
+    "groups": "用户组",
     "id": "ID",
     "identityProvider": "身份提供商",
     "issueUri": "问题URL",
@@ -533,7 +543,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "机密威胁模型不会自动与安全审查员组共享。此设置在创建后无法更改。",
-    "confidentialLabel": "机密",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "描述此威胁模型的目的和范围",
     "framework": "框架",
     "namePlaceholder": "输入威胁模型名称",
@@ -824,9 +834,9 @@
     "noSurveys": "暂无可用调查",
     "responses": {
       "continueEditing": "继续编辑",
-      "errorLoadingResponses": "加载回复失败",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "按状态筛选",
-      "loadingResponses": "正在加载回复...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "您还没有完成任何调查问卷。请从调查问卷页面开始。",
       "noResponsesTitle": "暂无回复",
       "pageTitle": "我的调查问卷回复",
@@ -914,7 +924,7 @@
     "createNewRepository": "添加仓库引用",
     "created": "{{common.created}}",
     "createdBy": "创建者",
-    "dashboard": "仪表板",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "数据流图",
     "deleteWarningPermanent": "此操作无法撤销，将永久删除所有相关图表、威胁和元数据。",
     "descriptionPlaceholder": "描述此威胁模型的目的和范围",
@@ -1084,7 +1094,7 @@
     "columns": {
       "confidentialTooltip": "机密提交"
     },
-    "createTm": "创建威胁模型",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "无回复记录",
       "responseDetails": "回复详情",
@@ -1093,7 +1103,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "所有调查问卷",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "清除筛选",
       "confidential": "机密性",
       "confidentialOnly": "机密",
@@ -1210,7 +1220,7 @@
     },
     "userProfile": {
       "currentRole": "当前威胁模型角色",
-      "groups": "用户组",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "提供商ID",
       "title": "用户资料",

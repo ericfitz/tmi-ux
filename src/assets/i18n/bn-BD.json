@@ -104,10 +104,10 @@
         "noMembers": "এই গ্রুপে কোনো সদস্য নেই",
         "removeTooltip": "গ্রুপ থেকে সরান",
         "searchHint": "খুঁজতে কমপক্ষে ২টি অক্ষর টাইপ করুন",
-        "searchPlaceholder": "ইমেইল ঠিকানা টাইপ শুরু করুন...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "ইমেইল দিয়ে ব্যবহারকারী খুঁজুন",
-        "subjectTypeGroup": "গ্রুপ",
-        "subjectTypeUser": "ব্যবহারকারী"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "কোনো গ্রুপ পাওয়া যায়নি",
       "subtitle": "সিস্টেম গ্রুপ দেখুন এবং পরিচালনা করুন",
@@ -170,10 +170,19 @@
     "subtitle": "সিস্টেম সেটিংস এবং কনফিগারেশন পরিচালনা করুন",
     "title": "প্রশাসন",
     "users": {
+      "administrator": "প্রশাসক",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "ব্যবহারকারী অ্যাকাউন্ট মুছুন",
       "filterLabel": "ব্যবহারকারী ফিল্টার করুন",
       "filterPlaceholder": "ইমেইল, নাম, প্রোভাইডার বা গ্রুপের নাম দিয়ে খুঁজুন",
+      "lastLogin": "সর্বশেষ লগইন",
       "listTitle": "ব্যবহারকারী",
+      "never": "কখনো না",
       "noUsers": "কোনো ব্যবহারকারী পাওয়া যায়নি",
       "subtitle": "সিস্টেম ব্যবহারকারী দেখুন এবং পরিচালনা করুন",
       "title": "ব্যবহারকারী পরিচালনা করুন",
@@ -181,7 +190,7 @@
         "confirm": "আপনি কি নিশ্চিত যে আপনি {{source}} থেকে {{target}}-এ সমস্ত ডেটা স্থানান্তর করতে চান?",
         "dialogTitle": "ব্যবহারকারীর ডেটা স্থানান্তর করুন",
         "error": "মালিকানা স্থানান্তর করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
-        "success": "{{tmCount}} হুমকি মডেল এবং {{responseCount}} জরিপ প্রতিক্রিয়া স্থানান্তরিত করা হয়েছে।",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "মালিকানা স্থানান্তর করুন"
       }
     },
@@ -237,7 +246,7 @@
     "noMatchingTitle": "কোনো মিলে যাওয়া জরিপ নেই",
     "noTemplatesMessage": "শুরু করতে আপনার প্রথম জরিপ তৈরি করুন।",
     "noTemplatesTitle": "এখনও কোনো জরিপ নেই",
-    "pageTitle": "জরিপ পরিচালনা করুন",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "নাম দিয়ে খুঁজুন...",
     "searchTemplates": "জরিপ অনুসন্ধান করুন",
     "surveyDetails": "সার্ভে বিবরণ",
@@ -415,6 +424,7 @@
     "emailLabel": "ইমেল ঠিকানা",
     "error": "ত্রুটি",
     "fonts": "ফন্ট",
+    "groups": "গ্রুপ",
     "id": "আইডি",
     "identityProvider": "পরিচয় প্রদানকারী",
     "issueUri": "সমস্যা URL",
@@ -533,7 +543,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "গোপনীয় হুমকি মডেলগুলি স্বয়ংক্রিয়ভাবে নিরাপত্তা পর্যালোচক দলের সাথে ভাগ করা হয় না। এই সেটিং সৃষ্টির পরে পরিবর্তন করা যায় না।",
-    "confidentialLabel": "গোপনীয়",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "এই হুমকি মডেলের উদ্দেশ্য এবং সুযোগ বর্ণনা করুন",
     "framework": "ফ্রেমওয়ার্ক",
     "namePlaceholder": "হুমকি মডেল নাম প্রবেश করুন",
@@ -824,9 +834,9 @@
     "noSurveys": "কোনো জরিপ উপলব্ধ নেই",
     "responses": {
       "continueEditing": "সম্পাদনা চালিয়ে যান",
-      "errorLoadingResponses": "প্রতিক্রিয়া লোড করতে ব্যর্থ",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "স্ট্যাটাস অনুযায়ী ফিল্টার করুন",
-      "loadingResponses": "প্রতিক্রিয়া লোড হচ্ছে...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "আপনি এখনো কোনো সমীক্ষা সম্পন্ন করেননি। সমীক্ষা পৃষ্ঠা থেকে একটি শুরু করুন।",
       "noResponsesTitle": "এখনো কোনো প্রতিক্রিয়া নেই",
       "pageTitle": "আমার সমীক্ষা প্রতিক্রিয়াসমূহ",
@@ -914,7 +924,7 @@
     "createNewRepository": "রিপোজিটরি রেফারেন্স যোগ করুন",
     "created": "{{common.created}}",
     "createdBy": "তৈরি করেছেন",
-    "dashboard": "ড্যাশবোর্ড",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "ডেটা ফ্লো ডায়াগ্রাম",
     "deleteWarningPermanent": "এই ক্রিয়া পূর্বাবস্থায় ফেরানো যাবে না এবং সমস্ত সম্পর্কিত ডায়াগ্রাম, হুমকি এবং মেটাডেটা স্থায়ীভাবে মুছে ফেলবে।",
     "descriptionPlaceholder": "এই থ্রেট মডেলের উদ্দেশ্য এবং সুযোগ বর্ণনা করুন",
@@ -1084,7 +1094,7 @@
     "columns": {
       "confidentialTooltip": "গোপনীয় জমা"
     },
-    "createTm": "হুমকি মডেল তৈরি করুন",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "কোনো প্রতিক্রিয়া রেকর্ড করা হয়নি",
       "responseDetails": "প্রতিক্রিয়া বিবরণ",
@@ -1093,7 +1103,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "সকল জরিপ",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "ফিল্টার সাফ করুন",
       "confidential": "গোপনীয়তা",
       "confidentialOnly": "গোপনীয়",
@@ -1210,7 +1220,7 @@
     },
     "userProfile": {
       "currentRole": "বর্তমান থ্রেট মডেল ভূমিকা",
-      "groups": "গ্রুপ",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "প্রদানকারী আইডি",
       "title": "ব্যবহারকারীর প্রোফাইল",

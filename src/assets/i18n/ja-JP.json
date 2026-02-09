@@ -104,10 +104,10 @@
         "noMembers": "このグループにメンバーはいません",
         "removeTooltip": "グループから削除",
         "searchHint": "検索するには2文字以上入力してください",
-        "searchPlaceholder": "メールアドレスを入力...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "メールでユーザーを検索",
-        "subjectTypeGroup": "グループ",
-        "subjectTypeUser": "ユーザー"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "グループが見つかりません",
       "subtitle": "システムグループの表示と管理",
@@ -170,10 +170,19 @@
     "subtitle": "システム設定と構成の管理",
     "title": "管理",
     "users": {
+      "administrator": "管理者",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "ユーザーアカウントを削除",
       "filterLabel": "ユーザーをフィルター",
       "filterPlaceholder": "メール、名前、プロバイダー、またはグループ名で検索",
+      "lastLogin": "最終ログイン",
       "listTitle": "ユーザー",
+      "never": "なし",
       "noUsers": "ユーザーが見つかりません",
       "subtitle": "システムユーザーの表示と管理",
       "title": "ユーザーの管理",
@@ -181,7 +190,7 @@
         "confirm": "{{source}}から{{target}}へすべてのデータを転送してもよろしいですか？",
         "dialogTitle": "ユーザーデータの転送",
         "error": "所有権の転送に失敗しました。もう一度お試しください。",
-        "success": "{{tmCount}}件の脅威モデルと{{responseCount}}件の調査回答を転送しました。",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "所有権を転送"
       }
     },
@@ -237,7 +246,7 @@
     "noMatchingTitle": "一致する調査がありません",
     "noTemplatesMessage": "最初の調査を作成して開始してください。",
     "noTemplatesTitle": "調査がまだありません",
-    "pageTitle": "調査を管理",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "名前で検索...",
     "searchTemplates": "調査を検索",
     "surveyDetails": "調査詳細",
@@ -415,6 +424,7 @@
     "emailLabel": "メールアドレス",
     "error": "エラー",
     "fonts": "フォント",
+    "groups": "グループ",
     "id": "ID",
     "identityProvider": "IDプロバイダー",
     "issueUri": "課題URL",
@@ -533,7 +543,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "機密の脅威モデルはセキュリティレビュアーグループと自動的には共有されません。この設定は作成後に変更することはできません。",
-    "confidentialLabel": "機密",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "この脅威モデルの目的と範囲を説明してください",
     "framework": "フレームワーク",
     "namePlaceholder": "脅威モデル名を入力してください",
@@ -824,9 +834,9 @@
     "noSurveys": "利用可能な調査がありません",
     "responses": {
       "continueEditing": "編集を続ける",
-      "errorLoadingResponses": "回答の読み込みに失敗しました",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "ステータスでフィルタ",
-      "loadingResponses": "回答を読み込んでいます...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "まだアンケートに回答していません。アンケートページから開始してください。",
       "noResponsesTitle": "回答がありません",
       "pageTitle": "自分のアンケート回答",
@@ -914,7 +924,7 @@
     "createNewRepository": "リポジトリ参照を追加",
     "created": "{{common.created}}",
     "createdBy": "作成者",
-    "dashboard": "ダッシュボード",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "データフローダイアグラム",
     "deleteWarningPermanent": "この操作は元に戻すことができず、関連するすべてのダイアグラム、脅威、メタデータが永久に削除されます。",
     "descriptionPlaceholder": "この脅威モデルの目的と範囲を記述してください",
@@ -1084,7 +1094,7 @@
     "columns": {
       "confidentialTooltip": "機密送信"
     },
-    "createTm": "脅威モデルを作成",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "記録された回答がありません",
       "responseDetails": "回答の詳細",
@@ -1093,7 +1103,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "すべての調査",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "フィルタをクリア",
       "confidential": "機密性",
       "confidentialOnly": "機密",
@@ -1210,7 +1220,7 @@
     },
     "userProfile": {
       "currentRole": "現在の脅威モデルロール",
-      "groups": "グループ",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "プロバイダーID",
       "title": "ユーザープロフィール",

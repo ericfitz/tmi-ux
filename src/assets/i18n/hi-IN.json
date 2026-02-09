@@ -104,10 +104,10 @@
         "noMembers": "इस समूह में कोई सदस्य नहीं",
         "removeTooltip": "समूह से हटाएं",
         "searchHint": "खोजने के लिए कम से कम 2 अक्षर टाइप करें",
-        "searchPlaceholder": "ईमेल पता टाइप करना शुरू करें...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "ईमेल द्वारा उपयोगकर्ता खोजें",
-        "subjectTypeGroup": "समूह",
-        "subjectTypeUser": "उपयोगकर्ता"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "कोई समूह नहीं मिला",
       "subtitle": "सिस्टम समूहों को देखें और प्रबंधित करें",
@@ -170,10 +170,19 @@
     "subtitle": "सिस्टम सेटिंग्स और कॉन्फ़िगरेशन प्रबंधित करें",
     "title": "प्रशासन",
     "users": {
+      "administrator": "प्रशासक",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "उपयोगकर्ता खाता हटाएं",
       "filterLabel": "उपयोगकर्ता फ़िल्टर करें",
       "filterPlaceholder": "ईमेल, नाम, प्रदाता या समूह के नाम से खोजें",
+      "lastLogin": "अंतिम लॉगिन",
       "listTitle": "उपयोगकर्ता",
+      "never": "कभी नहीं",
       "noUsers": "कोई उपयोगकर्ता नहीं मिला",
       "subtitle": "सिस्टम उपयोगकर्ताओं को देखें और प्रबंधित करें",
       "title": "उपयोगकर्ता प्रबंधित करें",
@@ -181,7 +190,7 @@
         "confirm": "क्या आप {{source}} से {{target}} को सभी डेटा स्थानांतरित करना सुनिश्चित हैं?",
         "dialogTitle": "उपयोगकर्ता डेटा स्थानांतरित करें",
         "error": "स्वामित्व स्थानांतरित करने में विफल। कृपया पुनः प्रयास करें।",
-        "success": "{{tmCount}} खतरा मॉडल और {{responseCount}} सर्वेक्षण प्रतिक्रियाएं स्थानांतरित की गईं।",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "स्वामित्व स्थानांतरित करें"
       }
     },
@@ -237,7 +246,7 @@
     "noMatchingTitle": "कोई मिलान करने वाला सर्वेक्षण नहीं",
     "noTemplatesMessage": "आरंभ करने के लिए अपना पहला सर्वेक्षण बनाएं।",
     "noTemplatesTitle": "अभी तक कोई सर्वेक्षण नहीं",
-    "pageTitle": "सर्वेक्षणों का प्रबंधन करें",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "नाम से खोजें...",
     "searchTemplates": "सर्वेक्षण खोजें",
     "surveyDetails": "सर्वेक्षण विवरण",
@@ -415,6 +424,7 @@
     "emailLabel": "ईमेल पता",
     "error": "त्रुटि",
     "fonts": "फ़ॉन्ट्स",
+    "groups": "समूह",
     "id": "आईडी",
     "identityProvider": "पहचान प्रदाता",
     "issueUri": "समस्या URL",
@@ -533,7 +543,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "गोपनीय खतरा मॉडल स्वचालित रूप से सुरक्षा समीक्षक समूह के साथ साझा नहीं किए जाते हैं। इस सेटिंग को निर्माण के बाद नहीं बदला जा सकता।",
-    "confidentialLabel": "गोपनीय",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "इस खतरा मॉडल के उद्देश्य और दायरे का वर्णन करें",
     "framework": "ढांचा",
     "namePlaceholder": "खतरा मॉडल का नाम दर्ज करें",
@@ -824,9 +834,9 @@
     "noSurveys": "कोई सर्वेक्षण उपलब्ध नहीं है",
     "responses": {
       "continueEditing": "संपादन जारी रखें",
-      "errorLoadingResponses": "प्रतिक्रियाएं लोड करने में विफल",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "स्थिति के अनुसार फ़िल्टर करें",
-      "loadingResponses": "प्रतिक्रियाएं लोड हो रही हैं...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "आपने कोई सर्वेक्षण पूरा नहीं किया है। सर्वेक्षण पृष्ठ से एक शुरू करें।",
       "noResponsesTitle": "अभी तक कोई प्रतिक्रिया नहीं",
       "pageTitle": "मेरी सर्वेक्षण प्रतिक्रियाएं",
@@ -914,7 +924,7 @@
     "createNewRepository": "रिपॉजिटरी संदर्भ जोड़ें",
     "created": "{{common.created}}",
     "createdBy": "द्वारा बनाया गया",
-    "dashboard": "डैशबोर्ड",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "डेटा फ्लो डायग्राम",
     "deleteWarningPermanent": "यह क्रिया पूर्ववत नहीं की जा सकती और सभी संबंधित डायग्राम, खतरे और मेटाडेटा को स्थायी रूप से हटा देगी।",
     "descriptionPlaceholder": "इस थ्रेट मॉडल के उद्देश्य और दायरे का वर्णन करें",
@@ -1084,7 +1094,7 @@
     "columns": {
       "confidentialTooltip": "गोपनीय प्रस्तुति"
     },
-    "createTm": "खतरा मॉडल बनाएं",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "कोई प्रतिक्रिया दर्ज नहीं की गई",
       "responseDetails": "प्रतिक्रिया विवरण",
@@ -1093,7 +1103,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "सभी सर्वेक्षण",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "फ़िल्टर साफ़ करें",
       "confidential": "गोपनीयता",
       "confidentialOnly": "गोपनीय",
@@ -1210,7 +1220,7 @@
     },
     "userProfile": {
       "currentRole": "वर्तमान थ्रेट मॉडल भूमिका",
-      "groups": "समूह",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "प्रदाता ID",
       "title": "उपयोगकर्ता प्रोफ़ाइल",

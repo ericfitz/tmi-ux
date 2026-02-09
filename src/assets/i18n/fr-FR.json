@@ -104,10 +104,10 @@
         "noMembers": "Aucun membre dans ce groupe",
         "removeTooltip": "Retirer du groupe",
         "searchHint": "Tapez au moins 2 caracteres pour rechercher",
-        "searchPlaceholder": "Commencez a taper l'adresse email...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "Rechercher un utilisateur par email",
-        "subjectTypeGroup": "Groupe",
-        "subjectTypeUser": "Utilisateur"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "Aucun groupe trouve",
       "subtitle": "Afficher et gerer les groupes systeme",
@@ -170,10 +170,19 @@
     "subtitle": "Gerer les parametres et configurations du systeme",
     "title": "Administration",
     "users": {
+      "administrator": "Administrateur",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "Supprimer le compte utilisateur",
       "filterLabel": "Filtrer les utilisateurs",
       "filterPlaceholder": "Rechercher par email, nom, fournisseur ou nom de groupe",
+      "lastLogin": "Derniere connexion",
       "listTitle": "Utilisateurs",
+      "never": "Jamais",
       "noUsers": "Aucun utilisateur trouve",
       "subtitle": "Afficher et gerer les utilisateurs du systeme",
       "title": "Gerer les Utilisateurs",
@@ -181,7 +190,7 @@
         "confirm": "Êtes-vous sûr de vouloir transférer toutes les données de {{source}} vers {{target}} ?",
         "dialogTitle": "Transférer les données de l'utilisateur",
         "error": "Échec du transfert de la propriété. Veuillez réessayer.",
-        "success": "{{tmCount}} modèles de menace et {{responseCount}} réponses d'enquête transférés.",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "Transférer la propriété"
       }
     },
@@ -237,7 +246,7 @@
     "noMatchingTitle": "Aucune enquête correspondante",
     "noTemplatesMessage": "Créez votre première enquête pour commencer.",
     "noTemplatesTitle": "Aucune enquête pour le moment",
-    "pageTitle": "Gérer les enquêtes",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "Rechercher par nom...",
     "searchTemplates": "Rechercher des enquêtes",
     "surveyDetails": "Détails de l'enquête",
@@ -415,6 +424,7 @@
     "emailLabel": "Adresse E-mail",
     "error": "Erreur",
     "fonts": "Polices",
+    "groups": "Groupes",
     "id": "ID",
     "identityProvider": "Fournisseur d'Identite",
     "issueUri": "URL du Probleme",
@@ -533,7 +543,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "Les modèles de menace confidentiels ne sont pas automatiquement partagés avec le groupe des relecteurs de sécurité. Ce paramètre ne peut pas être modifié après la création.",
-    "confidentialLabel": "Confidentiel",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "Décrivez l'objectif et la portée de ce modèle de menace",
     "framework": "Framework",
     "namePlaceholder": "Entrez le nom du modèle de menace",
@@ -824,9 +834,9 @@
     "noSurveys": "Aucune enquête disponible",
     "responses": {
       "continueEditing": "Continuer la modification",
-      "errorLoadingResponses": "Échec du chargement des réponses",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "Filtrer par statut",
-      "loadingResponses": "Chargement des réponses...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "Vous n'avez pas encore complété de questionnaires. Commencez-en un depuis la page des questionnaires.",
       "noResponsesTitle": "Aucune réponse pour le moment",
       "pageTitle": "Mes réponses aux questionnaires",
@@ -914,7 +924,7 @@
     "createNewRepository": "Ajouter une reference de depot",
     "created": "{{common.created}}",
     "createdBy": "Cree par",
-    "dashboard": "Tableau de bord",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Diagramme de flux de donnees",
     "deleteWarningPermanent": "Cette action est irreversible et supprimera definitivement tous les diagrammes, menaces et metadonnees associes.",
     "descriptionPlaceholder": "Decrivez l'objectif et la portee de ce modele de menaces",
@@ -1084,7 +1094,7 @@
     "columns": {
       "confidentialTooltip": "Soumission confidentielle"
     },
-    "createTm": "Créer un modèle de menace",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "Aucune réponse enregistrée",
       "responseDetails": "Détails de la réponse",
@@ -1093,7 +1103,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "Toutes les enquêtes",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "Effacer les filtres",
       "confidential": "Confidentialité",
       "confidentialOnly": "Confidentiel",
@@ -1210,7 +1220,7 @@
     },
     "userProfile": {
       "currentRole": "Role actuel du modele de menaces",
-      "groups": "Groupes",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID du fournisseur",
       "title": "Profil Utilisateur",

@@ -104,10 +104,10 @@
         "noMembers": "ไม่มีสมาชิกในกลุ่มนี้",
         "removeTooltip": "ลบออกจากกลุ่ม",
         "searchHint": "พิมพ์อย่างน้อย 2 ตัวอักษรเพื่อค้นหา",
-        "searchPlaceholder": "เริ่มพิมพ์ที่อยู่อีเมล...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "ค้นหาผู้ใช้ด้วยอีเมล",
-        "subjectTypeGroup": "กลุ่ม",
-        "subjectTypeUser": "ผู้ใช้"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "ไม่พบกลุ่ม",
       "subtitle": "ดูและจัดการกลุ่มระบบ",
@@ -170,10 +170,19 @@
     "subtitle": "จัดการการตั้งค่าระบบและการกำหนดค่า",
     "title": "การจัดการระบบ",
     "users": {
+      "administrator": "ผู้ดูแลระบบ",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "ลบบัญชีผู้ใช้",
       "filterLabel": "กรองผู้ใช้",
       "filterPlaceholder": "ค้นหาตามอีเมล ชื่อ ผู้ให้บริการ หรือชื่อกลุ่ม",
+      "lastLogin": "เข้าสู่ระบบครั้งล่าสุด",
       "listTitle": "ผู้ใช้",
+      "never": "ไม่เคย",
       "noUsers": "ไม่พบผู้ใช้",
       "subtitle": "ดูและจัดการผู้ใช้ระบบ",
       "title": "จัดการผู้ใช้",
@@ -181,7 +190,7 @@
         "confirm": "คุณแน่ใจหรือไม่ว่าต้องการโอนข้อมูลทั้งหมดจาก {{source}} ไป {{target}}?",
         "dialogTitle": "โอนข้อมูลผู้ใช้",
         "error": "ไม่สามารถโอนสิทธิ์ได้ โปรดลองอีกครั้ง",
-        "success": "โอนแล้ว {{tmCount}} รูปแบบภัยคุกคาม และ {{responseCount}} การตอบสนองจากการสำรวจ",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "โอนสิทธิ์ความเป็นเจ้าของ"
       }
     },
@@ -237,7 +246,7 @@
     "noMatchingTitle": "ไม่พบแบบสำรวจที่ตรงกัน",
     "noTemplatesMessage": "สร้างแบบสำรวจแรกของคุณเพื่อเริ่มต้น",
     "noTemplatesTitle": "ยังไม่มีแบบสำรวจ",
-    "pageTitle": "จัดการแบบสำรวจ",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "ค้นหาตามชื่อ...",
     "searchTemplates": "ค้นหาแบบสำรวจ",
     "surveyDetails": "รายละเอียดแบบสำรวจ",
@@ -415,6 +424,7 @@
     "emailLabel": "ที่อยู่อีเมล",
     "error": "ข้อผิดพลาด",
     "fonts": "แบบอักษร",
+    "groups": "กลุ่ม",
     "id": "รหัส",
     "identityProvider": "ผู้ให้บริการยืนยันตัวตน",
     "issueUri": "URL ปัญหา",
@@ -533,7 +543,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "โมเดลภัยคุกคามที่เป็นความลับไม่ได้แชร์อัตโนมัติกับกลุ่ม Security Reviewers ไม่สามารถเปลี่ยนการตั้งค่านี้ได้หลังจากสร้าง",
-    "confidentialLabel": "ความลับ",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "อธิบายวัตถุประสงค์และขอบเขตของแบบจำลองภัยคุกคามนี้",
     "framework": "เฟรมเวิร์ก",
     "namePlaceholder": "ป้อนชื่อแบบจำลองภัยคุกคาม",
@@ -824,9 +834,9 @@
     "noSurveys": "ไม่มีแบบสำรวจที่พร้อมใช้งาน",
     "responses": {
       "continueEditing": "แก้ไขต่อ",
-      "errorLoadingResponses": "โหลดคำตอบไม่สำเร็จ",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "กรองตามสถานะ",
-      "loadingResponses": "กำลังโหลดคำตอบ...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "คุณยังไม่ได้ทำแบบสำรวจใดๆ เสร็จสิ้น เริ่มทำแบบสำรวจได้จากหน้าแบบสำรวจ",
       "noResponsesTitle": "ยังไม่มีคำตอบ",
       "pageTitle": "คำตอบแบบสำรวจของฉัน",
@@ -914,7 +924,7 @@
     "createNewRepository": "เพิ่มการอ้างอิงที่เก็บ",
     "created": "{{common.created}}",
     "createdBy": "สร้างโดย",
-    "dashboard": "แดชบอร์ด",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "แผนภาพการไหลของข้อมูล",
     "deleteWarningPermanent": "การดำเนินการนี้ไม่สามารถยกเลิกได้และจะลบแผนภาพ ภัยคุกคาม และข้อมูลเมตาที่เกี่ยวข้องทั้งหมดอย่างถาวร",
     "descriptionPlaceholder": "อธิบายวัตถุประสงค์และขอบเขตของแบบจำลองภัยคุกคามนี้",
@@ -1084,7 +1094,7 @@
     "columns": {
       "confidentialTooltip": "การส่งที่เป็นความลับ"
     },
-    "createTm": "สร้างโมเดลภัยคุกคาม",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "ไม่มีการบันทึกคำตอบ",
       "responseDetails": "รายละเอียดคำตอบ",
@@ -1093,7 +1103,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "แบบสำรวจทั้งหมด",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "ล้างตัวกรอง",
       "confidential": "ความลับ",
       "confidentialOnly": "เป็นความลับ",
@@ -1210,7 +1220,7 @@
     },
     "userProfile": {
       "currentRole": "บทบาทโมเดลภัยคุกคามปัจจุบัน",
-      "groups": "กลุ่ม",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "รหัสผู้ให้บริการ",
       "title": "โปรไฟล์ผู้ใช้",

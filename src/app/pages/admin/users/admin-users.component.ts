@@ -25,6 +25,7 @@ import {
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
+import { LanguageService } from '@app/i18n/language.service';
 import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
 import {
   DEFAULT_PAGE_SIZE,
@@ -79,6 +80,7 @@ export class AdminUsersComponent implements OnInit {
 
   filterText = '';
   loading = false;
+  currentLocale = 'en-US';
 
   constructor(
     private userAdminService: UserAdminService,
@@ -89,9 +91,16 @@ export class AdminUsersComponent implements OnInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private transloco: TranslocoService,
+    private languageService: LanguageService,
   ) {}
 
   ngOnInit(): void {
+    this.languageService.currentLanguage$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(language => {
+        this.currentLocale = language.code;
+      });
+
     this.loadProviders();
 
     // Initialize pagination state from URL query params

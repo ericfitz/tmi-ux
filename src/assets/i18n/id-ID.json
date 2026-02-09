@@ -104,10 +104,10 @@
         "noMembers": "Tidak ada anggota dalam grup ini",
         "removeTooltip": "Keluarkan dari grup",
         "searchHint": "Ketik minimal 2 karakter untuk mencari",
-        "searchPlaceholder": "Mulai ketik alamat email...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "Cari Pengguna berdasarkan Email",
-        "subjectTypeGroup": "Grup",
-        "subjectTypeUser": "Pengguna"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "Tidak ada grup ditemukan",
       "subtitle": "Lihat dan kelola grup sistem",
@@ -170,10 +170,19 @@
     "subtitle": "Kelola pengaturan dan konfigurasi sistem",
     "title": "Administrasi",
     "users": {
+      "administrator": "Administrator",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "Hapus akun pengguna",
       "filterLabel": "Filter Pengguna",
       "filterPlaceholder": "Cari berdasarkan email, nama, penyedia, atau nama grup",
+      "lastLogin": "Login Terakhir",
       "listTitle": "Pengguna",
+      "never": "Tidak Pernah",
       "noUsers": "Tidak ada pengguna ditemukan",
       "subtitle": "Lihat dan kelola pengguna sistem",
       "title": "Kelola Pengguna",
@@ -181,7 +190,7 @@
         "confirm": "Apakah Anda yakin ingin mengalihkan semua data dari {{source}} ke {{target}}?",
         "dialogTitle": "Alihkan Data Pengguna",
         "error": "Gagal mengalihkan kepemilikan. Silakan coba lagi.",
-        "success": "Dialihkan {{tmCount}} model ancaman dan {{responseCount}} respons survei.",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "Alihkan kepemilikan"
       }
     },
@@ -237,7 +246,7 @@
     "noMatchingTitle": "Tidak Ada Survei yang Cocok",
     "noTemplatesMessage": "Buat survei pertama Anda untuk memulai.",
     "noTemplatesTitle": "Belum Ada Survei",
-    "pageTitle": "Kelola Survei",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "Cari berdasarkan nama...",
     "searchTemplates": "Cari survei",
     "surveyDetails": "Detail Survei",
@@ -415,6 +424,7 @@
     "emailLabel": "Alamat Email",
     "error": "Kesalahan",
     "fonts": "Font",
+    "groups": "Grup",
     "id": "ID",
     "identityProvider": "Penyedia Identitas",
     "issueUri": "URL Isu",
@@ -533,7 +543,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "Model ancaman rahasia tidak secara otomatis dibagikan dengan grup Peninjau Keamanan. Pengaturan ini tidak dapat diubah setelah pembuatan.",
-    "confidentialLabel": "Rahasia",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "Jelaskan tujuan dan ruang lingkup model ancaman ini",
     "framework": "Framework",
     "namePlaceholder": "Masukkan nama model ancaman",
@@ -824,9 +834,9 @@
     "noSurveys": "Tidak ada survei tersedia",
     "responses": {
       "continueEditing": "Lanjutkan mengedit",
-      "errorLoadingResponses": "Gagal memuat respons",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "Filter berdasarkan Status",
-      "loadingResponses": "Memuat respons...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "Anda belum menyelesaikan survei apa pun. Mulai dari halaman survei.",
       "noResponsesTitle": "Belum Ada Respons",
       "pageTitle": "Respons Survei Saya",
@@ -914,7 +924,7 @@
     "createNewRepository": "Tambah Referensi Repositori",
     "created": "{{common.created}}",
     "createdBy": "Dibuat Oleh",
-    "dashboard": "Dasbor",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Diagram Aliran Data",
     "deleteWarningPermanent": "Tindakan ini tidak dapat dibatalkan dan akan menghapus secara permanen semua diagram, ancaman, dan metadata terkait.",
     "descriptionPlaceholder": "Jelaskan Tujuan dan Ruang Lingkup Model Ancaman Ini",
@@ -1084,7 +1094,7 @@
     "columns": {
       "confidentialTooltip": "Pengiriman rahasia"
     },
-    "createTm": "Buat Model Ancaman",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "Tidak ada respons tercatat",
       "responseDetails": "Detail Respons",
@@ -1093,7 +1103,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "Semua Survei",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "Hapus Filter",
       "confidential": "Kerahasiaan",
       "confidentialOnly": "Rahasia",
@@ -1210,7 +1220,7 @@
     },
     "userProfile": {
       "currentRole": "Peran Model Ancaman Saat Ini",
-      "groups": "Grup",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID Penyedia",
       "title": "Profil Pengguna",

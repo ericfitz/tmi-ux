@@ -111,10 +111,10 @@
         "noMembers": "No members in this group",
         "removeTooltip": "Remove from group",
         "searchHint": "Type at least 2 characters to search",
-        "searchPlaceholder": "Start typing email address...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "Search User by Email",
-        "subjectTypeGroup": "Group",
-        "subjectTypeUser": "User"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "No groups found",
       "subtitle": "View and manage system groups",
@@ -178,10 +178,19 @@
     "subtitle": "Manage system settings and configurations",
     "title": "Administration",
     "users": {
+      "administrator": "Administrator",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "Delete user account",
       "filterLabel": "Filter Users",
       "filterPlaceholder": "Search by email, name, provider, or group name",
+      "lastLogin": "Last Login",
       "listTitle": "Users",
+      "never": "Never",
       "noUsers": "No users found",
       "subtitle": "View and manage system users",
       "title": "Manage Users",
@@ -189,7 +198,7 @@
         "confirm": "Are you sure you want to transfer all data from {{source}} to {{target}}?",
         "dialogTitle": "Transfer User Data",
         "error": "Failed to transfer ownership. Please try again.",
-        "success": "Transferred {{tmCount}} threat models and {{responseCount}} survey responses.",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "Transfer ownership"
       }
     },
@@ -249,7 +258,7 @@
     "noMatchingTitle": "No Matching Surveys",
     "noTemplatesMessage": "Create your first survey to get started.",
     "noTemplatesTitle": "No Surveys Yet",
-    "pageTitle": "Manage Surveys",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "Search by name...",
     "searchTemplates": "Search surveys",
     "surveyDetails": "Survey Details",
@@ -433,6 +442,7 @@
     "emailLabel": "Email Address",
     "error": "Error",
     "fonts": "Fonts",
+    "groups": "Groups",
     "id": "ID",
     "identityProvider": "Identity Provider",
     "issueUri": "Issue URL",
@@ -554,7 +564,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "Confidential threat models are not automatically shared with the Security Reviewers group. This setting cannot be changed after creation.",
-    "confidentialLabel": "Confidential",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "Describe the purpose and scope of this threat model",
     "framework": "Framework",
     "namePlaceholder": "Enter threat model name",
@@ -846,9 +856,9 @@
     "noSurveys": "No surveys available",
     "responses": {
       "continueEditing": "Continue editing",
-      "errorLoadingResponses": "Failed to load responses",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "Filter by Status",
-      "loadingResponses": "Loading responses...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "You haven't completed any surveys. Start one from the surveys page.",
       "noResponsesTitle": "No Responses Yet",
       "pageTitle": "My Survey Responses",
@@ -938,7 +948,7 @@
     "created": "{{common.created}}",
     "created.comment": "This is used to reference the date and time that something was created.",
     "createdBy": "Created By",
-    "dashboard": "Dashboard",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Data Flow Diagram",
     "deleteWarningPermanent": "This action cannot be undone and will permanently delete all associated diagrams, threats, and metadata.",
     "descriptionPlaceholder": "Describe the Purpose and Scope of This Threat Model",
@@ -1112,7 +1122,7 @@
     "columns": {
       "confidentialTooltip": "Confidential submission"
     },
-    "createTm": "Create Threat Model",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "No responses recorded",
       "responseDetails": "Response Details",
@@ -1121,7 +1131,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "All Surveys",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "Clear Filters",
       "confidential": "Confidentiality",
       "confidentialOnly": "Confidential",
@@ -1242,7 +1252,7 @@
     },
     "userProfile": {
       "currentRole": "Current Threat Model Role",
-      "groups": "Groups",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "Provider ID",
       "title": "User Profile",

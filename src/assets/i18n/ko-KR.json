@@ -104,10 +104,10 @@
         "noMembers": "이 그룹에 멤버가 없습니다",
         "removeTooltip": "그룹에서 제거",
         "searchHint": "검색하려면 최소 2자 이상 입력하세요",
-        "searchPlaceholder": "이메일 주소를 입력하세요...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "이메일로 사용자 검색",
-        "subjectTypeGroup": "그룹",
-        "subjectTypeUser": "사용자"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "그룹을 찾을 수 없습니다",
       "subtitle": "시스템 그룹 보기 및 관리",
@@ -170,10 +170,19 @@
     "subtitle": "시스템 설정 및 구성 관리",
     "title": "관리",
     "users": {
+      "administrator": "관리자",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "사용자 계정 삭제",
       "filterLabel": "사용자 필터",
       "filterPlaceholder": "이메일, 이름, 공급자 또는 그룹 이름으로 검색",
+      "lastLogin": "마지막 로그인",
       "listTitle": "사용자",
+      "never": "없음",
       "noUsers": "사용자를 찾을 수 없습니다",
       "subtitle": "시스템 사용자 보기 및 관리",
       "title": "사용자 관리",
@@ -181,7 +190,7 @@
         "confirm": "{{source}}에서 {{target}}로 모든 데이터를 이전하시겠습니까?",
         "dialogTitle": "사용자 데이터 이전",
         "error": "소유권 이전에 실패했습니다. 다시 시도해 주세요.",
-        "success": "{{tmCount}}개의 위협 모델과 {{responseCount}}개의 설문 응답을 이전했습니다.",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "소유권 이전"
       }
     },
@@ -237,7 +246,7 @@
     "noMatchingTitle": "일치하는 설문조사 없음",
     "noTemplatesMessage": "첫 번째 설문조사를 생성하여 시작하세요.",
     "noTemplatesTitle": "아직 설문조사 없음",
-    "pageTitle": "설문조사 관리",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "이름으로 검색...",
     "searchTemplates": "설문조사 검색",
     "surveyDetails": "설문 세부정보",
@@ -415,6 +424,7 @@
     "emailLabel": "이메일 주소",
     "error": "오류",
     "fonts": "글꼴",
+    "groups": "그룹",
     "id": "ID",
     "identityProvider": "ID 공급자",
     "issueUri": "이슈 URL",
@@ -533,7 +543,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "기밀 위협 모델은 보안 검토자 그룹과 자동으로 공유되지 않습니다. 이 설정은 생성 후 변경할 수 없습니다.",
-    "confidentialLabel": "기밀",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "이 위협 모델의 목적과 범위를 설명하세요",
     "framework": "프레임워크",
     "namePlaceholder": "위협 모델 이름 입력",
@@ -824,9 +834,9 @@
     "noSurveys": "사용 가능한 설문이 없습니다",
     "responses": {
       "continueEditing": "편집 계속하기",
-      "errorLoadingResponses": "응답을 불러오는 데 실패했습니다",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "상태별 필터",
-      "loadingResponses": "응답 불러오는 중...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "완료한 설문조사가 없습니다. 설문조사 페이지에서 시작하세요.",
       "noResponsesTitle": "응답 없음",
       "pageTitle": "내 설문조사 응답",
@@ -914,7 +924,7 @@
     "createNewRepository": "저장소 참조 추가",
     "created": "{{common.created}}",
     "createdBy": "생성자",
-    "dashboard": "대시보드",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "데이터 흐름 다이어그램",
     "deleteWarningPermanent": "이 작업은 취소할 수 없으며 관련된 모든 다이어그램, 위협 및 메타데이터가 영구적으로 삭제됩니다.",
     "descriptionPlaceholder": "이 위협 모델의 목적 및 범위를 설명하세요",
@@ -1084,7 +1094,7 @@
     "columns": {
       "confidentialTooltip": "기밀 제출"
     },
-    "createTm": "위협 모델 생성",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "기록된 응답 없음",
       "responseDetails": "응답 세부 정보",
@@ -1093,7 +1103,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "모든 설문조사",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "필터 지우기",
       "confidential": "기밀성",
       "confidentialOnly": "기밀",
@@ -1210,7 +1220,7 @@
     },
     "userProfile": {
       "currentRole": "현재 위협 모델 역할",
-      "groups": "그룹",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "공급자 ID",
       "title": "사용자 프로필",

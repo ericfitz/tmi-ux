@@ -2,6 +2,7 @@
   "*": [
     "admin.addons.addDialog.webhook",
     "admin.groups.addDialog.groupNamePlaceholder",
+    "admin.users.columns.threatModels",
     "admin.webhooks.addDialog.url",
     "common.id",
     "common.version",
@@ -12,6 +13,7 @@
   "bn-BD": [],
   "de-DE": [
     "about.opensourcetitle",
+    "admin.users.administrator",
     "adminSurveys.templateBuilder.nameId",
     "adminSurveys.templateBuilder.questionTypeLabels.dropdown",
     "adminSurveys.templateBuilder.questionTypeLabels.panel",
@@ -26,6 +28,7 @@
     "common.objectTypes.repository",
     "common.ok",
     "common.status",
+    "createThreatModel.framework",
     "editor.nodeLabels.textbox",
     "navbar.dashboard",
     "threatModels.branch",
@@ -40,14 +43,15 @@
     "assetEditor.types.hardware",
     "assetEditor.types.software",
     "common.error",
+    "createThreatModel.framework",
     "editor.nodeLabels.actor",
+    "surveys.confidentialDialog.no",
     "threatModels.commit"
   ],
   "fr-FR": [
     "about.opensourcetitle",
-    "adminSurveys.templateBuilder.questions",
-    "triage.title",
     "admin.title",
+    "adminSurveys.templateBuilder.questions",
     "assetEditor.types.infrastructure",
     "assetEditor.types.personnel",
     "assetEditor.types.service",
@@ -64,8 +68,10 @@
     "common.score",
     "common.sessionRoles.participant",
     "common.type",
+    "createThreatModel.framework",
     "navbar.admin",
     "privacy.introductionTitle",
+    "triage.title",
     "userPreferences.marginSize.standard",
     "userPreferences.tabs.danger"
   ],
@@ -74,6 +80,7 @@
   "id-ID": [
     "about.contactoperator",
     "about.server",
+    "admin.users.administrator",
     "adminSurveys.templateBuilder.questionTypeLabels.panel",
     "assetEditor.types.data",
     "common.metadata",
@@ -82,6 +89,7 @@
     "common.sessionRoles.host",
     "common.sessionRoles.presenter",
     "common.status",
+    "createThreatModel.framework",
     "editor.nodeLabels.node",
     "navbar.admin",
     "navbar.appTitle",
@@ -96,6 +104,7 @@
     "assetEditor.types.software",
     "common.ok",
     "common.status",
+    "createThreatModel.framework",
     "navbar.admin",
     "threatModels.commit"
   ],

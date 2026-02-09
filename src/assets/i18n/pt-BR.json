@@ -104,10 +104,10 @@
         "noMembers": "Nenhum membro neste grupo",
         "removeTooltip": "Remover do grupo",
         "searchHint": "Digite pelo menos 2 caracteres para pesquisar",
-        "searchPlaceholder": "Comece a digitar o endereco de e-mail...",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
         "searchUser": "Pesquisar Usuario por E-mail",
-        "subjectTypeGroup": "Grupo",
-        "subjectTypeUser": "Usuário"
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "Nenhum grupo encontrado",
       "subtitle": "Visualizar e gerenciar grupos do sistema",
@@ -170,10 +170,19 @@
     "subtitle": "Gerenciar configuracoes e ajustes do sistema",
     "title": "Administracao",
     "users": {
+      "administrator": "Administrador",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "Excluir conta de usuario",
       "filterLabel": "Filtrar Usuarios",
       "filterPlaceholder": "Pesquisar por e-mail, nome, provedor ou nome do grupo",
+      "lastLogin": "Último Login",
       "listTitle": "Usuarios",
+      "never": "Nunca",
       "noUsers": "Nenhum usuario encontrado",
       "subtitle": "Visualizar e gerenciar usuarios do sistema",
       "title": "Gerenciar Usuarios",
@@ -181,7 +190,7 @@
         "confirm": "Tem certeza de que deseja transferir todos os dados de {{source}} para {{target}}?",
         "dialogTitle": "Transferir Dados do Usuário",
         "error": "Falha ao transferir propriedade. Por favor, tente novamente.",
-        "success": "Transferiu {{tmCount}} modelos de ameaça e {{responseCount}} respostas de pesquisa.",
+        "success": "{{userPreferences.transferData.success}}",
         "tooltip": "Transferir propriedade"
       }
     },
@@ -237,7 +246,7 @@
     "noMatchingTitle": "Nenhuma Pesquisa Correspondente",
     "noTemplatesMessage": "Crie sua primeira pesquisa para começar.",
     "noTemplatesTitle": "Nenhuma Pesquisa Ainda",
-    "pageTitle": "Gerenciar Pesquisas",
+    "pageTitle": "{{admin.sections.surveys.title}}",
     "searchByName": "Pesquisar por nome...",
     "searchTemplates": "Buscar pesquisas",
     "surveyDetails": "Detalhes da Pesquisa",
@@ -415,6 +424,7 @@
     "emailLabel": "Endereco de E-mail",
     "error": "Erro",
     "fonts": "Fontes",
+    "groups": "Grupos",
     "id": "ID",
     "identityProvider": "Provedor de Identidade",
     "issueUri": "URL do Problema",
@@ -533,7 +543,7 @@
   },
   "createThreatModel": {
     "confidentialHint": "Modelos de ameaça confidenciais não são compartilhados automaticamente com o grupo Revisores de Segurança. Esta configuração não pode ser alterada após a criação.",
-    "confidentialLabel": "Confidencial",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
     "descriptionPlaceholder": "Descreva o propósito e o escopo deste modelo de ameaça",
     "framework": "Framework",
     "namePlaceholder": "Digite o nome do modelo de ameaça",
@@ -824,9 +834,9 @@
     "noSurveys": "Nenhuma pesquisa disponível",
     "responses": {
       "continueEditing": "Continuar editando",
-      "errorLoadingResponses": "Falha ao carregar respostas",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
       "filterByStatus": "Filtrar por Status",
-      "loadingResponses": "Carregando respostas...",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "Você ainda não completou nenhuma pesquisa. Comece uma na página de pesquisas.",
       "noResponsesTitle": "Nenhuma Resposta Ainda",
       "pageTitle": "Minhas Respostas de Pesquisas",
@@ -914,7 +924,7 @@
     "createNewRepository": "Adicionar Referencia de Repositorio",
     "created": "{{common.created}}",
     "createdBy": "Criado Por",
-    "dashboard": "Painel",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Diagrama de Fluxo de Dados",
     "deleteWarningPermanent": "Esta acao nao pode ser desfeita e excluira permanentemente todos os diagramas, ameacas e metadados associados.",
     "descriptionPlaceholder": "Descreva o Proposito e Escopo Deste Modelo de Ameacas",
@@ -1084,7 +1094,7 @@
     "columns": {
       "confidentialTooltip": "Resposta confidencial"
     },
-    "createTm": "Criar Modelo de Ameaça",
+    "createTm": "{{createThreatModel.title}}",
     "detail": {
       "noResponses": "Nenhuma resposta registrada",
       "responseDetails": "Detalhes da Resposta",
@@ -1093,7 +1103,7 @@
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
-      "allSurveys": "Todas as Pesquisas",
+      "allSurveys": "{{triage.list.allSurveys}}",
       "clearFilters": "Limpar Filtros",
       "confidential": "Confidencialidade",
       "confidentialOnly": "Confidencial",
@@ -1210,7 +1220,7 @@
     },
     "userProfile": {
       "currentRole": "Funcao Atual no Modelo de Ameacas",
-      "groups": "Grupos",
+      "groups": "{{common.groups}}",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID do Provedor",
       "title": "Perfil do Usuario",
