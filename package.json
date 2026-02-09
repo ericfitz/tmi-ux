@@ -51,7 +51,9 @@
     "heroku-postbuild": "ng build --configuration=hosted-container",
     "deploy:heroku": "./scripts/push-heroku.sh",
     "build:oci": "ng build --configuration=oci",
-    "deploy:oci": "./scripts/push-oci.sh"
+    "deploy:oci": "./scripts/push-oci.sh",
+    "build:container": "ng build --configuration=container",
+    "deploy:chainguard": "./scripts/push-chainguard.sh"
   },
   "private": true,
   "dependencies": {
