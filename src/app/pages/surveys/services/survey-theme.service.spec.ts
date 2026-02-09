@@ -37,7 +37,6 @@ describe('SurveyThemeService', () => {
       }),
     };
 
-     
     service = new SurveyThemeService(mockThemeService as any);
   });
 
