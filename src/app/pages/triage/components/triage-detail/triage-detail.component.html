@@ -14,9 +14,6 @@
   } @else if (response) {
     <!-- Header -->
     <div class="detail-header">
-      <button mat-icon-button (click)="goBack()" matTooltip="Back to triage">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
       <div class="header-title">
         <h1>{{ surveyJson?.title || 'Survey Response' }}</h1>
         <span class="response-meta">
@@ -48,6 +45,14 @@
           </button>
         }
       </div>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="goBack()"
+        [attr.aria-label]="'common.close' | transloco"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
 
     <div class="detail-content">

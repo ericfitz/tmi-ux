@@ -33,7 +33,7 @@
 
 .detail-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
   padding: 16px 24px;
   background: var(--color-surface);
@@ -58,6 +58,10 @@
     display: flex;
     align-items: center;
     gap: 12px;
+  }
+
+  .close-button {
+    margin-left: 16px;
   }
 }
 
@@ -516,20 +520,23 @@ button:not([mat-icon-button]) mat-icon {
     padding: 12px 16px;
 
     .header-title {
-      order: 2;
-      width: 100%;
-      margin-top: 8px;
+      flex-basis: calc(100% - 56px);
     }
 
     .header-actions {
       order: 3;
       width: 100%;
       flex-wrap: wrap;
+      margin-top: 8px;
 
       button {
         flex: 1;
         min-width: 120px;
       }
+    }
+
+    .close-button {
+      margin-left: auto;
     }
   }
 
