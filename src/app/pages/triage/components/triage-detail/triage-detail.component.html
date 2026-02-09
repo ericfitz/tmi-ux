@@ -27,11 +27,13 @@
         @if (response.status === 'submitted') {
           <button mat-stroked-button (click)="approveResponse()" [disabled]="isUpdatingStatus">
             <mat-icon>check_circle</mat-icon>
-            Approve
+            {{ 'triage.list.approve' | transloco }}
           </button>
+        }
+        @if (response.status === 'submitted' || response.status === 'ready_for_review') {
           <button mat-stroked-button (click)="openRevisionDialog()" [disabled]="isUpdatingStatus">
             <mat-icon>rate_review</mat-icon>
-            Return for Revision
+            {{ 'triage.list.returnForRevision' | transloco }}
           </button>
         }
         @if (response.status === 'ready_for_review') {
@@ -42,7 +44,7 @@
             [disabled]="isUpdatingStatus"
           >
             <mat-icon>security</mat-icon>
-            Create Threat Model
+            {{ 'triage.list.createThreatModel' | transloco }}
           </button>
         }
       </div>
@@ -51,6 +53,30 @@
     <div class="detail-content">
       <!-- Main content -->
       <div class="content-main">
+        <!-- Revision Notes Banner -->
+        @if (response.revision_notes) {
+          <mat-card class="revision-notes-card">
+            <mat-card-content>
+              <div class="revision-notes-header">
+                <mat-icon>rate_review</mat-icon>
+                <h3>{{ 'triage.detail.revisionNotesTitle' | transloco }}</h3>
+              </div>
+              <div class="revision-notes-content">{{ response.revision_notes }}</div>
+              @if (response.reviewed_by) {
+                <div class="revision-notes-meta">
+                  {{ 'triage.detail.reviewedBy' | transloco }}
+                  <app-user-display [user]="response.reviewed_by" />
+                  @if (response.reviewed_at) {
+                    <span class="reviewed-date">
+                      &middot; {{ response.reviewed_at | date: 'medium' }}
+                    </span>
+                  }
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        }
+
         <!-- Status Timeline -->
         <mat-card class="timeline-card">
           <mat-card-content>
@@ -118,19 +144,19 @@
         <!-- Response Info -->
         <mat-card class="info-card">
           <mat-card-header>
-            <mat-card-title>Response Details</mat-card-title>
+            <mat-card-title>{{ 'triage.detail.responseDetails' | transloco }}</mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <div class="info-grid">
               <div class="info-item">
-                <span class="info-label">Status</span>
+                <span class="info-label">{{ 'common.status' | transloco }}</span>
                 <mat-chip [ngClass]="getStatusClass(response.status)">
                   {{ getStatusLabel(response.status) }}
                 </mat-chip>
               </div>
 
               <div class="info-item">
-                <span class="info-label">Submitter</span>
+                <span class="info-label">{{ 'triage.list.submitter' | transloco }}</span>
                 <span class="info-value">
                   <app-user-display [user]="response.owner" />
                 </span>
@@ -138,36 +164,52 @@
 
               @if (response.owner.display_name) {
                 <div class="info-item">
-                  <span class="info-label">Email</span>
+                  <span class="info-label">{{ 'common.email' | transloco }}</span>
                   <span class="info-value">{{ response.owner.email }}</span>
                 </div>
               }
 
               <div class="info-item">
-                <span class="info-label">Version</span>
+                <span class="info-label">{{ 'common.version' | transloco }}</span>
                 <span class="info-value">v{{ response.survey_version }}</span>
               </div>
 
               <div class="info-item">
-                <span class="info-label">Created</span>
+                <span class="info-label">{{ 'common.created' | transloco }}</span>
                 <span class="info-value">{{ response.created_at | date: 'medium' }}</span>
               </div>
 
               @if (response.submitted_at) {
                 <div class="info-item">
-                  <span class="info-label">Submitted</span>
+                  <span class="info-label">{{ 'triage.list.submitted' | transloco }}</span>
                   <span class="info-value">{{ response.submitted_at | date: 'medium' }}</span>
                 </div>
               }
 
+              @if (response.reviewed_by) {
+                <div class="info-item">
+                  <span class="info-label">{{ 'triage.detail.reviewedBy' | transloco }}</span>
+                  <span class="info-value">
+                    <app-user-display [user]="response.reviewed_by" />
+                  </span>
+                </div>
+              }
+
+              @if (response.reviewed_at) {
+                <div class="info-item">
+                  <span class="info-label">{{ 'triage.detail.reviewedAt' | transloco }}</span>
+                  <span class="info-value">{{ response.reviewed_at | date: 'medium' }}</span>
+                </div>
+              }
+
               <div class="info-item">
-                <span class="info-label">Last Modified</span>
+                <span class="info-label">{{ 'common.lastModified' | transloco }}</span>
                 <span class="info-value">{{ response.modified_at | date: 'medium' }}</span>
               </div>
 
               @if (response.created_threat_model_id) {
                 <div class="info-item">
-                  <span class="info-label">Threat Model</span>
+                  <span class="info-label">{{ 'common.objectTypes.threatModel' | transloco }}</span>
                   <a [routerLink]="['/tm', response.created_threat_model_id]" class="tm-link">
                     View Threat Model
                   </a>
@@ -175,11 +217,91 @@
               }
 
               <div class="info-item">
-                <span class="info-label">Response ID</span>
+                <span class="info-label">{{ 'common.id' | transloco }}</span>
                 <span class="info-value monospace">{{ response.id }}</span>
               </div>
             </div>
           </mat-card-content>
+        </mat-card>
+
+        <!-- Triage Notes -->
+        <mat-card class="notes-card">
+          <mat-card-header>
+            <mat-card-title>{{ 'triage.detail.triageNotes' | transloco }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @if (isLoadingNotes) {
+              <div class="notes-loading">
+                <mat-spinner diameter="24"></mat-spinner>
+              </div>
+            } @else if (triageNotes.length === 0 && !showNoteForm) {
+              <div class="notes-empty">
+                <mat-icon>description</mat-icon>
+                <p>{{ 'triage.detail.noNotes' | transloco }}</p>
+              </div>
+            } @else {
+              <div class="notes-list">
+                @for (note of triageNotes; track note.id) {
+                  <div class="note-item">
+                    <div class="note-name">{{ note.name }}</div>
+                    <div class="note-meta">
+                      @if (note.created_by) {
+                        <app-user-display [user]="note.created_by" />
+                      }
+                      <span class="note-date">{{ note.created_at | date: 'short' }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (showNoteForm) {
+              <div class="note-form">
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'triage.detail.noteNameLabel' | transloco }}</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="newNoteName"
+                    [placeholder]="'triage.detail.noteNamePlaceholder' | transloco"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'triage.detail.noteContentLabel' | transloco }}</mat-label>
+                  <textarea
+                    matInput
+                    [(ngModel)]="newNoteContent"
+                    rows="4"
+                    [placeholder]="'triage.detail.noteContentPlaceholder' | transloco"
+                  ></textarea>
+                  <mat-hint>{{ 'triage.detail.markdownSupported' | transloco }}</mat-hint>
+                </mat-form-field>
+
+                <div class="note-form-actions">
+                  <button mat-button (click)="cancelNoteForm()">
+                    {{ 'common.cancel' | transloco }}
+                  </button>
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="createNote()"
+                    [disabled]="!newNoteName.trim() || !newNoteContent.trim() || isCreatingNote"
+                  >
+                    {{ 'common.save' | transloco }}
+                  </button>
+                </div>
+              </div>
+            }
+          </mat-card-content>
+
+          @if (!showNoteForm) {
+            <mat-card-actions>
+              <button mat-button (click)="toggleNoteForm()">
+                <mat-icon>add</mat-icon>
+                {{ 'triage.detail.addNote' | transloco }}
+              </button>
+            </mat-card-actions>
+          }
         </mat-card>
       </div>
     </div>

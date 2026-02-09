@@ -281,6 +281,7 @@
   }
 }
 
+// Status chip colors
 .status-draft {
   --mdc-chip-label-text-color: #666;
   --mdc-chip-elevated-container-color: #f5f5f5;
@@ -291,19 +292,169 @@
   --mdc-chip-elevated-container-color: #e3f2fd;
 }
 
-.status-in-review {
+.status-needs-revision {
   --mdc-chip-label-text-color: #e65100;
   --mdc-chip-elevated-container-color: #fff3e0;
 }
 
-.status-pending-triage {
+.status-ready-for-review {
   --mdc-chip-label-text-color: #2e7d32;
   --mdc-chip-elevated-container-color: #e8f5e9;
 }
 
-// Button icon alignment
+.status-review-created {
+  --mdc-chip-label-text-color: #6a1b9a;
+  --mdc-chip-elevated-container-color: #f3e5f5;
+}
+
+// Revision Notes Banner
+.revision-notes-card {
+  border-left: 4px solid var(--color-warning, #ff9800);
+
+  mat-card-content {
+    padding: 16px;
+  }
+}
+
+.revision-notes-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+
+  /* stylelint-disable-next-line no-descending-specificity */
+  mat-icon {
+    color: var(--color-warning, #ff9800);
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+.revision-notes-content {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 12px;
+  background: var(--color-background-light);
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.revision-notes-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+// Triage Notes Card
+.notes-card {
+  mat-card-header {
+    padding: 16px 16px 0;
+
+    mat-card-title {
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+
+  mat-card-content {
+    padding: 16px;
+  }
+
+  mat-card-actions {
+    padding: 8px 16px;
+    margin: 0;
+  }
+}
+
+.notes-loading,
+.notes-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--color-text-secondary);
+
+  /* stylelint-disable-next-line no-descending-specificity */
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    margin-bottom: 8px;
+    opacity: 0.4;
+  }
+
+  /* stylelint-disable-next-line no-descending-specificity */
+  p {
+    margin: 8px 0 0;
+    font-size: 13px;
+  }
+}
+
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.note-item {
+  padding: 12px;
+  background: var(--color-background-light);
+  border-radius: 4px;
+  border: 1px solid var(--color-border-light);
+
+  .note-name {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .note-meta {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .note-date {
+      margin-left: auto;
+    }
+  }
+}
+
+.note-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border-light);
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  .note-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+}
+
+// Button icon alignment (exclude icon-only buttons)
 /* stylelint-disable-next-line no-descending-specificity */
-button mat-icon {
+button:not([mat-icon-button]) mat-icon {
   vertical-align: middle;
   margin-right: 4px;
 }

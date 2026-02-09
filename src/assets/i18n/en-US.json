@@ -502,6 +502,7 @@
     "cut": "Cut",
     "deactivate": "Deactivate",
     "delete": "Delete",
+    "email": "Email",
     "deleteConfirm": "Confirm Deletion",
     "deleteWarningConfirmationField": "Delete Confirmation",
     "deleteWarningConfirmationMatch": "Confirmation text matches",
@@ -1203,10 +1204,21 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "Add Note",
+      "markdownSupported": "Markdown supported",
+      "noNotes": "No triage notes yet",
       "noResponses": "No responses recorded",
+      "noteContentLabel": "Content",
+      "noteContentPlaceholder": "Enter note content...",
+      "noteNameLabel": "Title",
+      "noteNamePlaceholder": "Brief note title",
       "responseDetails": "Response Details",
+      "reviewedAt": "Reviewed",
+      "reviewedBy": "Reviewed By",
+      "revisionNotesTitle": "Revision Requested",
       "statusTimeline": "Status Timeline",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "Triage Notes"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",

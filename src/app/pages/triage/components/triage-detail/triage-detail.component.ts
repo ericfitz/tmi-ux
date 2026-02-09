@@ -3,13 +3,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
+import { MarkdownModule } from 'ngx-markdown';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
 import { SurveyService } from '../../../surveys/services/survey.service';
+import { TriageNoteService } from '../../services/triage-note.service';
 import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
+import { TriageNoteListItem, CreateTriageNoteRequest } from '@app/types/triage-note.types';
 import {
   RevisionNotesDialogComponent,
   RevisionNotesDialogResult,
@@ -33,7 +36,13 @@ interface StatusTimelineEntry {
 @Component({
   selector: 'app-triage-detail',
   standalone: true,
-  imports: [...COMMON_IMPORTS, ...ALL_MATERIAL_IMPORTS, TranslocoModule, UserDisplayComponent],
+  imports: [
+    ...COMMON_IMPORTS,
+    ...ALL_MATERIAL_IMPORTS,
+    TranslocoModule,
+    UserDisplayComponent,
+    MarkdownModule,
+  ],
   templateUrl: './triage-detail.component.html',
   styleUrl: './triage-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.Default,
@@ -62,12 +71,29 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /** Formatted survey responses for display */
   formattedResponses: { question: string; answer: string; name: string }[] = [];
 
+  /** Triage notes for this response */
+  triageNotes: TriageNoteListItem[] = [];
+
+  /** Whether triage notes are loading */
+  isLoadingNotes = false;
+
+  /** Whether a note is being created */
+  isCreatingNote = false;
+
+  /** Whether the note creation form is visible */
+  showNoteForm = false;
+
+  /** New note form fields */
+  newNoteName = '';
+  newNoteContent = '';
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private dialog: MatDialog,
     private responseService: SurveyResponseService,
     private surveyService: SurveyService,
+    private triageNoteService: TriageNoteService,
     private logger: LoggerService,
   ) {}
 
@@ -89,6 +115,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
         next: response => {
           this.response = response;
           this.buildStatusTimeline(response);
+          this.loadTriageNotes(response.id);
 
           // Use the survey_json snapshot from the response if available
           if (response.survey_json) {
@@ -334,6 +361,76 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
           this.logger.error('Failed to create threat model from response', err);
         },
       });
+  }
+
+  /**
+   * Load triage notes for the current response
+   */
+  private loadTriageNotes(responseId: string): void {
+    this.isLoadingNotes = true;
+    this.triageNoteService
+      .list(responseId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: response => {
+          this.triageNotes = response.triage_notes;
+          this.isLoadingNotes = false;
+        },
+        error: (err: unknown) => {
+          this.isLoadingNotes = false;
+          this.logger.error('Failed to load triage notes', err);
+        },
+      });
+  }
+
+  /**
+   * Toggle the note creation form
+   */
+  toggleNoteForm(): void {
+    this.showNoteForm = !this.showNoteForm;
+    if (!this.showNoteForm) {
+      this.newNoteName = '';
+      this.newNoteContent = '';
+    }
+  }
+
+  /**
+   * Create a new triage note
+   */
+  createNote(): void {
+    if (!this.response || !this.newNoteName.trim() || !this.newNoteContent.trim()) return;
+
+    this.isCreatingNote = true;
+    const request: CreateTriageNoteRequest = {
+      name: this.newNoteName.trim(),
+      content: this.newNoteContent.trim(),
+    };
+
+    this.triageNoteService
+      .create(this.response.id, request)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.isCreatingNote = false;
+          this.showNoteForm = false;
+          this.newNoteName = '';
+          this.newNoteContent = '';
+          this.loadTriageNotes(this.response!.id);
+        },
+        error: (err: unknown) => {
+          this.isCreatingNote = false;
+          this.logger.error('Failed to create triage note', err);
+        },
+      });
+  }
+
+  /**
+   * Cancel note creation
+   */
+  cancelNoteForm(): void {
+    this.showNoteForm = false;
+    this.newNoteName = '';
+    this.newNoteContent = '';
   }
 
   /**
