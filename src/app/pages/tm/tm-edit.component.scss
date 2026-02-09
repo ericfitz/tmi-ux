@@ -55,7 +55,7 @@
   margin: 0;
   border: none;
   border-radius: 8px;
-  background-color: transparent;
+  background-color: var(--theme-surface);
   cursor: pointer;
   font-family: var(--font-family-primary);
   color: var(--theme-text-primary);
@@ -77,6 +77,9 @@
   color: var(--theme-text-secondary);
   transition: transform 0.2s ease;
   flex-shrink: 0;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
 
   &.collapsed {
     transform: rotate(-90deg);
@@ -87,6 +90,7 @@
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
   flex-shrink: 0;
+  color: var(--color-theme-cyan);
 }
 
 .section-description {
