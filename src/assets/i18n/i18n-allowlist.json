@@ -2,6 +2,7 @@
   "*": [
     "admin.addons.addDialog.webhook",
     "admin.groups.addDialog.groupNamePlaceholder",
+    "admin.settings.types.json",
     "admin.users.columns.threatModels",
     "admin.webhooks.addDialog.url",
     "common.id",
@@ -13,6 +14,10 @@
   "bn-BD": [],
   "de-DE": [
     "about.opensourcetitle",
+    "admin.settings.filterLabel",
+    "admin.settings.types.bool",
+    "admin.settings.types.int",
+    "admin.settings.types.string",
     "admin.users.administrator",
     "adminSurveys.templateBuilder.nameId",
     "adminSurveys.templateBuilder.questionTypeLabels.dropdown",
@@ -80,6 +85,11 @@
   "id-ID": [
     "about.contactoperator",
     "about.server",
+    "admin.quotas.default",
+    "admin.settings.filterLabel",
+    "admin.settings.types.bool",
+    "admin.settings.types.int",
+    "admin.settings.types.string",
     "admin.users.administrator",
     "adminSurveys.templateBuilder.questionTypeLabels.panel",
     "assetEditor.types.data",
@@ -97,9 +107,16 @@
     "threatModels.repositorySubPath",
     "threatModels.tag"
   ],
-  "ja-JP": ["about.wiki", "common.ok"],
+  "ja-JP": [
+    "about.wiki",
+    "admin.settings.types.bool",
+    "admin.settings.types.int",
+    "admin.settings.types.string",
+    "common.ok"
+  ],
   "ko-KR": [],
   "pt-BR": [
+    "admin.settings.types.string",
     "assetEditor.types.hardware",
     "assetEditor.types.software",
     "common.ok",
