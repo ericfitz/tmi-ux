@@ -58,33 +58,33 @@
                   <mat-icon>edit_note</mat-icon>
                   {{ 'surveys.list.yourDrafts' | transloco }}
                 </h4>
-                <mat-list>
-                  @for (draft of getDrafts(survey.id); track draft.id) {
-                    <mat-list-item class="draft-item" (click)="continueDraft(draft)">
-                      <span matListItemTitle>
+                @for (draft of getDrafts(survey.id); track draft.id) {
+                  <div class="draft-item" (click)="continueDraft(draft)">
+                    <div class="draft-info">
+                      <span class="draft-title">
                         {{
                           'surveys.list.draftStarted'
                             | transloco: { time: formatRelativeTime(draft.created_at) }
                         }}
                       </span>
-                      <span matListItemLine>
+                      <span class="draft-subtitle">
                         {{
                           'surveys.list.lastModified'
                             | transloco
                               : { time: formatRelativeTime(draft.modified_at ?? draft.created_at) }
                         }}
                       </span>
-                      <button
-                        mat-icon-button
-                        matListItemMeta
-                        (click)="deleteDraft(draft, $event)"
-                        [matTooltip]="'surveys.list.deleteDraft' | transloco"
-                      >
-                        <mat-icon>delete</mat-icon>
-                      </button>
-                    </mat-list-item>
-                  }
-                </mat-list>
+                    </div>
+                    <button
+                      mat-icon-button
+                      (click)="deleteDraft(draft, $event)"
+                      [matTooltip]="'surveys.list.deleteDraft' | transloco"
+                      [attr.aria-label]="'surveys.list.deleteDraft' | transloco"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                }
               </div>
             }
           </mat-card-content>

@@ -122,22 +122,33 @@
       }
     }
 
-    mat-list {
-      padding: 0;
+    .draft-item {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 4px;
+      margin: 4px 0;
+      padding: 4px 0 4px 8px;
 
-      .draft-item {
-        cursor: pointer;
-        border-radius: 4px;
-        margin: 4px 0;
+      .draft-info {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 0;
 
-        // Vertically center the meta (delete button) in multi-line list items
-        .mdc-list-item__end {
-          align-self: center;
+        .draft-title {
+          font-size: 14px;
+          font-weight: 500;
         }
 
-        &:hover {
-          background: var(--color-surface-hover);
+        .draft-subtitle {
+          font-size: 12px;
+          color: var(--color-text-secondary);
         }
+      }
+
+      &:hover {
+        background: var(--color-surface-hover);
       }
     }
   }
