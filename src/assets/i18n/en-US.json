@@ -557,8 +557,8 @@
     "confidentialLabel": "Confidential",
     "descriptionPlaceholder": "Describe the purpose and scope of this threat model",
     "framework": "Framework",
-    "nameRequired": "{{common.validation.nameRequired}}",
     "namePlaceholder": "Enter threat model name",
+    "nameRequired": "{{common.validation.nameRequired}}",
     "title": "Create Threat Model"
   },
   "dashboard": {
@@ -982,6 +982,14 @@
     "repositorySubPathHint": "Optional path within the repository",
     "repositoryType": "Repository Type",
     "repositoryUri": "Repository URL",
+    "sections": {
+      "inputs": "Inputs",
+      "inputs.comment": "Section heading for threat model input entities (assets, documents, repositories)",
+      "inputsDescription": "Assets, documents, and source code repositories that describe the system under analysis",
+      "outputs": "Outputs",
+      "outputs.comment": "Section heading for threat model output entities (notes, diagrams, threats)",
+      "outputsDescription": "Notes, diagrams, and threats produced during security analysis"
+    },
     "setAsOwner": "Set as Owner",
     "sourcesCount": "Repos",
     "status": {
@@ -1088,15 +1096,15 @@
   "triage": {
     "bulkActions": "Bulk Actions",
     "changeStatus": "Change Status",
+    "columns": {
+      "confidentialTooltip": "Confidential submission"
+    },
     "createTm": "Create Threat Model",
     "detail": {
       "noResponses": "No responses recorded",
       "responseDetails": "Response Details",
       "statusTimeline": "Status Timeline",
       "surveyResponses": "{{common.objectTypes.surveyResponses}}"
-    },
-    "columns": {
-      "confidentialTooltip": "Confidential submission"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",

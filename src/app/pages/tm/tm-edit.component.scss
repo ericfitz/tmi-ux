@@ -41,7 +41,72 @@
   width: 100%;
 }
 
-// Cards are now displayed in a single column via the content-container flex layout
+// Section grouping for Inputs/Outputs
+.section-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  margin: 0;
+  border: none;
+  border-radius: 8px;
+  background-color: transparent;
+  cursor: pointer;
+  font-family: var(--font-family-primary);
+  color: var(--theme-text-primary);
+  transition: background-color 0.15s ease;
+  text-align: left;
+  width: 100%;
+
+  &:hover {
+    background-color: var(--theme-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--theme-primary);
+    outline-offset: -2px;
+  }
+}
+
+.section-toggle-icon {
+  color: var(--theme-text-secondary);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+
+  &.collapsed {
+    transform: rotate(-90deg);
+  }
+}
+
+.section-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+}
+
+.section-description {
+  font-size: var(--font-size-sm);
+  color: var(--theme-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 8px;
+
+  &[hidden] {
+    display: none !important;
+  }
+}
 
 // Issue URL container with form field and hyperlink icon
 .issue-uri-container {
@@ -393,6 +458,14 @@ mat-card-header {
   .info-label {
     margin-right: 0;
     margin-left: 8px;
+  }
+
+  .section-header {
+    text-align: right;
+  }
+
+  .section-toggle-icon.collapsed {
+    transform: rotate(90deg);
   }
 }
 
@@ -787,8 +860,12 @@ mat-card-header {
 // Responsive Column Hiding
 // ============================================
 
-// Tablet breakpoint (768px) - Hide icon columns
+// Tablet breakpoint (768px) - Hide icon columns and section descriptions
 @media (width <= 768px) {
+  .section-description {
+    display: none;
+  }
+
   .column-icon {
     display: none !important;
   }

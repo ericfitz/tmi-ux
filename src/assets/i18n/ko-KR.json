@@ -176,7 +176,14 @@
       "listTitle": "사용자",
       "noUsers": "사용자를 찾을 수 없습니다",
       "subtitle": "시스템 사용자 보기 및 관리",
-      "title": "사용자 관리"
+      "title": "사용자 관리",
+      "transferOwnership": {
+        "confirm": "{{source}}에서 {{target}}로 모든 데이터를 이전하시겠습니까?",
+        "dialogTitle": "사용자 데이터 이전",
+        "error": "소유권 이전에 실패했습니다. 다시 시도해 주세요.",
+        "success": "{{tmCount}}개의 위협 모델과 {{responseCount}}개의 설문 응답을 이전했습니다.",
+        "tooltip": "소유권 이전"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -368,6 +375,7 @@
     "addMetadata": "메타데이터 추가",
     "addThreat": "위협 추가",
     "addons": "애드온",
+    "all": "모두",
     "allStatuses": "모든 상태",
     "archive": "보관",
     "back": "뒤로",
@@ -377,6 +385,7 @@
     "clear": "지우기",
     "clone": "복제",
     "close": "닫기",
+    "confirm": "확인",
     "confirmDelete": "{{item}} \"{{name}}\"을(를) 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
     "confirmDeleteMessage": "\"{{name}}\" {{objectType}}을(를) 삭제하시겠습니까?",
     "copy": "복사",
@@ -398,6 +407,7 @@
     "deleteWarningTypeConfirmation": "확인하려면 아래 필드에 \"{{confirmValue}}\"을(를) 입력하세요.",
     "description": "설명",
     "diagramId": "다이어그램 ID",
+    "dismiss": "닫기",
     "done": "완료",
     "download": "다운로드",
     "edit": "편집",
@@ -520,6 +530,15 @@
     "moveToFront": "맨 앞으로 이동",
     "noDataAssetsAvailable": "사용 가능한 데이터 자산이 없습니다",
     "showObject": "객체 표시"
+  },
+  "createThreatModel": {
+    "confidentialHint": "기밀 위협 모델은 보안 검토자 그룹과 자동으로 공유되지 않습니다. 이 설정은 생성 후 변경할 수 없습니다.",
+    "confidentialLabel": "기밀",
+    "descriptionPlaceholder": "이 위협 모델의 목적과 범위를 설명하세요",
+    "framework": "프레임워크",
+    "namePlaceholder": "위협 모델 이름 입력",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "위협 모델 생성"
   },
   "dashboard": {
     "clearFilter": "필터 지우기",
@@ -768,6 +787,12 @@
       "saving": "저장 중..."
     },
     "browse": "설문 찾아보기",
+    "confidentialDialog": {
+      "description": "이 제출을 기밀로 표시하시겠습니까? 기밀 제출은 보안 검토자 그룹과 자동으로 공유되지 않습니다. 이 설정은 응답 생성 후 변경할 수 없습니다.",
+      "no": "아니요",
+      "title": "기밀 제출",
+      "yes": "예, 기밀로 표시"
+    },
     "confirmation": {
       "backToSurveys": "설문 목록으로",
       "message": "설문이 성공적으로 제출되었습니다.",
@@ -933,6 +958,12 @@
     "repositorySubPathHint": "저장소 내 선택적 경로",
     "repositoryType": "저장소 유형",
     "repositoryUri": "저장소 URL",
+    "sections": {
+      "inputs": "입력",
+      "inputsDescription": "분석 대상 시스템을 설명하는 자산, 문서 및 소스 코드 저장소",
+      "outputs": "출력",
+      "outputsDescription": "보안 분석 중 생성된 노트, 다이어그램 및 위협"
+    },
     "setAsOwner": "소유자로 설정",
     "sourcesCount": "저장소",
     "status": {
@@ -1028,9 +1059,18 @@
     },
     "title": "서비스 약관"
   },
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "이메일로 검색",
+      "searchPlaceholder": "이메일 주소 입력 시작..."
+    }
+  },
   "triage": {
     "bulkActions": "일괄 작업",
     "changeStatus": "상태 변경",
+    "columns": {
+      "confidentialTooltip": "기밀 제출"
+    },
     "createTm": "위협 모델 생성",
     "detail": {
       "noResponses": "기록된 응답 없음",
@@ -1041,7 +1081,10 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "모든 설문조사",
-      "clearFilters": "필터 지우기"
+      "clearFilters": "필터 지우기",
+      "confidential": "기밀성",
+      "confidentialOnly": "기밀",
+      "nonConfidential": "비기밀"
     },
     "list": {
       "allSurveys": "모든 설문",
@@ -1144,6 +1187,14 @@
       "light": "라이트"
     },
     "title": "사용자 설정",
+    "transferData": {
+      "confirmMessage": "정말로 모든 위협 모델과 설문 응답을 {{email}}로 이전하시겠습니까? 이전된 항목에 대해 작성자 역할로 강등됩니다.",
+      "dialogTitle": "내 데이터 이전",
+      "error": "데이터 이전에 실패했습니다. 다시 시도해 주세요.",
+      "hint": "모든 위협 모델과 설문 응답의 소유권을 다른 사용자에게 이전합니다. 이전된 항목에 대해 작성자 역할로 강등됩니다.",
+      "success": "{{tmCount}}개의 위협 모델과 {{responseCount}}개의 설문 응답을 이전했습니다.",
+      "title": "내 데이터를 다른 사용자에게 이전"
+    },
     "userProfile": {
       "currentRole": "현재 위협 모델 역할",
       "groups": "그룹",

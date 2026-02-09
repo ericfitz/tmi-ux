@@ -176,7 +176,14 @@
       "listTitle": "Benutzer",
       "noUsers": "Keine Benutzer gefunden",
       "subtitle": "Systembenutzer anzeigen und verwalten",
-      "title": "Benutzer verwalten"
+      "title": "Benutzer verwalten",
+      "transferOwnership": {
+        "confirm": "Sind Sie sicher, dass Sie alle Daten von {{source}} zu {{target}} übertragen möchten?",
+        "dialogTitle": "Benutzerdaten übertragen",
+        "error": "Fehler beim Übertragen des Eigentums. Bitte versuchen Sie es erneut.",
+        "success": "{{tmCount}} Bedrohungsmodelle und {{responseCount}} Umfrageantworten übertragen.",
+        "tooltip": "Eigentum übertragen"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -368,6 +375,7 @@
     "addMetadata": "Metadaten hinzufügen",
     "addThreat": "Bedrohung hinzufügen",
     "addons": "Erweiterungen",
+    "all": "Alle",
     "allStatuses": "Alle Status",
     "archive": "Archivieren",
     "back": "Zurück",
@@ -377,6 +385,7 @@
     "clear": "Löschen",
     "clone": "Klonen",
     "close": "Schließen",
+    "confirm": "Bestätigen",
     "confirmDelete": "Sind Sie sicher, dass Sie {{item}} \"{{name}}\" löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
     "confirmDeleteMessage": "Sind Sie sicher, dass Sie {{objectType}} \"{{name}}\" löschen möchten?",
     "copy": "Kopieren",
@@ -398,6 +407,7 @@
     "deleteWarningTypeConfirmation": "Zur Bestätigung geben Sie bitte \"{{confirmValue}}\" in das untenstehende Feld ein.",
     "description": "Beschreibung",
     "diagramId": "Diagramm-ID",
+    "dismiss": "Verwerfen",
     "done": "Fertig",
     "download": "Herunterladen",
     "edit": "Bearbeiten",
@@ -521,6 +531,15 @@
     "noDataAssetsAvailable": "Keine Datenbestände verfügbar",
     "showObject": "Objekt anzeigen"
   },
+  "createThreatModel": {
+    "confidentialHint": "Vertrauliche Bedrohungsmodelle werden nicht automatisch mit der Gruppe \"Security Reviewers\" geteilt. Diese Einstellung kann nach der Erstellung nicht mehr geändert werden.",
+    "confidentialLabel": "Vertraulich",
+    "descriptionPlaceholder": "Beschreiben Sie den Zweck und Umfang dieses Bedrohungsmodells",
+    "framework": "Framework",
+    "namePlaceholder": "Geben Sie den Bedrohungsmodellnamen ein",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "Bedrohungsmodell erstellen"
+  },
   "dashboard": {
     "clearFilter": "Filter löschen",
     "filterLabel": "Bedrohungsmodelle filtern",
@@ -638,7 +657,7 @@
     "validationError": "Validierungsfehler"
   },
   "footer": {
-    "support": "Support"
+    "support": "Unterstützung"
   },
   "getStarted": "Loslegen",
   "homeDescription": "TMI ist ein Werkzeug zur Verwaltung und Verbesserung der Sicherheitsüberprüfungs- und Bedrohungsmodellierungsprozesse in Ihrer Organisation. Es steuert den Workflow für Sicherheitsüberprüfungen, organisiert Informationen für Sicherheitsüberprüfungen, ermöglicht die gemeinsame Erstellung von Datenflussdiagrammen und erlaubt die Integration von Automatisierung, um Routineaufgaben im Überprüfungsprozess zu reduzieren und Sicherheitsbedrohungen zu analysieren.",
@@ -768,6 +787,12 @@
       "saving": "Speichert..."
     },
     "browse": "Umfragen durchsuchen",
+    "confidentialDialog": {
+      "description": "Sollte diese Einreichung als vertraulich gekennzeichnet werden? Vertrauliche Einreichungen werden nicht automatisch mit der Gruppe \"Security Reviewers\" geteilt. Diese Einstellung kann nach der Erstellung der Antwort nicht mehr geändert werden.",
+      "no": "Nein",
+      "title": "Vertrauliche Einreichung",
+      "yes": "Ja, als vertraulich kennzeichnen"
+    },
     "confirmation": {
       "backToSurveys": "Zurück zu Umfragen",
       "message": "Ihre Umfrage wurde erfolgreich eingereicht.",
@@ -933,6 +958,12 @@
     "repositorySubPathHint": "Optionaler Pfad innerhalb des Repositories",
     "repositoryType": "Repository-Typ",
     "repositoryUri": "Repository-URL",
+    "sections": {
+      "inputs": "Eingaben",
+      "inputsDescription": "Assets, Dokumente und Quellcode-Repositories, die das analysierte System beschreiben",
+      "outputs": "Ausgaben",
+      "outputsDescription": "Notizen, Diagramme und Bedrohungen, die während der Sicherheitsanalyse erstellt werden"
+    },
     "setAsOwner": "Als Besitzer festlegen",
     "sourcesCount": "Repos",
     "status": {
@@ -1028,9 +1059,18 @@
     },
     "title": "Nutzungsbedingungen"
   },
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "Nach E-Mail suchen",
+      "searchPlaceholder": "Beginnen Sie mit der Eingabe der E-Mail-Adresse..."
+    }
+  },
   "triage": {
     "bulkActions": "Massenaktionen",
     "changeStatus": "Status ändern",
+    "columns": {
+      "confidentialTooltip": "Vertrauliche Einreichung"
+    },
     "createTm": "Bedrohungsmodell erstellen",
     "detail": {
       "noResponses": "Keine Antworten erfasst",
@@ -1041,7 +1081,10 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "Alle Umfragen",
-      "clearFilters": "Filter löschen"
+      "clearFilters": "Filter löschen",
+      "confidential": "Vertraulichkeit",
+      "confidentialOnly": "Vertraulich",
+      "nonConfidential": "Nicht vertraulich"
     },
     "list": {
       "allSurveys": "Alle Umfragen",
@@ -1144,6 +1187,14 @@
       "light": "Hell"
     },
     "title": "Benutzereinstellungen",
+    "transferData": {
+      "confirmMessage": "Sind Sie sicher, dass Sie alle Ihre Bedrohungsmodelle und Umfrageantworten zu {{email}} übertragen möchten? Sie werden auf übertragenen Elementen auf die Schreiberrolle herabgestuft.",
+      "dialogTitle": "Meine Daten übertragen",
+      "error": "Fehler beim Übertragen der Daten. Bitte versuchen Sie es erneut.",
+      "hint": "Übertragen Sie den Besitz aller Ihrer Bedrohungsmodelle und Umfrageantworten auf einen anderen Benutzer. Sie werden auf übertragenen Elementen auf die Schreiberrolle herabgestuft.",
+      "success": "{{tmCount}} Bedrohungsmodelle und {{responseCount}} Umfrageantworten übertragen.",
+      "title": "Meine Daten auf einen anderen Benutzer übertragen"
+    },
     "userProfile": {
       "currentRole": "Aktuelle Bedrohungsmodell-Rolle",
       "groups": "Gruppen",

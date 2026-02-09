@@ -176,7 +176,14 @@
       "listTitle": "用户",
       "noUsers": "未找到用户",
       "subtitle": "查看和管理系统用户",
-      "title": "管理用户"
+      "title": "管理用户",
+      "transferOwnership": {
+        "confirm": "您确定要将所有数据从 {{source}} 转移到 {{target}} 吗？",
+        "dialogTitle": "转移用户数据",
+        "error": "所有权转移失败。请重试。",
+        "success": "已转移 {{tmCount}} 个威胁模型和 {{responseCount}} 个调查响应。",
+        "tooltip": "转移所有权"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -368,6 +375,7 @@
     "addMetadata": "添加元数据",
     "addThreat": "添加威胁",
     "addons": "插件",
+    "all": "全部",
     "allStatuses": "所有状态",
     "archive": "归档",
     "back": "返回",
@@ -377,6 +385,7 @@
     "clear": "清除",
     "clone": "克隆",
     "close": "关闭",
+    "confirm": "确认",
     "confirmDelete": "您确定要删除{{item}}\"{{name}}\"吗？此操作无法撤销。",
     "confirmDeleteMessage": "您确定要删除{{objectType}}\"{{name}}\"吗？",
     "copy": "复制",
@@ -398,6 +407,7 @@
     "deleteWarningTypeConfirmation": "请在下方输入\"{{confirmValue}}\"以确认。",
     "description": "描述",
     "diagramId": "图表ID",
+    "dismiss": "关闭",
     "done": "完成",
     "download": "下载",
     "edit": "编辑",
@@ -520,6 +530,15 @@
     "moveToFront": "移到最前",
     "noDataAssetsAvailable": "没有可用的数据资产",
     "showObject": "显示对象"
+  },
+  "createThreatModel": {
+    "confidentialHint": "机密威胁模型不会自动与安全审查员组共享。此设置在创建后无法更改。",
+    "confidentialLabel": "机密",
+    "descriptionPlaceholder": "描述此威胁模型的目的和范围",
+    "framework": "框架",
+    "namePlaceholder": "输入威胁模型名称",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "创建威胁模型"
   },
   "dashboard": {
     "clearFilter": "清除筛选",
@@ -768,6 +787,12 @@
       "saving": "正在保存..."
     },
     "browse": "浏览调查",
+    "confidentialDialog": {
+      "description": "是否应将此提交标记为机密？机密提交不会自动与安全审查员组共享。此设置在创建响应后无法更改。",
+      "no": "否",
+      "title": "机密提交",
+      "yes": "是，标记为机密"
+    },
     "confirmation": {
       "backToSurveys": "返回调查",
       "message": "您的调查已成功提交。",
@@ -933,6 +958,12 @@
     "repositorySubPathHint": "存储库内的可选路径",
     "repositoryType": "存储库类型",
     "repositoryUri": "存储库URL",
+    "sections": {
+      "inputs": "输入",
+      "inputsDescription": "描述被分析系统的资产、文档和源代码仓库",
+      "outputs": "输出",
+      "outputsDescription": "安全分析过程中产生的笔记、图表和威胁"
+    },
     "setAsOwner": "设为所有者",
     "sourcesCount": "仓库",
     "status": {
@@ -1028,9 +1059,18 @@
     },
     "title": "服务条款"
   },
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "按电子邮件搜索",
+      "searchPlaceholder": "开始输入电子邮件地址..."
+    }
+  },
   "triage": {
     "bulkActions": "批量操作",
     "changeStatus": "更改状态",
+    "columns": {
+      "confidentialTooltip": "机密提交"
+    },
     "createTm": "创建威胁模型",
     "detail": {
       "noResponses": "无回复记录",
@@ -1041,7 +1081,10 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "所有调查问卷",
-      "clearFilters": "清除筛选"
+      "clearFilters": "清除筛选",
+      "confidential": "机密性",
+      "confidentialOnly": "机密",
+      "nonConfidential": "非机密"
     },
     "list": {
       "allSurveys": "所有调查",
@@ -1144,6 +1187,14 @@
       "light": "浅色"
     },
     "title": "用户偏好",
+    "transferData": {
+      "confirmMessage": "您确定要将所有威胁模型和调查响应转移到 {{email}} 吗？您在转移的项目中将被降级为编写者角色。",
+      "dialogTitle": "转移我的数据",
+      "error": "数据转移失败。请重试。",
+      "hint": "将您所有威胁模型和调查响应的所有权转移给另一个用户。您在转移的项目中将被降级为编写者角色。",
+      "success": "已转移 {{tmCount}} 个威胁模型和 {{responseCount}} 个调查响应。",
+      "title": "将我的数据转移给其他用户"
+    },
     "userProfile": {
       "currentRole": "当前威胁模型角色",
       "groups": "用户组",

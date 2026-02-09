@@ -176,7 +176,14 @@
       "listTitle": "المستخدمون",
       "noUsers": "لم يتم العثور على مستخدمين",
       "subtitle": "عرض وإدارة مستخدمي النظام",
-      "title": "إدارة المستخدمين"
+      "title": "إدارة المستخدمين",
+      "transferOwnership": {
+        "confirm": "هل أنت متأكد من أنك تريد نقل جميع البيانات من {{source}} إلى {{target}}؟",
+        "dialogTitle": "نقل بيانات المستخدم",
+        "error": "فشل نقل الملكية. يرجى المحاولة مرة أخرى.",
+        "success": "تم نقل {{tmCount}} نماذج تهديدات و {{responseCount}} استجابات الاستبيان.",
+        "tooltip": "نقل الملكية"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -368,6 +375,7 @@
     "addMetadata": "إضافة بيانات وصفية",
     "addThreat": "إضافة تهديد",
     "addons": "الوظائف الإضافية",
+    "all": "الكل",
     "allStatuses": "جميع الحالات",
     "archive": "أرشفة",
     "back": "رجوع",
@@ -377,6 +385,7 @@
     "clear": "مسح",
     "clone": "استنساخ",
     "close": "إغلاق",
+    "confirm": "تأكيد",
     "confirmDelete": "هل أنت متأكد أنك تريد حذف {{item}} \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
     "confirmDeleteMessage": "هل أنت متأكد أنك تريد حذف {{objectType}} \"{{name}}\"؟",
     "copy": "نسخ",
@@ -398,6 +407,7 @@
     "deleteWarningTypeConfirmation": "للتأكيد، يرجى كتابة \"{{confirmValue}}\" في الحقل أدناه.",
     "description": "الوصف",
     "diagramId": "معرف المخطط",
+    "dismiss": "إغلاق",
     "done": "تم",
     "download": "تحميل",
     "edit": "تحرير",
@@ -520,6 +530,15 @@
     "moveToFront": "نقل إلى المقدمة",
     "noDataAssetsAvailable": "لا توجد أصول بيانات متاحة",
     "showObject": "عرض الكائن"
+  },
+  "createThreatModel": {
+    "confidentialHint": "نماذج التهديدات السرية لا تُشارك تلقائياً مع مجموعة مراجعي الأمان. لا يمكن تغيير هذا الإعداد بعد الإنشاء.",
+    "confidentialLabel": "سري",
+    "descriptionPlaceholder": "صف الغرض والنطاق من هذا النموذج",
+    "framework": "الإطار",
+    "namePlaceholder": "أدخل اسم نموذج التهديد",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "إنشاء نموذج تهديد"
   },
   "dashboard": {
     "clearFilter": "مسح الفلتر",
@@ -768,6 +787,12 @@
       "saving": "جاري الحفظ..."
     },
     "browse": "تصفح الاستبيانات",
+    "confidentialDialog": {
+      "description": "هل يجب وضع علامة على هذه الإجابة كسرية؟ الإجابات السرية لا تُشارك تلقائياً مع مجموعة مراجعي الأمان. لا يمكن تغيير هذا الإعداد بعد إنشاء الاستجابة.",
+      "no": "لا",
+      "title": "إجابة سرية",
+      "yes": "نعم، ضع علامة كسري"
+    },
     "confirmation": {
       "backToSurveys": "العودة إلى الاستبيانات",
       "message": "تم تقديم الاستبيان بنجاح.",
@@ -933,6 +958,12 @@
     "repositorySubPathHint": "مسار اختياري داخل المستودع",
     "repositoryType": "نوع المستودع",
     "repositoryUri": "رابط المستودع",
+    "sections": {
+      "inputs": "المدخلات",
+      "inputsDescription": "الأصول والمستندات ومستودعات الأكواد المصدرية التي تصف النظام قيد التحليل",
+      "outputs": "المخرجات",
+      "outputsDescription": "الملاحظات والمخططات والتهديدات التي تم إنتاجها أثناء تحليل الأمان"
+    },
     "setAsOwner": "تعيين كمالك",
     "sourcesCount": "مستودعات",
     "status": {
@@ -1028,9 +1059,18 @@
     },
     "title": "شروط الخدمة"
   },
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "البحث بالبريد الإلكتروني",
+      "searchPlaceholder": "ابدأ بكتابة عنوان البريد الإلكتروني..."
+    }
+  },
   "triage": {
     "bulkActions": "إجراءات مجمعة",
     "changeStatus": "تغيير الحالة",
+    "columns": {
+      "confidentialTooltip": "إجابة سرية"
+    },
     "createTm": "إنشاء نموذج تهديد",
     "detail": {
       "noResponses": "لم يتم تسجيل أي ردود",
@@ -1041,7 +1081,10 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "كل الاستبيانات",
-      "clearFilters": "مسح المرشحات"
+      "clearFilters": "مسح المرشحات",
+      "confidential": "السرية",
+      "confidentialOnly": "سري",
+      "nonConfidential": "غير سري"
     },
     "list": {
       "allSurveys": "جميع الاستبيانات",
@@ -1144,6 +1187,14 @@
       "light": "فاتح"
     },
     "title": "تفضيلات المستخدم",
+    "transferData": {
+      "confirmMessage": "هل أنت متأكد من أنك تريد نقل جميع نماذج التهديدات واستجابات الاستبيان إلى {{email}}؟ سيتم تخفيض درجتك إلى دور الكاتب في العناصر المنقولة.",
+      "dialogTitle": "نقل بياناتي",
+      "error": "فشل نقل البيانات. يرجى المحاولة مرة أخرى.",
+      "hint": "نقل ملكية جميع نماذج التهديدات واستجابات الاستبيان إلى مستخدم آخر. سيتم تخفيض درجتك إلى دور الكاتب في العناصر المنقولة.",
+      "success": "تم نقل {{tmCount}} نماذج تهديدات و {{responseCount}} استجابات الاستبيان.",
+      "title": "نقل بياناتي إلى مستخدم آخر"
+    },
     "userProfile": {
       "currentRole": "دور نموذج التهديد الحالي",
       "groups": "المجموعات",

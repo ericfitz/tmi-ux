@@ -162,6 +162,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   canEdit = false;
   canManagePermissions = false;
 
+  // Section collapse state
+  inputsSectionExpanded = true;
+  outputsSectionExpanded = true;
+
   // Computed SVG properties to prevent infinite loops
   diagramSvgValidation = new Map<string, boolean>();
   diagramSvgDataUrls = new Map<string, string>();
@@ -715,6 +719,16 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this.svgCacheService.clearAllCaches();
     this.diagramSvgValidation.clear();
     this.diagramSvgDataUrls.clear();
+  }
+
+  /** Toggle the Inputs section expand/collapse state */
+  toggleInputsSection(): void {
+    this.inputsSectionExpanded = !this.inputsSectionExpanded;
+  }
+
+  /** Toggle the Outputs section expand/collapse state */
+  toggleOutputsSection(): void {
+    this.outputsSectionExpanded = !this.outputsSectionExpanded;
   }
 
   /**

@@ -176,7 +176,14 @@
       "listTitle": "משתמשים",
       "noUsers": "לא נמצאו משתמשים",
       "subtitle": "צפה ונהל משתמשי מערכת",
-      "title": "ניהול משתמשים"
+      "title": "ניהול משתמשים",
+      "transferOwnership": {
+        "confirm": "האם אתה בטוח שברצונך להעביר את כל הנתונים מ-{{source}} ל-{{target}}?",
+        "dialogTitle": "העברת נתוני משתמש",
+        "error": "ההעברה של הבעלות נכשלה. אנא נסה שוב.",
+        "success": "הועברו {{tmCount}} מודלי איום ו-{{responseCount}} תגובות סקר.",
+        "tooltip": "העבר בעלות"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -368,6 +375,7 @@
     "addMetadata": "הוסף מטא-נתונים",
     "addThreat": "הוסף איום",
     "addons": "תוספים",
+    "all": "הכל",
     "allStatuses": "כל הסטטוסים",
     "archive": "ארכיון",
     "back": "חזרה",
@@ -377,6 +385,7 @@
     "clear": "נקה",
     "clone": "שכפול",
     "close": "סגור",
+    "confirm": "אישור",
     "confirmDelete": "האם אתה בטוח שברצונך למחוק את {{item}} \"{{name}}\"? פעולה זו אינה ניתנת לביטול.",
     "confirmDeleteMessage": "האם אתה בטוח שברצונך למחוק את {{objectType}} \"{{name}}\"?",
     "copy": "העתק",
@@ -398,6 +407,7 @@
     "deleteWarningTypeConfirmation": "לאישור, הקלד \"{{confirmValue}}\" בשדה למטה.",
     "description": "תיאור",
     "diagramId": "מזהה דיאגרמה",
+    "dismiss": "סגור",
     "done": "בוצע",
     "download": "הורדה",
     "edit": "ערוך",
@@ -520,6 +530,15 @@
     "moveToFront": "הזז לקדמה",
     "noDataAssetsAvailable": "אין נכסי נתונים זמינים",
     "showObject": "הצג אובייקט"
+  },
+  "createThreatModel": {
+    "confidentialHint": "מודלי איום סודיים אינם משותפים באופן אוטומטי עם קבוצת סוקרי האבטחה. לא ניתן לשנות הגדרה זו לאחר היצירה.",
+    "confidentialLabel": "סודי",
+    "descriptionPlaceholder": "תאר את המטרה והיקף מודל איום זה",
+    "framework": "מסגרת",
+    "namePlaceholder": "הזן שם מודל איום",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "צור מודל איום"
   },
   "dashboard": {
     "clearFilter": "נקה מסנן",
@@ -768,6 +787,12 @@
       "saving": "שומר..."
     },
     "browse": "עיון בסקרים",
+    "confidentialDialog": {
+      "description": "האם הגשה זו צריכה להיות מסומנת כסודית? הגשות סודיות אינן משותפות באופן אוטומטי עם קבוצת סוקרי האבטחה. לא ניתן לשנות הגדרה זו לאחר יצירת התגובה.",
+      "no": "לא",
+      "title": "הגשה סודית",
+      "yes": "כן, סמן כסודי"
+    },
     "confirmation": {
       "backToSurveys": "חזרה לסקרים",
       "message": "הסקר שלך נשלח בהצלחה.",
@@ -933,6 +958,12 @@
     "repositorySubPathHint": "נתיב אופציונלי בתוך המאגר",
     "repositoryType": "סוג מאגר",
     "repositoryUri": "כתובת URL של המאגר",
+    "sections": {
+      "inputs": "קלטים",
+      "inputsDescription": "נכסים, מסמכים ומאגרי קוד מקור המתארים את המערכת הנתונה לניתוח",
+      "outputs": "פלטים",
+      "outputsDescription": "הערות, דיאגרמות ואיומים המיוצרים במהלך ניתוח אבטחה"
+    },
     "setAsOwner": "הגדר כבעלים",
     "sourcesCount": "מאגרים",
     "status": {
@@ -1028,9 +1059,18 @@
     },
     "title": "תנאי שימוש"
   },
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "חיפוש לפי דוא\"ל",
+      "searchPlaceholder": "התחל להקליד כתובת דוא\"ל..."
+    }
+  },
   "triage": {
     "bulkActions": "פעולות מרובות",
     "changeStatus": "שנה סטטוס",
+    "columns": {
+      "confidentialTooltip": "הגשה סודית"
+    },
     "createTm": "צור מודל איום",
     "detail": {
       "noResponses": "לא נרשמו תגובות",
@@ -1041,7 +1081,10 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "כל הסקרים",
-      "clearFilters": "נקה מסננים"
+      "clearFilters": "נקה מסננים",
+      "confidential": "סודיות",
+      "confidentialOnly": "סודי",
+      "nonConfidential": "לא סודי"
     },
     "list": {
       "allSurveys": "כל הסקרים",
@@ -1144,6 +1187,14 @@
       "light": "בהיר"
     },
     "title": "העדפות משתמש",
+    "transferData": {
+      "confirmMessage": "האם אתה בטוח שברצונך להעביר את כל מודלי האיומים ותגובות הסקר שלך ל-{{email}}? תיבחר כותב בפריטים שהועברו.",
+      "dialogTitle": "העברת הנתונים שלי",
+      "error": "ההעברה נכשלה. אנא נסה שוב.",
+      "hint": "העברת בעלות של כל מודלי האיומים ותגובות הסקר שלך למשתמש אחר. תיבחר כותב בפריטים שהועברו.",
+      "success": "הועברו {{tmCount}} מודלי איום ו-{{responseCount}} תגובות סקר.",
+      "title": "העברת הנתונים שלי למשתמש אחר"
+    },
     "userProfile": {
       "currentRole": "תפקיד נוכחי במודל איומים",
       "groups": "קבוצות",

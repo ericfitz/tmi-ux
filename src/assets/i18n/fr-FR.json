@@ -176,7 +176,14 @@
       "listTitle": "Utilisateurs",
       "noUsers": "Aucun utilisateur trouve",
       "subtitle": "Afficher et gerer les utilisateurs du systeme",
-      "title": "Gerer les Utilisateurs"
+      "title": "Gerer les Utilisateurs",
+      "transferOwnership": {
+        "confirm": "Êtes-vous sûr de vouloir transférer toutes les données de {{source}} vers {{target}} ?",
+        "dialogTitle": "Transférer les données de l'utilisateur",
+        "error": "Échec du transfert de la propriété. Veuillez réessayer.",
+        "success": "{{tmCount}} modèles de menace et {{responseCount}} réponses d'enquête transférés.",
+        "tooltip": "Transférer la propriété"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -368,6 +375,7 @@
     "addMetadata": "Ajouter des Metadonnees",
     "addThreat": "Ajouter une Menace",
     "addons": "Modules",
+    "all": "Tous",
     "allStatuses": "Tous les statuts",
     "archive": "Archiver",
     "back": "Retour",
@@ -377,6 +385,7 @@
     "clear": "Effacer",
     "clone": "Cloner",
     "close": "Fermer",
+    "confirm": "Confirmer",
     "confirmDelete": "Etes-vous sur de vouloir supprimer {{item}} \"{{name}}\" ? Cette action est irreversible.",
     "confirmDeleteMessage": "Êtes-vous sûr de vouloir supprimer {{objectType}} « {{name}} » ?",
     "copy": "Copier",
@@ -398,6 +407,7 @@
     "deleteWarningTypeConfirmation": "Pour confirmer, veuillez saisir « {{confirmValue}} » dans le champ ci-dessous.",
     "description": "Description",
     "diagramId": "ID du Diagramme",
+    "dismiss": "Rejeter",
     "done": "Termine",
     "download": "Télécharger",
     "edit": "Modifier",
@@ -520,6 +530,15 @@
     "moveToFront": "Mettre au premier plan",
     "noDataAssetsAvailable": "Aucun actif de données disponible",
     "showObject": "Afficher l'objet"
+  },
+  "createThreatModel": {
+    "confidentialHint": "Les modèles de menace confidentiels ne sont pas automatiquement partagés avec le groupe des relecteurs de sécurité. Ce paramètre ne peut pas être modifié après la création.",
+    "confidentialLabel": "Confidentiel",
+    "descriptionPlaceholder": "Décrivez l'objectif et la portée de ce modèle de menace",
+    "framework": "Framework",
+    "namePlaceholder": "Entrez le nom du modèle de menace",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "Créer un modèle de menace"
   },
   "dashboard": {
     "clearFilter": "Effacer le filtre",
@@ -768,6 +787,12 @@
       "saving": "Enregistrement en cours..."
     },
     "browse": "Parcourir les enquêtes",
+    "confidentialDialog": {
+      "description": "Cette soumission doit-elle être marquée comme confidentielle ? Les soumissions confidentielles ne sont pas automatiquement partagées avec le groupe des relecteurs de sécurité. Ce paramètre ne peut pas être modifié après la création de la réponse.",
+      "no": "Non",
+      "title": "Soumission confidentielle",
+      "yes": "Oui, marquer comme confidentiel"
+    },
     "confirmation": {
       "backToSurveys": "Retour aux enquêtes",
       "message": "Votre enquête a été soumise avec succès.",
@@ -933,6 +958,12 @@
     "repositorySubPathHint": "Chemin optionnel dans le depot",
     "repositoryType": "Type de depot",
     "repositoryUri": "URL du depot",
+    "sections": {
+      "inputs": "Entrées",
+      "inputsDescription": "Actifs, documents et dépôts de code source qui décrivent le système en cours d'analyse",
+      "outputs": "Sorties",
+      "outputsDescription": "Notes, diagrammes et menaces produits lors de l'analyse de sécurité"
+    },
     "setAsOwner": "Definir comme proprietaire",
     "sourcesCount": "Depots",
     "status": {
@@ -1028,9 +1059,18 @@
     },
     "title": "Conditions d'Utilisation"
   },
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "Rechercher par email",
+      "searchPlaceholder": "Commencez à taper l'adresse email..."
+    }
+  },
   "triage": {
     "bulkActions": "Actions groupées",
     "changeStatus": "Changer le statut",
+    "columns": {
+      "confidentialTooltip": "Soumission confidentielle"
+    },
     "createTm": "Créer un modèle de menace",
     "detail": {
       "noResponses": "Aucune réponse enregistrée",
@@ -1041,7 +1081,10 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "Toutes les enquêtes",
-      "clearFilters": "Effacer les filtres"
+      "clearFilters": "Effacer les filtres",
+      "confidential": "Confidentialité",
+      "confidentialOnly": "Confidentiel",
+      "nonConfidential": "Non confidentiel"
     },
     "list": {
       "allSurveys": "Toutes les enquêtes",
@@ -1144,6 +1187,14 @@
       "light": "Clair"
     },
     "title": "Preferences Utilisateur",
+    "transferData": {
+      "confirmMessage": "Êtes-vous sûr de vouloir transférer tous vos modèles de menace et réponses d'enquête à {{email}} ? Vous serez rétrogradé au rôle de rédacteur sur les éléments transférés.",
+      "dialogTitle": "Transférer mes données",
+      "error": "Échec du transfert des données. Veuillez réessayer.",
+      "hint": "Transfère la propriété de tous vos modèles de menace et réponses d'enquête à un autre utilisateur. Vous serez rétrogradé au rôle de rédacteur sur les éléments transférés.",
+      "success": "{{tmCount}} modèles de menace et {{responseCount}} réponses d'enquête transférés.",
+      "title": "Transférer mes données à un autre utilisateur"
+    },
     "userProfile": {
       "currentRole": "Role actuel du modele de menaces",
       "groups": "Groupes",

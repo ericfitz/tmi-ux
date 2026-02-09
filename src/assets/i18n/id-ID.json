@@ -176,7 +176,14 @@
       "listTitle": "Pengguna",
       "noUsers": "Tidak ada pengguna ditemukan",
       "subtitle": "Lihat dan kelola pengguna sistem",
-      "title": "Kelola Pengguna"
+      "title": "Kelola Pengguna",
+      "transferOwnership": {
+        "confirm": "Apakah Anda yakin ingin mengalihkan semua data dari {{source}} ke {{target}}?",
+        "dialogTitle": "Alihkan Data Pengguna",
+        "error": "Gagal mengalihkan kepemilikan. Silakan coba lagi.",
+        "success": "Dialihkan {{tmCount}} model ancaman dan {{responseCount}} respons survei.",
+        "tooltip": "Alihkan kepemilikan"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -368,6 +375,7 @@
     "addMetadata": "Tambah Metadata",
     "addThreat": "Tambah Ancaman",
     "addons": "Addon",
+    "all": "Semua",
     "allStatuses": "Semua Status",
     "archive": "Arsipkan",
     "back": "Kembali",
@@ -377,6 +385,7 @@
     "clear": "Bersihkan",
     "clone": "Duplikat",
     "close": "Tutup",
+    "confirm": "Konfirmasi",
     "confirmDelete": "Apakah Anda yakin ingin menghapus {{item}} \"{{name}}\"? Tindakan ini tidak dapat dibatalkan.",
     "confirmDeleteMessage": "Apakah Anda yakin ingin menghapus {{objectType}} \"{{name}}\"?",
     "copy": "Salin",
@@ -398,6 +407,7 @@
     "deleteWarningTypeConfirmation": "Untuk mengonfirmasi, silakan ketik \"{{confirmValue}}\" di bidang di bawah ini.",
     "description": "Deskripsi",
     "diagramId": "ID Diagram",
+    "dismiss": "Tutup",
     "done": "Selesai",
     "download": "Unduh",
     "edit": "Sunting",
@@ -520,6 +530,15 @@
     "moveToFront": "Pindah ke Paling Depan",
     "noDataAssetsAvailable": "Tidak ada aset data yang tersedia",
     "showObject": "Tampilkan Objek"
+  },
+  "createThreatModel": {
+    "confidentialHint": "Model ancaman rahasia tidak secara otomatis dibagikan dengan grup Peninjau Keamanan. Pengaturan ini tidak dapat diubah setelah pembuatan.",
+    "confidentialLabel": "Rahasia",
+    "descriptionPlaceholder": "Jelaskan tujuan dan ruang lingkup model ancaman ini",
+    "framework": "Framework",
+    "namePlaceholder": "Masukkan nama model ancaman",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "Buat Model Ancaman"
   },
   "dashboard": {
     "clearFilter": "Hapus Filter",
@@ -768,6 +787,12 @@
       "saving": "Menyimpan..."
     },
     "browse": "Jelajahi Survei",
+    "confidentialDialog": {
+      "description": "Haruskah pengiriman ini ditandai sebagai rahasia? Pengiriman rahasia tidak secara otomatis dibagikan dengan grup Peninjau Keamanan. Pengaturan ini tidak dapat diubah setelah respons dibuat.",
+      "no": "Tidak",
+      "title": "Pengiriman Rahasia",
+      "yes": "Ya, tandai sebagai rahasia"
+    },
     "confirmation": {
       "backToSurveys": "Kembali ke Survei",
       "message": "Survei Anda berhasil dikirim.",
@@ -933,6 +958,12 @@
     "repositorySubPathHint": "Path opsional dalam repositori",
     "repositoryType": "Jenis Repositori",
     "repositoryUri": "URL Repositori",
+    "sections": {
+      "inputs": "Input",
+      "inputsDescription": "Aset, dokumen, dan repositori kode sumber yang menjelaskan sistem yang dianalisis",
+      "outputs": "Output",
+      "outputsDescription": "Catatan, diagram, dan ancaman yang dihasilkan selama analisis keamanan"
+    },
     "setAsOwner": "Tetapkan sebagai Pemilik",
     "sourcesCount": "Repo",
     "status": {
@@ -1028,9 +1059,18 @@
     },
     "title": "Ketentuan Layanan"
   },
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "Cari berdasarkan email",
+      "searchPlaceholder": "Mulai ketik alamat email..."
+    }
+  },
   "triage": {
     "bulkActions": "Tindakan Massal",
     "changeStatus": "Ubah Status",
+    "columns": {
+      "confidentialTooltip": "Pengiriman rahasia"
+    },
     "createTm": "Buat Model Ancaman",
     "detail": {
       "noResponses": "Tidak ada respons tercatat",
@@ -1041,7 +1081,10 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "Semua Survei",
-      "clearFilters": "Hapus Filter"
+      "clearFilters": "Hapus Filter",
+      "confidential": "Kerahasiaan",
+      "confidentialOnly": "Rahasia",
+      "nonConfidential": "Bukan Rahasia"
     },
     "list": {
       "allSurveys": "Semua Survei",
@@ -1144,6 +1187,14 @@
       "light": "Terang"
     },
     "title": "Preferensi Pengguna",
+    "transferData": {
+      "confirmMessage": "Apakah Anda yakin ingin mengalihkan semua model ancaman dan respons survei Anda ke {{email}}? Anda akan diturunkan ke peran penulis pada item yang dialihkan.",
+      "dialogTitle": "Alihkan Data Saya",
+      "error": "Gagal mengalihkan data. Silakan coba lagi.",
+      "hint": "Alihkan kepemilikan semua model ancaman dan respons survei Anda ke pengguna lain. Anda akan diturunkan ke peran penulis pada item yang dialihkan.",
+      "success": "Dialihkan {{tmCount}} model ancaman dan {{responseCount}} respons survei.",
+      "title": "Alihkan Data Saya ke Pengguna Lain"
+    },
     "userProfile": {
       "currentRole": "Peran Model Ancaman Saat Ini",
       "groups": "Grup",

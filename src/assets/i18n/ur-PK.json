@@ -176,7 +176,14 @@
       "listTitle": "صارفین",
       "noUsers": "کوئی صارفین نہیں ملے",
       "subtitle": "سسٹم صارفین دیکھیں اور ان کا انتظام کریں",
-      "title": "صارفین کا انتظام"
+      "title": "صارفین کا انتظام",
+      "transferOwnership": {
+        "confirm": "کیا آپ واقعی {{source}} سے {{target}} تک تمام ڈیٹا منتقل کرنا چاہتے ہیں؟",
+        "dialogTitle": "صارف ڈیٹا منتقل کریں",
+        "error": "ملکیت منتقل کرنے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔",
+        "success": "{{tmCount}} خطرے کے ماڈلز اور {{responseCount}} سروے کے جوابات منتقل ہوگئے۔",
+        "tooltip": "ملکیت منتقل کریں"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -368,6 +375,7 @@
     "addMetadata": "میٹا ڈیٹا شامل کریں",
     "addThreat": "خطرہ شامل کریں",
     "addons": "ایڈ آنز",
+    "all": "سب",
     "allStatuses": "تمام حالات",
     "archive": "آرکائیو",
     "back": "واپس",
@@ -377,6 +385,7 @@
     "clear": "صاف کریں",
     "clone": "نقل کریں",
     "close": "بند کریں",
+    "confirm": "تصدیق کریں",
     "confirmDelete": "کیا آپ واقعی {{item}} \"{{name}}\" کو حذف کرنا چاہتے ہیں؟ یہ عمل واپس نہیں ہو سکتا۔",
     "confirmDeleteMessage": "کیا آپ واقعی {{objectType}} \"{{name}}\" کو حذف کرنا چاہتے ہیں؟",
     "copy": "کاپی کریں",
@@ -398,6 +407,7 @@
     "deleteWarningTypeConfirmation": "تصدیق کے لیے، براہ کرم نیچے دیے گئے فیلڈ میں \"{{confirmValue}}\" ٹائپ کریں۔",
     "description": "تفصیل",
     "diagramId": "ڈایاگرام ID",
+    "dismiss": "مسترد کریں",
     "done": "ہو گیا",
     "download": "ڈاؤن لوڈ",
     "edit": "ترمیم کریں",
@@ -520,6 +530,15 @@
     "moveToFront": "سب سے آگے منتقل کریں",
     "noDataAssetsAvailable": "کوئی ڈیٹا اثاثے دستیاب نہیں ہیں",
     "showObject": "آبجیکٹ دکھائیں"
+  },
+  "createThreatModel": {
+    "confidentialHint": "رازداری والے خطرے کے ماڈلز خودکار طور پر سیکیورٹی ریویورز گروپ کے ساتھ شیئر نہیں کیے جاتے۔ یہ ترتیب تخلیق کے بعد تبدیل نہیں کی جا سکتی۔",
+    "confidentialLabel": "رازدارانہ",
+    "descriptionPlaceholder": "اس خطرے کے ماڈل کا مقصد اور دائرہ کار بیان کریں",
+    "framework": "ڈھانچہ",
+    "namePlaceholder": "خطرے کے ماڈل کا نام درج کریں",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "خطرے کا ماڈل بنائیں"
   },
   "dashboard": {
     "clearFilter": "فلٹر صاف کریں",
@@ -768,6 +787,12 @@
       "saving": "محفوظ ہو رہا ہے..."
     },
     "browse": "سروے دیکھیں",
+    "confidentialDialog": {
+      "description": "کیا یہ درخواست رازدارانہ نشان زد ہونی چاہیے؟ رازدارانہ درخواستیں خودکار طور پر سیکیورٹی ریویورز گروپ کے ساتھ شیئر نہیں کی جاتیں۔ یہ ترتیب جواب کی تخلیق کے بعد تبدیل نہیں کی جا سکتی۔",
+      "no": "نہیں",
+      "title": "رازدارانہ درخواست",
+      "yes": "ہاں، رازدارانہ نشان زد کریں"
+    },
     "confirmation": {
       "backToSurveys": "سروے پر واپس جائیں",
       "message": "آپ کا سروے کامیابی سے جمع ہوگیا ہے۔",
@@ -933,6 +958,12 @@
     "repositorySubPathHint": "ریپوزٹری کے اندر اختیاری راستہ",
     "repositoryType": "ریپوزٹری کی قسم",
     "repositoryUri": "ریپوزٹری URL",
+    "sections": {
+      "inputs": "ان پٹ",
+      "inputsDescription": "اثاثے، دستاویزات، اور سورس کوڈ ریپوزٹریز جو تجزیہ کے تحت نظام کی وضاحت کرتے ہیں",
+      "outputs": "آؤٹ پٹ",
+      "outputsDescription": "نوٹس، ڈایاگرامز، اور خطرات جو سیکیورٹی تجزیہ کے دوران تیار ہوتے ہیں"
+    },
     "setAsOwner": "مالک کے طور پر مقرر کریں",
     "sourcesCount": "ریپوز",
     "status": {
@@ -1028,9 +1059,18 @@
     },
     "title": "سروس کی شرائط"
   },
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "ای میل کے ذریعے تلاش کریں",
+      "searchPlaceholder": "ای میل ایڈریس ٹائپ کرنا شروع کریں..."
+    }
+  },
   "triage": {
     "bulkActions": "بلک ایکشنز",
     "changeStatus": "حیثیت تبدیل کریں",
+    "columns": {
+      "confidentialTooltip": "رازدارانہ درخواست"
+    },
     "createTm": "خطرے کا ماڈل بنائیں",
     "detail": {
       "noResponses": "کوئی جواب ریکارڈ نہیں",
@@ -1041,7 +1081,10 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "تمام سروے",
-      "clearFilters": "فلٹرز صاف کریں"
+      "clearFilters": "فلٹرز صاف کریں",
+      "confidential": "رازداریت",
+      "confidentialOnly": "رازدارانہ",
+      "nonConfidential": "غیر رازدارانہ"
     },
     "list": {
       "allSurveys": "تمام سروے",
@@ -1144,6 +1187,14 @@
       "light": "لائٹ"
     },
     "title": "صارف کی ترجیحات",
+    "transferData": {
+      "confirmMessage": "کیا آپ واقعی اپنے تمام خطرے کے ماڈلز اور سروے کے جوابات {{email}} کو منتقل کرنا چاہتے ہیں؟ آپ منتقل شدہ اشیاء پر ライٹر کردار میں نیچے کر دیے جائیں گے۔",
+      "dialogTitle": "میرا ڈیٹا منتقل کریں",
+      "error": "ڈیٹا منتقل کرنے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔",
+      "hint": "تمام آپ کے خطرے کے ماڈلز اور سروے کے جوابات کی ملکیت دوسرے صارف کو منتقل کریں۔ آپ منتقل شدہ اشیاء پر ライٹر کردار میں نیچے کر دیے جائیں گے۔",
+      "success": "{{tmCount}} خطرے کے ماڈلز اور {{responseCount}} سروے کے جوابات منتقل ہوگئے۔",
+      "title": "میرا ڈیٹا دوسرے صارف کو منتقل کریں"
+    },
     "userProfile": {
       "currentRole": "موجودہ خطرے کے ماڈل کا کردار",
       "groups": "گروپس",

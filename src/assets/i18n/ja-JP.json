@@ -176,7 +176,14 @@
       "listTitle": "ユーザー",
       "noUsers": "ユーザーが見つかりません",
       "subtitle": "システムユーザーの表示と管理",
-      "title": "ユーザーの管理"
+      "title": "ユーザーの管理",
+      "transferOwnership": {
+        "confirm": "{{source}}から{{target}}へすべてのデータを転送してもよろしいですか？",
+        "dialogTitle": "ユーザーデータの転送",
+        "error": "所有権の転送に失敗しました。もう一度お試しください。",
+        "success": "{{tmCount}}件の脅威モデルと{{responseCount}}件の調査回答を転送しました。",
+        "tooltip": "所有権を転送"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -368,6 +375,7 @@
     "addMetadata": "メタデータを追加",
     "addThreat": "脅威を追加",
     "addons": "アドオン",
+    "all": "すべて",
     "allStatuses": "すべてのステータス",
     "archive": "アーカイブ",
     "back": "戻る",
@@ -377,6 +385,7 @@
     "clear": "クリア",
     "clone": "複製",
     "close": "閉じる",
+    "confirm": "確認",
     "confirmDelete": "{{item}}「{{name}}」を削除してもよろしいですか？この操作は元に戻せません。",
     "confirmDeleteMessage": "{{objectType}}「{{name}}」を削除してもよろしいですか？",
     "copy": "コピー",
@@ -398,6 +407,7 @@
     "deleteWarningTypeConfirmation": "確認のため、以下のフィールドに「{{confirmValue}}」と入力してください。",
     "description": "説明",
     "diagramId": "ダイアグラムID",
+    "dismiss": "閉じる",
     "done": "完了",
     "download": "ダウンロード",
     "edit": "編集",
@@ -520,6 +530,15 @@
     "moveToFront": "最前面へ移動",
     "noDataAssetsAvailable": "データ資産がありません",
     "showObject": "オブジェクトを表示"
+  },
+  "createThreatModel": {
+    "confidentialHint": "機密の脅威モデルはセキュリティレビュアーグループと自動的には共有されません。この設定は作成後に変更することはできません。",
+    "confidentialLabel": "機密",
+    "descriptionPlaceholder": "この脅威モデルの目的と範囲を説明してください",
+    "framework": "フレームワーク",
+    "namePlaceholder": "脅威モデル名を入力してください",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "脅威モデルを作成"
   },
   "dashboard": {
     "clearFilter": "フィルターをクリア",
@@ -768,6 +787,12 @@
       "saving": "保存中..."
     },
     "browse": "調査を閲覧",
+    "confidentialDialog": {
+      "description": "この送信を機密としてマークしますか？機密送信はセキュリティレビュアーグループと自動的には共有されません。この設定は回答作成後に変更することはできません。",
+      "no": "いいえ",
+      "title": "機密送信",
+      "yes": "はい、機密としてマークする"
+    },
     "confirmation": {
       "backToSurveys": "調査に戻る",
       "message": "調査が正常に送信されました。",
@@ -933,6 +958,12 @@
     "repositorySubPathHint": "リポジトリ内のオプションパス",
     "repositoryType": "リポジトリタイプ",
     "repositoryUri": "リポジトリURL",
+    "sections": {
+      "inputs": "入力",
+      "inputsDescription": "分析対象のシステムを説明するアセット、ドキュメント、およびソースコードリポジトリ",
+      "outputs": "出力",
+      "outputsDescription": "セキュリティ分析中に作成されたノート、図、および脅威"
+    },
     "setAsOwner": "オーナーに設定",
     "sourcesCount": "リポジトリ",
     "status": {
@@ -1028,9 +1059,18 @@
     },
     "title": "利用規約"
   },
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "メールで検索",
+      "searchPlaceholder": "メールアドレスを入力して開始..."
+    }
+  },
   "triage": {
     "bulkActions": "一括操作",
     "changeStatus": "ステータスを変更",
+    "columns": {
+      "confidentialTooltip": "機密送信"
+    },
     "createTm": "脅威モデルを作成",
     "detail": {
       "noResponses": "記録された回答がありません",
@@ -1041,7 +1081,10 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "すべての調査",
-      "clearFilters": "フィルタをクリア"
+      "clearFilters": "フィルタをクリア",
+      "confidential": "機密性",
+      "confidentialOnly": "機密",
+      "nonConfidential": "非機密"
     },
     "list": {
       "allSurveys": "すべてのアンケート",
@@ -1144,6 +1187,14 @@
       "light": "ライト"
     },
     "title": "ユーザー設定",
+    "transferData": {
+      "confirmMessage": "本当にすべての脅威モデルと調査回答を{{email}}に転送してもよろしいですか？転送されたアイテムでは編集者ロールにダウングレードされます。",
+      "dialogTitle": "私のデータを転送",
+      "error": "データの転送に失敗しました。もう一度お試しください。",
+      "hint": "すべての脅威モデルと調査回答の所有権を別のユーザーに転送します。転送されたアイテムでは編集者ロールにダウングレードされます。",
+      "success": "{{tmCount}}件の脅威モデルと{{responseCount}}件の調査回答を転送しました。",
+      "title": "私のデータを別のユーザーに転送"
+    },
     "userProfile": {
       "currentRole": "現在の脅威モデルロール",
       "groups": "グループ",
