@@ -418,16 +418,18 @@ export class ThreatModelService implements OnDestroy {
     description?: string,
     framework: 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai' = 'STRIDE',
     issueUrl?: string,
+    isConfidential?: boolean,
   ): Observable<ThreatModel> {
     // Ensure framework is never empty - use STRIDE as default
     const validFramework = framework && framework.trim() !== '' ? framework : 'STRIDE';
 
     // this.logger.debugComponent('ThreatModelService', 'Creating threat model via API');
-    const body = {
+    const body: Record<string, unknown> = {
       name,
       description,
       threat_model_framework: validFramework,
       issue_uri: issueUrl,
+      is_confidential: isConfidential ?? false,
     };
 
     return this.apiService.post<ThreatModel>('threat_models', body).pipe(

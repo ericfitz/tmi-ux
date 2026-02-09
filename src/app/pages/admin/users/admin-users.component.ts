@@ -3,7 +3,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, take } from 'rxjs/operators';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import {
   COMMON_IMPORTS,
@@ -16,6 +18,10 @@ import { UserAdminService } from '@app/core/services/user-admin.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
 import { AdminUser } from '@app/types/user.types';
+import {
+  UserPickerDialogComponent,
+  UserPickerDialogData,
+} from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
@@ -80,6 +86,9 @@ export class AdminUsersComponent implements OnInit {
     private route: ActivatedRoute,
     private logger: LoggerService,
     private authService: AuthService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private transloco: TranslocoService,
   ) {}
 
   ngOnInit(): void {
@@ -238,6 +247,55 @@ This action cannot be undone.`;
           },
         });
     }
+  }
+
+  onTransferOwnership(user: AdminUser): void {
+    const dialogRef = this.dialog.open(UserPickerDialogComponent, {
+      data: {
+        title: this.transloco.translate('admin.users.transferOwnership.dialogTitle'),
+        excludeUserId: user.internal_uuid,
+      } as UserPickerDialogData,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((targetUser: AdminUser | undefined) => {
+        if (!targetUser) return;
+
+        const confirmed = confirm(
+          this.transloco.translate('admin.users.transferOwnership.confirm', {
+            source: user.email,
+            target: targetUser.email,
+          }),
+        );
+
+        if (!confirmed) return;
+
+        this.userAdminService
+          .transferOwnership(user.internal_uuid, targetUser.internal_uuid)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: result => {
+              const message = this.transloco.translate('admin.users.transferOwnership.success', {
+                tmCount: result.threat_models_transferred.count,
+                responseCount: result.survey_responses_transferred.count,
+              });
+              this.snackBar.open(message, this.transloco.translate('common.dismiss'), {
+                duration: 5000,
+              });
+              this.loadUsers();
+            },
+            error: err => {
+              this.logger.error('Failed to transfer ownership', err);
+              this.snackBar.open(
+                this.transloco.translate('admin.users.transferOwnership.error'),
+                this.transloco.translate('common.dismiss'),
+                { duration: 5000 },
+              );
+            },
+          });
+      });
   }
 
   onClose(): void {

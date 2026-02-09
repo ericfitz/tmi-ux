@@ -17,6 +17,7 @@ import {
   ResponseStatus,
   SurveyResponseFilter,
 } from '@app/types/survey.types';
+import { environment } from '../../../../../environments/environment';
 
 /**
  * Filter state for triage list
@@ -25,6 +26,7 @@ interface TriageFilters {
   status: ResponseStatus | 'all';
   surveyId: string | null;
   searchTerm: string;
+  isConfidential: boolean | null;
 }
 
 /**
@@ -50,8 +52,13 @@ export class TriageListComponent implements OnInit, OnDestroy {
   /** Selection model for bulk actions */
   selection = new SelectionModel<SurveyResponseListItem>(true, []);
 
+  /** Whether confidential feature is enabled */
+  readonly showConfidential = environment.enableConfidentialThreatModels ?? false;
+
   /** Displayed columns */
-  displayedColumns = ['select', 'submitter', 'template', 'submitted_at', 'status', 'actions'];
+  displayedColumns = this.showConfidential
+    ? ['select', 'confidential', 'submitter', 'template', 'submitted_at', 'status', 'actions']
+    : ['select', 'submitter', 'template', 'submitted_at', 'status', 'actions'];
 
   /** Available templates for filtering */
   surveys: SurveyListItem[] = [];
@@ -61,6 +68,7 @@ export class TriageListComponent implements OnInit, OnDestroy {
     status: 'all',
     surveyId: null,
     searchTerm: '',
+    isConfidential: null,
   };
 
   /** Status options for filtering */
@@ -137,6 +145,9 @@ export class TriageListComponent implements OnInit, OnDestroy {
     if (this.filters.surveyId) {
       filter.survey_id = this.filters.surveyId;
     }
+    if (this.filters.isConfidential !== null) {
+      filter.is_confidential = this.filters.isConfidential;
+    }
 
     this.responseService
       .listAll(filter)
@@ -181,6 +192,7 @@ export class TriageListComponent implements OnInit, OnDestroy {
       status: 'all',
       surveyId: null,
       searchTerm: '',
+      isConfidential: null,
     };
     this.pageIndex = 0;
     this.loadResponses();
@@ -303,6 +315,11 @@ export class TriageListComponent implements OnInit, OnDestroy {
    * Check if there are any active filters
    */
   get hasActiveFilters(): boolean {
-    return this.filters.status !== 'all' || !!this.filters.surveyId || !!this.filters.searchTerm;
+    return (
+      this.filters.status !== 'all' ||
+      !!this.filters.surveyId ||
+      !!this.filters.searchTerm ||
+      this.filters.isConfidential !== null
+    );
   }
 }

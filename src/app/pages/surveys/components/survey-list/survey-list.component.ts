@@ -9,6 +9,7 @@ import {
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { MatDialog } from '@angular/material/dialog';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -20,6 +21,8 @@ import { LanguageService } from '../../../../i18n/language.service';
 import { SurveyService } from '../../services/survey.service';
 import { SurveyResponseService } from '../../services/survey-response.service';
 import { SurveyListItem, SurveyResponseListItem } from '@app/types/survey.types';
+import { SurveyConfidentialDialogComponent } from '../survey-confidential-dialog/survey-confidential-dialog.component';
+import { environment } from '../../../../../environments/environment';
 
 /**
  * Survey list component for respondents
@@ -56,6 +59,7 @@ export class SurveyListComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private transloco: TranslocoService,
     private languageService: LanguageService,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -130,10 +134,32 @@ export class SurveyListComponent implements OnInit {
 
   /**
    * Start a new survey
+   * If confidential threat models feature is enabled, prompts for confidentiality first
    */
   startSurvey(survey: SurveyListItem): void {
+    if (environment.enableConfidentialThreatModels) {
+      const dialogRef = this.dialog.open(SurveyConfidentialDialogComponent, {
+        width: '450px',
+        maxWidth: '90vw',
+      });
+
+      dialogRef
+        .afterClosed()
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((isConfidential: boolean | undefined) => {
+          if (isConfidential === undefined) {
+            return; // Dialog was dismissed
+          }
+          this.createDraftAndNavigate(survey, isConfidential);
+        });
+    } else {
+      this.createDraftAndNavigate(survey, false);
+    }
+  }
+
+  private createDraftAndNavigate(survey: SurveyListItem, isConfidential: boolean): void {
     this.responseService
-      .createDraft({ survey_id: survey.id })
+      .createDraft({ survey_id: survey.id, is_confidential: isConfidential })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {

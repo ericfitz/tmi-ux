@@ -184,7 +184,14 @@
       "listTitle": "Users",
       "noUsers": "No users found",
       "subtitle": "View and manage system users",
-      "title": "Manage Users"
+      "title": "Manage Users",
+      "transferOwnership": {
+        "confirm": "Are you sure you want to transfer all data from {{source}} to {{target}}?",
+        "dialogTitle": "Transfer User Data",
+        "error": "Failed to transfer ownership. Please try again.",
+        "success": "Transferred {{tmCount}} threat models and {{responseCount}} survey responses.",
+        "tooltip": "Transfer ownership"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -383,6 +390,7 @@
     "addMetadata": "Add Metadata",
     "addThreat": "Add Threat",
     "addons": "Addons",
+    "all": "All",
     "allStatuses": "All Statuses",
     "archive": "Archive",
     "back": "Back",
@@ -394,6 +402,7 @@
     "clear": "Clear",
     "clone": "Clone",
     "close": "Close",
+    "confirm": "Confirm",
     "confirmDelete": "Are you sure you want to delete the {{item}} \"{{name}}\"? This action cannot be undone.",
     "confirmDeleteMessage": "Are you sure you want to delete the {{objectType}} \"{{name}}\"?",
     "copy": "Copy",
@@ -416,6 +425,7 @@
     "deleteWarningTypeConfirmation": "To confirm, please type \"{{confirmValue}}\" in the field below.",
     "description": "Description",
     "diagramId": "Diagram ID",
+    "dismiss": "Dismiss",
     "done": "Done",
     "download": "Download",
     "edit": "Edit",
@@ -541,6 +551,15 @@
     "moveToFront": "Move to Front",
     "noDataAssetsAvailable": "No data assets available",
     "showObject": "Show Object"
+  },
+  "createThreatModel": {
+    "confidentialHint": "Confidential threat models are not automatically shared with the Security Reviewers group. This setting cannot be changed after creation.",
+    "confidentialLabel": "Confidential",
+    "descriptionPlaceholder": "Describe the purpose and scope of this threat model",
+    "framework": "Framework",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "namePlaceholder": "Enter threat model name",
+    "title": "Create Threat Model"
   },
   "dashboard": {
     "clearFilter": "Clear Filter",
@@ -790,6 +809,12 @@
       "saving": "Saving..."
     },
     "browse": "Browse Surveys",
+    "confidentialDialog": {
+      "description": "Should this submission be marked as confidential? Confidential submissions are not automatically shared with the Security Reviewers group. This setting cannot be changed after the response is created.",
+      "no": "No",
+      "title": "Confidential Submission",
+      "yes": "Yes, mark as confidential"
+    },
     "confirmation": {
       "backToSurveys": "Back to Surveys",
       "message": "Your survey has been submitted successfully.",
@@ -1054,6 +1079,12 @@
     },
     "title": "Terms of Service"
   },
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "Search by email",
+      "searchPlaceholder": "Start typing email address..."
+    }
+  },
   "triage": {
     "bulkActions": "Bulk Actions",
     "changeStatus": "Change Status",
@@ -1064,10 +1095,16 @@
       "statusTimeline": "Status Timeline",
       "surveyResponses": "{{common.objectTypes.surveyResponses}}"
     },
+    "columns": {
+      "confidentialTooltip": "Confidential submission"
+    },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "All Surveys",
-      "clearFilters": "Clear Filters"
+      "clearFilters": "Clear Filters",
+      "confidential": "Confidentiality",
+      "confidentialOnly": "Confidential",
+      "nonConfidential": "Non-confidential"
     },
     "list": {
       "allSurveys": "All Surveys",
@@ -1174,6 +1211,14 @@
       "light": "Light"
     },
     "title": "User Preferences",
+    "transferData": {
+      "confirmMessage": "Are you sure you want to transfer all your threat models and survey responses to {{email}}? You will be downgraded to writer role on transferred items.",
+      "dialogTitle": "Transfer My Data",
+      "error": "Failed to transfer data. Please try again.",
+      "hint": "Transfers ownership of all your threat models and survey responses to another user. You will be downgraded to writer role on transferred items.",
+      "success": "Transferred {{tmCount}} threat models and {{responseCount}} survey responses.",
+      "title": "Transfer My Data to Another User"
+    },
     "userProfile": {
       "currentRole": "Current Threat Model Role",
       "groups": "Groups",

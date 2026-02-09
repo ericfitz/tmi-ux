@@ -11,10 +11,12 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import { UserProfile } from '@app/auth/models/auth.models';
+import { TransferOwnershipResult } from '@app/types/transfer.types';
 
 /**
  * Response from requesting account deletion challenge
@@ -64,5 +66,25 @@ export class UserService {
   confirmDeleteAccount(challenge: string): Observable<void> {
     this.logger.info('Confirming account deletion with challenge');
     return this.apiService.deleteWithParams<void>('users/me', { challenge });
+  }
+
+  /**
+   * Transfer ownership of all owned resources to another user
+   */
+  transferOwnership(targetUserId: string): Observable<TransferOwnershipResult> {
+    return this.apiService
+      .post<TransferOwnershipResult>('me/transfer', { target_user_id: targetUserId })
+      .pipe(
+        tap(result => {
+          this.logger.info('Ownership transferred', {
+            threatModels: result.threat_models_transferred.count,
+            surveyResponses: result.survey_responses_transferred.count,
+          });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to transfer ownership', error);
+          throw error;
+        }),
+      );
   }
 }

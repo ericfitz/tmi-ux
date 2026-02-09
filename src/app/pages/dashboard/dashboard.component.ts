@@ -68,6 +68,10 @@ import {
   DeleteConfirmationDialogData,
   DeleteConfirmationDialogResult,
 } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import {
+  CreateThreatModelDialogComponent,
+  CreateThreatModelDialogResult,
+} from './create-threat-model-dialog/create-threat-model-dialog.component';
 import { AuthService } from '../../auth/services/auth.service';
 import { UserPreferencesService } from '../../core/services/user-preferences.service';
 import { PaginatorIntlService } from '../../shared/services/paginator-intl.service';
@@ -295,22 +299,36 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   createThreatModel(): void {
-    // Wait for user profile to load before creating threat model
-    // This ensures authorization can be properly calculated
-    this.authService.userProfile$
-      .pipe(
-        filter(profile => profile !== null),
-        take(1),
-        switchMap(() =>
-          this.threatModelService.createThreatModel(
-            'New Threat Model',
-            'Description of the threat model',
-            'STRIDE',
-          ),
-        ),
-      )
-      .subscribe(model => {
-        void this.router.navigate(['/tm', model.id]);
+    const dialogRef = this.dialog.open(CreateThreatModelDialogComponent, {
+      width: '500px',
+      maxWidth: '90vw',
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((result: CreateThreatModelDialogResult | undefined) => {
+        if (!result) {
+          return;
+        }
+
+        this.authService.userProfile$
+          .pipe(
+            filter(profile => profile !== null),
+            take(1),
+            switchMap(() =>
+              this.threatModelService.createThreatModel(
+                result.name,
+                result.description,
+                result.framework,
+                undefined,
+                result.isConfidential,
+              ),
+            ),
+          )
+          .subscribe(model => {
+            void this.router.navigate(['/tm', model.id]);
+          });
       });
   }
 

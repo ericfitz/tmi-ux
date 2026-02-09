@@ -135,6 +135,21 @@ export interface Environment {
   defaultAuthProvider?: string;
 
   /**
+   * Enable the confidential threat models feature
+   * When enabled, users can mark threat models and survey responses as confidential,
+   * which excludes the Security Reviewers group from automatic access.
+   * Default: false (feature disabled)
+   */
+  enableConfidentialThreatModels?: boolean;
+
+  /**
+   * Default threat model framework for new threat models
+   * Allowed values: 'STRIDE', 'CIA', 'LINDDUN', 'DIE', 'PLOT4ai'
+   * Default: 'STRIDE'
+   */
+  defaultThreatModelFramework?: string;
+
+  /**
    * Security configuration for HTTP headers and policies
    * These settings help configure security headers at the application level
    */

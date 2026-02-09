@@ -200,4 +200,23 @@ export const environment: Environment = {
    * Default: system hostname
    */
   tlsSubjectName: undefined,
+
+  /**
+   * Enable the confidential threat models feature
+   * When enabled, users can mark threat models and survey responses as confidential,
+   * which excludes the Security Reviewers group from automatic access.
+   *
+   * Allowed values: true, false
+   * Default: false (feature disabled)
+   */
+  enableConfidentialThreatModels: false,
+
+  /**
+   * Default threat model framework for new threat models
+   * Controls which framework is pre-selected in the create threat model dialog
+   *
+   * Allowed values: 'STRIDE', 'CIA', 'LINDDUN', 'DIE', 'PLOT4ai'
+   * Default: 'STRIDE'
+   */
+  defaultThreatModelFramework: 'STRIDE',
 };

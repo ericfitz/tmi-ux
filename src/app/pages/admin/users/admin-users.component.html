@@ -112,6 +112,13 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
+                    (click)="onTransferOwnership(user)"
+                    [matTooltip]="'admin.users.transferOwnership.tooltip' | transloco"
+                  >
+                    <mat-icon>swap_horiz</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
                     color="warn"
                     (click)="onDeleteUser(user)"
                     [matTooltip]="'admin.users.deleteTooltip' | transloco"
