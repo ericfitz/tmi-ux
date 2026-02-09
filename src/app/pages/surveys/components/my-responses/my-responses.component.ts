@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -47,15 +47,20 @@ export class MyResponsesComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
-  statusFilter: ResponseStatus | 'all' = 'all';
+  statusFilter: ResponseStatus[] = [
+    'draft',
+    'submitted',
+    'needs_revision',
+    'ready_for_review',
+    'review_created',
+  ];
 
-  readonly statusOptions: { value: ResponseStatus | 'all'; label: string }[] = [
-    { value: 'all', label: 'All Statuses' },
-    { value: 'draft', label: 'Draft' },
-    { value: 'submitted', label: 'Submitted' },
-    { value: 'needs_revision', label: 'Needs Revision' },
-    { value: 'ready_for_review', label: 'Ready for Review' },
-    { value: 'review_created', label: 'Review Created' },
+  readonly statusOptions: { value: ResponseStatus; labelKey: string }[] = [
+    { value: 'draft', labelKey: 'surveys.status.draft' },
+    { value: 'submitted', labelKey: 'surveys.status.submitted' },
+    { value: 'needs_revision', labelKey: 'surveys.status.needsRevision' },
+    { value: 'ready_for_review', labelKey: 'surveys.status.readyForReview' },
+    { value: 'review_created', labelKey: 'surveys.status.reviewCreated' },
   ];
 
   readonly displayedColumns = ['template', 'status', 'created', 'modified', 'actions'];
@@ -65,6 +70,7 @@ export class MyResponsesComponent implements OnInit {
     private router: Router,
     private logger: LoggerService,
     private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService,
   ) {}
 
   ngOnInit(): void {
@@ -89,7 +95,7 @@ export class MyResponsesComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: error => {
-          this.error = 'Failed to load responses';
+          this.error = this.transloco.translate('surveys.responses.errorLoadingResponses');
           this.loading = false;
           this.logger.error('Failed to load responses', error);
           this.cdr.markForCheck();
@@ -101,10 +107,10 @@ export class MyResponsesComponent implements OnInit {
    * Apply status filter
    */
   applyFilter(): void {
-    if (this.statusFilter === 'all') {
+    if (this.statusFilter.length === 0 || this.statusFilter.length === this.statusOptions.length) {
       this.filteredResponses = [...this.responses];
     } else {
-      this.filteredResponses = this.responses.filter(s => s.status === this.statusFilter);
+      this.filteredResponses = this.responses.filter(s => this.statusFilter.includes(s.status));
     }
 
     // Sort by modified date descending, falling back to created_at
@@ -168,15 +174,27 @@ export class MyResponsesComponent implements OnInit {
   /**
    * Get status display info
    */
-  getStatusInfo(status: ResponseStatus): { label: string; color: string; icon: string } {
-    const statusMap: Record<ResponseStatus, { label: string; color: string; icon: string }> = {
-      draft: { label: 'Draft', color: 'default', icon: 'edit_note' },
-      submitted: { label: 'Submitted', color: 'primary', icon: 'send' },
-      needs_revision: { label: 'Needs Revision', color: 'warn', icon: 'rate_review' },
-      ready_for_review: { label: 'Ready for Review', color: 'accent', icon: 'pending_actions' },
-      review_created: { label: 'Review Created', color: 'primary', icon: 'check_circle' },
+  getStatusInfo(status: ResponseStatus): { labelKey: string; color: string; icon: string } {
+    const statusMap: Record<ResponseStatus, { labelKey: string; color: string; icon: string }> = {
+      draft: { labelKey: 'surveys.status.draft', color: 'default', icon: 'edit_note' },
+      submitted: { labelKey: 'surveys.status.submitted', color: 'primary', icon: 'send' },
+      needs_revision: {
+        labelKey: 'surveys.status.needsRevision',
+        color: 'warn',
+        icon: 'rate_review',
+      },
+      ready_for_review: {
+        labelKey: 'surveys.status.readyForReview',
+        color: 'accent',
+        icon: 'pending_actions',
+      },
+      review_created: {
+        labelKey: 'surveys.status.reviewCreated',
+        color: 'primary',
+        icon: 'check_circle',
+      },
     };
-    return statusMap[status] ?? { label: status, color: 'default', icon: 'help' };
+    return statusMap[status] ?? { labelKey: status, color: 'default', icon: 'help' };
   }
 
   /**

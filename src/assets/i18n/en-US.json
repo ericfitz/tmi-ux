@@ -840,7 +840,20 @@
       "yourDrafts": "Your Drafts"
     },
     "myResponses": "My Responses",
+    "noMatchingResponses": "No Matching Responses",
+    "noMatchingResponsesMessage": "No responses match the selected filters.",
     "noResponses": "You haven't submitted any survey responses yet",
+    "responses": {
+      "continueEditing": "Continue editing",
+      "errorLoadingResponses": "Failed to load responses",
+      "filterByStatus": "Filter by Status",
+      "loadingResponses": "Loading responses...",
+      "noResponsesMessage": "You haven't completed any surveys. Start one from the surveys page.",
+      "noResponsesTitle": "No Responses Yet",
+      "pageTitle": "My Survey Responses",
+      "responseCount": "{{count}} response",
+      "responseCountPlural": "{{count}} responses"
+    },
     "noSurveys": "No surveys available",
     "saveDraft": "Save Draft",
     "startNew": "Start Survey",
