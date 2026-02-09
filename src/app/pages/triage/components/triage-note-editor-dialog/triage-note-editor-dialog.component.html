@@ -1,0 +1,151 @@
+<h2 mat-dialog-title>
+  {{ dialogTitle }}
+  @if (isReadOnly) {
+    <mat-icon
+      class="read-only-indicator"
+      color="warn"
+      [matTooltip]="'common.readOnlyTooltip' | transloco"
+      [attr.aria-label]="'common.readOnly' | transloco"
+      >edit_off</mat-icon
+    >
+  }
+</h2>
+
+<mat-dialog-content appScrollIndicator>
+  <form [formGroup]="noteForm">
+    <!-- Name field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'triage.noteEditor.nameLabel' | transloco }}</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        [placeholder]="'triage.noteEditor.namePlaceholder' | transloco"
+      />
+      @if (noteForm.get('name')?.hasError('required')) {
+        <mat-error>
+          {{ 'common.validation.required' | transloco }}
+        </mat-error>
+      }
+      @if (noteForm.get('name')?.hasError('maxlength')) {
+        <mat-error>
+          {{ 'common.validation.maxLength' | transloco: { max: maxNameLength } }}
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Markdown Editor Toolbar -->
+    @if (!isReadOnly) {
+      <div class="markdown-toolbar">
+        <div class="toolbar-left">
+          <button
+            mat-icon-button
+            type="button"
+            [class.active]="!previewMode"
+            (click)="previewMode = false"
+            [matTooltip]="'noteEditor.editMode' | transloco"
+            [attr.aria-label]="'noteEditor.editMode' | transloco"
+          >
+            <mat-icon fontSet="material-symbols-outlined">edit_note</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            [class.active]="previewMode"
+            (click)="togglePreview()"
+            [matTooltip]="'noteEditor.previewMode' | transloco"
+            [attr.aria-label]="'noteEditor.previewMode' | transloco"
+          >
+            <mat-icon fontSet="material-symbols-outlined">preview</mat-icon>
+          </button>
+          <span class="toolbar-divider"></span>
+          <button
+            mat-icon-button
+            type="button"
+            [disabled]="previewMode || !hasSelection"
+            (click)="onCut()"
+            [matTooltip]="'common.cut' | transloco"
+            [attr.aria-label]="'common.cut' | transloco"
+          >
+            <mat-icon fontSet="material-symbols-outlined">content_cut</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            [disabled]="!previewMode && !hasSelection"
+            (click)="onCopy()"
+            [matTooltip]="'common.copy' | transloco"
+            [attr.aria-label]="'common.copy' | transloco"
+          >
+            <mat-icon fontSet="material-symbols-outlined">content_copy</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            [disabled]="previewMode"
+            (click)="onPaste()"
+            [matTooltip]="'common.paste' | transloco"
+            [attr.aria-label]="'common.paste' | transloco"
+          >
+            <mat-icon fontSet="material-symbols-outlined">content_paste</mat-icon>
+          </button>
+        </div>
+        <div class="toolbar-right">
+          <span class="character-count">
+            {{
+              'noteEditor.characterCount'
+                | transloco: { current: currentContentLength, max: maxContentLength }
+            }}
+          </span>
+        </div>
+      </div>
+    }
+
+    <!-- Content field (Edit mode) -->
+    @if (!previewMode) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'triage.noteEditor.contentLabel' | transloco }}</mat-label>
+        <textarea
+          #contentTextarea
+          matInput
+          formControlName="content"
+          rows="15"
+          class="markdown-editor-textarea"
+          [placeholder]="'triage.noteEditor.contentPlaceholder' | transloco"
+          (select)="onTextareaSelect($event)"
+          (keyup)="onTextareaSelect($event)"
+          (mouseup)="onTextareaSelect($event)"
+        ></textarea>
+        @if (noteForm.get('content')?.hasError('required')) {
+          <mat-error>
+            {{ 'common.validation.required' | transloco }}
+          </mat-error>
+        }
+        @if (noteForm.get('content')?.hasError('maxlength')) {
+          <mat-error>
+            {{ 'common.validation.maxLength' | transloco: { max: maxContentLength } }}
+          </mat-error>
+        }
+      </mat-form-field>
+    }
+
+    <!-- Preview mode -->
+    @if (previewMode) {
+      <div class="markdown-preview-container">
+        <div #markdownPreview class="markdown-preview">
+          <markdown [data]="markdownContent"></markdown>
+        </div>
+      </div>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">
+    {{ isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco) }}
+  </button>
+  @if (!isReadOnly) {
+    <button mat-raised-button color="primary" [disabled]="noteForm.invalid" (click)="onSave()">
+      {{ 'common.save' | transloco }}
+    </button>
+  }
+</mat-dialog-actions>

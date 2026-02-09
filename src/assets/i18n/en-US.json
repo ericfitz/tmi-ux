@@ -1208,10 +1208,13 @@
       "markdownSupported": "Markdown supported",
       "noNotes": "No triage notes yet",
       "noResponses": "No responses recorded",
+      "noRevisionNotes": "No revision notes",
+      "note": "note",
       "noteContentLabel": "Content",
       "noteContentPlaceholder": "Enter note content...",
       "noteNameLabel": "Title",
       "noteNamePlaceholder": "Brief note title",
+      "notes": "notes",
       "responseDetails": "Response Details",
       "reviewedAt": "Reviewed",
       "reviewedBy": "Reviewed By",
@@ -1247,6 +1250,16 @@
     "markInReview": "Mark In Review",
     "markPendingTriage": "Mark Pending Triage",
     "noResponses": "No responses to triage",
+    "noteEditor": {
+      "contentLabel": "Content",
+      "contentPlaceholder": "Enter note content (Markdown supported)...",
+      "nameLabel": "Title",
+      "namePlaceholder": "Brief note title",
+      "title": {
+        "create": "New Triage Note",
+        "view": "View Triage Note"
+      }
+    },
     "queue": "Triage Queue",
     "returnToSubmitted": "Return to Submitted",
     "revisionDialog": {

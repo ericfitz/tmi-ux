@@ -12,11 +12,16 @@ import { SurveyResponseService } from '../../../surveys/services/survey-response
 import { SurveyService } from '../../../surveys/services/survey.service';
 import { TriageNoteService } from '../../services/triage-note.service';
 import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
-import { TriageNoteListItem, CreateTriageNoteRequest } from '@app/types/triage-note.types';
+import { TriageNoteListItem, TriageNote } from '@app/types/triage-note.types';
 import {
   RevisionNotesDialogComponent,
   RevisionNotesDialogResult,
 } from '../revision-notes-dialog/revision-notes-dialog.component';
+import {
+  TriageNoteEditorDialogComponent,
+  TriageNoteEditorDialogData,
+  TriageNoteEditorResult,
+} from '../triage-note-editor-dialog/triage-note-editor-dialog.component';
 
 /**
  * Status timeline entry
@@ -77,15 +82,12 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /** Whether triage notes are loading */
   isLoadingNotes = false;
 
-  /** Whether a note is being created */
-  isCreatingNote = false;
+  /** Expandable section states */
+  surveyResponsesSectionExpanded = true;
+  triageNotesSectionExpanded = true;
 
-  /** Whether the note creation form is visible */
-  showNoteForm = false;
-
-  /** New note form fields */
-  newNoteName = '';
-  newNoteContent = '';
+  /** Columns displayed in the triage notes table */
+  notesDisplayedColumns: string[] = ['name', 'created_by', 'created_at'];
 
   constructor(
     private route: ActivatedRoute,
@@ -384,53 +386,96 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Toggle the note creation form
+   * Toggle survey responses section
    */
-  toggleNoteForm(): void {
-    this.showNoteForm = !this.showNoteForm;
-    if (!this.showNoteForm) {
-      this.newNoteName = '';
-      this.newNoteContent = '';
-    }
+  toggleSurveyResponsesSection(): void {
+    this.surveyResponsesSectionExpanded = !this.surveyResponsesSectionExpanded;
   }
 
   /**
-   * Create a new triage note
+   * Toggle triage notes section
    */
-  createNote(): void {
-    if (!this.response || !this.newNoteName.trim() || !this.newNoteContent.trim()) return;
+  toggleTriageNotesSection(): void {
+    this.triageNotesSectionExpanded = !this.triageNotesSectionExpanded;
+  }
 
-    this.isCreatingNote = true;
-    const request: CreateTriageNoteRequest = {
-      name: this.newNoteName.trim(),
-      content: this.newNoteContent.trim(),
-    };
+  /**
+   * Open the note editor dialog to create a new triage note
+   */
+  openNoteEditor(): void {
+    if (!this.response) return;
 
+    const dialogData: TriageNoteEditorDialogData = { mode: 'create' };
+    const dialogRef = this.dialog.open<
+      TriageNoteEditorDialogComponent,
+      TriageNoteEditorDialogData,
+      TriageNoteEditorResult
+    >(TriageNoteEditorDialogComponent, {
+      width: '700px',
+      maxWidth: '90vw',
+      disableClose: true,
+      data: dialogData,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+          this.createNote(result);
+        }
+      });
+  }
+
+  /**
+   * View a triage note in the editor dialog (read-only)
+   */
+  viewNote(note: TriageNoteListItem): void {
+    if (!this.response) return;
+
+    // Fetch the full note content first
     this.triageNoteService
-      .create(this.response.id, request)
+      .getById(this.response.id, note.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => {
-          this.isCreatingNote = false;
-          this.showNoteForm = false;
-          this.newNoteName = '';
-          this.newNoteContent = '';
-          this.loadTriageNotes(this.response!.id);
+        next: (fullNote: TriageNote) => {
+          const dialogData: TriageNoteEditorDialogData = {
+            mode: 'view',
+            name: fullNote.name,
+            content: fullNote.content,
+          };
+          this.dialog.open<TriageNoteEditorDialogComponent, TriageNoteEditorDialogData>(
+            TriageNoteEditorDialogComponent,
+            {
+              width: '700px',
+              maxWidth: '90vw',
+              data: dialogData,
+            },
+          );
         },
         error: (err: unknown) => {
-          this.isCreatingNote = false;
-          this.logger.error('Failed to create triage note', err);
+          this.logger.error('Failed to load triage note', err);
         },
       });
   }
 
   /**
-   * Cancel note creation
+   * Create a new triage note via the service
    */
-  cancelNoteForm(): void {
-    this.showNoteForm = false;
-    this.newNoteName = '';
-    this.newNoteContent = '';
+  private createNote(result: TriageNoteEditorResult): void {
+    if (!this.response) return;
+
+    this.triageNoteService
+      .create(this.response.id, { name: result.name, content: result.content })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.loadTriageNotes(this.response!.id);
+        },
+        error: (err: unknown) => {
+          this.logger.error('Failed to create triage note', err);
+        },
+      });
   }
 
   /**
