@@ -818,8 +818,21 @@
       "yourDrafts": "Sus borradores"
     },
     "myResponses": "Mis Respuestas",
+    "noMatchingResponses": "No Hay Respuestas Coincidentes",
+    "noMatchingResponsesMessage": "Ninguna respuesta coincide con los filtros seleccionados.",
     "noResponses": "Aún no ha enviado ninguna respuesta de encuesta",
     "noSurveys": "No hay encuestas disponibles",
+    "responses": {
+      "continueEditing": "Continuar editando",
+      "errorLoadingResponses": "Error al cargar las respuestas",
+      "filterByStatus": "Filtrar por Estado",
+      "loadingResponses": "Cargando respuestas...",
+      "noResponsesMessage": "No ha completado ninguna encuesta. Comience una desde la página de encuestas.",
+      "noResponsesTitle": "Aún No Hay Respuestas",
+      "pageTitle": "Mis Respuestas de Encuestas",
+      "responseCount": "{{count}} respuesta",
+      "responseCountPlural": "{{count}} respuestas"
+    },
     "saveDraft": "Guardar Borrador",
     "startNew": "Iniciar Encuesta",
     "status": {

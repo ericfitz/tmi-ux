@@ -818,8 +818,21 @@
       "yourDrafts": "下書き"
     },
     "myResponses": "自分の回答",
+    "noMatchingResponses": "一致する回答がありません",
+    "noMatchingResponsesMessage": "選択されたフィルタに一致する回答がありません。",
     "noResponses": "まだ調査回答を送信していません",
     "noSurveys": "利用可能な調査がありません",
+    "responses": {
+      "continueEditing": "編集を続ける",
+      "errorLoadingResponses": "回答の読み込みに失敗しました",
+      "filterByStatus": "ステータスでフィルタ",
+      "loadingResponses": "回答を読み込んでいます...",
+      "noResponsesMessage": "まだアンケートに回答していません。アンケートページから開始してください。",
+      "noResponsesTitle": "回答がありません",
+      "pageTitle": "自分のアンケート回答",
+      "responseCount": "{{count}}件の回答",
+      "responseCountPlural": "{{count}}件の回答"
+    },
     "saveDraft": "下書きを保存",
     "startNew": "調査を開始",
     "status": {

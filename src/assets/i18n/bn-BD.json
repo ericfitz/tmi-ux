@@ -818,8 +818,21 @@
       "yourDrafts": "আপনার খসড়াসমূহ"
     },
     "myResponses": "আমার প্রতিক্রিয়া",
+    "noMatchingResponses": "কোনো মিলযুক্ত প্রতিক্রিয়া নেই",
+    "noMatchingResponsesMessage": "নির্বাচিত ফিল্টারের সাথে কোনো প্রতিক্রিয়া মিলছে না।",
     "noResponses": "আপনি এখনও কোনো জরিপ প্রতিক্রিয়া জমা দেননি",
     "noSurveys": "কোনো জরিপ উপলব্ধ নেই",
+    "responses": {
+      "continueEditing": "সম্পাদনা চালিয়ে যান",
+      "errorLoadingResponses": "প্রতিক্রিয়া লোড করতে ব্যর্থ",
+      "filterByStatus": "স্ট্যাটাস অনুযায়ী ফিল্টার করুন",
+      "loadingResponses": "প্রতিক্রিয়া লোড হচ্ছে...",
+      "noResponsesMessage": "আপনি এখনো কোনো সমীক্ষা সম্পন্ন করেননি। সমীক্ষা পৃষ্ঠা থেকে একটি শুরু করুন।",
+      "noResponsesTitle": "এখনো কোনো প্রতিক্রিয়া নেই",
+      "pageTitle": "আমার সমীক্ষা প্রতিক্রিয়াসমূহ",
+      "responseCount": "{{count}}টি প্রতিক্রিয়া",
+      "responseCountPlural": "{{count}}টি প্রতিক্রিয়া"
+    },
     "saveDraft": "খসড়া সংরক্ষণ করুন",
     "startNew": "জরিপ শুরু করুন",
     "status": {

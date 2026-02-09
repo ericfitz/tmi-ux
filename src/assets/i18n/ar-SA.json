@@ -818,8 +818,21 @@
       "yourDrafts": "مسوداتك"
     },
     "myResponses": "ردودي",
+    "noMatchingResponses": "لا توجد ردود مطابقة",
+    "noMatchingResponsesMessage": "لا توجد ردود تطابق الفلاتر المحددة.",
     "noResponses": "لم تقدم أي ردود على الاستبيانات بعد",
     "noSurveys": "لا توجد استبيانات متاحة",
+    "responses": {
+      "continueEditing": "متابعة التحرير",
+      "errorLoadingResponses": "فشل تحميل الردود",
+      "filterByStatus": "تصفية حسب الحالة",
+      "loadingResponses": "جارٍ تحميل الردود...",
+      "noResponsesMessage": "لم تكمل أي استبيانات بعد. ابدأ واحداً من صفحة الاستبيانات.",
+      "noResponsesTitle": "لا توجد ردود بعد",
+      "pageTitle": "ردودي على الاستبيانات",
+      "responseCount": "رد واحد ({{count}})",
+      "responseCountPlural": "{{count}} ردود"
+    },
     "saveDraft": "حفظ كمسودة",
     "startNew": "بدء الاستبيان",
     "status": {

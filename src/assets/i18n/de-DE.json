@@ -818,8 +818,21 @@
       "yourDrafts": "Ihre Entwürfe"
     },
     "myResponses": "Meine Antworten",
+    "noMatchingResponses": "Keine übereinstimmenden Antworten",
+    "noMatchingResponsesMessage": "Keine Antworten entsprechen den ausgewählten Filtern.",
     "noResponses": "Sie haben noch keine Umfrageantworten eingereicht",
     "noSurveys": "Keine Umfragen verfügbar",
+    "responses": {
+      "continueEditing": "Bearbeitung fortsetzen",
+      "errorLoadingResponses": "Fehler beim Laden der Antworten",
+      "filterByStatus": "Nach Status filtern",
+      "loadingResponses": "Antworten werden geladen...",
+      "noResponsesMessage": "Sie haben noch keine Umfragen abgeschlossen. Starten Sie eine auf der Umfragenseite.",
+      "noResponsesTitle": "Noch keine Antworten",
+      "pageTitle": "Meine Umfrageantworten",
+      "responseCount": "{{count}} Antwort",
+      "responseCountPlural": "{{count}} Antworten"
+    },
     "saveDraft": "Entwurf speichern",
     "startNew": "Umfrage starten",
     "status": {

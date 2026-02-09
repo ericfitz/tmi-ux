@@ -818,8 +818,21 @@
       "yourDrafts": "आपके ड्राफ्ट"
     },
     "myResponses": "मेरी प्रतिक्रियाएं",
+    "noMatchingResponses": "कोई मिलान प्रतिक्रिया नहीं",
+    "noMatchingResponsesMessage": "चयनित फ़िल्टर से कोई प्रतिक्रिया मेल नहीं खाती।",
     "noResponses": "आपने अभी तक कोई सर्वेक्षण प्रतिक्रिया सबमिट नहीं की है",
     "noSurveys": "कोई सर्वेक्षण उपलब्ध नहीं है",
+    "responses": {
+      "continueEditing": "संपादन जारी रखें",
+      "errorLoadingResponses": "प्रतिक्रियाएं लोड करने में विफल",
+      "filterByStatus": "स्थिति के अनुसार फ़िल्टर करें",
+      "loadingResponses": "प्रतिक्रियाएं लोड हो रही हैं...",
+      "noResponsesMessage": "आपने कोई सर्वेक्षण पूरा नहीं किया है। सर्वेक्षण पृष्ठ से एक शुरू करें।",
+      "noResponsesTitle": "अभी तक कोई प्रतिक्रिया नहीं",
+      "pageTitle": "मेरी सर्वेक्षण प्रतिक्रियाएं",
+      "responseCount": "{{count}} प्रतिक्रिया",
+      "responseCountPlural": "{{count}} प्रतिक्रियाएं"
+    },
     "saveDraft": "ड्राफ्ट सहेजें",
     "startNew": "सर्वेक्षण शुरू करें",
     "status": {

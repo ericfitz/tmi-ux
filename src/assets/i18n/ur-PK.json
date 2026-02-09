@@ -818,8 +818,21 @@
       "yourDrafts": "آپ کے مسودے"
     },
     "myResponses": "میرے جوابات",
+    "noMatchingResponses": "کوئی مماثل جواب نہیں",
+    "noMatchingResponsesMessage": "منتخب فلٹرز سے کوئی جواب میل نہیں کھاتا۔",
     "noResponses": "آپ نے ابھی تک کوئی سروے جواب جمع نہیں کیا",
     "noSurveys": "کوئی سروے دستیاب نہیں",
+    "responses": {
+      "continueEditing": "ترمیم جاری رکھیں",
+      "errorLoadingResponses": "جوابات لوڈ کرنے میں ناکامی",
+      "filterByStatus": "حیثیت کے مطابق فلٹر کریں",
+      "loadingResponses": "جوابات لوڈ ہو رہے ہیں...",
+      "noResponsesMessage": "آپ نے ابھی تک کوئی سروے مکمل نہیں کیا۔ سروے کے صفحے سے شروع کریں۔",
+      "noResponsesTitle": "ابھی تک کوئی جواب نہیں",
+      "pageTitle": "میرے سروے کے جوابات",
+      "responseCount": "{{count}} جواب",
+      "responseCountPlural": "{{count}} جوابات"
+    },
     "saveDraft": "مسودہ محفوظ کریں",
     "startNew": "سروے شروع کریں",
     "status": {

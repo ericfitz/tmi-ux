@@ -818,8 +818,21 @@
       "yourDrafts": "הטיוטות שלך"
     },
     "myResponses": "התגובות שלי",
+    "noMatchingResponses": "אין תגובות תואמות",
+    "noMatchingResponsesMessage": "אין תגובות התואמות את המסננים שנבחרו.",
     "noResponses": "עדיין לא שלחת תגובות לסקר",
     "noSurveys": "אין סקרים זמינים",
+    "responses": {
+      "continueEditing": "המשך בעריכה",
+      "errorLoadingResponses": "נכשל בטעינת התגובות",
+      "filterByStatus": "סנן לפי סטטוס",
+      "loadingResponses": "טוען תגובות...",
+      "noResponsesMessage": "לא השלמת אף סקר. התחל אחד מדף הסקרים.",
+      "noResponsesTitle": "אין תגובות עדיין",
+      "pageTitle": "התגובות שלי לסקרים",
+      "responseCount": "תגובה {{count}}",
+      "responseCountPlural": "{{count}} תגובות"
+    },
     "saveDraft": "שמור טיוטה",
     "startNew": "התחל סקר",
     "status": {

@@ -818,8 +818,21 @@
       "yourDrafts": "您的草稿"
     },
     "myResponses": "我的回复",
+    "noMatchingResponses": "没有匹配的回复",
+    "noMatchingResponsesMessage": "没有符合所选筛选条件的回复。",
     "noResponses": "您还没有提交任何调查回复",
     "noSurveys": "暂无可用调查",
+    "responses": {
+      "continueEditing": "继续编辑",
+      "errorLoadingResponses": "加载回复失败",
+      "filterByStatus": "按状态筛选",
+      "loadingResponses": "正在加载回复...",
+      "noResponsesMessage": "您还没有完成任何调查问卷。请从调查问卷页面开始。",
+      "noResponsesTitle": "暂无回复",
+      "pageTitle": "我的调查问卷回复",
+      "responseCount": "{{count}} 条回复",
+      "responseCountPlural": "{{count}} 条回复"
+    },
     "saveDraft": "保存草稿",
     "startNew": "开始调查",
     "status": {

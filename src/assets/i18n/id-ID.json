@@ -818,8 +818,21 @@
       "yourDrafts": "Draf Anda"
     },
     "myResponses": "Respons Saya",
+    "noMatchingResponses": "Tidak Ada Respons yang Cocok",
+    "noMatchingResponsesMessage": "Tidak ada respons yang cocok dengan filter yang dipilih.",
     "noResponses": "Anda belum mengirim respons survei apa pun",
     "noSurveys": "Tidak ada survei tersedia",
+    "responses": {
+      "continueEditing": "Lanjutkan mengedit",
+      "errorLoadingResponses": "Gagal memuat respons",
+      "filterByStatus": "Filter berdasarkan Status",
+      "loadingResponses": "Memuat respons...",
+      "noResponsesMessage": "Anda belum menyelesaikan survei apa pun. Mulai dari halaman survei.",
+      "noResponsesTitle": "Belum Ada Respons",
+      "pageTitle": "Respons Survei Saya",
+      "responseCount": "{{count}} respons",
+      "responseCountPlural": "{{count}} respons"
+    },
     "saveDraft": "Simpan Draf",
     "startNew": "Mulai Survei",
     "status": {

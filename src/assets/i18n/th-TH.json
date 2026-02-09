@@ -818,8 +818,21 @@
       "yourDrafts": "ฉบับร่างของคุณ"
     },
     "myResponses": "คำตอบของฉัน",
+    "noMatchingResponses": "ไม่พบคำตอบที่ตรงกัน",
+    "noMatchingResponsesMessage": "ไม่มีคำตอบที่ตรงกับตัวกรองที่เลือก",
     "noResponses": "คุณยังไม่ได้ส่งคำตอบแบบสำรวจใดๆ",
     "noSurveys": "ไม่มีแบบสำรวจที่พร้อมใช้งาน",
+    "responses": {
+      "continueEditing": "แก้ไขต่อ",
+      "errorLoadingResponses": "โหลดคำตอบไม่สำเร็จ",
+      "filterByStatus": "กรองตามสถานะ",
+      "loadingResponses": "กำลังโหลดคำตอบ...",
+      "noResponsesMessage": "คุณยังไม่ได้ทำแบบสำรวจใดๆ เสร็จสิ้น เริ่มทำแบบสำรวจได้จากหน้าแบบสำรวจ",
+      "noResponsesTitle": "ยังไม่มีคำตอบ",
+      "pageTitle": "คำตอบแบบสำรวจของฉัน",
+      "responseCount": "{{count}} คำตอบ",
+      "responseCountPlural": "{{count}} คำตอบ"
+    },
     "saveDraft": "บันทึกร่าง",
     "startNew": "เริ่มแบบสำรวจ",
     "status": {

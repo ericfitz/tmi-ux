@@ -818,8 +818,21 @@
       "yourDrafts": "Ваши черновики"
     },
     "myResponses": "Мои ответы",
+    "noMatchingResponses": "Нет подходящих ответов",
+    "noMatchingResponsesMessage": "Ни один ответ не соответствует выбранным фильтрам.",
     "noResponses": "Вы еще не отправили ни одного ответа на опрос",
     "noSurveys": "Нет доступных опросов",
+    "responses": {
+      "continueEditing": "Продолжить редактирование",
+      "errorLoadingResponses": "Не удалось загрузить ответы",
+      "filterByStatus": "Фильтр по статусу",
+      "loadingResponses": "Загрузка ответов...",
+      "noResponsesMessage": "Вы еще не заполнили ни одного опроса. Начните с страницы опросов.",
+      "noResponsesTitle": "Пока нет ответов",
+      "pageTitle": "Мои ответы на опросы",
+      "responseCount": "{{count}} ответ",
+      "responseCountPlural": "{{count}} ответов"
+    },
     "saveDraft": "Сохранить черновик",
     "startNew": "Начать опрос",
     "status": {

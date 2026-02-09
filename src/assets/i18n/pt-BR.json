@@ -818,8 +818,21 @@
       "yourDrafts": "Seus Rascunhos"
     },
     "myResponses": "Minhas Respostas",
+    "noMatchingResponses": "Nenhuma Resposta Correspondente",
+    "noMatchingResponsesMessage": "Nenhuma resposta corresponde aos filtros selecionados.",
     "noResponses": "Você ainda não enviou nenhuma resposta de pesquisa",
     "noSurveys": "Nenhuma pesquisa disponível",
+    "responses": {
+      "continueEditing": "Continuar editando",
+      "errorLoadingResponses": "Falha ao carregar respostas",
+      "filterByStatus": "Filtrar por Status",
+      "loadingResponses": "Carregando respostas...",
+      "noResponsesMessage": "Você ainda não completou nenhuma pesquisa. Comece uma na página de pesquisas.",
+      "noResponsesTitle": "Nenhuma Resposta Ainda",
+      "pageTitle": "Minhas Respostas de Pesquisas",
+      "responseCount": "{{count}} resposta",
+      "responseCountPlural": "{{count}} respostas"
+    },
     "saveDraft": "Salvar Rascunho",
     "startNew": "Iniciar Pesquisa",
     "status": {

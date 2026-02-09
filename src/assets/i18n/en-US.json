@@ -843,6 +843,7 @@
     "noMatchingResponses": "No Matching Responses",
     "noMatchingResponsesMessage": "No responses match the selected filters.",
     "noResponses": "You haven't submitted any survey responses yet",
+    "noSurveys": "No surveys available",
     "responses": {
       "continueEditing": "Continue editing",
       "errorLoadingResponses": "Failed to load responses",
@@ -854,7 +855,6 @@
       "responseCount": "{{count}} response",
       "responseCountPlural": "{{count}} responses"
     },
-    "noSurveys": "No surveys available",
     "saveDraft": "Save Draft",
     "startNew": "Start Survey",
     "status": {
