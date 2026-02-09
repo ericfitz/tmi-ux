@@ -12,8 +12,9 @@
 // Light theme (default)
 @import 'prismjs/themes/prism.css';
 
-// Import SurveyJS styles for survey rendering
-@import 'survey-core/survey-core.min.css';
+// Import SurveyJS styles for survey rendering (fontless variant — excludes Open Sans @font-face
+// declarations since TMI uses Roboto Condensed, set via --sjs-font-family in SurveyThemeService)
+@import 'survey-core/survey-core.fontless.min.css';
 
 // Dark theme - will be applied via CSS overrides based on .dark-theme class
 

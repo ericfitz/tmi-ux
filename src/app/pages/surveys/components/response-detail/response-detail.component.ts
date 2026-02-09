@@ -18,8 +18,10 @@ import {
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
 import { LoggerService } from '@app/core/services/logger.service';
+import { ThemeService } from '@app/core/services/theme.service';
 import { SurveyService } from '../../services/survey.service';
 import { SurveyResponseService } from '../../services/survey-response.service';
+import { SurveyThemeService } from '../../services/survey-theme.service';
 import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 
@@ -45,6 +47,8 @@ import { UserDisplayComponent } from '@app/shared/components/user-display/user-d
 })
 export class ResponseDetailComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
+  private themeService = inject(ThemeService);
+  private surveyThemeService = inject(SurveyThemeService);
 
   surveyModel: Model | null = null;
   response: SurveyResponse | null = null;
@@ -141,6 +145,19 @@ export class ResponseDetailComponent implements OnInit {
 
     // Create the survey model
     this.surveyModel = new Model(this.surveyJson);
+
+    // Apply TMI theme to SurveyJS
+    this.surveyModel.applyTheme(
+      this.surveyThemeService.getTheme(this.themeService.getCurrentTheme()),
+    );
+
+    // React to theme changes (light/dark, normal/colorblind)
+    this.surveyThemeService.theme$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(theme => {
+      if (this.surveyModel) {
+        this.surveyModel.applyTheme(theme);
+        this.cdr.markForCheck();
+      }
+    });
 
     // Set the data
     this.surveyModel.data = this.response.answers;

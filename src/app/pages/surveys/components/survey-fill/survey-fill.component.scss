@@ -118,10 +118,9 @@
   width: 100%;
   box-sizing: border-box;
 
-  // SurveyJS customizations
+  // SurveyJS layout overrides (colors/fonts handled by SurveyThemeService)
   :host ::ng-deep {
     .sd-root-modern {
-      // Ensure survey fills the container
       min-height: auto;
     }
 
@@ -131,27 +130,6 @@
 
     .sd-page {
       padding: 0;
-    }
-
-    // Style the navigation buttons
-    .sd-btn {
-      border-radius: 4px;
-      font-weight: 500;
-      text-transform: uppercase;
-    }
-
-    .sd-btn--action {
-      background: var(--color-primary);
-      color: white;
-    }
-
-    // Progress bar styling
-    .sd-progress {
-      background: var(--color-surface-variant);
-    }
-
-    .sd-progress__bar {
-      background: var(--color-primary);
     }
   }
 }
