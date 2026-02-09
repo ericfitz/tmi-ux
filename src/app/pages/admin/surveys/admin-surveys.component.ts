@@ -230,6 +230,24 @@ export class AdminSurveysComponent implements OnInit, AfterViewInit {
   }
 
   /**
+   * Unarchive a template, returning it to inactive status
+   */
+  unarchiveTemplate(template: SurveyListItem): void {
+    this.surveyService
+      .unarchive(template.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.loadTemplates();
+        },
+        error: error => {
+          this.logger.error('Failed to unarchive template', error);
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
+  /**
    * Get status icon
    */
   getStatusIcon(status: SurveyStatus): string {

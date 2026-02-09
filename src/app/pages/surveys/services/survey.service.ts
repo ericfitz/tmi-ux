@@ -174,6 +174,13 @@ export class SurveyService {
   }
 
   /**
+   * Unarchive a survey, returning it to inactive status (admin only)
+   */
+  public unarchive(surveyId: string): Observable<Survey> {
+    return this.setStatus(surveyId, 'inactive');
+  }
+
+  /**
    * Delete a survey (admin only)
    */
   public deleteSurvey(surveyId: string): Observable<void> {

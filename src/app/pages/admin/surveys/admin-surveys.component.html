@@ -167,6 +167,12 @@
                   <span>{{ 'common.archive' | transloco }}</span>
                 </button>
               }
+              @if (template.status === 'archived') {
+                <button mat-menu-item (click)="unarchiveTemplate(template)">
+                  <mat-icon>unarchive</mat-icon>
+                  <span>{{ 'common.unarchive' | transloco }}</span>
+                </button>
+              }
             </mat-menu>
           </td>
         </ng-container>

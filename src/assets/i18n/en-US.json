@@ -515,6 +515,7 @@
     "title": "Title",
     "tryAdjustingFilters": "Try adjusting your filters.",
     "type": "Type",
+    "unarchive": "Unarchive",
     "unsavedChangesWarning": "You have unsaved changes. Are you sure you want to close?",
     "userId": "User ID",
     "validation": {
