@@ -1,7 +1,6 @@
 import { Component, DestroyRef, inject, Inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
@@ -365,20 +364,6 @@ interface CheckboxChangeEvent {
         <!-- Danger Tab -->
         <mat-tab [label]="'userPreferences.tabs.danger' | transloco">
           <div class="tab-content danger-tab">
-            @if (userProfile?.is_admin) {
-              <div class="preference-item">
-                <button
-                  mat-raised-button
-                  color="primary"
-                  (click)="onAdminClick()"
-                  class="admin-button"
-                >
-                  <mat-icon>supervisor_account</mat-icon>
-                  <span [transloco]="'userPreferences.administration.title'">Administration</span>
-                </button>
-              </div>
-            }
-
             <div class="preference-item">
               <button
                 mat-raised-button
@@ -456,14 +441,12 @@ interface CheckboxChangeEvent {
         margin-left: 8px;
       }
 
-      .admin-button,
       .delete-button {
         display: flex;
         align-items: center;
         gap: 8px;
       }
 
-      .admin-button mat-icon,
       .delete-button mat-icon {
         font-size: 20px;
         width: 20px;
@@ -657,7 +640,6 @@ export class UserPreferencesDialogComponent implements OnInit {
     @Inject(AUTH_SERVICE) private authService: IAuthService,
     private logger: LoggerService,
     private dialog: MatDialog,
-    private router: Router,
     private themeService: ThemeService,
     private userPreferencesService: UserPreferencesService,
     private threatModelAuthService: ThreatModelAuthorizationService,
@@ -721,14 +703,6 @@ export class UserPreferencesDialogComponent implements OnInit {
   onDashboardListViewChange(event: CheckboxChangeEvent): void {
     this.preferences.dashboardListView = event.checked;
     this.userPreferencesService.updatePreferences({ dashboardListView: event.checked });
-  }
-
-  onAdminClick(): void {
-    this.logger.debugComponent('UserPreferences', 'Administration button clicked');
-    // Close the preferences dialog
-    this.dialogRef.close();
-    // Navigate to admin page
-    void this.router.navigate(['/admin']);
   }
 
   onDeleteData(): void {

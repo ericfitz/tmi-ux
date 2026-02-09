@@ -1088,9 +1088,6 @@
     "viewDetails": "View Details"
   },
   "userPreferences": {
-    "administration": {
-      "title": "{{admin.title}}"
-    },
     "colorBlindMode": "Enable Color Blind Mode",
     "credentials": {
       "add": "Add",
