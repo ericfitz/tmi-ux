@@ -5,7 +5,6 @@ import {
   OnDestroy,
   ViewChild,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -92,14 +91,6 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
     { value: 'draft', labelKey: 'surveys.status.draft' },
   ];
 
-  /** Status options for the row status dropdown (excludes draft) */
-  readonly rowStatusOptions: { value: ResponseStatus; labelKey: string }[] = [
-    { value: 'submitted', labelKey: 'surveys.status.submitted' },
-    { value: 'needs_revision', labelKey: 'surveys.status.needsRevision' },
-    { value: 'ready_for_review', labelKey: 'surveys.status.readyForReview' },
-    { value: 'review_created', labelKey: 'surveys.status.reviewCreated' },
-  ];
-
   /** Pagination settings */
   totalResponses = 0;
   pageSize = 25;
@@ -118,7 +109,6 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
     private logger: LoggerService,
     private transloco: TranslocoService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef,
   ) {}
 
   ngAfterViewInit(): void {
@@ -254,27 +244,18 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Handle status change from the row dropdown.
-   * If changing to needs_revision, opens the revision notes dialog.
+   * Approve a response (submitted → ready_for_review)
    */
-  onStatusChange(response: SurveyResponseListItem, newStatus: ResponseStatus): void {
-    if (newStatus === response.status) return;
-
-    if (newStatus === 'needs_revision') {
-      this.openRevisionDialog(response);
-      return;
-    }
-
+  approveResponse(response: SurveyResponseListItem): void {
     this.responseService
-      .updateStatus(response.id, newStatus)
+      .updateStatus(response.id, 'ready_for_review')
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.loadResponses();
         },
-        error: err => {
-          this.logger.error('Failed to update response status', err);
-          this.cdr.markForCheck();
+        error: (err: unknown) => {
+          this.logger.error('Failed to approve response', err);
         },
       });
   }
@@ -282,7 +263,7 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Open the revision notes dialog, then return for revision if confirmed
    */
-  private openRevisionDialog(response: SurveyResponseListItem): void {
+  openRevisionDialogForRow(response: SurveyResponseListItem): void {
     const dialogRef = this.dialog.open<
       RevisionNotesDialogComponent,
       void,
@@ -304,15 +285,47 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
               next: () => {
                 this.loadResponses();
               },
-              error: err => {
+              error: (err: unknown) => {
                 this.logger.error('Failed to return response for revision', err);
               },
             });
-        } else {
-          // User cancelled — reload to reset the dropdown display
-          this.loadResponses();
         }
       });
+  }
+
+  /**
+   * Create a threat model from a ready_for_review response
+   */
+  createThreatModel(response: SurveyResponseListItem): void {
+    this.responseService
+      .createThreatModel(response.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: result => {
+          this.logger.info('Threat model created from response', {
+            responseId: result.survey_response_id,
+            threatModelId: result.threat_model_id,
+          });
+          void this.router.navigate(['/tm', result.threat_model_id]);
+        },
+        error: (err: unknown) => {
+          this.logger.error('Failed to create threat model from response', err);
+        },
+      });
+  }
+
+  /**
+   * Get CSS class for a status chip
+   */
+  getStatusClass(status: ResponseStatus): string {
+    const statusClasses: Record<ResponseStatus, string> = {
+      draft: 'status-draft',
+      submitted: 'status-submitted',
+      needs_revision: 'status-needs-revision',
+      ready_for_review: 'status-ready-for-review',
+      review_created: 'status-review-created',
+    };
+    return statusClasses[status] ?? '';
   }
 
   /**

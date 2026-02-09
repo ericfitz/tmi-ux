@@ -1220,6 +1220,8 @@
       "allSurveys": "All Surveys",
       "approve": "Approve",
       "approveSelected": "Approve Selected",
+      "createThreatModel": "Create Threat Model",
+      "returnForRevision": "Return for Revision",
       "errorLoadingResponses": "Failed to load responses",
       "loadingResponses": "Loading responses...",
       "noResponsesFiltered": "No responses match your filters",

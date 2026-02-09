@@ -167,20 +167,9 @@
             {{ 'common.status' | transloco }}
           </th>
           <td mat-cell *matCellDef="let row">
-            <mat-form-field appearance="outline" class="status-select">
-              <mat-select
-                [value]="row.status"
-                (click)="$event.stopPropagation()"
-                (selectionChange)="onStatusChange(row, $event.value)"
-              >
-                @if (row.status === 'draft') {
-                  <mat-option value="draft">{{ 'surveys.status.draft' | transloco }}</mat-option>
-                }
-                @for (option of rowStatusOptions; track option.value) {
-                  <mat-option [value]="option.value">{{ option.labelKey | transloco }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
+            <mat-chip [ngClass]="getStatusClass(row.status)">
+              {{ 'surveys.status.' + getStatusKey(row.status) | transloco }}
+            </mat-chip>
           </td>
         </ng-container>
 
@@ -197,6 +186,36 @@
               >
                 <mat-icon>visibility</mat-icon>
               </button>
+              @if (row.status === 'submitted') {
+                <button
+                  mat-icon-button
+                  (click)="approveResponse(row); $event.stopPropagation()"
+                  [matTooltip]="'triage.list.approve' | transloco"
+                  [attr.aria-label]="'triage.list.approve' | transloco"
+                >
+                  <mat-icon>check_circle</mat-icon>
+                </button>
+              }
+              @if (row.status === 'submitted' || row.status === 'ready_for_review') {
+                <button
+                  mat-icon-button
+                  (click)="openRevisionDialogForRow(row); $event.stopPropagation()"
+                  [matTooltip]="'triage.list.returnForRevision' | transloco"
+                  [attr.aria-label]="'triage.list.returnForRevision' | transloco"
+                >
+                  <mat-icon>undo</mat-icon>
+                </button>
+              }
+              @if (row.status === 'ready_for_review') {
+                <button
+                  mat-icon-button
+                  (click)="createThreatModel(row); $event.stopPropagation()"
+                  [matTooltip]="'triage.list.createThreatModel' | transloco"
+                  [attr.aria-label]="'triage.list.createThreatModel' | transloco"
+                >
+                  <mat-icon>add_circle</mat-icon>
+                </button>
+              }
             </div>
           </td>
         </ng-container>
