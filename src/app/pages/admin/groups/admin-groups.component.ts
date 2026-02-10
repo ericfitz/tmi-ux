@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -6,6 +6,8 @@ import { Subject } from 'rxjs';
 import { debounceTime, take } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
 import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -56,14 +58,15 @@ import {
   styleUrl: './admin-groups.component.scss',
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
-export class AdminGroupsComponent implements OnInit {
+export class AdminGroupsComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   groups: AdminGroup[] = [];
-  filteredGroups: AdminGroup[] = [];
+  dataSource = new MatTableDataSource<AdminGroup>([]);
   totalGroups = 0;
   availableProviders: OAuthProviderInfo[] = [];
 
@@ -83,6 +86,22 @@ export class AdminGroupsComponent implements OnInit {
     private logger: LoggerService,
     private authService: AuthService,
   ) {}
+
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (item: AdminGroup, property: string): string | number => {
+      switch (property) {
+        case 'provider':
+          return item.provider.toLowerCase();
+        case 'group':
+          return (item.name || item.group_name).toLowerCase();
+        case 'usage':
+          return item.usage_count ?? 0;
+        default:
+          return '';
+      }
+    };
+  }
 
   ngOnInit(): void {
     this.loadProviders();
@@ -188,11 +207,11 @@ export class AdminGroupsComponent implements OnInit {
   applyFilter(): void {
     const filter = this.filterText.toLowerCase().trim();
     if (!filter) {
-      this.filteredGroups = [...this.groups];
+      this.dataSource.data = [...this.groups];
       return;
     }
 
-    this.filteredGroups = this.groups.filter(
+    this.dataSource.data = this.groups.filter(
       group =>
         group.group_name?.toLowerCase().includes(filter) ||
         group.name?.toLowerCase().includes(filter) ||
@@ -278,7 +297,7 @@ This action cannot be undone.`);
     if (this.authService.isAdmin) {
       void this.router.navigate(['/admin']);
     } else {
-      void this.router.navigate(['/dashboard']);
+      void this.router.navigate([this.authService.getLandingPage()]);
     }
   }
 
@@ -288,6 +307,10 @@ This action cannot be undone.`);
 
   getGroupIdentifier(group: AdminGroup): string {
     return group.group_name;
+  }
+
+  isEveryoneGroup(group: AdminGroup): boolean {
+    return group.provider === '*' && group.group_name.toLowerCase() === 'everyone';
   }
 
   getProviderInfo(providerId: string): OAuthProviderInfo | null {

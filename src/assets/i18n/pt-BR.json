@@ -76,26 +76,6 @@
       "subtitle": "Configure complementos para estender a funcionalidade do TMI",
       "title": "Gerenciar Complementos"
     },
-    "administrators": {
-      "addButton": "{{admin.administrators.addDialog.save}}",
-      "addDialog": {
-        "provider": "{{common.provider}}",
-        "providerRequired": "Provedor e obrigatorio",
-        "save": "Adicionar Administrador",
-        "subject": "Assunto",
-        "subjectHint": "Digite o e-mail do usuario ou nome do grupo",
-        "subjectPlaceholder": "E-mail do usuario ou nome do grupo",
-        "subjectRequired": "Assunto e obrigatorio",
-        "title": "{{admin.administrators.addDialog.save}}"
-      },
-      "filterLabel": "Filtrar Administradores",
-      "filterPlaceholder": "Pesquisar por e-mail ou nome do grupo",
-      "listTitle": "Administradores do Sistema",
-      "noAdministrators": "Nenhum administrador encontrado",
-      "removeTooltip": "Remover Permissoes de Administrador",
-      "subtitle": "Controle quem tem acesso administrativo ao sistema",
-      "title": "Gerenciar Administradores"
-    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -114,6 +94,11 @@
         "save": "Criar Grupo",
         "title": "Adicionar Grupo"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "Uso"
+      },
       "deleteTooltip": "Excluir grupo",
       "filterLabel": "Filtrar Grupos",
       "filterPlaceholder": "Pesquisar por nome do grupo ou provedor",
@@ -124,8 +109,10 @@
         "noMembers": "Nenhum membro neste grupo",
         "removeTooltip": "Remover do grupo",
         "searchHint": "Digite pelo menos 2 caracteres para pesquisar",
-        "searchPlaceholder": "Comece a digitar o endereco de e-mail...",
-        "searchUser": "Pesquisar Usuario por E-mail"
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
+        "searchUser": "Pesquisar Usuario por E-mail",
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "Nenhum grupo encontrado",
       "subtitle": "Visualizar e gerenciar grupos do sistema",
@@ -143,6 +130,12 @@
         "title": "Adicionar Cotas Personalizadas",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "Padrão",
       "deleteTooltip": "Remover cota personalizada (reverter para padroes)",
       "eventsPerMinute": "Eventos por minuto",
       "filterLabel": "Filtrar Cotas",
@@ -164,10 +157,6 @@
         "description": "Instalar e configurar complementos do aplicativo",
         "title": "{{admin.addons.title}}"
       },
-      "administrators": {
-        "description": "Conceder ou revogar permissoes de administrador",
-        "title": "{{admin.administrators.title}}"
-      },
       "groups": {
         "description": "Configurar grupos de usuarios e associacoes",
         "title": "{{admin.groups.title}}"
@@ -175,6 +164,14 @@
       "quotas": {
         "description": "Configurar cotas de recursos e limites",
         "title": "{{admin.quotas.title}}"
+      },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
+      "surveys": {
+        "description": "Criar e gerenciar pesquisas",
+        "title": "Gerenciar Pesquisas"
       },
       "users": {
         "description": "Visualizar e gerenciar contas de usuarios",
@@ -185,16 +182,83 @@
         "title": "{{admin.webhooks.title}}"
       }
     },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "Descrição opcional desta configuração",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "Minúsculas com pontos e sublinhados (ex.: rate_limit.max_rpm)",
+        "keyInvalid": "Deve começar com letra minúscula, usar apenas letras minúsculas, números, pontos e sublinhados",
+        "keyRequired": "Chave é obrigatória",
+        "save": "Criar Configuração",
+        "title": "Adicionar Configuração",
+        "type": "{{common.type}}",
+        "typeRequired": "Tipo é obrigatório",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "Valor é obrigatório"
+      },
+      "cancelTooltip": "Cancelar edição",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "Tem certeza de que deseja excluir a configuração \"{{key}}\"?",
+      "deleteTooltip": "Excluir configuração",
+      "editTooltip": "Editar configuração",
+      "filterLabel": "Filtrar",
+      "filterPlaceholder": "Filtrar por chave, valor ou descrição",
+      "listTitle": "Configurações do Sistema",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "Importar configurações do arquivo de configuração do servidor ou variáveis de ambiente para o banco de dados.",
+        "migrate": "Migrar",
+        "overwriteLabel": "Substituir configurações existentes",
+        "overwriteWarning": "Aviso: Isso substituirá quaisquer configurações no banco de dados que foram personalizadas anteriormente.",
+        "resultMigrated": "{{count}} configurações migradas",
+        "resultSkipped": "{{count}} configurações ignoradas",
+        "title": "Migrar Configurações"
+      },
+      "noSettings": "Nenhuma configuração encontrada",
+      "saveTooltip": "Salvar alterações",
+      "subtitle": "Visualizar e gerenciar configurações do sistema",
+      "title": "Gerenciar Configurações",
+      "types": {
+        "bool": "Booleano",
+        "int": "Inteiro",
+        "json": "JSON",
+        "string": "String"
+      }
+    },
     "subtitle": "Gerenciar configuracoes e ajustes do sistema",
     "title": "Administracao",
     "users": {
+      "administrator": "Administrador",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "Excluir conta de usuario",
       "filterLabel": "Filtrar Usuarios",
       "filterPlaceholder": "Pesquisar por e-mail, nome, provedor ou nome do grupo",
+      "lastLogin": "Último Login",
       "listTitle": "Usuarios",
+      "never": "Nunca",
       "noUsers": "Nenhum usuario encontrado",
       "subtitle": "Visualizar e gerenciar usuarios do sistema",
-      "title": "Gerenciar Usuarios"
+      "title": "Gerenciar Usuarios",
+      "transferOwnership": {
+        "confirm": "Tem certeza de que deseja transferir todos os dados de {{source}} para {{target}}?",
+        "dialogTitle": "Transferir Dados do Usuário",
+        "error": "Falha ao transferir propriedade. Por favor, tente novamente.",
+        "success": "{{userPreferences.transferData.success}}",
+        "tooltip": "Transferir propriedade"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -231,13 +295,112 @@
       "noWebhooks": "Nenhum webhook encontrado",
       "secret": "Segredo HMAC",
       "status": {
-        "active": "Ativo",
+        "active": "{{common.active}}",
         "pending_delete": "Exclusao Pendente",
         "pending_verification": "Verificacao Pendente"
       },
       "subtitle": "Configure assinaturas de webhook para notificacoes de eventos",
       "title": "Gerenciar Webhooks"
     }
+  },
+  "adminSurveys": {
+    "cloneSuffix": "(Cópia)",
+    "createDialog": {
+      "nameLabel": "Nome da Pesquisa",
+      "namePlaceholder": "Digite o nome da pesquisa",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "Criar Pesquisa",
+      "versionHint": "Identificador de versão em formato livre",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "ex.: 1, v2-piloto, 2024-T1",
+      "versionRequired": "Versão é obrigatória"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "editTemplate": "Editar pesquisa",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "Nenhuma Pesquisa Correspondente",
+    "noTemplatesMessage": "Crie sua primeira pesquisa para começar.",
+    "noTemplatesTitle": "Nenhuma Pesquisa Ainda",
+    "pageTitle": "{{admin.sections.surveys.title}}",
+    "searchByName": "Pesquisar por nome...",
+    "searchTemplates": "Buscar pesquisas",
+    "surveyDetails": "Detalhes da Pesquisa",
+    "templateBuilder": {
+      "addPage": "Adicionar página",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
+      "choicesPerLine": "Escolhas (uma por linha)",
+      "conditionalLogic": "Lógica Condicional",
+      "conditionalLogicHelp": "Documentação de lógica condicional do SurveyJS",
+      "deletePage": "Excluir página",
+      "deleteQuestion": "Excluir Pergunta",
+      "enableIf": "Ativar Se",
+      "enableIfHint": "ex., {questionName} = 'value'",
+      "enterSurveyDescription": "Insira a descrição da pesquisa",
+      "enterSurveyTitle": "Insira o título da pesquisa",
+      "failedToLoadTemplate": "Falha ao carregar pesquisa",
+      "failedToSaveTemplate": "Falha ao salvar pesquisa",
+      "loadingTemplate": "Carregando pesquisa...",
+      "mapsToTmField": "Mapeia para Campo do Modelo de Ameaças",
+      "metadataKey": "Chave de Metadados",
+      "metadataKeyHint": "Nome da chave para a entrada de metadados",
+      "nameId": "Nome (ID)",
+      "nameIdHint": "Identificador único para esta pergunta",
+      "nextPage": "{{pagination.nextPage}}",
+      "noQuestionsHint": "Clique em um tipo de pergunta da paleta para adicioná-lo",
+      "noQuestionsYet": "Nenhuma pergunta ainda",
+      "pageIndicator": "Página {{current}} de {{total}}",
+      "previousPage": "{{pagination.previousPage}}",
+      "questionProperties": "Propriedades da Pergunta",
+      "questionTypeDescriptions": {
+        "boolean": "Alternância booleana",
+        "checkbox": "Seleção de múltipla escolha",
+        "comment": "Área de texto multilinha",
+        "dropdown": "Seleção suspensa",
+        "panel": "Agrupar perguntas em um painel",
+        "paneldynamic": "Grupo de painéis repetível",
+        "radiogroup": "Escolha única entre opções",
+        "text": "Entrada de texto de linha única"
+      },
+      "questionTypeLabels": {
+        "boolean": "Sim/Não",
+        "checkbox": "Caixa de Seleção",
+        "comment": "Multilinha",
+        "dropdown": "Suspenso",
+        "panel": "Painel",
+        "paneldynamic": "Painel Dinâmico",
+        "radiogroup": "Grupo de Rádio",
+        "text": "{{editor.nodeLabels.textbox}}"
+      },
+      "questionTypes": "Tipos de Pergunta",
+      "questions": "Perguntas",
+      "required": "Obrigatório",
+      "requiredIf": "Obrigatório Se",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
+      "selectQuestionHint": "Selecione uma pergunta para editar suas propriedades",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
+      "tmFieldLabels": {
+        "assetDescription": "Descrição do Ativo",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
+        "description": "Descrição do Modelo de Ameaças",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
+        "issueUri": "URL de Rastreamento de Problemas",
+        "metadataKey": "Metadados Personalizados",
+        "name": "Nome do Modelo de Ameaças",
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
+      },
+      "tmFieldMapping": "Mapeamento de Campo do Modelo de Ameaças",
+      "tmFieldMappingHint": "Vincule esta resposta a um campo do modelo de ameaças",
+      "unsavedChanges": "Alterações não salvas",
+      "visibleIf": "Visível Se",
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
+    },
+    "templateCount": "{{count}} pesquisa",
+    "templateCountPlural": "{{count}} pesquisas"
   },
   "assetEditor": {
     "chipPlaceholder": "Digite o valor e pressione Enter",
@@ -300,15 +463,22 @@
   "common": {
     "about": "Sobre",
     "actions": "Acoes",
+    "activate": "Ativar",
+    "active": "Ativo",
     "addMetadata": "Adicionar Metadados",
     "addThreat": "Adicionar Ameaca",
     "addons": "Complementos",
+    "all": "Todos",
+    "allStatuses": "Todos os Status",
+    "archive": "Arquivar",
     "back": "Voltar",
     "cancel": "Cancelar",
     "cellId": "ID da Celula",
     "classification": "Classificação",
     "clear": "Limpar",
+    "clone": "Clonar",
     "close": "Fechar",
+    "confirm": "Confirmar",
     "confirmDelete": "Tem certeza de que deseja excluir {{item}} \"{{name}}\"? Esta acao nao pode ser desfeita.",
     "confirmDeleteMessage": "Tem certeza de que deseja excluir {{objectType}} \"{{name}}\"?",
     "copy": "Copiar",
@@ -317,6 +487,7 @@
     "created": "Criado",
     "criticality": "Criticidade",
     "cut": "Recortar",
+    "deactivate": "Desativar",
     "delete": "Excluir",
     "deleteConfirm": "Excluir Modelo de Ameacas",
     "deleteWarningConfirmationField": "Confirmação de Exclusão",
@@ -329,18 +500,23 @@
     "deleteWarningTypeConfirmation": "Para confirmar, digite \"{{confirmValue}}\" no campo abaixo.",
     "description": "Descricao",
     "diagramId": "ID do Diagrama",
+    "dismiss": "Descartar",
     "done": "Concluido",
     "download": "Baixar",
     "edit": "Editar",
     "editThreat": "Editar Ameaca",
+    "email": "E-mail",
     "emailLabel": "Endereco de E-mail",
+    "error": "Erro",
     "fonts": "Fontes",
+    "groups": "Grupos",
     "id": "ID",
     "identityProvider": "Provedor de Identidade",
     "issueUri": "URL do Problema",
     "language": "{{language}}",
     "lastModified": "Ultima Modificacao",
     "lastUpdated": "Ultima atualizacao",
+    "loading": "Carregando...",
     "manage": "Gerenciar",
     "manageMetadata": "Gerenciar Metadados",
     "manageThreats": "Gerenciar Ameacas",
@@ -350,9 +526,11 @@
     "mitigated": "Mitigado",
     "mitigation": "Mitigacao",
     "mitigationPlaceholder": "Descreva as mitigacoes recomendadas ou planejadas para esta ameaca",
+    "moreActions": "Mais ações",
     "name": "Nome",
     "noAddonsAvailable": "Nenhum addon disponível",
     "noDataAvailable": "Nenhum Dado Disponivel",
+    "noMatchingResults": "Nenhum resultado corresponde aos seus filtros.",
     "noMetadata": "Nenhum Metadado Disponivel",
     "noThreats": "Nenhuma Ameaca Disponivel",
     "none": "Nenhum",
@@ -360,17 +538,25 @@
       "asset": "Ativo",
       "assets": "Ativos",
       "cell": "Celula",
+      "cells": "Células",
       "diagram": "Diagrama",
+      "diagrams": "Diagramas",
       "document": "Documento",
       "documents": "Documentos",
       "metadata": "{{common.metadata}}",
       "note": "Nota",
       "notes": "Notas",
       "report": "Relatorio",
+      "reports": "Relatórios",
       "repositories": "Repositorios",
       "repository": "Repositorio",
+      "survey": "Pesquisa",
+      "surveyResponse": "Resposta de Pesquisa",
+      "surveyResponses": "Respostas de Pesquisa",
+      "surveys": "Pesquisas",
       "threat": "Ameaca",
       "threatModel": "Modelo de Ameacas",
+      "threatModels": "Modelos de Ameaça",
       "threats": "Ameacas"
     },
     "ok": "OK",
@@ -382,6 +568,7 @@
     "provider": "Provedor",
     "readOnly": "Somente Leitura",
     "readOnlyTooltip": "Voce tem acesso somente leitura a este modelo de ameacas. Entre em contato com o proprietario para solicitar permissoes de edicao.",
+    "retry": "Tentar novamente",
     "roles": {
       "owner": "Proprietario",
       "reader": "Leitor",
@@ -391,6 +578,8 @@
     "saveAndClose": "Salvar e Fechar",
     "savedSuccessfully": "Salvo com sucesso",
     "score": "Pontuacao",
+    "search": "Pesquisar",
+    "selected": "{{count}} selecionado(s)",
     "sensitivity": "Sensibilidade",
     "sessionRoles": {
       "host": "Anfitriao",
@@ -403,11 +592,15 @@
       "group": "Grupo",
       "user": "Usuario"
     },
+    "template": "Modelo",
     "threatDescription": "Descricao da Ameaca",
     "threatDescriptionPlaceholder": "Descreva a Ameaca em Detalhes",
     "threatName": "Nome da Ameaca",
     "threatType": "Tipo de Ameaca",
+    "title": "Título",
+    "tryAdjustingFilters": "Tente ajustar seus filtros.",
     "type": "Tipo",
+    "unarchive": "Desarquivar",
     "unsavedChangesWarning": "Voce tem alteracoes nao salvas. Tem certeza de que deseja fechar?",
     "userId": "ID do Usuario",
     "validation": {
@@ -416,6 +609,7 @@
       "nameRequired": "Nome e obrigatorio",
       "required": "Este campo e obrigatorio"
     },
+    "version": "Versão",
     "view": "Visualizar",
     "viewMetadata": "Visualizar Metadados",
     "viewPermissions": "Visualizar Permissoes",
@@ -431,6 +625,15 @@
     "moveToFront": "Mover para a Frente",
     "noDataAssetsAvailable": "Nenhum ativo de dados disponível",
     "showObject": "Mostrar Objeto"
+  },
+  "createThreatModel": {
+    "confidentialHint": "Modelos de ameaça confidenciais não são compartilhados automaticamente com o grupo Revisores de Segurança. Esta configuração não pode ser alterada após a criação.",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
+    "descriptionPlaceholder": "Descreva o propósito e o escopo deste modelo de ameaça",
+    "framework": "Framework",
+    "namePlaceholder": "Digite o nome do modelo de ameaça",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "Criar Modelo de Ameaça"
   },
   "dashboard": {
     "clearFilter": "Limpar Filtro",
@@ -466,7 +669,7 @@
     "common": {
       "affectedCells": "Celulas Afetadas",
       "cellIds": "IDs das Celulas",
-      "cells": "Celulas",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "Copiar JSON Completo"
     },
     "graphDataDialog": {
@@ -548,9 +751,18 @@
   "errors": {
     "validationError": "Erro de Validacao"
   },
+  "footer": {
+    "support": "Suporte"
+  },
   "getStarted": "Comecar",
-  "homeDescription": "Uma ferramenta colaborativa de modelagem de ameacas projetada para ajudar equipes a identificar, analisar e documentar ameacas de seguranca em seus sistemas. Crie, compartilhe e edite colaborativamente modelos de ameacas e diagramas para melhorar a seguranca de suas aplicacoes.",
+  "homeDescription": "TMI é uma ferramenta que gerencia e aprimora os processos de revisão de segurança e modelagem de ameaças para sua organização. Ela conduz o fluxo de trabalho de revisão de segurança, organiza as informações para revisões de segurança, permite a criação colaborativa de diagramas de fluxo de dados e possibilita a conexão de automação para reduzir esforços no processo de revisão e analisar ameaças de segurança.",
   "homeWelcomeTitle": "Bem-vindo ao TMI: Modelagem de Ameacas Aprimorada",
+  "intake": {
+    "fill": {
+      "saveAndExit": "Salvar e Sair",
+      "submitResponses": "Enviar Respostas"
+    }
+  },
   "login": {
     "chooseMethod": "Escolha seu metodo de login:",
     "explanation": "Faca login com sua conta existente de um provedor de identidade confiavel. Isso elimina a necessidade de uma senha separada, simplificando sua experiencia enquanto mantem voce seguro. Nunca armazenamos ou gerenciamos senhas - suas credenciais permanecem com seu provedor e nao podem ser comprometidas atraves de nos.",
@@ -571,10 +783,13 @@
     "unexpectedError": "Ocorreu um erro inesperado durante o OAuth."
   },
   "navbar": {
+    "admin": "Admin",
     "appTitle": "TMI: Modelagem de Ameacas Aprimorada",
     "copyUserEmail": "Copiar E-mail do Usuario para a Area de Transferencia",
+    "dashboard": "Painel",
     "feedback": "Reportar um bug, solicitar um recurso ou fornecer feedback",
     "home": "Inicio",
+    "intake": "Triagem",
     "logoutButton": "Sair",
     "serverStatus": {
       "noServerConfigured": "Nenhum Servidor Configurado",
@@ -666,6 +881,77 @@
     },
     "title": "Sessao Expirando em Breve"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "Falha ao salvar",
+      "saved": "Salvo",
+      "saving": "Salvando..."
+    },
+    "browse": "Navegar Pesquisas",
+    "confidentialDialog": {
+      "description": "Esta resposta deve ser marcada como confidencial? Respostas confidenciais não são compartilhadas automaticamente com o grupo Revisores de Segurança. Esta configuração não pode ser alterada após a resposta ser criada.",
+      "no": "Não",
+      "title": "Resposta Confidencial",
+      "yes": "Sim, marcar como confidencial"
+    },
+    "confirmation": {
+      "backToSurveys": "Voltar para Pesquisas",
+      "message": "Sua pesquisa foi enviada com sucesso.",
+      "title": "Pesquisa Enviada",
+      "viewResponses": "Ver Minhas Respostas"
+    },
+    "continueDraft": "Continuar Rascunho",
+    "fill": {
+      "submitConfirm": "Tem certeza que deseja enviar? Você não poderá editar suas respostas após o envio.",
+      "title": "Preencher Pesquisa"
+    },
+    "list": {
+      "deleteDraft": "Excluir rascunho",
+      "draftStarted": "Rascunho iniciado {{time}}",
+      "errorLoadingSurveys": "Falha ao carregar pesquisas",
+      "lastModified": "Última modificação {{time}}",
+      "loadingSurveys": "Carregando pesquisas...",
+      "noSurveysMessage": "Não há pesquisas ativas no momento. Verifique novamente mais tarde.",
+      "noSurveysTitle": "Nenhuma Pesquisa Disponível",
+      "pageDescription": "Escolha o tipo apropriado de revisão da lista a seguir e, em seguida, responda às perguntas apresentadas para fornecer à equipe de revisão de segurança as informações necessárias para realizar a revisão.",
+      "pageTitle": "Solicitar uma Revisão de Segurança",
+      "updated": "Atualizado",
+      "yourDrafts": "Seus Rascunhos"
+    },
+    "myResponses": "Minhas Respostas",
+    "noMatchingResponses": "Nenhuma Resposta Correspondente",
+    "noMatchingResponsesMessage": "Nenhuma resposta corresponde aos filtros selecionados.",
+    "noResponses": "Você ainda não enviou nenhuma resposta de pesquisa",
+    "noSurveys": "Nenhuma pesquisa disponível",
+    "responses": {
+      "continueEditing": "Continuar editando",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
+      "filterByStatus": "Filtrar por Status",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
+      "noResponsesMessage": "Você ainda não completou nenhuma pesquisa. Comece uma na página de pesquisas.",
+      "noResponsesTitle": "Nenhuma Resposta Ainda",
+      "pageTitle": "Minhas Respostas de Pesquisas",
+      "responseCount": "{{count}} resposta",
+      "responseCountPlural": "{{count}} respostas"
+    },
+    "saveDraft": "Salvar Rascunho",
+    "startNew": "Iniciar Pesquisa",
+    "status": {
+      "draft": "Rascunho",
+      "needsRevision": "Precisa Revisão",
+      "readyForReview": "Pronto para Revisão",
+      "reviewCreated": "Revisão Criada",
+      "submitted": "{{triage.list.submitted}}"
+    },
+    "submitSurvey": "Enviar Pesquisa",
+    "templateStatus": {
+      "active": "{{common.active}}",
+      "archived": "Arquivado",
+      "inactive": "Inativo"
+    },
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "Ver Resposta"
+  },
   "threatEditor": {
     "createNewThreat": "Criar Nova Ameaca",
     "notAssociatedWithAsset": "Nao associado a um ativo",
@@ -729,7 +1015,7 @@
     "createNewRepository": "Adicionar Referencia de Repositorio",
     "created": "{{common.created}}",
     "createdBy": "Criado Por",
-    "dashboard": "Painel",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Diagrama de Fluxo de Dados",
     "deleteWarningPermanent": "Esta acao nao pode ser desfeita e excluira permanentemente todos os diagramas, ameacas e metadados associados.",
     "descriptionPlaceholder": "Descreva o Proposito e Escopo Deste Modelo de Ameacas",
@@ -737,7 +1023,7 @@
     "diagramName": "Nome do Diagrama",
     "diagramPreview": "Visualizacao do Diagrama",
     "diagramType": "Tipo de Diagrama",
-    "diagrams": "Diagramas",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "Descreva o Proposito ou Conteudo do Documento",
     "documentEditor": {
       "title": {
@@ -762,7 +1048,7 @@
     "noPermissions": "Nenhuma Permissao Definida",
     "noRepositories": "Nenhum Repositorio Adicionado Ainda",
     "noThreats": "Nenhuma Ameaca Adicionada Ainda",
-    "pageTitle": "Modelos de Ameacas",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Funcao",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -786,6 +1072,12 @@
     "repositorySubPathHint": "Caminho opcional dentro do repositorio",
     "repositoryType": "Tipo de Repositorio",
     "repositoryUri": "URL do Repositorio",
+    "sections": {
+      "inputs": "Entradas",
+      "inputsDescription": "Ativos, documentos e repositórios de código-fonte que descrevem o sistema em análise",
+      "outputs": "Saídas",
+      "outputsDescription": "Notas, diagramas e ameaças produzidas durante a análise de segurança"
+    },
     "setAsOwner": "Definir como Proprietario",
     "sourcesCount": "Repositorios",
     "status": {
@@ -818,7 +1110,7 @@
       "addAsset": "Adicionar Ativo",
       "addDiagram": "Adicionar Diagrama",
       "addDocument": "Adicionar Documento",
-      "addNote": "Adicionar Nota",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "Ativos sao recursos valiosos dentro do sistema que requerem protecao, como dados, hardware, software, infraestrutura, servicos ou pessoal.",
       "diagramsCardTitle": "Diagramas no TMI sao representacoes legiveis por maquina do movimento de dados e processos dentro de um sistema, permitindo analise de seguranca manual e automatizada.",
       "documentsCardTitle": "Referencias de documentos sao links para documentos armazenados fora do TMI. Documentos relevantes descrevem o sistema a ser analisado e podem ser usados por analistas de seguranca e processos de analise automatizada.",
@@ -881,10 +1173,90 @@
     },
     "title": "Termos de Servico"
   },
-  "userPreferences": {
-    "administration": {
-      "title": "{{admin.title}}"
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "Pesquisar por e-mail",
+      "searchPlaceholder": "Comece a digitar o endereço de e-mail..."
+    }
+  },
+  "triage": {
+    "bulkActions": "Ações em Lote",
+    "changeStatus": "Alterar Status",
+    "columns": {
+      "confidentialTooltip": "Resposta confidencial"
     },
+    "createTm": "{{createThreatModel.title}}",
+    "detail": {
+      "addNote": "Adicionar Nota",
+      "markdownSupported": "Markdown suportado",
+      "noNotes": "Ainda não há notas de triagem",
+      "noResponses": "Nenhuma resposta registrada",
+      "noRevisionNotes": "Nenhuma nota de revisão",
+      "note": "nota",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "Digite o conteúdo da nota...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "Título breve da nota",
+      "notes": "notas",
+      "responseDetails": "Detalhes da Resposta",
+      "reviewedAt": "Revisado em",
+      "reviewedBy": "Revisado Por",
+      "revisionNotesTitle": "Revisão Solicitada",
+      "statusTimeline": "Linha do Tempo de Status",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "Notas de Triagem"
+    },
+    "filters": {
+      "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "{{triage.list.allSurveys}}",
+      "clearFilters": "Limpar Filtros",
+      "confidential": "Confidencialidade",
+      "confidentialOnly": "Confidencial",
+      "nonConfidential": "Não-confidencial"
+    },
+    "list": {
+      "allSurveys": "Todas as Pesquisas",
+      "approve": "Aprovar",
+      "approveSelected": "Aprovar Selecionados",
+      "createThreatModel": "{{createThreatModel.title}}",
+      "errorLoadingResponses": "Falha ao carregar respostas",
+      "loadingResponses": "Carregando respostas...",
+      "noResponsesFiltered": "Nenhuma resposta corresponde aos seus filtros",
+      "noResponsesTitle": "Nenhuma Resposta",
+      "noResponsesToTriage": "Não há respostas de pesquisa para triagem",
+      "notSubmitted": "Não enviada",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
+      "searchPlaceholder": "Buscar por autor ou pesquisa...",
+      "submitted": "Enviada",
+      "submitter": "Remetente"
+    },
+    "markInReview": "Marcar em Revisão",
+    "markPendingTriage": "Marcar Triagem Pendente",
+    "noResponses": "Nenhuma resposta para triagem",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "Digite o conteúdo da nota (Markdown suportado)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "Nova Nota de Triagem",
+        "view": "Visualizar Nota de Triagem"
+      }
+    },
+    "queue": "Fila de Triagem",
+    "returnToSubmitted": "Retornar para Enviado",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "Forneça notas explicando o que precisa ser revisado. O remetente verá estas notas quando revisar sua resposta.",
+      "hint": "Obrigatório — descreva quais mudanças são necessárias",
+      "label": "Notas de Revisão",
+      "placeholder": "Descreva as revisões necessárias...",
+      "title": "Devolver para Revisão"
+    },
+    "title": "Triagem",
+    "viewDetails": "Ver Detalhes"
+  },
+  "userPreferences": {
     "colorBlindMode": "Habilitar Modo para Daltonicos",
     "credentials": {
       "add": "Adicionar",
@@ -936,6 +1308,7 @@
     },
     "diagramAnimationEffects": "Habilitar Efeitos de Animacao no Editor de Diagramas",
     "displayPreferences": "Preferencias de Exibicao",
+    "hoverShowMetadata": "Mostrar metadados da célula ao passar o cursor",
     "marginSize": {
       "narrow": "Estreita",
       "standard": "Padrao",
@@ -948,13 +1321,18 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Preferencias de Relatorio",
+    "sections": {
+      "developer": "Desenvolvedor",
+      "diagramEditor": "Editor de Diagramas",
+      "securityReviewer": "Revisor de Segurança"
+    },
     "showDeveloperTools": "Mostrar Ferramentas do Desenvolvedor",
     "tabs": {
       "credentials": "Credenciais",
       "danger": "Perigo",
       "display": "Exibição",
       "profile": "Perfil",
-      "reports": "Relatórios"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "Tema",
     "themeMode": {
@@ -963,9 +1341,18 @@
       "light": "Claro"
     },
     "title": "Preferencias do Usuario",
+    "transferData": {
+      "confirmMessage": "Tem certeza de que deseja transferir todos os seus modelos de ameaça e respostas de pesquisa para {{email}}? Você será rebaixado para o papel de escritor nos itens transferidos.",
+      "dialogTitle": "Transferir Meus Dados",
+      "error": "Falha ao transferir dados. Por favor, tente novamente.",
+      "hint": "Transfere a propriedade de todos os seus modelos de ameaça e respostas de pesquisa para outro usuário. Você será rebaixado para o papel de escritor nos itens transferidos.",
+      "success": "Transferiu {{tmCount}} modelos de ameaça e {{responseCount}} respostas de pesquisa.",
+      "title": "Transferir Meus Dados para Outro Usuário"
+    },
     "userProfile": {
       "currentRole": "Funcao Atual no Modelo de Ameacas",
-      "groups": "Grupos",
+      "groups": "{{common.groups}}",
+      "jwtGroups": "Grupos JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID do Provedor",
       "title": "Perfil do Usuario",

@@ -1,4 +1,13 @@
-import { Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  ViewChild,
+  ViewChildren,
+  QueryList,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -6,6 +15,8 @@ import { Subject } from 'rxjs';
 import { debounceTime, take } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
 import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -80,17 +91,18 @@ interface EditableWebhookQuota extends EnrichedWebhookQuota {
   styleUrl: './admin-quotas.component.scss',
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
-export class AdminQuotasComponent implements OnInit {
+export class AdminQuotasComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
 
   @ViewChild('userAPIPaginator') userAPIPaginator!: MatPaginator;
   @ViewChild('webhookPaginator') webhookPaginator!: MatPaginator;
+  @ViewChildren(MatSort) sortChildren!: QueryList<MatSort>;
 
   userAPIQuotas: EditableUserAPIQuota[] = [];
   webhookQuotas: EditableWebhookQuota[] = [];
-  filteredUserAPIQuotas: EditableUserAPIQuota[] = [];
-  filteredWebhookQuotas: EditableWebhookQuota[] = [];
+  userAPIDataSource = new MatTableDataSource<EditableUserAPIQuota>([]);
+  webhookDataSource = new MatTableDataSource<EditableWebhookQuota>([]);
   totalUserAPIQuotas = 0;
   totalWebhookQuotas = 0;
   availableProviders: OAuthProviderInfo[] = [];
@@ -120,6 +132,68 @@ export class AdminQuotasComponent implements OnInit {
     private logger: LoggerService,
     private authService: AuthService,
   ) {}
+
+  ngAfterViewInit(): void {
+    // Assign sorts to data sources once views are available
+    this.sortChildren.changes
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((sorts: QueryList<MatSort>) => {
+        this.assignSorts(sorts);
+      });
+    this.assignSorts(this.sortChildren);
+  }
+
+  private assignSorts(sorts: QueryList<MatSort>): void {
+    const sortArray = sorts.toArray();
+    if (sortArray[0]) {
+      this.userAPIDataSource.sort = sortArray[0];
+      this.userAPIDataSource.sortingDataAccessor = (
+        item: EditableUserAPIQuota,
+        property: string,
+      ): string | number => {
+        switch (property) {
+          case 'provider':
+            return item.provider.toLowerCase();
+          case 'user':
+            return (item.user_name || item.user_email).toLowerCase();
+          case 'requests_per_minute':
+            return item.max_requests_per_minute;
+          case 'requests_per_hour':
+            return item.max_requests_per_hour ?? 0;
+          case 'modified':
+            return item.modified_at ? new Date(item.modified_at).getTime() : 0;
+          default:
+            return '';
+        }
+      };
+    }
+    if (sortArray[1]) {
+      this.webhookDataSource.sort = sortArray[1];
+      this.webhookDataSource.sortingDataAccessor = (
+        item: EditableWebhookQuota,
+        property: string,
+      ): string | number => {
+        switch (property) {
+          case 'provider':
+            return item.provider.toLowerCase();
+          case 'user':
+            return (item.user_name || item.user_email).toLowerCase();
+          case 'max_subscriptions':
+            return item.max_subscriptions;
+          case 'events_per_minute':
+            return item.max_events_per_minute;
+          case 'sub_req_per_minute':
+            return item.max_subscription_requests_per_minute;
+          case 'sub_req_per_day':
+            return item.max_subscription_requests_per_day;
+          case 'modified':
+            return item.modified_at ? new Date(item.modified_at).getTime() : 0;
+          default:
+            return '';
+        }
+      };
+    }
+  }
 
   ngOnInit(): void {
     this.loadProviders();
@@ -277,12 +351,12 @@ export class AdminQuotasComponent implements OnInit {
   applyFilter(): void {
     const filter = this.filterText.toLowerCase().trim();
     if (!filter) {
-      this.filteredUserAPIQuotas = [...this.userAPIQuotas];
-      this.filteredWebhookQuotas = [...this.webhookQuotas];
+      this.userAPIDataSource.data = [...this.userAPIQuotas];
+      this.webhookDataSource.data = [...this.webhookQuotas];
       return;
     }
 
-    this.filteredUserAPIQuotas = this.userAPIQuotas.filter(
+    this.userAPIDataSource.data = this.userAPIQuotas.filter(
       quota =>
         quota.user_email.toLowerCase().includes(filter) ||
         quota.user_name?.toLowerCase().includes(filter) ||
@@ -290,7 +364,7 @@ export class AdminQuotasComponent implements OnInit {
         quota.user_id.toLowerCase().includes(filter),
     );
 
-    this.filteredWebhookQuotas = this.webhookQuotas.filter(
+    this.webhookDataSource.data = this.webhookQuotas.filter(
       quota =>
         quota.user_email.toLowerCase().includes(filter) ||
         quota.user_name?.toLowerCase().includes(filter) ||
@@ -467,7 +541,7 @@ export class AdminQuotasComponent implements OnInit {
     if (this.authService.isAdmin) {
       void this.router.navigate(['/admin']);
     } else {
-      void this.router.navigate(['/dashboard']);
+      void this.router.navigate([this.authService.getLandingPage()]);
     }
   }
 }

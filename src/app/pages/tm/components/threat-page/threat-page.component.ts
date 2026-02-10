@@ -739,7 +739,9 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       .pipe(this.untilDestroyed())
       .subscribe({
         next: response => {
-          this.addonsForThreat = response.addons.filter(addon => addon.objects?.includes('threat'));
+          this.addonsForThreat = (response.addons ?? []).filter(addon =>
+            addon.objects?.includes('threat'),
+          );
         },
         error: error => {
           this.logger.error('Failed to load addons', error);

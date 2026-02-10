@@ -1,0 +1,504 @@
+<div class="template-builder-container">
+  <!-- Header -->
+  <div class="builder-header">
+    <div class="header-title">
+      <h1>
+        {{ (surveyId ? 'adminSurveys.editTemplate' : 'adminSurveys.createSurvey') | transloco }}
+      </h1>
+      @if (template) {
+        <span class="template-status">{{
+          'surveys.templateStatus.' + template.status | transloco
+        }}</span>
+      }
+    </div>
+    <div class="header-actions">
+      @if (hasUnsavedChanges) {
+        <span class="unsaved-indicator">{{
+          'adminSurveys.templateBuilder.unsavedChanges' | transloco
+        }}</span>
+      }
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="save()"
+        [disabled]="isSaving"
+        [matTooltip]="'common.save' | transloco"
+        [attr.aria-label]="'common.save' | transloco"
+      >
+        @if (isSaving) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          <mat-icon>save</mat-icon>
+        }
+      </button>
+      <button
+        mat-icon-button
+        color="warn"
+        (click)="goBack()"
+        [matTooltip]="'common.close' | transloco"
+        [attr.aria-label]="'common.close' | transloco"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading-container">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>{{ 'adminSurveys.templateBuilder.loadingTemplate' | transloco }}</p>
+    </div>
+  } @else if (error) {
+    <div class="error-container">
+      <mat-icon>error_outline</mat-icon>
+      <h2>{{ 'common.error' | transloco }}</h2>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" (click)="goBack()">
+        {{ 'adminSurveys.templateBuilder.backToTemplates' | transloco }}
+      </button>
+    </div>
+  } @else {
+    <div class="builder-content">
+      <!-- Survey Metadata -->
+      <mat-card class="metadata-card">
+        <mat-card-header>
+          <mat-card-title>{{ 'adminSurveys.surveyDetails' | transloco }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (template) {
+            <div class="metadata-row">
+              <mat-form-field appearance="outline" class="name-field">
+                <mat-label>{{ 'adminSurveys.templateBuilder.surveyName' | transloco }}</mat-label>
+                <input
+                  matInput
+                  [value]="template.name"
+                  (input)="updateTemplateName($any($event.target).value)"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="version-field">
+                <mat-label>{{
+                  'adminSurveys.templateBuilder.surveyVersion' | transloco
+                }}</mat-label>
+                <input
+                  matInput
+                  [value]="template.version"
+                  (input)="updateTemplateVersion($any($event.target).value)"
+                />
+              </mat-form-field>
+            </div>
+          }
+          <div class="metadata-row">
+            <mat-form-field appearance="outline" class="title-field">
+              <mat-label>{{ 'common.title' | transloco }}</mat-label>
+              <input
+                matInput
+                [value]="surveyJson.title ?? ''"
+                (input)="updateSurveyTitle($any($event.target).value)"
+                [placeholder]="'adminSurveys.templateBuilder.enterSurveyTitle' | transloco"
+              />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="description-field">
+              <mat-label>{{ 'common.description' | transloco }}</mat-label>
+              <textarea
+                matInput
+                [value]="surveyJson.description ?? ''"
+                (input)="updateSurveyDescription($any($event.target).value)"
+                [placeholder]="'adminSurveys.templateBuilder.enterSurveyDescription' | transloco"
+                rows="2"
+              ></textarea>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="builder-main">
+        <!-- Question Palette -->
+        <mat-card class="palette-card">
+          <mat-card-header>
+            <mat-card-title>{{
+              'adminSurveys.templateBuilder.questionTypes' | transloco
+            }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="question-palette">
+              @for (qType of questionTypes; track qType.type) {
+                <button
+                  mat-stroked-button
+                  class="palette-item"
+                  (click)="addQuestion(qType.type)"
+                  [matTooltip]="qType.description | transloco"
+                >
+                  <mat-icon>{{ qType.icon }}</mat-icon>
+                  <span>{{ qType.label | transloco }}</span>
+                </button>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Canvas / Question List -->
+        <mat-card class="canvas-card">
+          <mat-card-header>
+            <mat-card-title>
+              {{ 'adminSurveys.templateBuilder.questions' | transloco }}
+              @if (surveyJson.pages && surveyJson.pages.length > 1) {
+                <span class="page-indicator">
+                  ({{
+                    'adminSurveys.templateBuilder.pageIndicator'
+                      | transloco
+                        : { current: selectedPageIndex + 1, total: surveyJson.pages.length }
+                  }})
+                </span>
+              }
+            </mat-card-title>
+            <div class="canvas-actions">
+              @if (surveyJson.pages && surveyJson.pages.length > 1) {
+                <button
+                  mat-icon-button
+                  (click)="previousPage()"
+                  [disabled]="selectedPageIndex === 0"
+                  [matTooltip]="'adminSurveys.templateBuilder.previousPage' | transloco"
+                >
+                  <mat-icon>chevron_left</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  (click)="nextPage()"
+                  [disabled]="selectedPageIndex === surveyJson.pages.length - 1"
+                  [matTooltip]="'adminSurveys.templateBuilder.nextPage' | transloco"
+                >
+                  <mat-icon>chevron_right</mat-icon>
+                </button>
+              }
+              <button
+                mat-icon-button
+                (click)="addPage()"
+                [matTooltip]="'adminSurveys.templateBuilder.addPage' | transloco"
+              >
+                <mat-icon>note_add</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deletePage()"
+                [disabled]="!surveyJson.pages || surveyJson.pages.length <= 1"
+                [matTooltip]="'adminSurveys.templateBuilder.deletePage' | transloco"
+              >
+                <mat-icon>scan_delete</mat-icon>
+              </button>
+            </div>
+          </mat-card-header>
+          <mat-card-content>
+            @if (currentPageElements.length === 0) {
+              <div class="empty-canvas">
+                <mat-icon>add_circle_outline</mat-icon>
+                <p>{{ 'adminSurveys.templateBuilder.noQuestionsYet' | transloco }}</p>
+                <p class="hint">{{ 'adminSurveys.templateBuilder.noQuestionsHint' | transloco }}</p>
+              </div>
+            } @else {
+              <div class="question-list">
+                @for (question of currentPageElements; track question.name; let i = $index) {
+                  <div
+                    class="question-item"
+                    [class.selected]="selectedQuestion === question"
+                    (click)="selectQuestion(question, i)"
+                  >
+                    <mat-icon class="question-icon">{{ getQuestionIcon(question.type) }}</mat-icon>
+                    <div class="question-info">
+                      <span class="question-name">{{ question.name }}</span>
+                      <span class="question-title">{{ question.title }}</span>
+                    </div>
+                    <div class="question-actions">
+                      <button
+                        mat-icon-button
+                        (click)="moveQuestionUp(); $event.stopPropagation()"
+                        [disabled]="i === 0"
+                      >
+                        <mat-icon>arrow_upward</mat-icon>
+                      </button>
+                      <button
+                        mat-icon-button
+                        (click)="moveQuestionDown(); $event.stopPropagation()"
+                        [disabled]="i === currentPageElements.length - 1"
+                      >
+                        <mat-icon>arrow_downward</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Panel children -->
+                  @if (question.type === 'panel' && question.elements?.length) {
+                    <div class="panel-children">
+                      @for (child of question.elements; track child.name; let j = $index) {
+                        <div
+                          class="question-item nested"
+                          [class.selected]="selectedQuestion === child"
+                          (click)="selectQuestion(child, j, question)"
+                        >
+                          <mat-icon class="question-icon">{{
+                            getQuestionIcon(child.type)
+                          }}</mat-icon>
+                          <div class="question-info">
+                            <span class="question-name">{{ child.name }}</span>
+                            <span class="question-title">{{ child.title }}</span>
+                          </div>
+                          <div class="question-actions">
+                            <button
+                              mat-icon-button
+                              (click)="
+                                selectQuestion(child, j, question);
+                                moveQuestionUp();
+                                $event.stopPropagation()
+                              "
+                              [disabled]="j === 0"
+                            >
+                              <mat-icon>arrow_upward</mat-icon>
+                            </button>
+                            <button
+                              mat-icon-button
+                              (click)="
+                                selectQuestion(child, j, question);
+                                moveQuestionDown();
+                                $event.stopPropagation()
+                              "
+                              [disabled]="j === question.elements!.length - 1"
+                            >
+                              <mat-icon>arrow_downward</mat-icon>
+                            </button>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                  @if (question.type === 'paneldynamic' && question.templateElements?.length) {
+                    <div class="panel-children">
+                      @for (child of question.templateElements; track child.name; let j = $index) {
+                        <div
+                          class="question-item nested"
+                          [class.selected]="selectedQuestion === child"
+                          (click)="selectQuestion(child, j, question)"
+                        >
+                          <mat-icon class="question-icon">{{
+                            getQuestionIcon(child.type)
+                          }}</mat-icon>
+                          <div class="question-info">
+                            <span class="question-name">{{ child.name }}</span>
+                            <span class="question-title">{{ child.title }}</span>
+                          </div>
+                          <div class="question-actions">
+                            <button
+                              mat-icon-button
+                              (click)="
+                                selectQuestion(child, j, question);
+                                moveQuestionUp();
+                                $event.stopPropagation()
+                              "
+                              [disabled]="j === 0"
+                            >
+                              <mat-icon>arrow_upward</mat-icon>
+                            </button>
+                            <button
+                              mat-icon-button
+                              (click)="
+                                selectQuestion(child, j, question);
+                                moveQuestionDown();
+                                $event.stopPropagation()
+                              "
+                              [disabled]="j === question.templateElements!.length - 1"
+                            >
+                              <mat-icon>arrow_downward</mat-icon>
+                            </button>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                }
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Question Editor -->
+        <mat-card class="editor-card">
+          <mat-card-header>
+            <mat-card-title>{{
+              'adminSurveys.templateBuilder.questionProperties' | transloco
+            }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @if (selectedQuestion) {
+              <div class="question-editor">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'adminSurveys.templateBuilder.nameId' | transloco }}</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="selectedQuestion.name"
+                    (ngModelChange)="hasUnsavedChanges = true"
+                  />
+                  <mat-hint>{{ 'adminSurveys.templateBuilder.nameIdHint' | transloco }}</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'common.title' | transloco }}</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="selectedQuestion.title"
+                    (ngModelChange)="hasUnsavedChanges = true"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'common.description' | transloco }}</mat-label>
+                  <textarea
+                    matInput
+                    [(ngModel)]="selectedQuestion.description"
+                    (ngModelChange)="hasUnsavedChanges = true"
+                    rows="2"
+                  ></textarea>
+                </mat-form-field>
+
+                <div class="checkbox-row">
+                  <mat-checkbox
+                    [(ngModel)]="selectedQuestion.isRequired"
+                    (ngModelChange)="hasUnsavedChanges = true"
+                  >
+                    {{ 'adminSurveys.templateBuilder.required' | transloco }}
+                  </mat-checkbox>
+                </div>
+
+                @if (['radiogroup', 'checkbox', 'dropdown'].includes(selectedQuestion.type)) {
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{
+                      'adminSurveys.templateBuilder.choicesPerLine' | transloco
+                    }}</mat-label>
+                    <textarea
+                      matInput
+                      [ngModel]="getChoicesText()"
+                      (ngModelChange)="updateChoicesFromText($event)"
+                      rows="4"
+                    ></textarea>
+                  </mat-form-field>
+                }
+
+                <mat-expansion-panel class="condition-panel">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      {{ 'adminSurveys.templateBuilder.conditionalLogic' | transloco }}
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+
+                  <div class="condition-panel-content">
+                    <button
+                      mat-icon-button
+                      class="condition-help-button"
+                      (click)="openConditionHelp(); $event.stopPropagation()"
+                      [matTooltip]="'adminSurveys.templateBuilder.conditionalLogicHelp' | transloco"
+                      [attr.aria-label]="
+                        'adminSurveys.templateBuilder.conditionalLogicHelp' | transloco
+                      "
+                    >
+                      <mat-icon>help</mat-icon>
+                    </button>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>{{
+                        'adminSurveys.templateBuilder.visibleIf' | transloco
+                      }}</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="selectedQuestion.visibleIf"
+                        (ngModelChange)="hasUnsavedChanges = true"
+                      />
+                      <mat-hint>{{
+                        'adminSurveys.templateBuilder.visibleIfHint' | transloco
+                      }}</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>{{
+                        'adminSurveys.templateBuilder.enableIf' | transloco
+                      }}</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="selectedQuestion.enableIf"
+                        (ngModelChange)="hasUnsavedChanges = true"
+                      />
+                      <mat-hint>{{
+                        'adminSurveys.templateBuilder.enableIfHint' | transloco
+                      }}</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>{{
+                        'adminSurveys.templateBuilder.requiredIf' | transloco
+                      }}</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="selectedQuestion.requiredIf"
+                        (ngModelChange)="hasUnsavedChanges = true"
+                      />
+                      <mat-hint>{{
+                        'adminSurveys.templateBuilder.requiredIfHint' | transloco
+                      }}</mat-hint>
+                    </mat-form-field>
+                  </div>
+                </mat-expansion-panel>
+
+                <div class="tm-field-mapping">
+                  <h4>{{ 'adminSurveys.templateBuilder.tmFieldMapping' | transloco }}</h4>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{
+                      'adminSurveys.templateBuilder.mapsToTmField' | transloco
+                    }}</mat-label>
+                    <mat-select
+                      [ngModel]="getSelectedTmFieldPath()"
+                      (ngModelChange)="updateTmFieldPath($event)"
+                    >
+                      <mat-option value="">{{ 'common.none' | transloco }}</mat-option>
+                      @for (option of tmFieldOptions; track option.value) {
+                        <mat-option [value]="option.value">{{
+                          option.label | transloco
+                        }}</mat-option>
+                      }
+                    </mat-select>
+                    <mat-hint>{{
+                      'adminSurveys.templateBuilder.tmFieldMappingHint' | transloco
+                    }}</mat-hint>
+                  </mat-form-field>
+
+                  @if (selectedQuestion.mapsToTmField?.path === 'metadata.{key}') {
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>{{
+                        'adminSurveys.templateBuilder.metadataKey' | transloco
+                      }}</mat-label>
+                      <input
+                        matInput
+                        [ngModel]="selectedQuestion.mapsToTmField?.metadataKey ?? ''"
+                        (ngModelChange)="updateTmFieldMetadataKey($event)"
+                      />
+                      <mat-hint>{{
+                        'adminSurveys.templateBuilder.metadataKeyHint' | transloco
+                      }}</mat-hint>
+                    </mat-form-field>
+                  }
+                </div>
+
+                <div class="editor-actions">
+                  <button mat-raised-button color="warn" (click)="deleteSelectedQuestion()">
+                    <mat-icon>delete</mat-icon>
+                    {{ 'adminSurveys.templateBuilder.deleteQuestion' | transloco }}
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <div class="no-selection">
+                <mat-icon>touch_app</mat-icon>
+                <p>{{ 'adminSurveys.templateBuilder.selectQuestionHint' | transloco }}</p>
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  }
+</div>

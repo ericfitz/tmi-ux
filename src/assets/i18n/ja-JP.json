@@ -76,26 +76,6 @@
       "subtitle": "TMI機能を拡張するアドオンを設定",
       "title": "アドオンの管理"
     },
-    "administrators": {
-      "addButton": "{{admin.administrators.addDialog.save}}",
-      "addDialog": {
-        "provider": "{{common.provider}}",
-        "providerRequired": "プロバイダーは必須です",
-        "save": "管理者を追加",
-        "subject": "サブジェクト",
-        "subjectHint": "ユーザーメールアドレスまたはグループ名を入力",
-        "subjectPlaceholder": "ユーザーメールアドレスまたはグループ名",
-        "subjectRequired": "サブジェクトは必須です",
-        "title": "{{admin.administrators.addDialog.save}}"
-      },
-      "filterLabel": "管理者をフィルター",
-      "filterPlaceholder": "メールアドレスまたはグループ名で検索",
-      "listTitle": "システム管理者",
-      "noAdministrators": "管理者が見つかりません",
-      "removeTooltip": "管理者権限を削除",
-      "subtitle": "システムへの管理者アクセス権を持つユーザーを管理",
-      "title": "管理者の管理"
-    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -114,6 +94,11 @@
         "save": "グループを作成",
         "title": "グループを追加"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "使用状況"
+      },
       "deleteTooltip": "グループを削除",
       "filterLabel": "グループをフィルター",
       "filterPlaceholder": "グループ名またはプロバイダーで検索",
@@ -124,8 +109,10 @@
         "noMembers": "このグループにメンバーはいません",
         "removeTooltip": "グループから削除",
         "searchHint": "検索するには2文字以上入力してください",
-        "searchPlaceholder": "メールアドレスを入力...",
-        "searchUser": "メールでユーザーを検索"
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
+        "searchUser": "メールでユーザーを検索",
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "グループが見つかりません",
       "subtitle": "システムグループの表示と管理",
@@ -143,6 +130,12 @@
         "title": "カスタムクォータを追加",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "デフォルト",
       "deleteTooltip": "カスタムクォータを削除（デフォルトに戻す）",
       "eventsPerMinute": "1分あたりのイベント数",
       "filterLabel": "クォータをフィルター",
@@ -164,10 +157,6 @@
         "description": "アプリケーションアドオンのインストールと設定",
         "title": "{{admin.addons.title}}"
       },
-      "administrators": {
-        "description": "管理者権限の付与または取り消し",
-        "title": "{{admin.administrators.title}}"
-      },
       "groups": {
         "description": "ユーザーグループとメンバーシップの設定",
         "title": "{{admin.groups.title}}"
@@ -175,6 +164,14 @@
       "quotas": {
         "description": "リソースクォータと制限の設定",
         "title": "{{admin.quotas.title}}"
+      },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
+      "surveys": {
+        "description": "調査を作成および管理",
+        "title": "調査を管理"
       },
       "users": {
         "description": "ユーザーアカウントの表示と管理",
@@ -185,16 +182,83 @@
         "title": "{{admin.webhooks.title}}"
       }
     },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "この設定の説明（任意）",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "ドットとアンダースコアを含む小文字（例: rate_limit.max_rpm）",
+        "keyInvalid": "小文字で始まり、小文字、数字、ドット、アンダースコアのみを使用する必要があります",
+        "keyRequired": "キーは必須です",
+        "save": "設定を作成",
+        "title": "設定を追加",
+        "type": "{{common.type}}",
+        "typeRequired": "タイプは必須です",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "値は必須です"
+      },
+      "cancelTooltip": "編集をキャンセル",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "設定「{{key}}」を削除してもよろしいですか？",
+      "deleteTooltip": "設定を削除",
+      "editTooltip": "設定を編集",
+      "filterLabel": "フィルター",
+      "filterPlaceholder": "キー、値、または説明でフィルター",
+      "listTitle": "システム設定",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "サーバーの設定ファイルまたは環境変数から設定をデータベースにインポートします。",
+        "migrate": "マイグレート",
+        "overwriteLabel": "既存の設定を上書きする",
+        "overwriteWarning": "警告: これにより、以前にカスタマイズされたデータベース内の設定が置き換えられます。",
+        "resultMigrated": "{{count}}件の設定をマイグレートしました",
+        "resultSkipped": "{{count}}件の設定をスキップしました",
+        "title": "設定をマイグレート"
+      },
+      "noSettings": "設定が見つかりません",
+      "saveTooltip": "変更を保存",
+      "subtitle": "システム構成設定を表示および管理",
+      "title": "設定の管理",
+      "types": {
+        "bool": "Boolean",
+        "int": "Integer",
+        "json": "JSON",
+        "string": "String"
+      }
+    },
     "subtitle": "システム設定と構成の管理",
     "title": "管理",
     "users": {
+      "administrator": "管理者",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "ユーザーアカウントを削除",
       "filterLabel": "ユーザーをフィルター",
       "filterPlaceholder": "メール、名前、プロバイダー、またはグループ名で検索",
+      "lastLogin": "最終ログイン",
       "listTitle": "ユーザー",
+      "never": "なし",
       "noUsers": "ユーザーが見つかりません",
       "subtitle": "システムユーザーの表示と管理",
-      "title": "ユーザーの管理"
+      "title": "ユーザーの管理",
+      "transferOwnership": {
+        "confirm": "{{source}}から{{target}}へすべてのデータを転送してもよろしいですか？",
+        "dialogTitle": "ユーザーデータの転送",
+        "error": "所有権の転送に失敗しました。もう一度お試しください。",
+        "success": "{{userPreferences.transferData.success}}",
+        "tooltip": "所有権を転送"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -231,13 +295,112 @@
       "noWebhooks": "Webhookが見つかりません",
       "secret": "HMACシークレット",
       "status": {
-        "active": "アクティブ",
+        "active": "{{common.active}}",
         "pending_delete": "削除保留中",
         "pending_verification": "検証保留中"
       },
       "subtitle": "イベント通知用のWebhookサブスクリプションを設定",
       "title": "Webhooksの管理"
     }
+  },
+  "adminSurveys": {
+    "cloneSuffix": "（コピー）",
+    "createDialog": {
+      "nameLabel": "調査名",
+      "namePlaceholder": "調査名を入力",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "調査を作成",
+      "versionHint": "自由形式のバージョン識別子",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "例: 1, v2-pilot, 2024-Q1",
+      "versionRequired": "バージョンは必須です"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "editTemplate": "調査を編集",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "一致する調査がありません",
+    "noTemplatesMessage": "最初の調査を作成して開始してください。",
+    "noTemplatesTitle": "調査がまだありません",
+    "pageTitle": "{{admin.sections.surveys.title}}",
+    "searchByName": "名前で検索...",
+    "searchTemplates": "調査を検索",
+    "surveyDetails": "調査詳細",
+    "templateBuilder": {
+      "addPage": "ページを追加",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
+      "choicesPerLine": "選択肢（1行に1つ）",
+      "conditionalLogic": "条件付きロジック",
+      "conditionalLogicHelp": "SurveyJS条件付きロジックのドキュメント",
+      "deletePage": "ページを削除",
+      "deleteQuestion": "質問を削除",
+      "enableIf": "有効にする条件",
+      "enableIfHint": "例: {questionName} = 'value'",
+      "enterSurveyDescription": "調査の説明を入力",
+      "enterSurveyTitle": "調査のタイトルを入力",
+      "failedToLoadTemplate": "調査の読み込みに失敗しました",
+      "failedToSaveTemplate": "調査の保存に失敗しました",
+      "loadingTemplate": "調査を読み込み中...",
+      "mapsToTmField": "脅威モデルフィールドにマッピング",
+      "metadataKey": "メタデータキー",
+      "metadataKeyHint": "メタデータエントリのキー名",
+      "nameId": "名前（ID）",
+      "nameIdHint": "この質問の一意の識別子",
+      "nextPage": "{{pagination.nextPage}}",
+      "noQuestionsHint": "パレットから質問タイプをクリックして追加してください",
+      "noQuestionsYet": "まだ質問がありません",
+      "pageIndicator": "ページ {{current}} / {{total}}",
+      "previousPage": "{{pagination.previousPage}}",
+      "questionProperties": "質問のプロパティ",
+      "questionTypeDescriptions": {
+        "boolean": "真偽値トグル",
+        "checkbox": "複数選択",
+        "comment": "複数行テキストエリア",
+        "dropdown": "ドロップダウン選択",
+        "panel": "パネル内に質問をグループ化",
+        "paneldynamic": "繰り返し可能なパネルグループ",
+        "radiogroup": "選択肢から単一選択",
+        "text": "単一行テキスト入力"
+      },
+      "questionTypeLabels": {
+        "boolean": "はい/いいえ",
+        "checkbox": "チェックボックス",
+        "comment": "複数行",
+        "dropdown": "ドロップダウン",
+        "panel": "パネル",
+        "paneldynamic": "動的パネル",
+        "radiogroup": "ラジオグループ",
+        "text": "{{editor.nodeLabels.textbox}}"
+      },
+      "questionTypes": "質問タイプ",
+      "questions": "質問",
+      "required": "必須",
+      "requiredIf": "必須条件",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
+      "selectQuestionHint": "質問を選択してプロパティを編集してください",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
+      "tmFieldLabels": {
+        "assetDescription": "アセットの説明",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
+        "description": "脅威モデルの説明",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
+        "issueUri": "課題追跡URL",
+        "metadataKey": "カスタムメタデータ",
+        "name": "脅威モデル名",
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
+      },
+      "tmFieldMapping": "脅威モデルフィールドマッピング",
+      "tmFieldMappingHint": "この回答を脅威モデルフィールドにリンク",
+      "unsavedChanges": "未保存の変更",
+      "visibleIf": "表示条件",
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
+    },
+    "templateCount": "{{count}}件の調査",
+    "templateCountPlural": "{{count}}件の調査"
   },
   "assetEditor": {
     "chipPlaceholder": "値を入力してEnterを押してください",
@@ -300,15 +463,22 @@
   "common": {
     "about": "概要",
     "actions": "アクション",
+    "activate": "有効化",
+    "active": "アクティブ",
     "addMetadata": "メタデータを追加",
     "addThreat": "脅威を追加",
     "addons": "アドオン",
+    "all": "すべて",
+    "allStatuses": "すべてのステータス",
+    "archive": "アーカイブ",
     "back": "戻る",
     "cancel": "キャンセル",
     "cellId": "セルID",
     "classification": "分類",
     "clear": "クリア",
+    "clone": "複製",
     "close": "閉じる",
+    "confirm": "確認",
     "confirmDelete": "{{item}}「{{name}}」を削除してもよろしいですか？この操作は元に戻せません。",
     "confirmDeleteMessage": "{{objectType}}「{{name}}」を削除してもよろしいですか？",
     "copy": "コピー",
@@ -317,6 +487,7 @@
     "created": "作成日時",
     "criticality": "重要度",
     "cut": "切り取り",
+    "deactivate": "無効化",
     "delete": "削除",
     "deleteConfirm": "脅威モデルを削除",
     "deleteWarningConfirmationField": "削除の確認",
@@ -329,18 +500,23 @@
     "deleteWarningTypeConfirmation": "確認のため、以下のフィールドに「{{confirmValue}}」と入力してください。",
     "description": "説明",
     "diagramId": "ダイアグラムID",
+    "dismiss": "閉じる",
     "done": "完了",
     "download": "ダウンロード",
     "edit": "編集",
     "editThreat": "脅威を編集",
+    "email": "メールアドレス",
     "emailLabel": "メールアドレス",
+    "error": "エラー",
     "fonts": "フォント",
+    "groups": "グループ",
     "id": "ID",
     "identityProvider": "IDプロバイダー",
     "issueUri": "課題URL",
     "language": "{{language}}",
     "lastModified": "最終更新日",
     "lastUpdated": "最終更新",
+    "loading": "読み込み中...",
     "manage": "管理",
     "manageMetadata": "メタデータを管理",
     "manageThreats": "脅威を管理",
@@ -350,9 +526,11 @@
     "mitigated": "軽減済み",
     "mitigation": "軽減策",
     "mitigationPlaceholder": "この脅威に対する推奨または計画された軽減策を記述してください",
+    "moreActions": "その他の操作",
     "name": "名前",
     "noAddonsAvailable": "利用可能なアドオンがありません",
     "noDataAvailable": "データがありません",
+    "noMatchingResults": "フィルターに一致する結果はありません。",
     "noMetadata": "メタデータがありません",
     "noThreats": "脅威がありません",
     "none": "なし",
@@ -360,17 +538,25 @@
       "asset": "アセット",
       "assets": "アセット",
       "cell": "セル",
+      "cells": "セル",
       "diagram": "ダイアグラム",
+      "diagrams": "図",
       "document": "ドキュメント",
       "documents": "ドキュメント",
       "metadata": "{{common.metadata}}",
       "note": "ノート",
       "notes": "ノート",
       "report": "レポート",
+      "reports": "レポート",
       "repositories": "リポジトリ",
       "repository": "リポジトリ",
+      "survey": "調査",
+      "surveyResponse": "調査回答",
+      "surveyResponses": "調査回答",
+      "surveys": "調査",
       "threat": "脅威",
       "threatModel": "脅威モデル",
+      "threatModels": "脅威モデル",
       "threats": "脅威"
     },
     "ok": "OK",
@@ -382,6 +568,7 @@
     "provider": "プロバイダー",
     "readOnly": "読み取り専用",
     "readOnlyTooltip": "この脅威モデルへの読み取り専用アクセス権があります。編集権限についてはオーナーにお問い合わせください。",
+    "retry": "再試行",
     "roles": {
       "owner": "オーナー",
       "reader": "閲覧者",
@@ -391,6 +578,8 @@
     "saveAndClose": "保存して閉じる",
     "savedSuccessfully": "保存しました",
     "score": "スコア",
+    "search": "検索",
+    "selected": "{{count}} 件選択",
     "sensitivity": "機密度",
     "sessionRoles": {
       "host": "ホスト",
@@ -403,11 +592,15 @@
       "group": "グループ",
       "user": "ユーザー"
     },
+    "template": "テンプレート",
     "threatDescription": "脅威の説明",
     "threatDescriptionPlaceholder": "脅威を詳細に説明してください",
     "threatName": "脅威名",
     "threatType": "脅威タイプ",
+    "title": "タイトル",
+    "tryAdjustingFilters": "フィルターを調整してみてください。",
     "type": "タイプ",
+    "unarchive": "アーカイブ解除",
     "unsavedChangesWarning": "保存されていない変更があります。閉じてもよろしいですか？",
     "userId": "ユーザーID",
     "validation": {
@@ -416,6 +609,7 @@
       "nameRequired": "名前は必須です",
       "required": "このフィールドは必須です"
     },
+    "version": "バージョン",
     "view": "表示",
     "viewMetadata": "メタデータを表示",
     "viewPermissions": "権限を表示",
@@ -431,6 +625,15 @@
     "moveToFront": "最前面へ移動",
     "noDataAssetsAvailable": "データ資産がありません",
     "showObject": "オブジェクトを表示"
+  },
+  "createThreatModel": {
+    "confidentialHint": "機密の脅威モデルはセキュリティレビュアーグループと自動的には共有されません。この設定は作成後に変更することはできません。",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
+    "descriptionPlaceholder": "この脅威モデルの目的と範囲を説明してください",
+    "framework": "フレームワーク",
+    "namePlaceholder": "脅威モデル名を入力してください",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "脅威モデルを作成"
   },
   "dashboard": {
     "clearFilter": "フィルターをクリア",
@@ -466,7 +669,7 @@
     "common": {
       "affectedCells": "影響を受けるセル",
       "cellIds": "セルID",
-      "cells": "セル",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "完全なJSONをコピー"
     },
     "graphDataDialog": {
@@ -548,9 +751,18 @@
   "errors": {
     "validationError": "バリデーションエラー"
   },
+  "footer": {
+    "support": "サポート"
+  },
   "getStarted": "始める",
-  "homeDescription": "チームがシステムのセキュリティ脅威を特定、分析、文書化するための共同脅威モデリングツールです。脅威モデルとダイアグラムを作成、共有、共同編集して、アプリケーションのセキュリティを向上させましょう。",
+  "homeDescription": "TMIは、組織のセキュリティレビューと脅威モデリングプロセスを管理・強化するツールです。セキュリティレビューのワークフローを推進し、セキュリティレビューの情報を整理し、データフロー図を共同で作成し、自動化を接続してレビュープロセスの作業を削減し、セキュリティ脅威を分析します。",
   "homeWelcomeTitle": "TMIへようこそ: 脅威モデリング改善版",
+  "intake": {
+    "fill": {
+      "saveAndExit": "保存して終了",
+      "submitResponses": "回答を送信"
+    }
+  },
   "login": {
     "chooseMethod": "サインイン方法を選択してください:",
     "explanation": "信頼できるIDプロバイダーの既存アカウントでサインインします。これにより別途パスワードを設定する必要がなくなり、セキュリティを保ちながらスムーズにご利用いただけます。パスワードは保存・管理しません。認証情報はプロバイダーに保持され、当サービスを通じて漏洩することはありません。",
@@ -571,10 +783,13 @@
     "unexpectedError": "OAuth中に予期しないエラーが発生しました。"
   },
   "navbar": {
+    "admin": "管理",
     "appTitle": "TMI: 脅威モデリング改善版",
     "copyUserEmail": "ユーザーのメールアドレスをクリップボードにコピー",
+    "dashboard": "ダッシュボード",
     "feedback": "バグ報告、機能リクエスト、フィードバックを送信",
     "home": "ホーム",
+    "intake": "受付",
     "logoutButton": "サインアウト",
     "serverStatus": {
       "noServerConfigured": "サーバー未設定",
@@ -666,6 +881,77 @@
     },
     "title": "セッションがまもなく期限切れになります"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "保存に失敗しました",
+      "saved": "保存済み",
+      "saving": "保存中..."
+    },
+    "browse": "調査を閲覧",
+    "confidentialDialog": {
+      "description": "この送信を機密としてマークしますか？機密送信はセキュリティレビュアーグループと自動的には共有されません。この設定は回答作成後に変更することはできません。",
+      "no": "いいえ",
+      "title": "機密送信",
+      "yes": "はい、機密としてマークする"
+    },
+    "confirmation": {
+      "backToSurveys": "調査に戻る",
+      "message": "調査が正常に送信されました。",
+      "title": "調査を送信しました",
+      "viewResponses": "自分の回答を表示"
+    },
+    "continueDraft": "下書きを続ける",
+    "fill": {
+      "submitConfirm": "送信してもよろしいですか？送信後は回答を編集できなくなります。",
+      "title": "調査に回答"
+    },
+    "list": {
+      "deleteDraft": "下書きを削除",
+      "draftStarted": "下書き開始 {{time}}",
+      "errorLoadingSurveys": "アンケートの読み込みに失敗しました",
+      "lastModified": "最終更新 {{time}}",
+      "loadingSurveys": "アンケートを読み込み中...",
+      "noSurveysMessage": "現在アクティブなアンケートはありません。後でもう一度確認してください。",
+      "noSurveysTitle": "利用可能なアンケートはありません",
+      "pageDescription": "以下のリストから適切なレビュータイプを選択し、提示された質問に回答してセキュリティレビューチームがレビューを実施するために必要な情報を提供してください。",
+      "pageTitle": "セキュリティレビューをリクエスト",
+      "updated": "更新済み",
+      "yourDrafts": "下書き"
+    },
+    "myResponses": "自分の回答",
+    "noMatchingResponses": "一致する回答がありません",
+    "noMatchingResponsesMessage": "選択されたフィルタに一致する回答がありません。",
+    "noResponses": "まだ調査回答を送信していません",
+    "noSurveys": "利用可能な調査がありません",
+    "responses": {
+      "continueEditing": "編集を続ける",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
+      "filterByStatus": "ステータスでフィルタ",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
+      "noResponsesMessage": "まだアンケートに回答していません。アンケートページから開始してください。",
+      "noResponsesTitle": "回答がありません",
+      "pageTitle": "自分のアンケート回答",
+      "responseCount": "{{count}}件の回答",
+      "responseCountPlural": "{{count}}件の回答"
+    },
+    "saveDraft": "下書きを保存",
+    "startNew": "調査を開始",
+    "status": {
+      "draft": "下書き",
+      "needsRevision": "要修正",
+      "readyForReview": "レビュー待ち",
+      "reviewCreated": "レビュー作成済み",
+      "submitted": "{{triage.list.submitted}}"
+    },
+    "submitSurvey": "調査を送信",
+    "templateStatus": {
+      "active": "{{common.active}}",
+      "archived": "アーカイブ済み",
+      "inactive": "無効"
+    },
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "回答を表示"
+  },
   "threatEditor": {
     "createNewThreat": "新しい脅威を作成",
     "notAssociatedWithAsset": "アセットに関連付けられていません",
@@ -729,7 +1015,7 @@
     "createNewRepository": "リポジトリ参照を追加",
     "created": "{{common.created}}",
     "createdBy": "作成者",
-    "dashboard": "ダッシュボード",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "データフローダイアグラム",
     "deleteWarningPermanent": "この操作は元に戻すことができず、関連するすべてのダイアグラム、脅威、メタデータが永久に削除されます。",
     "descriptionPlaceholder": "この脅威モデルの目的と範囲を記述してください",
@@ -737,7 +1023,7 @@
     "diagramName": "ダイアグラム名",
     "diagramPreview": "ダイアグラムプレビュー",
     "diagramType": "ダイアグラムタイプ",
-    "diagrams": "ダイアグラム",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "ドキュメントの目的または内容を記述してください",
     "documentEditor": {
       "title": {
@@ -762,7 +1048,7 @@
     "noPermissions": "権限が定義されていません",
     "noRepositories": "まだリポジトリが追加されていません",
     "noThreats": "まだ脅威が追加されていません",
-    "pageTitle": "脅威モデル",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "ロール",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -786,6 +1072,12 @@
     "repositorySubPathHint": "リポジトリ内のオプションパス",
     "repositoryType": "リポジトリタイプ",
     "repositoryUri": "リポジトリURL",
+    "sections": {
+      "inputs": "入力",
+      "inputsDescription": "分析対象のシステムを説明するアセット、ドキュメント、およびソースコードリポジトリ",
+      "outputs": "出力",
+      "outputsDescription": "セキュリティ分析中に作成されたノート、図、および脅威"
+    },
     "setAsOwner": "オーナーに設定",
     "sourcesCount": "リポジトリ",
     "status": {
@@ -818,7 +1110,7 @@
       "addAsset": "アセットを追加",
       "addDiagram": "ダイアグラムを追加",
       "addDocument": "ドキュメントを追加",
-      "addNote": "ノートを追加",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "アセットとは、データ、ハードウェア、ソフトウェア、インフラストラクチャ、サービス、人員など、保護が必要なシステム内の価値あるリソースです。",
       "diagramsCardTitle": "TMIのダイアグラムは、システム内のデータの移動とプロセスを機械可読形式で表現したもので、手動および自動のセキュリティ分析を可能にします。",
       "documentsCardTitle": "ドキュメント参照は、TMI外に保存されているドキュメントへのリンクです。関連ドキュメントは分析対象のシステムを記述し、セキュリティアナリストと自動分析プロセスの両方で使用できます。",
@@ -881,10 +1173,90 @@
     },
     "title": "利用規約"
   },
-  "userPreferences": {
-    "administration": {
-      "title": "{{admin.title}}"
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "メールで検索",
+      "searchPlaceholder": "メールアドレスを入力して開始..."
+    }
+  },
+  "triage": {
+    "bulkActions": "一括操作",
+    "changeStatus": "ステータスを変更",
+    "columns": {
+      "confidentialTooltip": "機密送信"
     },
+    "createTm": "{{createThreatModel.title}}",
+    "detail": {
+      "addNote": "ノートを追加",
+      "markdownSupported": "Markdown対応",
+      "noNotes": "トリアージノートはまだありません",
+      "noResponses": "記録された回答がありません",
+      "noRevisionNotes": "修正依頼ノートはありません",
+      "note": "ノート",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "ノート内容を入力...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "簡単なノートタイトル",
+      "notes": "ノート",
+      "responseDetails": "回答の詳細",
+      "reviewedAt": "レビュー日時",
+      "reviewedBy": "レビュー者",
+      "revisionNotesTitle": "修正依頼",
+      "statusTimeline": "ステータスのタイムライン",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "トリアージノート"
+    },
+    "filters": {
+      "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "{{triage.list.allSurveys}}",
+      "clearFilters": "フィルタをクリア",
+      "confidential": "機密性",
+      "confidentialOnly": "機密",
+      "nonConfidential": "非機密"
+    },
+    "list": {
+      "allSurveys": "すべてのアンケート",
+      "approve": "承認",
+      "approveSelected": "選択を承認",
+      "createThreatModel": "{{createThreatModel.title}}",
+      "errorLoadingResponses": "回答の読み込みに失敗しました",
+      "loadingResponses": "回答を読み込み中...",
+      "noResponsesFiltered": "フィルターに一致する回答はありません",
+      "noResponsesTitle": "回答なし",
+      "noResponsesToTriage": "トリアージするアンケート回答はありません",
+      "notSubmitted": "未提出",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
+      "searchPlaceholder": "提出者または調査で検索...",
+      "submitted": "提出済み",
+      "submitter": "提出者"
+    },
+    "markInReview": "レビュー中に設定",
+    "markPendingTriage": "トリアージ待ちに設定",
+    "noResponses": "トリアージする回答がありません",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "ノート内容を入力 (Markdown対応)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "新規トリアージノート",
+        "view": "トリアージノートを表示"
+      }
+    },
+    "queue": "トリアージキュー",
+    "returnToSubmitted": "送信済みに戻す",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "修正が必要な内容を説明するノートを記入してください。提出者が回答を確認する際にこれらのノートが表示されます。",
+      "hint": "必須 — 必要な変更を記述してください",
+      "label": "修正依頼ノート",
+      "placeholder": "必要な修正内容を記述...",
+      "title": "修正依頼として差し戻し"
+    },
+    "title": "トリアージ",
+    "viewDetails": "詳細を表示"
+  },
+  "userPreferences": {
     "colorBlindMode": "色覚補助モードを有効にする",
     "credentials": {
       "add": "追加",
@@ -936,6 +1308,7 @@
     },
     "diagramAnimationEffects": "ダイアグラムエディターでアニメーション効果を有効にする",
     "displayPreferences": "表示設定",
+    "hoverShowMetadata": "ホバー時にセルのメタデータを表示",
     "marginSize": {
       "narrow": "狭い",
       "standard": "標準",
@@ -948,13 +1321,18 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "レポート設定",
+    "sections": {
+      "developer": "開発者",
+      "diagramEditor": "ダイアグラムエディター",
+      "securityReviewer": "セキュリティレビュアー"
+    },
     "showDeveloperTools": "開発者ツールを表示",
     "tabs": {
       "credentials": "認証情報",
       "danger": "危険",
       "display": "表示",
       "profile": "プロフィール",
-      "reports": "レポート"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "テーマ",
     "themeMode": {
@@ -963,9 +1341,18 @@
       "light": "ライト"
     },
     "title": "ユーザー設定",
+    "transferData": {
+      "confirmMessage": "本当にすべての脅威モデルと調査回答を{{email}}に転送してもよろしいですか？転送されたアイテムでは編集者ロールにダウングレードされます。",
+      "dialogTitle": "私のデータを転送",
+      "error": "データの転送に失敗しました。もう一度お試しください。",
+      "hint": "すべての脅威モデルと調査回答の所有権を別のユーザーに転送します。転送されたアイテムでは編集者ロールにダウングレードされます。",
+      "success": "{{tmCount}}件の脅威モデルと{{responseCount}}件の調査回答を転送しました。",
+      "title": "私のデータを別のユーザーに転送"
+    },
     "userProfile": {
       "currentRole": "現在の脅威モデルロール",
-      "groups": "グループ",
+      "groups": "{{common.groups}}",
+      "jwtGroups": "JWTグループ",
       "provider": "{{common.identityProvider}}",
       "providerId": "プロバイダーID",
       "title": "ユーザープロフィール",

@@ -76,26 +76,6 @@
       "subtitle": "TMI कार्यक्षमता बढ़ाने के लिए ऐडऑन कॉन्फ़िगर करें",
       "title": "ऐडऑन प्रबंधित करें"
     },
-    "administrators": {
-      "addButton": "{{admin.administrators.addDialog.save}}",
-      "addDialog": {
-        "provider": "{{common.provider}}",
-        "providerRequired": "प्रदाता आवश्यक है",
-        "save": "व्यवस्थापक जोड़ें",
-        "subject": "विषय",
-        "subjectHint": "उपयोगकर्ता ईमेल या समूह का नाम दर्ज करें",
-        "subjectPlaceholder": "उपयोगकर्ता ईमेल या समूह का नाम",
-        "subjectRequired": "विषय आवश्यक है",
-        "title": "{{admin.administrators.addDialog.save}}"
-      },
-      "filterLabel": "व्यवस्थापक फ़िल्टर करें",
-      "filterPlaceholder": "ईमेल या समूह के नाम से खोजें",
-      "listTitle": "सिस्टम व्यवस्थापक",
-      "noAdministrators": "कोई व्यवस्थापक नहीं मिला",
-      "removeTooltip": "व्यवस्थापक अनुमतियां हटाएं",
-      "subtitle": "सिस्टम तक प्रशासनिक पहुंच किसके पास है इसे नियंत्रित करें",
-      "title": "व्यवस्थापक प्रबंधित करें"
-    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -114,6 +94,11 @@
         "save": "समूह बनाएं",
         "title": "समूह जोड़ें"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "उपयोग"
+      },
       "deleteTooltip": "समूह हटाएं",
       "filterLabel": "समूह फ़िल्टर करें",
       "filterPlaceholder": "समूह के नाम या प्रदाता द्वारा खोजें",
@@ -124,8 +109,10 @@
         "noMembers": "इस समूह में कोई सदस्य नहीं",
         "removeTooltip": "समूह से हटाएं",
         "searchHint": "खोजने के लिए कम से कम 2 अक्षर टाइप करें",
-        "searchPlaceholder": "ईमेल पता टाइप करना शुरू करें...",
-        "searchUser": "ईमेल द्वारा उपयोगकर्ता खोजें"
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
+        "searchUser": "ईमेल द्वारा उपयोगकर्ता खोजें",
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "कोई समूह नहीं मिला",
       "subtitle": "सिस्टम समूहों को देखें और प्रबंधित करें",
@@ -143,6 +130,12 @@
         "title": "कस्टम कोटा जोड़ें",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "डिफ़ॉल्ट",
       "deleteTooltip": "कस्टम कोटा हटाएं (डिफ़ॉल्ट पर वापस जाएं)",
       "eventsPerMinute": "प्रति मिनट इवेंट्स",
       "filterLabel": "कोटा फ़िल्टर करें",
@@ -164,10 +157,6 @@
         "description": "एप्लिकेशन ऐडऑन इंस्टॉल और कॉन्फ़िगर करें",
         "title": "{{admin.addons.title}}"
       },
-      "administrators": {
-        "description": "व्यवस्थापक अनुमतियां प्रदान या रद्द करें",
-        "title": "{{admin.administrators.title}}"
-      },
       "groups": {
         "description": "उपयोगकर्ता समूह और सदस्यताएं कॉन्फ़िगर करें",
         "title": "{{admin.groups.title}}"
@@ -175,6 +164,14 @@
       "quotas": {
         "description": "संसाधन कोटा और सीमाएं कॉन्फ़िगर करें",
         "title": "{{admin.quotas.title}}"
+      },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
+      "surveys": {
+        "description": "सर्वेक्षण बनाएं और प्रबंधित करें",
+        "title": "सर्वेक्षणों का प्रबंधन करें"
       },
       "users": {
         "description": "उपयोगकर्ता खातों को देखें और प्रबंधित करें",
@@ -185,16 +182,83 @@
         "title": "{{admin.webhooks.title}}"
       }
     },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "इस सेटिंग का वैकल्पिक विवरण",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "डॉट और अंडरस्कोर के साथ लोअरकेस (उदा., rate_limit.max_rpm)",
+        "keyInvalid": "लोअरकेस अक्षर से शुरू होना चाहिए, केवल लोअरकेस अक्षर, संख्या, डॉट और अंडरस्कोर का उपयोग करें",
+        "keyRequired": "कुंजी आवश्यक है",
+        "save": "सेटिंग बनाएं",
+        "title": "सेटिंग जोड़ें",
+        "type": "{{common.type}}",
+        "typeRequired": "प्रकार आवश्यक है",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "मान आवश्यक है"
+      },
+      "cancelTooltip": "संपादन रद्द करें",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "क्या आप वाकई \"{{key}}\" सेटिंग को हटाना चाहते हैं?",
+      "deleteTooltip": "सेटिंग हटाएं",
+      "editTooltip": "सेटिंग संपादित करें",
+      "filterLabel": "फ़िल्टर",
+      "filterPlaceholder": "कुंजी, मान या विवरण द्वारा फ़िल्टर करें",
+      "listTitle": "सिस्टम सेटिंग्स",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "सर्वर की कॉन्फ़िगरेशन फ़ाइल या वातावरण चर से डेटाबेस में सेटिंग्स आयात करें।",
+        "migrate": "माइग्रेट करें",
+        "overwriteLabel": "मौजूदा सेटिंग्स को अधिलेखित करें",
+        "overwriteWarning": "चेतावनी: यह डेटाबेस में किसी भी सेटिंग्स को बदल देगा जो पहले कस्टमाइज़ की गई थीं।",
+        "resultMigrated": "{{count}} सेटिंग्स माइग्रेट की गईं",
+        "resultSkipped": "{{count}} सेटिंग्स छोड़ दी गईं",
+        "title": "सेटिंग्स माइग्रेट करें"
+      },
+      "noSettings": "कोई सेटिंग नहीं मिली",
+      "saveTooltip": "परिवर्तन सहेजें",
+      "subtitle": "सिस्टम कॉन्फ़िगरेशन सेटिंग्स देखें और प्रबंधित करें",
+      "title": "सेटिंग्स प्रबंधित करें",
+      "types": {
+        "bool": "बूलियन",
+        "int": "इंटीजर",
+        "json": "JSON",
+        "string": "स्ट्रिंग"
+      }
+    },
     "subtitle": "सिस्टम सेटिंग्स और कॉन्फ़िगरेशन प्रबंधित करें",
     "title": "प्रशासन",
     "users": {
+      "administrator": "प्रशासक",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "उपयोगकर्ता खाता हटाएं",
       "filterLabel": "उपयोगकर्ता फ़िल्टर करें",
       "filterPlaceholder": "ईमेल, नाम, प्रदाता या समूह के नाम से खोजें",
+      "lastLogin": "अंतिम लॉगिन",
       "listTitle": "उपयोगकर्ता",
+      "never": "कभी नहीं",
       "noUsers": "कोई उपयोगकर्ता नहीं मिला",
       "subtitle": "सिस्टम उपयोगकर्ताओं को देखें और प्रबंधित करें",
-      "title": "उपयोगकर्ता प्रबंधित करें"
+      "title": "उपयोगकर्ता प्रबंधित करें",
+      "transferOwnership": {
+        "confirm": "क्या आप {{source}} से {{target}} को सभी डेटा स्थानांतरित करना सुनिश्चित हैं?",
+        "dialogTitle": "उपयोगकर्ता डेटा स्थानांतरित करें",
+        "error": "स्वामित्व स्थानांतरित करने में विफल। कृपया पुनः प्रयास करें।",
+        "success": "{{userPreferences.transferData.success}}",
+        "tooltip": "स्वामित्व स्थानांतरित करें"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -231,13 +295,112 @@
       "noWebhooks": "कोई webhook नहीं मिला",
       "secret": "HMAC सीक्रेट",
       "status": {
-        "active": "सक्रिय",
+        "active": "{{common.active}}",
         "pending_delete": "हटाने की प्रतीक्षा में",
         "pending_verification": "सत्यापन की प्रतीक्षा में"
       },
       "subtitle": "इवेंट नोटिफिकेशन के लिए webhook सब्सक्रिप्शन कॉन्फ़िगर करें",
       "title": "Webhooks प्रबंधित करें"
     }
+  },
+  "adminSurveys": {
+    "cloneSuffix": "(प्रतिलिपि)",
+    "createDialog": {
+      "nameLabel": "सर्वेक्षण का नाम",
+      "namePlaceholder": "सर्वेक्षण का नाम दर्ज करें",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "सर्वेक्षण बनाएं",
+      "versionHint": "मुक्त-प्रारूप संस्करण पहचानकर्ता",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "उदा., 1, v2-pilot, 2024-Q1",
+      "versionRequired": "संस्करण आवश्यक है"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "editTemplate": "सर्वेक्षण संपादित करें",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "कोई मिलान करने वाला सर्वेक्षण नहीं",
+    "noTemplatesMessage": "आरंभ करने के लिए अपना पहला सर्वेक्षण बनाएं।",
+    "noTemplatesTitle": "अभी तक कोई सर्वेक्षण नहीं",
+    "pageTitle": "{{admin.sections.surveys.title}}",
+    "searchByName": "नाम से खोजें...",
+    "searchTemplates": "सर्वेक्षण खोजें",
+    "surveyDetails": "सर्वेक्षण विवरण",
+    "templateBuilder": {
+      "addPage": "पृष्ठ जोड़ें",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
+      "choicesPerLine": "विकल्प (प्रति पंक्ति एक)",
+      "conditionalLogic": "सशर्त तर्क",
+      "conditionalLogicHelp": "SurveyJS सशर्त तर्क दस्तावेज़ीकरण",
+      "deletePage": "पृष्ठ हटाएं",
+      "deleteQuestion": "प्रश्न हटाएं",
+      "enableIf": "सक्षम करें यदि",
+      "enableIfHint": "उदा., {questionName} = 'value'",
+      "enterSurveyDescription": "सर्वेक्षण विवरण दर्ज करें",
+      "enterSurveyTitle": "सर्वेक्षण शीर्षक दर्ज करें",
+      "failedToLoadTemplate": "सर्वेक्षण लोड करने में विफल",
+      "failedToSaveTemplate": "सर्वेक्षण सहेजने में विफल",
+      "loadingTemplate": "सर्वेक्षण लोड हो रहा है...",
+      "mapsToTmField": "TM फील्ड से मैप करता है",
+      "metadataKey": "मेटाडेटा कुंजी",
+      "metadataKeyHint": "मेटाडेटा प्रविष्टि के लिए कुंजी नाम",
+      "nameId": "नाम (ID)",
+      "nameIdHint": "इस प्रश्न के लिए अद्वितीय पहचानकर्ता",
+      "nextPage": "{{pagination.nextPage}}",
+      "noQuestionsHint": "इसे जोड़ने के लिए पैलेट से एक प्रश्न प्रकार पर क्लिक करें",
+      "noQuestionsYet": "अभी तक कोई प्रश्न नहीं",
+      "pageIndicator": "पृष्ठ {{current}} / {{total}}",
+      "previousPage": "{{pagination.previousPage}}",
+      "questionProperties": "प्रश्न गुण",
+      "questionTypeDescriptions": {
+        "boolean": "बूलियन टॉगल",
+        "checkbox": "बहुविकल्पीय चयन",
+        "comment": "बहुपंक्ति टेक्स्ट क्षेत्र",
+        "dropdown": "ड्रॉपडाउन चयन",
+        "panel": "पैनल में प्रश्न समूहित करें",
+        "paneldynamic": "दोहराने योग्य पैनल समूह",
+        "radiogroup": "विकल्पों में से एकल चयन",
+        "text": "एकल पंक्ति टेक्स्ट इनपुट"
+      },
+      "questionTypeLabels": {
+        "boolean": "हां/नहीं",
+        "checkbox": "चेकबॉक्स",
+        "comment": "बहुपंक्ति",
+        "dropdown": "ड्रॉपडाउन",
+        "panel": "पैनल",
+        "paneldynamic": "डायनामिक पैनल",
+        "radiogroup": "रेडियो समूह",
+        "text": "{{editor.nodeLabels.textbox}}"
+      },
+      "questionTypes": "प्रश्न प्रकार",
+      "questions": "प्रश्न",
+      "required": "आवश्यक",
+      "requiredIf": "आवश्यक यदि",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
+      "selectQuestionHint": "इसके गुण संपादित करने के लिए एक प्रश्न चुनें",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
+      "tmFieldLabels": {
+        "assetDescription": "एसेट विवरण",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
+        "description": "थ्रेट मॉडल विवरण",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
+        "issueUri": "इश्यू ट्रैकिंग URL",
+        "metadataKey": "कस्टम मेटाडेटा",
+        "name": "थ्रेट मॉडल नाम",
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
+      },
+      "tmFieldMapping": "थ्रेट मॉडल फील्ड मैपिंग",
+      "tmFieldMappingHint": "इस उत्तर को थ्रेट मॉडल फील्ड से लिंक करें",
+      "unsavedChanges": "असहेजे गए परिवर्तन",
+      "visibleIf": "दृश्यमान यदि",
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
+    },
+    "templateCount": "{{count}} सर्वेक्षण",
+    "templateCountPlural": "{{count}} सर्वेक्षण"
   },
   "assetEditor": {
     "chipPlaceholder": "मान दर्ज करें और Enter दबाएं",
@@ -300,15 +463,22 @@
   "common": {
     "about": "के बारे में",
     "actions": "कार्य",
+    "activate": "सक्रिय करें",
+    "active": "सक्रिय",
     "addMetadata": "मेटाडेटा जोड़ें",
     "addThreat": "खतरा जोड़ें",
     "addons": "ऐडऑन",
+    "all": "सभी",
+    "allStatuses": "सभी स्थितियां",
+    "archive": "संग्रहित करें",
     "back": "वापस",
     "cancel": "रद्द करें",
     "cellId": "सेल आईडी",
     "classification": "वर्गीकरण",
     "clear": "साफ़ करें",
+    "clone": "क्लोन",
     "close": "बंद करें",
+    "confirm": "पुष्टि करें",
     "confirmDelete": "क्या आप वाकई {{item}} \"{{name}}\" को हटाना चाहते हैं? यह कार्य पूर्ववत नहीं किया जा सकता।",
     "confirmDeleteMessage": "क्या आप वाकई {{objectType}} \"{{name}}\" को हटाना चाहते हैं?",
     "copy": "कॉपी",
@@ -317,30 +487,36 @@
     "created": "बनाया गया",
     "criticality": "गंभीरता",
     "cut": "काटें",
+    "deactivate": "निष्क्रिय करें",
     "delete": "हटाएं",
     "deleteConfirm": "थ्रेट मॉडल हटाएं",
     "deleteWarningConfirmationField": "हटाने की पुष्टि",
     "deleteWarningConfirmationMatch": "पुष्टि टेक्स्ट मेल खाता है",
     "deleteWarningConfirmationMismatch": "पुष्टि टेक्स्ट मेल नहीं खाता",
-    "deleteWarningConfirmationValue": "gone forever",
+    "deleteWarningConfirmationValue": "हमेशा के लिए चला गया",
     "deleteWarningPermanent": "यह क्रिया पूर्ववत नहीं की जा सकती और {{objectType}} तथा इससे जुड़े सभी मेटाडेटा को स्थायी रूप से हटा देगी।",
     "deleteWarningReferenceOnly": "TMI के बाहर संग्रहीत ऑब्जेक्ट्स जैसे डॉक्यूमेंट्स और रिपॉजिटरीज़ के लिए, केवल ऑब्जेक्ट का TMI संदर्भ हटाया जाएगा।",
     "deleteWarningSubEntities": "सभी संबंधित TMI एंटिटीज़ जैसे डायग्राम, थ्रेट्स और नोट्स भी स्थायी रूप से हटा दी जाएंगी।",
     "deleteWarningTypeConfirmation": "पुष्टि करने के लिए, कृपया नीचे दिए गए फ़ील्ड में \"{{confirmValue}}\" टाइप करें।",
     "description": "विवरण",
     "diagramId": "डायग्राम आईडी",
+    "dismiss": "खारिज करें",
     "done": "पूर्ण",
     "download": "डाउनलोड",
     "edit": "संपादित करें",
     "editThreat": "खतरा संपादित करें",
+    "email": "ईमेल",
     "emailLabel": "ईमेल पता",
+    "error": "त्रुटि",
     "fonts": "फ़ॉन्ट्स",
-    "id": "ID",
+    "groups": "समूह",
+    "id": "आईडी",
     "identityProvider": "पहचान प्रदाता",
     "issueUri": "समस्या URL",
     "language": "{{language}}",
     "lastModified": "अंतिम संशोधित",
     "lastUpdated": "अंतिम अपडेट",
+    "loading": "लोड हो रहा है...",
     "manage": "प्रबंधित करें",
     "manageMetadata": "मेटाडेटा प्रबंधित करें",
     "manageThreats": "खतरे प्रबंधित करें",
@@ -350,9 +526,11 @@
     "mitigated": "शमन किया गया",
     "mitigation": "शमन",
     "mitigationPlaceholder": "इस खतरे के लिए अनुशंसित या नियोजित शमन का वर्णन करें",
+    "moreActions": "अधिक कार्य",
     "name": "नाम",
     "noAddonsAvailable": "कोई ऐडऑन उपलब्ध नहीं",
     "noDataAvailable": "कोई डेटा उपलब्ध नहीं",
+    "noMatchingResults": "आपके फ़िल्टर से कोई परिणाम मेल नहीं खाता।",
     "noMetadata": "कोई मेटाडेटा उपलब्ध नहीं",
     "noThreats": "कोई खतरा उपलब्ध नहीं",
     "none": "कोई नहीं",
@@ -360,17 +538,25 @@
       "asset": "एसेट",
       "assets": "एसेट्स",
       "cell": "सेल",
+      "cells": "सेल",
       "diagram": "डायग्राम",
+      "diagrams": "आरेख",
       "document": "दस्तावेज़",
       "documents": "दस्तावेज़",
       "metadata": "{{common.metadata}}",
       "note": "नोट",
       "notes": "नोट्स",
       "report": "रिपोर्ट",
+      "reports": "रिपोर्ट",
       "repositories": "रिपॉजिटरीज",
       "repository": "रिपॉजिटरी",
+      "survey": "सर्वेक्षण",
+      "surveyResponse": "सर्वेक्षण प्रतिक्रिया",
+      "surveyResponses": "सर्वेक्षण प्रतिक्रियाएं",
+      "surveys": "सर्वेक्षण",
       "threat": "खतरा",
       "threatModel": "थ्रेट मॉडल",
+      "threatModels": "खतरा मॉडल",
       "threats": "खतरे"
     },
     "ok": "ठीक है",
@@ -382,6 +568,7 @@
     "provider": "प्रदाता",
     "readOnly": "केवल पढ़ने के लिए",
     "readOnlyTooltip": "इस थ्रेट मॉडल तक आपकी केवल पढ़ने की पहुंच है। संपादन अनुमतियों के लिए स्वामी से संपर्क करें।",
+    "retry": "पुनः प्रयास करें",
     "roles": {
       "owner": "स्वामी",
       "reader": "पाठक",
@@ -391,6 +578,8 @@
     "saveAndClose": "सहेजें और बंद करें",
     "savedSuccessfully": "सफलतापूर्वक सहेजा गया",
     "score": "स्कोर",
+    "search": "खोजें",
+    "selected": "{{count}} चयनित",
     "sensitivity": "संवेदनशीलता",
     "sessionRoles": {
       "host": "होस्ट",
@@ -403,11 +592,15 @@
       "group": "समूह",
       "user": "उपयोगकर्ता"
     },
+    "template": "टेम्पलेट",
     "threatDescription": "खतरे का विवरण",
     "threatDescriptionPlaceholder": "खतरे का विस्तार से वर्णन करें",
     "threatName": "खतरे का नाम",
     "threatType": "खतरे का प्रकार",
+    "title": "शीर्षक",
+    "tryAdjustingFilters": "अपने फ़िल्टर समायोजित करने का प्रयास करें।",
     "type": "प्रकार",
+    "unarchive": "अनार्काइव करें",
     "unsavedChangesWarning": "आपके पास सहेजे न गए परिवर्तन हैं। क्या आप वाकई बंद करना चाहते हैं?",
     "userId": "उपयोगकर्ता आईडी",
     "validation": {
@@ -416,6 +609,7 @@
       "nameRequired": "नाम आवश्यक है",
       "required": "यह फ़ील्ड आवश्यक है"
     },
+    "version": "संस्करण",
     "view": "देखें",
     "viewMetadata": "मेटाडेटा देखें",
     "viewPermissions": "अनुमतियां देखें",
@@ -431,6 +625,15 @@
     "moveToFront": "सबसे आगे ले जाएं",
     "noDataAssetsAvailable": "कोई डेटा एसेट उपलब्ध नहीं है",
     "showObject": "ऑब्जेक्ट दिखाएं"
+  },
+  "createThreatModel": {
+    "confidentialHint": "गोपनीय खतरा मॉडल स्वचालित रूप से सुरक्षा समीक्षक समूह के साथ साझा नहीं किए जाते हैं। इस सेटिंग को निर्माण के बाद नहीं बदला जा सकता।",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
+    "descriptionPlaceholder": "इस खतरा मॉडल के उद्देश्य और दायरे का वर्णन करें",
+    "framework": "ढांचा",
+    "namePlaceholder": "खतरा मॉडल का नाम दर्ज करें",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "खतरा मॉडल बनाएं"
   },
   "dashboard": {
     "clearFilter": "फ़िल्टर साफ़ करें",
@@ -466,7 +669,7 @@
     "common": {
       "affectedCells": "प्रभावित सेल",
       "cellIds": "सेल IDs",
-      "cells": "सेल",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "पूर्ण JSON कॉपी करें"
     },
     "graphDataDialog": {
@@ -548,9 +751,18 @@
   "errors": {
     "validationError": "सत्यापन त्रुटि"
   },
+  "footer": {
+    "support": "सहायता"
+  },
   "getStarted": "शुरू करें",
-  "homeDescription": "एक सहयोगी थ्रेट मॉडलिंग टूल जो टीमों को उनके सिस्टम में सुरक्षा खतरों की पहचान, विश्लेषण और दस्तावेज़ीकरण में मदद करने के लिए डिज़ाइन किया गया है। अपने एप्लिकेशन सुरक्षा को बेहतर बनाने के लिए थ्रेट मॉडल और डायग्राम बनाएं, साझा करें और सहयोगी रूप से संपादित करें।",
+  "homeDescription": "TMI एक उपकरण है जो आपके संगठन के लिए सुरक्षा समीक्षा और खतरा मॉडलिंग प्रक्रियाओं को प्रबंधित और बेहतर बनाता है। यह सुरक्षा समीक्षा वर्कफ़्लो को चलाता है, सुरक्षा समीक्षाओं के लिए जानकारी को व्यवस्थित करता है, सहयोगात्मक रूप से डेटा फ़्लो आरेख बनाने में सक्षम बनाता है, और समीक्षा प्रक्रिया में मेहनत को कम करने और सुरक्षा खतरों का विश्लेषण करने के लिए स्वचालन को जोड़ने में सक्षम बनाता है।",
   "homeWelcomeTitle": "TMI में आपका स्वागत है: थ्रेट मॉडलिंग इम्प्रूव्ड",
+  "intake": {
+    "fill": {
+      "saveAndExit": "सहेजें और बाहर निकलें",
+      "submitResponses": "प्रतिक्रियाएं सबमिट करें"
+    }
+  },
   "login": {
     "chooseMethod": "अपनी साइन इन विधि चुनें:",
     "explanation": "किसी विश्वसनीय पहचान प्रदाता से अपने मौजूदा खाते से साइन इन करें। इससे अलग पासवर्ड की आवश्यकता समाप्त हो जाती है, जो आपके अनुभव को सुव्यवस्थित करता है और आपको सुरक्षित रखता है। हम कभी भी पासवर्ड संग्रहीत या प्रबंधित नहीं करते—आपके क्रेडेंशियल आपके प्रदाता के पास रहते हैं और हमारे माध्यम से समझौता नहीं किया जा सकता।",
@@ -571,10 +783,13 @@
     "unexpectedError": "OAuth के दौरान एक अप्रत्याशित त्रुटि हुई।"
   },
   "navbar": {
+    "admin": "व्यवस्थापक",
     "appTitle": "TMI: थ्रेट मॉडलिंग इम्प्रूव्ड",
     "copyUserEmail": "उपयोगकर्ता ईमेल क्लिपबोर्ड पर कॉपी करें",
+    "dashboard": "डैशबोर्ड",
     "feedback": "बग रिपोर्ट करें, सुविधा का अनुरोध करें या प्रतिक्रिया दें",
     "home": "होम",
+    "intake": "इनटेक",
     "logoutButton": "साइन आउट",
     "serverStatus": {
       "noServerConfigured": "कोई सर्वर कॉन्फ़िगर नहीं",
@@ -666,6 +881,77 @@
     },
     "title": "सत्र जल्द समाप्त हो रहा है"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "सहेजना विफल",
+      "saved": "सहेजा गया",
+      "saving": "सहेजा जा रहा है..."
+    },
+    "browse": "सर्वेक्षण ब्राउज़ करें",
+    "confidentialDialog": {
+      "description": "क्या इस प्रस्तुति को गोपनीय के रूप में चिह्नित किया जाए? गोपनीय प्रस्तुतियों को स्वचालित रूप से सुरक्षा समीक्षक समूह के साथ साझा नहीं किया जाता है। इस सेटिंग को प्रतिक्रिया बनाने के बाद नहीं बदला जा सकता।",
+      "no": "नहीं",
+      "title": "गोपनीय प्रस्तुति",
+      "yes": "हां, गोपनीय के रूप में चिह्नित करें"
+    },
+    "confirmation": {
+      "backToSurveys": "सर्वेक्षण पर वापस जाएं",
+      "message": "आपका सर्वेक्षण सफलतापूर्वक सबमिट किया गया है।",
+      "title": "सर्वेक्षण सबमिट किया गया",
+      "viewResponses": "मेरी प्रतिक्रियाएं देखें"
+    },
+    "continueDraft": "ड्राफ्ट जारी रखें",
+    "fill": {
+      "submitConfirm": "क्या आप निश्चित हैं कि आप सबमिट करना चाहते हैं? सबमिट करने के बाद आप अपनी प्रतिक्रियाओं को संपादित नहीं कर पाएंगे।",
+      "title": "सर्वेक्षण भरें"
+    },
+    "list": {
+      "deleteDraft": "ड्राफ्ट हटाएं",
+      "draftStarted": "ड्राफ्ट शुरू हुआ {{time}}",
+      "errorLoadingSurveys": "सर्वेक्षण लोड करने में विफल",
+      "lastModified": "अंतिम संशोधन {{time}}",
+      "loadingSurveys": "सर्वेक्षण लोड हो रहे हैं...",
+      "noSurveysMessage": "इस समय कोई सक्रिय सर्वेक्षण नहीं है। बाद में पुनः जांचें।",
+      "noSurveysTitle": "कोई सर्वेक्षण उपलब्ध नहीं",
+      "pageDescription": "निम्नलिखित सूची से उपयुक्त समीक्षा प्रकार चुनें, और फिर सुरक्षा समीक्षा टीम को समीक्षा करने के लिए आवश्यक जानकारी प्रदान करने हेतु प्रस्तुत प्रश्नों का उत्तर दें।",
+      "pageTitle": "सुरक्षा समीक्षा का अनुरोध करें",
+      "updated": "अपडेट किया गया",
+      "yourDrafts": "आपके ड्राफ्ट"
+    },
+    "myResponses": "मेरी प्रतिक्रियाएं",
+    "noMatchingResponses": "कोई मिलान प्रतिक्रिया नहीं",
+    "noMatchingResponsesMessage": "चयनित फ़िल्टर से कोई प्रतिक्रिया मेल नहीं खाती।",
+    "noResponses": "आपने अभी तक कोई सर्वेक्षण प्रतिक्रिया सबमिट नहीं की है",
+    "noSurveys": "कोई सर्वेक्षण उपलब्ध नहीं है",
+    "responses": {
+      "continueEditing": "संपादन जारी रखें",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
+      "filterByStatus": "स्थिति के अनुसार फ़िल्टर करें",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
+      "noResponsesMessage": "आपने कोई सर्वेक्षण पूरा नहीं किया है। सर्वेक्षण पृष्ठ से एक शुरू करें।",
+      "noResponsesTitle": "अभी तक कोई प्रतिक्रिया नहीं",
+      "pageTitle": "मेरी सर्वेक्षण प्रतिक्रियाएं",
+      "responseCount": "{{count}} प्रतिक्रिया",
+      "responseCountPlural": "{{count}} प्रतिक्रियाएं"
+    },
+    "saveDraft": "ड्राफ्ट सहेजें",
+    "startNew": "सर्वेक्षण शुरू करें",
+    "status": {
+      "draft": "ड्राफ्ट",
+      "needsRevision": "संशोधन आवश्यक",
+      "readyForReview": "समीक्षा के लिए तैयार",
+      "reviewCreated": "समीक्षा बनाई गई",
+      "submitted": "{{triage.list.submitted}}"
+    },
+    "submitSurvey": "सर्वेक्षण सबमिट करें",
+    "templateStatus": {
+      "active": "{{common.active}}",
+      "archived": "संग्रहित",
+      "inactive": "निष्क्रिय"
+    },
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "प्रतिक्रिया देखें"
+  },
   "threatEditor": {
     "createNewThreat": "नया खतरा बनाएं",
     "notAssociatedWithAsset": "किसी एसेट से संबद्ध नहीं",
@@ -729,7 +1015,7 @@
     "createNewRepository": "रिपॉजिटरी संदर्भ जोड़ें",
     "created": "{{common.created}}",
     "createdBy": "द्वारा बनाया गया",
-    "dashboard": "डैशबोर्ड",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "डेटा फ्लो डायग्राम",
     "deleteWarningPermanent": "यह क्रिया पूर्ववत नहीं की जा सकती और सभी संबंधित डायग्राम, खतरे और मेटाडेटा को स्थायी रूप से हटा देगी।",
     "descriptionPlaceholder": "इस थ्रेट मॉडल के उद्देश्य और दायरे का वर्णन करें",
@@ -737,7 +1023,7 @@
     "diagramName": "डायग्राम का नाम",
     "diagramPreview": "डायग्राम पूर्वावलोकन",
     "diagramType": "डायग्राम का प्रकार",
-    "diagrams": "डायग्राम",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "दस्तावेज़ के उद्देश्य या सामग्री का वर्णन करें",
     "documentEditor": {
       "title": {
@@ -762,7 +1048,7 @@
     "noPermissions": "कोई अनुमति परिभाषित नहीं",
     "noRepositories": "अभी तक कोई रिपॉजिटरी नहीं जोड़ी गई",
     "noThreats": "अभी तक कोई खतरा नहीं जोड़ा गया",
-    "pageTitle": "थ्रेट मॉडल्स",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "भूमिका",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -786,6 +1072,12 @@
     "repositorySubPathHint": "रिपॉजिटरी के भीतर वैकल्पिक पथ",
     "repositoryType": "रिपॉजिटरी का प्रकार",
     "repositoryUri": "रिपॉजिटरी URL",
+    "sections": {
+      "inputs": "इनपुट",
+      "inputsDescription": "संपत्तियां, दस्तावेज़, और स्रोत कोड भंडार जो विश्लेषण के अंतर्गत सिस्टम का वर्णन करते हैं",
+      "outputs": "आउटपुट",
+      "outputsDescription": "सुरक्षा विश्लेषण के दौरान उत्पादित नोट्स, आरेख और खतरे"
+    },
     "setAsOwner": "स्वामी के रूप में सेट करें",
     "sourcesCount": "रिपोज़",
     "status": {
@@ -818,7 +1110,7 @@
       "addAsset": "एसेट जोड़ें",
       "addDiagram": "डायग्राम जोड़ें",
       "addDocument": "दस्तावेज़ जोड़ें",
-      "addNote": "नोट जोड़ें",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "एसेट सिस्टम के भीतर मूल्यवान संसाधन हैं जिन्हें सुरक्षा की आवश्यकता है, जैसे डेटा, हार्डवेयर, सॉफ्टवेयर, इन्फ्रास्ट्रक्चर, सेवाएं, या कर्मचारी।",
       "diagramsCardTitle": "TMI में डायग्राम सिस्टम के भीतर डेटा गतिविधि और प्रक्रियाओं के मशीन-पठनीय प्रतिनिधित्व हैं, जो मैन्युअल और स्वचालित दोनों सुरक्षा विश्लेषण को सक्षम करते हैं।",
       "documentsCardTitle": "दस्तावेज़ संदर्भ TMI के बाहर संग्रहीत दस्तावेज़ों के लिंक हैं। प्रासंगिक दस्तावेज़ विश्लेषण किए जाने वाले सिस्टम का वर्णन करते हैं, और सुरक्षा विश्लेषकों और स्वचालित विश्लेषण प्रक्रियाओं दोनों द्वारा उपयोग किए जा सकते हैं।",
@@ -881,10 +1173,90 @@
     },
     "title": "सेवा की शर्तें"
   },
-  "userPreferences": {
-    "administration": {
-      "title": "{{admin.title}}"
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "ईमेल द्वारा खोजें",
+      "searchPlaceholder": "ईमेल पता टाइप करना शुरू करें..."
+    }
+  },
+  "triage": {
+    "bulkActions": "बल्क एक्शन",
+    "changeStatus": "स्थिति बदलें",
+    "columns": {
+      "confidentialTooltip": "गोपनीय प्रस्तुति"
     },
+    "createTm": "{{createThreatModel.title}}",
+    "detail": {
+      "addNote": "नोट जोड़ें",
+      "markdownSupported": "Markdown समर्थित",
+      "noNotes": "अभी तक कोई ट्राइएज नोट नहीं",
+      "noResponses": "कोई प्रतिक्रिया दर्ज नहीं की गई",
+      "noRevisionNotes": "कोई संशोधन नोट नहीं",
+      "note": "नोट",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "नोट की सामग्री दर्ज करें...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "संक्षिप्त नोट शीर्षक",
+      "notes": "नोट्स",
+      "responseDetails": "प्रतिक्रिया विवरण",
+      "reviewedAt": "समीक्षा की गई",
+      "reviewedBy": "समीक्षाकर्ता",
+      "revisionNotesTitle": "संशोधन का अनुरोध किया गया",
+      "statusTimeline": "स्थिति समयरेखा",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "ट्राइएज नोट्स"
+    },
+    "filters": {
+      "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "{{triage.list.allSurveys}}",
+      "clearFilters": "फ़िल्टर साफ़ करें",
+      "confidential": "गोपनीयता",
+      "confidentialOnly": "गोपनीय",
+      "nonConfidential": "गैर-गोपनीय"
+    },
+    "list": {
+      "allSurveys": "सभी सर्वेक्षण",
+      "approve": "स्वीकृत करें",
+      "approveSelected": "चयनित स्वीकृत करें",
+      "createThreatModel": "{{createThreatModel.title}}",
+      "errorLoadingResponses": "प्रतिक्रियाएं लोड करने में विफल",
+      "loadingResponses": "प्रतिक्रियाएं लोड हो रही हैं...",
+      "noResponsesFiltered": "आपके फ़िल्टर से कोई प्रतिक्रिया मेल नहीं खाती",
+      "noResponsesTitle": "कोई प्रतिक्रिया नहीं",
+      "noResponsesToTriage": "छांटने के लिए कोई सर्वेक्षण प्रतिक्रियाएं नहीं हैं",
+      "notSubmitted": "जमा नहीं किया गया",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
+      "searchPlaceholder": "प्रस्तुतकर्ता या सर्वेक्षण के अनुसार खोजें...",
+      "submitted": "जमा किया गया",
+      "submitter": "जमाकर्ता"
+    },
+    "markInReview": "समीक्षा में चिह्नित करें",
+    "markPendingTriage": "लंबित ट्राइएज चिह्नित करें",
+    "noResponses": "ट्राइएज करने के लिए कोई प्रतिक्रिया नहीं",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "नोट की सामग्री दर्ज करें (Markdown समर्थित)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "नया ट्राइएज नोट",
+        "view": "ट्राइएज नोट देखें"
+      }
+    },
+    "queue": "ट्राइएज कतार",
+    "returnToSubmitted": "सबमिट किया गया पर वापस जाएं",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "यह बताने के लिए नोट्स प्रदान करें कि क्या संशोधित करने की आवश्यकता है। सबमिट करने वाला व्यक्ति अपनी प्रतिक्रिया की समीक्षा करते समय इन नोट्स को देखेगा।",
+      "hint": "आवश्यक — वर्णन करें कि कौन से परिवर्तन आवश्यक हैं",
+      "label": "संशोधन नोट्स",
+      "placeholder": "आवश्यक संशोधनों का वर्णन करें...",
+      "title": "संशोधन के लिए वापस करें"
+    },
+    "title": "ट्राइएज",
+    "viewDetails": "विवरण देखें"
+  },
+  "userPreferences": {
     "colorBlindMode": "कलर ब्लाइंड मोड सक्षम करें",
     "credentials": {
       "add": "जोड़ें",
@@ -936,6 +1308,7 @@
     },
     "diagramAnimationEffects": "डायग्राम एडिटर में एनिमेशन प्रभाव सक्षम करें",
     "displayPreferences": "प्रदर्शन प्राथमिकताएं",
+    "hoverShowMetadata": "होवर पर सेल मेटाडेटा दिखाएं",
     "marginSize": {
       "narrow": "संकीर्ण",
       "standard": "मानक",
@@ -948,13 +1321,18 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "रिपोर्ट प्राथमिकताएं",
+    "sections": {
+      "developer": "डेवलपर",
+      "diagramEditor": "डायग्राम एडिटर",
+      "securityReviewer": "सुरक्षा समीक्षक"
+    },
     "showDeveloperTools": "डेवलपर टूल्स दिखाएं",
     "tabs": {
       "credentials": "क्रेडेंशियल",
       "danger": "खतरा",
       "display": "प्रदर्शन",
       "profile": "प्रोफ़ाइल",
-      "reports": "रिपोर्ट"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "थीम",
     "themeMode": {
@@ -963,9 +1341,18 @@
       "light": "लाइट"
     },
     "title": "उपयोगकर्ता प्राथमिकताएं",
+    "transferData": {
+      "confirmMessage": "क्या आप {{email}} को अपने सभी खतरा मॉडल और सर्वेक्षण प्रतिक्रियाएं स्थानांतरित करना सुनिश्चित हैं? आप स्थानांतरित आइटम पर लेखक भूमिका में डाउनग्रेड किए जाएंगे।",
+      "dialogTitle": "मेरा डेटा स्थानांतरित करें",
+      "error": "डेटा स्थानांतरित करने में विफल। कृपया पुनः प्रयास करें।",
+      "hint": "सभी आपके खतरा मॉडल और सर्वेक्षण प्रतिक्रियाओं का स्वामित्व दूसरे उपयोगकर्ता को स्थानांतरित करता है। आप स्थानांतरित आइटम पर लेखक भूमिका में डाउनग्रेड किए जाएंगे।",
+      "success": "{{tmCount}} खतरा मॉडल और {{responseCount}} सर्वेक्षण प्रतिक्रियाएं स्थानांतरित की गईं।",
+      "title": "मेरा डेटा दूसरे उपयोगकर्ता को स्थानांतरित करें"
+    },
     "userProfile": {
       "currentRole": "वर्तमान थ्रेट मॉडल भूमिका",
-      "groups": "समूह",
+      "groups": "{{common.groups}}",
+      "jwtGroups": "JWT समूह",
       "provider": "{{common.identityProvider}}",
       "providerId": "प्रदाता ID",
       "title": "उपयोगकर्ता प्रोफ़ाइल",

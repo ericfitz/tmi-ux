@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Node } from '@antv/x6';
+import { Cell, Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { Metadata } from '../../domain/value-objects/metadata';
 
 /**
  * Interface for tooltip content data
@@ -167,6 +168,28 @@ export class UiTooltipService {
     } catch (error) {
       this.logger.error('[TooltipService] Error getting node tooltip content', error);
       return `Node: ${node.id}`;
+    }
+  }
+
+  /**
+   * Get tooltip content for a cell's metadata.
+   * Returns null if the cell has no metadata, suppressing the tooltip.
+   */
+  getCellMetadataTooltipContent(cell: Cell): string | null {
+    if (!cell) {
+      return null;
+    }
+
+    try {
+      const metadata: Metadata[] = cell.getData()?._metadata || [];
+      if (!metadata.length) {
+        return null;
+      }
+
+      return metadata.map(entry => `${entry.key} : ${entry.value}`).join('\n');
+    } catch (error) {
+      this.logger.error('[TooltipService] Error getting cell metadata tooltip content', error);
+      return null;
     }
   }
 

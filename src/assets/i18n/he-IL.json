@@ -76,26 +76,6 @@
       "subtitle": "הגדר תוספים להרחבת פונקציונליות TMI",
       "title": "ניהול תוספים"
     },
-    "administrators": {
-      "addButton": "{{admin.administrators.addDialog.save}}",
-      "addDialog": {
-        "provider": "{{common.provider}}",
-        "providerRequired": "ספק נדרש",
-        "save": "הוסף מנהל",
-        "subject": "נושא",
-        "subjectHint": "הזן דוא\"ל משתמש או שם קבוצה",
-        "subjectPlaceholder": "דוא\"ל משתמש או שם קבוצה",
-        "subjectRequired": "נושא נדרש",
-        "title": "{{admin.administrators.addDialog.save}}"
-      },
-      "filterLabel": "סנן מנהלים",
-      "filterPlaceholder": "חפש לפי דוא\"ל או שם קבוצה",
-      "listTitle": "מנהלי מערכת",
-      "noAdministrators": "לא נמצאו מנהלים",
-      "removeTooltip": "הסר הרשאות מנהל",
-      "subtitle": "שלוט מי יש לו גישה ניהולית למערכת",
-      "title": "ניהול מנהלים"
-    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -114,6 +94,11 @@
         "save": "צור קבוצה",
         "title": "הוסף קבוצה"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "שימוש"
+      },
       "deleteTooltip": "מחק קבוצה",
       "filterLabel": "סנן קבוצות",
       "filterPlaceholder": "חפש לפי שם קבוצה או ספק",
@@ -124,8 +109,10 @@
         "noMembers": "אין חברים בקבוצה זו",
         "removeTooltip": "הסר מהקבוצה",
         "searchHint": "הקלד לפחות 2 תווים לחיפוש",
-        "searchPlaceholder": "התחל להקליד כתובת דוא\"ל...",
-        "searchUser": "חפש משתמש לפי דוא\"ל"
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
+        "searchUser": "חפש משתמש לפי דוא\"ל",
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "לא נמצאו קבוצות",
       "subtitle": "צפה ונהל קבוצות מערכת",
@@ -143,6 +130,12 @@
         "title": "הוסף מכסות מותאמות אישית",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "ברירת מחדל",
       "deleteTooltip": "הסר מכסה מותאמת אישית (חזור לברירות מחדל)",
       "eventsPerMinute": "אירועים לדקה",
       "filterLabel": "סנן מכסות",
@@ -164,10 +157,6 @@
         "description": "התקן והגדר תוספי יישום",
         "title": "{{admin.addons.title}}"
       },
-      "administrators": {
-        "description": "הענק או בטל הרשאות מנהל",
-        "title": "{{admin.administrators.title}}"
-      },
       "groups": {
         "description": "הגדר קבוצות משתמשים וחברויות",
         "title": "{{admin.groups.title}}"
@@ -175,6 +164,14 @@
       "quotas": {
         "description": "הגדר מכסות ומגבלות משאבים",
         "title": "{{admin.quotas.title}}"
+      },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
+      "surveys": {
+        "description": "יצירה וניהול של סקרים",
+        "title": "ניהול סקרים"
       },
       "users": {
         "description": "צפה ונהל חשבונות משתמשים",
@@ -185,16 +182,83 @@
         "title": "{{admin.webhooks.title}}"
       }
     },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "תיאור אופציונלי של הגדרה זו",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "אותיות קטנות עם נקודות וקווים תחתיים (למשל, rate_limit.max_rpm)",
+        "keyInvalid": "חייב להתחיל באות קטנה, להשתמש רק באותיות קטנות, מספרים, נקודות וקווים תחתיים",
+        "keyRequired": "מפתח נדרש",
+        "save": "צור הגדרה",
+        "title": "הוסף הגדרה",
+        "type": "{{common.type}}",
+        "typeRequired": "סוג נדרש",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "ערך נדרש"
+      },
+      "cancelTooltip": "בטל עריכה",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "האם אתה בטוח שברצונך למחוק את ההגדרה \"{{key}}\"?",
+      "deleteTooltip": "מחק הגדרה",
+      "editTooltip": "ערוך הגדרה",
+      "filterLabel": "סנן",
+      "filterPlaceholder": "סנן לפי מפתח, ערך או תיאור",
+      "listTitle": "הגדרות מערכת",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "ייבא הגדרות מקובץ התצורה של השרת או ממשתני הסביבה למסד הנתונים.",
+        "migrate": "העבר",
+        "overwriteLabel": "החלף הגדרות קיימות",
+        "overwriteWarning": "אזהרה: זה יחליף כל הגדרה במסד הנתונים שהותאמה אישית בעבר.",
+        "resultMigrated": "{{count}} הגדרות הועברו",
+        "resultSkipped": "{{count}} הגדרות דולגו",
+        "title": "העבר הגדרות"
+      },
+      "noSettings": "לא נמצאו הגדרות",
+      "saveTooltip": "שמור שינויים",
+      "subtitle": "צפה ונהל הגדרות תצורת מערכת",
+      "title": "ניהול הגדרות",
+      "types": {
+        "bool": "בוליאני",
+        "int": "מספר שלם",
+        "json": "JSON",
+        "string": "מחרוזת"
+      }
+    },
     "subtitle": "נהל הגדרות מערכת ותצורות",
     "title": "ניהול",
     "users": {
+      "administrator": "מנהל מערכת",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "מחק חשבון משתמש",
       "filterLabel": "סנן משתמשים",
       "filterPlaceholder": "חפש לפי דוא\"ל, שם, ספק או שם קבוצה",
+      "lastLogin": "כניסה אחרונה",
       "listTitle": "משתמשים",
+      "never": "אף פעם",
       "noUsers": "לא נמצאו משתמשים",
       "subtitle": "צפה ונהל משתמשי מערכת",
-      "title": "ניהול משתמשים"
+      "title": "ניהול משתמשים",
+      "transferOwnership": {
+        "confirm": "האם אתה בטוח שברצונך להעביר את כל הנתונים מ-{{source}} ל-{{target}}?",
+        "dialogTitle": "העברת נתוני משתמש",
+        "error": "ההעברה של הבעלות נכשלה. אנא נסה שוב.",
+        "success": "{{userPreferences.transferData.success}}",
+        "tooltip": "העבר בעלות"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -231,13 +295,112 @@
       "noWebhooks": "לא נמצאו webhooks",
       "secret": "סוד HMAC",
       "status": {
-        "active": "פעיל",
+        "active": "{{common.active}}",
         "pending_delete": "ממתין למחיקה",
         "pending_verification": "ממתין לאימות"
       },
       "subtitle": "הגדר מנויי webhook להודעות אירועים",
       "title": "ניהול Webhooks"
     }
+  },
+  "adminSurveys": {
+    "cloneSuffix": "(עותק)",
+    "createDialog": {
+      "nameLabel": "שם הסקר",
+      "namePlaceholder": "הזן שם סקר",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "יצירת סקר",
+      "versionHint": "מזהה גרסה בפורמט חופשי",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "לדוגמה: 1, v2-pilot, 2024-Q1",
+      "versionRequired": "גרסה נדרשת"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "editTemplate": "עריכת סקר",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "לא נמצאו סקרים תואמים",
+    "noTemplatesMessage": "צור את הסקר הראשון שלך כדי להתחיל.",
+    "noTemplatesTitle": "אין סקרים עדיין",
+    "pageTitle": "{{admin.sections.surveys.title}}",
+    "searchByName": "חיפוש לפי שם...",
+    "searchTemplates": "חיפוש סקרים",
+    "surveyDetails": "פרטי סקר",
+    "templateBuilder": {
+      "addPage": "הוסף עמוד",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
+      "choicesPerLine": "אפשרויות (אחת בכל שורה)",
+      "conditionalLogic": "היגיון מותנה",
+      "conditionalLogicHelp": "תיעוד היגיון מותנה של SurveyJS",
+      "deletePage": "מחק עמוד",
+      "deleteQuestion": "מחק שאלה",
+      "enableIf": "הפעל אם",
+      "enableIfHint": "לדוגמה, {questionName} = 'value'",
+      "enterSurveyDescription": "הזן תיאור סקר",
+      "enterSurveyTitle": "הזן כותרת סקר",
+      "failedToLoadTemplate": "טעינת הסקר נכשלה",
+      "failedToSaveTemplate": "שמירת הסקר נכשלה",
+      "loadingTemplate": "טוען סקר...",
+      "mapsToTmField": "מתאים לשדה מודל איום",
+      "metadataKey": "מפתח מטא-נתונים",
+      "metadataKeyHint": "שם מפתח עבור ערך המטא-נתונים",
+      "nameId": "שם (ID)",
+      "nameIdHint": "מזהה ייחודי לשאלה זו",
+      "nextPage": "{{pagination.nextPage}}",
+      "noQuestionsHint": "לחץ על סוג שאלה מהלוח כדי להוסיף אותו",
+      "noQuestionsYet": "אין עדיין שאלות",
+      "pageIndicator": "עמוד {{current}} מתוך {{total}}",
+      "previousPage": "{{pagination.previousPage}}",
+      "questionProperties": "מאפייני שאלה",
+      "questionTypeDescriptions": {
+        "boolean": "מתג בוליאני",
+        "checkbox": "בחירה מרובה",
+        "comment": "תיבת טקסט רב-שורתי",
+        "dropdown": "בחירה מתפריט נפתח",
+        "panel": "קבוצת שאלות בפאנל",
+        "paneldynamic": "קבוצת פאנל חוזרת",
+        "radiogroup": "בחירה יחידה מאפשרויות",
+        "text": "קלט טקסט בשורה יחידה"
+      },
+      "questionTypeLabels": {
+        "boolean": "כן/לא",
+        "checkbox": "תיבת סימון",
+        "comment": "רב-שורתי",
+        "dropdown": "תפריט נפתח",
+        "panel": "פאנל",
+        "paneldynamic": "פאנל דינמי",
+        "radiogroup": "קבוצת רדיו",
+        "text": "{{editor.nodeLabels.textbox}}"
+      },
+      "questionTypes": "סוגי שאלות",
+      "questions": "שאלות",
+      "required": "חובה",
+      "requiredIf": "נדרש אם",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
+      "selectQuestionHint": "בחר שאלה כדי לערוך את מאפייניה",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
+      "tmFieldLabels": {
+        "assetDescription": "תיאור נכס",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
+        "description": "תיאור מודל איום",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
+        "issueUri": "URL למעקב אחר בעיות",
+        "metadataKey": "מטא-נתונים מותאמים אישית",
+        "name": "שם מודל איום",
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
+      },
+      "tmFieldMapping": "מיפוי שדה מודל איום",
+      "tmFieldMappingHint": "קשר תשובה זו לשדה מודל איום",
+      "unsavedChanges": "שינויים שלא נשמרו",
+      "visibleIf": "גלוי אם",
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
+    },
+    "templateCount": "{{count}} סקר",
+    "templateCountPlural": "{{count}} סקרים"
   },
   "assetEditor": {
     "chipPlaceholder": "הזן ערך ולחץ Enter",
@@ -300,15 +463,22 @@
   "common": {
     "about": "אודות",
     "actions": "פעולות",
+    "activate": "הפעלה",
+    "active": "פעיל",
     "addMetadata": "הוסף מטא-נתונים",
     "addThreat": "הוסף איום",
     "addons": "תוספים",
+    "all": "הכל",
+    "allStatuses": "כל הסטטוסים",
+    "archive": "ארכיון",
     "back": "חזרה",
     "cancel": "ביטול",
     "cellId": "מזהה תא",
     "classification": "סיווג",
     "clear": "נקה",
+    "clone": "שכפול",
     "close": "סגור",
+    "confirm": "אישור",
     "confirmDelete": "האם אתה בטוח שברצונך למחוק את {{item}} \"{{name}}\"? פעולה זו אינה ניתנת לביטול.",
     "confirmDeleteMessage": "האם אתה בטוח שברצונך למחוק את {{objectType}} \"{{name}}\"?",
     "copy": "העתק",
@@ -317,6 +487,7 @@
     "created": "נוצר",
     "criticality": "קריטיות",
     "cut": "גזור",
+    "deactivate": "השבתה",
     "delete": "מחק",
     "deleteConfirm": "מחק מודל איומים",
     "deleteWarningConfirmationField": "אישור מחיקה",
@@ -329,18 +500,23 @@
     "deleteWarningTypeConfirmation": "לאישור, הקלד \"{{confirmValue}}\" בשדה למטה.",
     "description": "תיאור",
     "diagramId": "מזהה דיאגרמה",
+    "dismiss": "סגור",
     "done": "בוצע",
     "download": "הורדה",
     "edit": "ערוך",
     "editThreat": "ערוך איום",
+    "email": "דוא\"ל",
     "emailLabel": "כתובת דוא\"ל",
+    "error": "שגיאה",
     "fonts": "גופנים",
+    "groups": "קבוצות",
     "id": "מזהה",
     "identityProvider": "ספק זהות",
     "issueUri": "כתובת URL של הבעיה",
     "language": "{{language}}",
     "lastModified": "שונה לאחרונה",
     "lastUpdated": "עודכן לאחרונה",
+    "loading": "טוען...",
     "manage": "נהל",
     "manageMetadata": "נהל מטא-נתונים",
     "manageThreats": "נהל איומים",
@@ -350,9 +526,11 @@
     "mitigated": "הופחת",
     "mitigation": "הפחתה",
     "mitigationPlaceholder": "תאר את ההפחתות המומלצות או המתוכננות לאיום זה",
+    "moreActions": "פעולות נוספות",
     "name": "שם",
     "noAddonsAvailable": "אין תוספים זמינים",
     "noDataAvailable": "אין נתונים זמינים",
+    "noMatchingResults": "אין תוצאות התואמות למסננים שלך.",
     "noMetadata": "אין מטא-נתונים זמינים",
     "noThreats": "אין איומים זמינים",
     "none": "אין",
@@ -360,17 +538,25 @@
       "asset": "נכס",
       "assets": "נכסים",
       "cell": "תא",
+      "cells": "תאים",
       "diagram": "דיאגרמה",
+      "diagrams": "דיאגרמות",
       "document": "מסמך",
       "documents": "מסמכים",
       "metadata": "{{common.metadata}}",
       "note": "הערה",
       "notes": "הערות",
       "report": "דוח",
+      "reports": "דוחות",
       "repositories": "מאגרים",
       "repository": "מאגר",
+      "survey": "סקר",
+      "surveyResponse": "תגובת סקר",
+      "surveyResponses": "תגובות סקר",
+      "surveys": "סקרים",
       "threat": "איום",
       "threatModel": "מודל איומים",
+      "threatModels": "מודלי איום",
       "threats": "איומים"
     },
     "ok": "אישור",
@@ -382,6 +568,7 @@
     "provider": "ספק",
     "readOnly": "קריאה בלבד",
     "readOnlyTooltip": "יש לך גישה לקריאה בלבד למודל איומים זה. פנה לבעלים לבקשת הרשאות עריכה.",
+    "retry": "נסה שוב",
     "roles": {
       "owner": "בעלים",
       "reader": "קורא",
@@ -391,6 +578,8 @@
     "saveAndClose": "שמור וסגור",
     "savedSuccessfully": "נשמר בהצלחה",
     "score": "ציון",
+    "search": "חיפוש",
+    "selected": "{{count}} נבחרו",
     "sensitivity": "רגישות",
     "sessionRoles": {
       "host": "מארח",
@@ -403,11 +592,15 @@
       "group": "קבוצה",
       "user": "משתמש"
     },
+    "template": "תבנית",
     "threatDescription": "תיאור האיום",
     "threatDescriptionPlaceholder": "תאר את האיום בפירוט",
     "threatName": "שם האיום",
     "threatType": "סוג איום",
+    "title": "כותרת",
+    "tryAdjustingFilters": "נסה להתאים את המסננים שלך.",
     "type": "סוג",
+    "unarchive": "ביטול ארכיון",
     "unsavedChangesWarning": "יש לך שינויים שלא נשמרו. האם אתה בטוח שברצונך לסגור?",
     "userId": "מזהה משתמש",
     "validation": {
@@ -416,6 +609,7 @@
       "nameRequired": "השם נדרש",
       "required": "שדה זה נדרש"
     },
+    "version": "גרסה",
     "view": "צפה",
     "viewMetadata": "צפה במטא-נתונים",
     "viewPermissions": "צפה בהרשאות",
@@ -431,6 +625,15 @@
     "moveToFront": "הזז לקדמה",
     "noDataAssetsAvailable": "אין נכסי נתונים זמינים",
     "showObject": "הצג אובייקט"
+  },
+  "createThreatModel": {
+    "confidentialHint": "מודלי איום סודיים אינם משותפים באופן אוטומטי עם קבוצת סוקרי האבטחה. לא ניתן לשנות הגדרה זו לאחר היצירה.",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
+    "descriptionPlaceholder": "תאר את המטרה והיקף מודל איום זה",
+    "framework": "מסגרת",
+    "namePlaceholder": "הזן שם מודל איום",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "צור מודל איום"
   },
   "dashboard": {
     "clearFilter": "נקה מסנן",
@@ -466,7 +669,7 @@
     "common": {
       "affectedCells": "תאים מושפעים",
       "cellIds": "מזהי תאים",
-      "cells": "תאים",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "העתק JSON מלא"
     },
     "graphDataDialog": {
@@ -548,9 +751,18 @@
   "errors": {
     "validationError": "שגיאת אימות"
   },
+  "footer": {
+    "support": "תמיכה"
+  },
   "getStarted": "התחל",
-  "homeDescription": "כלי מידול איומים שיתופי שנועד לעזור לצוותים לזהות, לנתח ולתעד איומי אבטחה במערכות שלהם. צור, שתף וערוך בשיתוף פעולה מודלי איומים ודיאגרמות לשיפור אבטחת היישום שלך.",
+  "homeDescription": "TMI הוא כלי לניהול ושיפור תהליכי סקירת אבטחה ומודלים של איומים עבור הארגון שלך. הוא מניע את זרימת העבודה של סקירת אבטחה, מארגן את המידע לסקירות אבטחה, מאפשר בניית תרשימי זרימת נתונים באופן שיתופי, ומאפשר חיבור של אוטומציה כדי להפחית עבודה חוזרת בתהליך הסקירה ולנתח איומי אבטחה.",
   "homeWelcomeTitle": "ברוכים הבאים ל-TMI: מידול איומים משופר",
+  "intake": {
+    "fill": {
+      "saveAndExit": "שמור וצא",
+      "submitResponses": "שלח תשובות"
+    }
+  },
   "login": {
     "chooseMethod": "בחר את שיטת הכניסה שלך:",
     "explanation": "התחבר עם החשבון הקיים שלך מספק זהות מהימן. זה מבטל את הצורך בסיסמה נפרדת, מייעל את החוויה שלך תוך שמירה על אבטחתך. אנחנו לעולם לא שומרים או מנהלים סיסמאות - האישורים שלך נשארים אצל הספק שלך ולא יכולים להיפרץ דרכנו.",
@@ -571,10 +783,13 @@
     "unexpectedError": "אירעה שגיאה בלתי צפויה במהלך OAuth."
   },
   "navbar": {
+    "admin": "ניהול",
     "appTitle": "TMI: מידול איומים משופר",
     "copyUserEmail": "העתק דוא\"ל משתמש ללוח",
+    "dashboard": "לוח בקרה",
     "feedback": "דווח על באג, בקש תכונה או ספק משוב",
     "home": "דף הבית",
+    "intake": "קליטה",
     "logoutButton": "התנתק",
     "serverStatus": {
       "noServerConfigured": "לא הוגדר שרת",
@@ -666,6 +881,77 @@
     },
     "title": "ההפעלה עומדת לפוג בקרוב"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "השמירה נכשלה",
+      "saved": "נשמר",
+      "saving": "שומר..."
+    },
+    "browse": "עיון בסקרים",
+    "confidentialDialog": {
+      "description": "האם הגשה זו צריכה להיות מסומנת כסודית? הגשות סודיות אינן משותפות באופן אוטומטי עם קבוצת סוקרי האבטחה. לא ניתן לשנות הגדרה זו לאחר יצירת התגובה.",
+      "no": "לא",
+      "title": "הגשה סודית",
+      "yes": "כן, סמן כסודי"
+    },
+    "confirmation": {
+      "backToSurveys": "חזרה לסקרים",
+      "message": "הסקר שלך נשלח בהצלחה.",
+      "title": "הסקר נשלח",
+      "viewResponses": "הצג את התגובות שלי"
+    },
+    "continueDraft": "המשך טיוטה",
+    "fill": {
+      "submitConfirm": "האם אתה בטוח שברצונך לשלוח? לא תוכל לערוך את התגובות שלך לאחר השליחה.",
+      "title": "מילוי סקר"
+    },
+    "list": {
+      "deleteDraft": "מחיקת טיוטה",
+      "draftStarted": "טיוטה התחילה {{time}}",
+      "errorLoadingSurveys": "טעינת הסקרים נכשלה",
+      "lastModified": "שונה לאחרונה {{time}}",
+      "loadingSurveys": "טוען סקרים...",
+      "noSurveysMessage": "אין סקרים פעילים כרגע. בדוק שוב מאוחר יותר.",
+      "noSurveysTitle": "אין סקרים זמינים",
+      "pageDescription": "בחר את סוג הסקירה המתאים מהרשימה הבאה, ולאחר מכן ענה על השאלות המוצגות כדי לספק לצוות סקירת האבטחה את המידע שהם צריכים לביצוע הסקירה.",
+      "pageTitle": "בקש סקירת אבטחה",
+      "updated": "עודכן",
+      "yourDrafts": "הטיוטות שלך"
+    },
+    "myResponses": "התגובות שלי",
+    "noMatchingResponses": "אין תגובות תואמות",
+    "noMatchingResponsesMessage": "אין תגובות התואמות את המסננים שנבחרו.",
+    "noResponses": "עדיין לא שלחת תגובות לסקר",
+    "noSurveys": "אין סקרים זמינים",
+    "responses": {
+      "continueEditing": "המשך בעריכה",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
+      "filterByStatus": "סנן לפי סטטוס",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
+      "noResponsesMessage": "לא השלמת אף סקר. התחל אחד מדף הסקרים.",
+      "noResponsesTitle": "אין תגובות עדיין",
+      "pageTitle": "התגובות שלי לסקרים",
+      "responseCount": "תגובה {{count}}",
+      "responseCountPlural": "{{count}} תגובות"
+    },
+    "saveDraft": "שמור טיוטה",
+    "startNew": "התחל סקר",
+    "status": {
+      "draft": "טיוטה",
+      "needsRevision": "דורש תיקון",
+      "readyForReview": "מוכן לבדיקה",
+      "reviewCreated": "בדיקה נוצרה",
+      "submitted": "{{triage.list.submitted}}"
+    },
+    "submitSurvey": "שלח סקר",
+    "templateStatus": {
+      "active": "{{common.active}}",
+      "archived": "בארכיון",
+      "inactive": "לא פעיל"
+    },
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "הצג תגובה"
+  },
   "threatEditor": {
     "createNewThreat": "צור איום חדש",
     "notAssociatedWithAsset": "לא משויך לנכס",
@@ -729,7 +1015,7 @@
     "createNewRepository": "הוסף הפניה למאגר",
     "created": "{{common.created}}",
     "createdBy": "נוצר על ידי",
-    "dashboard": "לוח בקרה",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "דיאגרמת זרימת נתונים",
     "deleteWarningPermanent": "פעולה זו אינה ניתנת לביטול ותמחק לצמיתות את כל הדיאגרמות, האיומים והמטא-נתונים המשויכים.",
     "descriptionPlaceholder": "תאר את המטרה והיקף מודל האיומים הזה",
@@ -737,7 +1023,7 @@
     "diagramName": "שם הדיאגרמה",
     "diagramPreview": "תצוגה מקדימה של הדיאגרמה",
     "diagramType": "סוג דיאגרמה",
-    "diagrams": "דיאגרמות",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "תאר את מטרת המסמך או תוכנו",
     "documentEditor": {
       "title": {
@@ -762,7 +1048,7 @@
     "noPermissions": "לא הוגדרו הרשאות",
     "noRepositories": "טרם נוספו מאגרים",
     "noThreats": "טרם נוספו איומים",
-    "pageTitle": "מודלי איומים",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "תפקיד",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -786,6 +1072,12 @@
     "repositorySubPathHint": "נתיב אופציונלי בתוך המאגר",
     "repositoryType": "סוג מאגר",
     "repositoryUri": "כתובת URL של המאגר",
+    "sections": {
+      "inputs": "קלטים",
+      "inputsDescription": "נכסים, מסמכים ומאגרי קוד מקור המתארים את המערכת הנתונה לניתוח",
+      "outputs": "פלטים",
+      "outputsDescription": "הערות, דיאגרמות ואיומים המיוצרים במהלך ניתוח אבטחה"
+    },
     "setAsOwner": "הגדר כבעלים",
     "sourcesCount": "מאגרים",
     "status": {
@@ -818,7 +1110,7 @@
       "addAsset": "הוסף נכס",
       "addDiagram": "הוסף דיאגרמה",
       "addDocument": "הוסף מסמך",
-      "addNote": "הוסף הערה",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "נכסים הם משאבים בעלי ערך בתוך המערכת הדורשים הגנה, כגון נתונים, חומרה, תוכנה, תשתית, שירותים או כוח אדם.",
       "diagramsCardTitle": "דיאגרמות ב-TMI הן ייצוגים קריאים למכונה של תנועת נתונים ותהליכים בתוך מערכת, המאפשרים ניתוח אבטחה ידני ואוטומטי כאחד.",
       "documentsCardTitle": "הפניות למסמכים הן קישורים למסמכים המאוחסנים מחוץ ל-TMI. מסמכים רלוונטיים מתארים את המערכת לניתוח, וניתן להשתמש בהם הן על ידי מנתחי אבטחה והן על ידי תהליכי ניתוח אוטומטיים.",
@@ -881,10 +1173,90 @@
     },
     "title": "תנאי שימוש"
   },
-  "userPreferences": {
-    "administration": {
-      "title": "{{admin.title}}"
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "חיפוש לפי דוא\"ל",
+      "searchPlaceholder": "התחל להקליד כתובת דוא\"ל..."
+    }
+  },
+  "triage": {
+    "bulkActions": "פעולות מרובות",
+    "changeStatus": "שנה סטטוס",
+    "columns": {
+      "confidentialTooltip": "הגשה סודית"
     },
+    "createTm": "{{createThreatModel.title}}",
+    "detail": {
+      "addNote": "הוסף הערה",
+      "markdownSupported": "תומך ב-Markdown",
+      "noNotes": "אין עדיין הערות טריאז'",
+      "noResponses": "לא נרשמו תגובות",
+      "noRevisionNotes": "אין הערות תיקון",
+      "note": "הערה",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "הזן תוכן הערה...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "כותרת הערה קצרה",
+      "notes": "הערות",
+      "responseDetails": "פרטי תגובה",
+      "reviewedAt": "נבדק",
+      "reviewedBy": "נבדק על ידי",
+      "revisionNotesTitle": "התבקש תיקון",
+      "statusTimeline": "ציר זמן סטטוס",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "הערות טריאז'"
+    },
+    "filters": {
+      "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "{{triage.list.allSurveys}}",
+      "clearFilters": "נקה מסננים",
+      "confidential": "סודיות",
+      "confidentialOnly": "סודי",
+      "nonConfidential": "לא סודי"
+    },
+    "list": {
+      "allSurveys": "כל הסקרים",
+      "approve": "אישור",
+      "approveSelected": "אישור הנבחרים",
+      "createThreatModel": "{{createThreatModel.title}}",
+      "errorLoadingResponses": "טעינת התגובות נכשלה",
+      "loadingResponses": "טוען תגובות...",
+      "noResponsesFiltered": "אין תגובות התואמות למסננים שלך",
+      "noResponsesTitle": "אין תגובות",
+      "noResponsesToTriage": "אין תגובות סקר למיון",
+      "notSubmitted": "לא הוגש",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
+      "searchPlaceholder": "חיפוש לפי מגיש או סקר...",
+      "submitted": "הוגש",
+      "submitter": "מגיש"
+    },
+    "markInReview": "סמן בבדיקה",
+    "markPendingTriage": "סמן ממתין לטריאז'",
+    "noResponses": "אין תגובות לטריאז'",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "הזן תוכן הערה (תומך ב-Markdown)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "הערת טריאז' חדשה",
+        "view": "צפה בהערת טריאז'"
+      }
+    },
+    "queue": "תור טריאז'",
+    "returnToSubmitted": "החזר לנשלח",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "ספק הערות המסבירות מה צריך לתקן. המגיש יראה הערות אלה כשהוא יבדוק את תשובתו.",
+      "hint": "נדרש — תאר אילו שינויים נחוצים",
+      "label": "הערות תיקון",
+      "placeholder": "תאר את התיקונים הנדרשים...",
+      "title": "החזר לתיקון"
+    },
+    "title": "טריאז'",
+    "viewDetails": "הצג פרטים"
+  },
+  "userPreferences": {
     "colorBlindMode": "הפעל מצב עיוורון צבעים",
     "credentials": {
       "add": "הוסף",
@@ -936,6 +1308,7 @@
     },
     "diagramAnimationEffects": "הפעל אפקטי אנימציה בעורך הדיאגרמות",
     "displayPreferences": "העדפות תצוגה",
+    "hoverShowMetadata": "הצג מטא-נתוני תא בריחוף",
     "marginSize": {
       "narrow": "צרים",
       "standard": "סטנדרטיים",
@@ -948,13 +1321,18 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "העדפות דוחות",
+    "sections": {
+      "developer": "מפתח",
+      "diagramEditor": "עורך דיאגרמות",
+      "securityReviewer": "סוקר אבטחה"
+    },
     "showDeveloperTools": "הצג כלי פיתוח",
     "tabs": {
       "credentials": "אישורים",
       "danger": "סכנה",
       "display": "תצוגה",
       "profile": "פרופיל",
-      "reports": "דוחות"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "ערכת נושא",
     "themeMode": {
@@ -963,9 +1341,18 @@
       "light": "בהיר"
     },
     "title": "העדפות משתמש",
+    "transferData": {
+      "confirmMessage": "האם אתה בטוח שברצונך להעביר את כל מודלי האיומים ותגובות הסקר שלך ל-{{email}}? תיבחר כותב בפריטים שהועברו.",
+      "dialogTitle": "העברת הנתונים שלי",
+      "error": "ההעברה נכשלה. אנא נסה שוב.",
+      "hint": "העברת בעלות של כל מודלי האיומים ותגובות הסקר שלך למשתמש אחר. תיבחר כותב בפריטים שהועברו.",
+      "success": "הועברו {{tmCount}} מודלי איום ו-{{responseCount}} תגובות סקר.",
+      "title": "העברת הנתונים שלי למשתמש אחר"
+    },
     "userProfile": {
       "currentRole": "תפקיד נוכחי במודל איומים",
-      "groups": "קבוצות",
+      "groups": "{{common.groups}}",
+      "jwtGroups": "קבוצות JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "מזהה ספק",
       "title": "פרופיל משתמש",

@@ -9,8 +9,6 @@ import { DFD_STYLING } from '../../constants/styling-constants';
 export interface NodeAttrs {
   body?: Record<string, unknown>;
   text?: Record<string, unknown>;
-  topLine?: Record<string, unknown>;
-  bottomLine?: Record<string, unknown>;
 }
 
 /**

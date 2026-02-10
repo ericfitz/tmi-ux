@@ -29,9 +29,6 @@
 
   .close-button {
     margin-left: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 }
 
@@ -50,13 +47,6 @@
       align-items: center;
     }
   }
-}
-
-// Action button icons centering - placed before higher specificity selectors
-.groups-table .action-buttons button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .groups-card {

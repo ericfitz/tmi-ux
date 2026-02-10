@@ -1,9 +1,32 @@
 <footer class="footer">
   <div class="footer-content">
+    @if (dataClassification$ | async; as classification) {
+      <div class="data-classification">{{ classification }}</div>
+    }
     <div class="footer-links">
-      <a routerLink="/about" [transloco]="'common.about'">About</a>
-      <a routerLink="/privacy" [transloco]="'privacy.title'">Privacy Policy</a>
-      <a routerLink="/tos" [transloco]="'tos.title'">Terms of Service</a>
+      @if (organizationName$ | async; as orgName) {
+        @if (organizationUrl$ | async; as orgUrl) {
+          <a [href]="orgUrl" target="_blank" rel="noopener noreferrer">{{ orgName }}</a>
+        } @else {
+          <span class="org-name">{{ orgName }}</span>
+        }
+      }
+      @if (showAboutLink) {
+        <a routerLink="/about" [transloco]="'common.about'">About</a>
+      }
+      @if (showPrivacyTosLinks) {
+        <a routerLink="/privacy" [transloco]="'privacy.title'">Privacy Policy</a>
+        <a routerLink="/tos" [transloco]="'tos.title'">Terms of Service</a>
+      }
+      @if (supportUrl$ | async; as supportUrl) {
+        <a
+          [href]="supportUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          [transloco]="'footer.support'"
+          >Support</a
+        >
+      }
     </div>
   </div>
 </footer>

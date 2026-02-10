@@ -1,0 +1,61 @@
+mat-dialog-actions {
+  padding: 16px 24px;
+  margin: 0;
+
+  button {
+    margin-left: 8px;
+
+    [dir='rtl'] & {
+      margin-left: 0;
+      margin-right: 8px;
+    }
+
+    &:first-child {
+      margin-left: 0;
+
+      [dir='rtl'] & {
+        margin-right: 0;
+      }
+    }
+
+    mat-icon {
+      margin-right: 4px;
+
+      [dir='rtl'] & {
+        margin-right: 0;
+        margin-left: 4px;
+      }
+    }
+  }
+}
+
+.revision-dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 20px 24px;
+
+  .title-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.revision-dialog-content {
+  padding: 0 24px 20px;
+  box-sizing: border-box;
+
+  .revision-dialog-description {
+    font-size: 14px;
+    margin-bottom: 20px;
+    color: rgb(0 0 0 / 87%);
+    line-height: 1.5;
+  }
+
+  .revision-notes-field {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

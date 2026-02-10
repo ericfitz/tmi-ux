@@ -19,6 +19,7 @@ import { Routes } from '@angular/router';
 import { adminGuard } from './auth/guards/admin.guard';
 import { authGuard } from './auth/guards/auth.guard';
 import { homeGuard } from './auth/guards/home.guard';
+import { reviewerGuard } from './auth/guards/reviewer.guard';
 
 export const routes: Routes = [
   {
@@ -90,14 +91,6 @@ export const routes: Routes = [
         canActivate: [adminGuard],
       },
       {
-        path: 'administrators',
-        loadComponent: () =>
-          import(
-            /* webpackChunkName: "admin-administrators" */ './pages/admin/administrators/admin-administrators.component'
-          ).then(c => c.AdminAdministratorsComponent),
-        canActivate: [adminGuard],
-      },
-      {
         path: 'users',
         loadComponent: () =>
           import(
@@ -135,12 +128,60 @@ export const routes: Routes = [
             /* webpackChunkName: "admin-addons" */ './pages/admin/addons/admin-addons.component'
           ).then(c => c.AdminAddonsComponent),
       },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-settings" */ './pages/admin/settings/admin-settings.component'
+          ).then(c => c.AdminSettingsComponent),
+        canActivate: [adminGuard],
+      },
+      {
+        path: 'surveys',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-surveys" */ './pages/admin/surveys/admin-surveys.component'
+          ).then(c => c.AdminSurveysComponent),
+        canActivate: [adminGuard],
+      },
+      {
+        path: 'surveys/new',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-survey-builder" */ './pages/admin/surveys/components/template-builder/template-builder.component'
+          ).then(c => c.TemplateBuilderComponent),
+        canActivate: [adminGuard],
+      },
+      {
+        path: 'surveys/:surveyId',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-survey-builder" */ './pages/admin/surveys/components/template-builder/template-builder.component'
+          ).then(c => c.TemplateBuilderComponent),
+        canActivate: [adminGuard],
+      },
     ],
   },
   {
     path: 'tm',
     loadChildren: () => import('./pages/tm/tm.routes').then(m => m.TM_ROUTES),
     canActivate: [authGuard],
+  },
+  {
+    path: 'intake',
+    loadChildren: () =>
+      import(/* webpackChunkName: "intake" */ './pages/surveys/surveys.routes').then(
+        m => m.SURVEY_ROUTES,
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'triage',
+    loadChildren: () =>
+      import(/* webpackChunkName: "triage" */ './pages/triage/triage.routes').then(
+        m => m.TRIAGE_ROUTES,
+      ),
+    canActivate: [authGuard, reviewerGuard],
   },
   {
     path: '**',

@@ -1,0 +1,92 @@
+<div class="response-detail-container">
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading response...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-stroked-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Responses
+      </button>
+    </div>
+  } @else if (response) {
+    <!-- Header -->
+    <div class="detail-header">
+      <div class="header-info">
+        <h1>{{ surveyJson?.title || 'Survey Response' }}</h1>
+        <div class="header-meta">
+          <mat-chip [highlighted]="response.status !== 'draft'">
+            <mat-icon matChipIcon>{{ getStatusInfo(response.status).icon }}</mat-icon>
+            {{ getStatusInfo(response.status).label }}
+          </mat-chip>
+        </div>
+      </div>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="goBack()"
+        [attr.aria-label]="'common.close' | transloco"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Response info card -->
+    <mat-card class="response-info-card">
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Responded By</span>
+            <span class="info-value">
+              <app-user-display [user]="response.owner" />
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Created</span>
+            <span class="info-value">{{ formatDate(response.created_at) }}</span>
+          </div>
+          @if (response.submitted_at) {
+            <div class="info-item">
+              <span class="info-label">Submitted</span>
+              <span class="info-value">{{ formatDate(response.submitted_at) }}</span>
+            </div>
+          }
+          @if (response.reviewed_at) {
+            <div class="info-item">
+              <span class="info-label">Review Started</span>
+              <span class="info-value">{{ formatDate(response.reviewed_at) }}</span>
+            </div>
+          }
+          @if (response.created_threat_model_id) {
+            <div class="info-item">
+              <span class="info-label">Threat Model</span>
+              <a [routerLink]="['/tm', response.created_threat_model_id]" class="info-link">
+                <mat-icon>open_in_new</mat-icon>
+                View Threat Model
+              </a>
+            </div>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Survey responses -->
+    <mat-card class="responses-card">
+      <mat-card-header>
+        <mat-card-title>Survey Responses</mat-card-title>
+        <mat-card-subtitle>Version {{ response.survey_version }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (surveyModel) {
+          <div class="survey-display">
+            <survey [model]="surveyModel"></survey>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

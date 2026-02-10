@@ -1,0 +1,93 @@
+<div class="survey-fill-container">
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading survey...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-stroked-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Surveys
+      </button>
+    </div>
+  } @else if (submitted) {
+    <div class="success-container">
+      <mat-icon class="success-icon">check_circle</mat-icon>
+      <h2>Survey Submitted!</h2>
+      <p>Thank you for completing this survey. Your response has been recorded.</p>
+      <div class="success-actions">
+        <button mat-stroked-button (click)="viewResponse()">
+          <mat-icon>visibility</mat-icon>
+          View Response
+        </button>
+        <button mat-flat-button color="primary" (click)="startAnother()">
+          <mat-icon>add</mat-icon>
+          Start Another Survey
+        </button>
+      </div>
+    </div>
+  } @else {
+    <!-- Survey header with save status -->
+    <div class="survey-header">
+      <div class="survey-title">
+        <h1>{{ surveyJson?.title || 'Survey' }}</h1>
+        @if (surveyJson?.description) {
+          <p class="survey-description">{{ surveyJson?.description }}</p>
+        }
+      </div>
+
+      <div class="save-status">
+        @if (isSaving$ | async) {
+          <mat-spinner diameter="16"></mat-spinner>
+          <span>Saving...</span>
+        } @else if (saveError$ | async) {
+          <mat-icon color="warn">error</mat-icon>
+          <span class="error-text">Save failed</span>
+        } @else if (lastSaved$ | async; as lastSaved) {
+          <mat-icon>cloud_done</mat-icon>
+          <span>Saved at {{ formatTime(lastSaved) }}</span>
+        }
+      </div>
+
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="saveAndExit()"
+        [matTooltip]="'intake.fill.saveAndExit' | transloco"
+        [attr.aria-label]="'intake.fill.saveAndExit' | transloco"
+      >
+        <mat-icon>save</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="saveAndExit()"
+        [attr.aria-label]="'common.close' | transloco"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Survey content -->
+    <div class="survey-content">
+      @if (surveyModel) {
+        <survey [model]="surveyModel"></survey>
+      }
+    </div>
+
+    <!-- Footer with save button -->
+    <div class="survey-footer">
+      <button mat-stroked-button (click)="saveAndExit()">
+        <mat-icon>save</mat-icon>
+        Save &amp; Exit
+      </button>
+
+      @if (submitting) {
+        <mat-spinner diameter="24"></mat-spinner>
+      }
+    </div>
+  }
+</div>

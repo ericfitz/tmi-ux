@@ -5,6 +5,7 @@ import {
   isDevMode,
   ViewChild,
   ChangeDetectorRef,
+  inject,
 } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -32,6 +33,7 @@ import { WebSocketAdapter, WebSocketState } from '../../services/websocket.adapt
 import { DfdCollaborationService } from '../../services/dfd-collaboration.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { environment } from '../../../../environments/environment';
+import { BrandingConfigService } from '../../services/branding-config.service';
 
 import { UserPreferencesDialogComponent } from '../user-preferences-dialog/user-preferences-dialog.component';
 
@@ -49,6 +51,8 @@ import { UserPreferencesDialogComponent } from '../user-preferences-dialog/user-
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
+  isAdmin = false;
+  isSecurityReviewer = false;
   username = '';
   userEmail = '';
   homeLink = '/';
@@ -82,8 +86,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private languageSubscription: Subscription | null = null;
   private serverConnectionSubscription: Subscription | null = null;
   private webSocketConnectionSubscription: Subscription | null = null;
+  private userProfileSubscription: Subscription | null = null;
   private routerSubscription: Subscription | null = null;
   private collaborationSubscription: Subscription | null = null;
+
+  private readonly brandingConfig = inject(BrandingConfigService);
+  readonly logoImageUrl$ = this.brandingConfig.logoImageUrl$;
+  readonly brandingOrgName$ = this.brandingConfig.organizationName$;
 
   constructor(
     private router: Router,
@@ -115,6 +124,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.usernameSubscription = this.authService.username$.subscribe(username => {
       this.username = username;
       this.loadUserEmail();
+    });
+
+    // Subscribe to user profile for role-based nav button states
+    this.userProfileSubscription = this.authService.userProfile$.subscribe(profile => {
+      this.isAdmin = profile?.is_admin === true;
+      this.isSecurityReviewer = profile?.is_security_reviewer === true;
+      this.updateHomeLink();
     });
 
     // Subscribe to language changes
@@ -174,6 +190,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.webSocketConnectionSubscription.unsubscribe();
     }
 
+    if (this.userProfileSubscription) {
+      this.userProfileSubscription.unsubscribe();
+    }
+
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe();
     }
@@ -192,7 +212,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   updateHomeLink(): void {
-    this.homeLink = this.isAuthenticated ? '/dashboard' : '/';
+    this.homeLink = this.isAuthenticated ? this.authService.getLandingPage() : '/';
   }
 
   logout(): void {

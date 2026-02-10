@@ -16,6 +16,8 @@ import { bootstrapApplication } from '@angular/platform-browser';
 
 import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
+import { environment } from './environments/environment';
+import { Environment } from './environments/environment.interface';
 
 // Import Prism for syntax highlighting in markdown code blocks
 import 'prismjs';
@@ -84,6 +86,27 @@ document.addEventListener('DOMContentLoaded', () => {
 // Use a self-executing function to avoid exposing the logger in global scope
 void (async () => {
   try {
+    // In production builds, fetch runtime configuration from the server before
+    // Angular bootstraps. This allows container deployments to override compiled-in
+    // environment values via TMI_* environment variables without rebuilding the image.
+    if (environment.production) {
+      try {
+        const response = await fetch('/config.json');
+        if (response.ok) {
+          const runtimeConfig = (await response.json()) as Partial<Environment>;
+          // Deep-merge securityConfig to preserve defaults for unset sub-properties
+          if (runtimeConfig.securityConfig && environment.securityConfig) {
+            Object.assign(environment.securityConfig, runtimeConfig.securityConfig);
+            delete runtimeConfig.securityConfig;
+          }
+          Object.assign(environment, runtimeConfig);
+        }
+      } catch {
+        // Config fetch failure is non-fatal; compiled-in defaults will be used
+        console.warn('TMI: Failed to fetch runtime config, using compiled defaults');
+      }
+    }
+
     await bootstrapApplication(AppComponent, appConfig);
   } catch (err) {
     // We need to use console.error here since LoggerService isn't available yet

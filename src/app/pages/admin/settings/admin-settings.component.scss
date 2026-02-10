@@ -29,9 +29,6 @@
 
   .close-button {
     margin-left: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 }
 
@@ -52,14 +49,7 @@
   }
 }
 
-// Action button icons centering - placed before higher specificity selectors
-.administrators-table .action-buttons button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.administrators-card {
+.settings-card {
   margin-bottom: 24px;
 
   mat-card-header {
@@ -75,6 +65,8 @@
     }
 
     .header-actions {
+      display: flex;
+      gap: 8px;
       margin-left: auto;
 
       button {
@@ -97,7 +89,7 @@
   padding: 48px 0;
 }
 
-.administrators-table {
+.settings-table {
   width: 100%;
   overflow-x: auto;
 
@@ -114,44 +106,71 @@
   td,
   th {
     padding: 12px 16px;
+    vertical-align: middle;
   }
 
-  .subject-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  .setting-key {
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 500;
+  }
 
-    .subject-name {
-      font-weight: 500;
-      color: var(--theme-text-primary);
+  .setting-value {
+    font-size: 14px;
+    overflow-wrap: break-word;
+  }
+
+  .json-value {
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    max-width: 300px;
+    display: inline-block;
+  }
+
+  .bool-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--theme-text-secondary);
+
+    &.bool-true {
+      color: var(--theme-primary);
     }
+  }
 
-    .subject-identifier {
-      font-size: 14px;
-      color: var(--theme-text-primary);
+  .type-badge {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--theme-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .setting-description {
+    font-size: 13px;
+    color: var(--theme-text-secondary);
+  }
+
+  .setting-input {
+    width: 200px;
+    font-size: 14px;
+
+    &.json-input {
+      width: 300px;
     }
+  }
 
-    .subject-meta {
-      display: flex;
-      gap: 12px;
-      font-size: 11px;
-      color: var(--theme-text-secondary);
-
-      .provider {
-        font-family: monospace;
-      }
-
-      .provider-id {
-        font-family: monospace;
-        opacity: 0.7;
-      }
-    }
+  .json-textarea {
+    font-family: monospace;
+    font-size: 12px;
   }
 
   .action-buttons {
     display: flex;
     gap: 4px;
     align-items: center;
+    justify-content: flex-end;
   }
 }
 
@@ -175,24 +194,24 @@
   }
 }
 
-.total-count {
-  padding: 16px;
-  text-align: right;
-  color: var(--theme-text-secondary);
-  font-size: 14px;
-  border-top: 1px solid var(--theme-divider);
-}
-
 @media (width <= 1200px) {
   .admin-page-container {
     max-width: 100%;
   }
 
-  .administrators-table {
+  .settings-table {
     th,
     td {
       padding: 8px 12px;
       font-size: 13px;
+    }
+
+    .setting-input {
+      width: 150px;
+
+      &.json-input {
+        width: 200px;
+      }
     }
   }
 }
@@ -212,7 +231,7 @@
     }
   }
 
-  .administrators-card {
+  .settings-card {
     mat-card-header {
       flex-direction: column;
       align-items: flex-start;
@@ -221,6 +240,7 @@
       .header-actions {
         width: 100%;
         margin-left: 0;
+        flex-direction: column;
 
         button {
           width: 100%;
@@ -230,7 +250,7 @@
     }
   }
 
-  .administrators-table {
+  .settings-table {
     font-size: 12px;
 
     th,
@@ -238,9 +258,12 @@
       padding: 6px 8px;
     }
 
-    .subject-meta {
-      flex-direction: column;
-      gap: 2px;
+    .setting-input {
+      width: 120px;
+
+      &.json-input {
+        width: 150px;
+      }
     }
   }
 }

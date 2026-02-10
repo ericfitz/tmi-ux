@@ -76,26 +76,6 @@
       "subtitle": "Настройка дополнений для расширения функциональности TMI",
       "title": "Управление Дополнениями"
     },
-    "administrators": {
-      "addButton": "{{admin.administrators.addDialog.save}}",
-      "addDialog": {
-        "provider": "{{common.provider}}",
-        "providerRequired": "Провайдер обязателен",
-        "save": "Добавить администратора",
-        "subject": "Субъект",
-        "subjectHint": "Введите email пользователя или название группы",
-        "subjectPlaceholder": "Email пользователя или название группы",
-        "subjectRequired": "Субъект обязателен",
-        "title": "{{admin.administrators.addDialog.save}}"
-      },
-      "filterLabel": "Фильтр администраторов",
-      "filterPlaceholder": "Поиск по email или названию группы",
-      "listTitle": "Системные Администраторы",
-      "noAdministrators": "Администраторы не найдены",
-      "removeTooltip": "Удалить права администратора",
-      "subtitle": "Управление доступом администраторов к системе",
-      "title": "Управление Администраторами"
-    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -114,6 +94,11 @@
         "save": "Создать группу",
         "title": "Добавить Группу"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "Использование"
+      },
       "deleteTooltip": "Удалить группу",
       "filterLabel": "Фильтр групп",
       "filterPlaceholder": "Поиск по названию группы или провайдеру",
@@ -124,8 +109,10 @@
         "noMembers": "В этой группе нет участников",
         "removeTooltip": "Удалить из группы",
         "searchHint": "Введите не менее 2 символов для поиска",
-        "searchPlaceholder": "Начните вводить адрес email...",
-        "searchUser": "Поиск пользователя по Email"
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
+        "searchUser": "Поиск пользователя по Email",
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "Группы не найдены",
       "subtitle": "Просмотр и управление системными группами",
@@ -143,6 +130,12 @@
         "title": "Добавить Пользовательские Квоты",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "По умолчанию",
       "deleteTooltip": "Удалить пользовательскую квоту (вернуть к значениям по умолчанию)",
       "eventsPerMinute": "Событий в минуту",
       "filterLabel": "Фильтр квот",
@@ -164,10 +157,6 @@
         "description": "Установка и настройка дополнений приложения",
         "title": "{{admin.addons.title}}"
       },
-      "administrators": {
-        "description": "Предоставление или отзыв прав администратора",
-        "title": "{{admin.administrators.title}}"
-      },
       "groups": {
         "description": "Настройка групп пользователей и членства",
         "title": "{{admin.groups.title}}"
@@ -175,6 +164,14 @@
       "quotas": {
         "description": "Настройка квот и лимитов ресурсов",
         "title": "{{admin.quotas.title}}"
+      },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
+      "surveys": {
+        "description": "Создание и управление опросами",
+        "title": "Управление опросами"
       },
       "users": {
         "description": "Просмотр и управление учётными записями пользователей",
@@ -185,16 +182,83 @@
         "title": "{{admin.webhooks.title}}"
       }
     },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "Необязательное описание этой настройки",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "Строчные буквы с точками и подчёркиваниями (например, rate_limit.max_rpm)",
+        "keyInvalid": "Должно начинаться со строчной буквы, использовать только строчные буквы, цифры, точки и подчёркивания",
+        "keyRequired": "Ключ обязателен",
+        "save": "Создать Настройку",
+        "title": "Добавить Настройку",
+        "type": "{{common.type}}",
+        "typeRequired": "Тип обязателен",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "Значение обязательно"
+      },
+      "cancelTooltip": "Отменить редактирование",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "Вы уверены, что хотите удалить настройку \"{{key}}\"?",
+      "deleteTooltip": "Удалить настройку",
+      "editTooltip": "Редактировать настройку",
+      "filterLabel": "Фильтр",
+      "filterPlaceholder": "Фильтр по ключу, значению или описанию",
+      "listTitle": "Системные Настройки",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "Импортировать настройки из конфигурационного файла сервера или переменных окружения в базу данных.",
+        "migrate": "Мигрировать",
+        "overwriteLabel": "Перезаписать существующие настройки",
+        "overwriteWarning": "Предупреждение: Это заменит любые настройки в базе данных, которые были ранее изменены.",
+        "resultMigrated": "Мигрировано настроек: {{count}}",
+        "resultSkipped": "Пропущено настроек: {{count}}",
+        "title": "Мигрировать Настройки"
+      },
+      "noSettings": "Настройки не найдены",
+      "saveTooltip": "Сохранить изменения",
+      "subtitle": "Просмотр и управление системными настройками конфигурации",
+      "title": "Управление Настройками",
+      "types": {
+        "bool": "Логический",
+        "int": "Целое число",
+        "json": "JSON",
+        "string": "Строка"
+      }
+    },
     "subtitle": "Управление системными настройками и конфигурациями",
     "title": "Администрирование",
     "users": {
+      "administrator": "Администратор",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "Удалить учётную запись пользователя",
       "filterLabel": "Фильтр пользователей",
       "filterPlaceholder": "Поиск по email, имени, провайдеру или названию группы",
+      "lastLogin": "Последний вход",
       "listTitle": "Пользователи",
+      "never": "Никогда",
       "noUsers": "Пользователи не найдены",
       "subtitle": "Просмотр и управление системными пользователями",
-      "title": "Управление Пользователями"
+      "title": "Управление Пользователями",
+      "transferOwnership": {
+        "confirm": "Вы уверены, что хотите передать все данные от {{source}} к {{target}}?",
+        "dialogTitle": "Передача данных пользователя",
+        "error": "Не удалось передать право собственности. Пожалуйста, попробуйте снова.",
+        "success": "{{userPreferences.transferData.success}}",
+        "tooltip": "Передать право собственности"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -231,13 +295,112 @@
       "noWebhooks": "Вебхуки не найдены",
       "secret": "Секрет HMAC",
       "status": {
-        "active": "Активен",
+        "active": "{{common.active}}",
         "pending_delete": "Ожидает удаления",
         "pending_verification": "Ожидает подтверждения"
       },
       "subtitle": "Настройка подписок вебхуков для уведомлений о событиях",
       "title": "Управление Webhooks"
     }
+  },
+  "adminSurveys": {
+    "cloneSuffix": "(Копия)",
+    "createDialog": {
+      "nameLabel": "Название опроса",
+      "namePlaceholder": "Введите название опроса",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "Создать опрос",
+      "versionHint": "Произвольный идентификатор версии",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "например, 1, v2-пилот, 2024-Q1",
+      "versionRequired": "Требуется указать версию"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "editTemplate": "Редактировать опрос",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "Нет подходящих опросов",
+    "noTemplatesMessage": "Создайте свой первый опрос, чтобы начать работу.",
+    "noTemplatesTitle": "Пока нет опросов",
+    "pageTitle": "{{admin.sections.surveys.title}}",
+    "searchByName": "Поиск по названию...",
+    "searchTemplates": "Поиск опросов",
+    "surveyDetails": "Детали опроса",
+    "templateBuilder": {
+      "addPage": "Добавить страницу",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
+      "choicesPerLine": "Варианты (по одному на строку)",
+      "conditionalLogic": "Условная логика",
+      "conditionalLogicHelp": "Документация по условной логике SurveyJS",
+      "deletePage": "Удалить страницу",
+      "deleteQuestion": "Удалить вопрос",
+      "enableIf": "Включить если",
+      "enableIfHint": "напр., {questionName} = 'value'",
+      "enterSurveyDescription": "Введите описание опроса",
+      "enterSurveyTitle": "Введите название опроса",
+      "failedToLoadTemplate": "Не удалось загрузить опрос",
+      "failedToSaveTemplate": "Не удалось сохранить опрос",
+      "loadingTemplate": "Загрузка опроса...",
+      "mapsToTmField": "Сопоставляется с полем модели угроз",
+      "metadataKey": "Ключ метаданных",
+      "metadataKeyHint": "Имя ключа для записи метаданных",
+      "nameId": "Название (ID)",
+      "nameIdHint": "Уникальный идентификатор для этого вопроса",
+      "nextPage": "{{pagination.nextPage}}",
+      "noQuestionsHint": "Нажмите на тип вопроса из палитры, чтобы добавить его",
+      "noQuestionsYet": "Вопросов пока нет",
+      "pageIndicator": "Страница {{current}} из {{total}}",
+      "previousPage": "{{pagination.previousPage}}",
+      "questionProperties": "Свойства вопроса",
+      "questionTypeDescriptions": {
+        "boolean": "Переключатель да/нет",
+        "checkbox": "Выбор нескольких вариантов",
+        "comment": "Многострочное текстовое поле",
+        "dropdown": "Выбор из выпадающего списка",
+        "panel": "Группировка вопросов в панель",
+        "paneldynamic": "Повторяющаяся группа панелей",
+        "radiogroup": "Выбор одного варианта",
+        "text": "Однострочный ввод текста"
+      },
+      "questionTypeLabels": {
+        "boolean": "Да/Нет",
+        "checkbox": "Флажок",
+        "comment": "Многострочный",
+        "dropdown": "Выпадающий список",
+        "panel": "Панель",
+        "paneldynamic": "Динамическая панель",
+        "radiogroup": "Группа переключателей",
+        "text": "{{editor.nodeLabels.textbox}}"
+      },
+      "questionTypes": "Типы вопросов",
+      "questions": "Вопросы",
+      "required": "Обязательно",
+      "requiredIf": "Требуется если",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
+      "selectQuestionHint": "Выберите вопрос для редактирования его свойств",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
+      "tmFieldLabels": {
+        "assetDescription": "Описание актива",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
+        "description": "Описание модели угроз",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
+        "issueUri": "URL отслеживания задач",
+        "metadataKey": "Пользовательские метаданные",
+        "name": "Название модели угроз",
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
+      },
+      "tmFieldMapping": "Сопоставление полей модели угроз",
+      "tmFieldMappingHint": "Связать этот ответ с полем модели угроз",
+      "unsavedChanges": "Несохранённые изменения",
+      "visibleIf": "Видимо, если",
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
+    },
+    "templateCount": "{{count}} опрос",
+    "templateCountPlural": "{{count}} опросов"
   },
   "assetEditor": {
     "chipPlaceholder": "Введите значение и нажмите Enter",
@@ -300,15 +463,22 @@
   "common": {
     "about": "О Программе",
     "actions": "Действия",
+    "activate": "Активировать",
+    "active": "Активный",
     "addMetadata": "Добавить Метаданные",
     "addThreat": "Добавить Угрозу",
     "addons": "Дополнения",
+    "all": "Все",
+    "allStatuses": "Все статусы",
+    "archive": "Архивировать",
     "back": "Назад",
     "cancel": "Отмена",
     "cellId": "ID Ячейки",
     "classification": "Классификация",
     "clear": "Очистить",
+    "clone": "Клонировать",
     "close": "Закрыть",
+    "confirm": "Подтвердить",
     "confirmDelete": "Вы уверены, что хотите удалить {{item}} \"{{name}}\"? Это действие нельзя отменить.",
     "confirmDeleteMessage": "Вы уверены, что хотите удалить {{objectType}} \"{{name}}\"?",
     "copy": "Копировать",
@@ -317,6 +487,7 @@
     "created": "Создано",
     "criticality": "Критичность",
     "cut": "Вырезать",
+    "deactivate": "Деактивировать",
     "delete": "Удалить",
     "deleteConfirm": "Удалить Модель Угроз",
     "deleteWarningConfirmationField": "Подтверждение удаления",
@@ -329,18 +500,23 @@
     "deleteWarningTypeConfirmation": "Для подтверждения введите \"{{confirmValue}}\" в поле ниже.",
     "description": "Описание",
     "diagramId": "ID Диаграммы",
+    "dismiss": "Отклонить",
     "done": "Готово",
     "download": "Скачать",
     "edit": "Редактировать",
     "editThreat": "Редактировать Угрозу",
+    "email": "Электронная почта",
     "emailLabel": "Адрес Электронной Почты",
+    "error": "Ошибка",
     "fonts": "Шрифты",
+    "groups": "Группы",
     "id": "Идентификатор",
     "identityProvider": "Поставщик удостоверений",
     "issueUri": "URL Задачи",
     "language": "{{language}}",
     "lastModified": "Последнее Изменение",
     "lastUpdated": "Последнее обновление",
+    "loading": "Загрузка...",
     "manage": "Управление",
     "manageMetadata": "Управление Метаданными",
     "manageThreats": "Управление Угрозами",
@@ -350,9 +526,11 @@
     "mitigated": "Смягчено",
     "mitigation": "Смягчение",
     "mitigationPlaceholder": "Опишите рекомендуемые или запланированные меры смягчения для этой угрозы",
+    "moreActions": "Дополнительные действия",
     "name": "Название",
     "noAddonsAvailable": "Дополнения недоступны",
     "noDataAvailable": "Данные Недоступны",
+    "noMatchingResults": "Нет результатов, соответствующих вашим фильтрам.",
     "noMetadata": "Метаданные Недоступны",
     "noThreats": "Угрозы Недоступны",
     "none": "Нет",
@@ -360,17 +538,25 @@
       "asset": "Актив",
       "assets": "Активы",
       "cell": "Ячейка",
+      "cells": "Ячейки",
       "diagram": "Диаграмма",
+      "diagrams": "Диаграммы",
       "document": "Документ",
       "documents": "Документы",
       "metadata": "{{common.metadata}}",
       "note": "Заметка",
       "notes": "Заметки",
       "report": "Отчёт",
+      "reports": "Отчеты",
       "repositories": "Репозитории",
       "repository": "Репозиторий",
+      "survey": "Опрос",
+      "surveyResponse": "Ответ на опрос",
+      "surveyResponses": "Ответы на опросы",
+      "surveys": "Опросы",
       "threat": "Угроза",
       "threatModel": "Модель Угроз",
+      "threatModels": "Модели угроз",
       "threats": "Угрозы"
     },
     "ok": "ОК",
@@ -382,6 +568,7 @@
     "provider": "Поставщик",
     "readOnly": "Только Чтение",
     "readOnlyTooltip": "У вас есть доступ только для чтения к этой модели угроз. Свяжитесь с владельцем для запроса прав редактирования.",
+    "retry": "Повторить",
     "roles": {
       "owner": "Владелец",
       "reader": "Читатель",
@@ -391,6 +578,8 @@
     "saveAndClose": "Сохранить и Закрыть",
     "savedSuccessfully": "Успешно сохранено",
     "score": "Оценка",
+    "search": "Поиск",
+    "selected": "{{count}} выбрано",
     "sensitivity": "Конфиденциальность",
     "sessionRoles": {
       "host": "Хост",
@@ -403,11 +592,15 @@
       "group": "Группа",
       "user": "Пользователь"
     },
+    "template": "Шаблон",
     "threatDescription": "Описание Угрозы",
     "threatDescriptionPlaceholder": "Подробно опишите угрозу",
     "threatName": "Название Угрозы",
     "threatType": "Тип Угрозы",
+    "title": "Название",
+    "tryAdjustingFilters": "Попробуйте изменить фильтры.",
     "type": "Тип",
+    "unarchive": "Разархивировать",
     "unsavedChangesWarning": "У вас есть несохранённые изменения. Вы уверены, что хотите закрыть?",
     "userId": "ID Пользователя",
     "validation": {
@@ -416,6 +609,7 @@
       "nameRequired": "Название обязательно",
       "required": "Это поле обязательно"
     },
+    "version": "Версия",
     "view": "Просмотр",
     "viewMetadata": "Просмотр Метаданных",
     "viewPermissions": "Просмотр Разрешений",
@@ -431,6 +625,15 @@
     "moveToFront": "На передний план",
     "noDataAssetsAvailable": "Нет доступных активов данных",
     "showObject": "Показать объект"
+  },
+  "createThreatModel": {
+    "confidentialHint": "Конфиденциальные модели угроз не автоматически распределяются группе Security Reviewers. Эта настройка не может быть изменена после создания.",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
+    "descriptionPlaceholder": "Опишите цель и область применения этой модели угроз",
+    "framework": "Фреймворк",
+    "namePlaceholder": "Введите название модели угроз",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "Создать Модель Угроз"
   },
   "dashboard": {
     "clearFilter": "Очистить фильтр",
@@ -466,7 +669,7 @@
     "common": {
       "affectedCells": "Затронутые ячейки",
       "cellIds": "ID ячеек",
-      "cells": "Ячейки",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "Копировать полный JSON"
     },
     "graphDataDialog": {
@@ -548,9 +751,18 @@
   "errors": {
     "validationError": "Ошибка валидации"
   },
+  "footer": {
+    "support": "Поддержка"
+  },
   "getStarted": "Начать",
-  "homeDescription": "Инструмент для совместного моделирования угроз, разработанный для помощи командам в выявлении, анализе и документировании угроз безопасности в их системах. Создавайте, делитесь и совместно редактируйте модели угроз и диаграммы для повышения безопасности ваших приложений.",
+  "homeDescription": "TMI — это инструмент для управления и улучшения процессов проверки безопасности и моделирования угроз в вашей организации. Он управляет рабочим процессом проверки безопасности, организует информацию для проверок безопасности, позволяет совместно создавать диаграммы потоков данных и подключать автоматизацию для снижения рутинной работы в процессе проверки и анализа угроз безопасности.",
   "homeWelcomeTitle": "Добро Пожаловать в TMI: Улучшенное Моделирование Угроз",
+  "intake": {
+    "fill": {
+      "saveAndExit": "Сохранить и выйти",
+      "submitResponses": "Отправить ответы"
+    }
+  },
   "login": {
     "chooseMethod": "Выберите способ входа:",
     "explanation": "Войдите с помощью существующей учётной записи доверенного поставщика удостоверений. Это избавляет от необходимости создавать отдельный пароль, упрощая работу и обеспечивая вашу безопасность. Мы никогда не храним и не управляем паролями — ваши учётные данные остаются у вашего поставщика и не могут быть скомпрометированы через нас.",
@@ -571,10 +783,13 @@
     "unexpectedError": "Произошла непредвиденная ошибка во время OAuth."
   },
   "navbar": {
+    "admin": "Админ",
     "appTitle": "TMI: Улучшенное Моделирование Угроз",
     "copyUserEmail": "Копировать email пользователя в буфер обмена",
+    "dashboard": "Панель",
     "feedback": "Сообщить об ошибке, запросить функцию или оставить отзыв",
     "home": "Главная",
+    "intake": "Приём",
     "logoutButton": "Выйти",
     "serverStatus": {
       "noServerConfigured": "Сервер не настроен",
@@ -666,6 +881,77 @@
     },
     "title": "Сеанс Скоро Истечёт"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "Ошибка сохранения",
+      "saved": "Сохранено",
+      "saving": "Сохранение..."
+    },
+    "browse": "Обзор опросов",
+    "confidentialDialog": {
+      "description": "Следует ли отметить эту отправку как конфиденциальную? Конфиденциальные отправки не автоматически распределяются группе Security Reviewers. Эта настройка не может быть изменена после создания ответа.",
+      "no": "Нет",
+      "title": "Конфиденциальная отправка",
+      "yes": "Да, отметить как конфиденциальное"
+    },
+    "confirmation": {
+      "backToSurveys": "Вернуться к опросам",
+      "message": "Ваш опрос успешно отправлен.",
+      "title": "Опрос отправлен",
+      "viewResponses": "Просмотреть мои ответы"
+    },
+    "continueDraft": "Продолжить черновик",
+    "fill": {
+      "submitConfirm": "Вы уверены, что хотите отправить? После отправки вы не сможете редактировать свои ответы.",
+      "title": "Заполнить опрос"
+    },
+    "list": {
+      "deleteDraft": "Удалить черновик",
+      "draftStarted": "Черновик начат {{time}}",
+      "errorLoadingSurveys": "Не удалось загрузить опросы",
+      "lastModified": "Последнее изменение {{time}}",
+      "loadingSurveys": "Загрузка опросов...",
+      "noSurveysMessage": "В настоящее время нет активных опросов. Проверьте позже.",
+      "noSurveysTitle": "Нет доступных опросов",
+      "pageDescription": "Выберите подходящий тип проверки из следующего списка, затем ответьте на представленные вопросы, чтобы предоставить команде проверки безопасности информацию, необходимую для проведения проверки.",
+      "pageTitle": "Запросить проверку безопасности",
+      "updated": "Обновлено",
+      "yourDrafts": "Ваши черновики"
+    },
+    "myResponses": "Мои ответы",
+    "noMatchingResponses": "Нет подходящих ответов",
+    "noMatchingResponsesMessage": "Ни один ответ не соответствует выбранным фильтрам.",
+    "noResponses": "Вы еще не отправили ни одного ответа на опрос",
+    "noSurveys": "Нет доступных опросов",
+    "responses": {
+      "continueEditing": "Продолжить редактирование",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
+      "filterByStatus": "Фильтр по статусу",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
+      "noResponsesMessage": "Вы еще не заполнили ни одного опроса. Начните с страницы опросов.",
+      "noResponsesTitle": "Пока нет ответов",
+      "pageTitle": "Мои ответы на опросы",
+      "responseCount": "{{count}} ответ",
+      "responseCountPlural": "{{count}} ответов"
+    },
+    "saveDraft": "Сохранить черновик",
+    "startNew": "Начать опрос",
+    "status": {
+      "draft": "Черновик",
+      "needsRevision": "Требуется доработка",
+      "readyForReview": "Готово к проверке",
+      "reviewCreated": "Проверка создана",
+      "submitted": "{{triage.list.submitted}}"
+    },
+    "submitSurvey": "Отправить опрос",
+    "templateStatus": {
+      "active": "{{common.active}}",
+      "archived": "В архиве",
+      "inactive": "Неактивный"
+    },
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "Просмотреть ответ"
+  },
   "threatEditor": {
     "createNewThreat": "Создать новую угрозу",
     "notAssociatedWithAsset": "Не связано с активом",
@@ -729,7 +1015,7 @@
     "createNewRepository": "Добавить ссылку на репозиторий",
     "created": "{{common.created}}",
     "createdBy": "Создал",
-    "dashboard": "Панель мониторинга",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Диаграмма потоков данных",
     "deleteWarningPermanent": "Это действие нельзя отменить, и оно безвозвратно удалит все связанные диаграммы, угрозы и метаданные.",
     "descriptionPlaceholder": "Опишите цель и область применения этой модели угроз",
@@ -737,7 +1023,7 @@
     "diagramName": "Название диаграммы",
     "diagramPreview": "Предпросмотр диаграммы",
     "diagramType": "Тип диаграммы",
-    "diagrams": "Диаграммы",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "Опишите назначение или содержимое документа",
     "documentEditor": {
       "title": {
@@ -762,7 +1048,7 @@
     "noPermissions": "Разрешения не определены",
     "noRepositories": "Репозитории ещё не добавлены",
     "noThreats": "Угрозы ещё не добавлены",
-    "pageTitle": "Модели Угроз",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Роль",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -786,6 +1072,12 @@
     "repositorySubPathHint": "Необязательный путь внутри репозитория",
     "repositoryType": "Тип репозитория",
     "repositoryUri": "URL репозитория",
+    "sections": {
+      "inputs": "Входные данные",
+      "inputsDescription": "Активы, документы и репозитории исходного кода, которые описывают анализируемую систему",
+      "outputs": "Выходные данные",
+      "outputsDescription": "Заметки, диаграммы и угрозы, созданные во время анализа безопасности"
+    },
     "setAsOwner": "Назначить владельцем",
     "sourcesCount": "Репозитории",
     "status": {
@@ -818,7 +1110,7 @@
       "addAsset": "Добавить актив",
       "addDiagram": "Добавить диаграмму",
       "addDocument": "Добавить документ",
-      "addNote": "Добавить заметку",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "Активы — это ценные ресурсы в системе, которые требуют защиты, такие как данные, оборудование, программное обеспечение, инфраструктура, услуги или персонал.",
       "diagramsCardTitle": "Диаграммы в TMI — это машиночитаемые представления движения данных и процессов в системе, позволяющие проводить как ручной, так и автоматизированный анализ безопасности.",
       "documentsCardTitle": "Ссылки на документы — это ссылки на документы, хранящиеся вне TMI. Соответствующие документы описывают анализируемую систему и могут использоваться как аналитиками безопасности, так и автоматизированными процессами анализа.",
@@ -881,10 +1173,90 @@
     },
     "title": "Условия Использования"
   },
-  "userPreferences": {
-    "administration": {
-      "title": "{{admin.title}}"
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "Поиск по e-mail",
+      "searchPlaceholder": "Начните вводить адрес электронной почты..."
+    }
+  },
+  "triage": {
+    "bulkActions": "Массовые действия",
+    "changeStatus": "Изменить статус",
+    "columns": {
+      "confidentialTooltip": "Конфиденциальная отправка"
     },
+    "createTm": "{{createThreatModel.title}}",
+    "detail": {
+      "addNote": "Добавить заметку",
+      "markdownSupported": "Поддерживается Markdown",
+      "noNotes": "Заметок триажа пока нет",
+      "noResponses": "Ответы не записаны",
+      "noRevisionNotes": "Заметок по доработке нет",
+      "note": "заметка",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "Введите содержание заметки...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "Краткий заголовок заметки",
+      "notes": "заметки",
+      "responseDetails": "Детали ответа",
+      "reviewedAt": "Проверено",
+      "reviewedBy": "Проверил",
+      "revisionNotesTitle": "Требуется доработка",
+      "statusTimeline": "Хронология статусов",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "Заметки триажа"
+    },
+    "filters": {
+      "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "{{triage.list.allSurveys}}",
+      "clearFilters": "Очистить фильтры",
+      "confidential": "Конфиденциальность",
+      "confidentialOnly": "Конфиденциальное",
+      "nonConfidential": "Неконфиденциальное"
+    },
+    "list": {
+      "allSurveys": "Все опросы",
+      "approve": "Утвердить",
+      "approveSelected": "Утвердить выбранные",
+      "createThreatModel": "{{createThreatModel.title}}",
+      "errorLoadingResponses": "Не удалось загрузить ответы",
+      "loadingResponses": "Загрузка ответов...",
+      "noResponsesFiltered": "Нет ответов, соответствующих вашим фильтрам",
+      "noResponsesTitle": "Нет ответов",
+      "noResponsesToTriage": "Нет ответов на опросы для сортировки",
+      "notSubmitted": "Не отправлено",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
+      "searchPlaceholder": "Поиск по отправителю или опросу...",
+      "submitted": "Отправлено",
+      "submitter": "Отправитель"
+    },
+    "markInReview": "Отметить на проверке",
+    "markPendingTriage": "Отметить ожидающим сортировки",
+    "noResponses": "Нет ответов для сортировки",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "Введите содержание заметки (поддерживается Markdown)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "Новая заметка триажа",
+        "view": "Просмотр заметки триажа"
+      }
+    },
+    "queue": "Очередь сортировки",
+    "returnToSubmitted": "Вернуть в отправленные",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "Укажите заметки с объяснением, что необходимо доработать. Отправитель увидит эти заметки при просмотре своего ответа.",
+      "hint": "Обязательно — опишите, какие изменения необходимы",
+      "label": "Заметки по доработке",
+      "placeholder": "Опишите необходимые доработки...",
+      "title": "Вернуть на доработку"
+    },
+    "title": "Сортировка",
+    "viewDetails": "Просмотреть детали"
+  },
+  "userPreferences": {
     "colorBlindMode": "Включить режим для дальтоников",
     "credentials": {
       "add": "Добавить",
@@ -936,6 +1308,7 @@
     },
     "diagramAnimationEffects": "Включить эффекты анимации в редакторе диаграмм",
     "displayPreferences": "Настройки отображения",
+    "hoverShowMetadata": "Показывать метаданные ячейки при наведении",
     "marginSize": {
       "narrow": "Узкие",
       "standard": "Стандартный",
@@ -948,13 +1321,18 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Настройки отчётов",
+    "sections": {
+      "developer": "Разработчик",
+      "diagramEditor": "Редактор диаграмм",
+      "securityReviewer": "Ревизор безопасности"
+    },
     "showDeveloperTools": "Показать инструменты разработчика",
     "tabs": {
       "credentials": "Учетные данные",
       "danger": "Опасная зона",
       "display": "Отображение",
       "profile": "Профиль",
-      "reports": "Отчеты"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "Тема",
     "themeMode": {
@@ -963,9 +1341,18 @@
       "light": "Светлая"
     },
     "title": "Настройки Пользователя",
+    "transferData": {
+      "confirmMessage": "Вы уверены, что хотите передать все свои модели угроз и ответы на опросы {{email}}? Вы будете понижены в роли до редактора на переданных элементах.",
+      "dialogTitle": "Передать Мои Данные",
+      "error": "Не удалось передать данные. Пожалуйста, попробуйте снова.",
+      "hint": "Передает право собственности на все ваши модели угроз и ответы на опросы другому пользователю. Вы будете понижены в роли до редактора на переданных элементах.",
+      "success": "Передано {{tmCount}} моделей угроз и {{responseCount}} ответов на опросы.",
+      "title": "Передать Мои Данные Другому Пользователю"
+    },
     "userProfile": {
       "currentRole": "Текущая роль в модели угроз",
-      "groups": "Группы",
+      "groups": "{{common.groups}}",
+      "jwtGroups": "Группы JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID провайдера",
       "title": "Профиль Пользователя",

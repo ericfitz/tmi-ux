@@ -74,6 +74,20 @@ export interface Environment {
   operatorJurisdiction: string;
 
   /**
+   * Suppress the "About" link in the application footer
+   * When true, the About link will not be displayed
+   * Default: false (About link is shown)
+   */
+  suppressAboutLink?: boolean;
+
+  /**
+   * Suppress the "Privacy Policy" and "Terms of Service" links in the application footer
+   * When true, the Privacy and ToS links will not be displayed
+   * Default: false (Privacy and ToS links are shown)
+   */
+  suppressPrivacyTosLinks?: boolean;
+
+  /**
    * Port on which the application server will listen
    * Default: 4200
    */
@@ -119,6 +133,21 @@ export interface Environment {
    * If not specified, will use 'google' or first provider from TMI server
    */
   defaultAuthProvider?: string;
+
+  /**
+   * Enable the confidential threat models feature
+   * When enabled, users can mark threat models and survey responses as confidential,
+   * which excludes the Security Reviewers group from automatic access.
+   * Default: false (feature disabled)
+   */
+  enableConfidentialThreatModels?: boolean;
+
+  /**
+   * Default threat model framework for new threat models
+   * Allowed values: 'STRIDE', 'CIA', 'LINDDUN', 'DIE', 'PLOT4ai'
+   * Default: 'STRIDE'
+   */
+  defaultThreatModelFramework?: string;
 
   /**
    * Security configuration for HTTP headers and policies

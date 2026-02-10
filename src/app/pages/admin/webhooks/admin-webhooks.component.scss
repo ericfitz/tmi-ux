@@ -29,9 +29,6 @@
 
   .close-button {
     margin-left: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 }
 
@@ -134,12 +131,6 @@
     grid-row: 1;
     display: flex;
     align-items: center;
-
-    button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
   }
 
   .webhook-name {

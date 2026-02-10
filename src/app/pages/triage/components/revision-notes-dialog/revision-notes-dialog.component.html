@@ -1,0 +1,48 @@
+<h2 mat-dialog-title class="revision-dialog-title">
+  <mat-icon class="title-icon">rate_review</mat-icon>
+  {{ 'triage.revisionDialog.title' | transloco }}
+</h2>
+
+<mat-dialog-content appScrollIndicator>
+  <div class="revision-dialog-content">
+    <p class="revision-dialog-description">
+      {{ 'triage.revisionDialog.description' | transloco }}
+    </p>
+
+    <mat-form-field appearance="outline" class="revision-notes-field">
+      <mat-label>{{ 'triage.revisionDialog.label' | transloco }}</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="revisionNotes"
+        [placeholder]="'triage.revisionDialog.placeholder' | transloco"
+        rows="5"
+        cdkFocusInitial
+        tabindex="1"
+      ></textarea>
+      <mat-hint>{{ 'triage.revisionDialog.hint' | transloco }}</mat-hint>
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onCancel()"
+    tabindex="2"
+    [attr.aria-label]="'common.cancel' | transloco"
+  >
+    {{ 'common.cancel' | transloco }}
+  </button>
+  <button
+    mat-button
+    color="warn"
+    (click)="onConfirm()"
+    [disabled]="!canSubmit"
+    tabindex="3"
+    [attr.aria-label]="'triage.revisionDialog.confirm' | transloco"
+  >
+    <mat-icon>rate_review</mat-icon>
+    {{ 'triage.revisionDialog.confirm' | transloco }}
+  </button>
+</mat-dialog-actions>

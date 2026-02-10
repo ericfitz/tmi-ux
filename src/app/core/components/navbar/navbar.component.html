@@ -9,7 +9,11 @@
         [matTooltip]="'navbar.home' | transloco"
         matTooltipPosition="below"
       >
-        <img src="/TMI-FullLogo-Transparent-512x512.png" alt="TMI Logo" class="tmi-logo" />
+        <img
+          [src]="logoImageUrl$ | async"
+          [alt]="(brandingOrgName$ | async) || 'TMI Logo'"
+          class="tmi-logo"
+        />
       </button>
       <span class="app-title" [transloco]="'navbar.appTitle'">TMI: Threat Modeling Improved</span>
 
@@ -31,6 +35,40 @@
         </button>
       </mat-menu>
     </div>
+
+    <!-- Center: Navigation links -->
+    @if (isAuthenticated) {
+      <div class="navbar-nav">
+        <button mat-button routerLink="/intake" routerLinkActive="active-link" class="nav-link">
+          <mat-icon>assignment</mat-icon>
+          <span [transloco]="'navbar.intake'">Intake</span>
+        </button>
+        <button
+          mat-button
+          routerLink="/triage"
+          routerLinkActive="active-link"
+          class="nav-link"
+          [disabled]="!isSecurityReviewer"
+        >
+          <mat-icon>inbox</mat-icon>
+          <span [transloco]="'triage.title'">Triage</span>
+        </button>
+        <button mat-button routerLink="/dashboard" routerLinkActive="active-link" class="nav-link">
+          <mat-icon>dashboard</mat-icon>
+          <span [transloco]="'navbar.dashboard'">Dashboard</span>
+        </button>
+        <button
+          mat-button
+          routerLink="/admin"
+          routerLinkActive="active-link"
+          class="nav-link"
+          [disabled]="!isAdmin"
+        >
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span [transloco]="'navbar.admin'">Admin</span>
+        </button>
+      </div>
+    }
 
     <!-- Right side: Server status, User info and logout button -->
     <div class="navbar-right">

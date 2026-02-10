@@ -191,7 +191,7 @@ describe('InfraPortStateService', () => {
 
     it('should show all ports on all nodes', () => {
       const node2 = graph.addNode({
-        shape: 'ellipse',
+        shape: 'rect',
         x: 300,
         y: 300,
         width: 80,
@@ -239,7 +239,7 @@ describe('InfraPortStateService', () => {
 
     it('should hide unconnected ports on all nodes', () => {
       const node2 = graph.addNode({
-        shape: 'ellipse',
+        shape: 'rect',
         x: 300,
         y: 300,
         width: 80,
@@ -510,7 +510,7 @@ describe('InfraPortStateService', () => {
 
     it('should handle connection changes by updating all nodes', () => {
       graph.addNode({
-        shape: 'ellipse',
+        shape: 'rect',
         x: 300,
         y: 300,
         width: 80,
@@ -580,7 +580,7 @@ describe('InfraPortStateService', () => {
     it('should get all port states for debugging', () => {
       // Create state for multiple nodes
       const node2 = graph.addNode({
-        shape: 'ellipse',
+        shape: 'rect',
         x: 300,
         y: 300,
         width: 80,

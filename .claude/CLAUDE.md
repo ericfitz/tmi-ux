@@ -42,6 +42,13 @@ Also:
 2. **Test**: Run related tests and fix any failures
 3. **Never Skip Tests**: Always troubleshoot to root cause and fix, or ask what to do
 
+### For GitHub Issue-Related Changes
+
+When code changes are associated with a GitHub issue, also:
+
+1. **Reference the Commit**: Add a comment to the issue referencing the commit
+2. **Close the Issue**: Close the issue as "done"
+
 ### General Guidelines
 
 - Remove unused references rather than prefixing with underscore (unless placeholders)
@@ -141,6 +148,10 @@ Automatic semantic versioning via git hooks using [Conventional Commits](https:/
 - `feat:`/`refactor:` → minor bump (0.x.0)
 - `fix:`/`chore:`/`docs:`/`perf:`/`test:`/`ci:`/`build:` → patch bump (0.0.x)
 - Version bumps happen on commit, not build
+
+## UI Terminology
+
+- **Action button**: A `mat-icon-button` that displays only an icon (no text label) and uses `matTooltip` to show the button's localized label. Action buttons must not implement any button styling locally — centering and icon sizing are handled globally by the `.mat-mdc-icon-button` override in `src/styles/component-overrides.scss`.
 
 ## Code Style
 

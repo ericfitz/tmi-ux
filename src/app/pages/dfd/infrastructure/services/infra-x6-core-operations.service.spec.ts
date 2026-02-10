@@ -82,7 +82,7 @@ describe('InfraX6CoreOperationsService', () => {
       it('should add node with all optional properties', () => {
         const nodeConfig: NodeCreationConfig = {
           id: 'test-node-2',
-          shape: 'ellipse',
+          shape: 'rect',
           x: 200,
           y: 150,
           width: 100,

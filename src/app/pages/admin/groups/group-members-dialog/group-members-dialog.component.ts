@@ -159,8 +159,7 @@ export class GroupMembersDialogComponent implements OnInit {
     this.errorMessage = '';
 
     const request: AddGroupMemberRequest = {
-      provider: user.provider,
-      provider_user_id: user.provider_user_id,
+      user_internal_uuid: user.internal_uuid,
     };
 
     this.groupAdminService
@@ -180,16 +179,32 @@ export class GroupMembersDialogComponent implements OnInit {
       });
   }
 
+  getMemberDisplayName(member: GroupMember): string {
+    if (member.subject_type === 'group') {
+      return member.member_group_name || '';
+    }
+    return member.user_name || member.user_email || '';
+  }
+
   onRemoveMember(member: GroupMember): void {
-    const confirmed = confirm(`Are you sure you want to remove ${member.email} from this group?`);
+    const displayName = this.getMemberDisplayName(member);
+    const confirmed = confirm(`Are you sure you want to remove ${displayName} from this group?`);
 
     if (confirmed) {
+      const memberUuid =
+        member.subject_type === 'group'
+          ? member.member_group_internal_uuid!
+          : member.user_internal_uuid!;
+
       this.groupAdminService
-        .removeMember(this.data.group.internal_uuid, member.internal_uuid)
+        .removeMember(this.data.group.internal_uuid, memberUuid, member.subject_type)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
-            this.logger.info('Member removed from group', { email: member.email });
+            this.logger.info('Member removed from group', {
+              member_uuid: memberUuid,
+              subject_type: member.subject_type,
+            });
             this.loadMembers();
           },
           error: error => {

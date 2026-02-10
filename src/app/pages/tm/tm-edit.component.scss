@@ -29,14 +29,6 @@
   display: flex;
   align-items: center;
   gap: 12px;
-
-  // Ensure Material Symbols Outlined icons are properly centered
-  .mat-icon[fontSet='material-symbols-outlined'] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-  }
 }
 
 .content-container {
@@ -49,7 +41,76 @@
   width: 100%;
 }
 
-// Cards are now displayed in a single column via the content-container flex layout
+// Section grouping for Inputs/Outputs
+.section-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  margin: 0;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--theme-surface);
+  cursor: pointer;
+  font-family: var(--font-family-primary);
+  color: var(--theme-text-primary);
+  transition: background-color 0.15s ease;
+  text-align: left;
+  width: 100%;
+
+  &:hover {
+    background-color: var(--theme-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--theme-primary);
+    outline-offset: -2px;
+  }
+}
+
+.section-toggle-icon {
+  color: var(--theme-text-secondary);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+
+  &.collapsed {
+    transform: rotate(-90deg);
+  }
+}
+
+.section-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+  color: var(--color-theme-cyan);
+}
+
+.section-description {
+  font-size: var(--font-size-sm);
+  color: var(--theme-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 8px;
+
+  &[hidden] {
+    display: none !important;
+  }
+}
 
 // Issue URL container with form field and hyperlink icon
 .issue-uri-container {
@@ -159,31 +220,6 @@ mat-card-header {
     display: flex;
     align-items: center;
     gap: 4px;
-
-    button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      mat-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-    }
-  }
-
-  // Also apply to direct button children (for cards with single add button)
-  > button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    mat-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
   }
 }
 
@@ -325,27 +361,6 @@ mat-card-header {
   font-family: var(--font-family-primary);
 }
 
-.copy-button {
-  width: 28px;
-  height: 28px;
-  line-height: 28px;
-  margin-inline-start: 2px; // Use logical property for RTL support
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
-
-  .mat-icon {
-    font-size: var(--icon-size-sm);
-    width: var(--icon-size-sm);
-    height: var(--icon-size-sm);
-    line-height: var(--icon-size-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
 // Specific styling for external edit button icons
 .issue-uri-container .external-edit-button .mat-icon {
   font-size: var(--icon-size-lg);
@@ -447,6 +462,14 @@ mat-card-header {
   .info-label {
     margin-right: 0;
     margin-left: 8px;
+  }
+
+  .section-header {
+    text-align: right;
+  }
+
+  .section-toggle-icon.collapsed {
+    transform: rotate(90deg);
   }
 }
 
@@ -677,20 +700,6 @@ mat-card-header {
   max-width: 48px;
   text-align: center;
   padding: 4px !important;
-
-  // Vertical centering for hyperlink icons
-  .mat-mdc-icon-button {
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    vertical-align: middle;
-
-    mat-icon {
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-    }
-  }
 }
 
 .column-actions {
@@ -706,19 +715,6 @@ mat-card-header {
   gap: 2px;
   align-items: center;
   justify-content: flex-end;
-
-  .mat-mdc-icon-button {
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    vertical-align: middle;
-
-    mat-icon {
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-    }
-  }
 }
 
 // Hyperlink button in table
@@ -868,8 +864,12 @@ mat-card-header {
 // Responsive Column Hiding
 // ============================================
 
-// Tablet breakpoint (768px) - Hide icon columns
+// Tablet breakpoint (768px) - Hide icon columns and section descriptions
 @media (width <= 768px) {
+  .section-description {
+    display: none;
+  }
+
   .column-icon {
     display: none !important;
   }

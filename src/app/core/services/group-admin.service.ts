@@ -123,7 +123,7 @@ export class GroupAdminService {
         tap(member => {
           this.logger.info('Member added to group', {
             internal_uuid,
-            user_uuid: member.internal_uuid,
+            member_id: member.id,
           });
         }),
         catchError(error => {
@@ -136,16 +136,28 @@ export class GroupAdminService {
   /**
    * Remove a member from a group
    */
-  public removeMember(internal_uuid: string, user_uuid: string): Observable<void> {
-    return this.apiService.delete<void>(`admin/groups/${internal_uuid}/members/${user_uuid}`).pipe(
-      tap(() => {
-        this.logger.info('Member removed from group', { internal_uuid, user_uuid });
-      }),
-      catchError(error => {
-        this.logger.error('Failed to remove group member', error);
-        throw error;
-      }),
-    );
+  public removeMember(
+    internal_uuid: string,
+    member_uuid: string,
+    subject_type: 'user' | 'group',
+  ): Observable<void> {
+    return this.apiService
+      .deleteWithParams<void>(`admin/groups/${internal_uuid}/members/${member_uuid}`, {
+        subject_type,
+      })
+      .pipe(
+        tap(() => {
+          this.logger.info('Member removed from group', {
+            internal_uuid,
+            member_uuid,
+            subject_type,
+          });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to remove group member', error);
+          throw error;
+        }),
+      );
   }
 
   /**

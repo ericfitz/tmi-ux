@@ -166,8 +166,9 @@
                 <mat-icon>account_tree</mat-icon> {{ session.diagramName }}
               </p>
               <p class="collaboration-session-host">
-                <mat-icon>person</mat-icon> {{ 'collaboration.hostedBy' | transloco }}
-                <span [matTooltip]="session.host?.email || ''">
+                <mat-icon>person</mat-icon> {{ 'collaboration.hostedBy' | transloco }}&nbsp;<span
+                  [matTooltip]="session.host?.email || ''"
+                >
                   {{ session.host?.display_name || session.host?.email || '—' }}
                 </span>
               </p>

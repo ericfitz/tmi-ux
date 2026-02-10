@@ -76,26 +76,6 @@
       "subtitle": "TMI কার্যকারিতা বাড়াতে অ্যাডঅন কনফিগার করুন",
       "title": "অ্যাডঅন পরিচালনা করুন"
     },
-    "administrators": {
-      "addButton": "{{admin.administrators.addDialog.save}}",
-      "addDialog": {
-        "provider": "{{common.provider}}",
-        "providerRequired": "প্রোভাইডার প্রয়োজন",
-        "save": "অ্যাডমিনিস্ট্রেটর যোগ করুন",
-        "subject": "বিষয়",
-        "subjectHint": "ব্যবহারকারীর ইমেইল বা গ্রুপের নাম লিখুন",
-        "subjectPlaceholder": "ব্যবহারকারীর ইমেইল বা গ্রুপের নাম",
-        "subjectRequired": "বিষয় প্রয়োজন",
-        "title": "{{admin.administrators.addDialog.save}}"
-      },
-      "filterLabel": "অ্যাডমিনিস্ট্রেটর ফিল্টার করুন",
-      "filterPlaceholder": "ইমেইল বা গ্রুপের নাম দিয়ে খুঁজুন",
-      "listTitle": "সিস্টেম প্রশাসক",
-      "noAdministrators": "কোনো অ্যাডমিনিস্ট্রেটর পাওয়া যায়নি",
-      "removeTooltip": "অ্যাডমিনিস্ট্রেটর অনুমতি সরান",
-      "subtitle": "সিস্টেমে কার প্রশাসনিক অ্যাক্সেস আছে তা নিয়ন্ত্রণ করুন",
-      "title": "প্রশাসক পরিচালনা করুন"
-    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -114,6 +94,11 @@
         "save": "গ্রুপ তৈরি করুন",
         "title": "গ্রুপ যোগ করুন"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "ব্যবহার"
+      },
       "deleteTooltip": "গ্রুপ মুছুন",
       "filterLabel": "গ্রুপ ফিল্টার করুন",
       "filterPlaceholder": "গ্রুপের নাম বা প্রোভাইডার দিয়ে খুঁজুন",
@@ -124,8 +109,10 @@
         "noMembers": "এই গ্রুপে কোনো সদস্য নেই",
         "removeTooltip": "গ্রুপ থেকে সরান",
         "searchHint": "খুঁজতে কমপক্ষে ২টি অক্ষর টাইপ করুন",
-        "searchPlaceholder": "ইমেইল ঠিকানা টাইপ শুরু করুন...",
-        "searchUser": "ইমেইল দিয়ে ব্যবহারকারী খুঁজুন"
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
+        "searchUser": "ইমেইল দিয়ে ব্যবহারকারী খুঁজুন",
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "কোনো গ্রুপ পাওয়া যায়নি",
       "subtitle": "সিস্টেম গ্রুপ দেখুন এবং পরিচালনা করুন",
@@ -143,6 +130,12 @@
         "title": "কাস্টম কোটা যোগ করুন",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "ডিফল্ট",
       "deleteTooltip": "কাস্টম কোটা সরান (ডিফল্টে ফিরে যান)",
       "eventsPerMinute": "প্রতি মিনিটে ইভেন্ট",
       "filterLabel": "কোটা ফিল্টার করুন",
@@ -164,10 +157,6 @@
         "description": "অ্যাপ্লিকেশন অ্যাডঅন ইনস্টল এবং কনফিগার করুন",
         "title": "{{admin.addons.title}}"
       },
-      "administrators": {
-        "description": "অ্যাডমিনিস্ট্রেটর অনুমতি প্রদান বা প্রত্যাহার করুন",
-        "title": "{{admin.administrators.title}}"
-      },
       "groups": {
         "description": "ব্যবহারকারী গ্রুপ এবং সদস্যপদ কনফিগার করুন",
         "title": "{{admin.groups.title}}"
@@ -175,6 +164,14 @@
       "quotas": {
         "description": "রিসোর্স কোটা এবং লিমিট কনফিগার করুন",
         "title": "{{admin.quotas.title}}"
+      },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
+      "surveys": {
+        "description": "জরিপ তৈরি এবং পরিচালনা করুন",
+        "title": "জরিপ পরিচালনা করুন"
       },
       "users": {
         "description": "ব্যবহারকারী অ্যাকাউন্ট দেখুন এবং পরিচালনা করুন",
@@ -185,16 +182,83 @@
         "title": "{{admin.webhooks.title}}"
       }
     },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "এই সেটিংয়ের ঐচ্ছিক বিবরণ",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "ডট এবং আন্ডারস্কোর সহ লোয়ারকেস (উদাহরণ: rate_limit.max_rpm)",
+        "keyInvalid": "অবশ্যই লোয়ারকেস অক্ষর দিয়ে শুরু হতে হবে, শুধুমাত্র লোয়ারকেস অক্ষর, সংখ্যা, ডট এবং আন্ডারস্কোর ব্যবহার করুন",
+        "keyRequired": "কী প্রয়োজন",
+        "save": "সেটিং তৈরি করুন",
+        "title": "সেটিং যোগ করুন",
+        "type": "{{common.type}}",
+        "typeRequired": "ধরন প্রয়োজন",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "মান প্রয়োজন"
+      },
+      "cancelTooltip": "সম্পাদনা বাতিল করুন",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "আপনি কি নিশ্চিত যে \"{{key}}\" সেটিংটি মুছতে চান?",
+      "deleteTooltip": "সেটিং মুছুন",
+      "editTooltip": "সেটিং সম্পাদনা করুন",
+      "filterLabel": "ফিল্টার",
+      "filterPlaceholder": "কী, মান বা বিবরণ দিয়ে ফিল্টার করুন",
+      "listTitle": "সিস্টেম সেটিংস",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "সার্ভারের কনফিগারেশন ফাইল বা এনভায়রনমেন্ট ভেরিয়েবল থেকে ডাটাবেসে সেটিংস ইম্পোর্ট করুন।",
+        "migrate": "মাইগ্রেট করুন",
+        "overwriteLabel": "বিদ্যমান সেটিংস ওভাররাইট করুন",
+        "overwriteWarning": "সতর্কতা: এটি ডাটাবেসে পূর্বে কাস্টমাইজ করা যেকোনো সেটিংস প্রতিস্থাপন করবে।",
+        "resultMigrated": "{{count}} সেটিংস মাইগ্রেট করা হয়েছে",
+        "resultSkipped": "{{count}} সেটিংস এড়িয়ে যাওয়া হয়েছে",
+        "title": "সেটিংস মাইগ্রেট করুন"
+      },
+      "noSettings": "কোনো সেটিংস পাওয়া যায়নি",
+      "saveTooltip": "পরিবর্তনগুলি সংরক্ষণ করুন",
+      "subtitle": "সিস্টেম কনফিগারেশন সেটিংস দেখুন এবং পরিচালনা করুন",
+      "title": "সেটিংস পরিচালনা করুন",
+      "types": {
+        "bool": "বুলিয়ান",
+        "int": "ইন্টিজার",
+        "json": "JSON",
+        "string": "স্ট্রিং"
+      }
+    },
     "subtitle": "সিস্টেম সেটিংস এবং কনফিগারেশন পরিচালনা করুন",
     "title": "প্রশাসন",
     "users": {
+      "administrator": "প্রশাসক",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "ব্যবহারকারী অ্যাকাউন্ট মুছুন",
       "filterLabel": "ব্যবহারকারী ফিল্টার করুন",
       "filterPlaceholder": "ইমেইল, নাম, প্রোভাইডার বা গ্রুপের নাম দিয়ে খুঁজুন",
+      "lastLogin": "সর্বশেষ লগইন",
       "listTitle": "ব্যবহারকারী",
+      "never": "কখনো না",
       "noUsers": "কোনো ব্যবহারকারী পাওয়া যায়নি",
       "subtitle": "সিস্টেম ব্যবহারকারী দেখুন এবং পরিচালনা করুন",
-      "title": "ব্যবহারকারী পরিচালনা করুন"
+      "title": "ব্যবহারকারী পরিচালনা করুন",
+      "transferOwnership": {
+        "confirm": "আপনি কি নিশ্চিত যে আপনি {{source}} থেকে {{target}}-এ সমস্ত ডেটা স্থানান্তর করতে চান?",
+        "dialogTitle": "ব্যবহারকারীর ডেটা স্থানান্তর করুন",
+        "error": "মালিকানা স্থানান্তর করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
+        "success": "{{userPreferences.transferData.success}}",
+        "tooltip": "মালিকানা স্থানান্তর করুন"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -231,13 +295,112 @@
       "noWebhooks": "কোনো ওয়েবহুক পাওয়া যায়নি",
       "secret": "HMAC সিক্রেট",
       "status": {
-        "active": "সক্রিয়",
+        "active": "{{common.active}}",
         "pending_delete": "মুছে ফেলা মুলতুবি",
         "pending_verification": "যাচাই মুলতুবি"
       },
       "subtitle": "ইভেন্ট বিজ্ঞপ্তির জন্য ওয়েবহুক সাবস্ক্রিপশন কনফিগার করুন",
       "title": "Webhooks পরিচালনা করুন"
     }
+  },
+  "adminSurveys": {
+    "cloneSuffix": "(অনুলিপি)",
+    "createDialog": {
+      "nameLabel": "সমীক্ষার নাম",
+      "namePlaceholder": "সমীক্ষার নাম লিখুন",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "সমীক্ষা তৈরি করুন",
+      "versionHint": "মুক্ত-ফর্ম সংস্করণ শনাক্তকারী",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "যেমন, 1, v2-pilot, 2024-Q1",
+      "versionRequired": "সংস্করণ প্রয়োজন"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "editTemplate": "জরিপ সম্পাদনা করুন",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "কোনো মিলে যাওয়া জরিপ নেই",
+    "noTemplatesMessage": "শুরু করতে আপনার প্রথম জরিপ তৈরি করুন।",
+    "noTemplatesTitle": "এখনও কোনো জরিপ নেই",
+    "pageTitle": "{{admin.sections.surveys.title}}",
+    "searchByName": "নাম দিয়ে খুঁজুন...",
+    "searchTemplates": "জরিপ অনুসন্ধান করুন",
+    "surveyDetails": "সার্ভে বিবরণ",
+    "templateBuilder": {
+      "addPage": "পৃষ্ঠা যোগ করুন",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
+      "choicesPerLine": "পছন্দসমূহ (প্রতি লাইনে একটি)",
+      "conditionalLogic": "শর্তসাপেক্ষ লজিক",
+      "conditionalLogicHelp": "SurveyJS শর্তসাপেক্ষ লজিক ডকুমেন্টেশন",
+      "deletePage": "পৃষ্ঠা মুছুন",
+      "deleteQuestion": "প্রশ্ন মুছুন",
+      "enableIf": "সক্ষম করুন যদি",
+      "enableIfHint": "যেমন, {questionName} = 'value'",
+      "enterSurveyDescription": "সার্ভে বিবরণ লিখুন",
+      "enterSurveyTitle": "সার্ভে শিরোনাম লিখুন",
+      "failedToLoadTemplate": "জরিপ লোড করতে ব্যর্থ",
+      "failedToSaveTemplate": "জরিপ সংরক্ষণ করতে ব্যর্থ",
+      "loadingTemplate": "জরিপ লোড হচ্ছে...",
+      "mapsToTmField": "TM ক্ষেত্রের সাথে ম্যাপ করে",
+      "metadataKey": "মেটাডেটা কী",
+      "metadataKeyHint": "মেটাডেটা এন্ট্রির জন্য কী নাম",
+      "nameId": "নাম (ID)",
+      "nameIdHint": "এই প্রশ্নের জন্য অনন্য শনাক্তকারী",
+      "nextPage": "{{pagination.nextPage}}",
+      "noQuestionsHint": "প্যালেট থেকে একটি প্রশ্ন প্রকার ক্লিক করুন যোগ করতে",
+      "noQuestionsYet": "এখনও কোনো প্রশ্ন নেই",
+      "pageIndicator": "পৃষ্ঠা {{current}}/{{total}}",
+      "previousPage": "{{pagination.previousPage}}",
+      "questionProperties": "প্রশ্নের বৈশিষ্ট্য",
+      "questionTypeDescriptions": {
+        "boolean": "বুলিয়ান টগল",
+        "checkbox": "বহু পছন্দ নির্বাচন",
+        "comment": "বহু-লাইন টেক্সট এরিয়া",
+        "dropdown": "ড্রপডাউন নির্বাচন",
+        "panel": "প্যানেলে প্রশ্ন গ্রুপ করুন",
+        "paneldynamic": "পুনরাবৃত্তিযোগ্য প্যানেল গ্রুপ",
+        "radiogroup": "বিকল্প থেকে একক পছন্দ",
+        "text": "একক লাইন টেক্সট ইনপুট"
+      },
+      "questionTypeLabels": {
+        "boolean": "হ্যাঁ/না",
+        "checkbox": "চেকবক্স",
+        "comment": "মাল্টিলাইন",
+        "dropdown": "ড্রপডাউন",
+        "panel": "প্যানেল",
+        "paneldynamic": "ডায়নামিক প্যানেল",
+        "radiogroup": "রেডিও গ্রুপ",
+        "text": "{{editor.nodeLabels.textbox}}"
+      },
+      "questionTypes": "প্রশ্নের প্রকার",
+      "questions": "প্রশ্নসমূহ",
+      "required": "আবশ্যক",
+      "requiredIf": "প্রয়োজনীয় যদি",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
+      "selectQuestionHint": "এর বৈশিষ্ট্য সম্পাদনা করতে একটি প্রশ্ন নির্বাচন করুন",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
+      "tmFieldLabels": {
+        "assetDescription": "সম্পদ বিবরণ",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
+        "description": "থ্রেট মডেল বিবরণ",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
+        "issueUri": "ইস্যু ট্র্যাকিং URL",
+        "metadataKey": "কাস্টম মেটাডেটা",
+        "name": "থ্রেট মডেল নাম",
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
+      },
+      "tmFieldMapping": "থ্রেট মডেল ক্ষেত্র ম্যাপিং",
+      "tmFieldMappingHint": "এই উত্তরটি একটি থ্রেট মডেল ক্ষেত্রের সাথে লিংক করুন",
+      "unsavedChanges": "অসংরক্ষিত পরিবর্তন",
+      "visibleIf": "দৃশ্যমান যদি",
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
+    },
+    "templateCount": "{{count}} জরিপ",
+    "templateCountPlural": "{{count}} জরিপ"
   },
   "assetEditor": {
     "chipPlaceholder": "মান লিখুন এবং Enter চাপুন",
@@ -300,15 +463,22 @@
   "common": {
     "about": "সম্পর্কে",
     "actions": "ক্রিয়াকলাপ",
+    "activate": "সক্রিয় করুন",
+    "active": "সক্রিয়",
     "addMetadata": "মেটাডেটা যোগ করুন",
     "addThreat": "হুমকি যোগ করুন",
     "addons": "অ্যাডঅন",
+    "all": "সব",
+    "allStatuses": "সকল অবস্থা",
+    "archive": "আর্কাইভ",
     "back": "পিছনে",
     "cancel": "বাতিল",
     "cellId": "সেল আইডি",
     "classification": "শ্রেণীবিভাগ",
     "clear": "পরিষ্কার",
+    "clone": "ক্লোন",
     "close": "বন্ধ করুন",
+    "confirm": "নিশ্চিত করুন",
     "confirmDelete": "আপনি কি নিশ্চিত যে আপনি {{item}} \"{{name}}\" মুছতে চান? এই ক্রিয়া পূর্বাবস্থায় ফেরানো যাবে না।",
     "confirmDeleteMessage": "আপনি কি নিশ্চিত যে আপনি {{objectType}} \"{{name}}\" মুছে ফেলতে চান?",
     "copy": "কপি",
@@ -317,6 +487,7 @@
     "created": "তৈরি হয়েছে",
     "criticality": "গুরুত্বপূর্ণতা",
     "cut": "কাট",
+    "deactivate": "নিষ্ক্রিয় করুন",
     "delete": "মুছুন",
     "deleteConfirm": "থ্রেট মডেল মুছুন",
     "deleteWarningConfirmationField": "মুছে ফেলার নিশ্চিতকরণ",
@@ -329,18 +500,23 @@
     "deleteWarningTypeConfirmation": "নিশ্চিত করতে, অনুগ্রহ করে নিচের ফিল্ডে \"{{confirmValue}}\" টাইপ করুন।",
     "description": "বিবরণ",
     "diagramId": "ডায়াগ্রাম আইডি",
+    "dismiss": "বাতিল করুন",
     "done": "সম্পন্ন",
     "download": "ডাউনলোড",
     "edit": "সম্পাদনা",
     "editThreat": "হুমকি সম্পাদনা করুন",
+    "email": "ইমেইল",
     "emailLabel": "ইমেল ঠিকানা",
+    "error": "ত্রুটি",
     "fonts": "ফন্ট",
+    "groups": "গ্রুপ",
     "id": "আইডি",
     "identityProvider": "পরিচয় প্রদানকারী",
     "issueUri": "সমস্যা URL",
     "language": "{{language}}",
     "lastModified": "সর্বশেষ পরিবর্তিত",
     "lastUpdated": "সর্বশেষ আপডেট",
+    "loading": "লোড হচ্ছে...",
     "manage": "পরিচালনা",
     "manageMetadata": "মেটাডেটা পরিচালনা করুন",
     "manageThreats": "হুমকি পরিচালনা করুন",
@@ -350,9 +526,11 @@
     "mitigated": "প্রশমিত",
     "mitigation": "প্রশমন",
     "mitigationPlaceholder": "এই হুমকির জন্য প্রস্তাবিত বা পরিকল্পিত প্রশমনগুলি বর্ণনা করুন",
+    "moreActions": "আরও কার্যক্রম",
     "name": "নাম",
     "noAddonsAvailable": "কোনও অ্যাড-অন উপলব্ধ নেই",
     "noDataAvailable": "কোনো ডেটা উপলব্ধ নেই",
+    "noMatchingResults": "আপনার ফিল্টারের সাথে কোনো ফলাফল মেলেনি।",
     "noMetadata": "কোনো মেটাডেটা উপলব্ধ নেই",
     "noThreats": "কোনো হুমকি উপলব্ধ নেই",
     "none": "কোনোটিই নয়",
@@ -360,17 +538,25 @@
       "asset": "অ্যাসেট",
       "assets": "অ্যাসেট",
       "cell": "সেল",
+      "cells": "কোষ",
       "diagram": "ডায়াগ্রাম",
+      "diagrams": "চিত্র",
       "document": "ডকুমেন্ট",
       "documents": "ডকুমেন্ট",
       "metadata": "{{common.metadata}}",
       "note": "নোট",
       "notes": "নোট",
       "report": "রিপোর্ট",
+      "reports": "প্রতিবেদন",
       "repositories": "রিপোজিটরি",
       "repository": "রিপোজিটরি",
+      "survey": "জরিপ",
+      "surveyResponse": "জরিপ প্রতিক্রিয়া",
+      "surveyResponses": "জরিপ প্রতিক্রিয়া",
+      "surveys": "জরিপ",
       "threat": "হুমকি",
       "threatModel": "থ্রেট মডেল",
+      "threatModels": "হুমকি মডেল",
       "threats": "হুমকি"
     },
     "ok": "ঠিক আছে",
@@ -382,6 +568,7 @@
     "provider": "প্রদানকারী",
     "readOnly": "শুধুমাত্র পড়ার জন্য",
     "readOnlyTooltip": "এই থ্রেট মডেলে আপনার শুধুমাত্র পড়ার অ্যাক্সেস রয়েছে। সম্পাদনার অনুমতির জন্য মালিকের সাথে যোগাযোগ করুন।",
+    "retry": "পুনরায় চেষ্টা করুন",
     "roles": {
       "owner": "মালিক",
       "reader": "পাঠক",
@@ -391,6 +578,8 @@
     "saveAndClose": "সংরক্ষণ করুন এবং বন্ধ করুন",
     "savedSuccessfully": "সফলভাবে সংরক্ষিত",
     "score": "স্কোর",
+    "search": "অনুসন্ধান",
+    "selected": "{{count}} নির্বাচিত",
     "sensitivity": "সংবেদনশীলতা",
     "sessionRoles": {
       "host": "হোস্ট",
@@ -403,11 +592,15 @@
       "group": "গ্রুপ",
       "user": "ব্যবহারকারী"
     },
+    "template": "টেমপ্লেট",
     "threatDescription": "হুমকির বিবরণ",
     "threatDescriptionPlaceholder": "বিস্তারিতভাবে হুমকি বর্ণনা করুন",
     "threatName": "হুমকির নাম",
     "threatType": "হুমকির ধরন",
+    "title": "শিরোনাম",
+    "tryAdjustingFilters": "আপনার ফিল্টার সমন্বয় করে দেখুন।",
     "type": "ধরন",
+    "unarchive": "আনআর্কাইভ",
     "unsavedChangesWarning": "আপনার অসংরক্ষিত পরিবর্তন আছে। আপনি কি নিশ্চিত যে আপনি বন্ধ করতে চান?",
     "userId": "ব্যবহারকারী আইডি",
     "validation": {
@@ -416,6 +609,7 @@
       "nameRequired": "নাম প্রয়োজন",
       "required": "এই ক্ষেত্রটি প্রয়োজন"
     },
+    "version": "সংস্করণ",
     "view": "দেখুন",
     "viewMetadata": "মেটাডেটা দেখুন",
     "viewPermissions": "অনুমতি দেখুন",
@@ -431,6 +625,15 @@
     "moveToFront": "সবার সামনে সরান",
     "noDataAssetsAvailable": "কোন ডেটা অ্যাসেট উপলব্ধ নেই",
     "showObject": "অবজেক্ট দেখান"
+  },
+  "createThreatModel": {
+    "confidentialHint": "গোপনীয় হুমকি মডেলগুলি স্বয়ংক্রিয়ভাবে নিরাপত্তা পর্যালোচক দলের সাথে ভাগ করা হয় না। এই সেটিং সৃষ্টির পরে পরিবর্তন করা যায় না।",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
+    "descriptionPlaceholder": "এই হুমকি মডেলের উদ্দেশ্য এবং সুযোগ বর্ণনা করুন",
+    "framework": "ফ্রেমওয়ার্ক",
+    "namePlaceholder": "হুমকি মডেল নাম প্রবেश করুন",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "হুমকি মডেল তৈরি করুন"
   },
   "dashboard": {
     "clearFilter": "ফিল্টার সাফ করুন",
@@ -466,7 +669,7 @@
     "common": {
       "affectedCells": "প্রভাবিত সেল",
       "cellIds": "সেল আইডি",
-      "cells": "সেল",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "সম্পূর্ণ JSON কপি করুন"
     },
     "graphDataDialog": {
@@ -548,9 +751,18 @@
   "errors": {
     "validationError": "যাচাইকরণ ত্রুটি"
   },
+  "footer": {
+    "support": "সহায়তা"
+  },
   "getStarted": "শুরু করুন",
-  "homeDescription": "একটি সহযোগিতামূলক থ্রেট মডেলিং টুল যা দলগুলোকে তাদের সিস্টেমে নিরাপত্তা হুমকি চিহ্নিত, বিশ্লেষণ এবং নথিভুক্ত করতে সাহায্য করে। আপনার অ্যাপ্লিকেশনের নিরাপত্তা উন্নত করতে থ্রেট মডেল এবং ডায়াগ্রাম তৈরি, শেয়ার এবং সহযোগিতামূলকভাবে সম্পাদনা করুন।",
+  "homeDescription": "TMI এমন একটি টুল যা আপনার প্রতিষ্ঠানের জন্য নিরাপত্তা পর্যালোচনা এবং হুমকি মডেলিং প্রক্রিয়া পরিচালনা ও উন্নত করে। এটি নিরাপত্তা পর্যালোচনা ওয়ার্কফ্লো পরিচালনা করে, নিরাপত্তা পর্যালোচনার জন্য তথ্য সংগঠিত করে, সহযোগিতামূলকভাবে ডেটা ফ্লো ডায়াগ্রাম তৈরি করতে সক্ষম করে এবং পর্যালোচনা প্রক্রিয়ায় পরিশ্রম কমাতে এবং নিরাপত্তা হুমকি বিশ্লেষণ করতে অটোমেশন সংযোগ করতে সক্ষম করে।",
   "homeWelcomeTitle": "TMI-তে স্বাগতম: থ্রেট মডেলিং ইমপ্রুভড",
+  "intake": {
+    "fill": {
+      "saveAndExit": "সংরক্ষণ করুন এবং প্রস্থান করুন",
+      "submitResponses": "উত্তর জমা দিন"
+    }
+  },
   "login": {
     "chooseMethod": "আপনার সাইন ইন পদ্ধতি বেছে নিন:",
     "explanation": "একটি বিশ্বস্ত পরিচয় প্রদানকারী থেকে আপনার বিদ্যমান অ্যাকাউন্ট দিয়ে সাইন ইন করুন। এটি আলাদা পাসওয়ার্ডের প্রয়োজনীয়তা দূর করে, আপনাকে সুরক্ষিত রেখে আপনার অভিজ্ঞতা সহজ করে। আমরা কখনো পাসওয়ার্ড সংরক্ষণ বা পরিচালনা করি না—আপনার শংসাপত্র আপনার প্রদানকারীর কাছে থাকে এবং আমাদের মাধ্যমে আপোস করা যাবে না।",
@@ -571,10 +783,13 @@
     "unexpectedError": "OAuth এর সময় একটি অপ্রত্যাশিত ত্রুটি ঘটেছে।"
   },
   "navbar": {
+    "admin": "অ্যাডমিন",
     "appTitle": "TMI: থ্রেট মডেলিং ইমপ্রুভড",
     "copyUserEmail": "ব্যবহারকারীর ইমেইল ক্লিপবোর্ডে কপি করুন",
+    "dashboard": "ড্যাশবোর্ড",
     "feedback": "একটি বাগ রিপোর্ট করুন, একটি ফিচার অনুরোধ করুন বা মতামত দিন",
     "home": "হোম",
+    "intake": "ইনটেক",
     "logoutButton": "সাইন আউট",
     "serverStatus": {
       "noServerConfigured": "কোনো সার্ভার কনফিগার করা নেই",
@@ -666,6 +881,77 @@
     },
     "title": "সেশন শীঘ্রই শেষ হবে"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "সংরক্ষণ ব্যর্থ হয়েছে",
+      "saved": "সংরক্ষিত",
+      "saving": "সংরক্ষণ করা হচ্ছে..."
+    },
+    "browse": "জরিপ ব্রাউজ করুন",
+    "confidentialDialog": {
+      "description": "এই জমাটি কি গোপনীয় হিসাবে চিহ্নিত করা উচিত? গোপনীয় জমাগুলি স্বয়ংক্রিয়ভাবে নিরাপত্তা পর্যালোচক দলের সাথে ভাগ করা হয় না। এই সেটিং প্রতিক্রিয়া তৈরির পরে পরিবর্তন করা যায় না।",
+      "no": "না",
+      "title": "গোপনীয় জমা",
+      "yes": "হ্যাঁ, গোপনীয় হিসাবে চিহ্নিত করুন"
+    },
+    "confirmation": {
+      "backToSurveys": "জরিপে ফিরে যান",
+      "message": "আপনার জরিপ সফলভাবে জমা দেওয়া হয়েছে।",
+      "title": "জরিপ জমা দেওয়া হয়েছে",
+      "viewResponses": "আমার প্রতিক্রিয়া দেখুন"
+    },
+    "continueDraft": "খসড়া চালিয়ে যান",
+    "fill": {
+      "submitConfirm": "আপনি কি নিশ্চিত যে আপনি জমা দিতে চান? জমা দেওয়ার পরে আপনি আপনার প্রতিক্রিয়া সম্পাদনা করতে পারবেন না।",
+      "title": "জরিপ পূরণ করুন"
+    },
+    "list": {
+      "deleteDraft": "খসড়া মুছুন",
+      "draftStarted": "খসড়া শুরু হয়েছে {{time}}",
+      "errorLoadingSurveys": "সার্ভে লোড করতে ব্যর্থ",
+      "lastModified": "সর্বশেষ পরিবর্তন {{time}}",
+      "loadingSurveys": "সার্ভে লোড হচ্ছে...",
+      "noSurveysMessage": "এই মুহূর্তে কোনো সক্রিয় সার্ভে নেই। পরে আবার দেখুন।",
+      "noSurveysTitle": "কোনো সার্ভে উপলব্ধ নেই",
+      "pageDescription": "নিম্নলিখিত তালিকা থেকে উপযুক্ত ধরনের পর্যালোচনা বেছে নিন, এবং তারপর নিরাপত্তা পর্যালোচনা দলকে পর্যালোচনা সম্পাদনের জন্য প্রয়োজনীয় তথ্য সরবরাহ করতে উপস্থাপিত প্রশ্নের উত্তর দিন।",
+      "pageTitle": "একটি নিরাপত্তা পর্যালোচনার অনুরোধ করুন",
+      "updated": "আপডেট হয়েছে",
+      "yourDrafts": "আপনার খসড়াসমূহ"
+    },
+    "myResponses": "আমার প্রতিক্রিয়া",
+    "noMatchingResponses": "কোনো মিলযুক্ত প্রতিক্রিয়া নেই",
+    "noMatchingResponsesMessage": "নির্বাচিত ফিল্টারের সাথে কোনো প্রতিক্রিয়া মিলছে না।",
+    "noResponses": "আপনি এখনও কোনো জরিপ প্রতিক্রিয়া জমা দেননি",
+    "noSurveys": "কোনো জরিপ উপলব্ধ নেই",
+    "responses": {
+      "continueEditing": "সম্পাদনা চালিয়ে যান",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
+      "filterByStatus": "স্ট্যাটাস অনুযায়ী ফিল্টার করুন",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
+      "noResponsesMessage": "আপনি এখনো কোনো সমীক্ষা সম্পন্ন করেননি। সমীক্ষা পৃষ্ঠা থেকে একটি শুরু করুন।",
+      "noResponsesTitle": "এখনো কোনো প্রতিক্রিয়া নেই",
+      "pageTitle": "আমার সমীক্ষা প্রতিক্রিয়াসমূহ",
+      "responseCount": "{{count}}টি প্রতিক্রিয়া",
+      "responseCountPlural": "{{count}}টি প্রতিক্রিয়া"
+    },
+    "saveDraft": "খসড়া সংরক্ষণ করুন",
+    "startNew": "জরিপ শুরু করুন",
+    "status": {
+      "draft": "খসড়া",
+      "needsRevision": "সংশোধন প্রয়োজন",
+      "readyForReview": "পর্যালোচনার জন্য প্রস্তুত",
+      "reviewCreated": "পর্যালোচনা তৈরি হয়েছে",
+      "submitted": "{{triage.list.submitted}}"
+    },
+    "submitSurvey": "জরিপ জমা দিন",
+    "templateStatus": {
+      "active": "{{common.active}}",
+      "archived": "আর্কাইভকৃত",
+      "inactive": "নিষ্ক্রিয়"
+    },
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "প্রতিক্রিয়া দেখুন"
+  },
   "threatEditor": {
     "createNewThreat": "নতুন হুমকি তৈরি করুন",
     "notAssociatedWithAsset": "কোনো অ্যাসেটের সাথে সম্পর্কিত নয়",
@@ -729,7 +1015,7 @@
     "createNewRepository": "রিপোজিটরি রেফারেন্স যোগ করুন",
     "created": "{{common.created}}",
     "createdBy": "তৈরি করেছেন",
-    "dashboard": "ড্যাশবোর্ড",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "ডেটা ফ্লো ডায়াগ্রাম",
     "deleteWarningPermanent": "এই ক্রিয়া পূর্বাবস্থায় ফেরানো যাবে না এবং সমস্ত সম্পর্কিত ডায়াগ্রাম, হুমকি এবং মেটাডেটা স্থায়ীভাবে মুছে ফেলবে।",
     "descriptionPlaceholder": "এই থ্রেট মডেলের উদ্দেশ্য এবং সুযোগ বর্ণনা করুন",
@@ -737,7 +1023,7 @@
     "diagramName": "ডায়াগ্রামের নাম",
     "diagramPreview": "ডায়াগ্রাম প্রিভিউ",
     "diagramType": "ডায়াগ্রামের ধরন",
-    "diagrams": "ডায়াগ্রাম",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "ডকুমেন্টের উদ্দেশ্য বা বিষয়বস্তু বর্ণনা করুন",
     "documentEditor": {
       "title": {
@@ -762,7 +1048,7 @@
     "noPermissions": "কোনো অনুমতি সংজ্ঞায়িত নেই",
     "noRepositories": "এখনো কোনো রিপোজিটরি যোগ করা হয়নি",
     "noThreats": "এখনো কোনো হুমকি যোগ করা হয়নি",
-    "pageTitle": "থ্রেট মডেল",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "ভূমিকা",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -786,6 +1072,12 @@
     "repositorySubPathHint": "রিপোজিটরির মধ্যে ঐচ্ছিক পাথ",
     "repositoryType": "রিপোজিটরির ধরন",
     "repositoryUri": "রিপোজিটরি URL",
+    "sections": {
+      "inputs": "ইনপুট",
+      "inputsDescription": "অ্যাসেট, ডকুমেন্ট এবং বিশ্লেষণ অধীন সিস্টেম বর্ণনা করে এমন উৎস কোড রিপোজিটরি",
+      "outputs": "আউটপুট",
+      "outputsDescription": "নোট, ডায়াগ্রাম এবং নিরাপত্তা বিশ্লেষণের সময় উৎপাদিত হুমকি"
+    },
     "setAsOwner": "মালিক হিসেবে সেট করুন",
     "sourcesCount": "রিপো",
     "status": {
@@ -818,7 +1110,7 @@
       "addAsset": "অ্যাসেট যোগ করুন",
       "addDiagram": "ডায়াগ্রাম যোগ করুন",
       "addDocument": "ডকুমেন্ট যোগ করুন",
-      "addNote": "নোট যোগ করুন",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "অ্যাসেট হল সিস্টেমের মধ্যে মূল্যবান সম্পদ যা সুরক্ষা প্রয়োজন, যেমন ডেটা, হার্ডওয়্যার, সফটওয়্যার, অবকাঠামো, সেবা বা কর্মী।",
       "diagramsCardTitle": "TMI-তে ডায়াগ্রাম হল একটি সিস্টেমের মধ্যে ডেটা চলাচল এবং প্রক্রিয়াগুলির মেশিন-পাঠযোগ্য উপস্থাপনা, যা ম্যানুয়াল এবং স্বয়ংক্রিয় নিরাপত্তা বিশ্লেষণ উভয়ই সক্ষম করে।",
       "documentsCardTitle": "ডকুমেন্ট রেফারেন্স হল TMI-র বাইরে সংরক্ষিত ডকুমেন্টের লিংক। প্রাসঙ্গিক ডকুমেন্ট বিশ্লেষণ করা সিস্টেম বর্ণনা করে এবং নিরাপত্তা বিশ্লেষক এবং স্বয়ংক্রিয় বিশ্লেষণ প্রক্রিয়া উভয় দ্বারা ব্যবহার করা যেতে পারে।",
@@ -881,10 +1173,90 @@
     },
     "title": "সেবার শর্তাবলী"
   },
-  "userPreferences": {
-    "administration": {
-      "title": "{{admin.title}}"
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "ইমেইল দ্বারা অনুসন্ধান করুন",
+      "searchPlaceholder": "ইমেইল ঠিকানা টাইপ শুরু করুন..."
+    }
+  },
+  "triage": {
+    "bulkActions": "বাল্ক কর্ম",
+    "changeStatus": "স্ট্যাটাস পরিবর্তন করুন",
+    "columns": {
+      "confidentialTooltip": "গোপনীয় জমা"
     },
+    "createTm": "{{createThreatModel.title}}",
+    "detail": {
+      "addNote": "নোট যোগ করুন",
+      "markdownSupported": "মার্কডাউন সমর্থিত",
+      "noNotes": "এখনো কোনো ট্রায়াজ নোট নেই",
+      "noResponses": "কোনো প্রতিক্রিয়া রেকর্ড করা হয়নি",
+      "noRevisionNotes": "কোনো সংশোধন নোট নেই",
+      "note": "নোট",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "নোটের বিষয়বস্তু লিখুন...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "সংক্ষিপ্ত নোট শিরোনাম",
+      "notes": "নোট",
+      "responseDetails": "প্রতিক্রিয়া বিবরণ",
+      "reviewedAt": "পর্যালোচিত",
+      "reviewedBy": "পর্যালোচক",
+      "revisionNotesTitle": "সংশোধনের অনুরোধ করা হয়েছে",
+      "statusTimeline": "স্ট্যাটাস টাইমলাইন",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "ট্রায়াজ নোট"
+    },
+    "filters": {
+      "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "{{triage.list.allSurveys}}",
+      "clearFilters": "ফিল্টার সাফ করুন",
+      "confidential": "গোপনীয়তা",
+      "confidentialOnly": "গোপনীয়",
+      "nonConfidential": "অ-গোপনীয়"
+    },
+    "list": {
+      "allSurveys": "সকল সার্ভে",
+      "approve": "অনুমোদন",
+      "approveSelected": "নির্বাচিত অনুমোদন করুন",
+      "createThreatModel": "{{createThreatModel.title}}",
+      "errorLoadingResponses": "প্রতিক্রিয়া লোড করতে ব্যর্থ",
+      "loadingResponses": "প্রতিক্রিয়া লোড হচ্ছে...",
+      "noResponsesFiltered": "আপনার ফিল্টারের সাথে কোনো প্রতিক্রিয়া মেলেনি",
+      "noResponsesTitle": "কোনো প্রতিক্রিয়া নেই",
+      "noResponsesToTriage": "ফরজ করার জন্য কোনো সার্ভে প্রতিক্রিয়া নেই",
+      "notSubmitted": "জমা দেওয়া হয়নি",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
+      "searchPlaceholder": "জমাদাতা বা জরিপ দ্বারা অনুসন্ধান করুন...",
+      "submitted": "জমা দেওয়া হয়েছে",
+      "submitter": "জমাদানকারী"
+    },
+    "markInReview": "পর্যালোচনায় চিহ্নিত করুন",
+    "markPendingTriage": "ট্রায়াজ মুলতুবি চিহ্নিত করুন",
+    "noResponses": "ট্রায়াজ করার জন্য কোনো প্রতিক্রিয়া নেই",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "নোটের বিষয়বস্তু লিখুন (মার্কডাউন সমর্থিত)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "নতুন ট্রায়াজ নোট",
+        "view": "ট্রায়াজ নোট দেখুন"
+      }
+    },
+    "queue": "ট্রায়াজ সারি",
+    "returnToSubmitted": "জমা দেওয়াতে ফিরে যান",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "কী সংশোধন করতে হবে তা ব্যাখ্যা করে নোট প্রদান করুন। জমাদাতা তাদের উত্তর পর্যালোচনা করার সময় এই নোটগুলি দেখতে পাবেন।",
+      "hint": "প্রয়োজন — কী পরিবর্তন প্রয়োজন তা বর্ণনা করুন",
+      "label": "সংশোধন নোট",
+      "placeholder": "প্রয়োজনীয় সংশোধনগুলি বর্ণনা করুন...",
+      "title": "সংশোধনের জন্য ফেরত পাঠান"
+    },
+    "title": "ট্রায়াজ",
+    "viewDetails": "বিবরণ দেখুন"
+  },
+  "userPreferences": {
     "colorBlindMode": "কালার ব্লাইন্ড মোড সক্রিয় করুন",
     "credentials": {
       "add": "যোগ করুন",
@@ -936,6 +1308,7 @@
     },
     "diagramAnimationEffects": "ডায়াগ্রাম এডিটরে অ্যানিমেশন ইফেক্ট সক্রিয় করুন",
     "displayPreferences": "প্রদর্শন পছন্দ",
+    "hoverShowMetadata": "হোভারে সেল মেটাডেটা দেখান",
     "marginSize": {
       "narrow": "সরু",
       "standard": "মানক",
@@ -948,13 +1321,18 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "রিপোর্ট পছন্দ",
+    "sections": {
+      "developer": "ডেভেলপার",
+      "diagramEditor": "ডায়াগ্রাম এডিটর",
+      "securityReviewer": "নিরাপত্তা পর্যালোচক"
+    },
     "showDeveloperTools": "ডেভেলপার টুলস দেখান",
     "tabs": {
       "credentials": "শংসাপত্র",
       "danger": "বিপদ",
       "display": "প্রদর্শন",
       "profile": "প্রোফাইল",
-      "reports": "প্রতিবেদন"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "থিম",
     "themeMode": {
@@ -963,9 +1341,18 @@
       "light": "হালকা"
     },
     "title": "ব্যবহারকারীর পছন্দ",
+    "transferData": {
+      "confirmMessage": "আপনি কি নিশ্চিত যে আপনি আপনার সমস্ত হুমকি মডেল এবং জরিপ প্রতিক্রিয়া {{email}}-এ স্থানান্তর করতে চান? স্থানান্তরিত আইটেমগুলিতে আপনি লেখক ভূমিকায় হ্রাস পাবেন।",
+      "dialogTitle": "আমার ডেটা স্থানান্তর করুন",
+      "error": "ডেটা স্থানান্তর করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
+      "hint": "আপনার সমস্ত হুমকি মডেল এবং জরিপ প্রতিক্রিয়ার মালিকানা অন্য ব্যবহারকারীর কাছে স্থানান্তর করে। স্থানান্তরিত আইটেমগুলিতে আপনি লেখক ভূমিকায় হ্রাস পাবেন।",
+      "success": "{{tmCount}} হুমকি মডেল এবং {{responseCount}} জরিপ প্রতিক্রিয়া স্থানান্তরিত করা হয়েছে।",
+      "title": "আমার ডেটা অন্য ব্যবহারকারীর কাছে স্থানান্তর করুন"
+    },
     "userProfile": {
       "currentRole": "বর্তমান থ্রেট মডেল ভূমিকা",
-      "groups": "গ্রুপ",
+      "groups": "{{common.groups}}",
+      "jwtGroups": "JWT গ্রুপ",
       "provider": "{{common.identityProvider}}",
       "providerId": "প্রদানকারী আইডি",
       "title": "ব্যবহারকারীর প্রোফাইল",

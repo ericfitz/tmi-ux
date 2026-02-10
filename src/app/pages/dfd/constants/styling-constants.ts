@@ -166,11 +166,11 @@ export const DFD_STYLING = {
       DEFAULT_HEIGHT: 60,
     },
     STORE: {
-      STROKE: 'transparent',
-      STROKE_WIDTH: 0,
+      STROKE: '#000000',
+      STROKE_WIDTH: 2,
       FILL: '#FFFFFF',
       DEFAULT_WIDTH: 160,
-      DEFAULT_HEIGHT: 60,
+      DEFAULT_HEIGHT: 80,
     },
     SECURITY_BOUNDARY: {
       STROKE: '#000000',

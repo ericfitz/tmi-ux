@@ -29,9 +29,6 @@
 
   .close-button {
     margin-left: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 }
 
@@ -123,9 +120,12 @@
     text-align: center;
   }
 
-  .mat-column-actions {
-    width: 80px;
-    text-align: center;
+  .mat-column-actions,
+  .column-actions {
+    width: 120px;
+    min-width: 120px;
+    text-align: right;
+    padding-right: 8px !important;
   }
 
   .subject-info {
@@ -182,14 +182,9 @@
 
   .action-buttons {
     display: flex;
-    gap: 4px;
+    gap: 2px;
     align-items: center;
-
-    button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    justify-content: flex-end;
   }
 }
 

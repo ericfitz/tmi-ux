@@ -201,6 +201,27 @@
                   "with": "src/environments/environment.oci.ts"
                 }
               ]
+            },
+            "container": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2.5MB",
+                  "maximumError": "3MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "20kB",
+                  "maximumError": "25kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.container.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"

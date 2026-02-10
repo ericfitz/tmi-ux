@@ -63,7 +63,7 @@ export class LoginComponent implements OnInit {
 
     // Get returnUrl and reason from query params
     this.route.queryParams.pipe(take(1)).subscribe(queryParams => {
-      this.returnUrl = (queryParams['returnUrl'] as string | undefined) || '/dashboard';
+      this.returnUrl = (queryParams['returnUrl'] as string | undefined) || null;
 
       // Check if user was redirected due to session expiry
       const reason = queryParams['reason'] as string | undefined;
@@ -138,7 +138,7 @@ export class LoginComponent implements OnInit {
         providerId: provider.id,
         providerName: provider.name,
         providerType: 'oauth',
-        returnUrl: this.returnUrl || '/dashboard',
+        returnUrl: this.returnUrl || undefined,
       },
     });
   }
@@ -158,7 +158,7 @@ export class LoginComponent implements OnInit {
         providerId: provider.id,
         providerName: provider.name,
         providerType: 'saml',
-        returnUrl: this.returnUrl || '/dashboard',
+        returnUrl: this.returnUrl || undefined,
       },
     });
   }

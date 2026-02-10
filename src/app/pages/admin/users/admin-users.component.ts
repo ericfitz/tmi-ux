@@ -1,10 +1,14 @@
-import { Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, take } from 'rxjs/operators';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
@@ -16,8 +20,14 @@ import { UserAdminService } from '@app/core/services/user-admin.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { AuthService } from '@app/auth/services/auth.service';
 import { AdminUser } from '@app/types/user.types';
+import {
+  UserPickerDialogComponent,
+  UserPickerDialogData,
+} from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
+import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
+import { LanguageService } from '@app/i18n/language.service';
 import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
 import {
   DEFAULT_PAGE_SIZE,
@@ -48,19 +58,21 @@ import {
     ...FEEDBACK_MATERIAL_IMPORTS,
     TranslocoModule,
     ProviderDisplayComponent,
+    UserDisplayComponent,
   ],
   templateUrl: './admin-users.component.html',
   styleUrl: './admin-users.component.scss',
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntlService }],
 })
-export class AdminUsersComponent implements OnInit {
+export class AdminUsersComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private filterSubject$ = new Subject<string>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   users: AdminUser[] = [];
-  filteredUsers: AdminUser[] = [];
+  dataSource = new MatTableDataSource<AdminUser>([]);
   totalUsers = 0;
   availableProviders: OAuthProviderInfo[] = [];
 
@@ -71,6 +83,7 @@ export class AdminUsersComponent implements OnInit {
 
   filterText = '';
   loading = false;
+  currentLocale = 'en-US';
 
   constructor(
     private userAdminService: UserAdminService,
@@ -78,9 +91,39 @@ export class AdminUsersComponent implements OnInit {
     private route: ActivatedRoute,
     private logger: LoggerService,
     private authService: AuthService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private transloco: TranslocoService,
+    private languageService: LanguageService,
   ) {}
 
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (item: AdminUser, property: string): string | number => {
+      switch (property) {
+        case 'provider':
+          return item.provider.toLowerCase();
+        case 'subject':
+          return (item.name || item.email || '').toLowerCase();
+        case 'lastLogin':
+          return item.last_login ? new Date(item.last_login).getTime() : 0;
+        case 'groups':
+          return (item.groups ?? []).join(', ').toLowerCase();
+        case 'threatModels':
+          return item.active_threat_models ?? 0;
+        default:
+          return '';
+      }
+    };
+  }
+
   ngOnInit(): void {
+    this.languageService.currentLanguage$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(language => {
+        this.currentLocale = language.code;
+      });
+
     this.loadProviders();
 
     // Initialize pagination state from URL query params
@@ -184,11 +227,11 @@ export class AdminUsersComponent implements OnInit {
   applyFilter(): void {
     const filter = this.filterText.toLowerCase().trim();
     if (!filter) {
-      this.filteredUsers = [...this.users];
+      this.dataSource.data = [...this.users];
       return;
     }
 
-    this.filteredUsers = this.users.filter(
+    this.dataSource.data = this.users.filter(
       user =>
         user.email?.toLowerCase().includes(filter) ||
         user.name?.toLowerCase().includes(filter) ||
@@ -238,11 +281,60 @@ This action cannot be undone.`;
     }
   }
 
+  onTransferOwnership(user: AdminUser): void {
+    const dialogRef = this.dialog.open(UserPickerDialogComponent, {
+      data: {
+        title: this.transloco.translate('admin.users.transferOwnership.dialogTitle'),
+        excludeUserId: user.internal_uuid,
+      } as UserPickerDialogData,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((targetUser: AdminUser | undefined) => {
+        if (!targetUser) return;
+
+        const confirmed = confirm(
+          this.transloco.translate('admin.users.transferOwnership.confirm', {
+            source: user.email,
+            target: targetUser.email,
+          }),
+        );
+
+        if (!confirmed) return;
+
+        this.userAdminService
+          .transferOwnership(user.internal_uuid, targetUser.internal_uuid)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: result => {
+              const message = this.transloco.translate('admin.users.transferOwnership.success', {
+                tmCount: result.threat_models_transferred.count,
+                responseCount: result.survey_responses_transferred.count,
+              });
+              this.snackBar.open(message, this.transloco.translate('common.dismiss'), {
+                duration: 5000,
+              });
+              this.loadUsers();
+            },
+            error: err => {
+              this.logger.error('Failed to transfer ownership', err);
+              this.snackBar.open(
+                this.transloco.translate('admin.users.transferOwnership.error'),
+                this.transloco.translate('common.dismiss'),
+                { duration: 5000 },
+              );
+            },
+          });
+      });
+  }
+
   onClose(): void {
     if (this.authService.isAdmin) {
       void this.router.navigate(['/admin']);
     } else {
-      void this.router.navigate(['/dashboard']);
+      void this.router.navigate([this.authService.getLandingPage()]);
     }
   }
 

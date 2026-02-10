@@ -1,0 +1,60 @@
+# Multi-stage build for TMI-UX using Chainguard base images
+# Uses the container configuration (environment.container.ts)
+# Runtime environment can be overridden via TMI_* env vars
+
+# Stage 1: Build the Angular application
+FROM cgr.dev/chainguard/node:latest-dev AS builder
+
+# Run as root to install pnpm via corepack
+USER root
+WORKDIR /app
+
+# Enable corepack and activate pnpm
+RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
+
+# Copy package files first for layer caching
+COPY package.json pnpm-lock.yaml ./
+
+# Install all dependencies (including devDependencies for build)
+RUN pnpm install --frozen-lockfile
+
+# Copy application source
+COPY . .
+
+# Build the application with container configuration
+RUN pnpm run build:container
+
+# Stage 2: Install runtime dependencies in a separate stage
+FROM cgr.dev/chainguard/node:latest-dev AS runtime-deps
+
+USER root
+WORKDIR /app
+
+# Create minimal package.json with only runtime server dependencies
+RUN echo '{"name":"tmi-ux-server","version":"1.0.0","type":"module","dependencies":{"express":"^5.1.0","express-rate-limit":"^8.1.0"}}' > package.json
+
+# Install only production dependencies
+RUN npm install --omit=dev --production
+
+# Stage 3: Production runtime
+FROM cgr.dev/chainguard/node:latest
+
+WORKDIR /app
+
+# Copy runtime node_modules from the deps stage
+COPY --from=runtime-deps /app/node_modules ./node_modules
+
+# Copy built Angular application from builder stage
+COPY --from=builder /app/dist ./dist
+
+# Copy server file
+COPY server.js ./
+
+EXPOSE 8080
+
+ENV PORT=8080
+ENV NODE_ENV=production
+
+# Chainguard node:latest has ENTRYPOINT ["/usr/bin/node"]
+# so CMD only needs the script path
+CMD ["server.js"]

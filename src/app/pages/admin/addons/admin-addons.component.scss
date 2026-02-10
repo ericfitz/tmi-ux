@@ -29,12 +29,6 @@
 
   .close-button {
     margin-left: 16px;
-
-    mat-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
   }
 }
 
@@ -98,7 +92,7 @@
 
 .addon-item {
   display: grid;
-  grid-template-columns: 64px 1fr auto;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
   grid-template-rows: auto auto auto;
   gap: 4px 16px;
   padding: 16px;
@@ -138,6 +132,9 @@
     font-size: 16px;
     display: flex;
     align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .addon-actions {
@@ -154,6 +151,10 @@
     color: var(--theme-text-secondary);
     font-size: 14px;
     line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 
   .addon-metadata {
@@ -251,7 +252,7 @@
   }
 
   .addon-item {
-    grid-template-columns: 48px 1fr auto;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
     gap: 4px 12px;
 
     .addon-icon {

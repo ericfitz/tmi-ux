@@ -1,4 +1,4 @@
-import { Shape } from '@antv/x6';
+import { NumberExt, Shape } from '@antv/x6';
 import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
@@ -15,60 +15,124 @@ const registeredShapes = new Set<string>();
  * Register all custom shapes for DFD diagrams
  */
 export function registerCustomShapes(): void {
-  // Register custom store shape with only top and bottom borders
+  // Register custom store shape (cylinder/drum per DFD3 spec)
+  // Adapted from official X6 custom cylinder example
   if (!registeredShapes.has('store')) {
     registeredShapes.add('store');
     Shape.Rect.define({
       shape: 'store',
       markup: [
         {
-          tagName: 'rect',
+          tagName: 'path',
           selector: 'body',
+        },
+        {
+          tagName: 'ellipse',
+          selector: 'top',
         },
         {
           tagName: 'text',
           selector: 'text',
         },
-        {
-          tagName: 'path',
-          selector: 'topLine',
-        },
-        {
-          tagName: 'path',
-          selector: 'bottomLine',
-        },
       ],
       attrs: {
-        topLine: {
-          stroke:
-            DFD_STYLING.NODES.STORE.STROKE === 'transparent'
-              ? DFD_STYLING.DEFAULT_STROKE
-              : DFD_STYLING.NODES.STORE.STROKE,
-          strokeWidth: DFD_STYLING.NODES.STORE.STROKE_WIDTH || DFD_STYLING.DEFAULT_STROKE_WIDTH,
-          refD: 'M 0 0 l 200 0',
-        },
-        bottomLine: {
-          stroke:
-            DFD_STYLING.NODES.STORE.STROKE === 'transparent'
-              ? DFD_STYLING.DEFAULT_STROKE
-              : DFD_STYLING.NODES.STORE.STROKE,
-          strokeWidth: DFD_STYLING.NODES.STORE.STROKE_WIDTH || DFD_STYLING.DEFAULT_STROKE_WIDTH,
-          refY: '100%',
-          refD: 'M 0 0 l 200 0',
-        },
         body: {
           fill: DFD_STYLING.NODES.STORE.FILL,
           stroke: DFD_STYLING.NODES.STORE.STROKE,
           strokeWidth: DFD_STYLING.NODES.STORE.STROKE_WIDTH,
+          lateral: 10,
+        },
+        top: {
+          fill: DFD_STYLING.NODES.STORE.FILL,
+          stroke: DFD_STYLING.NODES.STORE.STROKE,
+          strokeWidth: DFD_STYLING.NODES.STORE.STROKE_WIDTH,
+          refCx: '50%',
+          refRx: '50%',
+          cy: 10,
+          ry: 10,
         },
         text: {
           refX: '50%',
-          refY: '50%',
+          refY: '55%',
           textAnchor: 'middle',
           textVerticalAnchor: 'middle',
           fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
           fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
           fill: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
+        },
+      },
+      attrHooks: {
+        lateral: {
+          set(val, { refBBox }) {
+            let t: number | string = val as number | string;
+            const isPercentage = NumberExt.isPercentage(t);
+            if (isPercentage) {
+              t = parseFloat(t as string) / 100;
+            }
+
+            const x = refBBox.x;
+            const y = refBBox.y;
+            const w = refBBox.width;
+            const h = refBBox.height;
+
+            const rx = w / 2;
+            const ry = isPercentage ? h * (t as number) : (t as number);
+            const kappa = 0.551784;
+            const cx = kappa * rx;
+            const cy = kappa * ry;
+
+            const xLeft = x;
+            const xCenter = x + w / 2;
+            const xRight = x + w;
+
+            const ySideTop = y + ry;
+            const yCurveTop = ySideTop - ry;
+            const ySideBottom = y + h - ry;
+            const yCurveBottom = y + h;
+
+            const data = [
+              'M',
+              xLeft,
+              ySideTop,
+              'L',
+              xLeft,
+              ySideBottom,
+              'C',
+              x,
+              ySideBottom + cy,
+              xCenter - cx,
+              yCurveBottom,
+              xCenter,
+              yCurveBottom,
+              'C',
+              xCenter + cx,
+              yCurveBottom,
+              xRight,
+              ySideBottom + cy,
+              xRight,
+              ySideBottom,
+              'L',
+              xRight,
+              ySideTop,
+              'C',
+              xRight,
+              ySideTop - cy,
+              xCenter + cx,
+              yCurveTop,
+              xCenter,
+              yCurveTop,
+              'C',
+              xCenter - cx,
+              yCurveTop,
+              xLeft,
+              ySideTop - cy,
+              xLeft,
+              ySideTop,
+              'Z',
+            ];
+
+            return { d: data.join(' ') };
+          },
         },
       },
     });
@@ -110,14 +174,14 @@ export function registerCustomShapes(): void {
     });
   }
 
-  // Register custom process shape (elliptical/circular)
+  // Register custom process shape (rounded rectangle per DFD3 spec)
   if (!registeredShapes.has('process')) {
     registeredShapes.add('process');
-    Shape.Ellipse.define({
+    Shape.Rect.define({
       shape: 'process',
       markup: [
         {
-          tagName: 'ellipse',
+          tagName: 'rect',
           selector: 'body',
         },
         {
@@ -130,8 +194,8 @@ export function registerCustomShapes(): void {
           strokeWidth: DFD_STYLING.NODES.PROCESS.STROKE_WIDTH,
           stroke: DFD_STYLING.NODES.PROCESS.STROKE,
           fill: DFD_STYLING.NODES.PROCESS.FILL,
-          rx: 30,
-          ry: 30,
+          rx: 10,
+          ry: 10,
         },
         text: {
           refX: '50%',

@@ -76,26 +76,6 @@
       "subtitle": "TMI کی فعالیت بڑھانے کے لیے ایڈ آنز ترتیب دیں",
       "title": "ایڈ آنز کا انتظام"
     },
-    "administrators": {
-      "addButton": "{{admin.administrators.addDialog.save}}",
-      "addDialog": {
-        "provider": "{{common.provider}}",
-        "providerRequired": "فراہم کنندہ ضروری ہے",
-        "save": "ایڈمنسٹریٹر شامل کریں",
-        "subject": "موضوع",
-        "subjectHint": "صارف کا ای میل یا گروپ کا نام درج کریں",
-        "subjectPlaceholder": "صارف کا ای میل یا گروپ کا نام",
-        "subjectRequired": "موضوع ضروری ہے",
-        "title": "{{admin.administrators.addDialog.save}}"
-      },
-      "filterLabel": "ایڈمنسٹریٹرز فلٹر کریں",
-      "filterPlaceholder": "ای میل یا گروپ کے نام سے تلاش کریں",
-      "listTitle": "سسٹم ایڈمنسٹریٹرز",
-      "noAdministrators": "کوئی ایڈمنسٹریٹرز نہیں ملے",
-      "removeTooltip": "ایڈمنسٹریٹر کی اجازتیں ہٹائیں",
-      "subtitle": "کنٹرول کریں کہ کس کو سسٹم تک انتظامی رسائی حاصل ہے",
-      "title": "ایڈمنسٹریٹرز کا انتظام"
-    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -114,6 +94,11 @@
         "save": "گروپ بنائیں",
         "title": "گروپ شامل کریں"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "استعمال"
+      },
       "deleteTooltip": "گروپ حذف کریں",
       "filterLabel": "گروپس فلٹر کریں",
       "filterPlaceholder": "گروپ کے نام یا فراہم کنندہ سے تلاش کریں",
@@ -124,8 +109,10 @@
         "noMembers": "اس گروپ میں کوئی اراکین نہیں",
         "removeTooltip": "گروپ سے ہٹائیں",
         "searchHint": "تلاش کے لیے کم از کم 2 حروف ٹائپ کریں",
-        "searchPlaceholder": "ای میل ایڈریس ٹائپ کرنا شروع کریں...",
-        "searchUser": "ای میل سے صارف تلاش کریں"
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
+        "searchUser": "ای میل سے صارف تلاش کریں",
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "کوئی گروپس نہیں ملے",
       "subtitle": "سسٹم گروپس دیکھیں اور ان کا انتظام کریں",
@@ -143,6 +130,12 @@
         "title": "حسب ضرورت کوٹہ شامل کریں",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "ڈیفالٹ",
       "deleteTooltip": "حسب ضرورت کوٹہ ہٹائیں (ڈیفالٹس پر واپس جائیں)",
       "eventsPerMinute": "فی منٹ ایونٹس",
       "filterLabel": "کوٹہ فلٹر کریں",
@@ -164,10 +157,6 @@
         "description": "ایپلیکیشن ایڈ آنز انسٹال اور ترتیب دیں",
         "title": "{{admin.addons.title}}"
       },
-      "administrators": {
-        "description": "ایڈمنسٹریٹر کی اجازتیں دیں یا منسوخ کریں",
-        "title": "{{admin.administrators.title}}"
-      },
       "groups": {
         "description": "صارف گروپس اور رکنیتیں ترتیب دیں",
         "title": "{{admin.groups.title}}"
@@ -175,6 +164,14 @@
       "quotas": {
         "description": "وسائل کے کوٹہ اور حدود ترتیب دیں",
         "title": "{{admin.quotas.title}}"
+      },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
+      "surveys": {
+        "description": "سروے بنائیں اور ان کا نظم کریں",
+        "title": "سروے کا نظم کریں"
       },
       "users": {
         "description": "صارف اکاؤنٹس دیکھیں اور ان کا انتظام کریں",
@@ -185,16 +182,83 @@
         "title": "{{admin.webhooks.title}}"
       }
     },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "اس ترتیب کی اختیاری تفصیل",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "چھوٹے حروف کے ساتھ نقطوں اور انڈر سکور (مثلاً، rate_limit.max_rpm)",
+        "keyInvalid": "چھوٹے حرف سے شروع ہونا چاہیے، صرف چھوٹے حروف، نمبرز، نقطے، اور انڈر سکور استعمال کریں",
+        "keyRequired": "کی ضروری ہے",
+        "save": "ترتیب بنائیں",
+        "title": "ترتیب شامل کریں",
+        "type": "{{common.type}}",
+        "typeRequired": "قسم ضروری ہے",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "قدر ضروری ہے"
+      },
+      "cancelTooltip": "ترمیم منسوخ کریں",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "کیا آپ واقعی ترتیب \"{{key}}\" کو حذف کرنا چاہتے ہیں؟",
+      "deleteTooltip": "ترتیب حذف کریں",
+      "editTooltip": "ترتیب میں ترمیم کریں",
+      "filterLabel": "فلٹر",
+      "filterPlaceholder": "کی، قدر، یا تفصیل سے فلٹر کریں",
+      "listTitle": "سسٹم کی ترتیبات",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "سرور کی تشکیل فائل یا ماحولیاتی متغیرات سے ڈیٹا بیس میں ترتیبات درآمد کریں۔",
+        "migrate": "منتقل کریں",
+        "overwriteLabel": "موجودہ ترتیبات کو اوور رائٹ کریں",
+        "overwriteWarning": "انتباہ: یہ ڈیٹا بیس میں ان ترتیبات کو تبدیل کر دے گا جو پہلے حسب ضرورت کی گئی تھیں۔",
+        "resultMigrated": "{{count}} ترتیبات منتقل کی گئیں",
+        "resultSkipped": "{{count}} ترتیبات چھوڑی گئیں",
+        "title": "ترتیبات منتقل کریں"
+      },
+      "noSettings": "کوئی ترتیبات نہیں ملیں",
+      "saveTooltip": "تبدیلیاں محفوظ کریں",
+      "subtitle": "سسٹم کی تشکیل کی ترتیبات دیکھیں اور ان کا انتظام کریں",
+      "title": "ترتیبات کا انتظام",
+      "types": {
+        "bool": "بولین",
+        "int": "انٹیجر",
+        "json": "JSON",
+        "string": "اسٹرنگ"
+      }
+    },
     "subtitle": "سسٹم کی ترتیبات اور تشکیلات کا انتظام کریں",
     "title": "انتظامیہ",
     "users": {
+      "administrator": "منتظم",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "صارف اکاؤنٹ حذف کریں",
       "filterLabel": "صارفین فلٹر کریں",
       "filterPlaceholder": "ای میل، نام، فراہم کنندہ، یا گروپ کے نام سے تلاش کریں",
+      "lastLogin": "آخری لاگ ان",
       "listTitle": "صارفین",
+      "never": "کبھی نہیں",
       "noUsers": "کوئی صارفین نہیں ملے",
       "subtitle": "سسٹم صارفین دیکھیں اور ان کا انتظام کریں",
-      "title": "صارفین کا انتظام"
+      "title": "صارفین کا انتظام",
+      "transferOwnership": {
+        "confirm": "کیا آپ واقعی {{source}} سے {{target}} تک تمام ڈیٹا منتقل کرنا چاہتے ہیں؟",
+        "dialogTitle": "صارف ڈیٹا منتقل کریں",
+        "error": "ملکیت منتقل کرنے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔",
+        "success": "{{userPreferences.transferData.success}}",
+        "tooltip": "ملکیت منتقل کریں"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -231,13 +295,112 @@
       "noWebhooks": "کوئی webhooks نہیں ملے",
       "secret": "HMAC راز",
       "status": {
-        "active": "فعال",
+        "active": "{{common.active}}",
         "pending_delete": "حذف زیر التواء",
         "pending_verification": "تصدیق زیر التواء"
       },
       "subtitle": "ایونٹ نوٹیفیکیشنز کے لیے webhook سبسکرپشنز ترتیب دیں",
       "title": "Webhooks کا انتظام"
     }
+  },
+  "adminSurveys": {
+    "cloneSuffix": "(نقل)",
+    "createDialog": {
+      "nameLabel": "سروے کا نام",
+      "namePlaceholder": "سروے کا نام درج کریں",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "سروے بنائیں",
+      "versionHint": "آزاد شکل میں ورژن کی شناخت",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "مثلاً، 1، v2-pilot، 2024-Q1",
+      "versionRequired": "ورژن ضروری ہے"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "editTemplate": "سروے میں ترمیم کریں",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "کوئی مماثل سروے نہیں",
+    "noTemplatesMessage": "شروع کرنے کے لیے اپنا پہلا سروے بنائیں۔",
+    "noTemplatesTitle": "ابھی تک کوئی سروے نہیں",
+    "pageTitle": "{{admin.sections.surveys.title}}",
+    "searchByName": "نام سے تلاش کریں...",
+    "searchTemplates": "سروے تلاش کریں",
+    "surveyDetails": "سروے کی تفصیلات",
+    "templateBuilder": {
+      "addPage": "صفحہ شامل کریں",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
+      "choicesPerLine": "انتخابات (ہر لائن میں ایک)",
+      "conditionalLogic": "مشروط منطق",
+      "conditionalLogicHelp": "SurveyJS مشروط منطق دستاویزات",
+      "deletePage": "صفحہ حذف کریں",
+      "deleteQuestion": "سوال حذف کریں",
+      "enableIf": "اگر فعال کریں",
+      "enableIfHint": "مثلاً، {questionName} = 'value'",
+      "enterSurveyDescription": "سروے کی تفصیل درج کریں",
+      "enterSurveyTitle": "سروے کا عنوان درج کریں",
+      "failedToLoadTemplate": "سروے لوڈ کرنے میں ناکامی",
+      "failedToSaveTemplate": "سروے محفوظ کرنے میں ناکامی",
+      "loadingTemplate": "سروے لوڈ ہو رہا ہے...",
+      "mapsToTmField": "TM فیلڈ سے منسلک",
+      "metadataKey": "میٹا ڈیٹا کی",
+      "metadataKeyHint": "میٹا ڈیٹا انٹری کے لیے کی کا نام",
+      "nameId": "نام (ID)",
+      "nameIdHint": "اس سوال کے لیے منفرد شناخت کنندہ",
+      "nextPage": "{{pagination.nextPage}}",
+      "noQuestionsHint": "سوال شامل کرنے کے لیے پیلیٹ سے سوال کی قسم پر کلک کریں",
+      "noQuestionsYet": "ابھی تک کوئی سوالات نہیں",
+      "pageIndicator": "صفحہ {{current}} از {{total}}",
+      "previousPage": "{{pagination.previousPage}}",
+      "questionProperties": "سوال کی خصوصیات",
+      "questionTypeDescriptions": {
+        "boolean": "بولین ٹوگل",
+        "checkbox": "متعدد انتخاب",
+        "comment": "کثیر السطر ٹیکسٹ ایریا",
+        "dropdown": "ڈراپ ڈاؤن انتخاب",
+        "panel": "پینل میں سوالات گروپ کریں",
+        "paneldynamic": "قابل تکرار پینل گروپ",
+        "radiogroup": "اختیارات میں سے واحد انتخاب",
+        "text": "واحد لائن ٹیکسٹ ان پٹ"
+      },
+      "questionTypeLabels": {
+        "boolean": "ہاں/نہیں",
+        "checkbox": "چیک باکس",
+        "comment": "کثیر السطر",
+        "dropdown": "ڈراپ ڈاؤن",
+        "panel": "پینل",
+        "paneldynamic": "ڈائنامک پینل",
+        "radiogroup": "ریڈیو گروپ",
+        "text": "{{editor.nodeLabels.textbox}}"
+      },
+      "questionTypes": "سوالات کی اقسام",
+      "questions": "سوالات",
+      "required": "ضروری",
+      "requiredIf": "اگر ضروری ہے",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
+      "selectQuestionHint": "اس کی خصوصیات میں ترمیم کرنے کے لیے سوال منتخب کریں",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
+      "tmFieldLabels": {
+        "assetDescription": "اثاثہ کی تفصیل",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
+        "description": "خطرے کے ماڈل کی تفصیل",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
+        "issueUri": "مسئلہ ٹریکنگ URL",
+        "metadataKey": "حسب ضرورت میٹا ڈیٹا",
+        "name": "خطرے کے ماڈل کا نام",
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
+      },
+      "tmFieldMapping": "خطرے کے ماڈل فیلڈ میپنگ",
+      "tmFieldMappingHint": "اس جواب کو خطرے کے ماڈل فیلڈ سے منسلک کریں",
+      "unsavedChanges": "غیر محفوظ شدہ تبدیلیاں",
+      "visibleIf": "اگر نظر آئے",
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
+    },
+    "templateCount": "{{count}} سروے",
+    "templateCountPlural": "{{count}} سروے"
   },
   "assetEditor": {
     "chipPlaceholder": "قدر درج کریں اور Enter دبائیں",
@@ -300,15 +463,22 @@
   "common": {
     "about": "کے بارے میں",
     "actions": "کارروائیاں",
+    "activate": "فعال کریں",
+    "active": "فعال",
     "addMetadata": "میٹا ڈیٹا شامل کریں",
     "addThreat": "خطرہ شامل کریں",
     "addons": "ایڈ آنز",
+    "all": "سب",
+    "allStatuses": "تمام حالات",
+    "archive": "آرکائیو",
     "back": "واپس",
     "cancel": "منسوخ کریں",
     "cellId": "سیل ID",
     "classification": "درجہ بندی",
     "clear": "صاف کریں",
+    "clone": "نقل کریں",
     "close": "بند کریں",
+    "confirm": "تصدیق کریں",
     "confirmDelete": "کیا آپ واقعی {{item}} \"{{name}}\" کو حذف کرنا چاہتے ہیں؟ یہ عمل واپس نہیں ہو سکتا۔",
     "confirmDeleteMessage": "کیا آپ واقعی {{objectType}} \"{{name}}\" کو حذف کرنا چاہتے ہیں؟",
     "copy": "کاپی کریں",
@@ -317,6 +487,7 @@
     "created": "بنایا گیا",
     "criticality": "اہمیت",
     "cut": "کاٹیں",
+    "deactivate": "غیر فعال کریں",
     "delete": "حذف کریں",
     "deleteConfirm": "خطرے کا ماڈل حذف کریں",
     "deleteWarningConfirmationField": "حذف کی تصدیق",
@@ -329,18 +500,23 @@
     "deleteWarningTypeConfirmation": "تصدیق کے لیے، براہ کرم نیچے دیے گئے فیلڈ میں \"{{confirmValue}}\" ٹائپ کریں۔",
     "description": "تفصیل",
     "diagramId": "ڈایاگرام ID",
+    "dismiss": "مسترد کریں",
     "done": "ہو گیا",
     "download": "ڈاؤن لوڈ",
     "edit": "ترمیم کریں",
     "editThreat": "خطرے میں ترمیم کریں",
+    "email": "ای میل",
     "emailLabel": "ای میل ایڈریس",
+    "error": "خرابی",
     "fonts": "فونٹس",
-    "id": "ID",
+    "groups": "گروپس",
+    "id": "شناخت",
     "identityProvider": "شناختی فراہم کنندہ",
     "issueUri": "مسئلہ URL",
     "language": "{{language}}",
     "lastModified": "آخری ترمیم",
     "lastUpdated": "آخری اپڈیٹ",
+    "loading": "لوڈ ہو رہا ہے...",
     "manage": "انتظام کریں",
     "manageMetadata": "میٹا ڈیٹا کا انتظام کریں",
     "manageThreats": "خطرات کا انتظام کریں",
@@ -350,9 +526,11 @@
     "mitigated": "تخفیف شدہ",
     "mitigation": "تخفیف",
     "mitigationPlaceholder": "اس خطرے کے لیے تجویز کردہ یا منصوبہ بند تخفیف کی وضاحت کریں",
+    "moreActions": "مزید اقدامات",
     "name": "نام",
     "noAddonsAvailable": "کوئی ایڈ آنز دستیاب نہیں ہیں",
     "noDataAvailable": "کوئی ڈیٹا دستیاب نہیں",
+    "noMatchingResults": "آپ کے فلٹرز سے کوئی نتائج نہیں ملے۔",
     "noMetadata": "کوئی میٹا ڈیٹا دستیاب نہیں",
     "noThreats": "کوئی خطرات دستیاب نہیں",
     "none": "کوئی نہیں",
@@ -360,17 +538,25 @@
       "asset": "اثاثہ",
       "assets": "اثاثے",
       "cell": "سیل",
+      "cells": "خلیے",
       "diagram": "ڈایاگرام",
+      "diagrams": "ڈایاگرامز",
       "document": "دستاویز",
       "documents": "دستاویزات",
       "metadata": "{{common.metadata}}",
       "note": "نوٹ",
       "notes": "نوٹس",
       "report": "رپورٹ",
+      "reports": "رپورٹس",
       "repositories": "ریپوزٹریز",
       "repository": "ریپوزٹری",
+      "survey": "سروے",
+      "surveyResponse": "سروے کا جواب",
+      "surveyResponses": "سروے کے جوابات",
+      "surveys": "سروے",
       "threat": "خطرہ",
       "threatModel": "خطرے کا ماڈل",
+      "threatModels": "خطرے کے ماڈلز",
       "threats": "خطرات"
     },
     "ok": "ٹھیک ہے",
@@ -382,6 +568,7 @@
     "provider": "فراہم کنندہ",
     "readOnly": "صرف پڑھنے کے لیے",
     "readOnlyTooltip": "آپ کے پاس اس خطرے کے ماڈل کی صرف پڑھنے کی رسائی ہے۔ ترمیم کی اجازت کے لیے مالک سے رابطہ کریں۔",
+    "retry": "دوبارہ کوشش کریں",
     "roles": {
       "owner": "مالک",
       "reader": "قاری",
@@ -391,6 +578,8 @@
     "saveAndClose": "محفوظ کریں اور بند کریں",
     "savedSuccessfully": "کامیابی سے محفوظ ہو گیا",
     "score": "سکور",
+    "search": "تلاش",
+    "selected": "{{count}} منتخب",
     "sensitivity": "حساسیت",
     "sessionRoles": {
       "host": "میزبان",
@@ -403,11 +592,15 @@
       "group": "گروپ",
       "user": "صارف"
     },
+    "template": "ٹیمپلیٹ",
     "threatDescription": "خطرے کی تفصیل",
     "threatDescriptionPlaceholder": "خطرے کی تفصیل بیان کریں",
     "threatName": "خطرے کا نام",
     "threatType": "خطرے کی قسم",
+    "title": "عنوان",
+    "tryAdjustingFilters": "اپنے فلٹرز کو ایڈجسٹ کرنے کی کوشش کریں۔",
     "type": "قسم",
+    "unarchive": "آرکائیو ختم کریں",
     "unsavedChangesWarning": "آپ کے پاس غیر محفوظ شدہ تبدیلیاں ہیں۔ کیا آپ واقعی بند کرنا چاہتے ہیں؟",
     "userId": "صارف ID",
     "validation": {
@@ -416,6 +609,7 @@
       "nameRequired": "نام ضروری ہے",
       "required": "یہ فیلڈ ضروری ہے"
     },
+    "version": "ورژن",
     "view": "دیکھیں",
     "viewMetadata": "میٹا ڈیٹا دیکھیں",
     "viewPermissions": "اجازتیں دیکھیں",
@@ -431,6 +625,15 @@
     "moveToFront": "سب سے آگے منتقل کریں",
     "noDataAssetsAvailable": "کوئی ڈیٹا اثاثے دستیاب نہیں ہیں",
     "showObject": "آبجیکٹ دکھائیں"
+  },
+  "createThreatModel": {
+    "confidentialHint": "رازداری والے خطرے کے ماڈلز خودکار طور پر سیکیورٹی ریویورز گروپ کے ساتھ شیئر نہیں کیے جاتے۔ یہ ترتیب تخلیق کے بعد تبدیل نہیں کی جا سکتی۔",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
+    "descriptionPlaceholder": "اس خطرے کے ماڈل کا مقصد اور دائرہ کار بیان کریں",
+    "framework": "ڈھانچہ",
+    "namePlaceholder": "خطرے کے ماڈل کا نام درج کریں",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "خطرے کا ماڈل بنائیں"
   },
   "dashboard": {
     "clearFilter": "فلٹر صاف کریں",
@@ -466,7 +669,7 @@
     "common": {
       "affectedCells": "متاثرہ سیلز",
       "cellIds": "سیل IDs",
-      "cells": "سیلز",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "مکمل JSON کاپی کریں"
     },
     "graphDataDialog": {
@@ -548,9 +751,18 @@
   "errors": {
     "validationError": "توثیق کی خرابی"
   },
+  "footer": {
+    "support": "سپورٹ"
+  },
   "getStarted": "شروع کریں",
-  "homeDescription": "ایک مشترکہ خطرے کی ماڈلنگ ٹول جو ٹیموں کو ان کے سسٹمز میں سیکیورٹی خطرات کی شناخت، تجزیہ اور دستاویز کرنے میں مدد کرنے کے لیے ڈیزائن کیا گیا ہے۔ اپنی ایپلیکیشن سیکیورٹی کو بہتر بنانے کے لیے خطرے کے ماڈلز اور ڈایاگرامز بنائیں، شیئر کریں اور مشترکہ طور پر ترمیم کریں۔",
+  "homeDescription": "TMI ایک ٹول ہے جو آپ کی تنظیم کے لیے سیکیورٹی جائزے اور خطرے کی ماڈلنگ کے عمل کو منظم اور بہتر بناتا ہے۔ یہ سیکیورٹی جائزے کے ورک فلو کو چلاتا ہے، سیکیورٹی جائزوں کے لیے معلومات کو منظم کرتا ہے، مشترکہ طور پر ڈیٹا فلو ڈایاگرام بنانے کی سہولت فراہم کرتا ہے، اور جائزے کے عمل میں محنت کو کم کرنے اور سیکیورٹی خطرات کا تجزیہ کرنے کے لیے آٹومیشن سے منسلک ہونے کی اجازت دیتا ہے۔",
   "homeWelcomeTitle": "TMI میں خوش آمدید: Threat Modeling Improved",
+  "intake": {
+    "fill": {
+      "saveAndExit": "محفوظ کریں اور باہر نکلیں",
+      "submitResponses": "جوابات جمع کرائیں"
+    }
+  },
   "login": {
     "chooseMethod": "اپنا سائن ان طریقہ منتخب کریں:",
     "explanation": "قابل اعتماد شناختی فراہم کنندہ سے اپنے موجودہ اکاؤنٹ کے ساتھ سائن ان کریں۔ یہ علیحدہ پاس ورڈ کی ضرورت کو ختم کرتا ہے، آپ کو محفوظ رکھتے ہوئے آپ کے تجربے کو ہموار کرتا ہے۔ ہم کبھی پاس ورڈز کو ذخیرہ یا منظم نہیں کرتے — آپ کی اسناد آپ کے فراہم کنندہ کے پاس رہتی ہیں اور ہمارے ذریعے سے خراب نہیں ہو سکتیں۔",
@@ -571,10 +783,13 @@
     "unexpectedError": "OAuth کے دوران ایک غیر متوقع خرابی ہوئی۔"
   },
   "navbar": {
+    "admin": "ایڈمن",
     "appTitle": "TMI: خطرے کی ماڈلنگ میں بہتری",
     "copyUserEmail": "صارف کا ای میل کلپ بورڈ پر کاپی کریں",
+    "dashboard": "ڈیش بورڈ",
     "feedback": "بگ رپورٹ کریں، فیچر کی درخواست کریں یا تاثرات فراہم کریں",
     "home": "ہوم",
+    "intake": "انٹیک",
     "logoutButton": "سائن آؤٹ",
     "serverStatus": {
       "noServerConfigured": "کوئی سرور ترتیب نہیں دیا گیا",
@@ -666,6 +881,77 @@
     },
     "title": "سیشن جلد ختم ہونے والا ہے"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "محفوظ کرنا ناکام",
+      "saved": "محفوظ ہوگیا",
+      "saving": "محفوظ ہو رہا ہے..."
+    },
+    "browse": "سروے دیکھیں",
+    "confidentialDialog": {
+      "description": "کیا یہ درخواست رازدارانہ نشان زد ہونی چاہیے؟ رازدارانہ درخواستیں خودکار طور پر سیکیورٹی ریویورز گروپ کے ساتھ شیئر نہیں کی جاتیں۔ یہ ترتیب جواب کی تخلیق کے بعد تبدیل نہیں کی جا سکتی۔",
+      "no": "نہیں",
+      "title": "رازدارانہ درخواست",
+      "yes": "ہاں، رازدارانہ نشان زد کریں"
+    },
+    "confirmation": {
+      "backToSurveys": "سروے پر واپس جائیں",
+      "message": "آپ کا سروے کامیابی سے جمع ہوگیا ہے۔",
+      "title": "سروے جمع ہوگیا",
+      "viewResponses": "میرے جوابات دیکھیں"
+    },
+    "continueDraft": "مسودہ جاری رکھیں",
+    "fill": {
+      "submitConfirm": "کیا آپ واقعی جمع کرنا چاہتے ہیں؟ جمع کرنے کے بعد آپ اپنے جوابات میں ترمیم نہیں کر سکیں گے۔",
+      "title": "سروے بھریں"
+    },
+    "list": {
+      "deleteDraft": "مسودہ حذف کریں",
+      "draftStarted": "مسودہ شروع ہوا {{time}}",
+      "errorLoadingSurveys": "سروے لوڈ کرنے میں ناکام",
+      "lastModified": "آخری ترمیم {{time}}",
+      "loadingSurveys": "سروے لوڈ ہو رہے ہیں...",
+      "noSurveysMessage": "اس وقت کوئی فعال سروے نہیں ہیں۔ بعد میں دوبارہ چیک کریں۔",
+      "noSurveysTitle": "کوئی سروے دستیاب نہیں",
+      "pageDescription": "مندرجہ ذیل فہرست سے مناسب جائزے کی قسم منتخب کریں، اور پھر پیش کردہ سوالات کے جوابات دیں تاکہ سیکیورٹی جائزے کی ٹیم کو وہ معلومات فراہم کریں جو انہیں جائزہ انجام دینے کے لیے درکار ہیں۔",
+      "pageTitle": "سیکیورٹی جائزے کی درخواست کریں",
+      "updated": "اپ ڈیٹ شدہ",
+      "yourDrafts": "آپ کے مسودے"
+    },
+    "myResponses": "میرے جوابات",
+    "noMatchingResponses": "کوئی مماثل جواب نہیں",
+    "noMatchingResponsesMessage": "منتخب فلٹرز سے کوئی جواب میل نہیں کھاتا۔",
+    "noResponses": "آپ نے ابھی تک کوئی سروے جواب جمع نہیں کیا",
+    "noSurveys": "کوئی سروے دستیاب نہیں",
+    "responses": {
+      "continueEditing": "ترمیم جاری رکھیں",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
+      "filterByStatus": "حیثیت کے مطابق فلٹر کریں",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
+      "noResponsesMessage": "آپ نے ابھی تک کوئی سروے مکمل نہیں کیا۔ سروے کے صفحے سے شروع کریں۔",
+      "noResponsesTitle": "ابھی تک کوئی جواب نہیں",
+      "pageTitle": "میرے سروے کے جوابات",
+      "responseCount": "{{count}} جواب",
+      "responseCountPlural": "{{count}} جوابات"
+    },
+    "saveDraft": "مسودہ محفوظ کریں",
+    "startNew": "سروے شروع کریں",
+    "status": {
+      "draft": "مسودہ",
+      "needsRevision": "نظرثانی درکار",
+      "readyForReview": "جائزے کے لیے تیار",
+      "reviewCreated": "جائزہ بنایا گیا",
+      "submitted": "{{triage.list.submitted}}"
+    },
+    "submitSurvey": "سروے جمع کریں",
+    "templateStatus": {
+      "active": "{{common.active}}",
+      "archived": "آرکائیو شدہ",
+      "inactive": "غیر فعال"
+    },
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "جواب دیکھیں"
+  },
   "threatEditor": {
     "createNewThreat": "نیا خطرہ بنائیں",
     "notAssociatedWithAsset": "کسی اثاثے سے منسلک نہیں",
@@ -729,7 +1015,7 @@
     "createNewRepository": "ریپوزٹری حوالہ شامل کریں",
     "created": "{{common.created}}",
     "createdBy": "بنانے والا",
-    "dashboard": "ڈیش بورڈ",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "ڈیٹا فلو ڈایاگرام",
     "deleteWarningPermanent": "یہ عمل واپس نہیں ہو سکتا اور تمام متعلقہ ڈایاگرامز، خطرات، اور میٹا ڈیٹا کو مستقل طور پر حذف کر دے گا۔",
     "descriptionPlaceholder": "اس خطرے کے ماڈل کا مقصد اور دائرہ کار بیان کریں",
@@ -737,7 +1023,7 @@
     "diagramName": "ڈایاگرام کا نام",
     "diagramPreview": "ڈایاگرام کا پیش نظارہ",
     "diagramType": "ڈایاگرام کی قسم",
-    "diagrams": "ڈایاگرامز",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "دستاویز کا مقصد یا مواد بیان کریں",
     "documentEditor": {
       "title": {
@@ -762,7 +1048,7 @@
     "noPermissions": "کوئی اجازتیں متعین نہیں",
     "noRepositories": "ابھی تک کوئی ریپوزٹریز شامل نہیں",
     "noThreats": "ابھی تک کوئی خطرات شامل نہیں",
-    "pageTitle": "خطرے کے ماڈلز",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "کردار",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -786,6 +1072,12 @@
     "repositorySubPathHint": "ریپوزٹری کے اندر اختیاری راستہ",
     "repositoryType": "ریپوزٹری کی قسم",
     "repositoryUri": "ریپوزٹری URL",
+    "sections": {
+      "inputs": "ان پٹ",
+      "inputsDescription": "اثاثے، دستاویزات، اور سورس کوڈ ریپوزٹریز جو تجزیہ کے تحت نظام کی وضاحت کرتے ہیں",
+      "outputs": "آؤٹ پٹ",
+      "outputsDescription": "نوٹس، ڈایاگرامز، اور خطرات جو سیکیورٹی تجزیہ کے دوران تیار ہوتے ہیں"
+    },
     "setAsOwner": "مالک کے طور پر مقرر کریں",
     "sourcesCount": "ریپوز",
     "status": {
@@ -818,7 +1110,7 @@
       "addAsset": "اثاثہ شامل کریں",
       "addDiagram": "ڈایاگرام شامل کریں",
       "addDocument": "دستاویز شامل کریں",
-      "addNote": "نوٹ شامل کریں",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "اثاثے نظام کے اندر قیمتی وسائل ہیں جن کو تحفظ کی ضرورت ہے، جیسے ڈیٹا، ہارڈ ویئر، سافٹ ویئر، انفراسٹرکچر، خدمات، یا اہلکار۔",
       "diagramsCardTitle": "TMI میں ڈایاگرامز سسٹم کے اندر ڈیٹا کی نقل و حرکت اور عملات کی مشین پڑھنے کے قابل نمائندگی ہیں، جو دستی اور خودکار سیکیورٹی تجزیہ دونوں کو ممکن بناتے ہیں۔",
       "documentsCardTitle": "دستاویز کے حوالے TMI کے باہر ذخیرہ شدہ دستاویزات کے لنکس ہیں۔ متعلقہ دستاویزات تجزیہ کیے جانے والے سسٹم کی وضاحت کرتی ہیں، اور سیکیورٹی تجزیہ کاروں اور خودکار تجزیہ کے عمل دونوں کے ذریعے استعمال کی جا سکتی ہیں۔",
@@ -881,10 +1173,90 @@
     },
     "title": "سروس کی شرائط"
   },
-  "userPreferences": {
-    "administration": {
-      "title": "{{admin.title}}"
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "ای میل کے ذریعے تلاش کریں",
+      "searchPlaceholder": "ای میل ایڈریس ٹائپ کرنا شروع کریں..."
+    }
+  },
+  "triage": {
+    "bulkActions": "بلک ایکشنز",
+    "changeStatus": "حیثیت تبدیل کریں",
+    "columns": {
+      "confidentialTooltip": "رازدارانہ درخواست"
     },
+    "createTm": "{{createThreatModel.title}}",
+    "detail": {
+      "addNote": "نوٹ شامل کریں",
+      "markdownSupported": "Markdown تعاون یافتہ",
+      "noNotes": "ابھی تک کوئی ٹرائیج نوٹس نہیں",
+      "noResponses": "کوئی جواب ریکارڈ نہیں",
+      "noRevisionNotes": "کوئی نظرثانی نوٹس نہیں",
+      "note": "نوٹ",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "نوٹ کا مواد درج کریں...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "مختصر نوٹ عنوان",
+      "notes": "نوٹس",
+      "responseDetails": "جواب کی تفصیلات",
+      "reviewedAt": "جائزہ لیا گیا",
+      "reviewedBy": "جائزہ کار",
+      "revisionNotesTitle": "نظرثانی کی درخواست",
+      "statusTimeline": "حیثیت کی ٹائم لائن",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "ٹرائیج نوٹس"
+    },
+    "filters": {
+      "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "{{triage.list.allSurveys}}",
+      "clearFilters": "فلٹرز صاف کریں",
+      "confidential": "رازداریت",
+      "confidentialOnly": "رازدارانہ",
+      "nonConfidential": "غیر رازدارانہ"
+    },
+    "list": {
+      "allSurveys": "تمام سروے",
+      "approve": "منظوری دیں",
+      "approveSelected": "منتخب کی منظوری دیں",
+      "createThreatModel": "{{createThreatModel.title}}",
+      "errorLoadingResponses": "جوابات لوڈ کرنے میں ناکام",
+      "loadingResponses": "جوابات لوڈ ہو رہے ہیں...",
+      "noResponsesFiltered": "آپ کے فلٹرز سے کوئی جوابات نہیں ملے",
+      "noResponsesTitle": "کوئی جوابات نہیں",
+      "noResponsesToTriage": "ٹرائیج کے لیے کوئی سروے جوابات نہیں ہیں",
+      "notSubmitted": "جمع نہیں کرایا",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
+      "searchPlaceholder": "جمع کرانے والے یا سروے کے ذریعے تلاش کریں...",
+      "submitted": "جمع کرایا گیا",
+      "submitter": "جمع کرانے والا"
+    },
+    "markInReview": "جائزے میں نشان زد کریں",
+    "markPendingTriage": "زیر التواء ٹرائیج نشان زد کریں",
+    "noResponses": "ٹرائیج کے لیے کوئی جواب نہیں",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "نوٹ کا مواد درج کریں (Markdown تعاون یافتہ)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "نیا ٹرائیج نوٹ",
+        "view": "ٹرائیج نوٹ دیکھیں"
+      }
+    },
+    "queue": "ٹرائیج قطار",
+    "returnToSubmitted": "جمع شدہ پر واپس جائیں",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "نوٹس فراہم کریں جو وضاحت کریں کہ کیا نظرثانی کی ضرورت ہے۔ جمع کرانے والا یہ نوٹس دیکھے گا جب وہ اپنے جواب کا جائزہ لیں گے۔",
+      "hint": "ضروری — بیان کریں کہ کن تبدیلیوں کی ضرورت ہے",
+      "label": "نظرثانی نوٹس",
+      "placeholder": "ضروری نظرثانی کی تفصیل بیان کریں...",
+      "title": "نظرثانی کے لیے واپس کریں"
+    },
+    "title": "ٹرائیج",
+    "viewDetails": "تفصیلات دیکھیں"
+  },
+  "userPreferences": {
     "colorBlindMode": "کلر بلائنڈ موڈ فعال کریں",
     "credentials": {
       "add": "شامل کریں",
@@ -936,6 +1308,7 @@
     },
     "diagramAnimationEffects": "ڈایاگرام ایڈیٹر میں اینیمیشن اثرات فعال کریں",
     "displayPreferences": "ڈسپلے کی ترجیحات",
+    "hoverShowMetadata": "ہوور پر سیل میٹا ڈیٹا دکھائیں",
     "marginSize": {
       "narrow": "تنگ",
       "standard": "معیاری",
@@ -948,13 +1321,18 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "رپورٹ کی ترجیحات",
+    "sections": {
+      "developer": "ڈویلپر",
+      "diagramEditor": "ڈایاگرام ایڈیٹر",
+      "securityReviewer": "سیکیورٹی جائزہ کار"
+    },
     "showDeveloperTools": "ڈویلپر ٹولز دکھائیں",
     "tabs": {
       "credentials": "اعتبارات",
       "danger": "خطرناک",
       "display": "نمائش",
       "profile": "پروفائل",
-      "reports": "رپورٹس"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "تھیم",
     "themeMode": {
@@ -963,9 +1341,18 @@
       "light": "لائٹ"
     },
     "title": "صارف کی ترجیحات",
+    "transferData": {
+      "confirmMessage": "کیا آپ واقعی اپنے تمام خطرے کے ماڈلز اور سروے کے جوابات {{email}} کو منتقل کرنا چاہتے ہیں؟ آپ منتقل شدہ اشیاء پر ライٹر کردار میں نیچے کر دیے جائیں گے۔",
+      "dialogTitle": "میرا ڈیٹا منتقل کریں",
+      "error": "ڈیٹا منتقل کرنے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔",
+      "hint": "تمام آپ کے خطرے کے ماڈلز اور سروے کے جوابات کی ملکیت دوسرے صارف کو منتقل کریں۔ آپ منتقل شدہ اشیاء پر ライٹر کردار میں نیچے کر دیے جائیں گے۔",
+      "success": "{{tmCount}} خطرے کے ماڈلز اور {{responseCount}} سروے کے جوابات منتقل ہوگئے۔",
+      "title": "میرا ڈیٹا دوسرے صارف کو منتقل کریں"
+    },
     "userProfile": {
       "currentRole": "موجودہ خطرے کے ماڈل کا کردار",
-      "groups": "گروپس",
+      "groups": "{{common.groups}}",
+      "jwtGroups": "JWT گروپس",
       "provider": "{{common.identityProvider}}",
       "providerId": "فراہم کنندہ ID",
       "title": "صارف پروفائل",

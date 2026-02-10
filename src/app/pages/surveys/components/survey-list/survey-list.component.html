@@ -1,0 +1,108 @@
+<div class="survey-list-container">
+  <div class="page-header">
+    <h1 class="page-title">{{ 'surveys.list.pageTitle' | transloco }}</h1>
+    <button mat-stroked-button (click)="viewMyResponses()">
+      <mat-icon>history</mat-icon>
+      {{ 'surveys.myResponses' | transloco }}
+    </button>
+  </div>
+
+  <p class="page-description">{{ 'surveys.list.pageDescription' | transloco }}</p>
+
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>{{ 'surveys.list.loadingSurveys' | transloco }}</p>
+    </div>
+  } @else if (error) {
+    <div class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-stroked-button (click)="loadData()">
+        <mat-icon>refresh</mat-icon>
+        {{ 'common.retry' | transloco }}
+      </button>
+    </div>
+  } @else if (surveys.length === 0) {
+    <div class="empty-state">
+      <mat-icon>assignment</mat-icon>
+      <h2>{{ 'surveys.list.noSurveysTitle' | transloco }}</h2>
+      <p>{{ 'surveys.list.noSurveysMessage' | transloco }}</p>
+    </div>
+  } @else {
+    <div class="survey-grid">
+      @for (survey of surveys; track survey.id) {
+        <mat-card class="survey-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>assignment</mat-icon>
+            <mat-card-title class="survey-name">{{ survey.name }}</mat-card-title>
+            <mat-card-subtitle>
+              <span class="survey-meta">
+                {{ 'common.version' | transloco }} {{ survey.version }}
+              </span>
+              <span class="survey-meta">
+                {{ 'surveys.list.updated' | transloco }}
+                {{ survey.modified_at | date: 'mediumDate' }}
+              </span>
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            @if (survey.description) {
+              <p class="template-description">{{ survey.description }}</p>
+            }
+
+            @if (getDrafts(survey.id).length > 0) {
+              <div class="drafts-section">
+                <h4>
+                  <mat-icon>edit_note</mat-icon>
+                  {{ 'surveys.list.yourDrafts' | transloco }}
+                </h4>
+                @for (draft of getDrafts(survey.id); track draft.id) {
+                  <div class="draft-item" (click)="continueDraft(draft)">
+                    <div class="draft-info">
+                      <span class="draft-title">
+                        {{
+                          'surveys.list.draftStarted'
+                            | transloco: { time: formatRelativeTime(draft.created_at) }
+                        }}
+                      </span>
+                      <span class="draft-subtitle">
+                        {{
+                          'surveys.list.lastModified'
+                            | transloco
+                              : { time: formatRelativeTime(draft.modified_at ?? draft.created_at) }
+                        }}
+                      </span>
+                    </div>
+                    <button
+                      mat-icon-button
+                      (click)="deleteDraft(draft, $event)"
+                      [matTooltip]="'surveys.list.deleteDraft' | transloco"
+                      [attr.aria-label]="'surveys.list.deleteDraft' | transloco"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </mat-card-content>
+
+          <mat-card-actions align="end">
+            @if (getDrafts(survey.id).length > 0) {
+              <button mat-stroked-button (click)="continueDraft(getDrafts(survey.id)[0])">
+                <mat-icon>edit</mat-icon>
+                {{ 'surveys.continueDraft' | transloco }}
+              </button>
+            }
+            <button mat-flat-button color="primary" (click)="startSurvey(survey)">
+              <mat-icon>add</mat-icon>
+              {{ 'surveys.startNew' | transloco }}
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

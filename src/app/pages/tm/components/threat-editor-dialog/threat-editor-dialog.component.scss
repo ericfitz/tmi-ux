@@ -238,21 +238,6 @@ mat-dialog-actions {
   flex: 1;
 }
 
-// Copy button styles
-.copy-button {
-  width: 36px;
-  height: 36px;
-  line-height: 36px;
-  margin-inline-start: 8px; // Use logical property for RTL support
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  .mat-icon {
-    @extend %button-icon;
-  }
-}
-
 // Metadata section styles
 .metadata-section {
   margin-top: 8px;

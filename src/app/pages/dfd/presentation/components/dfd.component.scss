@@ -66,19 +66,6 @@
   .presenter-mode-active {
     color: var(--color-success) !important; // Success color when presenter mode is active
   }
-
-  button[mat-icon-button] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .mat-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-    }
-  }
 }
 
 .overlay-icon {
@@ -131,16 +118,6 @@
 
   button[mat-icon-button] {
     color: var(--color-text-primary); // Dark text for proper contrast
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .mat-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-    }
 
     &:disabled {
       color: var(--color-text-disabled); // Light gray for disabled state

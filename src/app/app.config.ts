@@ -63,6 +63,7 @@ import { UserPreferencesService } from './core/services/user-preferences.service
 import { WebSocketAdapter } from './core/services/websocket.adapter';
 import { AppNotificationService } from './pages/dfd/application/services/app-notification.service';
 import { TokenValidityGuardService } from './auth/services/token-validity-guard.service';
+import { BrandingConfigService } from './core/services/branding-config.service';
 
 // We still need LOCALE_ID for date formatting with Angular's pipes
 function getBasicLocale(): string {
@@ -136,6 +137,13 @@ function initializeTokenValidityGuard(tokenValidityGuard: TokenValidityGuardServ
     // Start monitoring for token expiry across visibility changes, timer drift, and cross-tab events
     tokenValidityGuard.startMonitoring();
   };
+}
+
+// Branding configuration initialization function
+function initializeBrandingConfig(
+  brandingConfigService: BrandingConfigService,
+): () => Promise<void> {
+  return () => brandingConfigService.initialize();
 }
 
 // Marked configuration with security and syntax highlighting
@@ -354,6 +362,13 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: initializeDialogDirection,
       deps: [DialogDirectionService],
+      multi: true,
+    },
+    // Initialize branding configuration (fetches server /config, pre-loads logo)
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeBrandingConfig,
+      deps: [BrandingConfigService],
       multi: true,
     },
     // Initialize Material Icons

@@ -47,6 +47,7 @@ import { InfraX6ZOrderAdapter } from './infra-x6-z-order.adapter';
 import { InfraX6EmbeddingAdapter } from './infra-x6-embedding.adapter';
 import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
 import { InfraX6EventLoggerAdapter } from './infra-x6-event-logger.adapter';
+import { X6TooltipAdapter } from './infra-x6-tooltip.adapter';
 import { normalizeCell } from '../../utils/cell-normalization.util';
 import { Cell as WebSocketCell } from '../../../../core/types/websocket-message.types';
 import { AppEdgeService } from '../../application/services/app-edge.service';
@@ -158,6 +159,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     private readonly _embeddingAdapter: InfraX6EmbeddingAdapter,
     private readonly _selectionAdapter: InfraX6SelectionAdapter,
     private readonly _x6EventLogger: InfraX6EventLoggerAdapter,
+    private readonly _tooltipAdapter: X6TooltipAdapter,
     private readonly _edgeService: AppEdgeService,
     private readonly _historyCoordinator: AppOperationStateManager,
     private readonly _x6CoreOps: InfraX6CoreOperationsService,
@@ -493,6 +495,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     // Initialize embedding functionality using dedicated adapter
     this._embeddingAdapter.initializeEmbedding(this._graph);
 
+    // Initialize tooltip system
+    this._tooltipAdapter.initialize(this._graph);
+
     // Trigger an initial resize to ensure the graph fits the container properly
     this._scheduleInitialResize(container);
 
@@ -529,6 +534,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
     // Initialize embedding functionality using dedicated adapter
     this._embeddingAdapter.initializeEmbedding(this._graph);
+
+    // Initialize tooltip system
+    this._tooltipAdapter.initialize(this._graph);
 
     this.logger.debugComponent('X6Graph', 'X6 graph adapter configured with orchestrator graph');
   }
@@ -994,6 +1002,9 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     if (this._historyCoordinator) {
       this._historyCoordinator.dispose();
     }
+
+    // Clean up tooltip adapter
+    this._tooltipAdapter.dispose();
 
     if (this._graph) {
       this._graph.dispose();

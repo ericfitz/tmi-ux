@@ -76,26 +76,6 @@
       "subtitle": "تكوين الملحقات لتوسيع وظائف TMI",
       "title": "إدارة الملحقات"
     },
-    "administrators": {
-      "addButton": "{{admin.administrators.addDialog.save}}",
-      "addDialog": {
-        "provider": "{{common.provider}}",
-        "providerRequired": "المزود مطلوب",
-        "save": "إضافة مسؤول",
-        "subject": "الموضوع",
-        "subjectHint": "أدخل البريد الإلكتروني للمستخدم أو اسم المجموعة",
-        "subjectPlaceholder": "البريد الإلكتروني للمستخدم أو اسم المجموعة",
-        "subjectRequired": "الموضوع مطلوب",
-        "title": "{{admin.administrators.addDialog.save}}"
-      },
-      "filterLabel": "تصفية المسؤولين",
-      "filterPlaceholder": "البحث بالبريد الإلكتروني أو اسم المجموعة",
-      "listTitle": "مسؤولو النظام",
-      "noAdministrators": "لم يتم العثور على مسؤولين",
-      "removeTooltip": "إزالة صلاحيات المسؤول",
-      "subtitle": "التحكم في من لديه صلاحية الوصول الإداري للنظام",
-      "title": "إدارة المسؤولين"
-    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -114,6 +94,11 @@
         "save": "إنشاء المجموعة",
         "title": "إضافة مجموعة"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "الاستخدام"
+      },
       "deleteTooltip": "حذف المجموعة",
       "filterLabel": "تصفية المجموعات",
       "filterPlaceholder": "البحث بالاسم أو المزود",
@@ -124,8 +109,10 @@
         "noMembers": "لا يوجد أعضاء في هذه المجموعة",
         "removeTooltip": "إزالة من المجموعة",
         "searchHint": "اكتب حرفين على الأقل للبحث",
-        "searchPlaceholder": "ابدأ بكتابة عنوان البريد الإلكتروني...",
-        "searchUser": "البحث عن مستخدم بالبريد الإلكتروني"
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
+        "searchUser": "البحث عن مستخدم بالبريد الإلكتروني",
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "لم يتم العثور على مجموعات",
       "subtitle": "عرض وإدارة مجموعات النظام",
@@ -143,6 +130,12 @@
         "title": "إضافة حصص مخصصة",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "افتراضي",
       "deleteTooltip": "إزالة الحصة المخصصة (العودة للإعدادات الافتراضية)",
       "eventsPerMinute": "الأحداث في الدقيقة",
       "filterLabel": "تصفية الحصص",
@@ -164,10 +157,6 @@
         "description": "تثبيت وتكوين الوظائف الإضافية للتطبيق",
         "title": "{{admin.addons.title}}"
       },
-      "administrators": {
-        "description": "منح أو إلغاء أذونات المسؤول",
-        "title": "{{admin.administrators.title}}"
-      },
       "groups": {
         "description": "تكوين مجموعات المستخدمين والعضويات",
         "title": "{{admin.groups.title}}"
@@ -175,6 +164,14 @@
       "quotas": {
         "description": "تكوين حصص الموارد والحدود",
         "title": "{{admin.quotas.title}}"
+      },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
+      "surveys": {
+        "description": "إنشاء وإدارة الاستبيانات",
+        "title": "إدارة الاستبيانات"
       },
       "users": {
         "description": "عرض وإدارة حسابات المستخدمين",
@@ -185,16 +182,83 @@
         "title": "{{admin.webhooks.title}}"
       }
     },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "وصف اختياري لهذا الإعداد",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "أحرف صغيرة مع نقاط وشرطات سفلية (مثل: rate_limit.max_rpm)",
+        "keyInvalid": "يجب أن يبدأ بحرف صغير، ويستخدم فقط الأحرف الصغيرة والأرقام والنقاط والشرطات السفلية",
+        "keyRequired": "المفتاح مطلوب",
+        "save": "إنشاء إعداد",
+        "title": "إضافة إعداد",
+        "type": "{{common.type}}",
+        "typeRequired": "النوع مطلوب",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "القيمة مطلوبة"
+      },
+      "cancelTooltip": "إلغاء التحرير",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "هل أنت متأكد من حذف الإعداد \"{{key}}\"؟",
+      "deleteTooltip": "حذف الإعداد",
+      "editTooltip": "تحرير الإعداد",
+      "filterLabel": "تصفية",
+      "filterPlaceholder": "تصفية حسب المفتاح أو القيمة أو الوصف",
+      "listTitle": "إعدادات النظام",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "استيراد الإعدادات من ملف تكوين الخادم أو متغيرات البيئة إلى قاعدة البيانات.",
+        "migrate": "ترحيل",
+        "overwriteLabel": "استبدال الإعدادات الموجودة",
+        "overwriteWarning": "تحذير: سيؤدي هذا إلى استبدال أي إعدادات في قاعدة البيانات تم تخصيصها مسبقاً.",
+        "resultMigrated": "تم ترحيل {{count}} من الإعدادات",
+        "resultSkipped": "تم تخطي {{count}} من الإعدادات",
+        "title": "ترحيل الإعدادات"
+      },
+      "noSettings": "لم يتم العثور على إعدادات",
+      "saveTooltip": "حفظ التغييرات",
+      "subtitle": "عرض وإدارة إعدادات تكوين النظام",
+      "title": "إدارة الإعدادات",
+      "types": {
+        "bool": "منطقي",
+        "int": "عدد صحيح",
+        "json": "JSON",
+        "string": "نص"
+      }
+    },
     "subtitle": "إدارة إعدادات النظام والتكوينات",
     "title": "الإدارة",
     "users": {
+      "administrator": "مسؤول",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "حذف حساب المستخدم",
       "filterLabel": "تصفية المستخدمين",
       "filterPlaceholder": "البحث بالبريد الإلكتروني أو الاسم أو المزود أو اسم المجموعة",
+      "lastLogin": "آخر تسجيل دخول",
       "listTitle": "المستخدمون",
+      "never": "أبداً",
       "noUsers": "لم يتم العثور على مستخدمين",
       "subtitle": "عرض وإدارة مستخدمي النظام",
-      "title": "إدارة المستخدمين"
+      "title": "إدارة المستخدمين",
+      "transferOwnership": {
+        "confirm": "هل أنت متأكد من أنك تريد نقل جميع البيانات من {{source}} إلى {{target}}؟",
+        "dialogTitle": "نقل بيانات المستخدم",
+        "error": "فشل نقل الملكية. يرجى المحاولة مرة أخرى.",
+        "success": "{{userPreferences.transferData.success}}",
+        "tooltip": "نقل الملكية"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -231,13 +295,112 @@
       "noWebhooks": "لم يتم العثور على Webhooks",
       "secret": "مفتاح HMAC السري",
       "status": {
-        "active": "نشط",
+        "active": "{{common.active}}",
         "pending_delete": "في انتظار الحذف",
         "pending_verification": "في انتظار التحقق"
       },
       "subtitle": "تكوين اشتراكات Webhook لإشعارات الأحداث",
       "title": "إدارة Webhooks"
     }
+  },
+  "adminSurveys": {
+    "cloneSuffix": "(نسخة)",
+    "createDialog": {
+      "nameLabel": "اسم الاستبيان",
+      "namePlaceholder": "أدخل اسم الاستبيان",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "إنشاء استبيان",
+      "versionHint": "معرّف الإصدار (نص حر)",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "مثال: 1، v2-pilot، 2024-Q1",
+      "versionRequired": "الإصدار مطلوب"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "editTemplate": "تحرير الاستبيان",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "لا توجد استبيانات مطابقة",
+    "noTemplatesMessage": "قم بإنشاء استبيانك الأول للبدء.",
+    "noTemplatesTitle": "لا توجد استبيانات بعد",
+    "pageTitle": "{{admin.sections.surveys.title}}",
+    "searchByName": "البحث بالاسم...",
+    "searchTemplates": "البحث في الاستبيانات",
+    "surveyDetails": "تفاصيل الاستبيان",
+    "templateBuilder": {
+      "addPage": "إضافة صفحة",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
+      "choicesPerLine": "الخيارات (واحد لكل سطر)",
+      "conditionalLogic": "المنطق الشرطي",
+      "conditionalLogicHelp": "وثائق المنطق الشرطي لـ SurveyJS",
+      "deletePage": "حذف الصفحة",
+      "deleteQuestion": "حذف السؤال",
+      "enableIf": "تفعيل إذا",
+      "enableIfHint": "مثال: {questionName} = 'value'",
+      "enterSurveyDescription": "أدخل وصف الاستبيان",
+      "enterSurveyTitle": "أدخل عنوان الاستبيان",
+      "failedToLoadTemplate": "فشل تحميل الاستبيان",
+      "failedToSaveTemplate": "فشل حفظ الاستبيان",
+      "loadingTemplate": "جاري تحميل الاستبيان...",
+      "mapsToTmField": "يُربط بحقل نموذج التهديد",
+      "metadataKey": "مفتاح البيانات الوصفية",
+      "metadataKeyHint": "اسم المفتاح لإدخال البيانات الوصفية",
+      "nameId": "الاسم (ID)",
+      "nameIdHint": "معرف فريد لهذا السؤال",
+      "nextPage": "{{pagination.nextPage}}",
+      "noQuestionsHint": "انقر على نوع سؤال من اللوحة لإضافته",
+      "noQuestionsYet": "لا توجد أسئلة بعد",
+      "pageIndicator": "الصفحة {{current}} من {{total}}",
+      "previousPage": "{{pagination.previousPage}}",
+      "questionProperties": "خصائص السؤال",
+      "questionTypeDescriptions": {
+        "boolean": "تبديل منطقي",
+        "checkbox": "اختيار متعدد",
+        "comment": "منطقة نص متعددة الأسطر",
+        "dropdown": "اختيار من قائمة منسدلة",
+        "panel": "تجميع الأسئلة في لوحة",
+        "paneldynamic": "مجموعة لوحات قابلة للتكرار",
+        "radiogroup": "اختيار واحد من خيارات",
+        "text": "إدخال نص من سطر واحد"
+      },
+      "questionTypeLabels": {
+        "boolean": "نعم/لا",
+        "checkbox": "خانة اختيار",
+        "comment": "متعدد الأسطر",
+        "dropdown": "قائمة منسدلة",
+        "panel": "لوحة",
+        "paneldynamic": "لوحة ديناميكية",
+        "radiogroup": "مجموعة اختيار",
+        "text": "{{editor.nodeLabels.textbox}}"
+      },
+      "questionTypes": "أنواع الأسئلة",
+      "questions": "الأسئلة",
+      "required": "مطلوب",
+      "requiredIf": "مطلوب إذا",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
+      "selectQuestionHint": "حدد سؤالاً لتعديل خصائصه",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
+      "tmFieldLabels": {
+        "assetDescription": "وصف الأصل",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
+        "description": "وصف نموذج التهديد",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
+        "issueUri": "رابط تتبع المشكلة",
+        "metadataKey": "بيانات وصفية مخصصة",
+        "name": "اسم نموذج التهديد",
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
+      },
+      "tmFieldMapping": "ربط حقل نموذج التهديد",
+      "tmFieldMappingHint": "ربط هذا الجواب بحقل نموذج التهديد",
+      "unsavedChanges": "تغييرات غير محفوظة",
+      "visibleIf": "مرئي إذا",
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
+    },
+    "templateCount": "{{count}} استبيان",
+    "templateCountPlural": "{{count}} استبيانات"
   },
   "assetEditor": {
     "chipPlaceholder": "أدخل القيمة واضغط Enter",
@@ -300,15 +463,22 @@
   "common": {
     "about": "حول",
     "actions": "الإجراءات",
+    "activate": "تفعيل",
+    "active": "نشط",
     "addMetadata": "إضافة بيانات وصفية",
     "addThreat": "إضافة تهديد",
     "addons": "الوظائف الإضافية",
+    "all": "الكل",
+    "allStatuses": "جميع الحالات",
+    "archive": "أرشفة",
     "back": "رجوع",
     "cancel": "إلغاء",
     "cellId": "معرف الخلية",
     "classification": "التصنيف",
     "clear": "مسح",
+    "clone": "استنساخ",
     "close": "إغلاق",
+    "confirm": "تأكيد",
     "confirmDelete": "هل أنت متأكد أنك تريد حذف {{item}} \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
     "confirmDeleteMessage": "هل أنت متأكد أنك تريد حذف {{objectType}} \"{{name}}\"؟",
     "copy": "نسخ",
@@ -317,6 +487,7 @@
     "created": "تم الإنشاء",
     "criticality": "الحرجية",
     "cut": "قص",
+    "deactivate": "إلغاء التفعيل",
     "delete": "حذف",
     "deleteConfirm": "حذف نموذج التهديد",
     "deleteWarningConfirmationField": "تأكيد الحذف",
@@ -329,18 +500,23 @@
     "deleteWarningTypeConfirmation": "للتأكيد، يرجى كتابة \"{{confirmValue}}\" في الحقل أدناه.",
     "description": "الوصف",
     "diagramId": "معرف المخطط",
+    "dismiss": "إغلاق",
     "done": "تم",
     "download": "تحميل",
     "edit": "تحرير",
     "editThreat": "تحرير التهديد",
+    "email": "البريد الإلكتروني",
     "emailLabel": "عنوان البريد الإلكتروني",
+    "error": "خطأ",
     "fonts": "الخطوط",
+    "groups": "المجموعات",
     "id": "المعرّف",
     "identityProvider": "مزود الهوية",
     "issueUri": "رابط المشكلة",
     "language": "{{language}}",
     "lastModified": "آخر تعديل",
     "lastUpdated": "آخر تحديث",
+    "loading": "جارٍ التحميل...",
     "manage": "إدارة",
     "manageMetadata": "إدارة البيانات الوصفية",
     "manageThreats": "إدارة التهديدات",
@@ -350,9 +526,11 @@
     "mitigated": "تم التخفيف",
     "mitigation": "التخفيف",
     "mitigationPlaceholder": "اوصف التخفيف الموصى به أو المخطط له لهذا التهديد",
+    "moreActions": "إجراءات إضافية",
     "name": "الاسم",
     "noAddonsAvailable": "لا توجد وظائف إضافية متاحة",
     "noDataAvailable": "لا توجد بيانات متاحة",
+    "noMatchingResults": "لا توجد نتائج تطابق عوامل التصفية.",
     "noMetadata": "لا توجد بيانات وصفية متاحة",
     "noThreats": "لا توجد تهديدات متاحة",
     "none": "لا شيء",
@@ -360,17 +538,25 @@
       "asset": "أصل",
       "assets": "أصول",
       "cell": "خلية",
+      "cells": "الخلايا",
       "diagram": "مخطط",
+      "diagrams": "المخططات",
       "document": "وثيقة",
       "documents": "وثائق",
       "metadata": "{{common.metadata}}",
       "note": "ملاحظة",
       "notes": "ملاحظات",
       "report": "تقرير",
+      "reports": "التقارير",
       "repositories": "مستودعات",
       "repository": "مستودع",
+      "survey": "استبيان",
+      "surveyResponse": "رد على الاستبيان",
+      "surveyResponses": "ردود الاستبيانات",
+      "surveys": "الاستبيانات",
       "threat": "تهديد",
       "threatModel": "نموذج التهديد",
+      "threatModels": "نماذج التهديدات",
       "threats": "التهديدات"
     },
     "ok": "موافق",
@@ -382,6 +568,7 @@
     "provider": "المزود",
     "readOnly": "للقراءة فقط",
     "readOnlyTooltip": "لديك صلاحيات قراءة فقط لنموذج التهديد هذا. اتصل بالمالك لطلب صلاحيات التحرير.",
+    "retry": "إعادة المحاولة",
     "roles": {
       "owner": "مالك",
       "reader": "قارئ",
@@ -391,6 +578,8 @@
     "saveAndClose": "حفظ وإغلاق",
     "savedSuccessfully": "تم الحفظ بنجاح",
     "score": "النتيجة",
+    "search": "بحث",
+    "selected": "{{count}} محدد",
     "sensitivity": "الحساسية",
     "sessionRoles": {
       "host": "مضيف",
@@ -403,11 +592,15 @@
       "group": "مجموعة",
       "user": "مستخدم"
     },
+    "template": "قالب",
     "threatDescription": "وصف التهديد",
     "threatDescriptionPlaceholder": "وصف التهديد بالتفصيل",
     "threatName": "اسم التهديد",
     "threatType": "نوع التهديد",
+    "title": "العنوان",
+    "tryAdjustingFilters": "حاول تعديل عوامل التصفية.",
     "type": "النوع",
+    "unarchive": "إلغاء الأرشفة",
     "unsavedChangesWarning": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد الإغلاق؟",
     "userId": "معرف المستخدم",
     "validation": {
@@ -416,6 +609,7 @@
       "nameRequired": "الاسم مطلوب",
       "required": "هذا الحقل مطلوب"
     },
+    "version": "الإصدار",
     "view": "عرض",
     "viewMetadata": "عرض البيانات الوصفية",
     "viewPermissions": "عرض الأذونات",
@@ -431,6 +625,15 @@
     "moveToFront": "نقل إلى المقدمة",
     "noDataAssetsAvailable": "لا توجد أصول بيانات متاحة",
     "showObject": "عرض الكائن"
+  },
+  "createThreatModel": {
+    "confidentialHint": "نماذج التهديدات السرية لا تُشارك تلقائياً مع مجموعة مراجعي الأمان. لا يمكن تغيير هذا الإعداد بعد الإنشاء.",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
+    "descriptionPlaceholder": "صف الغرض والنطاق من هذا النموذج",
+    "framework": "الإطار",
+    "namePlaceholder": "أدخل اسم نموذج التهديد",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "إنشاء نموذج تهديد"
   },
   "dashboard": {
     "clearFilter": "مسح الفلتر",
@@ -466,7 +669,7 @@
     "common": {
       "affectedCells": "الخلايا المتأثرة",
       "cellIds": "معرفات الخلايا",
-      "cells": "خلايا",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "نسخ JSON كامل"
     },
     "graphDataDialog": {
@@ -491,7 +694,7 @@
       "title": "السجل",
       "undoStack": "مكدس التراجع",
       "undoStackSize": "حجم مكدس التراجع",
-      "userId": "معرف المستخدم"
+      "userId": "{{common.userId}}"
     }
   },
   "editor": {
@@ -548,9 +751,18 @@
   "errors": {
     "validationError": "خطأ في التحقق"
   },
+  "footer": {
+    "support": "الدعم"
+  },
   "getStarted": "ابدأ",
-  "homeDescription": "أداة تعاونية لنمذجة التهديدات مصممة لمساعدة الفرق على تحديد وتحليل وتوثيق التهديدات الأمنية في أنظمتهم. إنشاء ومشاركة وتحرير نماذج التهديدات والرسوم البيانية بشكل تعاوني لتحسين أمان التطبيق الخاص بك.",
+  "homeDescription": "TMI هي أداة تدير وتعزز عمليات المراجعة الأمنية ونمذجة التهديدات لمؤسستك. تدير سير عمل المراجعة الأمنية، وتنظم المعلومات للمراجعات الأمنية، وتمكّن من بناء مخططات تدفق البيانات بشكل تعاوني، وتتيح ربط الأتمتة لتقليل الجهد في عملية المراجعة وتحليل التهديدات الأمنية.",
   "homeWelcomeTitle": "مرحبا بكم في تي إم آي: نمذجة التهديدات المحسنة",
+  "intake": {
+    "fill": {
+      "saveAndExit": "حفظ وخروج",
+      "submitResponses": "إرسال الردود"
+    }
+  },
   "login": {
     "chooseMethod": "اختر طريقة تسجيل الدخول:",
     "explanation": "سجل الدخول باستخدام حسابك الموجود من موفر هوية موثوق به. وهذا يلغي الحاجة إلى كلمة مرور منفصلة، مما يبسط تجربتك مع الحفاظ على أمانك. نحن لا نقوم أبدًا بتخزين أو إدارة كلمات المرور - تبقى بيانات اعتمادك مع موفر الخدمة الخاص بك ولا يمكن اختراقها من خلالنا.",
@@ -571,10 +783,13 @@
     "unexpectedError": "حدث خطأ غير متوقع أثناء مصادقة OAuth."
   },
   "navbar": {
+    "admin": "المسؤول",
     "appTitle": "تي إم آي: نمذجة التهديدات المحسنة",
     "copyUserEmail": "نسخ البريد الإلكتروني للمستخدم إلى الحافظة",
+    "dashboard": "لوحة التحكم",
     "feedback": "الإبلاغ عن خطأ أو طلب ميزة أو تقديم ملاحظات",
     "home": "الصفحة الرئيسية",
+    "intake": "استقبال",
     "logoutButton": "تسجيل الخروج",
     "serverStatus": {
       "noServerConfigured": "لم يتم تكوين خادم",
@@ -666,6 +881,77 @@
     },
     "title": "الجلسة على وشك الانتهاء"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "فشل الحفظ",
+      "saved": "تم الحفظ",
+      "saving": "جاري الحفظ..."
+    },
+    "browse": "تصفح الاستبيانات",
+    "confidentialDialog": {
+      "description": "هل يجب وضع علامة على هذه الإجابة كسرية؟ الإجابات السرية لا تُشارك تلقائياً مع مجموعة مراجعي الأمان. لا يمكن تغيير هذا الإعداد بعد إنشاء الاستجابة.",
+      "no": "لا",
+      "title": "إجابة سرية",
+      "yes": "نعم، ضع علامة كسري"
+    },
+    "confirmation": {
+      "backToSurveys": "العودة إلى الاستبيانات",
+      "message": "تم تقديم الاستبيان بنجاح.",
+      "title": "تم تقديم الاستبيان",
+      "viewResponses": "عرض ردودي"
+    },
+    "continueDraft": "متابعة المسودة",
+    "fill": {
+      "submitConfirm": "هل أنت متأكد من أنك تريد التقديم؟ لن تتمكن من تعديل ردودك بعد التقديم.",
+      "title": "تعبئة الاستبيان"
+    },
+    "list": {
+      "deleteDraft": "حذف المسودة",
+      "draftStarted": "بدأت المسودة {{time}}",
+      "errorLoadingSurveys": "فشل تحميل الاستبيانات",
+      "lastModified": "آخر تعديل {{time}}",
+      "loadingSurveys": "جارٍ تحميل الاستبيانات...",
+      "noSurveysMessage": "لا توجد استبيانات نشطة حالياً. تحقق لاحقاً.",
+      "noSurveysTitle": "لا توجد استبيانات متاحة",
+      "pageDescription": "اختر نوع المراجعة المناسب من القائمة التالية، ثم أجب على الأسئلة المعروضة لتزويد فريق المراجعة الأمنية بالمعلومات التي يحتاجونها لإجراء المراجعة.",
+      "pageTitle": "طلب مراجعة أمنية",
+      "updated": "محدّث",
+      "yourDrafts": "مسوداتك"
+    },
+    "myResponses": "ردودي",
+    "noMatchingResponses": "لا توجد ردود مطابقة",
+    "noMatchingResponsesMessage": "لا توجد ردود تطابق الفلاتر المحددة.",
+    "noResponses": "لم تقدم أي ردود على الاستبيانات بعد",
+    "noSurveys": "لا توجد استبيانات متاحة",
+    "responses": {
+      "continueEditing": "متابعة التحرير",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
+      "filterByStatus": "تصفية حسب الحالة",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
+      "noResponsesMessage": "لم تكمل أي استبيانات بعد. ابدأ واحداً من صفحة الاستبيانات.",
+      "noResponsesTitle": "لا توجد ردود بعد",
+      "pageTitle": "ردودي على الاستبيانات",
+      "responseCount": "رد واحد ({{count}})",
+      "responseCountPlural": "{{count}} ردود"
+    },
+    "saveDraft": "حفظ كمسودة",
+    "startNew": "بدء الاستبيان",
+    "status": {
+      "draft": "مسودة",
+      "needsRevision": "يحتاج إلى مراجعة",
+      "readyForReview": "جاهز للمراجعة",
+      "reviewCreated": "تم إنشاء المراجعة",
+      "submitted": "{{triage.list.submitted}}"
+    },
+    "submitSurvey": "تقديم الاستبيان",
+    "templateStatus": {
+      "active": "{{common.active}}",
+      "archived": "مؤرشف",
+      "inactive": "غير نشط"
+    },
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "عرض الرد"
+  },
   "threatEditor": {
     "createNewThreat": "إنشاء تهديد جديد",
     "notAssociatedWithAsset": "غير مرتبط بأصل",
@@ -729,7 +1015,7 @@
     "createNewRepository": "إضافة مرجع مستودع",
     "created": "{{common.created}}",
     "createdBy": "تم إنشاؤه بواسطة",
-    "dashboard": "لوحة المعلومات",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "مخطط تدفق البيانات",
     "deleteWarningPermanent": "لا يمكن التراجع عن هذا الإجراء وسيحذف نهائياً جميع المخططات والتهديدات والبيانات الوصفية المرتبطة.",
     "descriptionPlaceholder": "صف الغرض ونطاق نموذج التهديد هذا",
@@ -737,7 +1023,7 @@
     "diagramName": "اسم المخطط",
     "diagramPreview": "معاينة المخطط",
     "diagramType": "نوع المخطط",
-    "diagrams": "المخططات",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "اوصف الغرض أو محتوى الوثيقة",
     "documentEditor": {
       "title": {
@@ -762,8 +1048,8 @@
     "noPermissions": "لم يتم تحديد أي أذونات",
     "noRepositories": "لم تتم إضافة أي مستودعات بعد",
     "noThreats": "لم تتم إضافة أي تهديدات بعد",
-    "pageTitle": "نماذج التهديدات",
-    "permissionsProvider": "المزود",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
+    "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "الدور",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "إدارة الأذونات",
@@ -786,6 +1072,12 @@
     "repositorySubPathHint": "مسار اختياري داخل المستودع",
     "repositoryType": "نوع المستودع",
     "repositoryUri": "رابط المستودع",
+    "sections": {
+      "inputs": "المدخلات",
+      "inputsDescription": "الأصول والمستندات ومستودعات الأكواد المصدرية التي تصف النظام قيد التحليل",
+      "outputs": "المخرجات",
+      "outputsDescription": "الملاحظات والمخططات والتهديدات التي تم إنتاجها أثناء تحليل الأمان"
+    },
     "setAsOwner": "تعيين كمالك",
     "sourcesCount": "مستودعات",
     "status": {
@@ -818,7 +1110,7 @@
       "addAsset": "إضافة أصل",
       "addDiagram": "إضافة مخطط",
       "addDocument": "إضافة وثيقة",
-      "addNote": "إضافة ملاحظة",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "الأصول هي موارد قيمة داخل النظام تتطلب الحماية، مثل البيانات والأجهزة والبرامج والبنية التحتية والخدمات أو الموظفين.",
       "diagramsCardTitle": "المخططات في TMI هي تمثيلات قابلة للقراءة آليًا لحركة البيانات والعمليات داخل النظام، مما يتيح التحليل الأمني اليدوي والآلي.",
       "documentsCardTitle": "مراجع الوثائق هي روابط للوثائق المخزنة خارج TMI. الوثائق ذات الصلة تصف النظام المراد تحليله، ويمكن استخدامها من قبل محللي الأمن وعمليات التحليل الآلي.",
@@ -881,10 +1173,90 @@
     },
     "title": "شروط الخدمة"
   },
-  "userPreferences": {
-    "administration": {
-      "title": "{{admin.title}}"
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "البحث بالبريد الإلكتروني",
+      "searchPlaceholder": "ابدأ بكتابة عنوان البريد الإلكتروني..."
+    }
+  },
+  "triage": {
+    "bulkActions": "إجراءات مجمعة",
+    "changeStatus": "تغيير الحالة",
+    "columns": {
+      "confidentialTooltip": "إجابة سرية"
     },
+    "createTm": "{{createThreatModel.title}}",
+    "detail": {
+      "addNote": "إضافة ملاحظة",
+      "markdownSupported": "يدعم Markdown",
+      "noNotes": "لا توجد ملاحظات فرز بعد",
+      "noResponses": "لم يتم تسجيل أي ردود",
+      "noRevisionNotes": "لا توجد ملاحظات مراجعة",
+      "note": "ملاحظة",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "أدخل محتوى الملاحظة...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "عنوان مختصر للملاحظة",
+      "notes": "ملاحظات",
+      "responseDetails": "تفاصيل الرد",
+      "reviewedAt": "تمت المراجعة",
+      "reviewedBy": "روجعت بواسطة",
+      "revisionNotesTitle": "طُلبت المراجعة",
+      "statusTimeline": "جدول الحالة الزمني",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "ملاحظات الفرز"
+    },
+    "filters": {
+      "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "{{triage.list.allSurveys}}",
+      "clearFilters": "مسح المرشحات",
+      "confidential": "السرية",
+      "confidentialOnly": "سري",
+      "nonConfidential": "غير سري"
+    },
+    "list": {
+      "allSurveys": "جميع الاستبيانات",
+      "approve": "موافقة",
+      "approveSelected": "الموافقة على المحدد",
+      "createThreatModel": "{{createThreatModel.title}}",
+      "errorLoadingResponses": "فشل تحميل الردود",
+      "loadingResponses": "جارٍ تحميل الردود...",
+      "noResponsesFiltered": "لا توجد ردود تطابق عوامل التصفية",
+      "noResponsesTitle": "لا توجد ردود",
+      "noResponsesToTriage": "لا توجد ردود استبيانات للفرز",
+      "notSubmitted": "لم يتم الإرسال",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
+      "searchPlaceholder": "البحث حسب مقدم الطلب أو الاستبيان...",
+      "submitted": "تم الإرسال",
+      "submitter": "المرسل"
+    },
+    "markInReview": "وضع علامة قيد المراجعة",
+    "markPendingTriage": "وضع علامة في انتظار الفرز",
+    "noResponses": "لا توجد ردود للفرز",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "أدخل محتوى الملاحظة (يدعم Markdown)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "ملاحظة فرز جديدة",
+        "view": "عرض ملاحظة الفرز"
+      }
+    },
+    "queue": "قائمة انتظار الفرز",
+    "returnToSubmitted": "الإرجاع إلى مقدم",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "قدّم ملاحظات توضح ما يحتاج إلى مراجعة. سيرى مقدّم الطلب هذه الملاحظات عند مراجعة رده.",
+      "hint": "مطلوب — صف التغييرات المطلوبة",
+      "label": "ملاحظات المراجعة",
+      "placeholder": "صف المراجعات المطلوبة...",
+      "title": "إعادة للمراجعة"
+    },
+    "title": "الفرز",
+    "viewDetails": "عرض التفاصيل"
+  },
+  "userPreferences": {
     "colorBlindMode": "تفعيل وضع عمى الألوان",
     "credentials": {
       "add": "إضافة",
@@ -936,6 +1308,7 @@
     },
     "diagramAnimationEffects": "تفعيل تأثيرات الرسوم المتحركة في محرر المخططات",
     "displayPreferences": "تفضيلات العرض",
+    "hoverShowMetadata": "إظهار بيانات الخلية الوصفية عند التمرير",
     "marginSize": {
       "narrow": "ضيق",
       "standard": "قياسي",
@@ -948,13 +1321,18 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "تفضيلات التقرير",
+    "sections": {
+      "developer": "المطوّر",
+      "diagramEditor": "محرر المخططات",
+      "securityReviewer": "مراجع الأمان"
+    },
     "showDeveloperTools": "عرض أدوات المطور",
     "tabs": {
       "credentials": "بيانات الاعتماد",
       "danger": "خطر",
       "display": "العرض",
       "profile": "الملف الشخصي",
-      "reports": "التقارير"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "المظهر",
     "themeMode": {
@@ -963,13 +1341,22 @@
       "light": "فاتح"
     },
     "title": "تفضيلات المستخدم",
+    "transferData": {
+      "confirmMessage": "هل أنت متأكد من أنك تريد نقل جميع نماذج التهديدات واستجابات الاستبيان إلى {{email}}؟ سيتم تخفيض درجتك إلى دور الكاتب في العناصر المنقولة.",
+      "dialogTitle": "نقل بياناتي",
+      "error": "فشل نقل البيانات. يرجى المحاولة مرة أخرى.",
+      "hint": "نقل ملكية جميع نماذج التهديدات واستجابات الاستبيان إلى مستخدم آخر. سيتم تخفيض درجتك إلى دور الكاتب في العناصر المنقولة.",
+      "success": "تم نقل {{tmCount}} نماذج تهديدات و {{responseCount}} استجابات الاستبيان.",
+      "title": "نقل بياناتي إلى مستخدم آخر"
+    },
     "userProfile": {
       "currentRole": "دور نموذج التهديد الحالي",
-      "groups": "المجموعات",
-      "provider": "موفر الهوية",
+      "groups": "{{common.groups}}",
+      "jwtGroups": "مجموعات JWT",
+      "provider": "{{common.identityProvider}}",
       "providerId": "معرف الموفر",
       "title": "ملف المستخدم",
-      "userId": "معرف المستخدم"
+      "userId": "{{common.userId}}"
     }
   }
 }

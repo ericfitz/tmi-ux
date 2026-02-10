@@ -1,7 +1,6 @@
 import { Component, DestroyRef, inject, Inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
@@ -25,6 +24,15 @@ import {
   CredentialSecretDialogComponent,
   CredentialSecretDialogData,
 } from './credential-secret-dialog/credential-secret-dialog.component';
+import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
+import {
+  UserPickerDialogComponent,
+  UserPickerDialogData,
+} from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
+import { UserService } from '../../services/user.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslocoService } from '@jsverse/transloco';
+import { AdminUser } from '@app/types/user.types';
 
 export interface UserPreferences {
   animations: boolean;
@@ -34,6 +42,7 @@ export interface UserPreferences {
   marginSize: 'narrow' | 'standard' | 'wide';
   showDeveloperTools: boolean;
   dashboardListView: boolean;
+  hoverShowMetadata: boolean;
 }
 
 interface CheckboxChangeEvent {
@@ -48,6 +57,7 @@ interface CheckboxChangeEvent {
     ...DATA_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
     TranslocoModule,
+    UserDisplayComponent,
   ],
   template: `
     <h2 mat-dialog-title [transloco]="'userPreferences.title'">User Preferences</h2>
@@ -63,7 +73,9 @@ interface CheckboxChangeEvent {
             <div class="profile-info">
               <div class="profile-item">
                 <span class="profile-label" [transloco]="'common.name'">Name</span>
-                <span class="profile-value">{{ userProfile?.display_name || 'N/A' }}</span>
+                <span class="profile-value"
+                  ><app-user-display [user]="userProfile" fallback="N/A"
+                /></span>
               </div>
 
               <div class="profile-item">
@@ -98,12 +110,27 @@ interface CheckboxChangeEvent {
                     Groups
                   </span>
                   <div class="profile-value groups-list">
-                    @for (group of userProfile?.groups; track group) {
-                      <span class="group-badge">{{ group }}</span>
+                    @for (group of userProfile?.groups; track group.internal_uuid) {
+                      <span class="group-badge">{{ group.name ?? group.group_name }}</span>
                     }
                   </div>
                 </div>
               }
+
+              <div class="profile-item">
+                <span class="profile-label" [transloco]="'userPreferences.userProfile.jwtGroups'">
+                  JWT Groups
+                </span>
+                @if (userProfile?.jwt_groups && (userProfile?.jwt_groups?.length ?? 0) > 0) {
+                  <div class="profile-value groups-list">
+                    @for (group of userProfile?.jwt_groups; track group) {
+                      <span class="group-badge">{{ group }}</span>
+                    }
+                  </div>
+                } @else {
+                  <span class="profile-value" [transloco]="'common.none'">None</span>
+                }
+              </div>
 
               @if (currentThreatModelRole) {
                 <div class="profile-item">
@@ -128,17 +155,6 @@ interface CheckboxChangeEvent {
             <h3 class="section-header" [transloco]="'userPreferences.displayPreferences'">
               Display Preferences
             </h3>
-
-            <div class="preference-item">
-              <mat-checkbox
-                [(ngModel)]="preferences.animations"
-                (change)="onAnimationPreferenceChange($event)"
-              >
-                <span [transloco]="'userPreferences.diagramAnimationEffects'">
-                  Diagram animation effects
-                </span>
-              </mat-checkbox>
-            </div>
 
             <div class="preference-item">
               <label class="preference-label" [transloco]="'userPreferences.theme'">Theme</label>
@@ -172,16 +188,38 @@ interface CheckboxChangeEvent {
               </mat-checkbox>
             </div>
 
+            <label class="preference-label" [transloco]="'userPreferences.sections.diagramEditor'">
+              Diagram Editor
+            </label>
+
             <div class="preference-item">
               <mat-checkbox
-                [(ngModel)]="preferences.showDeveloperTools"
-                (change)="onShowDeveloperToolsChange($event)"
+                [(ngModel)]="preferences.animations"
+                (change)="onAnimationPreferenceChange($event)"
               >
-                <span [transloco]="'userPreferences.showDeveloperTools'">
-                  Show Developer Tools
+                <span [transloco]="'userPreferences.diagramAnimationEffects'">
+                  Diagram animation effects
                 </span>
               </mat-checkbox>
             </div>
+
+            <div class="preference-item">
+              <mat-checkbox
+                [(ngModel)]="preferences.hoverShowMetadata"
+                (change)="onHoverShowMetadataChange($event)"
+              >
+                <span [transloco]="'userPreferences.hoverShowMetadata'">
+                  Show cell metadata on hover
+                </span>
+              </mat-checkbox>
+            </div>
+
+            <label
+              class="preference-label"
+              [transloco]="'userPreferences.sections.securityReviewer'"
+            >
+              Security Reviewer
+            </label>
 
             <div class="preference-item">
               <mat-checkbox
@@ -190,6 +228,21 @@ interface CheckboxChangeEvent {
               >
                 <span [transloco]="'userPreferences.dashboardListView'">
                   Show Dashboard as List View
+                </span>
+              </mat-checkbox>
+            </div>
+
+            <label class="preference-label" [transloco]="'userPreferences.sections.developer'">
+              Developer
+            </label>
+
+            <div class="preference-item">
+              <mat-checkbox
+                [(ngModel)]="preferences.showDeveloperTools"
+                (change)="onShowDeveloperToolsChange($event)"
+              >
+                <span [transloco]="'userPreferences.showDeveloperTools'">
+                  Show Developer Tools
                 </span>
               </mat-checkbox>
             </div>
@@ -365,20 +418,24 @@ interface CheckboxChangeEvent {
         <!-- Danger Tab -->
         <mat-tab [label]="'userPreferences.tabs.danger' | transloco">
           <div class="tab-content danger-tab">
-            @if (userProfile?.is_admin) {
-              <div class="preference-item">
-                <button
-                  mat-raised-button
-                  color="primary"
-                  (click)="onAdminClick()"
-                  class="admin-button"
+            <div class="preference-item">
+              <button
+                mat-raised-button
+                color="warn"
+                (click)="onTransferData()"
+                class="transfer-button"
+              >
+                <mat-icon>swap_horiz</mat-icon>
+                <span [transloco]="'userPreferences.transferData.title'"
+                  >Transfer My Data to Another User</span
                 >
-                  <mat-icon>supervisor_account</mat-icon>
-                  <span [transloco]="'userPreferences.administration.title'">Administration</span>
-                </button>
-              </div>
-            }
-
+              </button>
+              <p class="danger-hint" [transloco]="'userPreferences.transferData.hint'">
+                Transfers ownership of all your threat models and survey responses to another user.
+                You will be downgraded to writer role on transferred items.
+              </p>
+            </div>
+            <mat-divider></mat-divider>
             <div class="preference-item">
               <button
                 mat-raised-button
@@ -456,14 +513,12 @@ interface CheckboxChangeEvent {
         margin-left: 8px;
       }
 
-      .admin-button,
       .delete-button {
         display: flex;
         align-items: center;
         gap: 8px;
       }
 
-      .admin-button mat-icon,
       .delete-button mat-icon {
         font-size: 20px;
         width: 20px;
@@ -636,6 +691,30 @@ interface CheckboxChangeEvent {
       .danger-tab {
         padding-top: 8px;
       }
+
+      .transfer-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .transfer-button mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+      }
+
+      .danger-hint {
+        margin: 8px 0 0 0;
+        font-size: 12px;
+        color: var(--theme-text-secondary);
+        line-height: 1.4;
+      }
+
+      mat-divider {
+        margin: 16px 0;
+      }
     `,
   ],
 })
@@ -657,11 +736,13 @@ export class UserPreferencesDialogComponent implements OnInit {
     @Inject(AUTH_SERVICE) private authService: IAuthService,
     private logger: LoggerService,
     private dialog: MatDialog,
-    private router: Router,
     private themeService: ThemeService,
     private userPreferencesService: UserPreferencesService,
     private threatModelAuthService: ThreatModelAuthorizationService,
     private clientCredentialService: ClientCredentialService,
+    private userService: UserService,
+    private snackBar: MatSnackBar,
+    private transloco: TranslocoService,
   ) {
     this.preferences = this.userPreferencesService.getPreferences();
   }
@@ -723,12 +804,59 @@ export class UserPreferencesDialogComponent implements OnInit {
     this.userPreferencesService.updatePreferences({ dashboardListView: event.checked });
   }
 
-  onAdminClick(): void {
-    this.logger.debugComponent('UserPreferences', 'Administration button clicked');
-    // Close the preferences dialog
-    this.dialogRef.close();
-    // Navigate to admin page
-    void this.router.navigate(['/admin']);
+  onHoverShowMetadataChange(event: CheckboxChangeEvent): void {
+    this.preferences.hoverShowMetadata = event.checked;
+    this.userPreferencesService.updatePreferences({ hoverShowMetadata: event.checked });
+  }
+
+  onTransferData(): void {
+    const dialogData: UserPickerDialogData = {
+      title: this.transloco.translate('userPreferences.transferData.dialogTitle'),
+    };
+
+    const pickerRef = this.dialog.open(UserPickerDialogComponent, {
+      width: '500px',
+      maxWidth: '90vw',
+      data: dialogData,
+    });
+
+    pickerRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((selectedUser: AdminUser | undefined) => {
+        if (!selectedUser) {
+          return;
+        }
+
+        const confirmed = confirm(
+          this.transloco.translate('userPreferences.transferData.confirmMessage', {
+            email: selectedUser.email,
+          }),
+        );
+
+        if (confirmed) {
+          this.userService
+            .transferOwnership(selectedUser.internal_uuid)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: result => {
+                const message = this.transloco.translate('userPreferences.transferData.success', {
+                  tmCount: result.threat_models_transferred.count,
+                  srCount: result.survey_responses_transferred.count,
+                });
+                this.snackBar.open(message, undefined, { duration: 5000 });
+              },
+              error: error => {
+                this.logger.error('Failed to transfer ownership', error);
+                this.snackBar.open(
+                  this.transloco.translate('userPreferences.transferData.error'),
+                  undefined,
+                  { duration: 5000 },
+                );
+              },
+            });
+        }
+      });
   }
 
   onDeleteData(): void {

@@ -278,6 +278,7 @@ describe('Authentication Integration', () => {
         display_name: 'test',
         email: testEmail,
         groups: null,
+        jwt_groups: null,
       };
 
       authService.storeToken(token);
@@ -308,6 +309,7 @@ describe('Authentication Integration', () => {
         display_name: 'test',
         email: 'test@example.com',
         groups: null,
+        jwt_groups: null,
       };
 
       authService.storeToken(token);
@@ -366,7 +368,7 @@ describe('Authentication Integration', () => {
           expect(success).toBe(true);
           expect(authService.isAuthenticated).toBe(true);
           expect(authService.userProfile).toBeTruthy();
-          expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+          expect(router.navigate).toHaveBeenCalledWith(['/intake']);
         });
 
         // Verify localStorage cleanup
@@ -560,6 +562,7 @@ describe('Authentication Integration', () => {
           display_name: 'Restored User',
           email: 'restored@example.com',
           groups: null,
+          jwt_groups: null,
         };
 
         // Helper function to XOR encrypt data like the real service would

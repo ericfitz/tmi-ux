@@ -75,20 +75,37 @@ export interface CreateGroupRequest {
 
 /**
  * Group member object
+ * Supports both user members and nested group members via subject_type
  */
 export interface GroupMember {
-  /** Internal system UUID of the user */
-  internal_uuid: string;
-  /** OAuth/SAML provider identifier */
-  provider: string;
-  /** Provider-assigned user identifier */
-  provider_user_id: string;
-  /** User email address */
-  email: string;
-  /** User display name */
-  name: string;
-  /** When the user was added to the group */
+  /** Unique identifier for the membership record */
+  id: string;
+  /** Internal UUID of the group this membership belongs to */
+  group_internal_uuid: string;
+  /** Type of member: user (direct user) or group (nested group) */
+  subject_type: 'user' | 'group';
+  /** Internal UUID of the user (null when subject_type is group) */
+  user_internal_uuid?: string | null;
+  /** Email address of the user (null when subject_type is group) */
+  user_email?: string | null;
+  /** Display name of the user (null when subject_type is group) */
+  user_name?: string | null;
+  /** OAuth/SAML provider for the user (null when subject_type is group) */
+  user_provider?: string | null;
+  /** Provider-specific user identifier (null when subject_type is group) */
+  user_provider_user_id?: string | null;
+  /** Internal UUID of admin who added this member */
+  added_by_internal_uuid?: string | null;
+  /** Email of admin who added this member */
+  added_by_email?: string | null;
+  /** When the member was added to the group */
   added_at: string;
+  /** Optional notes about this membership */
+  notes?: string | null;
+  /** Internal UUID of the member group (when subject_type is group) */
+  member_group_internal_uuid?: string | null;
+  /** Display name of the member group (when subject_type is group) */
+  member_group_name?: string | null;
 }
 
 /**
@@ -103,10 +120,15 @@ export interface ListGroupMembersResponse {
 
 /**
  * Request to add a member to a group
+ * Provide user_internal_uuid for user members or member_group_internal_uuid for group members
  */
 export interface AddGroupMemberRequest {
-  /** OAuth/SAML provider identifier */
-  provider: string;
-  /** Provider-assigned user identifier */
-  provider_user_id: string;
+  /** Internal UUID of the user to add (required when subject_type is user) */
+  user_internal_uuid?: string;
+  /** Type of member to add: user or group */
+  subject_type?: 'user' | 'group';
+  /** Internal UUID of the group to add as member (required when subject_type is group) */
+  member_group_internal_uuid?: string;
+  /** Optional notes about this membership */
+  notes?: string;
 }

@@ -1,6 +1,6 @@
 <div class="home-container">
   <div class="logo-row">
-    <img src="/TMI-FullLogo-Transparent.svg" alt="TMI Logo" class="tmi-home-logo" />
+    <img [src]="logoImageUrl$ | async" alt="TMI Logo" class="tmi-home-logo" />
   </div>
 
   <div class="title-row">

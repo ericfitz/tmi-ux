@@ -43,6 +43,21 @@ mat-toolbar,
   }
 }
 
+// Icon button centering — ensures icons are consistently centered in all icon-only buttons
+.mat-mdc-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  .mat-icon,
+  mat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+}
+
 // Material 3 error color buttons
 // In M3, the color attribute adds a class but doesn't apply styles automatically
 // We need to use the button-color mixin to apply error colors

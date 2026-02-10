@@ -76,26 +76,6 @@
       "subtitle": "กำหนดค่าส่วนเสริมเพื่อขยายความสามารถของ TMI",
       "title": "จัดการส่วนเสริม"
     },
-    "administrators": {
-      "addButton": "{{admin.administrators.addDialog.save}}",
-      "addDialog": {
-        "provider": "{{common.provider}}",
-        "providerRequired": "จำเป็นต้องระบุผู้ให้บริการ",
-        "save": "เพิ่มผู้ดูแลระบบ",
-        "subject": "หัวเรื่อง",
-        "subjectHint": "ป้อนอีเมลผู้ใช้หรือชื่อกลุ่ม",
-        "subjectPlaceholder": "อีเมลผู้ใช้หรือชื่อกลุ่ม",
-        "subjectRequired": "จำเป็นต้องระบุหัวเรื่อง",
-        "title": "{{admin.administrators.addDialog.save}}"
-      },
-      "filterLabel": "กรองผู้ดูแลระบบ",
-      "filterPlaceholder": "ค้นหาตามอีเมลหรือชื่อกลุ่ม",
-      "listTitle": "ผู้ดูแลระบบ",
-      "noAdministrators": "ไม่พบผู้ดูแลระบบ",
-      "removeTooltip": "ลบสิทธิ์ผู้ดูแลระบบ",
-      "subtitle": "ควบคุมผู้ที่มีสิทธิ์เข้าถึงระบบในฐานะผู้ดูแล",
-      "title": "จัดการผู้ดูแลระบบ"
-    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -114,6 +94,11 @@
         "save": "สร้างกลุ่ม",
         "title": "เพิ่มกลุ่ม"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "การใช้งาน"
+      },
       "deleteTooltip": "ลบกลุ่ม",
       "filterLabel": "กรองกลุ่ม",
       "filterPlaceholder": "ค้นหาตามชื่อกลุ่มหรือผู้ให้บริการ",
@@ -124,8 +109,10 @@
         "noMembers": "ไม่มีสมาชิกในกลุ่มนี้",
         "removeTooltip": "ลบออกจากกลุ่ม",
         "searchHint": "พิมพ์อย่างน้อย 2 ตัวอักษรเพื่อค้นหา",
-        "searchPlaceholder": "เริ่มพิมพ์ที่อยู่อีเมล...",
-        "searchUser": "ค้นหาผู้ใช้ด้วยอีเมล"
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
+        "searchUser": "ค้นหาผู้ใช้ด้วยอีเมล",
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "ไม่พบกลุ่ม",
       "subtitle": "ดูและจัดการกลุ่มระบบ",
@@ -143,6 +130,12 @@
         "title": "เพิ่มโควตาที่กำหนดเอง",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "ค่าเริ่มต้น",
       "deleteTooltip": "ลบโควตาที่กำหนดเอง (กลับไปใช้ค่าเริ่มต้น)",
       "eventsPerMinute": "เหตุการณ์ต่อนาที",
       "filterLabel": "กรองโควตา",
@@ -164,10 +157,6 @@
         "description": "ติดตั้งและกำหนดค่าส่วนเสริมของแอปพลิเคชัน",
         "title": "{{admin.addons.title}}"
       },
-      "administrators": {
-        "description": "ให้หรือเพิกถอนสิทธิ์ผู้ดูแลระบบ",
-        "title": "{{admin.administrators.title}}"
-      },
       "groups": {
         "description": "กำหนดค่ากลุ่มผู้ใช้และสมาชิก",
         "title": "{{admin.groups.title}}"
@@ -175,6 +164,14 @@
       "quotas": {
         "description": "กำหนดค่าโควตาทรัพยากรและข้อจำกัด",
         "title": "{{admin.quotas.title}}"
+      },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
+      "surveys": {
+        "description": "สร้างและจัดการแบบสำรวจ",
+        "title": "จัดการแบบสำรวจ"
       },
       "users": {
         "description": "ดูและจัดการบัญชีผู้ใช้",
@@ -185,16 +182,83 @@
         "title": "{{admin.webhooks.title}}"
       }
     },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "คำอธิบายเลือกเพิ่มเติมของการตั้งค่านี้",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "ตัวพิมพ์เล็กพร้อมจุดและขีดล่าง (เช่น rate_limit.max_rpm)",
+        "keyInvalid": "ต้องเริ่มต้นด้วยตัวพิมพ์เล็ก ใช้เฉพาะตัวพิมพ์เล็ก ตัวเลข จุด และขีดล่าง",
+        "keyRequired": "ต้องระบุคีย์",
+        "save": "สร้างการตั้งค่า",
+        "title": "เพิ่มการตั้งค่า",
+        "type": "{{common.type}}",
+        "typeRequired": "ต้องระบุประเภท",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "ต้องระบุค่า"
+      },
+      "cancelTooltip": "ยกเลิกการแก้ไข",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "คุณแน่ใจหรือไม่ว่าต้องการลบการตั้งค่า \"{{key}}\"?",
+      "deleteTooltip": "ลบการตั้งค่า",
+      "editTooltip": "แก้ไขการตั้งค่า",
+      "filterLabel": "กรอง",
+      "filterPlaceholder": "กรองตามคีย์ ค่า หรือคำอธิบาย",
+      "listTitle": "การตั้งค่าระบบ",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "นำเข้าการตั้งค่าจากไฟล์การกำหนดค่าของเซิร์ฟเวอร์หรือตัวแปรสภาพแวดล้อมเข้าสู่ฐานข้อมูล",
+        "migrate": "ย้ายข้อมูล",
+        "overwriteLabel": "เขียนทับการตั้งค่าที่มีอยู่",
+        "overwriteWarning": "คำเตือน: การดำเนินการนี้จะแทนที่การตั้งค่าใดๆ ในฐานข้อมูลที่ได้รับการปรับแต่งไว้ก่อนหน้านี้",
+        "resultMigrated": "ย้ายข้อมูลการตั้งค่า {{count}} รายการแล้ว",
+        "resultSkipped": "ข้ามการตั้งค่า {{count}} รายการ",
+        "title": "ย้ายข้อมูลการตั้งค่า"
+      },
+      "noSettings": "ไม่พบการตั้งค่า",
+      "saveTooltip": "บันทึกการเปลี่ยนแปลง",
+      "subtitle": "ดูและจัดการการตั้งค่าการกำหนดค่าระบบ",
+      "title": "จัดการการตั้งค่า",
+      "types": {
+        "bool": "บูลีน",
+        "int": "จำนวนเต็ม",
+        "json": "JSON",
+        "string": "สตริง"
+      }
+    },
     "subtitle": "จัดการการตั้งค่าระบบและการกำหนดค่า",
     "title": "การจัดการระบบ",
     "users": {
+      "administrator": "ผู้ดูแลระบบ",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "ลบบัญชีผู้ใช้",
       "filterLabel": "กรองผู้ใช้",
       "filterPlaceholder": "ค้นหาตามอีเมล ชื่อ ผู้ให้บริการ หรือชื่อกลุ่ม",
+      "lastLogin": "เข้าสู่ระบบครั้งล่าสุด",
       "listTitle": "ผู้ใช้",
+      "never": "ไม่เคย",
       "noUsers": "ไม่พบผู้ใช้",
       "subtitle": "ดูและจัดการผู้ใช้ระบบ",
-      "title": "จัดการผู้ใช้"
+      "title": "จัดการผู้ใช้",
+      "transferOwnership": {
+        "confirm": "คุณแน่ใจหรือไม่ว่าต้องการโอนข้อมูลทั้งหมดจาก {{source}} ไป {{target}}?",
+        "dialogTitle": "โอนข้อมูลผู้ใช้",
+        "error": "ไม่สามารถโอนสิทธิ์ได้ โปรดลองอีกครั้ง",
+        "success": "{{userPreferences.transferData.success}}",
+        "tooltip": "โอนสิทธิ์ความเป็นเจ้าของ"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -231,13 +295,112 @@
       "noWebhooks": "ไม่พบ webhooks",
       "secret": "ความลับ HMAC",
       "status": {
-        "active": "ใช้งานอยู่",
+        "active": "{{common.active}}",
         "pending_delete": "รอการลบ",
         "pending_verification": "รอการยืนยัน"
       },
       "subtitle": "กำหนดค่าการสมัครสมาชิก webhook สำหรับการแจ้งเตือนเหตุการณ์",
       "title": "จัดการ Webhooks"
     }
+  },
+  "adminSurveys": {
+    "cloneSuffix": "(สำเนา)",
+    "createDialog": {
+      "nameLabel": "ชื่อแบบสำรวจ",
+      "namePlaceholder": "ป้อนชื่อแบบสำรวจ",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "สร้างแบบสำรวจ",
+      "versionHint": "ตัวระบุเวอร์ชันแบบอิสระ",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "เช่น 1, v2-pilot, 2024-Q1",
+      "versionRequired": "ต้องระบุเวอร์ชัน"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "editTemplate": "แก้ไขแบบสำรวจ",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "ไม่พบแบบสำรวจที่ตรงกัน",
+    "noTemplatesMessage": "สร้างแบบสำรวจแรกของคุณเพื่อเริ่มต้น",
+    "noTemplatesTitle": "ยังไม่มีแบบสำรวจ",
+    "pageTitle": "{{admin.sections.surveys.title}}",
+    "searchByName": "ค้นหาตามชื่อ...",
+    "searchTemplates": "ค้นหาแบบสำรวจ",
+    "surveyDetails": "รายละเอียดแบบสำรวจ",
+    "templateBuilder": {
+      "addPage": "เพิ่มหน้า",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
+      "choicesPerLine": "ตัวเลือก (หนึ่งตัวเลือกต่อบรรทัด)",
+      "conditionalLogic": "ลอจิกเงื่อนไข",
+      "conditionalLogicHelp": "เอกสารลอจิกเงื่อนไขของ SurveyJS",
+      "deletePage": "ลบหน้า",
+      "deleteQuestion": "ลบคำถาม",
+      "enableIf": "เปิดใช้งานถ้า",
+      "enableIfHint": "เช่น {questionName} = 'value'",
+      "enterSurveyDescription": "ป้อนคำอธิบายแบบสำรวจ",
+      "enterSurveyTitle": "ป้อนชื่อแบบสำรวจ",
+      "failedToLoadTemplate": "โหลดแบบสำรวจไม่สำเร็จ",
+      "failedToSaveTemplate": "บันทึกแบบสำรวจไม่สำเร็จ",
+      "loadingTemplate": "กำลังโหลดแบบสำรวจ...",
+      "mapsToTmField": "แมปกับฟิลด์ TM",
+      "metadataKey": "คีย์เมทาดาทา",
+      "metadataKeyHint": "ชื่อคีย์สำหรับรายการเมทาดาทา",
+      "nameId": "ชื่อ (ID)",
+      "nameIdHint": "ตัวระบุเฉพาะสำหรับคำถามนี้",
+      "nextPage": "{{pagination.nextPage}}",
+      "noQuestionsHint": "คลิกประเภทคำถามจากพาเลทเพื่อเพิ่มคำถาม",
+      "noQuestionsYet": "ยังไม่มีคำถาม",
+      "pageIndicator": "หน้า {{current}} จาก {{total}}",
+      "previousPage": "{{pagination.previousPage}}",
+      "questionProperties": "คุณสมบัติคำถาม",
+      "questionTypeDescriptions": {
+        "boolean": "สวิตช์แบบบูลีน",
+        "checkbox": "การเลือกหลายตัวเลือก",
+        "comment": "พื้นที่ข้อความหลายบรรทัด",
+        "dropdown": "การเลือกแบบดรอปดาวน์",
+        "panel": "จัดกลุ่มคำถามในแผง",
+        "paneldynamic": "กลุ่มแผงที่สามารถทำซ้ำได้",
+        "radiogroup": "เลือกหนึ่งตัวเลือกจากรายการ",
+        "text": "การป้อนข้อความบรรทัดเดียว"
+      },
+      "questionTypeLabels": {
+        "boolean": "ใช่/ไม่ใช่",
+        "checkbox": "ช็อกบ็อกซ์",
+        "comment": "หลายบรรทัด",
+        "dropdown": "ดรอปดาวน์",
+        "panel": "แผง",
+        "paneldynamic": "แผงไดนามิก",
+        "radiogroup": "กลุ่มปุ่มวิทยุ",
+        "text": "{{editor.nodeLabels.textbox}}"
+      },
+      "questionTypes": "ประเภทคำถาม",
+      "questions": "คำถาม",
+      "required": "จำเป็น",
+      "requiredIf": "จำเป็นถ้า",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
+      "selectQuestionHint": "เลือกคำถามเพื่อแก้ไขคุณสมบัติ",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
+      "tmFieldLabels": {
+        "assetDescription": "คำอธิบายสินทรัพย์",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
+        "description": "คำอธิบายโมเดลภัยคุกคาม",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
+        "issueUri": "URL ติดตามปัญหา",
+        "metadataKey": "เมทาดาทาที่กำหนดเอง",
+        "name": "ชื่อโมเดลภัยคุกคาม",
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
+      },
+      "tmFieldMapping": "การแมปฟิลด์โมเดลภัยคุกคาม",
+      "tmFieldMappingHint": "เชื่อมโยงคำตอบนี้กับฟิลด์โมเดลภัยคุกคาม",
+      "unsavedChanges": "การเปลี่ยนแปลงที่ยังไม่ได้บันทึก",
+      "visibleIf": "แสดงถ้า",
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
+    },
+    "templateCount": "แบบสำรวจ {{count}} รายการ",
+    "templateCountPlural": "แบบสำรวจ {{count}} รายการ"
   },
   "assetEditor": {
     "chipPlaceholder": "ป้อนค่าและกด Enter",
@@ -300,15 +463,22 @@
   "common": {
     "about": "เกี่ยวกับ",
     "actions": "การกระทำ",
+    "activate": "เปิดใช้งาน",
+    "active": "ใช้งานอยู่",
     "addMetadata": "เพิ่มข้อมูลเมตา",
     "addThreat": "เพิ่มภัยคุกคาม",
     "addons": "ส่วนเสริม",
+    "all": "ทั้งหมด",
+    "allStatuses": "ทุกสถานะ",
+    "archive": "เก็บถาวร",
     "back": "ย้อนกลับ",
     "cancel": "ยกเลิก",
     "cellId": "รหัสเซลล์",
     "classification": "การจำแนกประเภท",
     "clear": "ล้าง",
+    "clone": "ทำสำเนา",
     "close": "ปิด",
+    "confirm": "ยืนยัน",
     "confirmDelete": "คุณแน่ใจหรือไม่ว่าต้องการลบ {{item}} \"{{name}}\"? การกระทำนี้ไม่สามารถย้อนกลับได้",
     "confirmDeleteMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบ{{objectType}} \"{{name}}\"?",
     "copy": "คัดลอก",
@@ -317,6 +487,7 @@
     "created": "สร้างแล้ว",
     "criticality": "ความสำคัญ",
     "cut": "ตัด",
+    "deactivate": "ปิดใช้งาน",
     "delete": "ลบ",
     "deleteConfirm": "ลบโมเดลภัยคุกคาม",
     "deleteWarningConfirmationField": "ยืนยันการลบ",
@@ -329,18 +500,23 @@
     "deleteWarningTypeConfirmation": "เพื่อยืนยัน กรุณาพิมพ์ \"{{confirmValue}}\" ในช่องด้านล่าง",
     "description": "คำอธิบาย",
     "diagramId": "รหัสแผนภาพ",
+    "dismiss": "ปิด",
     "done": "เสร็จสิ้น",
     "download": "ดาวน์โหลด",
     "edit": "แก้ไข",
     "editThreat": "แก้ไขภัยคุกคาม",
+    "email": "อีเมล",
     "emailLabel": "ที่อยู่อีเมล",
+    "error": "ข้อผิดพลาด",
     "fonts": "แบบอักษร",
+    "groups": "กลุ่ม",
     "id": "รหัส",
     "identityProvider": "ผู้ให้บริการยืนยันตัวตน",
     "issueUri": "URL ปัญหา",
     "language": "{{language}}",
     "lastModified": "แก้ไขล่าสุด",
     "lastUpdated": "อัปเดตล่าสุด",
+    "loading": "กำลังโหลด...",
     "manage": "จัดการ",
     "manageMetadata": "จัดการข้อมูลเมตา",
     "manageThreats": "จัดการภัยคุกคาม",
@@ -350,9 +526,11 @@
     "mitigated": "ลดความรุนแรง",
     "mitigation": "การลดผลกระทบ",
     "mitigationPlaceholder": "อธิบายการลดผลกระทบที่แนะนำหรือวางแผนไว้สำหรับภัยคุกคามนี้",
+    "moreActions": "การดำเนินการเพิ่มเติม",
     "name": "ชื่อ",
     "noAddonsAvailable": "ไม่มีส่วนเสริมที่พร้อมใช้งาน",
     "noDataAvailable": "ไม่มีข้อมูล",
+    "noMatchingResults": "ไม่มีผลลัพธ์ที่ตรงกับตัวกรองของคุณ",
     "noMetadata": "ไม่มีข้อมูลเมตา",
     "noThreats": "ไม่มีภัยคุกคาม",
     "none": "ไม่มี",
@@ -360,17 +538,25 @@
       "asset": "สินทรัพย์",
       "assets": "สินทรัพย์",
       "cell": "เซลล์",
+      "cells": "เซลล์",
       "diagram": "แผนภาพ",
+      "diagrams": "แผนภาพ",
       "document": "เอกสาร",
       "documents": "เอกสาร",
       "metadata": "{{common.metadata}}",
       "note": "หมายเหตุ",
       "notes": "หมายเหตุ",
       "report": "รายงาน",
+      "reports": "รายงาน",
       "repositories": "ที่เก็บ",
       "repository": "ที่เก็บ",
+      "survey": "แบบสำรวจ",
+      "surveyResponse": "คำตอบแบบสำรวจ",
+      "surveyResponses": "คำตอบแบบสำรวจ",
+      "surveys": "แบบสำรวจ",
       "threat": "ภัยคุกคาม",
       "threatModel": "โมเดลภัยคุกคาม",
+      "threatModels": "โมเดลภัยคุกคาม",
       "threats": "ภัยคุกคาม"
     },
     "ok": "ตกลง",
@@ -382,6 +568,7 @@
     "provider": "ผู้ให้บริการ",
     "readOnly": "อ่านอย่างเดียว",
     "readOnlyTooltip": "คุณมีสิทธิ์เข้าถึงแบบอ่านอย่างเดียวสำหรับแบบจำลองภัยคุกคามนี้ ติดต่อเจ้าของเพื่อขอสิทธิ์การแก้ไข",
+    "retry": "ลองอีกครั้ง",
     "roles": {
       "owner": "เจ้าของ",
       "reader": "ผู้อ่าน",
@@ -391,6 +578,8 @@
     "saveAndClose": "บันทึกและปิด",
     "savedSuccessfully": "บันทึกสำเร็จ",
     "score": "คะแนน",
+    "search": "ค้นหา",
+    "selected": "เลือกแล้ว {{count}} รายการ",
     "sensitivity": "ความอ่อนไหว",
     "sessionRoles": {
       "host": "เจ้าภาพ",
@@ -403,11 +592,15 @@
       "group": "กลุ่ม",
       "user": "ผู้ใช้"
     },
+    "template": "เทมเพลต",
     "threatDescription": "คำอธิบายภัยคุกคาม",
     "threatDescriptionPlaceholder": "อธิบายภัยคุกคามโดยละเอียด",
     "threatName": "ชื่อภัยคุกคาม",
     "threatType": "ประเภทภัยคุกคาม",
+    "title": "ชื่อ",
+    "tryAdjustingFilters": "ลองปรับตัวกรองของคุณ",
     "type": "ประเภท",
+    "unarchive": "ยกเลิกการเก็บถาวร",
     "unsavedChangesWarning": "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก คุณแน่ใจหรือไม่ว่าต้องการปิด?",
     "userId": "รหัสผู้ใช้",
     "validation": {
@@ -416,6 +609,7 @@
       "nameRequired": "จำเป็นต้องระบุชื่อ",
       "required": "ฟิลด์นี้จำเป็น"
     },
+    "version": "เวอร์ชัน",
     "view": "ดู",
     "viewMetadata": "ดูข้อมูลเมตา",
     "viewPermissions": "ดูสิทธิ์การเข้าถึง",
@@ -431,6 +625,15 @@
     "moveToFront": "เลื่อนไปด้านหน้า",
     "noDataAssetsAvailable": "ไม่มีสินทรัพย์ข้อมูลที่พร้อมใช้งาน",
     "showObject": "แสดงอ็อบเจกต์"
+  },
+  "createThreatModel": {
+    "confidentialHint": "โมเดลภัยคุกคามที่เป็นความลับไม่ได้แชร์อัตโนมัติกับกลุ่ม Security Reviewers ไม่สามารถเปลี่ยนการตั้งค่านี้ได้หลังจากสร้าง",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
+    "descriptionPlaceholder": "อธิบายวัตถุประสงค์และขอบเขตของแบบจำลองภัยคุกคามนี้",
+    "framework": "เฟรมเวิร์ก",
+    "namePlaceholder": "ป้อนชื่อแบบจำลองภัยคุกคาม",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "สร้างแบบจำลองภัยคุกคาม"
   },
   "dashboard": {
     "clearFilter": "ล้างตัวกรอง",
@@ -466,7 +669,7 @@
     "common": {
       "affectedCells": "เซลล์ที่ได้รับผลกระทบ",
       "cellIds": "ID ของเซลล์",
-      "cells": "เซลล์",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "คัดลอก JSON ทั้งหมด"
     },
     "graphDataDialog": {
@@ -491,7 +694,7 @@
       "title": "ประวัติ",
       "undoStack": "สแต็กเลิกทำ",
       "undoStackSize": "ขนาดสแต็กเลิกทำ",
-      "userId": "ID ผู้ใช้"
+      "userId": "{{common.userId}}"
     }
   },
   "editor": {
@@ -548,9 +751,18 @@
   "errors": {
     "validationError": "ข้อผิดพลาดในการตรวจสอบ"
   },
+  "footer": {
+    "support": "การสนับสนุน"
+  },
   "getStarted": "เริ่มต้นใช้งาน",
-  "homeDescription": "เครื่องมือสร้างแบบจำลองภัยคุกคามแบบการทำงานร่วมกันที่ออกแบบมาเพื่อช่วยทีมในการระบุ วิเคราะห์ และจัดทำเอกสารภัยคุกคามด้านความปลอดภัยในระบบของพวกเขา สร้าง แบ่งปัน และแก้ไขแบบจำลองภัยคุกคามและแผนภาพร่วมกันเพื่อปรับปรุงความปลอดภัยของแอปพลิเคชันของคุณ",
+  "homeDescription": "TMI เป็นเครื่องมือที่จัดการและปรับปรุงกระบวนการตรวจสอบความปลอดภัยและการสร้างแบบจำลองภัยคุกคามสำหรับองค์กรของคุณ ช่วยขับเคลื่อนขั้นตอนการตรวจสอบความปลอดภัย จัดระเบียบข้อมูลสำหรับการตรวจสอบความปลอดภัย ทำให้สามารถสร้างแผนภาพการไหลของข้อมูลร่วมกันได้ และเชื่อมต่อระบบอัตโนมัติเพื่อลดภาระงานในกระบวนการตรวจสอบและวิเคราะห์ภัยคุกคามด้านความปลอดภัย",
   "homeWelcomeTitle": "ยินดีต้อนรับสู่ TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
+  "intake": {
+    "fill": {
+      "saveAndExit": "บันทึกและออก",
+      "submitResponses": "ส่งคำตอบ"
+    }
+  },
   "login": {
     "chooseMethod": "เลือกวิธีการเข้าสู่ระบบของคุณ:",
     "explanation": "เข้าสู่ระบบด้วยบัญชีที่มีอยู่ของคุณจากผู้ให้บริการข้อมูลประจำตัวที่เชื่อถือได้ วิธีนี้ช่วยลดความจำเป็นในการใช้รหัสผ่านแยกต่างหาก ทำให้ประสบการณ์ของคุณคล่องตัวขึ้นในขณะที่ยังคงความปลอดภัย เราไม่เคยเก็บหรือจัดการรหัสผ่าน ข้อมูลรับรองของคุณอยู่กับผู้ให้บริการของคุณและไม่สามารถถูกบุกรุกผ่านเราได้",
@@ -571,10 +783,13 @@
     "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิดระหว่างการตรวจสอบสิทธิ์ OAuth"
   },
   "navbar": {
+    "admin": "ผู้ดูแล",
     "appTitle": "TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
     "copyUserEmail": "คัดลอกอีเมลผู้ใช้ไปยังคลิปบอร์ด",
+    "dashboard": "แดชบอร์ด",
     "feedback": "รายงานข้อบกพร่อง ขอคุณสมบัติ หรือให้ข้อเสนอแนะ",
     "home": "หน้าแรก",
+    "intake": "รับเรื่อง",
     "logoutButton": "ออกจากระบบ",
     "serverStatus": {
       "noServerConfigured": "ไม่มีการกำหนดค่าเซิร์ฟเวอร์",
@@ -666,6 +881,77 @@
     },
     "title": "เซสชันกำลังจะหมดอายุ"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "บันทึกล้มเหลว",
+      "saved": "บันทึกแล้ว",
+      "saving": "กำลังบันทึก..."
+    },
+    "browse": "เรียกดูแบบสำรวจ",
+    "confidentialDialog": {
+      "description": "ควรทำเครื่องหมายการส่งนี้เป็นความลับหรือไม่? การส่งที่เป็นความลับไม่ได้แชร์อัตโนมัติกับกลุ่ม Security Reviewers ไม่สามารถเปลี่ยนการตั้งค่านี้ได้หลังจากสร้างการตอบสนอง",
+      "no": "ไม่",
+      "title": "การส่งที่เป็นความลับ",
+      "yes": "ใช่ ทำเครื่องหมายเป็นความลับ"
+    },
+    "confirmation": {
+      "backToSurveys": "กลับไปยังแบบสำรวจ",
+      "message": "แบบสำรวจของคุณถูกส่งเรียบร้อยแล้ว",
+      "title": "ส่งแบบสำรวจแล้ว",
+      "viewResponses": "ดูคำตอบของฉัน"
+    },
+    "continueDraft": "ทำร่างต่อ",
+    "fill": {
+      "submitConfirm": "คุณแน่ใจหรือไม่ว่าต้องการส่ง? คุณจะไม่สามารถแก้ไขคำตอบของคุณได้หลังจากส่งแล้ว",
+      "title": "กรอกแบบสำรวจ"
+    },
+    "list": {
+      "deleteDraft": "ลบฉบับร่าง",
+      "draftStarted": "ฉบับร่างเริ่มต้น {{time}}",
+      "errorLoadingSurveys": "ไม่สามารถโหลดแบบสำรวจได้",
+      "lastModified": "แก้ไขล่าสุด {{time}}",
+      "loadingSurveys": "กำลังโหลดแบบสำรวจ...",
+      "noSurveysMessage": "ขณะนี้ไม่มีแบบสำรวจที่ใช้งานอยู่ กรุณาตรวจสอบอีกครั้งในภายหลัง",
+      "noSurveysTitle": "ไม่มีแบบสำรวจที่พร้อมใช้งาน",
+      "pageDescription": "เลือกประเภทของการตรวจสอบที่เหมาะสมจากรายการต่อไปนี้ แล้วตอบคำถามที่แสดงเพื่อให้ข้อมูลที่ทีมตรวจสอบความปลอดภัยต้องการสำหรับการตรวจสอบ",
+      "pageTitle": "ขอการตรวจสอบความปลอดภัย",
+      "updated": "อัปเดตแล้ว",
+      "yourDrafts": "ฉบับร่างของคุณ"
+    },
+    "myResponses": "คำตอบของฉัน",
+    "noMatchingResponses": "ไม่พบคำตอบที่ตรงกัน",
+    "noMatchingResponsesMessage": "ไม่มีคำตอบที่ตรงกับตัวกรองที่เลือก",
+    "noResponses": "คุณยังไม่ได้ส่งคำตอบแบบสำรวจใดๆ",
+    "noSurveys": "ไม่มีแบบสำรวจที่พร้อมใช้งาน",
+    "responses": {
+      "continueEditing": "แก้ไขต่อ",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
+      "filterByStatus": "กรองตามสถานะ",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
+      "noResponsesMessage": "คุณยังไม่ได้ทำแบบสำรวจใดๆ เสร็จสิ้น เริ่มทำแบบสำรวจได้จากหน้าแบบสำรวจ",
+      "noResponsesTitle": "ยังไม่มีคำตอบ",
+      "pageTitle": "คำตอบแบบสำรวจของฉัน",
+      "responseCount": "{{count}} คำตอบ",
+      "responseCountPlural": "{{count}} คำตอบ"
+    },
+    "saveDraft": "บันทึกร่าง",
+    "startNew": "เริ่มแบบสำรวจ",
+    "status": {
+      "draft": "ร่าง",
+      "needsRevision": "ต้องแก้ไข",
+      "readyForReview": "พร้อมตรวจสอบ",
+      "reviewCreated": "สร้างการตรวจสอบแล้ว",
+      "submitted": "{{triage.list.submitted}}"
+    },
+    "submitSurvey": "ส่งแบบสำรวจ",
+    "templateStatus": {
+      "active": "{{common.active}}",
+      "archived": "เก็บถาวรแล้ว",
+      "inactive": "ไม่ได้ใช้งาน"
+    },
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "ดูคำตอบ"
+  },
   "threatEditor": {
     "createNewThreat": "สร้างภัยคุกคามใหม่",
     "notAssociatedWithAsset": "ไม่เชื่อมโยงกับสินทรัพย์",
@@ -729,7 +1015,7 @@
     "createNewRepository": "เพิ่มการอ้างอิงที่เก็บ",
     "created": "{{common.created}}",
     "createdBy": "สร้างโดย",
-    "dashboard": "แดชบอร์ด",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "แผนภาพการไหลของข้อมูล",
     "deleteWarningPermanent": "การดำเนินการนี้ไม่สามารถยกเลิกได้และจะลบแผนภาพ ภัยคุกคาม และข้อมูลเมตาที่เกี่ยวข้องทั้งหมดอย่างถาวร",
     "descriptionPlaceholder": "อธิบายวัตถุประสงค์และขอบเขตของแบบจำลองภัยคุกคามนี้",
@@ -737,7 +1023,7 @@
     "diagramName": "ชื่อแผนภาพ",
     "diagramPreview": "ตัวอย่างแผนภาพ",
     "diagramType": "ประเภทแผนภาพ",
-    "diagrams": "แผนภาพ",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "อธิบายวัตถุประสงค์หรือเนื้อหาของเอกสาร",
     "documentEditor": {
       "title": {
@@ -762,8 +1048,8 @@
     "noPermissions": "ไม่มีสิทธิ์การเข้าถึงที่กำหนดไว้",
     "noRepositories": "ยังไม่มีการเพิ่มที่เก็บ",
     "noThreats": "ยังไม่มีการเพิ่มภัยคุกคาม",
-    "pageTitle": "แบบจำลองภัยคุกคาม",
-    "permissionsProvider": "ผู้ให้บริการ",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
+    "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "บทบาท",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "จัดการสิทธิ์การเข้าถึง",
@@ -786,6 +1072,12 @@
     "repositorySubPathHint": "เส้นทางเสริมภายในที่เก็บ",
     "repositoryType": "ประเภทที่เก็บ",
     "repositoryUri": "URL ที่เก็บ",
+    "sections": {
+      "inputs": "ข้อมูลเข้า",
+      "inputsDescription": "สินทรัพย์ เอกสาร และที่เก็บโค้ดต้นฉบับที่อธิบายระบบที่กำลังวิเคราะห์",
+      "outputs": "ผลลัพธ์",
+      "outputsDescription": "หมายเหตุ แผนภาพ และภัยคุกคามที่สร้างขึ้นระหว่างการวิเคราะห์ความปลอดภัย"
+    },
     "setAsOwner": "ตั้งเป็นเจ้าของ",
     "sourcesCount": "ที่เก็บ",
     "status": {
@@ -818,7 +1110,7 @@
       "addAsset": "เพิ่มสินทรัพย์",
       "addDiagram": "เพิ่มแผนภาพ",
       "addDocument": "เพิ่มเอกสาร",
-      "addNote": "เพิ่มหมายเหตุ",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "สินทรัพย์คือทรัพยากรที่มีค่าภายในระบบที่ต้องการการปกป้อง เช่น ข้อมูล ฮาร์ดแวร์ ซอฟต์แวร์ โครงสร้างพื้นฐาน บริการ หรือบุคลากร",
       "diagramsCardTitle": "แผนภาพใน TMI คือการแสดงข้อมูลที่เครื่องอ่านได้ของการเคลื่อนที่ของข้อมูลและกระบวนการภายในระบบ ช่วยให้สามารถวิเคราะห์ความปลอดภัยทั้งด้วยตนเองและด้วยระบบอัตโนมัติ",
       "documentsCardTitle": "การอ้างอิงเอกสารคือลิงก์ไปยังเอกสารที่จัดเก็บนอก TMI เอกสารที่เกี่ยวข้องจะอธิบายระบบที่จะวิเคราะห์ และสามารถใช้โดยนักวิเคราะห์ความปลอดภัยและกระบวนการวิเคราะห์อัตโนมัติ",
@@ -881,10 +1173,90 @@
     },
     "title": "เงื่อนไขการให้บริการ"
   },
-  "userPreferences": {
-    "administration": {
-      "title": "{{admin.title}}"
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "ค้นหาด้วยอีเมล",
+      "searchPlaceholder": "เริ่มพิมพ์ที่อยู่อีเมล..."
+    }
+  },
+  "triage": {
+    "bulkActions": "การดำเนินการเป็นชุด",
+    "changeStatus": "เปลี่ยนสถานะ",
+    "columns": {
+      "confidentialTooltip": "การส่งที่เป็นความลับ"
     },
+    "createTm": "{{createThreatModel.title}}",
+    "detail": {
+      "addNote": "เพิ่มหมายเหตุ",
+      "markdownSupported": "รองรับ Markdown",
+      "noNotes": "ยังไม่มีหมายเหตุการคัดกรอง",
+      "noResponses": "ไม่มีการบันทึกคำตอบ",
+      "noRevisionNotes": "ไม่มีหมายเหตุการแก้ไข",
+      "note": "หมายเหตุ",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "ป้อนเนื้อหาหมายเหตุ...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "ชื่อหมายเหตุโดยย่อ",
+      "notes": "หมายเหตุ",
+      "responseDetails": "รายละเอียดคำตอบ",
+      "reviewedAt": "ตรวจสอบแล้ว",
+      "reviewedBy": "ตรวจสอบโดย",
+      "revisionNotesTitle": "ขอแก้ไขแล้ว",
+      "statusTimeline": "ไทม์ไลน์สถานะ",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "หมายเหตุการคัดกรอง"
+    },
+    "filters": {
+      "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "{{triage.list.allSurveys}}",
+      "clearFilters": "ล้างตัวกรอง",
+      "confidential": "ความลับ",
+      "confidentialOnly": "เป็นความลับ",
+      "nonConfidential": "ไม่เป็นความลับ"
+    },
+    "list": {
+      "allSurveys": "แบบสำรวจทั้งหมด",
+      "approve": "อนุมัติ",
+      "approveSelected": "อนุมัติที่เลือก",
+      "createThreatModel": "{{createThreatModel.title}}",
+      "errorLoadingResponses": "ไม่สามารถโหลดคำตอบได้",
+      "loadingResponses": "กำลังโหลดคำตอบ...",
+      "noResponsesFiltered": "ไม่มีคำตอบที่ตรงกับตัวกรองของคุณ",
+      "noResponsesTitle": "ไม่มีคำตอบ",
+      "noResponsesToTriage": "ไม่มีคำตอบแบบสำรวจที่ต้องคัดกรอง",
+      "notSubmitted": "ยังไม่ได้ส่ง",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
+      "searchPlaceholder": "ค้นหาตามผู้ส่งหรือแบบสำรวจ...",
+      "submitted": "ส่งแล้ว",
+      "submitter": "ผู้ส่ง"
+    },
+    "markInReview": "ทำเครื่องหมายว่ากำลังตรวจสอบ",
+    "markPendingTriage": "ทำเครื่องหมายว่ารอคัดกรอง",
+    "noResponses": "ไม่มีคำตอบที่ต้องคัดกรอง",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "ป้อนเนื้อหาหมายเหตุ (รองรับ Markdown)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "หมายเหตุการคัดกรองใหม่",
+        "view": "ดูหมายเหตุการคัดกรอง"
+      }
+    },
+    "queue": "คิวคัดกรอง",
+    "returnToSubmitted": "ส่งกลับไปยังสถานะที่ส่งแล้ว",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "ให้หมายเหตุอธิบายสิ่งที่ต้องแก้ไข ผู้ส่งจะเห็นหมายเหตุเหล่านี้เมื่อตรวจสอบคำตอบของตน",
+      "hint": "จำเป็น — อธิบายการเปลี่ยนแปลงที่ต้องการ",
+      "label": "หมายเหตุการแก้ไข",
+      "placeholder": "อธิบายการแก้ไขที่ต้องการ...",
+      "title": "ส่งกลับเพื่อแก้ไข"
+    },
+    "title": "คัดกรอง",
+    "viewDetails": "ดูรายละเอียด"
+  },
+  "userPreferences": {
     "colorBlindMode": "เปิดใช้งานโหมดตาบอดสี",
     "credentials": {
       "add": "เพิ่ม",
@@ -936,6 +1308,7 @@
     },
     "diagramAnimationEffects": "เปิดใช้งานเอฟเฟกต์แอนิเมชันในโปรแกรมแก้ไขแผนภาพ",
     "displayPreferences": "การตั้งค่าการแสดงผล",
+    "hoverShowMetadata": "แสดงข้อมูลเมตาของเซลล์เมื่อวางเมาส์",
     "marginSize": {
       "narrow": "แคบ",
       "standard": "มาตรฐาน",
@@ -948,13 +1321,18 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "การตั้งค่ารายงาน",
+    "sections": {
+      "developer": "นักพัฒนา",
+      "diagramEditor": "ตัวแก้ไขไดอะแกรม",
+      "securityReviewer": "ผู้ตรวจสอบความปลอดภัย"
+    },
     "showDeveloperTools": "แสดงเครื่องมือนักพัฒนา",
     "tabs": {
       "credentials": "ข้อมูลประจำตัว",
       "danger": "อันตราย",
       "display": "การแสดงผล",
       "profile": "โปรไฟล์",
-      "reports": "รายงาน"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "ธีม",
     "themeMode": {
@@ -963,13 +1341,22 @@
       "light": "สว่าง"
     },
     "title": "การตั้งค่าผู้ใช้",
+    "transferData": {
+      "confirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการโอนแบบจำลองภัยคุกคามทั้งหมดและการตอบสนองจากการสำรวจของคุณไป {{email}}? คุณจะถูกลดระดับให้เป็นบทบาทผู้เขียนในรายการที่โอน",
+      "dialogTitle": "โอนข้อมูลของฉัน",
+      "error": "ไม่สามารถโอนข้อมูลได้ โปรดลองอีกครั้ง",
+      "hint": "โอนความเป็นเจ้าของของแบบจำลองภัยคุกคามทั้งหมดและการตอบสนองจากการสำรวจของคุณให้ผู้ใช้คนอื่น คุณจะถูกลดระดับให้เป็นบทบาทผู้เขียนในรายการที่โอน",
+      "success": "โอนแล้ว {{tmCount}} แบบจำลองภัยคุกคาม และ {{responseCount}} การตอบสนองจากการสำรวจ",
+      "title": "โอนข้อมูลของฉันไปยังผู้ใช้คนอื่น"
+    },
     "userProfile": {
       "currentRole": "บทบาทโมเดลภัยคุกคามปัจจุบัน",
-      "groups": "กลุ่ม",
-      "provider": "ผู้ให้บริการข้อมูลประจำตัว",
+      "groups": "{{common.groups}}",
+      "jwtGroups": "กลุ่ม JWT",
+      "provider": "{{common.identityProvider}}",
       "providerId": "รหัสผู้ให้บริการ",
       "title": "โปรไฟล์ผู้ใช้",
-      "userId": "รหัสผู้ใช้"
+      "userId": "{{common.userId}}"
     }
   }
 }

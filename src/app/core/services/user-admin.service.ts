@@ -4,6 +4,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import { AdminUser, AdminUserFilter, ListAdminUsersResponse } from '@app/types/user.types';
+import { TransferOwnershipResult } from '@app/types/transfer.types';
 import { buildHttpParams } from '@app/shared/utils/http-params.util';
 
 /**
@@ -59,5 +60,32 @@ export class UserAdminService {
         throw error;
       }),
     );
+  }
+
+  /**
+   * Transfer all threat models and survey responses from one user to another
+   */
+  public transferOwnership(
+    sourceUserId: string,
+    targetUserId: string,
+  ): Observable<TransferOwnershipResult> {
+    return this.apiService
+      .post<TransferOwnershipResult>(`admin/users/${sourceUserId}/transfer`, {
+        target_user_id: targetUserId,
+      })
+      .pipe(
+        tap(result => {
+          this.logger.info('Ownership transferred (admin)', {
+            sourceUserId,
+            targetUserId,
+            tmCount: result.threat_models_transferred.count,
+            responseCount: result.survey_responses_transferred.count,
+          });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to transfer ownership (admin)', error);
+          throw error;
+        }),
+      );
   }
 }

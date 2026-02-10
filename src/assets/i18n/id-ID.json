@@ -76,26 +76,6 @@
       "subtitle": "Konfigurasikan addon untuk memperluas fungsionalitas TMI",
       "title": "Kelola Addon"
     },
-    "administrators": {
-      "addButton": "{{admin.administrators.addDialog.save}}",
-      "addDialog": {
-        "provider": "{{common.provider}}",
-        "providerRequired": "Penyedia wajib diisi",
-        "save": "Tambah Administrator",
-        "subject": "Subjek",
-        "subjectHint": "Masukkan email pengguna atau nama grup",
-        "subjectPlaceholder": "Email pengguna atau nama grup",
-        "subjectRequired": "Subjek wajib diisi",
-        "title": "{{admin.administrators.addDialog.save}}"
-      },
-      "filterLabel": "Filter Administrator",
-      "filterPlaceholder": "Cari berdasarkan email atau nama grup",
-      "listTitle": "Administrator Sistem",
-      "noAdministrators": "Tidak ada administrator ditemukan",
-      "removeTooltip": "Hapus Izin Administrator",
-      "subtitle": "Kontrol siapa yang memiliki akses administratif ke sistem",
-      "title": "Kelola Administrator"
-    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -114,6 +94,11 @@
         "save": "Buat Grup",
         "title": "Tambah Grup"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "Penggunaan"
+      },
       "deleteTooltip": "Hapus grup",
       "filterLabel": "Filter Grup",
       "filterPlaceholder": "Cari berdasarkan nama grup atau penyedia",
@@ -124,8 +109,10 @@
         "noMembers": "Tidak ada anggota dalam grup ini",
         "removeTooltip": "Keluarkan dari grup",
         "searchHint": "Ketik minimal 2 karakter untuk mencari",
-        "searchPlaceholder": "Mulai ketik alamat email...",
-        "searchUser": "Cari Pengguna berdasarkan Email"
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
+        "searchUser": "Cari Pengguna berdasarkan Email",
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "Tidak ada grup ditemukan",
       "subtitle": "Lihat dan kelola grup sistem",
@@ -143,6 +130,12 @@
         "title": "Tambah Kuota Kustom",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "Default",
       "deleteTooltip": "Hapus kuota kustom (kembalikan ke default)",
       "eventsPerMinute": "Peristiwa per menit",
       "filterLabel": "Filter Kuota",
@@ -164,10 +157,6 @@
         "description": "Pasang dan konfigurasikan addon aplikasi",
         "title": "{{admin.addons.title}}"
       },
-      "administrators": {
-        "description": "Berikan atau cabut izin administrator",
-        "title": "{{admin.administrators.title}}"
-      },
       "groups": {
         "description": "Konfigurasikan grup pengguna dan keanggotaan",
         "title": "{{admin.groups.title}}"
@@ -175,6 +164,14 @@
       "quotas": {
         "description": "Konfigurasikan kuota dan batas sumber daya",
         "title": "{{admin.quotas.title}}"
+      },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
+      "surveys": {
+        "description": "Buat dan kelola survei",
+        "title": "Kelola Survei"
       },
       "users": {
         "description": "Lihat dan kelola akun pengguna",
@@ -185,16 +182,83 @@
         "title": "{{admin.webhooks.title}}"
       }
     },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "Deskripsi opsional dari pengaturan ini",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "Huruf kecil dengan titik dan garis bawah (contoh: rate_limit.max_rpm)",
+        "keyInvalid": "Harus dimulai dengan huruf kecil, hanya gunakan huruf kecil, angka, titik, dan garis bawah",
+        "keyRequired": "Kunci wajib diisi",
+        "save": "Buat Pengaturan",
+        "title": "Tambah Pengaturan",
+        "type": "{{common.type}}",
+        "typeRequired": "Jenis wajib diisi",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "Nilai wajib diisi"
+      },
+      "cancelTooltip": "Batalkan pengeditan",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "Apakah Anda yakin ingin menghapus pengaturan \"{{key}}\"?",
+      "deleteTooltip": "Hapus pengaturan",
+      "editTooltip": "Edit pengaturan",
+      "filterLabel": "Filter",
+      "filterPlaceholder": "Filter berdasarkan kunci, nilai, atau deskripsi",
+      "listTitle": "Pengaturan Sistem",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "Impor pengaturan dari file konfigurasi server atau variabel lingkungan ke dalam database.",
+        "migrate": "Migrasikan",
+        "overwriteLabel": "Timpa pengaturan yang ada",
+        "overwriteWarning": "Peringatan: Ini akan mengganti pengaturan apa pun dalam database yang sebelumnya disesuaikan.",
+        "resultMigrated": "{{count}} pengaturan dimigrasikan",
+        "resultSkipped": "{{count}} pengaturan dilewati",
+        "title": "Migrasikan Pengaturan"
+      },
+      "noSettings": "Tidak ada pengaturan ditemukan",
+      "saveTooltip": "Simpan perubahan",
+      "subtitle": "Lihat dan kelola pengaturan konfigurasi sistem",
+      "title": "Kelola Pengaturan",
+      "types": {
+        "bool": "Boolean",
+        "int": "Integer",
+        "json": "JSON",
+        "string": "String"
+      }
+    },
     "subtitle": "Kelola pengaturan dan konfigurasi sistem",
     "title": "Administrasi",
     "users": {
+      "administrator": "Administrator",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "Hapus akun pengguna",
       "filterLabel": "Filter Pengguna",
       "filterPlaceholder": "Cari berdasarkan email, nama, penyedia, atau nama grup",
+      "lastLogin": "Login Terakhir",
       "listTitle": "Pengguna",
+      "never": "Tidak Pernah",
       "noUsers": "Tidak ada pengguna ditemukan",
       "subtitle": "Lihat dan kelola pengguna sistem",
-      "title": "Kelola Pengguna"
+      "title": "Kelola Pengguna",
+      "transferOwnership": {
+        "confirm": "Apakah Anda yakin ingin mengalihkan semua data dari {{source}} ke {{target}}?",
+        "dialogTitle": "Alihkan Data Pengguna",
+        "error": "Gagal mengalihkan kepemilikan. Silakan coba lagi.",
+        "success": "{{userPreferences.transferData.success}}",
+        "tooltip": "Alihkan kepemilikan"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -231,13 +295,112 @@
       "noWebhooks": "Tidak ada webhook ditemukan",
       "secret": "Rahasia HMAC",
       "status": {
-        "active": "Aktif",
+        "active": "{{common.active}}",
         "pending_delete": "Menunggu Penghapusan",
         "pending_verification": "Menunggu Verifikasi"
       },
       "subtitle": "Konfigurasikan langganan webhook untuk notifikasi peristiwa",
       "title": "Kelola Webhook"
     }
+  },
+  "adminSurveys": {
+    "cloneSuffix": "(Salinan)",
+    "createDialog": {
+      "nameLabel": "Nama Survei",
+      "namePlaceholder": "Masukkan nama survei",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "Buat Survei",
+      "versionHint": "Pengenal versi bentuk bebas",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "mis., 1, v2-pilot, 2024-Q1",
+      "versionRequired": "Versi wajib diisi"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "editTemplate": "Edit survei",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "Tidak Ada Survei yang Cocok",
+    "noTemplatesMessage": "Buat survei pertama Anda untuk memulai.",
+    "noTemplatesTitle": "Belum Ada Survei",
+    "pageTitle": "{{admin.sections.surveys.title}}",
+    "searchByName": "Cari berdasarkan nama...",
+    "searchTemplates": "Cari survei",
+    "surveyDetails": "Detail Survei",
+    "templateBuilder": {
+      "addPage": "Tambah halaman",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
+      "choicesPerLine": "Pilihan (satu per baris)",
+      "conditionalLogic": "Logika Kondisional",
+      "conditionalLogicHelp": "Dokumentasi logika kondisional SurveyJS",
+      "deletePage": "Hapus halaman",
+      "deleteQuestion": "Hapus Pertanyaan",
+      "enableIf": "Aktifkan Jika",
+      "enableIfHint": "contoh, {questionName} = 'value'",
+      "enterSurveyDescription": "Masukkan deskripsi survei",
+      "enterSurveyTitle": "Masukkan judul survei",
+      "failedToLoadTemplate": "Gagal memuat survei",
+      "failedToSaveTemplate": "Gagal menyimpan survei",
+      "loadingTemplate": "Memuat survei...",
+      "mapsToTmField": "Dipetakan ke Bidang TM",
+      "metadataKey": "Kunci Metadata",
+      "metadataKeyHint": "Nama kunci untuk entri metadata",
+      "nameId": "Nama (ID)",
+      "nameIdHint": "Pengenal unik untuk pertanyaan ini",
+      "nextPage": "{{pagination.nextPage}}",
+      "noQuestionsHint": "Klik jenis pertanyaan dari palet untuk menambahkannya",
+      "noQuestionsYet": "Belum ada pertanyaan",
+      "pageIndicator": "Halaman {{current}} dari {{total}}",
+      "previousPage": "{{pagination.previousPage}}",
+      "questionProperties": "Properti Pertanyaan",
+      "questionTypeDescriptions": {
+        "boolean": "Tombol beralih boolean",
+        "checkbox": "Pilihan ganda",
+        "comment": "Area teks multi-baris",
+        "dropdown": "Pilihan dropdown",
+        "panel": "Kelompokkan pertanyaan dalam panel",
+        "paneldynamic": "Grup panel yang dapat diulang",
+        "radiogroup": "Pilihan tunggal dari opsi",
+        "text": "Input teks satu baris"
+      },
+      "questionTypeLabels": {
+        "boolean": "Ya/Tidak",
+        "checkbox": "Kotak centang",
+        "comment": "Multiline",
+        "dropdown": "Menu dropdown",
+        "panel": "Panel",
+        "paneldynamic": "Panel Dinamis",
+        "radiogroup": "Grup Radio",
+        "text": "{{editor.nodeLabels.textbox}}"
+      },
+      "questionTypes": "Jenis Pertanyaan",
+      "questions": "Pertanyaan",
+      "required": "Wajib diisi",
+      "requiredIf": "Wajib Jika",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
+      "selectQuestionHint": "Pilih pertanyaan untuk mengedit propertinya",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
+      "tmFieldLabels": {
+        "assetDescription": "Deskripsi Aset",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
+        "description": "Deskripsi Model Ancaman",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
+        "issueUri": "URL Pelacakan Isu",
+        "metadataKey": "Metadata Kustom",
+        "name": "Nama Model Ancaman",
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
+      },
+      "tmFieldMapping": "Pemetaan Bidang Model Ancaman",
+      "tmFieldMappingHint": "Hubungkan jawaban ini ke bidang model ancaman",
+      "unsavedChanges": "Perubahan belum disimpan",
+      "visibleIf": "Terlihat Jika",
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
+    },
+    "templateCount": "{{count}} survei",
+    "templateCountPlural": "{{count}} survei"
   },
   "assetEditor": {
     "chipPlaceholder": "Masukkan nilai dan tekan Enter",
@@ -300,15 +463,22 @@
   "common": {
     "about": "Tentang",
     "actions": "Tindakan",
+    "activate": "Aktifkan",
+    "active": "Aktif",
     "addMetadata": "Tambah Metadata",
     "addThreat": "Tambah Ancaman",
     "addons": "Addon",
+    "all": "Semua",
+    "allStatuses": "Semua Status",
+    "archive": "Arsipkan",
     "back": "Kembali",
     "cancel": "Batal",
     "cellId": "ID Sel",
     "classification": "Klasifikasi",
     "clear": "Bersihkan",
+    "clone": "Duplikat",
     "close": "Tutup",
+    "confirm": "Konfirmasi",
     "confirmDelete": "Apakah Anda yakin ingin menghapus {{item}} \"{{name}}\"? Tindakan ini tidak dapat dibatalkan.",
     "confirmDeleteMessage": "Apakah Anda yakin ingin menghapus {{objectType}} \"{{name}}\"?",
     "copy": "Salin",
@@ -317,6 +487,7 @@
     "created": "Dibuat",
     "criticality": "Kekritisan",
     "cut": "Potong",
+    "deactivate": "Nonaktifkan",
     "delete": "Hapus",
     "deleteConfirm": "Hapus Model Ancaman",
     "deleteWarningConfirmationField": "Konfirmasi Penghapusan",
@@ -329,18 +500,23 @@
     "deleteWarningTypeConfirmation": "Untuk mengonfirmasi, silakan ketik \"{{confirmValue}}\" di bidang di bawah ini.",
     "description": "Deskripsi",
     "diagramId": "ID Diagram",
+    "dismiss": "Tutup",
     "done": "Selesai",
     "download": "Unduh",
     "edit": "Sunting",
     "editThreat": "Edit Ancaman",
+    "email": "Email",
     "emailLabel": "Alamat Email",
+    "error": "Kesalahan",
     "fonts": "Font",
+    "groups": "Grup",
     "id": "ID",
     "identityProvider": "Penyedia Identitas",
     "issueUri": "URL Isu",
     "language": "{{language}}",
     "lastModified": "Terakhir Diubah",
     "lastUpdated": "Terakhir diperbarui",
+    "loading": "Memuat...",
     "manage": "Kelola",
     "manageMetadata": "Kelola Metadata",
     "manageThreats": "Kelola Ancaman",
@@ -350,9 +526,11 @@
     "mitigated": "Dimitigasi",
     "mitigation": "Mitigasi",
     "mitigationPlaceholder": "Jelaskan mitigasi yang direkomendasikan atau direncanakan untuk ancaman ini",
+    "moreActions": "Tindakan lainnya",
     "name": "Nama",
     "noAddonsAvailable": "Tidak ada addon tersedia",
     "noDataAvailable": "Tidak Ada Data Tersedia",
+    "noMatchingResults": "Tidak ada hasil yang cocok dengan filter Anda.",
     "noMetadata": "Tidak Ada Metadata Tersedia",
     "noThreats": "Tidak Ada Ancaman Tersedia",
     "none": "Tidak Ada",
@@ -360,17 +538,25 @@
       "asset": "Aset",
       "assets": "Aset",
       "cell": "Sel",
+      "cells": "Sel",
       "diagram": "Diagram",
+      "diagrams": "Diagram",
       "document": "Dokumen",
       "documents": "Dokumen",
       "metadata": "{{common.metadata}}",
       "note": "Catatan",
       "notes": "Catatan",
       "report": "Laporan",
+      "reports": "Laporan",
       "repositories": "Repositori",
       "repository": "Repositori",
+      "survey": "Survei",
+      "surveyResponse": "Respons Survei",
+      "surveyResponses": "Respons Survei",
+      "surveys": "Survei",
       "threat": "Ancaman",
       "threatModel": "Model Ancaman",
+      "threatModels": "Model Ancaman",
       "threats": "Ancaman"
     },
     "ok": "OK",
@@ -382,6 +568,7 @@
     "provider": "Penyedia",
     "readOnly": "Hanya Baca",
     "readOnlyTooltip": "Anda memiliki akses hanya baca ke model ancaman ini. Hubungi pemilik untuk meminta izin edit.",
+    "retry": "Coba lagi",
     "roles": {
       "owner": "Pemilik",
       "reader": "Pembaca",
@@ -391,6 +578,8 @@
     "saveAndClose": "Simpan dan Tutup",
     "savedSuccessfully": "Berhasil disimpan",
     "score": "Skor",
+    "search": "Cari",
+    "selected": "{{count}} dipilih",
     "sensitivity": "Sensitivitas",
     "sessionRoles": {
       "host": "Host",
@@ -403,11 +592,15 @@
       "group": "Grup",
       "user": "Pengguna"
     },
+    "template": "Templat",
     "threatDescription": "Deskripsi Ancaman",
     "threatDescriptionPlaceholder": "Jelaskan Ancaman Secara Detail",
     "threatName": "Nama Ancaman",
     "threatType": "Jenis Ancaman",
+    "title": "Judul",
+    "tryAdjustingFilters": "Coba sesuaikan filter Anda.",
     "type": "Jenis",
+    "unarchive": "Batalkan Arsip",
     "unsavedChangesWarning": "Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin menutup?",
     "userId": "ID Pengguna",
     "validation": {
@@ -416,6 +609,7 @@
       "nameRequired": "Nama wajib diisi",
       "required": "Bidang ini wajib diisi"
     },
+    "version": "Versi",
     "view": "Lihat",
     "viewMetadata": "Lihat Metadata",
     "viewPermissions": "Lihat Izin",
@@ -431,6 +625,15 @@
     "moveToFront": "Pindah ke Paling Depan",
     "noDataAssetsAvailable": "Tidak ada aset data yang tersedia",
     "showObject": "Tampilkan Objek"
+  },
+  "createThreatModel": {
+    "confidentialHint": "Model ancaman rahasia tidak secara otomatis dibagikan dengan grup Peninjau Keamanan. Pengaturan ini tidak dapat diubah setelah pembuatan.",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
+    "descriptionPlaceholder": "Jelaskan tujuan dan ruang lingkup model ancaman ini",
+    "framework": "Framework",
+    "namePlaceholder": "Masukkan nama model ancaman",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "Buat Model Ancaman"
   },
   "dashboard": {
     "clearFilter": "Hapus Filter",
@@ -466,7 +669,7 @@
     "common": {
       "affectedCells": "Sel yang Terpengaruh",
       "cellIds": "ID Sel",
-      "cells": "Sel",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "Salin JSON Lengkap"
     },
     "graphDataDialog": {
@@ -548,9 +751,18 @@
   "errors": {
     "validationError": "Kesalahan Validasi"
   },
+  "footer": {
+    "support": "Dukungan"
+  },
   "getStarted": "Mulai",
-  "homeDescription": "Alat pemodelan ancaman kolaboratif yang dirancang untuk membantu tim mengidentifikasi, menganalisis, dan mendokumentasikan ancaman keamanan dalam sistem mereka. Buat, bagikan, dan edit secara kolaboratif model ancaman dan diagram untuk meningkatkan keamanan aplikasi Anda.",
+  "homeDescription": "TMI adalah alat yang mengelola dan meningkatkan proses tinjauan keamanan dan pemodelan ancaman untuk organisasi Anda. Alat ini menggerakkan alur kerja tinjauan keamanan, mengorganisir informasi untuk tinjauan keamanan, memungkinkan pembuatan diagram alur data secara kolaboratif, dan memungkinkan koneksi otomatisasi untuk mengurangi beban kerja dalam proses tinjauan dan menganalisis ancaman keamanan.",
   "homeWelcomeTitle": "Selamat Datang di TMI: Threat Modeling Improved",
+  "intake": {
+    "fill": {
+      "saveAndExit": "Simpan & Keluar",
+      "submitResponses": "Kirim Respons"
+    }
+  },
   "login": {
     "chooseMethod": "Pilih metode masuk Anda:",
     "explanation": "Masuk dengan akun yang ada dari penyedia identitas terpercaya. Ini menghilangkan kebutuhan akan kata sandi terpisah, menyederhanakan pengalaman Anda sambil tetap aman. Kami tidak pernah menyimpan atau mengelola kata sandi—kredensial Anda tetap bersama penyedia Anda dan tidak dapat dikompromikan melalui kami.",
@@ -571,10 +783,13 @@
     "unexpectedError": "Terjadi kesalahan yang tidak terduga selama OAuth."
   },
   "navbar": {
+    "admin": "Admin",
     "appTitle": "TMI: Threat Modeling Improved",
     "copyUserEmail": "Salin Email Pengguna ke Papan Klip",
+    "dashboard": "Dasbor",
     "feedback": "Laporkan bug, minta fitur, atau berikan umpan balik",
     "home": "Beranda",
+    "intake": "Penerimaan",
     "logoutButton": "Keluar",
     "serverStatus": {
       "noServerConfigured": "Server Tidak Dikonfigurasi",
@@ -666,6 +881,77 @@
     },
     "title": "Sesi Akan Segera Berakhir"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "Gagal menyimpan",
+      "saved": "Tersimpan",
+      "saving": "Menyimpan..."
+    },
+    "browse": "Jelajahi Survei",
+    "confidentialDialog": {
+      "description": "Haruskah pengiriman ini ditandai sebagai rahasia? Pengiriman rahasia tidak secara otomatis dibagikan dengan grup Peninjau Keamanan. Pengaturan ini tidak dapat diubah setelah respons dibuat.",
+      "no": "Tidak",
+      "title": "Pengiriman Rahasia",
+      "yes": "Ya, tandai sebagai rahasia"
+    },
+    "confirmation": {
+      "backToSurveys": "Kembali ke Survei",
+      "message": "Survei Anda berhasil dikirim.",
+      "title": "Survei Terkirim",
+      "viewResponses": "Lihat Respons Saya"
+    },
+    "continueDraft": "Lanjutkan Draf",
+    "fill": {
+      "submitConfirm": "Apakah Anda yakin ingin mengirim? Anda tidak dapat mengedit respons setelah mengirim.",
+      "title": "Isi Survei"
+    },
+    "list": {
+      "deleteDraft": "Hapus draf",
+      "draftStarted": "Draf dimulai {{time}}",
+      "errorLoadingSurveys": "Gagal memuat survei",
+      "lastModified": "Terakhir diubah {{time}}",
+      "loadingSurveys": "Memuat survei...",
+      "noSurveysMessage": "Tidak ada survei aktif saat ini. Periksa kembali nanti.",
+      "noSurveysTitle": "Tidak Ada Survei Tersedia",
+      "pageDescription": "Pilih jenis tinjauan yang sesuai dari daftar berikut, lalu jawab pertanyaan yang disajikan untuk memberikan tim tinjauan keamanan informasi yang mereka butuhkan untuk melakukan tinjauan.",
+      "pageTitle": "Minta Tinjauan Keamanan",
+      "updated": "Diperbarui",
+      "yourDrafts": "Draf Anda"
+    },
+    "myResponses": "Respons Saya",
+    "noMatchingResponses": "Tidak Ada Respons yang Cocok",
+    "noMatchingResponsesMessage": "Tidak ada respons yang cocok dengan filter yang dipilih.",
+    "noResponses": "Anda belum mengirim respons survei apa pun",
+    "noSurveys": "Tidak ada survei tersedia",
+    "responses": {
+      "continueEditing": "Lanjutkan mengedit",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
+      "filterByStatus": "Filter berdasarkan Status",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
+      "noResponsesMessage": "Anda belum menyelesaikan survei apa pun. Mulai dari halaman survei.",
+      "noResponsesTitle": "Belum Ada Respons",
+      "pageTitle": "Respons Survei Saya",
+      "responseCount": "{{count}} respons",
+      "responseCountPlural": "{{count}} respons"
+    },
+    "saveDraft": "Simpan Draf",
+    "startNew": "Mulai Survei",
+    "status": {
+      "draft": "Draf",
+      "needsRevision": "Perlu Revisi",
+      "readyForReview": "Siap Ditinjau",
+      "reviewCreated": "Tinjauan Dibuat",
+      "submitted": "{{triage.list.submitted}}"
+    },
+    "submitSurvey": "Kirim Survei",
+    "templateStatus": {
+      "active": "{{common.active}}",
+      "archived": "Diarsipkan",
+      "inactive": "Tidak Aktif"
+    },
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "Lihat Respons"
+  },
   "threatEditor": {
     "createNewThreat": "Buat Ancaman Baru",
     "notAssociatedWithAsset": "Tidak terkait dengan aset",
@@ -729,7 +1015,7 @@
     "createNewRepository": "Tambah Referensi Repositori",
     "created": "{{common.created}}",
     "createdBy": "Dibuat Oleh",
-    "dashboard": "Dasbor",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Diagram Aliran Data",
     "deleteWarningPermanent": "Tindakan ini tidak dapat dibatalkan dan akan menghapus secara permanen semua diagram, ancaman, dan metadata terkait.",
     "descriptionPlaceholder": "Jelaskan Tujuan dan Ruang Lingkup Model Ancaman Ini",
@@ -737,7 +1023,7 @@
     "diagramName": "Nama Diagram",
     "diagramPreview": "Pratinjau Diagram",
     "diagramType": "Jenis Diagram",
-    "diagrams": "Diagram",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "Jelaskan Tujuan atau Konten Dokumen",
     "documentEditor": {
       "title": {
@@ -762,7 +1048,7 @@
     "noPermissions": "Tidak Ada Izin Ditetapkan",
     "noRepositories": "Belum Ada Repositori Ditambahkan",
     "noThreats": "Belum Ada Ancaman Ditambahkan",
-    "pageTitle": "Model Ancaman",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Peran",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -786,6 +1072,12 @@
     "repositorySubPathHint": "Path opsional dalam repositori",
     "repositoryType": "Jenis Repositori",
     "repositoryUri": "URL Repositori",
+    "sections": {
+      "inputs": "Input",
+      "inputsDescription": "Aset, dokumen, dan repositori kode sumber yang menjelaskan sistem yang dianalisis",
+      "outputs": "Output",
+      "outputsDescription": "Catatan, diagram, dan ancaman yang dihasilkan selama analisis keamanan"
+    },
     "setAsOwner": "Tetapkan sebagai Pemilik",
     "sourcesCount": "Repo",
     "status": {
@@ -818,7 +1110,7 @@
       "addAsset": "Tambah Aset",
       "addDiagram": "Tambah Diagram",
       "addDocument": "Tambah Dokumen",
-      "addNote": "Tambah Catatan",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "Aset adalah sumber daya berharga dalam sistem yang memerlukan perlindungan, seperti data, perangkat keras, perangkat lunak, infrastruktur, layanan, atau personel.",
       "diagramsCardTitle": "Diagram di TMI adalah representasi yang dapat dibaca mesin dari pergerakan data dan proses dalam sistem, memungkinkan analisis keamanan manual dan otomatis.",
       "documentsCardTitle": "Referensi dokumen adalah tautan ke dokumen yang disimpan di luar TMI. Dokumen yang relevan menjelaskan sistem yang akan dianalisis, dan dapat digunakan oleh analis keamanan dan proses analisis otomatis.",
@@ -881,10 +1173,90 @@
     },
     "title": "Ketentuan Layanan"
   },
-  "userPreferences": {
-    "administration": {
-      "title": "{{admin.title}}"
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "Cari berdasarkan email",
+      "searchPlaceholder": "Mulai ketik alamat email..."
+    }
+  },
+  "triage": {
+    "bulkActions": "Tindakan Massal",
+    "changeStatus": "Ubah Status",
+    "columns": {
+      "confidentialTooltip": "Pengiriman rahasia"
     },
+    "createTm": "{{createThreatModel.title}}",
+    "detail": {
+      "addNote": "Tambah Catatan",
+      "markdownSupported": "Markdown didukung",
+      "noNotes": "Belum ada catatan triage",
+      "noResponses": "Tidak ada respons tercatat",
+      "noRevisionNotes": "Tidak ada catatan revisi",
+      "note": "catatan",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "Masukkan isi catatan...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "Judul catatan singkat",
+      "notes": "catatan",
+      "responseDetails": "Detail Respons",
+      "reviewedAt": "Ditinjau",
+      "reviewedBy": "Ditinjau Oleh",
+      "revisionNotesTitle": "Revisi Diminta",
+      "statusTimeline": "Linimasa Status",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "Catatan Triage"
+    },
+    "filters": {
+      "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "{{triage.list.allSurveys}}",
+      "clearFilters": "Hapus Filter",
+      "confidential": "Kerahasiaan",
+      "confidentialOnly": "Rahasia",
+      "nonConfidential": "Bukan Rahasia"
+    },
+    "list": {
+      "allSurveys": "Semua Survei",
+      "approve": "Setujui",
+      "approveSelected": "Setujui yang Dipilih",
+      "createThreatModel": "{{createThreatModel.title}}",
+      "errorLoadingResponses": "Gagal memuat tanggapan",
+      "loadingResponses": "Memuat tanggapan...",
+      "noResponsesFiltered": "Tidak ada tanggapan yang cocok dengan filter Anda",
+      "noResponsesTitle": "Tidak Ada Tanggapan",
+      "noResponsesToTriage": "Tidak ada tanggapan survei untuk ditriase",
+      "notSubmitted": "Belum dikirim",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
+      "searchPlaceholder": "Cari berdasarkan pengirim atau survei...",
+      "submitted": "Terkirim",
+      "submitter": "Pengirim"
+    },
+    "markInReview": "Tandai Sedang Ditinjau",
+    "markPendingTriage": "Tandai Menunggu Triase",
+    "noResponses": "Tidak ada respons untuk ditriase",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "Masukkan isi catatan (Markdown didukung)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "Catatan Triage Baru",
+        "view": "Lihat Catatan Triage"
+      }
+    },
+    "queue": "Antrean Triase",
+    "returnToSubmitted": "Kembalikan ke Terkirim",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "Berikan catatan yang menjelaskan apa yang perlu direvisi. Pengirim akan melihat catatan ini saat mereka meninjau respons mereka.",
+      "hint": "Wajib diisi — jelaskan perubahan apa yang diperlukan",
+      "label": "Catatan Revisi",
+      "placeholder": "Jelaskan revisi yang diperlukan...",
+      "title": "Kembalikan untuk Revisi"
+    },
+    "title": "Triase",
+    "viewDetails": "Lihat Detail"
+  },
+  "userPreferences": {
     "colorBlindMode": "Aktifkan Mode Buta Warna",
     "credentials": {
       "add": "Tambah",
@@ -936,6 +1308,7 @@
     },
     "diagramAnimationEffects": "Aktifkan Efek Animasi di Editor Diagram",
     "displayPreferences": "Preferensi Tampilan",
+    "hoverShowMetadata": "Tampilkan metadata sel saat mengarahkan kursor",
     "marginSize": {
       "narrow": "Sempit",
       "standard": "Standar",
@@ -948,13 +1321,18 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Preferensi Laporan",
+    "sections": {
+      "developer": "Pengembang",
+      "diagramEditor": "Editor Diagram",
+      "securityReviewer": "Peninjau Keamanan"
+    },
     "showDeveloperTools": "Tampilkan Alat Pengembang",
     "tabs": {
       "credentials": "Kredensial",
       "danger": "Bahaya",
       "display": "Tampilan",
       "profile": "Profil",
-      "reports": "Laporan"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "Tema",
     "themeMode": {
@@ -963,9 +1341,18 @@
       "light": "Terang"
     },
     "title": "Preferensi Pengguna",
+    "transferData": {
+      "confirmMessage": "Apakah Anda yakin ingin mengalihkan semua model ancaman dan respons survei Anda ke {{email}}? Anda akan diturunkan ke peran penulis pada item yang dialihkan.",
+      "dialogTitle": "Alihkan Data Saya",
+      "error": "Gagal mengalihkan data. Silakan coba lagi.",
+      "hint": "Alihkan kepemilikan semua model ancaman dan respons survei Anda ke pengguna lain. Anda akan diturunkan ke peran penulis pada item yang dialihkan.",
+      "success": "Dialihkan {{tmCount}} model ancaman dan {{responseCount}} respons survei.",
+      "title": "Alihkan Data Saya ke Pengguna Lain"
+    },
     "userProfile": {
       "currentRole": "Peran Model Ancaman Saat Ini",
-      "groups": "Grup",
+      "groups": "{{common.groups}}",
+      "jwtGroups": "Grup JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID Penyedia",
       "title": "Profil Pengguna",

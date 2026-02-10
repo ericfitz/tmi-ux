@@ -97,6 +97,7 @@ import {
   DeleteConfirmationDialogData,
   DeleteConfirmationDialogResult,
 } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 
 // Define form value interface
 interface ThreatModelFormValues {
@@ -140,6 +141,7 @@ interface RepositoryFormResult {
     MatTableModule,
     MatSortModule,
     TranslocoModule,
+    UserDisplayComponent,
   ],
   templateUrl: './tm-edit.component.html',
   styleUrls: ['./tm-edit.component.scss'],
@@ -159,6 +161,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   // Permission properties
   canEdit = false;
   canManagePermissions = false;
+
+  // Section collapse state
+  inputsSectionExpanded = true;
+  outputsSectionExpanded = true;
 
   // Computed SVG properties to prevent infinite loops
   diagramSvgValidation = new Map<string, boolean>();
@@ -713,6 +719,16 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this.svgCacheService.clearAllCaches();
     this.diagramSvgValidation.clear();
     this.diagramSvgDataUrls.clear();
+  }
+
+  /** Toggle the Inputs section expand/collapse state */
+  toggleInputsSection(): void {
+    this.inputsSectionExpanded = !this.inputsSectionExpanded;
+  }
+
+  /** Toggle the Outputs section expand/collapse state */
+  toggleOutputsSection(): void {
+    this.outputsSectionExpanded = !this.outputsSectionExpanded;
   }
 
   /**
@@ -2225,43 +2241,47 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     // Remove focus from the button to restore non-focused state
     (event.target as HTMLElement)?.blur();
 
-    const dialogData: MetadataDialogData = {
-      metadata: diagram.metadata || [],
-      isReadOnly: !this.canEdit,
-      objectType: 'Diagram',
-      objectName: `${this.transloco.translate('common.objectTypes.diagram')}: ${diagram.name} (${diagram.id})`,
-    };
+    if (!this.threatModel) return;
 
-    const dialogRef = this.dialog.open(MetadataDialogComponent, {
-      width: '90vw',
-      maxWidth: '800px',
-      minWidth: '500px',
-      maxHeight: '80vh',
-      data: dialogData,
-    });
-
+    // Fetch metadata from API since list endpoint doesn't include it
     this._subscriptions.add(
-      dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
-        if (result && this.threatModel) {
+      this.threatModelService
+        .getDiagramMetadata(this.threatModel.id, diagram.id)
+        .subscribe(metadata => {
+          const dialogData: MetadataDialogData = {
+            metadata: metadata || [],
+            isReadOnly: !this.canEdit,
+            objectType: 'Diagram',
+            objectName: `${this.transloco.translate('common.objectTypes.diagram')}: ${diagram.name} (${diagram.id})`,
+          };
+
+          const dialogRef = this.dialog.open(MetadataDialogComponent, {
+            width: '90vw',
+            maxWidth: '800px',
+            minWidth: '500px',
+            maxHeight: '80vh',
+            data: dialogData,
+          });
+
           this._subscriptions.add(
-            this.threatModelService
-              .updateDiagramMetadata(this.threatModel.id, diagram.id, result)
-              .subscribe(updatedMetadata => {
-                if (updatedMetadata) {
-                  const diagramIndex = this.diagrams.findIndex(d => d.id === diagram.id);
-                  if (diagramIndex !== -1) {
-                    this.diagrams[diagramIndex].metadata = updatedMetadata;
-                    this.diagrams[diagramIndex].modified_at = new Date().toISOString();
-                  }
-                  this.logger.info('Updated diagram metadata via API', {
-                    diagramId: diagram.id,
-                    metadata: updatedMetadata,
-                  });
-                }
-              }),
+            dialogRef.afterClosed().subscribe((result: Metadata[] | undefined) => {
+              if (result && this.threatModel) {
+                this._subscriptions.add(
+                  this.threatModelService
+                    .updateDiagramMetadata(this.threatModel.id, diagram.id, result)
+                    .subscribe(updatedMetadata => {
+                      if (updatedMetadata) {
+                        this.logger.info('Updated diagram metadata via API', {
+                          diagramId: diagram.id,
+                          metadata: updatedMetadata,
+                        });
+                      }
+                    }),
+                );
+              }
+            }),
           );
-        }
-      }),
+        }),
     );
   }
 
@@ -3211,7 +3231,12 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this._subscriptions.add(
       this.addonService.list().subscribe({
         next: response => {
-          this.filterAndCacheAddons(response.addons);
+          const addons = response.addons ?? [];
+          this.logger.debug('Addon API response', {
+            count: addons.length,
+            ids: addons.map(a => a.id),
+          });
+          this.filterAndCacheAddons(addons);
         },
         error: error => {
           this.logger.error('Failed to load addons', error);

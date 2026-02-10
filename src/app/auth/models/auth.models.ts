@@ -29,6 +29,18 @@ export interface JwtToken {
 }
 
 /**
+ * TMI-managed group membership as returned by GET /me
+ */
+export interface UserGroupMembership {
+  /** Group internal UUID */
+  internal_uuid: string;
+  /** Group identifier (e.g., "administrators", "security-reviewers") */
+  group_name: string;
+  /** Human-readable display name for the group */
+  name?: string;
+}
+
+/**
  * User profile information (matches backend Principal + User schema)
  * User identity is defined by the combination of (provider, provider_id)
  */
@@ -55,15 +67,26 @@ export interface UserProfile {
   email: string;
 
   /**
-   * Groups the user belongs to (nullable array of group names)
+   * TMI-managed groups the user belongs to (from GET /me response)
    */
-  groups: string[] | null;
+  groups: UserGroupMembership[] | null;
+
+  /**
+   * Groups from the JWT groups claim (raw group name strings)
+   */
+  jwt_groups: string[] | null;
 
   /**
    * Whether the user has administrator privileges
-   * Only populated when fetched from GET /users/me endpoint
+   * Populated from JWT tmi_is_administrator claim and verified via GET /users/me
    */
   is_admin?: boolean;
+
+  /**
+   * Whether the user has security reviewer privileges
+   * Populated from JWT tmi_is_security_reviewer claim and verified via GET /users/me
+   */
+  is_security_reviewer?: boolean;
 }
 
 /**
@@ -107,6 +130,11 @@ export interface UserMeResponse {
   is_admin: boolean;
 
   /**
+   * Whether the user has security reviewer privileges
+   */
+  is_security_reviewer?: boolean;
+
+  /**
    * Account creation timestamp
    */
   created_at?: string;
@@ -122,9 +150,9 @@ export interface UserMeResponse {
   last_login?: string;
 
   /**
-   * Groups the user belongs to (nullable array of group names)
+   * TMI-managed groups the user belongs to (from GET /me response)
    */
-  groups?: string[] | null;
+  groups?: UserGroupMembership[] | null;
 }
 
 /**

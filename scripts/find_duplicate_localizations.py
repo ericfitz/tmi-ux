@@ -13,7 +13,7 @@ Tool to find duplicate localized string values and generate a de-duplication pla
 import argparse
 import json
 import re
-import yaml
+import yaml  # type: ignore[import-not-found]  # noqa: F401 - managed by uv
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Tuple, Any

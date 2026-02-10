@@ -82,27 +82,6 @@
       "subtitle": "Configure addons for extending TMI functionality",
       "title": "Manage Addons"
     },
-    "administrators": {
-      "addButton": "{{admin.administrators.addDialog.save}}",
-      "addDialog": {
-        "provider": "{{common.provider}}",
-        "providerRequired": "Provider is required",
-        "save": "Add Administrator",
-        "subject": "Subject",
-        "subjectHint": "Enter user email or group name",
-        "subjectPlaceholder": "User email or group name",
-        "subjectRequired": "Subject is required",
-        "title": "{{admin.administrators.addDialog.save}}"
-      },
-      "filterLabel": "Filter Administrators",
-      "filterPlaceholder": "Search by email or group name",
-      "listTitle": "System Administrators",
-      "noAdministrators": "No administrators found",
-      "removeTooltip": "Remove Administrator Permissions",
-      "subtitle": "Control who has administrative access to the system",
-      "subtitle.comment": "'Control' is the imperative verb form.",
-      "title": "Manage Administrators"
-    },
     "groups": {
       "addButton": "{{admin.groups.addDialog.title}}",
       "addDialog": {
@@ -122,6 +101,11 @@
         "save": "Create Group",
         "title": "Add Group"
       },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "Usage"
+      },
       "deleteTooltip": "Delete group",
       "filterLabel": "Filter Groups",
       "filterPlaceholder": "Search by group name or provider",
@@ -132,8 +116,10 @@
         "noMembers": "No members in this group",
         "removeTooltip": "Remove from group",
         "searchHint": "Type at least 2 characters to search",
-        "searchPlaceholder": "Start typing email address...",
-        "searchUser": "Search User by Email"
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
+        "searchUser": "Search User by Email",
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
       },
       "noGroups": "No groups found",
       "subtitle": "View and manage system groups",
@@ -151,6 +137,13 @@
         "title": "Add Custom Quotas",
         "webhookQuotas": "{{admin.quotas.webhookTitle}}"
       },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "Default",
+      "default.comment": "Label shown before a default quota value, e.g. 'Default: 60'.",
       "deleteTooltip": "Remove custom quota (revert to defaults)",
       "eventsPerMinute": "Events per minute",
       "filterLabel": "Filter Quotas",
@@ -173,10 +166,6 @@
         "description": "Install and configure application addons",
         "title": "{{admin.addons.title}}"
       },
-      "administrators": {
-        "description": "Grant or revoke administrator permissions",
-        "title": "{{admin.administrators.title}}"
-      },
       "groups": {
         "description": "Configure user groups and memberships",
         "title": "{{admin.groups.title}}"
@@ -184,6 +173,14 @@
       "quotas": {
         "description": "Configure resource quotas and limits",
         "title": "{{admin.quotas.title}}"
+      },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "{{admin.settings.title}}"
+      },
+      "surveys": {
+        "description": "Create and manage surveys",
+        "title": "Manage Surveys"
       },
       "users": {
         "description": "View and manage user accounts",
@@ -194,16 +191,83 @@
         "title": "{{admin.webhooks.title}}"
       }
     },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "Optional description of this setting",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "Lowercase with dots and underscores (e.g., rate_limit.max_rpm)",
+        "keyInvalid": "Must start with lowercase letter, use only lowercase letters, numbers, dots, and underscores",
+        "keyRequired": "Key is required",
+        "save": "Create Setting",
+        "title": "Add Setting",
+        "type": "{{common.type}}",
+        "typeRequired": "Type is required",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "Value is required"
+      },
+      "cancelTooltip": "Cancel editing",
+      "columns": {
+        "description": "{{common.description}}",
+        "key": "{{common.metadataKey}}",
+        "modified": "{{common.lastModified}}",
+        "type": "{{common.type}}",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "Are you sure you want to delete the setting \"{{key}}\"?",
+      "deleteTooltip": "Delete setting",
+      "editTooltip": "Edit setting",
+      "filterLabel": "Filter",
+      "filterPlaceholder": "Filter by key, value, or description",
+      "listTitle": "System Settings",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "Import settings from the server's configuration file or environment variables into the database.",
+        "migrate": "Migrate",
+        "overwriteLabel": "Overwrite existing settings",
+        "overwriteWarning": "Warning: This will replace any settings in the database that were previously customized.",
+        "resultMigrated": "{{count}} settings migrated",
+        "resultSkipped": "{{count}} settings skipped",
+        "title": "Migrate Settings"
+      },
+      "noSettings": "No settings found",
+      "saveTooltip": "Save changes",
+      "subtitle": "View and manage system configuration settings",
+      "title": "Manage Settings",
+      "types": {
+        "bool": "Boolean",
+        "int": "Integer",
+        "json": "JSON",
+        "string": "String"
+      }
+    },
     "subtitle": "Manage system settings and configurations",
     "title": "Administration",
     "users": {
+      "administrator": "Administrator",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
       "deleteTooltip": "Delete user account",
       "filterLabel": "Filter Users",
       "filterPlaceholder": "Search by email, name, provider, or group name",
+      "lastLogin": "Last Login",
       "listTitle": "Users",
+      "never": "Never",
       "noUsers": "No users found",
       "subtitle": "View and manage system users",
-      "title": "Manage Users"
+      "title": "Manage Users",
+      "transferOwnership": {
+        "confirm": "Are you sure you want to transfer all data from {{source}} to {{target}}?",
+        "dialogTitle": "Transfer User Data",
+        "error": "Failed to transfer ownership. Please try again.",
+        "success": "{{userPreferences.transferData.success}}",
+        "tooltip": "Transfer ownership"
+      }
     },
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
@@ -244,13 +308,112 @@
       "noWebhooks": "No webhooks found",
       "secret": "HMAC secret",
       "status": {
-        "active": "Active",
+        "active": "{{common.active}}",
         "pending_delete": "Pending Delete",
         "pending_verification": "Pending Verification"
       },
       "subtitle": "Configure webhook subscriptions for event notifications",
       "title": "Manage Webhooks"
     }
+  },
+  "adminSurveys": {
+    "cloneSuffix": "(Copy)",
+    "createDialog": {
+      "nameLabel": "Survey Name",
+      "namePlaceholder": "Enter survey name",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "Create Survey",
+      "versionHint": "Free-form version identifier",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "e.g., 1, v2-pilot, 2024-Q1",
+      "versionRequired": "Version is required"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "editTemplate": "Edit Survey",
+    "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
+    "loadingTemplates": "{{surveys.list.loadingSurveys}}",
+    "noMatchingTitle": "No Matching Surveys",
+    "noTemplatesMessage": "Create your first survey to get started.",
+    "noTemplatesTitle": "No Surveys Yet",
+    "pageTitle": "{{admin.sections.surveys.title}}",
+    "searchByName": "Search by name...",
+    "searchTemplates": "Search surveys",
+    "surveyDetails": "Survey Details",
+    "templateBuilder": {
+      "addPage": "Add page",
+      "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
+      "choicesPerLine": "Choices (one per line)",
+      "conditionalLogic": "Conditional Logic",
+      "conditionalLogicHelp": "SurveyJS conditional logic documentation",
+      "deletePage": "Delete page",
+      "deleteQuestion": "Delete Question",
+      "enableIf": "Enable If",
+      "enableIfHint": "e.g., {questionName} = 'value'",
+      "enterSurveyDescription": "Enter survey description",
+      "enterSurveyTitle": "Enter survey title",
+      "failedToLoadTemplate": "Failed to load survey",
+      "failedToSaveTemplate": "Failed to save survey",
+      "loadingTemplate": "Loading survey...",
+      "mapsToTmField": "Maps to TM Field",
+      "metadataKey": "Metadata Key",
+      "metadataKeyHint": "Key name for the metadata entry",
+      "nameId": "Name (ID)",
+      "nameIdHint": "Unique identifier for this question",
+      "nextPage": "{{pagination.nextPage}}",
+      "noQuestionsHint": "Click a question type from the palette to add it",
+      "noQuestionsYet": "No questions yet",
+      "pageIndicator": "Page {{current}} of {{total}}",
+      "previousPage": "{{pagination.previousPage}}",
+      "questionProperties": "Question Properties",
+      "questionTypeDescriptions": {
+        "boolean": "Boolean toggle",
+        "checkbox": "Multiple choice selection",
+        "comment": "Multi-line text area",
+        "dropdown": "Dropdown selection",
+        "panel": "Group questions in a panel",
+        "paneldynamic": "Repeatable panel group",
+        "radiogroup": "Single choice from options",
+        "text": "Single line text input"
+      },
+      "questionTypeLabels": {
+        "boolean": "Yes/No",
+        "checkbox": "Checkbox",
+        "comment": "Multiline",
+        "dropdown": "Dropdown",
+        "panel": "Panel",
+        "paneldynamic": "Dynamic Panel",
+        "radiogroup": "Radio Group",
+        "text": "{{editor.nodeLabels.textbox}}"
+      },
+      "questionTypes": "Question Types",
+      "questions": "Questions",
+      "required": "Required",
+      "requiredIf": "Required If",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
+      "selectQuestionHint": "Select a question to edit its properties",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
+      "tmFieldLabels": {
+        "assetDescription": "Asset Description",
+        "assetName": "{{assetEditor.name}}",
+        "assetType": "{{assetEditor.type}}",
+        "description": "Threat Model Description",
+        "documentName": "{{threatModels.documentName}}",
+        "documentUrl": "{{threatModels.documentUrl}}",
+        "issueUri": "Issue Tracking URL",
+        "metadataKey": "Custom Metadata",
+        "name": "Threat Model Name",
+        "repositoryName": "{{threatModels.repositoryName}}",
+        "repositoryUrl": "{{threatModels.repositoryUri}}"
+      },
+      "tmFieldMapping": "Threat Model Field Mapping",
+      "tmFieldMappingHint": "Link this answer to a threat model field",
+      "unsavedChanges": "Unsaved changes",
+      "visibleIf": "Visible If",
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
+    },
+    "templateCount": "{{count}} survey",
+    "templateCountPlural": "{{count}} surveys"
   },
   "assetEditor": {
     "chipPlaceholder": "Enter value and press Enter",
@@ -316,9 +479,14 @@
   "common": {
     "about": "About",
     "actions": "Actions",
+    "activate": "Activate",
+    "active": "Active",
     "addMetadata": "Add Metadata",
     "addThreat": "Add Threat",
     "addons": "Addons",
+    "all": "All",
+    "allStatuses": "All Statuses",
+    "archive": "Archive",
     "back": "Back",
     "back.comment": "Used as a tooltip or label for buttons that allows a user to navigate to the previous page.",
     "cancel": "Cancel",
@@ -326,7 +494,9 @@
     "classification": "Classification",
     "classification.comment": "Used in the sense of the category that something is placed in.",
     "clear": "Clear",
+    "clone": "Clone",
     "close": "Close",
+    "confirm": "Confirm",
     "confirmDelete": "Are you sure you want to delete the {{item}} \"{{name}}\"? This action cannot be undone.",
     "confirmDeleteMessage": "Are you sure you want to delete the {{objectType}} \"{{name}}\"?",
     "copy": "Copy",
@@ -336,6 +506,7 @@
     "criticality": "Criticality",
     "criticality.comment": "Used in the sense of how important something is, or how much impact would occur.",
     "cut": "Cut",
+    "deactivate": "Deactivate",
     "delete": "Delete",
     "deleteConfirm": "Confirm Deletion",
     "deleteWarningConfirmationField": "Delete Confirmation",
@@ -348,18 +519,23 @@
     "deleteWarningTypeConfirmation": "To confirm, please type \"{{confirmValue}}\" in the field below.",
     "description": "Description",
     "diagramId": "Diagram ID",
+    "dismiss": "Dismiss",
     "done": "Done",
     "download": "Download",
     "edit": "Edit",
     "editThreat": "Edit Threat",
+    "email": "Email",
     "emailLabel": "Email Address",
+    "error": "Error",
     "fonts": "Fonts",
+    "groups": "Groups",
     "id": "ID",
     "identityProvider": "Identity Provider",
     "issueUri": "Issue URL",
     "language": "{{language}}",
     "lastModified": "Last Modified",
     "lastUpdated": "Last updated",
+    "loading": "Loading...",
     "manage": "Manage",
     "manageMetadata": "Manage Metadata",
     "manageThreats": "Manage Threats",
@@ -369,10 +545,12 @@
     "mitigated": "Mitigated",
     "mitigation": "Mitigation",
     "mitigationPlaceholder": "Describe recommended or planned mitigation(s) for this threat",
+    "moreActions": "More actions",
     "name": "Name",
     "name.comment": "The German (de-DE) word for name is the same as the English word.",
     "noAddonsAvailable": "No addons available",
     "noDataAvailable": "No Data Available",
+    "noMatchingResults": "No results match your filters.",
     "noMetadata": "No Metadata Available",
     "noThreats": "No Threats Available",
     "none": "None",
@@ -380,17 +558,25 @@
       "asset": "Asset",
       "assets": "Assets",
       "cell": "Cell",
+      "cells": "Cells",
       "diagram": "Diagram",
+      "diagrams": "Diagrams",
       "document": "Document",
       "documents": "Documents",
       "metadata": "{{common.metadata}}",
       "note": "Note",
       "notes": "Notes",
       "report": "Report",
+      "reports": "Reports",
       "repositories": "Repositories",
       "repository": "Repository",
+      "survey": "Survey",
+      "surveyResponse": "Survey Response",
+      "surveyResponses": "Survey Responses",
+      "surveys": "Surveys",
       "threat": "Threat",
       "threatModel": "Threat Model",
+      "threatModels": "Threat Models",
       "threats": "Threats"
     },
     "ok": "OK",
@@ -402,6 +588,7 @@
     "provider": "Provider",
     "readOnly": "Read-Only",
     "readOnlyTooltip": "You have read-only access to this threat model. Contact the owner to request edit permissions.",
+    "retry": "Retry",
     "roles": {
       "owner": "Owner",
       "reader": "Reader",
@@ -411,6 +598,8 @@
     "saveAndClose": "Save and Close",
     "savedSuccessfully": "Saved successfully",
     "score": "Score",
+    "search": "Search",
+    "selected": "{{count}} selected",
     "sensitivity": "Sensitivity",
     "sensitivity.comment": "Used in the sense of how damaging something would be if it were discovered, not in the sense of the keenness of senses.",
     "sessionRoles": {
@@ -424,11 +613,15 @@
       "group": "Group",
       "user": "User"
     },
+    "template": "Template",
     "threatDescription": "Threat Description",
     "threatDescriptionPlaceholder": "Describe the Threat in Detail",
     "threatName": "Threat Name",
     "threatType": "Threat Type",
+    "title": "Title",
+    "tryAdjustingFilters": "Try adjusting your filters.",
     "type": "Type",
+    "unarchive": "Unarchive",
     "unsavedChangesWarning": "You have unsaved changes. Are you sure you want to close?",
     "userId": "User ID",
     "validation": {
@@ -437,6 +630,7 @@
       "nameRequired": "Name is required",
       "required": "This field is required"
     },
+    "version": "Version",
     "view": "View",
     "view.comment": "View is used as a verb here.",
     "viewMetadata": "View Metadata",
@@ -453,6 +647,15 @@
     "moveToFront": "Move to Front",
     "noDataAssetsAvailable": "No data assets available",
     "showObject": "Show Object"
+  },
+  "createThreatModel": {
+    "confidentialHint": "Confidential threat models are not automatically shared with the Security Reviewers group. This setting cannot be changed after creation.",
+    "confidentialLabel": "{{triage.filters.confidentialOnly}}",
+    "descriptionPlaceholder": "Describe the purpose and scope of this threat model",
+    "framework": "Framework",
+    "namePlaceholder": "Enter threat model name",
+    "nameRequired": "{{common.validation.nameRequired}}",
+    "title": "Create Threat Model"
   },
   "dashboard": {
     "clearFilter": "Clear Filter",
@@ -488,7 +691,7 @@
     "common": {
       "affectedCells": "Affected Cells",
       "cellIds": "Cell IDs",
-      "cells": "Cells",
+      "cells": "{{common.objectTypes.cells}}",
       "copyFullJson": "Copy Full JSON"
     },
     "graphDataDialog": {
@@ -570,9 +773,18 @@
   "errors": {
     "validationError": "Validation Error"
   },
+  "footer": {
+    "support": "Support"
+  },
   "getStarted": "Get Started",
-  "homeDescription": "A collaborative threat modeling tool designed to help teams identify, analyze, and document security threats in their systems. Create, share, and collaboratively edit threat models and diagrams to improve your application security.",
+  "homeDescription": "TMI is a tool that manages and enhances the security review and threat modeling processes for your organization.  It drives security review workflow, organizes the information for security reviews, enables building data flow diagrams collaboratively, and enables connecting automation to reduce toil in the review process and to analyze for security threats.",
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
+  "intake": {
+    "fill": {
+      "saveAndExit": "Save & Exit",
+      "submitResponses": "Submit Responses"
+    }
+  },
   "login": {
     "chooseMethod": "Choose your sign in method:",
     "explanation": "Sign in with your existing account from a trusted identity provider. This eliminates the need for a separate password, streamlining your experience while keeping you secure. We never store or manage passwords—your credentials stay with your provider and can't be compromised through us.",
@@ -593,10 +805,13 @@
     "unexpectedError": "An unexpected error occurred during OAuth."
   },
   "navbar": {
+    "admin": "Admin",
     "appTitle": "TMI: Threat Modeling Improved",
     "copyUserEmail": "Copy User Email to Clipboard",
+    "dashboard": "Dashboard",
     "feedback": "Report a bug, request a feature or provide feedback",
     "home": "Home",
+    "intake": "Intake",
     "logoutButton": "Sign Out",
     "serverStatus": {
       "noServerConfigured": "No Server Configured",
@@ -689,6 +904,77 @@
     },
     "title": "Session Expiring Soon"
   },
+  "surveys": {
+    "autoSave": {
+      "error": "Save failed",
+      "saved": "Saved",
+      "saving": "Saving..."
+    },
+    "browse": "Browse Surveys",
+    "confidentialDialog": {
+      "description": "Should this submission be marked as confidential? Confidential submissions are not automatically shared with the Security Reviewers group. This setting cannot be changed after the response is created.",
+      "no": "No",
+      "title": "Confidential Submission",
+      "yes": "Yes, mark as confidential"
+    },
+    "confirmation": {
+      "backToSurveys": "Back to Surveys",
+      "message": "Your survey has been submitted successfully.",
+      "title": "Survey Submitted",
+      "viewResponses": "View My Responses"
+    },
+    "continueDraft": "Continue Draft",
+    "fill": {
+      "submitConfirm": "Are you sure you want to submit? You won't be able to edit your responses after submitting.",
+      "title": "Fill Survey"
+    },
+    "list": {
+      "deleteDraft": "Delete draft",
+      "draftStarted": "Draft started {{time}}",
+      "errorLoadingSurveys": "Failed to load surveys",
+      "lastModified": "Last modified {{time}}",
+      "loadingSurveys": "Loading surveys...",
+      "noSurveysMessage": "There are no active surveys at this time. Check back later.",
+      "noSurveysTitle": "No Surveys Available",
+      "pageDescription": "Choose the appropriate type of review from the following list, and then answer the presented questions to provide the security review team with the information they need to perform the review.",
+      "pageTitle": "Request a Security Review",
+      "updated": "Updated",
+      "yourDrafts": "Your Drafts"
+    },
+    "myResponses": "My Responses",
+    "noMatchingResponses": "No Matching Responses",
+    "noMatchingResponsesMessage": "No responses match the selected filters.",
+    "noResponses": "You haven't submitted any survey responses yet",
+    "noSurveys": "No surveys available",
+    "responses": {
+      "continueEditing": "Continue editing",
+      "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
+      "filterByStatus": "Filter by Status",
+      "loadingResponses": "{{triage.list.loadingResponses}}",
+      "noResponsesMessage": "You haven't completed any surveys. Start one from the surveys page.",
+      "noResponsesTitle": "No Responses Yet",
+      "pageTitle": "My Survey Responses",
+      "responseCount": "{{count}} response",
+      "responseCountPlural": "{{count}} responses"
+    },
+    "saveDraft": "Save Draft",
+    "startNew": "Start Survey",
+    "status": {
+      "draft": "Draft",
+      "needsRevision": "Needs Revision",
+      "readyForReview": "Ready for Review",
+      "reviewCreated": "Review Created",
+      "submitted": "{{triage.list.submitted}}"
+    },
+    "submitSurvey": "Submit Survey",
+    "templateStatus": {
+      "active": "{{common.active}}",
+      "archived": "Archived",
+      "inactive": "Inactive"
+    },
+    "title": "{{common.objectTypes.surveys}}",
+    "viewResponse": "View Response"
+  },
   "threatEditor": {
     "createNewThreat": "Create New Threat",
     "notAssociatedWithAsset": "Not associated with an asset",
@@ -754,7 +1040,7 @@
     "created": "{{common.created}}",
     "created.comment": "This is used to reference the date and time that something was created.",
     "createdBy": "Created By",
-    "dashboard": "Dashboard",
+    "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Data Flow Diagram",
     "deleteWarningPermanent": "This action cannot be undone and will permanently delete all associated diagrams, threats, and metadata.",
     "descriptionPlaceholder": "Describe the Purpose and Scope of This Threat Model",
@@ -762,7 +1048,7 @@
     "diagramName": "Diagram Name",
     "diagramPreview": "Diagram Preview",
     "diagramType": "Diagram Type",
-    "diagrams": "Diagrams",
+    "diagrams": "{{common.objectTypes.diagrams}}",
     "documentDescriptionPlaceholder": "Describe the Document's Purpose or Content",
     "documentEditor": {
       "title": {
@@ -787,7 +1073,7 @@
     "noPermissions": "No Permissions Defined",
     "noRepositories": "No Repositories Added Yet",
     "noThreats": "No Threats Added Yet",
-    "pageTitle": "Threat Models",
+    "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
     "permissionsRole": "Role",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
@@ -811,6 +1097,14 @@
     "repositorySubPathHint": "Optional path within the repository",
     "repositoryType": "Repository Type",
     "repositoryUri": "Repository URL",
+    "sections": {
+      "inputs": "Inputs",
+      "inputs.comment": "Section heading for threat model input entities (assets, documents, repositories)",
+      "inputsDescription": "Assets, documents, and source code repositories that describe the system under analysis",
+      "outputs": "Outputs",
+      "outputs.comment": "Section heading for threat model output entities (notes, diagrams, threats)",
+      "outputsDescription": "Notes, diagrams, and threats produced during security analysis"
+    },
     "setAsOwner": "Set as Owner",
     "sourcesCount": "Repos",
     "status": {
@@ -843,7 +1137,7 @@
       "addAsset": "Add Asset",
       "addDiagram": "Add Diagram",
       "addDocument": "Add Document",
-      "addNote": "Add Note",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "Assets are valuable resources within the system that require protection, such as data, hardware, software, infrastructure, services, or personnel.",
       "diagramsCardTitle": "Diagrams in TMI are machine-readable representations of data movement and processes within a system, enabling both manual and automated security analysis.",
       "documentsCardTitle": "Document references are links to documents stored outside TMI. Relevant documents describe the system to be analyzed, and can be used by both security analysts and automated analysis processes.",
@@ -908,10 +1202,90 @@
     },
     "title": "Terms of Service"
   },
-  "userPreferences": {
-    "administration": {
-      "title": "{{admin.title}}"
+  "transfer": {
+    "userPicker": {
+      "searchLabel": "Search by email",
+      "searchPlaceholder": "Start typing email address..."
+    }
+  },
+  "triage": {
+    "bulkActions": "Bulk Actions",
+    "changeStatus": "Change Status",
+    "columns": {
+      "confidentialTooltip": "Confidential submission"
     },
+    "createTm": "{{createThreatModel.title}}",
+    "detail": {
+      "addNote": "Add Note",
+      "markdownSupported": "Markdown supported",
+      "noNotes": "No triage notes yet",
+      "noResponses": "No responses recorded",
+      "noRevisionNotes": "No revision notes",
+      "note": "note",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "Enter note content...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "Brief note title",
+      "notes": "notes",
+      "responseDetails": "Response Details",
+      "reviewedAt": "Reviewed",
+      "reviewedBy": "Reviewed By",
+      "revisionNotesTitle": "Revision Requested",
+      "statusTimeline": "Status Timeline",
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "Triage Notes"
+    },
+    "filters": {
+      "allStatuses": "{{common.allStatuses}}",
+      "allSurveys": "{{triage.list.allSurveys}}",
+      "clearFilters": "Clear Filters",
+      "confidential": "Confidentiality",
+      "confidentialOnly": "Confidential",
+      "nonConfidential": "Non-confidential"
+    },
+    "list": {
+      "allSurveys": "All Surveys",
+      "approve": "Approve",
+      "approveSelected": "Approve Selected",
+      "createThreatModel": "{{createThreatModel.title}}",
+      "errorLoadingResponses": "Failed to load responses",
+      "loadingResponses": "Loading responses...",
+      "noResponsesFiltered": "No responses match your filters",
+      "noResponsesTitle": "No Responses",
+      "noResponsesToTriage": "There are no survey responses to triage",
+      "notSubmitted": "Not submitted",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
+      "searchPlaceholder": "Search by submitter or survey...",
+      "submitted": "Submitted",
+      "submitter": "Submitter"
+    },
+    "markInReview": "Mark In Review",
+    "markPendingTriage": "Mark Pending Triage",
+    "noResponses": "No responses to triage",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "Enter note content (Markdown supported)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "New Triage Note",
+        "view": "View Triage Note"
+      }
+    },
+    "queue": "Triage Queue",
+    "returnToSubmitted": "Return to Submitted",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "Provide notes explaining what needs to be revised. The submitter will see these notes when they review their response.",
+      "hint": "Required — describe what changes are needed",
+      "label": "Revision Notes",
+      "placeholder": "Describe the revisions needed...",
+      "title": "Return for Revision"
+    },
+    "title": "Triage",
+    "viewDetails": "View Details"
+  },
+  "userPreferences": {
     "colorBlindMode": "Enable Color Blind Mode",
     "credentials": {
       "add": "Add",
@@ -964,6 +1338,7 @@
     },
     "diagramAnimationEffects": "Enable Animation Effects in Diagram Editor",
     "displayPreferences": "Display Preferences",
+    "hoverShowMetadata": "Show cell metadata on hover",
     "marginSize": {
       "narrow": "Narrow",
       "standard": "Standard",
@@ -978,13 +1353,18 @@
       "usLetter.comment": "This is a proper name and should not be translated."
     },
     "reportPreferences": "Report Preferences",
+    "sections": {
+      "developer": "Developer",
+      "diagramEditor": "Diagram Editor",
+      "securityReviewer": "Security Reviewer"
+    },
     "showDeveloperTools": "Show Developer Tools",
     "tabs": {
       "credentials": "Credentials",
       "danger": "Danger",
       "display": "Display",
       "profile": "Profile",
-      "reports": "Reports"
+      "reports": "{{common.objectTypes.reports}}"
     },
     "theme": "Theme",
     "theme.comment": "Theme is used as a noun here, to indicate visual styles applied in the UI.",
@@ -994,9 +1374,18 @@
       "light": "Light"
     },
     "title": "User Preferences",
+    "transferData": {
+      "confirmMessage": "Are you sure you want to transfer all your threat models and survey responses to {{email}}? You will be downgraded to writer role on transferred items.",
+      "dialogTitle": "Transfer My Data",
+      "error": "Failed to transfer data. Please try again.",
+      "hint": "Transfers ownership of all your threat models and survey responses to another user. You will be downgraded to writer role on transferred items.",
+      "success": "Transferred {{tmCount}} threat models and {{responseCount}} survey responses.",
+      "title": "Transfer My Data to Another User"
+    },
     "userProfile": {
       "currentRole": "Current Threat Model Role",
-      "groups": "Groups",
+      "groups": "{{common.groups}}",
+      "jwtGroups": "JWT Groups",
       "provider": "{{common.identityProvider}}",
       "providerId": "Provider ID",
       "title": "User Profile",

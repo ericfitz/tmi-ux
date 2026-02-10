@@ -29,9 +29,6 @@
 
   .close-button {
     margin-left: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 }
 
@@ -153,18 +150,6 @@
     display: flex;
     gap: 4px;
     align-items: center;
-
-    button[mat-icon-button] {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      mat-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-    }
   }
 }
 
