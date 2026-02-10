@@ -305,7 +305,17 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(प्रतिलिपि)",
-    "createSurvey": "सर्वेक्षण बनाएं",
+    "createDialog": {
+      "nameLabel": "सर्वेक्षण का नाम",
+      "namePlaceholder": "सर्वेक्षण का नाम दर्ज करें",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "सर्वेक्षण बनाएं",
+      "versionHint": "मुक्त-प्रारूप संस्करण पहचानकर्ता",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "उदा., 1, v2-pilot, 2024-Q1",
+      "versionRequired": "संस्करण आवश्यक है"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
     "editTemplate": "सर्वेक्षण संपादित करें",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -362,6 +372,8 @@
       "questions": "प्रश्न",
       "required": "आवश्यक",
       "selectQuestionHint": "इसके गुण संपादित करने के लिए एक प्रश्न चुनें",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
         "assetDescription": "एसेट विवरण",
         "assetName": "{{assetEditor.name}}",
@@ -487,6 +499,7 @@
     "download": "डाउनलोड",
     "edit": "संपादित करें",
     "editThreat": "खतरा संपादित करें",
+    "email": "ईमेल",
     "emailLabel": "ईमेल पता",
     "error": "त्रुटि",
     "fonts": "फ़ॉन्ट्स",
@@ -738,6 +751,12 @@
   "getStarted": "शुरू करें",
   "homeDescription": "TMI एक उपकरण है जो आपके संगठन के लिए सुरक्षा समीक्षा और खतरा मॉडलिंग प्रक्रियाओं को प्रबंधित और बेहतर बनाता है। यह सुरक्षा समीक्षा वर्कफ़्लो को चलाता है, सुरक्षा समीक्षाओं के लिए जानकारी को व्यवस्थित करता है, सहयोगात्मक रूप से डेटा फ़्लो आरेख बनाने में सक्षम बनाता है, और समीक्षा प्रक्रिया में मेहनत को कम करने और सुरक्षा खतरों का विश्लेषण करने के लिए स्वचालन को जोड़ने में सक्षम बनाता है।",
   "homeWelcomeTitle": "TMI में आपका स्वागत है: थ्रेट मॉडलिंग इम्प्रूव्ड",
+  "intake": {
+    "fill": {
+      "saveAndExit": "सहेजें और बाहर निकलें",
+      "submitResponses": "प्रतिक्रियाएं सबमिट करें"
+    }
+  },
   "login": {
     "chooseMethod": "अपनी साइन इन विधि चुनें:",
     "explanation": "किसी विश्वसनीय पहचान प्रदाता से अपने मौजूदा खाते से साइन इन करें। इससे अलग पासवर्ड की आवश्यकता समाप्त हो जाती है, जो आपके अनुभव को सुव्यवस्थित करता है और आपको सुरक्षित रखता है। हम कभी भी पासवर्ड संग्रहीत या प्रबंधित नहीं करते—आपके क्रेडेंशियल आपके प्रदाता के पास रहते हैं और हमारे माध्यम से समझौता नहीं किया जा सकता।",
@@ -1085,7 +1104,7 @@
       "addAsset": "एसेट जोड़ें",
       "addDiagram": "डायग्राम जोड़ें",
       "addDocument": "दस्तावेज़ जोड़ें",
-      "addNote": "नोट जोड़ें",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "एसेट सिस्टम के भीतर मूल्यवान संसाधन हैं जिन्हें सुरक्षा की आवश्यकता है, जैसे डेटा, हार्डवेयर, सॉफ्टवेयर, इन्फ्रास्ट्रक्चर, सेवाएं, या कर्मचारी।",
       "diagramsCardTitle": "TMI में डायग्राम सिस्टम के भीतर डेटा गतिविधि और प्रक्रियाओं के मशीन-पठनीय प्रतिनिधित्व हैं, जो मैन्युअल और स्वचालित दोनों सुरक्षा विश्लेषण को सक्षम करते हैं।",
       "documentsCardTitle": "दस्तावेज़ संदर्भ TMI के बाहर संग्रहीत दस्तावेज़ों के लिंक हैं। प्रासंगिक दस्तावेज़ विश्लेषण किए जाने वाले सिस्टम का वर्णन करते हैं, और सुरक्षा विश्लेषकों और स्वचालित विश्लेषण प्रक्रियाओं दोनों द्वारा उपयोग किए जा सकते हैं।",
@@ -1162,10 +1181,24 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "नोट जोड़ें",
+      "markdownSupported": "Markdown समर्थित",
+      "noNotes": "अभी तक कोई ट्राइएज नोट नहीं",
       "noResponses": "कोई प्रतिक्रिया दर्ज नहीं की गई",
+      "noRevisionNotes": "कोई संशोधन नोट नहीं",
+      "note": "नोट",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "नोट की सामग्री दर्ज करें...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "संक्षिप्त नोट शीर्षक",
+      "notes": "नोट्स",
       "responseDetails": "प्रतिक्रिया विवरण",
+      "reviewedAt": "समीक्षा की गई",
+      "reviewedBy": "समीक्षाकर्ता",
+      "revisionNotesTitle": "संशोधन का अनुरोध किया गया",
       "statusTimeline": "स्थिति समयरेखा",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "ट्राइएज नोट्स"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1179,12 +1212,14 @@
       "allSurveys": "सभी सर्वेक्षण",
       "approve": "स्वीकृत करें",
       "approveSelected": "चयनित स्वीकृत करें",
+      "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "प्रतिक्रियाएं लोड करने में विफल",
       "loadingResponses": "प्रतिक्रियाएं लोड हो रही हैं...",
       "noResponsesFiltered": "आपके फ़िल्टर से कोई प्रतिक्रिया मेल नहीं खाती",
       "noResponsesTitle": "कोई प्रतिक्रिया नहीं",
       "noResponsesToTriage": "छांटने के लिए कोई सर्वेक्षण प्रतिक्रियाएं नहीं हैं",
       "notSubmitted": "जमा नहीं किया गया",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "प्रस्तुतकर्ता या सर्वेक्षण के अनुसार खोजें...",
       "submitted": "जमा किया गया",
       "submitter": "जमाकर्ता"
@@ -1192,8 +1227,26 @@
     "markInReview": "समीक्षा में चिह्नित करें",
     "markPendingTriage": "लंबित ट्राइएज चिह्नित करें",
     "noResponses": "ट्राइएज करने के लिए कोई प्रतिक्रिया नहीं",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "नोट की सामग्री दर्ज करें (Markdown समर्थित)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "नया ट्राइएज नोट",
+        "view": "ट्राइएज नोट देखें"
+      }
+    },
     "queue": "ट्राइएज कतार",
     "returnToSubmitted": "सबमिट किया गया पर वापस जाएं",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "यह बताने के लिए नोट्स प्रदान करें कि क्या संशोधित करने की आवश्यकता है। सबमिट करने वाला व्यक्ति अपनी प्रतिक्रिया की समीक्षा करते समय इन नोट्स को देखेगा।",
+      "hint": "आवश्यक — वर्णन करें कि कौन से परिवर्तन आवश्यक हैं",
+      "label": "संशोधन नोट्स",
+      "placeholder": "आवश्यक संशोधनों का वर्णन करें...",
+      "title": "संशोधन के लिए वापस करें"
+    },
     "title": "ट्राइएज",
     "viewDetails": "विवरण देखें"
   },

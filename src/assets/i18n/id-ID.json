@@ -305,7 +305,17 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Salinan)",
-    "createSurvey": "Buat Survei",
+    "createDialog": {
+      "nameLabel": "Nama Survei",
+      "namePlaceholder": "Masukkan nama survei",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "Buat Survei",
+      "versionHint": "Pengenal versi bentuk bebas",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "mis., 1, v2-pilot, 2024-Q1",
+      "versionRequired": "Versi wajib diisi"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
     "editTemplate": "Edit survei",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -362,6 +372,8 @@
       "questions": "Pertanyaan",
       "required": "Wajib diisi",
       "selectQuestionHint": "Pilih pertanyaan untuk mengedit propertinya",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
         "assetDescription": "Deskripsi Aset",
         "assetName": "{{assetEditor.name}}",
@@ -487,6 +499,7 @@
     "download": "Unduh",
     "edit": "Sunting",
     "editThreat": "Edit Ancaman",
+    "email": "Email",
     "emailLabel": "Alamat Email",
     "error": "Kesalahan",
     "fonts": "Font",
@@ -738,6 +751,12 @@
   "getStarted": "Mulai",
   "homeDescription": "TMI adalah alat yang mengelola dan meningkatkan proses tinjauan keamanan dan pemodelan ancaman untuk organisasi Anda. Alat ini menggerakkan alur kerja tinjauan keamanan, mengorganisir informasi untuk tinjauan keamanan, memungkinkan pembuatan diagram alur data secara kolaboratif, dan memungkinkan koneksi otomatisasi untuk mengurangi beban kerja dalam proses tinjauan dan menganalisis ancaman keamanan.",
   "homeWelcomeTitle": "Selamat Datang di TMI: Threat Modeling Improved",
+  "intake": {
+    "fill": {
+      "saveAndExit": "Simpan & Keluar",
+      "submitResponses": "Kirim Respons"
+    }
+  },
   "login": {
     "chooseMethod": "Pilih metode masuk Anda:",
     "explanation": "Masuk dengan akun yang ada dari penyedia identitas terpercaya. Ini menghilangkan kebutuhan akan kata sandi terpisah, menyederhanakan pengalaman Anda sambil tetap aman. Kami tidak pernah menyimpan atau mengelola kata sandi—kredensial Anda tetap bersama penyedia Anda dan tidak dapat dikompromikan melalui kami.",
@@ -1085,7 +1104,7 @@
       "addAsset": "Tambah Aset",
       "addDiagram": "Tambah Diagram",
       "addDocument": "Tambah Dokumen",
-      "addNote": "Tambah Catatan",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "Aset adalah sumber daya berharga dalam sistem yang memerlukan perlindungan, seperti data, perangkat keras, perangkat lunak, infrastruktur, layanan, atau personel.",
       "diagramsCardTitle": "Diagram di TMI adalah representasi yang dapat dibaca mesin dari pergerakan data dan proses dalam sistem, memungkinkan analisis keamanan manual dan otomatis.",
       "documentsCardTitle": "Referensi dokumen adalah tautan ke dokumen yang disimpan di luar TMI. Dokumen yang relevan menjelaskan sistem yang akan dianalisis, dan dapat digunakan oleh analis keamanan dan proses analisis otomatis.",
@@ -1162,10 +1181,24 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "Tambah Catatan",
+      "markdownSupported": "Markdown didukung",
+      "noNotes": "Belum ada catatan triage",
       "noResponses": "Tidak ada respons tercatat",
+      "noRevisionNotes": "Tidak ada catatan revisi",
+      "note": "catatan",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "Masukkan isi catatan...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "Judul catatan singkat",
+      "notes": "catatan",
       "responseDetails": "Detail Respons",
+      "reviewedAt": "Ditinjau",
+      "reviewedBy": "Ditinjau Oleh",
+      "revisionNotesTitle": "Revisi Diminta",
       "statusTimeline": "Linimasa Status",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "Catatan Triage"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1179,12 +1212,14 @@
       "allSurveys": "Semua Survei",
       "approve": "Setujui",
       "approveSelected": "Setujui yang Dipilih",
+      "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "Gagal memuat tanggapan",
       "loadingResponses": "Memuat tanggapan...",
       "noResponsesFiltered": "Tidak ada tanggapan yang cocok dengan filter Anda",
       "noResponsesTitle": "Tidak Ada Tanggapan",
       "noResponsesToTriage": "Tidak ada tanggapan survei untuk ditriase",
       "notSubmitted": "Belum dikirim",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Cari berdasarkan pengirim atau survei...",
       "submitted": "Terkirim",
       "submitter": "Pengirim"
@@ -1192,8 +1227,26 @@
     "markInReview": "Tandai Sedang Ditinjau",
     "markPendingTriage": "Tandai Menunggu Triase",
     "noResponses": "Tidak ada respons untuk ditriase",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "Masukkan isi catatan (Markdown didukung)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "Catatan Triage Baru",
+        "view": "Lihat Catatan Triage"
+      }
+    },
     "queue": "Antrean Triase",
     "returnToSubmitted": "Kembalikan ke Terkirim",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "Berikan catatan yang menjelaskan apa yang perlu direvisi. Pengirim akan melihat catatan ini saat mereka meninjau respons mereka.",
+      "hint": "Wajib diisi — jelaskan perubahan apa yang diperlukan",
+      "label": "Catatan Revisi",
+      "placeholder": "Jelaskan revisi yang diperlukan...",
+      "title": "Kembalikan untuk Revisi"
+    },
     "title": "Triase",
     "viewDetails": "Lihat Detail"
   },

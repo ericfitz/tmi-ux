@@ -305,7 +305,17 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Cópia)",
-    "createSurvey": "Criar Pesquisa",
+    "createDialog": {
+      "nameLabel": "Nome da Pesquisa",
+      "namePlaceholder": "Digite o nome da pesquisa",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "Criar Pesquisa",
+      "versionHint": "Identificador de versão em formato livre",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "ex.: 1, v2-piloto, 2024-T1",
+      "versionRequired": "Versão é obrigatória"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
     "editTemplate": "Editar pesquisa",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -362,6 +372,8 @@
       "questions": "Perguntas",
       "required": "Obrigatório",
       "selectQuestionHint": "Selecione uma pergunta para editar suas propriedades",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
         "assetDescription": "Descrição do Ativo",
         "assetName": "{{assetEditor.name}}",
@@ -487,6 +499,7 @@
     "download": "Baixar",
     "edit": "Editar",
     "editThreat": "Editar Ameaca",
+    "email": "E-mail",
     "emailLabel": "Endereco de E-mail",
     "error": "Erro",
     "fonts": "Fontes",
@@ -738,6 +751,12 @@
   "getStarted": "Comecar",
   "homeDescription": "TMI é uma ferramenta que gerencia e aprimora os processos de revisão de segurança e modelagem de ameaças para sua organização. Ela conduz o fluxo de trabalho de revisão de segurança, organiza as informações para revisões de segurança, permite a criação colaborativa de diagramas de fluxo de dados e possibilita a conexão de automação para reduzir esforços no processo de revisão e analisar ameaças de segurança.",
   "homeWelcomeTitle": "Bem-vindo ao TMI: Modelagem de Ameacas Aprimorada",
+  "intake": {
+    "fill": {
+      "saveAndExit": "Salvar e Sair",
+      "submitResponses": "Enviar Respostas"
+    }
+  },
   "login": {
     "chooseMethod": "Escolha seu metodo de login:",
     "explanation": "Faca login com sua conta existente de um provedor de identidade confiavel. Isso elimina a necessidade de uma senha separada, simplificando sua experiencia enquanto mantem voce seguro. Nunca armazenamos ou gerenciamos senhas - suas credenciais permanecem com seu provedor e nao podem ser comprometidas atraves de nos.",
@@ -1085,7 +1104,7 @@
       "addAsset": "Adicionar Ativo",
       "addDiagram": "Adicionar Diagrama",
       "addDocument": "Adicionar Documento",
-      "addNote": "Adicionar Nota",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "Ativos sao recursos valiosos dentro do sistema que requerem protecao, como dados, hardware, software, infraestrutura, servicos ou pessoal.",
       "diagramsCardTitle": "Diagramas no TMI sao representacoes legiveis por maquina do movimento de dados e processos dentro de um sistema, permitindo analise de seguranca manual e automatizada.",
       "documentsCardTitle": "Referencias de documentos sao links para documentos armazenados fora do TMI. Documentos relevantes descrevem o sistema a ser analisado e podem ser usados por analistas de seguranca e processos de analise automatizada.",
@@ -1162,10 +1181,24 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "Adicionar Nota",
+      "markdownSupported": "Markdown suportado",
+      "noNotes": "Ainda não há notas de triagem",
       "noResponses": "Nenhuma resposta registrada",
+      "noRevisionNotes": "Nenhuma nota de revisão",
+      "note": "nota",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "Digite o conteúdo da nota...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "Título breve da nota",
+      "notes": "notas",
       "responseDetails": "Detalhes da Resposta",
+      "reviewedAt": "Revisado em",
+      "reviewedBy": "Revisado Por",
+      "revisionNotesTitle": "Revisão Solicitada",
       "statusTimeline": "Linha do Tempo de Status",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "Notas de Triagem"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1179,12 +1212,14 @@
       "allSurveys": "Todas as Pesquisas",
       "approve": "Aprovar",
       "approveSelected": "Aprovar Selecionados",
+      "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "Falha ao carregar respostas",
       "loadingResponses": "Carregando respostas...",
       "noResponsesFiltered": "Nenhuma resposta corresponde aos seus filtros",
       "noResponsesTitle": "Nenhuma Resposta",
       "noResponsesToTriage": "Não há respostas de pesquisa para triagem",
       "notSubmitted": "Não enviada",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Buscar por autor ou pesquisa...",
       "submitted": "Enviada",
       "submitter": "Remetente"
@@ -1192,8 +1227,26 @@
     "markInReview": "Marcar em Revisão",
     "markPendingTriage": "Marcar Triagem Pendente",
     "noResponses": "Nenhuma resposta para triagem",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "Digite o conteúdo da nota (Markdown suportado)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "Nova Nota de Triagem",
+        "view": "Visualizar Nota de Triagem"
+      }
+    },
     "queue": "Fila de Triagem",
     "returnToSubmitted": "Retornar para Enviado",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "Forneça notas explicando o que precisa ser revisado. O remetente verá estas notas quando revisar sua resposta.",
+      "hint": "Obrigatório — descreva quais mudanças são necessárias",
+      "label": "Notas de Revisão",
+      "placeholder": "Descreva as revisões necessárias...",
+      "title": "Devolver para Revisão"
+    },
     "title": "Triagem",
     "viewDetails": "Ver Detalhes"
   },

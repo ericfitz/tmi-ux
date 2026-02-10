@@ -305,7 +305,17 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(עותק)",
-    "createSurvey": "צור סקר",
+    "createDialog": {
+      "nameLabel": "שם הסקר",
+      "namePlaceholder": "הזן שם סקר",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "יצירת סקר",
+      "versionHint": "מזהה גרסה בפורמט חופשי",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "לדוגמה: 1, v2-pilot, 2024-Q1",
+      "versionRequired": "גרסה נדרשת"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
     "editTemplate": "עריכת סקר",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -362,6 +372,8 @@
       "questions": "שאלות",
       "required": "חובה",
       "selectQuestionHint": "בחר שאלה כדי לערוך את מאפייניה",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
         "assetDescription": "תיאור נכס",
         "assetName": "{{assetEditor.name}}",
@@ -487,6 +499,7 @@
     "download": "הורדה",
     "edit": "ערוך",
     "editThreat": "ערוך איום",
+    "email": "דוא\"ל",
     "emailLabel": "כתובת דוא\"ל",
     "error": "שגיאה",
     "fonts": "גופנים",
@@ -738,6 +751,12 @@
   "getStarted": "התחל",
   "homeDescription": "TMI הוא כלי לניהול ושיפור תהליכי סקירת אבטחה ומודלים של איומים עבור הארגון שלך. הוא מניע את זרימת העבודה של סקירת אבטחה, מארגן את המידע לסקירות אבטחה, מאפשר בניית תרשימי זרימת נתונים באופן שיתופי, ומאפשר חיבור של אוטומציה כדי להפחית עבודה חוזרת בתהליך הסקירה ולנתח איומי אבטחה.",
   "homeWelcomeTitle": "ברוכים הבאים ל-TMI: מידול איומים משופר",
+  "intake": {
+    "fill": {
+      "saveAndExit": "שמור וצא",
+      "submitResponses": "שלח תשובות"
+    }
+  },
   "login": {
     "chooseMethod": "בחר את שיטת הכניסה שלך:",
     "explanation": "התחבר עם החשבון הקיים שלך מספק זהות מהימן. זה מבטל את הצורך בסיסמה נפרדת, מייעל את החוויה שלך תוך שמירה על אבטחתך. אנחנו לעולם לא שומרים או מנהלים סיסמאות - האישורים שלך נשארים אצל הספק שלך ולא יכולים להיפרץ דרכנו.",
@@ -1085,7 +1104,7 @@
       "addAsset": "הוסף נכס",
       "addDiagram": "הוסף דיאגרמה",
       "addDocument": "הוסף מסמך",
-      "addNote": "הוסף הערה",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "נכסים הם משאבים בעלי ערך בתוך המערכת הדורשים הגנה, כגון נתונים, חומרה, תוכנה, תשתית, שירותים או כוח אדם.",
       "diagramsCardTitle": "דיאגרמות ב-TMI הן ייצוגים קריאים למכונה של תנועת נתונים ותהליכים בתוך מערכת, המאפשרים ניתוח אבטחה ידני ואוטומטי כאחד.",
       "documentsCardTitle": "הפניות למסמכים הן קישורים למסמכים המאוחסנים מחוץ ל-TMI. מסמכים רלוונטיים מתארים את המערכת לניתוח, וניתן להשתמש בהם הן על ידי מנתחי אבטחה והן על ידי תהליכי ניתוח אוטומטיים.",
@@ -1162,10 +1181,24 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "הוסף הערה",
+      "markdownSupported": "תומך ב-Markdown",
+      "noNotes": "אין עדיין הערות טריאז'",
       "noResponses": "לא נרשמו תגובות",
+      "noRevisionNotes": "אין הערות תיקון",
+      "note": "הערה",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "הזן תוכן הערה...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "כותרת הערה קצרה",
+      "notes": "הערות",
       "responseDetails": "פרטי תגובה",
+      "reviewedAt": "נבדק",
+      "reviewedBy": "נבדק על ידי",
+      "revisionNotesTitle": "התבקש תיקון",
       "statusTimeline": "ציר זמן סטטוס",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "הערות טריאז'"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1179,12 +1212,14 @@
       "allSurveys": "כל הסקרים",
       "approve": "אישור",
       "approveSelected": "אישור הנבחרים",
+      "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "טעינת התגובות נכשלה",
       "loadingResponses": "טוען תגובות...",
       "noResponsesFiltered": "אין תגובות התואמות למסננים שלך",
       "noResponsesTitle": "אין תגובות",
       "noResponsesToTriage": "אין תגובות סקר למיון",
       "notSubmitted": "לא הוגש",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "חיפוש לפי מגיש או סקר...",
       "submitted": "הוגש",
       "submitter": "מגיש"
@@ -1192,8 +1227,26 @@
     "markInReview": "סמן בבדיקה",
     "markPendingTriage": "סמן ממתין לטריאז'",
     "noResponses": "אין תגובות לטריאז'",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "הזן תוכן הערה (תומך ב-Markdown)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "הערת טריאז' חדשה",
+        "view": "צפה בהערת טריאז'"
+      }
+    },
     "queue": "תור טריאז'",
     "returnToSubmitted": "החזר לנשלח",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "ספק הערות המסבירות מה צריך לתקן. המגיש יראה הערות אלה כשהוא יבדוק את תשובתו.",
+      "hint": "נדרש — תאר אילו שינויים נחוצים",
+      "label": "הערות תיקון",
+      "placeholder": "תאר את התיקונים הנדרשים...",
+      "title": "החזר לתיקון"
+    },
     "title": "טריאז'",
     "viewDetails": "הצג פרטים"
   },

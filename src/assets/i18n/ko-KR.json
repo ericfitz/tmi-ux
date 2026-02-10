@@ -305,7 +305,17 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(복사본)",
-    "createSurvey": "설문 생성",
+    "createDialog": {
+      "nameLabel": "설문 이름",
+      "namePlaceholder": "설문 이름 입력",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "설문 생성",
+      "versionHint": "자유 형식 버전 식별자",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "예: 1, v2-pilot, 2024-Q1",
+      "versionRequired": "버전은 필수입니다"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
     "editTemplate": "설문조사 편집",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -362,6 +372,8 @@
       "questions": "질문",
       "required": "필수",
       "selectQuestionHint": "질문을 선택하여 속성을 편집하세요",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
         "assetDescription": "자산 설명",
         "assetName": "{{assetEditor.name}}",
@@ -487,6 +499,7 @@
     "download": "다운로드",
     "edit": "편집",
     "editThreat": "위협 편집",
+    "email": "이메일",
     "emailLabel": "이메일 주소",
     "error": "오류",
     "fonts": "글꼴",
@@ -738,6 +751,12 @@
   "getStarted": "시작하기",
   "homeDescription": "TMI는 조직의 보안 검토 및 위협 모델링 프로세스를 관리하고 향상시키는 도구입니다. 보안 검토 워크플로를 주도하고, 보안 검토를 위한 정보를 구성하며, 협업적으로 데이터 흐름 다이어그램을 구축하고, 검토 프로세스의 수고를 줄이고 보안 위협을 분석하기 위해 자동화를 연결할 수 있습니다.",
   "homeWelcomeTitle": "TMI에 오신 것을 환영합니다: 향상된 위협 모델링",
+  "intake": {
+    "fill": {
+      "saveAndExit": "저장 후 나가기",
+      "submitResponses": "응답 제출"
+    }
+  },
   "login": {
     "chooseMethod": "로그인 방법을 선택하세요:",
     "explanation": "신뢰할 수 있는 ID 공급자의 기존 계정으로 로그인하세요. 별도의 비밀번호가 필요 없어 편리하면서도 안전합니다. 비밀번호는 저장하거나 관리하지 않으며, 자격 증명은 공급자에게 유지되어 저희를 통해 유출될 수 없습니다.",
@@ -1085,7 +1104,7 @@
       "addAsset": "자산 추가",
       "addDiagram": "다이어그램 추가",
       "addDocument": "문서 추가",
-      "addNote": "노트 추가",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "자산은 데이터, 하드웨어, 소프트웨어, 인프라, 서비스 또는 인력과 같이 보호가 필요한 시스템 내의 가치 있는 리소스입니다.",
       "diagramsCardTitle": "TMI의 다이어그램은 시스템 내 데이터 이동 및 프로세스를 기계가 읽을 수 있는 형태로 표현하여 수동 및 자동 보안 분석을 모두 가능하게 합니다.",
       "documentsCardTitle": "문서 참조는 TMI 외부에 저장된 문서에 대한 링크입니다. 관련 문서는 분석할 시스템을 설명하며 보안 분석가와 자동화된 분석 프로세스 모두에서 사용할 수 있습니다.",
@@ -1162,10 +1181,24 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "노트 추가",
+      "markdownSupported": "Markdown 지원",
+      "noNotes": "아직 트리아지 노트가 없습니다",
       "noResponses": "기록된 응답 없음",
+      "noRevisionNotes": "수정 노트 없음",
+      "note": "노트",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "노트 내용 입력...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "간단한 노트 제목",
+      "notes": "노트",
       "responseDetails": "응답 세부 정보",
+      "reviewedAt": "검토됨",
+      "reviewedBy": "검토자",
+      "revisionNotesTitle": "수정 요청됨",
       "statusTimeline": "상태 타임라인",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "트리아지 노트"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1179,12 +1212,14 @@
       "allSurveys": "모든 설문",
       "approve": "승인",
       "approveSelected": "선택 항목 승인",
+      "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "응답을 불러오지 못했습니다",
       "loadingResponses": "응답 로딩 중...",
       "noResponsesFiltered": "필터와 일치하는 응답이 없습니다",
       "noResponsesTitle": "응답 없음",
       "noResponsesToTriage": "분류할 설문 응답이 없습니다",
       "notSubmitted": "미제출",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "제출자 또는 설문조사로 검색...",
       "submitted": "제출됨",
       "submitter": "제출자"
@@ -1192,8 +1227,26 @@
     "markInReview": "검토 중으로 표시",
     "markPendingTriage": "트리아지 대기로 표시",
     "noResponses": "트리아지할 응답이 없습니다",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "노트 내용 입력 (Markdown 지원)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "새 트리아지 노트",
+        "view": "트리아지 노트 보기"
+      }
+    },
     "queue": "트리아지 대기열",
     "returnToSubmitted": "제출됨으로 되돌리기",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "수정이 필요한 사항을 설명하는 노트를 제공하십시오. 제출자는 응답을 검토할 때 이 노트를 보게 됩니다.",
+      "hint": "필수 — 필요한 변경 사항 설명",
+      "label": "수정 노트",
+      "placeholder": "필요한 수정 사항 설명...",
+      "title": "수정 요청 반환"
+    },
     "title": "트리아지",
     "viewDetails": "세부 정보 보기"
   },

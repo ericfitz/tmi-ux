@@ -305,7 +305,17 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Kopie)",
-    "createSurvey": "Umfrage erstellen",
+    "createDialog": {
+      "nameLabel": "Name der Umfrage",
+      "namePlaceholder": "Umfragenamen eingeben",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "Umfrage erstellen",
+      "versionHint": "Freiform-Versionskennung",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "z.B. 1, v2-pilot, 2024-Q1",
+      "versionRequired": "Version ist erforderlich"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
     "editTemplate": "Umfrage bearbeiten",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -362,6 +372,8 @@
       "questions": "Fragen",
       "required": "Erforderlich",
       "selectQuestionHint": "Wählen Sie eine Frage aus, um ihre Eigenschaften zu bearbeiten",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
         "assetDescription": "Asset-Beschreibung",
         "assetName": "{{assetEditor.name}}",
@@ -487,6 +499,7 @@
     "download": "Herunterladen",
     "edit": "Bearbeiten",
     "editThreat": "Bedrohung bearbeiten",
+    "email": "E-Mail",
     "emailLabel": "E-Mail-Adresse",
     "error": "Fehler",
     "fonts": "Schriftarten",
@@ -738,6 +751,12 @@
   "getStarted": "Loslegen",
   "homeDescription": "TMI ist ein Werkzeug zur Verwaltung und Verbesserung der Sicherheitsüberprüfungs- und Bedrohungsmodellierungsprozesse in Ihrer Organisation. Es steuert den Workflow für Sicherheitsüberprüfungen, organisiert Informationen für Sicherheitsüberprüfungen, ermöglicht die gemeinsame Erstellung von Datenflussdiagrammen und erlaubt die Integration von Automatisierung, um Routineaufgaben im Überprüfungsprozess zu reduzieren und Sicherheitsbedrohungen zu analysieren.",
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
+  "intake": {
+    "fill": {
+      "saveAndExit": "Speichern & Beenden",
+      "submitResponses": "Antworten absenden"
+    }
+  },
   "login": {
     "chooseMethod": "Wählen Sie Ihre Anmeldemethode:",
     "explanation": "Melden Sie sich mit Ihrem bestehenden Konto bei einem vertrauenswürdigen Identitätsanbieter an. Dies macht ein separates Passwort überflüssig, optimiert Ihr Erlebnis und sorgt für Ihre Sicherheit. Wir speichern oder verwalten niemals Passwörter – Ihre Anmeldedaten bleiben bei Ihrem Anbieter und können nicht über uns kompromittiert werden.",
@@ -1085,7 +1104,7 @@
       "addAsset": "Asset hinzufügen",
       "addDiagram": "Diagramm hinzufügen",
       "addDocument": "Dokument hinzufügen",
-      "addNote": "Notiz hinzufügen",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "Assets sind wertvolle Ressourcen innerhalb des Systems, die Schutz benötigen, wie Daten, Hardware, Software, Infrastruktur, Dienste oder Personal.",
       "diagramsCardTitle": "Diagramme in TMI sind maschinenlesbare Darstellungen von Datenbewegungen und Prozessen innerhalb eines Systems, die sowohl manuelle als auch automatisierte Sicherheitsanalysen ermöglichen.",
       "documentsCardTitle": "Dokumentreferenzen sind Links zu Dokumenten, die außerhalb von TMI gespeichert sind. Relevante Dokumente beschreiben das zu analysierende System und können sowohl von Sicherheitsanalysten als auch von automatisierten Analyseprozessen verwendet werden.",
@@ -1162,10 +1181,24 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "Notiz hinzufügen",
+      "markdownSupported": "Markdown unterstützt",
+      "noNotes": "Noch keine Triage-Notizen",
       "noResponses": "Keine Antworten erfasst",
+      "noRevisionNotes": "Keine Überarbeitungsnotizen",
+      "note": "Notiz",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "Notizinhalt eingeben...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "Kurzer Notiztitel",
+      "notes": "Notizen",
       "responseDetails": "Antwortdetails",
+      "reviewedAt": "Überprüft am",
+      "reviewedBy": "Überprüft von",
+      "revisionNotesTitle": "Überarbeitung angefordert",
       "statusTimeline": "Statusverlauf",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "Triage-Notizen"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1179,12 +1212,14 @@
       "allSurveys": "Alle Umfragen",
       "approve": "Genehmigen",
       "approveSelected": "Ausgewählte genehmigen",
+      "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "Antworten konnten nicht geladen werden",
       "loadingResponses": "Antworten werden geladen...",
       "noResponsesFiltered": "Keine Antworten stimmen mit Ihren Filtern überein",
       "noResponsesTitle": "Keine Antworten",
       "noResponsesToTriage": "Es gibt keine Umfrageantworten zur Sichtung",
       "notSubmitted": "Nicht eingereicht",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Nach Einreicher oder Umfrage suchen...",
       "submitted": "Eingereicht",
       "submitter": "Einreichender"
@@ -1192,8 +1227,26 @@
     "markInReview": "Als geprüft markieren",
     "markPendingTriage": "Als ausstehend markieren",
     "noResponses": "Keine Antworten zur Triage",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "Notizinhalt eingeben (Markdown unterstützt)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "Neue Triage-Notiz",
+        "view": "Triage-Notiz anzeigen"
+      }
+    },
     "queue": "Triage-Warteschlange",
     "returnToSubmitted": "Zurück zu eingereicht",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "Geben Sie Notizen an, die erläutern, was überarbeitet werden muss. Der Einreicher sieht diese Notizen, wenn er seine Antwort überprüft.",
+      "hint": "Erforderlich — beschreiben Sie, welche Änderungen erforderlich sind",
+      "label": "Überarbeitungsnotizen",
+      "placeholder": "Beschreiben Sie die erforderlichen Überarbeitungen...",
+      "title": "Zur Überarbeitung zurücksenden"
+    },
     "title": "Triage",
     "viewDetails": "Details anzeigen"
   },

@@ -305,7 +305,17 @@
   },
   "adminSurveys": {
     "cloneSuffix": "（コピー）",
-    "createSurvey": "調査を作成",
+    "createDialog": {
+      "nameLabel": "調査名",
+      "namePlaceholder": "調査名を入力",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "調査を作成",
+      "versionHint": "自由形式のバージョン識別子",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "例: 1, v2-pilot, 2024-Q1",
+      "versionRequired": "バージョンは必須です"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
     "editTemplate": "調査を編集",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -362,6 +372,8 @@
       "questions": "質問",
       "required": "必須",
       "selectQuestionHint": "質問を選択してプロパティを編集してください",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
         "assetDescription": "アセットの説明",
         "assetName": "{{assetEditor.name}}",
@@ -487,6 +499,7 @@
     "download": "ダウンロード",
     "edit": "編集",
     "editThreat": "脅威を編集",
+    "email": "メールアドレス",
     "emailLabel": "メールアドレス",
     "error": "エラー",
     "fonts": "フォント",
@@ -738,6 +751,12 @@
   "getStarted": "始める",
   "homeDescription": "TMIは、組織のセキュリティレビューと脅威モデリングプロセスを管理・強化するツールです。セキュリティレビューのワークフローを推進し、セキュリティレビューの情報を整理し、データフロー図を共同で作成し、自動化を接続してレビュープロセスの作業を削減し、セキュリティ脅威を分析します。",
   "homeWelcomeTitle": "TMIへようこそ: 脅威モデリング改善版",
+  "intake": {
+    "fill": {
+      "saveAndExit": "保存して終了",
+      "submitResponses": "回答を送信"
+    }
+  },
   "login": {
     "chooseMethod": "サインイン方法を選択してください:",
     "explanation": "信頼できるIDプロバイダーの既存アカウントでサインインします。これにより別途パスワードを設定する必要がなくなり、セキュリティを保ちながらスムーズにご利用いただけます。パスワードは保存・管理しません。認証情報はプロバイダーに保持され、当サービスを通じて漏洩することはありません。",
@@ -1085,7 +1104,7 @@
       "addAsset": "アセットを追加",
       "addDiagram": "ダイアグラムを追加",
       "addDocument": "ドキュメントを追加",
-      "addNote": "ノートを追加",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "アセットとは、データ、ハードウェア、ソフトウェア、インフラストラクチャ、サービス、人員など、保護が必要なシステム内の価値あるリソースです。",
       "diagramsCardTitle": "TMIのダイアグラムは、システム内のデータの移動とプロセスを機械可読形式で表現したもので、手動および自動のセキュリティ分析を可能にします。",
       "documentsCardTitle": "ドキュメント参照は、TMI外に保存されているドキュメントへのリンクです。関連ドキュメントは分析対象のシステムを記述し、セキュリティアナリストと自動分析プロセスの両方で使用できます。",
@@ -1162,10 +1181,24 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "ノートを追加",
+      "markdownSupported": "Markdown対応",
+      "noNotes": "トリアージノートはまだありません",
       "noResponses": "記録された回答がありません",
+      "noRevisionNotes": "修正依頼ノートはありません",
+      "note": "ノート",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "ノート内容を入力...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "簡単なノートタイトル",
+      "notes": "ノート",
       "responseDetails": "回答の詳細",
+      "reviewedAt": "レビュー日時",
+      "reviewedBy": "レビュー者",
+      "revisionNotesTitle": "修正依頼",
       "statusTimeline": "ステータスのタイムライン",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "トリアージノート"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1179,12 +1212,14 @@
       "allSurveys": "すべてのアンケート",
       "approve": "承認",
       "approveSelected": "選択を承認",
+      "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "回答の読み込みに失敗しました",
       "loadingResponses": "回答を読み込み中...",
       "noResponsesFiltered": "フィルターに一致する回答はありません",
       "noResponsesTitle": "回答なし",
       "noResponsesToTriage": "トリアージするアンケート回答はありません",
       "notSubmitted": "未提出",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "提出者または調査で検索...",
       "submitted": "提出済み",
       "submitter": "提出者"
@@ -1192,8 +1227,26 @@
     "markInReview": "レビュー中に設定",
     "markPendingTriage": "トリアージ待ちに設定",
     "noResponses": "トリアージする回答がありません",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "ノート内容を入力 (Markdown対応)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "新規トリアージノート",
+        "view": "トリアージノートを表示"
+      }
+    },
     "queue": "トリアージキュー",
     "returnToSubmitted": "送信済みに戻す",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "修正が必要な内容を説明するノートを記入してください。提出者が回答を確認する際にこれらのノートが表示されます。",
+      "hint": "必須 — 必要な変更を記述してください",
+      "label": "修正依頼ノート",
+      "placeholder": "必要な修正内容を記述...",
+      "title": "修正依頼として差し戻し"
+    },
     "title": "トリアージ",
     "viewDetails": "詳細を表示"
   },

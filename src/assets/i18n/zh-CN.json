@@ -305,7 +305,17 @@
   },
   "adminSurveys": {
     "cloneSuffix": "（副本）",
-    "createSurvey": "创建调查",
+    "createDialog": {
+      "nameLabel": "调查问卷名称",
+      "namePlaceholder": "输入调查问卷名称",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "创建调查问卷",
+      "versionHint": "自由格式的版本标识符",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "例如：1、v2-pilot、2024-Q1",
+      "versionRequired": "版本为必填项"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
     "editTemplate": "编辑调查问卷",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -362,6 +372,8 @@
       "questions": "问题",
       "required": "必填",
       "selectQuestionHint": "选择一个问题以编辑其属性",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
         "assetDescription": "资产描述",
         "assetName": "{{assetEditor.name}}",
@@ -487,6 +499,7 @@
     "download": "下载",
     "edit": "编辑",
     "editThreat": "编辑威胁",
+    "email": "邮箱",
     "emailLabel": "电子邮件地址",
     "error": "错误",
     "fonts": "字体",
@@ -738,6 +751,12 @@
   "getStarted": "开始使用",
   "homeDescription": "TMI 是一款管理和增强组织安全审查和威胁建模流程的工具。它驱动安全审查工作流程，组织安全审查信息，支持协作构建数据流图，并能连接自动化以减少审查过程中的繁琐工作和分析安全威胁。",
   "homeWelcomeTitle": "欢迎使用 TMI: 威胁建模改进",
+  "intake": {
+    "fill": {
+      "saveAndExit": "保存并退出",
+      "submitResponses": "提交回复"
+    }
+  },
   "login": {
     "chooseMethod": "选择您的登录方式：",
     "explanation": "使用您在受信任的身份提供商处的现有帐户登录。这消除了对单独密码的需求，简化了您的体验，同时确保您的安全。我们从不存储或管理密码 - 您的凭据保留在您的提供商处，无法通过我们被泄露。",
@@ -1085,7 +1104,7 @@
       "addAsset": "添加资产",
       "addDiagram": "添加图表",
       "addDocument": "添加文档",
-      "addNote": "添加笔记",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "资产是系统内需要保护的宝贵资源，例如数据、硬件、软件、基础设施、服务或人员。",
       "diagramsCardTitle": "TMI中的图表是系统内数据流动和处理过程的机器可读表示，支持手动和自动化安全分析。",
       "documentsCardTitle": "文档引用是指向存储在TMI外部的文档的链接。相关文档描述要分析的系统，可供安全分析师和自动化分析流程使用。",
@@ -1162,10 +1181,24 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "添加备注",
+      "markdownSupported": "支持 Markdown",
+      "noNotes": "暂无分诊备注",
       "noResponses": "无回复记录",
+      "noRevisionNotes": "无修订备注",
+      "note": "备注",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "输入备注内容...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "简要备注标题",
+      "notes": "备注",
       "responseDetails": "回复详情",
+      "reviewedAt": "审核时间",
+      "reviewedBy": "审核人",
+      "revisionNotesTitle": "请求修订",
       "statusTimeline": "状态时间线",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "分诊备注"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1179,12 +1212,14 @@
       "allSurveys": "所有调查",
       "approve": "批准",
       "approveSelected": "批准所选",
+      "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "加载回复失败",
       "loadingResponses": "正在加载回复...",
       "noResponsesFiltered": "没有与您的筛选条件匹配的回复",
       "noResponsesTitle": "没有回复",
       "noResponsesToTriage": "没有需要分类的调查回复",
       "notSubmitted": "未提交",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "按提交者或调查问卷搜索...",
       "submitted": "已提交",
       "submitter": "提交者"
@@ -1192,8 +1227,26 @@
     "markInReview": "标记为审核中",
     "markPendingTriage": "标记为待分诊",
     "noResponses": "暂无待分诊回复",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "输入备注内容（支持 Markdown）...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "新建分诊备注",
+        "view": "查看分诊备注"
+      }
+    },
     "queue": "分诊队列",
     "returnToSubmitted": "返回已提交",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "提供说明需要修订内容的备注。提交者在审核其回复时将看到这些备注。",
+      "hint": "必填 — 描述需要进行的更改",
+      "label": "修订备注",
+      "placeholder": "描述需要修订的内容...",
+      "title": "退回修订"
+    },
     "title": "分诊",
     "viewDetails": "查看详情"
   },

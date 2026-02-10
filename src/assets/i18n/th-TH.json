@@ -305,7 +305,17 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(สำเนา)",
-    "createSurvey": "สร้างแบบสำรวจ",
+    "createDialog": {
+      "nameLabel": "ชื่อแบบสำรวจ",
+      "namePlaceholder": "ป้อนชื่อแบบสำรวจ",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "สร้างแบบสำรวจ",
+      "versionHint": "ตัวระบุเวอร์ชันแบบอิสระ",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "เช่น 1, v2-pilot, 2024-Q1",
+      "versionRequired": "ต้องระบุเวอร์ชัน"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
     "editTemplate": "แก้ไขแบบสำรวจ",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -362,6 +372,8 @@
       "questions": "คำถาม",
       "required": "จำเป็น",
       "selectQuestionHint": "เลือกคำถามเพื่อแก้ไขคุณสมบัติ",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
         "assetDescription": "คำอธิบายสินทรัพย์",
         "assetName": "{{assetEditor.name}}",
@@ -487,6 +499,7 @@
     "download": "ดาวน์โหลด",
     "edit": "แก้ไข",
     "editThreat": "แก้ไขภัยคุกคาม",
+    "email": "อีเมล",
     "emailLabel": "ที่อยู่อีเมล",
     "error": "ข้อผิดพลาด",
     "fonts": "แบบอักษร",
@@ -738,6 +751,12 @@
   "getStarted": "เริ่มต้นใช้งาน",
   "homeDescription": "TMI เป็นเครื่องมือที่จัดการและปรับปรุงกระบวนการตรวจสอบความปลอดภัยและการสร้างแบบจำลองภัยคุกคามสำหรับองค์กรของคุณ ช่วยขับเคลื่อนขั้นตอนการตรวจสอบความปลอดภัย จัดระเบียบข้อมูลสำหรับการตรวจสอบความปลอดภัย ทำให้สามารถสร้างแผนภาพการไหลของข้อมูลร่วมกันได้ และเชื่อมต่อระบบอัตโนมัติเพื่อลดภาระงานในกระบวนการตรวจสอบและวิเคราะห์ภัยคุกคามด้านความปลอดภัย",
   "homeWelcomeTitle": "ยินดีต้อนรับสู่ TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
+  "intake": {
+    "fill": {
+      "saveAndExit": "บันทึกและออก",
+      "submitResponses": "ส่งคำตอบ"
+    }
+  },
   "login": {
     "chooseMethod": "เลือกวิธีการเข้าสู่ระบบของคุณ:",
     "explanation": "เข้าสู่ระบบด้วยบัญชีที่มีอยู่ของคุณจากผู้ให้บริการข้อมูลประจำตัวที่เชื่อถือได้ วิธีนี้ช่วยลดความจำเป็นในการใช้รหัสผ่านแยกต่างหาก ทำให้ประสบการณ์ของคุณคล่องตัวขึ้นในขณะที่ยังคงความปลอดภัย เราไม่เคยเก็บหรือจัดการรหัสผ่าน ข้อมูลรับรองของคุณอยู่กับผู้ให้บริการของคุณและไม่สามารถถูกบุกรุกผ่านเราได้",
@@ -1085,7 +1104,7 @@
       "addAsset": "เพิ่มสินทรัพย์",
       "addDiagram": "เพิ่มแผนภาพ",
       "addDocument": "เพิ่มเอกสาร",
-      "addNote": "เพิ่มหมายเหตุ",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "สินทรัพย์คือทรัพยากรที่มีค่าภายในระบบที่ต้องการการปกป้อง เช่น ข้อมูล ฮาร์ดแวร์ ซอฟต์แวร์ โครงสร้างพื้นฐาน บริการ หรือบุคลากร",
       "diagramsCardTitle": "แผนภาพใน TMI คือการแสดงข้อมูลที่เครื่องอ่านได้ของการเคลื่อนที่ของข้อมูลและกระบวนการภายในระบบ ช่วยให้สามารถวิเคราะห์ความปลอดภัยทั้งด้วยตนเองและด้วยระบบอัตโนมัติ",
       "documentsCardTitle": "การอ้างอิงเอกสารคือลิงก์ไปยังเอกสารที่จัดเก็บนอก TMI เอกสารที่เกี่ยวข้องจะอธิบายระบบที่จะวิเคราะห์ และสามารถใช้โดยนักวิเคราะห์ความปลอดภัยและกระบวนการวิเคราะห์อัตโนมัติ",
@@ -1162,10 +1181,24 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "เพิ่มหมายเหตุ",
+      "markdownSupported": "รองรับ Markdown",
+      "noNotes": "ยังไม่มีหมายเหตุการคัดกรอง",
       "noResponses": "ไม่มีการบันทึกคำตอบ",
+      "noRevisionNotes": "ไม่มีหมายเหตุการแก้ไข",
+      "note": "หมายเหตุ",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "ป้อนเนื้อหาหมายเหตุ...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "ชื่อหมายเหตุโดยย่อ",
+      "notes": "หมายเหตุ",
       "responseDetails": "รายละเอียดคำตอบ",
+      "reviewedAt": "ตรวจสอบแล้ว",
+      "reviewedBy": "ตรวจสอบโดย",
+      "revisionNotesTitle": "ขอแก้ไขแล้ว",
       "statusTimeline": "ไทม์ไลน์สถานะ",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "หมายเหตุการคัดกรอง"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1179,12 +1212,14 @@
       "allSurveys": "แบบสำรวจทั้งหมด",
       "approve": "อนุมัติ",
       "approveSelected": "อนุมัติที่เลือก",
+      "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "ไม่สามารถโหลดคำตอบได้",
       "loadingResponses": "กำลังโหลดคำตอบ...",
       "noResponsesFiltered": "ไม่มีคำตอบที่ตรงกับตัวกรองของคุณ",
       "noResponsesTitle": "ไม่มีคำตอบ",
       "noResponsesToTriage": "ไม่มีคำตอบแบบสำรวจที่ต้องคัดกรอง",
       "notSubmitted": "ยังไม่ได้ส่ง",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "ค้นหาตามผู้ส่งหรือแบบสำรวจ...",
       "submitted": "ส่งแล้ว",
       "submitter": "ผู้ส่ง"
@@ -1192,8 +1227,26 @@
     "markInReview": "ทำเครื่องหมายว่ากำลังตรวจสอบ",
     "markPendingTriage": "ทำเครื่องหมายว่ารอคัดกรอง",
     "noResponses": "ไม่มีคำตอบที่ต้องคัดกรอง",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "ป้อนเนื้อหาหมายเหตุ (รองรับ Markdown)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "หมายเหตุการคัดกรองใหม่",
+        "view": "ดูหมายเหตุการคัดกรอง"
+      }
+    },
     "queue": "คิวคัดกรอง",
     "returnToSubmitted": "ส่งกลับไปยังสถานะที่ส่งแล้ว",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "ให้หมายเหตุอธิบายสิ่งที่ต้องแก้ไข ผู้ส่งจะเห็นหมายเหตุเหล่านี้เมื่อตรวจสอบคำตอบของตน",
+      "hint": "จำเป็น — อธิบายการเปลี่ยนแปลงที่ต้องการ",
+      "label": "หมายเหตุการแก้ไข",
+      "placeholder": "อธิบายการแก้ไขที่ต้องการ...",
+      "title": "ส่งกลับเพื่อแก้ไข"
+    },
     "title": "คัดกรอง",
     "viewDetails": "ดูรายละเอียด"
   },

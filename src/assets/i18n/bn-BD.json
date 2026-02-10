@@ -305,7 +305,17 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(অনুলিপি)",
-    "createSurvey": "সার্ভে তৈরি করুন",
+    "createDialog": {
+      "nameLabel": "সমীক্ষার নাম",
+      "namePlaceholder": "সমীক্ষার নাম লিখুন",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "সমীক্ষা তৈরি করুন",
+      "versionHint": "মুক্ত-ফর্ম সংস্করণ শনাক্তকারী",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "যেমন, 1, v2-pilot, 2024-Q1",
+      "versionRequired": "সংস্করণ প্রয়োজন"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
     "editTemplate": "জরিপ সম্পাদনা করুন",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -362,6 +372,8 @@
       "questions": "প্রশ্নসমূহ",
       "required": "আবশ্যক",
       "selectQuestionHint": "এর বৈশিষ্ট্য সম্পাদনা করতে একটি প্রশ্ন নির্বাচন করুন",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
         "assetDescription": "সম্পদ বিবরণ",
         "assetName": "{{assetEditor.name}}",
@@ -487,6 +499,7 @@
     "download": "ডাউনলোড",
     "edit": "সম্পাদনা",
     "editThreat": "হুমকি সম্পাদনা করুন",
+    "email": "ইমেইল",
     "emailLabel": "ইমেল ঠিকানা",
     "error": "ত্রুটি",
     "fonts": "ফন্ট",
@@ -738,6 +751,12 @@
   "getStarted": "শুরু করুন",
   "homeDescription": "TMI এমন একটি টুল যা আপনার প্রতিষ্ঠানের জন্য নিরাপত্তা পর্যালোচনা এবং হুমকি মডেলিং প্রক্রিয়া পরিচালনা ও উন্নত করে। এটি নিরাপত্তা পর্যালোচনা ওয়ার্কফ্লো পরিচালনা করে, নিরাপত্তা পর্যালোচনার জন্য তথ্য সংগঠিত করে, সহযোগিতামূলকভাবে ডেটা ফ্লো ডায়াগ্রাম তৈরি করতে সক্ষম করে এবং পর্যালোচনা প্রক্রিয়ায় পরিশ্রম কমাতে এবং নিরাপত্তা হুমকি বিশ্লেষণ করতে অটোমেশন সংযোগ করতে সক্ষম করে।",
   "homeWelcomeTitle": "TMI-তে স্বাগতম: থ্রেট মডেলিং ইমপ্রুভড",
+  "intake": {
+    "fill": {
+      "saveAndExit": "সংরক্ষণ করুন এবং প্রস্থান করুন",
+      "submitResponses": "উত্তর জমা দিন"
+    }
+  },
   "login": {
     "chooseMethod": "আপনার সাইন ইন পদ্ধতি বেছে নিন:",
     "explanation": "একটি বিশ্বস্ত পরিচয় প্রদানকারী থেকে আপনার বিদ্যমান অ্যাকাউন্ট দিয়ে সাইন ইন করুন। এটি আলাদা পাসওয়ার্ডের প্রয়োজনীয়তা দূর করে, আপনাকে সুরক্ষিত রেখে আপনার অভিজ্ঞতা সহজ করে। আমরা কখনো পাসওয়ার্ড সংরক্ষণ বা পরিচালনা করি না—আপনার শংসাপত্র আপনার প্রদানকারীর কাছে থাকে এবং আমাদের মাধ্যমে আপোস করা যাবে না।",
@@ -1085,7 +1104,7 @@
       "addAsset": "অ্যাসেট যোগ করুন",
       "addDiagram": "ডায়াগ্রাম যোগ করুন",
       "addDocument": "ডকুমেন্ট যোগ করুন",
-      "addNote": "নোট যোগ করুন",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "অ্যাসেট হল সিস্টেমের মধ্যে মূল্যবান সম্পদ যা সুরক্ষা প্রয়োজন, যেমন ডেটা, হার্ডওয়্যার, সফটওয়্যার, অবকাঠামো, সেবা বা কর্মী।",
       "diagramsCardTitle": "TMI-তে ডায়াগ্রাম হল একটি সিস্টেমের মধ্যে ডেটা চলাচল এবং প্রক্রিয়াগুলির মেশিন-পাঠযোগ্য উপস্থাপনা, যা ম্যানুয়াল এবং স্বয়ংক্রিয় নিরাপত্তা বিশ্লেষণ উভয়ই সক্ষম করে।",
       "documentsCardTitle": "ডকুমেন্ট রেফারেন্স হল TMI-র বাইরে সংরক্ষিত ডকুমেন্টের লিংক। প্রাসঙ্গিক ডকুমেন্ট বিশ্লেষণ করা সিস্টেম বর্ণনা করে এবং নিরাপত্তা বিশ্লেষক এবং স্বয়ংক্রিয় বিশ্লেষণ প্রক্রিয়া উভয় দ্বারা ব্যবহার করা যেতে পারে।",
@@ -1162,10 +1181,24 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "নোট যোগ করুন",
+      "markdownSupported": "মার্কডাউন সমর্থিত",
+      "noNotes": "এখনো কোনো ট্রায়াজ নোট নেই",
       "noResponses": "কোনো প্রতিক্রিয়া রেকর্ড করা হয়নি",
+      "noRevisionNotes": "কোনো সংশোধন নোট নেই",
+      "note": "নোট",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "নোটের বিষয়বস্তু লিখুন...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "সংক্ষিপ্ত নোট শিরোনাম",
+      "notes": "নোট",
       "responseDetails": "প্রতিক্রিয়া বিবরণ",
+      "reviewedAt": "পর্যালোচিত",
+      "reviewedBy": "পর্যালোচক",
+      "revisionNotesTitle": "সংশোধনের অনুরোধ করা হয়েছে",
       "statusTimeline": "স্ট্যাটাস টাইমলাইন",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "ট্রায়াজ নোট"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1179,12 +1212,14 @@
       "allSurveys": "সকল সার্ভে",
       "approve": "অনুমোদন",
       "approveSelected": "নির্বাচিত অনুমোদন করুন",
+      "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "প্রতিক্রিয়া লোড করতে ব্যর্থ",
       "loadingResponses": "প্রতিক্রিয়া লোড হচ্ছে...",
       "noResponsesFiltered": "আপনার ফিল্টারের সাথে কোনো প্রতিক্রিয়া মেলেনি",
       "noResponsesTitle": "কোনো প্রতিক্রিয়া নেই",
       "noResponsesToTriage": "ফরজ করার জন্য কোনো সার্ভে প্রতিক্রিয়া নেই",
       "notSubmitted": "জমা দেওয়া হয়নি",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "জমাদাতা বা জরিপ দ্বারা অনুসন্ধান করুন...",
       "submitted": "জমা দেওয়া হয়েছে",
       "submitter": "জমাদানকারী"
@@ -1192,8 +1227,26 @@
     "markInReview": "পর্যালোচনায় চিহ্নিত করুন",
     "markPendingTriage": "ট্রায়াজ মুলতুবি চিহ্নিত করুন",
     "noResponses": "ট্রায়াজ করার জন্য কোনো প্রতিক্রিয়া নেই",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "নোটের বিষয়বস্তু লিখুন (মার্কডাউন সমর্থিত)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "নতুন ট্রায়াজ নোট",
+        "view": "ট্রায়াজ নোট দেখুন"
+      }
+    },
     "queue": "ট্রায়াজ সারি",
     "returnToSubmitted": "জমা দেওয়াতে ফিরে যান",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "কী সংশোধন করতে হবে তা ব্যাখ্যা করে নোট প্রদান করুন। জমাদাতা তাদের উত্তর পর্যালোচনা করার সময় এই নোটগুলি দেখতে পাবেন।",
+      "hint": "প্রয়োজন — কী পরিবর্তন প্রয়োজন তা বর্ণনা করুন",
+      "label": "সংশোধন নোট",
+      "placeholder": "প্রয়োজনীয় সংশোধনগুলি বর্ণনা করুন...",
+      "title": "সংশোধনের জন্য ফেরত পাঠান"
+    },
     "title": "ট্রায়াজ",
     "viewDetails": "বিবরণ দেখুন"
   },

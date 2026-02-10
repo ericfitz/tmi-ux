@@ -305,7 +305,17 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Копия)",
-    "createSurvey": "Создать опрос",
+    "createDialog": {
+      "nameLabel": "Название опроса",
+      "namePlaceholder": "Введите название опроса",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "Создать опрос",
+      "versionHint": "Произвольный идентификатор версии",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "например, 1, v2-пилот, 2024-Q1",
+      "versionRequired": "Требуется указать версию"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
     "editTemplate": "Редактировать опрос",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -362,6 +372,8 @@
       "questions": "Вопросы",
       "required": "Обязательно",
       "selectQuestionHint": "Выберите вопрос для редактирования его свойств",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
         "assetDescription": "Описание актива",
         "assetName": "{{assetEditor.name}}",
@@ -487,6 +499,7 @@
     "download": "Скачать",
     "edit": "Редактировать",
     "editThreat": "Редактировать Угрозу",
+    "email": "Электронная почта",
     "emailLabel": "Адрес Электронной Почты",
     "error": "Ошибка",
     "fonts": "Шрифты",
@@ -738,6 +751,12 @@
   "getStarted": "Начать",
   "homeDescription": "TMI — это инструмент для управления и улучшения процессов проверки безопасности и моделирования угроз в вашей организации. Он управляет рабочим процессом проверки безопасности, организует информацию для проверок безопасности, позволяет совместно создавать диаграммы потоков данных и подключать автоматизацию для снижения рутинной работы в процессе проверки и анализа угроз безопасности.",
   "homeWelcomeTitle": "Добро Пожаловать в TMI: Улучшенное Моделирование Угроз",
+  "intake": {
+    "fill": {
+      "saveAndExit": "Сохранить и выйти",
+      "submitResponses": "Отправить ответы"
+    }
+  },
   "login": {
     "chooseMethod": "Выберите способ входа:",
     "explanation": "Войдите с помощью существующей учётной записи доверенного поставщика удостоверений. Это избавляет от необходимости создавать отдельный пароль, упрощая работу и обеспечивая вашу безопасность. Мы никогда не храним и не управляем паролями — ваши учётные данные остаются у вашего поставщика и не могут быть скомпрометированы через нас.",
@@ -1085,7 +1104,7 @@
       "addAsset": "Добавить актив",
       "addDiagram": "Добавить диаграмму",
       "addDocument": "Добавить документ",
-      "addNote": "Добавить заметку",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "Активы — это ценные ресурсы в системе, которые требуют защиты, такие как данные, оборудование, программное обеспечение, инфраструктура, услуги или персонал.",
       "diagramsCardTitle": "Диаграммы в TMI — это машиночитаемые представления движения данных и процессов в системе, позволяющие проводить как ручной, так и автоматизированный анализ безопасности.",
       "documentsCardTitle": "Ссылки на документы — это ссылки на документы, хранящиеся вне TMI. Соответствующие документы описывают анализируемую систему и могут использоваться как аналитиками безопасности, так и автоматизированными процессами анализа.",
@@ -1162,10 +1181,24 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "Добавить заметку",
+      "markdownSupported": "Поддерживается Markdown",
+      "noNotes": "Заметок триажа пока нет",
       "noResponses": "Ответы не записаны",
+      "noRevisionNotes": "Заметок по доработке нет",
+      "note": "заметка",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "Введите содержание заметки...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "Краткий заголовок заметки",
+      "notes": "заметки",
       "responseDetails": "Детали ответа",
+      "reviewedAt": "Проверено",
+      "reviewedBy": "Проверил",
+      "revisionNotesTitle": "Требуется доработка",
       "statusTimeline": "Хронология статусов",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "Заметки триажа"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1179,12 +1212,14 @@
       "allSurveys": "Все опросы",
       "approve": "Утвердить",
       "approveSelected": "Утвердить выбранные",
+      "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "Не удалось загрузить ответы",
       "loadingResponses": "Загрузка ответов...",
       "noResponsesFiltered": "Нет ответов, соответствующих вашим фильтрам",
       "noResponsesTitle": "Нет ответов",
       "noResponsesToTriage": "Нет ответов на опросы для сортировки",
       "notSubmitted": "Не отправлено",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Поиск по отправителю или опросу...",
       "submitted": "Отправлено",
       "submitter": "Отправитель"
@@ -1192,8 +1227,26 @@
     "markInReview": "Отметить на проверке",
     "markPendingTriage": "Отметить ожидающим сортировки",
     "noResponses": "Нет ответов для сортировки",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "Введите содержание заметки (поддерживается Markdown)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "Новая заметка триажа",
+        "view": "Просмотр заметки триажа"
+      }
+    },
     "queue": "Очередь сортировки",
     "returnToSubmitted": "Вернуть в отправленные",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "Укажите заметки с объяснением, что необходимо доработать. Отправитель увидит эти заметки при просмотре своего ответа.",
+      "hint": "Обязательно — опишите, какие изменения необходимы",
+      "label": "Заметки по доработке",
+      "placeholder": "Опишите необходимые доработки...",
+      "title": "Вернуть на доработку"
+    },
     "title": "Сортировка",
     "viewDetails": "Просмотреть детали"
   },

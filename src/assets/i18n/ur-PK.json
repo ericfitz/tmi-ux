@@ -305,7 +305,17 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(نقل)",
-    "createSurvey": "سروے بنائیں",
+    "createDialog": {
+      "nameLabel": "سروے کا نام",
+      "namePlaceholder": "سروے کا نام درج کریں",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "سروے بنائیں",
+      "versionHint": "آزاد شکل میں ورژن کی شناخت",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "مثلاً، 1، v2-pilot، 2024-Q1",
+      "versionRequired": "ورژن ضروری ہے"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
     "editTemplate": "سروے میں ترمیم کریں",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -362,6 +372,8 @@
       "questions": "سوالات",
       "required": "ضروری",
       "selectQuestionHint": "اس کی خصوصیات میں ترمیم کرنے کے لیے سوال منتخب کریں",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
         "assetDescription": "اثاثہ کی تفصیل",
         "assetName": "{{assetEditor.name}}",
@@ -487,6 +499,7 @@
     "download": "ڈاؤن لوڈ",
     "edit": "ترمیم کریں",
     "editThreat": "خطرے میں ترمیم کریں",
+    "email": "ای میل",
     "emailLabel": "ای میل ایڈریس",
     "error": "خرابی",
     "fonts": "فونٹس",
@@ -738,6 +751,12 @@
   "getStarted": "شروع کریں",
   "homeDescription": "TMI ایک ٹول ہے جو آپ کی تنظیم کے لیے سیکیورٹی جائزے اور خطرے کی ماڈلنگ کے عمل کو منظم اور بہتر بناتا ہے۔ یہ سیکیورٹی جائزے کے ورک فلو کو چلاتا ہے، سیکیورٹی جائزوں کے لیے معلومات کو منظم کرتا ہے، مشترکہ طور پر ڈیٹا فلو ڈایاگرام بنانے کی سہولت فراہم کرتا ہے، اور جائزے کے عمل میں محنت کو کم کرنے اور سیکیورٹی خطرات کا تجزیہ کرنے کے لیے آٹومیشن سے منسلک ہونے کی اجازت دیتا ہے۔",
   "homeWelcomeTitle": "TMI میں خوش آمدید: Threat Modeling Improved",
+  "intake": {
+    "fill": {
+      "saveAndExit": "محفوظ کریں اور باہر نکلیں",
+      "submitResponses": "جوابات جمع کرائیں"
+    }
+  },
   "login": {
     "chooseMethod": "اپنا سائن ان طریقہ منتخب کریں:",
     "explanation": "قابل اعتماد شناختی فراہم کنندہ سے اپنے موجودہ اکاؤنٹ کے ساتھ سائن ان کریں۔ یہ علیحدہ پاس ورڈ کی ضرورت کو ختم کرتا ہے، آپ کو محفوظ رکھتے ہوئے آپ کے تجربے کو ہموار کرتا ہے۔ ہم کبھی پاس ورڈز کو ذخیرہ یا منظم نہیں کرتے — آپ کی اسناد آپ کے فراہم کنندہ کے پاس رہتی ہیں اور ہمارے ذریعے سے خراب نہیں ہو سکتیں۔",
@@ -1085,7 +1104,7 @@
       "addAsset": "اثاثہ شامل کریں",
       "addDiagram": "ڈایاگرام شامل کریں",
       "addDocument": "دستاویز شامل کریں",
-      "addNote": "نوٹ شامل کریں",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "اثاثے نظام کے اندر قیمتی وسائل ہیں جن کو تحفظ کی ضرورت ہے، جیسے ڈیٹا، ہارڈ ویئر، سافٹ ویئر، انفراسٹرکچر، خدمات، یا اہلکار۔",
       "diagramsCardTitle": "TMI میں ڈایاگرامز سسٹم کے اندر ڈیٹا کی نقل و حرکت اور عملات کی مشین پڑھنے کے قابل نمائندگی ہیں، جو دستی اور خودکار سیکیورٹی تجزیہ دونوں کو ممکن بناتے ہیں۔",
       "documentsCardTitle": "دستاویز کے حوالے TMI کے باہر ذخیرہ شدہ دستاویزات کے لنکس ہیں۔ متعلقہ دستاویزات تجزیہ کیے جانے والے سسٹم کی وضاحت کرتی ہیں، اور سیکیورٹی تجزیہ کاروں اور خودکار تجزیہ کے عمل دونوں کے ذریعے استعمال کی جا سکتی ہیں۔",
@@ -1162,10 +1181,24 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "نوٹ شامل کریں",
+      "markdownSupported": "Markdown تعاون یافتہ",
+      "noNotes": "ابھی تک کوئی ٹرائیج نوٹس نہیں",
       "noResponses": "کوئی جواب ریکارڈ نہیں",
+      "noRevisionNotes": "کوئی نظرثانی نوٹس نہیں",
+      "note": "نوٹ",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "نوٹ کا مواد درج کریں...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "مختصر نوٹ عنوان",
+      "notes": "نوٹس",
       "responseDetails": "جواب کی تفصیلات",
+      "reviewedAt": "جائزہ لیا گیا",
+      "reviewedBy": "جائزہ کار",
+      "revisionNotesTitle": "نظرثانی کی درخواست",
       "statusTimeline": "حیثیت کی ٹائم لائن",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "ٹرائیج نوٹس"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1179,12 +1212,14 @@
       "allSurveys": "تمام سروے",
       "approve": "منظوری دیں",
       "approveSelected": "منتخب کی منظوری دیں",
+      "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "جوابات لوڈ کرنے میں ناکام",
       "loadingResponses": "جوابات لوڈ ہو رہے ہیں...",
       "noResponsesFiltered": "آپ کے فلٹرز سے کوئی جوابات نہیں ملے",
       "noResponsesTitle": "کوئی جوابات نہیں",
       "noResponsesToTriage": "ٹرائیج کے لیے کوئی سروے جوابات نہیں ہیں",
       "notSubmitted": "جمع نہیں کرایا",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "جمع کرانے والے یا سروے کے ذریعے تلاش کریں...",
       "submitted": "جمع کرایا گیا",
       "submitter": "جمع کرانے والا"
@@ -1192,8 +1227,26 @@
     "markInReview": "جائزے میں نشان زد کریں",
     "markPendingTriage": "زیر التواء ٹرائیج نشان زد کریں",
     "noResponses": "ٹرائیج کے لیے کوئی جواب نہیں",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "نوٹ کا مواد درج کریں (Markdown تعاون یافتہ)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "نیا ٹرائیج نوٹ",
+        "view": "ٹرائیج نوٹ دیکھیں"
+      }
+    },
     "queue": "ٹرائیج قطار",
     "returnToSubmitted": "جمع شدہ پر واپس جائیں",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "نوٹس فراہم کریں جو وضاحت کریں کہ کیا نظرثانی کی ضرورت ہے۔ جمع کرانے والا یہ نوٹس دیکھے گا جب وہ اپنے جواب کا جائزہ لیں گے۔",
+      "hint": "ضروری — بیان کریں کہ کن تبدیلیوں کی ضرورت ہے",
+      "label": "نظرثانی نوٹس",
+      "placeholder": "ضروری نظرثانی کی تفصیل بیان کریں...",
+      "title": "نظرثانی کے لیے واپس کریں"
+    },
     "title": "ٹرائیج",
     "viewDetails": "تفصیلات دیکھیں"
   },

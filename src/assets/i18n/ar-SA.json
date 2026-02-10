@@ -305,7 +305,17 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(نسخة)",
-    "createSurvey": "إنشاء استبيان",
+    "createDialog": {
+      "nameLabel": "اسم الاستبيان",
+      "namePlaceholder": "أدخل اسم الاستبيان",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "إنشاء استبيان",
+      "versionHint": "معرّف الإصدار (نص حر)",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "مثال: 1، v2-pilot، 2024-Q1",
+      "versionRequired": "الإصدار مطلوب"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
     "editTemplate": "تحرير الاستبيان",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -362,6 +372,8 @@
       "questions": "الأسئلة",
       "required": "مطلوب",
       "selectQuestionHint": "حدد سؤالاً لتعديل خصائصه",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
         "assetDescription": "وصف الأصل",
         "assetName": "{{assetEditor.name}}",
@@ -487,6 +499,7 @@
     "download": "تحميل",
     "edit": "تحرير",
     "editThreat": "تحرير التهديد",
+    "email": "البريد الإلكتروني",
     "emailLabel": "عنوان البريد الإلكتروني",
     "error": "خطأ",
     "fonts": "الخطوط",
@@ -738,6 +751,12 @@
   "getStarted": "ابدأ",
   "homeDescription": "TMI هي أداة تدير وتعزز عمليات المراجعة الأمنية ونمذجة التهديدات لمؤسستك. تدير سير عمل المراجعة الأمنية، وتنظم المعلومات للمراجعات الأمنية، وتمكّن من بناء مخططات تدفق البيانات بشكل تعاوني، وتتيح ربط الأتمتة لتقليل الجهد في عملية المراجعة وتحليل التهديدات الأمنية.",
   "homeWelcomeTitle": "مرحبا بكم في تي إم آي: نمذجة التهديدات المحسنة",
+  "intake": {
+    "fill": {
+      "saveAndExit": "حفظ وخروج",
+      "submitResponses": "إرسال الردود"
+    }
+  },
   "login": {
     "chooseMethod": "اختر طريقة تسجيل الدخول:",
     "explanation": "سجل الدخول باستخدام حسابك الموجود من موفر هوية موثوق به. وهذا يلغي الحاجة إلى كلمة مرور منفصلة، مما يبسط تجربتك مع الحفاظ على أمانك. نحن لا نقوم أبدًا بتخزين أو إدارة كلمات المرور - تبقى بيانات اعتمادك مع موفر الخدمة الخاص بك ولا يمكن اختراقها من خلالنا.",
@@ -1085,7 +1104,7 @@
       "addAsset": "إضافة أصل",
       "addDiagram": "إضافة مخطط",
       "addDocument": "إضافة وثيقة",
-      "addNote": "إضافة ملاحظة",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "الأصول هي موارد قيمة داخل النظام تتطلب الحماية، مثل البيانات والأجهزة والبرامج والبنية التحتية والخدمات أو الموظفين.",
       "diagramsCardTitle": "المخططات في TMI هي تمثيلات قابلة للقراءة آليًا لحركة البيانات والعمليات داخل النظام، مما يتيح التحليل الأمني اليدوي والآلي.",
       "documentsCardTitle": "مراجع الوثائق هي روابط للوثائق المخزنة خارج TMI. الوثائق ذات الصلة تصف النظام المراد تحليله، ويمكن استخدامها من قبل محللي الأمن وعمليات التحليل الآلي.",
@@ -1162,10 +1181,24 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "إضافة ملاحظة",
+      "markdownSupported": "يدعم Markdown",
+      "noNotes": "لا توجد ملاحظات فرز بعد",
       "noResponses": "لم يتم تسجيل أي ردود",
+      "noRevisionNotes": "لا توجد ملاحظات مراجعة",
+      "note": "ملاحظة",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "أدخل محتوى الملاحظة...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "عنوان مختصر للملاحظة",
+      "notes": "ملاحظات",
       "responseDetails": "تفاصيل الرد",
+      "reviewedAt": "تمت المراجعة",
+      "reviewedBy": "روجعت بواسطة",
+      "revisionNotesTitle": "طُلبت المراجعة",
       "statusTimeline": "جدول الحالة الزمني",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "ملاحظات الفرز"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1179,12 +1212,14 @@
       "allSurveys": "جميع الاستبيانات",
       "approve": "موافقة",
       "approveSelected": "الموافقة على المحدد",
+      "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "فشل تحميل الردود",
       "loadingResponses": "جارٍ تحميل الردود...",
       "noResponsesFiltered": "لا توجد ردود تطابق عوامل التصفية",
       "noResponsesTitle": "لا توجد ردود",
       "noResponsesToTriage": "لا توجد ردود استبيانات للفرز",
       "notSubmitted": "لم يتم الإرسال",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "البحث حسب مقدم الطلب أو الاستبيان...",
       "submitted": "تم الإرسال",
       "submitter": "المرسل"
@@ -1192,8 +1227,26 @@
     "markInReview": "وضع علامة قيد المراجعة",
     "markPendingTriage": "وضع علامة في انتظار الفرز",
     "noResponses": "لا توجد ردود للفرز",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "أدخل محتوى الملاحظة (يدعم Markdown)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "ملاحظة فرز جديدة",
+        "view": "عرض ملاحظة الفرز"
+      }
+    },
     "queue": "قائمة انتظار الفرز",
     "returnToSubmitted": "الإرجاع إلى مقدم",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "قدّم ملاحظات توضح ما يحتاج إلى مراجعة. سيرى مقدّم الطلب هذه الملاحظات عند مراجعة رده.",
+      "hint": "مطلوب — صف التغييرات المطلوبة",
+      "label": "ملاحظات المراجعة",
+      "placeholder": "صف المراجعات المطلوبة...",
+      "title": "إعادة للمراجعة"
+    },
     "title": "الفرز",
     "viewDetails": "عرض التفاصيل"
   },

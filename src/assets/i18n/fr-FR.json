@@ -305,7 +305,17 @@
   },
   "adminSurveys": {
     "cloneSuffix": "(Copie)",
-    "createSurvey": "Créer une enquête",
+    "createDialog": {
+      "nameLabel": "Nom du sondage",
+      "namePlaceholder": "Saisir le nom du sondage",
+      "nameRequired": "{{common.validation.nameRequired}}",
+      "title": "Créer un sondage",
+      "versionHint": "Identifiant de version libre",
+      "versionLabel": "{{common.version}}",
+      "versionPlaceholder": "par ex., 1, v2-pilote, 2024-T1",
+      "versionRequired": "La version est requise"
+    },
+    "createSurvey": "{{adminSurveys.createDialog.title}}",
     "editTemplate": "Modifier l'enquête",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
@@ -362,6 +372,8 @@
       "questions": "Questions",
       "required": "Obligatoire",
       "selectQuestionHint": "Sélectionnez une question pour modifier ses propriétés",
+      "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
+      "surveyVersion": "{{common.version}}",
       "tmFieldLabels": {
         "assetDescription": "Description de l'actif",
         "assetName": "{{assetEditor.name}}",
@@ -487,6 +499,7 @@
     "download": "Télécharger",
     "edit": "Modifier",
     "editThreat": "Modifier la Menace",
+    "email": "E-mail",
     "emailLabel": "Adresse E-mail",
     "error": "Erreur",
     "fonts": "Polices",
@@ -738,6 +751,12 @@
   "getStarted": "Commencer",
   "homeDescription": "TMI est un outil qui gère et améliore les processus de revue de sécurité et de modélisation des menaces pour votre organisation. Il pilote le workflow de revue de sécurité, organise les informations des revues de sécurité, permet de créer des diagrammes de flux de données de manière collaborative et permet de connecter l'automatisation pour réduire les tâches répétitives dans le processus de revue et pour analyser les menaces de sécurité.",
   "homeWelcomeTitle": "Bienvenue sur TMI : Modelisation des Menaces Amelioree",
+  "intake": {
+    "fill": {
+      "saveAndExit": "Enregistrer et quitter",
+      "submitResponses": "Soumettre les réponses"
+    }
+  },
   "login": {
     "chooseMethod": "Choisissez votre methode de connexion :",
     "explanation": "Connectez-vous avec votre compte existant aupres d'un fournisseur d'identite de confiance. Cela elimine le besoin d'un mot de passe separe, simplifiant votre experience tout en vous gardant en securite. Nous ne stockons ni ne gerons jamais de mots de passe - vos identifiants restent chez votre fournisseur et ne peuvent pas etre compromis via nous.",
@@ -1085,7 +1104,7 @@
       "addAsset": "Ajouter un actif",
       "addDiagram": "Ajouter un diagramme",
       "addDocument": "Ajouter un document",
-      "addNote": "Ajouter une note",
+      "addNote": "{{triage.detail.addNote}}",
       "assetsCardTitle": "Les actifs sont des ressources precieuses au sein du systeme qui necessitent une protection, telles que les donnees, le materiel, les logiciels, l'infrastructure, les services ou le personnel.",
       "diagramsCardTitle": "Les diagrammes dans TMI sont des representations lisibles par machine du mouvement des donnees et des processus au sein d'un systeme, permettant une analyse de securite manuelle et automatisee.",
       "documentsCardTitle": "Les references de documents sont des liens vers des documents stockes en dehors de TMI. Les documents pertinents decrivent le systeme a analyser et peuvent etre utilises par les analystes de securite et les processus d'analyse automatises.",
@@ -1162,10 +1181,24 @@
     },
     "createTm": "{{createThreatModel.title}}",
     "detail": {
+      "addNote": "Ajouter une note",
+      "markdownSupported": "Markdown pris en charge",
+      "noNotes": "Aucune note de triage pour le moment",
       "noResponses": "Aucune réponse enregistrée",
+      "noRevisionNotes": "Aucune note de révision",
+      "note": "note",
+      "noteContentLabel": "{{noteEditor.content}}",
+      "noteContentPlaceholder": "Saisir le contenu de la note...",
+      "noteNameLabel": "{{common.title}}",
+      "noteNamePlaceholder": "Titre bref de la note",
+      "notes": "notes",
       "responseDetails": "Détails de la réponse",
+      "reviewedAt": "Révisé le",
+      "reviewedBy": "Révisé par",
+      "revisionNotesTitle": "Révision demandée",
       "statusTimeline": "Chronologie des statuts",
-      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "triageNotes": "Notes de triage"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
@@ -1179,12 +1212,14 @@
       "allSurveys": "Toutes les enquêtes",
       "approve": "Approuver",
       "approveSelected": "Approuver la sélection",
+      "createThreatModel": "{{createThreatModel.title}}",
       "errorLoadingResponses": "Échec du chargement des réponses",
       "loadingResponses": "Chargement des réponses...",
       "noResponsesFiltered": "Aucune réponse ne correspond à vos filtres",
       "noResponsesTitle": "Aucune réponse",
       "noResponsesToTriage": "Il n'y a pas de réponses d'enquête à trier",
       "notSubmitted": "Non soumise",
+      "returnForRevision": "{{triage.revisionDialog.title}}",
       "searchPlaceholder": "Rechercher par soumetteur ou enquête...",
       "submitted": "Soumise",
       "submitter": "Soumetteur"
@@ -1192,8 +1227,26 @@
     "markInReview": "Marquer en révision",
     "markPendingTriage": "Marquer en attente de triage",
     "noResponses": "Aucune réponse à trier",
+    "noteEditor": {
+      "contentLabel": "{{noteEditor.content}}",
+      "contentPlaceholder": "Saisir le contenu de la note (Markdown pris en charge)...",
+      "nameLabel": "{{common.title}}",
+      "namePlaceholder": "{{triage.detail.noteNamePlaceholder}}",
+      "title": {
+        "create": "Nouvelle note de triage",
+        "view": "Afficher la note de triage"
+      }
+    },
     "queue": "File de triage",
     "returnToSubmitted": "Retourner à soumis",
+    "revisionDialog": {
+      "confirm": "{{triage.revisionDialog.title}}",
+      "description": "Fournissez des notes expliquant ce qui doit être révisé. Le soumissionnaire verra ces notes lorsqu'il examinera sa réponse.",
+      "hint": "Requis — décrire les modifications nécessaires",
+      "label": "Notes de révision",
+      "placeholder": "Décrire les révisions nécessaires...",
+      "title": "Retourner pour révision"
+    },
     "title": "Triage",
     "viewDetails": "Voir les détails"
   },
