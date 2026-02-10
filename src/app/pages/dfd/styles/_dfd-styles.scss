@@ -87,43 +87,11 @@ svg text[font-family] {
   stroke: var(--color-dfd-snapline);
 }
 
-// Store shape specific styles
+// Store shape specific styles (cylinder/drum per DFD3 spec)
 .store-shape {
-  path.topLine,
-  path.bottomLine {
-    stroke: var(--color-text-primary);
-    stroke-width: 2;
-  }
-
-  // Explicitly ensure left and right sides have no stroke
-  path.leftLine,
-  path.rightLine {
-    stroke: transparent;
-    stroke-width: 0;
-  }
-
   text.label {
     @include shape-label-styles;
   }
-
-  // NOTE: Commented out CSS filter rules to allow X6 attribute-based filters to work
-  // These CSS rules override X6's filter attributes and prevent creation effects
-  // &.is-hovered,
-  // &:hover {
-  //   .x6-cell-body {
-  //     rect.body {
-  //       filter: drop-shadow(0 0 4px rgb(255 0 0 / 60%));
-  //     }
-  //   }
-  // }
-
-  // &.is-selected {
-  //   .x6-cell-body {
-  //     rect.body {
-  //       filter: drop-shadow(0 0 8px rgb(255 0 0 / 80%));
-  //     }
-  //   }
-  // }
 }
 
 // =============================================================================

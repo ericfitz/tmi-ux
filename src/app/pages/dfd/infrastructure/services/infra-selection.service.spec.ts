@@ -112,7 +112,7 @@ describe('SelectionService', () => {
       });
 
       const node2 = graph.addNode({
-        shape: 'ellipse',
+        shape: 'rect',
         x: 300,
         y: 200,
         width: 80,
@@ -146,7 +146,7 @@ describe('SelectionService', () => {
       });
 
       const node2 = graph.addNode({
-        shape: 'ellipse',
+        shape: 'rect',
         x: 300,
         y: 200,
         width: 80,

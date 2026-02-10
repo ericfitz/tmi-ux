@@ -539,7 +539,7 @@ describe('NodeInfo', () => {
       const expectedDimensions = [
         { width: 120, height: 60 }, // actor
         { width: 140, height: 60 }, // process
-        { width: 160, height: 60 }, // store
+        { width: 160, height: 80 }, // store
         { width: 200, height: 150 }, // security-boundary
         { width: 100, height: 40 }, // text-box
       ];

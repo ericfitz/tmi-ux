@@ -232,7 +232,7 @@ export function initializeX6CellExtensions(): void {
     let shape = 'rect'; // Default shape
     switch (nodeType) {
       case 'process':
-        shape = 'ellipse';
+        shape = 'rect';
         break;
       case 'store':
         shape = 'store';

@@ -120,7 +120,7 @@ describe('InfraEdgeQueryService', () => {
       });
 
       node2 = graph.addNode({
-        shape: 'ellipse',
+        shape: 'rect',
         x: 300,
         y: 100,
         width: 80,
