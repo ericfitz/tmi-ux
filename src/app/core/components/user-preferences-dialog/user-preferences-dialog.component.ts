@@ -116,18 +116,20 @@ interface CheckboxChangeEvent {
                 </div>
               }
 
-              @if (userProfile?.jwt_groups && (userProfile?.jwt_groups?.length ?? 0) > 0) {
-                <div class="profile-item">
-                  <span class="profile-label" [transloco]="'userPreferences.userProfile.jwtGroups'">
-                    JWT Groups
-                  </span>
+              <div class="profile-item">
+                <span class="profile-label" [transloco]="'userPreferences.userProfile.jwtGroups'">
+                  JWT Groups
+                </span>
+                @if (userProfile?.jwt_groups && (userProfile?.jwt_groups?.length ?? 0) > 0) {
                   <div class="profile-value groups-list">
                     @for (group of userProfile?.jwt_groups; track group) {
                       <span class="group-badge">{{ group }}</span>
                     }
                   </div>
-                </div>
-              }
+                } @else {
+                  <span class="profile-value" [transloco]="'common.none'">None</span>
+                }
+              </div>
 
               @if (currentThreatModelRole) {
                 <div class="profile-item">
