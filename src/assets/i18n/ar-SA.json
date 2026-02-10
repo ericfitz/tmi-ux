@@ -330,8 +330,12 @@
       "addPage": "إضافة صفحة",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "الخيارات (واحد لكل سطر)",
+      "conditionalLogic": "المنطق الشرطي",
+      "conditionalLogicHelp": "وثائق المنطق الشرطي لـ SurveyJS",
       "deletePage": "حذف الصفحة",
       "deleteQuestion": "حذف السؤال",
+      "enableIf": "تفعيل إذا",
+      "enableIfHint": "مثال: {questionName} = 'value'",
       "enterSurveyDescription": "أدخل وصف الاستبيان",
       "enterSurveyTitle": "أدخل عنوان الاستبيان",
       "failedToLoadTemplate": "فشل تحميل الاستبيان",
@@ -371,6 +375,8 @@
       "questionTypes": "أنواع الأسئلة",
       "questions": "الأسئلة",
       "required": "مطلوب",
+      "requiredIf": "مطلوب إذا",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "حدد سؤالاً لتعديل خصائصه",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
@@ -391,7 +397,7 @@
       "tmFieldMappingHint": "ربط هذا الجواب بحقل نموذج التهديد",
       "unsavedChanges": "تغييرات غير محفوظة",
       "visibleIf": "مرئي إذا",
-      "visibleIfHint": "مثال: {questionName} = 'value'"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "{{count}} استبيان",
     "templateCountPlural": "{{count}} استبيانات"
@@ -1346,6 +1352,7 @@
     "userProfile": {
       "currentRole": "دور نموذج التهديد الحالي",
       "groups": "{{common.groups}}",
+      "jwtGroups": "مجموعات JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "معرف الموفر",
       "title": "ملف المستخدم",

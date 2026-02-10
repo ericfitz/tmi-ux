@@ -380,17 +380,69 @@
                   </mat-form-field>
                 }
 
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>{{ 'adminSurveys.templateBuilder.visibleIf' | transloco }}</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="selectedQuestion.visibleIf"
-                    (ngModelChange)="hasUnsavedChanges = true"
-                  />
-                  <mat-hint>{{
-                    'adminSurveys.templateBuilder.visibleIfHint' | transloco
-                  }}</mat-hint>
-                </mat-form-field>
+                <mat-expansion-panel class="condition-panel">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      {{ 'adminSurveys.templateBuilder.conditionalLogic' | transloco }}
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+
+                  <div class="condition-panel-content">
+                    <button
+                      mat-icon-button
+                      class="condition-help-button"
+                      (click)="openConditionHelp(); $event.stopPropagation()"
+                      [matTooltip]="'adminSurveys.templateBuilder.conditionalLogicHelp' | transloco"
+                      [attr.aria-label]="
+                        'adminSurveys.templateBuilder.conditionalLogicHelp' | transloco
+                      "
+                    >
+                      <mat-icon>help</mat-icon>
+                    </button>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>{{
+                        'adminSurveys.templateBuilder.visibleIf' | transloco
+                      }}</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="selectedQuestion.visibleIf"
+                        (ngModelChange)="hasUnsavedChanges = true"
+                      />
+                      <mat-hint>{{
+                        'adminSurveys.templateBuilder.visibleIfHint' | transloco
+                      }}</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>{{
+                        'adminSurveys.templateBuilder.enableIf' | transloco
+                      }}</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="selectedQuestion.enableIf"
+                        (ngModelChange)="hasUnsavedChanges = true"
+                      />
+                      <mat-hint>{{
+                        'adminSurveys.templateBuilder.enableIfHint' | transloco
+                      }}</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>{{
+                        'adminSurveys.templateBuilder.requiredIf' | transloco
+                      }}</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="selectedQuestion.requiredIf"
+                        (ngModelChange)="hasUnsavedChanges = true"
+                      />
+                      <mat-hint>{{
+                        'adminSurveys.templateBuilder.requiredIfHint' | transloco
+                      }}</mat-hint>
+                    </mat-form-field>
+                  </div>
+                </mat-expansion-panel>
 
                 <div class="tm-field-mapping">
                   <h4>{{ 'adminSurveys.templateBuilder.tmFieldMapping' | transloco }}</h4>

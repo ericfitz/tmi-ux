@@ -330,8 +330,12 @@
       "addPage": "เพิ่มหน้า",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "ตัวเลือก (หนึ่งตัวเลือกต่อบรรทัด)",
+      "conditionalLogic": "ลอจิกเงื่อนไข",
+      "conditionalLogicHelp": "เอกสารลอจิกเงื่อนไขของ SurveyJS",
       "deletePage": "ลบหน้า",
       "deleteQuestion": "ลบคำถาม",
+      "enableIf": "เปิดใช้งานถ้า",
+      "enableIfHint": "เช่น {questionName} = 'value'",
       "enterSurveyDescription": "ป้อนคำอธิบายแบบสำรวจ",
       "enterSurveyTitle": "ป้อนชื่อแบบสำรวจ",
       "failedToLoadTemplate": "โหลดแบบสำรวจไม่สำเร็จ",
@@ -371,6 +375,8 @@
       "questionTypes": "ประเภทคำถาม",
       "questions": "คำถาม",
       "required": "จำเป็น",
+      "requiredIf": "จำเป็นถ้า",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "เลือกคำถามเพื่อแก้ไขคุณสมบัติ",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
@@ -391,7 +397,7 @@
       "tmFieldMappingHint": "เชื่อมโยงคำตอบนี้กับฟิลด์โมเดลภัยคุกคาม",
       "unsavedChanges": "การเปลี่ยนแปลงที่ยังไม่ได้บันทึก",
       "visibleIf": "แสดงถ้า",
-      "visibleIfHint": "เช่น {questionName} = 'value'"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "แบบสำรวจ {{count}} รายการ",
     "templateCountPlural": "แบบสำรวจ {{count}} รายการ"
@@ -1346,6 +1352,7 @@
     "userProfile": {
       "currentRole": "บทบาทโมเดลภัยคุกคามปัจจุบัน",
       "groups": "{{common.groups}}",
+      "jwtGroups": "กลุ่ม JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "รหัสผู้ให้บริการ",
       "title": "โปรไฟล์ผู้ใช้",

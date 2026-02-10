@@ -330,8 +330,12 @@
       "addPage": "페이지 추가",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "선택 항목 (한 줄에 하나)",
+      "conditionalLogic": "조건부 로직",
+      "conditionalLogicHelp": "SurveyJS 조건부 로직 문서",
       "deletePage": "페이지 삭제",
       "deleteQuestion": "질문 삭제",
+      "enableIf": "활성화 조건",
+      "enableIfHint": "예: {questionName} = 'value'",
       "enterSurveyDescription": "설문 설명 입력",
       "enterSurveyTitle": "설문 제목 입력",
       "failedToLoadTemplate": "설문조사를 불러오지 못했습니다",
@@ -371,6 +375,8 @@
       "questionTypes": "질문 유형",
       "questions": "질문",
       "required": "필수",
+      "requiredIf": "필수 조건",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "질문을 선택하여 속성을 편집하세요",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
@@ -391,7 +397,7 @@
       "tmFieldMappingHint": "이 답변을 위협 모델 필드에 연결하세요",
       "unsavedChanges": "저장되지 않은 변경 사항",
       "visibleIf": "표시 조건",
-      "visibleIfHint": "예: {questionName} = 'value'"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "설문조사 {{count}}개",
     "templateCountPlural": "설문조사 {{count}}개"
@@ -1346,6 +1352,7 @@
     "userProfile": {
       "currentRole": "현재 위협 모델 역할",
       "groups": "{{common.groups}}",
+      "jwtGroups": "JWT 그룹",
       "provider": "{{common.identityProvider}}",
       "providerId": "공급자 ID",
       "title": "사용자 프로필",

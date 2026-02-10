@@ -330,8 +330,12 @@
       "addPage": "添加页面",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "选项（每行一个）",
+      "conditionalLogic": "条件逻辑",
+      "conditionalLogicHelp": "SurveyJS 条件逻辑文档",
       "deletePage": "删除页面",
       "deleteQuestion": "删除问题",
+      "enableIf": "启用条件",
+      "enableIfHint": "例如，{questionName} = 'value'",
       "enterSurveyDescription": "输入调查描述",
       "enterSurveyTitle": "输入调查标题",
       "failedToLoadTemplate": "加载调查问卷失败",
@@ -371,6 +375,8 @@
       "questionTypes": "问题类型",
       "questions": "问题",
       "required": "必填",
+      "requiredIf": "必填条件",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "选择一个问题以编辑其属性",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
@@ -391,7 +397,7 @@
       "tmFieldMappingHint": "将此答案链接到威胁模型字段",
       "unsavedChanges": "未保存的更改",
       "visibleIf": "可见条件",
-      "visibleIfHint": "例如：{questionName} = 'value'"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "{{count}} 个调查问卷",
     "templateCountPlural": "{{count}} 个调查问卷"
@@ -1346,6 +1352,7 @@
     "userProfile": {
       "currentRole": "当前威胁模型角色",
       "groups": "{{common.groups}}",
+      "jwtGroups": "JWT 组",
       "provider": "{{common.identityProvider}}",
       "providerId": "提供商ID",
       "title": "用户资料",

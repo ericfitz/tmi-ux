@@ -330,8 +330,12 @@
       "addPage": "Tambah halaman",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "Pilihan (satu per baris)",
+      "conditionalLogic": "Logika Kondisional",
+      "conditionalLogicHelp": "Dokumentasi logika kondisional SurveyJS",
       "deletePage": "Hapus halaman",
       "deleteQuestion": "Hapus Pertanyaan",
+      "enableIf": "Aktifkan Jika",
+      "enableIfHint": "contoh, {questionName} = 'value'",
       "enterSurveyDescription": "Masukkan deskripsi survei",
       "enterSurveyTitle": "Masukkan judul survei",
       "failedToLoadTemplate": "Gagal memuat survei",
@@ -371,6 +375,8 @@
       "questionTypes": "Jenis Pertanyaan",
       "questions": "Pertanyaan",
       "required": "Wajib diisi",
+      "requiredIf": "Wajib Jika",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "Pilih pertanyaan untuk mengedit propertinya",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
@@ -391,7 +397,7 @@
       "tmFieldMappingHint": "Hubungkan jawaban ini ke bidang model ancaman",
       "unsavedChanges": "Perubahan belum disimpan",
       "visibleIf": "Terlihat Jika",
-      "visibleIfHint": "mis., {questionName} = 'value'"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "{{count}} survei",
     "templateCountPlural": "{{count}} survei"
@@ -1346,6 +1352,7 @@
     "userProfile": {
       "currentRole": "Peran Model Ancaman Saat Ini",
       "groups": "{{common.groups}}",
+      "jwtGroups": "Grup JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID Penyedia",
       "title": "Profil Pengguna",

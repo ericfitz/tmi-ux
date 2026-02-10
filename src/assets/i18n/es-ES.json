@@ -330,8 +330,12 @@
       "addPage": "Añadir página",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "Opciones (una por línea)",
+      "conditionalLogic": "Lógica Condicional",
+      "conditionalLogicHelp": "Documentación de lógica condicional de SurveyJS",
       "deletePage": "Eliminar página",
       "deleteQuestion": "Eliminar Pregunta",
+      "enableIf": "Habilitar Si",
+      "enableIfHint": "ej., {questionName} = 'value'",
       "enterSurveyDescription": "Introduzca la descripción de la encuesta",
       "enterSurveyTitle": "Introduzca el título de la encuesta",
       "failedToLoadTemplate": "Error al cargar la encuesta",
@@ -371,6 +375,8 @@
       "questionTypes": "Tipos de Pregunta",
       "questions": "Preguntas",
       "required": "Obligatorio",
+      "requiredIf": "Obligatorio Si",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "Seleccione una pregunta para editar sus propiedades",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
@@ -391,7 +397,7 @@
       "tmFieldMappingHint": "Vincular esta respuesta a un campo del modelo de amenazas",
       "unsavedChanges": "Cambios sin guardar",
       "visibleIf": "Visible Si",
-      "visibleIfHint": "p. ej., {questionName} = 'value'"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "{{count}} encuesta",
     "templateCountPlural": "{{count}} encuestas"
@@ -1346,6 +1352,7 @@
     "userProfile": {
       "currentRole": "Rol Actual en Modelo de Amenazas",
       "groups": "{{common.groups}}",
+      "jwtGroups": "Grupos JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID del Proveedor",
       "title": "Perfil de Usuario",

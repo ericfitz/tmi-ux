@@ -330,8 +330,12 @@
       "addPage": "Добавить страницу",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "Варианты (по одному на строку)",
+      "conditionalLogic": "Условная логика",
+      "conditionalLogicHelp": "Документация по условной логике SurveyJS",
       "deletePage": "Удалить страницу",
       "deleteQuestion": "Удалить вопрос",
+      "enableIf": "Включить если",
+      "enableIfHint": "напр., {questionName} = 'value'",
       "enterSurveyDescription": "Введите описание опроса",
       "enterSurveyTitle": "Введите название опроса",
       "failedToLoadTemplate": "Не удалось загрузить опрос",
@@ -371,6 +375,8 @@
       "questionTypes": "Типы вопросов",
       "questions": "Вопросы",
       "required": "Обязательно",
+      "requiredIf": "Требуется если",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "Выберите вопрос для редактирования его свойств",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
@@ -391,7 +397,7 @@
       "tmFieldMappingHint": "Связать этот ответ с полем модели угроз",
       "unsavedChanges": "Несохранённые изменения",
       "visibleIf": "Видимо, если",
-      "visibleIfHint": "например, {questionName} = 'значение'"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "{{count}} опрос",
     "templateCountPlural": "{{count}} опросов"
@@ -1346,6 +1352,7 @@
     "userProfile": {
       "currentRole": "Текущая роль в модели угроз",
       "groups": "{{common.groups}}",
+      "jwtGroups": "Группы JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID провайдера",
       "title": "Профиль Пользователя",

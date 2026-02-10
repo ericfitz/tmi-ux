@@ -343,8 +343,12 @@
       "addPage": "Add page",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "Choices (one per line)",
+      "conditionalLogic": "Conditional Logic",
+      "conditionalLogicHelp": "SurveyJS conditional logic documentation",
       "deletePage": "Delete page",
       "deleteQuestion": "Delete Question",
+      "enableIf": "Enable If",
+      "enableIfHint": "e.g., {questionName} = 'value'",
       "enterSurveyDescription": "Enter survey description",
       "enterSurveyTitle": "Enter survey title",
       "failedToLoadTemplate": "Failed to load survey",
@@ -384,6 +388,8 @@
       "questionTypes": "Question Types",
       "questions": "Questions",
       "required": "Required",
+      "requiredIf": "Required If",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "Select a question to edit its properties",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
@@ -404,7 +410,7 @@
       "tmFieldMappingHint": "Link this answer to a threat model field",
       "unsavedChanges": "Unsaved changes",
       "visibleIf": "Visible If",
-      "visibleIfHint": "e.g., {questionName} = 'value'"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "{{count}} survey",
     "templateCountPlural": "{{count}} surveys"

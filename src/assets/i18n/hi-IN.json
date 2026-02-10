@@ -330,8 +330,12 @@
       "addPage": "पृष्ठ जोड़ें",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "विकल्प (प्रति पंक्ति एक)",
+      "conditionalLogic": "सशर्त तर्क",
+      "conditionalLogicHelp": "SurveyJS सशर्त तर्क दस्तावेज़ीकरण",
       "deletePage": "पृष्ठ हटाएं",
       "deleteQuestion": "प्रश्न हटाएं",
+      "enableIf": "सक्षम करें यदि",
+      "enableIfHint": "उदा., {questionName} = 'value'",
       "enterSurveyDescription": "सर्वेक्षण विवरण दर्ज करें",
       "enterSurveyTitle": "सर्वेक्षण शीर्षक दर्ज करें",
       "failedToLoadTemplate": "सर्वेक्षण लोड करने में विफल",
@@ -371,6 +375,8 @@
       "questionTypes": "प्रश्न प्रकार",
       "questions": "प्रश्न",
       "required": "आवश्यक",
+      "requiredIf": "आवश्यक यदि",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "इसके गुण संपादित करने के लिए एक प्रश्न चुनें",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
@@ -391,7 +397,7 @@
       "tmFieldMappingHint": "इस उत्तर को थ्रेट मॉडल फील्ड से लिंक करें",
       "unsavedChanges": "असहेजे गए परिवर्तन",
       "visibleIf": "दृश्यमान यदि",
-      "visibleIfHint": "उदाहरण, {questionName} = 'value'"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "{{count}} सर्वेक्षण",
     "templateCountPlural": "{{count}} सर्वेक्षण"
@@ -1346,6 +1352,7 @@
     "userProfile": {
       "currentRole": "वर्तमान थ्रेट मॉडल भूमिका",
       "groups": "{{common.groups}}",
+      "jwtGroups": "JWT समूह",
       "provider": "{{common.identityProvider}}",
       "providerId": "प्रदाता ID",
       "title": "उपयोगकर्ता प्रोफ़ाइल",

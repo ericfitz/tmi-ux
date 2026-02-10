@@ -41,6 +41,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTabsModule } from '@angular/material/tabs';
 import { A11yModule } from '@angular/cdk/a11y';
 
@@ -96,6 +97,7 @@ export const DATA_MATERIAL_IMPORTS = [
   MatGridListModule,
   MatBadgeModule,
   MatChipsModule,
+  MatExpansionModule,
 ] as const;
 
 /**

@@ -330,8 +330,12 @@
       "addPage": "הוסף עמוד",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "אפשרויות (אחת בכל שורה)",
+      "conditionalLogic": "היגיון מותנה",
+      "conditionalLogicHelp": "תיעוד היגיון מותנה של SurveyJS",
       "deletePage": "מחק עמוד",
       "deleteQuestion": "מחק שאלה",
+      "enableIf": "הפעל אם",
+      "enableIfHint": "לדוגמה, {questionName} = 'value'",
       "enterSurveyDescription": "הזן תיאור סקר",
       "enterSurveyTitle": "הזן כותרת סקר",
       "failedToLoadTemplate": "טעינת הסקר נכשלה",
@@ -371,6 +375,8 @@
       "questionTypes": "סוגי שאלות",
       "questions": "שאלות",
       "required": "חובה",
+      "requiredIf": "נדרש אם",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "בחר שאלה כדי לערוך את מאפייניה",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
@@ -391,7 +397,7 @@
       "tmFieldMappingHint": "קשר תשובה זו לשדה מודל איום",
       "unsavedChanges": "שינויים שלא נשמרו",
       "visibleIf": "גלוי אם",
-      "visibleIfHint": "לדוגמה, {questionName} = 'value'"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "{{count}} סקר",
     "templateCountPlural": "{{count}} סקרים"
@@ -1346,6 +1352,7 @@
     "userProfile": {
       "currentRole": "תפקיד נוכחי במודל איומים",
       "groups": "{{common.groups}}",
+      "jwtGroups": "קבוצות JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "מזהה ספק",
       "title": "פרופיל משתמש",

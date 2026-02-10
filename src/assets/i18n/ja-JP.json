@@ -330,8 +330,12 @@
       "addPage": "ページを追加",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "選択肢（1行に1つ）",
+      "conditionalLogic": "条件付きロジック",
+      "conditionalLogicHelp": "SurveyJS条件付きロジックのドキュメント",
       "deletePage": "ページを削除",
       "deleteQuestion": "質問を削除",
+      "enableIf": "有効にする条件",
+      "enableIfHint": "例: {questionName} = 'value'",
       "enterSurveyDescription": "調査の説明を入力",
       "enterSurveyTitle": "調査のタイトルを入力",
       "failedToLoadTemplate": "調査の読み込みに失敗しました",
@@ -371,6 +375,8 @@
       "questionTypes": "質問タイプ",
       "questions": "質問",
       "required": "必須",
+      "requiredIf": "必須条件",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "質問を選択してプロパティを編集してください",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
@@ -391,7 +397,7 @@
       "tmFieldMappingHint": "この回答を脅威モデルフィールドにリンク",
       "unsavedChanges": "未保存の変更",
       "visibleIf": "表示条件",
-      "visibleIfHint": "例: {questionName} = 'value'"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "{{count}}件の調査",
     "templateCountPlural": "{{count}}件の調査"
@@ -1346,6 +1352,7 @@
     "userProfile": {
       "currentRole": "現在の脅威モデルロール",
       "groups": "{{common.groups}}",
+      "jwtGroups": "JWTグループ",
       "provider": "{{common.identityProvider}}",
       "providerId": "プロバイダーID",
       "title": "ユーザープロフィール",

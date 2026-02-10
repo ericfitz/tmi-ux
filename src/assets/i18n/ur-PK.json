@@ -330,8 +330,12 @@
       "addPage": "صفحہ شامل کریں",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "انتخابات (ہر لائن میں ایک)",
+      "conditionalLogic": "مشروط منطق",
+      "conditionalLogicHelp": "SurveyJS مشروط منطق دستاویزات",
       "deletePage": "صفحہ حذف کریں",
       "deleteQuestion": "سوال حذف کریں",
+      "enableIf": "اگر فعال کریں",
+      "enableIfHint": "مثلاً، {questionName} = 'value'",
       "enterSurveyDescription": "سروے کی تفصیل درج کریں",
       "enterSurveyTitle": "سروے کا عنوان درج کریں",
       "failedToLoadTemplate": "سروے لوڈ کرنے میں ناکامی",
@@ -371,6 +375,8 @@
       "questionTypes": "سوالات کی اقسام",
       "questions": "سوالات",
       "required": "ضروری",
+      "requiredIf": "اگر ضروری ہے",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "اس کی خصوصیات میں ترمیم کرنے کے لیے سوال منتخب کریں",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
@@ -391,7 +397,7 @@
       "tmFieldMappingHint": "اس جواب کو خطرے کے ماڈل فیلڈ سے منسلک کریں",
       "unsavedChanges": "غیر محفوظ شدہ تبدیلیاں",
       "visibleIf": "اگر نظر آئے",
-      "visibleIfHint": "مثال، {questionName} = 'value'"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "{{count}} سروے",
     "templateCountPlural": "{{count}} سروے"
@@ -1346,6 +1352,7 @@
     "userProfile": {
       "currentRole": "موجودہ خطرے کے ماڈل کا کردار",
       "groups": "{{common.groups}}",
+      "jwtGroups": "JWT گروپس",
       "provider": "{{common.identityProvider}}",
       "providerId": "فراہم کنندہ ID",
       "title": "صارف پروفائل",

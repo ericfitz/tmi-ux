@@ -532,6 +532,16 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Open SurveyJS conditional logic documentation in a new tab
+   */
+  openConditionHelp(): void {
+    window.open(
+      'https://surveyjs.io/form-library/documentation/design-survey/conditional-logic',
+      '_blank',
+    );
+  }
+
+  /**
    * Get the current page elements
    */
   get currentPageElements(): SurveyQuestion[] {

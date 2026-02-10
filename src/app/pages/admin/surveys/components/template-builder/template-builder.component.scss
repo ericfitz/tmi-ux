@@ -337,6 +337,24 @@ button:not([mat-icon-button]) mat-icon {
     gap: 16px;
   }
 
+  .condition-panel {
+    box-shadow: none;
+    border: 1px solid var(--color-divider);
+
+    .condition-panel-content {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+
+      .condition-help-button {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+      }
+    }
+  }
+
   .tm-field-mapping {
     margin-top: 8px;
     padding-top: 16px;

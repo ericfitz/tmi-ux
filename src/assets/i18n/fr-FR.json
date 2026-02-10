@@ -330,8 +330,12 @@
       "addPage": "Ajouter une page",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "Choix (un par ligne)",
+      "conditionalLogic": "Logique Conditionnelle",
+      "conditionalLogicHelp": "Documentation sur la logique conditionnelle de SurveyJS",
       "deletePage": "Supprimer la page",
       "deleteQuestion": "Supprimer la question",
+      "enableIf": "Activer Si",
+      "enableIfHint": "ex., {questionName} = 'value'",
       "enterSurveyDescription": "Saisir la description de l'enquête",
       "enterSurveyTitle": "Saisir le titre de l'enquête",
       "failedToLoadTemplate": "Échec du chargement de l'enquête",
@@ -371,6 +375,8 @@
       "questionTypes": "Types de question",
       "questions": "Questions",
       "required": "Obligatoire",
+      "requiredIf": "Obligatoire Si",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "Sélectionnez une question pour modifier ses propriétés",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
@@ -391,7 +397,7 @@
       "tmFieldMappingHint": "Lier cette réponse à un champ du modèle de menaces",
       "unsavedChanges": "Modifications non enregistrées",
       "visibleIf": "Visible si",
-      "visibleIfHint": "par ex., {questionName} = 'valeur'"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "{{count}} enquête",
     "templateCountPlural": "{{count}} enquêtes"
@@ -1346,6 +1352,7 @@
     "userProfile": {
       "currentRole": "Role actuel du modele de menaces",
       "groups": "{{common.groups}}",
+      "jwtGroups": "Groupes JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID du fournisseur",
       "title": "Profil Utilisateur",

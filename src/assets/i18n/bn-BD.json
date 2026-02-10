@@ -330,8 +330,12 @@
       "addPage": "পৃষ্ঠা যোগ করুন",
       "backToTemplates": "{{surveys.confirmation.backToSurveys}}",
       "choicesPerLine": "পছন্দসমূহ (প্রতি লাইনে একটি)",
+      "conditionalLogic": "শর্তসাপেক্ষ লজিক",
+      "conditionalLogicHelp": "SurveyJS শর্তসাপেক্ষ লজিক ডকুমেন্টেশন",
       "deletePage": "পৃষ্ঠা মুছুন",
       "deleteQuestion": "প্রশ্ন মুছুন",
+      "enableIf": "সক্ষম করুন যদি",
+      "enableIfHint": "যেমন, {questionName} = 'value'",
       "enterSurveyDescription": "সার্ভে বিবরণ লিখুন",
       "enterSurveyTitle": "সার্ভে শিরোনাম লিখুন",
       "failedToLoadTemplate": "জরিপ লোড করতে ব্যর্থ",
@@ -371,6 +375,8 @@
       "questionTypes": "প্রশ্নের প্রকার",
       "questions": "প্রশ্নসমূহ",
       "required": "আবশ্যক",
+      "requiredIf": "প্রয়োজনীয় যদি",
+      "requiredIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}",
       "selectQuestionHint": "এর বৈশিষ্ট্য সম্পাদনা করতে একটি প্রশ্ন নির্বাচন করুন",
       "surveyName": "{{adminSurveys.createDialog.nameLabel}}",
       "surveyVersion": "{{common.version}}",
@@ -391,7 +397,7 @@
       "tmFieldMappingHint": "এই উত্তরটি একটি থ্রেট মডেল ক্ষেত্রের সাথে লিংক করুন",
       "unsavedChanges": "অসংরক্ষিত পরিবর্তন",
       "visibleIf": "দৃশ্যমান যদি",
-      "visibleIfHint": "যেমন, {questionName} = 'value'"
+      "visibleIfHint": "{{adminSurveys.templateBuilder.enableIfHint}}"
     },
     "templateCount": "{{count}} জরিপ",
     "templateCountPlural": "{{count}} জরিপ"
@@ -1346,6 +1352,7 @@
     "userProfile": {
       "currentRole": "বর্তমান থ্রেট মডেল ভূমিকা",
       "groups": "{{common.groups}}",
+      "jwtGroups": "JWT গ্রুপ",
       "provider": "{{common.identityProvider}}",
       "providerId": "প্রদানকারী আইডি",
       "title": "ব্যবহারকারীর প্রোফাইল",
