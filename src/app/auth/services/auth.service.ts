@@ -1339,7 +1339,8 @@ export class AuthService {
         provider_id: providerId,
         display_name: decodedPayload.name,
         email: decodedPayload.email,
-        groups: decodedPayload.groups || null,
+        groups: null,
+        jwt_groups: decodedPayload.groups || null,
         is_admin: decodedPayload.tmi_is_administrator ?? false,
         is_security_reviewer: decodedPayload.tmi_is_security_reviewer ?? false,
       };
@@ -1366,6 +1367,7 @@ export class AuthService {
           display_name: response.name,
           email: response.email,
           groups: response.groups ?? null,
+          jwt_groups: null,
           is_admin: response.is_admin,
           is_security_reviewer: response.is_security_reviewer,
         };
@@ -1404,6 +1406,7 @@ export class AuthService {
           display_name: serverProfile.display_name || currentProfile.display_name,
           email: serverProfile.email || currentProfile.email,
           groups: serverProfile.groups !== null ? serverProfile.groups : currentProfile.groups,
+          jwt_groups: currentProfile.jwt_groups,
 
           // Server-verified fields (prefer server values, fall back to JWT-derived values)
           is_admin: serverProfile.is_admin,

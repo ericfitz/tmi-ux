@@ -1373,6 +1373,7 @@
     "userProfile": {
       "currentRole": "Current Threat Model Role",
       "groups": "{{common.groups}}",
+      "jwtGroups": "JWT Groups",
       "provider": "{{common.identityProvider}}",
       "providerId": "Provider ID",
       "title": "User Profile",

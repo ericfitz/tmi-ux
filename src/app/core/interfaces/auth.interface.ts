@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { UserProfile } from '@app/auth/models/auth.models';
+import { UserGroupMembership, UserProfile } from '@app/auth/models/auth.models';
 
 /**
  * JWT token structure
@@ -19,7 +19,8 @@ export interface IUserProfile {
   provider_id: string;
   display_name: string;
   email: string;
-  groups: string[] | null;
+  groups: UserGroupMembership[] | null;
+  jwt_groups: string[] | null;
   is_admin?: boolean;
 }
 

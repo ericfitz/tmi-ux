@@ -115,6 +115,7 @@ describe('AuthService', () => {
     display_name: 'Test User',
     email: 'test@example.com',
     groups: null,
+    jwt_groups: null,
   };
 
   const _mockOAuthResponse: OAuthResponse = {
@@ -639,6 +640,7 @@ describe('AuthService', () => {
         display_name: 'John Doe',
         email: 'john@example.com',
         groups: null,
+        jwt_groups: null,
       };
       vi.mocked(httpClient.get).mockReturnValue(of(johnUserProfile));
 
@@ -761,6 +763,7 @@ describe('AuthService', () => {
         display_name: 'Demo User',
         email: testEmail,
         groups: null,
+        jwt_groups: null,
       };
 
       service.storeToken(token);
@@ -919,6 +922,7 @@ describe('AuthService', () => {
         display_name: 'Reviewer',
         email: 'reviewer@example.com',
         groups: null,
+        jwt_groups: null,
         is_security_reviewer: true,
       };
       service['userProfileSubject'].next(reviewerProfile);
@@ -933,6 +937,7 @@ describe('AuthService', () => {
         display_name: 'Regular',
         email: 'regular@example.com',
         groups: null,
+        jwt_groups: null,
         is_security_reviewer: false,
       };
       service['userProfileSubject'].next(regularProfile);
@@ -947,6 +952,7 @@ describe('AuthService', () => {
         display_name: 'Reviewer',
         email: 'reviewer@example.com',
         groups: null,
+        jwt_groups: null,
         is_security_reviewer: true,
       };
       service['userProfileSubject'].next(reviewerProfile);
@@ -961,6 +967,7 @@ describe('AuthService', () => {
         display_name: 'Admin',
         email: 'admin@example.com',
         groups: null,
+        jwt_groups: null,
         is_admin: true,
         is_security_reviewer: false,
       };
@@ -976,6 +983,7 @@ describe('AuthService', () => {
         display_name: 'Regular',
         email: 'regular@example.com',
         groups: null,
+        jwt_groups: null,
       };
       service['userProfileSubject'].next(regularProfile);
 
@@ -989,6 +997,7 @@ describe('AuthService', () => {
         display_name: 'Both',
         email: 'both@example.com',
         groups: null,
+        jwt_groups: null,
         is_admin: true,
         is_security_reviewer: true,
       };
