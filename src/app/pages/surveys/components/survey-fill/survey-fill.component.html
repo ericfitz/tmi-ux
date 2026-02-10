@@ -56,6 +56,15 @@
         mat-icon-button
         class="close-button"
         (click)="saveAndExit()"
+        [matTooltip]="'intake.fill.saveAndExit' | transloco"
+        [attr.aria-label]="'intake.fill.saveAndExit' | transloco"
+      >
+        <mat-icon>save</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="saveAndExit()"
         [attr.aria-label]="'common.close' | transloco"
       >
         <mat-icon>close</mat-icon>

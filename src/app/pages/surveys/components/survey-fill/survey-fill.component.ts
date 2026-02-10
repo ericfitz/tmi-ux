@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Model } from 'survey-core';
 import { SurveyModule } from 'survey-angular-ui';
 import {
@@ -49,6 +49,7 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
   private draftService = inject(SurveyDraftService);
   private themeService = inject(ThemeService);
   private surveyThemeService = inject(SurveyThemeService);
+  private translocoService = inject(TranslocoService);
 
   surveyModel: Model | null = null;
   response: SurveyResponse | null = null;
@@ -166,6 +167,9 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
 
     // Create the survey model
     this.surveyModel = new Model(this.surveyJson);
+
+    // Customize the complete button text
+    this.surveyModel.completeText = this.translocoService.translate('intake.fill.submitResponses');
 
     // Apply TMI theme to SurveyJS
     this.surveyModel.applyTheme(

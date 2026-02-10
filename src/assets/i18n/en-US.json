@@ -773,6 +773,12 @@
   "getStarted": "Get Started",
   "homeDescription": "TMI is a tool that manages and enhances the security review and threat modeling processes for your organization.  It drives security review workflow, organizes the information for security reviews, enables building data flow diagrams collaboratively, and enables connecting automation to reduce toil in the review process and to analyze for security threats.",
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
+  "intake": {
+    "fill": {
+      "saveAndExit": "Save & Exit",
+      "submitResponses": "Submit Responses"
+    }
+  },
   "login": {
     "chooseMethod": "Choose your sign in method:",
     "explanation": "Sign in with your existing account from a trusted identity provider. This eliminates the need for a separate password, streamlining your experience while keeping you secure. We never store or manage passwords—your credentials stay with your provider and can't be compromised through us.",
