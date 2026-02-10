@@ -16,20 +16,23 @@
   } @else if (response) {
     <!-- Header -->
     <div class="detail-header">
-      <div class="header-left">
-        <button mat-icon-button (click)="goBack()" matTooltip="Back to responses">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-        <div class="header-info">
-          <h1>{{ surveyJson?.title || 'Survey Response' }}</h1>
-          <div class="header-meta">
-            <mat-chip [highlighted]="response.status !== 'draft'">
-              <mat-icon matChipIcon>{{ getStatusInfo(response.status).icon }}</mat-icon>
-              {{ getStatusInfo(response.status).label }}
-            </mat-chip>
-          </div>
+      <div class="header-info">
+        <h1>{{ surveyJson?.title || 'Survey Response' }}</h1>
+        <div class="header-meta">
+          <mat-chip [highlighted]="response.status !== 'draft'">
+            <mat-icon matChipIcon>{{ getStatusInfo(response.status).icon }}</mat-icon>
+            {{ getStatusInfo(response.status).label }}
+          </mat-chip>
         </div>
       </div>
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="goBack()"
+        [attr.aria-label]="'common.close' | transloco"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
 
     <!-- Response info card -->

@@ -32,13 +32,9 @@
   align-items: flex-start;
   margin-bottom: 24px;
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
   .header-info {
+    flex: 1;
+
     h1 {
       margin: 0 0 8px;
       font-size: 24px;
@@ -56,6 +52,10 @@
         height: 16px;
       }
     }
+  }
+
+  .close-button {
+    margin-left: 16px;
   }
 }
 
@@ -181,11 +181,12 @@ button mat-icon {
   }
 
   .detail-header {
-    flex-direction: column;
-    gap: 16px;
-
     .header-info h1 {
       font-size: 20px;
+    }
+
+    .close-button {
+      margin-left: 8px;
     }
   }
 
