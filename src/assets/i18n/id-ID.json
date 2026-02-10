@@ -1302,6 +1302,7 @@
     },
     "diagramAnimationEffects": "Aktifkan Efek Animasi di Editor Diagram",
     "displayPreferences": "Preferensi Tampilan",
+    "hoverShowMetadata": "Tampilkan metadata sel saat mengarahkan kursor",
     "marginSize": {
       "narrow": "Sempit",
       "standard": "Standar",
@@ -1314,6 +1315,11 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Preferensi Laporan",
+    "sections": {
+      "developer": "Pengembang",
+      "diagramEditor": "Editor Diagram",
+      "securityReviewer": "Peninjau Keamanan"
+    },
     "showDeveloperTools": "Tampilkan Alat Pengembang",
     "tabs": {
       "credentials": "Kredensial",

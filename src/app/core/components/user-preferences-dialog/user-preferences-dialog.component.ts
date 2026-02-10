@@ -42,6 +42,7 @@ export interface UserPreferences {
   marginSize: 'narrow' | 'standard' | 'wide';
   showDeveloperTools: boolean;
   dashboardListView: boolean;
+  hoverShowMetadata: boolean;
 }
 
 interface CheckboxChangeEvent {
@@ -156,17 +157,6 @@ interface CheckboxChangeEvent {
             </h3>
 
             <div class="preference-item">
-              <mat-checkbox
-                [(ngModel)]="preferences.animations"
-                (change)="onAnimationPreferenceChange($event)"
-              >
-                <span [transloco]="'userPreferences.diagramAnimationEffects'">
-                  Diagram animation effects
-                </span>
-              </mat-checkbox>
-            </div>
-
-            <div class="preference-item">
               <label class="preference-label" [transloco]="'userPreferences.theme'">Theme</label>
               <mat-radio-group
                 [(ngModel)]="preferences.themeMode"
@@ -198,16 +188,38 @@ interface CheckboxChangeEvent {
               </mat-checkbox>
             </div>
 
+            <label class="preference-label" [transloco]="'userPreferences.sections.diagramEditor'">
+              Diagram Editor
+            </label>
+
             <div class="preference-item">
               <mat-checkbox
-                [(ngModel)]="preferences.showDeveloperTools"
-                (change)="onShowDeveloperToolsChange($event)"
+                [(ngModel)]="preferences.animations"
+                (change)="onAnimationPreferenceChange($event)"
               >
-                <span [transloco]="'userPreferences.showDeveloperTools'">
-                  Show Developer Tools
+                <span [transloco]="'userPreferences.diagramAnimationEffects'">
+                  Diagram animation effects
                 </span>
               </mat-checkbox>
             </div>
+
+            <div class="preference-item">
+              <mat-checkbox
+                [(ngModel)]="preferences.hoverShowMetadata"
+                (change)="onHoverShowMetadataChange($event)"
+              >
+                <span [transloco]="'userPreferences.hoverShowMetadata'">
+                  Show cell metadata on hover
+                </span>
+              </mat-checkbox>
+            </div>
+
+            <label
+              class="preference-label"
+              [transloco]="'userPreferences.sections.securityReviewer'"
+            >
+              Security Reviewer
+            </label>
 
             <div class="preference-item">
               <mat-checkbox
@@ -216,6 +228,21 @@ interface CheckboxChangeEvent {
               >
                 <span [transloco]="'userPreferences.dashboardListView'">
                   Show Dashboard as List View
+                </span>
+              </mat-checkbox>
+            </div>
+
+            <label class="preference-label" [transloco]="'userPreferences.sections.developer'">
+              Developer
+            </label>
+
+            <div class="preference-item">
+              <mat-checkbox
+                [(ngModel)]="preferences.showDeveloperTools"
+                (change)="onShowDeveloperToolsChange($event)"
+              >
+                <span [transloco]="'userPreferences.showDeveloperTools'">
+                  Show Developer Tools
                 </span>
               </mat-checkbox>
             </div>
@@ -775,6 +802,11 @@ export class UserPreferencesDialogComponent implements OnInit {
   onDashboardListViewChange(event: CheckboxChangeEvent): void {
     this.preferences.dashboardListView = event.checked;
     this.userPreferencesService.updatePreferences({ dashboardListView: event.checked });
+  }
+
+  onHoverShowMetadataChange(event: CheckboxChangeEvent): void {
+    this.preferences.hoverShowMetadata = event.checked;
+    this.userPreferencesService.updatePreferences({ hoverShowMetadata: event.checked });
   }
 
   onTransferData(): void {

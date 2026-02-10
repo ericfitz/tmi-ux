@@ -1302,6 +1302,7 @@
     },
     "diagramAnimationEffects": "在图表编辑器中启用动画效果",
     "displayPreferences": "显示偏好设置",
+    "hoverShowMetadata": "悬停时显示单元格元数据",
     "marginSize": {
       "narrow": "窄",
       "standard": "标准",
@@ -1314,6 +1315,11 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "报告首选项",
+    "sections": {
+      "developer": "开发者",
+      "diagramEditor": "图表编辑器",
+      "securityReviewer": "安全审查员"
+    },
     "showDeveloperTools": "显示开发者工具",
     "tabs": {
       "credentials": "凭证",

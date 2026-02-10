@@ -1302,6 +1302,7 @@
     },
     "diagramAnimationEffects": "Включить эффекты анимации в редакторе диаграмм",
     "displayPreferences": "Настройки отображения",
+    "hoverShowMetadata": "Показывать метаданные ячейки при наведении",
     "marginSize": {
       "narrow": "Узкие",
       "standard": "Стандартный",
@@ -1314,6 +1315,11 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Настройки отчётов",
+    "sections": {
+      "developer": "Разработчик",
+      "diagramEditor": "Редактор диаграмм",
+      "securityReviewer": "Ревизор безопасности"
+    },
     "showDeveloperTools": "Показать инструменты разработчика",
     "tabs": {
       "credentials": "Учетные данные",

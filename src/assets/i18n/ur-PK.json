@@ -1302,6 +1302,7 @@
     },
     "diagramAnimationEffects": "ڈایاگرام ایڈیٹر میں اینیمیشن اثرات فعال کریں",
     "displayPreferences": "ڈسپلے کی ترجیحات",
+    "hoverShowMetadata": "ہوور پر سیل میٹا ڈیٹا دکھائیں",
     "marginSize": {
       "narrow": "تنگ",
       "standard": "معیاری",
@@ -1314,6 +1315,11 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "رپورٹ کی ترجیحات",
+    "sections": {
+      "developer": "ڈویلپر",
+      "diagramEditor": "ڈایاگرام ایڈیٹر",
+      "securityReviewer": "سیکیورٹی جائزہ کار"
+    },
     "showDeveloperTools": "ڈویلپر ٹولز دکھائیں",
     "tabs": {
       "credentials": "اعتبارات",

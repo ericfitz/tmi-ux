@@ -15,6 +15,7 @@ export interface UserPreferencesData {
   colorBlindMode: boolean;
   showDeveloperTools: boolean;
   dashboardListView: boolean;
+  hoverShowMetadata: boolean;
   pageSize: 'usLetter' | 'A4';
   marginSize: 'narrow' | 'standard' | 'wide';
 }
@@ -35,6 +36,7 @@ const DEFAULT_PREFERENCES: UserPreferencesData = {
   colorBlindMode: false,
   showDeveloperTools: false,
   dashboardListView: false,
+  hoverShowMetadata: false,
   pageSize: 'usLetter',
   marginSize: 'standard',
 };

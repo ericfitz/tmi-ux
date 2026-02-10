@@ -72,6 +72,8 @@ import { InfraX6SelectionAdapter } from '../../infrastructure/adapters/infra-x6-
 import { InfraX6EmbeddingAdapter } from '../../infrastructure/adapters/infra-x6-embedding.adapter';
 import { InfraX6KeyboardAdapter } from '../../infrastructure/adapters/infra-x6-keyboard.adapter';
 import { InfraX6EventLoggerAdapter } from '../../infrastructure/adapters/infra-x6-event-logger.adapter';
+import { X6TooltipAdapter } from '../../infrastructure/adapters/infra-x6-tooltip.adapter';
+import { UiTooltipService } from '../services/ui-tooltip.service';
 import { InfraEdgeQueryService } from '../../infrastructure/services/infra-edge-query.service';
 import { InfraNodeConfigurationService } from '../../infrastructure/services/infra-node-configuration.service';
 import { InfraEmbeddingService } from '../../infrastructure/services/infra-embedding.service';
@@ -170,6 +172,8 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     InfraX6EmbeddingAdapter,
     InfraX6KeyboardAdapter,
     InfraX6EventLoggerAdapter,
+    X6TooltipAdapter,
+    UiTooltipService,
     InfraEdgeQueryService,
     InfraNodeConfigurationService,
     InfraEmbeddingService,

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Graph, Node } from '@antv/x6';
+import { Cell, Graph, Node } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
 import { UiTooltipService } from '../../presentation/services/ui-tooltip.service';
 import { DFD_STYLING } from '../../constants/styling-constants';
 
@@ -17,6 +18,7 @@ export class X6TooltipAdapter {
   constructor(
     private logger: LoggerService,
     private tooltipService: UiTooltipService,
+    private userPreferencesService: UserPreferencesService,
   ) {}
 
   /**
@@ -31,6 +33,7 @@ export class X6TooltipAdapter {
     try {
       this.createTooltipElement(graph);
       this.setupPortTooltipEvents(graph);
+      this.setupCellMetadataTooltipEvents(graph);
       this.isInitialized = true;
       this.logger.info('[X6TooltipAdapter] Tooltip system initialized');
     } catch (error) {
@@ -66,6 +69,10 @@ export class X6TooltipAdapter {
       this.hideTooltip();
       return;
     }
+
+    // Reset to single-line styles (in case multi-line was previously applied)
+    this.tooltipElement.style.whiteSpace = 'nowrap';
+    this.tooltipElement.style.maxWidth = '200px';
 
     // Set content and position
     this.tooltipElement.textContent = formattedContent;
@@ -173,5 +180,68 @@ export class X6TooltipAdapter {
     });
 
     this.logger.debugComponent('X6Tooltip', 'Port tooltip events set up');
+  }
+
+  /**
+   * Show multi-line tooltip at specified position with raw content.
+   * Bypasses formatTooltipContent to preserve line breaks.
+   */
+  private showMultilineTooltip(content: string, position: { x: number; y: number }): void {
+    if (!this.tooltipElement) {
+      this.logger.warn('[X6TooltipAdapter] Cannot show tooltip: element not initialized');
+      return;
+    }
+
+    if (!content || content.trim().length === 0) {
+      this.hideTooltip();
+      return;
+    }
+
+    // Apply multi-line styles
+    this.tooltipElement.style.whiteSpace = 'pre-line';
+    this.tooltipElement.style.maxWidth = '350px';
+
+    // Set content directly (no formatting/truncation)
+    this.tooltipElement.textContent = content;
+    this.tooltipElement.style.left = `${position.x}px`;
+    this.tooltipElement.style.top = `${position.y}px`;
+    this.tooltipElement.style.display = 'block';
+
+    this.logger.debugComponent('X6Tooltip', 'Multi-line tooltip shown', {
+      contentLines: content.split('\n').length,
+      position,
+    });
+  }
+
+  /**
+   * Set up cell metadata tooltip event handlers
+   */
+  private setupCellMetadataTooltipEvents(graph: Graph): void {
+    graph.on('cell:mouseenter', ({ cell, e }: { cell: Cell; e: MouseEvent }) => {
+      try {
+        if (!this.userPreferencesService.getPreferences().hoverShowMetadata) {
+          return;
+        }
+
+        const content = this.tooltipService.getCellMetadataTooltipContent(cell);
+        if (content === null) {
+          return;
+        }
+
+        const position = this.tooltipService.calculateTooltipPosition(e, {
+          offsetX: 15,
+          offsetY: -10,
+        });
+        this.showMultilineTooltip(content, position);
+      } catch (error) {
+        this.logger.error('[X6TooltipAdapter] Error handling cell metadata mouseenter', error);
+      }
+    });
+
+    graph.on('cell:mouseleave', () => {
+      this.hideTooltip();
+    });
+
+    this.logger.debugComponent('X6Tooltip', 'Cell metadata tooltip events set up');
   }
 }

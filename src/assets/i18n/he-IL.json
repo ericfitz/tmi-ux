@@ -1302,6 +1302,7 @@
     },
     "diagramAnimationEffects": "הפעל אפקטי אנימציה בעורך הדיאגרמות",
     "displayPreferences": "העדפות תצוגה",
+    "hoverShowMetadata": "הצג מטא-נתוני תא בריחוף",
     "marginSize": {
       "narrow": "צרים",
       "standard": "סטנדרטיים",
@@ -1314,6 +1315,11 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "העדפות דוחות",
+    "sections": {
+      "developer": "מפתח",
+      "diagramEditor": "עורך דיאגרמות",
+      "securityReviewer": "סוקר אבטחה"
+    },
     "showDeveloperTools": "הצג כלי פיתוח",
     "tabs": {
       "credentials": "אישורים",

@@ -1302,6 +1302,7 @@
     },
     "diagramAnimationEffects": "Animationseffekte im Diagramm-Editor aktivieren",
     "displayPreferences": "Anzeigeeinstellungen",
+    "hoverShowMetadata": "Zell-Metadaten beim Überfahren anzeigen",
     "marginSize": {
       "narrow": "Schmal",
       "standard": "Standard",
@@ -1314,6 +1315,11 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Berichtseinstellungen",
+    "sections": {
+      "developer": "Entwickler",
+      "diagramEditor": "Diagramm-Editor",
+      "securityReviewer": "Sicherheitsprüfer"
+    },
     "showDeveloperTools": "Entwicklertools anzeigen",
     "tabs": {
       "credentials": "Anmeldedaten",

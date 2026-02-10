@@ -8,7 +8,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { UiTooltipService } from './ui-tooltip.service';
 import type { LoggerService } from '@app/core/services/logger.service';
-import type { Node } from '@antv/x6';
+import type { Cell, Node } from '@antv/x6';
 
 describe('UiTooltipService', () => {
   let service: UiTooltipService;
@@ -477,6 +477,87 @@ describe('UiTooltipService', () => {
         '[TooltipService] Error getting node tooltip content',
         expect.any(Error),
       );
+    });
+  });
+
+  describe('getCellMetadataTooltipContent()', () => {
+    it('should return formatted metadata when cell has metadata', () => {
+      const mockCell = {
+        getData: vi.fn().mockReturnValue({
+          _metadata: [
+            { key: 'threat', value: 'SQL Injection' },
+            { key: 'severity', value: 'High' },
+          ],
+        }),
+      } as unknown as Cell;
+
+      const result = service.getCellMetadataTooltipContent(mockCell);
+
+      expect(result).toBe('threat : SQL Injection\nseverity : High');
+    });
+
+    it('should return null when cell has no metadata', () => {
+      const mockCell = {
+        getData: vi.fn().mockReturnValue({}),
+      } as unknown as Cell;
+
+      const result = service.getCellMetadataTooltipContent(mockCell);
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null when metadata is empty array', () => {
+      const mockCell = {
+        getData: vi.fn().mockReturnValue({ _metadata: [] }),
+      } as unknown as Cell;
+
+      const result = service.getCellMetadataTooltipContent(mockCell);
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null when cell is null', () => {
+      const result = service.getCellMetadataTooltipContent(null as unknown as Cell);
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null when getData returns null', () => {
+      const mockCell = {
+        getData: vi.fn().mockReturnValue(null),
+      } as unknown as Cell;
+
+      const result = service.getCellMetadataTooltipContent(mockCell);
+
+      expect(result).toBeNull();
+    });
+
+    it('should handle getData throwing error gracefully', () => {
+      const mockCell = {
+        getData: vi.fn().mockImplementation(() => {
+          throw new Error('data error');
+        }),
+      } as unknown as Cell;
+
+      const result = service.getCellMetadataTooltipContent(mockCell);
+
+      expect(result).toBeNull();
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        '[TooltipService] Error getting cell metadata tooltip content',
+        expect.any(Error),
+      );
+    });
+
+    it('should format single metadata entry', () => {
+      const mockCell = {
+        getData: vi.fn().mockReturnValue({
+          _metadata: [{ key: 'status', value: 'reviewed' }],
+        }),
+      } as unknown as Cell;
+
+      const result = service.getCellMetadataTooltipContent(mockCell);
+
+      expect(result).toBe('status : reviewed');
     });
   });
 });

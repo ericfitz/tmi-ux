@@ -1302,6 +1302,7 @@
     },
     "diagramAnimationEffects": "Habilitar Efeitos de Animacao no Editor de Diagramas",
     "displayPreferences": "Preferencias de Exibicao",
+    "hoverShowMetadata": "Mostrar metadados da célula ao passar o cursor",
     "marginSize": {
       "narrow": "Estreita",
       "standard": "Padrao",
@@ -1314,6 +1315,11 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Preferencias de Relatorio",
+    "sections": {
+      "developer": "Desenvolvedor",
+      "diagramEditor": "Editor de Diagramas",
+      "securityReviewer": "Revisor de Segurança"
+    },
     "showDeveloperTools": "Mostrar Ferramentas do Desenvolvedor",
     "tabs": {
       "credentials": "Credenciais",

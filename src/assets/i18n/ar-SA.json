@@ -1302,6 +1302,7 @@
     },
     "diagramAnimationEffects": "تفعيل تأثيرات الرسوم المتحركة في محرر المخططات",
     "displayPreferences": "تفضيلات العرض",
+    "hoverShowMetadata": "إظهار بيانات الخلية الوصفية عند التمرير",
     "marginSize": {
       "narrow": "ضيق",
       "standard": "قياسي",
@@ -1314,6 +1315,11 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "تفضيلات التقرير",
+    "sections": {
+      "developer": "المطوّر",
+      "diagramEditor": "محرر المخططات",
+      "securityReviewer": "مراجع الأمان"
+    },
     "showDeveloperTools": "عرض أدوات المطور",
     "tabs": {
       "credentials": "بيانات الاعتماد",

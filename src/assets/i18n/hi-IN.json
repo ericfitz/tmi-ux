@@ -1302,6 +1302,7 @@
     },
     "diagramAnimationEffects": "डायग्राम एडिटर में एनिमेशन प्रभाव सक्षम करें",
     "displayPreferences": "प्रदर्शन प्राथमिकताएं",
+    "hoverShowMetadata": "होवर पर सेल मेटाडेटा दिखाएं",
     "marginSize": {
       "narrow": "संकीर्ण",
       "standard": "मानक",
@@ -1314,6 +1315,11 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "रिपोर्ट प्राथमिकताएं",
+    "sections": {
+      "developer": "डेवलपर",
+      "diagramEditor": "डायग्राम एडिटर",
+      "securityReviewer": "सुरक्षा समीक्षक"
+    },
     "showDeveloperTools": "डेवलपर टूल्स दिखाएं",
     "tabs": {
       "credentials": "क्रेडेंशियल",

@@ -1302,6 +1302,7 @@
     },
     "diagramAnimationEffects": "다이어그램 편집기에서 애니메이션 효과 활성화",
     "displayPreferences": "디스플레이 설정",
+    "hoverShowMetadata": "호버 시 셀 메타데이터 표시",
     "marginSize": {
       "narrow": "좁게",
       "standard": "표준",
@@ -1314,6 +1315,11 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "보고서 설정",
+    "sections": {
+      "developer": "개발자",
+      "diagramEditor": "다이어그램 편집기",
+      "securityReviewer": "보안 검토자"
+    },
     "showDeveloperTools": "개발자 도구 표시",
     "tabs": {
       "credentials": "자격증명",

@@ -1302,6 +1302,7 @@
     },
     "diagramAnimationEffects": "เปิดใช้งานเอฟเฟกต์แอนิเมชันในโปรแกรมแก้ไขแผนภาพ",
     "displayPreferences": "การตั้งค่าการแสดงผล",
+    "hoverShowMetadata": "แสดงข้อมูลเมตาของเซลล์เมื่อวางเมาส์",
     "marginSize": {
       "narrow": "แคบ",
       "standard": "มาตรฐาน",
@@ -1314,6 +1315,11 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "การตั้งค่ารายงาน",
+    "sections": {
+      "developer": "นักพัฒนา",
+      "diagramEditor": "ตัวแก้ไขไดอะแกรม",
+      "securityReviewer": "ผู้ตรวจสอบความปลอดภัย"
+    },
     "showDeveloperTools": "แสดงเครื่องมือนักพัฒนา",
     "tabs": {
       "credentials": "ข้อมูลประจำตัว",

@@ -1302,6 +1302,7 @@
     },
     "diagramAnimationEffects": "ডায়াগ্রাম এডিটরে অ্যানিমেশন ইফেক্ট সক্রিয় করুন",
     "displayPreferences": "প্রদর্শন পছন্দ",
+    "hoverShowMetadata": "হোভারে সেল মেটাডেটা দেখান",
     "marginSize": {
       "narrow": "সরু",
       "standard": "মানক",
@@ -1314,6 +1315,11 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "রিপোর্ট পছন্দ",
+    "sections": {
+      "developer": "ডেভেলপার",
+      "diagramEditor": "ডায়াগ্রাম এডিটর",
+      "securityReviewer": "নিরাপত্তা পর্যালোচক"
+    },
     "showDeveloperTools": "ডেভেলপার টুলস দেখান",
     "tabs": {
       "credentials": "শংসাপত্র",

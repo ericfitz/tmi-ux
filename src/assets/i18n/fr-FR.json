@@ -1302,6 +1302,7 @@
     },
     "diagramAnimationEffects": "Activer les effets d'animation dans l'editeur de diagrammes",
     "displayPreferences": "Preferences d'affichage",
+    "hoverShowMetadata": "Afficher les métadonnées de cellule au survol",
     "marginSize": {
       "narrow": "Etroit",
       "standard": "Standard",
@@ -1314,6 +1315,11 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "Preferences de rapport",
+    "sections": {
+      "developer": "Développeur",
+      "diagramEditor": "Éditeur de diagrammes",
+      "securityReviewer": "Réviseur de sécurité"
+    },
     "showDeveloperTools": "Afficher les outils de développement",
     "tabs": {
       "credentials": "Identifiants",

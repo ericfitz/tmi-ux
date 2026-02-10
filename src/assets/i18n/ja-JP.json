@@ -1302,6 +1302,7 @@
     },
     "diagramAnimationEffects": "ダイアグラムエディターでアニメーション効果を有効にする",
     "displayPreferences": "表示設定",
+    "hoverShowMetadata": "ホバー時にセルのメタデータを表示",
     "marginSize": {
       "narrow": "狭い",
       "standard": "標準",
@@ -1314,6 +1315,11 @@
       "usLetter": "US Letter"
     },
     "reportPreferences": "レポート設定",
+    "sections": {
+      "developer": "開発者",
+      "diagramEditor": "ダイアグラムエディター",
+      "securityReviewer": "セキュリティレビュアー"
+    },
     "showDeveloperTools": "開発者ツールを表示",
     "tabs": {
       "credentials": "認証情報",

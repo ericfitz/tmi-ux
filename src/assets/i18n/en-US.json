@@ -1332,6 +1332,7 @@
     },
     "diagramAnimationEffects": "Enable Animation Effects in Diagram Editor",
     "displayPreferences": "Display Preferences",
+    "hoverShowMetadata": "Show cell metadata on hover",
     "marginSize": {
       "narrow": "Narrow",
       "standard": "Standard",
@@ -1346,6 +1347,11 @@
       "usLetter.comment": "This is a proper name and should not be translated."
     },
     "reportPreferences": "Report Preferences",
+    "sections": {
+      "developer": "Developer",
+      "diagramEditor": "Diagram Editor",
+      "securityReviewer": "Security Reviewer"
+    },
     "showDeveloperTools": "Show Developer Tools",
     "tabs": {
       "credentials": "Credentials",
