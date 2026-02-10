@@ -32,10 +32,6 @@
   } @else {
     <!-- Survey header with save status -->
     <div class="survey-header">
-      <button mat-icon-button (click)="saveAndExit()" matTooltip="Save and exit">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-
       <div class="survey-title">
         <h1>{{ surveyJson?.title || 'Survey' }}</h1>
         @if (surveyJson?.description) {
@@ -55,6 +51,15 @@
           <span>Saved at {{ formatTime(lastSaved) }}</span>
         }
       </div>
+
+      <button
+        mat-icon-button
+        class="close-button"
+        (click)="saveAndExit()"
+        [attr.aria-label]="'common.close' | transloco"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
 
     <!-- Survey content -->

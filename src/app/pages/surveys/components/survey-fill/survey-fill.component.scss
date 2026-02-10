@@ -65,7 +65,7 @@
 
 .survey-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
   padding: 16px 24px;
   background: var(--color-surface);
@@ -107,6 +107,10 @@
     .error-text {
       color: var(--color-error);
     }
+  }
+
+  .close-button {
+    margin-left: 16px;
   }
 }
 
@@ -158,13 +162,18 @@ button mat-icon {
     padding: 12px 16px;
 
     .survey-title {
-      order: 2;
+      order: 1;
+      flex-basis: calc(100% - 56px);
+    }
+
+    .save-status {
+      order: 3;
       width: 100%;
       margin-top: 8px;
     }
 
-    .save-status {
-      order: 1;
+    .close-button {
+      order: 2;
       margin-left: auto;
     }
   }
