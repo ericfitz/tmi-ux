@@ -58,8 +58,10 @@ oci raw-request --profile "${OCI_PROFILE}" \
     docker login "${REGISTRY}" --username "${OCI_TENANCY_NAMESPACE}/oracleidentitycloudservice/$(oci iam user list --profile "${OCI_PROFILE}" --query 'data[0].name' --raw-output 2>/dev/null || echo 'user')" --password-stdin 2>&1 | grep -v "WARNING" || true
 echo ""
 
-echo "Building Docker image for OCI..."
-docker build -f Dockerfile.oci -t "${FULL_IMAGE_NAME}" .
+APP_VERSION=$(node -p "require('./package.json').version")
+
+echo "Building Docker image for OCI (version: ${APP_VERSION})..."
+docker build --build-arg APP_VERSION="${APP_VERSION}" -f Dockerfile.oci -t "${FULL_IMAGE_NAME}" .
 echo ""
 
 echo "Pushing image to OCI Container Registry..."

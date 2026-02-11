@@ -38,6 +38,8 @@ RUN npm install --omit=dev --production
 
 # Stage 3: Production runtime
 FROM cgr.dev/chainguard/node:latest
+ARG APP_VERSION=unknown
+LABEL org.opencontainers.image.version=$APP_VERSION
 
 WORKDIR /app
 
