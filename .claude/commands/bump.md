@@ -5,11 +5,13 @@ Safely update pnpm JavaScript/TypeScript package dependencies, focusing on patch
 ## Overview
 
 This command performs a controlled dependency update:
-1. Analyzes all direct and transitive dependencies for available updates
-2. Separates updates into safe (patch/minor) and excluded (major/special) categories
-3. Applies safe updates automatically
-4. Presents recommendations for excluded packages (Angular, AntV/X6, major versions)
-5. Validates the project builds and tests pass after updates
+1. Runs a security audit to identify vulnerable transitive dependencies
+2. Checks pnpm overrides for available patch/minor updates
+3. Analyzes all direct dependencies for available updates
+4. Separates updates into safe (patch/minor) and excluded (major/special) categories
+5. Applies safe updates and security fixes automatically
+6. Presents recommendations for excluded packages (Angular, AntV/X6, major versions)
+7. Validates the project builds and tests pass after updates
 
 ## Exclusion Rules
 
@@ -39,9 +41,62 @@ Before checking for outdated packages, prune the pnpm store to ensure fresh regi
 pnpm store prune
 ```
 
-### Step 2: Check Current State
+### Step 2: Security Audit
 
-Run `pnpm outdated --format json` to get the current state of all dependencies:
+Run `pnpm audit --json` to check for known vulnerabilities in transitive dependencies:
+
+```bash
+pnpm audit --json
+```
+
+This returns a JSON object with vulnerability information:
+```json
+{
+  "advisories": {
+    "1234": {
+      "module_name": "qs",
+      "severity": "high",
+      "title": "Prototype Pollution",
+      "findings": [{ "version": "6.14.1", "paths": ["express>qs"] }],
+      "patched_versions": ">=6.14.2"
+    }
+  },
+  "metadata": {
+    "vulnerabilities": { "info": 0, "low": 0, "moderate": 0, "high": 1, "critical": 0 }
+  }
+}
+```
+
+**Processing audit results:**
+
+For each advisory:
+1. Check if the vulnerable package is already in `pnpm.overrides` in `package.json`
+2. If yes, update the override version to the patched version (if it's a patch/minor bump)
+3. If no, add a new override entry to pin the patched version
+4. If the fix requires a major version bump, flag it in the excluded/recommendations section instead
+
+**Important:** Only auto-apply audit fixes that are patch or minor version bumps. Major version fixes should be flagged as recommendations. Apply the same exclusion rules (Angular, AntV/X6) to audit fixes.
+
+### Step 3: Check Override Updates
+
+Examine the `pnpm.overrides` section in `package.json` for packages that have newer patch/minor versions available, independent of security advisories. Overrides are typically added for security or compatibility reasons and should be kept current.
+
+For each override entry:
+1. Parse the package name and current version from the override
+2. Look up the latest available version using `pnpm view <package> version`
+3. If a newer patch or minor version exists within the same major, flag it as a safe update
+4. Skip overrides that use complex selectors (e.g., `wrap-ansi@9.0.1`) — these pin specific transitive dependency versions and should not be auto-bumped
+
+**Override version formats to handle:**
+- `^1.2.3` or `>=1.2.3` — semver ranges, update the version number
+- `1.2.3` — exact pins, update to the latest patch/minor within the same major
+- `package@version` selector format (e.g., `wrap-ansi@9.0.1`: `9.0.0`) — skip, these are targeted overrides
+
+Present override updates alongside other safe updates in the analysis display.
+
+### Step 4: Check Current State
+
+Run `pnpm outdated --format json` to get the current state of all direct dependencies:
 
 ```bash
 pnpm outdated --format json
@@ -66,7 +121,7 @@ This returns a JSON object with package information:
 - `wanted`: Latest version matching the semver range in package.json
 - `dependencyType`: "dependencies", "devDependencies", or "optionalDependencies"
 
-### Step 3: Categorize Updates
+### Step 5: Categorize Updates
 
 Parse the output and categorize each package:
 
@@ -98,12 +153,31 @@ function isExcludedPackage(name):
          name.startsWith('@antv/x6')
 ```
 
-### Step 4: Display Analysis
+### Step 6: Display Analysis
 
 Present the analysis to the user:
 
 ```
 Dependency Update Analysis
+
+Security Fixes (will be applied):
+-----------------------------------------
+Package                     Current   Patched   Severity   Source
+-----------------------------------------
+qs                          6.14.1    6.14.2    high       audit (override)
+...
+-----------------------------------------
+Total: 1 package
+
+Override Updates (will be applied):
+-----------------------------------------
+Package                     Current   Target    Type       Notes
+-----------------------------------------
+hono                        4.11.7    4.11.9    patch      exact pin
+...
+-----------------------------------------
+Total: 1 package
+Skipped: 2 (targeted selectors: wrap-ansi@9.0.1, slice-ansi@7.1.1)
 
 Safe Updates (will be applied):
 -----------------------------------------
@@ -132,7 +206,17 @@ Total: 8 packages
 Proceed with safe updates? (Continuing automatically)
 ```
 
-### Step 5: Apply Safe Updates
+### Step 7: Apply Security Fixes and Override Updates
+
+For security fixes identified by `pnpm audit`:
+1. Update the version in `pnpm.overrides` (or add a new override if one doesn't exist)
+2. If the package also appears as a direct dependency, update that version too
+
+For override updates:
+1. Update the version in the `pnpm.overrides` entry
+2. If the same package appears as a direct dependency with the same pin, update both
+
+### Step 8: Apply Safe Updates
 
 For each safe update, use `pnpm update` with the specific package:
 
@@ -148,7 +232,7 @@ pnpm update <package1> <package2> <package3> ...
 
 **Important:** Use `pnpm update` without `--latest` to respect semver ranges and only apply wanted versions.
 
-### Step 6: Install and Lock
+### Step 9: Install and Lock
 
 After updates, ensure the lockfile is consistent:
 
@@ -156,7 +240,7 @@ After updates, ensure the lockfile is consistent:
 pnpm install
 ```
 
-### Step 7: Validate Build
+### Step 10: Validate Build
 
 Run the build to ensure no breaking changes:
 
@@ -170,7 +254,7 @@ If the build fails:
 3. Re-run the build
 4. Report which packages caused issues
 
-### Step 8: Run Tests
+### Step 11: Run Tests
 
 Run the test suite to validate functionality:
 
@@ -184,7 +268,7 @@ If tests fail:
 3. Re-run tests
 4. Report which packages caused test failures
 
-### Step 9: Lint Check
+### Step 12: Lint Check
 
 Run linting to ensure code style is maintained:
 
@@ -192,12 +276,30 @@ Run linting to ensure code style is maintained:
 pnpm run lint:all
 ```
 
-### Step 10: Display Final Report
+### Step 13: Display Final Report
 
 ```
 Dependency Update Complete
 
-Applied Updates:
+Security Fixes Applied:
+-----------------------------------------
+Package                     Previous  Updated   Severity   Source
+-----------------------------------------
+qs                          6.14.1    6.14.2    high       audit (override)
+...
+-----------------------------------------
+Total: 1 package
+
+Override Updates Applied:
+-----------------------------------------
+Package                     Previous  Updated   Type
+-----------------------------------------
+hono                        4.11.7    4.11.9    patch
+...
+-----------------------------------------
+Total: 1 package
+
+Direct Dependency Updates Applied:
 -----------------------------------------
 Package                     Previous  Updated   Type
 -----------------------------------------
@@ -236,7 +338,9 @@ Lint Status: PASSED
 
 ## Error Handling
 
+- **pnpm audit fails**: Report error but continue with `pnpm outdated` and override checks
 - **pnpm outdated fails**: Report error and exit
+- **pnpm view fails** (for override checking): Skip that override, report it, and continue with others
 - **Build fails after update**: Revert failing packages, continue with remaining updates
 - **Tests fail after update**: Revert failing packages, continue with remaining updates
 - **Network errors**: Retry up to 3 times, then report and exit
@@ -249,7 +353,7 @@ Lint Status: PASSED
 
 ## Implementation Notes
 
-1. **Transitive dependencies**: `pnpm outdated` shows direct dependencies only by default. Transitive dependencies are handled automatically by pnpm's lockfile resolution.
+1. **Transitive dependencies**: `pnpm outdated` shows direct dependencies only by default. Transitive dependencies are handled by `pnpm audit` (for security) and override checking (for version currency).
 
 2. **Lockfile changes**: The `pnpm-lock.yaml` file will be updated. This is expected and should be committed.
 
@@ -261,7 +365,11 @@ Lint Status: PASSED
 
 6. **Reverting updates**: If a package causes issues, use `pnpm update <package>@<previous-version>` to revert, then `pnpm install`.
 
-7. **Security considerations**: This command does not bypass security advisories. If a package has a security vulnerability requiring a major update, it will be flagged in recommendations.
+7. **Security audit**: `pnpm audit` catches vulnerabilities in transitive dependencies that `pnpm outdated` misses. Overrides are the primary mechanism for pinning transitive dependency versions in pnpm, so audit fixes often require updating or adding override entries.
+
+8. **Override management**: Overrides in `pnpm.overrides` pin transitive dependency versions, typically for security or compatibility. These should be kept current with patch/minor updates. Overrides using the `package@version` selector syntax (e.g., `"wrap-ansi@9.0.1": "9.0.0"`) target specific transitive resolution paths and should not be auto-bumped — they require manual analysis.
+
+9. **Dual entries**: Some packages appear both as a direct dependency and as an override (e.g., `hono`). When updating these, both entries must be updated together to avoid version conflicts.
 
 ## Related Commands
 
