@@ -23,7 +23,7 @@ You are a senior software engineer collaborating with a peer. Prioritize thoroug
 - Push back on flawed logic or problematic approaches
 - When changes are purely stylistic/preferential, acknowledge them as such ("Sure, I'll use that approach" rather than "You're absolutely right")
 - Present trade-offs objectively without defaulting to agreement
-- Be conservative when suggesting refactoring, adopting patterns, or implementing additional layers
+- Be conservative when suggesting refactoring, adopting patterns, or implementing additional layers or components
 
 ## Task Completion Requirements
 
@@ -53,7 +53,7 @@ When code changes are associated with a GitHub issue, also:
 
 - Remove unused references rather than prefixing with underscore (unless placeholders)
 - Don't add comments indicating code has been removed or relocated
-- Don't disable code that needs fixing unless instructed
+- Don't disable code that needs fixing unless instructed, but do comment the code, noting the problem
 - Don't report task complete with unimplemented functionality - document remaining work
 
 ## When Planning
@@ -100,7 +100,13 @@ When code changes are associated with a GitHub issue, also:
 
 ## Project Overview
 
-TMI-UX is an Angular-based threat modeling application with real-time collaborative editing and data flow diagram creation.
+TMI-UX is an Angular-based application implementing a user workflow for managing a security review process, from request (intake) through analysis and followup. The review process focuses on a threat modeling approach, with collaborative data flow diagram creation and artifacts that can be created, read or updated by either machines or humans, interchangeably. The application is designed to be easy to integrate with and extend without having to make code modifications.
+
+The application has three sets of users:
+
+- Security reviewers - triage and prioritize incoming work; peform security reviews
+- End users/requesters - request security reviews by filling out intake surveys; check status
+- Administrators - manage the application and its configuration at runtime
 
 ## API and Backend
 
@@ -129,6 +135,8 @@ See the [Architecture and Design](https://github.com/ericfitz/tmi/wiki/Architect
 - Threat Modeling (`/pages/tm`) - List, edit, diagram management
 - Data Flow Diagrams (`/pages/dfd`) - Layered DDD architecture with AntV X6 graphing
 - Core Services (`/core`) - ApiService, AuthService, LoggerService, WebSocketService, etc.
+- Administration (`/admin`) - Administration of the application while it is operating
+- Intake (`/intake`) - User requests for security review by filling out surveys
 
 **Environments:** `src/environments/` - API URLs, feature flags, OAuth config
 
@@ -161,9 +169,3 @@ Automatic semantic versioning via git hooks using [Conventional Commits](https:/
 - Error handling: `catchError` with `LoggerService`, never `console.log`
 - Explicit return types, JSDoc comments
 - Import order: Angular core → Angular modules → Third-party → Project
-
-## Additional Resources
-
-- Agent context: [docs/agent/README.md](docs/agent/README.md)
-- All docs: [docs/README.md](docs/README.md)
-- Service standards: [docs/reference/architecture/service-provisioning.md](docs/reference/architecture/service-provisioning.md)
