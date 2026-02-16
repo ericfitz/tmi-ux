@@ -205,49 +205,6 @@ export class InfraEmbeddingService {
   }
 
   /**
-   * Calculate z-index adjustments for embedding (business logic)
-   */
-  calculateEmbeddingZIndexes(
-    parent: Node,
-    child: Node,
-  ): {
-    parentZIndex: number;
-    childZIndex: number;
-  } {
-    const parentType = (parent as any).getNodeTypeInfo
-      ? (parent as any).getNodeTypeInfo().type
-      : 'process';
-    const childType = (child as any).getNodeTypeInfo
-      ? (child as any).getNodeTypeInfo().type
-      : 'process';
-
-    // Parent keeps its base z-index (security boundaries stay behind)
-    let parentZIndex: number;
-    if (parentType === 'security-boundary') {
-      parentZIndex = 1; // Security boundaries stay at the back
-    } else {
-      parentZIndex = 10;
-    }
-
-    // Child gets appropriate z-index based on type
-    let childZIndex: number;
-    if (childType === 'security-boundary') {
-      // Security boundaries should always stay behind, even when embedded
-      childZIndex = 2; // Slightly higher than non-embedded security boundaries but still behind regular nodes
-    } else if (childType === 'text-box') {
-      // Text-boxes follow normal embedding rules but appear above other embedded nodes
-      childZIndex = 15; // Same as regular nodes when embedded
-    } else {
-      childZIndex = 15; // Regular nodes appear in front when embedded
-    }
-
-    return {
-      parentZIndex,
-      childZIndex,
-    };
-  }
-
-  /**
    * Calculate z-index for unembedding (business logic)
    */
   calculateUnembeddingZIndex(node: Node): number {

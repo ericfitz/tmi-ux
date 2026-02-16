@@ -281,43 +281,7 @@ export class AppDfdOrchestrator {
    */
   undo(): Observable<OperationResult> {
     this.logger.debugComponent('AppDfdOrchestrator', 'Undo requested');
-
-    // Check if in active collaboration session
-    const isCollaborating = this.collaborationService.isCollaborating();
-
-    if (isCollaborating) {
-      // Collaboration mode: send WebSocket message instead of local undo
-      // Server will respond with diagram_operation containing the changes
-      this.logger.info('Undo in collaboration mode - sending WebSocket message');
-      return this.websocketCollaborationAdapter.requestUndo().pipe(
-        map(() => ({
-          success: true,
-          operationType: 'batch-operation' as const,
-          affectedCellIds: [],
-          timestamp: Date.now(),
-        })),
-        catchError(error => {
-          this.logger.error('Failed to send undo WebSocket message', { error });
-          return throwError(() => error);
-        }),
-      );
-    }
-
-    // Solo mode: execute local undo
-    this.logger.info('Undo in solo mode - executing local operation');
-    return this.appHistoryService.undo().pipe(
-      tap(result => {
-        if (result.success) {
-          // Clear visual effects after undo
-          this.dfdInfrastructure.graphAdapter?.clearAllVisualEffects();
-          // Update embedding appearances to reflect new state
-          this.dfdInfrastructure.graphAdapter?.updateAllEmbeddingAppearances();
-          // Update port visibility based on new connection state
-          this.dfdInfrastructure.graphAdapter?.updateAllPortVisibility();
-          this.logger.debugComponent('AppDfdOrchestrator', 'Post-undo cleanup completed');
-        }
-      }),
-    );
+    return this._executeUndoRedo('undo');
   }
 
   /**
@@ -327,43 +291,7 @@ export class AppDfdOrchestrator {
    */
   redo(): Observable<OperationResult> {
     this.logger.debugComponent('AppDfdOrchestrator', 'Redo requested');
-
-    // Check if in active collaboration session
-    const isCollaborating = this.collaborationService.isCollaborating();
-
-    if (isCollaborating) {
-      // Collaboration mode: send WebSocket message instead of local redo
-      // Server will respond with diagram_operation containing the changes
-      this.logger.info('Redo in collaboration mode - sending WebSocket message');
-      return this.websocketCollaborationAdapter.requestRedo().pipe(
-        map(() => ({
-          success: true,
-          operationType: 'batch-operation' as const,
-          affectedCellIds: [],
-          timestamp: Date.now(),
-        })),
-        catchError(error => {
-          this.logger.error('Failed to send redo WebSocket message', { error });
-          return throwError(() => error);
-        }),
-      );
-    }
-
-    // Solo mode: execute local redo
-    this.logger.info('Redo in solo mode - executing local operation');
-    return this.appHistoryService.redo().pipe(
-      tap(result => {
-        if (result.success) {
-          // Clear visual effects after redo
-          this.dfdInfrastructure.graphAdapter?.clearAllVisualEffects();
-          // Update embedding appearances to reflect new state
-          this.dfdInfrastructure.graphAdapter?.updateAllEmbeddingAppearances();
-          // Update port visibility based on new connection state
-          this.dfdInfrastructure.graphAdapter?.updateAllPortVisibility();
-          this.logger.debugComponent('AppDfdOrchestrator', 'Post-redo cleanup completed');
-        }
-      }),
-    );
+    return this._executeUndoRedo('redo');
   }
 
   /**
@@ -2030,6 +1958,53 @@ export class AppDfdOrchestrator {
     }
 
     return new Blob([arrayBuffer], { type: mimeType });
+  }
+
+  /**
+   * Shared undo/redo implementation
+   * Handles collaboration check, WebSocket vs solo branching, and post-operation cleanup
+   */
+  private _executeUndoRedo(direction: 'undo' | 'redo'): Observable<OperationResult> {
+    // Check if in active collaboration session
+    const isCollaborating = this.collaborationService.isCollaborating();
+
+    if (isCollaborating) {
+      // Collaboration mode: send WebSocket message instead of local operation
+      // Server will respond with diagram_operation containing the changes
+      this.logger.info(`${direction} in collaboration mode - sending WebSocket message`);
+      const request$ =
+        direction === 'undo'
+          ? this.websocketCollaborationAdapter.requestUndo()
+          : this.websocketCollaborationAdapter.requestRedo();
+      return request$.pipe(
+        map(() => ({
+          success: true,
+          operationType: 'batch-operation' as const,
+          affectedCellIds: [],
+          timestamp: Date.now(),
+        })),
+        catchError(error => {
+          this.logger.error(`Failed to send ${direction} WebSocket message`, { error });
+          return throwError(() => error);
+        }),
+      );
+    }
+
+    // Solo mode: execute local operation
+    this.logger.info(`${direction} in solo mode - executing local operation`);
+    const operation$ =
+      direction === 'undo' ? this.appHistoryService.undo() : this.appHistoryService.redo();
+    return operation$.pipe(
+      tap(result => {
+        if (result.success) {
+          // Post-operation cleanup: clear visual effects, update embedding, update ports
+          this.dfdInfrastructure.graphAdapter?.clearAllVisualEffects();
+          this.dfdInfrastructure.graphAdapter?.updateAllEmbeddingAppearances();
+          this.dfdInfrastructure.graphAdapter?.updateAllPortVisibility();
+          this.logger.debugComponent('AppDfdOrchestrator', `Post-${direction} cleanup completed`);
+        }
+      }),
+    );
   }
 
   private _markUnsavedChanges(): void {

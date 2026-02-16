@@ -238,21 +238,7 @@ export class InfraNodeService {
    * Get default label for a shape type
    */
   private getDefaultLabelForType(shapeType: NodeType): string {
-    switch (shapeType) {
-      case 'actor':
-        return this.transloco.translate('editor.nodeLabels.actor');
-      case 'process':
-        return this.transloco.translate('editor.nodeLabels.process');
-      case 'store':
-        return this.transloco.translate('editor.nodeLabels.store');
-      case 'security-boundary':
-        return this.transloco.translate('editor.nodeLabels.securityBoundary');
-      case 'text-box':
-        return this.transloco.translate('editor.nodeLabels.textbox');
-      default:
-        // we probably should return an error string here that can be used to diagnose unexpected case
-        return this.transloco.translate('editor.nodeLabels.node');
-    }
+    return NodeInfo.getDefaultLabel(shapeType, (key: string) => this.transloco.translate(key));
   }
 
   /**

@@ -1209,8 +1209,9 @@ describe('AuthService', () => {
 
     it('should clear provider cache on logout', () => {
       // Set up initial state with cached providers
-      service['cachedProviders'] = mockProvidersResponse.providers;
-      service['providersCacheTime'] = Date.now();
+      service['cachedOAuthProviders'] = mockProvidersResponse.providers;
+      service['oauthProvidersCacheTime'] = Date.now();
+      service['samlProvidersCacheTime'] = Date.now();
 
       service['isAuthenticatedSubject'].next(true);
       service['userProfileSubject'].next(mockUserProfile);
@@ -1221,7 +1222,8 @@ describe('AuthService', () => {
       // Verify provider cache is cleared
       expect(service['cachedOAuthProviders']).toBeNull();
       expect(service['cachedSAMLProviders']).toBeNull();
-      expect(service['providersCacheTime']).toBe(0);
+      expect(service['oauthProvidersCacheTime']).toBe(0);
+      expect(service['samlProvidersCacheTime']).toBe(0);
 
       // Verify auth data is also cleared
       expect(service.isAuthenticated).toBe(false);

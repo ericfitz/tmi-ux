@@ -22,6 +22,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { Cell } from '@antv/x6';
+import { copyToClipboard } from '../../../../../shared/utils/clipboard.util';
 
 /**
  * Data interface for the cell properties dialog
@@ -67,43 +68,7 @@ export class CellPropertiesDialogComponent {
    * Copy the JSON content to clipboard
    */
   onCopyToClipboard(): void {
-    try {
-      navigator.clipboard.writeText(this.cellJson).then(
-        () => {
-          // Success - could add a toast notification here if needed
-        },
-        (_error: unknown) => {
-          // Fallback for older browsers
-          this._fallbackCopyToClipboard(this.cellJson);
-        },
-      );
-    } catch {
-      // Fallback for older browsers
-      this._fallbackCopyToClipboard(this.cellJson);
-    }
-  }
-
-  /**
-   * Fallback method to copy text to clipboard for older browsers
-   */
-  private _fallbackCopyToClipboard(text: string): void {
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-999999px';
-    textArea.style.top = '-999999px';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-
-    try {
-      document.execCommand('copy');
-    } catch {
-      // Last resort: show the text in an alert so user can manually copy
-      alert('Please manually copy this text:\n\n' + text);
-    }
-
-    document.body.removeChild(textArea);
+    copyToClipboard(this.cellJson);
   }
 
   /**

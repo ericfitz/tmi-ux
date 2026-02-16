@@ -22,6 +22,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
 import { HistoryState, HistoryEntry } from '../../../types/history.types';
 import { AppHistoryService } from '../../../application/services/app-history.service';
+import { safeStringify } from '../../../../../shared/utils/safe-stringify.util';
+import { copyToClipboard } from '../../../../../shared/utils/clipboard.util';
 
 /**
  * Data interface for the history dialog
@@ -118,7 +120,7 @@ export class HistoryDialogComponent {
 
     // Create complete JSON for copying
     const historyData = this._extractHistoryData(historyState);
-    this.historyJson = this._safeStringify(historyData, 2);
+    this.historyJson = safeStringify(historyData, 2, { maxArrayLength: 10, maxProperties: 20 });
   }
 
   /**
@@ -137,8 +139,11 @@ export class HistoryDialogComponent {
       userId: entry.userId,
       operationId: entry.operationId,
       metadata: entry.metadata,
-      cellsJson: this._safeStringify(entry.cells, 2),
-      previousCellsJson: this._safeStringify(entry.previousCells, 2),
+      cellsJson: safeStringify(entry.cells, 2, { maxArrayLength: 10, maxProperties: 20 }),
+      previousCellsJson: safeStringify(entry.previousCells, 2, {
+        maxArrayLength: 10,
+        maxProperties: 20,
+      }),
     };
   }
 
@@ -202,98 +207,10 @@ export class HistoryDialogComponent {
   }
 
   /**
-   * Safely stringify an object, handling circular references
-   */
-  private _safeStringify(obj: any, indent: number = 0): string {
-    const seen = new WeakSet();
-
-    const replacerFunction = (_key: string, value: any): any => {
-      // Handle null and undefined
-      if (value === null || value === undefined) {
-        return value;
-      }
-
-      // Handle primitive types
-      if (typeof value !== 'object') {
-        return value;
-      }
-
-      // Handle circular references
-      if (seen.has(value)) {
-        return '[Circular Reference]';
-      }
-
-      seen.add(value);
-
-      // Handle functions
-      if (typeof value === 'function') {
-        return `[Function: ${value.name || 'anonymous'}]`;
-      }
-
-      // Handle arrays
-      if (Array.isArray(value)) {
-        // Limit array length to prevent massive output
-        if (value.length > 10) {
-          return [...value.slice(0, 10), `[... ${value.length - 10} more items]`];
-        }
-        return value;
-      }
-
-      // Handle DOM elements and complex objects
-      if (value instanceof Element || value instanceof Node) {
-        return `[DOM Element: ${value.constructor.name}]`;
-      }
-
-      // Handle objects with too many properties (to prevent huge output)
-      if (typeof value === 'object' && value.constructor === Object) {
-        const keys = Object.keys(value);
-        if (keys.length > 20) {
-          const limitedObj: any = {};
-          keys.slice(0, 20).forEach(key => {
-            limitedObj[key] = value[key];
-          });
-          limitedObj['...'] = `[${keys.length - 20} more properties]`;
-          return limitedObj;
-        }
-      }
-
-      return value;
-    };
-
-    try {
-      return JSON.stringify(obj, replacerFunction, indent);
-    } catch (error) {
-      return JSON.stringify(
-        {
-          error: 'Failed to serialize object',
-          message: error instanceof Error ? error.message : 'Unknown error',
-          objectType: typeof obj,
-          constructor: obj?.constructor?.name || 'unknown',
-        },
-        null,
-        indent,
-      );
-    }
-  }
-
-  /**
    * Copy the JSON content to clipboard
    */
   onCopyToClipboard(): void {
-    try {
-      navigator.clipboard.writeText(this.historyJson).then(
-        () => {
-          // Success - could add a toast notification here if needed
-        },
-        (_error: unknown) => {
-          // Fallback for older browsers
-          this._fallbackCopyToClipboard(this.historyJson);
-        },
-      );
-    } catch {
-      // Fallback for older browsers
-      this._fallbackCopyToClipboard(this.historyJson);
-    }
+    copyToClipboard(this.historyJson);
   }
 
   /**
@@ -302,29 +219,6 @@ export class HistoryDialogComponent {
   onClearHistory(): void {
     this.data.historyService.clearHistory();
     this._dialogRef.close();
-  }
-
-  /**
-   * Fallback method to copy text to clipboard for older browsers
-   */
-  private _fallbackCopyToClipboard(text: string): void {
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-999999px';
-    textArea.style.top = '-999999px';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-
-    try {
-      document.execCommand('copy');
-    } catch {
-      // Last resort: show the text in an alert so user can manually copy
-      alert('Please manually copy this text:\n\n' + text);
-    }
-
-    document.body.removeChild(textArea);
   }
 
   /**

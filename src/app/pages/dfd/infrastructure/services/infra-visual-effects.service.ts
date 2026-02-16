@@ -432,65 +432,49 @@ export class InfraVisualEffectsService {
     return false;
   }
 
-  /**
-   * Disable history tracking if available
-   * @param graph - Graph instance that may have history disable functionality
-   * @returns true if history was disabled, false if it was already disabled or not available
-   */
-  private _disableHistoryIfAvailable(graph?: any): boolean {
-    // Try multiple ways to access the history plugin
-    let historyPlugin = null;
-
-    // Method 1: Direct property access (what we've been trying)
+  private _discoverHistoryPlugin(graph?: any): any {
+    // Method 1: Direct property access
     if (graph && graph.history) {
-      historyPlugin = graph.history;
+      return graph.history;
     }
 
     // Method 2: Try accessing via getPlugin method if it exists
-    if (!historyPlugin && graph && typeof graph.getPlugin === 'function') {
+    if (graph && typeof graph.getPlugin === 'function') {
       try {
-        historyPlugin = graph.getPlugin('history');
+        const plugin = graph.getPlugin('history');
+        if (plugin) return plugin;
       } catch {
         // Ignore errors from getPlugin
       }
     }
 
     // Method 3: Try accessing plugins array/object
-    if (!historyPlugin && graph && graph.plugins) {
-      // Check if plugins is an array
+    if (graph && graph.plugins) {
       if (Array.isArray(graph.plugins)) {
-        historyPlugin = graph.plugins.find(
+        const found = graph.plugins.find(
           (p: any) => p.name === 'history' || p.constructor.name === 'History',
         );
+        if (found) return found;
       } else if (typeof graph.plugins === 'object') {
-        historyPlugin = graph.plugins.history || graph.plugins.History;
+        const found = graph.plugins.history || graph.plugins.History;
+        if (found) return found;
       }
     }
 
-    // this.logger.debugComponent('DfdVisualEffects', 'Attempting to disable history', {
-    //   hasGraph: !!graph,
-    //   hasHistory: !!(graph && graph.history),
-    //   hasHistoryPlugin: !!historyPlugin,
-    //   hasDisableMethod: !!(historyPlugin && typeof historyPlugin.disable === 'function'),
-    //   graphType: graph ? graph.constructor.name : 'undefined',
-    //   historyType: historyPlugin ? historyPlugin.constructor.name : 'undefined',
-    //   hasGetPlugin: !!(graph && typeof graph.getPlugin === 'function'),
-    //   hasPlugins: !!(graph && graph.plugins),
-    //   pluginsType:
-    //     graph && graph.plugins
-    //       ? Array.isArray(graph.plugins)
-    //         ? 'array'
-    //         : typeof graph.plugins
-    //       : 'undefined',
-    // });
+    return null;
+  }
+
+  /**
+   * Disable history tracking if available
+   * @param graph - Graph instance that may have history disable functionality
+   * @returns true if history was disabled, false if it was already disabled or not available
+   */
+  private _disableHistoryIfAvailable(graph?: any): boolean {
+    const historyPlugin = this._discoverHistoryPlugin(graph);
 
     if (historyPlugin && typeof historyPlugin.disable === 'function') {
       try {
         historyPlugin.disable();
-        // this.logger.debugComponent(
-        //   'DfdVisualEffects',
-        //   'History tracking disabled for visual effects',
-        // );
         return true;
       } catch (error) {
         this.logger.warn('[VisualEffects] Failed to disable history tracking', { error });
@@ -516,41 +500,11 @@ export class InfraVisualEffectsService {
   private _enableHistoryIfAvailable(graph?: any, wasDisabled?: boolean): void {
     if (!wasDisabled) return;
 
-    // Try multiple ways to access the history plugin (same as disable method)
-    let historyPlugin = null;
-
-    // Method 1: Direct property access
-    if (graph && graph.history) {
-      historyPlugin = graph.history;
-    }
-
-    // Method 2: Try accessing via getPlugin method if it exists
-    if (!historyPlugin && graph && typeof graph.getPlugin === 'function') {
-      try {
-        historyPlugin = graph.getPlugin('history');
-      } catch {
-        // Ignore errors from getPlugin
-      }
-    }
-
-    // Method 3: Try accessing plugins array/object
-    if (!historyPlugin && graph && graph.plugins) {
-      if (Array.isArray(graph.plugins)) {
-        historyPlugin = graph.plugins.find(
-          (p: any) => p.name === 'history' || p.constructor.name === 'History',
-        );
-      } else if (typeof graph.plugins === 'object') {
-        historyPlugin = graph.plugins.history || graph.plugins.History;
-      }
-    }
+    const historyPlugin = this._discoverHistoryPlugin(graph);
 
     if (historyPlugin && typeof historyPlugin.enable === 'function') {
       try {
         historyPlugin.enable();
-        // this.logger.debugComponent(
-        //   'DfdVisualEffects',
-        //   'History tracking re-enabled after visual effects',
-        // );
       } catch (error) {
         this.logger.warn('[VisualEffects] Failed to re-enable history tracking', { error });
       }

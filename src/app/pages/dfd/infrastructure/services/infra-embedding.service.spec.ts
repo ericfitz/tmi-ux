@@ -414,70 +414,6 @@ describe('InfraEmbeddingService', () => {
   });
 
   describe('Z-Index Calculations', () => {
-    describe('Embedding Z-Indexes', () => {
-      it('should calculate z-indexes for process nodes embedding', () => {
-        const parent = createMockNodeWithType('parent', 'process');
-        const child = createMockNodeWithType('child', 'process');
-
-        const result = service.calculateEmbeddingZIndexes(parent, child);
-
-        expect(result).toEqual({
-          parentZIndex: 10,
-          childZIndex: 15,
-        });
-      });
-
-      it('should calculate z-indexes for security boundary parent', () => {
-        const parent = createMockNodeWithType('parent', 'security-boundary');
-        const child = createMockNodeWithType('child', 'process');
-
-        const result = service.calculateEmbeddingZIndexes(parent, child);
-
-        expect(result).toEqual({
-          parentZIndex: 1, // Security boundaries stay at back
-          childZIndex: 15,
-        });
-      });
-
-      it('should calculate z-indexes for security boundary child', () => {
-        const parent = createMockNodeWithType('parent', 'security-boundary');
-        const child = createMockNodeWithType('child', 'security-boundary');
-
-        const result = service.calculateEmbeddingZIndexes(parent, child);
-
-        expect(result).toEqual({
-          parentZIndex: 1,
-          childZIndex: 2, // Security boundary child slightly higher but still behind regular nodes
-        });
-      });
-
-      it('should handle nodes without getNodeTypeInfo method', () => {
-        const parent = graph.addNode({
-          id: 'parent',
-          shape: 'rect',
-          x: 100,
-          y: 100,
-          width: 100,
-          height: 50,
-        });
-        const child = graph.addNode({
-          id: 'child',
-          shape: 'rect',
-          x: 150,
-          y: 150,
-          width: 80,
-          height: 40,
-        });
-
-        const result = service.calculateEmbeddingZIndexes(parent, child);
-
-        expect(result).toEqual({
-          parentZIndex: 10, // Default to process type
-          childZIndex: 15,
-        });
-      });
-    });
-
     describe('Unembedding Z-Index', () => {
       it('should return default z-index for process node', () => {
         const node = createMockNodeWithType('node1', 'process');
@@ -592,20 +528,6 @@ describe('InfraEmbeddingService', () => {
 
       expect(result.isValid).toBe(false); // Self-embedding should be prevented (circular embedding)
       expect(result.reason).toContain('Circular embedding');
-    });
-
-    it('should handle z-index calculations with mixed node types', () => {
-      const securityBoundary = createMockNodeWithType('sb1', 'security-boundary');
-      const actor = createMockNodeWithType('actor1', 'actor');
-      const store = createMockNodeWithType('store1', 'store');
-
-      const result1 = service.calculateEmbeddingZIndexes(securityBoundary, actor);
-      const result2 = service.calculateEmbeddingZIndexes(actor, store);
-
-      expect(result1.parentZIndex).toBe(1); // Security boundary parent
-      expect(result1.childZIndex).toBe(15); // Regular node child
-      expect(result2.parentZIndex).toBe(10); // Regular node parent
-      expect(result2.childZIndex).toBe(15); // Regular node child
     });
   });
 });

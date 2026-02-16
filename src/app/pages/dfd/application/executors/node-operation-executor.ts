@@ -13,6 +13,7 @@ import { Graph } from '@antv/x6';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
+import { NodeInfo } from '../../domain/value-objects/node-info';
 import { getX6ShapeForNodeType } from '../../infrastructure/adapters/infra-x6-shape-definitions';
 import {
   GraphOperation,
@@ -490,20 +491,7 @@ export class NodeOperationExecutor implements OperationExecutor {
    * Get default label for node type
    */
   private _getDefaultLabelForNodeType(nodeType: string): string {
-    switch (nodeType) {
-      case 'actor':
-        return 'Actor';
-      case 'process':
-        return 'Process';
-      case 'store':
-        return 'Store';
-      case 'security-boundary':
-        return 'Security Boundary';
-      case 'text-box':
-        return 'Text Box';
-      default:
-        return 'New Node';
-    }
+    return NodeInfo.getDefaultLabel(nodeType);
   }
 
   /**

@@ -296,6 +296,34 @@ describe('DfdCollaborationService', () => {
     });
   });
 
+  describe('toggleCollaboration()', () => {
+    it('should error when diagram context is not set', () => {
+      let error: Error | undefined;
+      service.toggleCollaboration().subscribe({
+        error: (err: Error) => {
+          error = err;
+        },
+      });
+      expect(error).toBeDefined();
+      expect(error!.message).toContain('context not ready');
+    });
+
+    it('should call startOrJoinCollaboration when not collaborating and context is set', () => {
+      // Set diagram context so isDiagramContextSet() returns true
+      service.setDiagramContext('tm-1', 'dg-1');
+
+      const startSpy = vi.spyOn(service, 'startOrJoinCollaboration').mockReturnValue(of(true));
+
+      let result: boolean | undefined;
+      service.toggleCollaboration().subscribe(val => {
+        result = val;
+      });
+
+      expect(startSpy).toHaveBeenCalled();
+      expect(result).toBe(true);
+    });
+  });
+
   describe('Cleanup', () => {
     it('should clean up subscriptions on destroy', () => {
       service.ngOnDestroy();

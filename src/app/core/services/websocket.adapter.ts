@@ -24,6 +24,7 @@ import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter, takeUntil, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 
 import { LoggerService } from './logger.service';
+import { redactSensitiveData } from '../utils/redact-sensitive-data.util';
 import { TMIWebSocketMessage, TMIMessageType } from '../types/websocket-message.types';
 import type { IAuthService } from '../interfaces/auth.interface';
 
@@ -353,7 +354,7 @@ export class WebSocketAdapter {
           sessionId: fullMessage.sessionId,
           userId: fullMessage.userId,
           requiresAck: fullMessage.requiresAck,
-          body: this._redactSensitiveData(fullMessage.data),
+          body: redactSensitiveData(fullMessage.data),
         });
 
         this._socket!.send(JSON.stringify(fullMessage));
@@ -625,7 +626,7 @@ export class WebSocketAdapter {
           userEmail: userInfo?.email,
           operationId: messageData.operation_id,
           hasOperation: !!messageData.operation,
-          body: this._redactSensitiveData(message),
+          body: redactSensitiveData(message),
         });
 
         this._socket!.send(JSON.stringify(message));
@@ -728,7 +729,7 @@ export class WebSocketAdapter {
           userId: message.userId,
           timestamp: message.timestamp,
           requiresAck: message.requiresAck,
-          body: this._redactSensitiveData(message.data),
+          body: redactSensitiveData(message.data),
         });
 
         this._messages$.next(message);
@@ -1219,79 +1220,5 @@ export class WebSocketAdapter {
     });
 
     this._errors$.next(wsError);
-  }
-
-  /**
-   * Redact sensitive information from WebSocket message data
-   * @param data Message data that may contain sensitive information
-   * @returns Object with sensitive values redacted
-   */
-  private _redactSensitiveData(data: unknown): unknown {
-    if (!data || typeof data !== 'object') {
-      return data;
-    }
-
-    // Create a null-prototype object to prevent prototype pollution
-    const redacted = Object.create(null) as Record<string, unknown>;
-    const source = data as Record<string, unknown>;
-    const sensitiveKeys = [
-      'bearer',
-      'token',
-      'password',
-      'secret',
-      'jwt',
-      'refresh_token',
-      'access_token',
-      'api_key',
-      'apikey',
-      'authorization',
-      'auth',
-    ];
-
-    // Use Object.keys to only iterate own enumerable properties (not inherited)
-    for (const key of Object.keys(source)) {
-      // Skip prototype-polluting keys as an extra safeguard
-      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
-        continue;
-      }
-
-      const value = source[key];
-      const lowerKey = key.toLowerCase();
-
-      // Check if the key contains sensitive information
-      // Note: redacted is a null-prototype object created via Object.create(null),
-      // and dangerous keys (__proto__, constructor, prototype) are explicitly skipped above.
-      // This prevents prototype pollution even though CodeQL may still flag the pattern.
-      if (sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
-        if (typeof value === 'string' && value.length > 0) {
-          redacted[key] = this._redactToken(value); // lgtm[js/remote-property-injection]
-        } else {
-          redacted[key] = '[REDACTED]'; // lgtm[js/remote-property-injection]
-        }
-      } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-        // Recursively redact nested objects
-        redacted[key] = this._redactSensitiveData(value); // lgtm[js/remote-property-injection]
-      } else {
-        // Copy non-sensitive, non-object values as-is
-        redacted[key] = value; // lgtm[js/remote-property-injection]
-      }
-    }
-
-    return redacted;
-  }
-
-  /**
-   * Redact a token while showing first and last few characters for debugging
-   * @param token The token to redact
-   * @returns Redacted token string
-   */
-  private _redactToken(token: string): string {
-    if (token.length <= 8) {
-      return '[REDACTED]';
-    }
-    const start = token.substring(0, 4);
-    const end = token.substring(token.length - 4);
-    const middle = '*'.repeat(Math.min(12, token.length - 8));
-    return `${start}${middle}${end}`;
   }
 }

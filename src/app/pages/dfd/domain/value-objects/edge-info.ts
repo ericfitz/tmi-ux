@@ -4,6 +4,11 @@ import { EdgeAttrs } from './edge-attrs';
 import { EdgeLabel } from './edge-label';
 import { Metadata, safeMetadataEntry } from './metadata';
 import { MarkupElement, CellTool, EdgeRouter, EdgeConnector } from './x6-types';
+import {
+  validateMarkupElements,
+  validateCellTools,
+  hybridDataEquals,
+} from '../utils/x6-validation.util';
 
 /**
  * Edge info value object representing the domain model for diagram edges
@@ -838,37 +843,8 @@ export class EdgeInfo {
    * Validates X6-specific properties
    */
   private _validateX6Properties(): void {
-    // Validate markup structure
-    if (this.markup) {
-      this.markup.forEach((element, index) => {
-        if (!element.tagName || typeof element.tagName !== 'string') {
-          throw new Error(`Edge markup element at index ${index} must have a valid tagName`);
-        }
-        if (element.selector && typeof element.selector !== 'string') {
-          throw new Error(`Edge markup element at index ${index} selector must be a string`);
-        }
-        if (element.attrs && typeof element.attrs !== 'object') {
-          throw new Error(`Edge markup element at index ${index} attrs must be an object`);
-        }
-        if (element.children) {
-          if (!Array.isArray(element.children)) {
-            throw new Error(`Edge markup element at index ${index} children must be an array`);
-          }
-        }
-      });
-    }
-
-    // Validate tools structure
-    if (this.tools) {
-      this.tools.forEach((tool, index) => {
-        if (!tool.name || typeof tool.name !== 'string') {
-          throw new Error(`Edge tool at index ${index} must have a valid name`);
-        }
-        if (tool.args && typeof tool.args !== 'object') {
-          throw new Error(`Edge tool at index ${index} args must be an object`);
-        }
-      });
-    }
+    validateMarkupElements(this.markup, 'Edge markup element');
+    validateCellTools(this.tools, 'Edge tool');
 
     // Validate router configuration
     if (this.router) {
@@ -955,28 +931,10 @@ export class EdgeInfo {
    * Checks if metadata arrays are equal
    */
   private metadataEquals(other: { [key: string]: any; _metadata: Metadata[] }): boolean {
-    const thisMetadata = this.metadata;
     const otherMetadata = other._metadata || [];
-
-    if (thisMetadata.length !== otherMetadata.length) {
-      return false;
-    }
-
-    // Sort both arrays by key for comparison
-    const thisSorted = [...thisMetadata].sort((a, b) => a.key.localeCompare(b.key));
-    const otherSorted = [...otherMetadata].sort((a, b) => a.key.localeCompare(b.key));
-
-    // Check metadata equality
-    const metadataEqual = thisSorted.every((entry, index) => {
-      const otherEntry = otherSorted[index];
-      return entry.key === otherEntry.key && entry.value === otherEntry.value;
-    });
-
-    // Check custom data equality (excluding _metadata)
-    const thisCustomData = this.getCustomData();
     const otherCustomData = { ...other };
     delete (otherCustomData as any)._metadata;
 
-    return metadataEqual && JSON.stringify(thisCustomData) === JSON.stringify(otherCustomData);
+    return hybridDataEquals(this.metadata, otherMetadata, this.getCustomData(), otherCustomData);
   }
 }

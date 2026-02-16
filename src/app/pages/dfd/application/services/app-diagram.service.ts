@@ -592,20 +592,7 @@ export class AppDiagramService {
    * Get default label for node type
    */
   private getDefaultLabelForType(nodeType: string): string {
-    switch (nodeType) {
-      case 'actor':
-        return 'External Entity';
-      case 'process':
-        return 'Process';
-      case 'store':
-        return 'Data Store';
-      case 'security-boundary':
-        return 'Trust Boundary';
-      case 'text-box':
-        return 'Text';
-      default:
-        return 'Element';
-    }
+    return NodeInfo.getDefaultLabel(nodeType);
   }
 
   /**
@@ -752,51 +739,7 @@ export class AppDiagramService {
     threatModelId: string,
     imageData: { svg?: string; update_vector?: number },
   ): Observable<boolean> {
-    // Convert current graph state to cell operations (full state sync)
-    const cells = this.convertGraphToCellsFormat(graph);
-    const operations: CellOperation[] = cells.map(cell => ({
-      id: cell.id,
-      operation: 'update',
-      data: cell,
-    }));
-
-    this.logger.debugComponent(
-      'AppDiagramService',
-      '[DfdDiagram] Attempting WebSocket save with image data',
-      {
-        diagramId,
-        threatModelId,
-        operationCount: operations.length,
-        hasImageData: !!imageData.svg,
-      },
-    );
-
-    // Try WebSocket save first
-    return this.sendCollaborativeOperation(operations, graph, diagramId, threatModelId).pipe(
-      map(() => true), // Convert void to boolean success
-      catchError((wsError: unknown) => {
-        this.logger.warn(
-          'WebSocket save with image failed, falling back to REST with image',
-          wsError,
-          {
-            diagramId,
-            threatModelId,
-            operationCount: operations.length,
-          },
-        );
-
-        // Fall back to REST save with image
-        return this.saveViaRESTWithImage(graph, diagramId, threatModelId, imageData).pipe(
-          catchError((restError: unknown) => {
-            this.logger.error('Both WebSocket and REST save with image failed', {
-              wsError: wsError instanceof Error ? wsError.message : String(wsError),
-              restError: restError instanceof Error ? restError.message : String(restError),
-            });
-            return of(false); // Return false instead of throwing to match REST behavior
-          }),
-        );
-      }),
-    );
+    return this._saveViaWebSocketWithFallbackInternal(graph, diagramId, threatModelId, imageData);
   }
 
   /**
@@ -859,62 +802,77 @@ export class AppDiagramService {
     diagramId: string,
     threatModelId: string,
   ): Observable<boolean> {
-    // Convert current graph state to cell operations (full state sync)
+    return this._saveViaWebSocketWithFallbackInternal(graph, diagramId, threatModelId);
+  }
+
+  /**
+   * Shared WebSocket-with-REST-fallback save logic.
+   * Applies consistent timeout and auth error checking for both save variants.
+   * Auth errors (401/403) are never silently fallen back — they propagate as errors.
+   */
+  private _saveViaWebSocketWithFallbackInternal(
+    graph: Graph,
+    diagramId: string,
+    threatModelId: string,
+    imageData?: { svg?: string; update_vector?: number },
+  ): Observable<boolean> {
     const cells = this.convertGraphToCellsFormat(graph);
     const operations: CellOperation[] = cells.map(cell => ({
       id: cell.id,
-      operation: 'update', // For bulk save, treat all as updates
+      operation: 'update',
       data: cell,
     }));
 
-    this.logger.debugComponent('AppDiagramService', 'Attempting WebSocket bulk save', {
-      cellCount: cells.length,
-      diagramId,
-      threatModelId,
-    });
+    const logContext = imageData ? 'with image data ' : '';
+    this.logger.debugComponent(
+      'AppDiagramService',
+      `Attempting WebSocket bulk save ${logContext}`,
+      { cellCount: cells.length, diagramId, threatModelId, hasImageData: !!imageData },
+    );
 
-    // Try WebSocket operation with timeout
     return this.collaborativeOperationService.sendDiagramOperation(operations).pipe(
-      timeout(15000), // 15 second timeout for WebSocket operations
+      timeout(15000),
       map(() => {
-        this.logger.info('WebSocket bulk save successful');
+        this.logger.info(`WebSocket bulk save ${logContext}successful`);
         return true;
       }),
       catchError(error => {
-        this.logger.warn('WebSocket bulk save failed, falling back to REST', {
+        this.logger.warn(`WebSocket bulk save ${logContext}failed, falling back to REST`, {
           error: error.message,
           cellCount: cells.length,
         });
 
-        // Check if error is authentication-related (don't fallback for auth errors)
         if (this._isAuthenticationError(error)) {
           this.logger.debugComponent(
             'AppDiagramService',
             'User lacks edit permissions - operation blocked as expected',
-            {
-              error: error.message,
-            },
+            { error: error.message },
           );
           return throwError(() => error);
         }
 
-        // Attempt REST fallback
-        this.logger.info('Executing REST fallback for bulk save operation');
-        return this.saveViaREST(graph, diagramId, threatModelId).pipe(
+        this.logger.info(`Executing REST fallback for bulk save ${logContext}operation`);
+        const restSave$ = imageData
+          ? this.saveViaRESTWithImage(graph, diagramId, threatModelId, imageData)
+          : this.saveViaREST(graph, diagramId, threatModelId);
+
+        return restSave$.pipe(
           map(success => {
             if (success) {
-              this.logger.info('REST fallback successful - diagram saved via REST API');
+              this.logger.info(
+                `REST fallback ${logContext}successful - diagram saved via REST API`,
+              );
             } else {
-              this.logger.error('REST fallback failed - diagram not saved');
+              this.logger.error(`REST fallback ${logContext}failed - diagram not saved`);
             }
             return success;
           }),
           catchError(restError => {
-            this.logger.error('Both WebSocket and REST bulk save operations failed', {
+            this.logger.error(`Both WebSocket and REST bulk save ${logContext}operations failed`, {
               webSocketError: error.message,
-              restError: restError.message,
+              restError: restError instanceof Error ? restError.message : String(restError),
             });
-            return of(false); // Return false instead of throwing to match REST behavior
+            return of(false);
           }),
         );
       }),

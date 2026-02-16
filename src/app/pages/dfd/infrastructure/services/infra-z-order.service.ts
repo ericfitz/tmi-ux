@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Cell, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 
 /**
  * Z-Order Service
@@ -30,14 +31,7 @@ export class ZOrderService {
    * Get default z-index for a node type (business rule)
    */
   getDefaultZIndex(nodeType: string): number {
-    switch (nodeType) {
-      case 'security-boundary':
-        return 1; // Security boundaries stay behind other nodes
-      case 'text-box':
-        return 20; // Textboxes appear above all other shapes
-      default:
-        return 10; // Default z-index for regular nodes
-    }
+    return DFD_STYLING_HELPERS.getDefaultZIndex(nodeType);
   }
 
   /**

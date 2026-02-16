@@ -293,11 +293,12 @@ export const DFD_STYLING = {
 
   // Z-Index constants for proper layering
   Z_INDEX: {
-    SECURITY_BOUNDARY: 0, // Security boundaries go behind everything
-    NODE_DEFAULT: 1, // Default z-index for nodes
-    EDGE_DEFAULT: 1, // Default z-index for edges
-    SELECTION: 10, // Selection indicators on top
-    TOOLS: 20, // Node/edge tools on top of everything
+    SECURITY_BOUNDARY: 1, // Security boundaries go behind regular nodes
+    NODE_DEFAULT: 10, // Default z-index for regular nodes
+    TEXT_BOX: 20, // Text boxes appear above regular nodes
+    EDGE_DEFAULT: 10, // Default z-index for edges
+    SELECTION: 50, // Selection indicators on top
+    TOOLS: 100, // Node/edge tools on top of everything
   },
 } as const;
 
@@ -590,6 +591,20 @@ export const DFD_STYLING_HELPERS = {
           width: DFD_STYLING.NODES.ACTOR.DEFAULT_WIDTH,
           height: DFD_STYLING.NODES.ACTOR.DEFAULT_HEIGHT,
         };
+    }
+  },
+
+  /**
+   * Get default z-index for a specific node type
+   */
+  getDefaultZIndex(nodeType: string): number {
+    switch (nodeType) {
+      case 'security-boundary':
+        return DFD_STYLING.Z_INDEX.SECURITY_BOUNDARY;
+      case 'text-box':
+        return DFD_STYLING.Z_INDEX.TEXT_BOX;
+      default:
+        return DFD_STYLING.Z_INDEX.NODE_DEFAULT;
     }
   },
 } as const;

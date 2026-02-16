@@ -136,83 +136,26 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    */
   handleCollaborationAction(): void {
     this._logger.info('[CollaborationComponent] Collaboration button clicked', {
-      timestamp: new Date().toISOString(),
-      userCount: this.collaborationUsers.length,
       isCollaborating: this.isCollaborating,
       existingSessionAvailable: !!this.existingSessionAvailable,
       isContextReady: this.isContextReady,
-      diagramContext: this._collaborationService.getDiagramContext(),
     });
 
-    // Check if diagram context is ready before proceeding
-    if (!this.isContextReady) {
-      this._logger.error('[CollaborationComponent] Button clicked without context ready', {
-        context: this._collaborationService.getDiagramContext(),
+    this._collaborationService
+      .toggleCollaboration()
+      .pipe(take(1))
+      .subscribe({
+        next: success => {
+          if (success) {
+            this._logger.info('Collaboration toggled successfully');
+          } else {
+            this._logger.error('Failed to toggle collaboration');
+          }
+        },
+        error: error => {
+          this._logger.error('Error toggling collaboration', error);
+        },
       });
-      return;
-    }
-
-    // Perform the appropriate action based on current state
-    if (this.isCollaborating) {
-      // Currently in session - either end (host) or leave (participant)
-      if (this._collaborationService.isCurrentUserHost()) {
-        this._logger.info('[CollaborationComponent] Host ending collaboration');
-        this._collaborationService
-          .endCollaboration()
-          .pipe(take(1))
-          .subscribe({
-            next: success => {
-              if (success) {
-                this._logger.info('Collaboration ended successfully');
-              } else {
-                this._logger.error('Failed to end collaboration');
-              }
-            },
-            error: error => {
-              this._logger.error('Error ending collaboration', error);
-            },
-          });
-      } else {
-        this._logger.info('[CollaborationComponent] Participant leaving session');
-        this._collaborationService
-          .leaveSession()
-          .pipe(take(1))
-          .subscribe({
-            next: success => {
-              if (success) {
-                this._logger.info('Left collaboration session successfully');
-              } else {
-                this._logger.error('Failed to leave collaboration session');
-              }
-            },
-            error: error => {
-              this._logger.error('Error leaving session', error);
-            },
-          });
-      }
-    } else {
-      // Not in session - either start new or join existing
-      if (this.existingSessionAvailable) {
-        this._logger.info('[CollaborationComponent] Joining existing session');
-      } else {
-        this._logger.info('[CollaborationComponent] Starting new collaboration');
-      }
-      this._collaborationService
-        .startOrJoinCollaboration()
-        .pipe(take(1))
-        .subscribe({
-          next: success => {
-            if (success) {
-              this._logger.info('Collaboration started or joined successfully');
-            } else {
-              this._logger.error('Failed to start or join collaboration');
-            }
-          },
-          error: error => {
-            this._logger.error('Error starting/joining collaboration', error);
-          },
-        });
-    }
   }
 
   /**

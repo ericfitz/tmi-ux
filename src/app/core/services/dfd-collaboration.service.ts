@@ -1188,6 +1188,25 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
+   * Toggle collaboration: start/join if not active, end (host) or leave (participant) if active.
+   * Returns Observable<boolean> indicating success. Emits an error if the diagram context is not set.
+   */
+  public toggleCollaboration(): Observable<boolean> {
+    if (!this.isDiagramContextSet()) {
+      this._logger.error('Cannot toggle collaboration: diagram context not ready', {
+        context: this.getDiagramContext(),
+      });
+      return throwError(() => new Error('Diagram context not ready'));
+    }
+
+    if (this.isCollaborating()) {
+      return this.isCurrentUserHost() ? this.endCollaboration() : this.leaveSession();
+    }
+
+    return this.startOrJoinCollaboration();
+  }
+
+  /**
    * Get the current presenter's email
    * @returns The presenter's email or null if no presenter
    */

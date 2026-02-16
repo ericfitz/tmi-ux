@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
+import { AdminServiceBase } from './admin-service-base';
 import {
   ListWebhookSubscriptionsResponse,
   WebhookFilter,
   WebhookSubscription,
   WebhookSubscriptionInput,
 } from '@app/types/webhook.types';
-import { buildHttpParams } from '@app/shared/utils/http-params.util';
 
 /**
  * Service for managing webhook subscriptions
@@ -18,116 +18,70 @@ import { buildHttpParams } from '@app/shared/utils/http-params.util';
 @Injectable({
   providedIn: 'root',
 })
-export class WebhookService {
-  private webhooksSubject$ = new BehaviorSubject<WebhookSubscription[]>([]);
-  public webhooks$: Observable<WebhookSubscription[]> = this.webhooksSubject$.asObservable();
+export class WebhookService extends AdminServiceBase<WebhookSubscription, WebhookFilter> {
+  public webhooks$: Observable<WebhookSubscription[]> = this.items$;
 
-  constructor(
-    private apiService: ApiService,
-    private logger: LoggerService,
-  ) {}
+  constructor(apiService: ApiService, logger: LoggerService) {
+    super(apiService, logger, {
+      endpoint: 'webhooks/subscriptions',
+      entityName: 'webhook',
+    });
+  }
+
+  protected extractItems(response: unknown): WebhookSubscription[] {
+    return (response as ListWebhookSubscriptionsResponse).subscriptions;
+  }
 
   /**
    * List all webhook subscriptions with optional filtering
    * Note: When user is admin, server will return all webhooks (future enhancement)
    */
   public list(filter?: WebhookFilter): Observable<ListWebhookSubscriptionsResponse> {
-    const params = buildHttpParams(filter);
-    return this.apiService
-      .get<ListWebhookSubscriptionsResponse>('webhooks/subscriptions', params)
-      .pipe(
-        tap(response => {
-          this.webhooksSubject$.next(response.subscriptions);
-          this.logger.debug('Webhooks loaded', { count: response.subscriptions.length });
-        }),
-        catchError(error => {
-          this.logger.error('Failed to list webhooks', error);
-          throw error;
-        }),
-      );
+    return this.listItems<ListWebhookSubscriptionsResponse>(filter);
   }
 
   /**
    * Get a specific webhook subscription by ID
    */
   public get(id: string): Observable<WebhookSubscription> {
-    return this.apiService.get<WebhookSubscription>(`webhooks/subscriptions/${id}`).pipe(
-      tap(webhook => this.logger.debug('Webhook loaded', { id: webhook.id })),
-      catchError(error => {
-        this.logger.error('Failed to get webhook', error);
-        throw error;
-      }),
-    );
+    return this.getItem(id);
   }
 
   /**
    * Create a new webhook subscription
    */
   public create(input: WebhookSubscriptionInput): Observable<WebhookSubscription> {
-    return this.apiService
-      .post<WebhookSubscription>(
-        'webhooks/subscriptions',
-        input as unknown as Record<string, unknown>,
-      )
-      .pipe(
-        tap(webhook => {
-          this.logger.info('Webhook created', { id: webhook.id });
-          this.list().subscribe();
-        }),
-        catchError(error => {
-          this.logger.error('Failed to create webhook', error);
-          throw error;
-        }),
-      );
+    return this.createItem(input as unknown as Record<string, unknown>);
   }
 
   /**
    * Update an existing webhook subscription
    */
   public update(id: string, input: WebhookSubscriptionInput): Observable<WebhookSubscription> {
-    return this.apiService
-      .put<WebhookSubscription>(
-        `webhooks/subscriptions/${id}`,
-        input as unknown as Record<string, unknown>,
-      )
-      .pipe(
-        tap(webhook => {
-          this.logger.info('Webhook updated', { id: webhook.id });
-          this.list().subscribe();
-        }),
-        catchError(error => {
-          this.logger.error('Failed to update webhook', error);
-          throw error;
-        }),
-      );
+    return this.updateItem(id, input as unknown as Record<string, unknown>);
   }
 
   /**
    * Delete a webhook subscription
    */
   public delete(id: string): Observable<void> {
-    return this.apiService.delete<void>(`webhooks/subscriptions/${id}`).pipe(
-      tap(() => {
-        this.logger.info('Webhook deleted', { id });
-        this.list().subscribe();
-      }),
-      catchError(error => {
-        this.logger.error('Failed to delete webhook', error);
-        throw error;
-      }),
-    );
+    return this.deleteItem(id);
   }
 
   /**
    * Test a webhook subscription
    */
   public test(id: string): Observable<void> {
-    return this.apiService.post<void>(`webhooks/subscriptions/${id}/test`, {}).pipe(
+    return this.apiService.post<void>(`${this.config.endpoint}/${id}/test`, {}).pipe(
       tap(() => this.logger.info('Webhook test triggered', { id })),
       catchError(error => {
         this.logger.error('Failed to test webhook', error);
         throw error;
       }),
     );
+  }
+
+  protected override refreshList(): void {
+    this.list().subscribe();
   }
 }
