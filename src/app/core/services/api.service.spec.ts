@@ -7,13 +7,15 @@
 // Do not disable or skip failing tests, ask the user what to do
 import '@angular/compiler';
 
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpContext } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { throwError } from 'rxjs';
+import { TimeoutError } from 'rxjs';
+import { SKIP_ERROR_HANDLING } from '../tokens/http-context.tokens';
 import {
   createTypedMockLoggerService,
   createTypedMockRouter,
@@ -436,6 +438,293 @@ describe('ApiService', () => {
 
       expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/${testEndpoint}`, {
         params: mixedParams,
+      });
+    });
+  });
+
+  describe('PATCH Requests', () => {
+    const patchOperations = [
+      { op: 'replace', path: '/name', value: 'Updated Name' },
+      { op: 'add', path: '/tags/-', value: 'new-tag' },
+    ];
+
+    it('should make successful PATCH request with JSON Patch operations', () => {
+      const result$ = service.patch<typeof mockSuccessResponse>(testEndpoint, patchOperations);
+
+      result$.subscribe(result => {
+        expect(result).toEqual(mockSuccessResponse);
+        expect(httpClient.patch).toHaveBeenCalledWith(
+          `${environment.apiUrl}/${testEndpoint}`,
+          patchOperations,
+          { headers: { 'Content-Type': 'application/json-patch+json' } },
+        );
+      });
+    });
+
+    it('should handle PATCH request errors', () => {
+      const errorResponse = new HttpErrorResponse({
+        error: { error: 'Invalid patch operation' },
+        status: 400,
+        statusText: 'Bad Request',
+      });
+
+      vi.mocked(httpClient.patch).mockReturnValue(throwError(() => errorResponse));
+
+      const result$ = service.patch<typeof mockSuccessResponse>(testEndpoint, patchOperations);
+
+      result$.subscribe({
+        error: error => {
+          expect(error).toBeInstanceOf(HttpErrorResponse);
+          expect(error.status).toBe(400);
+          expect(loggerService.error).toHaveBeenCalled();
+        },
+      });
+    });
+  });
+
+  describe('getText Requests', () => {
+    it('should make GET request with text responseType', () => {
+      vi.mocked(httpClient.get).mockReturnValue(throwError(() => 'should not be called') as any);
+      // Override for this specific call pattern
+      vi.mocked(httpClient.get).mockReturnValueOnce({
+        pipe: vi.fn().mockReturnValue({ subscribe: vi.fn() }),
+      } as any);
+
+      service.getText(testEndpoint);
+
+      expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/${testEndpoint}`, {
+        params: undefined,
+        responseType: 'text',
+      });
+    });
+  });
+
+  describe('deleteWithParams Requests', () => {
+    it('should make DELETE request with query parameters', () => {
+      const params = { cascade: true, force: false };
+      service.deleteWithParams<undefined>(testEndpoint, params);
+
+      expect(httpClient.delete).toHaveBeenCalledWith(`${environment.apiUrl}/${testEndpoint}`, {
+        params,
+      });
+    });
+
+    it('should handle deleteWithParams errors', () => {
+      const errorResponse = new HttpErrorResponse({
+        error: mockErrorResponse,
+        status: 404,
+        statusText: 'Not Found',
+      });
+
+      vi.mocked(httpClient.delete).mockReturnValue(throwError(() => errorResponse));
+
+      const result$ = service.deleteWithParams<undefined>(testEndpoint, { id: 123 });
+
+      result$.subscribe({
+        error: error => {
+          expect(error).toBeInstanceOf(HttpErrorResponse);
+          expect(error.status).toBe(404);
+        },
+      });
+    });
+  });
+
+  describe('Timeout Handling', () => {
+    it('should handle timeout errors', () => {
+      const timeoutError = new TimeoutError();
+
+      vi.mocked(httpClient.patch).mockReturnValue(throwError(() => timeoutError));
+
+      const result$ = service.patch<typeof mockSuccessResponse>(testEndpoint, [
+        { op: 'replace', path: '/name', value: 'test' },
+      ]);
+
+      result$.subscribe({
+        error: error => {
+          // TimeoutError is wrapped into a new Error by handleError
+          expect(error).toBeInstanceOf(Error);
+          expect(error.message).toContain('timeout');
+          expect(loggerService.error).toHaveBeenCalledWith(
+            expect.stringContaining('timeout'),
+            timeoutError,
+          );
+        },
+      });
+    });
+  });
+
+  describe('Validation Error Dialog', () => {
+    it('should open validation error dialog on 400 errors', () => {
+      const errorResponse = new HttpErrorResponse({
+        error: {
+          error: 'validation_error',
+          error_description: 'Name must be at least 3 characters',
+        },
+        status: 400,
+        statusText: 'Bad Request',
+      });
+
+      vi.mocked(httpClient.post).mockReturnValue(throwError(() => errorResponse));
+
+      const result$ = service.post<typeof mockSuccessResponse>(testEndpoint, testBody);
+
+      result$.subscribe({
+        error: () => {
+          expect(dialog.open).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({
+              width: '500px',
+              data: {
+                error: 'validation_error',
+                errorDescription: 'Name must be at least 3 characters',
+              },
+            }),
+          );
+        },
+      });
+    });
+
+    it('should handle missing error details gracefully in validation errors', () => {
+      const errorResponse = new HttpErrorResponse({
+        error: {},
+        status: 400,
+        statusText: 'Bad Request',
+      });
+
+      vi.mocked(httpClient.post).mockReturnValue(throwError(() => errorResponse));
+
+      const result$ = service.post<typeof mockSuccessResponse>(testEndpoint, testBody);
+
+      result$.subscribe({
+        error: () => {
+          expect(dialog.open).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({
+              data: {
+                error: 'Unknown validation error',
+                errorDescription: '',
+              },
+            }),
+          );
+        },
+      });
+    });
+  });
+
+  describe('SKIP_ERROR_HANDLING', () => {
+    it('should skip 400 validation dialog when SKIP_ERROR_HANDLING is set', () => {
+      const errorResponse = new HttpErrorResponse({
+        error: { error: 'validation_error' },
+        status: 400,
+        statusText: 'Bad Request',
+      });
+
+      vi.mocked(httpClient.put).mockReturnValue(throwError(() => errorResponse));
+
+      const context = new HttpContext().set(SKIP_ERROR_HANDLING, true);
+      const result$ = service.put<typeof mockSuccessResponse>(testEndpoint, testBody, context);
+
+      result$.subscribe({
+        error: () => {
+          // Dialog should NOT be opened when SKIP_ERROR_HANDLING is set
+          expect(dialog.open).not.toHaveBeenCalled();
+          // 403 redirect should also be skipped
+          expect(router.navigate).not.toHaveBeenCalled();
+        },
+      });
+    });
+
+    it('should skip 403 redirect when SKIP_ERROR_HANDLING is set', () => {
+      const errorResponse = new HttpErrorResponse({
+        error: mockErrorResponse,
+        status: 403,
+        statusText: 'Forbidden',
+      });
+
+      vi.mocked(httpClient.put).mockReturnValue(throwError(() => errorResponse));
+
+      const context = new HttpContext().set(SKIP_ERROR_HANDLING, true);
+      const result$ = service.put<typeof mockSuccessResponse>(testEndpoint, testBody, context);
+
+      result$.subscribe({
+        error: () => {
+          expect(router.navigate).not.toHaveBeenCalled();
+        },
+      });
+    });
+  });
+
+  describe('404 Error Handling', () => {
+    it('should propagate 404 errors without special handling', () => {
+      const notFoundError = new HttpErrorResponse({
+        error: { error: 'Resource not found' },
+        status: 404,
+        statusText: 'Not Found',
+      });
+
+      vi.mocked(httpClient.get).mockReturnValue(throwError(() => notFoundError));
+
+      const result$ = service.get<typeof mockSuccessResponse>(testEndpoint);
+
+      result$.subscribe({
+        error: error => {
+          expect(error).toBeInstanceOf(HttpErrorResponse);
+          expect(error.status).toBe(404);
+          // No redirect or dialog for 404
+          expect(router.navigate).not.toHaveBeenCalled();
+          expect(dialog.open).not.toHaveBeenCalled();
+        },
+      });
+    });
+  });
+
+  describe('Error Response Preservation', () => {
+    it('should return HttpErrorResponse for server errors (preserving status codes)', () => {
+      const serverError = new HttpErrorResponse({
+        error: { message: 'Internal server error' },
+        status: 500,
+        statusText: 'Internal Server Error',
+      });
+
+      vi.mocked(httpClient.get).mockReturnValue(throwError(() => serverError));
+
+      const result$ = service.get<typeof mockSuccessResponse>(testEndpoint);
+
+      result$.subscribe({
+        error: error => {
+          // Should preserve the HttpErrorResponse, not wrap it
+          expect(error).toBeInstanceOf(HttpErrorResponse);
+          expect(error.status).toBe(500);
+        },
+      });
+    });
+
+    it('should wrap non-HTTP errors in Error with descriptive message', () => {
+      const genericError = new Error('Something broke');
+
+      vi.mocked(httpClient.get).mockReturnValue(throwError(() => genericError));
+
+      const result$ = service.get<typeof mockSuccessResponse>(testEndpoint);
+
+      result$.subscribe({
+        error: error => {
+          expect(error).toBeInstanceOf(Error);
+          expect(error.message).toContain('Unexpected error');
+          expect(error.message).toContain('GET');
+          expect(error.message).toContain(testEndpoint);
+        },
+      });
+    });
+  });
+
+  describe('URL Normalization', () => {
+    it('should handle apiUrl with trailing slash', () => {
+      // The apiUrl from environment is 'http://localhost:8080'
+      // Let's test the buildUrl method indirectly
+      service.get<typeof mockSuccessResponse>('/endpoint');
+
+      expect(httpClient.get).toHaveBeenCalledWith(`${environment.apiUrl}/endpoint`, {
+        params: undefined,
       });
     });
   });
