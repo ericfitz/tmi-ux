@@ -314,38 +314,3 @@ export interface SAMLProvidersResponse {
    */
   providers: SAMLProviderInfo[];
 }
-
-/**
- * User role in the system
- */
-export enum UserRole {
-  /**
-   * Owner role - full control over resources
-   */
-  Owner = 'owner',
-
-  /**
-   * Writer role - can modify resources but not delete or change ownership
-   */
-  Writer = 'writer',
-
-  /**
-   * Reader role - read-only access to resources
-   */
-  Reader = 'reader',
-}
-
-/**
- * Authorization information for a resource
- */
-export interface Authorization {
-  /**
-   * Subject (user identifier, typically email)
-   */
-  subject: string;
-
-  /**
-   * Role assigned to the subject
-   */
-  role: UserRole;
-}

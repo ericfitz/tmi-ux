@@ -45,7 +45,6 @@ import {
   OAuthResponse,
   UserProfile,
   UserMeResponse,
-  UserRole,
   OAuthProviderInfo,
   ProvidersResponse,
   SAMLProviderInfo,
@@ -1692,18 +1691,6 @@ export class AuthService {
       bytes[i] = binStr.charCodeAt(i);
     }
     return bytes;
-  }
-
-  /**
-   * Check if user has a specific role
-   * @param role Role to check
-   * @returns True if user has the role
-   */
-  hasRole(_role: UserRole): boolean {
-    // TODO: use access checking here
-    // This is a placeholder. In a real implementation, we would check the user's roles
-    // For now, we'll assume all authenticated users have all roles
-    return this.isAuthenticated;
   }
 
   /**

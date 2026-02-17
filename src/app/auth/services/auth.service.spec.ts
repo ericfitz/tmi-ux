@@ -21,7 +21,6 @@ import {
   UserProfile,
   OAuthResponse,
   AuthError,
-  UserRole,
   ProvidersResponse,
 } from '../models/auth.models';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
@@ -895,24 +894,6 @@ describe('AuthService', () => {
       expect(usernames[2]).toBe('');
     });
   }); /* End of Authentication State Management describe block */
-
-  describe('Role-based Authorization', () => {
-    it('should return true for any role when authenticated', () => {
-      service['isAuthenticatedSubject'].next(true);
-
-      expect(service.hasRole(UserRole.Owner)).toBe(true);
-      expect(service.hasRole(UserRole.Writer)).toBe(true);
-      expect(service.hasRole(UserRole.Reader)).toBe(true);
-    });
-
-    it('should return false for any role when not authenticated', () => {
-      service['isAuthenticatedSubject'].next(false);
-
-      expect(service.hasRole(UserRole.Owner)).toBe(false);
-      expect(service.hasRole(UserRole.Writer)).toBe(false);
-      expect(service.hasRole(UserRole.Reader)).toBe(false);
-    });
-  }); /* End of Role-based Authorization describe block */
 
   describe('Security Reviewer and Landing Page', () => {
     it('should return true for isSecurityReviewer when profile has is_security_reviewer', () => {
