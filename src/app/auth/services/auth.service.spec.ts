@@ -1602,4 +1602,520 @@ describe('AuthService', () => {
       });
     });
   }); /* End of Token Refresh Functionality describe block */
+
+  describe('OAuth State / CSRF Validation (Security)', () => {
+    describe('decodeState()', () => {
+      it('should decode valid Base64-encoded structured state with csrf and returnUrl', () => {
+        const stateData = { csrf: 'csrf-token-123', returnUrl: '/dashboard' };
+        const encodedState = btoa(JSON.stringify(stateData));
+
+        const result = service['decodeState'](encodedState);
+
+        expect(result.csrf).toBe('csrf-token-123');
+        expect(result.returnUrl).toBe('/dashboard');
+      });
+
+      it('should decode valid Base64-encoded structured state with csrf only', () => {
+        const stateData = { csrf: 'csrf-only-token' };
+        const encodedState = btoa(JSON.stringify(stateData));
+
+        const result = service['decodeState'](encodedState);
+
+        expect(result.csrf).toBe('csrf-only-token');
+        expect(result.returnUrl).toBeUndefined();
+      });
+
+      it('should fall back to plain CSRF token for non-Base64 string', () => {
+        const plainState = 'plain-csrf-token-!@#$%';
+
+        const result = service['decodeState'](plainState);
+
+        expect(result.csrf).toBe('plain-csrf-token-!@#$%');
+        expect(result.returnUrl).toBeUndefined();
+      });
+
+      it('should fall back to plain CSRF token for valid Base64 but non-JSON content', () => {
+        const nonJsonBase64 = btoa('this is not json');
+
+        const result = service['decodeState'](nonJsonBase64);
+
+        // Should fall back to treating the entire Base64 string as a plain CSRF token
+        expect(result.csrf).toBe(nonJsonBase64);
+        expect(result.returnUrl).toBeUndefined();
+      });
+
+      it('should handle Base64-encoded JSON without csrf field', () => {
+        const stateData = { returnUrl: '/some-page' }; // Missing csrf field
+        const encodedState = btoa(JSON.stringify(stateData));
+
+        const result = service['decodeState'](encodedState);
+
+        // csrf will be undefined from the decoded object
+        expect(result.csrf).toBeUndefined();
+        expect(result.returnUrl).toBe('/some-page');
+      });
+
+      it('should not throw for empty string input', () => {
+        // isBase64 returns false for empty string, so this should fall back
+        const result = service['decodeState']('');
+
+        expect(result.csrf).toBe('');
+        expect(result.returnUrl).toBeUndefined();
+      });
+    });
+
+    describe('handleOAuthCallback() CSRF state validation', () => {
+      it('should skip state validation when access_token is present (TMI proxy flow)', () => {
+        const forgedState = 'completely-forged-state';
+        localStorageMock.getItem.mockImplementation((key: string) => {
+          if (key === 'oauth_state') return 'original-state-value';
+          if (key === 'oauth_provider') return 'tmi';
+          return null;
+        });
+
+        // Mock GET /me call
+        vi.mocked(httpClient.get).mockReturnValue(of(mockUserProfile));
+
+        const response: OAuthResponse = {
+          access_token: mockJwtToken.token,
+          refresh_token: 'mock-refresh-token',
+          expires_in: 3600,
+          state: forgedState,
+        };
+
+        const result$ = service.handleOAuthCallback(response);
+
+        result$.subscribe(result => {
+          // Should succeed despite state mismatch because access_token is present
+          expect(result).toBe(true);
+        });
+      });
+
+      it('should process token when access_token present but no state at all', () => {
+        localStorageMock.getItem.mockImplementation((key: string) => {
+          if (key === 'oauth_state') return 'stored-state';
+          if (key === 'oauth_provider') return 'tmi';
+          return null;
+        });
+
+        // Mock GET /me call
+        vi.mocked(httpClient.get).mockReturnValue(of(mockUserProfile));
+
+        const response: OAuthResponse = {
+          access_token: mockJwtToken.token,
+          refresh_token: 'mock-refresh-token',
+          expires_in: 3600,
+          // No state property at all
+        };
+
+        const result$ = service.handleOAuthCallback(response);
+
+        result$.subscribe(result => {
+          expect(result).toBe(true);
+        });
+      });
+
+      it('should reject mismatched state when no access_token (code flow)', () => {
+        const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
+        localStorageMock.getItem.mockImplementation((key: string) => {
+          if (key === 'oauth_state') return 'stored-csrf-value';
+          if (key === 'oauth_provider') return 'google';
+          return null;
+        });
+
+        const response: OAuthResponse = {
+          code: 'auth-code',
+          state: 'different-csrf-value', // Mismatched plain state
+        };
+
+        const result$ = service.handleOAuthCallback(response);
+
+        result$.subscribe(result => {
+          expect(result).toBe(false);
+          expect(handleAuthErrorSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+              code: 'invalid_state',
+            }),
+          );
+        });
+      });
+
+      it('should accept matching state in code flow', () => {
+        localStorageMock.getItem.mockImplementation((key: string) => {
+          if (key === 'oauth_state') return 'matching-state';
+          if (key === 'oauth_provider') return 'google';
+          return null;
+        });
+
+        // Mock code exchange
+        const tokenResponse = {
+          access_token: mockJwtToken.token,
+          refresh_token: 'refresh-token',
+          expires_in: 3600,
+          token_type: 'Bearer',
+        };
+        httpClient.post.mockReturnValue(of(tokenResponse));
+
+        // Mock GET /me
+        vi.mocked(httpClient.get).mockReturnValue(of(mockUserProfile));
+
+        const response: OAuthResponse = {
+          code: 'auth-code',
+          state: 'matching-state',
+        };
+
+        const result$ = service.handleOAuthCallback(response);
+
+        result$.subscribe(result => {
+          expect(result).toBe(true);
+        });
+      });
+
+      it('should handle structured state (Base64) matching in code flow', () => {
+        const stateData = { csrf: 'csrf-123', returnUrl: '/tm/edit/42' };
+        const encodedState = btoa(JSON.stringify(stateData));
+
+        localStorageMock.getItem.mockImplementation((key: string) => {
+          if (key === 'oauth_state') return encodedState;
+          if (key === 'oauth_provider') return 'google';
+          return null;
+        });
+
+        // Mock code exchange
+        const tokenResponse = {
+          access_token: mockJwtToken.token,
+          refresh_token: 'refresh-token',
+          expires_in: 3600,
+          token_type: 'Bearer',
+        };
+        httpClient.post.mockReturnValue(of(tokenResponse));
+        vi.mocked(httpClient.get).mockReturnValue(of(mockUserProfile));
+
+        const response: OAuthResponse = {
+          code: 'auth-code',
+          state: encodedState, // Same encoded state
+        };
+
+        const result$ = service.handleOAuthCallback(response);
+
+        result$.subscribe(result => {
+          expect(result).toBe(true);
+        });
+      });
+
+      it('should reject structured state with different csrf in code flow', () => {
+        const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
+        const storedState = btoa(JSON.stringify({ csrf: 'original-csrf' }));
+        const receivedState = btoa(JSON.stringify({ csrf: 'forged-csrf' }));
+
+        localStorageMock.getItem.mockImplementation((key: string) => {
+          if (key === 'oauth_state') return storedState;
+          if (key === 'oauth_provider') return 'google';
+          return null;
+        });
+
+        const response: OAuthResponse = {
+          code: 'auth-code',
+          state: receivedState,
+        };
+
+        const result$ = service.handleOAuthCallback(response);
+
+        result$.subscribe(result => {
+          expect(result).toBe(false);
+          expect(handleAuthErrorSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+              code: 'invalid_state',
+              message: expect.stringContaining('possible CSRF attack'),
+            }),
+          );
+        });
+      });
+
+      it('should handle OAuth error response before state validation', () => {
+        const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
+
+        const response: OAuthResponse = {
+          error: 'server_error',
+          error_description: 'Internal server error',
+          state: 'some-state',
+        };
+
+        const result$ = service.handleOAuthCallback(response);
+
+        result$.subscribe(result => {
+          expect(result).toBe(false);
+          expect(handleAuthErrorSpy).toHaveBeenCalled();
+        });
+      });
+
+      it('should clean up oauth_state and oauth_provider after callback', async () => {
+        localStorageMock.getItem.mockImplementation((key: string) => {
+          if (key === 'oauth_state') return 'state-value';
+          if (key === 'oauth_provider') return 'tmi';
+          return null;
+        });
+
+        vi.mocked(httpClient.get).mockReturnValue(of(mockUserProfile));
+
+        const response: OAuthResponse = {
+          access_token: mockJwtToken.token,
+          refresh_token: 'mock-refresh',
+          expires_in: 3600,
+          state: 'state-value',
+        };
+
+        await service.handleOAuthCallback(response).toPromise();
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+        expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_state');
+        expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
+      });
+    });
+  }); /* End of OAuth State / CSRF Validation describe block */
+
+  describe('Token Encryption / Decryption (Security)', () => {
+    describe('encryptProfile / decryptProfile roundtrip', () => {
+      it('should encrypt and decrypt a user profile successfully', async () => {
+        const profile: UserProfile = {
+          provider: 'tmi',
+          provider_id: 'test@example.com',
+          display_name: 'Test User',
+          email: 'test@example.com',
+          groups: null,
+          jwt_groups: null,
+        };
+
+        const keyStr = 'test-encryption-key';
+
+        const encrypted = await service['encryptProfile'](profile, keyStr);
+        expect(encrypted).toContain(':'); // iv:ciphertext format
+
+        const decrypted = await service['decryptProfile'](encrypted, keyStr);
+        expect(decrypted).toEqual(profile);
+      });
+
+      it('should handle special characters in profile data', async () => {
+        const profile: UserProfile = {
+          provider: 'tmi',
+          provider_id: 'user+special@example.com',
+          display_name: 'Test <User> & "Friends"',
+          email: 'user+special@example.com',
+          groups: null,
+          jwt_groups: null,
+        };
+
+        const keyStr = 'test-key-special';
+
+        const encrypted = await service['encryptProfile'](profile, keyStr);
+        const decrypted = await service['decryptProfile'](encrypted, keyStr);
+        expect(decrypted).toEqual(profile);
+      });
+    });
+
+    describe('decryptProfile error handling', () => {
+      it('should return null for input without colon separator', async () => {
+        const result = await service['decryptProfile']('no-colon-here', 'any-key');
+        expect(result).toBeNull();
+      });
+
+      it('should return null for empty string input', async () => {
+        const result = await service['decryptProfile']('', 'any-key');
+        expect(result).toBeNull();
+      });
+
+      it('should handle corrupted ciphertext gracefully', async () => {
+        // Make decrypt throw an error for corrupted data
+        const originalDecrypt = (cryptoMock as any).subtle.decrypt;
+        (cryptoMock as any).subtle.decrypt = vi
+          .fn()
+          .mockRejectedValue(new Error('Decryption failed'));
+
+        try {
+          const result = await service['decryptProfile']('validIv:corruptedCipher', 'key');
+          // Should either return null or throw - either is acceptable
+          expect(result).toBeNull();
+        } catch (error) {
+          // If it throws, that's also acceptable behavior for corrupted data
+          expect(error).toBeDefined();
+        } finally {
+          (cryptoMock as any).subtle.decrypt = originalDecrypt;
+        }
+      });
+    });
+
+    describe('Base64 encoding utilities', () => {
+      it('should roundtrip uint8ToB64 and b64ToUint8', () => {
+        const original = new Uint8Array([0, 1, 127, 128, 255, 42, 99]);
+
+        const b64 = service['uint8ToB64'](original);
+        const restored = service['b64ToUint8'](b64);
+
+        expect(restored).toEqual(original);
+      });
+
+      it('should handle empty array', () => {
+        const empty = new Uint8Array([]);
+
+        const b64 = service['uint8ToB64'](empty);
+        const restored = service['b64ToUint8'](b64);
+
+        expect(restored).toEqual(empty);
+      });
+    });
+
+    describe('getAesKeyFromString', () => {
+      it('should produce a deterministic key from the same input', async () => {
+        // The mock returns a fixed ArrayBuffer, so both calls should get the same result
+        await service['getAesKeyFromString']('test-key');
+        await service['getAesKeyFromString']('test-key');
+
+        // Both should have called digest and importKey
+        expect((cryptoMock as any).subtle.digest).toHaveBeenCalledTimes(2);
+        expect((cryptoMock as any).subtle.importKey).toHaveBeenCalledTimes(2);
+
+        // Both calls should use SHA-256
+        const digestCalls = (cryptoMock as any).subtle.digest.mock.calls;
+        expect(digestCalls.length).toBe(2);
+        expect(digestCalls[0][0]).toBe('SHA-256');
+        expect(digestCalls[1][0]).toBe('SHA-256');
+
+        // Both calls should request AES-GCM with 256-bit key
+        const importKeyCalls = (cryptoMock as any).subtle.importKey.mock.calls;
+        expect(importKeyCalls.length).toBe(2);
+        expect(importKeyCalls[0][0]).toBe('raw');
+        expect(importKeyCalls[0][2]).toEqual({ name: 'AES-GCM', length: 256 });
+        expect(importKeyCalls[0][3]).toBe(false);
+        expect(importKeyCalls[0][4]).toEqual(['encrypt', 'decrypt']);
+      });
+    });
+  }); /* End of Token Encryption / Decryption describe block */
+
+  describe('Token Refresh Boundary Conditions (Security)', () => {
+    describe('shouldRefreshToken() 15-minute boundary', () => {
+      it('should return true when token expires in exactly 15 minutes', () => {
+        const boundaryToken: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: 'refresh-token',
+          expiresAt: new Date(Date.now() + 15 * 60 * 1000), // Exactly 15 minutes
+        };
+
+        service['jwtTokenSubject'].next(boundaryToken);
+
+        // expiresAt <= fifteenMinutesFromNow should be true when equal
+        const shouldRefresh = service['shouldRefreshToken']();
+        expect(shouldRefresh).toBe(true);
+      });
+
+      it('should return false when token expires in 16 minutes', () => {
+        const safeToken: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: 'refresh-token',
+          expiresAt: new Date(Date.now() + 16 * 60 * 1000), // 16 minutes
+        };
+
+        service['jwtTokenSubject'].next(safeToken);
+
+        const shouldRefresh = service['shouldRefreshToken']();
+        expect(shouldRefresh).toBe(false);
+      });
+
+      it('should return true when token expires in 14 minutes', () => {
+        const nearExpiryToken: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: 'refresh-token',
+          expiresAt: new Date(Date.now() + 14 * 60 * 1000), // 14 minutes
+        };
+
+        service['jwtTokenSubject'].next(nearExpiryToken);
+
+        const shouldRefresh = service['shouldRefreshToken']();
+        expect(shouldRefresh).toBe(true);
+      });
+
+      it('should return false when token has no refresh token even if expiring', () => {
+        const noRefreshToken: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: undefined,
+          expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes, should refresh but can't
+        };
+
+        service['jwtTokenSubject'].next(noRefreshToken);
+
+        const shouldRefresh = service['shouldRefreshToken']();
+        expect(shouldRefresh).toBe(false);
+      });
+
+      it('should return false when called with null token and nothing cached', () => {
+        // Ensure no cached token
+        service['jwtTokenSubject'].next(null as unknown as JwtToken);
+        localStorageMock.getItem.mockReturnValue(null);
+
+        const shouldRefresh = service['shouldRefreshToken'](null);
+        expect(shouldRefresh).toBe(false);
+      });
+    });
+
+    describe('getValidToken() token decryption wait path', () => {
+      it('should wait for tokenReady$ when token initialization is in progress', () => {
+        // Set tokenReady to false to simulate decryption in progress
+        service['tokenReadySubject'].next(false);
+
+        // No cached token
+        service['jwtTokenSubject'].next(null as unknown as JwtToken);
+
+        const result$ = service.getValidToken();
+        const results: JwtToken[] = [];
+
+        result$.subscribe({
+          next: token => results.push(token),
+          error: () => {},
+        });
+
+        // Should not have emitted yet (waiting for tokenReady$)
+        expect(results.length).toBe(0);
+
+        // Now simulate decryption completing with a valid token
+        const validToken: JwtToken = {
+          ...mockJwtToken,
+          expiresAt: new Date(Date.now() + 1800000), // 30 minutes
+        };
+        service['jwtTokenSubject'].next(validToken);
+        service['tokenReadySubject'].next(true);
+
+        // Now it should have emitted
+        expect(results.length).toBe(1);
+        expect(results[0]).toEqual(validToken);
+      });
+    });
+
+    describe('refreshToken() HTTP interactions', () => {
+      it('should POST to /oauth2/refresh with the refresh token', () => {
+        const tokenWithRefresh: JwtToken = {
+          ...mockJwtToken,
+          refreshToken: 'my-refresh-token',
+        };
+
+        service['jwtTokenSubject'].next(tokenWithRefresh);
+
+        const refreshResponse = {
+          access_token: 'new-token',
+          refresh_token: 'new-refresh',
+          expires_in: 7200,
+          token_type: 'Bearer',
+        };
+        vi.mocked(httpClient.post).mockReturnValue(of(refreshResponse));
+
+        service.refreshToken().subscribe(token => {
+          expect(token.token).toBe('new-token');
+          expect(token.refreshToken).toBe('new-refresh');
+          expect(token.expiresIn).toBe(7200);
+        });
+
+        expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/oauth2/refresh`, {
+          refresh_token: 'my-refresh-token',
+        });
+      });
+    });
+  }); /* End of Token Refresh Boundary Conditions describe block */
 });
