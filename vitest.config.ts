@@ -27,9 +27,10 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['src/**/*.spec.ts'],
     exclude: [
-      // Exclude integration tests that have been converted to Cypress
+      // Integration tests have transitive Angular Material dependencies that
+      // can't compile in vitest/JSDOM. Keep excluded until migrated to Playwright.
       'src/app/pages/dfd/integration/**',
-      'src/app/pages/dfd/infrastructure/adapters/x6-graph.adapter.spec.ts'
+      'src/app/pages/dfd/infrastructure/adapters/x6-graph.adapter.spec.ts',
     ],
     setupFiles: ['src/test-setup.ts'],
     server: {

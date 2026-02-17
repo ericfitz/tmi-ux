@@ -11,6 +11,12 @@ import { Graph, Node } from '@antv/x6';
 import { InfraEmbeddingService } from './infra-embedding.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
+import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
+
+// Ensure cell extensions are initialized (as they are in production)
+// This makes tests deterministic regardless of execution order since
+// other test files may also initialize extensions on the shared Cell prototype
+initializeX6CellExtensions();
 
 // Mock SVG methods for X6 compatibility
 const mockMatrix = {
@@ -297,7 +303,11 @@ describe('InfraEmbeddingService', () => {
       expect(config.fillColor).toBe('#FFFFFF');
     });
 
-    it('should handle nodes without getNodeTypeInfo method', () => {
+    it('should handle nodes with generic rect shape (no DFD-specific shape)', () => {
+      // In production, initializeX6CellExtensions() adds getNodeTypeInfo to
+      // Cell.prototype, so it's always available. A node with shape 'rect'
+      // (X6 built-in) gets type 'rect' from getNodeTypeInfo(), not a DFD
+      // type like 'process'. This verifies embedding handles non-DFD shapes.
       const node = graph.addNode({
         id: 'node1',
         shape: 'rect',
@@ -309,12 +319,13 @@ describe('InfraEmbeddingService', () => {
 
       const config = service.getEmbeddingConfiguration(node);
 
-      expect(config.shouldUpdateColor).toBe(true); // Default to process type
+      // Non-text-box shapes should update color
+      expect(config.shouldUpdateColor).toBe(true);
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'Embedding',
         'Calculated embedding configuration',
         expect.objectContaining({
-          nodeType: 'process',
+          nodeType: 'rect',
         }),
       );
     });
@@ -389,7 +400,7 @@ describe('InfraEmbeddingService', () => {
       );
     });
 
-    it('should handle nodes without getNodeTypeInfo method', () => {
+    it('should allow embedding between generic rect-shaped nodes', () => {
       const parent = graph.addNode({
         id: 'parent',
         shape: 'rect',
@@ -409,7 +420,8 @@ describe('InfraEmbeddingService', () => {
 
       const result = service.validateEmbedding(parent, child);
 
-      expect(result.isValid).toBe(true); // Default to process type
+      // 'rect' shape is not text-box or security-boundary, so embedding is allowed
+      expect(result.isValid).toBe(true);
     });
   });
 
@@ -439,7 +451,7 @@ describe('InfraEmbeddingService', () => {
         expect(zIndex).toBe(10);
       });
 
-      it('should handle nodes without getNodeTypeInfo method', () => {
+      it('should return default z-index for generic rect-shaped node', () => {
         const node = graph.addNode({
           id: 'node1',
           shape: 'rect',
@@ -451,7 +463,8 @@ describe('InfraEmbeddingService', () => {
 
         const zIndex = service.calculateUnembeddingZIndex(node);
 
-        expect(zIndex).toBe(10); // Default to process type
+        // 'rect' shape is not a security-boundary, so gets default z-index
+        expect(zIndex).toBe(10);
       });
     });
 
@@ -480,7 +493,7 @@ describe('InfraEmbeddingService', () => {
         expect(zIndex).toBe(20);
       });
 
-      it('should handle nodes without getNodeTypeInfo method', () => {
+      it('should return high temporary z-index for generic rect-shaped node', () => {
         const node = graph.addNode({
           id: 'node1',
           shape: 'rect',
@@ -492,7 +505,8 @@ describe('InfraEmbeddingService', () => {
 
         const zIndex = service.getTemporaryEmbeddingZIndex(node);
 
-        expect(zIndex).toBe(20); // Default to process type
+        // 'rect' shape is not a security-boundary, so gets high z-index
+        expect(zIndex).toBe(20);
       });
     });
   });
