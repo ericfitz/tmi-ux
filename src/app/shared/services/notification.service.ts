@@ -221,56 +221,9 @@ export class NotificationService {
 
     if (error instanceof HttpErrorResponse) {
       statusCode = error.status;
-
-      // Create detailed message based on HTTP status
-      switch (error.status) {
-        case 400:
-          title = 'Validation Error';
-          message = extractHttpErrorMessage(error) || 'Please check your input and try again';
-          break;
-        case 401:
-          title = 'Authentication Required';
-          message = 'Please log in again to continue';
-          break;
-        case 403:
-          title = 'Permission Denied';
-          message = 'You do not have permission to save this item';
-          break;
-        case 404:
-          title = 'Not Found';
-          message = 'The item you are trying to save could not be found';
-          break;
-        case 409:
-          title = 'Conflict';
-          message = extractHttpErrorMessage(error) || 'This item was modified by another user';
-          break;
-        case 422:
-          title = 'Validation Error';
-          message = extractHttpErrorMessage(error) || 'The data provided is invalid';
-          break;
-        case 500:
-          title = 'Server Error';
-          message =
-            extractHttpErrorMessage(error) || 'The server encountered an error while saving';
-          break;
-        case 502:
-        case 503:
-        case 504:
-          title = 'Service Unavailable';
-          message = 'The server is temporarily unavailable. Please try again later';
-          break;
-        default:
-          title = `HTTP ${error.status}`;
-          message = extractHttpErrorMessage(error) || `Server returned error ${error.status}`;
-      }
+      ({ title, message } = this.getHttpErrorDetails(error));
     } else if (error instanceof Error) {
-      // Handle JavaScript errors
-      if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
-        title = 'Network Error';
-        message = 'Unable to connect to server. Please check your connection';
-      } else {
-        message = error.message || 'An unexpected error occurred';
-      }
+      ({ title, message } = this.getJsErrorDetails(error));
     } else if (typeof error === 'string') {
       message = error;
     }
@@ -282,6 +235,75 @@ export class NotificationService {
       retryAction,
       duration: 8000,
       actionLabel: retryAction ? 'Retry' : undefined,
+    };
+  }
+
+  /**
+   * Map an HTTP error status to a user-facing title and message.
+   */
+  private getHttpErrorDetails(error: HttpErrorResponse): { title: string; message: string } {
+    const STATUS_MAP: Record<number, { title: string; message: string | null }> = {
+      400: { title: 'Validation Error', message: 'Please check your input and try again' },
+      401: { title: 'Authentication Required', message: 'Please log in again to continue' },
+      403: {
+        title: 'Permission Denied',
+        message: 'You do not have permission to save this item',
+      },
+      404: {
+        title: 'Not Found',
+        message: 'The item you are trying to save could not be found',
+      },
+      409: { title: 'Conflict', message: 'This item was modified by another user' },
+      422: { title: 'Validation Error', message: 'The data provided is invalid' },
+      500: {
+        title: 'Server Error',
+        message: 'The server encountered an error while saving',
+      },
+      502: {
+        title: 'Service Unavailable',
+        message: 'The server is temporarily unavailable. Please try again later',
+      },
+      503: {
+        title: 'Service Unavailable',
+        message: 'The server is temporarily unavailable. Please try again later',
+      },
+      504: {
+        title: 'Service Unavailable',
+        message: 'The server is temporarily unavailable. Please try again later',
+      },
+    };
+
+    const entry = STATUS_MAP[error.status];
+
+    if (entry) {
+      // For statuses that may have server-provided details, prefer extracting from the response
+      const extractable = [400, 409, 422, 500];
+      const message = extractable.includes(error.status)
+        ? extractHttpErrorMessage(error) || entry.message!
+        : entry.message!;
+      return { title: entry.title, message };
+    }
+
+    return {
+      title: `HTTP ${error.status}`,
+      message: extractHttpErrorMessage(error) || `Server returned error ${error.status}`,
+    };
+  }
+
+  /**
+   * Map a JavaScript Error to a user-facing title and message.
+   */
+  private getJsErrorDetails(error: Error): { title: string; message: string } {
+    if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+      return {
+        title: 'Network Error',
+        message: 'Unable to connect to server. Please check your connection',
+      };
+    }
+
+    return {
+      title: 'Save Failed',
+      message: error.message || 'An unexpected error occurred',
     };
   }
 }

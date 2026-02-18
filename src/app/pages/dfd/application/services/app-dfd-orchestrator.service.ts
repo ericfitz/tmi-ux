@@ -1731,43 +1731,13 @@ export class AppDfdOrchestrator {
    * Generate human-readable description for operation
    */
   private _generateOperationDescription(operation: GraphOperation, cellCount: number): string {
-    // For node update operations, check what changed to provide specific description
-    if (operation.type === 'update-node') {
-      const updateOp = operation as UpdateNodeOperation;
-      const updates = updateOp.updates;
-
-      // Check what was updated to provide more specific description
-      if (updates.position && !updates.size) {
-        return cellCount > 1 ? `Move ${cellCount} Nodes` : 'Move Node';
-      }
-      if (updates.size && !updates.position) {
-        return 'Resize Node';
-      }
-      if (updates.label !== undefined) {
-        return 'Edit Label';
-      }
-      if (updates.properties) {
-        return cellCount > 1 ? `Update ${cellCount} Cells` : 'Update Properties';
-      }
+    // Try to infer a specific description from update operations
+    const specific = this._describeUpdateOperation(operation, cellCount);
+    if (specific) {
+      return specific;
     }
 
-    // For edge update operations, check what changed
-    if (operation.type === 'update-edge') {
-      const updateOp = operation as UpdateEdgeOperation;
-      const updates = updateOp.updates;
-
-      if (updates.labels !== undefined) {
-        return 'Edit Label';
-      }
-      if (updates.vertices) {
-        return 'Adjust Edge Path';
-      }
-      if (updates.source || updates.target) {
-        return 'Reconnect Edge';
-      }
-    }
-
-    // Default descriptions
+    // Default descriptions by operation type
     const typeMap: Record<string, string> = {
       'create-node': cellCount > 1 ? `Add ${cellCount} Nodes` : 'Add Node',
       'update-node': cellCount > 1 ? `Update ${cellCount} Nodes` : 'Update Node',
@@ -1780,6 +1750,33 @@ export class AppDfdOrchestrator {
     };
 
     return typeMap[operation.type] || `${operation.type} (${cellCount} items)`;
+  }
+
+  /**
+   * Infer a specific description from node/edge update operations based on what changed.
+   * Returns null if no specific description applies.
+   */
+  private _describeUpdateOperation(operation: GraphOperation, cellCount: number): string | null {
+    if (operation.type === 'update-node') {
+      const { updates } = operation as UpdateNodeOperation;
+      if (updates.position && !updates.size) {
+        return cellCount > 1 ? `Move ${cellCount} Nodes` : 'Move Node';
+      }
+      if (updates.size && !updates.position) return 'Resize Node';
+      if (updates.label !== undefined) return 'Edit Label';
+      if (updates.properties) {
+        return cellCount > 1 ? `Update ${cellCount} Cells` : 'Update Properties';
+      }
+    }
+
+    if (operation.type === 'update-edge') {
+      const { updates } = operation as UpdateEdgeOperation;
+      if (updates.labels !== undefined) return 'Edit Label';
+      if (updates.vertices) return 'Adjust Edge Path';
+      if (updates.source || updates.target) return 'Reconnect Edge';
+    }
+
+    return null;
   }
 
   /**

@@ -72,98 +72,35 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
 
       // Validate source and target nodes exist
       const sourceNode = this.getNode(graph, sourceNodeId);
-      const targetNode = this.getNode(graph, targetNodeId);
-
       if (!sourceNode) {
-        const error = `Source node not found: ${sourceNodeId}`;
-        return of(this.createFailureResult(operation, error));
+        return of(this.createFailureResult(operation, `Source node not found: ${sourceNodeId}`));
       }
 
+      const targetNode = this.getNode(graph, targetNodeId);
       if (!targetNode) {
-        const error = `Target node not found: ${targetNodeId}`;
-        return of(this.createFailureResult(operation, error));
+        return of(this.createFailureResult(operation, `Target node not found: ${targetNodeId}`));
       }
 
-      // Generate edge ID if not provided
       const edgeId = edgeInfo.id || this.generateCellId();
-
-      // Check if this is a retroactive operation (edge already exists)
       const existingEdge = this.getEdge(graph, edgeId);
-      const isRetroactive = operation.metadata?.['retroactive'] === true;
 
-      if (existingEdge && isRetroactive) {
-        // Edge already exists (created by X6 drag-connect), just capture state for history
-        this.logger.debugComponent(
-          'EdgeOperationExecutor',
-          'Retroactive edge creation - edge already exists, capturing state',
-          {
-            edgeId,
-          },
-        );
-
-        const currentState = this._captureEdgeState(graph, edgeId);
-
-        const result = this.createSuccessResult(operation, [edgeId], {
-          edgeId,
-          edgeType: (edgeInfo as any).edgeType,
-          sourceNodeId,
-          targetNodeId,
-          hasLabel: !!(edgeInfo as any).label,
-          retroactive: true,
-        });
-
-        return of({
-          ...result,
-          previousState: [],
-          currentState: currentState ? [currentState] : [],
-        });
+      // Handle retroactive creation (edge already created by X6 drag-connect)
+      if (existingEdge && operation.metadata?.['retroactive'] === true) {
+        return of(this._handleRetroactiveCreation(graph, operation, edgeId));
       }
 
-      // Normal edge creation (not retroactive)
       if (existingEdge) {
-        const error = `Edge already exists: ${edgeId}`;
-        this.logger.warn(error);
-        return of(this.createFailureResult(operation, error));
+        this.logger.warn(`Edge already exists: ${edgeId}`);
+        return of(this.createFailureResult(operation, `Edge already exists: ${edgeId}`));
       }
 
-      // Create edge configuration
-      // Use labels from edgeInfo if available (preserves complete structure from history)
-      // Otherwise create new label from legacy label property
-      // Uses X6 native label format: { position, attrs: { text: { text, fontSize, ... } } }
-      let labels: any[] = [];
-      if (edgeInfo.labels && edgeInfo.labels.length > 0) {
-        // Use labels directly from edgeInfo to preserve all styling and structure
-        labels = edgeInfo.labels;
-      } else if ((edgeInfo as any).label) {
-        // Legacy: create new label from simple label string using X6 native format
-        labels = [
-          {
-            position: 0.5,
-            attrs: {
-              text: {
-                text: (edgeInfo as any).label,
-                fontSize: (edgeInfo as any).style?.fontSize || DFD_STYLING.DEFAULT_FONT_SIZE,
-                fill: (edgeInfo as any).style?.textColor || DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
-                fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
-                textAnchor: 'middle',
-                dominantBaseline: 'middle',
-              },
-            },
-          },
-        ];
-      }
-
+      // Build and add the edge
+      const labels = this._buildEdgeLabels(edgeInfo);
       const edgeConfig = {
         id: edgeId,
         shape: edgeInfo.shape || 'edge',
-        source: {
-          cell: sourceNodeId,
-          port: sourcePortId || undefined,
-        },
-        target: {
-          cell: targetNodeId,
-          port: targetPortId || undefined,
-        },
+        source: { cell: sourceNodeId, port: sourcePortId || undefined },
+        target: { cell: targetNodeId, port: targetPortId || undefined },
         attrs: {
           line: {
             stroke: (edgeInfo as any).style?.stroke || DFD_STYLING.EDGES.STROKE,
@@ -178,16 +115,8 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
         },
       };
 
-      // Add edge to graph
-      const _edge = graph.addEdge(edgeConfig);
+      graph.addEdge(edgeConfig);
 
-      // Apply any additional styling
-      if ((edgeInfo as any).style?.cssClass) {
-        // Note: addCssClass might not exist, skip for now
-        // _edge.addCssClass(edgeInfo.style.cssClass);
-      }
-
-      // Capture current state for history
       const currentState = this._captureEdgeState(graph, edgeId);
 
       this.logger.debugComponent('EdgeOperationExecutor', 'Edge created successfully', {
@@ -217,6 +146,71 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
     }
   }
 
+  /**
+   * Handle retroactive edge creation where the edge was already created by X6 drag-connect.
+   * Captures state for history without re-creating the edge.
+   */
+  private _handleRetroactiveCreation(
+    graph: Graph,
+    operation: CreateEdgeOperation,
+    edgeId: string,
+  ): OperationResult {
+    const { edgeInfo, sourceNodeId, targetNodeId } = operation;
+
+    this.logger.debugComponent(
+      'EdgeOperationExecutor',
+      'Retroactive edge creation - edge already exists, capturing state',
+      { edgeId },
+    );
+
+    const currentState = this._captureEdgeState(graph, edgeId);
+
+    const result = this.createSuccessResult(operation, [edgeId], {
+      edgeId,
+      edgeType: (edgeInfo as any).edgeType,
+      sourceNodeId,
+      targetNodeId,
+      hasLabel: !!(edgeInfo as any).label,
+      retroactive: true,
+    });
+
+    return {
+      ...result,
+      previousState: [],
+      currentState: currentState ? [currentState] : [],
+    };
+  }
+
+  /**
+   * Build edge labels from edgeInfo.
+   * Uses labels directly if available, otherwise creates from legacy label string.
+   */
+  private _buildEdgeLabels(edgeInfo: any): any[] {
+    if (edgeInfo.labels && edgeInfo.labels.length > 0) {
+      return edgeInfo.labels;
+    }
+
+    if (edgeInfo.label) {
+      return [
+        {
+          position: 0.5,
+          attrs: {
+            text: {
+              text: edgeInfo.label,
+              fontSize: edgeInfo.style?.fontSize || DFD_STYLING.DEFAULT_FONT_SIZE,
+              fill: edgeInfo.style?.textColor || DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
+              fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
+              textAnchor: 'middle',
+              dominantBaseline: 'middle',
+            },
+          },
+        },
+      ];
+    }
+
+    return [];
+  }
+
   private executeUpdateEdge(
     operation: UpdateEdgeOperation,
     context: OperationContext,
@@ -227,103 +221,22 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
 
       const edge = this.getEdge(graph, edgeId);
       if (!edge) {
-        const error = `Edge not found: ${edgeId}`;
-        return of(this.createFailureResult(operation, error));
+        return of(this.createFailureResult(operation, `Edge not found: ${edgeId}`));
       }
 
       // Use pre-captured state from metadata if available (for label changes where
-      // the graph has already been updated before the operation runs), otherwise
-      // capture from the current graph state
+      // the graph has already been updated before the operation runs)
       const previousState = operation.metadata?.['previousCellState']
         ? (operation.metadata['previousCellState'] as Cell)
         : this._captureEdgeState(graph, edgeId);
 
-      // Apply updates
-      const changedProperties: string[] = [];
-
-      // Handle singular label string (from facade label changes)
-      // Uses X6 native label format: { position, attrs: { text: { text, fontSize, ... } } }
-      if ((updates as any).label !== undefined) {
-        const labelText = (updates as any).label;
-        edge.setLabels([
-          {
-            position: 0.5,
-            attrs: {
-              text: {
-                text: labelText,
-                fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
-                fill: DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
-                fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
-                textAnchor: 'middle',
-                dominantBaseline: 'middle',
-              },
-            },
-          },
-        ]);
-        changedProperties.push('label');
+      // Apply updates and collect changed property names
+      const endpointError = this._applyEdgeUpdates(graph, edge, updates, operation);
+      if (endpointError) {
+        return of(endpointError);
       }
 
-      // Handle labels array (from remote operations or history)
-      // Labels should already be in X6 native format from history capture, pass through directly
-      if (updates.labels !== undefined) {
-        edge.setLabels(updates.labels);
-        changedProperties.push('label');
-      }
-
-      if ((updates as any).style) {
-        if ((updates as any).style.stroke) {
-          edge.setAttrByPath('line/stroke', (updates as any).style.stroke);
-          changedProperties.push('stroke');
-        }
-        if ((updates as any).style.strokeWidth !== undefined) {
-          edge.setAttrByPath('line/strokeWidth', (updates as any).style.strokeWidth);
-          changedProperties.push('strokeWidth');
-        }
-        if ((updates as any).style.strokeDasharray !== undefined) {
-          edge.setAttrByPath('line/strokeDasharray', (updates as any).style.strokeDasharray);
-          changedProperties.push('strokeDasharray');
-        }
-      }
-
-      if ((updates as any).sourceNodeId || (updates as any).targetNodeId) {
-        // Update source/target connections
-        const source = edge.getSource();
-        const target = edge.getTarget();
-
-        if ((updates as any).sourceNodeId) {
-          const newSourceNode = this.getNode(graph, (updates as any).sourceNodeId);
-          if (!newSourceNode) {
-            const error = `New source node not found: ${(updates as any).sourceNodeId}`;
-            return of(this.createFailureResult(operation, error));
-          }
-          edge.setSource({
-            cell: (updates as any).sourceNodeId,
-            port: (updates as any).sourcePort || (source as any).port,
-          });
-          changedProperties.push('source');
-        }
-
-        if ((updates as any).targetNodeId) {
-          const newTargetNode = this.getNode(graph, (updates as any).targetNodeId);
-          if (!newTargetNode) {
-            const error = `New target node not found: ${(updates as any).targetNodeId}`;
-            return of(this.createFailureResult(operation, error));
-          }
-          edge.setTarget({
-            cell: (updates as any).targetNodeId,
-            port: (updates as any).targetPort || (target as any).port,
-          });
-          changedProperties.push('target');
-        }
-      }
-
-      if ((updates as any).properties) {
-        const currentData = edge.getData() || {};
-        edge.setData({ ...currentData, ...(updates as any).properties });
-        changedProperties.push('properties');
-      }
-
-      // Capture current state after all changes
+      const changedProperties = this._collectChangedProperties(updates);
       const currentState = this._captureEdgeState(graph, edgeId);
 
       this.logger.debugComponent('EdgeOperationExecutor', 'Edge updated successfully', {
@@ -351,6 +264,108 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       });
       return of(this.createFailureResult(operation, errorMessage, [operation.edgeId]));
     }
+  }
+
+  /**
+   * Apply all update fields to an edge. Returns a failure result if an endpoint
+   * node is not found, or null on success.
+   */
+  private _applyEdgeUpdates(
+    graph: Graph,
+    edge: any,
+    updates: any,
+    operation: UpdateEdgeOperation,
+  ): OperationResult | null {
+    // Handle singular label string (from facade label changes)
+    if (updates.label !== undefined) {
+      edge.setLabels([
+        {
+          position: 0.5,
+          attrs: {
+            text: {
+              text: updates.label,
+              fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
+              fill: DFD_STYLING.EDGES.LABEL_TEXT_COLOR,
+              fontFamily: DFD_STYLING.TEXT_FONT_FAMILY,
+              textAnchor: 'middle',
+              dominantBaseline: 'middle',
+            },
+          },
+        },
+      ]);
+    }
+
+    // Handle labels array (from remote operations or history)
+    if (updates.labels !== undefined) {
+      edge.setLabels(updates.labels);
+    }
+
+    // Handle style updates
+    if (updates.style) {
+      if (updates.style.stroke) {
+        edge.setAttrByPath('line/stroke', updates.style.stroke);
+      }
+      if (updates.style.strokeWidth !== undefined) {
+        edge.setAttrByPath('line/strokeWidth', updates.style.strokeWidth);
+      }
+      if (updates.style.strokeDasharray !== undefined) {
+        edge.setAttrByPath('line/strokeDasharray', updates.style.strokeDasharray);
+      }
+    }
+
+    // Handle endpoint updates (may fail if nodes not found)
+    if (updates.sourceNodeId) {
+      if (!this.getNode(graph, updates.sourceNodeId)) {
+        return this.createFailureResult(
+          operation,
+          `New source node not found: ${updates.sourceNodeId}`,
+        );
+      }
+      const source = edge.getSource();
+      edge.setSource({
+        cell: updates.sourceNodeId,
+        port: updates.sourcePort || (source).port,
+      });
+    }
+
+    if (updates.targetNodeId) {
+      if (!this.getNode(graph, updates.targetNodeId)) {
+        return this.createFailureResult(
+          operation,
+          `New target node not found: ${updates.targetNodeId}`,
+        );
+      }
+      const target = edge.getTarget();
+      edge.setTarget({
+        cell: updates.targetNodeId,
+        port: updates.targetPort || (target).port,
+      });
+    }
+
+    // Handle data properties
+    if (updates.properties) {
+      const currentData = edge.getData() || {};
+      edge.setData({ ...currentData, ...updates.properties });
+    }
+
+    return null;
+  }
+
+  /**
+   * Collect names of changed properties from an updates object.
+   */
+  private _collectChangedProperties(updates: any): string[] {
+    const changed: string[] = [];
+
+    if (updates.label !== undefined || updates.labels !== undefined) changed.push('label');
+    if (updates.style?.stroke) changed.push('stroke');
+    if (updates.style?.strokeWidth !== undefined) changed.push('strokeWidth');
+    if (updates.style?.strokeDasharray !== undefined) changed.push('strokeDasharray');
+    if (updates.sourceNodeId) changed.push('source');
+    if (updates.targetNodeId) changed.push('target');
+    if (updates.properties) changed.push('properties');
+
+    return changed;
   }
 
   private executeDeleteEdge(

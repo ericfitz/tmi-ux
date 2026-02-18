@@ -302,23 +302,7 @@ export class InfraX6EmbeddingAdapter {
         }
 
         const previousParentId = nodeParentStates.get(node.id);
-        const currentParent = current;
-
-        // Safely check if currentParent is a valid Node with isNode method
-        let currentParentId: string | null = null;
-        if (currentParent && typeof currentParent === 'object' && 'isNode' in currentParent) {
-          try {
-            if (typeof currentParent.isNode === 'function' && currentParent.isNode()) {
-              currentParentId = currentParent.id;
-            }
-          } catch (error) {
-            this.logger.warn('Error checking if currentParent is a node', {
-              nodeId: node.id,
-              currentParent,
-              error,
-            });
-          }
-        }
+        const currentParentId = this.safeGetNodeId(current, node.id);
 
         this.logger.debugComponent('X6Embedding', 'Node parent changed', {
           nodeId: node.id,
@@ -331,89 +315,13 @@ export class InfraX6EmbeddingAdapter {
         // Update parent state tracking
         nodeParentStates.set(node.id, currentParentId);
 
-        // Detect unembedding: had a parent before, now doesn't
-        if (previousParentId && !currentParentId) {
-          this.logger.info('Detected unembedding via parent change', {
-            nodeId: node.id,
-            formerParentId: previousParentId,
-          });
-          this.handleNodeUnembedded(graph, node);
-        }
-        // Detect embedding: didn't have a parent before, now does
-        else if (
-          !previousParentId &&
-          currentParentId &&
-          currentParent &&
-          typeof currentParent === 'object' &&
-          'isNode' in currentParent
-        ) {
-          try {
-            if (typeof currentParent.isNode === 'function' && currentParent.isNode()) {
-              this.logger.info('Detected embedding via parent change', {
-                nodeId: node.id,
-                newParentId: currentParentId,
-              });
-              this.handleNodeEmbedded(graph, node, currentParent);
-            }
-          } catch (error) {
-            this.logger.warn('Error handling embedding via parent change', {
-              nodeId: node.id,
-              error,
-            });
-          }
-        }
-        // Handle parent change (from one parent to another - re-embedding)
-        else if (
-          previousParentId &&
-          currentParentId &&
-          previousParentId !== currentParentId &&
-          currentParent &&
-          typeof currentParent === 'object' &&
-          'isNode' in currentParent
-        ) {
-          try {
-            if (typeof currentParent.isNode === 'function' && currentParent.isNode()) {
-              this.logger.info('Detected parent change (re-embedding)', {
-                nodeId: node.id,
-                formerParentId: previousParentId,
-                newParentId: currentParentId,
-              });
-
-              // Validate re-embedding
-              const validation = this.infraEmbeddingService.validateEmbedding(currentParent, node);
-
-              if (!validation.isValid) {
-                this.logger.warn('Re-embedding validation failed - reverting', {
-                  nodeId: node.id,
-                  formerParentId: previousParentId,
-                  attemptedParentId: currentParentId,
-                  reason: validation.reason,
-                });
-
-                // Get the previous parent to restore
-                const previousParent = graph.getCellById(previousParentId);
-                if (previousParent && previousParent.isNode()) {
-                  // Revert to previous parent
-                  node.setParent(previousParent);
-                } else {
-                  // If previous parent no longer exists, unembed entirely
-                  node.removeFromParent();
-                }
-
-                return;
-              }
-
-              // Valid re-embedding - handle it
-              // Note: This will update appearance, z-order, and recalculate descendant depths
-              this.handleNodeReEmbedded(graph, node, currentParent);
-            }
-          } catch (error) {
-            this.logger.warn('Error handling parent change (re-embedding)', {
-              nodeId: node.id,
-              error,
-            });
-          }
-        }
+        this.dispatchParentChange(
+          graph,
+          node,
+          previousParentId ?? null,
+          currentParentId,
+          current as Node,
+        );
       },
     );
 
@@ -435,6 +343,104 @@ export class InfraX6EmbeddingAdapter {
     });
 
     // this.logger.info('Embedding event handlers set up with unembedding detection');
+  }
+
+  /**
+   * Safely extract the ID from a potential parent node reference.
+   * Handles the case where the value may not be a valid X6 Node.
+   */
+  private safeGetNodeId(candidate: Node | null | undefined, contextNodeId: string): string | null {
+    if (!candidate || typeof candidate !== 'object' || !('isNode' in candidate)) {
+      return null;
+    }
+
+    try {
+      if (typeof candidate.isNode === 'function' && candidate.isNode()) {
+        return candidate.id;
+      }
+    } catch (error) {
+      this.logger.warn('Error checking if candidate is a node', {
+        nodeId: contextNodeId,
+        candidate,
+        error,
+      });
+    }
+
+    return null;
+  }
+
+  /**
+   * Dispatch the appropriate handler based on parent change state transition.
+   * Determines whether this is an unembed, embed, or re-embed and delegates accordingly.
+   */
+  private dispatchParentChange(
+    graph: Graph,
+    node: Node,
+    previousParentId: string | null,
+    currentParentId: string | null,
+    currentParent: Node,
+  ): void {
+    const hadParent = !!previousParentId;
+    const hasParent = !!currentParentId;
+
+    if (hadParent && !hasParent) {
+      // Unembed: had a parent, now doesn't
+      this.logger.info('Detected unembedding via parent change', {
+        nodeId: node.id,
+        formerParentId: previousParentId,
+      });
+      this.handleNodeUnembedded(graph, node);
+    } else if (!hadParent && hasParent) {
+      // New embedding: didn't have a parent, now does
+      this.logger.info('Detected embedding via parent change', {
+        nodeId: node.id,
+        newParentId: currentParentId,
+      });
+      this.handleNodeEmbedded(graph, node, currentParent);
+    } else if (hadParent && hasParent && previousParentId !== currentParentId) {
+      // Re-embedding: parent changed to a different node
+      this.handleReEmbedding(graph, node, currentParent, previousParentId, currentParentId);
+    }
+  }
+
+  /**
+   * Handle re-embedding: validate and either apply or revert the parent change.
+   */
+  private handleReEmbedding(
+    graph: Graph,
+    node: Node,
+    newParent: Node,
+    previousParentId: string,
+    newParentId: string,
+  ): void {
+    this.logger.info('Detected parent change (re-embedding)', {
+      nodeId: node.id,
+      formerParentId: previousParentId,
+      newParentId,
+    });
+
+    const validation = this.infraEmbeddingService.validateEmbedding(newParent, node);
+
+    if (!validation.isValid) {
+      this.logger.warn('Re-embedding validation failed - reverting', {
+        nodeId: node.id,
+        formerParentId: previousParentId,
+        attemptedParentId: newParentId,
+        reason: validation.reason,
+      });
+
+      // Revert to previous parent, or unembed if it no longer exists
+      const previousParent = graph.getCellById(previousParentId);
+      if (previousParent && previousParent.isNode()) {
+        node.setParent(previousParent);
+      } else {
+        node.removeFromParent();
+      }
+
+      return;
+    }
+
+    this.handleNodeReEmbedded(graph, node, newParent);
   }
 
   /**
