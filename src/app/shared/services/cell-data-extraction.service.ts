@@ -45,11 +45,9 @@ interface StoredEdgeLabel {
 }
 
 /**
- * Interface for stored cell data from threat models
- * Supports both X6 format and legacy mxGraph format:
+ * Interface for stored cell data from threat models (X6 format)
  * - Nodes: attrs.text.text
  * - Edges: labels[].attrs.text.text (X6 native format)
- * - Legacy: value/style fields
  */
 interface StoredCell {
   id: string;
@@ -58,11 +56,7 @@ interface StoredCell {
     text?: { text?: string };
     [key: string]: unknown;
   };
-  // X6 edge labels array (edges store labels here, not in attrs.text.text)
   labels?: StoredEdgeLabel[];
-  // Legacy mxGraph format properties (kept for backward compatibility)
-  value?: string;
-  style?: string | { [key: string]: unknown };
   data?: {
     id?: string;
     label?: string;
@@ -274,19 +268,15 @@ export class CellDataExtractionService {
   }
 
   /**
-   * Extracts label from a stored cell, trying multiple strategies in priority order:
+   * Extracts label from a stored cell, trying strategies in priority order:
    * 1. Edge labels array (X6 native edge format)
    * 2. Node attrs.text.text (X6 node format)
-   * 3. Legacy mxGraph value field (with HTML stripping)
-   * 4. Legacy mxGraph style field (text/label attributes)
-   * 5. Generate friendly label from cell ID
+   * 3. Generate friendly label from cell ID
    */
   private extractStoredCellLabel(storedCell: StoredCell): string | null {
     return (
       this.tryExtractEdgeLabel(storedCell) ??
       this.tryExtractNodeAttrsLabel(storedCell) ??
-      this.tryExtractLegacyValue(storedCell) ??
-      this.tryExtractStyleLabel(storedCell) ??
       this.generateFriendlyLabel(storedCell)
     );
   }
@@ -308,58 +298,6 @@ export class CellDataExtractionService {
     const text = cell.attrs?.text?.text;
     if (text && typeof text === 'string' && text.trim()) {
       return text.trim();
-    }
-    return null;
-  }
-
-  /** Extracts label from legacy mxGraph value field, stripping HTML tags. */
-  private tryExtractLegacyValue(cell: StoredCell): string | null {
-    if (!cell.value || typeof cell.value !== 'string') {
-      return null;
-    }
-    let cleanValue = cell.value;
-    let previousValue;
-    do {
-      previousValue = cleanValue;
-      cleanValue = cleanValue.replace(/<[^>]*>/g, '');
-    } while (cleanValue !== previousValue);
-    cleanValue = cleanValue.trim();
-    if (cleanValue && cleanValue !== cell.id) {
-      return cleanValue;
-    }
-    return null;
-  }
-
-  /** Extracts label from legacy mxGraph style field using regex patterns. */
-  private tryExtractStyleLabel(cell: StoredCell): string | null {
-    if (!cell.style || typeof cell.style !== 'string') {
-      return null;
-    }
-
-    const stylePatterns = [
-      /text=([^;]+)/i,
-      /label=([^;]+)/i,
-      /html=1;text=([^;]+)/i,
-      /whiteSpace=wrap;.*text=([^;]+)/i,
-    ];
-
-    for (const pattern of stylePatterns) {
-      const styleMatch = cell.style.match(pattern);
-      if (styleMatch?.[1]) {
-        try {
-          let decodedText = decodeURIComponent(styleMatch[1]).trim();
-          decodedText = decodedText.replace(/&[a-zA-Z0-9]+;/g, ' ').trim();
-          decodedText = decodedText.replace(/\s+/g, ' ');
-          if (decodedText && decodedText !== cell.id && decodedText.length > 0) {
-            return decodedText;
-          }
-        } catch (error) {
-          this.logger.warn('Error decoding style text', {
-            styleMatch: styleMatch[1],
-            error,
-          });
-        }
-      }
     }
     return null;
   }

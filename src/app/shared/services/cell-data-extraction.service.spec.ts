@@ -46,14 +46,14 @@ describe('CellDataExtractionService', () => {
             id: 'diag1',
             name: 'Diagram 1',
             cells: [
-              { id: 'cell1', value: 'Cell 1 Value' },
-              { id: 'cell2', value: 'Cell 2 Value' },
+              { id: 'cell1', shape: 'process', attrs: { text: { text: 'Cell 1' } } },
+              { id: 'cell2', shape: 'process', attrs: { text: { text: 'Cell 2' } } },
             ],
           },
           {
             id: 'diag2',
             name: 'Diagram 2',
-            cells: [{ id: 'cell3', value: 'Cell 3 Value' }],
+            cells: [{ id: 'cell3', shape: 'process', attrs: { text: { text: 'Cell 3' } } }],
           },
         ],
       } as any;
@@ -77,14 +77,14 @@ describe('CellDataExtractionService', () => {
             id: 'diag1',
             name: 'Diagram 1',
             cells: [
-              { id: 'cell1', value: 'Cell 1' },
-              { id: 'cell2', value: 'Cell 2' },
+              { id: 'cell1', shape: 'process', attrs: { text: { text: 'Cell 1' } } },
+              { id: 'cell2', shape: 'process', attrs: { text: { text: 'Cell 2' } } },
             ],
           },
           {
             id: 'diag2',
             name: 'Diagram 2',
-            cells: [{ id: 'cell3', value: 'Cell 3' }],
+            cells: [{ id: 'cell3', shape: 'process', attrs: { text: { text: 'Cell 3' } } }],
           },
         ],
       } as any;
@@ -152,7 +152,7 @@ describe('CellDataExtractionService', () => {
       expect(result.cells[0].label).toBe('My Process Label');
     });
 
-    it('should prefer attrs.text.text over value field', () => {
+    it('should extract label from attrs.text.text', () => {
       const threatModel: ThreatModel = {
         id: 'tm1',
         name: 'Test',
@@ -163,8 +163,8 @@ describe('CellDataExtractionService', () => {
             cells: [
               {
                 id: 'cell1',
+                shape: 'process',
                 attrs: { text: { text: 'Correct Label' } },
-                value: 'Wrong Label',
               },
             ],
           },
@@ -279,60 +279,6 @@ describe('CellDataExtractionService', () => {
       expect(result.cells[0].label).toBe('Correct Edge Label');
     });
 
-    it('should extract cell labels from value field (legacy format)', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [{ id: 'cell1', value: 'Process A' }],
-          },
-        ],
-      } as any;
-
-      const result = service.extractFromThreatModel(threatModel);
-
-      expect(result.cells[0].label).toBe('Process A');
-    });
-
-    it('should strip HTML from cell values', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [{ id: 'cell1', value: '<div>Process <b>A</b></div>' }],
-          },
-        ],
-      } as any;
-
-      const result = service.extractFromThreatModel(threatModel);
-
-      expect(result.cells[0].label).toBe('Process A');
-    });
-
-    it('should extract label from style attribute', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [{ id: 'cell1', value: '', style: 'text=Process%20A' }],
-          },
-        ],
-      } as any;
-
-      const result = service.extractFromThreatModel(threatModel);
-
-      expect(result.cells[0].label).toBe('Process A');
-    });
-
     it('should fallback to cell ID when no label found', () => {
       const threatModel: ThreatModel = {
         id: 'tm1',
@@ -341,7 +287,7 @@ describe('CellDataExtractionService', () => {
           {
             id: 'diag1',
             name: 'Diagram 1',
-            cells: [{ id: 'cell1', value: '' }],
+            cells: [{ id: 'cell1', shape: 'process' }],
           },
         ],
       } as any;
@@ -359,7 +305,7 @@ describe('CellDataExtractionService', () => {
           {
             id: 'diag1',
             name: 'Diagram 1',
-            cells: [{ id: 'cell1', value: 'Test' }],
+            cells: [{ id: 'cell1', shape: 'process', attrs: { text: { text: 'Test' } } }],
           },
         ],
       } as any;
@@ -523,7 +469,7 @@ describe('CellDataExtractionService', () => {
           {
             id: 'diag1',
             name: 'Diagram 1',
-            cells: [{ id: longId, value: '' }],
+            cells: [{ id: longId, shape: 'process' }],
           },
         ],
       } as any;
@@ -543,7 +489,7 @@ describe('CellDataExtractionService', () => {
           {
             id: 'diag1',
             name: 'Diagram 1',
-            cells: [{ id: uuid, value: '' }],
+            cells: [{ id: uuid, shape: 'process' }],
           },
         ],
       } as any;
@@ -551,66 +497,6 @@ describe('CellDataExtractionService', () => {
       const result = service.extractFromThreatModel(threatModel);
 
       expect(result.cells[0].label).toBe('123e4567...');
-    });
-
-    it('should handle cells with nested HTML in value', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [{ id: 'cell1', value: '<div><span><b>Nested</b></span></div>' }],
-          },
-        ],
-      } as any;
-
-      const result = service.extractFromThreatModel(threatModel);
-
-      expect(result.cells[0].label).toBe('Nested');
-    });
-
-    it('should handle cells with whitespace-only value', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [{ id: 'cell1', value: '   ' }],
-          },
-        ],
-      } as any;
-
-      const result = service.extractFromThreatModel(threatModel);
-
-      expect(result.cells[0].label).toBe('cell1'); // Falls back to ID
-    });
-
-    it('should decode URL-encoded text in style attribute', () => {
-      const threatModel: ThreatModel = {
-        id: 'tm1',
-        name: 'Test',
-        diagrams: [
-          {
-            id: 'diag1',
-            name: 'Diagram 1',
-            cells: [
-              {
-                id: 'cell1',
-                value: '',
-                style: 'text=Process%20with%20spaces%20and%20%26%20ampersand',
-              },
-            ],
-          },
-        ],
-      } as any;
-
-      const result = service.extractFromThreatModel(threatModel);
-
-      expect(result.cells[0].label).toBe('Process with spaces and & ampersand');
     });
   });
 });
