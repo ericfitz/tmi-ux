@@ -421,30 +421,43 @@ export class AppDiagramService {
    * Convert mock node data to proper X6 format
    */
   private convertMockNodeToX6Format(mockCell: any, infraNodeConfigurationService: any): any {
-    // Get the node type from the shape
     const nodeType = mockCell.shape;
-
-    // Get the correct X6 shape name
     const x6Shape = getX6ShapeForNodeType(nodeType);
-
-    // Extract label from various possible import format locations
-    // Note: This is for import/conversion, not live X6 cell manipulation
     const label =
       mockCell.attrs?.text?.text ||
       mockCell.value ||
       mockCell.label ||
       this.getDefaultLabelForType(nodeType);
 
-    // Get proper port configuration for this node type
     const portConfig = infraNodeConfigurationService.getNodePorts(nodeType);
+    const { x, y, width, height } = this.extractMockNodeGeometry(mockCell, nodeType);
 
-    // Handle position from X6 format (position object), fallback to flat properties or geometry
+    return {
+      id: mockCell.id,
+      shape: x6Shape,
+      x,
+      y,
+      width,
+      height,
+      label,
+      zIndex: mockCell.zIndex || 1,
+      ports: portConfig,
+      ...this.normalizeMockNodeData(mockCell),
+      ...(mockCell.parent ? { parent: mockCell.parent } : {}),
+      ...(Array.isArray(mockCell.children) ? { children: mockCell.children } : {}),
+    };
+  }
+
+  /** Extract position and size from various import format locations. */
+  private extractMockNodeGeometry(
+    mockCell: any,
+    nodeType: string,
+  ): { x: number; y: number; width: number; height: number } {
     const x = mockCell.position?.x ?? mockCell.x ?? mockCell.geometry?.x ?? 0;
     const y = mockCell.position?.y ?? mockCell.y ?? mockCell.geometry?.y ?? 0;
     const width = mockCell.size?.width ?? mockCell.width ?? mockCell.geometry?.width ?? 80;
     const height = mockCell.size?.height ?? mockCell.height ?? mockCell.geometry?.height ?? 80;
 
-    // Log position data for debugging positioning issues
     if (x === 0 && y === 0 && !mockCell.position?.x && !mockCell.x && !mockCell.geometry?.x) {
       this.logger.warn('Node has no position data, defaulting to (0,0)', {
         nodeId: mockCell.id,
@@ -457,42 +470,19 @@ export class AppDiagramService {
       });
     }
 
-    // Create base configuration
-    const cellConfig: any = {
-      id: mockCell.id,
-      shape: x6Shape,
-      x,
-      y,
-      width,
-      height,
-      label,
-      zIndex: mockCell.zIndex || 1,
-      ports: portConfig,
-    };
+    return { x, y, width, height };
+  }
 
-    // Add hybrid data format if present
-    if (mockCell.data) {
-      if (Array.isArray(mockCell.data)) {
-        // Legacy format: convert array of {key, value} to hybrid format
-        const metadataArray = mockCell.data.filter((item: any) => item.key && item.value);
-        cellConfig.data = { _metadata: metadataArray };
-      } else {
-        // Already in hybrid format or custom object
-        cellConfig.data = mockCell.data;
-      }
+  /** Normalize mock node data to hybrid format. */
+  private normalizeMockNodeData(mockCell: any): Record<string, unknown> {
+    if (!mockCell.data) {
+      return {};
     }
-
-    // Add parent property if present (for embedded nodes)
-    if (mockCell.parent) {
-      cellConfig.parent = mockCell.parent;
+    if (Array.isArray(mockCell.data)) {
+      const metadataArray = mockCell.data.filter((item: any) => item.key && item.value);
+      return { data: { _metadata: metadataArray } };
     }
-
-    // Add children property if present (for container nodes)
-    if (mockCell.children && Array.isArray(mockCell.children)) {
-      cellConfig.children = mockCell.children;
-    }
-
-    return cellConfig;
+    return { data: mockCell.data };
   }
 
   /**

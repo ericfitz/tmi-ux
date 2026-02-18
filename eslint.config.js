@@ -29,6 +29,7 @@ export default [
       'unused-imports': unusedImports,
     },
     rules: {
+      'complexity': ['warn', 20],
       'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': 'off', // We use @typescript-eslint/no-unused-vars
       '@typescript-eslint/explicit-function-return-type': ['warn', {

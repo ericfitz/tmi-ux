@@ -46,6 +46,7 @@ import {
   UpdateEdgeOperation,
   NodeData,
 } from '../../types/graph-operation.types';
+import { HistoryOperationType } from '../../types/history.types';
 import { normalizeCells } from '../../utils/cell-normalization.util';
 import { shouldTriggerHistoryOrPersistence } from '../../utils/cell-property-filter.util';
 import { DFD_STYLING } from '../../constants/styling-constants';
@@ -1525,100 +1526,54 @@ export class AppDfdOrchestrator {
 
     const { cellId, dragType, initialState } = dragCompletion;
 
-    // Capture current state from graph
     const cell = graph.getCellById(cellId);
     if (!cell) {
       return;
     }
 
-    // Get current state (X6 has already updated the cell during drag)
     const currentPosition = cell.isNode?.() ? cell.getPosition() : undefined;
     const currentSize = cell.isNode?.() ? cell.getSize() : undefined;
     const currentVertices = cell.isEdge?.() ? cell.getVertices?.() || [] : undefined;
 
-    // Check if anything actually changed (prevent no-op history entries)
-    let hasChanged = false;
-    if (dragType === 'move' && initialState.position && currentPosition) {
-      hasChanged =
-        Math.abs(initialState.position.x - currentPosition.x) > 0.01 ||
-        Math.abs(initialState.position.y - currentPosition.y) > 0.01;
-    } else if (dragType === 'resize' && initialState.size && currentSize) {
-      hasChanged =
-        Math.abs(initialState.size.width - currentSize.width) > 0.01 ||
-        Math.abs(initialState.size.height - currentSize.height) > 0.01;
-    } else if (dragType === 'vertex' && initialState.vertices && currentVertices) {
-      // Check if vertices changed
-      hasChanged = JSON.stringify(initialState.vertices) !== JSON.stringify(currentVertices);
-    }
-
-    if (!hasChanged) {
+    if (
+      !this._hasDragChanged(dragType, initialState, currentPosition, currentSize, currentVertices)
+    ) {
       this.logger.debugComponent(
         'AppDfdOrchestrator',
         'Skipping drag completion - no actual change detected',
-        {
-          cellId,
-          dragType,
-        },
+        { cellId, dragType },
       );
       return;
     }
 
-    // Build previousState from initial drag state (minimal, semantic data only)
     const previousCells = [
       {
         id: cellId,
         shape: cell.shape,
-        ...(dragType === 'move' && initialState.position
-          ? { position: initialState.position }
-          : {}),
-        ...(dragType === 'resize' && initialState.size ? { size: initialState.size } : {}),
-        ...(dragType === 'vertex' && initialState.vertices
-          ? { vertices: initialState.vertices }
-          : {}),
+        ...this._buildDragPreviousState(dragType, initialState),
       },
     ];
 
-    // Build currentState from final drag state (minimal, semantic data only - no visual effects)
     const currentCells = [
       {
         id: cellId,
         shape: cell.shape,
-        ...(dragType === 'move' || dragType === 'resize'
-          ? {
-              position: currentPosition,
-              size: currentSize,
-            }
-          : {}),
-        ...(dragType === 'vertex'
-          ? {
-              source: cell.isEdge?.() ? cell.getSource() : undefined,
-              target: cell.isEdge?.() ? cell.getTarget() : undefined,
-              vertices: currentVertices,
-            }
-          : {}),
+        ...this._buildDragCurrentState(
+          dragType,
+          cell,
+          currentPosition,
+          currentSize,
+          currentVertices,
+        ),
       },
     ];
 
-    // Create description
-    const description =
-      dragType === 'move'
-        ? 'Move Cell'
-        : dragType === 'resize'
-          ? 'Resize Cell'
-          : 'Adjust Edge Vertices';
-
-    // Create history entry
     const timestamp = Date.now();
     const historyEntry = {
       id: `hist_${timestamp}_${Math.random().toString(36).substr(2, 9)}`,
       timestamp,
-      operationType:
-        dragType === 'move'
-          ? ('move-node' as const)
-          : dragType === 'resize'
-            ? ('resize-node' as const)
-            : ('change-vertices' as const),
-      description,
+      operationType: this._dragOperationType(dragType),
+      description: this._dragDescription(dragType),
       cells: currentCells,
       previousCells,
       userId: this.authService.providerId,
@@ -1629,9 +1584,98 @@ export class AppDfdOrchestrator {
       },
     };
 
-    // Record in local history
-    // The history entry will be automatically broadcast via WebSocketPersistenceStrategy
     this.appHistoryService.addHistoryEntry(historyEntry);
+  }
+
+  /** Check whether a drag operation actually changed the cell state. */
+  private _hasDragChanged(
+    dragType: string,
+    initialState: any,
+    currentPosition: any,
+    currentSize: any,
+    currentVertices: any,
+  ): boolean {
+    switch (dragType) {
+      case 'move':
+        return (
+          !!initialState.position &&
+          !!currentPosition &&
+          (Math.abs(initialState.position.x - currentPosition.x) > 0.01 ||
+            Math.abs(initialState.position.y - currentPosition.y) > 0.01)
+        );
+      case 'resize':
+        return (
+          !!initialState.size &&
+          !!currentSize &&
+          (Math.abs(initialState.size.width - currentSize.width) > 0.01 ||
+            Math.abs(initialState.size.height - currentSize.height) > 0.01)
+        );
+      case 'vertex':
+        return (
+          !!initialState.vertices &&
+          !!currentVertices &&
+          JSON.stringify(initialState.vertices) !== JSON.stringify(currentVertices)
+        );
+      default:
+        return false;
+    }
+  }
+
+  /** Build the previous-state payload for a drag history entry. */
+  private _buildDragPreviousState(dragType: string, initialState: any): Record<string, unknown> {
+    switch (dragType) {
+      case 'move':
+        return initialState.position ? { position: initialState.position } : {};
+      case 'resize':
+        return initialState.size ? { size: initialState.size } : {};
+      case 'vertex':
+        return initialState.vertices ? { vertices: initialState.vertices } : {};
+      default:
+        return {};
+    }
+  }
+
+  /** Build the current-state payload for a drag history entry. */
+  private _buildDragCurrentState(
+    dragType: string,
+    cell: any,
+    currentPosition: any,
+    currentSize: any,
+    currentVertices: any,
+  ): Record<string, unknown> {
+    switch (dragType) {
+      case 'move':
+      case 'resize':
+        return { position: currentPosition, size: currentSize };
+      case 'vertex':
+        return {
+          source: cell.isEdge?.() ? cell.getSource() : undefined,
+          target: cell.isEdge?.() ? cell.getTarget() : undefined,
+          vertices: currentVertices,
+        };
+      default:
+        return {};
+    }
+  }
+
+  private static readonly DRAG_DESCRIPTIONS: Record<string, string> = {
+    move: 'Move Cell',
+    resize: 'Resize Cell',
+    vertex: 'Adjust Edge Vertices',
+  };
+
+  private static readonly DRAG_OPERATION_TYPES: Record<string, HistoryOperationType> = {
+    move: 'move-node',
+    resize: 'resize-node',
+    vertex: 'change-vertices',
+  };
+
+  private _dragDescription(dragType: string): string {
+    return AppDfdOrchestrator.DRAG_DESCRIPTIONS[dragType] || 'Unknown Operation';
+  }
+
+  private _dragOperationType(dragType: string): HistoryOperationType {
+    return AppDfdOrchestrator.DRAG_OPERATION_TYPES[dragType] || 'move-node';
   }
 
   /**
