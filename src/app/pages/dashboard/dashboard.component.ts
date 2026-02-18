@@ -254,26 +254,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.dataSource.sort = this.sort;
 
     // Custom sorting accessor to handle nested properties and date columns
-    this.dataSource.sortingDataAccessor = (item: TMListItem, property: string): string | number => {
-      switch (property) {
-        case 'name':
-          return item.name?.toLowerCase() || '';
-        case 'description':
-          return item.description?.toLowerCase() || '';
-        case 'lastModified':
-          return item.modified_at ? new Date(item.modified_at).getTime() : 0;
-        case 'status':
-          return item.status?.toLowerCase() || '';
-        case 'statusLastChanged':
-          return item.status_updated ? new Date(item.status_updated).getTime() : 0;
-        case 'owner':
-          return item.owner?.display_name?.toLowerCase() || item.owner?.email?.toLowerCase() || '';
-        case 'created':
-          return item.created_at ? new Date(item.created_at).getTime() : 0;
-        default:
-          return '';
-      }
-    };
+    this.dataSource.sortingDataAccessor = (item: TMListItem, property: string): string | number =>
+      this._getSortValue(item, property);
 
     // Override sortData to always float active-session TMs to the top
     this.dataSource.sortData = (data: TMListItem[], sort: MatSort): TMListItem[] => {
@@ -498,6 +480,24 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   refreshThreatModels(): void {
     // this.logger.info('Manually refreshing threat models');
     this.loadData();
+  }
+
+  private _getSortValue(item: TMListItem, property: string): string | number {
+    const dateAccessor = (field: string | null | undefined): number =>
+      field ? new Date(field).getTime() : 0;
+
+    const accessors: Record<string, () => string | number> = {
+      name: () => item.name?.toLowerCase() || '',
+      description: () => item.description?.toLowerCase() || '',
+      lastModified: () => dateAccessor(item.modified_at),
+      status: () => item.status?.toLowerCase() || '',
+      statusLastChanged: () => dateAccessor(item.status_updated),
+      owner: () =>
+        item.owner?.display_name?.toLowerCase() || item.owner?.email?.toLowerCase() || '',
+      created: () => dateAccessor(item.created_at),
+    };
+
+    return accessors[property]?.() ?? '';
   }
 
   /**

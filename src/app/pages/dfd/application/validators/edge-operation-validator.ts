@@ -117,34 +117,18 @@ export class EdgeOperationValidator extends BaseOperationValidator {
       warnings.push('Creating self-loop edge (source and target are the same node)');
     }
 
-    // Check for duplicate edges
+    // Check for duplicate edges (only if no errors so far, i.e., nodes exist)
     if (errors.length === 0) {
-      // Only check if nodes exist
-      const existingEdges = context.graph.getEdges();
-      const duplicateEdge = existingEdges.find(edge => {
-        const source = edge.getSource();
-        const target = edge.getTarget();
-        const sourceId = typeof source === 'object' ? source.cell : source;
-        const targetId = typeof target === 'object' ? target.cell : target;
-        return sourceId === edgeData.sourceNodeId && targetId === edgeData.targetNodeId;
-      });
-
-      if (duplicateEdge) {
-        warnings.push(`Similar edge already exists between these nodes (ID: ${duplicateEdge.id})`);
-      }
+      this._checkDuplicateEdge(
+        context.graph,
+        edgeData.sourceNodeId,
+        edgeData.targetNodeId,
+        warnings,
+      );
     }
 
     // Validate edge type
-    if (!edgeData.edgeType) {
-      warnings.push('Edge type not specified, will default to "data-flow"');
-    } else {
-      const validEdgeTypes = ['data-flow', 'control-flow', 'trust-boundary'];
-      if (!validEdgeTypes.includes(edgeData.edgeType)) {
-        warnings.push(
-          `Unusual edge type '${edgeData.edgeType}', expected one of: ${validEdgeTypes.join(', ')}`,
-        );
-      }
-    }
+    this._validateEdgeType(edgeData.edgeType, warnings);
 
     // Validate label
     if (edgeData.label !== undefined && edgeData.label !== null) {
@@ -163,6 +147,39 @@ export class EdgeOperationValidator extends BaseOperationValidator {
     return errors.length > 0
       ? this.createInvalidResult(errors, warnings)
       : this.createValidResult(warnings);
+  }
+
+  private _checkDuplicateEdge(
+    graph: any,
+    sourceNodeId: string,
+    targetNodeId: string,
+    warnings: string[],
+  ): void {
+    const existingEdges = graph.getEdges();
+    const duplicateEdge = existingEdges.find((edge: any) => {
+      const source = edge.getSource();
+      const target = edge.getTarget();
+      const sourceId = typeof source === 'object' ? source.cell : source;
+      const targetId = typeof target === 'object' ? target.cell : target;
+      return sourceId === sourceNodeId && targetId === targetNodeId;
+    });
+
+    if (duplicateEdge) {
+      warnings.push(`Similar edge already exists between these nodes (ID: ${duplicateEdge.id})`);
+    }
+  }
+
+  private _validateEdgeType(edgeType: string | undefined, warnings: string[]): void {
+    if (!edgeType) {
+      warnings.push('Edge type not specified, will default to "data-flow"');
+      return;
+    }
+    const validEdgeTypes = ['data-flow', 'control-flow', 'trust-boundary'];
+    if (!validEdgeTypes.includes(edgeType)) {
+      warnings.push(
+        `Unusual edge type '${edgeType}', expected one of: ${validEdgeTypes.join(', ')}`,
+      );
+    }
   }
 
   private validateUpdateEdge(

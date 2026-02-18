@@ -846,71 +846,75 @@ export class EdgeInfo {
     validateMarkupElements(this.markup, 'Edge markup element');
     validateCellTools(this.tools, 'Edge tool');
 
-    // Validate router configuration
     if (this.router) {
-      if (typeof this.router === 'string') {
-        const validRouters = ['normal', 'orth', 'oneSide', 'manhattan', 'metro', 'er'];
-        if (!validRouters.includes(this.router)) {
-          throw new Error(
-            `Invalid router type: ${this.router}. Must be one of: ${validRouters.join(', ')}`,
-          );
-        }
-      } else if (typeof this.router === 'object') {
-        const validRouters = ['normal', 'orth', 'oneSide', 'manhattan', 'metro', 'er'];
-        if (!this.router.name || !validRouters.includes(this.router.name)) {
-          throw new Error(
-            `Invalid router name: ${this.router.name}. Must be one of: ${validRouters.join(', ')}`,
-          );
-        }
-        if (this.router.args && typeof this.router.args !== 'object') {
-          throw new Error('Router args must be an object');
-        }
-      } else {
-        throw new Error('Router must be a string or object with name property');
-      }
+      this._validateNamedConfig(
+        this.router,
+        ['normal', 'orth', 'oneSide', 'manhattan', 'metro', 'er'],
+        'router',
+      );
     }
 
-    // Validate connector configuration
     if (this.connector) {
-      if (typeof this.connector === 'string') {
-        const validConnectors = ['normal', 'rounded', 'smooth', 'jumpover'];
-        if (!validConnectors.includes(this.connector)) {
-          throw new Error(
-            `Invalid connector type: ${this.connector}. Must be one of: ${validConnectors.join(', ')}`,
-          );
-        }
-      } else if (typeof this.connector === 'object') {
-        const validConnectors = ['normal', 'rounded', 'smooth', 'jumpover'];
-        if (!this.connector.name || !validConnectors.includes(this.connector.name)) {
-          throw new Error(
-            `Invalid connector name: ${this.connector.name}. Must be one of: ${validConnectors.join(', ')}`,
-          );
-        }
-        if (this.connector.args && typeof this.connector.args !== 'object') {
-          throw new Error('Connector args must be an object');
-        }
-      } else {
-        throw new Error('Connector must be a string or object with name property');
-      }
+      this._validateNamedConfig(
+        this.connector,
+        ['normal', 'rounded', 'smooth', 'jumpover'],
+        'connector',
+      );
     }
 
-    // Validate defaultLabel structure
-    if (this.defaultLabel) {
-      if (typeof this.defaultLabel !== 'object') {
-        throw new Error('Default label must be an object');
+    this._validateDefaultLabel();
+  }
+
+  /**
+   * Validates a string-or-object config (router or connector)
+   */
+  private _validateNamedConfig(
+    config: string | { name: string; args?: any },
+    validNames: string[],
+    label: string,
+  ): void {
+    if (typeof config === 'string') {
+      if (!validNames.includes(config)) {
+        throw new Error(
+          `Invalid ${label} type: ${config}. Must be one of: ${validNames.join(', ')}`,
+        );
       }
-      if (this.defaultLabel.position !== undefined) {
-        if (
-          typeof this.defaultLabel.position !== 'number' ||
-          this.defaultLabel.position < 0 ||
-          this.defaultLabel.position > 1
-        ) {
-          throw new Error('Default label position must be a number between 0 and 1');
-        }
+    } else if (typeof config === 'object') {
+      if (!config.name || !validNames.includes(config.name)) {
+        throw new Error(
+          `Invalid ${label} name: ${config.name}. Must be one of: ${validNames.join(', ')}`,
+        );
       }
-      if (this.defaultLabel.attrs && typeof this.defaultLabel.attrs !== 'object') {
-        throw new Error('Default label attrs must be an object');
+      if (config.args && typeof config.args !== 'object') {
+        throw new Error(`${label.charAt(0).toUpperCase() + label.slice(1)} args must be an object`);
       }
+    } else {
+      throw new Error(
+        `${label.charAt(0).toUpperCase() + label.slice(1)} must be a string or object with name property`,
+      );
+    }
+  }
+
+  /**
+   * Validates the defaultLabel structure
+   */
+  private _validateDefaultLabel(): void {
+    if (!this.defaultLabel) return;
+
+    if (typeof this.defaultLabel !== 'object') {
+      throw new Error('Default label must be an object');
+    }
+    if (this.defaultLabel.position !== undefined) {
+      if (
+        typeof this.defaultLabel.position !== 'number' ||
+        this.defaultLabel.position < 0 ||
+        this.defaultLabel.position > 1
+      ) {
+        throw new Error('Default label position must be a number between 0 and 1');
+      }
+    }
+    if (this.defaultLabel.attrs && typeof this.defaultLabel.attrs !== 'object') {
+      throw new Error('Default label attrs must be an object');
     }
   }
 

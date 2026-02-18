@@ -112,24 +112,7 @@ export class NodeOperationValidator extends BaseOperationValidator {
 
     // Validate size if provided
     if (nodeData.size) {
-      const sizeError = this.validateSize(nodeData.size.width, nodeData.size.height);
-      if (sizeError) {
-        errors.push(sizeError);
-      }
-
-      // Check for reasonable size limits
-      const maxSize = 1000;
-      const minSize = 10;
-      if (nodeData.size.width > maxSize || nodeData.size.height > maxSize) {
-        warnings.push(
-          `Node size is very large (${nodeData.size.width}x${nodeData.size.height}), maximum recommended is ${maxSize}x${maxSize}`,
-        );
-      }
-      if (nodeData.size.width < minSize || nodeData.size.height < minSize) {
-        warnings.push(
-          `Node size is very small (${nodeData.size.width}x${nodeData.size.height}), minimum recommended is ${minSize}x${minSize}`,
-        );
-      }
+      this._validateNodeSize(nodeData.size, errors, warnings);
     }
 
     // Validate label
@@ -260,6 +243,30 @@ export class NodeOperationValidator extends BaseOperationValidator {
     return errors.length > 0
       ? this.createInvalidResult(errors, warnings)
       : this.createValidResult(warnings);
+  }
+
+  private _validateNodeSize(
+    size: { width: number; height: number },
+    errors: string[],
+    warnings: string[],
+  ): void {
+    const sizeError = this.validateSize(size.width, size.height);
+    if (sizeError) {
+      errors.push(sizeError);
+    }
+
+    const maxSize = 1000;
+    const minSize = 10;
+    if (size.width > maxSize || size.height > maxSize) {
+      warnings.push(
+        `Node size is very large (${size.width}x${size.height}), maximum recommended is ${maxSize}x${maxSize}`,
+      );
+    }
+    if (size.width < minSize || size.height < minSize) {
+      warnings.push(
+        `Node size is very small (${size.width}x${size.height}), minimum recommended is ${minSize}x${minSize}`,
+      );
+    }
   }
 
   private validateNodeStyle(style: any, errors: string[], warnings: string[]): void {

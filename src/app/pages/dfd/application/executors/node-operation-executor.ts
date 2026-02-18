@@ -215,57 +215,7 @@ export class NodeOperationExecutor implements OperationExecutor {
         ? (operation.metadata['previousCellState'] as Cell)
         : this._captureCellState(graph, nodeId);
 
-      const changedProperties: string[] = [];
-
-      // Update position
-      if (updates.position && node.isNode?.()) {
-        node.setPosition(updates.position.x, updates.position.y);
-        changedProperties.push('position');
-      }
-
-      // Update size
-      if (updates.size && node.isNode?.()) {
-        node.setSize(updates.size.width, updates.size.height);
-        changedProperties.push('size');
-      }
-
-      // Update label
-      if (updates.label !== undefined) {
-        node.setAttrByPath('text/text', updates.label);
-        changedProperties.push('label');
-      }
-
-      // Update style properties
-      if (updates.style) {
-        if (updates.style['fill'] !== undefined) {
-          node.setAttrByPath('body/fill', updates.style['fill']);
-          changedProperties.push('fill');
-        }
-        if (updates.style['stroke'] !== undefined) {
-          node.setAttrByPath('body/stroke', updates.style['stroke']);
-          changedProperties.push('stroke');
-        }
-        if (updates.style['strokeWidth'] !== undefined) {
-          node.setAttrByPath('body/strokeWidth', updates.style['strokeWidth']);
-          changedProperties.push('strokeWidth');
-        }
-        if (updates.style['fontSize'] !== undefined) {
-          node.setAttrByPath('text/fontSize', updates.style['fontSize']);
-          changedProperties.push('fontSize');
-        }
-        if (updates.style['textColor'] !== undefined) {
-          node.setAttrByPath('text/fill', updates.style['textColor']);
-          changedProperties.push('textColor');
-        }
-      }
-
-      // Update properties (custom data)
-      if (updates.properties) {
-        const currentData = node.getData() || {};
-        const newData = { ...currentData, ...updates.properties };
-        node.setData(newData);
-        changedProperties.push('properties');
-      }
+      const changedProperties = this._applyNodeUpdates(node, updates);
 
       // Capture current state after all changes
       const currentState = this._captureCellState(graph, nodeId);
@@ -492,6 +442,66 @@ export class NodeOperationExecutor implements OperationExecutor {
    */
   private _getDefaultLabelForNodeType(nodeType: string): string {
     return NodeInfo.getDefaultLabel(nodeType);
+  }
+
+  /**
+   * Apply updates to a node and return the list of changed property names.
+   */
+  private _applyNodeUpdates(node: any, updates: Partial<NodeData>): string[] {
+    const changed: string[] = [];
+
+    if (updates.position && node.isNode?.()) {
+      node.setPosition(updates.position.x, updates.position.y);
+      changed.push('position');
+    }
+
+    if (updates.size && node.isNode?.()) {
+      node.setSize(updates.size.width, updates.size.height);
+      changed.push('size');
+    }
+
+    if (updates.label !== undefined) {
+      node.setAttrByPath('text/text', updates.label);
+      changed.push('label');
+    }
+
+    if (updates.style) {
+      this._applyNodeStyleUpdates(node, updates.style, changed);
+    }
+
+    if (updates.properties) {
+      const currentData = node.getData() || {};
+      node.setData({ ...currentData, ...updates.properties });
+      changed.push('properties');
+    }
+
+    return changed;
+  }
+
+  /**
+   * Apply individual style property updates to a node.
+   */
+  private _applyNodeStyleUpdates(node: any, style: Record<string, any>, changed: string[]): void {
+    if (style['fill']) {
+      node.setAttrByPath('body/fill', style['fill']);
+      changed.push('fill');
+    }
+    if (style['stroke']) {
+      node.setAttrByPath('body/stroke', style['stroke']);
+      changed.push('stroke');
+    }
+    if (style['strokeWidth'] !== undefined) {
+      node.setAttrByPath('body/strokeWidth', style['strokeWidth']);
+      changed.push('strokeWidth');
+    }
+    if (style['fontSize'] !== undefined) {
+      node.setAttrByPath('text/fontSize', style['fontSize']);
+      changed.push('fontSize');
+    }
+    if (style['textColor']) {
+      node.setAttrByPath('text/fill', style['textColor']);
+      changed.push('textColor');
+    }
   }
 
   /**

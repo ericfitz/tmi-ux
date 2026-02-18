@@ -324,7 +324,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       const source = edge.getSource();
       edge.setSource({
         cell: updates.sourceNodeId,
-        port: updates.sourcePort || (source).port,
+        port: updates.sourcePort || source.port,
       });
     }
 
@@ -338,7 +338,7 @@ export class EdgeOperationExecutor extends BaseOperationExecutor {
       const target = edge.getTarget();
       edge.setTarget({
         cell: updates.targetNodeId,
-        port: updates.targetPort || (target).port,
+        port: updates.targetPort || target.port,
       });
     }
 

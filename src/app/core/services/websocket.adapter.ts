@@ -1108,88 +1108,90 @@ export class WebSocketAdapter {
    * Validate TMI collaborative message structure
    */
   private _validateTMIMessage(message: unknown): { isValid: boolean; error?: string } {
-    // Check if message is an object
     if (!message || typeof message !== 'object') {
       return { isValid: false, error: 'TMI message must be an object' };
     }
 
-    // Type guard to safely access properties
-    const msg = message as {
-      message_type?: unknown;
-      event?: unknown;
-      user?: unknown;
-      user_id?: unknown; // Legacy field
-      operation_id?: unknown;
-      operation?: unknown;
-      cursor_position?: unknown;
-      selected_cells?: unknown;
-    };
+    const msg = message as Record<string, unknown>;
 
-    // Check for message_type or event field
-    const messageType = msg.message_type || msg.event;
+    // Validate message_type or event field
+    const messageType = msg['message_type'] || msg['event'];
     if (typeof messageType !== 'string' || !messageType.trim()) {
       return { isValid: false, error: 'TMI message must have message_type or event string' };
     }
 
-    // Validate user object if present
-    if (msg.user !== undefined) {
-      if (typeof msg.user !== 'object' || msg.user === null) {
-        return { isValid: false, error: 'user must be an object if provided' };
-      }
-      const userObj = msg.user as { user_id?: unknown; email?: unknown };
-      if (userObj.user_id !== undefined && typeof userObj.user_id !== 'string') {
-        return { isValid: false, error: 'user.user_id must be a string if provided' };
-      }
-      if (userObj.email !== undefined && typeof userObj.email !== 'string') {
-        return { isValid: false, error: 'user.email must be a string if provided' };
-      }
-    }
-
-    // Legacy: Validate user_id if present (for backward compatibility)
-    if (msg.user_id !== undefined && typeof msg.user_id !== 'string') {
-      return { isValid: false, error: 'user_id must be a string if provided' };
-    }
-
-    // Validate operation_id if present
-    if (msg.operation_id !== undefined && typeof msg.operation_id !== 'string') {
-      return { isValid: false, error: 'operation_id must be a string if provided' };
+    // Validate common fields
+    const commonError = this._validateTMICommonFields(msg);
+    if (commonError) {
+      return { isValid: false, error: commonError };
     }
 
     // Type-specific validation
+    const typeError = this._validateTMIMessageType(messageType, msg);
+    if (typeError) {
+      return { isValid: false, error: typeError };
+    }
+
+    return { isValid: true };
+  }
+
+  /** Validate common optional fields shared across all TMI message types. */
+  private _validateTMICommonFields(msg: Record<string, unknown>): string | null {
+    // Validate user object if present
+    if (msg['user'] !== undefined) {
+      if (typeof msg['user'] !== 'object' || msg['user'] === null) {
+        return 'user must be an object if provided';
+      }
+      const userObj = msg['user'] as Record<string, unknown>;
+      if (userObj['user_id'] !== undefined && typeof userObj['user_id'] !== 'string') {
+        return 'user.user_id must be a string if provided';
+      }
+      if (userObj['email'] !== undefined && typeof userObj['email'] !== 'string') {
+        return 'user.email must be a string if provided';
+      }
+    }
+
+    if (msg['user_id'] !== undefined && typeof msg['user_id'] !== 'string') {
+      return 'user_id must be a string if provided';
+    }
+
+    if (msg['operation_id'] !== undefined && typeof msg['operation_id'] !== 'string') {
+      return 'operation_id must be a string if provided';
+    }
+
+    return null;
+  }
+
+  /** Validate type-specific payload requirements. */
+  private _validateTMIMessageType(
+    messageType: string,
+    msg: Record<string, unknown>,
+  ): string | null {
     if (messageType === 'diagram_operation') {
-      if (!msg.operation || typeof msg.operation !== 'object') {
-        return { isValid: false, error: 'diagram_operation message must have operation object' };
+      if (!msg['operation'] || typeof msg['operation'] !== 'object') {
+        return 'diagram_operation message must have operation object';
       }
-
-      const operation = msg.operation as { type?: unknown; cells?: unknown };
-
-      if (typeof operation.type !== 'string') {
-        return { isValid: false, error: 'operation must have type string' };
+      const operation = msg['operation'] as Record<string, unknown>;
+      if (typeof operation['type'] !== 'string') {
+        return 'operation must have type string';
       }
-
-      if (!Array.isArray(operation.cells)) {
-        return { isValid: false, error: 'operation must have cells array' };
+      if (!Array.isArray(operation['cells'])) {
+        return 'operation must have cells array';
       }
     }
 
     if (
       messageType === 'presenter_cursor' &&
-      (!msg.cursor_position || typeof msg.cursor_position !== 'object')
+      (!msg['cursor_position'] || typeof msg['cursor_position'] !== 'object')
     ) {
-      return { isValid: false, error: 'presenter_cursor message must have cursor_position object' };
+      return 'presenter_cursor message must have cursor_position object';
     }
 
-    if (messageType === 'presenter_selection') {
-      const selectionMsg = msg as { selected_cells?: unknown };
-      if (!Array.isArray(selectionMsg.selected_cells)) {
-        return {
-          isValid: false,
-          error: 'presenter_selection message must have selected_cells array',
-        };
-      }
+    if (messageType === 'presenter_selection' && !Array.isArray(msg['selected_cells'])) {
+      return 'presenter_selection message must have selected_cells array';
     }
 
-    return { isValid: true };
+    return null;
   }
 
   /**

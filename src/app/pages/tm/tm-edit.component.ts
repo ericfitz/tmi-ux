@@ -928,120 +928,94 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe(result => {
-        if (result && this.threatModel) {
-          // Type the result to avoid unsafe assignments
-          interface ThreatFormResult {
-            name: string;
-            description: string;
-            severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
-            threat_type: string[];
-            asset_id?: string;
-            diagram_id?: string;
-            cell_id?: string;
-            score?: number;
-            priority?: string;
-            mitigated?: boolean;
-            status?: string;
-            issue_uri?: string;
-          }
-          const formResult = result as ThreatFormResult;
+        if (!result || !this.threatModel) return;
 
-          if (mode === 'create') {
-            // Create a new threat via API
-            const newThreatData: Partial<Threat> = {
-              name: formResult.name,
-              description: formResult.description,
-              severity: formResult.severity || 'High',
-              threat_type: formResult.threat_type || [],
-              mitigated: formResult.mitigated || false,
-              status: formResult.status || 'Open',
-              metadata: [],
-            };
-
-            // Only include optional fields if they have values
-            if (formResult.asset_id !== undefined) {
-              newThreatData.asset_id = formResult.asset_id;
-            }
-            if (formResult.diagram_id !== undefined) {
-              newThreatData.diagram_id = formResult.diagram_id;
-            }
-            if (formResult.cell_id !== undefined) {
-              newThreatData.cell_id = formResult.cell_id;
-            }
-            if (formResult.score !== undefined) {
-              newThreatData.score = formResult.score;
-            }
-            if (formResult.priority !== undefined) {
-              newThreatData.priority = formResult.priority;
-            }
-            if (formResult.issue_uri !== undefined) {
-              newThreatData.issue_uri = formResult.issue_uri;
-            }
-
-            this._subscriptions.add(
-              this.threatModelService
-                .createThreat(this.threatModel.id, newThreatData)
-                .subscribe(newThreat => {
-                  // Add the new threat to local state (check for duplicates first)
-                  // Use spread to create new array and update data source for immediate UI refresh
-                  if (!this.threatModel!.threats?.find(t => t.id === newThreat.id)) {
-                    this.threatModel!.threats = [...(this.threatModel!.threats || []), newThreat];
-                    this.threatsDataSource.data = this.threatModel!.threats;
-                  }
-
-                  // Update framework control state since we added a threat
-                  this.updateFrameworkControlState();
-                }),
-            );
-          } else if (mode === 'edit' && threat) {
-            // Update an existing threat via API
-            const updatedThreatData: Partial<Threat> = {
-              name: formResult.name,
-              description: formResult.description,
-              severity: formResult.severity || threat.severity,
-              threat_type: formResult.threat_type || threat.threat_type || [],
-            };
-
-            // Only include optional fields if they have values
-            if (formResult.asset_id !== undefined) {
-              updatedThreatData.asset_id = formResult.asset_id;
-            }
-            if (formResult.diagram_id !== undefined) {
-              updatedThreatData.diagram_id = formResult.diagram_id;
-            }
-            if (formResult.cell_id !== undefined) {
-              updatedThreatData.cell_id = formResult.cell_id;
-            }
-            if (formResult.score !== undefined) {
-              updatedThreatData.score = formResult.score;
-            }
-            if (formResult.priority !== undefined) {
-              updatedThreatData.priority = formResult.priority;
-            }
-            if (formResult.mitigated !== undefined) {
-              updatedThreatData.mitigated = formResult.mitigated;
-            }
-            if (formResult.status !== undefined) {
-              updatedThreatData.status = formResult.status;
-            }
-            if (formResult.issue_uri !== undefined) {
-              updatedThreatData.issue_uri = formResult.issue_uri;
-            }
-
-            this._subscriptions.add(
-              this.threatModelService
-                .updateThreat(this.threatModel.id, threat.id, updatedThreatData)
-                .subscribe(updatedThreat => {
-                  // Update the threat in local state
-                  const index = this.threatModel?.threats?.findIndex(t => t.id === threat.id) ?? -1;
-                  if (index !== -1 && this.threatModel?.threats) {
-                    this.threatModel.threats[index] = updatedThreat;
-                  }
-                }),
-            );
-          }
+        if (mode === 'create') {
+          this._handleCreateThreatResult(result);
+        } else if (mode === 'edit' && threat) {
+          this._handleEditThreatResult(result, threat);
         }
       }),
+    );
+  }
+
+  /** Build threat data from form result, copying only defined optional fields. */
+  private _copyDefinedFields(
+    source: Record<string, any>,
+    target: Partial<Threat>,
+    fields: (keyof Threat)[],
+  ): void {
+    for (const field of fields) {
+      if (source[field] !== undefined) {
+        (target as any)[field] = source[field];
+      }
+    }
+  }
+
+  /** Handle creating a new threat from dialog result. */
+  private _handleCreateThreatResult(result: any): void {
+    const newThreatData: Partial<Threat> = {
+      name: result.name,
+      description: result.description,
+      severity: result.severity || 'High',
+      threat_type: result.threat_type || [],
+      mitigated: result.mitigated || false,
+      status: result.status || 'Open',
+      metadata: [],
+    };
+
+    this._copyDefinedFields(result, newThreatData, [
+      'asset_id',
+      'diagram_id',
+      'cell_id',
+      'score',
+      'priority',
+      'issue_uri',
+    ]);
+
+    this._subscriptions.add(
+      this.threatModelService
+        .createThreat(this.threatModel!.id, newThreatData)
+        .subscribe(newThreat => {
+          if (!this.threatModel!.threats?.find(t => t.id === newThreat.id)) {
+            this.threatModel!.threats = [...(this.threatModel!.threats || []), newThreat];
+            this.threatsDataSource.data = this.threatModel!.threats;
+          }
+
+          this.updateFrameworkControlState();
+        }),
+    );
+  }
+
+  /** Handle updating an existing threat from dialog result. */
+  private _handleEditThreatResult(result: any, threat: Threat): void {
+    const updatedThreatData: Partial<Threat> = {
+      name: result.name,
+      description: result.description,
+      severity: result.severity || threat.severity,
+      threat_type: result.threat_type || threat.threat_type || [],
+    };
+
+    this._copyDefinedFields(result, updatedThreatData, [
+      'asset_id',
+      'diagram_id',
+      'cell_id',
+      'score',
+      'priority',
+      'mitigated',
+      'status',
+      'issue_uri',
+    ]);
+
+    this._subscriptions.add(
+      this.threatModelService
+        .updateThreat(this.threatModel!.id, threat.id, updatedThreatData)
+        .subscribe(updatedThreat => {
+          const index = this.threatModel?.threats?.findIndex(t => t.id === threat.id) ?? -1;
+          if (index !== -1 && this.threatModel?.threats) {
+            this.threatModel.threats[index] = updatedThreat;
+          }
+        }),
     );
   }
 

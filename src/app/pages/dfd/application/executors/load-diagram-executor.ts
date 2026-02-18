@@ -71,67 +71,12 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
       const loadedCellIds: string[] = [];
       const loadErrors: string[] = [];
 
-      // Load nodes first
-      if (diagramData.nodes && diagramData.nodes.length > 0) {
-        this.logger.debugComponent('LoadDiagramExecutor', 'Loading nodes', {
-          count: diagramData.nodes.length,
-        });
-
-        diagramData.nodes.forEach((nodeData: any) => {
-          try {
-            const nodeConfig = this.createNodeConfig(nodeData);
-            const node = graph.addNode(nodeConfig);
-            loadedCellIds.push(node.id);
-
-            // Apply additional styling if present
-            if (nodeData.cssClass) {
-              // Note: addCssClass might not exist on X6 nodes, skip for now
-              // node.addCssClass(nodeData.cssClass);
-            }
-          } catch (error) {
-            const errorMsg = `Failed to load node ${nodeData.id}: ${String(error)}`;
-            loadErrors.push(errorMsg);
-            this.logger.warn(errorMsg, { nodeId: nodeData.id, error });
-          }
-        });
-      }
-
-      // Load edges after nodes
-      if (diagramData.edges && diagramData.edges.length > 0) {
-        this.logger.debugComponent('LoadDiagramExecutor', 'Loading edges', {
-          count: diagramData.edges.length,
-        });
-
-        diagramData.edges.forEach((edgeData: any) => {
-          try {
-            // Verify source and target nodes exist
-            if (!graph.getCellById(edgeData.source.cell)) {
-              throw new Error(`Source node not found: ${edgeData.source.cell}`);
-            }
-            if (!graph.getCellById(edgeData.target.cell)) {
-              throw new Error(`Target node not found: ${edgeData.target.cell}`);
-            }
-
-            const edgeConfig = this.createEdgeConfig(edgeData);
-            const edge = graph.addEdge(edgeConfig);
-            loadedCellIds.push(edge.id);
-
-            // Apply additional styling if present
-            if (edgeData.cssClass) {
-              // Note: addCssClass might not exist on X6 edges, skip for now
-              // edge.addCssClass(edgeData.cssClass);
-            }
-          } catch (error) {
-            const errorMsg = `Failed to load edge ${edgeData.id}: ${String(error)}`;
-            loadErrors.push(errorMsg);
-            this.logger.warn(errorMsg, { edgeId: edgeData.id, error });
-          }
-        });
-      }
+      // Load nodes first, then edges
+      this._loadNodes(graph, diagramData.nodes, loadedCellIds, loadErrors);
+      this._loadEdges(graph, diagramData.edges, loadedCellIds, loadErrors);
 
       // Apply diagram-level properties
       if (diagramData.properties) {
-        // Could store diagram properties in graph metadata
         this.logger.debugComponent('LoadDiagramExecutor', 'Applied diagram properties', {
           properties: Object.keys(diagramData.properties),
         });
@@ -179,6 +124,59 @@ export class LoadDiagramExecutor extends BaseOperationExecutor {
       this.logger.error(errorMessage, { operationId: operation.id, error });
       return of(this.createFailureResult(operation, errorMessage));
     }
+  }
+
+  private _loadNodes(
+    graph: any,
+    nodes: any[] | undefined,
+    loadedCellIds: string[],
+    loadErrors: string[],
+  ): void {
+    if (!nodes || nodes.length === 0) return;
+
+    this.logger.debugComponent('LoadDiagramExecutor', 'Loading nodes', { count: nodes.length });
+
+    nodes.forEach((nodeData: any) => {
+      try {
+        const nodeConfig = this.createNodeConfig(nodeData);
+        const node = graph.addNode(nodeConfig);
+        loadedCellIds.push(node.id);
+      } catch (error) {
+        const errorMsg = `Failed to load node ${nodeData.id}: ${String(error)}`;
+        loadErrors.push(errorMsg);
+        this.logger.warn(errorMsg, { nodeId: nodeData.id, error });
+      }
+    });
+  }
+
+  private _loadEdges(
+    graph: any,
+    edges: any[] | undefined,
+    loadedCellIds: string[],
+    loadErrors: string[],
+  ): void {
+    if (!edges || edges.length === 0) return;
+
+    this.logger.debugComponent('LoadDiagramExecutor', 'Loading edges', { count: edges.length });
+
+    edges.forEach((edgeData: any) => {
+      try {
+        if (!graph.getCellById(edgeData.source.cell)) {
+          throw new Error(`Source node not found: ${edgeData.source.cell}`);
+        }
+        if (!graph.getCellById(edgeData.target.cell)) {
+          throw new Error(`Target node not found: ${edgeData.target.cell}`);
+        }
+
+        const edgeConfig = this.createEdgeConfig(edgeData);
+        const edge = graph.addEdge(edgeConfig);
+        loadedCellIds.push(edge.id);
+      } catch (error) {
+        const errorMsg = `Failed to load edge ${edgeData.id}: ${String(error)}`;
+        loadErrors.push(errorMsg);
+        this.logger.warn(errorMsg, { edgeId: edgeData.id, error });
+      }
+    });
   }
 
   private createNodeConfig(nodeData: any): any {

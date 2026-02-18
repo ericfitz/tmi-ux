@@ -104,24 +104,10 @@ export class NodeInfo {
     tools?: CellTool[];
   }): NodeInfo {
     const shape = data.shape || data.type || 'process';
-    // Prioritize X6 v2 nested format, fall back to X6 v1 flat format
-    const x = data.position?.x ?? data.x ?? 0;
-    const y = data.position?.y ?? data.y ?? 0;
-    const width = data.size?.width ?? data.width ?? 120;
-    const height = data.size?.height ?? data.height ?? 60;
-
+    const { x, y, width, height } = NodeInfo._resolveGeometry(data);
     const attrs = data.attrs || createDefaultNodeAttrs(shape);
     const ports = data.ports || createDefaultPortConfiguration(shape);
-
-    // Handle hybrid data format or legacy metadata
-    let hybridData = data.data || { _metadata: [] };
-    if (!data.data && data.metadata) {
-      // Convert legacy metadata to hybrid format
-      const metadataArray = Object.entries(data.metadata).map(([key, value]) =>
-        safeMetadataEntry(key, value, 'NodeInfo.fromJSON'),
-      );
-      hybridData = { _metadata: metadataArray };
-    }
+    const hybridData = NodeInfo._resolveHybridData(data);
 
     return new NodeInfo(
       data.id,
@@ -140,6 +126,42 @@ export class NodeInfo {
       data.markup,
       data.tools,
     );
+  }
+
+  /**
+   * Resolves geometry from X6 v2 nested or v1 flat format
+   */
+  private static _resolveGeometry(data: {
+    position?: { x: number; y: number };
+    size?: { width: number; height: number };
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+  }): { x: number; y: number; width: number; height: number } {
+    return {
+      x: data.position?.x ?? data.x ?? 0,
+      y: data.position?.y ?? data.y ?? 0,
+      width: data.size?.width ?? data.width ?? 120,
+      height: data.size?.height ?? data.height ?? 60,
+    };
+  }
+
+  /**
+   * Resolves hybrid data from data field or legacy metadata
+   */
+  private static _resolveHybridData(data: {
+    data?: { [key: string]: any; _metadata: Metadata[] };
+    metadata?: Record<string, string>;
+  }): { [key: string]: any; _metadata: Metadata[] } {
+    if (data.data) return data.data;
+    if (data.metadata) {
+      const metadataArray = Object.entries(data.metadata).map(([key, value]) =>
+        safeMetadataEntry(key, value, 'NodeInfo.fromJSON'),
+      );
+      return { _metadata: metadataArray };
+    }
+    return { _metadata: [] };
   }
 
   /**

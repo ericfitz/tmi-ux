@@ -453,12 +453,12 @@ export class AppDiagramService {
     mockCell: any,
     nodeType: string,
   ): { x: number; y: number; width: number; height: number } {
-    const x = mockCell.position?.x ?? mockCell.x ?? mockCell.geometry?.x ?? 0;
-    const y = mockCell.position?.y ?? mockCell.y ?? mockCell.geometry?.y ?? 0;
-    const width = mockCell.size?.width ?? mockCell.width ?? mockCell.geometry?.width ?? 80;
-    const height = mockCell.size?.height ?? mockCell.height ?? mockCell.geometry?.height ?? 80;
+    const x = this._resolveGeometryField(mockCell, 'position', 'x', 0);
+    const y = this._resolveGeometryField(mockCell, 'position', 'y', 0);
+    const width = this._resolveGeometryField(mockCell, 'size', 'width', 80);
+    const height = this._resolveGeometryField(mockCell, 'size', 'height', 80);
 
-    if (x === 0 && y === 0 && !mockCell.position?.x && !mockCell.x && !mockCell.geometry?.x) {
+    if (x === 0 && y === 0 && this._lacksExplicitPosition(mockCell)) {
       this.logger.warn('Node has no position data, defaulting to (0,0)', {
         nodeId: mockCell.id,
         shape: nodeType,
@@ -471,6 +471,26 @@ export class AppDiagramService {
     }
 
     return { x, y, width, height };
+  }
+
+  /**
+   * Resolve a geometry field from multiple possible import format locations.
+   * Priority: nested (position/size) → flat → geometry (legacy) → fallback.
+   */
+  private _resolveGeometryField(
+    mockCell: any,
+    nestedKey: string,
+    field: string,
+    fallback: number,
+  ): number {
+    return (
+      mockCell[nestedKey]?.[field] ?? mockCell[field] ?? mockCell.geometry?.[field] ?? fallback
+    );
+  }
+
+  /** Check if a mock cell has no explicit x position in any format location. */
+  private _lacksExplicitPosition(mockCell: any): boolean {
+    return !mockCell.position?.x && !mockCell.x && !mockCell.geometry?.x;
   }
 
   /** Normalize mock node data to hybrid format. */
