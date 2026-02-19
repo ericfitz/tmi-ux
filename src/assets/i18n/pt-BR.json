@@ -759,6 +759,8 @@
   "homeWelcomeTitle": "Bem-vindo ao TMI: Modelagem de Ameacas Aprimorada",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "Salvar e Sair",
       "submitResponses": "Enviar Respostas"
     }

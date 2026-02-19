@@ -759,6 +759,8 @@
   "homeWelcomeTitle": "TMI-তে স্বাগতম: থ্রেট মডেলিং ইমপ্রুভড",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "সংরক্ষণ করুন এবং প্রস্থান করুন",
       "submitResponses": "উত্তর জমা দিন"
     }

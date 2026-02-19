@@ -781,6 +781,8 @@
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "Save & Exit",
       "submitResponses": "Submit Responses"
     }

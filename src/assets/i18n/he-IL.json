@@ -759,6 +759,8 @@
   "homeWelcomeTitle": "ברוכים הבאים ל-TMI: מידול איומים משופר",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "שמור וצא",
       "submitResponses": "שלח תשובות"
     }

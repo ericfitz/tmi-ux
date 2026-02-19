@@ -12,11 +12,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Model } from 'survey-core';
 import { SurveyModule } from 'survey-angular-ui';
+import { MatCardModule } from '@angular/material/card';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
+import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import { LoggerService } from '@app/core/services/logger.service';
 import { ThemeService } from '@app/core/services/theme.service';
 import { SurveyService } from '../../services/survey.service';
@@ -37,8 +39,10 @@ import { Observable } from 'rxjs';
     ...COMMON_IMPORTS,
     ...CORE_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
+    MatCardModule,
     SurveyModule,
     TranslocoModule,
+    UserDisplayComponent,
   ],
   templateUrl: './survey-fill.component.html',
   styleUrl: './survey-fill.component.scss',

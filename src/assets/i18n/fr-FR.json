@@ -759,6 +759,8 @@
   "homeWelcomeTitle": "Bienvenue sur TMI : Modelisation des Menaces Amelioree",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "Enregistrer et quitter",
       "submitResponses": "Soumettre les réponses"
     }

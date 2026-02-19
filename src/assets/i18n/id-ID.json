@@ -759,6 +759,8 @@
   "homeWelcomeTitle": "Selamat Datang di TMI: Threat Modeling Improved",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "Simpan & Keluar",
       "submitResponses": "Kirim Respons"
     }

@@ -759,6 +759,8 @@
   "homeWelcomeTitle": "TMI میں خوش آمدید: Threat Modeling Improved",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "محفوظ کریں اور باہر نکلیں",
       "submitResponses": "جوابات جمع کرائیں"
     }

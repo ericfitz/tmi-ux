@@ -759,6 +759,8 @@
   "homeWelcomeTitle": "欢迎使用 TMI: 威胁建模改进",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "保存并退出",
       "submitResponses": "提交回复"
     }

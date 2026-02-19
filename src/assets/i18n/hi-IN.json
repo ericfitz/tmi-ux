@@ -759,6 +759,8 @@
   "homeWelcomeTitle": "TMI में आपका स्वागत है: थ्रेट मॉडलिंग इम्प्रूव्ड",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "सहेजें और बाहर निकलें",
       "submitResponses": "प्रतिक्रियाएं सबमिट करें"
     }

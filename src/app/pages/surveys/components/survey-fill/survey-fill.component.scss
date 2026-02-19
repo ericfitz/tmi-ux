@@ -114,6 +114,47 @@
   }
 }
 
+// Revision Notes Card (shown when survey returned for revision)
+.revision-notes-card {
+  border-left: 4px solid var(--color-warning, #ff9800);
+  margin: 0 24px;
+
+  mat-card-header {
+    padding: 16px 16px 0;
+  }
+
+  mat-card-content {
+    padding: 16px;
+  }
+}
+
+.revision-notes-content {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 12px;
+  background: var(--color-background-light);
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.revision-notes-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+
+  /* stylelint-disable-next-line no-descending-specificity */
+  mat-icon {
+    color: var(--color-warning, #ff9800);
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
 .survey-content {
   flex: 1;
   padding: 24px;
@@ -176,6 +217,10 @@ button mat-icon {
       order: 2;
       margin-left: auto;
     }
+  }
+
+  .revision-notes-card {
+    margin: 0 16px;
   }
 
   .survey-content {
