@@ -50,8 +50,10 @@ export default defineConfig({
         'unused/**',
       ],
     },
-    // Add these options for better Zone.js compatibility
-    isolate: false,
-    pool: 'forks', // Use 'forks' instead of 'threads' for better Zone.js compatibility
+    // Use 'forks' pool for Zone.js compatibility
+    isolate: true,
+    pool: 'forks',
+    restoreMocks: true,
+    clearMocks: true,
   },
 });

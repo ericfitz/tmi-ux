@@ -117,7 +117,7 @@ describe('WebSocketAdapter', () => {
 
     // Mock the global WebSocket constructor with static constants
     mockWebSocketInstance = new MockWebSocket('');
-    const mockConstructor = vi.fn().mockImplementation((url: string) => {
+    const mockConstructor = vi.fn().mockImplementation(function (url: string) {
       mockWebSocketInstance = new MockWebSocket(url);
       return mockWebSocketInstance;
     });

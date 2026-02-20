@@ -17,11 +17,4 @@ if (!globalThis.crypto?.subtle) {
   });
 }
 
-// Global cleanup to prevent test pollution
-import { afterEach, vi } from 'vitest';
-
-afterEach(() => {
-  // Restore all mocks/spies after each test to prevent cross-test contamination
-  // This is critical for tests that spy on global objects like crypto, window, etc.
-  vi.restoreAllMocks();
-});
+// Mock cleanup is handled by vitest config: restoreMocks: true, clearMocks: true
