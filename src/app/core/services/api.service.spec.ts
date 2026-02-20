@@ -120,7 +120,8 @@ describe('ApiService', () => {
       });
     });
 
-    it('should handle GET request errors', () => {
+    it('should handle GET request errors', async () => {
+      vi.useFakeTimers();
       const errorResponse = new HttpErrorResponse({
         error: mockErrorResponse,
         status: 500,
@@ -131,16 +132,22 @@ describe('ApiService', () => {
 
       const result$ = service.get<typeof mockSuccessResponse>(testEndpoint);
 
-      result$.subscribe({
-        error: error => {
-          expect(error).toBeInstanceOf(HttpErrorResponse);
-          expect(error.status).toBe(500);
-          expect(loggerService.error).toHaveBeenCalled();
-        },
+      const errorPromise = new Promise<HttpErrorResponse>((resolve, reject) => {
+        result$.subscribe({
+          next: () => reject(new Error('Expected error')),
+          error: (err: HttpErrorResponse) => resolve(err),
+        });
       });
+
+      await vi.advanceTimersByTimeAsync(0);
+      const error = await errorPromise;
+      expect(error).toBeInstanceOf(HttpErrorResponse);
+      expect(error.status).toBe(500);
+      expect(loggerService.error).toHaveBeenCalled();
     });
 
-    it('should handle network errors with retry logic', () => {
+    it('should handle network errors with retry logic', async () => {
+      vi.useFakeTimers();
       const errorResponse = new HttpErrorResponse({
         error: mockErrorResponse,
         status: 500,
@@ -151,14 +158,20 @@ describe('ApiService', () => {
 
       const result$ = service.get<typeof mockSuccessResponse>(testEndpoint);
 
-      result$.subscribe({
-        error: error => {
-          // Verify that error handling works correctly after retry attempts
-          expect(error).toBeInstanceOf(HttpErrorResponse);
-          expect(error.status).toBe(500);
-          expect(loggerService.error).toHaveBeenCalled();
-        },
+      const errorPromise = new Promise<HttpErrorResponse>((resolve, reject) => {
+        result$.subscribe({
+          next: () => reject(new Error('Expected error')),
+          error: (err: HttpErrorResponse) => resolve(err),
+        });
       });
+
+      // Advance past the retry delay (timer(0))
+      await vi.advanceTimersByTimeAsync(0);
+      const error = await errorPromise;
+      // Verify that error handling works correctly after retry attempts
+      expect(error).toBeInstanceOf(HttpErrorResponse);
+      expect(error.status).toBe(500);
+      expect(loggerService.error).toHaveBeenCalled();
     });
   });
 
@@ -266,7 +279,8 @@ describe('ApiService', () => {
   });
 
   describe('Error Handling', () => {
-    it('should handle client-side errors', () => {
+    it('should handle client-side errors', async () => {
+      vi.useFakeTimers();
       const clientError = new HttpErrorResponse({
         error: new ErrorEvent('Network error', { message: 'Connection failed' }),
       });
@@ -275,13 +289,18 @@ describe('ApiService', () => {
 
       const result$ = service.get<typeof mockSuccessResponse>(testEndpoint);
 
-      result$.subscribe({
-        error: error => {
-          expect(error).toBeInstanceOf(HttpErrorResponse);
-          expect(error.error.message).toBe('Connection failed');
-          expect(loggerService.error).toHaveBeenCalledWith('Client Error: Connection failed');
-        },
+      const errorPromise = new Promise<HttpErrorResponse>((resolve, reject) => {
+        result$.subscribe({
+          next: () => reject(new Error('Expected error')),
+          error: (err: HttpErrorResponse) => resolve(err),
+        });
       });
+
+      await vi.advanceTimersByTimeAsync(0);
+      const error = await errorPromise;
+      expect(error).toBeInstanceOf(HttpErrorResponse);
+      expect(error.error.message).toBe('Connection failed');
+      expect(loggerService.error).toHaveBeenCalledWith('Client Error: Connection failed');
     });
 
     it('should propagate 401 unauthorized errors (JWT interceptor handles auth)', () => {
@@ -329,7 +348,8 @@ describe('ApiService', () => {
       });
     });
 
-    it('should log debug information for server errors', () => {
+    it('should log debug information for server errors', async () => {
+      vi.useFakeTimers();
       const serverError = new HttpErrorResponse({
         error: mockErrorResponse,
         status: 500,
@@ -340,15 +360,20 @@ describe('ApiService', () => {
 
       const result$ = service.get<typeof mockSuccessResponse>(testEndpoint);
 
-      result$.subscribe({
-        error: () => {
-          expect(loggerService.debugComponent).toHaveBeenCalledWith(
-            'Api',
-            'Full error response',
-            serverError,
-          );
-        },
+      const errorPromise = new Promise<void>((resolve, reject) => {
+        result$.subscribe({
+          next: () => reject(new Error('Expected error')),
+          error: () => resolve(),
+        });
       });
+
+      await vi.advanceTimersByTimeAsync(0);
+      await errorPromise;
+      expect(loggerService.debugComponent).toHaveBeenCalledWith(
+        'Api',
+        'Full error response',
+        serverError,
+      );
     });
 
     it('should include method and endpoint in error messages', () => {
@@ -679,7 +704,8 @@ describe('ApiService', () => {
   });
 
   describe('Error Response Preservation', () => {
-    it('should return HttpErrorResponse for server errors (preserving status codes)', () => {
+    it('should return HttpErrorResponse for server errors (preserving status codes)', async () => {
+      vi.useFakeTimers();
       const serverError = new HttpErrorResponse({
         error: { message: 'Internal server error' },
         status: 500,
@@ -690,13 +716,18 @@ describe('ApiService', () => {
 
       const result$ = service.get<typeof mockSuccessResponse>(testEndpoint);
 
-      result$.subscribe({
-        error: error => {
-          // Should preserve the HttpErrorResponse, not wrap it
-          expect(error).toBeInstanceOf(HttpErrorResponse);
-          expect(error.status).toBe(500);
-        },
+      const errorPromise = new Promise<HttpErrorResponse>((resolve, reject) => {
+        result$.subscribe({
+          next: () => reject(new Error('Expected error')),
+          error: (err: HttpErrorResponse) => resolve(err),
+        });
       });
+
+      await vi.advanceTimersByTimeAsync(0);
+      const error = await errorPromise;
+      // Should preserve the HttpErrorResponse, not wrap it
+      expect(error).toBeInstanceOf(HttpErrorResponse);
+      expect(error.status).toBe(500);
     });
 
     it('should wrap non-HTTP errors in Error with descriptive message', () => {

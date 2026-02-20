@@ -17,7 +17,7 @@
 
 import { HttpClient, HttpErrorResponse, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError, TimeoutError } from 'rxjs';
+import { Observable, throwError, timer, TimeoutError } from 'rxjs';
 import { catchError, retry, timeout } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -42,6 +42,8 @@ export class ApiService {
   private apiUrl = environment.apiUrl;
   private readonly DEFAULT_TIMEOUT = 30000; // 30 seconds
   private readonly SAVE_TIMEOUT = 45000; // 45 seconds for save operations
+  private readonly DEFAULT_RETRY_DELAY = 1000; // 1 second fallback for 429 without Retry-After
+  private readonly MAX_RETRY_DELAY = 30000; // Cap Retry-After at 30 seconds
 
   constructor(
     private http: HttpClient,
@@ -79,7 +81,10 @@ export class ApiService {
     // Request logging handled by JWT interceptor
 
     return this.http.get<T>(url, { params }).pipe(
-      retry(1),
+      retry({
+        count: 1,
+        delay: (error: HttpErrorResponse) => this.getRetryDelay(error),
+      }),
       // Response logging handled by JWT interceptor
       catchError((error: HttpErrorResponse) => this.handleError(error, 'GET', endpoint)),
     );
@@ -97,7 +102,10 @@ export class ApiService {
     const url = this.buildUrl(endpoint);
 
     return this.http.get(url, { params, responseType: 'text' }).pipe(
-      retry(1),
+      retry({
+        count: 1,
+        delay: (error: HttpErrorResponse) => this.getRetryDelay(error),
+      }),
       catchError((error: HttpErrorResponse) => this.handleError(error, 'GET', endpoint)),
     );
   }
@@ -196,6 +204,41 @@ export class ApiService {
           this.handleError(error, 'PATCH', endpoint),
         ),
       );
+  }
+
+  /**
+   * Determines whether a failed GET request should be retried.
+   * Retries on transient errors (5xx, network failures) and 429 rate limiting.
+   * For 429, respects the Retry-After header if present.
+   */
+  private getRetryDelay(error: HttpErrorResponse): Observable<number> {
+    if (error.status >= 500 || error.status === 0) {
+      return timer(0);
+    }
+
+    if (error.status === 429) {
+      const retryAfter = error.headers?.get('Retry-After');
+      let delayMs = this.DEFAULT_RETRY_DELAY;
+
+      if (retryAfter) {
+        const seconds = Number(retryAfter);
+        if (!isNaN(seconds)) {
+          delayMs = seconds * 1000;
+        } else {
+          // Retry-After can be an HTTP-date
+          const date = new Date(retryAfter).getTime();
+          if (!isNaN(date)) {
+            delayMs = Math.max(0, date - Date.now());
+          }
+        }
+        delayMs = Math.min(delayMs, this.MAX_RETRY_DELAY);
+      }
+
+      this.logger.warn(`Rate limited (429), retrying after ${delayMs}ms`);
+      return timer(delayMs);
+    }
+
+    return throwError(() => error);
   }
 
   /**
