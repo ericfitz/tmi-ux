@@ -43,7 +43,8 @@
       "WebFetchTool(domain:github.com)",
       "WebSearch",
       "Skill(translate_to_language)",
-      "Skill(translate_to_language:*)"
+      "Skill(translate_to_language:*)",
+      "WebFetch(domain:vitest.dev)"
     ]
   }
 }
