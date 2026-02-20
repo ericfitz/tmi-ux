@@ -38,6 +38,7 @@ import {
   provideMarkdown,
   MARKED_OPTIONS,
   MERMAID_OPTIONS,
+  SANITIZE,
   MarkedRenderer,
   MarkedOptions,
 } from 'ngx-markdown';
@@ -327,7 +328,7 @@ export const appConfig: ApplicationConfig = {
     // Configure markdown with DOMPurify sanitization (handled in markedOptionsFactory)
     // Mermaid rendering is enabled via MERMAID_OPTIONS provider below
     provideMarkdown({
-      sanitize: SecurityContext.NONE, // We handle sanitization via DOMPurify in the renderer
+      sanitize: { provide: SANITIZE, useValue: SecurityContext.NONE }, // We handle sanitization via DOMPurify in the renderer
     }),
     {
       provide: MARKED_OPTIONS,
