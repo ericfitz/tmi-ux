@@ -1017,7 +1017,7 @@
     "createNewDiagram": "Criar Novo Diagrama",
     "createNewRepository": "Adicionar Referencia de Repositorio",
     "created": "{{common.created}}",
-    "createdBy": "Criado Por",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Diagrama de Fluxo de Dados",
     "deleteWarningPermanent": "Esta acao nao pode ser desfeita e excluira permanentemente todos os diagramas, ameacas e metadados associados.",

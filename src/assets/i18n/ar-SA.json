@@ -1017,7 +1017,7 @@
     "createNewDiagram": "إنشاء مخطط جديد",
     "createNewRepository": "إضافة مرجع مستودع",
     "created": "{{common.created}}",
-    "createdBy": "تم إنشاؤه بواسطة",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "مخطط تدفق البيانات",
     "deleteWarningPermanent": "لا يمكن التراجع عن هذا الإجراء وسيحذف نهائياً جميع المخططات والتهديدات والبيانات الوصفية المرتبطة.",

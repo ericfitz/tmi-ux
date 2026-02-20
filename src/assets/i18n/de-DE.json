@@ -1017,7 +1017,7 @@
     "createNewDiagram": "Neues Diagramm erstellen",
     "createNewRepository": "Repository-Referenz hinzufügen",
     "created": "{{common.created}}",
-    "createdBy": "Erstellt von",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Datenflussdiagramm",
     "deleteWarningPermanent": "Diese Aktion kann nicht rückgängig gemacht werden und löscht dauerhaft alle zugehörigen Diagramme, Bedrohungen und Metadaten.",

@@ -1017,7 +1017,7 @@
     "createNewDiagram": "创建新图表",
     "createNewRepository": "添加仓库引用",
     "created": "{{common.created}}",
-    "createdBy": "创建者",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "数据流图",
     "deleteWarningPermanent": "此操作无法撤销，将永久删除所有相关图表、威胁和元数据。",

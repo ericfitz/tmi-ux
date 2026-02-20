@@ -1017,7 +1017,7 @@
     "createNewDiagram": "নতুন ডায়াগ্রাম তৈরি করুন",
     "createNewRepository": "রিপোজিটরি রেফারেন্স যোগ করুন",
     "created": "{{common.created}}",
-    "createdBy": "তৈরি করেছেন",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "ডেটা ফ্লো ডায়াগ্রাম",
     "deleteWarningPermanent": "এই ক্রিয়া পূর্বাবস্থায় ফেরানো যাবে না এবং সমস্ত সম্পর্কিত ডায়াগ্রাম, হুমকি এবং মেটাডেটা স্থায়ীভাবে মুছে ফেলবে।",

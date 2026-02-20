@@ -1017,7 +1017,7 @@
     "createNewDiagram": "Creer un nouveau diagramme",
     "createNewRepository": "Ajouter une reference de depot",
     "created": "{{common.created}}",
-    "createdBy": "Cree par",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Diagramme de flux de donnees",
     "deleteWarningPermanent": "Cette action est irreversible et supprimera definitivement tous les diagrammes, menaces et metadonnees associes.",

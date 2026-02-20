@@ -1042,7 +1042,7 @@
     "createNewRepository": "Add Repository Reference",
     "created": "{{common.created}}",
     "created.comment": "This is used to reference the date and time that something was created.",
-    "createdBy": "Created By",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Data Flow Diagram",
     "deleteWarningPermanent": "This action cannot be undone and will permanently delete all associated diagrams, threats, and metadata.",

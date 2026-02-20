@@ -1017,7 +1017,7 @@
     "createNewDiagram": "नया डायग्राम बनाएं",
     "createNewRepository": "रिपॉजिटरी संदर्भ जोड़ें",
     "created": "{{common.created}}",
-    "createdBy": "द्वारा बनाया गया",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "डेटा फ्लो डायग्राम",
     "deleteWarningPermanent": "यह क्रिया पूर्ववत नहीं की जा सकती और सभी संबंधित डायग्राम, खतरे और मेटाडेटा को स्थायी रूप से हटा देगी।",

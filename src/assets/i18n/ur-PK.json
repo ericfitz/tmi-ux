@@ -1017,7 +1017,7 @@
     "createNewDiagram": "نیا ڈایاگرام بنائیں",
     "createNewRepository": "ریپوزٹری حوالہ شامل کریں",
     "created": "{{common.created}}",
-    "createdBy": "بنانے والا",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "ڈیٹا فلو ڈایاگرام",
     "deleteWarningPermanent": "یہ عمل واپس نہیں ہو سکتا اور تمام متعلقہ ڈایاگرامز، خطرات، اور میٹا ڈیٹا کو مستقل طور پر حذف کر دے گا۔",

@@ -1017,7 +1017,7 @@
     "createNewDiagram": "צור דיאגרמה חדשה",
     "createNewRepository": "הוסף הפניה למאגר",
     "created": "{{common.created}}",
-    "createdBy": "נוצר על ידי",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "דיאגרמת זרימת נתונים",
     "deleteWarningPermanent": "פעולה זו אינה ניתנת לביטול ותמחק לצמיתות את כל הדיאגרמות, האיומים והמטא-נתונים המשויכים.",

@@ -1017,7 +1017,7 @@
     "createNewDiagram": "新しいダイアグラムを作成",
     "createNewRepository": "リポジトリ参照を追加",
     "created": "{{common.created}}",
-    "createdBy": "作成者",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "データフローダイアグラム",
     "deleteWarningPermanent": "この操作は元に戻すことができず、関連するすべてのダイアグラム、脅威、メタデータが永久に削除されます。",
