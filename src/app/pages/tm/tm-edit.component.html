@@ -278,10 +278,16 @@
           <mat-icon class="section-toggle-icon" [class.collapsed]="!inputsSectionExpanded">
             expand_more
           </mat-icon>
-          <span class="section-title" [transloco]="'threatModels.sections.inputs'">Inputs</span>
-          <span class="section-description" [transloco]="'threatModels.sections.inputsDescription'">
-            Assets, documents, and source code repositories that describe the system under analysis
-          </span>
+          <div class="section-text">
+            <span class="section-title" [transloco]="'threatModels.sections.inputs'">Inputs</span>
+            <span
+              class="section-description"
+              [transloco]="'threatModels.sections.inputsDescription'"
+            >
+              Assets, documents, and source code repositories that describe the system under
+              analysis
+            </span>
+          </div>
         </button>
         <div class="section-body" id="inputs-section-body" [hidden]="!inputsSectionExpanded">
           <!-- Assets Card -->
@@ -860,13 +866,15 @@
           <mat-icon class="section-toggle-icon" [class.collapsed]="!outputsSectionExpanded">
             expand_more
           </mat-icon>
-          <span class="section-title" [transloco]="'threatModels.sections.outputs'">Outputs</span>
-          <span
-            class="section-description"
-            [transloco]="'threatModels.sections.outputsDescription'"
-          >
-            Notes, diagrams, and threats produced during security analysis
-          </span>
+          <div class="section-text">
+            <span class="section-title" [transloco]="'threatModels.sections.outputs'">Outputs</span>
+            <span
+              class="section-description"
+              [transloco]="'threatModels.sections.outputsDescription'"
+            >
+              Notes, diagrams, and threats produced during security analysis
+            </span>
+          </div>
         </button>
         <div class="section-body" id="outputs-section-body" [hidden]="!outputsSectionExpanded">
           <!-- Notes Card -->

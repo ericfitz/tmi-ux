@@ -86,6 +86,13 @@
   }
 }
 
+.section-text {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
 .section-title {
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
