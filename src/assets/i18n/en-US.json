@@ -503,6 +503,7 @@
     "copyToClipboard": "Copy to Clipboard",
     "create": "Create",
     "created": "Created",
+    "createdBy": "Created By",
     "criticality": "Criticality",
     "criticality.comment": "Used in the sense of how important something is, or how much impact would occur.",
     "cut": "Cut",
