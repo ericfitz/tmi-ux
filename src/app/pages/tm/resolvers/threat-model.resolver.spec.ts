@@ -40,7 +40,7 @@ describe('threatModelResolver', () => {
   const mockThreatModel: ThreatModel = {
     id: 'tm-123',
     name: 'Test Model',
-    status: '0',
+    status: 'notStarted',
     owner: { provider_id: 'user1', _subject: 'user1@test.com' },
     authorizations: [],
     assets: [],

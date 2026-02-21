@@ -10,6 +10,7 @@ import {
   getFieldOptions,
   getFieldLabel,
   getFieldTooltip,
+  getFieldKeysForFieldType,
   type FieldType,
 } from './field-value-helpers';
 
@@ -23,45 +24,45 @@ describe('field-value-helpers', () => {
   const enTranslations = {
     threatEditor: {
       threatSeverity: {
-        0: 'Unknown',
-        1: 'Low',
-        2: 'Medium',
-        3: 'High',
-        4: 'Critical',
-        5: 'Emergency',
+        critical: 'Critical',
+        high: 'High',
+        medium: 'Medium',
+        low: 'Low',
+        informational: 'Informational',
+        unknown: 'Unknown',
       },
       threatStatus: {
-        0: 'Open',
-        1: 'In Progress',
-        2: 'Mitigated',
-        3: 'Accepted',
-        4: 'Transferred',
-        5: 'Deferred',
-        6: 'Monitoring',
-        7: 'Rejected',
-        8: 'Reopened',
-        9: 'Closed',
+        open: 'Open',
+        confirmed: 'Confirmed',
+        mitigationPlanned: 'Mitigation Planned',
+        mitigationInProgress: 'Mitigation In Progress',
+        verificationPending: 'Verification Pending',
+        resolved: 'Resolved',
+        accepted: 'Accepted',
+        falsePositive: 'False Positive',
+        deferred: 'Deferred',
+        closed: 'Closed',
       },
       threatPriority: {
-        0: 'None',
-        1: 'Low',
-        2: 'Medium',
-        3: 'High',
-        4: 'Critical',
+        immediate: 'Immediate (P0)',
+        high: 'High (P1)',
+        medium: 'Medium (P2)',
+        low: 'Low (P3)',
+        deferred: 'Deferred (P4)',
       },
     },
     threatModels: {
       status: {
-        0: 'Draft',
-        1: 'In Review',
-        2: 'Approved',
-        3: 'Rejected',
-        4: 'Archived',
-        5: 'Deprecated',
-        6: 'Active',
-        7: 'On Hold',
-        8: 'Cancelled',
-        9: 'Completed',
+        notStarted: 'Not Started',
+        inProgress: 'In Progress',
+        pendingReview: 'Pending Review',
+        remediationRequired: 'Remediation Required',
+        remediationInProgress: 'Remediation In Progress',
+        verificationPending: 'Verification Pending',
+        approved: 'Approved',
+        rejected: 'Rejected',
+        deferred: 'Deferred',
+        closed: 'Closed',
       },
     },
   };
@@ -69,12 +70,12 @@ describe('field-value-helpers', () => {
   const deTranslations = {
     threatEditor: {
       threatSeverity: {
-        0: 'Unbekannt',
-        1: 'Niedrig',
-        2: 'Mittel',
-        3: 'Hoch',
-        4: 'Kritisch',
-        5: 'Notfall',
+        critical: 'Kritisch',
+        high: 'Hoch',
+        medium: 'Mittel',
+        low: 'Niedrig',
+        informational: 'Informativ',
+        unknown: 'Unbekannt',
       },
     },
   };
@@ -103,6 +104,33 @@ describe('field-value-helpers', () => {
     };
   });
 
+  describe('getFieldKeysForFieldType', () => {
+    it('should return 6 keys for threatSeverity', () => {
+      expect(getFieldKeysForFieldType('threatEditor.threatSeverity')).toHaveLength(6);
+    });
+
+    it('should return 10 keys for threatStatus', () => {
+      expect(getFieldKeysForFieldType('threatEditor.threatStatus')).toHaveLength(10);
+    });
+
+    it('should return 5 keys for threatPriority', () => {
+      expect(getFieldKeysForFieldType('threatEditor.threatPriority')).toHaveLength(5);
+    });
+
+    it('should return 10 keys for threatModels.status', () => {
+      expect(getFieldKeysForFieldType('threatModels.status')).toHaveLength(10);
+    });
+
+    it('should return empty array for unknown field type', () => {
+      expect(getFieldKeysForFieldType('unknown.field' as FieldType)).toHaveLength(0);
+    });
+
+    it('should return camelCase keys in order', () => {
+      const keys = getFieldKeysForFieldType('threatEditor.threatSeverity');
+      expect(keys).toEqual(['critical', 'high', 'medium', 'low', 'informational', 'unknown']);
+    });
+  });
+
   describe('migrateFieldValue', () => {
     it('should return null for null value', () => {
       expect(
@@ -122,37 +150,62 @@ describe('field-value-helpers', () => {
       ).toBeNull();
     });
 
-    it('should pass through already-numeric values', () => {
+    it('should pass through already-valid camelCase keys', () => {
       expect(
-        migrateFieldValue('3', 'threatEditor.threatSeverity', mockTranslocoService as never),
-      ).toBe('3');
+        migrateFieldValue('high', 'threatEditor.threatSeverity', mockTranslocoService as never),
+      ).toBe('high');
+      expect(
+        migrateFieldValue(
+          'mitigationPlanned',
+          'threatEditor.threatStatus',
+          mockTranslocoService as never,
+        ),
+      ).toBe('mitigationPlanned');
     });
 
-    it('should pass through multi-digit numeric values', () => {
+    it('should migrate numeric key to camelCase by index position', () => {
+      expect(
+        migrateFieldValue('0', 'threatEditor.threatSeverity', mockTranslocoService as never),
+      ).toBe('critical');
+      expect(
+        migrateFieldValue('1', 'threatEditor.threatSeverity', mockTranslocoService as never),
+      ).toBe('high');
+      expect(
+        migrateFieldValue('5', 'threatEditor.threatSeverity', mockTranslocoService as never),
+      ).toBe('unknown');
+    });
+
+    it('should return null for out-of-range numeric key', () => {
       expect(
         migrateFieldValue('99', 'threatEditor.threatSeverity', mockTranslocoService as never),
-      ).toBe('99');
+      ).toBeNull();
     });
 
-    it('should migrate English string value to numeric key', () => {
+    it('should migrate English string value to camelCase key', () => {
       expect(
         migrateFieldValue('High', 'threatEditor.threatSeverity', mockTranslocoService as never),
-      ).toBe('3');
+      ).toBe('high');
+      expect(
+        migrateFieldValue('Critical', 'threatEditor.threatSeverity', mockTranslocoService as never),
+      ).toBe('critical');
     });
 
     it('should perform case-insensitive matching', () => {
       expect(
         migrateFieldValue('HIGH', 'threatEditor.threatSeverity', mockTranslocoService as never),
-      ).toBe('3');
+      ).toBe('high');
       expect(
-        migrateFieldValue('high', 'threatEditor.threatSeverity', mockTranslocoService as never),
-      ).toBe('3');
+        migrateFieldValue('critical', 'threatEditor.threatSeverity', mockTranslocoService as never),
+      ).toBe('critical');
     });
 
     it('should match value from non-English language', () => {
       expect(
         migrateFieldValue('Hoch', 'threatEditor.threatSeverity', mockTranslocoService as never),
-      ).toBe('3');
+      ).toBe('high');
+      expect(
+        migrateFieldValue('Kritisch', 'threatEditor.threatSeverity', mockTranslocoService as never),
+      ).toBe('critical');
     });
 
     it('should return null for unrecognized value', () => {
@@ -166,9 +219,30 @@ describe('field-value-helpers', () => {
     });
 
     it('should handle threat model status field type', () => {
-      expect(migrateFieldValue('Draft', 'threatModels.status', mockTranslocoService as never)).toBe(
-        '0',
+      expect(
+        migrateFieldValue('Not Started', 'threatModels.status', mockTranslocoService as never),
+      ).toBe('notStarted');
+      expect(migrateFieldValue('0', 'threatModels.status', mockTranslocoService as never)).toBe(
+        'notStarted',
       );
+    });
+
+    it('should migrate numeric threat status keys', () => {
+      expect(
+        migrateFieldValue('0', 'threatEditor.threatStatus', mockTranslocoService as never),
+      ).toBe('open');
+      expect(
+        migrateFieldValue('7', 'threatEditor.threatStatus', mockTranslocoService as never),
+      ).toBe('falsePositive');
+    });
+
+    it('should migrate numeric priority keys', () => {
+      expect(
+        migrateFieldValue('0', 'threatEditor.threatPriority', mockTranslocoService as never),
+      ).toBe('immediate');
+      expect(
+        migrateFieldValue('4', 'threatEditor.threatPriority', mockTranslocoService as never),
+      ).toBe('deferred');
     });
   });
 
@@ -193,12 +267,13 @@ describe('field-value-helpers', () => {
       expect(options).toHaveLength(10);
     });
 
-    it('should return options with key, label, and tooltip', () => {
+    it('should return options with camelCase keys, labels, and tooltips', () => {
       const options = getFieldOptions('threatEditor.threatSeverity', mockTranslocoService as never);
       expect(options[0]).toHaveProperty('key');
       expect(options[0]).toHaveProperty('label');
       expect(options[0]).toHaveProperty('tooltip');
-      expect(options[0].key).toBe('0');
+      expect(options[0].key).toBe('critical');
+      expect(options[1].key).toBe('high');
     });
 
     it('should return 0 options for unknown field type', () => {
@@ -220,11 +295,13 @@ describe('field-value-helpers', () => {
       ).toBe('');
     });
 
-    it('should return translated label for valid numeric key', () => {
-      expect(getFieldLabel('3', 'threatEditor.threatSeverity', mockTranslocoService as never)).toBe(
-        'High',
+    it('should return translated label for valid camelCase key', () => {
+      expect(
+        getFieldLabel('high', 'threatEditor.threatSeverity', mockTranslocoService as never),
+      ).toBe('High');
+      expect(mockTranslocoService.translate).toHaveBeenCalledWith(
+        'threatEditor.threatSeverity.high',
       );
-      expect(mockTranslocoService.translate).toHaveBeenCalledWith('threatEditor.threatSeverity.3');
     });
   });
 
@@ -236,14 +313,16 @@ describe('field-value-helpers', () => {
     });
 
     it('should use "tooltip" suffix for threatModels.status', () => {
-      getFieldTooltip('0', 'threatModels.status', mockTranslocoService as never);
-      expect(mockTranslocoService.translate).toHaveBeenCalledWith('threatModels.status.0.tooltip');
+      getFieldTooltip('notStarted', 'threatModels.status', mockTranslocoService as never);
+      expect(mockTranslocoService.translate).toHaveBeenCalledWith(
+        'threatModels.status.notStarted.tooltip',
+      );
     });
 
     it('should use "description" suffix for threat fields', () => {
-      getFieldTooltip('3', 'threatEditor.threatSeverity', mockTranslocoService as never);
+      getFieldTooltip('high', 'threatEditor.threatSeverity', mockTranslocoService as never);
       expect(mockTranslocoService.translate).toHaveBeenCalledWith(
-        'threatEditor.threatSeverity.3.description',
+        'threatEditor.threatSeverity.high.description',
       );
     });
   });

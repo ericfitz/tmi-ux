@@ -19,13 +19,53 @@ export interface FieldOption {
 }
 
 /**
- * Migrates old string values to new numeric key format
- * Checks the stored value against all localized strings and returns matching numeric key
+ * Returns the ordered array of valid camelCase keys for a field type.
+ * The array order defines the canonical sort/display order.
+ */
+export function getFieldKeysForFieldType(keyPrefix: FieldType): string[] {
+  switch (keyPrefix) {
+    case 'threatModels.status':
+      return [
+        'notStarted',
+        'inProgress',
+        'pendingReview',
+        'remediationRequired',
+        'remediationInProgress',
+        'verificationPending',
+        'approved',
+        'rejected',
+        'deferred',
+        'closed',
+      ];
+    case 'threatEditor.threatStatus':
+      return [
+        'open',
+        'confirmed',
+        'mitigationPlanned',
+        'mitigationInProgress',
+        'verificationPending',
+        'resolved',
+        'accepted',
+        'falsePositive',
+        'deferred',
+        'closed',
+      ];
+    case 'threatEditor.threatSeverity':
+      return ['critical', 'high', 'medium', 'low', 'informational', 'unknown'];
+    case 'threatEditor.threatPriority':
+      return ['immediate', 'high', 'medium', 'low', 'deferred'];
+    default:
+      return [];
+  }
+}
+
+/**
+ * Migrates old values (numeric keys or localized strings) to camelCase keys.
  *
- * @param value The stored value (either already numeric key or old string value)
+ * @param value The stored value (camelCase key, numeric key, or old localized string)
  * @param keyPrefix The translation key prefix (e.g., 'threatEditor.threatSeverity')
  * @param translocoService The Transloco service for accessing translations
- * @returns The numeric key as string, or null if no match found
+ * @returns The camelCase key, or null if no match found
  */
 export function migrateFieldValue(
   value: string | null | undefined,
@@ -36,36 +76,39 @@ export function migrateFieldValue(
     return null;
   }
 
-  // If already numeric, return as-is
-  if (/^\d+$/.test(value)) {
+  const keys = getFieldKeysForFieldType(keyPrefix);
+
+  // If already a valid camelCase key, return as-is
+  if (keys.includes(value)) {
     return value;
   }
 
-  // Get all available languages
+  // If numeric, map by index position to the corresponding camelCase key
+  if (/^\d+$/.test(value)) {
+    const idx = parseInt(value, 10);
+    return idx >= 0 && idx < keys.length ? keys[idx] : null;
+  }
+
+  // If old localized string, search translations for a match
   const availableLangs = translocoService.getAvailableLangs() as string[];
 
-  // Get the number of keys for this field type
-  const keyCount = getKeyCountForFieldType(keyPrefix);
-
-  // Check each language for a match
   for (const lang of availableLangs) {
     const translations = translocoService.getTranslation(lang);
 
-    // Check each numeric key
-    for (let i = 0; i < keyCount; i++) {
-      const key = `${keyPrefix}.${i}`;
-      const translatedValue = getNestedProperty(translations, key);
+    for (const camelKey of keys) {
+      const translationKey = `${keyPrefix}.${camelKey}`;
+      const translatedValue = getNestedProperty(translations, translationKey);
 
       if (
         typeof translatedValue === 'string' &&
         translatedValue.toLowerCase() === value.toLowerCase()
       ) {
-        return String(i);
+        return camelKey;
       }
     }
   }
 
-  // No match found, return null
+  // No match found
   return null;
 }
 
@@ -80,29 +123,25 @@ export function getFieldOptions(
   keyPrefix: FieldType,
   translocoService: TranslocoService,
 ): FieldOption[] {
-  const options: FieldOption[] = [];
-  const keyCount = getKeyCountForFieldType(keyPrefix);
+  const keys = getFieldKeysForFieldType(keyPrefix);
   const tooltipSuffix = getTooltipSuffixForFieldType(keyPrefix);
 
-  for (let i = 0; i < keyCount; i++) {
-    const key = String(i);
+  return keys.map(key => {
     const labelKey = `${keyPrefix}.${key}`;
     const tooltipKey = `${keyPrefix}.${key}.${tooltipSuffix}`;
 
-    options.push({
+    return {
       key,
       label: translocoService.translate(labelKey),
       tooltip: translocoService.translate(tooltipKey),
-    });
-  }
-
-  return options;
+    };
+  });
 }
 
 /**
  * Gets the display label for a stored field value
  *
- * @param value The numeric key as string
+ * @param value The camelCase key
  * @param keyPrefix The translation key prefix
  * @param translocoService The Transloco service
  * @returns The translated label, or empty string if invalid
@@ -123,7 +162,7 @@ export function getFieldLabel(
 /**
  * Gets the tooltip/description for a stored field value
  *
- * @param value The numeric key as string
+ * @param value The camelCase key
  * @param keyPrefix The translation key prefix
  * @param translocoService The Transloco service
  * @returns The translated tooltip/description
@@ -140,24 +179,6 @@ export function getFieldTooltip(
   const tooltipSuffix = getTooltipSuffixForFieldType(keyPrefix);
   const tooltipKey = `${keyPrefix}.${value}.${tooltipSuffix}`;
   return translocoService.translate(tooltipKey);
-}
-
-/**
- * Gets the number of keys available for a field type
- */
-function getKeyCountForFieldType(keyPrefix: FieldType): number {
-  switch (keyPrefix) {
-    case 'threatModels.status':
-      return 10; // 0-9
-    case 'threatEditor.threatStatus':
-      return 10; // 0-9
-    case 'threatEditor.threatSeverity':
-      return 6; // 0-5
-    case 'threatEditor.threatPriority':
-      return 5; // 0-4
-    default:
-      return 0;
-  }
 }
 
 /**

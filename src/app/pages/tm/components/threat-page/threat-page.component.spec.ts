@@ -86,7 +86,7 @@ describe('ThreatPageComponent', () => {
     id: 'threat-1',
     name: 'Test Threat',
     description: 'Test description',
-    severity: '1',
+    severity: 'high',
     threat_type: ['Spoofing'],
     created_at: '2024-01-01T00:00:00Z',
     modified_at: '2024-01-01T00:00:00Z',

@@ -79,7 +79,7 @@ export class ThreatsDialogComponent implements OnInit {
 
   /**
    * Gets the severity label for display
-   * @param severity The threat severity (numeric key as string)
+   * @param severity The threat severity camelCase key
    * @returns Localized severity label
    */
   getSeverityLabel(severity: string | null): string {
@@ -91,30 +91,11 @@ export class ThreatsDialogComponent implements OnInit {
 
   /**
    * Gets the severity color class for display
-   * @param severity The threat severity (numeric key as string)
+   * @param severity The threat severity camelCase key
    * @returns CSS class name for the severity
    */
   getSeverityClass(severity: string | null): string {
-    if (!severity) {
-      return 'severity-unknown';
-    }
-    // Map numeric keys to CSS classes: 0=Critical, 1=High, 2=Medium, 3=Low, 4=Informational, 5=Unknown
-    switch (severity) {
-      case '0':
-        return 'severity-critical';
-      case '1':
-        return 'severity-high';
-      case '2':
-        return 'severity-medium';
-      case '3':
-        return 'severity-low';
-      case '4':
-        return 'severity-informational';
-      case '5':
-        return 'severity-unknown';
-      default:
-        return 'severity-unknown';
-    }
+    return 'severity-' + (severity ?? 'unknown');
   }
 
   /**

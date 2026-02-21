@@ -787,29 +787,28 @@ mat-card-header {
   text-align: center;
   white-space: nowrap;
 
-  // Numeric severity classes
-  &.severity-0 {
+  &.severity-critical {
     background-color: var(--color-severity-critical);
     color: var(--color-background-white);
   }
 
-  &.severity-1 {
+  &.severity-high {
     background-color: var(--color-severity-high);
     color: var(--color-background-white);
   }
 
-  &.severity-2 {
+  &.severity-medium {
     background-color: var(--color-severity-medium);
     color: var(--color-text-primary);
   }
 
-  &.severity-3 {
+  &.severity-low {
     background-color: var(--color-severity-low);
     color: var(--color-background-white);
   }
 
-  &.severity-4,
-  &.severity-5 {
+  &.severity-informational,
+  &.severity-unknown {
     background-color: var(--color-severity-none);
     color: var(--color-background-white);
   }

@@ -91,7 +91,11 @@ import { ThreatModelReportService } from './services/threat-model-report.service
 import { FrameworkService } from '../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../shared/models/framework.model';
-import { FieldOption, getFieldOptions } from '../../shared/utils/field-value-helpers';
+import {
+  FieldOption,
+  getFieldKeysForFieldType,
+  getFieldOptions,
+} from '../../shared/utils/field-value-helpers';
 import {
   DeleteConfirmationDialogComponent,
   DeleteConfirmationDialogData,
@@ -333,73 +337,71 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Hardcoded mapping from old string values to new numeric keys
-   * Used for migrating legacy data
-   * Mapping: Critical=0, High=1, Medium=2, Low=3, Informational=4, Unknown=5
+   * Hardcoded mapping from old values (numeric keys and English strings) to camelCase keys.
+   * Used for migrating legacy data synchronously before Transloco translations are loaded.
    */
   private readonly severityMap: Record<string, string> = {
-    Critical: '0',
-    High: '1',
-    Medium: '2',
-    Low: '3',
-    Informational: '4',
-    Info: '4',
-    Unknown: '5',
-    None: '5',
-    critical: '0',
-    high: '1',
-    medium: '2',
-    low: '3',
-    informational: '4',
-    info: '4',
-    unknown: '5',
-    none: '5',
+    '0': 'critical',
+    '1': 'high',
+    '2': 'medium',
+    '3': 'low',
+    '4': 'informational',
+    '5': 'unknown',
+    Critical: 'critical',
+    High: 'high',
+    Medium: 'medium',
+    Low: 'low',
+    Informational: 'informational',
+    Info: 'informational',
+    Unknown: 'unknown',
+    None: 'unknown',
   };
 
   private readonly statusMap: Record<string, string> = {
-    Open: '0',
-    Confirmed: '1',
-    'Mitigation Planned': '2',
-    'Mitigation In Progress': '3',
-    'Verification Pending': '4',
-    Resolved: '5',
-    Accepted: '6',
-    'False Positive': '7',
-    Deferred: '8',
-    Closed: '9',
-    // Lowercase variants
-    open: '0',
-    confirmed: '1',
-    'mitigation planned': '2',
-    'mitigation in progress': '3',
-    'verification pending': '4',
-    resolved: '5',
-    accepted: '6',
-    'false positive': '7',
-    deferred: '8',
-    closed: '9',
+    '0': 'open',
+    '1': 'confirmed',
+    '2': 'mitigationPlanned',
+    '3': 'mitigationInProgress',
+    '4': 'verificationPending',
+    '5': 'resolved',
+    '6': 'accepted',
+    '7': 'falsePositive',
+    '8': 'deferred',
+    '9': 'closed',
+    Open: 'open',
+    Confirmed: 'confirmed',
+    'Mitigation Planned': 'mitigationPlanned',
+    'Mitigation In Progress': 'mitigationInProgress',
+    'Verification Pending': 'verificationPending',
+    Resolved: 'resolved',
+    Accepted: 'accepted',
+    'False Positive': 'falsePositive',
+    Deferred: 'deferred',
+    Closed: 'closed',
   };
 
   private readonly priorityMap: Record<string, string> = {
-    'Immediate (P0)': '0',
-    'High (P1)': '1',
-    'Medium (P2)': '2',
-    'Low (P3)': '3',
-    'Deferred (P4)': '4',
-    Immediate: '0',
-    High: '1',
-    Medium: '2',
-    Low: '3',
-    Deferred: '4',
-    immediate: '0',
-    high: '1',
-    medium: '2',
-    low: '3',
-    deferred: '4',
+    '0': 'immediate',
+    '1': 'high',
+    '2': 'medium',
+    '3': 'low',
+    '4': 'deferred',
+    'Immediate (P0)': 'immediate',
+    'High (P1)': 'high',
+    'Medium (P2)': 'medium',
+    'Low (P3)': 'low',
+    'Deferred (P4)': 'deferred',
+    Immediate: 'immediate',
+    High: 'high',
+    Medium: 'medium',
+    Low: 'low',
   };
 
+  private readonly severityKeys = getFieldKeysForFieldType('threatEditor.threatSeverity');
+  private readonly threatStatusKeys = getFieldKeysForFieldType('threatEditor.threatStatus');
+
   /**
-   * Migrates old field values to new numeric keys for a single threat
+   * Migrates old field values (numeric keys or English strings) to camelCase keys
    * @param threat The threat to migrate
    * @returns Migrated threat
    */
@@ -409,7 +411,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     // Migrate severity
     if (
       migratedThreat.severity &&
-      !/^\d+$/.test(migratedThreat.severity) &&
+      !this.severityKeys.includes(migratedThreat.severity) &&
       this.severityMap[migratedThreat.severity]
     ) {
       migratedThreat.severity = this.severityMap[migratedThreat.severity];
@@ -418,16 +420,17 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     // Migrate status
     if (
       migratedThreat.status &&
-      !/^\d+$/.test(migratedThreat.status) &&
+      !this.threatStatusKeys.includes(migratedThreat.status) &&
       this.statusMap[migratedThreat.status]
     ) {
       migratedThreat.status = this.statusMap[migratedThreat.status];
     }
 
     // Migrate priority
+    const priorityKeys = getFieldKeysForFieldType('threatEditor.threatPriority');
     if (
       migratedThreat.priority &&
-      !/^\d+$/.test(migratedThreat.priority) &&
+      !priorityKeys.includes(migratedThreat.priority) &&
       this.priorityMap[migratedThreat.priority]
     ) {
       migratedThreat.priority = this.priorityMap[migratedThreat.priority];
@@ -667,7 +670,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
           case 'severity':
             return this.getSeverityOrder(threat.severity);
           case 'status':
-            return threat.status ? parseInt(threat.status, 10) : 999;
+            return threat.status ? this.threatStatusKeys.indexOf(threat.status) : 999;
           case 'name':
             return threat.name?.toLowerCase() ?? '';
           default:
@@ -690,12 +693,12 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Get numeric order for severity (lower = more severe)
+   * Get ordinal position for severity (lower index = more severe)
    */
   private getSeverityOrder(severity: string | null): number {
     if (!severity) return 999;
-    const order = parseInt(severity, 10);
-    return isNaN(order) ? 999 : order;
+    const idx = this.severityKeys.indexOf(severity);
+    return idx >= 0 ? idx : 999;
   }
 
   ngOnDestroy(): void {
