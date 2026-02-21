@@ -20,7 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Observable, Subscription } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
@@ -76,6 +76,7 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
     private _cdr: ChangeDetectorRef,
     private _collaborationService: DfdCollaborationService,
     private _dialog: MatDialog,
+    private _transloco: TranslocoService,
   ) {
     // Initialize presenter mode observable
     this.isPresenterModeActive$ = this._collaborationService.collaborationState$.pipe(
@@ -233,20 +234,19 @@ export class DfdCollaborationComponent implements OnInit, OnDestroy {
    */
   getCollaborationButtonTooltip(): string {
     if (!this.isContextReady) {
-      return 'Loading diagram context...';
+      return this._transloco.translate('collaboration.loadingDiagramContext');
     }
     if (this.isCollaborating) {
-      // Determine if current user is host
       if (this._collaborationService.isCurrentUserHost()) {
-        return 'End Collaboration'; // Host can end collaboration
+        return this._transloco.translate('collaboration.endCollaboration');
       } else {
-        return 'Leave Session'; // Participant can leave session
+        return this._transloco.translate('collaboration.leaveSession');
       }
     }
     if (this.existingSessionAvailable) {
-      return 'Join Session'; // Join existing session
+      return this._transloco.translate('collaboration.joinSession');
     }
-    return 'Start Collaboration'; // Start new collaboration
+    return this._transloco.translate('collaboration.startCollaboration');
   }
 
   /**
