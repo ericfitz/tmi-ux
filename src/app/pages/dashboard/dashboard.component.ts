@@ -27,7 +27,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Observable, Subject, Subscription } from 'rxjs';
 import {
@@ -40,6 +40,8 @@ import {
   takeUntil,
 } from 'rxjs/operators';
 import { MatPaginator, MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 import {
   COMMON_IMPORTS,
@@ -51,7 +53,7 @@ import {
 import { LanguageService } from '../../i18n/language.service';
 import { ThreatModel } from '../tm/models/threat-model.model';
 import { TMListItem } from '../tm/models/tm-list-item.model';
-import { ThreatModelService } from '../tm/services/threat-model.service';
+import { ThreatModelService, ThreatModelListParams } from '../tm/services/threat-model.service';
 import { ThreatModelValidatorService } from '../tm/validation/threat-model-validator.service';
 import {
   CollaborationSessionService,
@@ -83,10 +85,16 @@ import {
 import {
   calculateOffset,
   parsePaginationFromUrl,
-  buildPaginationQueryParams,
   adjustPageAfterDeletion,
 } from '../../shared/utils/pagination.util';
 import { UserDisplayComponent } from '../../shared/components/user-display/user-display.component';
+import { FieldOption, getFieldOptions } from '../../shared/utils/field-value-helpers';
+import {
+  DashboardFilters,
+  createDefaultFilters,
+  hasActiveFilters as hasActiveServerFilters,
+  hasAdvancedFilters as hasAdvancedServerFilters,
+} from './dashboard-filter.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -97,6 +105,8 @@ import { UserDisplayComponent } from '../../shared/components/user-display/user-
     ...DATA_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
     ...FORM_MATERIAL_IMPORTS,
+    MatDatepickerModule,
+    MatNativeDateModule,
     TranslocoModule,
     UserDisplayComponent,
   ],
@@ -125,11 +135,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   totalItems = 0;
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
 
-  // View mode and filtering
+  // View mode
   dashboardListView = false;
-  filterText = '';
-  private filterChanged$ = new Subject<string>();
-  private destroy$ = new Subject<void>();
   displayedColumns: string[] = [
     'collaborationIndicator',
     'name',
@@ -140,6 +147,23 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     'created',
     'actions',
   ];
+
+  // Client-side search (renamed from "filter")
+  searchText = '';
+  private searchChanged$ = new Subject<string>();
+
+  // Server-side filters
+  filters: DashboardFilters = createDefaultFilters();
+  showAdvancedFilters = false;
+  statusOptions: FieldOption[] = [];
+
+  // Debounced subjects for server-side text filter inputs
+  private nameFilterChanged$ = new Subject<string>();
+  private descriptionFilterChanged$ = new Subject<string>();
+  private ownerFilterChanged$ = new Subject<string>();
+  private issueUriFilterChanged$ = new Subject<string>();
+
+  private destroy$ = new Subject<void>();
 
   // Collaboration session mapping
   currentSessionMap = new Map<string, CollaborationSession[]>();
@@ -175,10 +199,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    // this.logger.debugComponent('Dashboard', 'DashboardComponent.ngOnInit called');
-
     // Load view preference from localStorage
     this.loadViewPreference();
+
+    // Initialize status options for multi-select dropdown
+    this.statusOptions = getFieldOptions('threatModels.status', this.transloco);
 
     // Clear SVG caches when initializing dashboard to ensure fresh start
     this.svgCacheService.clearAllCaches();
@@ -197,36 +222,78 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         existing.push(session);
         this.currentSessionMap.set(session.threatModelId, existing);
       }
-      this.applyFilter();
+      this.applyLocalSearch();
       this.cdr.detectChanges();
     });
 
-    // Initialize pagination state from URL query params
+    // Initialize pagination and filter state from URL query params
     this.route.queryParams.pipe(take(1)).subscribe(params => {
       const paginationState = parsePaginationFromUrl(params, DEFAULT_PAGE_SIZE);
       this.pageIndex = paginationState.pageIndex;
       this.pageSize = paginationState.pageSize;
-      this.filterText = (params[PAGINATION_QUERY_PARAMS.FILTER] as string | undefined) || '';
 
-      // Load data with pagination
+      // Parse client-side search from URL
+      this.searchText = (params[PAGINATION_QUERY_PARAMS.SEARCH] as string | undefined) || '';
+
+      // Parse server-side filters from URL
+      this.filters.name = (params[PAGINATION_QUERY_PARAMS.NAME] as string | undefined) || '';
+      this.filters.description =
+        (params[PAGINATION_QUERY_PARAMS.DESCRIPTION] as string | undefined) || '';
+      this.filters.owner = (params[PAGINATION_QUERY_PARAMS.OWNER] as string | undefined) || '';
+      this.filters.issueUri =
+        (params[PAGINATION_QUERY_PARAMS.ISSUE_URI] as string | undefined) || '';
+      const statusParam = params[PAGINATION_QUERY_PARAMS.STATUS] as string | undefined;
+      this.filters.statuses = statusParam ? statusParam.split(',') : [];
+      this.filters.createdAfter =
+        (params[PAGINATION_QUERY_PARAMS.CREATED_AFTER] as string | undefined) || null;
+      this.filters.createdBefore =
+        (params[PAGINATION_QUERY_PARAMS.CREATED_BEFORE] as string | undefined) || null;
+      this.filters.modifiedAfter =
+        (params[PAGINATION_QUERY_PARAMS.MODIFIED_AFTER] as string | undefined) || null;
+      this.filters.modifiedBefore =
+        (params[PAGINATION_QUERY_PARAMS.MODIFIED_BEFORE] as string | undefined) || null;
+      this.filters.statusUpdatedAfter =
+        (params[PAGINATION_QUERY_PARAMS.STATUS_UPDATED_AFTER] as string | undefined) || null;
+      this.filters.statusUpdatedBefore =
+        (params[PAGINATION_QUERY_PARAMS.STATUS_UPDATED_BEFORE] as string | undefined) || null;
+
+      // Auto-expand advanced filters if any are present in URL
+      if (hasAdvancedServerFilters(this.filters)) {
+        this.showAdvancedFilters = true;
+      }
+
       this.loadData();
     });
 
-    // Set up debounced filter changes
-    this.filterChanged$
+    // Set up debounced client-side search
+    this.searchChanged$
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
-      .subscribe(filterValue => {
-        this.filterText = filterValue;
-        this.pageIndex = 0; // Reset to first page on filter change
-        this.loadData();
+      .subscribe(value => {
+        this.searchText = value;
+        this.applyLocalSearch();
         this.updateUrl();
+        this.cdr.detectChanges();
       });
+
+    // Set up debounced server-side text filter inputs
+    this.setupDebouncedServerFilter(this.nameFilterChanged$, value => {
+      this.filters.name = value;
+    });
+    this.setupDebouncedServerFilter(this.descriptionFilterChanged$, value => {
+      this.filters.description = value;
+    });
+    this.setupDebouncedServerFilter(this.ownerFilterChanged$, value => {
+      this.filters.owner = value;
+    });
+    this.setupDebouncedServerFilter(this.issueUriFilterChanged$, value => {
+      this.filters.issueUri = value;
+    });
 
     // Subscribe to language changes to refresh date formatting
     this.languageSubscription = this.languageService.currentLanguage$.subscribe(language => {
-      // Update current locale
       this.currentLocale = language.code;
-      // Force change detection to re-evaluate date formatting and status labels
+      // Re-initialize status options with updated language
+      this.statusOptions = getFieldOptions('threatModels.status', this.transloco);
       this.cdr.detectChanges();
     });
   }
@@ -280,6 +347,71 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     };
   }
 
+  // --- Search and filter handlers ---
+
+  /** Handle client-side search input changes */
+  onSearchChange(value: string): void {
+    this.searchChanged$.next(value);
+  }
+
+  /** Clear just the client-side search text */
+  clearSearch(): void {
+    this.searchText = '';
+    this.applyLocalSearch();
+    this.updateUrl();
+    this.cdr.detectChanges();
+  }
+
+  /** Handle debounced server-side text filter input changes */
+  onNameFilterChange(value: string): void {
+    this.nameFilterChanged$.next(value);
+  }
+
+  onDescriptionFilterChange(value: string): void {
+    this.descriptionFilterChanged$.next(value);
+  }
+
+  onOwnerFilterChange(value: string): void {
+    this.ownerFilterChanged$.next(value);
+  }
+
+  onIssueUriFilterChange(value: string): void {
+    this.issueUriFilterChanged$.next(value);
+  }
+
+  /** Handle immediate server-side filter changes (dropdowns, date pickers) */
+  onServerFilterChange(): void {
+    this.pageIndex = 0;
+    this.loadData();
+    this.updateUrl();
+  }
+
+  /** Clear all server-side filters and client-side search */
+  clearAllFilters(): void {
+    this.searchText = '';
+    this.filters = createDefaultFilters();
+    this.pageIndex = 0;
+    this.loadData();
+    this.updateUrl();
+  }
+
+  /** Whether any server-side filters are active */
+  get hasActiveFilters(): boolean {
+    return hasActiveServerFilters(this.filters);
+  }
+
+  /** Whether any advanced (non-primary) filters are active */
+  get hasAdvancedFilters(): boolean {
+    return hasAdvancedServerFilters(this.filters);
+  }
+
+  /** Whether any filter or search is active (for empty state) */
+  get hasAnyFilterOrSearch(): boolean {
+    return this.searchText.trim() !== '' || this.hasActiveFilters;
+  }
+
+  // --- Threat model operations ---
+
   createThreatModel(): void {
     const dialogRef = this.dialog.open(CreateThreatModelDialogComponent, {
       width: '500px',
@@ -315,8 +447,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   openThreatModel(id: string): void {
-    // When opening a threat model for editing, the service will automatically
-    // expire all other cached models and cache only the one being opened
     void this.router.navigate(['/tm', id]);
   }
 
@@ -324,20 +454,17 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
    * Format a date according to the current locale
    */
   formatDate(date: string | null | undefined): string {
-    // Handle null, undefined, or empty date strings
     if (!date) {
       return '—';
     }
 
     const dateObj = new Date(date);
 
-    // Check if the date is valid
     if (isNaN(dateObj.getTime())) {
       this.logger.warn('Invalid date provided to formatDate', { date });
       return '—';
     }
 
-    // Use Intl.DateTimeFormat for more consistent locale-based formatting
     return new Intl.DateTimeFormat(this.currentLocale, {
       year: 'numeric',
       month: 'numeric',
@@ -347,7 +474,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /**
    * Format session start time as a relative time string
-   * Uses Intl.RelativeTimeFormat for proper internationalization
    */
   formatSessionTime(startedAt: Date): string {
     const now = new Date();
@@ -358,13 +484,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     if (diffMinutes < 1) {
       return this.transloco.translate('collaboration.justNow');
     } else if (diffMinutes < 60) {
-      // Use Intl.RelativeTimeFormat for minutes
       return this.formatRelativeTime(-diffMinutes, 'minute');
     } else if (diffHours < 24) {
-      // Use Intl.RelativeTimeFormat for hours
       return this.formatRelativeTime(-diffHours, 'hour');
     } else {
-      // For sessions older than 24 hours, show the actual time
       return new Intl.DateTimeFormat(this.currentLocale, {
         month: 'short',
         day: 'numeric',
@@ -374,15 +497,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  /**
-   * Format relative time using Intl.RelativeTimeFormat with fallback
-   * @param value The relative time value (negative for past)
-   * @param unit The time unit ('minute', 'hour', etc.)
-   * @returns Localized relative time string
-   */
   private formatRelativeTime(value: number, unit: 'minute' | 'hour'): string {
     try {
-      // Check if Intl.RelativeTimeFormat is supported
       if (typeof Intl !== 'undefined' && Intl.RelativeTimeFormat) {
         const rtf = new Intl.RelativeTimeFormat(this.currentLocale, {
           numeric: 'auto',
@@ -392,10 +508,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     } catch {
       // Fallback if RelativeTimeFormat fails
-      // this.logger.debugComponent('TM', 'RelativeTimeFormat not supported, using fallback');
     }
 
-    // Fallback to English format for unsupported browsers
     const absValue = Math.abs(value);
     const unitText = unit === 'minute' ? 'minute' : 'hour';
     const pluralSuffix = absValue === 1 ? '' : 's';
@@ -403,16 +517,14 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   deleteThreatModel(id: string, event: MouseEvent): void {
-    event.stopPropagation(); // Prevent opening threat model when clicking delete
+    event.stopPropagation();
 
-    // Find the threat model to get its name for the confirmation dialog
     const threatModel = this.threatModels.find(tm => tm.id === id);
     if (!threatModel) {
       this.logger.error('Threat model not found for deletion', { id });
       return;
     }
 
-    // Show confirmation dialog
     const dialogData: DeleteConfirmationDialogData = {
       id: threatModel.id,
       name: threatModel.name,
@@ -427,16 +539,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
     dialogRef.afterClosed().subscribe((result: DeleteConfirmationDialogResult | undefined) => {
       if (result?.confirmed) {
-        // User confirmed deletion
         this.threatModelService.deleteThreatModel(id).subscribe({
           next: success => {
             if (success) {
-              // Show success message
               this.snackBar.open(`Threat model "${threatModel.name}" has been deleted.`, 'Close', {
                 duration: 3000,
               });
 
-              // Adjust page if we deleted the last item on the current page
               const itemsOnPageAfterDelete = this.threatModels.length - 1;
               const newTotal = this.totalItems - 1;
               this.pageIndex = adjustPageAfterDeletion(
@@ -445,7 +554,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
                 newTotal,
               );
 
-              // Reload data to reflect deletion
               this.loadData();
               this.updateUrl();
             }
@@ -474,13 +582,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.expandedTmId = this.expandedTmId === tmId ? null : tmId;
   }
 
-  /**
-   * Refresh the threat models list
-   */
   refreshThreatModels(): void {
-    // this.logger.info('Manually refreshing threat models');
     this.loadData();
   }
+
+  // --- Private helpers ---
 
   private _getSortValue(item: TMListItem, property: string): string | number {
     const dateAccessor = (field: string | null | undefined): number =>
@@ -501,7 +607,24 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Load threat models data with pagination
+   * Set up a debounced subscription for a server-side text filter input.
+   */
+  private setupDebouncedServerFilter(
+    subject: Subject<string>,
+    setter: (value: string) => void,
+  ): void {
+    subject
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(value => {
+        setter(value);
+        this.pageIndex = 0;
+        this.loadData();
+        this.updateUrl();
+      });
+  }
+
+  /**
+   * Load threat models data with pagination and server-side filters.
    */
   private loadData(): void {
     this.isLoadingThreatModels = true;
@@ -509,18 +632,35 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const offset = calculateOffset(this.pageIndex, this.pageSize);
 
-    this.threatModelService.fetchThreatModels(this.pageSize, offset).subscribe(response => {
+    const params: ThreatModelListParams = {
+      limit: this.pageSize,
+      offset,
+    };
+
+    // Map server-side filters to API params
+    if (this.filters.name.trim()) params.name = this.filters.name.trim();
+    if (this.filters.description.trim()) params.description = this.filters.description.trim();
+    if (this.filters.owner.trim()) params.owner = this.filters.owner.trim();
+    if (this.filters.issueUri.trim()) params.issue_uri = this.filters.issueUri.trim();
+    if (this.filters.statuses.length > 0) params.status = this.filters.statuses.join(',');
+    if (this.filters.createdAfter) params.created_after = this.filters.createdAfter;
+    if (this.filters.createdBefore) params.created_before = this.filters.createdBefore;
+    if (this.filters.modifiedAfter) params.modified_after = this.filters.modifiedAfter;
+    if (this.filters.modifiedBefore) params.modified_before = this.filters.modifiedBefore;
+    if (this.filters.statusUpdatedAfter)
+      params.status_updated_after = this.filters.statusUpdatedAfter;
+    if (this.filters.statusUpdatedBefore)
+      params.status_updated_before = this.filters.statusUpdatedBefore;
+
+    this.threatModelService.fetchThreatModels(params).subscribe(response => {
       this.threatModels = response.threat_models || [];
       this.totalItems = response.total;
-      this.applyFilter();
+      this.applyLocalSearch();
       this.isLoadingThreatModels = false;
       this.cdr.detectChanges();
     });
   }
 
-  /**
-   * Handle page change events from the paginator
-   */
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -529,31 +669,69 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Update the URL query parameters to reflect current pagination state
+   * Update URL query parameters to reflect current pagination, search, and filter state.
+   * Only includes non-default values to keep URLs clean.
    */
   private updateUrl(): void {
-    const queryParams = buildPaginationQueryParams(
-      { pageIndex: this.pageIndex, pageSize: this.pageSize, total: this.totalItems },
-      this.filterText,
-      DEFAULT_PAGE_SIZE,
-    );
+    const queryParams: Params = {};
+
+    // Pagination
+    if (this.pageIndex > 0) {
+      queryParams[PAGINATION_QUERY_PARAMS.PAGE] = String(this.pageIndex);
+    }
+    if (this.pageSize !== DEFAULT_PAGE_SIZE) {
+      queryParams[PAGINATION_QUERY_PARAMS.SIZE] = String(this.pageSize);
+    }
+
+    // Client-side search
+    if (this.searchText.trim()) {
+      queryParams[PAGINATION_QUERY_PARAMS.SEARCH] = this.searchText.trim();
+    }
+
+    // Server-side filters
+    if (this.filters.name.trim()) {
+      queryParams[PAGINATION_QUERY_PARAMS.NAME] = this.filters.name.trim();
+    }
+    if (this.filters.description.trim()) {
+      queryParams[PAGINATION_QUERY_PARAMS.DESCRIPTION] = this.filters.description.trim();
+    }
+    if (this.filters.owner.trim()) {
+      queryParams[PAGINATION_QUERY_PARAMS.OWNER] = this.filters.owner.trim();
+    }
+    if (this.filters.issueUri.trim()) {
+      queryParams[PAGINATION_QUERY_PARAMS.ISSUE_URI] = this.filters.issueUri.trim();
+    }
+    if (this.filters.statuses.length > 0) {
+      queryParams[PAGINATION_QUERY_PARAMS.STATUS] = this.filters.statuses.join(',');
+    }
+    if (this.filters.createdAfter) {
+      queryParams[PAGINATION_QUERY_PARAMS.CREATED_AFTER] = this.filters.createdAfter;
+    }
+    if (this.filters.createdBefore) {
+      queryParams[PAGINATION_QUERY_PARAMS.CREATED_BEFORE] = this.filters.createdBefore;
+    }
+    if (this.filters.modifiedAfter) {
+      queryParams[PAGINATION_QUERY_PARAMS.MODIFIED_AFTER] = this.filters.modifiedAfter;
+    }
+    if (this.filters.modifiedBefore) {
+      queryParams[PAGINATION_QUERY_PARAMS.MODIFIED_BEFORE] = this.filters.modifiedBefore;
+    }
+    if (this.filters.statusUpdatedAfter) {
+      queryParams[PAGINATION_QUERY_PARAMS.STATUS_UPDATED_AFTER] = this.filters.statusUpdatedAfter;
+    }
+    if (this.filters.statusUpdatedBefore) {
+      queryParams[PAGINATION_QUERY_PARAMS.STATUS_UPDATED_BEFORE] = this.filters.statusUpdatedBefore;
+    }
 
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams,
-      queryParamsHandling: '', // Replace all query params
-      replaceUrl: true, // Don't add to browser history for pagination changes
+      queryParamsHandling: '',
+      replaceUrl: true,
     });
   }
 
-  /**
-   * Navigate to the DFD page for a specific diagram
-   * @param diagramId The ID of the diagram to open
-   */
   openCollaborationSession(diagramId: string): void {
-    // this.logger.info('Opening collaboration session', { diagramId });
-
-    // Find the session data to get the threat model ID
     this.collaborationSessions$
       .pipe(
         take(1),
@@ -565,7 +743,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           return;
         }
 
-        // Navigate to DFD page with collaboration context using correct nested route
         void this.router.navigate(['/tm', session.threatModelId, 'dfd', diagramId], {
           queryParams: {
             joinCollaboration: 'true',
@@ -574,20 +751,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  /**
-   * Load a threat model from desktop using File System Access API
-   */
   async import(): Promise<void> {
-    // this.logger.info('Loading threat model from desktop');
-
     try {
       let fileHandle: FileSystemFileHandle;
       let file: File;
 
-      // Check if File System Access API is supported
       if ('showOpenFilePicker' in window) {
-        // this.logger.debugComponent('TM', 'Using File System Access API');
-
         const [handle] = await window.showOpenFilePicker({
           types: [
             {
@@ -603,38 +772,22 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         fileHandle = handle;
         file = await fileHandle.getFile();
       } else {
-        // Fallback for browsers that don't support File System Access API
-        // this.logger.debugComponent('TM', 'Using fallback file input method');
         file = await this.selectFileViaInput();
       }
 
-      // Read and parse the file content
       const content = await file.text();
       const threatModelData = JSON.parse(content) as Record<string, unknown>;
 
-      // this.logger.info('File loaded successfully', {
-      //   filename: file.name,
-      //   size: file.size,
-      //   type: file.type,
-      // });
-
-      // Import the threat model
       await this.importThreatModel(threatModelData);
     } catch (error) {
-      // Check if user cancelled the operation
       if (error instanceof DOMException && error.name === 'AbortError') {
-        // this.logger.debugComponent('TM', 'File selection cancelled by user');
         return;
       }
 
-      // Handle other errors (file parsing, import errors, etc.)
       this.logger.error('Failed to load threat model from file', error);
     }
   }
 
-  /**
-   * Fallback method for selecting files in browsers without File System Access API
-   */
   private selectFileViaInput(): Promise<File> {
     return new Promise((resolve, reject) => {
       const input = document.createElement('input');
@@ -654,29 +807,18 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         reject(new DOMException('User cancelled file selection', 'AbortError'));
       };
 
-      // Trigger file picker
       input.click();
     });
   }
 
-  /**
-   * Import a threat model from parsed JSON data
-   */
   private async importThreatModel(data: Record<string, unknown>): Promise<void> {
     this.isImporting = true;
     try {
-      // Basic validation - check if it has expected threat model structure
       if (typeof data['id'] !== 'string' || typeof data['name'] !== 'string') {
         this.showError('Invalid threat model format: missing required fields (id, name)');
         return;
       }
 
-      // this.logger.info('Importing threat model', {
-      //   id: data['id'],
-      //   name: data['name'],
-      // });
-
-      // Validate the threat model data
       const validationResult = this.validator.validate(data as unknown as ThreatModel);
       if (!validationResult.valid) {
         this.logger.error('Threat model validation failed', validationResult.errors);
@@ -690,7 +832,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         this.logger.warn('Threat model has validation warnings', validationResult.warnings);
       }
 
-      // Import the threat model (always creates a new instance)
       const result = await this.threatModelService
         .importThreatModel(data as Partial<ThreatModel> & { id: string; name: string })
         .toPromise();
@@ -709,13 +850,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private navigateToImportedModel(model: ThreatModel): void {
-    // this.logger.info('Threat model imported successfully', { id: model.id });
-
     this.snackBar.open(`Threat model "${model.name}" imported successfully`, 'Close', {
       duration: 3000,
     });
 
-    // Navigate to the imported/updated threat model
     void this.router.navigate(['/tm', model.id]);
   }
 
@@ -726,21 +864,14 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  /**
-   * Load the dashboard view preference from UserPreferencesService
-   */
   private loadViewPreference(): void {
     const prefs = this.userPreferencesService.getPreferences();
     this.dashboardListView = prefs.dashboardListView;
   }
 
-  /**
-   * Toggle between card and list view
-   */
   toggleViewMode(): void {
     this.dashboardListView = !this.dashboardListView;
 
-    // Save preference via UserPreferencesService
     this.userPreferencesService.updatePreferences({
       dashboardListView: this.dashboardListView,
     });
@@ -749,39 +880,23 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Handle filter input changes
+   * Apply client-side search and collaboration-session-first sorting.
+   * This operates on the already-fetched (server-filtered) threat models.
    */
-  onFilterChange(value: string): void {
-    this.filterChanged$.next(value);
-  }
-
-  /**
-   * Clear the filter
-   */
-  clearFilter(): void {
-    this.filterText = '';
-    this.pageIndex = 0;
-    this.loadData();
-    this.updateUrl();
-  }
-
-  /**
-   * Apply the current filter to the threat models list
-   */
-  private applyFilter(): void {
-    const filter = this.filterText.toLowerCase().trim();
+  private applyLocalSearch(): void {
+    const search = this.searchText.toLowerCase().trim();
     let filtered: TMListItem[];
 
-    if (!filter) {
+    if (!search) {
       filtered = [...this.threatModels];
     } else {
       filtered = this.threatModels.filter(
         tm =>
-          tm.name?.toLowerCase().includes(filter) ||
-          tm.description?.toLowerCase().includes(filter) ||
-          tm.owner?.display_name?.toLowerCase().includes(filter) ||
-          tm.owner?.email?.toLowerCase().includes(filter) ||
-          tm.status?.toLowerCase().includes(filter),
+          tm.name?.toLowerCase().includes(search) ||
+          tm.description?.toLowerCase().includes(search) ||
+          tm.owner?.display_name?.toLowerCase().includes(search) ||
+          tm.owner?.email?.toLowerCase().includes(search) ||
+          tm.status?.toLowerCase().includes(search),
       );
     }
 
@@ -792,13 +907,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       return aHasSession - bHasSession;
     });
 
-    // Update both the dataSource (for table) and filteredThreatModels (for cards)
     this.dataSource.data = filtered;
   }
 
-  /**
-   * Get filtered threat models for card view
-   */
+  /** Get filtered threat models for card view */
   get filteredThreatModels(): TMListItem[] {
     return this.dataSource.data;
   }

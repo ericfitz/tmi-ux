@@ -96,6 +96,25 @@ import {
 import { ReadonlyFieldFilterService } from './import/readonly-field-filter.service';
 import { ProviderAdapterService } from './providers/provider-adapter.service';
 
+/**
+ * Parameters for listing and filtering threat models via GET /threat_models.
+ */
+export interface ThreatModelListParams {
+  limit?: number;
+  offset?: number;
+  name?: string;
+  description?: string;
+  owner?: string;
+  status?: string;
+  issue_uri?: string;
+  created_after?: string;
+  created_before?: string;
+  modified_after?: string;
+  modified_before?: string;
+  status_updated_after?: string;
+  status_updated_before?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -117,13 +136,31 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Fetch threat models with pagination support
-   * Returns the full API response including pagination metadata
+   * Fetch threat models with pagination and filtering support.
+   * Returns the full API response including pagination metadata.
    */
-  fetchThreatModels(limit?: number, offset?: number): Observable<ListThreatModelsResponse> {
+  fetchThreatModels(listParams?: ThreatModelListParams): Observable<ListThreatModelsResponse> {
     const params: Record<string, string> = {};
-    if (limit !== undefined) params['limit'] = limit.toString();
-    if (offset !== undefined) params['offset'] = offset.toString();
+    if (listParams) {
+      if (listParams.limit !== undefined) params['limit'] = listParams.limit.toString();
+      if (listParams.offset !== undefined) params['offset'] = listParams.offset.toString();
+      const stringKeys: (keyof Omit<ThreatModelListParams, 'limit' | 'offset'>)[] = [
+        'name',
+        'description',
+        'owner',
+        'status',
+        'issue_uri',
+        'created_after',
+        'created_before',
+        'modified_after',
+        'modified_before',
+        'status_updated_after',
+        'status_updated_before',
+      ];
+      for (const key of stringKeys) {
+        if (listParams[key]) params[key] = listParams[key];
+      }
+    }
 
     return this.apiService.get<ListThreatModelsResponse>('threat_models', params).pipe(
       tap(response => {

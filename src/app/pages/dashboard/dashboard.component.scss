@@ -39,10 +39,59 @@
   }
 }
 
-// Filter field
-.filter-field {
-  width: 100%;
+// Primary filters row
+.filters-row {
+  display: flex;
+  gap: 12px;
   margin-bottom: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .search-field {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .name-filter {
+    width: 200px;
+  }
+
+  .status-filter {
+    width: 200px;
+  }
+
+  .filter-toggle-active {
+    color: var(--mdc-theme-primary);
+  }
+
+  .clear-filters-button {
+    white-space: nowrap;
+  }
+
+  // Hide subscript wrapper in filter fields to save vertical space
+  mat-form-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+// Advanced filters row (expandable)
+.advanced-filters-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+
+  .text-filter {
+    width: 200px;
+  }
+
+  .date-filter {
+    width: 170px;
+  }
+
+  mat-form-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
 }
 
 // Cards grid layout

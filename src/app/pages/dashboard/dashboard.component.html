@@ -37,22 +37,205 @@
     </div>
   </div>
 
-  <!-- Filter field -->
-  <mat-form-field class="filter-field" appearance="outline">
-    <mat-label [transloco]="'dashboard.filterLabel'">Filter Threat Models</mat-label>
-    <input
-      matInput
-      [value]="filterText"
-      (input)="onFilterChange($any($event.target).value)"
-      [placeholder]="'dashboard.filterPlaceholder' | transloco"
-    />
-    <mat-icon matPrefix>search</mat-icon>
-    @if (filterText) {
-      <button matSuffix mat-icon-button (click)="clearFilter()" aria-label="Clear filter">
-        <mat-icon>close</mat-icon>
+  <!-- Primary filters row -->
+  <div class="filters-row">
+    <!-- Client-side search field -->
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>{{ 'dashboard.searchLabel' | transloco }}</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        [value]="searchText"
+        (input)="onSearchChange($any($event.target).value)"
+        [placeholder]="'dashboard.searchPlaceholder' | transloco"
+      />
+      @if (searchText) {
+        <button
+          matSuffix
+          mat-icon-button
+          (click)="clearSearch()"
+          [matTooltip]="'dashboard.clearSearch' | transloco"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <!-- Name server-side filter -->
+    <mat-form-field appearance="outline" class="name-filter">
+      <mat-label>{{ 'dashboard.nameFilter' | transloco }}</mat-label>
+      <input
+        matInput
+        [value]="filters.name"
+        (input)="onNameFilterChange($any($event.target).value)"
+        [placeholder]="'dashboard.namePlaceholder' | transloco"
+      />
+    </mat-form-field>
+
+    <!-- Status multi-select -->
+    <mat-form-field appearance="outline" class="status-filter">
+      <mat-label>{{ 'common.status' | transloco }}</mat-label>
+      <mat-select
+        multiple
+        [(ngModel)]="filters.statuses"
+        (selectionChange)="onServerFilterChange()"
+      >
+        @for (option of statusOptions; track option.key) {
+          <mat-option [value]="option.key" [matTooltip]="option.tooltip">
+            {{ option.label }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <!-- More Filters toggle -->
+    <button
+      mat-icon-button
+      (click)="showAdvancedFilters = !showAdvancedFilters"
+      [matTooltip]="
+        showAdvancedFilters
+          ? ('dashboard.lessFilters' | transloco)
+          : ('dashboard.moreFilters' | transloco)
+      "
+      [class.filter-toggle-active]="showAdvancedFilters || hasAdvancedFilters"
+    >
+      <mat-icon>{{ showAdvancedFilters ? 'filter_list_off' : 'filter_list' }}</mat-icon>
+    </button>
+
+    <!-- Clear All Filters button -->
+    @if (hasActiveFilters || searchText) {
+      <button mat-stroked-button (click)="clearAllFilters()" class="clear-filters-button">
+        <mat-icon>filter_list_off</mat-icon>
+        {{ 'dashboard.clearAllFilters' | transloco }}
       </button>
     }
-  </mat-form-field>
+  </div>
+
+  <!-- Advanced filters row (expandable) -->
+  @if (showAdvancedFilters) {
+    <div class="advanced-filters-row" [@detailExpand]>
+      <!-- Description filter -->
+      <mat-form-field appearance="outline" class="text-filter">
+        <mat-label>{{ 'dashboard.descriptionFilter' | transloco }}</mat-label>
+        <input
+          matInput
+          [value]="filters.description"
+          (input)="onDescriptionFilterChange($any($event.target).value)"
+          [placeholder]="'dashboard.descriptionPlaceholder' | transloco"
+        />
+      </mat-form-field>
+
+      <!-- Owner filter -->
+      <mat-form-field appearance="outline" class="text-filter">
+        <mat-label>{{ 'dashboard.ownerFilter' | transloco }}</mat-label>
+        <input
+          matInput
+          [value]="filters.owner"
+          (input)="onOwnerFilterChange($any($event.target).value)"
+          [placeholder]="'dashboard.ownerPlaceholder' | transloco"
+        />
+      </mat-form-field>
+
+      <!-- Issue URI filter -->
+      <mat-form-field appearance="outline" class="text-filter">
+        <mat-label>{{ 'dashboard.issueUriFilter' | transloco }}</mat-label>
+        <input
+          matInput
+          [value]="filters.issueUri"
+          (input)="onIssueUriFilterChange($any($event.target).value)"
+          [placeholder]="'dashboard.issueUriPlaceholder' | transloco"
+        />
+      </mat-form-field>
+
+      <!-- Created date range -->
+      <mat-form-field appearance="outline" class="date-filter">
+        <mat-label>{{ 'dashboard.createdAfter' | transloco }}</mat-label>
+        <input
+          matInput
+          [matDatepicker]="createdAfterPicker"
+          [value]="filters.createdAfter"
+          (dateChange)="
+            filters.createdAfter = $event.value?.toISOString() ?? null; onServerFilterChange()
+          "
+        />
+        <mat-datepicker-toggle matSuffix [for]="createdAfterPicker"></mat-datepicker-toggle>
+        <mat-datepicker #createdAfterPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="date-filter">
+        <mat-label>{{ 'dashboard.createdBefore' | transloco }}</mat-label>
+        <input
+          matInput
+          [matDatepicker]="createdBeforePicker"
+          [value]="filters.createdBefore"
+          (dateChange)="
+            filters.createdBefore = $event.value?.toISOString() ?? null; onServerFilterChange()
+          "
+        />
+        <mat-datepicker-toggle matSuffix [for]="createdBeforePicker"></mat-datepicker-toggle>
+        <mat-datepicker #createdBeforePicker></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Modified date range -->
+      <mat-form-field appearance="outline" class="date-filter">
+        <mat-label>{{ 'dashboard.modifiedAfter' | transloco }}</mat-label>
+        <input
+          matInput
+          [matDatepicker]="modifiedAfterPicker"
+          [value]="filters.modifiedAfter"
+          (dateChange)="
+            filters.modifiedAfter = $event.value?.toISOString() ?? null; onServerFilterChange()
+          "
+        />
+        <mat-datepicker-toggle matSuffix [for]="modifiedAfterPicker"></mat-datepicker-toggle>
+        <mat-datepicker #modifiedAfterPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="date-filter">
+        <mat-label>{{ 'dashboard.modifiedBefore' | transloco }}</mat-label>
+        <input
+          matInput
+          [matDatepicker]="modifiedBeforePicker"
+          [value]="filters.modifiedBefore"
+          (dateChange)="
+            filters.modifiedBefore = $event.value?.toISOString() ?? null; onServerFilterChange()
+          "
+        />
+        <mat-datepicker-toggle matSuffix [for]="modifiedBeforePicker"></mat-datepicker-toggle>
+        <mat-datepicker #modifiedBeforePicker></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Status Updated date range -->
+      <mat-form-field appearance="outline" class="date-filter">
+        <mat-label>{{ 'dashboard.statusUpdatedAfter' | transloco }}</mat-label>
+        <input
+          matInput
+          [matDatepicker]="statusUpdatedAfterPicker"
+          [value]="filters.statusUpdatedAfter"
+          (dateChange)="
+            filters.statusUpdatedAfter = $event.value?.toISOString() ?? null; onServerFilterChange()
+          "
+        />
+        <mat-datepicker-toggle matSuffix [for]="statusUpdatedAfterPicker"></mat-datepicker-toggle>
+        <mat-datepicker #statusUpdatedAfterPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="date-filter">
+        <mat-label>{{ 'dashboard.statusUpdatedBefore' | transloco }}</mat-label>
+        <input
+          matInput
+          [matDatepicker]="statusUpdatedBeforePicker"
+          [value]="filters.statusUpdatedBefore"
+          (dateChange)="
+            filters.statusUpdatedBefore = $event.value?.toISOString() ?? null;
+            onServerFilterChange()
+          "
+        />
+        <mat-datepicker-toggle matSuffix [for]="statusUpdatedBeforePicker"></mat-datepicker-toggle>
+        <mat-datepicker #statusUpdatedBeforePicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+  }
 
   <div class="threat-models-list">
     @if (isLoadingThreatModels) {
@@ -390,8 +573,8 @@
       </div>
     }
 
-    <!-- Empty state: no threat models at all -->
-    @if (!isLoadingThreatModels && threatModels.length === 0) {
+    <!-- Empty state: no threat models at all (no filters active) -->
+    @if (!isLoadingThreatModels && threatModels.length === 0 && !hasAnyFilterOrSearch) {
       <div class="no-threat-models">
         <mat-icon class="empty-icon">sentiment_dissatisfied</mat-icon>
         <p [transloco]="'threatModels.noItemsMessage'">You don't have any threat models yet.</p>
@@ -401,13 +584,19 @@
       </div>
     }
 
-    <!-- Empty state: no matching threat models after filtering -->
-    @if (!isLoadingThreatModels && threatModels.length > 0 && filteredThreatModels.length === 0) {
+    <!-- Empty state: no matching threat models (filters or search active) -->
+    @if (
+      !isLoadingThreatModels &&
+      (threatModels.length === 0 || filteredThreatModels.length === 0) &&
+      hasAnyFilterOrSearch
+    ) {
       <div class="no-threat-models">
         <mat-icon class="empty-icon">search_off</mat-icon>
-        <p [transloco]="'dashboard.noMatchingThreatModels'">No threat models match your filter.</p>
-        <button mat-button (click)="clearFilter()">
-          {{ 'dashboard.clearFilter' | transloco }}
+        <p [transloco]="'dashboard.noMatchingThreatModels'">
+          No threat models match your search or filters.
+        </p>
+        <button mat-button (click)="clearAllFilters()">
+          {{ 'dashboard.clearAllFilters' | transloco }}
         </button>
       </div>
     }
