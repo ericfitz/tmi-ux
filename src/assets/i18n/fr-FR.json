@@ -842,6 +842,53 @@
       "view": "Voir la Note"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "Se connecter"
+    },
+    "operationError": "Échec de {{operation}} : {{errorMessage}}",
+    "operationFailed": "Opération échouée",
+    "operations": {
+      "collaboration": "collaboration",
+      "denyPresenterRequest": "refuser la demande de présentateur",
+      "sendPresenterRequest": "envoyer la demande de présentateur",
+      "startCollaboration": "démarrer la collaboration",
+      "updatePresenter": "mettre à jour le présentateur"
+    },
+    "presenter": {
+      "assigned": "{{user}} est maintenant le présentateur",
+      "assignedYou": "Vous êtes maintenant le présentateur",
+      "cleared": "Le mode présentateur a été désactivé",
+      "cursorMoved": "Le curseur du présentateur a bougé",
+      "modeChanged": "Le mode présentateur a changé",
+      "privilegesRequested": "Privilèges de présentateur demandés",
+      "removed": "{{user}} n'est plus le présentateur",
+      "removedYou": "Vous n'êtes plus le présentateur",
+      "requestDenied": "Votre demande de présentateur a été refusée",
+      "requestSent": "Demande de présentateur envoyée au propriétaire de la session",
+      "requesting": "{{user}} demande les privilèges de présentateur",
+      "selectionChanged": "La sélection du présentateur a changé"
+    },
+    "session": {
+      "disconnected": "Déconnecté de la session de collaboration",
+      "reconnected": "Reconnecté à la session de collaboration",
+      "reconnecting": "Reconnexion à la session de collaboration...",
+      "userRemoved": "{{user}} a été retiré de la session",
+      "youWereRemoved": "Vous avez été retiré de la session de collaboration"
+    },
+    "unknownError": "Erreur inconnue",
+    "websocket": {
+      "authenticationFailed": "Échec de l'authentification. Veuillez vous reconnecter.",
+      "communicationError": "Erreur de communication avec le serveur. Certaines mises à jour pourraient ne pas être synchronisées.",
+      "connectionError": "Erreur de connexion. Travail en mode hors ligne.",
+      "connectionFailed": "Échec de la connexion au serveur de collaboration.",
+      "connectionTimeout": "Délai de connexion dépassé. Le serveur est peut-être surchargé.",
+      "disconnected": "Déconnecté du serveur de collaboration. Les modifications seront enregistrées localement.",
+      "messageSendFailed": "Échec de l'envoi du message. Vos modifications pourraient ne pas être synchronisées.",
+      "multipleFailed": "Échec de connexion après plusieurs tentatives. Travail en mode hors ligne.",
+      "unknownError": "Erreur WebSocket inconnue survenue"
+    }
+  },
   "pagination": {
     "ariaLabel": "Sélectionner la page des éléments",
     "firstPage": "Première page",

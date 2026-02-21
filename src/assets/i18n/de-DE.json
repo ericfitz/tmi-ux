@@ -842,6 +842,53 @@
       "view": "Notiz anzeigen"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "Anmelden"
+    },
+    "operationError": "{{operation}} fehlgeschlagen: {{errorMessage}}",
+    "operationFailed": "Vorgang fehlgeschlagen",
+    "operations": {
+      "collaboration": "Zusammenarbeit",
+      "denyPresenterRequest": "Präsentator-Anfrage ablehnen",
+      "sendPresenterRequest": "Präsentator-Anfrage senden",
+      "startCollaboration": "Zusammenarbeit starten",
+      "updatePresenter": "Präsentator aktualisieren"
+    },
+    "presenter": {
+      "assigned": "{{user}} ist jetzt Präsentator",
+      "assignedYou": "Sie sind jetzt Präsentator",
+      "cleared": "Präsentatormodus wurde aufgehoben",
+      "cursorMoved": "Präsentator-Cursor bewegt",
+      "modeChanged": "Präsentatormodus geändert",
+      "privilegesRequested": "Präsentator-Berechtigungen angefordert",
+      "removed": "{{user}} ist nicht mehr Präsentator",
+      "removedYou": "Sie sind nicht mehr Präsentator",
+      "requestDenied": "Ihre Präsentator-Anfrage wurde abgelehnt",
+      "requestSent": "Präsentator-Anfrage an Sitzungsinhaber gesendet",
+      "requesting": "{{user}} fordert Präsentator-Berechtigungen an",
+      "selectionChanged": "Präsentator-Auswahl geändert"
+    },
+    "session": {
+      "disconnected": "Verbindung zur Zusammenarbeitssitzung getrennt",
+      "reconnected": "Wieder mit Zusammenarbeitssitzung verbunden",
+      "reconnecting": "Verbindung zur Zusammenarbeitssitzung wird wiederhergestellt...",
+      "userRemoved": "{{user}} wurde aus der Sitzung entfernt",
+      "youWereRemoved": "Sie wurden aus der Zusammenarbeitssitzung entfernt"
+    },
+    "unknownError": "Unbekannter Fehler",
+    "websocket": {
+      "authenticationFailed": "Authentifizierung fehlgeschlagen. Bitte melden Sie sich erneut an.",
+      "communicationError": "Kommunikationsfehler mit dem Server. Einige Aktualisierungen werden möglicherweise nicht synchronisiert.",
+      "connectionError": "Verbindungsfehler. Arbeit im Offlinemodus.",
+      "connectionFailed": "Verbindung zum Zusammenarbeitsserver fehlgeschlagen.",
+      "connectionTimeout": "Zeitüberschreitung der Verbindung. Der Server ist möglicherweise überlastet.",
+      "disconnected": "Verbindung zum Zusammenarbeitsserver getrennt. Änderungen werden lokal gespeichert.",
+      "messageSendFailed": "Nachricht konnte nicht gesendet werden. Ihre Änderungen werden möglicherweise nicht synchronisiert.",
+      "multipleFailed": "Verbindung nach mehreren Versuchen fehlgeschlagen. Arbeit im Offlinemodus.",
+      "unknownError": "Unbekannter WebSocket-Fehler aufgetreten"
+    }
+  },
   "pagination": {
     "ariaLabel": "Seite mit Einträgen auswählen",
     "firstPage": "Erste Seite",

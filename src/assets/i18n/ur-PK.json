@@ -842,6 +842,53 @@
       "view": "نوٹ دیکھیں"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "لاگ ان"
+    },
+    "operationError": "{{operation}} ناکام: {{errorMessage}}",
+    "operationFailed": "آپریشن ناکام ہو گیا",
+    "operations": {
+      "collaboration": "تعاون",
+      "denyPresenterRequest": "پریزینٹر کی درخواست مسترد کریں",
+      "sendPresenterRequest": "پریزینٹر کی درخواست بھیجیں",
+      "startCollaboration": "تعاون شروع کریں",
+      "updatePresenter": "پریزینٹر کو اپ ڈیٹ کریں"
+    },
+    "presenter": {
+      "assigned": "{{user}} اب پریزینٹر ہے",
+      "assignedYou": "اب آپ پریزینٹر ہیں",
+      "cleared": "پریزینٹر موڈ ختم کر دیا گیا ہے",
+      "cursorMoved": "پریزینٹر کا کرسر منتقل ہوا",
+      "modeChanged": "پریزینٹر موڈ تبدیل ہو گیا",
+      "privilegesRequested": "پریزینٹر کے مراعات کی درخواست کی گئی",
+      "removed": "{{user}} اب پریزینٹر نہیں ہے",
+      "removedYou": "آپ اب پریزینٹر نہیں ہیں",
+      "requestDenied": "آپ کی پریزینٹر کی درخواست مسترد کر دی گئی",
+      "requestSent": "پریزینٹر کی درخواست سیشن کے مالک کو بھیج دی گئی",
+      "requesting": "{{user}} پریزینٹر کے مراعات کی درخواست کر رہا ہے",
+      "selectionChanged": "پریزینٹر کا انتخاب تبدیل ہو گیا"
+    },
+    "session": {
+      "disconnected": "تعاون کے سیشن سے منقطع ہو گیا",
+      "reconnected": "تعاون کے سیشن سے دوبارہ جڑ گیا",
+      "reconnecting": "تعاون کے سیشن سے دوبارہ جڑ رہا ہے...",
+      "userRemoved": "{{user}} کو سیشن سے ہٹا دیا گیا",
+      "youWereRemoved": "آپ کو تعاون کے سیشن سے ہٹا دیا گیا ہے"
+    },
+    "unknownError": "نامعلوم خرابی",
+    "websocket": {
+      "authenticationFailed": "توثیق ناکام ہو گئی۔ براہ کرم دوبارہ لاگ ان کریں۔",
+      "communicationError": "سرور سے مواصلاتی خرابی۔ کچھ اپ ڈیٹس سنک نہیں ہو سکتیں۔",
+      "connectionError": "کنکشن میں خرابی۔ آف لائن موڈ میں کام ہو رہا ہے۔",
+      "connectionFailed": "تعاون کے سرور سے جڑنے میں ناکامی۔",
+      "connectionTimeout": "کنکشن کا وقت ختم ہو گیا۔ سرور پر زیادہ بوجھ ہو سکتا ہے۔",
+      "disconnected": "تعاون کے سرور سے منقطع ہو گیا۔ تبدیلیاں مقامی طور پر محفوظ ہوں گی۔",
+      "messageSendFailed": "پیغام بھیجنے میں ناکامی۔ آپ کی تبدیلیاں سنک نہیں ہو سکتیں۔",
+      "multipleFailed": "متعدد کوششوں کے بعد کنکشن ناکام ہو گیا۔ آف لائن موڈ میں کام ہو رہا ہے۔",
+      "unknownError": "نامعلوم WebSocket خرابی واقع ہوئی"
+    }
+  },
   "pagination": {
     "ariaLabel": "آئٹمز کا صفحہ منتخب کریں",
     "firstPage": "پہلا صفحہ",

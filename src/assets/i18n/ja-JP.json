@@ -842,6 +842,53 @@
       "view": "ノートを表示"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "ログイン"
+    },
+    "operationError": "{{operation}}に失敗しました: {{errorMessage}}",
+    "operationFailed": "操作に失敗しました",
+    "operations": {
+      "collaboration": "コラボレーション",
+      "denyPresenterRequest": "プレゼンターリクエストの拒否",
+      "sendPresenterRequest": "プレゼンターリクエストの送信",
+      "startCollaboration": "コラボレーションの開始",
+      "updatePresenter": "プレゼンターの更新"
+    },
+    "presenter": {
+      "assigned": "{{user}}がプレゼンターになりました",
+      "assignedYou": "あなたがプレゼンターになりました",
+      "cleared": "プレゼンターモードが解除されました",
+      "cursorMoved": "プレゼンターのカーソルが移動しました",
+      "modeChanged": "プレゼンターモードが変更されました",
+      "privilegesRequested": "プレゼンター権限がリクエストされました",
+      "removed": "{{user}}はプレゼンターではなくなりました",
+      "removedYou": "あなたはプレゼンターではなくなりました",
+      "requestDenied": "プレゼンターリクエストが拒否されました",
+      "requestSent": "プレゼンターリクエストをセッションオーナーに送信しました",
+      "requesting": "{{user}}がプレゼンター権限をリクエストしています",
+      "selectionChanged": "プレゼンターの選択が変更されました"
+    },
+    "session": {
+      "disconnected": "コラボレーションセッションから切断されました",
+      "reconnected": "コラボレーションセッションに再接続しました",
+      "reconnecting": "コラボレーションセッションに再接続中...",
+      "userRemoved": "{{user}}がセッションから削除されました",
+      "youWereRemoved": "コラボレーションセッションから削除されました"
+    },
+    "unknownError": "不明なエラー",
+    "websocket": {
+      "authenticationFailed": "認証に失敗しました。再度ログインしてください。",
+      "communicationError": "サーバーとの通信エラーが発生しました。一部の更新が同期されない場合があります。",
+      "connectionError": "接続エラー。オフラインモードで動作しています。",
+      "connectionFailed": "コラボレーションサーバーへの接続に失敗しました。",
+      "connectionTimeout": "接続がタイムアウトしました。サーバーが過負荷の可能性があります。",
+      "disconnected": "コラボレーションサーバーから切断されました。変更はローカルに保存されます。",
+      "messageSendFailed": "メッセージの送信に失敗しました。変更が同期されない場合があります。",
+      "multipleFailed": "複数回の試行後に接続に失敗しました。オフラインモードで動作しています。",
+      "unknownError": "不明なWebSocketエラーが発生しました"
+    }
+  },
   "pagination": {
     "ariaLabel": "アイテムのページを選択",
     "firstPage": "最初のページ",

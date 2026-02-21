@@ -842,6 +842,53 @@
       "view": "查看笔记"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "登录"
+    },
+    "operationError": "{{operation}}失败：{{errorMessage}}",
+    "operationFailed": "操作失败",
+    "operations": {
+      "collaboration": "协作",
+      "denyPresenterRequest": "拒绝演示者请求",
+      "sendPresenterRequest": "发送演示者请求",
+      "startCollaboration": "开始协作",
+      "updatePresenter": "更新演示者"
+    },
+    "presenter": {
+      "assigned": "{{user}} 现在是演示者",
+      "assignedYou": "您现在是演示者",
+      "cleared": "演示者模式已清除",
+      "cursorMoved": "演示者光标已移动",
+      "modeChanged": "演示者模式已更改",
+      "privilegesRequested": "已请求演示者权限",
+      "removed": "{{user}} 不再是演示者",
+      "removedYou": "您不再是演示者",
+      "requestDenied": "您的演示者请求已被拒绝",
+      "requestSent": "演示者请求已发送给会话所有者",
+      "requesting": "{{user}} 正在请求演示者权限",
+      "selectionChanged": "演示者选择已更改"
+    },
+    "session": {
+      "disconnected": "已从协作会话断开连接",
+      "reconnected": "已重新连接到协作会话",
+      "reconnecting": "正在重新连接到协作会话...",
+      "userRemoved": "{{user}} 已被移出会话",
+      "youWereRemoved": "您已被移出协作会话"
+    },
+    "unknownError": "未知错误",
+    "websocket": {
+      "authenticationFailed": "身份验证失败，请重新登录。",
+      "communicationError": "与服务器通信出错，部分更新可能无法同步。",
+      "connectionError": "连接错误，正在离线模式下工作。",
+      "connectionFailed": "无法连接到协作服务器。",
+      "connectionTimeout": "连接超时，服务器可能负载过高。",
+      "disconnected": "已从协作服务器断开连接，更改将保存在本地。",
+      "messageSendFailed": "消息发送失败，您的更改可能无法同步。",
+      "multipleFailed": "多次尝试后连接失败，正在离线模式下工作。",
+      "unknownError": "发生未知的 WebSocket 错误"
+    }
+  },
   "pagination": {
     "ariaLabel": "选择项目页面",
     "firstPage": "第一页",

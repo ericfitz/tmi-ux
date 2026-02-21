@@ -842,6 +842,53 @@
       "view": "노트 보기"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "로그인"
+    },
+    "operationError": "{{operation}} 실패: {{errorMessage}}",
+    "operationFailed": "작업 실패",
+    "operations": {
+      "collaboration": "협업",
+      "denyPresenterRequest": "발표자 요청 거부",
+      "sendPresenterRequest": "발표자 요청 전송",
+      "startCollaboration": "협업 시작",
+      "updatePresenter": "발표자 업데이트"
+    },
+    "presenter": {
+      "assigned": "{{user}}님이 발표자가 되었습니다",
+      "assignedYou": "이제 발표자입니다",
+      "cleared": "발표자 모드가 해제되었습니다",
+      "cursorMoved": "발표자 커서가 이동했습니다",
+      "modeChanged": "발표자 모드가 변경되었습니다",
+      "privilegesRequested": "발표자 권한이 요청되었습니다",
+      "removed": "{{user}}님이 더 이상 발표자가 아닙니다",
+      "removedYou": "더 이상 발표자가 아닙니다",
+      "requestDenied": "발표자 요청이 거부되었습니다",
+      "requestSent": "세션 소유자에게 발표자 요청을 보냈습니다",
+      "requesting": "{{user}}님이 발표자 권한을 요청하고 있습니다",
+      "selectionChanged": "발표자 선택이 변경되었습니다"
+    },
+    "session": {
+      "disconnected": "협업 세션에서 연결이 끊겼습니다",
+      "reconnected": "협업 세션에 다시 연결되었습니다",
+      "reconnecting": "협업 세션에 다시 연결 중...",
+      "userRemoved": "{{user}}님이 세션에서 제거되었습니다",
+      "youWereRemoved": "협업 세션에서 제거되었습니다"
+    },
+    "unknownError": "알 수 없는 오류",
+    "websocket": {
+      "authenticationFailed": "인증에 실패했습니다. 다시 로그인해 주세요.",
+      "communicationError": "서버와의 통신 오류입니다. 일부 업데이트가 동기화되지 않을 수 있습니다.",
+      "connectionError": "연결 오류입니다. 오프라인 모드로 작동합니다.",
+      "connectionFailed": "협업 서버에 연결하지 못했습니다.",
+      "connectionTimeout": "연결 시간이 초과되었습니다. 서버가 과부하 상태일 수 있습니다.",
+      "disconnected": "협업 서버에서 연결이 끊겼습니다. 변경 사항은 로컬에 저장됩니다.",
+      "messageSendFailed": "메시지 전송에 실패했습니다. 변경 사항이 동기화되지 않을 수 있습니다.",
+      "multipleFailed": "여러 번 시도 후 연결에 실패했습니다. 오프라인 모드로 작동합니다.",
+      "unknownError": "알 수 없는 WebSocket 오류가 발생했습니다"
+    }
+  },
   "pagination": {
     "ariaLabel": "항목 페이지 선택",
     "firstPage": "첫 페이지",

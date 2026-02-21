@@ -842,6 +842,53 @@
       "view": "Visualizar Nota"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "Entrar"
+    },
+    "operationError": "Falha ao {{operation}}: {{errorMessage}}",
+    "operationFailed": "Operação falhou",
+    "operations": {
+      "collaboration": "colaboração",
+      "denyPresenterRequest": "negar solicitação de apresentador",
+      "sendPresenterRequest": "enviar solicitação de apresentador",
+      "startCollaboration": "iniciar colaboração",
+      "updatePresenter": "atualizar apresentador"
+    },
+    "presenter": {
+      "assigned": "{{user}} agora é o apresentador",
+      "assignedYou": "Você agora é o apresentador",
+      "cleared": "O modo de apresentador foi desativado",
+      "cursorMoved": "Cursor do apresentador movido",
+      "modeChanged": "Modo de apresentador alterado",
+      "privilegesRequested": "Privilégios de apresentador solicitados",
+      "removed": "{{user}} não é mais o apresentador",
+      "removedYou": "Você não é mais o apresentador",
+      "requestDenied": "Sua solicitação de apresentador foi negada",
+      "requestSent": "Solicitação de apresentador enviada ao proprietário da sessão",
+      "requesting": "{{user}} está solicitando privilégios de apresentador",
+      "selectionChanged": "Seleção do apresentador alterada"
+    },
+    "session": {
+      "disconnected": "Desconectado da sessão de colaboração",
+      "reconnected": "Reconectado à sessão de colaboração",
+      "reconnecting": "Reconectando à sessão de colaboração...",
+      "userRemoved": "{{user}} foi removido da sessão",
+      "youWereRemoved": "Você foi removido da sessão de colaboração"
+    },
+    "unknownError": "Erro desconhecido",
+    "websocket": {
+      "authenticationFailed": "Falha na autenticação. Faça login novamente.",
+      "communicationError": "Erro de comunicação com o servidor. Algumas atualizações podem não sincronizar.",
+      "connectionError": "Erro de conexão. Trabalhando no modo offline.",
+      "connectionFailed": "Falha ao conectar ao servidor de colaboração.",
+      "connectionTimeout": "Tempo de conexão esgotado. O servidor pode estar sobrecarregado.",
+      "disconnected": "Desconectado do servidor de colaboração. As alterações serão salvas localmente.",
+      "messageSendFailed": "Falha ao enviar mensagem. Suas alterações podem não ser sincronizadas.",
+      "multipleFailed": "Conexão falhou após várias tentativas. Trabalhando no modo offline.",
+      "unknownError": "Ocorreu um erro desconhecido de WebSocket"
+    }
+  },
   "pagination": {
     "ariaLabel": "Selecionar página de itens",
     "firstPage": "Primeira página",

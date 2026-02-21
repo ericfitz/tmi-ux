@@ -842,6 +842,53 @@
       "view": "नोट देखें"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "लॉगिन"
+    },
+    "operationError": "{{operation}} विफल: {{errorMessage}}",
+    "operationFailed": "कार्रवाई विफल रही",
+    "operations": {
+      "collaboration": "सहयोग",
+      "denyPresenterRequest": "प्रस्तुतकर्ता अनुरोध अस्वीकार करना",
+      "sendPresenterRequest": "प्रस्तुतकर्ता अनुरोध भेजना",
+      "startCollaboration": "सहयोग शुरू करना",
+      "updatePresenter": "प्रस्तुतकर्ता अपडेट करना"
+    },
+    "presenter": {
+      "assigned": "{{user}} अब प्रस्तुतकर्ता हैं",
+      "assignedYou": "अब आप प्रस्तुतकर्ता हैं",
+      "cleared": "प्रस्तुतकर्ता मोड हटा दिया गया",
+      "cursorMoved": "प्रस्तुतकर्ता का कर्सर हिला",
+      "modeChanged": "प्रस्तुतकर्ता मोड बदला गया",
+      "privilegesRequested": "प्रस्तुतकर्ता अधिकार का अनुरोध किया गया",
+      "removed": "{{user}} अब प्रस्तुतकर्ता नहीं हैं",
+      "removedYou": "अब आप प्रस्तुतकर्ता नहीं हैं",
+      "requestDenied": "आपका प्रस्तुतकर्ता अनुरोध अस्वीकार कर दिया गया",
+      "requestSent": "प्रस्तुतकर्ता अनुरोध सत्र स्वामी को भेजा गया",
+      "requesting": "{{user}} प्रस्तुतकर्ता अधिकार का अनुरोध कर रहे हैं",
+      "selectionChanged": "प्रस्तुतकर्ता का चयन बदला गया"
+    },
+    "session": {
+      "disconnected": "सहयोग सत्र से डिस्कनेक्ट हो गए",
+      "reconnected": "सहयोग सत्र से पुनः कनेक्ट हो गए",
+      "reconnecting": "सहयोग सत्र से पुनः कनेक्ट हो रहा है...",
+      "userRemoved": "{{user}} को सत्र से हटा दिया गया",
+      "youWereRemoved": "आपको सहयोग सत्र से हटा दिया गया है"
+    },
+    "unknownError": "अज्ञात त्रुटि",
+    "websocket": {
+      "authenticationFailed": "प्रमाणीकरण विफल। कृपया पुनः लॉगिन करें।",
+      "communicationError": "सर्वर से संचार त्रुटि। कुछ अपडेट सिंक नहीं हो सकते।",
+      "connectionError": "कनेक्शन त्रुटि। ऑफ़लाइन मोड में कार्य कर रहे हैं।",
+      "connectionFailed": "सहयोग सर्वर से कनेक्ट करने में विफल।",
+      "connectionTimeout": "कनेक्शन टाइमआउट। सर्वर पर अधिक लोड हो सकता है।",
+      "disconnected": "सहयोग सर्वर से डिस्कनेक्ट हो गए। परिवर्तन स्थानीय रूप से सहेजे जाएंगे।",
+      "messageSendFailed": "संदेश भेजने में विफल। आपके परिवर्तन सिंक नहीं हो सकते।",
+      "multipleFailed": "कई प्रयासों के बाद कनेक्शन विफल। ऑफ़लाइन मोड में कार्य कर रहे हैं।",
+      "unknownError": "अज्ञात WebSocket त्रुटि हुई"
+    }
+  },
   "pagination": {
     "ariaLabel": "आइटम का पेज चुनें",
     "firstPage": "पहला पेज",

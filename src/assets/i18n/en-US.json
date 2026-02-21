@@ -864,6 +864,53 @@
       "view": "View Note"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "Login"
+    },
+    "operationError": "Failed to {{operation}}: {{errorMessage}}",
+    "operationFailed": "Operation failed",
+    "operations": {
+      "collaboration": "collaboration",
+      "denyPresenterRequest": "deny presenter request",
+      "sendPresenterRequest": "send presenter request",
+      "startCollaboration": "start collaboration",
+      "updatePresenter": "update presenter"
+    },
+    "presenter": {
+      "assigned": "{{user}} is now the presenter",
+      "assignedYou": "You are now the presenter",
+      "cleared": "Presenter mode has been cleared",
+      "cursorMoved": "Presenter cursor moved",
+      "modeChanged": "Presenter mode changed",
+      "privilegesRequested": "Presenter privileges requested",
+      "removed": "{{user}} is no longer the presenter",
+      "removedYou": "You are no longer the presenter",
+      "requestDenied": "Your presenter request was denied",
+      "requestSent": "Presenter request sent to session owner",
+      "requesting": "{{user}} is requesting presenter privileges",
+      "selectionChanged": "Presenter selection changed"
+    },
+    "session": {
+      "disconnected": "Disconnected from collaboration session",
+      "reconnected": "Reconnected to collaboration session",
+      "reconnecting": "Reconnecting to collaboration session...",
+      "userRemoved": "{{user}} was removed from the session",
+      "youWereRemoved": "You have been removed from the collaboration session"
+    },
+    "unknownError": "Unknown error",
+    "websocket": {
+      "authenticationFailed": "Authentication failed. Please log in again.",
+      "communicationError": "Communication error with server. Some updates may not sync.",
+      "connectionError": "Connection error. Working in offline mode.",
+      "connectionFailed": "Failed to connect to collaboration server.",
+      "connectionTimeout": "Connection timeout. The server may be overloaded.",
+      "disconnected": "Disconnected from collaboration server. Changes will be saved locally.",
+      "messageSendFailed": "Failed to send message. Your changes may not be synced.",
+      "multipleFailed": "Connection failed after multiple attempts. Working in offline mode.",
+      "unknownError": "Unknown WebSocket error occurred"
+    }
+  },
   "pagination": {
     "ariaLabel": "Select page of items",
     "firstPage": "First page",

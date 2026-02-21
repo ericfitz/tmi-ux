@@ -842,6 +842,53 @@
       "view": "عرض الملاحظة"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "تسجيل الدخول"
+    },
+    "operationError": "فشل في {{operation}}: {{errorMessage}}",
+    "operationFailed": "فشلت العملية",
+    "operations": {
+      "collaboration": "التعاون",
+      "denyPresenterRequest": "رفض طلب مقدم العرض",
+      "sendPresenterRequest": "إرسال طلب مقدم العرض",
+      "startCollaboration": "بدء التعاون",
+      "updatePresenter": "تحديث مقدم العرض"
+    },
+    "presenter": {
+      "assigned": "{{user}} هو مقدم العرض الآن",
+      "assignedYou": "أنت مقدم العرض الآن",
+      "cleared": "تم إلغاء وضع مقدم العرض",
+      "cursorMoved": "تحرك مؤشر مقدم العرض",
+      "modeChanged": "تغيّر وضع مقدم العرض",
+      "privilegesRequested": "تم طلب صلاحيات مقدم العرض",
+      "removed": "{{user}} لم يعد مقدم العرض",
+      "removedYou": "لم تعد مقدم العرض",
+      "requestDenied": "تم رفض طلب مقدم العرض الخاص بك",
+      "requestSent": "تم إرسال طلب مقدم العرض إلى مالك الجلسة",
+      "requesting": "{{user}} يطلب صلاحيات مقدم العرض",
+      "selectionChanged": "تغيّر تحديد مقدم العرض"
+    },
+    "session": {
+      "disconnected": "تم قطع الاتصال بجلسة التعاون",
+      "reconnected": "تمت إعادة الاتصال بجلسة التعاون",
+      "reconnecting": "جارٍ إعادة الاتصال بجلسة التعاون...",
+      "userRemoved": "تمت إزالة {{user}} من الجلسة",
+      "youWereRemoved": "تمت إزالتك من جلسة التعاون"
+    },
+    "unknownError": "خطأ غير معروف",
+    "websocket": {
+      "authenticationFailed": "فشلت المصادقة. يرجى تسجيل الدخول مرة أخرى.",
+      "communicationError": "خطأ في الاتصال بالخادم. قد لا تتم مزامنة بعض التحديثات.",
+      "connectionError": "خطأ في الاتصال. العمل في وضع عدم الاتصال.",
+      "connectionFailed": "فشل الاتصال بخادم التعاون.",
+      "connectionTimeout": "انتهت مهلة الاتصال. قد يكون الخادم محملاً بشكل زائد.",
+      "disconnected": "تم قطع الاتصال بخادم التعاون. سيتم حفظ التغييرات محلياً.",
+      "messageSendFailed": "فشل إرسال الرسالة. قد لا تتم مزامنة تغييراتك.",
+      "multipleFailed": "فشل الاتصال بعد عدة محاولات. العمل في وضع عدم الاتصال.",
+      "unknownError": "حدث خطأ غير معروف في WebSocket"
+    }
+  },
   "pagination": {
     "ariaLabel": "اختر صفحة العناصر",
     "firstPage": "الصفحة الأولى",

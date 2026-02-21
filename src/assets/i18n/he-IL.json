@@ -842,6 +842,53 @@
       "view": "צפה בהערה"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "התחברות"
+    },
+    "operationError": "{{operation}} נכשל: {{errorMessage}}",
+    "operationFailed": "הפעולה נכשלה",
+    "operations": {
+      "collaboration": "שיתוף פעולה",
+      "denyPresenterRequest": "דחיית בקשת מציג",
+      "sendPresenterRequest": "שליחת בקשת מציג",
+      "startCollaboration": "התחלת שיתוף פעולה",
+      "updatePresenter": "עדכון מציג"
+    },
+    "presenter": {
+      "assigned": "{{user}} הוא כעת המציג",
+      "assignedYou": "אתה כעת המציג",
+      "cleared": "מצב המציג נוקה",
+      "cursorMoved": "סמן המציג זז",
+      "modeChanged": "מצב המציג השתנה",
+      "privilegesRequested": "הרשאות מציג התבקשו",
+      "removed": "{{user}} כבר לא המציג",
+      "removedYou": "אינך עוד המציג",
+      "requestDenied": "בקשת המציג שלך נדחתה",
+      "requestSent": "בקשת מציג נשלחה לבעל הפגישה",
+      "requesting": "{{user}} מבקש הרשאות מציג",
+      "selectionChanged": "בחירת המציג השתנתה"
+    },
+    "session": {
+      "disconnected": "נותקת מפגישת שיתוף הפעולה",
+      "reconnected": "התחברת מחדש לפגישת שיתוף הפעולה",
+      "reconnecting": "מתחבר מחדש לפגישת שיתוף הפעולה...",
+      "userRemoved": "{{user}} הוסר מהפגישה",
+      "youWereRemoved": "הוסרת מפגישת שיתוף הפעולה"
+    },
+    "unknownError": "שגיאה לא ידועה",
+    "websocket": {
+      "authenticationFailed": "האימות נכשל. אנא התחבר שוב.",
+      "communicationError": "שגיאת תקשורת עם השרת. חלק מהעדכונים עלולים לא להסתנכרן.",
+      "connectionError": "שגיאת חיבור. עובד במצב לא מקוון.",
+      "connectionFailed": "החיבור לשרת שיתוף הפעולה נכשל.",
+      "connectionTimeout": "זמן החיבור פג. ייתכן שהשרת עמוס.",
+      "disconnected": "נותקת משרת שיתוף הפעולה. השינויים יישמרו מקומית.",
+      "messageSendFailed": "שליחת ההודעה נכשלה. ייתכן שהשינויים שלך לא יסתנכרנו.",
+      "multipleFailed": "החיבור נכשל לאחר מספר ניסיונות. עובד במצב לא מקוון.",
+      "unknownError": "אירעה שגיאת WebSocket לא ידועה"
+    }
+  },
   "pagination": {
     "ariaLabel": "בחר עמוד של פריטים",
     "firstPage": "עמוד ראשון",

@@ -842,6 +842,53 @@
       "view": "নোট দেখুন"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "লগইন"
+    },
+    "operationError": "{{operation}} ব্যর্থ হয়েছে: {{errorMessage}}",
+    "operationFailed": "অপারেশন ব্যর্থ হয়েছে",
+    "operations": {
+      "collaboration": "সহযোগিতা",
+      "denyPresenterRequest": "উপস্থাপকের অনুরোধ প্রত্যাখ্যান",
+      "sendPresenterRequest": "উপস্থাপকের অনুরোধ পাঠানো",
+      "startCollaboration": "সহযোগিতা শুরু",
+      "updatePresenter": "উপস্থাপক আপডেট"
+    },
+    "presenter": {
+      "assigned": "{{user}} এখন উপস্থাপক",
+      "assignedYou": "আপনি এখন উপস্থাপক",
+      "cleared": "উপস্থাপক মোড সাফ করা হয়েছে",
+      "cursorMoved": "উপস্থাপকের কার্সর সরেছে",
+      "modeChanged": "উপস্থাপক মোড পরিবর্তিত হয়েছে",
+      "privilegesRequested": "উপস্থাপকের অধিকার অনুরোধ করা হয়েছে",
+      "removed": "{{user}} আর উপস্থাপক নন",
+      "removedYou": "আপনি আর উপস্থাপক নন",
+      "requestDenied": "আপনার উপস্থাপকের অনুরোধ প্রত্যাখ্যান করা হয়েছে",
+      "requestSent": "সেশনের মালিকের কাছে উপস্থাপকের অনুরোধ পাঠানো হয়েছে",
+      "requesting": "{{user}} উপস্থাপকের অধিকার অনুরোধ করছেন",
+      "selectionChanged": "উপস্থাপকের নির্বাচন পরিবর্তিত হয়েছে"
+    },
+    "session": {
+      "disconnected": "সহযোগিতা সেশন থেকে সংযোগ বিচ্ছিন্ন হয়েছে",
+      "reconnected": "সহযোগিতা সেশনে পুনরায় সংযুক্ত হয়েছে",
+      "reconnecting": "সহযোগিতা সেশনে পুনরায় সংযোগ হচ্ছে...",
+      "userRemoved": "{{user}} সেশন থেকে সরানো হয়েছে",
+      "youWereRemoved": "আপনাকে সহযোগিতা সেশন থেকে সরানো হয়েছে"
+    },
+    "unknownError": "অজানা ত্রুটি",
+    "websocket": {
+      "authenticationFailed": "প্রমাণীকরণ ব্যর্থ হয়েছে। অনুগ্রহ করে আবার লগইন করুন।",
+      "communicationError": "সার্ভারের সাথে যোগাযোগে ত্রুটি। কিছু আপডেট সিঙ্ক নাও হতে পারে।",
+      "connectionError": "সংযোগে ত্রুটি। অফলাইন মোডে কাজ হচ্ছে।",
+      "connectionFailed": "সহযোগিতা সার্ভারে সংযোগ ব্যর্থ হয়েছে।",
+      "connectionTimeout": "সংযোগের সময়সীমা শেষ। সার্ভারে অতিরিক্ত লোড থাকতে পারে।",
+      "disconnected": "সহযোগিতা সার্ভার থেকে সংযোগ বিচ্ছিন্ন। পরিবর্তনগুলি স্থানীয়ভাবে সংরক্ষিত হবে।",
+      "messageSendFailed": "বার্তা পাঠাতে ব্যর্থ। আপনার পরিবর্তনগুলি সিঙ্ক নাও হতে পারে।",
+      "multipleFailed": "একাধিক প্রচেষ্টার পরে সংযোগ ব্যর্থ। অফলাইন মোডে কাজ হচ্ছে।",
+      "unknownError": "অজানা WebSocket ত্রুটি ঘটেছে"
+    }
+  },
   "pagination": {
     "ariaLabel": "আইটেমের পৃষ্ঠা নির্বাচন করুন",
     "firstPage": "প্রথম পৃষ্ঠা",

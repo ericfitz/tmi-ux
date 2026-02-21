@@ -842,6 +842,53 @@
       "view": "Lihat Catatan"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "Masuk"
+    },
+    "operationError": "Gagal {{operation}}: {{errorMessage}}",
+    "operationFailed": "Operasi gagal",
+    "operations": {
+      "collaboration": "kolaborasi",
+      "denyPresenterRequest": "menolak permintaan presenter",
+      "sendPresenterRequest": "mengirim permintaan presenter",
+      "startCollaboration": "memulai kolaborasi",
+      "updatePresenter": "memperbarui presenter"
+    },
+    "presenter": {
+      "assigned": "{{user}} sekarang menjadi presenter",
+      "assignedYou": "Anda sekarang menjadi presenter",
+      "cleared": "Mode presenter telah dihapus",
+      "cursorMoved": "Kursor presenter berpindah",
+      "modeChanged": "Mode presenter berubah",
+      "privilegesRequested": "Hak akses presenter diminta",
+      "removed": "{{user}} bukan lagi presenter",
+      "removedYou": "Anda bukan lagi presenter",
+      "requestDenied": "Permintaan presenter Anda ditolak",
+      "requestSent": "Permintaan presenter dikirim ke pemilik sesi",
+      "requesting": "{{user}} meminta hak akses presenter",
+      "selectionChanged": "Pilihan presenter berubah"
+    },
+    "session": {
+      "disconnected": "Terputus dari sesi kolaborasi",
+      "reconnected": "Terhubung kembali ke sesi kolaborasi",
+      "reconnecting": "Menghubungkan kembali ke sesi kolaborasi...",
+      "userRemoved": "{{user}} telah dihapus dari sesi",
+      "youWereRemoved": "Anda telah dihapus dari sesi kolaborasi"
+    },
+    "unknownError": "Kesalahan tidak diketahui",
+    "websocket": {
+      "authenticationFailed": "Autentikasi gagal. Silakan masuk kembali.",
+      "communicationError": "Kesalahan komunikasi dengan server. Beberapa pembaruan mungkin tidak tersinkronisasi.",
+      "connectionError": "Kesalahan koneksi. Bekerja dalam mode offline.",
+      "connectionFailed": "Gagal terhubung ke server kolaborasi.",
+      "connectionTimeout": "Waktu koneksi habis. Server mungkin kelebihan beban.",
+      "disconnected": "Terputus dari server kolaborasi. Perubahan akan disimpan secara lokal.",
+      "messageSendFailed": "Gagal mengirim pesan. Perubahan Anda mungkin tidak tersinkronisasi.",
+      "multipleFailed": "Koneksi gagal setelah beberapa percobaan. Bekerja dalam mode offline.",
+      "unknownError": "Terjadi kesalahan WebSocket yang tidak diketahui"
+    }
+  },
   "pagination": {
     "ariaLabel": "Pilih halaman item",
     "firstPage": "Halaman pertama",
