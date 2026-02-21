@@ -134,6 +134,19 @@ $dark-colorblind-theme: mat.define-theme(
   border-radius: 8px;
 }
 
+// Vertically center prefix/suffix icons in form fields.
+// The icon (display: inline-block from .material-symbols-outlined) sits inside
+// a prefix container with line-height: 0. This collapses the inline formatting
+// context, causing vertical-align: middle to misposition the icon. Switching the
+// icon to display: flex eliminates the inline layout and centers it properly.
+.mat-mdc-form-field-icon-prefix,
+.mat-mdc-form-field-icon-suffix {
+  > .mat-icon {
+    display: flex;
+    align-items: center;
+  }
+}
+
 // =============================================================================
 // CARD STYLING
 // =============================================================================
