@@ -106,11 +106,12 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
     });
 
     // Log the request with component-specific debug logging
-    this.logger.debugComponent('api', `${request.method} request to ${request.url}:`, {
-      url: request.url,
+    // Use urlWithParams to include query parameters serialized by HttpClient
+    this.logger.debugComponent('api', `${request.method} request to ${request.urlWithParams}:`, {
+      url: request.urlWithParams,
       headers: redactSensitiveData(headers, { isHeaderContext: true }),
       body: request.body ? redactSensitiveData(request.body) : undefined,
-      params: this.extractUrlParams(request.url),
+      params: this.extractUrlParams(request.urlWithParams),
     });
   }
 
