@@ -120,7 +120,23 @@
   margin-top: 0;
 
   mat-form-field {
-    border-radius: 0 0 4px 4px;
+    border-radius: 0 0 8px 8px;
+
+    ::ng-deep {
+      .mdc-notched-outline__leading {
+        border-top: none;
+        border-top-left-radius: 0;
+      }
+
+      .mdc-notched-outline__trailing {
+        border-top: none;
+        border-top-right-radius: 0;
+      }
+
+      .mdc-notched-outline__notch {
+        border-top: none;
+      }
+    }
   }
 }
 
@@ -198,10 +214,10 @@
 // Markdown preview styles (from note-editor-dialog)
 .markdown-preview-container {
   border: 1px solid var(--theme-divider);
-  border-radius: 0 0 4px 4px;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
   min-height: 400px;
   background-color: var(--theme-card);
-  margin-top: 8px;
 }
 
 .markdown-preview {

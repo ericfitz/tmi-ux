@@ -22,7 +22,7 @@
   padding: 8px;
   background-color: var(--theme-surface);
   border: 1px solid var(--theme-divider);
-  border-radius: 8px 4px 0 0;
+  border-radius: 8px 8px 0 0;
   margin-bottom: -1px;
 
   .toolbar-left {
@@ -83,10 +83,31 @@
   font-family: 'Roboto Mono', monospace !important;
 }
 
+// Merge content form field with toolbar above — remove top border, flatten top corners
+.markdown-toolbar ~ mat-form-field {
+  border-radius: 0 0 8px 8px;
+
+  ::ng-deep {
+    .mdc-notched-outline__leading {
+      border-top: none;
+      border-top-left-radius: 0;
+    }
+
+    .mdc-notched-outline__trailing {
+      border-top: none;
+      border-top-right-radius: 0;
+    }
+
+    .mdc-notched-outline__notch {
+      border-top: none;
+    }
+  }
+}
+
 .markdown-preview-container {
   border: 1px solid var(--theme-divider);
   border-top: none;
-  border-radius: 0 0 4px 4px;
+  border-radius: 0 0 8px 8px;
   min-height: 300px;
   background-color: var(--theme-card);
 }
