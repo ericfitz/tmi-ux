@@ -147,7 +147,7 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private loadSurveys(): void {
     this.surveyService
-      .listAdmin()
+      .listActive()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: response => {
