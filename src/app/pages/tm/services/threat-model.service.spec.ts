@@ -406,10 +406,10 @@ describe('ThreatModelService', () => {
 
     it('should update threat model metadata via API', waitForAsync(() => {
       const metadata = [{ key: 'updated-key', value: 'updated-value' }];
-      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+      vi.spyOn(apiService, 'put').mockReturnValue(of(metadata));
 
       service.updateThreatModelMetadata(testThreatModel1.id, metadata).subscribe(result => {
-        expect(apiService.post).toHaveBeenCalledWith(
+        expect(apiService.put).toHaveBeenCalledWith(
           `threat_models/${testThreatModel1.id}/metadata/bulk`,
           metadata,
         );
@@ -433,10 +433,10 @@ describe('ThreatModelService', () => {
     it('should update diagram metadata via API', waitForAsync(() => {
       const metadata = [{ key: 'diagram-updated', value: 'diagram-updated-value' }];
       const diagramId = 'test-diagram-id';
-      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+      vi.spyOn(apiService, 'put').mockReturnValue(of(metadata));
 
       service.updateDiagramMetadata(testThreatModel1.id, diagramId, metadata).subscribe(result => {
-        expect(apiService.post).toHaveBeenCalledWith(
+        expect(apiService.put).toHaveBeenCalledWith(
           `threat_models/${testThreatModel1.id}/diagrams/${diagramId}/metadata/bulk`,
           metadata,
         );
@@ -460,10 +460,10 @@ describe('ThreatModelService', () => {
     it('should update threat metadata via API', waitForAsync(() => {
       const metadata = [{ key: 'threat-updated', value: 'threat-updated-value' }];
       const threatId = 'test-threat-id';
-      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+      vi.spyOn(apiService, 'put').mockReturnValue(of(metadata));
 
       service.updateThreatMetadata(testThreatModel1.id, threatId, metadata).subscribe(result => {
-        expect(apiService.post).toHaveBeenCalledWith(
+        expect(apiService.put).toHaveBeenCalledWith(
           `threat_models/${testThreatModel1.id}/threats/${threatId}/metadata/bulk`,
           metadata,
         );
@@ -487,12 +487,12 @@ describe('ThreatModelService', () => {
     it('should update document metadata via API', waitForAsync(() => {
       const metadata = [{ key: 'doc-updated', value: 'doc-updated-value' }];
       const documentId = 'test-doc-id';
-      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+      vi.spyOn(apiService, 'put').mockReturnValue(of(metadata));
 
       service
         .updateDocumentMetadata(testThreatModel1.id, documentId, metadata)
         .subscribe(result => {
-          expect(apiService.post).toHaveBeenCalledWith(
+          expect(apiService.put).toHaveBeenCalledWith(
             `threat_models/${testThreatModel1.id}/documents/${documentId}/metadata/bulk`,
             metadata,
           );
@@ -516,17 +516,57 @@ describe('ThreatModelService', () => {
     it('should update repository metadata via API', waitForAsync(() => {
       const metadata = [{ key: 'repository-updated', value: 'repository-updated-value' }];
       const repositoryId = 'test-repository-id';
-      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+      vi.spyOn(apiService, 'put').mockReturnValue(of(metadata));
 
       service
         .updateRepositoryMetadata(testThreatModel1.id, repositoryId, metadata)
         .subscribe(result => {
-          expect(apiService.post).toHaveBeenCalledWith(
+          expect(apiService.put).toHaveBeenCalledWith(
             `threat_models/${testThreatModel1.id}/repositories/${repositoryId}/metadata/bulk`,
             metadata,
           );
           expect(result).toEqual(metadata);
         });
+    }));
+
+    it('should update note metadata via API', waitForAsync(() => {
+      const metadata = [{ key: 'note-updated', value: 'note-updated-value' }];
+      const noteId = 'test-note-id';
+      vi.spyOn(apiService, 'put').mockReturnValue(of(metadata));
+
+      service.updateNoteMetadata(testThreatModel1.id, noteId, metadata).subscribe(result => {
+        expect(apiService.put).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/notes/${noteId}/metadata/bulk`,
+          metadata,
+        );
+        expect(result).toEqual(metadata);
+      });
+    }));
+
+    it('should update asset metadata via API', waitForAsync(() => {
+      const metadata = [{ key: 'asset-updated', value: 'asset-updated-value' }];
+      const assetId = 'test-asset-id';
+      vi.spyOn(apiService, 'put').mockReturnValue(of(metadata));
+
+      service.updateAssetMetadata(testThreatModel1.id, assetId, metadata).subscribe(result => {
+        expect(apiService.put).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/assets/${assetId}/metadata/bulk`,
+          metadata,
+        );
+        expect(result).toEqual(metadata);
+      });
+    }));
+
+    it('should send PUT with empty array to clear metadata', waitForAsync(() => {
+      vi.spyOn(apiService, 'put').mockReturnValue(of([]));
+
+      service.updateThreatModelMetadata(testThreatModel1.id, []).subscribe(result => {
+        expect(apiService.put).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/metadata/bulk`,
+          [],
+        );
+        expect(result).toEqual([]);
+      });
     }));
   });
 

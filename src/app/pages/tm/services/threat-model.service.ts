@@ -1281,20 +1281,10 @@ export class ThreatModelService implements OnDestroy {
    * Update metadata for a threat model
    */
   updateThreatModelMetadata(threatModelId: string, metadata: Metadata[]): Observable<Metadata[]> {
-    // If metadata is empty, skip the API call and return empty array
-    if (!metadata || metadata.length === 0) {
-      // this.logger.debugComponent(
-      // 'ThreatModelService',
-      // `Skipping metadata update for threat model ${threatModelId} - no valid metadata to save`,
-      // { threatModelId, metadataCount: metadata?.length || 0 },
-      // );
-      return of([]);
-    }
-
     return this.apiService
-      .post<
+      .put<
         Metadata[]
-      >(`threat_models/${threatModelId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for threat model ID: ${threatModelId}`, error);
@@ -1325,20 +1315,10 @@ export class ThreatModelService implements OnDestroy {
     diagramId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    // If metadata is empty, skip the API call and return empty array
-    if (!metadata || metadata.length === 0) {
-      // this.logger.debugComponent(
-      // 'ThreatModelService',
-      // `Skipping metadata update for diagram ${diagramId} - no valid metadata to save`,
-      // { threatModelId, diagramId, metadataCount: metadata?.length || 0 },
-      // );
-      return of([]);
-    }
-
     return this.apiService
-      .post<
+      .put<
         Metadata[]
-      >(`threat_models/${threatModelId}/diagrams/${diagramId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/diagrams/${diagramId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for diagram ID: ${diagramId}`, error);
@@ -1411,20 +1391,10 @@ export class ThreatModelService implements OnDestroy {
     threatId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    // If metadata is empty, skip the API call and return empty array
-    if (!metadata || metadata.length === 0) {
-      // this.logger.debugComponent(
-      // 'ThreatModelService',
-      // `Skipping metadata update for threat ${threatId} - no valid metadata to save`,
-      // { threatModelId, threatId, metadataCount: metadata?.length || 0 },
-      // );
-      return of([]);
-    }
-
     return this.apiService
-      .post<
+      .put<
         Metadata[]
-      >(`threat_models/${threatModelId}/threats/${threatId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/threats/${threatId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for threat ID: ${threatId}`, error);
@@ -1455,20 +1425,10 @@ export class ThreatModelService implements OnDestroy {
     documentId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    // If metadata is empty, skip the API call and return empty array
-    if (!metadata || metadata.length === 0) {
-      // this.logger.debugComponent(
-      // 'ThreatModelService',
-      // `Skipping metadata update for document ${documentId} - no valid metadata to save`,
-      // { threatModelId, documentId, metadataCount: metadata?.length || 0 },
-      // );
-      return of([]);
-    }
-
     return this.apiService
-      .post<
+      .put<
         Metadata[]
-      >(`threat_models/${threatModelId}/documents/${documentId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/documents/${documentId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for document ID: ${documentId}`, error);
@@ -1499,20 +1459,10 @@ export class ThreatModelService implements OnDestroy {
     repositoryId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    // If metadata is empty, skip the API call and return empty array
-    if (!metadata || metadata.length === 0) {
-      // this.logger.debugComponent(
-      // 'ThreatModelService',
-      // `Skipping metadata update for repository ${repositoryId} - no valid metadata to save`,
-      // { threatModelId, repositoryId, metadataCount: metadata?.length || 0 },
-      // );
-      return of([]);
-    }
-
     return this.apiService
-      .post<
+      .put<
         Metadata[]
-      >(`threat_models/${threatModelId}/repositories/${repositoryId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/repositories/${repositoryId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for repository ID: ${repositoryId}`, error);
@@ -1612,19 +1562,10 @@ export class ThreatModelService implements OnDestroy {
     noteId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    if (!metadata || metadata.length === 0) {
-      // this.logger.debugComponent(
-      // 'ThreatModelService',
-      // `Skipping metadata update for note ${noteId} - no valid metadata to save`,
-      // { threatModelId, noteId, metadataCount: metadata?.length || 0 },
-      // );
-      return of([]);
-    }
-
     return this.apiService
-      .post<
+      .put<
         Metadata[]
-      >(`threat_models/${threatModelId}/notes/${noteId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/notes/${noteId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for note ID: ${noteId}`, error);
@@ -1737,19 +1678,10 @@ export class ThreatModelService implements OnDestroy {
     assetId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    if (!metadata || metadata.length === 0) {
-      // this.logger.debugComponent(
-      // 'ThreatModelService',
-      // `Skipping metadata update for asset ${assetId} - no valid metadata to save`,
-      // { threatModelId, assetId, metadataCount: metadata?.length || 0 },
-      // );
-      return of([]);
-    }
-
     return this.apiService
-      .post<
+      .put<
         Metadata[]
-      >(`threat_models/${threatModelId}/assets/${assetId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/assets/${assetId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for asset ID: ${assetId}`, error);
