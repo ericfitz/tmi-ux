@@ -742,6 +742,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "One or more selected elements have metadata entries. Deleting these elements will permanently remove their metadata. Do you want to continue?",
+      "title": "Metadata Will Be Lost"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "Enter diagram description",
     "diagramNamePlaceholder": "Enter diagram name",

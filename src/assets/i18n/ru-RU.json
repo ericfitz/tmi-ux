@@ -720,6 +720,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "Один или несколько выбранных элементов содержат метаданные. Удаление этих элементов безвозвратно удалит их метаданные. Вы хотите продолжить?",
+      "title": "Метаданные Будут Потеряны"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "Введите описание диаграммы",
     "diagramNamePlaceholder": "Введите название диаграммы",

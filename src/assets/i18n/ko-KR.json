@@ -720,6 +720,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "선택한 요소 중 하나 이상에 메타데이터 항목이 있습니다. 이 요소들을 삭제하면 메타데이터가 영구적으로 제거됩니다. 계속하시겠습니까?",
+      "title": "메타데이터가 손실됩니다"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "다이어그램 설명 입력",
     "diagramNamePlaceholder": "다이어그램 이름 입력",

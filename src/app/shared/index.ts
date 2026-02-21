@@ -10,5 +10,7 @@ export * from './services/notification.service';
 export * from './services/form-validation.service';
 
 // Export shared components
+export * from './components/confirm-action-dialog/confirm-action-dialog.component';
+export * from './components/confirm-action-dialog/confirm-action-dialog.types';
 export * from './components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 export * from './components/delete-confirmation-dialog/delete-confirmation-dialog.types';

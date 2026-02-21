@@ -720,6 +720,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "一个或多个选定的元素具有元数据条目。删除这些元素将永久删除它们的元数据。您要继续吗？",
+      "title": "元数据将丢失"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "输入图表描述",
     "diagramNamePlaceholder": "输入图表名称",

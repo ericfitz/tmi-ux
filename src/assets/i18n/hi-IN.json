@@ -720,6 +720,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "एक या अधिक चुने गए तत्वों के पास मेटाडेटा प्रविष्टियां हैं। इन तत्वों को हटाने से उनका मेटाडेटा स्थायी रूप से हटा दिया जाएगा। क्या आप जारी रखना चाहते हैं?",
+      "title": "मेटाडेटा खो जाएगा"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "आरेख विवरण दर्ज करें",
     "diagramNamePlaceholder": "आरेख का नाम दर्ज करें",

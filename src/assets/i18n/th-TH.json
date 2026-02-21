@@ -720,6 +720,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "องค์ประกอบที่เลือกหนึ่งรายการขึ้นไปมีรายการข้อมูลเมตาดาต้า การลบองค์ประกอบเหล่านี้จะลบข้อมูลเมตาดาต้าของพวกเขาอย่างถาวร คุณต้องการดำเนินการต่อหรือไม่",
+      "title": "ข้อมูลเมตาดาต้าจะหายไป"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "ป้อนคำอธิบายแผนภาพ",
     "diagramNamePlaceholder": "ป้อนชื่อแผนภาพ",

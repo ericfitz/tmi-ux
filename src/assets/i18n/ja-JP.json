@@ -720,6 +720,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "選択された1つ以上の要素にメタデータエントリがあります。これらの要素を削除すると、メタデータが永久に削除されます。続行しますか?",
+      "title": "メタデータが失われます"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "図の説明を入力",
     "diagramNamePlaceholder": "図の名前を入力",

@@ -720,6 +720,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "לאחד או יותר מהאלמנטים שנבחרו יש ערכי מטא-דאטה. מחיקת אלמנטים אלה תסיר את המטא-דאטה שלהם לצמיתות. האם ברצונך להמשיך?",
+      "title": "המטא-דאטה תאבד"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "הזן תיאור דיאגרמה",
     "diagramNamePlaceholder": "הזן שם דיאגרמה",

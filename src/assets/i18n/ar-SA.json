@@ -720,6 +720,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "واحد أو أكثر من العناصر المحددة يحتوي على إدخالات بيانات وصفية. سيؤدي حذف هذه العناصر إلى إزالة بيانات الوصف الخاصة بها بشكل دائم. هل تريد المتابعة؟",
+      "title": "سيتم فقدان البيانات الوصفية"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "أدخل وصف المخطط",
     "diagramNamePlaceholder": "أدخل اسم المخطط",

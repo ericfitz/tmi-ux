@@ -720,6 +720,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "Un ou plusieurs éléments sélectionnés comportent des entrées de métadonnées. La suppression de ces éléments supprimera définitivement leurs métadonnées. Voulez-vous continuer ?",
+      "title": "Les métadonnées seront perdues"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "Saisir la description du diagramme",
     "diagramNamePlaceholder": "Saisir le nom du diagramme",

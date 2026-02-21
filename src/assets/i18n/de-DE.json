@@ -720,6 +720,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "Ein oder mehrere ausgewählte Elemente enthalten Metadaten-Einträge. Das Löschen dieser Elemente entfernt ihre Metadaten dauerhaft. Möchten Sie fortfahren?",
+      "title": "Metadaten gehen verloren"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "Diagrammbeschreibung eingeben",
     "diagramNamePlaceholder": "Diagrammname eingeben",

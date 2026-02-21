@@ -690,43 +690,10 @@ export class AppDfdOrchestrator {
         return true;
       }
 
+      // Delete/Backspace is handled by DfdComponent.onKeyDown() for metadata confirmation
       case 'delete':
-      case 'backspace': {
-        // Don't handle delete/backspace if any Material Dialog is open
-        // This prevents delete/backspace from affecting the graph while typing in dialogs
-        if (this.dialog.openDialogs.length > 0) {
-          this.logger.debugComponent(
-            'AppDfdOrchestrator',
-            'Ignoring delete/backspace key - dialog is open',
-          );
-          return false; // Let the dialog handle the key event
-        }
-
-        // Delete selected cells
-        if (this._state$.value.readOnly) {
-          this.logger.debugComponent('AppDfdOrchestrator', 'Cannot delete cells in read-only mode');
-          return true; // Prevent default behavior
-        }
-
-        const selectedCells = this.getSelectedCells();
-        if (selectedCells.length > 0) {
-          this.deleteSelectedCells().subscribe({
-            next: result => {
-              if (result.success) {
-                this.logger.debugComponent(
-                  'AppDfdOrchestrator',
-                  'Selected cells deleted via keyboard shortcut',
-                  {
-                    count: result.metadata?.['deletedCount'],
-                  },
-                );
-              }
-            },
-            error: error => this.logger.error('Delete via keyboard failed', { error }),
-          });
-        }
-        return true;
-      }
+      case 'backspace':
+        return false;
 
       default:
         // Unhandled shortcut

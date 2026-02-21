@@ -720,6 +720,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "Satu atau lebih elemen yang dipilih memiliki entri metadata. Menghapus elemen-elemen ini akan secara permanen menghapus metadata mereka. Apakah Anda ingin melanjutkan?",
+      "title": "Metadata Akan Hilang"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "Masukkan deskripsi diagram",
     "diagramNamePlaceholder": "Masukkan nama diagram",

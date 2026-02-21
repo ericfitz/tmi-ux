@@ -720,6 +720,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "ایک یا زیادہ منتخب عناصر میں میٹاڈیٹا اندراجات ہیں۔ ان عناصر کو حذف کرنے سے ان کی میٹاڈیٹا مستقل طور پر ہٹ جائے گی۔ کیا آپ جاری رکھنا چاہتے ہیں؟",
+      "title": "میٹاڈیٹا ضائع ہو جائے گا"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "ڈایاگرام کی تفصیل درج کریں",
     "diagramNamePlaceholder": "ڈایاگرام کا نام درج کریں",

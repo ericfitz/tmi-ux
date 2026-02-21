@@ -720,6 +720,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "এক বা একাধিক নির্বাচিত উপাদানের মেটাডেটা এন্ট্রি রয়েছে। এই উপাদানগুলি মুছে ফেললে তাদের মেটাডেটা স্থায়ীভাবে সরিয়ে ফেলা হবে। আপনি কি চালিয়ে যেতে চান?",
+      "title": "মেটাডেটা হারিয়ে যাবে"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "ডায়াগ্রামের বিবরণ লিখুন",
     "diagramNamePlaceholder": "ডায়াগ্রামের নাম লিখুন",
