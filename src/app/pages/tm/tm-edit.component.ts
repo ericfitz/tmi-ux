@@ -922,7 +922,11 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       shapeType,
     };
 
-    const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
+    const dialogRef = this.dialog.open<
+      ThreatEditorDialogComponent,
+      ThreatEditorDialogData,
+      Partial<Threat>
+    >(ThreatEditorDialogComponent, {
       width: '650px',
       maxHeight: '90vh',
       panelClass: 'threat-editor-dialog-650',
@@ -944,19 +948,19 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /** Build threat data from form result, copying only defined optional fields. */
   private _copyDefinedFields(
-    source: Record<string, any>,
+    source: Partial<Threat>,
     target: Partial<Threat>,
     fields: (keyof Threat)[],
   ): void {
     for (const field of fields) {
       if (source[field] !== undefined) {
-        (target as any)[field] = source[field];
+        Object.assign(target, { [field]: source[field] });
       }
     }
   }
 
   /** Handle creating a new threat from dialog result. */
-  private _handleCreateThreatResult(result: any): void {
+  private _handleCreateThreatResult(result: Partial<Threat>): void {
     const newThreatData: Partial<Threat> = {
       name: result.name,
       description: result.description,
@@ -991,7 +995,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Handle updating an existing threat from dialog result. */
-  private _handleEditThreatResult(result: any, threat: Threat): void {
+  private _handleEditThreatResult(result: Partial<Threat>, threat: Threat): void {
     const updatedThreatData: Partial<Threat> = {
       name: result.name,
       description: result.description,
