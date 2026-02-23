@@ -146,6 +146,7 @@ export class InfraRestPersistenceStrategy {
               threatModelId: loadResult.diagram.threatModelId,
               threatModelName: loadResult.diagram.threatModelName,
               update_vector: loadResult.diagram.update_vector,
+              include_in_report: loadResult.diagram.include_in_report,
             },
             source: 'api' as const,
             timestamp: Date.now(),
