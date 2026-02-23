@@ -582,6 +582,7 @@
     },
     "save": "Guardar",
     "saveAndClose": "Guardar y Cerrar",
+    "saveFailed": "Error al guardar",
     "savedSuccessfully": "Guardado correctamente",
     "score": "Puntuación",
     "search": "Buscar",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "Error al guardar",
+      "error": "{{common.saveFailed}}",
       "saved": "Guardado",
       "saving": "Guardando..."
     },

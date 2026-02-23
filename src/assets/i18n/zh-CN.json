@@ -582,6 +582,7 @@
     },
     "save": "保存",
     "saveAndClose": "保存并关闭",
+    "saveFailed": "保存失败",
     "savedSuccessfully": "保存成功",
     "score": "评分",
     "search": "搜索",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "保存失败",
+      "error": "{{common.saveFailed}}",
       "saved": "已保存",
       "saving": "正在保存..."
     },

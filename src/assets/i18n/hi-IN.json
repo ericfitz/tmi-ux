@@ -582,6 +582,7 @@
     },
     "save": "सहेजें",
     "saveAndClose": "सहेजें और बंद करें",
+    "saveFailed": "सहेजना विफल",
     "savedSuccessfully": "सफलतापूर्वक सहेजा गया",
     "score": "स्कोर",
     "search": "खोजें",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "सहेजना विफल",
+      "error": "{{common.saveFailed}}",
       "saved": "सहेजा गया",
       "saving": "सहेजा जा रहा है..."
     },

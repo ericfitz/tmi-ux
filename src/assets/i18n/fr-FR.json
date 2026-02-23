@@ -582,6 +582,7 @@
     },
     "save": "Enregistrer",
     "saveAndClose": "Enregistrer et Fermer",
+    "saveFailed": "Échec de la sauvegarde",
     "savedSuccessfully": "Enregistré avec succès",
     "score": "Score",
     "search": "Rechercher",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "Échec de l'enregistrement",
+      "error": "{{common.saveFailed}}",
       "saved": "Enregistré",
       "saving": "Enregistrement en cours..."
     },

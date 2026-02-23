@@ -582,6 +582,7 @@
     },
     "save": "সংরক্ষণ করুন",
     "saveAndClose": "সংরক্ষণ করুন এবং বন্ধ করুন",
+    "saveFailed": "সংরক্ষণ ব্যর্থ",
     "savedSuccessfully": "সফলভাবে সংরক্ষিত",
     "score": "স্কোর",
     "search": "অনুসন্ধান",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "সংরক্ষণ ব্যর্থ হয়েছে",
+      "error": "{{common.saveFailed}}",
       "saved": "সংরক্ষিত",
       "saving": "সংরক্ষণ করা হচ্ছে..."
     },

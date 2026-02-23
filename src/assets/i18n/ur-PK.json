@@ -582,6 +582,7 @@
     },
     "save": "محفوظ کریں",
     "saveAndClose": "محفوظ کریں اور بند کریں",
+    "saveFailed": "محفوظ کرنا ناکام",
     "savedSuccessfully": "کامیابی سے محفوظ ہو گیا",
     "score": "سکور",
     "search": "تلاش",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "محفوظ کرنا ناکام",
+      "error": "{{common.saveFailed}}",
       "saved": "محفوظ ہوگیا",
       "saving": "محفوظ ہو رہا ہے..."
     },

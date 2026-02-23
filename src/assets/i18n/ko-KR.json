@@ -582,6 +582,7 @@
     },
     "save": "저장",
     "saveAndClose": "저장 및 닫기",
+    "saveFailed": "저장 실패",
     "savedSuccessfully": "저장되었습니다",
     "score": "점수",
     "search": "검색",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "저장 실패",
+      "error": "{{common.saveFailed}}",
       "saved": "저장됨",
       "saving": "저장 중..."
     },

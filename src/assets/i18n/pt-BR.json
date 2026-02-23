@@ -582,6 +582,7 @@
     },
     "save": "Salvar",
     "saveAndClose": "Salvar e Fechar",
+    "saveFailed": "Falha ao salvar",
     "savedSuccessfully": "Salvo com sucesso",
     "score": "Pontuacao",
     "search": "Pesquisar",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "Falha ao salvar",
+      "error": "{{common.saveFailed}}",
       "saved": "Salvo",
       "saving": "Salvando..."
     },

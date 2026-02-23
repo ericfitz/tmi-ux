@@ -602,6 +602,7 @@
     },
     "save": "Save",
     "saveAndClose": "Save and Close",
+    "saveFailed": "Save failed",
     "savedSuccessfully": "Saved successfully",
     "score": "Score",
     "search": "Search",
@@ -983,7 +984,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "Save failed",
+      "error": "{{common.saveFailed}}",
       "saved": "Saved",
       "saving": "Saving..."
     },

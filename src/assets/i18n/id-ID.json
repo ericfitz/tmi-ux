@@ -582,6 +582,7 @@
     },
     "save": "Simpan",
     "saveAndClose": "Simpan dan Tutup",
+    "saveFailed": "Gagal menyimpan",
     "savedSuccessfully": "Berhasil disimpan",
     "score": "Skor",
     "search": "Cari",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "Gagal menyimpan",
+      "error": "{{common.saveFailed}}",
       "saved": "Tersimpan",
       "saving": "Menyimpan..."
     },

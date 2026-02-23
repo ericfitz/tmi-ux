@@ -1335,7 +1335,7 @@
                     <td mat-cell *matCellDef="let threat" class="column-status">
                       @if (threat.status) {
                         <span class="status-badge">
-                          {{ 'threatEditor.threatStatus.' + threat.status | transloco }}
+                          {{ getThreatStatusLabel(threat.status) }}
                         </span>
                       } @else {
                         -
@@ -1362,8 +1362,11 @@
                     </th>
                     <td mat-cell *matCellDef="let threat" class="column-severity">
                       @if (threat.severity) {
-                        <span class="severity-badge" [ngClass]="'severity-' + threat.severity">
-                          {{ 'threatEditor.threatSeverity.' + threat.severity | transloco }}
+                        <span
+                          class="severity-badge"
+                          [ngClass]="getThreatSeverityClass(threat.severity)"
+                        >
+                          {{ getThreatSeverityLabel(threat.severity) }}
                         </span>
                       } @else {
                         <span class="severity-badge severity-unknown">

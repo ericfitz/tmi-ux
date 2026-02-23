@@ -582,6 +582,7 @@
     },
     "save": "保存",
     "saveAndClose": "保存して閉じる",
+    "saveFailed": "保存に失敗しました",
     "savedSuccessfully": "保存しました",
     "score": "スコア",
     "search": "検索",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "保存に失敗しました",
+      "error": "{{common.saveFailed}}",
       "saved": "保存済み",
       "saving": "保存中..."
     },

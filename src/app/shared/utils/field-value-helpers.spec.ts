@@ -303,6 +303,40 @@ describe('field-value-helpers', () => {
         'threatEditor.threatSeverity.high',
       );
     });
+
+    it('should migrate numeric value and return translated label', () => {
+      expect(getFieldLabel('0', 'threatEditor.threatSeverity', mockTranslocoService as never)).toBe(
+        'Critical',
+      );
+      expect(getFieldLabel('1', 'threatEditor.threatSeverity', mockTranslocoService as never)).toBe(
+        'High',
+      );
+    });
+
+    it('should migrate localized string and return translated label', () => {
+      expect(
+        getFieldLabel('Hoch', 'threatEditor.threatSeverity', mockTranslocoService as never),
+      ).toBe('High');
+    });
+
+    it('should return raw value for unrecognized input', () => {
+      expect(
+        getFieldLabel(
+          'SomethingUnknown',
+          'threatEditor.threatSeverity',
+          mockTranslocoService as never,
+        ),
+      ).toBe('SomethingUnknown');
+    });
+
+    it('should migrate numeric threat status values', () => {
+      expect(getFieldLabel('0', 'threatEditor.threatStatus', mockTranslocoService as never)).toBe(
+        'Open',
+      );
+      expect(getFieldLabel('3', 'threatEditor.threatStatus', mockTranslocoService as never)).toBe(
+        'Mitigation In Progress',
+      );
+    });
   });
 
   describe('getFieldTooltip', () => {

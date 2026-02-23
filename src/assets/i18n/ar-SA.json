@@ -582,6 +582,7 @@
     },
     "save": "حفظ",
     "saveAndClose": "حفظ وإغلاق",
+    "saveFailed": "فشل الحفظ",
     "savedSuccessfully": "تم الحفظ بنجاح",
     "score": "النتيجة",
     "search": "بحث",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "فشل الحفظ",
+      "error": "{{common.saveFailed}}",
       "saved": "تم الحفظ",
       "saving": "جاري الحفظ..."
     },

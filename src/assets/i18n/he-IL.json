@@ -582,6 +582,7 @@
     },
     "save": "שמור",
     "saveAndClose": "שמור וסגור",
+    "saveFailed": "השמירה נכשלה",
     "savedSuccessfully": "נשמר בהצלחה",
     "score": "ציון",
     "search": "חיפוש",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "השמירה נכשלה",
+      "error": "{{common.saveFailed}}",
       "saved": "נשמר",
       "saving": "שומר..."
     },

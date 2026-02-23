@@ -94,7 +94,9 @@ import { FrameworkModel } from '../../shared/models/framework.model';
 import {
   FieldOption,
   getFieldKeysForFieldType,
+  getFieldLabel,
   getFieldOptions,
+  migrateFieldValue,
 } from '../../shared/utils/field-value-helpers';
 import {
   DeleteConfirmationDialogComponent,
@@ -505,6 +507,24 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     } catch {
       return false;
     }
+  }
+
+  /** Gets the translated label for a threat severity value, handling legacy numeric values. */
+  getThreatSeverityLabel(severity: string | null | undefined): string {
+    return getFieldLabel(severity, 'threatEditor.threatSeverity', this.transloco);
+  }
+
+  /** Gets the translated label for a threat status value, handling legacy numeric values. */
+  getThreatStatusLabel(status: string | null | undefined): string {
+    return getFieldLabel(status, 'threatEditor.threatStatus', this.transloco);
+  }
+
+  /** Gets the CSS class for a threat severity value, handling legacy numeric values. */
+  getThreatSeverityClass(severity: string | null | undefined): string {
+    const key = severity
+      ? (migrateFieldValue(severity, 'threatEditor.threatSeverity', this.transloco) ?? 'unknown')
+      : 'unknown';
+    return 'severity-' + key;
   }
 
   ngOnInit(): void {

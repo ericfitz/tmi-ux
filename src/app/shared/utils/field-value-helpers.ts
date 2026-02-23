@@ -139,12 +139,14 @@ export function getFieldOptions(
 }
 
 /**
- * Gets the display label for a stored field value
+ * Gets the display label for a stored field value.
+ * Handles legacy values (numeric indices, localized strings) by migrating
+ * them to the canonical camelCase key before looking up the translation.
  *
- * @param value The camelCase key
+ * @param value The stored value (camelCase key, numeric key, or old localized string)
  * @param keyPrefix The translation key prefix
  * @param translocoService The Transloco service
- * @returns The translated label, or empty string if invalid
+ * @returns The translated label, the raw value as fallback, or empty string if null/undefined
  */
 export function getFieldLabel(
   value: string | null | undefined,
@@ -155,8 +157,21 @@ export function getFieldLabel(
     return '';
   }
 
-  const labelKey = `${keyPrefix}.${value}`;
-  return translocoService.translate(labelKey);
+  const keys = getFieldKeysForFieldType(keyPrefix);
+
+  // Fast path: already a valid camelCase key
+  if (keys.includes(value)) {
+    return translocoService.translate(`${keyPrefix}.${value}`);
+  }
+
+  // Try migrating legacy values (numeric indices, localized strings)
+  const migratedKey = migrateFieldValue(value, keyPrefix, translocoService);
+  if (migratedKey) {
+    return translocoService.translate(`${keyPrefix}.${migratedKey}`);
+  }
+
+  // Unrecognized value — return as-is rather than a broken transloco key
+  return value;
 }
 
 /**

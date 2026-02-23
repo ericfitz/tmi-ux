@@ -582,6 +582,7 @@
     },
     "save": "Speichern",
     "saveAndClose": "Speichern und Schließen",
+    "saveFailed": "Speichern fehlgeschlagen",
     "savedSuccessfully": "Erfolgreich gespeichert",
     "score": "Bewertung",
     "search": "Suche",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "Speichern fehlgeschlagen",
+      "error": "{{common.saveFailed}}",
       "saved": "Gespeichert",
       "saving": "Speichert..."
     },

@@ -582,6 +582,7 @@
     },
     "save": "บันทึก",
     "saveAndClose": "บันทึกและปิด",
+    "saveFailed": "บันทึกล้มเหลว",
     "savedSuccessfully": "บันทึกสำเร็จ",
     "score": "คะแนน",
     "search": "ค้นหา",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "บันทึกล้มเหลว",
+      "error": "{{common.saveFailed}}",
       "saved": "บันทึกแล้ว",
       "saving": "กำลังบันทึก..."
     },

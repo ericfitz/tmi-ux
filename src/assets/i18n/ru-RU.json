@@ -582,6 +582,7 @@
     },
     "save": "Сохранить",
     "saveAndClose": "Сохранить и Закрыть",
+    "saveFailed": "Не удалось сохранить",
     "savedSuccessfully": "Успешно сохранено",
     "score": "Оценка",
     "search": "Поиск",
@@ -960,7 +961,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "Ошибка сохранения",
+      "error": "{{common.saveFailed}}",
       "saved": "Сохранено",
       "saving": "Сохранение..."
     },
