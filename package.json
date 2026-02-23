@@ -53,7 +53,8 @@
     "build:oci": "ng build --configuration=oci",
     "deploy:oci": "./scripts/push-oci.sh",
     "build:container": "ng build --configuration=container",
-    "deploy:chainguard": "./scripts/push-chainguard.sh"
+    "deploy:chainguard": "./scripts/push-chainguard.sh",
+    "generate:api-types": "openapi-typescript ${OPENAPI_SPEC:-https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json} -o src/app/generated/api-types.d.ts"
   },
   "private": true,
   "dependencies": {
@@ -126,6 +127,7 @@
     "globals": "^17.3.0",
     "http-proxy-middleware": "^3.0.5",
     "jsdom": "^28.1.0",
+    "openapi-typescript": "^7.13.0",
     "prettier": "^3.8.1",
     "stylelint": "^16.26.1",
     "stylelint-config-standard-scss": "^16.0.0",
