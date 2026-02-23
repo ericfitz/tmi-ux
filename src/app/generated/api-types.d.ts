@@ -3392,7 +3392,7 @@ export interface components {
        * @enum {string}
        */
       type: 'DFD-1.0.0';
-    }  ;
+    };
     /**
      * @description Input schema for creating or updating a Data Flow Diagram
      * @example {

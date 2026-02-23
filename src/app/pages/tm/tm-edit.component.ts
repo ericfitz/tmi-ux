@@ -695,7 +695,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Get ordinal position for severity (lower index = more severe)
    */
-  private getSeverityOrder(severity: string | null): number {
+  private getSeverityOrder(severity: string | null | undefined): number {
     if (!severity) return 999;
     const idx = this.severityKeys.indexOf(severity);
     return idx >= 0 ? idx : 999;
@@ -1107,7 +1107,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
             // Create a new diagram via API
             const newDiagramData: Partial<Diagram> = {
               name: diagramData.name,
-              type: diagramData.type,
+              type: diagramData.type as Diagram['type'],
             };
 
             this._subscriptions.add(

@@ -23,14 +23,14 @@ describe('Principal Display Utils', () => {
     });
 
     it('should return just name when email is missing', () => {
-      const user: User = {
+      const principal: Principal = {
         principal_type: 'user',
         provider: 'google',
         provider_id: '123',
         display_name: 'John Doe',
       };
 
-      expect(getPrincipalDisplayName(user)).toBe('John Doe');
+      expect(getPrincipalDisplayName(principal)).toBe('John Doe');
     });
 
     it('should return just name when email is null', () => {
@@ -97,6 +97,7 @@ describe('Principal Display Utils', () => {
         provider: 'google',
         provider_id: '123456',
         display_name: 'John Doe',
+        email: 'john@example.com',
       };
 
       expect(getCompositeKey(user)).toBe('google:123456');
@@ -108,6 +109,7 @@ describe('Principal Display Utils', () => {
         provider: 'github',
         provider_id: '987654',
         display_name: 'Jane Smith',
+        email: 'jane@example.com',
       };
 
       expect(getCompositeKey(user)).toBe('github:987654');
@@ -160,6 +162,7 @@ describe('Principal Display Utils', () => {
         provider: 'google',
         provider_id: '123',
         display_name: 'John Doe',
+        email: 'john@example.com',
       };
 
       const user2: User = {
@@ -167,6 +170,7 @@ describe('Principal Display Utils', () => {
         provider: 'google',
         provider_id: '456',
         display_name: 'John Doe',
+        email: 'john@example.com',
       };
 
       expect(principalsEqual(user1, user2)).toBe(false);
@@ -178,6 +182,7 @@ describe('Principal Display Utils', () => {
         provider: 'google',
         provider_id: '123',
         display_name: 'John Doe',
+        email: 'john@example.com',
       };
 
       const user2: User = {
@@ -185,6 +190,7 @@ describe('Principal Display Utils', () => {
         provider: 'github',
         provider_id: '123',
         display_name: 'John Doe',
+        email: 'john@example.com',
       };
 
       expect(principalsEqual(user1, user2)).toBe(false);
@@ -196,6 +202,7 @@ describe('Principal Display Utils', () => {
         provider: 'google',
         provider_id: '123',
         display_name: 'John Doe',
+        email: 'john@example.com',
       };
 
       expect(principalsEqual(null, user)).toBe(false);
@@ -207,6 +214,7 @@ describe('Principal Display Utils', () => {
         provider: 'google',
         provider_id: '123',
         display_name: 'John Doe',
+        email: 'john@example.com',
       };
 
       expect(principalsEqual(user, null)).toBe(false);
@@ -226,6 +234,7 @@ describe('Principal Display Utils', () => {
         provider: 'google',
         provider_id: '123',
         display_name: 'John Doe',
+        email: 'john@example.com',
       };
 
       const group: Group = {
@@ -247,6 +256,7 @@ describe('Principal Display Utils', () => {
         provider: 'google',
         provider_id: '123',
         display_name: 'John Doe',
+        email: 'john@example.com',
       };
 
       expect(isPrincipalUser(user)).toBe(true);
@@ -282,6 +292,7 @@ describe('Principal Display Utils', () => {
         provider: 'google',
         provider_id: '123',
         display_name: 'John Doe',
+        email: 'john@example.com',
       };
 
       expect(isPrincipalGroup(user)).toBe(false);

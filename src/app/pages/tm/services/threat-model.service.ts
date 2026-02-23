@@ -1749,8 +1749,7 @@ export class ThreatModelService implements OnDestroy {
       modified_at: threatModel.modified_at,
       owner: threatModel.owner,
       created_by: threatModel.created_by,
-      threat_model_framework:
-        threatModel.threat_model_framework as TMListItem['threat_model_framework'],
+      threat_model_framework: threatModel.threat_model_framework,
       issue_uri: threatModel.issue_uri,
       status: threatModel.status,
       status_updated: threatModel.status_updated,

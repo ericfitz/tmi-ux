@@ -766,8 +766,8 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
         principal_type: 'user',
         provider: selectedAuth.provider,
         provider_id: selectedAuth.provider_id,
-        display_name: selectedAuth.display_name,
-        email: selectedAuth.email,
+        display_name: selectedAuth.display_name || selectedAuth.provider_id,
+        email: selectedAuth.email || '',
       };
 
       // Update the local owner value

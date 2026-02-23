@@ -18,10 +18,11 @@ export interface TMListItem {
   modified_at: string;
   owner: User;
   created_by: User;
-  threat_model_framework: 'CIA' | 'STRIDE' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
+  threat_model_framework: string;
   issue_uri?: string;
   status?: string | null;
   status_updated?: string;
+  security_reviewer?: User | null;
   document_count: number;
   repo_count: number;
   diagram_count: number;

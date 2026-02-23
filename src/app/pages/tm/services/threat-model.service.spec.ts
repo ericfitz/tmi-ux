@@ -19,6 +19,7 @@ import { ThreatModelAuthorizationService } from './threat-model-authorization.se
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createMockLoggerService } from '../../../../testing/mocks';
+import { Diagram } from '../models/diagram.model';
 
 // Import testing utilities
 import { waitForAsync } from '../../../../testing/async-utils';
@@ -726,7 +727,7 @@ describe('ThreatModelService', () => {
 
     describe('Diagram API Methods', () => {
       it('should create a diagram via API', waitForAsync(() => {
-        const diagramData = { name: 'Test Diagram', type: 'DFD-1.0.0' };
+        const diagramData: Partial<Diagram> = { name: 'Test Diagram', type: 'DFD-1.0.0' };
         const expectedDiagram = { ...diagramData, id: 'new-diagram-id' };
         vi.spyOn(apiService, 'post').mockReturnValue(of(expectedDiagram));
 

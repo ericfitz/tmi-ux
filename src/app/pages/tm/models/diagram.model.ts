@@ -48,7 +48,7 @@ export interface Cell {
 export interface Diagram {
   id: string;
   name: string;
-  type: string;
+  type: 'DFD-1.0.0';
   created_at: string;
   modified_at: string;
   description?: string; // Optional diagram description

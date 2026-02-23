@@ -268,7 +268,8 @@ export class CollaborationSessionService implements OnDestroy {
       principal_type: 'user',
       provider: 'unknown',
       provider_id: serverSession.participants[0]?.user_id || 'unknown',
-      email: serverSession.participants[0]?.user_id,
+      email: serverSession.participants[0]?.user_id || '',
+      display_name: serverSession.participants[0]?.user_id || 'Unknown',
     };
 
     const session: CollaborationSession = {

@@ -31,9 +31,11 @@ describe('ThreatModelAuthorizationService', () => {
   };
 
   const mockOwner: User = {
+    principal_type: 'user',
     provider: 'google',
     provider_id: 'google-123',
     email: 'owner@example.com',
+    display_name: 'Owner',
   };
 
   const mockUserAuthorization: Authorization = {
@@ -365,9 +367,11 @@ describe('ThreatModelAuthorizationService', () => {
       mockAuthService.userEmail = 'owner@example.com';
 
       const ownerWithEmailInProviderId: User = {
+        principal_type: 'user',
         provider: 'google',
         provider_id: 'owner@example.com',
         email: 'owner@example.com',
+        display_name: 'Owner',
       };
 
       service.setAuthorization('tm-123', [], ownerWithEmailInProviderId);
@@ -733,9 +737,11 @@ describe('ThreatModelAuthorizationService', () => {
 
       // Switch to second TM where user is just a reader
       const otherOwner: User = {
+        principal_type: 'user',
         provider: 'google',
         provider_id: 'google-999',
         email: 'other@example.com',
+        display_name: 'Other Owner',
       };
       const readerAuth: Authorization = {
         principal_type: 'user',

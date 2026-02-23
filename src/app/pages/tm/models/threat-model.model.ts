@@ -16,6 +16,8 @@ export interface Principal {
 
 export interface User extends Principal {
   principal_type: 'user';
+  email: string;
+  display_name: string;
 }
 
 export interface Group extends Principal {
@@ -80,6 +82,11 @@ export interface Asset {
   metadata?: Metadata[];
 }
 
+export interface CVSSScore {
+  vector: string;
+  score: number;
+}
+
 export interface Threat {
   id: string;
   threat_model_id: string;
@@ -89,7 +96,7 @@ export interface Threat {
   modified_at: string;
   diagram_id?: string;
   cell_id?: string;
-  severity: string | null;
+  severity?: string;
   score?: number;
   priority?: string | null;
   mitigated?: boolean;
@@ -99,6 +106,8 @@ export interface Threat {
   asset_id?: string;
   issue_uri?: string;
   metadata?: Metadata[];
+  cwe_id?: string[];
+  cvss?: CVSSScore[];
 }
 
 export interface ThreatModel {
@@ -114,8 +123,11 @@ export interface ThreatModel {
   status?: string | null;
   status_updated?: string;
   is_confidential?: boolean;
-  authorization: Authorization[] | null;
+  authorization: Authorization[];
   metadata?: Metadata[];
+  alias?: string[];
+  security_reviewer?: User | null;
+  project_id?: string | null;
   documents?: Document[];
   repositories?: Repository[];
   diagrams?: import('./diagram.model').Diagram[];

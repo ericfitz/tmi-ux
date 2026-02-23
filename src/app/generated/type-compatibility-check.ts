@@ -61,12 +61,8 @@ type _PrincipalToApi = Assert<IsAssignableTo<Principal, ApiPrincipal>>;
 type _PrincipalFromApi = Assert<IsAssignableTo<ApiPrincipal, Principal>>;
 
 // ─── User ────────────────────────────────────────────────────────────────────
-// KNOWN DRIFT: Generated User requires email and display_name;
-// manual User (extends Principal) has them optional.
-// Manual → Generated fails because optional fields don't satisfy required ones.
-// @ts-expect-error TS2344: Manual User has optional email/display_name, generated requires them
+// Manual User now requires email and display_name, matching the generated type.
 type _UserToApi = Assert<IsAssignableTo<User, ApiUser>>;
-// Generated → Manual works because required fields satisfy optional ones.
 type _UserFromApi = Assert<IsAssignableTo<ApiUser, User>>;
 
 // ─── Authorization ───────────────────────────────────────────────────────────
@@ -76,94 +72,84 @@ type _AuthorizationToApi = Assert<IsAssignableTo<Authorization, ApiAuthorization
 type _AuthorizationFromApi = Assert<IsAssignableTo<ApiAuthorization, Authorization>>;
 
 // ─── Document ────────────────────────────────────────────────────────────────
-// KNOWN DRIFT: Generated Document has readonly id and uses DocumentBase composition.
-// Generated Document has optional created_at/modified_at; manual has them required.
-// Manual → Generated should work (required satisfies optional)
+// Manual → Generated works (required fields satisfy optional ones)
 type _DocumentToApi = Assert<IsAssignableTo<TMDocument, ApiDocument>>;
-// Generated → Manual may fail if generated has optional fields that manual requires
-// @ts-expect-error TS2344: Generated Document has optional created_at/modified_at, manual requires them
+// Generated → Manual: Generated has optional server-managed fields (id, created_at,
+// modified_at) that manual requires. This is intentional — manual types model API
+// responses where these fields are always present.
+// @ts-expect-error TS2344: Generated Document has optional server-managed fields, manual requires them
 type _DocumentFromApi = Assert<IsAssignableTo<ApiDocument, TMDocument>>;
 
 // ─── Repository ──────────────────────────────────────────────────────────────
-// Manual Repository is structurally assignable to generated (excess properties allowed).
+// Manual → Generated works (excess properties allowed, required satisfies optional)
 type _RepositoryToApi = Assert<IsAssignableTo<Repository, ApiRepository>>;
-// @ts-expect-error TS2344: Generated Repository has optional created_at/modified_at, manual requires them
+// @ts-expect-error TS2344: Generated Repository has optional server-managed fields, manual requires them
 type _RepositoryFromApi = Assert<IsAssignableTo<ApiRepository, Repository>>;
 
 // ─── Note ────────────────────────────────────────────────────────────────────
-// Manual Note is structurally assignable to generated (required fields satisfy optional).
+// Manual → Generated works (required fields satisfy optional ones)
 type _NoteToApi = Assert<IsAssignableTo<Note, ApiNote>>;
-// @ts-expect-error TS2344: Generated Note has optional created_at/modified_at, manual requires them
+// @ts-expect-error TS2344: Generated Note has optional server-managed fields, manual requires them
 type _NoteFromApi = Assert<IsAssignableTo<ApiNote, Note>>;
 
 // ─── Asset ───────────────────────────────────────────────────────────────────
-// Manual Asset is structurally assignable to generated (string literal union assignable to string).
+// Manual → Generated works (string literal union assignable to string)
 type _AssetToApi = Assert<IsAssignableTo<Asset, ApiAsset>>;
-// @ts-expect-error TS2344: Generated Asset has optional created_at/modified_at, manual requires them
+// @ts-expect-error TS2344: Generated Asset has optional server-managed fields, manual requires them
 type _AssetFromApi = Assert<IsAssignableTo<ApiAsset, Asset>>;
 
 // ─── Threat ──────────────────────────────────────────────────────────────────
-// KNOWN DRIFT: Generated ThreatBase has cwe_id and cvss fields that manual Threat lacks.
-// Manual Threat has required `severity: string | null`; generated has optional severity.
-// Manual → Generated: manual has id/threat_model_id/created_at/modified_at that generated
-// Threat also has (as readonly), so structurally compatible minus field type differences.
-// @ts-expect-error TS2344: Manual Threat has severity as `string | null` (required), generated has optional string
+// REMAINING DRIFT: Manual Threat has `priority?: string | null` and
+// `status?: string | null`; generated has them as `string?` (no null).
+// @ts-expect-error TS2344: Manual Threat allows null on priority/status, generated does not
 type _ThreatToApi = Assert<IsAssignableTo<Threat, ApiThreat>>;
-// @ts-expect-error TS2344: Generated Threat has optional id/created_at/modified_at, manual requires them
+// @ts-expect-error TS2344: Generated Threat has optional server-managed fields, manual requires them
 type _ThreatFromApi = Assert<IsAssignableTo<ApiThreat, Threat>>;
 
 // ─── ThreatModel ─────────────────────────────────────────────────────────────
-// KNOWN DRIFT: Generated ThreatModelBase has alias, security_reviewer, project_id
-// that manual ThreatModel lacks. Generated ThreatModel has readonly server fields as optional.
-// @ts-expect-error TS2344: Manual ThreatModel lacks alias, security_reviewer, project_id; authorization nullability differs
+// REMAINING DRIFT: Manual ThreatModel uses `assets?: Asset[]`; generated uses
+// `ExtendedAsset[]`. Also nested Threat/Document types carry through their own drift.
+// @ts-expect-error TS2344: Manual ThreatModel has Asset[] (generated expects ExtendedAsset[]), nested type drift
 type _ThreatModelToApi = Assert<IsAssignableTo<ThreatModel, ApiThreatModel>>;
-// @ts-expect-error TS2344: Generated ThreatModel has optional server fields that manual requires (id, created_at, etc.)
+// @ts-expect-error TS2344: Generated ThreatModel has optional server-managed fields, manual requires them
 type _ThreatModelFromApi = Assert<IsAssignableTo<ApiThreatModel, ThreatModel>>;
 
 // ─── TMListItem ──────────────────────────────────────────────────────────────
-// KNOWN DRIFT: Manual has threat_model_framework as string literal union;
-// generated has plain string. Manual has User references with optional fields.
-// Generated has security_reviewer field that manual lacks.
-// @ts-expect-error TS2344: Manual TMListItem User references have optional email/display_name, generated requires them
+// Manual → Generated: framework widened to string, security_reviewer added,
+// User references now have required email/display_name.
 type _TMListItemToApi = Assert<IsAssignableTo<TMListItem, ApiTMListItem>>;
-// @ts-expect-error TS2344: Generated TMListItem has string framework (manual expects literal union), plus security_reviewer
+// Generated → Manual: Generated TMListItem has optional/readonly server-managed
+// fields (status_updated as string | null) that manual types define differently.
+// @ts-expect-error TS2344: Generated TMListItem field nullability/optionality differs from manual
 type _TMListItemFromApi = Assert<IsAssignableTo<ApiTMListItem, TMListItem>>;
 
 // ─── Diagram ─────────────────────────────────────────────────────────────────
-// NOTE: Manual Diagram is a simplified interface. Generated DfdDiagram/BaseDiagram
-// has discriminated union cells (Node | Edge), readonly server fields, and type as enum.
-// The Cell types are structurally very different (manual is loose, generated is strict).
-// We compare against BaseDiagram since Diagram is the deprecated wrapper.
-// @ts-expect-error TS2344: Manual Diagram type is string, generated is enum 'DFD-1.0.0'; cells type differs
+// Manual → Generated: Type narrowed to 'DFD-1.0.0', cells are structurally compatible.
 type _DiagramToApi = Assert<IsAssignableTo<Diagram, ApiBaseDiagram>>;
-// @ts-expect-error TS2344: Generated BaseDiagram has readonly id/created_at/modified_at, different cell types
+// Generated → Manual: Generated BaseDiagram has optional server-managed fields
+// and different cell types (Node | Edge discriminated union vs loose Cell interface).
+// @ts-expect-error TS2344: Generated BaseDiagram has optional server-managed fields, different cell types
 type _DiagramFromApi = Assert<IsAssignableTo<ApiBaseDiagram, Diagram>>;
 
-// ─── Summary of known drift ─────────────────────────────────────────────────
+// ─── Summary of remaining known drift ──────────────────────────────────────
 //
-// Each @ts-expect-error above documents a specific incompatibility between
-// the manual types and the OpenAPI spec. Key themes:
+// After resolving type compatibility issues from issue #372 Phase 2, the
+// remaining @ts-expect-error directives document these asymmetries:
 //
-// 1. OPTIONAL vs REQUIRED (User fields):
-//    Generated User requires email and display_name; manual User (extends
-//    Principal) has them optional. This causes Manual→API failures for any
-//    type containing User references (ThreatModel, TMListItem).
-//
-// 2. READONLY+OPTIONAL vs REQUIRED (server-managed fields):
+// 1. READONLY+OPTIONAL vs REQUIRED (server-managed fields):
 //    Generated types have id, created_at, modified_at as `readonly` and
-//    optional (since they're server-populated); manual types have them as
-//    required. This causes API→Manual failures for Document, Note, Asset,
-//    Repository, Threat, ThreatModel.
+//    optional (modeling both input and output schemas); manual types have
+//    them as required (modeling API responses only). This causes
+//    Generated→Manual failures for: Document, Repository, Note, Asset,
+//    Threat, ThreatModel, TMListItem, Diagram.
 //
-// 3. MISSING FIELDS in manual types:
-//    - ThreatModel: alias, security_reviewer, project_id
-//    - Threat: cwe_id, cvss
-//    - TMListItem: security_reviewer
+// 2. NULLABILITY (Threat priority/status):
+//    Manual Threat has `priority?: string | null` and `status?: string | null`;
+//    generated has them as optional string without null. This causes
+//    Manual→Generated failure for Threat.
 //
-// 4. STRUCTURAL DIFFERENCES:
-//    - Diagram/Cell: manual is a loose single interface; generated uses
-//      Node|Edge discriminated union with strict shape enums
-//    - TMListItem: manual restricts framework to 5 literal values;
-//      generated allows any string
-//
-// These will be resolved incrementally in Phase 2+ of issue #372.
+// 3. ASSET TYPE (ThreatModel):
+//    Manual ThreatModel uses `assets?: Asset[]`; generated uses
+//    `ExtendedAsset[]` (Asset + threat_model_id, created_at, modified_at).
+//    Nested Threat type drift also propagates. This causes Manual→Generated
+//    failure for ThreatModel.
