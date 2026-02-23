@@ -1004,16 +1004,17 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     ]);
 
     this._subscriptions.add(
-      this.threatModelService
-        .createThreat(this.threatModel!.id, newThreatData)
-        .subscribe(newThreat => {
-          if (!this.threatModel!.threats?.find(t => t.id === newThreat.id)) {
-            this.threatModel!.threats = [...(this.threatModel!.threats || []), newThreat];
-            this.threatsDataSource.data = this.threatModel!.threats;
+      this.threatModelService.createThreat(this.threatModel!.id, newThreatData).subscribe({
+        next: () => {
+          if (this.threatModel) {
+            this.loadThreats(this.threatModel.id);
           }
-
           this.updateFrameworkControlState();
-        }),
+        },
+        error: error => {
+          this.logger.error('Failed to create threat', error);
+        },
+      }),
     );
   }
 
@@ -1136,40 +1137,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
             this._subscriptions.add(
               this.threatModelService.createDiagram(this.threatModel.id, newDiagramData).subscribe({
-                next: newDiagram => {
-                  // Add the diagram to the DIAGRAMS_BY_ID map for backward compatibility
-                  DIAGRAMS_BY_ID.set(newDiagram.id, newDiagram);
-
-                  // Add the new diagram to local state (check for duplicates first)
-                  // Use spread to create new array and update data source for immediate UI refresh
-                  const isDuplicate = this.threatModel?.diagrams?.find(d => {
-                    if (typeof d === 'string') return d === newDiagram.id;
-                    return d.id === newDiagram.id;
-                  });
-
-                  if (!isDuplicate) {
-                    // Handle both string ID arrays and Diagram object arrays
-                    if (
-                      this.threatModel!.diagrams?.length &&
-                      typeof this.threatModel!.diagrams[0] === 'string'
-                    ) {
-                      this.threatModel!.diagrams = [
-                        ...((this.threatModel!.diagrams || []) as unknown as string[]),
-                        newDiagram.id,
-                      ] as unknown as Diagram[];
-                    } else {
-                      this.threatModel!.diagrams = [
-                        ...(this.threatModel!.diagrams || []),
-                        newDiagram,
-                      ];
-                    }
-                  }
-
-                  // Always update the display diagrams array (these are always Diagram objects)
-                  if (!this._diagrams.find(d => d.id === newDiagram.id)) {
-                    this._diagrams = [...this._diagrams, newDiagram];
-                    this.diagramsDataSource.data = this._diagrams;
-                    this.computeDiagramSvgData();
+                next: () => {
+                  if (this.threatModel) {
+                    this.loadDiagrams(this.threatModel.id);
                   }
                 },
                 error: error => {
@@ -1270,19 +1240,16 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
           };
 
           this._subscriptions.add(
-            this.threatModelService
-              .createDocument(this.threatModel.id, newDocumentData)
-              .subscribe(newDocument => {
-                // Add the new document to local state (check for duplicates first)
-                // Use spread to create new array and update data source for immediate UI refresh
-                if (!this.threatModel!.documents?.find(d => d.id === newDocument.id)) {
-                  this.threatModel!.documents = [
-                    ...(this.threatModel!.documents || []),
-                    newDocument,
-                  ];
-                  this.documentsDataSource.data = this.threatModel!.documents;
+            this.threatModelService.createDocument(this.threatModel.id, newDocumentData).subscribe({
+              next: () => {
+                if (this.threatModel) {
+                  this.loadDocuments(this.threatModel.id);
                 }
-              }),
+              },
+              error: error => {
+                this.logger.error('Failed to create document', error);
+              },
+            }),
           );
         }
       }),
@@ -1448,16 +1415,15 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
           this._subscriptions.add(
             this.threatModelService
               .createRepository(this.threatModel.id, newRepositoryData)
-              .subscribe(newRepository => {
-                // Add the new repository to local state (check for duplicates first)
-                // Use spread to create new array and update data source for immediate UI refresh
-                if (!this.threatModel!.repositories?.find(r => r.id === newRepository.id)) {
-                  this.threatModel!.repositories = [
-                    ...(this.threatModel!.repositories || []),
-                    newRepository,
-                  ];
-                  this.repositoriesDataSource.data = this.threatModel!.repositories;
-                }
+              .subscribe({
+                next: () => {
+                  if (this.threatModel) {
+                    this.loadRepositories(this.threatModel.id);
+                  }
+                },
+                error: error => {
+                  this.logger.error('Failed to create repository', error);
+                },
               }),
           );
         }
@@ -1675,23 +1641,18 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
       this._subscriptions.add(
-        this.threatModelService.createNote(this.threatModel.id, noteResult).subscribe(
-          createdNote => {
+        this.threatModelService.createNote(this.threatModel.id, noteResult).subscribe({
+          next: createdNote => {
             if (this.threatModel) {
-              // Use spread to create new array and update data source for immediate UI refresh
-              if (!this.threatModel.notes?.find(n => n.id === createdNote.id)) {
-                this.threatModel.notes = [...(this.threatModel.notes || []), createdNote];
-                this.notesDataSource.data = this.threatModel.notes;
-              }
-              this.logger.info('Created note via API', { note: createdNote });
+              this.loadNotes(this.threatModel.id);
               // Notify the dialog that the note was created
               dialogRef.componentInstance.setCreatedNoteId(createdNote.id);
             }
           },
-          error => {
+          error: error => {
             this.logger.error('Failed to create note', error);
           },
-        ),
+        }),
       );
     });
 
@@ -1724,21 +1685,16 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
           } else {
             // Note was not created yet, create it now
             this._subscriptions.add(
-              this.threatModelService.createNote(this.threatModel.id, result.formValue).subscribe(
-                createdNote => {
+              this.threatModelService.createNote(this.threatModel.id, result.formValue).subscribe({
+                next: () => {
                   if (this.threatModel) {
-                    // Use spread to create new array and update data source for immediate UI refresh
-                    if (!this.threatModel.notes?.find(n => n.id === createdNote.id)) {
-                      this.threatModel.notes = [...(this.threatModel.notes || []), createdNote];
-                      this.notesDataSource.data = this.threatModel.notes;
-                    }
-                    this.logger.info('Created note via API', { note: createdNote });
+                    this.loadNotes(this.threatModel.id);
                   }
                 },
-                error => {
+                error: error => {
                   this.logger.error('Failed to create note', error);
                 },
-              ),
+              }),
             );
           }
         }
@@ -3212,21 +3168,16 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       dialogRef.afterClosed().subscribe((result: Partial<Asset> | undefined) => {
         if (result && this.threatModel) {
           this._subscriptions.add(
-            this.threatModelService.createAsset(this.threatModel.id, result).subscribe(
-              createdAsset => {
+            this.threatModelService.createAsset(this.threatModel.id, result).subscribe({
+              next: () => {
                 if (this.threatModel) {
-                  // Use spread to create new array and update data source for immediate UI refresh
-                  if (!this.threatModel.assets?.find(a => a.id === createdAsset.id)) {
-                    this.threatModel.assets = [...(this.threatModel.assets || []), createdAsset];
-                    this.assetsDataSource.data = this.threatModel.assets;
-                  }
-                  this.logger.info('Created asset via API', { asset: createdAsset });
+                  this.loadAssets(this.threatModel.id);
                 }
               },
-              error => {
+              error: error => {
                 this.logger.error('Failed to create asset', error);
               },
-            ),
+            }),
           );
         }
       }),
