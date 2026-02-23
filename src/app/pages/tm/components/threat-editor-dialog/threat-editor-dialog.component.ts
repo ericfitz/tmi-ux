@@ -739,7 +739,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       status: migratedStatus,
       mitigation: this.data.threat.mitigation || '',
       issue_uri: this.initialIssueUriValue,
-      include_in_report: this.data.threat.include_in_report ?? true,
+      include_in_report: this.data.threat.include_in_report,
     });
 
     this.logger.debugComponent('ThreatEditorDialog', 'Form values after patching', {

@@ -1248,6 +1248,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         next: updatedDiagram => {
           this.diagramName = updatedDiagram.name;
+          this.appDfdOrchestrator.updateDiagramMetadata({
+            diagramName: updatedDiagram.name,
+          });
           this.cdr.detectChanges();
           this.logger.info('Diagram name updated successfully', { name: updatedDiagram.name });
         },
@@ -1278,6 +1281,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         next: updatedDiagram => {
           this.diagramDescription = updatedDiagram.description ?? null;
+          this.appDfdOrchestrator.updateDiagramMetadata({
+            diagramDescription: updatedDiagram.description,
+          });
           this.cdr.detectChanges();
           this.logger.info('Diagram description updated successfully', {
             description: updatedDiagram.description,
@@ -1301,7 +1307,10 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: updatedDiagram => {
-          this.includeInReport = updatedDiagram.include_in_report ?? true;
+          this.includeInReport = updatedDiagram.include_in_report ?? event.checked;
+          this.appDfdOrchestrator.updateDiagramMetadata({
+            includeInReport: this.includeInReport,
+          });
           this.cdr.detectChanges();
           this.logger.info('Diagram include_in_report updated', {
             include_in_report: this.includeInReport,

@@ -88,7 +88,7 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
       criticality: [data.asset?.criticality || '', Validators.maxLength(64)],
       classification: [data.asset?.classification || []],
       sensitivity: [data.asset?.sensitivity || '', Validators.maxLength(256)],
-      include_in_report: [data.asset?.include_in_report ?? true],
+      include_in_report: [data.mode === 'create' ? true : data.asset?.include_in_report],
     });
 
     if (this.isReadOnly) {

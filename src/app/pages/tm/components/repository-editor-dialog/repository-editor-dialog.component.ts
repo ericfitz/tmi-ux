@@ -88,7 +88,7 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
       refType: [data.repository?.parameters?.refType || 'branch'],
       refValue: [data.repository?.parameters?.refValue || '', Validators.maxLength(256)],
       subPath: [data.repository?.parameters?.subPath || '', Validators.maxLength(256)],
-      include_in_report: [data.repository?.include_in_report ?? true],
+      include_in_report: [data.mode === 'create' ? true : data.repository?.include_in_report],
     });
 
     if (this.isReadOnly) {

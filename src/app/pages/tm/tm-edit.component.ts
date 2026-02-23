@@ -117,6 +117,7 @@ interface DocumentFormResult {
   name: string;
   uri: string;
   description?: string;
+  include_in_report?: boolean;
 }
 
 // Define repository form result interface
@@ -130,6 +131,7 @@ interface RepositoryFormResult {
     refValue: string;
     subPath?: string;
   };
+  include_in_report?: boolean;
 }
 
 @Component({
@@ -978,6 +980,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       'score',
       'priority',
       'issue_uri',
+      'include_in_report',
     ]);
 
     this._subscriptions.add(
@@ -1012,6 +1015,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       'mitigated',
       'status',
       'issue_uri',
+      'include_in_report',
     ]);
 
     this._subscriptions.add(
@@ -1242,6 +1246,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
             name: result.name,
             uri: result.uri,
             description: result.description || undefined,
+            include_in_report: result.include_in_report,
           };
 
           this._subscriptions.add(
@@ -1299,6 +1304,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
             name: result.name,
             uri: result.uri,
             description: result.description || undefined,
+            include_in_report: result.include_in_report,
           };
 
           this._subscriptions.add(
@@ -1416,6 +1422,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
             type: result.type,
             uri: result.uri,
             parameters: result.parameters,
+            include_in_report: result.include_in_report,
           };
 
           this._subscriptions.add(
@@ -1475,6 +1482,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
             type: result.type,
             uri: result.uri,
             parameters: result.parameters,
+            include_in_report: result.include_in_report,
           };
 
           this._subscriptions.add(

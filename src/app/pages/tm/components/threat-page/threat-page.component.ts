@@ -69,6 +69,7 @@ interface ThreatFormValues {
   status?: string | null;
   mitigation?: string;
   issue_uri?: string;
+  include_in_report?: boolean;
 }
 
 /**
@@ -173,6 +174,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       status: [null],
       mitigation: ['', Validators.maxLength(1024)],
       issue_uri: [''],
+      include_in_report: [true],
     });
   }
 
@@ -494,6 +496,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       status: migratedStatus,
       mitigation: this.threat.mitigation || '',
       issue_uri: this.initialIssueUriValue,
+      include_in_report: this.threat.include_in_report,
     });
 
     // Mark form as pristine after initial population
@@ -569,6 +572,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       status: formValues.status || undefined,
       mitigation: formValues.mitigation || undefined,
       issue_uri: formValues.issue_uri || undefined,
+      include_in_report: formValues.include_in_report,
     };
 
     this.threatModelService

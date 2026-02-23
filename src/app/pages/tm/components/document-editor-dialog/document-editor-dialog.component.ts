@@ -78,7 +78,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
         ],
       ],
       description: [data.document?.description || '', Validators.maxLength(1024)],
-      include_in_report: [data.document?.include_in_report ?? true],
+      include_in_report: [data.mode === 'create' ? true : data.document?.include_in_report],
     });
 
     if (this.isReadOnly) {

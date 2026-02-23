@@ -73,7 +73,7 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
   private originalContent = '';
   private originalName = '';
   private originalDescription = '';
-  private originalIncludeInReport = true;
+  private originalIncludeInReport: boolean | undefined = true;
   private createdNoteId?: string;
   private taskListCheckboxesInitialized = false;
   private anchorClickHandler?: (event: Event) => void;
@@ -111,15 +111,16 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
         this.data.note?.description || '',
         [Validators.maxLength(this.maxDescriptionLength)],
       ],
-      include_in_report: [this.data.note?.include_in_report ?? true],
+      include_in_report: [this.data.mode === 'create' ? true : this.data.note?.include_in_report],
     });
 
     this.originalName = (this.noteForm.get('name')?.value as string | undefined) || '';
     this.originalContent = (this.noteForm.get('content')?.value as string | undefined) || '';
     this.originalDescription =
       (this.noteForm.get('description')?.value as string | undefined) || '';
-    this.originalIncludeInReport =
-      (this.noteForm.get('include_in_report')?.value as boolean | undefined) ?? true;
+    this.originalIncludeInReport = this.noteForm.get('include_in_report')?.value as
+      | boolean
+      | undefined;
 
     // Start in preview mode if there is existing content, otherwise start in edit mode
     // Always use preview mode when read-only
@@ -171,8 +172,9 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
     const currentDescription =
       (this.noteForm.get('description')?.value as string | undefined) || '';
 
-    const currentIncludeInReport =
-      (this.noteForm.get('include_in_report')?.value as boolean | undefined) ?? true;
+    const currentIncludeInReport = this.noteForm.get('include_in_report')?.value as
+      | boolean
+      | undefined;
 
     return (
       currentName !== this.originalName ||
@@ -289,7 +291,7 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
     this.originalName = formValue.name;
     this.originalContent = formValue.content;
     this.originalDescription = formValue.description || '';
-    this.originalIncludeInReport = formValue.include_in_report ?? true;
+    this.originalIncludeInReport = formValue.include_in_report;
     this.saveEvent.emit(formValue);
     this.showMessage('noteEditor.savedSuccessfully');
   }

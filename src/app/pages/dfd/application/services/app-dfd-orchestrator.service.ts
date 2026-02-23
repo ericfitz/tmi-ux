@@ -601,6 +601,14 @@ export class AppDfdOrchestrator {
     return this._state$.value;
   }
 
+  updateDiagramMetadata(metadata: {
+    diagramName?: string;
+    diagramDescription?: string;
+    includeInReport?: boolean;
+  }): void {
+    this._updateState(metadata);
+  }
+
   get stateChanged$(): Observable<DfdState> {
     return this._stateChanged$.asObservable();
   }
@@ -1065,7 +1073,7 @@ export class AppDfdOrchestrator {
             lastSaved: new Date(),
             diagramName: result.data.name,
             diagramDescription: result.data.description,
-            includeInReport: result.data.include_in_report ?? true,
+            includeInReport: result.data.include_in_report,
             threatModelName: result.data.threatModelName,
           });
         }

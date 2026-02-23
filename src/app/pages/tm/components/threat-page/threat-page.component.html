@@ -249,8 +249,8 @@
           }
         </div>
 
-        <!-- Status and Mitigated row -->
-        <div class="form-field-row two-columns">
+        <!-- Status, Mitigated, and Include in Report row -->
+        <div class="form-field-row three-columns">
           <!-- Status field -->
           <mat-form-field appearance="outline" floatLabel="always">
             <mat-label>{{ 'common.status' | transloco }}</mat-label>
@@ -273,6 +273,13 @@
           <div class="checkbox-field">
             <mat-checkbox formControlName="mitigated">
               {{ 'common.mitigated' | transloco }}
+            </mat-checkbox>
+          </div>
+
+          <!-- Include in Report -->
+          <div class="checkbox-field">
+            <mat-checkbox formControlName="include_in_report">
+              {{ 'common.includeInReport' | transloco }}
             </mat-checkbox>
           </div>
         </div>
