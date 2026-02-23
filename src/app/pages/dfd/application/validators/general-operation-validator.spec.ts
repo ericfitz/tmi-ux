@@ -197,7 +197,7 @@ describe('GeneralOperationValidator', () => {
 
     it('should warn when receiving collaborative operation from same user', () => {
       const result = validator.validate(
-        baseOperation({ source: 'websocket-message' }),
+        baseOperation({ source: 'remote-collaboration' }),
         baseContext({
           isCollaborating: true,
           userId: 'user-1',

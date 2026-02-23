@@ -15,6 +15,8 @@ import {
   UpdateEdgeOperation,
   DeleteEdgeOperation,
 } from '../../types/graph-operation.types';
+import { EdgeAttrs } from '../../domain/value-objects/edge-attrs';
+import { EdgeLabel } from '../../domain/value-objects/edge-label';
 
 @Injectable()
 export class EdgeOperationValidator extends BaseOperationValidator {
@@ -75,45 +77,45 @@ export class EdgeOperationValidator extends BaseOperationValidator {
       errors.push(permissionError);
     }
 
-    const edgeData = operation.edgeData;
+    const edgeInfo = operation.edgeInfo;
 
-    // Validate edge ID if provided
-    if (edgeData.id) {
-      const idError = this.validateCellId(edgeData.id, 'Edge ID');
+    // Validate edge ID
+    if (edgeInfo.id) {
+      const idError = this.validateCellId(edgeInfo.id, 'Edge ID');
       if (idError) {
         errors.push(idError);
       }
 
       // Check for ID conflicts
-      if (this.getCell(context.graph, edgeData.id)) {
-        errors.push(`Edge with ID '${edgeData.id}' already exists`);
+      if (this.getCell(context.graph, edgeInfo.id)) {
+        errors.push(`Edge with ID '${edgeInfo.id}' already exists`);
       }
     }
 
     // Validate source node
-    const sourceIdError = this.validateCellId(edgeData.sourceNodeId, 'Source node ID');
+    const sourceIdError = this.validateCellId(operation.sourceNodeId, 'Source node ID');
     if (sourceIdError) {
       errors.push(sourceIdError);
     } else {
-      const sourceNode = this.getNode(context.graph, edgeData.sourceNodeId);
+      const sourceNode = this.getNode(context.graph, operation.sourceNodeId);
       if (!sourceNode) {
-        errors.push(`Source node '${edgeData.sourceNodeId}' not found`);
+        errors.push(`Source node '${operation.sourceNodeId}' not found`);
       }
     }
 
     // Validate target node
-    const targetIdError = this.validateCellId(edgeData.targetNodeId, 'Target node ID');
+    const targetIdError = this.validateCellId(operation.targetNodeId, 'Target node ID');
     if (targetIdError) {
       errors.push(targetIdError);
     } else {
-      const targetNode = this.getNode(context.graph, edgeData.targetNodeId);
+      const targetNode = this.getNode(context.graph, operation.targetNodeId);
       if (!targetNode) {
-        errors.push(`Target node '${edgeData.targetNodeId}' not found`);
+        errors.push(`Target node '${operation.targetNodeId}' not found`);
       }
     }
 
     // Check for self-loops
-    if (edgeData.sourceNodeId === edgeData.targetNodeId) {
+    if (operation.sourceNodeId === operation.targetNodeId) {
       warnings.push('Creating self-loop edge (source and target are the same node)');
     }
 
@@ -121,27 +123,18 @@ export class EdgeOperationValidator extends BaseOperationValidator {
     if (errors.length === 0) {
       this._checkDuplicateEdge(
         context.graph,
-        edgeData.sourceNodeId,
-        edgeData.targetNodeId,
+        operation.sourceNodeId,
+        operation.targetNodeId,
         warnings,
       );
     }
 
-    // Validate edge type
-    this._validateEdgeType(edgeData.edgeType, warnings);
+    // Validate labels
+    this.validateEdgeLabels(edgeInfo.labels, errors, warnings);
 
-    // Validate label
-    if (edgeData.label !== undefined && edgeData.label !== null) {
-      if (typeof edgeData.label !== 'string') {
-        errors.push('Edge label must be a string');
-      } else if (edgeData.label.length > 50) {
-        warnings.push('Edge label is very long, consider shortening for better display');
-      }
-    }
-
-    // Validate style properties
-    if (edgeData.style) {
-      this.validateEdgeStyle(edgeData.style, errors, warnings);
+    // Validate attrs (visual styling)
+    if (edgeInfo.attrs) {
+      this.validateEdgeAttrs(edgeInfo.attrs, errors, warnings);
     }
 
     return errors.length > 0
@@ -166,19 +159,6 @@ export class EdgeOperationValidator extends BaseOperationValidator {
 
     if (duplicateEdge) {
       warnings.push(`Similar edge already exists between these nodes (ID: ${duplicateEdge.id})`);
-    }
-  }
-
-  private _validateEdgeType(edgeType: string | undefined, warnings: string[]): void {
-    if (!edgeType) {
-      warnings.push('Edge type not specified, will default to "data-flow"');
-      return;
-    }
-    const validEdgeTypes = ['data-flow', 'control-flow', 'trust-boundary'];
-    if (!validEdgeTypes.includes(edgeType)) {
-      warnings.push(
-        `Unusual edge type '${edgeType}', expected one of: ${validEdgeTypes.join(', ')}`,
-      );
     }
   }
 
@@ -217,50 +197,46 @@ export class EdgeOperationValidator extends BaseOperationValidator {
     const updates = operation.updates;
 
     // Validate new source node if being updated
-    if (updates.sourceNodeId) {
-      const sourceIdError = this.validateCellId(updates.sourceNodeId, 'New source node ID');
+    if (updates.source) {
+      const sourceIdError = this.validateCellId(updates.source.cell, 'New source node ID');
       if (sourceIdError) {
         errors.push(sourceIdError);
       } else {
-        const sourceNode = this.getNode(context.graph, updates.sourceNodeId);
+        const sourceNode = this.getNode(context.graph, updates.source.cell);
         if (!sourceNode) {
-          errors.push(`New source node '${updates.sourceNodeId}' not found`);
+          errors.push(`New source node '${updates.source.cell}' not found`);
         }
       }
     }
 
     // Validate new target node if being updated
-    if (updates.targetNodeId) {
-      const targetIdError = this.validateCellId(updates.targetNodeId, 'New target node ID');
+    if (updates.target) {
+      const targetIdError = this.validateCellId(updates.target.cell, 'New target node ID');
       if (targetIdError) {
         errors.push(targetIdError);
       } else {
-        const targetNode = this.getNode(context.graph, updates.targetNodeId);
+        const targetNode = this.getNode(context.graph, updates.target.cell);
         if (!targetNode) {
-          errors.push(`New target node '${updates.targetNodeId}' not found`);
+          errors.push(`New target node '${updates.target.cell}' not found`);
         }
       }
     }
 
     // Check for self-loops if both source and target are being updated
-    const newSourceId = updates.sourceNodeId;
-    const newTargetId = updates.targetNodeId;
+    const newSourceId = updates.source?.cell;
+    const newTargetId = updates.target?.cell;
     if (newSourceId && newTargetId && newSourceId === newTargetId) {
       warnings.push('Update will create self-loop edge (source and target are the same node)');
     }
 
-    // Validate label update
-    if (updates.label !== undefined && updates.label !== null) {
-      if (typeof updates.label !== 'string') {
-        errors.push('Edge label must be a string');
-      } else if (updates.label.length > 50) {
-        warnings.push('Edge label is very long, consider shortening for better display');
-      }
+    // Validate label updates
+    if (updates.labels !== undefined) {
+      this.validateEdgeLabels(updates.labels ?? [], errors, warnings);
     }
 
-    // Validate style updates
-    if (updates.style) {
-      this.validateEdgeStyle(updates.style, errors, warnings);
+    // Validate attrs updates
+    if (updates.attrs) {
+      this.validateEdgeAttrs(updates.attrs, errors, warnings);
     }
 
     return errors.length > 0
@@ -304,52 +280,99 @@ export class EdgeOperationValidator extends BaseOperationValidator {
       : this.createValidResult(warnings);
   }
 
-  private validateEdgeStyle(style: any, errors: string[], warnings: string[]): void {
-    // Validate colors
-    if (style.stroke && !isValidColor(style.stroke)) {
-      errors.push(`Invalid stroke color: ${style.stroke}`);
-    }
-    if (style.textColor && !isValidColor(style.textColor)) {
-      errors.push(`Invalid text color: ${style.textColor}`);
-    }
-    if (style.labelBackground && !isValidColor(style.labelBackground)) {
-      errors.push(`Invalid label background color: ${style.labelBackground}`);
-    }
-    if (style.labelBorder && !isValidColor(style.labelBorder)) {
-      errors.push(`Invalid label border color: ${style.labelBorder}`);
+  private validateEdgeLabels(labels: EdgeLabel[], errors: string[], warnings: string[]): void {
+    if (!Array.isArray(labels)) {
+      return;
     }
 
-    // Validate stroke width
-    if (style.strokeWidth !== undefined) {
-      const strokeWidthError = this.validatePositive(style.strokeWidth, 'Stroke width');
-      if (strokeWidthError) {
-        errors.push(strokeWidthError);
-      } else if (style.strokeWidth > 10) {
-        warnings.push('Very thick stroke width may affect visual appearance');
-      }
-    }
+    for (let i = 0; i < labels.length; i++) {
+      const label = labels[i];
+      const labelText = label.attrs?.text?.text;
 
-    // Validate font size
-    if (style.fontSize !== undefined) {
-      const fontSizeError = this.validatePositive(style.fontSize, 'Font size');
-      if (fontSizeError) {
-        errors.push(fontSizeError);
-      } else if (style.fontSize < 8) {
-        warnings.push('Very small font size may be difficult to read');
-      } else if (style.fontSize > 18) {
-        warnings.push('Very large font size may not fit well on edge');
-      }
-    }
-
-    // Validate stroke dash array
-    if (style.strokeDasharray !== undefined) {
-      if (typeof style.strokeDasharray === 'string') {
-        // Basic validation for dash array format
-        if (!/^[\d\s,.-]+$/.test(style.strokeDasharray)) {
-          errors.push('Invalid stroke dash array format');
+      if (labelText !== undefined && labelText !== null) {
+        if (typeof labelText !== 'string') {
+          errors.push(`Edge label ${i} text must be a string`);
+        } else if (labelText.length > 50) {
+          warnings.push(`Edge label ${i} is very long, consider shortening for better display`);
         }
-      } else if (style.strokeDasharray !== null) {
-        errors.push('Stroke dash array must be a string or null');
+      }
+
+      // Validate label position if specified
+      if (label.position !== undefined && typeof label.position === 'number') {
+        if (label.position < 0 || label.position > 1) {
+          warnings.push(`Edge label ${i} position should be between 0 and 1`);
+        }
+      }
+
+      // Validate label text color
+      const textFill = label.attrs?.text?.fill;
+      if (textFill && !isValidColor(textFill)) {
+        errors.push(`Invalid label ${i} text color: ${textFill}`);
+      }
+    }
+  }
+
+  private validateEdgeAttrs(attrs: EdgeAttrs, errors: string[], warnings: string[]): void {
+    // Validate line styling
+    if (attrs.line) {
+      // Validate stroke color
+      if (attrs.line.stroke && !isValidColor(attrs.line.stroke)) {
+        errors.push(`Invalid stroke color: ${attrs.line.stroke}`);
+      }
+
+      // Validate stroke width
+      if (attrs.line.strokeWidth !== undefined) {
+        const strokeWidthError = this.validatePositive(attrs.line.strokeWidth, 'Stroke width');
+        if (strokeWidthError) {
+          errors.push(strokeWidthError);
+        } else if (attrs.line.strokeWidth > 10) {
+          warnings.push('Very thick stroke width may affect visual appearance');
+        }
+      }
+
+      // Validate stroke dash array
+      if (attrs.line.strokeDasharray !== undefined && attrs.line.strokeDasharray !== null) {
+        if (typeof attrs.line.strokeDasharray === 'string') {
+          if (!/^[\d\s,.-]+$/.test(attrs.line.strokeDasharray)) {
+            errors.push('Invalid stroke dash array format');
+          }
+        } else {
+          errors.push('Stroke dash array must be a string or null');
+        }
+      }
+
+      // Validate target marker
+      if (attrs.line.targetMarker?.fill && !isValidColor(attrs.line.targetMarker.fill)) {
+        errors.push(`Invalid target marker fill color: ${attrs.line.targetMarker.fill}`);
+      }
+      if (attrs.line.targetMarker?.stroke && !isValidColor(attrs.line.targetMarker.stroke)) {
+        errors.push(`Invalid target marker stroke color: ${attrs.line.targetMarker.stroke}`);
+      }
+
+      // Validate source marker
+      if (attrs.line.sourceMarker?.fill && !isValidColor(attrs.line.sourceMarker.fill)) {
+        errors.push(`Invalid source marker fill color: ${attrs.line.sourceMarker.fill}`);
+      }
+      if (attrs.line.sourceMarker?.stroke && !isValidColor(attrs.line.sourceMarker.stroke)) {
+        errors.push(`Invalid source marker stroke color: ${attrs.line.sourceMarker.stroke}`);
+      }
+    }
+
+    // Validate text styling
+    if (attrs.text) {
+      if (attrs.text.fill && !isValidColor(attrs.text.fill)) {
+        errors.push(`Invalid text color: ${attrs.text.fill}`);
+      }
+
+      if (attrs.text.fontSize !== undefined) {
+        const fontSizeError = this.validatePositive(attrs.text.fontSize, 'Font size');
+        if (fontSizeError) {
+          errors.push(fontSizeError);
+        } else if (attrs.text.fontSize < 8) {
+          warnings.push('Very small font size may be difficult to read');
+        } else if (attrs.text.fontSize > 18) {
+          warnings.push('Very large font size may not fit well on edge');
+        }
       }
     }
   }

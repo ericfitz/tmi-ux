@@ -4,7 +4,7 @@ import { tap } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
 import { LoggerService } from '../services/logger.service';
-import { SecurityConfigService, SecurityHeaders } from '../services/security-config.service';
+import { SecurityConfigService } from '../services/security-config.service';
 
 export const securityHeadersInterceptor: HttpInterceptorFn = (req, next) => {
   const logger = inject(LoggerService);
@@ -21,8 +21,7 @@ export const securityHeadersInterceptor: HttpInterceptorFn = (req, next) => {
         // Check for security headers in the response
         const headers = event.headers;
         const missingHeaders: string[] = [];
-        const recommendationsObservable = securityConfig.recommendedHeaders$;
-        const recommendations = recommendationsObservable.value as SecurityHeaders;
+        const recommendations = securityConfig.recommendedHeaders;
 
         // Check for recommended security headers
         Object.keys(recommendations).forEach(headerName => {

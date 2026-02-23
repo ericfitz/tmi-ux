@@ -2,7 +2,7 @@
  * Tests for EdgeOperationValidator
  *
  * Covers: create/update/delete edge validation, source/target node checks,
- * self-loop warnings, duplicate detection, style validation.
+ * self-loop warnings, duplicate detection, attrs validation.
  */
 
 import '@angular/compiler';
@@ -11,6 +11,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import { LoggerService } from '../../../../core/services/logger.service';
 import { EdgeOperationValidator } from './edge-operation-validator';
+import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { createTypedMockLoggerService, type MockLoggerService } from '@testing/mocks';
 
 describe('EdgeOperationValidator', () => {
@@ -115,12 +116,9 @@ describe('EdgeOperationValidator', () => {
       const graph = createMockGraph({ cells, nodes: cells });
 
       const operation = baseOperation('create-edge', {
-        edgeData: {
-          id: 'edge-1',
-          sourceNodeId: 'node-1',
-          targetNodeId: 'node-2',
-          edgeType: 'data-flow',
-        },
+        edgeInfo: EdgeInfo.createSimple('edge-1', 'node-1', 'node-2'),
+        sourceNodeId: 'node-1',
+        targetNodeId: 'node-2',
       });
 
       const result = validator.validate(operation, baseContext(graph));
@@ -133,11 +131,9 @@ describe('EdgeOperationValidator', () => {
       const graph = createMockGraph({ cells });
 
       const operation = baseOperation('create-edge', {
-        edgeData: {
-          sourceNodeId: 'nonexistent',
-          targetNodeId: 'node-2',
-          edgeType: 'data-flow',
-        },
+        edgeInfo: EdgeInfo.createSimple('edge-1', 'nonexistent', 'node-2'),
+        sourceNodeId: 'nonexistent',
+        targetNodeId: 'node-2',
       });
 
       const result = validator.validate(operation, baseContext(graph));
@@ -151,11 +147,9 @@ describe('EdgeOperationValidator', () => {
       const graph = createMockGraph({ cells });
 
       const operation = baseOperation('create-edge', {
-        edgeData: {
-          sourceNodeId: 'node-1',
-          targetNodeId: 'nonexistent',
-          edgeType: 'data-flow',
-        },
+        edgeInfo: EdgeInfo.createSimple('edge-1', 'node-1', 'nonexistent'),
+        sourceNodeId: 'node-1',
+        targetNodeId: 'nonexistent',
       });
 
       const result = validator.validate(operation, baseContext(graph));
@@ -175,12 +169,9 @@ describe('EdgeOperationValidator', () => {
       const graph = createMockGraph({ cells });
 
       const operation = baseOperation('create-edge', {
-        edgeData: {
-          id: 'edge-1',
-          sourceNodeId: 'node-1',
-          targetNodeId: 'node-2',
-          edgeType: 'data-flow',
-        },
+        edgeInfo: EdgeInfo.createSimple('edge-1', 'node-1', 'node-2'),
+        sourceNodeId: 'node-1',
+        targetNodeId: 'node-2',
       });
 
       const result = validator.validate(operation, baseContext(graph));
@@ -193,12 +184,14 @@ describe('EdgeOperationValidator', () => {
       const cells = new Map<string, any>([['node-1', node]]);
       const graph = createMockGraph({ cells });
 
+      // EdgeInfo.createSimple would throw on same source+target+port,
+      // so create with different ports
+      const edgeInfo = EdgeInfo.createWithPorts('edge-1', 'node-1', 'node-1', 'right', 'left');
+
       const operation = baseOperation('create-edge', {
-        edgeData: {
-          sourceNodeId: 'node-1',
-          targetNodeId: 'node-1',
-          edgeType: 'data-flow',
-        },
+        edgeInfo,
+        sourceNodeId: 'node-1',
+        targetNodeId: 'node-1',
       });
 
       const result = validator.validate(operation, baseContext(graph));
@@ -217,11 +210,9 @@ describe('EdgeOperationValidator', () => {
       const graph = createMockGraph({ cells, edges: [existingEdge] });
 
       const operation = baseOperation('create-edge', {
-        edgeData: {
-          sourceNodeId: 'node-1',
-          targetNodeId: 'node-2',
-          edgeType: 'data-flow',
-        },
+        edgeInfo: EdgeInfo.createSimple('edge-2', 'node-1', 'node-2'),
+        sourceNodeId: 'node-1',
+        targetNodeId: 'node-2',
       });
 
       const result = validator.validate(operation, baseContext(graph));
@@ -231,7 +222,7 @@ describe('EdgeOperationValidator', () => {
       );
     });
 
-    it('should warn on invalid edge type', () => {
+    it('should reject invalid stroke color in attrs', () => {
       const sourceNode = mockNode('node-1');
       const targetNode = mockNode('node-2');
       const cells = new Map<string, any>([
@@ -240,58 +231,15 @@ describe('EdgeOperationValidator', () => {
       ]);
       const graph = createMockGraph({ cells });
 
-      const operation = baseOperation('create-edge', {
-        edgeData: {
-          sourceNodeId: 'node-1',
-          targetNodeId: 'node-2',
-          edgeType: 'custom-flow',
-        },
+      const edgeInfo = EdgeInfo.createSimple('edge-1', 'node-1', 'node-2');
+      const edgeInfoWithBadAttrs = edgeInfo.withAttrs({
+        line: { stroke: 'not-a-color' },
       });
 
-      const result = validator.validate(operation, baseContext(graph));
-      expect(result.valid).toBe(true);
-      expect(result.warnings.some((w: string) => w.includes('Unusual edge type'))).toBe(true);
-    });
-
-    it('should reject non-string label', () => {
-      const sourceNode = mockNode('node-1');
-      const targetNode = mockNode('node-2');
-      const cells = new Map<string, any>([
-        ['node-1', sourceNode],
-        ['node-2', targetNode],
-      ]);
-      const graph = createMockGraph({ cells });
-
       const operation = baseOperation('create-edge', {
-        edgeData: {
-          sourceNodeId: 'node-1',
-          targetNodeId: 'node-2',
-          edgeType: 'data-flow',
-          label: 123,
-        },
-      });
-
-      const result = validator.validate(operation, baseContext(graph));
-      expect(result.valid).toBe(false);
-      expect(result.errors.some((e: string) => e.includes('label must be a string'))).toBe(true);
-    });
-
-    it('should reject invalid stroke color in style', () => {
-      const sourceNode = mockNode('node-1');
-      const targetNode = mockNode('node-2');
-      const cells = new Map<string, any>([
-        ['node-1', sourceNode],
-        ['node-2', targetNode],
-      ]);
-      const graph = createMockGraph({ cells });
-
-      const operation = baseOperation('create-edge', {
-        edgeData: {
-          sourceNodeId: 'node-1',
-          targetNodeId: 'node-2',
-          edgeType: 'data-flow',
-          style: { stroke: 'not-a-color' },
-        },
+        edgeInfo: edgeInfoWithBadAttrs,
+        sourceNodeId: 'node-1',
+        targetNodeId: 'node-2',
       });
 
       const result = validator.validate(operation, baseContext(graph));
@@ -301,10 +249,9 @@ describe('EdgeOperationValidator', () => {
 
     it('should reject when graph is null', () => {
       const operation = baseOperation('create-edge', {
-        edgeData: {
-          sourceNodeId: 'node-1',
-          targetNodeId: 'node-2',
-        },
+        edgeInfo: EdgeInfo.createSimple('edge-1', 'node-1', 'node-2'),
+        sourceNodeId: 'node-1',
+        targetNodeId: 'node-2',
       });
 
       const result = validator.validate(operation, baseContext(null));
@@ -319,7 +266,7 @@ describe('EdgeOperationValidator', () => {
 
       const operation = baseOperation('update-edge', {
         edgeId: 'nonexistent',
-        updates: { label: 'New Label' },
+        updates: { labels: [] },
       });
 
       const result = validator.validate(operation, baseContext(graph));
@@ -334,7 +281,7 @@ describe('EdgeOperationValidator', () => {
 
       const operation = baseOperation('update-edge', {
         edgeId: 'edge-1',
-        updates: { sourceNodeId: 'nonexistent' },
+        updates: { source: { cell: 'nonexistent', port: 'right' } },
       });
 
       const result = validator.validate(operation, baseContext(graph));

@@ -180,6 +180,9 @@ export interface OperationContext {
   readonly userId: string;
   readonly isCollaborating: boolean;
   readonly permissions: string[];
+  readonly lastOperationTime?: number;
+  readonly sessionId?: string;
+  readonly originUserId?: string;
 }
 
 /**
