@@ -42,6 +42,15 @@
           (valueChange)="onDiagramDescriptionChange($event)"
         ></app-inline-edit>
       </div>
+      <div class="subtitle include-in-report">
+        <mat-checkbox
+          [checked]="includeInReport"
+          [disabled]="isReadOnlyMode || isCollaborating"
+          (change)="onIncludeInReportChange($event)"
+        >
+          {{ 'common.includeInReport' | transloco }}
+        </mat-checkbox>
+      </div>
     </div>
     <div class="collaboration-controls">
       <app-dfd-collaboration></app-dfd-collaboration>

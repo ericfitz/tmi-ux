@@ -517,6 +517,7 @@
     "groups": "グループ",
     "id": "ID",
     "identityProvider": "IDプロバイダー",
+    "includeInReport": "レポートに含める",
     "issueUri": "課題URL",
     "language": "{{language}}",
     "lastModified": "最終更新日",

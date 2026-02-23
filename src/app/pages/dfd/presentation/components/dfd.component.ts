@@ -211,6 +211,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // Diagram data
   diagramName: string | null = null;
   diagramDescription: string | null = null;
+  includeInReport = true;
   threatModelName: string | null = null;
   threatModelPermission: 'reader' | 'writer' | null = null;
 
@@ -634,6 +635,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         // Description can be empty string, so check for undefined specifically
         if (state.diagramDescription !== undefined) {
           this.diagramDescription = state.diagramDescription ?? null;
+        }
+        if (state.includeInReport !== undefined) {
+          this.includeInReport = state.includeInReport;
         }
         if (state.threatModelName) {
           this.threatModelName = state.threatModelName;
@@ -1281,6 +1285,30 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         error: error => {
           this.logger.error('Failed to update diagram description', { error });
+        },
+      });
+  }
+
+  onIncludeInReportChange(event: { checked: boolean }): void {
+    if (!this.threatModelId || !this.dfdId || this.isReadOnlyMode || this.isCollaborating) {
+      return;
+    }
+
+    this.threatModelService
+      .patchDiagramProperties(this.threatModelId, this.dfdId, {
+        include_in_report: event.checked,
+      })
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: updatedDiagram => {
+          this.includeInReport = updatedDiagram.include_in_report ?? true;
+          this.cdr.detectChanges();
+          this.logger.info('Diagram include_in_report updated', {
+            include_in_report: this.includeInReport,
+          });
+        },
+        error: error => {
+          this.logger.error('Failed to update diagram include_in_report', { error });
         },
       });
   }

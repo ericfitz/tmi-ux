@@ -517,6 +517,7 @@
     "groups": "Grup",
     "id": "ID",
     "identityProvider": "Penyedia Identitas",
+    "includeInReport": "Sertakan dalam Laporan",
     "issueUri": "URL Isu",
     "language": "{{language}}",
     "lastModified": "Terakhir Diubah",

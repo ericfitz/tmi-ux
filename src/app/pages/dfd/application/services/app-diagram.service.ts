@@ -25,6 +25,7 @@ export interface DiagramData {
   id: string;
   name: string;
   description?: string;
+  include_in_report?: boolean;
   threatModelId?: string;
   threatModelName?: string;
   cells?: any[]; // Full diagram cells data for rendering
@@ -97,6 +98,7 @@ export class AppDiagramService {
               id: diagramId,
               name: diagram.name,
               description: diagram.description,
+              include_in_report: diagram.include_in_report,
               threatModelId,
               threatModelName: threatModel?.name,
               cells: diagram.cells || [], // Use the diagram cells directly from the diagram endpoint

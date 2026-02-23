@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -26,6 +27,7 @@ interface RepositoryFormValues {
   refType?: 'branch' | 'tag' | 'commit';
   refValue?: string;
   subPath?: string;
+  include_in_report?: boolean;
 }
 
 /**
@@ -48,6 +50,7 @@ export interface RepositoryEditorDialogData {
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    MatCheckboxModule,
     MatTooltipModule,
     ReactiveFormsModule,
     TranslocoModule,
@@ -85,6 +88,7 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
       refType: [data.repository?.parameters?.refType || 'branch'],
       refValue: [data.repository?.parameters?.refValue || '', Validators.maxLength(256)],
       subPath: [data.repository?.parameters?.subPath || '', Validators.maxLength(256)],
+      include_in_report: [data.repository?.include_in_report ?? true],
     });
 
     if (this.isReadOnly) {
@@ -149,6 +153,7 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
             subPath: formValues.subPath,
           }
         : undefined,
+      include_in_report: formValues.include_in_report,
     };
 
     this.dialogRef.close(result);

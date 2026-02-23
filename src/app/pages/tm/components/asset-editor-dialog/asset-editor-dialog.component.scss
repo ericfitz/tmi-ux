@@ -41,6 +41,13 @@
   }
 }
 
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+  height: 56px;
+}
+
 mat-dialog-content {
   max-height: calc(100vh - 220px);
   overflow: hidden auto;

@@ -1252,9 +1252,9 @@ export class ThreatModelService implements OnDestroy {
   patchDiagramProperties(
     threatModelId: string,
     diagramId: string,
-    properties: { name?: string; description?: string },
+    properties: { name?: string; description?: string; include_in_report?: boolean },
   ): Observable<Diagram> {
-    const operations: { op: 'replace'; path: string; value: string }[] = [];
+    const operations: { op: 'replace'; path: string; value: string | boolean }[] = [];
 
     if (properties.name !== undefined) {
       operations.push({
@@ -1269,6 +1269,14 @@ export class ThreatModelService implements OnDestroy {
         op: 'replace' as const,
         path: '/description',
         value: properties.description,
+      });
+    }
+
+    if (properties.include_in_report !== undefined) {
+      operations.push({
+        op: 'replace' as const,
+        path: '/include_in_report',
+        value: properties.include_in_report,
       });
     }
 

@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -26,6 +27,7 @@ interface AssetFormValues {
   criticality?: string;
   classification?: string[];
   sensitivity?: string;
+  include_in_report?: boolean;
 }
 
 /**
@@ -49,6 +51,7 @@ export interface AssetEditorDialogData {
     MatSelectModule,
     MatChipsModule,
     MatIconModule,
+    MatCheckboxModule,
     MatTooltipModule,
     ReactiveFormsModule,
     TranslocoModule,
@@ -85,6 +88,7 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
       criticality: [data.asset?.criticality || '', Validators.maxLength(64)],
       classification: [data.asset?.classification || []],
       sensitivity: [data.asset?.sensitivity || '', Validators.maxLength(256)],
+      include_in_report: [data.asset?.include_in_report ?? true],
     });
 
     if (this.isReadOnly) {
@@ -166,6 +170,8 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
     if (formValues.sensitivity?.trim()) {
       result.sensitivity = formValues.sensitivity.trim();
     }
+
+    result.include_in_report = formValues.include_in_report;
 
     this.dialogRef.close(result);
   }

@@ -33,6 +33,13 @@ mat-dialog-actions {
   padding: 8px 24px 20px;
 }
 
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+  height: 56px;
+}
+
 // URI suggestion hint styling
 .uri-suggestion-hint {
   color: #ff9800; // Orange color for warnings

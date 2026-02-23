@@ -517,6 +517,7 @@
     "groups": "গ্রুপ",
     "id": "আইডি",
     "identityProvider": "পরিচয় প্রদানকারী",
+    "includeInReport": "প্রতিবেদনে অন্তর্ভুক্ত করুন",
     "issueUri": "সমস্যা URL",
     "language": "{{language}}",
     "lastModified": "সর্বশেষ পরিবর্তিত",

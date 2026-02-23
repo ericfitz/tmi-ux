@@ -517,6 +517,7 @@
     "groups": "กลุ่ม",
     "id": "รหัส",
     "identityProvider": "ผู้ให้บริการยืนยันตัวตน",
+    "includeInReport": "รวมในรายงาน",
     "issueUri": "URL ปัญหา",
     "language": "{{language}}",
     "lastModified": "แก้ไขล่าสุด",

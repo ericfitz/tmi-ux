@@ -517,6 +517,7 @@
     "groups": "المجموعات",
     "id": "المعرّف",
     "identityProvider": "مزود الهوية",
+    "includeInReport": "تضمين في التقرير",
     "issueUri": "رابط المشكلة",
     "language": "{{language}}",
     "lastModified": "آخر تعديل",

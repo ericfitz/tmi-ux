@@ -72,6 +72,7 @@ export interface DfdState {
   readonly threatModelId?: string;
   readonly diagramName?: string;
   readonly diagramDescription?: string;
+  readonly includeInReport?: boolean;
   readonly threatModelName?: string;
 }
 
@@ -1064,6 +1065,7 @@ export class AppDfdOrchestrator {
             lastSaved: new Date(),
             diagramName: result.data.name,
             diagramDescription: result.data.description,
+            includeInReport: result.data.include_in_report ?? true,
             threatModelName: result.data.threatModelName,
           });
         }

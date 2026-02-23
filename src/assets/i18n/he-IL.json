@@ -517,6 +517,7 @@
     "groups": "קבוצות",
     "id": "מזהה",
     "identityProvider": "ספק זהות",
+    "includeInReport": "כלול בדוח",
     "issueUri": "כתובת URL של הבעיה",
     "language": "{{language}}",
     "lastModified": "שונה לאחרונה",

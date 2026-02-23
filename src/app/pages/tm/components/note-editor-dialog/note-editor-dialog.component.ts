@@ -18,6 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Note } from '../../models/threat-model.model';
 
@@ -37,6 +38,7 @@ export interface NoteFormResult {
   name: string;
   content: string;
   description?: string;
+  include_in_report?: boolean;
 }
 
 @Component({
@@ -50,6 +52,7 @@ export interface NoteFormResult {
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatCheckboxModule,
     MatTooltipModule,
     MatSnackBarModule,
     TranslocoModule,
@@ -70,6 +73,7 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
   private originalContent = '';
   private originalName = '';
   private originalDescription = '';
+  private originalIncludeInReport = true;
   private createdNoteId?: string;
   private taskListCheckboxesInitialized = false;
   private anchorClickHandler?: (event: Event) => void;
@@ -107,12 +111,15 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
         this.data.note?.description || '',
         [Validators.maxLength(this.maxDescriptionLength)],
       ],
+      include_in_report: [this.data.note?.include_in_report ?? true],
     });
 
     this.originalName = (this.noteForm.get('name')?.value as string | undefined) || '';
     this.originalContent = (this.noteForm.get('content')?.value as string | undefined) || '';
     this.originalDescription =
       (this.noteForm.get('description')?.value as string | undefined) || '';
+    this.originalIncludeInReport =
+      (this.noteForm.get('include_in_report')?.value as boolean | undefined) ?? true;
 
     // Start in preview mode if there is existing content, otherwise start in edit mode
     // Always use preview mode when read-only
@@ -164,10 +171,14 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
     const currentDescription =
       (this.noteForm.get('description')?.value as string | undefined) || '';
 
+    const currentIncludeInReport =
+      (this.noteForm.get('include_in_report')?.value as boolean | undefined) ?? true;
+
     return (
       currentName !== this.originalName ||
       currentContent !== this.originalContent ||
-      currentDescription !== this.originalDescription
+      currentDescription !== this.originalDescription ||
+      currentIncludeInReport !== this.originalIncludeInReport
     );
   }
 
@@ -278,6 +289,7 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
     this.originalName = formValue.name;
     this.originalContent = formValue.content;
     this.originalDescription = formValue.description || '';
+    this.originalIncludeInReport = formValue.include_in_report ?? true;
     this.saveEvent.emit(formValue);
     this.showMessage('noteEditor.savedSuccessfully');
   }
@@ -326,6 +338,7 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
       name: value.name.trim(),
       content: value.content.trim(),
       description: value.description?.trim(),
+      include_in_report: value.include_in_report,
     };
   }
 

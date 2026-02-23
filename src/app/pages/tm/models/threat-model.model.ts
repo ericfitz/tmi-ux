@@ -38,6 +38,7 @@ export interface Document {
   name: string;
   uri: string;
   description?: string;
+  include_in_report?: boolean;
   created_at: string;
   modified_at: string;
   metadata?: Metadata[];
@@ -54,6 +55,7 @@ export interface Repository {
     refValue: string;
     subPath?: string;
   };
+  include_in_report?: boolean;
   created_at: string;
   modified_at: string;
   metadata?: Metadata[];
@@ -64,6 +66,7 @@ export interface Note {
   name: string;
   content: string;
   description?: string;
+  include_in_report?: boolean;
   created_at: string;
   modified_at: string;
   metadata?: Metadata[];
@@ -77,6 +80,7 @@ export interface Asset {
   criticality?: string | null;
   classification?: string[] | null;
   sensitivity?: string | null;
+  include_in_report?: boolean;
   created_at: string;
   modified_at: string;
   metadata?: Metadata[];
@@ -105,6 +109,7 @@ export interface Threat {
   threat_type: string[];
   asset_id?: string;
   issue_uri?: string;
+  include_in_report?: boolean;
   metadata?: Metadata[];
   cwe_id?: string[];
   cvss?: CVSSScore[];

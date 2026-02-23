@@ -517,6 +517,7 @@
     "groups": "گروپس",
     "id": "شناخت",
     "identityProvider": "شناختی فراہم کنندہ",
+    "includeInReport": "رپورٹ میں شامل کریں",
     "issueUri": "مسئلہ URL",
     "language": "{{language}}",
     "lastModified": "آخری ترمیم",

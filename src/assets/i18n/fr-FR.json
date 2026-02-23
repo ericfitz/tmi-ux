@@ -517,6 +517,7 @@
     "groups": "Groupes",
     "id": "ID",
     "identityProvider": "Fournisseur d'Identite",
+    "includeInReport": "Inclure dans le Rapport",
     "issueUri": "URL du Probleme",
     "language": "{{language}}",
     "lastModified": "Derniere Modification",

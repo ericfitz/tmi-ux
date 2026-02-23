@@ -517,6 +517,7 @@
     "groups": "समूह",
     "id": "आईडी",
     "identityProvider": "पहचान प्रदाता",
+    "includeInReport": "रिपोर्ट में शामिल करें",
     "issueUri": "समस्या URL",
     "language": "{{language}}",
     "lastModified": "अंतिम संशोधित",

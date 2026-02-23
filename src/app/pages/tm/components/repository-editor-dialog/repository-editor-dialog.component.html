@@ -122,6 +122,12 @@
           }
         </mat-form-field>
       </div>
+
+      <div class="checkbox-field">
+        <mat-checkbox formControlName="include_in_report" tabindex="8">
+          {{ 'common.includeInReport' | transloco }}
+        </mat-checkbox>
+      </div>
     </div>
   </form>
 </mat-dialog-content>
@@ -129,7 +135,7 @@
   <button
     mat-button
     (click)="onCancel()"
-    tabindex="8"
+    tabindex="9"
     [attr.aria-label]="isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco)"
   >
     {{ isReadOnly ? ('common.close' | transloco) : ('common.cancel' | transloco) }}
@@ -140,7 +146,7 @@
       color="primary"
       [disabled]="repositoryForm.invalid"
       (click)="onSubmit()"
-      tabindex="9"
+      tabindex="10"
       [attr.aria-label]="
         mode === 'create' ? ('common.create' | transloco) : ('common.save' | transloco)
       "

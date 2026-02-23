@@ -517,6 +517,7 @@
     "groups": "Группы",
     "id": "Идентификатор",
     "identityProvider": "Поставщик удостоверений",
+    "includeInReport": "Включить в отчет",
     "issueUri": "URL Задачи",
     "language": "{{language}}",
     "lastModified": "Последнее Изменение",

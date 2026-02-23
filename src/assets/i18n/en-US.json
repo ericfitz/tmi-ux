@@ -536,6 +536,7 @@
     "groups": "Groups",
     "id": "ID",
     "identityProvider": "Identity Provider",
+    "includeInReport": "Include in Report",
     "issueUri": "Issue URL",
     "language": "{{language}}",
     "lastModified": "Last Modified",
