@@ -14,13 +14,23 @@
   <div class="filters-row">
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>{{ 'adminSurveys.searchTemplates' | transloco }}</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
       <input
         matInput
         [(ngModel)]="searchText"
         (input)="onFilterChange()"
         [placeholder]="'adminSurveys.searchByName' | transloco"
       />
-      <mat-icon matSuffix>search</mat-icon>
+      @if (searchText) {
+        <button
+          matSuffix
+          mat-icon-button
+          (click)="clearSearch()"
+          [matTooltip]="'dashboard.clearSearch' | transloco"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="status-filter">
