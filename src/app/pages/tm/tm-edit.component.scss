@@ -1,3 +1,5 @@
+@use '../../../styles/link-colors' as links;
+
 /* stylelint-disable no-descending-specificity */
 
 .tm-edit-container {
@@ -180,17 +182,7 @@
 
 // URL view content - readonly input styled as hyperlink
 .url-view-content {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
-  &:hover {
-    color: var(--color-primary-dark) !important;
-  }
-
-  &:visited {
-    color: var(--color-link-visited) !important;
-  }
+  @include links.url-link-styles;
 }
 
 .assets-card,

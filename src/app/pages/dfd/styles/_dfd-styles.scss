@@ -4,8 +4,8 @@
 // IMPORTS
 // =============================================================================
 
-// Import notification styles
-@use 'notification-styles';
+// Notification styles are in src/styles/_notification-styles.scss (global scope)
+// because snackbars render in the CDK overlay outside component encapsulation.
 
 // =============================================================================
 // MIXINS AND VARIABLES

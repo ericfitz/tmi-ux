@@ -1,3 +1,5 @@
+@use '../../../../../styles/link-colors' as links;
+
 .threat-page-container {
   width: 100%;
   padding: 16px;
@@ -173,13 +175,7 @@
 }
 
 .uri-view-content {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
-  &:hover {
-    color: var(--color-primary-dark) !important;
-  }
+  @include links.url-link-styles;
 }
 
 .view-only-uri {
