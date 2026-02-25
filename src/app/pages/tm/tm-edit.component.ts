@@ -460,23 +460,6 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Migrates old severity values in all threats to new numeric keys
-   * This ensures that old string values like "High" are converted to "4"
-   * Uses a hardcoded mapping for immediate conversion without waiting for translations
-   */
-  private migrateThreatSeverityValues(): void {
-    if (!this.threatModel?.threats) {
-      this.threatsDataSource.data = [];
-      return;
-    }
-
-    this.threatModel.threats = this.threatModel.threats.map(threat =>
-      this.migrateThreatFieldValues(threat),
-    );
-    this.threatsDataSource.data = this.threatModel.threats;
-  }
-
-  /**
    * Enter edit mode for issue URI
    */
   editIssueUri(): void {
@@ -617,7 +600,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this.threatModel = threatModel;
     this.isNewThreatModel = false; // Resolved threat models are not new
 
-    // Load threats via API with pagination (migration happens in service)
+    // Load threats via API with pagination
     this.loadThreats(id);
 
     // Subscribe to authorization changes
@@ -711,7 +694,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
           case 'severity':
             return this.getSeverityOrder(threat.severity);
           case 'status':
-            return threat.status ? this.threatStatusKeys.indexOf(threat.status) : 999;
+            return this.getStatusOrder(threat.status);
           case 'name':
             return threat.name?.toLowerCase() ?? '';
           default:
@@ -734,12 +717,36 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Get ordinal position for severity (lower index = more severe)
+   * Get ordinal position for severity (lower index = more severe).
+   * Falls back to severityMap for legacy values that bypassed migration.
    */
   private getSeverityOrder(severity: string | null | undefined): number {
     if (!severity) return 999;
     const idx = this.severityKeys.indexOf(severity);
-    return idx >= 0 ? idx : 999;
+    if (idx >= 0) return idx;
+    // Defense-in-depth: try mapping legacy values (numeric or English strings)
+    const migrated = this.severityMap[severity];
+    if (migrated) {
+      const migratedIdx = this.severityKeys.indexOf(migrated);
+      return migratedIdx >= 0 ? migratedIdx : 999;
+    }
+    return 999;
+  }
+
+  /**
+   * Get ordinal position for threat status.
+   * Falls back to statusMap for legacy values that bypassed migration.
+   */
+  private getStatusOrder(status: string | null | undefined): number {
+    if (!status) return 999;
+    const idx = this.threatStatusKeys.indexOf(status);
+    if (idx >= 0) return idx;
+    const migrated = this.statusMap[status];
+    if (migrated) {
+      const migratedIdx = this.threatStatusKeys.indexOf(migrated);
+      return migratedIdx >= 0 ? migratedIdx : 999;
+    }
+    return 999;
   }
 
   ngOnDestroy(): void {
@@ -1204,10 +1211,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     const newThreatData: Partial<Threat> = {
       name: result.name,
       description: result.description,
-      severity: result.severity || 'High',
+      severity: result.severity || 'high',
       threat_type: result.threat_type || [],
       mitigated: result.mitigated || false,
-      status: result.status || 'Open',
+      status: result.status || 'open',
       metadata: [],
     };
 
@@ -3334,8 +3341,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         .subscribe({
           next: response => {
             if (this.threatModel) {
-              this.threatModel.threats = response.threats;
-              this.threatsDataSource.data = response.threats;
+              this.threatModel.threats = response.threats.map(t =>
+                this.migrateThreatFieldValues(t),
+              );
+              this.threatsDataSource.data = this.threatModel.threats;
               this.totalThreats = response.total;
             }
           },
