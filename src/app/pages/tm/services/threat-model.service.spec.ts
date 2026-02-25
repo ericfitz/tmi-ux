@@ -627,6 +627,101 @@ describe('ThreatModelService', () => {
           expect(result).toBe(true);
         });
       }));
+
+      it('should update cache after creating a threat', waitForAsync(() => {
+        // Pre-populate cache by loading the threat model
+        const cachedModel = { ...testThreatModel1, threats: [] };
+        vi.spyOn(apiService, 'get').mockReturnValueOnce(of(cachedModel));
+
+        return new Promise<void>(resolve => {
+          service.getThreatModelById(testThreatModel1.id).subscribe(() => {
+            // Now create a threat
+            const newThreat = {
+              id: 'new-threat-id',
+              threat_model_id: testThreatModel1.id,
+              name: 'New Threat',
+              description: 'Created threat',
+              severity: 'high',
+              threat_type: ['spoofing'],
+              created_at: new Date().toISOString(),
+              modified_at: new Date().toISOString(),
+            };
+            vi.spyOn(apiService, 'post').mockReturnValueOnce(of(newThreat));
+
+            service.createThreat(testThreatModel1.id, { name: 'New Threat' }).subscribe(() => {
+              // Verify cache was updated (no forceRefresh, should use cache)
+              service.getThreatModelById(testThreatModel1.id).subscribe(cached => {
+                expect(cached?.threats).toBeDefined();
+                expect(cached!.threats!.length).toBe(1);
+                expect(cached!.threats![0].id).toBe('new-threat-id');
+                resolve();
+              });
+            });
+          });
+        });
+      }));
+
+      it('should update cache after updating a threat', waitForAsync(() => {
+        const existingThreat = {
+          id: 'existing-threat-id',
+          threat_model_id: testThreatModel1.id,
+          name: 'Original Name',
+          severity: 'low',
+          threat_type: ['spoofing'],
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+        };
+        const cachedModel = { ...testThreatModel1, threats: [existingThreat] };
+        vi.spyOn(apiService, 'get').mockReturnValueOnce(of(cachedModel));
+
+        return new Promise<void>(resolve => {
+          service.getThreatModelById(testThreatModel1.id).subscribe(() => {
+            const updatedThreat = { ...existingThreat, name: 'Updated Name', severity: 'critical' };
+            vi.spyOn(apiService, 'put').mockReturnValueOnce(of(updatedThreat));
+
+            service
+              .updateThreat(testThreatModel1.id, existingThreat.id, { name: 'Updated Name' })
+              .subscribe(() => {
+                service.getThreatModelById(testThreatModel1.id).subscribe(cached => {
+                  expect(cached?.threats).toBeDefined();
+                  expect(cached!.threats!.length).toBe(1);
+                  expect(cached!.threats![0].name).toBe('Updated Name');
+                  // 'critical' is migrated to '0' by migrateLegacyThreatFieldValues
+                  expect(cached!.threats![0].severity).toBe('0');
+                  resolve();
+                });
+              });
+          });
+        });
+      }));
+
+      it('should update cache after deleting a threat', waitForAsync(() => {
+        const existingThreat = {
+          id: 'threat-to-delete',
+          threat_model_id: testThreatModel1.id,
+          name: 'Doomed Threat',
+          severity: 'high',
+          threat_type: ['tampering'],
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+        };
+        const cachedModel = { ...testThreatModel1, threats: [existingThreat] };
+        vi.spyOn(apiService, 'get').mockReturnValueOnce(of(cachedModel));
+
+        return new Promise<void>(resolve => {
+          service.getThreatModelById(testThreatModel1.id).subscribe(() => {
+            vi.spyOn(apiService, 'delete').mockReturnValueOnce(of({}));
+
+            service.deleteThreat(testThreatModel1.id, existingThreat.id).subscribe(() => {
+              service.getThreatModelById(testThreatModel1.id).subscribe(cached => {
+                expect(cached?.threats).toBeDefined();
+                expect(cached!.threats!.length).toBe(0);
+                resolve();
+              });
+            });
+          });
+        });
+      }));
     });
 
     describe('Document API Methods', () => {

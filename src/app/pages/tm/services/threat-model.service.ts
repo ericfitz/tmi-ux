@@ -941,6 +941,16 @@ export class ThreatModelService implements OnDestroy {
         threatData as unknown as Record<string, unknown>,
       )
       .pipe(
+        tap(newThreat => {
+          const cached = this._cachedThreatModels.get(threatModelId);
+          if (cached) {
+            cached.threats = [
+              ...(cached.threats || []),
+              this.migrateLegacyThreatFieldValues(newThreat),
+            ];
+            this._cachedThreatModels.set(threatModelId, cached);
+          }
+        }),
         catchError(error => {
           this.logger.error(`Error creating threat in threat model ID: ${threatModelId}`, error);
           throw error;
@@ -967,6 +977,16 @@ export class ThreatModelService implements OnDestroy {
         threatData as unknown as Record<string, unknown>,
       )
       .pipe(
+        tap(updatedThreat => {
+          const cached = this._cachedThreatModels.get(threatModelId);
+          if (cached?.threats) {
+            const index = cached.threats.findIndex(t => t.id === threatId);
+            if (index !== -1) {
+              cached.threats[index] = this.migrateLegacyThreatFieldValues(updatedThreat);
+              this._cachedThreatModels.set(threatModelId, cached);
+            }
+          }
+        }),
         catchError(error => {
           this.logger.error(`Error updating threat ID: ${threatId}`, error);
           throw error;
@@ -980,6 +1000,13 @@ export class ThreatModelService implements OnDestroy {
   deleteThreat(threatModelId: string, threatId: string): Observable<boolean> {
     return this.apiService.delete(`threat_models/${threatModelId}/threats/${threatId}`).pipe(
       map(() => true),
+      tap(() => {
+        const cached = this._cachedThreatModels.get(threatModelId);
+        if (cached?.threats) {
+          cached.threats = cached.threats.filter(t => t.id !== threatId);
+          this._cachedThreatModels.set(threatModelId, cached);
+        }
+      }),
       catchError(error => {
         this.logger.error(`Error deleting threat ID: ${threatId}`, error);
         throw error;
