@@ -155,6 +155,65 @@
                 </div>
               }
             </div>
+
+            <!-- Security Reviewer row -->
+            <div class="info-row info-row-security-reviewer">
+              <div class="info-field">
+                @if (canEdit && securityReviewerMode === 'dropdown') {
+                  <mat-form-field appearance="outline" class="security-reviewer-dropdown">
+                    <mat-label>{{ 'threatModels.securityReviewer' | transloco }}</mat-label>
+                    <mat-select
+                      [value]="threatModel.security_reviewer"
+                      [compareWith]="compareReviewers"
+                      (selectionChange)="onSecurityReviewerChange($event)"
+                    >
+                      <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+                      @for (reviewer of securityReviewerOptions; track reviewer.provider_id) {
+                        <mat-option [value]="reviewer">
+                          {{ reviewer.display_name || reviewer.email }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                } @else if (canEdit && securityReviewerMode === 'picker') {
+                  <span class="info-label">{{ 'threatModels.securityReviewer' | transloco }}:</span>
+                  @if (threatModel.security_reviewer) {
+                    <span class="info-value"
+                      ><app-user-display [user]="threatModel.security_reviewer"
+                    /></span>
+                  } @else {
+                    <span class="info-value">—</span>
+                  }
+                  <button
+                    mat-icon-button
+                    (click)="openSecurityReviewerPicker()"
+                    [matTooltip]="'threatModels.changeSecurityReviewer' | transloco"
+                    [attr.aria-label]="'threatModels.changeSecurityReviewer' | transloco"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  @if (threatModel.security_reviewer) {
+                    <button
+                      mat-icon-button
+                      (click)="clearSecurityReviewer()"
+                      [matTooltip]="'threatModels.clearSecurityReviewer' | transloco"
+                      [attr.aria-label]="'threatModels.clearSecurityReviewer' | transloco"
+                    >
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  }
+                } @else if (securityReviewerMode !== 'loading') {
+                  <span class="info-label">{{ 'threatModels.securityReviewer' | transloco }}:</span>
+                  @if (threatModel.security_reviewer) {
+                    <span class="info-value"
+                      ><app-user-display [user]="threatModel.security_reviewer"
+                    /></span>
+                  } @else {
+                    <span class="info-value">—</span>
+                  }
+                }
+              </div>
+            </div>
           </div>
 
           <form [formGroup]="threatModelForm" class="threat-model-form">

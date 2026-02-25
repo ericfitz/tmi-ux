@@ -1087,6 +1087,8 @@
   "threatModels": {
     "addPermission": "إضافة إذن",
     "branch": "فرع",
+    "changeSecurityReviewer": "تغيير مراجع الأمان",
+    "clearSecurityReviewer": "مسح مراجع الأمان",
     "commit": "التزام",
     "createFirstButton": "أنشئ نموذج التهديد الأول",
     "createNewDiagram": "إنشاء مخطط جديد",
@@ -1156,6 +1158,7 @@
       "outputs": "المخرجات",
       "outputsDescription": "الملاحظات والمخططات والتهديدات التي تم إنتاجها أثناء تحليل الأمان"
     },
+    "securityReviewer": "مراجع الأمان",
     "setAsOwner": "تعيين كمالك",
     "sourcesCount": "مستودعات",
     "status": {
@@ -1402,7 +1405,7 @@
     "sections": {
       "developer": "المطوّر",
       "diagramEditor": "محرر المخططات",
-      "securityReviewer": "مراجع الأمان"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "عرض أدوات المطور",
     "tabs": {

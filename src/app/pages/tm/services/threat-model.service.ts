@@ -707,6 +707,7 @@ export class ThreatModelService implements OnDestroy {
         | 'authorization'
         | 'owner'
         | 'status'
+        | 'security_reviewer'
       >
     >,
   ): Observable<ThreatModel> {

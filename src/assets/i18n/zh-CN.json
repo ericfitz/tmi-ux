@@ -1087,6 +1087,8 @@
   "threatModels": {
     "addPermission": "添加权限",
     "branch": "分支",
+    "changeSecurityReviewer": "更换安全审查员",
+    "clearSecurityReviewer": "清除安全审查员",
     "commit": "提交",
     "createFirstButton": "创建您的第一个威胁模型",
     "createNewDiagram": "创建新图表",
@@ -1156,6 +1158,7 @@
       "outputs": "输出",
       "outputsDescription": "安全分析过程中产生的笔记、图表和威胁"
     },
+    "securityReviewer": "安全审查员",
     "setAsOwner": "设为所有者",
     "sourcesCount": "仓库",
     "status": {
@@ -1402,7 +1405,7 @@
     "sections": {
       "developer": "开发者",
       "diagramEditor": "图表编辑器",
-      "securityReviewer": "安全审查员"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "显示开发者工具",
     "tabs": {

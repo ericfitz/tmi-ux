@@ -137,5 +137,10 @@
     "autoSave": {
       "error": "{{common.saveFailed}}"
     }
+  },
+  "userPreferences": {
+    "sections": {
+      "securityReviewer": "{{threatModels.securityReviewer}}"
+    }
   }
 }

@@ -1087,6 +1087,8 @@
   "threatModels": {
     "addPermission": "הוסף הרשאה",
     "branch": "ענף",
+    "changeSecurityReviewer": "שינוי סוקר אבטחה",
+    "clearSecurityReviewer": "ניקוי סוקר אבטחה",
     "commit": "קומיט",
     "createFirstButton": "צור את מודל האיומים הראשון שלך",
     "createNewDiagram": "צור דיאגרמה חדשה",
@@ -1156,6 +1158,7 @@
       "outputs": "פלטים",
       "outputsDescription": "הערות, דיאגרמות ואיומים המיוצרים במהלך ניתוח אבטחה"
     },
+    "securityReviewer": "סוקר אבטחה",
     "setAsOwner": "הגדר כבעלים",
     "sourcesCount": "מאגרים",
     "status": {
@@ -1402,7 +1405,7 @@
     "sections": {
       "developer": "מפתח",
       "diagramEditor": "עורך דיאגרמות",
-      "securityReviewer": "סוקר אבטחה"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "הצג כלי פיתוח",
     "tabs": {

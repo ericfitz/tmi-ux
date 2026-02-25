@@ -23,13 +23,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ThreatModelAuthorizationService } from './services/threat-model-authorization.service';
 import { AuthorizationPrepareService } from './services/providers/authorization-prepare.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { Subscription, Subject } from 'rxjs';
-import { debounceTime, filter, distinctUntilChanged } from 'rxjs/operators';
+import { Subscription, Subject, of } from 'rxjs';
+import { debounceTime, filter, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { LanguageService } from '../../i18n/language.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { SvgCacheService } from './services/svg-cache.service';
 import { ApiService } from '../../core/services/api.service';
 import { AddonService } from '../../core/services/addon.service';
+import { AuthService } from '../../auth/services/auth.service';
+import { UserGroupService } from '../../core/services/user-group.service';
+import { GroupAdminService } from '../../core/services/group-admin.service';
 import { Addon, AddonObjectType } from '../../types/addon.types';
 
 import {
@@ -104,6 +107,12 @@ import {
   DeleteConfirmationDialogResult,
 } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
+import {
+  UserPickerDialogComponent,
+  UserPickerDialogData,
+} from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
+import { GroupMember } from '@app/types/group.types';
+import { AdminUser } from '@app/types/user.types';
 
 // Define form value interface
 interface ThreatModelFormValues {
@@ -184,6 +193,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Status dropdown options
   statusOptions: FieldOption[] = [];
+
+  // Security reviewer dropdown
+  securityReviewerOptions: User[] = [];
+  securityReviewerMode: 'dropdown' | 'picker' | 'loading' = 'loading';
 
   // Addon cache - filtered lists by object type
   addonsForThreatModel: Addon[] = [];
@@ -314,6 +327,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private addonService: AddonService,
     private snackBar: MatSnackBar,
+    private authService: AuthService,
+    private userGroupService: UserGroupService,
+    private groupAdminService: GroupAdminService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -659,6 +675,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     // Load addons for menus
     this.loadAddons();
 
+    // Load security reviewers for the reviewer dropdown
+    this.loadSecurityReviewers();
+
     // Re-enable auto-save after initial population is complete
     setTimeout(() => {
       this._isLoadingInitialData = false;
@@ -831,6 +850,205 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
+
+  // ─── Security Reviewer ───────────────────────────────────────────────
+
+  /**
+   * Load security reviewer options using tiered fallback:
+   * 1. Current user is a security reviewer → use /me/groups endpoint
+   * 2. Current user is an admin → use admin groups API
+   * 3. Neither → fall back to user picker dialog mode
+   */
+  private loadSecurityReviewers(): void {
+    const profile = this.authService.userProfile;
+
+    // Tier 1: User is a security reviewer — find group UUID from their profile
+    const securityReviewersGroup = profile?.groups?.find(
+      g => g.group_name === 'security-reviewers',
+    );
+
+    if (securityReviewersGroup) {
+      this._subscriptions.add(
+        this.userGroupService.listMembers(securityReviewersGroup.internal_uuid).subscribe({
+          next: response => {
+            this.applySecurityReviewerOptions(response.members);
+          },
+          error: error => {
+            this.logger.warn(
+              'Failed to load security reviewers via /me/groups, trying admin API',
+              error,
+            );
+            this.loadSecurityReviewersViaAdmin();
+          },
+        }),
+      );
+      return;
+    }
+
+    // Tier 2: User is an admin
+    if (profile?.is_admin) {
+      this.loadSecurityReviewersViaAdmin();
+      return;
+    }
+
+    // Tier 3: Neither — fall back to user picker dialog
+    this.securityReviewerMode = 'picker';
+  }
+
+  /**
+   * Load security reviewers via admin groups API (tier 2 fallback)
+   */
+  private loadSecurityReviewersViaAdmin(): void {
+    this._subscriptions.add(
+      this.groupAdminService
+        .list({ group_name: 'security-reviewers' })
+        .pipe(
+          switchMap(response => {
+            const group = response.groups.find(g => g.group_name === 'security-reviewers');
+            if (!group) {
+              this.logger.warn('Security reviewers group not found via admin API');
+              return of({ members: [] as GroupMember[], total: 0, limit: 0, offset: 0 });
+            }
+            return this.groupAdminService.listMembers(group.internal_uuid);
+          }),
+          catchError(error => {
+            this.logger.warn('Failed to load security reviewers via admin API', error);
+            return of(null);
+          }),
+        )
+        .subscribe(response => {
+          if (response) {
+            this.applySecurityReviewerOptions(response.members);
+          } else {
+            // Admin API also failed — fall back to picker
+            this.securityReviewerMode = 'picker';
+          }
+        }),
+    );
+  }
+
+  /**
+   * Apply loaded group members as security reviewer dropdown options
+   */
+  private applySecurityReviewerOptions(members: GroupMember[]): void {
+    this.securityReviewerOptions = members
+      .filter(m => m.subject_type === 'user')
+      .map(m => this.mapGroupMemberToUser(m));
+
+    // Ensure current reviewer is in the list (may have been removed from group)
+    if (this.threatModel?.security_reviewer) {
+      const current = this.threatModel.security_reviewer;
+      const alreadyInList = this.securityReviewerOptions.some(
+        r => r.provider === current.provider && r.provider_id === current.provider_id,
+      );
+      if (!alreadyInList) {
+        this.securityReviewerOptions = [current, ...this.securityReviewerOptions];
+      }
+    }
+
+    this.securityReviewerMode = 'dropdown';
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Map a GroupMember to the User interface used by the threat model
+   */
+  private mapGroupMemberToUser(member: GroupMember): User {
+    return {
+      principal_type: 'user',
+      provider: member.user_provider ?? '',
+      provider_id: member.user_provider_user_id ?? '',
+      email: member.user_email ?? '',
+      display_name: member.user_name ?? member.user_email ?? '',
+    };
+  }
+
+  /**
+   * Handle security reviewer dropdown selection change.
+   * Persists immediately via PATCH (not through form auto-save).
+   */
+  onSecurityReviewerChange(event: { value: unknown }): void {
+    if (!this.threatModel || !this.canEdit) return;
+
+    const selectedUser = event.value as User | null;
+    const previousReviewer = this.threatModel.security_reviewer ?? null;
+
+    // Update local model immediately for responsive UI
+    this.threatModel.security_reviewer = selectedUser;
+
+    this._subscriptions.add(
+      this.threatModelService
+        .patchThreatModel(this.threatModel.id, { security_reviewer: selectedUser })
+        .subscribe({
+          next: result => {
+            if (result && this.threatModel) {
+              this.threatModel.security_reviewer = result.security_reviewer;
+              this.threatModel.modified_at = result.modified_at;
+              this.cdr.detectChanges();
+              this.logger.info('Security reviewer updated', {
+                threatModelId: this.threatModel.id,
+                reviewer: selectedUser?.email ?? 'none',
+              });
+            }
+          },
+          error: error => {
+            this.logger.error('Failed to update security reviewer', error);
+            // Rollback on error
+            if (this.threatModel) {
+              this.threatModel.security_reviewer = previousReviewer;
+              this.cdr.detectChanges();
+            }
+          },
+        }),
+    );
+  }
+
+  /**
+   * Open user picker dialog for security reviewer (fallback when group list unavailable)
+   */
+  openSecurityReviewerPicker(): void {
+    if (!this.threatModel || !this.canEdit) return;
+
+    const dialogRef = this.dialog.open(UserPickerDialogComponent, {
+      data: {
+        title: this.transloco.translate('threatModels.changeSecurityReviewer'),
+      } as UserPickerDialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((selectedAdminUser: AdminUser | undefined) => {
+        if (!selectedAdminUser || !this.threatModel) return;
+
+        const user: User = {
+          principal_type: 'user',
+          provider: selectedAdminUser.provider,
+          provider_id: selectedAdminUser.provider_user_id,
+          email: selectedAdminUser.email,
+          display_name: selectedAdminUser.name,
+        };
+
+        this.onSecurityReviewerChange({ value: user });
+      }),
+    );
+  }
+
+  /**
+   * Clear the security reviewer assignment
+   */
+  clearSecurityReviewer(): void {
+    this.onSecurityReviewerChange({ value: null });
+  }
+
+  /**
+   * Compare function for mat-select to match User objects by provider identity
+   */
+  compareReviewers(a: User | null, b: User | null): boolean {
+    if (a === b) return true;
+    if (!a || !b) return false;
+    return a.provider === b.provider && a.provider_id === b.provider_id;
+  }
+
+  // ─── End Security Reviewer ─────────────────────────────────────────
 
   /**
    * Simplified field blur handler (mainly for UI state like issue URL editing)

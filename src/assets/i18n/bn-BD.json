@@ -1087,6 +1087,8 @@
   "threatModels": {
     "addPermission": "অনুমতি যোগ করুন",
     "branch": "ব্রাঞ্চ",
+    "changeSecurityReviewer": "নিরাপত্তা পর্যালোচক পরিবর্তন করুন",
+    "clearSecurityReviewer": "নিরাপত্তা পর্যালোচক মুছুন",
     "commit": "কমিট",
     "createFirstButton": "আপনার প্রথম থ্রেট মডেল তৈরি করুন",
     "createNewDiagram": "নতুন ডায়াগ্রাম তৈরি করুন",
@@ -1156,6 +1158,7 @@
       "outputs": "আউটপুট",
       "outputsDescription": "নোট, ডায়াগ্রাম এবং নিরাপত্তা বিশ্লেষণের সময় উৎপাদিত হুমকি"
     },
+    "securityReviewer": "নিরাপত্তা পর্যালোচক",
     "setAsOwner": "মালিক হিসেবে সেট করুন",
     "sourcesCount": "রিপো",
     "status": {
@@ -1402,7 +1405,7 @@
     "sections": {
       "developer": "ডেভেলপার",
       "diagramEditor": "ডায়াগ্রাম এডিটর",
-      "securityReviewer": "নিরাপত্তা পর্যালোচক"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "ডেভেলপার টুলস দেখান",
     "tabs": {

@@ -1110,6 +1110,8 @@
   "threatModels": {
     "addPermission": "Add Permission",
     "branch": "Branch",
+    "changeSecurityReviewer": "Change Security Reviewer",
+    "clearSecurityReviewer": "Clear Security Reviewer",
     "commit": "Commit",
     "commit.comment": "This is used as a noun, representing the id value of a change in a source code management system.",
     "createFirstButton": "Create Your First Threat Model",
@@ -1183,6 +1185,7 @@
       "outputs.comment": "Section heading for threat model output entities (notes, diagrams, threats)",
       "outputsDescription": "Notes, diagrams, and threats produced during security analysis"
     },
+    "securityReviewer": "Security Reviewer",
     "setAsOwner": "Set as Owner",
     "sourcesCount": "Repos",
     "status": {
@@ -1434,7 +1437,7 @@
     "sections": {
       "developer": "Developer",
       "diagramEditor": "Diagram Editor",
-      "securityReviewer": "Security Reviewer"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "Show Developer Tools",
     "tabs": {

@@ -1087,6 +1087,8 @@
   "threatModels": {
     "addPermission": "Добавить разрешение",
     "branch": "Ветка",
+    "changeSecurityReviewer": "Изменить ревизора безопасности",
+    "clearSecurityReviewer": "Убрать ревизора безопасности",
     "commit": "Коммит",
     "createFirstButton": "Создайте Свою Первую Модель Угроз",
     "createNewDiagram": "Создать новую диаграмму",
@@ -1156,6 +1158,7 @@
       "outputs": "Выходные данные",
       "outputsDescription": "Заметки, диаграммы и угрозы, созданные во время анализа безопасности"
     },
+    "securityReviewer": "Ревизор безопасности",
     "setAsOwner": "Назначить владельцем",
     "sourcesCount": "Репозитории",
     "status": {
@@ -1402,7 +1405,7 @@
     "sections": {
       "developer": "Разработчик",
       "diagramEditor": "Редактор диаграмм",
-      "securityReviewer": "Ревизор безопасности"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "Показать инструменты разработчика",
     "tabs": {

@@ -1087,6 +1087,8 @@
   "threatModels": {
     "addPermission": "अनुमति जोड़ें",
     "branch": "शाखा",
+    "changeSecurityReviewer": "सुरक्षा समीक्षक बदलें",
+    "clearSecurityReviewer": "सुरक्षा समीक्षक हटाएं",
     "commit": "कमिट",
     "createFirstButton": "अपना पहला थ्रेट मॉडल बनाएं",
     "createNewDiagram": "नया डायग्राम बनाएं",
@@ -1156,6 +1158,7 @@
       "outputs": "आउटपुट",
       "outputsDescription": "सुरक्षा विश्लेषण के दौरान उत्पादित नोट्स, आरेख और खतरे"
     },
+    "securityReviewer": "सुरक्षा समीक्षक",
     "setAsOwner": "स्वामी के रूप में सेट करें",
     "sourcesCount": "रिपोज़",
     "status": {
@@ -1402,7 +1405,7 @@
     "sections": {
       "developer": "डेवलपर",
       "diagramEditor": "डायग्राम एडिटर",
-      "securityReviewer": "सुरक्षा समीक्षक"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "डेवलपर टूल्स दिखाएं",
     "tabs": {

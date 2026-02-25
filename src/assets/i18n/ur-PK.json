@@ -1087,6 +1087,8 @@
   "threatModels": {
     "addPermission": "اجازت شامل کریں",
     "branch": "برانچ",
+    "changeSecurityReviewer": "سیکیورٹی جائزہ کار تبدیل کریں",
+    "clearSecurityReviewer": "سیکیورٹی جائزہ کار صاف کریں",
     "commit": "کمٹ",
     "createFirstButton": "اپنا پہلا خطرے کا ماڈل بنائیں",
     "createNewDiagram": "نیا ڈایاگرام بنائیں",
@@ -1156,6 +1158,7 @@
       "outputs": "آؤٹ پٹ",
       "outputsDescription": "نوٹس، ڈایاگرامز، اور خطرات جو سیکیورٹی تجزیہ کے دوران تیار ہوتے ہیں"
     },
+    "securityReviewer": "سیکیورٹی جائزہ کار",
     "setAsOwner": "مالک کے طور پر مقرر کریں",
     "sourcesCount": "ریپوز",
     "status": {
@@ -1402,7 +1405,7 @@
     "sections": {
       "developer": "ڈویلپر",
       "diagramEditor": "ڈایاگرام ایڈیٹر",
-      "securityReviewer": "سیکیورٹی جائزہ کار"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "ڈویلپر ٹولز دکھائیں",
     "tabs": {

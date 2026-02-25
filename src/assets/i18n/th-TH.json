@@ -1087,6 +1087,8 @@
   "threatModels": {
     "addPermission": "เพิ่มสิทธิ์การเข้าถึง",
     "branch": "สาขา",
+    "changeSecurityReviewer": "เปลี่ยนผู้ตรวจสอบความปลอดภัย",
+    "clearSecurityReviewer": "ล้างผู้ตรวจสอบความปลอดภัย",
     "commit": "คอมมิต",
     "createFirstButton": "สร้างแบบจำลองภัยคุกคามแรกของคุณ",
     "createNewDiagram": "สร้างแผนภาพใหม่",
@@ -1156,6 +1158,7 @@
       "outputs": "ผลลัพธ์",
       "outputsDescription": "หมายเหตุ แผนภาพ และภัยคุกคามที่สร้างขึ้นระหว่างการวิเคราะห์ความปลอดภัย"
     },
+    "securityReviewer": "ผู้ตรวจสอบความปลอดภัย",
     "setAsOwner": "ตั้งเป็นเจ้าของ",
     "sourcesCount": "ที่เก็บ",
     "status": {
@@ -1402,7 +1405,7 @@
     "sections": {
       "developer": "นักพัฒนา",
       "diagramEditor": "ตัวแก้ไขไดอะแกรม",
-      "securityReviewer": "ผู้ตรวจสอบความปลอดภัย"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "แสดงเครื่องมือนักพัฒนา",
     "tabs": {

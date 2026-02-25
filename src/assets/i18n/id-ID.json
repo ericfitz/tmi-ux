@@ -1087,6 +1087,8 @@
   "threatModels": {
     "addPermission": "Tambah Izin",
     "branch": "Cabang",
+    "changeSecurityReviewer": "Ubah Peninjau Keamanan",
+    "clearSecurityReviewer": "Hapus Peninjau Keamanan",
     "commit": "Commit",
     "createFirstButton": "Buat Model Ancaman Pertama Anda",
     "createNewDiagram": "Buat Diagram Baru",
@@ -1156,6 +1158,7 @@
       "outputs": "Output",
       "outputsDescription": "Catatan, diagram, dan ancaman yang dihasilkan selama analisis keamanan"
     },
+    "securityReviewer": "Peninjau Keamanan",
     "setAsOwner": "Tetapkan sebagai Pemilik",
     "sourcesCount": "Repo",
     "status": {
@@ -1402,7 +1405,7 @@
     "sections": {
       "developer": "Pengembang",
       "diagramEditor": "Editor Diagram",
-      "securityReviewer": "Peninjau Keamanan"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "Tampilkan Alat Pengembang",
     "tabs": {

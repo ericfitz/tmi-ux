@@ -1087,6 +1087,8 @@
   "threatModels": {
     "addPermission": "権限を追加",
     "branch": "ブランチ",
+    "changeSecurityReviewer": "セキュリティレビュアーを変更",
+    "clearSecurityReviewer": "セキュリティレビュアーをクリア",
     "commit": "コミット",
     "createFirstButton": "最初の脅威モデルを作成",
     "createNewDiagram": "新しいダイアグラムを作成",
@@ -1156,6 +1158,7 @@
       "outputs": "出力",
       "outputsDescription": "セキュリティ分析中に作成されたノート、図、および脅威"
     },
+    "securityReviewer": "セキュリティレビュアー",
     "setAsOwner": "オーナーに設定",
     "sourcesCount": "リポジトリ",
     "status": {
@@ -1402,7 +1405,7 @@
     "sections": {
       "developer": "開発者",
       "diagramEditor": "ダイアグラムエディター",
-      "securityReviewer": "セキュリティレビュアー"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "開発者ツールを表示",
     "tabs": {

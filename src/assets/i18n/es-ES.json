@@ -1087,6 +1087,8 @@
   "threatModels": {
     "addPermission": "Añadir Permiso",
     "branch": "Rama",
+    "changeSecurityReviewer": "Cambiar revisor de seguridad",
+    "clearSecurityReviewer": "Quitar revisor de seguridad",
     "commit": "Commit",
     "createFirstButton": "Crear Su Primer Modelo de Amenazas",
     "createNewDiagram": "Crear Nuevo Diagrama",
@@ -1156,6 +1158,7 @@
       "outputs": "Salidas",
       "outputsDescription": "Notas, diagramas y amenazas producidas durante el análisis de seguridad"
     },
+    "securityReviewer": "Revisor de seguridad",
     "setAsOwner": "Establecer como Propietario",
     "sourcesCount": "Repositorios",
     "status": {
@@ -1402,7 +1405,7 @@
     "sections": {
       "developer": "Desarrollador",
       "diagramEditor": "Editor de diagramas",
-      "securityReviewer": "Revisor de seguridad"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "Mostrar Herramientas de Desarrollador",
     "tabs": {

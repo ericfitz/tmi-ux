@@ -1087,6 +1087,8 @@
   "threatModels": {
     "addPermission": "권한 추가",
     "branch": "브랜치",
+    "changeSecurityReviewer": "보안 검토자 변경",
+    "clearSecurityReviewer": "보안 검토자 해제",
     "commit": "커밋",
     "createFirstButton": "첫 번째 위협 모델 만들기",
     "createNewDiagram": "새 다이어그램 생성",
@@ -1156,6 +1158,7 @@
       "outputs": "출력",
       "outputsDescription": "보안 분석 중 생성된 노트, 다이어그램 및 위협"
     },
+    "securityReviewer": "보안 검토자",
     "setAsOwner": "소유자로 설정",
     "sourcesCount": "저장소",
     "status": {
@@ -1402,7 +1405,7 @@
     "sections": {
       "developer": "개발자",
       "diagramEditor": "다이어그램 편집기",
-      "securityReviewer": "보안 검토자"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "개발자 도구 표시",
     "tabs": {
