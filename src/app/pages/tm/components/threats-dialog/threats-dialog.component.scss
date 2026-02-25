@@ -24,7 +24,6 @@
 
   .threats-table {
     width: 100%;
-    min-width: 600px;
 
     .mat-column-severity {
       flex: 0 0 120px;
@@ -32,8 +31,8 @@
     }
 
     .mat-column-description {
-      flex: 1 1 60%;
-      min-width: 200px;
+      flex: 1 1 auto;
+      overflow: hidden;
     }
 
     .mat-column-actions {
@@ -107,6 +106,9 @@
   }
 
   .threat-info {
+    overflow-wrap: break-word;
+    min-width: 0;
+
     .threat-name {
       font-weight: 600;
       margin-bottom: 4px;
@@ -153,14 +155,8 @@
     }
 
     .threats-table {
-      min-width: 500px;
-
       .mat-column-severity {
         flex: 0 0 100px;
-      }
-
-      .mat-column-description {
-        min-width: 150px;
       }
 
       .mat-column-actions {
@@ -209,14 +205,8 @@
 @media (width <= 480px) {
   .threats-dialog {
     .threats-table {
-      min-width: 400px;
-
       .mat-column-severity {
         flex: 0 0 80px;
-      }
-
-      .mat-column-description {
-        min-width: 120px;
       }
 
       .mat-column-actions {
