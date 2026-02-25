@@ -1,24 +1,26 @@
 <div class="my-responses-container">
   <div class="page-header">
-    <div class="header-left">
+    <h1 class="page-title">{{ 'surveys.responses.pageTitle' | transloco }}</h1>
+
+    <div class="header-actions">
+      <mat-form-field appearance="outline" class="status-filter">
+        <mat-label>{{ 'surveys.responses.filterByStatus' | transloco }}</mat-label>
+        <mat-select multiple [(value)]="statusFilter" (selectionChange)="onFilterChange()">
+          @for (option of statusOptions; track option.value) {
+            <mat-option [value]="option.value">{{ option.labelKey | transloco }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
       <button
         mat-icon-button
+        class="close-button"
         (click)="goBack()"
-        [matTooltip]="'surveys.confirmation.backToSurveys' | transloco"
+        [attr.aria-label]="'common.close' | transloco"
       >
-        <mat-icon>arrow_back</mat-icon>
+        <mat-icon>close</mat-icon>
       </button>
-      <h1 class="page-title">{{ 'surveys.responses.pageTitle' | transloco }}</h1>
     </div>
-
-    <mat-form-field appearance="outline" class="status-filter">
-      <mat-label>{{ 'surveys.responses.filterByStatus' | transloco }}</mat-label>
-      <mat-select multiple [(value)]="statusFilter" (selectionChange)="onFilterChange()">
-        @for (option of statusOptions; track option.value) {
-          <mat-option [value]="option.value">{{ option.labelKey | transloco }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
   </div>
 
   @if (loading) {
