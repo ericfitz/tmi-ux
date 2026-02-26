@@ -856,7 +856,7 @@
     "operationError": "Échec de {{operation}} : {{errorMessage}}",
     "operationFailed": "Opération échouée",
     "operations": {
-      "collaboration": "collaboration",
+      "collaboration": "Collaboration",
       "denyPresenterRequest": "refuser la demande de présentateur",
       "sendPresenterRequest": "envoyer la demande de présentateur",
       "startCollaboration": "démarrer la collaboration",
@@ -1158,7 +1158,7 @@
       "outputs": "Sorties",
       "outputsDescription": "Notes, diagrammes et menaces produits lors de l'analyse de sécurité"
     },
-    "securityReviewer": "Réviseur de sécurité",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Definir comme proprietaire",
     "sourcesCount": "Depots",
     "status": {
@@ -1273,12 +1273,12 @@
       "noNotes": "Aucune note de triage pour le moment",
       "noResponses": "Aucune réponse enregistrée",
       "noRevisionNotes": "Aucune note de révision",
-      "note": "note",
+      "note": "Note",
       "noteContentLabel": "{{noteEditor.content}}",
       "noteContentPlaceholder": "Saisir le contenu de la note...",
       "noteNameLabel": "{{common.title}}",
       "noteNamePlaceholder": "Titre bref de la note",
-      "notes": "notes",
+      "notes": "Notes",
       "responseDetails": "Détails de la réponse",
       "reviewedAt": "Révisé le",
       "reviewedBy": "Révisé par",
@@ -1326,6 +1326,16 @@
     },
     "queue": "File de triage",
     "returnToSubmitted": "Retourner à soumis",
+    "reviewerAssignment": {
+      "assign": "Assigner",
+      "assignToMe": "M'assigner",
+      "errorLoading": "Échec du chargement des modèles de menace non attribués",
+      "loading": "Chargement des évaluations non attribuées...",
+      "noUnassigned": "Aucune évaluation non attribuée",
+      "noUnassignedDescription": "Tous les modèles de menace actifs ont un évaluateur de sécurité attribué",
+      "reviewer": "Évaluateur de sécurité",
+      "selectReviewer": "Sélectionner un évaluateur..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "Fournissez des notes expliquant ce qui doit être révisé. Le soumissionnaire verra ces notes lorsqu'il examinera sa réponse.",
@@ -1333,6 +1343,10 @@
       "label": "Notes de révision",
       "placeholder": "Décrire les révisions nécessaires...",
       "title": "Retourner pour révision"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "Évaluations non attribuées"
     },
     "title": "Triage",
     "viewDetails": "Voir les détails"

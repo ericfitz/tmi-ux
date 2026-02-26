@@ -1158,7 +1158,7 @@
       "outputs": "المخرجات",
       "outputsDescription": "الملاحظات والمخططات والتهديدات التي تم إنتاجها أثناء تحليل الأمان"
     },
-    "securityReviewer": "مراجع الأمان",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "تعيين كمالك",
     "sourcesCount": "مستودعات",
     "status": {
@@ -1326,6 +1326,16 @@
     },
     "queue": "قائمة انتظار الفرز",
     "returnToSubmitted": "الإرجاع إلى مقدم",
+    "reviewerAssignment": {
+      "assign": "تعيين",
+      "assignToMe": "تعيين لي",
+      "errorLoading": "فشل في تحميل نماذج التهديد غير المعينة",
+      "loading": "جارٍ تحميل المراجعات غير المعينة...",
+      "noUnassigned": "لا توجد مراجعات غير معينة",
+      "noUnassignedDescription": "جميع نماذج التهديد النشطة لديها مراجع أمان معين",
+      "reviewer": "مراجع الأمان",
+      "selectReviewer": "اختر مراجعاً..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "قدّم ملاحظات توضح ما يحتاج إلى مراجعة. سيرى مقدّم الطلب هذه الملاحظات عند مراجعة رده.",
@@ -1333,6 +1343,10 @@
       "label": "ملاحظات المراجعة",
       "placeholder": "صف المراجعات المطلوبة...",
       "title": "إعادة للمراجعة"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "المراجعات غير المعينة"
     },
     "title": "الفرز",
     "viewDetails": "عرض التفاصيل"

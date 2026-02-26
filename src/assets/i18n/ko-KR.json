@@ -1158,7 +1158,7 @@
       "outputs": "출력",
       "outputsDescription": "보안 분석 중 생성된 노트, 다이어그램 및 위협"
     },
-    "securityReviewer": "보안 검토자",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "소유자로 설정",
     "sourcesCount": "저장소",
     "status": {
@@ -1326,6 +1326,16 @@
     },
     "queue": "트리아지 대기열",
     "returnToSubmitted": "제출됨으로 되돌리기",
+    "reviewerAssignment": {
+      "assign": "할당",
+      "assignToMe": "자신에게 할당",
+      "errorLoading": "할당되지 않은 위협 모델을 불러오지 못했습니다",
+      "loading": "할당되지 않은 검토 로딩 중...",
+      "noUnassigned": "할당되지 않은 검토 없음",
+      "noUnassignedDescription": "모든 활성 위협 모델에 보안 검토자가 할당되었습니다",
+      "reviewer": "보안 검토자",
+      "selectReviewer": "검토자 선택..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "수정이 필요한 사항을 설명하는 노트를 제공하십시오. 제출자는 응답을 검토할 때 이 노트를 보게 됩니다.",
@@ -1333,6 +1343,10 @@
       "label": "수정 노트",
       "placeholder": "필요한 수정 사항 설명...",
       "title": "수정 요청 반환"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "할당되지 않은 검토"
     },
     "title": "트리아지",
     "viewDetails": "세부 정보 보기"

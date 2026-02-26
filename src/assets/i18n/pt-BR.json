@@ -1158,7 +1158,7 @@
       "outputs": "Saídas",
       "outputsDescription": "Notas, diagramas e ameaças produzidas durante a análise de segurança"
     },
-    "securityReviewer": "Revisor de Segurança",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Definir como Proprietario",
     "sourcesCount": "Repositorios",
     "status": {
@@ -1326,6 +1326,16 @@
     },
     "queue": "Fila de Triagem",
     "returnToSubmitted": "Retornar para Enviado",
+    "reviewerAssignment": {
+      "assign": "Atribuir",
+      "assignToMe": "Atribuir para Mim",
+      "errorLoading": "Falha ao carregar modelos de ameaça não atribuídos",
+      "loading": "Carregando revisões não atribuídas...",
+      "noUnassigned": "Nenhuma Revisão Não Atribuída",
+      "noUnassignedDescription": "Todos os modelos de ameaça ativos têm um revisor de segurança atribuído",
+      "reviewer": "Revisor de Segurança",
+      "selectReviewer": "Selecionar revisor..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "Forneça notas explicando o que precisa ser revisado. O remetente verá estas notas quando revisar sua resposta.",
@@ -1333,6 +1343,10 @@
       "label": "Notas de Revisão",
       "placeholder": "Descreva as revisões necessárias...",
       "title": "Devolver para Revisão"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "Revisões Não Atribuídas"
     },
     "title": "Triagem",
     "viewDetails": "Ver Detalhes"

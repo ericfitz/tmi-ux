@@ -1158,7 +1158,7 @@
       "outputs": "Salidas",
       "outputsDescription": "Notas, diagramas y amenazas producidas durante el análisis de seguridad"
     },
-    "securityReviewer": "Revisor de seguridad",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Establecer como Propietario",
     "sourcesCount": "Repositorios",
     "status": {
@@ -1326,6 +1326,16 @@
     },
     "queue": "Cola de Clasificación",
     "returnToSubmitted": "Devolver a Enviado",
+    "reviewerAssignment": {
+      "assign": "Asignar",
+      "assignToMe": "Asignarme a mí",
+      "errorLoading": "Error al cargar los modelos de amenaza sin asignar",
+      "loading": "Cargando revisiones sin asignar...",
+      "noUnassigned": "Sin Revisiones Sin Asignar",
+      "noUnassignedDescription": "Todos los modelos de amenaza activos tienen un revisor de seguridad asignado",
+      "reviewer": "Revisor de Seguridad",
+      "selectReviewer": "Seleccionar revisor..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "Proporcione notas explicando qué necesita ser revisado. El remitente verá estas notas cuando revise su respuesta.",
@@ -1333,6 +1343,10 @@
       "label": "Notas de Revisión",
       "placeholder": "Describa las revisiones necesarias...",
       "title": "Devolver para Revisión"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "Revisiones Sin Asignar"
     },
     "title": "Clasificación",
     "viewDetails": "Ver Detalles"

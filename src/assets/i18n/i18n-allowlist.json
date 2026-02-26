@@ -142,5 +142,13 @@
     "sections": {
       "securityReviewer": "{{threatModels.securityReviewer}}"
     }
+  },
+  "triage": {
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    }
+  },
+  "threatModels": {
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}"
   }
 }

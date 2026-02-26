@@ -14,7 +14,9 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
+import { MatTabsModule } from '@angular/material/tabs';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
+import { ReviewerAssignmentListComponent } from '../reviewer-assignment-list/reviewer-assignment-list.component';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
@@ -48,7 +50,14 @@ interface TriageFilters {
 @Component({
   selector: 'app-triage-list',
   standalone: true,
-  imports: [...COMMON_IMPORTS, ...ALL_MATERIAL_IMPORTS, TranslocoModule, UserDisplayComponent],
+  imports: [
+    ...COMMON_IMPORTS,
+    ...ALL_MATERIAL_IMPORTS,
+    MatTabsModule,
+    TranslocoModule,
+    UserDisplayComponent,
+    ReviewerAssignmentListComponent,
+  ],
   templateUrl: './triage-list.component.html',
   styleUrl: './triage-list.component.scss',
   changeDetection: ChangeDetectionStrategy.Default,
@@ -95,6 +104,12 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
   totalResponses = 0;
   pageSize = 25;
   pageIndex = 0;
+
+  /** Currently selected tab index */
+  selectedTabIndex = 0;
+
+  /** Count of unassigned threat models (from child component) */
+  unassignedCount = 0;
 
   /** Loading state */
   isLoading = false;

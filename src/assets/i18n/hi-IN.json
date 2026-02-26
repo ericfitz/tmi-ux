@@ -1158,7 +1158,7 @@
       "outputs": "आउटपुट",
       "outputsDescription": "सुरक्षा विश्लेषण के दौरान उत्पादित नोट्स, आरेख और खतरे"
     },
-    "securityReviewer": "सुरक्षा समीक्षक",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "स्वामी के रूप में सेट करें",
     "sourcesCount": "रिपोज़",
     "status": {
@@ -1326,6 +1326,16 @@
     },
     "queue": "ट्राइएज कतार",
     "returnToSubmitted": "सबमिट किया गया पर वापस जाएं",
+    "reviewerAssignment": {
+      "assign": "असाइन करें",
+      "assignToMe": "मुझे असाइन करें",
+      "errorLoading": "असाइन नहीं किए गए खतरा मॉडल लोड करने में विफल",
+      "loading": "असाइन नहीं किए गए समीक्षाएं लोड हो रही हैं...",
+      "noUnassigned": "कोई असाइन नहीं किए गए समीक्षाएं नहीं",
+      "noUnassignedDescription": "सभी सक्रिय खतरा मॉडल के लिए सुरक्षा समीक्षक असाइन है",
+      "reviewer": "सुरक्षा समीक्षक",
+      "selectReviewer": "समीक्षक चुनें..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "यह बताने के लिए नोट्स प्रदान करें कि क्या संशोधित करने की आवश्यकता है। सबमिट करने वाला व्यक्ति अपनी प्रतिक्रिया की समीक्षा करते समय इन नोट्स को देखेगा।",
@@ -1333,6 +1343,10 @@
       "label": "संशोधन नोट्स",
       "placeholder": "आवश्यक संशोधनों का वर्णन करें...",
       "title": "संशोधन के लिए वापस करें"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "असाइन नहीं किए गए समीक्षाएं"
     },
     "title": "ट्राइएज",
     "viewDetails": "विवरण देखें"

@@ -1158,7 +1158,7 @@
       "outputs": "输出",
       "outputsDescription": "安全分析过程中产生的笔记、图表和威胁"
     },
-    "securityReviewer": "安全审查员",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "设为所有者",
     "sourcesCount": "仓库",
     "status": {
@@ -1326,6 +1326,16 @@
     },
     "queue": "分诊队列",
     "returnToSubmitted": "返回已提交",
+    "reviewerAssignment": {
+      "assign": "分配",
+      "assignToMe": "分配给我",
+      "errorLoading": "加载未分配的威胁模型失败",
+      "loading": "正在加载未分配的审核...",
+      "noUnassigned": "无未分配的审核",
+      "noUnassignedDescription": "所有活跃威胁模型都已分配了安全审核员",
+      "reviewer": "安全审核员",
+      "selectReviewer": "选择审核员..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "提供说明需要修订内容的备注。提交者在审核其回复时将看到这些备注。",
@@ -1333,6 +1343,10 @@
       "label": "修订备注",
       "placeholder": "描述需要修订的内容...",
       "title": "退回修订"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "未分配的审核"
     },
     "title": "分诊",
     "viewDetails": "查看详情"

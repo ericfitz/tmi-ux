@@ -1158,7 +1158,7 @@
       "outputs": "آؤٹ پٹ",
       "outputsDescription": "نوٹس، ڈایاگرامز، اور خطرات جو سیکیورٹی تجزیہ کے دوران تیار ہوتے ہیں"
     },
-    "securityReviewer": "سیکیورٹی جائزہ کار",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "مالک کے طور پر مقرر کریں",
     "sourcesCount": "ریپوز",
     "status": {
@@ -1326,6 +1326,16 @@
     },
     "queue": "ٹرائیج قطار",
     "returnToSubmitted": "جمع شدہ پر واپس جائیں",
+    "reviewerAssignment": {
+      "assign": "تفویض کریں",
+      "assignToMe": "مجھے تفویض کریں",
+      "errorLoading": "غیر تفویض شدہ خطرے کی ماڈلز لوڈ کرنے میں ناکام",
+      "loading": "غیر تفویض شدہ جائزے لوڈ ہو رہے ہیں...",
+      "noUnassigned": "کوئی غیر تفویض شدہ جائزے نہیں",
+      "noUnassignedDescription": "تمام فعال خطرے کی ماڈلز میں سیکیورٹی جائزہ کار تفویض ہے",
+      "reviewer": "سیکیورٹی جائزہ کار",
+      "selectReviewer": "جائزہ کار منتخب کریں..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "نوٹس فراہم کریں جو وضاحت کریں کہ کیا نظرثانی کی ضرورت ہے۔ جمع کرانے والا یہ نوٹس دیکھے گا جب وہ اپنے جواب کا جائزہ لیں گے۔",
@@ -1333,6 +1343,10 @@
       "label": "نظرثانی نوٹس",
       "placeholder": "ضروری نظرثانی کی تفصیل بیان کریں...",
       "title": "نظرثانی کے لیے واپس کریں"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "غیر تفویض شدہ جائزے"
     },
     "title": "ٹرائیج",
     "viewDetails": "تفصیلات دیکھیں"

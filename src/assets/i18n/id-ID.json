@@ -1158,7 +1158,7 @@
       "outputs": "Output",
       "outputsDescription": "Catatan, diagram, dan ancaman yang dihasilkan selama analisis keamanan"
     },
-    "securityReviewer": "Peninjau Keamanan",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Tetapkan sebagai Pemilik",
     "sourcesCount": "Repo",
     "status": {
@@ -1326,6 +1326,16 @@
     },
     "queue": "Antrean Triase",
     "returnToSubmitted": "Kembalikan ke Terkirim",
+    "reviewerAssignment": {
+      "assign": "Tetapkan",
+      "assignToMe": "Tetapkan ke Saya",
+      "errorLoading": "Gagal memuat model ancaman yang tidak ditugaskan",
+      "loading": "Memuat ulasan yang tidak ditugaskan...",
+      "noUnassigned": "Tidak Ada Ulasan yang Tidak Ditugaskan",
+      "noUnassignedDescription": "Semua model ancaman aktif memiliki reviewer keamanan yang ditugaskan",
+      "reviewer": "Reviewer Keamanan",
+      "selectReviewer": "Pilih reviewer..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "Berikan catatan yang menjelaskan apa yang perlu direvisi. Pengirim akan melihat catatan ini saat mereka meninjau respons mereka.",
@@ -1333,6 +1343,10 @@
       "label": "Catatan Revisi",
       "placeholder": "Jelaskan revisi yang diperlukan...",
       "title": "Kembalikan untuk Revisi"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "Ulasan yang Tidak Ditugaskan"
     },
     "title": "Triase",
     "viewDetails": "Lihat Detail"

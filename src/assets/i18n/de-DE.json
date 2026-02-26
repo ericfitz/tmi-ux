@@ -1158,7 +1158,7 @@
       "outputs": "Ausgaben",
       "outputsDescription": "Notizen, Diagramme und Bedrohungen, die während der Sicherheitsanalyse erstellt werden"
     },
-    "securityReviewer": "Sicherheitsprüfer",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Als Besitzer festlegen",
     "sourcesCount": "Repos",
     "status": {
@@ -1326,6 +1326,16 @@
     },
     "queue": "Triage-Warteschlange",
     "returnToSubmitted": "Zurück zu eingereicht",
+    "reviewerAssignment": {
+      "assign": "Zuweisen",
+      "assignToMe": "Mir zuweisen",
+      "errorLoading": "Unzugewiesene Bedrohungsmodelle konnten nicht geladen werden",
+      "loading": "Unzugewiesene Überprüfungen werden geladen...",
+      "noUnassigned": "Keine unzugewiesenen Überprüfungen",
+      "noUnassignedDescription": "Alle aktiven Bedrohungsmodelle haben einen Sicherheitsprüfer zugewiesen",
+      "reviewer": "Sicherheitsprüfer",
+      "selectReviewer": "Prüfer auswählen..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "Geben Sie Notizen an, die erläutern, was überarbeitet werden muss. Der Einreicher sieht diese Notizen, wenn er seine Antwort überprüft.",
@@ -1333,6 +1343,10 @@
       "label": "Überarbeitungsnotizen",
       "placeholder": "Beschreiben Sie die erforderlichen Überarbeitungen...",
       "title": "Zur Überarbeitung zurücksenden"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "Unzugewiesene Überprüfungen"
     },
     "title": "Triage",
     "viewDetails": "Details anzeigen"

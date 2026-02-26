@@ -1158,7 +1158,7 @@
       "outputs": "פלטים",
       "outputsDescription": "הערות, דיאגרמות ואיומים המיוצרים במהלך ניתוח אבטחה"
     },
-    "securityReviewer": "סוקר אבטחה",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "הגדר כבעלים",
     "sourcesCount": "מאגרים",
     "status": {
@@ -1326,6 +1326,16 @@
     },
     "queue": "תור טריאז'",
     "returnToSubmitted": "החזר לנשלח",
+    "reviewerAssignment": {
+      "assign": "הקצה",
+      "assignToMe": "הקצה לי",
+      "errorLoading": "טעינת מודלי איומים לא מוקצים נכשלה",
+      "loading": "טוען ביקורות לא מוקצות...",
+      "noUnassigned": "אין ביקורות לא מוקצות",
+      "noUnassignedDescription": "לכל מודלי האיומים הפעילים יש בודק ביטחון מוקצה",
+      "reviewer": "בודק ביטחון",
+      "selectReviewer": "בחר בודק..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "ספק הערות המסבירות מה צריך לתקן. המגיש יראה הערות אלה כשהוא יבדוק את תשובתו.",
@@ -1333,6 +1343,10 @@
       "label": "הערות תיקון",
       "placeholder": "תאר את התיקונים הנדרשים...",
       "title": "החזר לתיקון"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "ביקורות לא מוקצות"
     },
     "title": "טריאז'",
     "viewDetails": "הצג פרטים"

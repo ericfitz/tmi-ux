@@ -1185,7 +1185,7 @@
       "outputs.comment": "Section heading for threat model output entities (notes, diagrams, threats)",
       "outputsDescription": "Notes, diagrams, and threats produced during security analysis"
     },
-    "securityReviewer": "Security Reviewer",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Set as Owner",
     "sourcesCount": "Repos",
     "status": {
@@ -1355,6 +1355,16 @@
     },
     "queue": "Triage Queue",
     "returnToSubmitted": "Return to Submitted",
+    "reviewerAssignment": {
+      "assign": "Assign",
+      "assignToMe": "Assign to Me",
+      "errorLoading": "Failed to load unassigned threat models",
+      "loading": "Loading unassigned reviews...",
+      "noUnassigned": "No Unassigned Reviews",
+      "noUnassignedDescription": "All active threat models have a security reviewer assigned",
+      "reviewer": "Security Reviewer",
+      "selectReviewer": "Select reviewer..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "Provide notes explaining what needs to be revised. The submitter will see these notes when they review their response.",
@@ -1362,6 +1372,10 @@
       "label": "Revision Notes",
       "placeholder": "Describe the revisions needed...",
       "title": "Return for Revision"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "Unassigned Reviews"
     },
     "title": "Triage",
     "viewDetails": "View Details"

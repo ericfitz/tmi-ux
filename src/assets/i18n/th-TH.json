@@ -1158,7 +1158,7 @@
       "outputs": "ผลลัพธ์",
       "outputsDescription": "หมายเหตุ แผนภาพ และภัยคุกคามที่สร้างขึ้นระหว่างการวิเคราะห์ความปลอดภัย"
     },
-    "securityReviewer": "ผู้ตรวจสอบความปลอดภัย",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "ตั้งเป็นเจ้าของ",
     "sourcesCount": "ที่เก็บ",
     "status": {
@@ -1326,6 +1326,16 @@
     },
     "queue": "คิวคัดกรอง",
     "returnToSubmitted": "ส่งกลับไปยังสถานะที่ส่งแล้ว",
+    "reviewerAssignment": {
+      "assign": "มอบหมาย",
+      "assignToMe": "มอบหมายให้ฉัน",
+      "errorLoading": "ไม่สามารถโหลดแบบจำลองการคุกคามที่ยังไม่ได้มอบหมายได้",
+      "loading": "กำลังโหลดการตรวจสอบที่ยังไม่ได้มอบหมาย...",
+      "noUnassigned": "ไม่มีการตรวจสอบที่ยังไม่ได้มอบหมาย",
+      "noUnassignedDescription": "แบบจำลองการคุกคามที่ใช้งานอยู่ทั้งหมดได้รับการมอบหมายผู้ตรวจสอบความปลอดภัยแล้ว",
+      "reviewer": "ผู้ตรวจสอบความปลอดภัย",
+      "selectReviewer": "เลือกผู้ตรวจสอบ..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "ให้หมายเหตุอธิบายสิ่งที่ต้องแก้ไข ผู้ส่งจะเห็นหมายเหตุเหล่านี้เมื่อตรวจสอบคำตอบของตน",
@@ -1333,6 +1343,10 @@
       "label": "หมายเหตุการแก้ไข",
       "placeholder": "อธิบายการแก้ไขที่ต้องการ...",
       "title": "ส่งกลับเพื่อแก้ไข"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "การตรวจสอบที่ยังไม่ได้มอบหมาย"
     },
     "title": "คัดกรอง",
     "viewDetails": "ดูรายละเอียด"

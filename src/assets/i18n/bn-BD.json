@@ -1158,7 +1158,7 @@
       "outputs": "আউটপুট",
       "outputsDescription": "নোট, ডায়াগ্রাম এবং নিরাপত্তা বিশ্লেষণের সময় উৎপাদিত হুমকি"
     },
-    "securityReviewer": "নিরাপত্তা পর্যালোচক",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "মালিক হিসেবে সেট করুন",
     "sourcesCount": "রিপো",
     "status": {
@@ -1326,6 +1326,16 @@
     },
     "queue": "ট্রায়াজ সারি",
     "returnToSubmitted": "জমা দেওয়াতে ফিরে যান",
+    "reviewerAssignment": {
+      "assign": "নিয়োগ করুন",
+      "assignToMe": "আমাকে নিয়োগ করুন",
+      "errorLoading": "নিয়োগহীন হুমকি মডেল লোড করতে ব্যর্থ",
+      "loading": "নিয়োগহীন পর্যালোচনা লোড হচ্ছে...",
+      "noUnassigned": "কোনো নিয়োগহীন পর্যালোচনা নেই",
+      "noUnassignedDescription": "সমস্ত সক্রিয় হুমকি মডেলের একটি সুরক্ষা পর্যালোচক নিয়োগ করা হয়েছে",
+      "reviewer": "নিরাপত্তা পর্যালোচক",
+      "selectReviewer": "পর্যালোচক নির্বাচন করুন..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "কী সংশোধন করতে হবে তা ব্যাখ্যা করে নোট প্রদান করুন। জমাদাতা তাদের উত্তর পর্যালোচনা করার সময় এই নোটগুলি দেখতে পাবেন।",
@@ -1333,6 +1343,10 @@
       "label": "সংশোধন নোট",
       "placeholder": "প্রয়োজনীয় সংশোধনগুলি বর্ণনা করুন...",
       "title": "সংশোধনের জন্য ফেরত পাঠান"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "নিয়োগহীন পর্যালোচনা"
     },
     "title": "ট্রায়াজ",
     "viewDetails": "বিবরণ দেখুন"

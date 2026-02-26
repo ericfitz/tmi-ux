@@ -1158,7 +1158,7 @@
       "outputs": "出力",
       "outputsDescription": "セキュリティ分析中に作成されたノート、図、および脅威"
     },
-    "securityReviewer": "セキュリティレビュアー",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "オーナーに設定",
     "sourcesCount": "リポジトリ",
     "status": {
@@ -1326,6 +1326,16 @@
     },
     "queue": "トリアージキュー",
     "returnToSubmitted": "送信済みに戻す",
+    "reviewerAssignment": {
+      "assign": "割り当てる",
+      "assignToMe": "自分に割り当てる",
+      "errorLoading": "未割り当ての脅威モデルの読み込みに失敗しました",
+      "loading": "未割り当てのレビューを読み込み中...",
+      "noUnassigned": "割り当てられていないレビュー",
+      "noUnassignedDescription": "すべてのアクティブな脅威モデルにセキュリティレビュー担当者が割り当てられています",
+      "reviewer": "セキュリティレビュー担当者",
+      "selectReviewer": "レビュー担当者を選択..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "修正が必要な内容を説明するノートを記入してください。提出者が回答を確認する際にこれらのノートが表示されます。",
@@ -1333,6 +1343,10 @@
       "label": "修正依頼ノート",
       "placeholder": "必要な修正内容を記述...",
       "title": "修正依頼として差し戻し"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "未割り当てのレビュー"
     },
     "title": "トリアージ",
     "viewDetails": "詳細を表示"

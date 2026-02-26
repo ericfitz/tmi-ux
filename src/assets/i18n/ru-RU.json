@@ -1158,7 +1158,7 @@
       "outputs": "Выходные данные",
       "outputsDescription": "Заметки, диаграммы и угрозы, созданные во время анализа безопасности"
     },
-    "securityReviewer": "Ревизор безопасности",
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Назначить владельцем",
     "sourcesCount": "Репозитории",
     "status": {
@@ -1326,6 +1326,16 @@
     },
     "queue": "Очередь сортировки",
     "returnToSubmitted": "Вернуть в отправленные",
+    "reviewerAssignment": {
+      "assign": "Назначить",
+      "assignToMe": "Назначить мне",
+      "errorLoading": "Не удалось загрузить неназначенные модели угроз",
+      "loading": "Загрузка неназначенных рецензий...",
+      "noUnassigned": "Нет неназначенных рецензий",
+      "noUnassignedDescription": "Все активные модели угроз имеют назначенного рецензента безопасности",
+      "reviewer": "Рецензент по безопасности",
+      "selectReviewer": "Выберите рецензента..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "Укажите заметки с объяснением, что необходимо доработать. Отправитель увидит эти заметки при просмотре своего ответа.",
@@ -1333,6 +1343,10 @@
       "label": "Заметки по доработке",
       "placeholder": "Опишите необходимые доработки...",
       "title": "Вернуть на доработку"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "Неназначенные рецензии"
     },
     "title": "Сортировка",
     "viewDetails": "Просмотреть детали"
