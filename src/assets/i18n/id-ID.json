@@ -784,7 +784,7 @@
     "support": "Dukungan"
   },
   "getStarted": "Mulai",
-  "homeDescription": "TMI adalah alat yang mengelola dan meningkatkan proses tinjauan keamanan dan pemodelan ancaman untuk organisasi Anda. Alat ini menggerakkan alur kerja tinjauan keamanan, mengorganisir informasi untuk tinjauan keamanan, memungkinkan pembuatan diagram alur data secara kolaboratif, dan memungkinkan koneksi otomatisasi untuk mengurangi beban kerja dalam proses tinjauan dan menganalisis ancaman keamanan.",
+  "homeDescription": "TMI adalah alat yang menyederhanakan proses peninjauan keamanan dan pemodelan ancaman organisasi Anda. Ini mendorong alur kerja peninjauan, mengorganisir informasi penting, dan memungkinkan tim untuk secara kolaboratif membangun diagram alur data. Alat ini juga terhubung dengan otomasi, membantu mengurangi pekerjaan manual dan mengidentifikasi ancaman keamanan dengan lebih efisien.",
   "homeWelcomeTitle": "Selamat Datang di TMI: Threat Modeling Improved",
   "intake": {
     "fill": {
