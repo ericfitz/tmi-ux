@@ -280,7 +280,7 @@
                 <p class="threat-model-status">
                   <span class="status-label">{{ 'common.status' | transloco }}:</span>
                   {{
-                    threatModel.status
+                    threatModel.status && threatModel.status !== 'none'
                       ? ('threatModels.status.' + threatModel.status | transloco)
                       : '—'
                   }}
@@ -454,7 +454,11 @@
               {{ 'dashboard.tableHeaders.status' | transloco }}
             </th>
             <td mat-cell *matCellDef="let tm">
-              {{ tm.status ? ('threatModels.status.' + tm.status | transloco) : '—' }}
+              {{
+                tm.status && tm.status !== 'none'
+                  ? ('threatModels.status.' + tm.status | transloco)
+                  : '—'
+              }}
             </td>
           </ng-container>
 
