@@ -45,11 +45,9 @@ interface StoredEdgeLabel {
 }
 
 /**
- * Interface for stored cell data from threat models
- * Supports both X6 format and legacy mxGraph format:
+ * Interface for stored cell data from threat models (X6 format)
  * - Nodes: attrs.text.text
  * - Edges: labels[].attrs.text.text (X6 native format)
- * - Legacy: value/style fields
  */
 interface StoredCell {
   id: string;
@@ -58,11 +56,7 @@ interface StoredCell {
     text?: { text?: string };
     [key: string]: unknown;
   };
-  // X6 edge labels array (edges store labels here, not in attrs.text.text)
   labels?: StoredEdgeLabel[];
-  // Legacy mxGraph format properties (kept for backward compatibility)
-  value?: string;
-  style?: string | { [key: string]: unknown };
   data?: {
     id?: string;
     label?: string;
@@ -224,141 +218,99 @@ export class CellDataExtractionService {
       return 'Unknown Cell';
     }
 
-    let label = cell.id; // Default fallback
-
     try {
-      if (cellType === 'x6') {
-        const x6Cell = cell as X6Cell;
-        // For X6 runtime cells, use the getLabel extension method if available
-        if (typeof x6Cell.getLabel === 'function') {
-          const extractedLabel = x6Cell.getLabel();
-          const labelText = this.extractLabelText(extractedLabel);
-          if (labelText && labelText.trim()) {
-            label = labelText.trim();
-          }
-        } else {
-          // Fallback manual extraction for X6 cells
-          if (x6Cell.isNode && x6Cell.isNode()) {
-            // Node cells - try text attributes
-            const textValue = x6Cell.getAttrByPath ? x6Cell.getAttrByPath('text/text') : null;
-            if (textValue && typeof textValue === 'string') {
-              label = textValue.trim();
-            }
-          } else if (x6Cell.isEdge && x6Cell.isEdge()) {
-            // Edge cells - try labels array
-            const labels = x6Cell.getLabels ? x6Cell.getLabels() : null;
-            if (labels && labels.length > 0) {
-              const firstLabel = labels[0];
-              if (firstLabel?.attrs?.['text']?.value) {
-                label = firstLabel.attrs['text'].value.trim();
-              }
-            }
-          }
-        }
-      } else if (cellType === 'stored') {
-        const storedCell = cell as StoredCell;
-        // For stored cells from threat model data
-        // Note: This handles the basic Cell interface from diagram.model.ts
+      const label =
+        cellType === 'x6'
+          ? this.extractX6CellLabel(cell as X6Cell)
+          : this.extractStoredCellLabel(cell as StoredCell);
 
-        // Try multiple approaches to get a meaningful label from stored data
-
-        // 1. Primary for edges: Check labels[].attrs.text.text (X6 native edge format)
-        // Edge labels in X6 are stored in a labels array, not in attrs.text.text
-        if (
-          storedCell.shape === 'edge' &&
-          Array.isArray(storedCell.labels) &&
-          storedCell.labels.length > 0
-        ) {
-          const firstLabel = storedCell.labels[0];
-          const labelText = firstLabel?.attrs?.text?.text;
-          if (labelText && typeof labelText === 'string' && labelText.trim()) {
-            label = labelText.trim();
-          }
-        }
-
-        // 2. Primary for nodes: Check attrs.text.text (X6 format for node labels)
-        if (label === storedCell.id) {
-          const attrsText = storedCell.attrs?.text;
-          if (attrsText?.text && typeof attrsText.text === 'string' && attrsText.text.trim()) {
-            label = attrsText.text.trim();
-          }
-        }
-
-        // 3. Fallback: Check if value contains actual text (legacy mxGraph format)
-        if (label === storedCell.id && storedCell.value && typeof storedCell.value === 'string') {
-          let cleanValue = storedCell.value;
-          let previousValue;
-          do {
-            previousValue = cleanValue;
-            cleanValue = cleanValue.replace(/<[^>]*>/g, '');
-          } while (cleanValue !== previousValue);
-          cleanValue = cleanValue.trim(); // Remove leading/trailing whitespace after tags are gone
-          if (cleanValue && cleanValue !== storedCell.id) {
-            label = cleanValue;
-          }
-        }
-
-        // 4. Fallback: Check style field (legacy mxGraph format)
-        if (label === storedCell.id) {
-          if (storedCell.style && typeof storedCell.style === 'string') {
-            // Enhanced style parsing for different text encodings and formats
-
-            // Look for text content in various style attribute formats
-            const stylePatterns = [
-              /text=([^;]+)/i, // text=value
-              /label=([^;]+)/i, // label=value
-              /html=1;text=([^;]+)/i, // html=1;text=value
-              /whiteSpace=wrap;.*text=([^;]+)/i, // whiteSpace=wrap;...text=value
-            ];
-
-            for (const pattern of stylePatterns) {
-              const styleMatch = storedCell.style.match(pattern);
-              if (styleMatch && styleMatch[1]) {
-                try {
-                  let decodedText = decodeURIComponent(styleMatch[1]).trim();
-                  // Remove additional HTML entities if present
-                  decodedText = decodedText.replace(/&[a-zA-Z0-9]+;/g, ' ').trim();
-                  // Remove extra whitespace
-                  decodedText = decodedText.replace(/\s+/g, ' ');
-
-                  if (decodedText && decodedText !== storedCell.id && decodedText.length > 0) {
-                    label = decodedText;
-                    break; // Found a good match, stop searching
-                  }
-                } catch (error) {
-                  this.logger.warn('Error decoding style text', {
-                    styleMatch: styleMatch[1],
-                    error,
-                  });
-                }
-              }
-            }
-          }
-        }
-
-        // 5. Last resort: Generate friendly label from ID
-        if (!label || label === storedCell.id) {
-          label = this.generateFriendlyLabel(storedCell);
-        }
-      }
-
-      // Clean up the label
-      if (typeof label === 'string') {
-        label = label.replace(/\n/g, ' ').trim();
-        if (!label) {
-          label = cell.id; // Fallback to ID if label is empty
-        }
-      }
+      return this.cleanLabel(label, cell.id);
     } catch (error) {
       this.logger.warn('Error extracting cell label, using ID as fallback', {
         cellId: cell.id,
         cellType,
         error,
       });
-      label = cell.id;
+      return cell.id;
+    }
+  }
+
+  /**
+   * Extracts label from an X6 runtime cell using getLabel() or manual fallback.
+   */
+  private extractX6CellLabel(x6Cell: X6Cell): string | null {
+    if (typeof x6Cell.getLabel === 'function') {
+      const extractedLabel = x6Cell.getLabel();
+      const labelText = this.extractLabelText(extractedLabel);
+      if (labelText?.trim()) {
+        return labelText.trim();
+      }
+      return null;
     }
 
-    return label || cell.id; // Ensure we always return something
+    // Fallback manual extraction for X6 cells
+    if (x6Cell.isNode?.()) {
+      const textValue = x6Cell.getAttrByPath?.('text/text');
+      if (textValue && typeof textValue === 'string') {
+        return textValue.trim();
+      }
+    } else if (x6Cell.isEdge?.()) {
+      const labels = x6Cell.getLabels?.();
+      if (labels && labels.length > 0) {
+        const firstLabelValue = labels[0]?.attrs?.['text']?.value;
+        if (firstLabelValue) {
+          return firstLabelValue.trim();
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Extracts label from a stored cell, trying strategies in priority order:
+   * 1. Edge labels array (X6 native edge format)
+   * 2. Node attrs.text.text (X6 node format)
+   * 3. Generate friendly label from cell ID
+   */
+  private extractStoredCellLabel(storedCell: StoredCell): string | null {
+    return (
+      this.tryExtractEdgeLabel(storedCell) ??
+      this.tryExtractNodeAttrsLabel(storedCell) ??
+      this.generateFriendlyLabel(storedCell)
+    );
+  }
+
+  /** Extracts label from X6 edge labels array (labels[].attrs.text.text). */
+  private tryExtractEdgeLabel(cell: StoredCell): string | null {
+    if (cell.shape !== 'edge' || !Array.isArray(cell.labels) || cell.labels.length === 0) {
+      return null;
+    }
+    const labelText = cell.labels[0]?.attrs?.text?.text;
+    if (labelText && typeof labelText === 'string' && labelText.trim()) {
+      return labelText.trim();
+    }
+    return null;
+  }
+
+  /** Extracts label from X6 node attrs (attrs.text.text). */
+  private tryExtractNodeAttrsLabel(cell: StoredCell): string | null {
+    const text = cell.attrs?.text?.text;
+    if (text && typeof text === 'string' && text.trim()) {
+      return text.trim();
+    }
+    return null;
+  }
+
+  /** Cleans up a label by collapsing newlines and trimming, falling back to cell ID. */
+  private cleanLabel(label: string | null, cellId: string): string {
+    if (typeof label === 'string') {
+      const cleaned = label.replace(/\n/g, ' ').trim();
+      if (cleaned) {
+        return cleaned;
+      }
+    }
+    return cellId;
   }
 
   /**

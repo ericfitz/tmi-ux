@@ -132,5 +132,23 @@
     "userPreferences.credentials.clientSecret"
   ],
   "ur-PK": [],
-  "zh-CN": ["common.userId"]
+  "zh-CN": ["common.userId"],
+  "surveys": {
+    "autoSave": {
+      "error": "{{common.saveFailed}}"
+    }
+  },
+  "userPreferences": {
+    "sections": {
+      "securityReviewer": "{{threatModels.securityReviewer}}"
+    }
+  },
+  "triage": {
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}"
+    }
+  },
+  "threatModels": {
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}"
+  }
 }

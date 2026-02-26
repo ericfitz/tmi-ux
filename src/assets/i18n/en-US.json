@@ -455,10 +455,13 @@
     "collaboratorsHeader": "Participants",
     "copyLink": "Copy Link",
     "denyPresenterRequest": "Deny Presenter Request",
+    "endCollaboration": "End Collaboration",
     "hostedBy": "Hosted by",
     "isRequestingPresenterPrivileges": "is requesting presenter privileges",
     "joinSession": "Join Session",
     "justNow": "just now",
+    "leaveSession": "Leave Session",
+    "loadingDiagramContext": "Loading diagram context...",
     "manageParticipants": "Manage Participants",
     "noActiveSessions": "No Active Collaboration Sessions",
     "participantRequestsPresenterRole": "Participant Requests Presenter Role",
@@ -466,6 +469,7 @@
     "removeFromSession": "Remove from Session",
     "requestPresenter": "Request Presenter",
     "sessionStarted": "Started",
+    "startCollaboration": "Start Collaboration",
     "takeBackPresenter": "Take Back Presenter",
     "title": "Collaboration Session Participants",
     "userJoined": "{{user}} joined the collaboration",
@@ -503,6 +507,7 @@
     "copyToClipboard": "Copy to Clipboard",
     "create": "Create",
     "created": "Created",
+    "createdBy": "Created By",
     "criticality": "Criticality",
     "criticality.comment": "Used in the sense of how important something is, or how much impact would occur.",
     "cut": "Cut",
@@ -531,6 +536,7 @@
     "groups": "Groups",
     "id": "ID",
     "identityProvider": "Identity Provider",
+    "includeInReport": "Include in Report",
     "issueUri": "Issue URL",
     "language": "{{language}}",
     "lastModified": "Last Modified",
@@ -585,6 +591,7 @@
     "paste": "Paste",
     "permissions": "Permissions",
     "priority": "Priority",
+    "project": "Project",
     "provider": "Provider",
     "readOnly": "Read-Only",
     "readOnlyTooltip": "You have read-only access to this threat model. Contact the owner to request edit permissions.",
@@ -596,6 +603,7 @@
     },
     "save": "Save",
     "saveAndClose": "Save and Close",
+    "saveFailed": "Save failed",
     "savedSuccessfully": "Saved successfully",
     "score": "Score",
     "search": "Search",
@@ -613,6 +621,7 @@
       "group": "Group",
       "user": "User"
     },
+    "team": "Team",
     "template": "Template",
     "threatDescription": "Threat Description",
     "threatDescriptionPlaceholder": "Describe the Threat in Detail",
@@ -623,8 +632,10 @@
     "type": "Type",
     "unarchive": "Unarchive",
     "unsavedChangesWarning": "You have unsaved changes. Are you sure you want to close?",
+    "uri": "URI",
     "userId": "User ID",
     "validation": {
+      "email": "Please enter a valid email address",
       "invalidUrl": "Please enter a valid URL",
       "maxLength": "Maximum length is {{max}} characters",
       "nameRequired": "Name is required",
@@ -658,10 +669,27 @@
     "title": "Create Threat Model"
   },
   "dashboard": {
-    "clearFilter": "Clear Filter",
-    "filterLabel": "Filter Threat Models",
-    "filterPlaceholder": "Search by name, description, owner, or status",
-    "noMatchingThreatModels": "No threat models match your filter.",
+    "clearAllFilters": "Clear All Filters",
+    "clearSearch": "Clear Search",
+    "createdAfter": "Created After",
+    "createdBefore": "Created Before",
+    "descriptionFilter": "{{common.description}}",
+    "descriptionPlaceholder": "Filter by description",
+    "issueUriFilter": "{{common.issueUri}}",
+    "issueUriPlaceholder": "Filter by issue URL",
+    "lessFilters": "Fewer Filters",
+    "modifiedAfter": "Modified After",
+    "modifiedBefore": "Modified Before",
+    "moreFilters": "More Filters",
+    "nameFilter": "{{common.name}}",
+    "namePlaceholder": "Filter by name",
+    "noMatchingThreatModels": "No threat models match your search or filters.",
+    "ownerFilter": "{{common.roles.owner}}",
+    "ownerPlaceholder": "Filter by owner name or email",
+    "searchLabel": "{{common.search}}",
+    "searchPlaceholder": "Search by name, description, owner, or status",
+    "statusUpdatedAfter": "Status Updated After",
+    "statusUpdatedBefore": "Status Updated Before",
     "tableHeaders": {
       "actions": "{{common.actions}}",
       "created": "{{common.created}}",
@@ -720,6 +748,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "One or more selected elements have metadata entries. Deleting these elements will permanently remove their metadata. Do you want to continue?",
+      "title": "Metadata Will Be Lost"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "Enter diagram description",
     "diagramNamePlaceholder": "Enter diagram name",
@@ -777,10 +810,12 @@
     "support": "Support"
   },
   "getStarted": "Get Started",
-  "homeDescription": "TMI is a tool that manages and enhances the security review and threat modeling processes for your organization.  It drives security review workflow, organizes the information for security reviews, enables building data flow diagrams collaboratively, and enables connecting automation to reduce toil in the review process and to analyze for security threats.",
+  "homeDescription": "TMI is a tool that streamlines your organization's security review and threat modeling processes. It drives review workflows, organizes key information, and enables teams to collaboratively build data flow diagrams. It also connects to automation, helping reduce manual toil and surface security threats more efficiently.",
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "Save & Exit",
       "submitResponses": "Submit Responses"
     }
@@ -840,6 +875,53 @@
       "view": "View Note"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "Login"
+    },
+    "operationError": "Failed to {{operation}}: {{errorMessage}}",
+    "operationFailed": "Operation failed",
+    "operations": {
+      "collaboration": "collaboration",
+      "denyPresenterRequest": "deny presenter request",
+      "sendPresenterRequest": "send presenter request",
+      "startCollaboration": "start collaboration",
+      "updatePresenter": "update presenter"
+    },
+    "presenter": {
+      "assigned": "{{user}} is now the presenter",
+      "assignedYou": "You are now the presenter",
+      "cleared": "Presenter mode has been cleared",
+      "cursorMoved": "Presenter cursor moved",
+      "modeChanged": "Presenter mode changed",
+      "privilegesRequested": "Presenter privileges requested",
+      "removed": "{{user}} is no longer the presenter",
+      "removedYou": "You are no longer the presenter",
+      "requestDenied": "Your presenter request was denied",
+      "requestSent": "Presenter request sent to session owner",
+      "requesting": "{{user}} is requesting presenter privileges",
+      "selectionChanged": "Presenter selection changed"
+    },
+    "session": {
+      "disconnected": "Disconnected from collaboration session",
+      "reconnected": "Reconnected to collaboration session",
+      "reconnecting": "Reconnecting to collaboration session...",
+      "userRemoved": "{{user}} was removed from the session",
+      "youWereRemoved": "You have been removed from the collaboration session"
+    },
+    "unknownError": "Unknown error",
+    "websocket": {
+      "authenticationFailed": "Authentication failed. Please log in again.",
+      "communicationError": "Communication error with server. Some updates may not sync.",
+      "connectionError": "Connection error. Working in offline mode.",
+      "connectionFailed": "Failed to connect to collaboration server.",
+      "connectionTimeout": "Connection timeout. The server may be overloaded.",
+      "disconnected": "Disconnected from collaboration server. Changes will be saved locally.",
+      "messageSendFailed": "Failed to send message. Your changes may not be synced.",
+      "multipleFailed": "Connection failed after multiple attempts. Working in offline mode.",
+      "unknownError": "Unknown WebSocket error occurred"
+    }
+  },
   "pagination": {
     "ariaLabel": "Select page of items",
     "firstPage": "First page",
@@ -893,6 +975,23 @@
     "userRightsContent2": "This option enables immediate deletion of all data The Operator stores on your behalf, including profile information and authentication records. Upon activation, your data will be permanently removed from The Operator's systems and third-party providers, subject to any legal retention obligations.",
     "userRightsTitle": "User Rights"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "Enter project description",
+      "namePlaceholder": "Enter project name",
+      "nameRequired": "Project name is required",
+      "statusPlaceholder": "e.g. active, planning, archived",
+      "teamRequired": "Team is required",
+      "title": "Create Project",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Create New Project",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "No Project"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "Extend Session",
     "extending": "Extending your session, please wait...",
@@ -906,7 +1005,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "Save failed",
+      "error": "{{common.saveFailed}}",
       "saved": "Saved",
       "saving": "Saving..."
     },
@@ -975,63 +1074,80 @@
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "View Response"
   },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "Enter team description",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "Enter team name",
+      "nameRequired": "Team name is required",
+      "statusPlaceholder": "e.g. active, archived",
+      "title": "Create Team",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Create New Team"
+  },
   "threatEditor": {
     "createNewThreat": "Create New Threat",
     "notAssociatedWithAsset": "Not associated with an asset",
     "notAssociatedWithCell": "Not Associated With a Cell",
     "notAssociatedWithDiagram": "Not Associated With a Diagram",
     "threatPriority": {
-      "0": "Immediate (P0)",
-      "0.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",
-      "1": "High (P1)",
-      "1.description": "Requires prompt resolution; high-risk exposure or upcoming release deadline.",
-      "2": "Medium (P2)",
-      "2.description": "Address within standard development cycles; moderate exposure.",
-      "3": "Low (P3)",
-      "3.description": "Include in backlog for future cycles; no immediate exposure.",
-      "4": "Deferred (P4)",
-      "4.description": "Postponed with documented business approval; tracked but not scheduled."
+      "deferred": "Deferred (P4)",
+      "deferred.description": "Postponed with documented business approval; tracked but not scheduled.",
+      "high": "High (P1)",
+      "high.description": "Requires prompt resolution; high-risk exposure or upcoming release deadline.",
+      "immediate": "Immediate (P0)",
+      "immediate.description": "Must be addressed urgently; active exploitation, regulatory violation, or critical business exposure.",
+      "low": "Low (P3)",
+      "low.description": "Include in backlog for future cycles; no immediate exposure.",
+      "medium": "Medium (P2)",
+      "medium.description": "Address within standard development cycles; moderate exposure."
     },
     "threatSeverity": {
-      "0": "Critical",
-      "0.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
-      "1": "High",
-      "1.description": "Significant impact or high likelihood; enables major unauthorized access, privilege escalation, or service disruption.",
-      "2": "Medium",
-      "2.description": "Moderate impact or likelihood; limited data exposure, partial functionality impairment, or requires chained exploits.",
-      "3": "Low",
-      "3.description": "Minimal impact or low likelihood; negligible business impact, requires specific conditions or user interaction.",
-      "4": "Informational",
-      "4.description": "No direct exploitability; recommendation, best practice deviation, or configuration improvement.",
-      "5": "Unknown",
-      "5.description": "Threat severity has not yet been assessed."
+      "critical": "Critical",
+      "critical.description": "Exploitable vulnerability enables complete system compromise, data breach, or safety impact; requires immediate action.",
+      "high": "High",
+      "high.description": "Significant impact or high likelihood; enables major unauthorized access, privilege escalation, or service disruption.",
+      "informational": "Informational",
+      "informational.description": "No direct exploitability; recommendation, best practice deviation, or configuration improvement.",
+      "low": "Low",
+      "low.description": "Minimal impact or low likelihood; negligible business impact, requires specific conditions or user interaction.",
+      "medium": "Medium",
+      "medium.description": "Moderate impact or likelihood; limited data exposure, partial functionality impairment, or requires chained exploits.",
+      "unknown": "Unknown",
+      "unknown.description": "Threat severity has not yet been assessed."
     },
     "threatStatus": {
-      "0": "Open",
-      "0.description": "The finding has been identified and documented but no action has been initiated.",
-      "1": "Confirmed",
-      "1.description": "The threat has been validated as legitimate through analysis or evidence.",
-      "2": "Mitigation Planned",
-      "2.description": "A remediation or mitigation strategy has been defined and assigned.",
-      "3": "Mitigation In Progress",
-      "3.description": "Implementation of controls, code changes, or countermeasures is underway.",
-      "4": "Verification Pending",
-      "4.description": "Mitigation is complete; security team must test or review effectiveness.",
-      "5": "Resolved",
-      "5.description": "The threat is fully mitigated and verified; residual risk is acceptable.",
-      "6": "Accepted",
-      "6.description": "The threat is acknowledged but intentionally not mitigated (e.g., due to business justification); requires formal risk acceptance.",
-      "7": "False Positive",
-      "7.description": "Investigation determined the finding is not a valid threat; no further action required.",
-      "8": "Deferred",
-      "8.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
-      "9": "Closed",
-      "9.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail."
+      "accepted": "Accepted",
+      "accepted.description": "The threat is acknowledged but intentionally not mitigated (e.g., due to business justification); requires formal risk acceptance.",
+      "closed": "Closed",
+      "closed.description": "The finding is archived after resolution, acceptance, or invalidation, with audit trail.",
+      "confirmed": "Confirmed",
+      "confirmed.description": "The threat has been validated as legitimate through analysis or evidence.",
+      "deferred": "Deferred",
+      "deferred.description": "Action is postponed with approval (e.g., for future sprints); includes rationale and due date.",
+      "falsePositive": "False Positive",
+      "falsePositive.description": "Investigation determined the finding is not a valid threat; no further action required.",
+      "mitigationInProgress": "Mitigation In Progress",
+      "mitigationInProgress.description": "Implementation of controls, code changes, or countermeasures is underway.",
+      "mitigationPlanned": "Mitigation Planned",
+      "mitigationPlanned.description": "A remediation or mitigation strategy has been defined and assigned.",
+      "open": "Open",
+      "open.description": "The finding has been identified and documented but no action has been initiated.",
+      "resolved": "Resolved",
+      "resolved.description": "The threat is fully mitigated and verified; residual risk is acceptable.",
+      "verificationPending": "Verification Pending",
+      "verificationPending.description": "Mitigation is complete; security team must test or review effectiveness."
     }
   },
   "threatModels": {
     "addPermission": "Add Permission",
     "branch": "Branch",
+    "changeSecurityReviewer": "Change Security Reviewer",
+    "clearSecurityReviewer": "Clear Security Reviewer",
     "commit": "Commit",
     "commit.comment": "This is used as a noun, representing the id value of a change in a source code management system.",
     "createFirstButton": "Create Your First Threat Model",
@@ -1039,7 +1155,7 @@
     "createNewRepository": "Add Repository Reference",
     "created": "{{common.created}}",
     "created.comment": "This is used to reference the date and time that something was created.",
-    "createdBy": "Created By",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Data Flow Diagram",
     "deleteWarningPermanent": "This action cannot be undone and will permanently delete all associated diagrams, threats, and metadata.",
@@ -1105,29 +1221,30 @@
       "outputs.comment": "Section heading for threat model output entities (notes, diagrams, threats)",
       "outputsDescription": "Notes, diagrams, and threats produced during security analysis"
     },
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Set as Owner",
     "sourcesCount": "Repos",
     "status": {
-      "0": "Not Started",
-      "0.tooltip": "The security review has been initiated but no assessment activities have begun.",
-      "1": "In Progress",
-      "1.tooltip": "Active assessment is underway, including threat modeling, code review, or testing.",
-      "2": "Pending Review",
-      "2.tooltip": "Assessment artifacts (e.g., reports, findings) await formal review by security leads or approvers.",
-      "3": "Remediation Required",
-      "3.tooltip": "Vulnerabilities or issues have been identified; development must address them.",
-      "4": "Remediation In Progress",
-      "4.tooltip": "Fixes for identified issues are being implemented by the development team.",
-      "5": "Verification Pending",
-      "5.tooltip": "Remediation is complete; security team must verify effectiveness.",
-      "6": "Approved",
-      "6.tooltip": "All issues are resolved and verified; the application meets security criteria for release or deployment.",
-      "7": "Rejected",
-      "7.tooltip": "The review failed critical criteria; significant rework is required before re-submission.",
-      "8": "Deferred",
-      "8.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
-      "9": "Closed",
-      "9.tooltip": "The review is fully completed and archived, with no further action needed."
+      "approved": "Approved",
+      "approved.tooltip": "All issues are resolved and verified; the application meets security criteria for release or deployment.",
+      "closed": "Closed",
+      "closed.tooltip": "The review is fully completed and archived, with no further action needed.",
+      "deferred": "Deferred",
+      "deferred.tooltip": "The review is paused (e.g., due to resource constraints or application changes); resumption is planned.",
+      "inProgress": "In Progress",
+      "inProgress.tooltip": "Active assessment is underway, including threat modeling, code review, or testing.",
+      "notStarted": "Not Started",
+      "notStarted.tooltip": "The security review has been initiated but no assessment activities have begun.",
+      "pendingReview": "Pending Review",
+      "pendingReview.tooltip": "Assessment artifacts (e.g., reports, findings) await formal review by security leads or approvers.",
+      "rejected": "Rejected",
+      "rejected.tooltip": "The review failed critical criteria; significant rework is required before re-submission.",
+      "remediationInProgress": "Remediation In Progress",
+      "remediationInProgress.tooltip": "Fixes for identified issues are being implemented by the development team.",
+      "remediationRequired": "Remediation Required",
+      "remediationRequired.tooltip": "Vulnerabilities or issues have been identified; development must address them.",
+      "verificationPending": "Verification Pending",
+      "verificationPending.tooltip": "Remediation is complete; security team must verify effectiveness."
     },
     "statusLastUpdated": "Status Last Updated",
     "tag": "Tag",
@@ -1274,6 +1391,16 @@
     },
     "queue": "Triage Queue",
     "returnToSubmitted": "Return to Submitted",
+    "reviewerAssignment": {
+      "assign": "Assign",
+      "assignToMe": "Assign to Me",
+      "errorLoading": "Failed to load unassigned threat models",
+      "loading": "Loading unassigned reviews...",
+      "noUnassigned": "No Unassigned Reviews",
+      "noUnassignedDescription": "All active threat models have a security reviewer assigned",
+      "reviewer": "Security Reviewer",
+      "selectReviewer": "Select reviewer..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "Provide notes explaining what needs to be revised. The submitter will see these notes when they review their response.",
@@ -1281,6 +1408,10 @@
       "label": "Revision Notes",
       "placeholder": "Describe the revisions needed...",
       "title": "Return for Revision"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "Unassigned Reviews"
     },
     "title": "Triage",
     "viewDetails": "View Details"
@@ -1356,7 +1487,7 @@
     "sections": {
       "developer": "Developer",
       "diagramEditor": "Diagram Editor",
-      "securityReviewer": "Security Reviewer"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "Show Developer Tools",
     "tabs": {

@@ -31,9 +31,11 @@ describe('ThreatModelAuthorizationService', () => {
   };
 
   const mockOwner: User = {
+    principal_type: 'user',
     provider: 'google',
     provider_id: 'google-123',
     email: 'owner@example.com',
+    display_name: 'Owner',
   };
 
   const mockUserAuthorization: Authorization = {
@@ -365,9 +367,11 @@ describe('ThreatModelAuthorizationService', () => {
       mockAuthService.userEmail = 'owner@example.com';
 
       const ownerWithEmailInProviderId: User = {
+        principal_type: 'user',
         provider: 'google',
         provider_id: 'owner@example.com',
         email: 'owner@example.com',
+        display_name: 'Owner',
       };
 
       service.setAuthorization('tm-123', [], ownerWithEmailInProviderId);
@@ -611,6 +615,162 @@ describe('ThreatModelAuthorizationService', () => {
 
       // Should not cause errors
       expect(service).toBeTruthy();
+    });
+  });
+
+  describe('Reactive Observable Emissions', () => {
+    it('should emit updated permission through currentUserPermission$ when profile changes', () => {
+      const emissions: (string | null)[] = [];
+
+      service.currentUserPermission$.subscribe(permission => {
+        emissions.push(permission);
+      });
+
+      // Initial state: null (no authorization set)
+      expect(emissions).toEqual([null]);
+
+      // Set authorization as a writer
+      service.setAuthorization('tm-123', [mockUserAuthorization], mockOwner);
+
+      // Should have emitted 'writer'
+      expect(emissions).toEqual([null, 'writer']);
+
+      // Change user to become the owner
+      mockAuthService.userIdp = 'google';
+      mockAuthService.providerId = 'google-123';
+      mockAuthService.userProfile$.next({
+        display_name: 'Owner',
+        provider_id: 'google-123',
+      });
+
+      // Should have emitted 'owner'
+      expect(emissions).toEqual([null, 'writer', 'owner']);
+    });
+
+    it('should emit canEdit$ correctly through permission transitions', () => {
+      const emissions: boolean[] = [];
+
+      service.canEdit$.subscribe(canEdit => {
+        emissions.push(canEdit);
+      });
+
+      // Initial: false (no authorization)
+      expect(emissions).toEqual([false]);
+
+      // Set as writer: canEdit = true
+      service.setAuthorization('tm-123', [mockUserAuthorization], mockOwner);
+      expect(emissions).toEqual([false, true]);
+
+      // Update to reader-only: canEdit = false
+      service.updateAuthorization([mockGroupAuthorization]);
+      expect(emissions).toEqual([false, true, false]);
+    });
+
+    it('should emit canManagePermissions$ correctly through permission transitions', () => {
+      const emissions: boolean[] = [];
+
+      service.canManagePermissions$.subscribe(canManage => {
+        emissions.push(canManage);
+      });
+
+      // Initial: false
+      expect(emissions).toEqual([false]);
+
+      // Set as writer: canManage = false (only owner can manage)
+      service.setAuthorization('tm-123', [mockUserAuthorization], mockOwner);
+      // distinctUntilChanged should suppress duplicate false
+      expect(emissions).toEqual([false]);
+
+      // Change user to owner: canManage = true
+      mockAuthService.userIdp = 'google';
+      mockAuthService.providerId = 'google-123';
+      mockAuthService.userProfile$.next({
+        display_name: 'Owner',
+        provider_id: 'google-123',
+      });
+      expect(emissions).toEqual([false, true]);
+    });
+
+    it('should handle profile arriving after authorization data is set', () => {
+      // Simulate no user initially
+      mockAuthService.userIdp = null;
+      mockAuthService.providerId = null;
+
+      // Set authorization data before profile is available
+      service.setAuthorization('tm-123', [mockUserAuthorization], mockOwner);
+
+      // Should be null since no user is authenticated
+      expect(service.getCurrentUserPermission()).toBeNull();
+
+      // Profile arrives later
+      mockAuthService.userIdp = 'google';
+      mockAuthService.providerId = 'google-456';
+      mockAuthService.userProfile$.next({
+        display_name: 'Test User',
+        provider_id: 'google-456',
+      });
+
+      // Should now be 'writer' after recalculation
+      expect(service.getCurrentUserPermission()).toBe('writer');
+    });
+
+    it('should handle user logout (profile becomes null) while threat model is loaded', () => {
+      service.setAuthorization('tm-123', [mockUserAuthorization], mockOwner);
+      expect(service.getCurrentUserPermission()).toBe('writer');
+
+      // User logs out
+      mockAuthService.userIdp = null;
+      mockAuthService.providerId = null;
+      mockAuthService.userEmail = null;
+      mockAuthService.userProfile$.next(null);
+
+      // Permission should be null
+      expect(service.getCurrentUserPermission()).toBeNull();
+    });
+
+    it('should recalculate permissions when switching between threat models', () => {
+      // Set as owner of first TM
+      mockAuthService.userIdp = 'google';
+      mockAuthService.providerId = 'google-123';
+      service.setAuthorization('tm-123', [], mockOwner);
+      expect(service.getCurrentUserPermission()).toBe('owner');
+
+      // Switch to second TM where user is just a reader
+      const otherOwner: User = {
+        principal_type: 'user',
+        provider: 'google',
+        provider_id: 'google-999',
+        email: 'other@example.com',
+        display_name: 'Other Owner',
+      };
+      const readerAuth: Authorization = {
+        principal_type: 'user',
+        provider: 'google',
+        provider_id: 'google-123',
+        role: 'reader',
+      };
+      service.setAuthorization('tm-456', [readerAuth], otherOwner);
+      expect(service.getCurrentUserPermission()).toBe('reader');
+      expect(service.currentThreatModelId).toBe('tm-456');
+    });
+
+    it('should handle rapid authorization updates without stale emissions', () => {
+      const emissions: (string | null)[] = [];
+
+      // Make user a member of team-1 so group authorization resolves
+      mockAuthService.userGroups = ['team-1'];
+
+      service.currentUserPermission$.subscribe(permission => {
+        emissions.push(permission);
+      });
+
+      // Rapid updates
+      service.setAuthorization('tm-123', [mockUserAuthorization], mockOwner);
+      service.updateAuthorization([mockGroupAuthorization]); // reader (via team-1 group)
+      service.updateAuthorization([mockUserAuthorization]); // back to writer
+
+      // null -> writer -> reader -> writer are all distinct
+      expect(emissions).toEqual([null, 'writer', 'reader', 'writer']);
     });
   });
 

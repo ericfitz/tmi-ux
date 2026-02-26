@@ -16,9 +16,10 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ThreatModelAuthorizationService } from './threat-model-authorization.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createMockLoggerService } from '../../../../testing/mocks';
+import { Diagram } from '../models/diagram.model';
 
 // Import testing utilities
 import { waitForAsync } from '../../../../testing/async-utils';
@@ -406,10 +407,10 @@ describe('ThreatModelService', () => {
 
     it('should update threat model metadata via API', waitForAsync(() => {
       const metadata = [{ key: 'updated-key', value: 'updated-value' }];
-      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+      vi.spyOn(apiService, 'put').mockReturnValue(of(metadata));
 
       service.updateThreatModelMetadata(testThreatModel1.id, metadata).subscribe(result => {
-        expect(apiService.post).toHaveBeenCalledWith(
+        expect(apiService.put).toHaveBeenCalledWith(
           `threat_models/${testThreatModel1.id}/metadata/bulk`,
           metadata,
         );
@@ -433,10 +434,10 @@ describe('ThreatModelService', () => {
     it('should update diagram metadata via API', waitForAsync(() => {
       const metadata = [{ key: 'diagram-updated', value: 'diagram-updated-value' }];
       const diagramId = 'test-diagram-id';
-      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+      vi.spyOn(apiService, 'put').mockReturnValue(of(metadata));
 
       service.updateDiagramMetadata(testThreatModel1.id, diagramId, metadata).subscribe(result => {
-        expect(apiService.post).toHaveBeenCalledWith(
+        expect(apiService.put).toHaveBeenCalledWith(
           `threat_models/${testThreatModel1.id}/diagrams/${diagramId}/metadata/bulk`,
           metadata,
         );
@@ -460,10 +461,10 @@ describe('ThreatModelService', () => {
     it('should update threat metadata via API', waitForAsync(() => {
       const metadata = [{ key: 'threat-updated', value: 'threat-updated-value' }];
       const threatId = 'test-threat-id';
-      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+      vi.spyOn(apiService, 'put').mockReturnValue(of(metadata));
 
       service.updateThreatMetadata(testThreatModel1.id, threatId, metadata).subscribe(result => {
-        expect(apiService.post).toHaveBeenCalledWith(
+        expect(apiService.put).toHaveBeenCalledWith(
           `threat_models/${testThreatModel1.id}/threats/${threatId}/metadata/bulk`,
           metadata,
         );
@@ -487,12 +488,12 @@ describe('ThreatModelService', () => {
     it('should update document metadata via API', waitForAsync(() => {
       const metadata = [{ key: 'doc-updated', value: 'doc-updated-value' }];
       const documentId = 'test-doc-id';
-      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+      vi.spyOn(apiService, 'put').mockReturnValue(of(metadata));
 
       service
         .updateDocumentMetadata(testThreatModel1.id, documentId, metadata)
         .subscribe(result => {
-          expect(apiService.post).toHaveBeenCalledWith(
+          expect(apiService.put).toHaveBeenCalledWith(
             `threat_models/${testThreatModel1.id}/documents/${documentId}/metadata/bulk`,
             metadata,
           );
@@ -516,17 +517,57 @@ describe('ThreatModelService', () => {
     it('should update repository metadata via API', waitForAsync(() => {
       const metadata = [{ key: 'repository-updated', value: 'repository-updated-value' }];
       const repositoryId = 'test-repository-id';
-      vi.spyOn(apiService, 'post').mockReturnValue(of(metadata));
+      vi.spyOn(apiService, 'put').mockReturnValue(of(metadata));
 
       service
         .updateRepositoryMetadata(testThreatModel1.id, repositoryId, metadata)
         .subscribe(result => {
-          expect(apiService.post).toHaveBeenCalledWith(
+          expect(apiService.put).toHaveBeenCalledWith(
             `threat_models/${testThreatModel1.id}/repositories/${repositoryId}/metadata/bulk`,
             metadata,
           );
           expect(result).toEqual(metadata);
         });
+    }));
+
+    it('should update note metadata via API', waitForAsync(() => {
+      const metadata = [{ key: 'note-updated', value: 'note-updated-value' }];
+      const noteId = 'test-note-id';
+      vi.spyOn(apiService, 'put').mockReturnValue(of(metadata));
+
+      service.updateNoteMetadata(testThreatModel1.id, noteId, metadata).subscribe(result => {
+        expect(apiService.put).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/notes/${noteId}/metadata/bulk`,
+          metadata,
+        );
+        expect(result).toEqual(metadata);
+      });
+    }));
+
+    it('should update asset metadata via API', waitForAsync(() => {
+      const metadata = [{ key: 'asset-updated', value: 'asset-updated-value' }];
+      const assetId = 'test-asset-id';
+      vi.spyOn(apiService, 'put').mockReturnValue(of(metadata));
+
+      service.updateAssetMetadata(testThreatModel1.id, assetId, metadata).subscribe(result => {
+        expect(apiService.put).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/assets/${assetId}/metadata/bulk`,
+          metadata,
+        );
+        expect(result).toEqual(metadata);
+      });
+    }));
+
+    it('should send PUT with empty array to clear metadata', waitForAsync(() => {
+      vi.spyOn(apiService, 'put').mockReturnValue(of([]));
+
+      service.updateThreatModelMetadata(testThreatModel1.id, []).subscribe(result => {
+        expect(apiService.put).toHaveBeenCalledWith(
+          `threat_models/${testThreatModel1.id}/metadata/bulk`,
+          [],
+        );
+        expect(result).toEqual([]);
+      });
     }));
   });
 
@@ -584,6 +625,101 @@ describe('ThreatModelService', () => {
             `threat_models/${testThreatModel1.id}/threats/${threatId}`,
           );
           expect(result).toBe(true);
+        });
+      }));
+
+      it('should update cache after creating a threat', waitForAsync(() => {
+        // Pre-populate cache by loading the threat model
+        const cachedModel = { ...testThreatModel1, threats: [] };
+        vi.spyOn(apiService, 'get').mockReturnValueOnce(of(cachedModel));
+
+        return new Promise<void>(resolve => {
+          service.getThreatModelById(testThreatModel1.id).subscribe(() => {
+            // Now create a threat
+            const newThreat = {
+              id: 'new-threat-id',
+              threat_model_id: testThreatModel1.id,
+              name: 'New Threat',
+              description: 'Created threat',
+              severity: 'high',
+              threat_type: ['spoofing'],
+              created_at: new Date().toISOString(),
+              modified_at: new Date().toISOString(),
+            };
+            vi.spyOn(apiService, 'post').mockReturnValueOnce(of(newThreat));
+
+            service.createThreat(testThreatModel1.id, { name: 'New Threat' }).subscribe(() => {
+              // Verify cache was updated (no forceRefresh, should use cache)
+              service.getThreatModelById(testThreatModel1.id).subscribe(cached => {
+                expect(cached?.threats).toBeDefined();
+                expect(cached!.threats!.length).toBe(1);
+                expect(cached!.threats![0].id).toBe('new-threat-id');
+                resolve();
+              });
+            });
+          });
+        });
+      }));
+
+      it('should update cache after updating a threat', waitForAsync(() => {
+        const existingThreat = {
+          id: 'existing-threat-id',
+          threat_model_id: testThreatModel1.id,
+          name: 'Original Name',
+          severity: 'low',
+          threat_type: ['spoofing'],
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+        };
+        const cachedModel = { ...testThreatModel1, threats: [existingThreat] };
+        vi.spyOn(apiService, 'get').mockReturnValueOnce(of(cachedModel));
+
+        return new Promise<void>(resolve => {
+          service.getThreatModelById(testThreatModel1.id).subscribe(() => {
+            const updatedThreat = { ...existingThreat, name: 'Updated Name', severity: 'critical' };
+            vi.spyOn(apiService, 'put').mockReturnValueOnce(of(updatedThreat));
+
+            service
+              .updateThreat(testThreatModel1.id, existingThreat.id, { name: 'Updated Name' })
+              .subscribe(() => {
+                service.getThreatModelById(testThreatModel1.id).subscribe(cached => {
+                  expect(cached?.threats).toBeDefined();
+                  expect(cached!.threats!.length).toBe(1);
+                  expect(cached!.threats![0].name).toBe('Updated Name');
+                  // 'critical' is migrated to '0' by migrateLegacyThreatFieldValues
+                  expect(cached!.threats![0].severity).toBe('0');
+                  resolve();
+                });
+              });
+          });
+        });
+      }));
+
+      it('should update cache after deleting a threat', waitForAsync(() => {
+        const existingThreat = {
+          id: 'threat-to-delete',
+          threat_model_id: testThreatModel1.id,
+          name: 'Doomed Threat',
+          severity: 'high',
+          threat_type: ['tampering'],
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+        };
+        const cachedModel = { ...testThreatModel1, threats: [existingThreat] };
+        vi.spyOn(apiService, 'get').mockReturnValueOnce(of(cachedModel));
+
+        return new Promise<void>(resolve => {
+          service.getThreatModelById(testThreatModel1.id).subscribe(() => {
+            vi.spyOn(apiService, 'delete').mockReturnValueOnce(of({}));
+
+            service.deleteThreat(testThreatModel1.id, existingThreat.id).subscribe(() => {
+              service.getThreatModelById(testThreatModel1.id).subscribe(cached => {
+                expect(cached?.threats).toBeDefined();
+                expect(cached!.threats!.length).toBe(0);
+                resolve();
+              });
+            });
+          });
         });
       }));
     });
@@ -686,7 +822,7 @@ describe('ThreatModelService', () => {
 
     describe('Diagram API Methods', () => {
       it('should create a diagram via API', waitForAsync(() => {
-        const diagramData = { name: 'Test Diagram', type: 'DFD-1.0.0' };
+        const diagramData: Partial<Diagram> = { name: 'Test Diagram', type: 'DFD-1.0.0' };
         const expectedDiagram = { ...diagramData, id: 'new-diagram-id' };
         vi.spyOn(apiService, 'post').mockReturnValue(of(expectedDiagram));
 
@@ -714,5 +850,288 @@ describe('ThreatModelService', () => {
         });
       }));
     });
+  });
+
+  describe('Cache Coherence (Data Integrity)', () => {
+    it('should add created threat model to both list cache and detail cache', waitForAsync(() => {
+      const newThreatModel = {
+        id: 'new-tm-id',
+        name: 'New TM',
+        description: 'Test',
+        created_at: new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+        owner: {
+          principal_type: 'user',
+          provider: 'test',
+          provider_id: 'user-1',
+          display_name: 'User',
+          email: 'u@test.com',
+        },
+        created_by: {
+          principal_type: 'user',
+          provider: 'test',
+          provider_id: 'user-1',
+          display_name: 'User',
+          email: 'u@test.com',
+        },
+        threat_model_framework: 'STRIDE',
+        diagrams: [],
+        threats: [],
+        authorization: [],
+      };
+      vi.mocked(apiService.post).mockReturnValue(of(newThreatModel));
+
+      return new Promise<void>((resolve, reject) => {
+        service.createThreatModel('New TM', 'Test').subscribe({
+          next: result => {
+            try {
+              expect(result).toBeDefined();
+              expect(result.id).toBe('new-tm-id');
+
+              // Verify authorization service was called
+              expect(authorizationService.setAuthorization).toHaveBeenCalledWith(
+                'new-tm-id',
+                expect.any(Array),
+                expect.anything(),
+              );
+
+              // Verify the detail cache has the model
+              // Access via getThreatModelById with no force refresh (should use cache)
+              vi.mocked(apiService.get).mockClear();
+              service.getThreatModelById('new-tm-id').subscribe({
+                next: cached => {
+                  try {
+                    expect(cached).toBeDefined();
+                    expect(cached?.id).toBe('new-tm-id');
+                    // Should NOT have made an API call (used cache)
+                    expect(apiService.get).not.toHaveBeenCalled();
+                    resolve();
+                  } catch (error) {
+                    reject(error instanceof Error ? error : new Error(String(error)));
+                  }
+                },
+                error: err => reject(err instanceof Error ? err : new Error(String(err))),
+              });
+            } catch (error) {
+              reject(error instanceof Error ? error : new Error(String(error)));
+            }
+          },
+          error: err => reject(err instanceof Error ? err : new Error(String(err))),
+        });
+      });
+    }));
+
+    it('should strip display_name from authorization in created threat model', waitForAsync(() => {
+      const newThreatModel = {
+        id: 'new-tm-id',
+        name: 'New TM',
+        description: 'Test',
+        created_at: new Date().toISOString(),
+        modified_at: new Date().toISOString(),
+        owner: {
+          principal_type: 'user',
+          provider: 'test',
+          provider_id: 'user-1',
+          display_name: 'User',
+          email: 'u@test.com',
+        },
+        created_by: {
+          principal_type: 'user',
+          provider: 'test',
+          provider_id: 'user-1',
+          display_name: 'User',
+          email: 'u@test.com',
+        },
+        threat_model_framework: 'STRIDE',
+        diagrams: [],
+        threats: [],
+        authorization: [
+          {
+            provider: 'test',
+            provider_id: 'user-1',
+            email: 'u@test.com',
+            display_name: 'Should Be Removed',
+            permissions: ['owner'],
+          },
+        ],
+      };
+      vi.mocked(apiService.post).mockReturnValue(of(newThreatModel));
+
+      return new Promise<void>((resolve, reject) => {
+        service.createThreatModel('New TM', 'Test').subscribe({
+          next: result => {
+            try {
+              // display_name should be removed from authorization entries
+              if (result.authorization && result.authorization.length > 0) {
+                expect((result.authorization[0] as any).display_name).toBeUndefined();
+              }
+              resolve();
+            } catch (error) {
+              reject(error instanceof Error ? error : new Error(String(error)));
+            }
+          },
+          error: err => reject(err instanceof Error ? err : new Error(String(err))),
+        });
+      });
+    }));
+
+    it('should bypass cache with forceRefresh=true on getThreatModelById', waitForAsync(() => {
+      // First, populate the cache
+      const cachedTm = {
+        id: 'tm-cached',
+        name: 'Cached Version',
+        description: 'Old',
+        authorization: [],
+        threats: [],
+        diagrams: [],
+        owner: {
+          principal_type: 'user',
+          provider: 'test',
+          provider_id: 'user-1',
+          display_name: 'User',
+          email: 'u@test.com',
+        },
+      };
+      const freshTm = {
+        ...cachedTm,
+        name: 'Fresh Version',
+        description: 'New',
+      };
+
+      vi.mocked(apiService.get).mockReturnValueOnce(of(cachedTm));
+
+      return new Promise<void>((resolve, reject) => {
+        // Load first to populate cache
+        service.getThreatModelById('tm-cached').subscribe({
+          next: () => {
+            // Now force refresh with different API response
+            vi.mocked(apiService.get).mockReturnValueOnce(of(freshTm));
+
+            service.getThreatModelById('tm-cached', true).subscribe({
+              next: result => {
+                try {
+                  expect(result?.name).toBe('Fresh Version');
+                  // API should have been called again
+                  expect(apiService.get).toHaveBeenCalledTimes(2);
+                  resolve();
+                } catch (error) {
+                  reject(error instanceof Error ? error : new Error(String(error)));
+                }
+              },
+              error: err => reject(err instanceof Error ? err : new Error(String(err))),
+            });
+          },
+          error: err => reject(err instanceof Error ? err : new Error(String(err))),
+        });
+      });
+    }));
+
+    it('should replace full list on fetchThreatModels (not merge)', waitForAsync(() => {
+      const firstList = [testThreatModel1].map(tm => ({
+        id: tm.id,
+        name: tm.name,
+        description: tm.description,
+        created_at: tm.created_at,
+        modified_at: tm.modified_at,
+        owner: tm.owner,
+        created_by: tm.created_by,
+        threat_model_framework: tm.threat_model_framework,
+        document_count: 0,
+        repo_count: 0,
+        diagram_count: 0,
+        threat_count: 0,
+        asset_count: 0,
+        note_count: 0,
+      }));
+      const secondList = [testThreatModel2, testThreatModel3].map(tm => ({
+        id: tm.id,
+        name: tm.name,
+        description: tm.description,
+        created_at: tm.created_at,
+        modified_at: tm.modified_at,
+        owner: tm.owner,
+        created_by: tm.created_by,
+        threat_model_framework: tm.threat_model_framework,
+        document_count: 0,
+        repo_count: 0,
+        diagram_count: 0,
+        threat_count: 0,
+        asset_count: 0,
+        note_count: 0,
+      }));
+
+      vi.mocked(apiService.get).mockReturnValueOnce(
+        of({ threat_models: firstList, total: 1, limit: 100, offset: 0 }),
+      );
+
+      return new Promise<void>((resolve, reject) => {
+        service.fetchThreatModels().subscribe({
+          next: firstResponse => {
+            try {
+              expect(firstResponse.threat_models).toHaveLength(1);
+
+              // Fetch again with different list
+              vi.mocked(apiService.get).mockReturnValueOnce(
+                of({ threat_models: secondList, total: 2, limit: 100, offset: 0 }),
+              );
+
+              service.fetchThreatModels().subscribe({
+                next: secondResponse => {
+                  try {
+                    // Should be completely replaced, not merged
+                    expect(secondResponse.threat_models).toHaveLength(2);
+                    expect(secondResponse.threat_models[0].id).toBe(testThreatModel2.id);
+                    resolve();
+                  } catch (error) {
+                    reject(error instanceof Error ? error : new Error(String(error)));
+                  }
+                },
+                error: err => reject(err instanceof Error ? err : new Error(String(err))),
+              });
+            } catch (error) {
+              reject(error instanceof Error ? error : new Error(String(error)));
+            }
+          },
+          error: err => reject(err instanceof Error ? err : new Error(String(err))),
+        });
+      });
+    }));
+
+    it('should return empty list on fetchThreatModels API failure', waitForAsync(() => {
+      vi.mocked(apiService.get).mockReturnValue(throwError(() => new Error('API unavailable')));
+
+      return new Promise<void>((resolve, reject) => {
+        service.fetchThreatModels().subscribe({
+          next: result => {
+            try {
+              expect(result.threat_models).toEqual([]);
+              expect(result.total).toBe(0);
+              resolve();
+            } catch (error) {
+              reject(error instanceof Error ? error : new Error(String(error)));
+            }
+          },
+          error: err => reject(err instanceof Error ? err : new Error(String(err))),
+        });
+      });
+    }));
+
+    it('should propagate error from createThreatModel API failure', waitForAsync(() => {
+      vi.mocked(apiService.post).mockReturnValue(throwError(() => new Error('Create failed')));
+
+      return new Promise<void>((resolve, reject) => {
+        service.createThreatModel('Test', 'Desc').subscribe({
+          next: () => reject(new Error('Should have thrown')),
+          error: error => {
+            try {
+              expect(error.message).toBe('Create failed');
+              resolve();
+            } catch (e) {
+              reject(e instanceof Error ? e : new Error(String(e)));
+            }
+          },
+        });
+      });
+    }));
   });
 });

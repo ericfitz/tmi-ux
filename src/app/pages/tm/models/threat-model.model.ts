@@ -16,6 +16,8 @@ export interface Principal {
 
 export interface User extends Principal {
   principal_type: 'user';
+  email: string;
+  display_name: string;
 }
 
 export interface Group extends Principal {
@@ -36,6 +38,7 @@ export interface Document {
   name: string;
   uri: string;
   description?: string;
+  include_in_report?: boolean;
   created_at: string;
   modified_at: string;
   metadata?: Metadata[];
@@ -52,6 +55,7 @@ export interface Repository {
     refValue: string;
     subPath?: string;
   };
+  include_in_report?: boolean;
   created_at: string;
   modified_at: string;
   metadata?: Metadata[];
@@ -62,6 +66,7 @@ export interface Note {
   name: string;
   content: string;
   description?: string;
+  include_in_report?: boolean;
   created_at: string;
   modified_at: string;
   metadata?: Metadata[];
@@ -75,9 +80,15 @@ export interface Asset {
   criticality?: string | null;
   classification?: string[] | null;
   sensitivity?: string | null;
+  include_in_report?: boolean;
   created_at: string;
   modified_at: string;
   metadata?: Metadata[];
+}
+
+export interface CVSSScore {
+  vector: string;
+  score: number;
 }
 
 export interface Threat {
@@ -89,7 +100,7 @@ export interface Threat {
   modified_at: string;
   diagram_id?: string;
   cell_id?: string;
-  severity: string | null;
+  severity?: string;
   score?: number;
   priority?: string | null;
   mitigated?: boolean;
@@ -98,7 +109,10 @@ export interface Threat {
   threat_type: string[];
   asset_id?: string;
   issue_uri?: string;
+  include_in_report?: boolean;
   metadata?: Metadata[];
+  cwe_id?: string[];
+  cvss?: CVSSScore[];
 }
 
 export interface ThreatModel {
@@ -114,8 +128,11 @@ export interface ThreatModel {
   status?: string | null;
   status_updated?: string;
   is_confidential?: boolean;
-  authorization: Authorization[] | null;
+  authorization: Authorization[];
   metadata?: Metadata[];
+  alias?: string[];
+  security_reviewer?: User | null;
+  project_id?: string | null;
   documents?: Document[];
   repositories?: Repository[];
   diagrams?: import('./diagram.model').Diagram[];
@@ -148,7 +165,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
     },
     threat_model_framework: 'STRIDE',
     issue_uri: 'https://issues.example.com/browse/TM-123',
-    status: '1', // In Progress
+    status: 'inProgress',
     status_updated: new Date(Date.now() - 1 * 86400000).toISOString(), // 1 day ago
     authorization: [
       {
@@ -394,11 +411,11 @@ Schedule follow-up review in 2 weeks to assess progress.`,
         modified_at: new Date(Date.now() - 2 * 86400000).toISOString(),
         diagram_id: '123e4567-e89b-12d3-a456-426614174000',
         cell_id: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88',
-        severity: 'High',
+        severity: 'high',
         score: 7.3,
-        priority: 'High',
+        priority: 'high',
         mitigated: false,
-        status: 'Open',
+        status: 'open',
         threat_type: ['Information Disclosure'],
         issue_uri: 'https://issues.example.com/browse/SEC-456',
         metadata: [],
@@ -412,11 +429,11 @@ Schedule follow-up review in 2 weeks to assess progress.`,
         modified_at: new Date(Date.now() - 2 * 86400000).toISOString(),
         diagram_id: '123e4567-e89b-12d3-a456-426614174000',
         cell_id: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88',
-        severity: 'Critical',
+        severity: 'critical',
         score: 8.5,
-        priority: 'High',
+        priority: 'high',
         mitigated: false,
-        status: 'Open',
+        status: 'open',
         threat_type: ['Elevation of Privilege'],
         issue_uri: 'https://issues.example.com/browse/SEC-457',
         metadata: [],
@@ -430,11 +447,11 @@ Schedule follow-up review in 2 weeks to assess progress.`,
         modified_at: new Date(Date.now() - 2 * 86400000).toISOString(),
         diagram_id: '123e4567-e89b-12d3-a456-426614174000',
         cell_id: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88',
-        severity: 'High',
+        severity: 'high',
         score: 7.0,
-        priority: 'Medium',
+        priority: 'medium',
         mitigated: false,
-        status: 'In Progress',
+        status: 'mitigationInProgress',
         threat_type: ['Tampering'],
         issue_uri: 'https://issues.example.com/browse/SEC-458',
         metadata: [],
@@ -448,11 +465,11 @@ Schedule follow-up review in 2 weeks to assess progress.`,
         modified_at: new Date(Date.now() - 2 * 86400000).toISOString(),
         diagram_id: '123e4567-e89b-12d3-a456-426614174000',
         cell_id: 'c7d10424-3c10-43d0-8ac6-47d61dee3f88',
-        severity: 'Medium',
+        severity: 'medium',
         score: 6.5,
-        priority: 'Medium',
+        priority: 'medium',
         mitigated: false,
-        status: 'Open',
+        status: 'open',
         threat_type: ['Denial of Service'],
         issue_uri: 'https://issues.example.com/browse/SEC-459',
         metadata: [],
@@ -533,11 +550,11 @@ Schedule follow-up review in 2 weeks to assess progress.`,
         modified_at: new Date(Date.now() - 5 * 86400000).toISOString(),
         diagram_id: '223e4567-e89b-12d3-a456-426614174000',
         cell_id: 'd8e20525-4d20-54e1-9bd7-58e72eef4f99',
-        severity: 'High',
+        severity: 'high',
         score: 7.8,
-        priority: 'High',
+        priority: 'high',
         mitigated: false,
-        status: 'Open',
+        status: 'open',
         threat_type: ['Authentication Bypass'],
         issue_uri: 'https://issues.example.com/browse/SEC-460',
         metadata: [],
@@ -551,11 +568,11 @@ Schedule follow-up review in 2 weeks to assess progress.`,
         modified_at: new Date(Date.now() - 5 * 86400000).toISOString(),
         diagram_id: '223e4567-e89b-12d3-a456-426614174001',
         cell_id: 'e9f31636-5e31-65f2-0ce8-69f83ff5f0aa',
-        severity: 'Critical',
+        severity: 'critical',
         score: 8.9,
-        priority: 'Critical',
+        priority: 'immediate',
         mitigated: false,
-        status: 'Open',
+        status: 'open',
         threat_type: ['Information Disclosure'],
         issue_uri: 'https://issues.example.com/browse/SEC-461',
         metadata: [],
@@ -654,11 +671,11 @@ Schedule follow-up review in 2 weeks to assess progress.`,
         modified_at: new Date(Date.now() - 1 * 86400000).toISOString(),
         diagram_id: '323e4567-e89b-12d3-a456-426614174000',
         cell_id: 'f0f42747-6f42-76g3-1df9-70g94gg6g1bb',
-        severity: 'High',
+        severity: 'high',
         score: 7.2,
-        priority: 'High',
+        priority: 'high',
         mitigated: false,
-        status: 'Open',
+        status: 'open',
         threat_type: ['Information Disclosure'],
         issue_uri: 'https://issues.example.com/browse/SEC-462',
         metadata: [],
@@ -672,11 +689,11 @@ Schedule follow-up review in 2 weeks to assess progress.`,
         modified_at: new Date(Date.now() - 1 * 86400000).toISOString(),
         diagram_id: '323e4567-e89b-12d3-a456-426614174000',
         cell_id: 'f0f42747-6f42-76g3-1df9-70g94gg6g1bb',
-        severity: 'Medium',
+        severity: 'medium',
         score: 6.8,
-        priority: 'Medium',
+        priority: 'medium',
         mitigated: false,
-        status: 'Open',
+        status: 'open',
         threat_type: ['Information Disclosure'],
         issue_uri: 'https://issues.example.com/browse/SEC-463',
         metadata: [],
@@ -690,11 +707,11 @@ Schedule follow-up review in 2 weeks to assess progress.`,
         modified_at: new Date(Date.now() - 1 * 86400000).toISOString(),
         diagram_id: '323e4567-e89b-12d3-a456-426614174000',
         cell_id: 'f0f42747-6f42-76g3-1df9-70g94gg6g1bb',
-        severity: 'High',
+        severity: 'high',
         score: 7.5,
-        priority: 'High',
+        priority: 'high',
         mitigated: false,
-        status: 'Open',
+        status: 'open',
         threat_type: ['Authentication Bypass'],
         issue_uri: 'https://issues.example.com/browse/SEC-464',
         metadata: [],

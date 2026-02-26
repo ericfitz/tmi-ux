@@ -16,7 +16,7 @@ import { of, throwError } from 'rxjs';
 import { AuthService } from './services/auth.service';
 import { JwtInterceptor } from './interceptors/jwt.interceptor';
 import { authGuard } from './guards/auth.guard';
-import { roleGuard } from './guards/role.guard';
+
 import { LoggerService } from '../core/services/logger.service';
 import { ServerConnectionService } from '../core/services/server-connection.service';
 import { environment } from '../../environments/environment';
@@ -236,11 +236,6 @@ describe('Authentication Integration', () => {
     it('should have authGuard function defined', () => {
       expect(authGuard).toBeDefined();
       expect(typeof authGuard).toBe('function');
-    });
-
-    it('should have roleGuard function defined', () => {
-      expect(roleGuard).toBeDefined();
-      expect(typeof roleGuard).toBe('function');
     });
   });
 

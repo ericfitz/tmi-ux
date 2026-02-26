@@ -56,6 +56,7 @@ interface NoteFormValues {
   name: string;
   content: string;
   description?: string;
+  include_in_report?: boolean;
 }
 
 /**
@@ -138,6 +139,7 @@ export class NotePageComponent implements OnInit, OnDestroy, AfterViewChecked {
       name: ['', [Validators.required, Validators.maxLength(this.maxNameLength)]],
       content: ['', [Validators.required, Validators.maxLength(this.maxContentLength)]],
       description: ['', Validators.maxLength(this.maxDescriptionLength)],
+      include_in_report: [true],
     });
   }
 
@@ -284,6 +286,7 @@ export class NotePageComponent implements OnInit, OnDestroy, AfterViewChecked {
       name: this.note.name,
       content: this.note.content || '',
       description: this.note.description || '',
+      include_in_report: this.note.include_in_report,
     });
 
     // Mark form as pristine after initial population
@@ -344,6 +347,7 @@ export class NotePageComponent implements OnInit, OnDestroy, AfterViewChecked {
       name: formValues.name.trim(),
       content: formValues.content.trim(),
       description: formValues.description?.trim() || undefined,
+      include_in_report: formValues.include_in_report,
     };
 
     this.threatModelService

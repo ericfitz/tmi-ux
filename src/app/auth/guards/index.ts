@@ -6,5 +6,3 @@
 // Guards
 export { authGuard } from './auth.guard';
 export { homeGuard } from './home.guard';
-export { permissionsGuard } from './permissions.guard';
-export { PermissionCheck } from './permissions.guard';

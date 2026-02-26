@@ -135,6 +135,13 @@
           </mat-form-field>
         </div>
 
+        <!-- Include in Report -->
+        <div class="checkbox-field">
+          <mat-checkbox formControlName="include_in_report">
+            {{ 'common.includeInReport' | transloco }}
+          </mat-checkbox>
+        </div>
+
         <!-- Markdown Toolbar -->
         @if (canEdit) {
           <div class="markdown-toolbar">

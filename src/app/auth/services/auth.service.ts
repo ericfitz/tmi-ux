@@ -45,7 +45,6 @@ import {
   OAuthResponse,
   UserProfile,
   UserMeResponse,
-  UserRole,
   OAuthProviderInfo,
   ProvidersResponse,
   SAMLProviderInfo,
@@ -109,7 +108,8 @@ export class AuthService {
   // Cached provider information
   private cachedOAuthProviders: OAuthProviderInfo[] | null = null;
   private cachedSAMLProviders: SAMLProviderInfo[] | null = null;
-  private providersCacheTime = 0;
+  private oauthProvidersCacheTime = 0;
+  private samlProvidersCacheTime = 0;
 
   // Refresh request deduplication - prevents concurrent refresh calls
   private refreshInProgress$: Observable<JwtToken> | null = null;
@@ -519,7 +519,10 @@ export class AuthService {
   getAvailableProviders(): Observable<OAuthProviderInfo[]> {
     // Check cache first
     const now = Date.now();
-    if (this.cachedOAuthProviders && now - this.providersCacheTime < this.providersCacheExpiry) {
+    if (
+      this.cachedOAuthProviders &&
+      now - this.oauthProvidersCacheTime < this.providersCacheExpiry
+    ) {
       return of(this.cachedOAuthProviders);
     }
 
@@ -541,7 +544,7 @@ export class AuthService {
 
         // Cache the results
         this.cachedOAuthProviders = providers;
-        this.providersCacheTime = now;
+        this.oauthProvidersCacheTime = now;
 
         // this.logger.debugComponent(
         //   'Auth',
@@ -566,7 +569,7 @@ export class AuthService {
   getAvailableSAMLProviders(): Observable<SAMLProviderInfo[]> {
     // Check cache first
     const now = Date.now();
-    if (this.cachedSAMLProviders && now - this.providersCacheTime < this.providersCacheExpiry) {
+    if (this.cachedSAMLProviders && now - this.samlProvidersCacheTime < this.providersCacheExpiry) {
       return of(this.cachedSAMLProviders);
     }
 
@@ -587,7 +590,7 @@ export class AuthService {
 
         // Cache the results
         this.cachedSAMLProviders = providers;
-        this.providersCacheTime = now;
+        this.samlProvidersCacheTime = now;
 
         // this.logger.debugComponent(
         //   'Auth',
@@ -1691,18 +1694,6 @@ export class AuthService {
   }
 
   /**
-   * Check if user has a specific role
-   * @param role Role to check
-   * @returns True if user has the role
-   */
-  hasRole(_role: UserRole): boolean {
-    // TODO: use access checking here
-    // This is a placeholder. In a real implementation, we would check the user's roles
-    // For now, we'll assume all authenticated users have all roles
-    return this.isAuthenticated;
-  }
-
-  /**
    * Handle authentication errors
    * @param error Authentication error
    */
@@ -1849,7 +1840,8 @@ export class AuthService {
     // Clear cached providers to force re-evaluation on next login
     this.cachedOAuthProviders = null;
     this.cachedSAMLProviders = null;
-    this.providersCacheTime = 0;
+    this.oauthProvidersCacheTime = 0;
+    this.samlProvidersCacheTime = 0;
 
     // Clear PKCE verifier
     this.pkceService.clearVerifier();

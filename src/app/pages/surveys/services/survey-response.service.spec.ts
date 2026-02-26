@@ -620,6 +620,55 @@ describe('SurveyResponseService', () => {
     });
   });
 
+  describe('patchProjectId()', () => {
+    it('should call API with correct PATCH payload', () => {
+      mockApiService.patch.mockReturnValue(of(mockResponse));
+
+      service.patchProjectId('response-123', 'proj-456').subscribe(response => {
+        expect(mockApiService.patch).toHaveBeenCalledWith('intake/survey_responses/response-123', [
+          { op: 'replace', path: '/project_id', value: 'proj-456' },
+        ]);
+        expect(response).toEqual(mockResponse);
+      });
+    });
+
+    it('should log info message on success', () => {
+      mockApiService.patch.mockReturnValue(of(mockResponse));
+
+      service.patchProjectId('response-123', 'proj-456').subscribe(() => {
+        expect(mockLoggerService.info).toHaveBeenCalledWith('Response project_id updated', {
+          responseId: 'response-123',
+          projectId: 'proj-456',
+        });
+      });
+    });
+
+    it('should support null project_id for clearing', () => {
+      mockApiService.patch.mockReturnValue(of(mockResponse));
+
+      service.patchProjectId('response-123', null).subscribe(() => {
+        expect(mockApiService.patch).toHaveBeenCalledWith('intake/survey_responses/response-123', [
+          { op: 'replace', path: '/project_id', value: null },
+        ]);
+      });
+    });
+
+    it('should handle API errors and log them', () => {
+      const error = new Error('Patch failed');
+      mockApiService.patch.mockReturnValue(throwError(() => error));
+
+      service.patchProjectId('response-123', 'proj-456').subscribe({
+        error: err => {
+          expect(mockLoggerService.error).toHaveBeenCalledWith(
+            'Failed to update response project_id',
+            error,
+          );
+          expect(err).toBe(error);
+        },
+      });
+    });
+  });
+
   describe('linkToThreatModel()', () => {
     it('should call API with correct PATCH payload', () => {
       mockApiService.patch.mockReturnValue(of(mockResponse));

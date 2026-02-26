@@ -29,6 +29,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 import { LoggerService } from '../services/logger.service';
+import { redactSensitiveData } from '../utils/redact-sensitive-data.util';
 
 @Injectable()
 export class HttpLoggingInterceptor implements HttpInterceptor {
@@ -105,13 +106,12 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
     });
 
     // Log the request with component-specific debug logging
-    this.logger.debugComponent('api', `${request.method} request to ${request.url}:`, {
-      url: request.url,
-      headers: this.redactSecrets(headers, true),
-      body: request.body
-        ? this.redactSecrets(request.body as Record<string, unknown>, false)
-        : undefined,
-      params: this.extractUrlParams(request.url),
+    // Use urlWithParams to include query parameters serialized by HttpClient
+    this.logger.debugComponent('api', `${request.method} request to ${request.urlWithParams}:`, {
+      url: request.urlWithParams,
+      headers: redactSensitiveData(headers, { isHeaderContext: true }),
+      body: request.body ? redactSensitiveData(request.body) : undefined,
+      params: this.extractUrlParams(request.urlWithParams),
     });
   }
 
@@ -133,10 +133,8 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
     this.logger.debugComponent('api', `${request.method} response from ${request.url}:`, {
       status: response.status,
       statusText: response.statusText,
-      headers: this.redactSecrets(headers, true),
-      body: response.body
-        ? this.redactSecrets(response.body as Record<string, unknown>, false)
-        : undefined,
+      headers: redactSensitiveData(headers, { isHeaderContext: true }),
+      body: response.body ? redactSensitiveData(response.body) : undefined,
     });
   }
 
@@ -196,78 +194,5 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
     } catch {
       return undefined;
     }
-  }
-
-  /**
-   * Redact sensitive information from objects
-   * @param obj Object that may contain sensitive data
-   * @param isHeaderContext Whether this is being called for headers (affects Authorization handling)
-   * @returns Object with sensitive values redacted
-   */
-  private redactSecrets(
-    obj: Record<string, unknown>,
-    isHeaderContext = false,
-  ): Record<string, unknown> {
-    const redacted = { ...obj };
-    const sensitiveKeys = [
-      'bearer',
-      'token',
-      'password',
-      'secret',
-      'jwt',
-      'refresh_token',
-      'access_token',
-      'api_key',
-      'apikey',
-    ];
-
-    for (const [key, value] of Object.entries(redacted)) {
-      const lowerKey = key.toLowerCase();
-      const isAuthorizationField = lowerKey === 'authorization';
-
-      // Handle Authorization field - only redact in header context
-      if (isAuthorizationField && isHeaderContext) {
-        if (typeof value === 'string' && value.length > 0) {
-          if (value.startsWith('Bearer ')) {
-            // Special handling for Bearer tokens - show prefix but redact token
-            const tokenPart = value.substring(7); // Remove 'Bearer '
-            redacted[key] = `Bearer ${this.redactToken(tokenPart)}`;
-          } else {
-            // Redact other Authorization header values
-            redacted[key] = this.redactToken(value);
-          }
-        } else {
-          redacted[key] = '[REDACTED]';
-        }
-      }
-      // Check if the key contains other sensitive information (but not "authorization" in general)
-      else if (sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
-        if (typeof value === 'string' && value.length > 0) {
-          redacted[key] = this.redactToken(value);
-        } else {
-          redacted[key] = '[REDACTED]';
-        }
-      } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-        // Recursively redact nested objects
-        redacted[key] = this.redactSecrets(value as Record<string, unknown>, isHeaderContext);
-      }
-    }
-
-    return redacted;
-  }
-
-  /**
-   * Redact a token while showing first and last few characters for debugging
-   * @param token The token to redact
-   * @returns Redacted token string
-   */
-  private redactToken(token: string): string {
-    if (token.length <= 8) {
-      return '[REDACTED]';
-    }
-    const start = token.substring(0, 4);
-    const end = token.substring(token.length - 4);
-    const middle = '*'.repeat(Math.min(12, token.length - 8));
-    return `${start}${middle}${end}`;
   }
 }

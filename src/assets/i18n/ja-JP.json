@@ -439,10 +439,13 @@
     "collaboratorsHeader": "参加者",
     "copyLink": "リンクをコピー",
     "denyPresenterRequest": "プレゼンターリクエストを拒否",
+    "endCollaboration": "コラボレーションを終了",
     "hostedBy": "ホスト:",
     "isRequestingPresenterPrivileges": "がプレゼンター権限をリクエストしています",
     "joinSession": "セッションに参加",
     "justNow": "たった今",
+    "leaveSession": "セッションから退出",
+    "loadingDiagramContext": "ダイアグラムコンテキストを読み込み中...",
     "manageParticipants": "参加者を管理",
     "noActiveSessions": "アクティブなコラボレーションセッションはありません",
     "participantRequestsPresenterRole": "参加者がプレゼンターロールをリクエスト",
@@ -450,6 +453,7 @@
     "removeFromSession": "セッションから削除",
     "requestPresenter": "プレゼンターをリクエスト",
     "sessionStarted": "開始",
+    "startCollaboration": "コラボレーションを開始",
     "takeBackPresenter": "プレゼンターを取り戻す",
     "title": "コラボレーションセッション参加者",
     "userJoined": "{{user}} がコラボレーションに参加しました",
@@ -485,6 +489,7 @@
     "copyToClipboard": "クリップボードにコピー",
     "create": "作成",
     "created": "作成日時",
+    "createdBy": "作成者",
     "criticality": "重要度",
     "cut": "切り取り",
     "deactivate": "無効化",
@@ -512,6 +517,7 @@
     "groups": "グループ",
     "id": "ID",
     "identityProvider": "IDプロバイダー",
+    "includeInReport": "レポートに含める",
     "issueUri": "課題URL",
     "language": "{{language}}",
     "lastModified": "最終更新日",
@@ -565,6 +571,7 @@
     "paste": "貼り付け",
     "permissions": "権限",
     "priority": "優先度",
+    "project": "プロジェクト",
     "provider": "プロバイダー",
     "readOnly": "読み取り専用",
     "readOnlyTooltip": "この脅威モデルへの読み取り専用アクセス権があります。編集権限についてはオーナーにお問い合わせください。",
@@ -576,6 +583,7 @@
     },
     "save": "保存",
     "saveAndClose": "保存して閉じる",
+    "saveFailed": "保存に失敗しました",
     "savedSuccessfully": "保存しました",
     "score": "スコア",
     "search": "検索",
@@ -592,6 +600,7 @@
       "group": "グループ",
       "user": "ユーザー"
     },
+    "team": "チーム",
     "template": "テンプレート",
     "threatDescription": "脅威の説明",
     "threatDescriptionPlaceholder": "脅威を詳細に説明してください",
@@ -602,8 +611,10 @@
     "type": "タイプ",
     "unarchive": "アーカイブ解除",
     "unsavedChangesWarning": "保存されていない変更があります。閉じてもよろしいですか？",
+    "uri": "URI",
     "userId": "ユーザーID",
     "validation": {
+      "email": "有効なメールアドレスを入力してください",
       "invalidUrl": "有効なURLを入力してください",
       "maxLength": "最大文字数は{{max}}文字です",
       "nameRequired": "名前は必須です",
@@ -636,10 +647,27 @@
     "title": "脅威モデルを作成"
   },
   "dashboard": {
-    "clearFilter": "フィルターをクリア",
-    "filterLabel": "脅威モデルをフィルター",
-    "filterPlaceholder": "名前、説明、オーナー、またはステータスで検索",
-    "noMatchingThreatModels": "フィルターに一致する脅威モデルはありません。",
+    "clearAllFilters": "すべてのフィルターをクリア",
+    "clearSearch": "検索をクリア",
+    "createdAfter": "作成日（以降）",
+    "createdBefore": "作成日（以前）",
+    "descriptionFilter": "{{common.description}}",
+    "descriptionPlaceholder": "説明でフィルター",
+    "issueUriFilter": "{{common.issueUri}}",
+    "issueUriPlaceholder": "課題URLでフィルター",
+    "lessFilters": "フィルターを減らす",
+    "modifiedAfter": "更新日（以降）",
+    "modifiedBefore": "更新日（以前）",
+    "moreFilters": "フィルターを増やす",
+    "nameFilter": "{{common.name}}",
+    "namePlaceholder": "名前でフィルター",
+    "noMatchingThreatModels": "検索またはフィルターに一致する脅威モデルはありません。",
+    "ownerFilter": "{{common.roles.owner}}",
+    "ownerPlaceholder": "オーナーの名前またはメールアドレスでフィルター",
+    "searchLabel": "{{common.search}}",
+    "searchPlaceholder": "名前、説明、オーナー、またはステータスで検索",
+    "statusUpdatedAfter": "ステータス更新日（以降）",
+    "statusUpdatedBefore": "ステータス更新日（以前）",
     "tableHeaders": {
       "actions": "{{common.actions}}",
       "created": "{{common.created}}",
@@ -698,6 +726,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "選択された1つ以上の要素にメタデータエントリがあります。これらの要素を削除すると、メタデータが永久に削除されます。続行しますか?",
+      "title": "メタデータが失われます"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "図の説明を入力",
     "diagramNamePlaceholder": "図の名前を入力",
@@ -755,10 +788,12 @@
     "support": "サポート"
   },
   "getStarted": "始める",
-  "homeDescription": "TMIは、組織のセキュリティレビューと脅威モデリングプロセスを管理・強化するツールです。セキュリティレビューのワークフローを推進し、セキュリティレビューの情報を整理し、データフロー図を共同で作成し、自動化を接続してレビュープロセスの作業を削減し、セキュリティ脅威を分析します。",
+  "homeDescription": "TMIは、組織のセキュリティレビューと脅威モデリングプロセスを効率化するツールです。レビューワークフローを推進し、重要な情報を整理し、チームが共同でデータフローダイアグラムを作成できるようにします。また、自動化と連携することで、手作業の負担を軽減し、セキュリティ上の脅威をより効率的に発見するのに役立ちます。",
   "homeWelcomeTitle": "TMIへようこそ: 脅威モデリング改善版",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "保存して終了",
       "submitResponses": "回答を送信"
     }
@@ -818,6 +853,53 @@
       "view": "ノートを表示"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "ログイン"
+    },
+    "operationError": "{{operation}}に失敗しました: {{errorMessage}}",
+    "operationFailed": "操作に失敗しました",
+    "operations": {
+      "collaboration": "コラボレーション",
+      "denyPresenterRequest": "プレゼンターリクエストの拒否",
+      "sendPresenterRequest": "プレゼンターリクエストの送信",
+      "startCollaboration": "コラボレーションの開始",
+      "updatePresenter": "プレゼンターの更新"
+    },
+    "presenter": {
+      "assigned": "{{user}}がプレゼンターになりました",
+      "assignedYou": "あなたがプレゼンターになりました",
+      "cleared": "プレゼンターモードが解除されました",
+      "cursorMoved": "プレゼンターのカーソルが移動しました",
+      "modeChanged": "プレゼンターモードが変更されました",
+      "privilegesRequested": "プレゼンター権限がリクエストされました",
+      "removed": "{{user}}はプレゼンターではなくなりました",
+      "removedYou": "あなたはプレゼンターではなくなりました",
+      "requestDenied": "プレゼンターリクエストが拒否されました",
+      "requestSent": "プレゼンターリクエストをセッションオーナーに送信しました",
+      "requesting": "{{user}}がプレゼンター権限をリクエストしています",
+      "selectionChanged": "プレゼンターの選択が変更されました"
+    },
+    "session": {
+      "disconnected": "コラボレーションセッションから切断されました",
+      "reconnected": "コラボレーションセッションに再接続しました",
+      "reconnecting": "コラボレーションセッションに再接続中...",
+      "userRemoved": "{{user}}がセッションから削除されました",
+      "youWereRemoved": "コラボレーションセッションから削除されました"
+    },
+    "unknownError": "不明なエラー",
+    "websocket": {
+      "authenticationFailed": "認証に失敗しました。再度ログインしてください。",
+      "communicationError": "サーバーとの通信エラーが発生しました。一部の更新が同期されない場合があります。",
+      "connectionError": "接続エラー。オフラインモードで動作しています。",
+      "connectionFailed": "コラボレーションサーバーへの接続に失敗しました。",
+      "connectionTimeout": "接続がタイムアウトしました。サーバーが過負荷の可能性があります。",
+      "disconnected": "コラボレーションサーバーから切断されました。変更はローカルに保存されます。",
+      "messageSendFailed": "メッセージの送信に失敗しました。変更が同期されない場合があります。",
+      "multipleFailed": "複数回の試行後に接続に失敗しました。オフラインモードで動作しています。",
+      "unknownError": "不明なWebSocketエラーが発生しました"
+    }
+  },
   "pagination": {
     "ariaLabel": "アイテムのページを選択",
     "firstPage": "最初のページ",
@@ -870,6 +952,23 @@
     "userRightsContent2": "このオプションを使用すると、運営者がお客様に代わって保存しているすべてのデータ（プロフィール情報や認証記録を含む）を即座に削除できます。有効化すると、法的保持義務に従い、お客様のデータは運営者のシステムおよびサードパーティプロバイダーから永久に削除されます。",
     "userRightsTitle": "ユーザーの権利"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "プロジェクトの説明を入力",
+      "namePlaceholder": "プロジェクト名を入力",
+      "nameRequired": "プロジェクト名は必須です",
+      "statusPlaceholder": "例: active, planning, archived",
+      "teamRequired": "チームは必須です",
+      "title": "プロジェクトを作成",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "新しいプロジェクトを作成",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "プロジェクトなし"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "セッションを延長",
     "extending": "セッションを延長中です。しばらくお待ちください...",
@@ -883,7 +982,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "保存に失敗しました",
+      "error": "{{common.saveFailed}}",
       "saved": "保存済み",
       "saving": "保存中..."
     },
@@ -952,69 +1051,86 @@
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "回答を表示"
   },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "チームの説明を入力",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "チーム名を入力",
+      "nameRequired": "チーム名は必須です",
+      "statusPlaceholder": "例: active, archived",
+      "title": "チームを作成",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "新しいチームを作成"
+  },
   "threatEditor": {
     "createNewThreat": "新しい脅威を作成",
     "notAssociatedWithAsset": "アセットに関連付けられていません",
     "notAssociatedWithCell": "セルに関連付けられていません",
     "notAssociatedWithDiagram": "ダイアグラムに関連付けられていません",
     "threatPriority": {
-      "0": "即時対応 (P0)",
-      "0.description": "緊急に対処が必要。アクティブな悪用、規制違反、または重大なビジネスエクスポージャー。",
-      "1": "高 (P1)",
-      "1.description": "迅速な解決が必要。高リスクのエクスポージャーまたはリリース期限が迫っている。",
-      "2": "中 (P2)",
-      "2.description": "標準的な開発サイクル内で対処。中程度のエクスポージャー。",
-      "3": "低 (P3)",
-      "3.description": "将来のサイクルのバックログに含める。即時のエクスポージャーなし。",
-      "4": "延期 (P4)",
-      "4.description": "ビジネス承認を文書化して延期。追跡されるがスケジュールされていない。"
+      "deferred": "延期 (P4)",
+      "deferred.description": "ビジネス承認を文書化して延期。追跡されるがスケジュールされていない。",
+      "high": "高 (P1)",
+      "high.description": "迅速な解決が必要。高リスクのエクスポージャーまたはリリース期限が迫っている。",
+      "immediate": "即時対応 (P0)",
+      "immediate.description": "緊急に対処が必要。アクティブな悪用、規制違反、または重大なビジネスエクスポージャー。",
+      "low": "低 (P3)",
+      "low.description": "将来のサイクルのバックログに含める。即時のエクスポージャーなし。",
+      "medium": "中 (P2)",
+      "medium.description": "標準的な開発サイクル内で対処。中程度のエクスポージャー。"
     },
     "threatSeverity": {
-      "0": "クリティカル",
-      "0.description": "悪用可能な脆弱性がシステム全体の侵害、データ漏洩、または安全性への影響を可能にする。即時対応が必要。",
-      "1": "高",
-      "1.description": "重大な影響または高い可能性。主要な不正アクセス、権限昇格、またはサービス中断を可能にする。",
-      "2": "中",
-      "2.description": "中程度の影響または可能性。限定的なデータ露出、部分的な機能障害、または連鎖的なエクスプロイトが必要。",
-      "3": "低",
-      "3.description": "最小限の影響または低い可能性。ビジネスへの影響は無視でき、特定の条件またはユーザーの操作が必要。",
-      "4": "情報提供",
-      "4.description": "直接的な悪用可能性なし。推奨事項、ベストプラクティスからの逸脱、または構成の改善。",
-      "5": "不明",
-      "5.description": "脅威の重大度はまだ評価されていません。"
+      "critical": "クリティカル",
+      "critical.description": "悪用可能な脆弱性がシステム全体の侵害、データ漏洩、または安全性への影響を可能にする。即時対応が必要。",
+      "high": "高",
+      "high.description": "重大な影響または高い可能性。主要な不正アクセス、権限昇格、またはサービス中断を可能にする。",
+      "informational": "情報提供",
+      "informational.description": "直接的な悪用可能性なし。推奨事項、ベストプラクティスからの逸脱、または構成の改善。",
+      "low": "低",
+      "low.description": "最小限の影響または低い可能性。ビジネスへの影響は無視でき、特定の条件またはユーザーの操作が必要。",
+      "medium": "中",
+      "medium.description": "中程度の影響または可能性。限定的なデータ露出、部分的な機能障害、または連鎖的なエクスプロイトが必要。",
+      "unknown": "不明",
+      "unknown.description": "脅威の重大度はまだ評価されていません。"
     },
     "threatStatus": {
-      "0": "オープン",
-      "0.description": "発見事項が特定され文書化されましたが、まだ対応は開始されていません。",
-      "1": "確認済み",
-      "1.description": "脅威が分析または証拠により正当なものとして検証されました。",
-      "2": "軽減策計画中",
-      "2.description": "修復または軽減戦略が定義され、割り当てられました。",
-      "3": "軽減策実施中",
-      "3.description": "コントロール、コード変更、または対策の実装が進行中です。",
-      "4": "検証待ち",
-      "4.description": "軽減策が完了。セキュリティチームが有効性をテストまたはレビューする必要があります。",
-      "5": "解決済み",
-      "5.description": "脅威は完全に軽減され検証されました。残存リスクは許容範囲内です。",
-      "6": "受容",
-      "6.description": "脅威は認識されていますが、意図的に軽減されていません（ビジネス上の正当化など）。正式なリスク受容が必要です。",
-      "7": "誤検知",
-      "7.description": "調査の結果、発見事項は有効な脅威ではないと判断されました。追加の対応は不要です。",
-      "8": "延期",
-      "8.description": "承認を得て対応が延期されています（将来のスプリント向けなど）。理由と期日が含まれます。",
-      "9": "クローズ",
-      "9.description": "発見事項は解決、受容、または無効化後にアーカイブされ、監査証跡が残っています。"
+      "accepted": "受容",
+      "accepted.description": "脅威は認識されていますが、意図的に軽減されていません（ビジネス上の正当化など）。正式なリスク受容が必要です。",
+      "closed": "クローズ",
+      "closed.description": "発見事項は解決、受容、または無効化後にアーカイブされ、監査証跡が残っています。",
+      "confirmed": "確認済み",
+      "confirmed.description": "脅威が分析または証拠により正当なものとして検証されました。",
+      "deferred": "延期",
+      "deferred.description": "承認を得て対応が延期されています（将来のスプリント向けなど）。理由と期日が含まれます。",
+      "falsePositive": "誤検知",
+      "falsePositive.description": "調査の結果、発見事項は有効な脅威ではないと判断されました。追加の対応は不要です。",
+      "mitigationInProgress": "軽減策実施中",
+      "mitigationInProgress.description": "コントロール、コード変更、または対策の実装が進行中です。",
+      "mitigationPlanned": "軽減策計画中",
+      "mitigationPlanned.description": "修復または軽減戦略が定義され、割り当てられました。",
+      "open": "オープン",
+      "open.description": "発見事項が特定され文書化されましたが、まだ対応は開始されていません。",
+      "resolved": "解決済み",
+      "resolved.description": "脅威は完全に軽減され検証されました。残存リスクは許容範囲内です。",
+      "verificationPending": "検証待ち",
+      "verificationPending.description": "軽減策が完了。セキュリティチームが有効性をテストまたはレビューする必要があります。"
     }
   },
   "threatModels": {
     "addPermission": "権限を追加",
     "branch": "ブランチ",
+    "changeSecurityReviewer": "セキュリティレビュアーを変更",
+    "clearSecurityReviewer": "セキュリティレビュアーをクリア",
     "commit": "コミット",
     "createFirstButton": "最初の脅威モデルを作成",
     "createNewDiagram": "新しいダイアグラムを作成",
     "createNewRepository": "リポジトリ参照を追加",
     "created": "{{common.created}}",
-    "createdBy": "作成者",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "データフローダイアグラム",
     "deleteWarningPermanent": "この操作は元に戻すことができず、関連するすべてのダイアグラム、脅威、メタデータが永久に削除されます。",
@@ -1078,29 +1194,30 @@
       "outputs": "出力",
       "outputsDescription": "セキュリティ分析中に作成されたノート、図、および脅威"
     },
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "オーナーに設定",
     "sourcesCount": "リポジトリ",
     "status": {
-      "0": "未開始",
-      "0.tooltip": "セキュリティレビューは開始されましたが、評価活動はまだ始まっていません。",
-      "1": "進行中",
-      "1.tooltip": "脅威モデリング、コードレビュー、テストなどのアクティブな評価が進行中です。",
-      "2": "レビュー待ち",
-      "2.tooltip": "評価成果物（レポート、発見事項など）がセキュリティリードまたは承認者による正式なレビューを待っています。",
-      "3": "修復が必要",
-      "3.tooltip": "脆弱性または問題が特定されました。開発チームが対処する必要があります。",
-      "4": "修復中",
-      "4.tooltip": "特定された問題の修正が開発チームにより実施中です。",
-      "5": "検証待ち",
-      "5.tooltip": "修復が完了しました。セキュリティチームが有効性を検証する必要があります。",
-      "6": "承認済み",
-      "6.tooltip": "すべての問題が解決され検証されました。アプリケーションはリリースまたはデプロイのセキュリティ基準を満たしています。",
-      "7": "却下",
-      "7.tooltip": "レビューが重要な基準に失敗しました。再提出前に大幅な修正が必要です。",
-      "8": "延期",
-      "8.tooltip": "レビューは一時停止されています（リソース制約やアプリケーションの変更など）。再開が計画されています。",
-      "9": "クローズ",
-      "9.tooltip": "レビューは完全に完了し、アーカイブされました。追加の対応は不要です。"
+      "approved": "承認済み",
+      "approved.tooltip": "すべての問題が解決され検証されました。アプリケーションはリリースまたはデプロイのセキュリティ基準を満たしています。",
+      "closed": "クローズ",
+      "closed.tooltip": "レビューは完全に完了し、アーカイブされました。追加の対応は不要です。",
+      "deferred": "延期",
+      "deferred.tooltip": "レビューは一時停止されています（リソース制約やアプリケーションの変更など）。再開が計画されています。",
+      "inProgress": "進行中",
+      "inProgress.tooltip": "脅威モデリング、コードレビュー、テストなどのアクティブな評価が進行中です。",
+      "notStarted": "未開始",
+      "notStarted.tooltip": "セキュリティレビューは開始されましたが、評価活動はまだ始まっていません。",
+      "pendingReview": "レビュー待ち",
+      "pendingReview.tooltip": "評価成果物（レポート、発見事項など）がセキュリティリードまたは承認者による正式なレビューを待っています。",
+      "rejected": "却下",
+      "rejected.tooltip": "レビューが重要な基準に失敗しました。再提出前に大幅な修正が必要です。",
+      "remediationInProgress": "修復中",
+      "remediationInProgress.tooltip": "特定された問題の修正が開発チームにより実施中です。",
+      "remediationRequired": "修復が必要",
+      "remediationRequired.tooltip": "脆弱性または問題が特定されました。開発チームが対処する必要があります。",
+      "verificationPending": "検証待ち",
+      "verificationPending.tooltip": "修復が完了しました。セキュリティチームが有効性を検証する必要があります。"
     },
     "statusLastUpdated": "ステータス最終更新",
     "tag": "タグ",
@@ -1245,6 +1362,16 @@
     },
     "queue": "トリアージキュー",
     "returnToSubmitted": "送信済みに戻す",
+    "reviewerAssignment": {
+      "assign": "割り当てる",
+      "assignToMe": "自分に割り当てる",
+      "errorLoading": "未割り当ての脅威モデルの読み込みに失敗しました",
+      "loading": "未割り当てのレビューを読み込み中...",
+      "noUnassigned": "割り当てられていないレビュー",
+      "noUnassignedDescription": "すべてのアクティブな脅威モデルにセキュリティレビュー担当者が割り当てられています",
+      "reviewer": "セキュリティレビュー担当者",
+      "selectReviewer": "レビュー担当者を選択..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "修正が必要な内容を説明するノートを記入してください。提出者が回答を確認する際にこれらのノートが表示されます。",
@@ -1252,6 +1379,10 @@
       "label": "修正依頼ノート",
       "placeholder": "必要な修正内容を記述...",
       "title": "修正依頼として差し戻し"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "未割り当てのレビュー"
     },
     "title": "トリアージ",
     "viewDetails": "詳細を表示"
@@ -1324,7 +1455,7 @@
     "sections": {
       "developer": "開発者",
       "diagramEditor": "ダイアグラムエディター",
-      "securityReviewer": "セキュリティレビュアー"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "開発者ツールを表示",
     "tabs": {

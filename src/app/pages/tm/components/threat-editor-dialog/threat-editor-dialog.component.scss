@@ -1,3 +1,5 @@
+@use '../../../../../styles/link-colors' as links;
+
 .full-width {
   width: 100%;
 }
@@ -119,17 +121,7 @@ mat-dialog-actions {
 
 // URL view content - readonly input styled as hyperlink
 .url-view-content {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
-  &:hover {
-    color: var(--color-primary-dark) !important;
-  }
-
-  &:visited {
-    color: var(--color-link-visited) !important;
-  }
+  @include links.url-link-styles;
 }
 
 // View-only URL display (for readonly mode)

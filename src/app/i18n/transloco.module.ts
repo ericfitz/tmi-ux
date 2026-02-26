@@ -4,59 +4,18 @@ import { firstValueFrom } from 'rxjs';
 
 import { TranslocoHttpLoader } from './transloco-loader.service';
 import { environment } from '../../environments/environment';
-
-// Function to get the initial language
-function getInitialLang(): string {
-  const supportedLangs = [
-    'en-US',
-    'ar-SA',
-    'bn-BD',
-    'de-DE',
-    'es-ES',
-    'fr-FR',
-    'he-IL',
-    'hi-IN',
-    'id-ID',
-    'ja-JP',
-    'ko-KR',
-    'pt-BR',
-    'ru-RU',
-    'th-TH',
-    'ur-PK',
-    'zh-CN',
-  ];
-
-  // Check localStorage for saved preference
-  const savedLang = localStorage.getItem('preferredLanguage');
-  if (savedLang && supportedLangs.includes(savedLang)) {
-    return savedLang;
-  }
-
-  // Check browser language
-  const browserLang = navigator.language;
-  if (browserLang) {
-    // Try exact match
-    if (supportedLangs.includes(browserLang)) {
-      return browserLang;
-    }
-
-    // Try base language match
-    const baseLang = browserLang.split('-')[0];
-    const baseMatch = supportedLangs.find(l => l.startsWith(baseLang));
-    if (baseMatch) {
-      return baseMatch;
-    }
-  }
-
-  // Default to English
-  return 'en-US';
-}
+import {
+  SUPPORTED_LANGUAGE_CODES,
+  SUPPORTED_LANGUAGES,
+  DEFAULT_LANGUAGE,
+  detectPreferredLanguage,
+} from './language-config';
 
 // This function initializes Transloco during app startup
 export function preloadTranslations(transloco: TranslocoService): () => Promise<unknown> {
   return () => {
-    // Get preferred language
-    const langToLoad = getInitialLang();
+    // Get preferred language (skip URL params — LanguageService handles those)
+    const langToLoad = detectPreferredLanguage(null);
 
     // Set active language
     transloco.setActiveLang(langToLoad);
@@ -65,12 +24,8 @@ export function preloadTranslations(transloco: TranslocoService): () => Promise<
     document.documentElement.lang = langToLoad;
 
     // Set RTL if needed
-    const rtlLanguages = ['ar-SA', 'he-IL', 'ur-PK'];
-    if (rtlLanguages.includes(langToLoad)) {
-      document.documentElement.dir = 'rtl';
-    } else {
-      document.documentElement.dir = 'ltr';
-    }
+    const langConfig = SUPPORTED_LANGUAGES.find(l => l.code === langToLoad);
+    document.documentElement.dir = langConfig?.rtl ? 'rtl' : 'ltr';
 
     // Always preload English as the fallback language
     const loadPromises: Promise<unknown>[] = [firstValueFrom(transloco.load('en-US'))];
@@ -90,26 +45,9 @@ export function preloadTranslations(transloco: TranslocoService): () => Promise<
   providers: [
     provideTransloco({
       config: {
-        availableLangs: [
-          'en-US',
-          'ar-SA',
-          'bn-BD',
-          'de-DE',
-          'es-ES',
-          'fr-FR',
-          'he-IL',
-          'hi-IN',
-          'id-ID',
-          'ja-JP',
-          'ko-KR',
-          'pt-BR',
-          'ru-RU',
-          'th-TH',
-          'ur-PK',
-          'zh-CN',
-        ],
-        defaultLang: 'en-US',
-        fallbackLang: 'en-US',
+        availableLangs: SUPPORTED_LANGUAGE_CODES,
+        defaultLang: DEFAULT_LANGUAGE,
+        fallbackLang: DEFAULT_LANGUAGE,
         reRenderOnLangChange: true,
         prodMode: environment.production,
         // Lazy load translations on demand - only preload English

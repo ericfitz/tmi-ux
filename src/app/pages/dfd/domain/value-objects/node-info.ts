@@ -4,6 +4,11 @@ import { PortConfiguration, createDefaultPortConfiguration } from './port-config
 import { Metadata, safeMetadataEntry } from './metadata';
 import { MarkupElement, CellTool } from './x6-types';
 import { DFD_STYLING_HELPERS } from '../../constants/styling-constants';
+import {
+  validateMarkupElements,
+  validateCellTools,
+  hybridDataEquals,
+} from '../utils/x6-validation.util';
 
 /**
  * Node types supported in the DFD diagram
@@ -99,24 +104,10 @@ export class NodeInfo {
     tools?: CellTool[];
   }): NodeInfo {
     const shape = data.shape || data.type || 'process';
-    // Prioritize X6 v2 nested format, fall back to X6 v1 flat format
-    const x = data.position?.x ?? data.x ?? 0;
-    const y = data.position?.y ?? data.y ?? 0;
-    const width = data.size?.width ?? data.width ?? 120;
-    const height = data.size?.height ?? data.height ?? 60;
-
+    const { x, y, width, height } = NodeInfo._resolveGeometry(data);
     const attrs = data.attrs || createDefaultNodeAttrs(shape);
     const ports = data.ports || createDefaultPortConfiguration(shape);
-
-    // Handle hybrid data format or legacy metadata
-    let hybridData = data.data || { _metadata: [] };
-    if (!data.data && data.metadata) {
-      // Convert legacy metadata to hybrid format
-      const metadataArray = Object.entries(data.metadata).map(([key, value]) =>
-        safeMetadataEntry(key, value, 'NodeInfo.fromJSON'),
-      );
-      hybridData = { _metadata: metadataArray };
-    }
+    const hybridData = NodeInfo._resolveHybridData(data);
 
     return new NodeInfo(
       data.id,
@@ -135,6 +126,42 @@ export class NodeInfo {
       data.markup,
       data.tools,
     );
+  }
+
+  /**
+   * Resolves geometry from X6 v2 nested or v1 flat format
+   */
+  private static _resolveGeometry(data: {
+    position?: { x: number; y: number };
+    size?: { width: number; height: number };
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+  }): { x: number; y: number; width: number; height: number } {
+    return {
+      x: data.position?.x ?? data.x ?? 0,
+      y: data.position?.y ?? data.y ?? 0,
+      width: data.size?.width ?? data.width ?? 120,
+      height: data.size?.height ?? data.height ?? 60,
+    };
+  }
+
+  /**
+   * Resolves hybrid data from data field or legacy metadata
+   */
+  private static _resolveHybridData(data: {
+    data?: { [key: string]: any; _metadata: Metadata[] };
+    metadata?: Record<string, string>;
+  }): { [key: string]: any; _metadata: Metadata[] } {
+    if (data.data) return data.data;
+    if (data.metadata) {
+      const metadataArray = Object.entries(data.metadata).map(([key, value]) =>
+        safeMetadataEntry(key, value, 'NodeInfo.fromJSON'),
+      );
+      return { _metadata: metadataArray };
+    }
+    return { _metadata: [] };
   }
 
   /**
@@ -215,20 +242,13 @@ export class NodeInfo {
    * Gets default zIndex for a node type
    */
   private static getDefaultZIndex(type: NodeType): number {
-    switch (type) {
-      case 'security-boundary':
-        return 1; // Security boundaries stay behind other nodes
-      case 'text-box':
-        return 20; // text-boxes appear above all other shapes
-      default:
-        return 10; // Default z-index for regular nodes (process, store, actor)
-    }
+    return DFD_STYLING_HELPERS.getDefaultZIndex(type);
   }
 
   /**
    * Gets default label for a node type
    */
-  private static getDefaultLabel(type: NodeType, translateFn?: (key: string) => string): string {
+  static getDefaultLabel(type: string, translateFn?: (key: string) => string): string {
     if (!translateFn) {
       // Fallback to English labels if no translation function provided
       switch (type) {
@@ -679,37 +699,8 @@ export class NodeInfo {
    * Validates X6-specific properties
    */
   private _validateX6Properties(): void {
-    // Validate markup structure
-    if (this.markup) {
-      this.markup.forEach((element, index) => {
-        if (!element.tagName || typeof element.tagName !== 'string') {
-          throw new Error(`Markup element at index ${index} must have a valid tagName`);
-        }
-        if (element.selector && typeof element.selector !== 'string') {
-          throw new Error(`Markup element at index ${index} selector must be a string`);
-        }
-        if (element.attrs && typeof element.attrs !== 'object') {
-          throw new Error(`Markup element at index ${index} attrs must be an object`);
-        }
-        if (element.children) {
-          if (!Array.isArray(element.children)) {
-            throw new Error(`Markup element at index ${index} children must be an array`);
-          }
-        }
-      });
-    }
-
-    // Validate tools structure
-    if (this.tools) {
-      this.tools.forEach((tool, index) => {
-        if (!tool.name || typeof tool.name !== 'string') {
-          throw new Error(`Tool at index ${index} must have a valid name`);
-        }
-        if (tool.args && typeof tool.args !== 'object') {
-          throw new Error(`Tool at index ${index} args must be an object`);
-        }
-      });
-    }
+    validateMarkupElements(this.markup);
+    validateCellTools(this.tools);
   }
 
   /**
@@ -723,28 +714,10 @@ export class NodeInfo {
    * Checks if metadata arrays are equal
    */
   private metadataEquals(other: { [key: string]: any; _metadata: Metadata[] }): boolean {
-    const thisMetadata = this.metadata;
     const otherMetadata = other._metadata || [];
-
-    if (thisMetadata.length !== otherMetadata.length) {
-      return false;
-    }
-
-    // Sort both arrays by key for comparison
-    const thisSorted = [...thisMetadata].sort((a, b) => a.key.localeCompare(b.key));
-    const otherSorted = [...otherMetadata].sort((a, b) => a.key.localeCompare(b.key));
-
-    // Check metadata equality
-    const metadataEqual = thisSorted.every((entry, index) => {
-      const otherEntry = otherSorted[index];
-      return entry.key === otherEntry.key && entry.value === otherEntry.value;
-    });
-
-    // Check custom data equality (excluding _metadata)
-    const thisCustomData = this.getCustomData();
     const otherCustomData = { ...other };
     delete (otherCustomData as any)._metadata;
 
-    return metadataEqual && JSON.stringify(thisCustomData) === JSON.stringify(otherCustomData);
+    return hybridDataEquals(this.metadata, otherMetadata, this.getCustomData(), otherCustomData);
   }
 }

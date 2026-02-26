@@ -439,10 +439,13 @@
     "collaboratorsHeader": "משתתפים",
     "copyLink": "העתק קישור",
     "denyPresenterRequest": "דחה בקשת מציג",
+    "endCollaboration": "סיום שיתוף פעולה",
     "hostedBy": "מתארח על ידי",
     "isRequestingPresenterPrivileges": "מבקש הרשאות מציג",
     "joinSession": "הצטרף לפגישה",
     "justNow": "עכשיו",
+    "leaveSession": "עזיבת הפגישה",
+    "loadingDiagramContext": "טוען הקשר דיאגרמה...",
     "manageParticipants": "נהל משתתפים",
     "noActiveSessions": "אין פגישות משותפות פעילות",
     "participantRequestsPresenterRole": "משתתף מבקש תפקיד מציג",
@@ -450,6 +453,7 @@
     "removeFromSession": "הסר מהפגישה",
     "requestPresenter": "בקש להיות מציג",
     "sessionStarted": "התחיל",
+    "startCollaboration": "התחלת שיתוף פעולה",
     "takeBackPresenter": "קח בחזרה את תפקיד המציג",
     "title": "משתתפי הפגישה המשותפת",
     "userJoined": "{{user}} הצטרף לשיתוף הפעולה",
@@ -485,6 +489,7 @@
     "copyToClipboard": "העתק ללוח",
     "create": "צור",
     "created": "נוצר",
+    "createdBy": "נוצר על ידי",
     "criticality": "קריטיות",
     "cut": "גזור",
     "deactivate": "השבתה",
@@ -512,6 +517,7 @@
     "groups": "קבוצות",
     "id": "מזהה",
     "identityProvider": "ספק זהות",
+    "includeInReport": "כלול בדוח",
     "issueUri": "כתובת URL של הבעיה",
     "language": "{{language}}",
     "lastModified": "שונה לאחרונה",
@@ -565,6 +571,7 @@
     "paste": "הדבק",
     "permissions": "הרשאות",
     "priority": "עדיפות",
+    "project": "פרויקט",
     "provider": "ספק",
     "readOnly": "קריאה בלבד",
     "readOnlyTooltip": "יש לך גישה לקריאה בלבד למודל איומים זה. פנה לבעלים לבקשת הרשאות עריכה.",
@@ -576,6 +583,7 @@
     },
     "save": "שמור",
     "saveAndClose": "שמור וסגור",
+    "saveFailed": "השמירה נכשלה",
     "savedSuccessfully": "נשמר בהצלחה",
     "score": "ציון",
     "search": "חיפוש",
@@ -592,6 +600,7 @@
       "group": "קבוצה",
       "user": "משתמש"
     },
+    "team": "צוות",
     "template": "תבנית",
     "threatDescription": "תיאור האיום",
     "threatDescriptionPlaceholder": "תאר את האיום בפירוט",
@@ -602,8 +611,10 @@
     "type": "סוג",
     "unarchive": "ביטול ארכיון",
     "unsavedChangesWarning": "יש לך שינויים שלא נשמרו. האם אתה בטוח שברצונך לסגור?",
+    "uri": "URI",
     "userId": "מזהה משתמש",
     "validation": {
+      "email": "אנא הזן כתובת דוא\"ל חוקית",
       "invalidUrl": "אנא הזן כתובת URL חוקית",
       "maxLength": "האורך המרבי הוא {{max}} תווים",
       "nameRequired": "השם נדרש",
@@ -636,10 +647,27 @@
     "title": "צור מודל איום"
   },
   "dashboard": {
-    "clearFilter": "נקה מסנן",
-    "filterLabel": "סנן מודלי איומים",
-    "filterPlaceholder": "חפש לפי שם, תיאור, בעלים או סטטוס",
-    "noMatchingThreatModels": "אין מודלי איומים התואמים את המסנן שלך.",
+    "clearAllFilters": "נקה את כל המסננים",
+    "clearSearch": "נקה חיפוש",
+    "createdAfter": "נוצר אחרי",
+    "createdBefore": "נוצר לפני",
+    "descriptionFilter": "{{common.description}}",
+    "descriptionPlaceholder": "סנן לפי תיאור",
+    "issueUriFilter": "{{common.issueUri}}",
+    "issueUriPlaceholder": "סנן לפי כתובת URL של בעיה",
+    "lessFilters": "פחות מסננים",
+    "modifiedAfter": "שונה אחרי",
+    "modifiedBefore": "שונה לפני",
+    "moreFilters": "עוד מסננים",
+    "nameFilter": "{{common.name}}",
+    "namePlaceholder": "סנן לפי שם",
+    "noMatchingThreatModels": "אין מודלי איומים התואמים את החיפוש או המסננים שלך.",
+    "ownerFilter": "{{common.roles.owner}}",
+    "ownerPlaceholder": "סנן לפי שם בעלים או דוא\"ל",
+    "searchLabel": "{{common.search}}",
+    "searchPlaceholder": "חפש לפי שם, תיאור, בעלים או סטטוס",
+    "statusUpdatedAfter": "סטטוס עודכן אחרי",
+    "statusUpdatedBefore": "סטטוס עודכן לפני",
     "tableHeaders": {
       "actions": "{{common.actions}}",
       "created": "{{common.created}}",
@@ -698,6 +726,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "לאחד או יותר מהאלמנטים שנבחרו יש ערכי מטא-דאטה. מחיקת אלמנטים אלה תסיר את המטא-דאטה שלהם לצמיתות. האם ברצונך להמשיך?",
+      "title": "המטא-דאטה תאבד"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "הזן תיאור דיאגרמה",
     "diagramNamePlaceholder": "הזן שם דיאגרמה",
@@ -755,10 +788,12 @@
     "support": "תמיכה"
   },
   "getStarted": "התחל",
-  "homeDescription": "TMI הוא כלי לניהול ושיפור תהליכי סקירת אבטחה ומודלים של איומים עבור הארגון שלך. הוא מניע את זרימת העבודה של סקירת אבטחה, מארגן את המידע לסקירות אבטחה, מאפשר בניית תרשימי זרימת נתונים באופן שיתופי, ומאפשר חיבור של אוטומציה כדי להפחית עבודה חוזרת בתהליך הסקירה ולנתח איומי אבטחה.",
+  "homeDescription": "TMI הוא כלי שמייעל את תהליכי סקירת האבטחה ומידול האיומים בארגון שלך. הוא מניע תהליכי עבודה של סקירה, מארגן מידע מרכזי ומאפשר לצוותים לבנות בשיתוף פעולה דיאגרמות זרימת נתונים. הוא גם מתחבר לאוטומציה, ועוזר לצמצם עבודה ידנית ולזהות איומי אבטחה בצורה יעילה יותר.",
   "homeWelcomeTitle": "ברוכים הבאים ל-TMI: מידול איומים משופר",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "שמור וצא",
       "submitResponses": "שלח תשובות"
     }
@@ -818,6 +853,53 @@
       "view": "צפה בהערה"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "התחברות"
+    },
+    "operationError": "{{operation}} נכשל: {{errorMessage}}",
+    "operationFailed": "הפעולה נכשלה",
+    "operations": {
+      "collaboration": "שיתוף פעולה",
+      "denyPresenterRequest": "דחיית בקשת מציג",
+      "sendPresenterRequest": "שליחת בקשת מציג",
+      "startCollaboration": "התחלת שיתוף פעולה",
+      "updatePresenter": "עדכון מציג"
+    },
+    "presenter": {
+      "assigned": "{{user}} הוא כעת המציג",
+      "assignedYou": "אתה כעת המציג",
+      "cleared": "מצב המציג נוקה",
+      "cursorMoved": "סמן המציג זז",
+      "modeChanged": "מצב המציג השתנה",
+      "privilegesRequested": "הרשאות מציג התבקשו",
+      "removed": "{{user}} כבר לא המציג",
+      "removedYou": "אינך עוד המציג",
+      "requestDenied": "בקשת המציג שלך נדחתה",
+      "requestSent": "בקשת מציג נשלחה לבעל הפגישה",
+      "requesting": "{{user}} מבקש הרשאות מציג",
+      "selectionChanged": "בחירת המציג השתנתה"
+    },
+    "session": {
+      "disconnected": "נותקת מפגישת שיתוף הפעולה",
+      "reconnected": "התחברת מחדש לפגישת שיתוף הפעולה",
+      "reconnecting": "מתחבר מחדש לפגישת שיתוף הפעולה...",
+      "userRemoved": "{{user}} הוסר מהפגישה",
+      "youWereRemoved": "הוסרת מפגישת שיתוף הפעולה"
+    },
+    "unknownError": "שגיאה לא ידועה",
+    "websocket": {
+      "authenticationFailed": "האימות נכשל. אנא התחבר שוב.",
+      "communicationError": "שגיאת תקשורת עם השרת. חלק מהעדכונים עלולים לא להסתנכרן.",
+      "connectionError": "שגיאת חיבור. עובד במצב לא מקוון.",
+      "connectionFailed": "החיבור לשרת שיתוף הפעולה נכשל.",
+      "connectionTimeout": "זמן החיבור פג. ייתכן שהשרת עמוס.",
+      "disconnected": "נותקת משרת שיתוף הפעולה. השינויים יישמרו מקומית.",
+      "messageSendFailed": "שליחת ההודעה נכשלה. ייתכן שהשינויים שלך לא יסתנכרנו.",
+      "multipleFailed": "החיבור נכשל לאחר מספר ניסיונות. עובד במצב לא מקוון.",
+      "unknownError": "אירעה שגיאת WebSocket לא ידועה"
+    }
+  },
   "pagination": {
     "ariaLabel": "בחר עמוד של פריטים",
     "firstPage": "עמוד ראשון",
@@ -870,6 +952,23 @@
     "userRightsContent2": "אפשרות זו מאפשרת מחיקה מיידית של כל הנתונים שהמפעיל מאחסן עבורך, כולל מידע פרופיל ורשומות אימות. עם ההפעלה, הנתונים שלך יוסרו לצמיתות ממערכות המפעיל ומספקי צד שלישי, בכפוף לכל חובות שמירה חוקיות.",
     "userRightsTitle": "זכויות המשתמש"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "הזן תיאור פרויקט",
+      "namePlaceholder": "הזן שם פרויקט",
+      "nameRequired": "שם הפרויקט נדרש",
+      "statusPlaceholder": "למשל active, planning, archived",
+      "teamRequired": "צוות נדרש",
+      "title": "צור פרויקט",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "צור פרויקט חדש",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "ללא פרויקט"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "הארך הפעלה",
     "extending": "מאריך את ההפעלה שלך, אנא המתן...",
@@ -883,7 +982,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "השמירה נכשלה",
+      "error": "{{common.saveFailed}}",
       "saved": "נשמר",
       "saving": "שומר..."
     },
@@ -952,69 +1051,86 @@
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "הצג תגובה"
   },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "הזן תיאור צוות",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "הזן שם צוות",
+      "nameRequired": "שם הצוות נדרש",
+      "statusPlaceholder": "למשל active, archived",
+      "title": "צור צוות",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "צור צוות חדש"
+  },
   "threatEditor": {
     "createNewThreat": "צור איום חדש",
     "notAssociatedWithAsset": "לא משויך לנכס",
     "notAssociatedWithCell": "לא משויך לתא",
     "notAssociatedWithDiagram": "לא משויך לדיאגרמה",
     "threatPriority": {
-      "0": "מיידי (P0)",
-      "0.description": "חייב להיות מטופל בדחיפות; ניצול פעיל, הפרת רגולציה או חשיפה עסקית קריטית.",
-      "1": "גבוהה (P1)",
-      "1.description": "דורש פתרון מהיר; חשיפה בסיכון גבוה או מועד שחרור קרוב.",
-      "2": "בינונית (P2)",
-      "2.description": "טפל במסגרת מחזורי פיתוח רגילים; חשיפה מתונה.",
-      "3": "נמוכה (P3)",
-      "3.description": "כלול ב-backlog למחזורים עתידיים; אין חשיפה מיידית.",
-      "4": "נדחה (P4)",
-      "4.description": "נדחה עם אישור עסקי מתועד; במעקב אך לא מתוזמן."
+      "deferred": "נדחה (P4)",
+      "deferred.description": "נדחה עם אישור עסקי מתועד; במעקב אך לא מתוזמן.",
+      "high": "גבוהה (P1)",
+      "high.description": "דורש פתרון מהיר; חשיפה בסיכון גבוה או מועד שחרור קרוב.",
+      "immediate": "מיידי (P0)",
+      "immediate.description": "חייב להיות מטופל בדחיפות; ניצול פעיל, הפרת רגולציה או חשיפה עסקית קריטית.",
+      "low": "נמוכה (P3)",
+      "low.description": "כלול ב-backlog למחזורים עתידיים; אין חשיפה מיידית.",
+      "medium": "בינונית (P2)",
+      "medium.description": "טפל במסגרת מחזורי פיתוח רגילים; חשיפה מתונה."
     },
     "threatSeverity": {
-      "0": "קריטי",
-      "0.description": "פגיעות הניתנת לניצול מאפשרת פריצה מלאה למערכת, דליפת נתונים או השפעה על בטיחות; דורש פעולה מיידית.",
-      "1": "גבוהה",
-      "1.description": "השפעה משמעותית או סבירות גבוהה; מאפשר גישה לא מורשית משמעותית, הסלמת הרשאות או שיבוש שירות.",
-      "2": "בינונית",
-      "2.description": "השפעה או סבירות מתונה; חשיפת נתונים מוגבלת, פגיעה חלקית בפונקציונליות או דורש ניצול משורשר.",
-      "3": "נמוכה",
-      "3.description": "השפעה מינימלית או סבירות נמוכה; השפעה עסקית זניחה, דורש תנאים ספציפיים או אינטראקציה של משתמש.",
-      "4": "מידעי",
-      "4.description": "אין ניצול ישיר; המלצה, סטייה מנוהל מומלץ או שיפור תצורה.",
-      "5": "לא ידוע",
-      "5.description": "חומרת האיום טרם הוערכה."
+      "critical": "קריטי",
+      "critical.description": "פגיעות הניתנת לניצול מאפשרת פריצה מלאה למערכת, דליפת נתונים או השפעה על בטיחות; דורש פעולה מיידית.",
+      "high": "גבוהה",
+      "high.description": "השפעה משמעותית או סבירות גבוהה; מאפשר גישה לא מורשית משמעותית, הסלמת הרשאות או שיבוש שירות.",
+      "informational": "מידעי",
+      "informational.description": "אין ניצול ישיר; המלצה, סטייה מנוהל מומלץ או שיפור תצורה.",
+      "low": "נמוכה",
+      "low.description": "השפעה מינימלית או סבירות נמוכה; השפעה עסקית זניחה, דורש תנאים ספציפיים או אינטראקציה של משתמש.",
+      "medium": "בינונית",
+      "medium.description": "השפעה או סבירות מתונה; חשיפת נתונים מוגבלת, פגיעה חלקית בפונקציונליות או דורש ניצול משורשר.",
+      "unknown": "לא ידוע",
+      "unknown.description": "חומרת האיום טרם הוערכה."
     },
     "threatStatus": {
-      "0": "פתוח",
-      "0.description": "הממצא זוהה ותועד אך לא ננקטה כל פעולה.",
-      "1": "מאומת",
-      "1.description": "האיום אומת כלגיטימי באמצעות ניתוח או ראיות.",
-      "2": "הפחתה מתוכננת",
-      "2.description": "אסטרטגיית תיקון או הפחתה הוגדרה והוקצתה.",
-      "3": "הפחתה בתהליך",
-      "3.description": "יישום בקרות, שינויי קוד או אמצעי נגד מתבצע.",
-      "4": "ממתין לאימות",
-      "4.description": "ההפחתה הושלמה; צוות האבטחה חייב לבדוק או לסקור את האפקטיביות.",
-      "5": "נפתר",
-      "5.description": "האיום הופחת במלואו ואומת; הסיכון השיורי מקובל.",
-      "6": "התקבל",
-      "6.description": "האיום מוכר אך בכוונה לא מופחת (למשל, עקב הצדקה עסקית); דורש קבלת סיכון רשמית.",
-      "7": "חיובי שגוי",
-      "7.description": "החקירה קבעה שהממצא אינו איום תקף; לא נדרשת פעולה נוספת.",
-      "8": "נדחה",
-      "8.description": "הפעולה נדחתה עם אישור (למשל, לספרינטים עתידיים); כולל נימוק ותאריך יעד.",
-      "9": "סגור",
-      "9.description": "הממצא מאורכב לאחר פתרון, קבלה או ביטול, עם נתיב ביקורת."
+      "accepted": "התקבל",
+      "accepted.description": "האיום מוכר אך בכוונה לא מופחת (למשל, עקב הצדקה עסקית); דורש קבלת סיכון רשמית.",
+      "closed": "סגור",
+      "closed.description": "הממצא מאורכב לאחר פתרון, קבלה או ביטול, עם נתיב ביקורת.",
+      "confirmed": "מאומת",
+      "confirmed.description": "האיום אומת כלגיטימי באמצעות ניתוח או ראיות.",
+      "deferred": "נדחה",
+      "deferred.description": "הפעולה נדחתה עם אישור (למשל, לספרינטים עתידיים); כולל נימוק ותאריך יעד.",
+      "falsePositive": "חיובי שגוי",
+      "falsePositive.description": "החקירה קבעה שהממצא אינו איום תקף; לא נדרשת פעולה נוספת.",
+      "mitigationInProgress": "הפחתה בתהליך",
+      "mitigationInProgress.description": "יישום בקרות, שינויי קוד או אמצעי נגד מתבצע.",
+      "mitigationPlanned": "הפחתה מתוכננת",
+      "mitigationPlanned.description": "אסטרטגיית תיקון או הפחתה הוגדרה והוקצתה.",
+      "open": "פתוח",
+      "open.description": "הממצא זוהה ותועד אך לא ננקטה כל פעולה.",
+      "resolved": "נפתר",
+      "resolved.description": "האיום הופחת במלואו ואומת; הסיכון השיורי מקובל.",
+      "verificationPending": "ממתין לאימות",
+      "verificationPending.description": "ההפחתה הושלמה; צוות האבטחה חייב לבדוק או לסקור את האפקטיביות."
     }
   },
   "threatModels": {
     "addPermission": "הוסף הרשאה",
     "branch": "ענף",
+    "changeSecurityReviewer": "שינוי סוקר אבטחה",
+    "clearSecurityReviewer": "ניקוי סוקר אבטחה",
     "commit": "קומיט",
     "createFirstButton": "צור את מודל האיומים הראשון שלך",
     "createNewDiagram": "צור דיאגרמה חדשה",
     "createNewRepository": "הוסף הפניה למאגר",
     "created": "{{common.created}}",
-    "createdBy": "נוצר על ידי",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "דיאגרמת זרימת נתונים",
     "deleteWarningPermanent": "פעולה זו אינה ניתנת לביטול ותמחק לצמיתות את כל הדיאגרמות, האיומים והמטא-נתונים המשויכים.",
@@ -1078,29 +1194,30 @@
       "outputs": "פלטים",
       "outputsDescription": "הערות, דיאגרמות ואיומים המיוצרים במהלך ניתוח אבטחה"
     },
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "הגדר כבעלים",
     "sourcesCount": "מאגרים",
     "status": {
-      "0": "לא התחיל",
-      "0.tooltip": "בדיקת האבטחה יזומה אך פעילויות ההערכה טרם החלו.",
-      "1": "בתהליך",
-      "1.tooltip": "הערכה פעילה מתבצעת, כולל מידול איומים, סקירת קוד או בדיקות.",
-      "2": "ממתין לסקירה",
-      "2.tooltip": "תוצרי ההערכה (למשל, דוחות, ממצאים) ממתינים לסקירה רשמית על ידי מובילי אבטחה או מאשרים.",
-      "3": "נדרש תיקון",
-      "3.tooltip": "זוהו פגיעויות או בעיות; הפיתוח חייב לטפל בהן.",
-      "4": "תיקון בתהליך",
-      "4.tooltip": "תיקונים לבעיות שזוהו מיושמים על ידי צוות הפיתוח.",
-      "5": "ממתין לאימות",
-      "5.tooltip": "התיקון הושלם; צוות האבטחה חייב לאמת את האפקטיביות.",
-      "6": "מאושר",
-      "6.tooltip": "כל הבעיות נפתרו ואומתו; היישום עומד בקריטריוני האבטחה לשחרור או פריסה.",
-      "7": "נדחה",
-      "7.tooltip": "הסקירה נכשלה בקריטריונים קריטיים; נדרשת עבודה מחדש משמעותית לפני הגשה מחודשת.",
-      "8": "מושהה",
-      "8.tooltip": "הסקירה מושהית (למשל, עקב מגבלות משאבים או שינויים ביישום); חידוש מתוכנן.",
-      "9": "סגור",
-      "9.tooltip": "הסקירה הושלמה במלואה וארכב, ללא צורך בפעולה נוספת."
+      "approved": "מאושר",
+      "approved.tooltip": "כל הבעיות נפתרו ואומתו; היישום עומד בקריטריוני האבטחה לשחרור או פריסה.",
+      "closed": "סגור",
+      "closed.tooltip": "הסקירה הושלמה במלואה וארכב, ללא צורך בפעולה נוספת.",
+      "deferred": "מושהה",
+      "deferred.tooltip": "הסקירה מושהית (למשל, עקב מגבלות משאבים או שינויים ביישום); חידוש מתוכנן.",
+      "inProgress": "בתהליך",
+      "inProgress.tooltip": "הערכה פעילה מתבצעת, כולל מידול איומים, סקירת קוד או בדיקות.",
+      "notStarted": "לא התחיל",
+      "notStarted.tooltip": "בדיקת האבטחה יזומה אך פעילויות ההערכה טרם החלו.",
+      "pendingReview": "ממתין לסקירה",
+      "pendingReview.tooltip": "תוצרי ההערכה (למשל, דוחות, ממצאים) ממתינים לסקירה רשמית על ידי מובילי אבטחה או מאשרים.",
+      "rejected": "נדחה",
+      "rejected.tooltip": "הסקירה נכשלה בקריטריונים קריטיים; נדרשת עבודה מחדש משמעותית לפני הגשה מחודשת.",
+      "remediationInProgress": "תיקון בתהליך",
+      "remediationInProgress.tooltip": "תיקונים לבעיות שזוהו מיושמים על ידי צוות הפיתוח.",
+      "remediationRequired": "נדרש תיקון",
+      "remediationRequired.tooltip": "זוהו פגיעויות או בעיות; הפיתוח חייב לטפל בהן.",
+      "verificationPending": "ממתין לאימות",
+      "verificationPending.tooltip": "התיקון הושלם; צוות האבטחה חייב לאמת את האפקטיביות."
     },
     "statusLastUpdated": "סטטוס עודכן לאחרונה",
     "tag": "תג",
@@ -1245,6 +1362,16 @@
     },
     "queue": "תור טריאז'",
     "returnToSubmitted": "החזר לנשלח",
+    "reviewerAssignment": {
+      "assign": "הקצה",
+      "assignToMe": "הקצה לי",
+      "errorLoading": "טעינת מודלי איומים לא מוקצים נכשלה",
+      "loading": "טוען ביקורות לא מוקצות...",
+      "noUnassigned": "אין ביקורות לא מוקצות",
+      "noUnassignedDescription": "לכל מודלי האיומים הפעילים יש בודק ביטחון מוקצה",
+      "reviewer": "בודק ביטחון",
+      "selectReviewer": "בחר בודק..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "ספק הערות המסבירות מה צריך לתקן. המגיש יראה הערות אלה כשהוא יבדוק את תשובתו.",
@@ -1252,6 +1379,10 @@
       "label": "הערות תיקון",
       "placeholder": "תאר את התיקונים הנדרשים...",
       "title": "החזר לתיקון"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "ביקורות לא מוקצות"
     },
     "title": "טריאז'",
     "viewDetails": "הצג פרטים"
@@ -1324,7 +1455,7 @@
     "sections": {
       "developer": "מפתח",
       "diagramEditor": "עורך דיאגרמות",
-      "securityReviewer": "סוקר אבטחה"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "הצג כלי פיתוח",
     "tabs": {

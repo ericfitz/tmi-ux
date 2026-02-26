@@ -181,6 +181,14 @@ export class AdminSurveysComponent implements OnInit, AfterViewInit, AfterViewCh
   }
 
   /**
+   * Clear search text and re-apply filters
+   */
+  clearSearch(): void {
+    this.searchText = '';
+    this.applyFilters();
+  }
+
+  /**
    * Create a new template via dialog
    */
   createTemplate(): void {

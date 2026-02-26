@@ -94,7 +94,7 @@ describe('DFD Integration - Styling Constants', () => {
 
     it('should have valid edge constants', () => {
       expect(DFD_STYLING.EDGES.DEFAULT_LABEL).toBe('Flow');
-      expect(DFD_STYLING.EDGES.DEFAULT_STROKE).toBe('#333');
+      expect(DFD_STYLING.EDGES.DEFAULT_STROKE).toBe('#000000');
       expect(DFD_STYLING.EDGES.ARROWHEAD).toBe('block');
       expect(DFD_STYLING.EDGES.CONNECTOR).toBe('smooth');
       expect(DFD_STYLING.EDGES.ROUTER).toBe('normal');
@@ -108,7 +108,7 @@ describe('DFD Integration - Styling Constants', () => {
 
     it('should have valid port constants', () => {
       expect(DFD_STYLING.PORTS.RADIUS).toBe(5);
-      expect(DFD_STYLING.PORTS.STROKE).toBe('#000');
+      expect(DFD_STYLING.PORTS.STROKE).toBe('#000000');
       expect(DFD_STYLING.PORTS.FILL).toBe('#ffffff');
       expect(DFD_STYLING.PORTS.STROKE_WIDTH).toBe(1);
       expect(DFD_STYLING.PORTS.MAGNET).toBe('active');

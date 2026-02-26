@@ -402,7 +402,7 @@ export class AppEventHandlersService {
                     name: string;
                     description: string;
                     severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
-                    threat_type: string;
+                    threat_type: string[];
                     diagram_id?: string;
                     cell_id?: string;
                     score?: number;
@@ -423,7 +423,7 @@ export class AppEventHandlersService {
                     created_at: now,
                     modified_at: now,
                     severity: formResult.severity || 'High',
-                    threat_type: formResult.threat_type || 'Information Disclosure',
+                    threat_type: formResult.threat_type || ['Information Disclosure'],
                     diagram_id: formResult.diagram_id || dfdId || '',
                     cell_id: formResult.cell_id || selectedCell?.id || '',
                     score: formResult.score || 10.0,

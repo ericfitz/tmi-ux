@@ -439,10 +439,13 @@
     "collaboratorsHeader": "Peserta",
     "copyLink": "Salin Tautan",
     "denyPresenterRequest": "Tolak Permintaan Presenter",
+    "endCollaboration": "Akhiri Kolaborasi",
     "hostedBy": "Diselenggarakan oleh",
     "isRequestingPresenterPrivileges": "meminta hak akses presenter",
     "joinSession": "Gabung Sesi",
     "justNow": "baru saja",
+    "leaveSession": "Tinggalkan Sesi",
+    "loadingDiagramContext": "Memuat konteks diagram...",
     "manageParticipants": "Kelola Peserta",
     "noActiveSessions": "Tidak Ada Sesi Kolaborasi Aktif",
     "participantRequestsPresenterRole": "Peserta Meminta Peran Presenter",
@@ -450,6 +453,7 @@
     "removeFromSession": "Keluarkan dari Sesi",
     "requestPresenter": "Minta Presenter",
     "sessionStarted": "Dimulai",
+    "startCollaboration": "Mulai Kolaborasi",
     "takeBackPresenter": "Ambil Kembali Presenter",
     "title": "Peserta Sesi Kolaborasi",
     "userJoined": "{{user}} bergabung ke kolaborasi",
@@ -485,6 +489,7 @@
     "copyToClipboard": "Salin ke Papan Klip",
     "create": "Buat",
     "created": "Dibuat",
+    "createdBy": "Dibuat Oleh",
     "criticality": "Kekritisan",
     "cut": "Potong",
     "deactivate": "Nonaktifkan",
@@ -512,6 +517,7 @@
     "groups": "Grup",
     "id": "ID",
     "identityProvider": "Penyedia Identitas",
+    "includeInReport": "Sertakan dalam Laporan",
     "issueUri": "URL Isu",
     "language": "{{language}}",
     "lastModified": "Terakhir Diubah",
@@ -565,6 +571,7 @@
     "paste": "Tempel",
     "permissions": "Izin",
     "priority": "Prioritas",
+    "project": "Proyek",
     "provider": "Penyedia",
     "readOnly": "Hanya Baca",
     "readOnlyTooltip": "Anda memiliki akses hanya baca ke model ancaman ini. Hubungi pemilik untuk meminta izin edit.",
@@ -576,6 +583,7 @@
     },
     "save": "Simpan",
     "saveAndClose": "Simpan dan Tutup",
+    "saveFailed": "Gagal menyimpan",
     "savedSuccessfully": "Berhasil disimpan",
     "score": "Skor",
     "search": "Cari",
@@ -592,6 +600,7 @@
       "group": "Grup",
       "user": "Pengguna"
     },
+    "team": "Tim",
     "template": "Templat",
     "threatDescription": "Deskripsi Ancaman",
     "threatDescriptionPlaceholder": "Jelaskan Ancaman Secara Detail",
@@ -602,8 +611,10 @@
     "type": "Jenis",
     "unarchive": "Batalkan Arsip",
     "unsavedChangesWarning": "Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin menutup?",
+    "uri": "URI",
     "userId": "ID Pengguna",
     "validation": {
+      "email": "Harap masukkan alamat email yang valid",
       "invalidUrl": "Masukkan URL yang valid",
       "maxLength": "Panjang maksimum adalah {{max}} karakter",
       "nameRequired": "Nama wajib diisi",
@@ -636,10 +647,27 @@
     "title": "Buat Model Ancaman"
   },
   "dashboard": {
-    "clearFilter": "Hapus Filter",
-    "filterLabel": "Filter Model Ancaman",
-    "filterPlaceholder": "Cari berdasarkan nama, deskripsi, pemilik, atau status",
-    "noMatchingThreatModels": "Tidak ada model ancaman yang cocok dengan filter Anda.",
+    "clearAllFilters": "Hapus Semua Filter",
+    "clearSearch": "Hapus Pencarian",
+    "createdAfter": "Dibuat Setelah",
+    "createdBefore": "Dibuat Sebelum",
+    "descriptionFilter": "{{common.description}}",
+    "descriptionPlaceholder": "Filter berdasarkan deskripsi",
+    "issueUriFilter": "{{common.issueUri}}",
+    "issueUriPlaceholder": "Filter berdasarkan URL isu",
+    "lessFilters": "Lebih Sedikit Filter",
+    "modifiedAfter": "Diubah Setelah",
+    "modifiedBefore": "Diubah Sebelum",
+    "moreFilters": "Lebih Banyak Filter",
+    "nameFilter": "{{common.name}}",
+    "namePlaceholder": "Filter berdasarkan nama",
+    "noMatchingThreatModels": "Tidak ada model ancaman yang cocok dengan pencarian atau filter Anda.",
+    "ownerFilter": "{{common.roles.owner}}",
+    "ownerPlaceholder": "Filter berdasarkan nama atau email pemilik",
+    "searchLabel": "{{common.search}}",
+    "searchPlaceholder": "Cari berdasarkan nama, deskripsi, pemilik, atau status",
+    "statusUpdatedAfter": "Status Diperbarui Setelah",
+    "statusUpdatedBefore": "Status Diperbarui Sebelum",
     "tableHeaders": {
       "actions": "{{common.actions}}",
       "created": "{{common.created}}",
@@ -698,6 +726,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "Satu atau lebih elemen yang dipilih memiliki entri metadata. Menghapus elemen-elemen ini akan secara permanen menghapus metadata mereka. Apakah Anda ingin melanjutkan?",
+      "title": "Metadata Akan Hilang"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "Masukkan deskripsi diagram",
     "diagramNamePlaceholder": "Masukkan nama diagram",
@@ -755,10 +788,12 @@
     "support": "Dukungan"
   },
   "getStarted": "Mulai",
-  "homeDescription": "TMI adalah alat yang mengelola dan meningkatkan proses tinjauan keamanan dan pemodelan ancaman untuk organisasi Anda. Alat ini menggerakkan alur kerja tinjauan keamanan, mengorganisir informasi untuk tinjauan keamanan, memungkinkan pembuatan diagram alur data secara kolaboratif, dan memungkinkan koneksi otomatisasi untuk mengurangi beban kerja dalam proses tinjauan dan menganalisis ancaman keamanan.",
+  "homeDescription": "TMI adalah alat yang menyederhanakan proses peninjauan keamanan dan pemodelan ancaman organisasi Anda. Ini mendorong alur kerja peninjauan, mengorganisir informasi penting, dan memungkinkan tim untuk secara kolaboratif membangun diagram alur data. Alat ini juga terhubung dengan otomasi, membantu mengurangi pekerjaan manual dan mengidentifikasi ancaman keamanan dengan lebih efisien.",
   "homeWelcomeTitle": "Selamat Datang di TMI: Threat Modeling Improved",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "Simpan & Keluar",
       "submitResponses": "Kirim Respons"
     }
@@ -818,6 +853,53 @@
       "view": "Lihat Catatan"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "Masuk"
+    },
+    "operationError": "Gagal {{operation}}: {{errorMessage}}",
+    "operationFailed": "Operasi gagal",
+    "operations": {
+      "collaboration": "kolaborasi",
+      "denyPresenterRequest": "menolak permintaan presenter",
+      "sendPresenterRequest": "mengirim permintaan presenter",
+      "startCollaboration": "memulai kolaborasi",
+      "updatePresenter": "memperbarui presenter"
+    },
+    "presenter": {
+      "assigned": "{{user}} sekarang menjadi presenter",
+      "assignedYou": "Anda sekarang menjadi presenter",
+      "cleared": "Mode presenter telah dihapus",
+      "cursorMoved": "Kursor presenter berpindah",
+      "modeChanged": "Mode presenter berubah",
+      "privilegesRequested": "Hak akses presenter diminta",
+      "removed": "{{user}} bukan lagi presenter",
+      "removedYou": "Anda bukan lagi presenter",
+      "requestDenied": "Permintaan presenter Anda ditolak",
+      "requestSent": "Permintaan presenter dikirim ke pemilik sesi",
+      "requesting": "{{user}} meminta hak akses presenter",
+      "selectionChanged": "Pilihan presenter berubah"
+    },
+    "session": {
+      "disconnected": "Terputus dari sesi kolaborasi",
+      "reconnected": "Terhubung kembali ke sesi kolaborasi",
+      "reconnecting": "Menghubungkan kembali ke sesi kolaborasi...",
+      "userRemoved": "{{user}} telah dihapus dari sesi",
+      "youWereRemoved": "Anda telah dihapus dari sesi kolaborasi"
+    },
+    "unknownError": "Kesalahan tidak diketahui",
+    "websocket": {
+      "authenticationFailed": "Autentikasi gagal. Silakan masuk kembali.",
+      "communicationError": "Kesalahan komunikasi dengan server. Beberapa pembaruan mungkin tidak tersinkronisasi.",
+      "connectionError": "Kesalahan koneksi. Bekerja dalam mode offline.",
+      "connectionFailed": "Gagal terhubung ke server kolaborasi.",
+      "connectionTimeout": "Waktu koneksi habis. Server mungkin kelebihan beban.",
+      "disconnected": "Terputus dari server kolaborasi. Perubahan akan disimpan secara lokal.",
+      "messageSendFailed": "Gagal mengirim pesan. Perubahan Anda mungkin tidak tersinkronisasi.",
+      "multipleFailed": "Koneksi gagal setelah beberapa percobaan. Bekerja dalam mode offline.",
+      "unknownError": "Terjadi kesalahan WebSocket yang tidak diketahui"
+    }
+  },
   "pagination": {
     "ariaLabel": "Pilih halaman item",
     "firstPage": "Halaman pertama",
@@ -870,6 +952,23 @@
     "userRightsContent2": "Opsi ini memungkinkan penghapusan segera semua data yang disimpan Operator atas nama Anda, termasuk informasi profil dan catatan autentikasi. Setelah diaktifkan, data Anda akan dihapus secara permanen dari sistem Operator dan penyedia pihak ketiga, tunduk pada kewajiban retensi hukum apa pun.",
     "userRightsTitle": "Hak Pengguna"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "Masukkan deskripsi proyek",
+      "namePlaceholder": "Masukkan nama proyek",
+      "nameRequired": "Nama proyek wajib diisi",
+      "statusPlaceholder": "mis. active, planning, archived",
+      "teamRequired": "Tim wajib diisi",
+      "title": "Buat Proyek",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Buat Proyek Baru",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "Tanpa Proyek"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "Perpanjang Sesi",
     "extending": "Memperpanjang sesi Anda, harap tunggu...",
@@ -883,7 +982,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "Gagal menyimpan",
+      "error": "{{common.saveFailed}}",
       "saved": "Tersimpan",
       "saving": "Menyimpan..."
     },
@@ -952,69 +1051,86 @@
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Lihat Respons"
   },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "Masukkan deskripsi tim",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "Masukkan nama tim",
+      "nameRequired": "Nama tim wajib diisi",
+      "statusPlaceholder": "mis. active, archived",
+      "title": "Buat Tim",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Buat Tim Baru"
+  },
   "threatEditor": {
     "createNewThreat": "Buat Ancaman Baru",
     "notAssociatedWithAsset": "Tidak terkait dengan aset",
     "notAssociatedWithCell": "Tidak Terkait dengan Sel",
     "notAssociatedWithDiagram": "Tidak Terkait dengan Diagram",
     "threatPriority": {
-      "0": "Segera (P0)",
-      "0.description": "Harus ditangani segera; eksploitasi aktif, pelanggaran regulasi, atau paparan bisnis kritis.",
-      "1": "Tinggi (P1)",
-      "1.description": "Memerlukan penyelesaian segera; paparan risiko tinggi atau tenggat rilis yang akan datang.",
-      "2": "Sedang (P2)",
-      "2.description": "Tangani dalam siklus pengembangan standar; paparan moderat.",
-      "3": "Rendah (P3)",
-      "3.description": "Masukkan dalam backlog untuk siklus mendatang; tidak ada paparan langsung.",
-      "4": "Ditunda (P4)",
-      "4.description": "Ditunda dengan persetujuan bisnis terdokumentasi; dilacak tetapi tidak dijadwalkan."
+      "deferred": "Ditunda (P4)",
+      "deferred.description": "Ditunda dengan persetujuan bisnis terdokumentasi; dilacak tetapi tidak dijadwalkan.",
+      "high": "Tinggi (P1)",
+      "high.description": "Memerlukan penyelesaian segera; paparan risiko tinggi atau tenggat rilis yang akan datang.",
+      "immediate": "Segera (P0)",
+      "immediate.description": "Harus ditangani segera; eksploitasi aktif, pelanggaran regulasi, atau paparan bisnis kritis.",
+      "low": "Rendah (P3)",
+      "low.description": "Masukkan dalam backlog untuk siklus mendatang; tidak ada paparan langsung.",
+      "medium": "Sedang (P2)",
+      "medium.description": "Tangani dalam siklus pengembangan standar; paparan moderat."
     },
     "threatSeverity": {
-      "0": "Kritis",
-      "0.description": "Kerentanan yang dapat dieksploitasi memungkinkan kompromi sistem lengkap, pelanggaran data, atau dampak keselamatan; memerlukan tindakan segera.",
-      "1": "Tinggi",
-      "1.description": "Dampak signifikan atau kemungkinan tinggi; memungkinkan akses tidak sah besar, eskalasi hak istimewa, atau gangguan layanan.",
-      "2": "Sedang",
-      "2.description": "Dampak atau kemungkinan moderat; paparan data terbatas, gangguan fungsionalitas parsial, atau memerlukan eksploitasi berantai.",
-      "3": "Rendah",
-      "3.description": "Dampak minimal atau kemungkinan rendah; dampak bisnis dapat diabaikan, memerlukan kondisi spesifik atau interaksi pengguna.",
-      "4": "Informasional",
-      "4.description": "Tidak dapat dieksploitasi secara langsung; rekomendasi, penyimpangan praktik terbaik, atau peningkatan konfigurasi.",
-      "5": "Tidak Diketahui",
-      "5.description": "Tingkat keparahan ancaman belum dinilai."
+      "critical": "Kritis",
+      "critical.description": "Kerentanan yang dapat dieksploitasi memungkinkan kompromi sistem lengkap, pelanggaran data, atau dampak keselamatan; memerlukan tindakan segera.",
+      "high": "Tinggi",
+      "high.description": "Dampak signifikan atau kemungkinan tinggi; memungkinkan akses tidak sah besar, eskalasi hak istimewa, atau gangguan layanan.",
+      "informational": "Informasional",
+      "informational.description": "Tidak dapat dieksploitasi secara langsung; rekomendasi, penyimpangan praktik terbaik, atau peningkatan konfigurasi.",
+      "low": "Rendah",
+      "low.description": "Dampak minimal atau kemungkinan rendah; dampak bisnis dapat diabaikan, memerlukan kondisi spesifik atau interaksi pengguna.",
+      "medium": "Sedang",
+      "medium.description": "Dampak atau kemungkinan moderat; paparan data terbatas, gangguan fungsionalitas parsial, atau memerlukan eksploitasi berantai.",
+      "unknown": "Tidak Diketahui",
+      "unknown.description": "Tingkat keparahan ancaman belum dinilai."
     },
     "threatStatus": {
-      "0": "Terbuka",
-      "0.description": "Temuan telah diidentifikasi dan didokumentasikan tetapi belum ada tindakan yang dimulai.",
-      "1": "Dikonfirmasi",
-      "1.description": "Ancaman telah divalidasi sebagai sah melalui analisis atau bukti.",
-      "2": "Mitigasi Direncanakan",
-      "2.description": "Strategi remediasi atau mitigasi telah ditetapkan dan ditugaskan.",
-      "3": "Mitigasi Sedang Berlangsung",
-      "3.description": "Implementasi kontrol, perubahan kode, atau tindakan pencegahan sedang berlangsung.",
-      "4": "Menunggu Verifikasi",
-      "4.description": "Mitigasi selesai; tim keamanan harus menguji atau meninjau efektivitas.",
-      "5": "Terselesaikan",
-      "5.description": "Ancaman telah sepenuhnya dimitigasi dan diverifikasi; risiko residual dapat diterima.",
-      "6": "Diterima",
-      "6.description": "Ancaman diakui tetapi sengaja tidak dimitigasi (misalnya, karena justifikasi bisnis); memerlukan penerimaan risiko formal.",
-      "7": "Positif Palsu",
-      "7.description": "Investigasi menentukan temuan bukan ancaman yang valid; tidak diperlukan tindakan lebih lanjut.",
-      "8": "Ditunda",
-      "8.description": "Tindakan ditunda dengan persetujuan (misalnya, untuk sprint mendatang); termasuk alasan dan tanggal jatuh tempo.",
-      "9": "Ditutup",
-      "9.description": "Temuan diarsipkan setelah penyelesaian, penerimaan, atau pembatalan, dengan jejak audit."
+      "accepted": "Diterima",
+      "accepted.description": "Ancaman diakui tetapi sengaja tidak dimitigasi (misalnya, karena justifikasi bisnis); memerlukan penerimaan risiko formal.",
+      "closed": "Ditutup",
+      "closed.description": "Temuan diarsipkan setelah penyelesaian, penerimaan, atau pembatalan, dengan jejak audit.",
+      "confirmed": "Dikonfirmasi",
+      "confirmed.description": "Ancaman telah divalidasi sebagai sah melalui analisis atau bukti.",
+      "deferred": "Ditunda",
+      "deferred.description": "Tindakan ditunda dengan persetujuan (misalnya, untuk sprint mendatang); termasuk alasan dan tanggal jatuh tempo.",
+      "falsePositive": "Positif Palsu",
+      "falsePositive.description": "Investigasi menentukan temuan bukan ancaman yang valid; tidak diperlukan tindakan lebih lanjut.",
+      "mitigationInProgress": "Mitigasi Sedang Berlangsung",
+      "mitigationInProgress.description": "Implementasi kontrol, perubahan kode, atau tindakan pencegahan sedang berlangsung.",
+      "mitigationPlanned": "Mitigasi Direncanakan",
+      "mitigationPlanned.description": "Strategi remediasi atau mitigasi telah ditetapkan dan ditugaskan.",
+      "open": "Terbuka",
+      "open.description": "Temuan telah diidentifikasi dan didokumentasikan tetapi belum ada tindakan yang dimulai.",
+      "resolved": "Terselesaikan",
+      "resolved.description": "Ancaman telah sepenuhnya dimitigasi dan diverifikasi; risiko residual dapat diterima.",
+      "verificationPending": "Menunggu Verifikasi",
+      "verificationPending.description": "Mitigasi selesai; tim keamanan harus menguji atau meninjau efektivitas."
     }
   },
   "threatModels": {
     "addPermission": "Tambah Izin",
     "branch": "Cabang",
+    "changeSecurityReviewer": "Ubah Peninjau Keamanan",
+    "clearSecurityReviewer": "Hapus Peninjau Keamanan",
     "commit": "Commit",
     "createFirstButton": "Buat Model Ancaman Pertama Anda",
     "createNewDiagram": "Buat Diagram Baru",
     "createNewRepository": "Tambah Referensi Repositori",
     "created": "{{common.created}}",
-    "createdBy": "Dibuat Oleh",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Diagram Aliran Data",
     "deleteWarningPermanent": "Tindakan ini tidak dapat dibatalkan dan akan menghapus secara permanen semua diagram, ancaman, dan metadata terkait.",
@@ -1078,29 +1194,30 @@
       "outputs": "Output",
       "outputsDescription": "Catatan, diagram, dan ancaman yang dihasilkan selama analisis keamanan"
     },
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Tetapkan sebagai Pemilik",
     "sourcesCount": "Repo",
     "status": {
-      "0": "Belum Dimulai",
-      "0.tooltip": "Tinjauan keamanan telah dimulai tetapi belum ada aktivitas penilaian yang dimulai.",
-      "1": "Sedang Berlangsung",
-      "1.tooltip": "Penilaian aktif sedang berlangsung, termasuk pemodelan ancaman, tinjauan kode, atau pengujian.",
-      "2": "Menunggu Tinjauan",
-      "2.tooltip": "Artefak penilaian (misalnya, laporan, temuan) menunggu tinjauan formal oleh pimpinan atau penyetuju keamanan.",
-      "3": "Remediasi Diperlukan",
-      "3.tooltip": "Kerentanan atau masalah telah diidentifikasi; pengembangan harus mengatasinya.",
-      "4": "Remediasi Sedang Berlangsung",
-      "4.tooltip": "Perbaikan untuk masalah yang diidentifikasi sedang diimplementasikan oleh tim pengembangan.",
-      "5": "Menunggu Verifikasi",
-      "5.tooltip": "Remediasi selesai; tim keamanan harus memverifikasi efektivitas.",
-      "6": "Disetujui",
-      "6.tooltip": "Semua masalah telah diselesaikan dan diverifikasi; aplikasi memenuhi kriteria keamanan untuk rilis atau penyebaran.",
-      "7": "Ditolak",
-      "7.tooltip": "Tinjauan gagal memenuhi kriteria kritis; diperlukan pengerjaan ulang yang signifikan sebelum pengajuan ulang.",
-      "8": "Ditunda",
-      "8.tooltip": "Tinjauan dijeda (misalnya, karena keterbatasan sumber daya atau perubahan aplikasi); dilanjutkan sesuai rencana.",
-      "9": "Ditutup",
-      "9.tooltip": "Tinjauan telah sepenuhnya selesai dan diarsipkan, tanpa tindakan lebih lanjut yang diperlukan."
+      "approved": "Disetujui",
+      "approved.tooltip": "Semua masalah telah diselesaikan dan diverifikasi; aplikasi memenuhi kriteria keamanan untuk rilis atau penyebaran.",
+      "closed": "Ditutup",
+      "closed.tooltip": "Tinjauan telah sepenuhnya selesai dan diarsipkan, tanpa tindakan lebih lanjut yang diperlukan.",
+      "deferred": "Ditunda",
+      "deferred.tooltip": "Tinjauan dijeda (misalnya, karena keterbatasan sumber daya atau perubahan aplikasi); dilanjutkan sesuai rencana.",
+      "inProgress": "Sedang Berlangsung",
+      "inProgress.tooltip": "Penilaian aktif sedang berlangsung, termasuk pemodelan ancaman, tinjauan kode, atau pengujian.",
+      "notStarted": "Belum Dimulai",
+      "notStarted.tooltip": "Tinjauan keamanan telah dimulai tetapi belum ada aktivitas penilaian yang dimulai.",
+      "pendingReview": "Menunggu Tinjauan",
+      "pendingReview.tooltip": "Artefak penilaian (misalnya, laporan, temuan) menunggu tinjauan formal oleh pimpinan atau penyetuju keamanan.",
+      "rejected": "Ditolak",
+      "rejected.tooltip": "Tinjauan gagal memenuhi kriteria kritis; diperlukan pengerjaan ulang yang signifikan sebelum pengajuan ulang.",
+      "remediationInProgress": "Remediasi Sedang Berlangsung",
+      "remediationInProgress.tooltip": "Perbaikan untuk masalah yang diidentifikasi sedang diimplementasikan oleh tim pengembangan.",
+      "remediationRequired": "Remediasi Diperlukan",
+      "remediationRequired.tooltip": "Kerentanan atau masalah telah diidentifikasi; pengembangan harus mengatasinya.",
+      "verificationPending": "Menunggu Verifikasi",
+      "verificationPending.tooltip": "Remediasi selesai; tim keamanan harus memverifikasi efektivitas."
     },
     "statusLastUpdated": "Status Terakhir Diperbarui",
     "tag": "Tag",
@@ -1245,6 +1362,16 @@
     },
     "queue": "Antrean Triase",
     "returnToSubmitted": "Kembalikan ke Terkirim",
+    "reviewerAssignment": {
+      "assign": "Tetapkan",
+      "assignToMe": "Tetapkan ke Saya",
+      "errorLoading": "Gagal memuat model ancaman yang tidak ditugaskan",
+      "loading": "Memuat ulasan yang tidak ditugaskan...",
+      "noUnassigned": "Tidak Ada Ulasan yang Tidak Ditugaskan",
+      "noUnassignedDescription": "Semua model ancaman aktif memiliki reviewer keamanan yang ditugaskan",
+      "reviewer": "Reviewer Keamanan",
+      "selectReviewer": "Pilih reviewer..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "Berikan catatan yang menjelaskan apa yang perlu direvisi. Pengirim akan melihat catatan ini saat mereka meninjau respons mereka.",
@@ -1252,6 +1379,10 @@
       "label": "Catatan Revisi",
       "placeholder": "Jelaskan revisi yang diperlukan...",
       "title": "Kembalikan untuk Revisi"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "Ulasan yang Tidak Ditugaskan"
     },
     "title": "Triase",
     "viewDetails": "Lihat Detail"
@@ -1324,7 +1455,7 @@
     "sections": {
       "developer": "Pengembang",
       "diagramEditor": "Editor Diagram",
-      "securityReviewer": "Peninjau Keamanan"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "Tampilkan Alat Pengembang",
     "tabs": {

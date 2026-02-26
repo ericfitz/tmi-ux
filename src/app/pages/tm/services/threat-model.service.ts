@@ -96,6 +96,25 @@ import {
 import { ReadonlyFieldFilterService } from './import/readonly-field-filter.service';
 import { ProviderAdapterService } from './providers/provider-adapter.service';
 
+/**
+ * Parameters for listing and filtering threat models via GET /threat_models.
+ */
+export interface ThreatModelListParams {
+  limit?: number;
+  offset?: number;
+  name?: string;
+  description?: string;
+  owner?: string;
+  status?: string;
+  issue_uri?: string;
+  created_after?: string;
+  created_before?: string;
+  modified_after?: string;
+  modified_before?: string;
+  status_updated_after?: string;
+  status_updated_before?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -117,13 +136,31 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Fetch threat models with pagination support
-   * Returns the full API response including pagination metadata
+   * Fetch threat models with pagination and filtering support.
+   * Returns the full API response including pagination metadata.
    */
-  fetchThreatModels(limit?: number, offset?: number): Observable<ListThreatModelsResponse> {
+  fetchThreatModels(listParams?: ThreatModelListParams): Observable<ListThreatModelsResponse> {
     const params: Record<string, string> = {};
-    if (limit !== undefined) params['limit'] = limit.toString();
-    if (offset !== undefined) params['offset'] = offset.toString();
+    if (listParams) {
+      if (listParams.limit !== undefined) params['limit'] = listParams.limit.toString();
+      if (listParams.offset !== undefined) params['offset'] = listParams.offset.toString();
+      const stringKeys: (keyof Omit<ThreatModelListParams, 'limit' | 'offset'>)[] = [
+        'name',
+        'description',
+        'owner',
+        'status',
+        'issue_uri',
+        'created_after',
+        'created_before',
+        'modified_after',
+        'modified_before',
+        'status_updated_after',
+        'status_updated_before',
+      ];
+      for (const key of stringKeys) {
+        if (listParams[key]) params[key] = listParams[key];
+      }
+    }
 
     return this.apiService.get<ListThreatModelsResponse>('threat_models', params).pipe(
       tap(response => {
@@ -670,6 +707,8 @@ export class ThreatModelService implements OnDestroy {
         | 'authorization'
         | 'owner'
         | 'status'
+        | 'security_reviewer'
+        | 'project_id'
       >
     >,
   ): Observable<ThreatModel> {
@@ -903,6 +942,16 @@ export class ThreatModelService implements OnDestroy {
         threatData as unknown as Record<string, unknown>,
       )
       .pipe(
+        tap(newThreat => {
+          const cached = this._cachedThreatModels.get(threatModelId);
+          if (cached) {
+            cached.threats = [
+              ...(cached.threats || []),
+              this.migrateLegacyThreatFieldValues(newThreat),
+            ];
+            this._cachedThreatModels.set(threatModelId, cached);
+          }
+        }),
         catchError(error => {
           this.logger.error(`Error creating threat in threat model ID: ${threatModelId}`, error);
           throw error;
@@ -929,6 +978,16 @@ export class ThreatModelService implements OnDestroy {
         threatData as unknown as Record<string, unknown>,
       )
       .pipe(
+        tap(updatedThreat => {
+          const cached = this._cachedThreatModels.get(threatModelId);
+          if (cached?.threats) {
+            const index = cached.threats.findIndex(t => t.id === threatId);
+            if (index !== -1) {
+              cached.threats[index] = this.migrateLegacyThreatFieldValues(updatedThreat);
+              this._cachedThreatModels.set(threatModelId, cached);
+            }
+          }
+        }),
         catchError(error => {
           this.logger.error(`Error updating threat ID: ${threatId}`, error);
           throw error;
@@ -942,6 +1001,13 @@ export class ThreatModelService implements OnDestroy {
   deleteThreat(threatModelId: string, threatId: string): Observable<boolean> {
     return this.apiService.delete(`threat_models/${threatModelId}/threats/${threatId}`).pipe(
       map(() => true),
+      tap(() => {
+        const cached = this._cachedThreatModels.get(threatModelId);
+        if (cached?.threats) {
+          cached.threats = cached.threats.filter(t => t.id !== threatId);
+          this._cachedThreatModels.set(threatModelId, cached);
+        }
+      }),
       catchError(error => {
         this.logger.error(`Error deleting threat ID: ${threatId}`, error);
         throw error;
@@ -1215,9 +1281,9 @@ export class ThreatModelService implements OnDestroy {
   patchDiagramProperties(
     threatModelId: string,
     diagramId: string,
-    properties: { name?: string; description?: string },
+    properties: { name?: string; description?: string; include_in_report?: boolean },
   ): Observable<Diagram> {
-    const operations: { op: 'replace'; path: string; value: string }[] = [];
+    const operations: { op: 'replace'; path: string; value: string | boolean }[] = [];
 
     if (properties.name !== undefined) {
       operations.push({
@@ -1232,6 +1298,14 @@ export class ThreatModelService implements OnDestroy {
         op: 'replace' as const,
         path: '/description',
         value: properties.description,
+      });
+    }
+
+    if (properties.include_in_report !== undefined) {
+      operations.push({
+        op: 'replace' as const,
+        path: '/include_in_report',
+        value: properties.include_in_report,
       });
     }
 
@@ -1281,20 +1355,10 @@ export class ThreatModelService implements OnDestroy {
    * Update metadata for a threat model
    */
   updateThreatModelMetadata(threatModelId: string, metadata: Metadata[]): Observable<Metadata[]> {
-    // If metadata is empty, skip the API call and return empty array
-    if (!metadata || metadata.length === 0) {
-      // this.logger.debugComponent(
-      // 'ThreatModelService',
-      // `Skipping metadata update for threat model ${threatModelId} - no valid metadata to save`,
-      // { threatModelId, metadataCount: metadata?.length || 0 },
-      // );
-      return of([]);
-    }
-
     return this.apiService
-      .post<
+      .put<
         Metadata[]
-      >(`threat_models/${threatModelId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for threat model ID: ${threatModelId}`, error);
@@ -1325,20 +1389,10 @@ export class ThreatModelService implements OnDestroy {
     diagramId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    // If metadata is empty, skip the API call and return empty array
-    if (!metadata || metadata.length === 0) {
-      // this.logger.debugComponent(
-      // 'ThreatModelService',
-      // `Skipping metadata update for diagram ${diagramId} - no valid metadata to save`,
-      // { threatModelId, diagramId, metadataCount: metadata?.length || 0 },
-      // );
-      return of([]);
-    }
-
     return this.apiService
-      .post<
+      .put<
         Metadata[]
-      >(`threat_models/${threatModelId}/diagrams/${diagramId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/diagrams/${diagramId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for diagram ID: ${diagramId}`, error);
@@ -1411,20 +1465,10 @@ export class ThreatModelService implements OnDestroy {
     threatId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    // If metadata is empty, skip the API call and return empty array
-    if (!metadata || metadata.length === 0) {
-      // this.logger.debugComponent(
-      // 'ThreatModelService',
-      // `Skipping metadata update for threat ${threatId} - no valid metadata to save`,
-      // { threatModelId, threatId, metadataCount: metadata?.length || 0 },
-      // );
-      return of([]);
-    }
-
     return this.apiService
-      .post<
+      .put<
         Metadata[]
-      >(`threat_models/${threatModelId}/threats/${threatId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/threats/${threatId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for threat ID: ${threatId}`, error);
@@ -1455,20 +1499,10 @@ export class ThreatModelService implements OnDestroy {
     documentId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    // If metadata is empty, skip the API call and return empty array
-    if (!metadata || metadata.length === 0) {
-      // this.logger.debugComponent(
-      // 'ThreatModelService',
-      // `Skipping metadata update for document ${documentId} - no valid metadata to save`,
-      // { threatModelId, documentId, metadataCount: metadata?.length || 0 },
-      // );
-      return of([]);
-    }
-
     return this.apiService
-      .post<
+      .put<
         Metadata[]
-      >(`threat_models/${threatModelId}/documents/${documentId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/documents/${documentId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for document ID: ${documentId}`, error);
@@ -1499,20 +1533,10 @@ export class ThreatModelService implements OnDestroy {
     repositoryId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    // If metadata is empty, skip the API call and return empty array
-    if (!metadata || metadata.length === 0) {
-      // this.logger.debugComponent(
-      // 'ThreatModelService',
-      // `Skipping metadata update for repository ${repositoryId} - no valid metadata to save`,
-      // { threatModelId, repositoryId, metadataCount: metadata?.length || 0 },
-      // );
-      return of([]);
-    }
-
     return this.apiService
-      .post<
+      .put<
         Metadata[]
-      >(`threat_models/${threatModelId}/repositories/${repositoryId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/repositories/${repositoryId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for repository ID: ${repositoryId}`, error);
@@ -1612,19 +1636,10 @@ export class ThreatModelService implements OnDestroy {
     noteId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    if (!metadata || metadata.length === 0) {
-      // this.logger.debugComponent(
-      // 'ThreatModelService',
-      // `Skipping metadata update for note ${noteId} - no valid metadata to save`,
-      // { threatModelId, noteId, metadataCount: metadata?.length || 0 },
-      // );
-      return of([]);
-    }
-
     return this.apiService
-      .post<
+      .put<
         Metadata[]
-      >(`threat_models/${threatModelId}/notes/${noteId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/notes/${noteId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for note ID: ${noteId}`, error);
@@ -1737,19 +1752,10 @@ export class ThreatModelService implements OnDestroy {
     assetId: string,
     metadata: Metadata[],
   ): Observable<Metadata[]> {
-    if (!metadata || metadata.length === 0) {
-      // this.logger.debugComponent(
-      // 'ThreatModelService',
-      // `Skipping metadata update for asset ${assetId} - no valid metadata to save`,
-      // { threatModelId, assetId, metadataCount: metadata?.length || 0 },
-      // );
-      return of([]);
-    }
-
     return this.apiService
-      .post<
+      .put<
         Metadata[]
-      >(`threat_models/${threatModelId}/assets/${assetId}/metadata/bulk`, metadata as unknown as Record<string, unknown>)
+      >(`threat_models/${threatModelId}/assets/${assetId}/metadata/bulk`, (metadata || []) as unknown as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating metadata for asset ID: ${assetId}`, error);
@@ -1780,8 +1786,7 @@ export class ThreatModelService implements OnDestroy {
       modified_at: threatModel.modified_at,
       owner: threatModel.owner,
       created_by: threatModel.created_by,
-      threat_model_framework:
-        threatModel.threat_model_framework as TMListItem['threat_model_framework'],
+      threat_model_framework: threatModel.threat_model_framework,
       issue_uri: threatModel.issue_uri,
       status: threatModel.status,
       status_updated: threatModel.status_updated,

@@ -46,6 +46,7 @@ import {
   UpdateEdgeOperation,
   NodeData,
 } from '../../types/graph-operation.types';
+import { HistoryOperationType } from '../../types/history.types';
 import { normalizeCells } from '../../utils/cell-normalization.util';
 import { shouldTriggerHistoryOrPersistence } from '../../utils/cell-property-filter.util';
 import { DFD_STYLING } from '../../constants/styling-constants';
@@ -71,6 +72,7 @@ export interface DfdState {
   readonly threatModelId?: string;
   readonly diagramName?: string;
   readonly diagramDescription?: string;
+  readonly includeInReport?: boolean;
   readonly threatModelName?: string;
 }
 
@@ -281,43 +283,7 @@ export class AppDfdOrchestrator {
    */
   undo(): Observable<OperationResult> {
     this.logger.debugComponent('AppDfdOrchestrator', 'Undo requested');
-
-    // Check if in active collaboration session
-    const isCollaborating = this.collaborationService.isCollaborating();
-
-    if (isCollaborating) {
-      // Collaboration mode: send WebSocket message instead of local undo
-      // Server will respond with diagram_operation containing the changes
-      this.logger.info('Undo in collaboration mode - sending WebSocket message');
-      return this.websocketCollaborationAdapter.requestUndo().pipe(
-        map(() => ({
-          success: true,
-          operationType: 'batch-operation' as const,
-          affectedCellIds: [],
-          timestamp: Date.now(),
-        })),
-        catchError(error => {
-          this.logger.error('Failed to send undo WebSocket message', { error });
-          return throwError(() => error);
-        }),
-      );
-    }
-
-    // Solo mode: execute local undo
-    this.logger.info('Undo in solo mode - executing local operation');
-    return this.appHistoryService.undo().pipe(
-      tap(result => {
-        if (result.success) {
-          // Clear visual effects after undo
-          this.dfdInfrastructure.graphAdapter?.clearAllVisualEffects();
-          // Update embedding appearances to reflect new state
-          this.dfdInfrastructure.graphAdapter?.updateAllEmbeddingAppearances();
-          // Update port visibility based on new connection state
-          this.dfdInfrastructure.graphAdapter?.updateAllPortVisibility();
-          this.logger.debugComponent('AppDfdOrchestrator', 'Post-undo cleanup completed');
-        }
-      }),
-    );
+    return this._executeUndoRedo('undo');
   }
 
   /**
@@ -327,43 +293,7 @@ export class AppDfdOrchestrator {
    */
   redo(): Observable<OperationResult> {
     this.logger.debugComponent('AppDfdOrchestrator', 'Redo requested');
-
-    // Check if in active collaboration session
-    const isCollaborating = this.collaborationService.isCollaborating();
-
-    if (isCollaborating) {
-      // Collaboration mode: send WebSocket message instead of local redo
-      // Server will respond with diagram_operation containing the changes
-      this.logger.info('Redo in collaboration mode - sending WebSocket message');
-      return this.websocketCollaborationAdapter.requestRedo().pipe(
-        map(() => ({
-          success: true,
-          operationType: 'batch-operation' as const,
-          affectedCellIds: [],
-          timestamp: Date.now(),
-        })),
-        catchError(error => {
-          this.logger.error('Failed to send redo WebSocket message', { error });
-          return throwError(() => error);
-        }),
-      );
-    }
-
-    // Solo mode: execute local redo
-    this.logger.info('Redo in solo mode - executing local operation');
-    return this.appHistoryService.redo().pipe(
-      tap(result => {
-        if (result.success) {
-          // Clear visual effects after redo
-          this.dfdInfrastructure.graphAdapter?.clearAllVisualEffects();
-          // Update embedding appearances to reflect new state
-          this.dfdInfrastructure.graphAdapter?.updateAllEmbeddingAppearances();
-          // Update port visibility based on new connection state
-          this.dfdInfrastructure.graphAdapter?.updateAllPortVisibility();
-          this.logger.debugComponent('AppDfdOrchestrator', 'Post-redo cleanup completed');
-        }
-      }),
-    );
+    return this._executeUndoRedo('redo');
   }
 
   /**
@@ -671,6 +601,14 @@ export class AppDfdOrchestrator {
     return this._state$.value;
   }
 
+  updateDiagramMetadata(metadata: {
+    diagramName?: string;
+    diagramDescription?: string;
+    includeInReport?: boolean;
+  }): void {
+    this._updateState(metadata);
+  }
+
   get stateChanged$(): Observable<DfdState> {
     return this._stateChanged$.asObservable();
   }
@@ -761,43 +699,10 @@ export class AppDfdOrchestrator {
         return true;
       }
 
+      // Delete/Backspace is handled by DfdComponent.onKeyDown() for metadata confirmation
       case 'delete':
-      case 'backspace': {
-        // Don't handle delete/backspace if any Material Dialog is open
-        // This prevents delete/backspace from affecting the graph while typing in dialogs
-        if (this.dialog.openDialogs.length > 0) {
-          this.logger.debugComponent(
-            'AppDfdOrchestrator',
-            'Ignoring delete/backspace key - dialog is open',
-          );
-          return false; // Let the dialog handle the key event
-        }
-
-        // Delete selected cells
-        if (this._state$.value.readOnly) {
-          this.logger.debugComponent('AppDfdOrchestrator', 'Cannot delete cells in read-only mode');
-          return true; // Prevent default behavior
-        }
-
-        const selectedCells = this.getSelectedCells();
-        if (selectedCells.length > 0) {
-          this.deleteSelectedCells().subscribe({
-            next: result => {
-              if (result.success) {
-                this.logger.debugComponent(
-                  'AppDfdOrchestrator',
-                  'Selected cells deleted via keyboard shortcut',
-                  {
-                    count: result.metadata?.['deletedCount'],
-                  },
-                );
-              }
-            },
-            error: error => this.logger.error('Delete via keyboard failed', { error }),
-          });
-        }
-        return true;
-      }
+      case 'backspace':
+        return false;
 
       default:
         // Unhandled shortcut
@@ -1168,6 +1073,7 @@ export class AppDfdOrchestrator {
             lastSaved: new Date(),
             diagramName: result.data.name,
             diagramDescription: result.data.description,
+            includeInReport: result.data.include_in_report,
             threatModelName: result.data.threatModelName,
           });
         }
@@ -1597,100 +1503,54 @@ export class AppDfdOrchestrator {
 
     const { cellId, dragType, initialState } = dragCompletion;
 
-    // Capture current state from graph
     const cell = graph.getCellById(cellId);
     if (!cell) {
       return;
     }
 
-    // Get current state (X6 has already updated the cell during drag)
     const currentPosition = cell.isNode?.() ? cell.getPosition() : undefined;
     const currentSize = cell.isNode?.() ? cell.getSize() : undefined;
     const currentVertices = cell.isEdge?.() ? cell.getVertices?.() || [] : undefined;
 
-    // Check if anything actually changed (prevent no-op history entries)
-    let hasChanged = false;
-    if (dragType === 'move' && initialState.position && currentPosition) {
-      hasChanged =
-        Math.abs(initialState.position.x - currentPosition.x) > 0.01 ||
-        Math.abs(initialState.position.y - currentPosition.y) > 0.01;
-    } else if (dragType === 'resize' && initialState.size && currentSize) {
-      hasChanged =
-        Math.abs(initialState.size.width - currentSize.width) > 0.01 ||
-        Math.abs(initialState.size.height - currentSize.height) > 0.01;
-    } else if (dragType === 'vertex' && initialState.vertices && currentVertices) {
-      // Check if vertices changed
-      hasChanged = JSON.stringify(initialState.vertices) !== JSON.stringify(currentVertices);
-    }
-
-    if (!hasChanged) {
+    if (
+      !this._hasDragChanged(dragType, initialState, currentPosition, currentSize, currentVertices)
+    ) {
       this.logger.debugComponent(
         'AppDfdOrchestrator',
         'Skipping drag completion - no actual change detected',
-        {
-          cellId,
-          dragType,
-        },
+        { cellId, dragType },
       );
       return;
     }
 
-    // Build previousState from initial drag state (minimal, semantic data only)
     const previousCells = [
       {
         id: cellId,
         shape: cell.shape,
-        ...(dragType === 'move' && initialState.position
-          ? { position: initialState.position }
-          : {}),
-        ...(dragType === 'resize' && initialState.size ? { size: initialState.size } : {}),
-        ...(dragType === 'vertex' && initialState.vertices
-          ? { vertices: initialState.vertices }
-          : {}),
+        ...this._buildDragPreviousState(dragType, initialState),
       },
     ];
 
-    // Build currentState from final drag state (minimal, semantic data only - no visual effects)
     const currentCells = [
       {
         id: cellId,
         shape: cell.shape,
-        ...(dragType === 'move' || dragType === 'resize'
-          ? {
-              position: currentPosition,
-              size: currentSize,
-            }
-          : {}),
-        ...(dragType === 'vertex'
-          ? {
-              source: cell.isEdge?.() ? cell.getSource() : undefined,
-              target: cell.isEdge?.() ? cell.getTarget() : undefined,
-              vertices: currentVertices,
-            }
-          : {}),
+        ...this._buildDragCurrentState(
+          dragType,
+          cell,
+          currentPosition,
+          currentSize,
+          currentVertices,
+        ),
       },
     ];
 
-    // Create description
-    const description =
-      dragType === 'move'
-        ? 'Move Cell'
-        : dragType === 'resize'
-          ? 'Resize Cell'
-          : 'Adjust Edge Vertices';
-
-    // Create history entry
     const timestamp = Date.now();
     const historyEntry = {
       id: `hist_${timestamp}_${Math.random().toString(36).substr(2, 9)}`,
       timestamp,
-      operationType:
-        dragType === 'move'
-          ? ('move-node' as const)
-          : dragType === 'resize'
-            ? ('resize-node' as const)
-            : ('change-vertices' as const),
-      description,
+      operationType: this._dragOperationType(dragType),
+      description: this._dragDescription(dragType),
       cells: currentCells,
       previousCells,
       userId: this.authService.providerId,
@@ -1701,9 +1561,98 @@ export class AppDfdOrchestrator {
       },
     };
 
-    // Record in local history
-    // The history entry will be automatically broadcast via WebSocketPersistenceStrategy
     this.appHistoryService.addHistoryEntry(historyEntry);
+  }
+
+  /** Check whether a drag operation actually changed the cell state. */
+  private _hasDragChanged(
+    dragType: string,
+    initialState: any,
+    currentPosition: any,
+    currentSize: any,
+    currentVertices: any,
+  ): boolean {
+    switch (dragType) {
+      case 'move':
+        return (
+          !!initialState.position &&
+          !!currentPosition &&
+          (Math.abs(initialState.position.x - currentPosition.x) > 0.01 ||
+            Math.abs(initialState.position.y - currentPosition.y) > 0.01)
+        );
+      case 'resize':
+        return (
+          !!initialState.size &&
+          !!currentSize &&
+          (Math.abs(initialState.size.width - currentSize.width) > 0.01 ||
+            Math.abs(initialState.size.height - currentSize.height) > 0.01)
+        );
+      case 'vertex':
+        return (
+          !!initialState.vertices &&
+          !!currentVertices &&
+          JSON.stringify(initialState.vertices) !== JSON.stringify(currentVertices)
+        );
+      default:
+        return false;
+    }
+  }
+
+  /** Build the previous-state payload for a drag history entry. */
+  private _buildDragPreviousState(dragType: string, initialState: any): Record<string, unknown> {
+    switch (dragType) {
+      case 'move':
+        return initialState.position ? { position: initialState.position } : {};
+      case 'resize':
+        return initialState.size ? { size: initialState.size } : {};
+      case 'vertex':
+        return initialState.vertices ? { vertices: initialState.vertices } : {};
+      default:
+        return {};
+    }
+  }
+
+  /** Build the current-state payload for a drag history entry. */
+  private _buildDragCurrentState(
+    dragType: string,
+    cell: any,
+    currentPosition: any,
+    currentSize: any,
+    currentVertices: any,
+  ): Record<string, unknown> {
+    switch (dragType) {
+      case 'move':
+      case 'resize':
+        return { position: currentPosition, size: currentSize };
+      case 'vertex':
+        return {
+          source: cell.isEdge?.() ? cell.getSource() : undefined,
+          target: cell.isEdge?.() ? cell.getTarget() : undefined,
+          vertices: currentVertices,
+        };
+      default:
+        return {};
+    }
+  }
+
+  private static readonly DRAG_DESCRIPTIONS: Record<string, string> = {
+    move: 'Move Cell',
+    resize: 'Resize Cell',
+    vertex: 'Adjust Edge Vertices',
+  };
+
+  private static readonly DRAG_OPERATION_TYPES: Record<string, HistoryOperationType> = {
+    move: 'move-node',
+    resize: 'resize-node',
+    vertex: 'change-vertices',
+  };
+
+  private _dragDescription(dragType: string): string {
+    return AppDfdOrchestrator.DRAG_DESCRIPTIONS[dragType] || 'Unknown Operation';
+  }
+
+  private _dragOperationType(dragType: string): HistoryOperationType {
+    return AppDfdOrchestrator.DRAG_OPERATION_TYPES[dragType] || 'move-node';
   }
 
   /**
@@ -1759,43 +1708,13 @@ export class AppDfdOrchestrator {
    * Generate human-readable description for operation
    */
   private _generateOperationDescription(operation: GraphOperation, cellCount: number): string {
-    // For node update operations, check what changed to provide specific description
-    if (operation.type === 'update-node') {
-      const updateOp = operation as UpdateNodeOperation;
-      const updates = updateOp.updates;
-
-      // Check what was updated to provide more specific description
-      if (updates.position && !updates.size) {
-        return cellCount > 1 ? `Move ${cellCount} Nodes` : 'Move Node';
-      }
-      if (updates.size && !updates.position) {
-        return 'Resize Node';
-      }
-      if (updates.label !== undefined) {
-        return 'Edit Label';
-      }
-      if (updates.properties) {
-        return cellCount > 1 ? `Update ${cellCount} Cells` : 'Update Properties';
-      }
+    // Try to infer a specific description from update operations
+    const specific = this._describeUpdateOperation(operation, cellCount);
+    if (specific) {
+      return specific;
     }
 
-    // For edge update operations, check what changed
-    if (operation.type === 'update-edge') {
-      const updateOp = operation as UpdateEdgeOperation;
-      const updates = updateOp.updates;
-
-      if (updates.labels !== undefined) {
-        return 'Edit Label';
-      }
-      if (updates.vertices) {
-        return 'Adjust Edge Path';
-      }
-      if (updates.source || updates.target) {
-        return 'Reconnect Edge';
-      }
-    }
-
-    // Default descriptions
+    // Default descriptions by operation type
     const typeMap: Record<string, string> = {
       'create-node': cellCount > 1 ? `Add ${cellCount} Nodes` : 'Add Node',
       'update-node': cellCount > 1 ? `Update ${cellCount} Nodes` : 'Update Node',
@@ -1808,6 +1727,33 @@ export class AppDfdOrchestrator {
     };
 
     return typeMap[operation.type] || `${operation.type} (${cellCount} items)`;
+  }
+
+  /**
+   * Infer a specific description from node/edge update operations based on what changed.
+   * Returns null if no specific description applies.
+   */
+  private _describeUpdateOperation(operation: GraphOperation, cellCount: number): string | null {
+    if (operation.type === 'update-node') {
+      const { updates } = operation as UpdateNodeOperation;
+      if (updates.position && !updates.size) {
+        return cellCount > 1 ? `Move ${cellCount} Nodes` : 'Move Node';
+      }
+      if (updates.size && !updates.position) return 'Resize Node';
+      if (updates.label !== undefined) return 'Edit Label';
+      if (updates.properties) {
+        return cellCount > 1 ? `Update ${cellCount} Cells` : 'Update Properties';
+      }
+    }
+
+    if (operation.type === 'update-edge') {
+      const { updates } = operation as UpdateEdgeOperation;
+      if (updates.labels !== undefined) return 'Edit Label';
+      if (updates.vertices) return 'Adjust Edge Path';
+      if (updates.source || updates.target) return 'Reconnect Edge';
+    }
+
+    return null;
   }
 
   /**
@@ -2030,6 +1976,53 @@ export class AppDfdOrchestrator {
     }
 
     return new Blob([arrayBuffer], { type: mimeType });
+  }
+
+  /**
+   * Shared undo/redo implementation
+   * Handles collaboration check, WebSocket vs solo branching, and post-operation cleanup
+   */
+  private _executeUndoRedo(direction: 'undo' | 'redo'): Observable<OperationResult> {
+    // Check if in active collaboration session
+    const isCollaborating = this.collaborationService.isCollaborating();
+
+    if (isCollaborating) {
+      // Collaboration mode: send WebSocket message instead of local operation
+      // Server will respond with diagram_operation containing the changes
+      this.logger.info(`${direction} in collaboration mode - sending WebSocket message`);
+      const request$ =
+        direction === 'undo'
+          ? this.websocketCollaborationAdapter.requestUndo()
+          : this.websocketCollaborationAdapter.requestRedo();
+      return request$.pipe(
+        map(() => ({
+          success: true,
+          operationType: 'batch-operation' as const,
+          affectedCellIds: [],
+          timestamp: Date.now(),
+        })),
+        catchError(error => {
+          this.logger.error(`Failed to send ${direction} WebSocket message`, { error });
+          return throwError(() => error);
+        }),
+      );
+    }
+
+    // Solo mode: execute local operation
+    this.logger.info(`${direction} in solo mode - executing local operation`);
+    const operation$ =
+      direction === 'undo' ? this.appHistoryService.undo() : this.appHistoryService.redo();
+    return operation$.pipe(
+      tap(result => {
+        if (result.success) {
+          // Post-operation cleanup: clear visual effects, update embedding, update ports
+          this.dfdInfrastructure.graphAdapter?.clearAllVisualEffects();
+          this.dfdInfrastructure.graphAdapter?.updateAllEmbeddingAppearances();
+          this.dfdInfrastructure.graphAdapter?.updateAllPortVisibility();
+          this.logger.debugComponent('AppDfdOrchestrator', `Post-${direction} cleanup completed`);
+        }
+      }),
+    );
   }
 
   private _markUnsavedChanges(): void {

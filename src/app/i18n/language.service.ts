@@ -1,40 +1,16 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { Language, SUPPORTED_LANGUAGES, detectPreferredLanguage } from './language-config';
 
-export interface Language {
-  code: string;
-  name: string;
-  localName: string;
-  rtl?: boolean;
-}
+export type { Language } from './language-config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LanguageService implements OnDestroy {
-  // Available languages
-  private availableLanguages: Language[] = [
-    { code: 'en-US', name: 'English', localName: 'English' },
-    { code: 'ar-SA', name: 'Arabic', localName: 'العربية', rtl: true },
-    { code: 'bn-BD', name: 'Bengali', localName: 'বাংলা' },
-    { code: 'de-DE', name: 'German', localName: 'Deutsch' },
-    { code: 'es-ES', name: 'Spanish', localName: 'Español' },
-    { code: 'fr-FR', name: 'French', localName: 'Français' },
-    { code: 'he-IL', name: 'Hebrew', localName: 'עברית', rtl: true },
-    { code: 'hi-IN', name: 'Hindi', localName: 'हिन्दी' },
-    { code: 'id-ID', name: 'Indonesian', localName: 'Bahasa Indonesia' },
-    { code: 'ja-JP', name: 'Japanese', localName: '日本語' },
-    { code: 'ko-KR', name: 'Korean', localName: '한국어' },
-    { code: 'pt-BR', name: 'Portuguese', localName: 'Português' },
-    { code: 'ru-RU', name: 'Russian', localName: 'Русский' },
-    { code: 'th-TH', name: 'Thai', localName: 'ไทย' },
-    { code: 'ur-PK', name: 'Urdu', localName: 'اردو', rtl: true },
-    { code: 'zh-CN', name: 'Chinese', localName: '中文' },
-  ];
-
   // Private subjects
-  private currentLanguageSubject = new BehaviorSubject<Language>(this.availableLanguages[0]);
+  private currentLanguageSubject = new BehaviorSubject<Language>(SUPPORTED_LANGUAGES[0]);
   private directionSubject = new BehaviorSubject<'ltr' | 'rtl'>('ltr');
   private langChangeSub: Subscription | null = null;
 
@@ -68,7 +44,7 @@ export class LanguageService implements OnDestroy {
    * Get all available languages
    */
   getAvailableLanguages(): Language[] {
-    return this.availableLanguages;
+    return SUPPORTED_LANGUAGES;
   }
 
   /**
@@ -101,7 +77,7 @@ export class LanguageService implements OnDestroy {
    */
   private updateCurrentLanguage(langCode: string): void {
     const language =
-      this.availableLanguages.find(lang => lang.code === langCode) || this.availableLanguages[0];
+      SUPPORTED_LANGUAGES.find(lang => lang.code === langCode) || SUPPORTED_LANGUAGES[0];
     this.currentLanguageSubject.next(language);
 
     // Update direction
@@ -123,7 +99,16 @@ export class LanguageService implements OnDestroy {
    * Initialize language based on various sources
    */
   private initializeLanguage(): void {
-    const preferredLang = this.getPreferredLanguage();
+    const preferredLang = detectPreferredLanguage(new URLSearchParams(window.location.search));
+
+    // Clean URL if language was specified in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('lang')) {
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('lang');
+      window.history.replaceState({}, '', newUrl.toString());
+    }
+
     this.setLanguage(preferredLang);
   }
 
@@ -137,52 +122,5 @@ export class LanguageService implements OnDestroy {
     if (langCode !== 'en-US') {
       this.translocoService.setActiveLang('en-US');
     }
-  }
-
-  /**
-   * Get preferred language in order of priority:
-   * 1. URL query parameter
-   * 2. LocalStorage
-   * 3. Browser language
-   * 4. Default (en-US)
-   */
-  private getPreferredLanguage(): string {
-    const supportedCodes = this.availableLanguages.map(lang => lang.code);
-
-    // Check URL query parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const langParam = urlParams.get('lang');
-    if (langParam && supportedCodes.includes(langParam)) {
-      // Clean URL if language was specified in the URL
-      const newUrl = new URL(window.location.href);
-      newUrl.searchParams.delete('lang');
-      window.history.replaceState({}, '', newUrl.toString());
-      return langParam;
-    }
-
-    // Check localStorage
-    const storedLang = localStorage.getItem('preferredLanguage');
-    if (storedLang && supportedCodes.includes(storedLang)) {
-      return storedLang;
-    }
-
-    // Check browser language
-    const browserLang = navigator.language;
-    if (browserLang) {
-      // Try exact match
-      if (supportedCodes.includes(browserLang)) {
-        return browserLang;
-      }
-
-      // Try base language match
-      const baseLang = browserLang.split('-')[0];
-      const baseMatch = this.availableLanguages.find(lang => lang.code.startsWith(baseLang));
-      if (baseMatch) {
-        return baseMatch.code;
-      }
-    }
-
-    // Default to English
-    return 'en-US';
   }
 }

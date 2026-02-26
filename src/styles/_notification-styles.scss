@@ -1,12 +1,22 @@
 /**
- * Notification styles for DFD collaboration notifications
- * These styles provide consistent theming for different notification types
+ * Global notification snackbar styles
+ *
+ * These styles must be global (not component-scoped) because Angular Material
+ * snackbars render in the CDK overlay container outside any component DOM tree.
+ * Component-scoped styles with ViewEncapsulation.Emulated cannot reach overlay elements.
+ *
+ * Used by:
+ * - NotificationService (shared) — panelClass: success-snackbar, warning-snackbar, error-snackbar
+ * - AppNotificationService (DFD) — panelClass: notification-success, notification-info, etc.
+ *
+ * !important is used on properties that override Material MDC's internal styles
+ * (CSS variables, background-color, color on internal elements). Decorative properties
+ * (box-shadow, border-radius, font-weight, etc.) rely on specificity instead.
  */
 
 /* stylelint-disable no-descending-specificity */
 
 // Success notifications (green theme)
-// Both notification-success (AppNotificationService) and success-snackbar (NotificationService)
 .success-snackbar,
 .notification-success {
   --mdc-snackbar-container-color: var(--color-success) !important;
@@ -29,7 +39,7 @@
         color: #fff !important;
 
         &:hover {
-          background-color: rgb(255 255 255 / 10%) !important;
+          background-color: rgb(255 255 255 / 10%);
         }
       }
     }
@@ -37,7 +47,6 @@
 }
 
 // Info notifications (blue theme)
-// Both notification-info (AppNotificationService) and info-snackbar (if used)
 .notification-info {
   --mdc-snackbar-container-color: var(--color-info) !important;
   --mdc-snackbar-supporting-text-color: #fff !important;
@@ -59,7 +68,7 @@
         color: #fff !important;
 
         &:hover {
-          background-color: rgb(255 255 255 / 10%) !important;
+          background-color: rgb(255 255 255 / 10%);
         }
       }
     }
@@ -67,7 +76,6 @@
 }
 
 // Warning notifications (orange theme)
-// Both notification-warning (AppNotificationService) and warning-snackbar (NotificationService)
 .warning-snackbar,
 .notification-warning {
   --mdc-snackbar-container-color: var(--color-warning) !important;
@@ -90,7 +98,7 @@
         color: #fff !important;
 
         &:hover {
-          background-color: rgb(255 255 255 / 10%) !important;
+          background-color: rgb(255 255 255 / 10%);
         }
       }
     }
@@ -98,7 +106,6 @@
 }
 
 // Error notifications (red theme)
-// Both notification-error (AppNotificationService) and error-snackbar (NotificationService)
 .error-snackbar,
 .notification-error {
   --mdc-snackbar-container-color: var(--color-error) !important;
@@ -121,14 +128,14 @@
         color: #fff !important;
 
         &:hover {
-          background-color: rgb(255 255 255 / 10%) !important;
+          background-color: rgb(255 255 255 / 10%);
         }
       }
     }
   }
 }
 
-// Shared animation improvements for all notification types
+// Shared visual improvements for all notification types
 .notification-success .mat-mdc-snack-bar-container .mdc-snackbar__surface,
 .success-snackbar .mat-mdc-snack-bar-container .mdc-snackbar__surface,
 .notification-info .mat-mdc-snack-bar-container .mdc-snackbar__surface,
@@ -136,9 +143,9 @@
 .warning-snackbar .mat-mdc-snack-bar-container .mdc-snackbar__surface,
 .notification-error .mat-mdc-snack-bar-container .mdc-snackbar__surface,
 .error-snackbar .mat-mdc-snack-bar-container .mdc-snackbar__surface {
-  box-shadow: 0 4px 8px rgb(0 0 0 / 15%) !important;
-  border-radius: 8px !important;
-  transition: all 0.3s ease-in-out !important;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
 }
 
 .notification-success .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button,
@@ -148,12 +155,12 @@
 .warning-snackbar .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button,
 .notification-error .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button,
 .error-snackbar .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button {
-  font-weight: 500 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  border-radius: 8px !important;
-  padding: 0 12px !important;
-  min-width: 64px !important;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 8px;
+  padding: 0 12px;
+  min-width: 64px;
 }
 
 .notification-success .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus,
@@ -163,11 +170,11 @@
 .warning-snackbar .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus,
 .notification-error .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus,
 .error-snackbar .mat-mdc-snack-bar-container .mat-mdc-snack-bar-action .mat-mdc-button:focus {
-  outline: 2px solid rgb(255 255 255 / 30%) !important;
-  outline-offset: 2px !important;
+  outline: 2px solid rgb(255 255 255 / 30%);
+  outline-offset: 2px;
 }
 
-// Dark theme overrides (if needed)
+// Dark theme overrides
 @media (prefers-color-scheme: dark) {
   .notification-success {
     --mdc-snackbar-container-color: var(--color-success-dark) !important;
@@ -196,11 +203,11 @@
   .notification-error,
   .error-snackbar {
     .mat-mdc-snack-bar-container {
-      margin: 8px !important;
-      max-width: calc(100vw - 16px) !important;
+      margin: 8px;
+      max-width: calc(100vw - 16px);
 
       .mdc-snackbar__surface {
-        border-radius: 8px !important;
+        border-radius: 8px;
       }
     }
   }

@@ -136,6 +136,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     previousCellState?: any; // Full node state before parent change, for history tracking
   }>();
   private readonly _historyChanged$ = new Subject<{ canUndo: boolean; canRedo: boolean }>();
+  private readonly _cellDeletionRequested$ = new Subject<Cell>();
 
   // Private properties to track previous undo/redo states
   private _previousCanUndo = false;
@@ -313,6 +314,14 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    */
   get historyChanged$(): Observable<{ canUndo: boolean; canRedo: boolean }> {
     return this._historyChanged$.asObservable();
+  }
+
+  /**
+   * Observable for cell deletion requests from the button-remove tool.
+   * The presentation layer subscribes to gate deletion with confirmation dialogs.
+   */
+  get cellDeletionRequested$(): Observable<Cell> {
+    return this._cellDeletionRequested$.asObservable();
   }
 
   /**
@@ -1719,49 +1728,60 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    * Centralized cell deletion handler - uses history coordinator for proper atomic deletion
    * with correct port visibility updates
    */
+  /**
+   * Emit a cell deletion request for the presentation layer to handle.
+   * Called by the button-remove tool on selected cells.
+   */
   private _handleCellDeletion(cell: Cell): void {
     const cellType = cell.isNode() ? 'node' : 'edge';
     this.logger.info(`[DFD] Delete tool clicked for ${cellType}`, { cellId: cell.id });
+    this._cellDeletionRequested$.next(cell);
+  }
 
-    // Use history coordinator for atomic deletion with port visibility suppression
-    if (this._graph) {
-      // For edges, capture the source and target nodes before deletion for port visibility update
-      let sourceNodeId: string | undefined;
-      let targetNodeId: string | undefined;
+  /**
+   * Execute cell deletion directly with proper history and port visibility handling.
+   * Called by the presentation layer after any confirmation has been obtained.
+   */
+  executeCellDeletion(cell: Cell): void {
+    if (!this._graph) return;
 
-      if (cell.isEdge()) {
-        sourceNodeId = cell.getSourceCellId();
-        targetNodeId = cell.getTargetCellId();
-      }
+    const cellType = cell.isNode() ? 'node' : 'edge';
 
-      // Delete the cell atomically
-      this._historyCoordinator.executeAtomicOperation(this._graph, () => {
-        this._x6CoreOps.removeCellObject(this._graph!, cell);
-      });
+    // For edges, capture the source and target nodes before deletion for port visibility update
+    let sourceNodeId: string | undefined;
+    let targetNodeId: string | undefined;
 
-      // Update port visibility for affected nodes (edges only)
-      if (cell.isEdge() && (sourceNodeId || targetNodeId)) {
-        // Use executeVisualEffect to suppress port visibility changes from history
-        this._historyCoordinator.executeVisualEffect(this._graph, () => {
-          if (sourceNodeId) {
-            const sourceNode = this._graph!.getCellById(sourceNodeId);
-            if (sourceNode && sourceNode.isNode()) {
-              this._portStateManager.updateNodePortVisibility(this._graph!, sourceNode);
-            }
+    if (cell.isEdge()) {
+      sourceNodeId = cell.getSourceCellId();
+      targetNodeId = cell.getTargetCellId();
+    }
+
+    // Delete the cell atomically
+    this._historyCoordinator.executeAtomicOperation(this._graph, () => {
+      this._x6CoreOps.removeCellObject(this._graph!, cell);
+    });
+
+    // Update port visibility for affected nodes (edges only)
+    if (cell.isEdge() && (sourceNodeId || targetNodeId)) {
+      this._historyCoordinator.executeVisualEffect(this._graph, () => {
+        if (sourceNodeId) {
+          const sourceNode = this._graph!.getCellById(sourceNodeId);
+          if (sourceNode && sourceNode.isNode()) {
+            this._portStateManager.updateNodePortVisibility(this._graph!, sourceNode);
           }
-          if (targetNodeId) {
-            const targetNode = this._graph!.getCellById(targetNodeId);
-            if (targetNode && targetNode.isNode()) {
-              this._portStateManager.updateNodePortVisibility(this._graph!, targetNode);
-            }
+        }
+        if (targetNodeId) {
+          const targetNode = this._graph!.getCellById(targetNodeId);
+          if (targetNode && targetNode.isNode()) {
+            this._portStateManager.updateNodePortVisibility(this._graph!, targetNode);
           }
-        });
-      }
-
-      this.logger.info(`[DFD] ${cellType} removed via atomic operation with port visibility`, {
-        cellId: cell.id,
+        }
       });
     }
+
+    this.logger.info(`[DFD] ${cellType} removed via atomic operation with port visibility`, {
+      cellId: cell.id,
+    });
   }
 
   /**

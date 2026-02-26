@@ -1,3 +1,5 @@
+@use '../../../styles/link-colors' as links;
+
 /* stylelint-disable no-descending-specificity */
 
 .tm-edit-container {
@@ -84,6 +86,13 @@
   &.collapsed {
     transform: rotate(-90deg);
   }
+}
+
+.section-text {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
 }
 
 .section-title {
@@ -173,17 +182,7 @@
 
 // URL view content - readonly input styled as hyperlink
 .url-view-content {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
-  &:hover {
-    color: var(--color-primary-dark) !important;
-  }
-
-  &:visited {
-    color: var(--color-link-visited) !important;
-  }
+  @include links.url-link-styles;
 }
 
 .assets-card,
@@ -305,6 +304,21 @@ mat-card-header {
 // Status dropdown styling - uses standard Material form field dimensions
 // Top margin to vertically center-align with "Status Last Updated" label
 .status-dropdown {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 8px;
+}
+
+.info-row-security-reviewer {
+  .info-field:first-child {
+    width: 66.67%;
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.security-reviewer-dropdown {
   width: 100%;
   margin-left: 0;
   margin-right: 0;
@@ -780,29 +794,28 @@ mat-card-header {
   text-align: center;
   white-space: nowrap;
 
-  // Numeric severity classes
-  &.severity-0 {
+  &.severity-critical {
     background-color: var(--color-severity-critical);
     color: var(--color-background-white);
   }
 
-  &.severity-1 {
+  &.severity-high {
     background-color: var(--color-severity-high);
     color: var(--color-background-white);
   }
 
-  &.severity-2 {
+  &.severity-medium {
     background-color: var(--color-severity-medium);
     color: var(--color-text-primary);
   }
 
-  &.severity-3 {
+  &.severity-low {
     background-color: var(--color-severity-low);
     color: var(--color-background-white);
   }
 
-  &.severity-4,
-  &.severity-5 {
+  &.severity-informational,
+  &.severity-unknown {
     background-color: var(--color-severity-none);
     color: var(--color-background-white);
   }

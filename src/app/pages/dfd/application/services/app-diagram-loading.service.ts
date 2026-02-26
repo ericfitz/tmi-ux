@@ -157,24 +157,4 @@ export class AppDiagramLoadingService {
       throw error;
     }
   }
-
-  /**
-   * Get default label for node type
-   */
-  private _getDefaultLabelForType(nodeType: string): string {
-    switch (nodeType) {
-      case 'actor':
-        return 'External Entity';
-      case 'process':
-        return 'Process';
-      case 'store':
-        return 'Data Store';
-      case 'security-boundary':
-        return 'Trust Boundary';
-      case 'text-box':
-        return 'Text';
-      default:
-        return 'Element';
-    }
-  }
 }

@@ -24,6 +24,7 @@ import { SurveyResponseService } from '../../services/survey-response.service';
 import { SurveyThemeService } from '../../services/survey-theme.service';
 import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
+import { ProjectPickerComponent } from '@app/shared/components/project-picker/project-picker.component';
 
 /**
  * Response detail component
@@ -40,6 +41,7 @@ import { UserDisplayComponent } from '@app/shared/components/user-display/user-d
     SurveyModule,
     TranslocoModule,
     UserDisplayComponent,
+    ProjectPickerComponent,
   ],
   templateUrl: './response-detail.component.html',
   styleUrl: './response-detail.component.scss',
@@ -193,6 +195,35 @@ export class ResponseDetailComponent implements OnInit {
       review_created: { label: 'Review Created', color: 'primary', icon: 'check_circle' },
     };
     return statusMap[status] ?? { label: status, color: 'default', icon: 'help' };
+  }
+
+  /**
+   * Handle project picker selection change
+   */
+  onProjectChange(projectId: string | null): void {
+    if (!this.response) return;
+
+    const previousProjectId = this.response.project_id ?? null;
+    this.response.project_id = projectId;
+
+    this.responseService
+      .patchProjectId(this.response.id, projectId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: updated => {
+          if (this.response) {
+            this.response.project_id = updated.project_id;
+            this.cdr.markForCheck();
+          }
+        },
+        error: error => {
+          this.logger.error('Failed to update project', error);
+          if (this.response) {
+            this.response.project_id = previousProjectId;
+            this.cdr.markForCheck();
+          }
+        },
+      });
   }
 
   /**

@@ -439,10 +439,13 @@
     "collaboratorsHeader": "참가자",
     "copyLink": "링크 복사",
     "denyPresenterRequest": "발표자 요청 거부",
+    "endCollaboration": "협업 종료",
     "hostedBy": "호스트",
     "isRequestingPresenterPrivileges": "발표자 권한을 요청 중입니다",
     "joinSession": "세션 참가",
     "justNow": "방금 전",
+    "leaveSession": "세션 나가기",
+    "loadingDiagramContext": "다이어그램 컨텍스트 로드 중...",
     "manageParticipants": "참가자 관리",
     "noActiveSessions": "활성 협업 세션 없음",
     "participantRequestsPresenterRole": "참가자가 발표자 역할 요청",
@@ -450,6 +453,7 @@
     "removeFromSession": "세션에서 제거",
     "requestPresenter": "발표자 요청",
     "sessionStarted": "시작됨",
+    "startCollaboration": "협업 시작",
     "takeBackPresenter": "발표자 권한 회수",
     "title": "협업 세션 참가자",
     "userJoined": "{{user}}님이 협업에 참가했습니다",
@@ -485,6 +489,7 @@
     "copyToClipboard": "클립보드에 복사",
     "create": "생성",
     "created": "생성됨",
+    "createdBy": "생성자",
     "criticality": "중요도",
     "cut": "잘라내기",
     "deactivate": "비활성화",
@@ -512,6 +517,7 @@
     "groups": "그룹",
     "id": "ID",
     "identityProvider": "ID 공급자",
+    "includeInReport": "보고서에 포함",
     "issueUri": "이슈 URL",
     "language": "{{language}}",
     "lastModified": "마지막 수정",
@@ -565,6 +571,7 @@
     "paste": "붙여넣기",
     "permissions": "권한",
     "priority": "우선순위",
+    "project": "프로젝트",
     "provider": "공급자",
     "readOnly": "읽기 전용",
     "readOnlyTooltip": "이 위협 모델에 대한 읽기 전용 액세스 권한이 있습니다. 편집 권한을 요청하려면 소유자에게 문의하세요.",
@@ -576,6 +583,7 @@
     },
     "save": "저장",
     "saveAndClose": "저장 및 닫기",
+    "saveFailed": "저장 실패",
     "savedSuccessfully": "저장되었습니다",
     "score": "점수",
     "search": "검색",
@@ -592,6 +600,7 @@
       "group": "그룹",
       "user": "사용자"
     },
+    "team": "팀",
     "template": "템플릿",
     "threatDescription": "위협 설명",
     "threatDescriptionPlaceholder": "위협을 자세히 설명하세요",
@@ -602,8 +611,10 @@
     "type": "유형",
     "unarchive": "보관 취소",
     "unsavedChangesWarning": "저장되지 않은 변경 사항이 있습니다. 닫으시겠습니까?",
+    "uri": "URI",
     "userId": "사용자 ID",
     "validation": {
+      "email": "유효한 이메일 주소를 입력해 주세요",
       "invalidUrl": "유효한 URL을 입력하세요",
       "maxLength": "최대 길이는 {{max}}자입니다",
       "nameRequired": "이름은 필수입니다",
@@ -636,10 +647,27 @@
     "title": "위협 모델 생성"
   },
   "dashboard": {
-    "clearFilter": "필터 지우기",
-    "filterLabel": "위협 모델 필터링",
-    "filterPlaceholder": "이름, 설명, 소유자 또는 상태로 검색",
-    "noMatchingThreatModels": "필터와 일치하는 위협 모델이 없습니다.",
+    "clearAllFilters": "모든 필터 지우기",
+    "clearSearch": "검색 지우기",
+    "createdAfter": "생성일 이후",
+    "createdBefore": "생성일 이전",
+    "descriptionFilter": "{{common.description}}",
+    "descriptionPlaceholder": "설명으로 필터링",
+    "issueUriFilter": "{{common.issueUri}}",
+    "issueUriPlaceholder": "이슈 URL로 필터링",
+    "lessFilters": "필터 줄이기",
+    "modifiedAfter": "수정일 이후",
+    "modifiedBefore": "수정일 이전",
+    "moreFilters": "더 많은 필터",
+    "nameFilter": "{{common.name}}",
+    "namePlaceholder": "이름으로 필터링",
+    "noMatchingThreatModels": "검색 조건 또는 필터와 일치하는 위협 모델이 없습니다.",
+    "ownerFilter": "{{common.roles.owner}}",
+    "ownerPlaceholder": "소유자 이름 또는 이메일로 필터링",
+    "searchLabel": "{{common.search}}",
+    "searchPlaceholder": "이름, 설명, 소유자 또는 상태로 검색",
+    "statusUpdatedAfter": "상태 업데이트일 이후",
+    "statusUpdatedBefore": "상태 업데이트일 이전",
     "tableHeaders": {
       "actions": "{{common.actions}}",
       "created": "{{common.created}}",
@@ -698,6 +726,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "선택한 요소 중 하나 이상에 메타데이터 항목이 있습니다. 이 요소들을 삭제하면 메타데이터가 영구적으로 제거됩니다. 계속하시겠습니까?",
+      "title": "메타데이터가 손실됩니다"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "다이어그램 설명 입력",
     "diagramNamePlaceholder": "다이어그램 이름 입력",
@@ -755,10 +788,12 @@
     "support": "지원"
   },
   "getStarted": "시작하기",
-  "homeDescription": "TMI는 조직의 보안 검토 및 위협 모델링 프로세스를 관리하고 향상시키는 도구입니다. 보안 검토 워크플로를 주도하고, 보안 검토를 위한 정보를 구성하며, 협업적으로 데이터 흐름 다이어그램을 구축하고, 검토 프로세스의 수고를 줄이고 보안 위협을 분석하기 위해 자동화를 연결할 수 있습니다.",
+  "homeDescription": "TMI는 조직의 보안 검토 및 위협 모델링 프로세스를 간소화하는 도구입니다. 검토 워크플로우를 주도하고, 핵심 정보를 정리하며, 팀이 협력하여 데이터 흐름 다이어그램을 구축할 수 있도록 지원합니다. 또한 자동화와 연결되어 수동 작업을 줄이고 보안 위협을 보다 효율적으로 식별하는 데 도움이 됩니다.",
   "homeWelcomeTitle": "TMI에 오신 것을 환영합니다: 향상된 위협 모델링",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "저장 후 나가기",
       "submitResponses": "응답 제출"
     }
@@ -818,6 +853,53 @@
       "view": "노트 보기"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "로그인"
+    },
+    "operationError": "{{operation}} 실패: {{errorMessage}}",
+    "operationFailed": "작업 실패",
+    "operations": {
+      "collaboration": "협업",
+      "denyPresenterRequest": "발표자 요청 거부",
+      "sendPresenterRequest": "발표자 요청 전송",
+      "startCollaboration": "협업 시작",
+      "updatePresenter": "발표자 업데이트"
+    },
+    "presenter": {
+      "assigned": "{{user}}님이 발표자가 되었습니다",
+      "assignedYou": "이제 발표자입니다",
+      "cleared": "발표자 모드가 해제되었습니다",
+      "cursorMoved": "발표자 커서가 이동했습니다",
+      "modeChanged": "발표자 모드가 변경되었습니다",
+      "privilegesRequested": "발표자 권한이 요청되었습니다",
+      "removed": "{{user}}님이 더 이상 발표자가 아닙니다",
+      "removedYou": "더 이상 발표자가 아닙니다",
+      "requestDenied": "발표자 요청이 거부되었습니다",
+      "requestSent": "세션 소유자에게 발표자 요청을 보냈습니다",
+      "requesting": "{{user}}님이 발표자 권한을 요청하고 있습니다",
+      "selectionChanged": "발표자 선택이 변경되었습니다"
+    },
+    "session": {
+      "disconnected": "협업 세션에서 연결이 끊겼습니다",
+      "reconnected": "협업 세션에 다시 연결되었습니다",
+      "reconnecting": "협업 세션에 다시 연결 중...",
+      "userRemoved": "{{user}}님이 세션에서 제거되었습니다",
+      "youWereRemoved": "협업 세션에서 제거되었습니다"
+    },
+    "unknownError": "알 수 없는 오류",
+    "websocket": {
+      "authenticationFailed": "인증에 실패했습니다. 다시 로그인해 주세요.",
+      "communicationError": "서버와의 통신 오류입니다. 일부 업데이트가 동기화되지 않을 수 있습니다.",
+      "connectionError": "연결 오류입니다. 오프라인 모드로 작동합니다.",
+      "connectionFailed": "협업 서버에 연결하지 못했습니다.",
+      "connectionTimeout": "연결 시간이 초과되었습니다. 서버가 과부하 상태일 수 있습니다.",
+      "disconnected": "협업 서버에서 연결이 끊겼습니다. 변경 사항은 로컬에 저장됩니다.",
+      "messageSendFailed": "메시지 전송에 실패했습니다. 변경 사항이 동기화되지 않을 수 있습니다.",
+      "multipleFailed": "여러 번 시도 후 연결에 실패했습니다. 오프라인 모드로 작동합니다.",
+      "unknownError": "알 수 없는 WebSocket 오류가 발생했습니다"
+    }
+  },
   "pagination": {
     "ariaLabel": "항목 페이지 선택",
     "firstPage": "첫 페이지",
@@ -870,6 +952,23 @@
     "userRightsContent2": "이 옵션을 사용하면 프로필 정보 및 인증 기록을 포함하여 운영자가 귀하를 대신하여 저장한 모든 데이터를 즉시 삭제할 수 있습니다. 활성화 시, 법적 보존 의무에 따라 운영자 시스템 및 타사 제공업체에서 데이터가 영구적으로 제거됩니다.",
     "userRightsTitle": "사용자 권리"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "프로젝트 설명을 입력하세요",
+      "namePlaceholder": "프로젝트 이름을 입력하세요",
+      "nameRequired": "프로젝트 이름은 필수입니다",
+      "statusPlaceholder": "예: active, planning, archived",
+      "teamRequired": "팀은 필수입니다",
+      "title": "프로젝트 생성",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "새 프로젝트 생성",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "프로젝트 없음"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "세션 연장",
     "extending": "세션 연장 중입니다. 잠시만 기다려 주세요...",
@@ -883,7 +982,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "저장 실패",
+      "error": "{{common.saveFailed}}",
       "saved": "저장됨",
       "saving": "저장 중..."
     },
@@ -952,69 +1051,86 @@
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "응답 보기"
   },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "팀 설명을 입력하세요",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "팀 이름을 입력하세요",
+      "nameRequired": "팀 이름은 필수입니다",
+      "statusPlaceholder": "예: active, archived",
+      "title": "팀 생성",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "새 팀 생성"
+  },
   "threatEditor": {
     "createNewThreat": "새 위협 생성",
     "notAssociatedWithAsset": "자산과 연결되지 않음",
     "notAssociatedWithCell": "셀과 연결되지 않음",
     "notAssociatedWithDiagram": "다이어그램과 연결되지 않음",
     "threatPriority": {
-      "0": "즉시 (P0)",
-      "0.description": "긴급히 해결해야 함; 활발한 악용, 규정 위반 또는 중요한 비즈니스 노출.",
-      "1": "높음 (P1)",
-      "1.description": "신속한 해결 필요; 고위험 노출 또는 임박한 릴리스 기한.",
-      "2": "중간 (P2)",
-      "2.description": "표준 개발 주기 내 해결; 중간 수준의 노출.",
-      "3": "낮음 (P3)",
-      "3.description": "향후 주기를 위한 백로그에 포함; 즉각적인 노출 없음.",
-      "4": "보류 (P4)",
-      "4.description": "문서화된 비즈니스 승인으로 연기됨; 추적되지만 일정에 없음."
+      "deferred": "보류 (P4)",
+      "deferred.description": "문서화된 비즈니스 승인으로 연기됨; 추적되지만 일정에 없음.",
+      "high": "높음 (P1)",
+      "high.description": "신속한 해결 필요; 고위험 노출 또는 임박한 릴리스 기한.",
+      "immediate": "즉시 (P0)",
+      "immediate.description": "긴급히 해결해야 함; 활발한 악용, 규정 위반 또는 중요한 비즈니스 노출.",
+      "low": "낮음 (P3)",
+      "low.description": "향후 주기를 위한 백로그에 포함; 즉각적인 노출 없음.",
+      "medium": "중간 (P2)",
+      "medium.description": "표준 개발 주기 내 해결; 중간 수준의 노출."
     },
     "threatSeverity": {
-      "0": "치명적",
-      "0.description": "악용 가능한 취약점으로 인해 시스템 전체 손상, 데이터 유출 또는 안전 영향 발생; 즉각적인 조치 필요.",
-      "1": "높음",
-      "1.description": "상당한 영향 또는 높은 가능성; 주요 무단 액세스, 권한 상승 또는 서비스 중단 가능.",
-      "2": "중간",
-      "2.description": "중간 수준의 영향 또는 가능성; 제한된 데이터 노출, 부분적 기능 장애 또는 연계된 공격 필요.",
-      "3": "낮음",
-      "3.description": "최소한의 영향 또는 낮은 가능성; 비즈니스 영향이 미미하며 특정 조건이나 사용자 상호작용 필요.",
-      "4": "정보성",
-      "4.description": "직접적인 악용 불가; 권장 사항, 모범 사례 이탈 또는 구성 개선.",
-      "5": "알 수 없음",
-      "5.description": "위협 심각도가 아직 평가되지 않았습니다."
+      "critical": "치명적",
+      "critical.description": "악용 가능한 취약점으로 인해 시스템 전체 손상, 데이터 유출 또는 안전 영향 발생; 즉각적인 조치 필요.",
+      "high": "높음",
+      "high.description": "상당한 영향 또는 높은 가능성; 주요 무단 액세스, 권한 상승 또는 서비스 중단 가능.",
+      "informational": "정보성",
+      "informational.description": "직접적인 악용 불가; 권장 사항, 모범 사례 이탈 또는 구성 개선.",
+      "low": "낮음",
+      "low.description": "최소한의 영향 또는 낮은 가능성; 비즈니스 영향이 미미하며 특정 조건이나 사용자 상호작용 필요.",
+      "medium": "중간",
+      "medium.description": "중간 수준의 영향 또는 가능성; 제한된 데이터 노출, 부분적 기능 장애 또는 연계된 공격 필요.",
+      "unknown": "알 수 없음",
+      "unknown.description": "위협 심각도가 아직 평가되지 않았습니다."
     },
     "threatStatus": {
-      "0": "열림",
-      "0.description": "발견이 식별 및 문서화되었지만 아직 조치가 시작되지 않았습니다.",
-      "1": "확인됨",
-      "1.description": "분석 또는 증거를 통해 위협이 합법적인 것으로 검증되었습니다.",
-      "2": "완화 계획됨",
-      "2.description": "수정 또는 완화 전략이 정의되고 할당되었습니다.",
-      "3": "완화 진행 중",
-      "3.description": "제어, 코드 변경 또는 대응책 구현이 진행 중입니다.",
-      "4": "검증 대기 중",
-      "4.description": "완화가 완료됨; 보안 팀이 효과를 테스트하거나 검토해야 합니다.",
-      "5": "해결됨",
-      "5.description": "위협이 완전히 완화되고 검증됨; 잔여 위험이 허용 가능합니다.",
-      "6": "수용됨",
-      "6.description": "위협이 인지되었지만 의도적으로 완화되지 않음(예: 비즈니스 정당화로 인해); 공식적인 위험 수용 필요.",
-      "7": "오탐",
-      "7.description": "조사 결과 발견이 유효한 위협이 아님이 확인됨; 추가 조치 불필요.",
-      "8": "보류됨",
-      "8.description": "승인으로 조치가 연기됨(예: 향후 스프린트); 근거 및 기한 포함.",
-      "9": "종료됨",
-      "9.description": "해결, 수용 또는 무효화 후 발견이 보관되며 감사 추적 포함."
+      "accepted": "수용됨",
+      "accepted.description": "위협이 인지되었지만 의도적으로 완화되지 않음(예: 비즈니스 정당화로 인해); 공식적인 위험 수용 필요.",
+      "closed": "종료됨",
+      "closed.description": "해결, 수용 또는 무효화 후 발견이 보관되며 감사 추적 포함.",
+      "confirmed": "확인됨",
+      "confirmed.description": "분석 또는 증거를 통해 위협이 합법적인 것으로 검증되었습니다.",
+      "deferred": "보류됨",
+      "deferred.description": "승인으로 조치가 연기됨(예: 향후 스프린트); 근거 및 기한 포함.",
+      "falsePositive": "오탐",
+      "falsePositive.description": "조사 결과 발견이 유효한 위협이 아님이 확인됨; 추가 조치 불필요.",
+      "mitigationInProgress": "완화 진행 중",
+      "mitigationInProgress.description": "제어, 코드 변경 또는 대응책 구현이 진행 중입니다.",
+      "mitigationPlanned": "완화 계획됨",
+      "mitigationPlanned.description": "수정 또는 완화 전략이 정의되고 할당되었습니다.",
+      "open": "열림",
+      "open.description": "발견이 식별 및 문서화되었지만 아직 조치가 시작되지 않았습니다.",
+      "resolved": "해결됨",
+      "resolved.description": "위협이 완전히 완화되고 검증됨; 잔여 위험이 허용 가능합니다.",
+      "verificationPending": "검증 대기 중",
+      "verificationPending.description": "완화가 완료됨; 보안 팀이 효과를 테스트하거나 검토해야 합니다."
     }
   },
   "threatModels": {
     "addPermission": "권한 추가",
     "branch": "브랜치",
+    "changeSecurityReviewer": "보안 검토자 변경",
+    "clearSecurityReviewer": "보안 검토자 해제",
     "commit": "커밋",
     "createFirstButton": "첫 번째 위협 모델 만들기",
     "createNewDiagram": "새 다이어그램 생성",
     "createNewRepository": "저장소 참조 추가",
     "created": "{{common.created}}",
-    "createdBy": "생성자",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "데이터 흐름 다이어그램",
     "deleteWarningPermanent": "이 작업은 취소할 수 없으며 관련된 모든 다이어그램, 위협 및 메타데이터가 영구적으로 삭제됩니다.",
@@ -1078,29 +1194,30 @@
       "outputs": "출력",
       "outputsDescription": "보안 분석 중 생성된 노트, 다이어그램 및 위협"
     },
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "소유자로 설정",
     "sourcesCount": "저장소",
     "status": {
-      "0": "시작 안 됨",
-      "0.tooltip": "보안 검토가 시작되었지만 평가 활동이 시작되지 않았습니다.",
-      "1": "진행 중",
-      "1.tooltip": "위협 모델링, 코드 검토 또는 테스트를 포함한 활성 평가가 진행 중입니다.",
-      "2": "검토 대기 중",
-      "2.tooltip": "평가 산출물(예: 보고서, 발견)이 보안 책임자 또는 승인자의 공식 검토를 대기 중입니다.",
-      "3": "수정 필요",
-      "3.tooltip": "취약점 또는 문제가 식별되었으며 개발팀이 해결해야 합니다.",
-      "4": "수정 진행 중",
-      "4.tooltip": "식별된 문제에 대한 수정이 개발팀에 의해 구현되고 있습니다.",
-      "5": "검증 대기 중",
-      "5.tooltip": "수정이 완료됨; 보안 팀이 효과를 검증해야 합니다.",
-      "6": "승인됨",
-      "6.tooltip": "모든 문제가 해결되고 검증됨; 애플리케이션이 릴리스 또는 배포를 위한 보안 기준을 충족합니다.",
-      "7": "거부됨",
-      "7.tooltip": "검토가 중요한 기준을 충족하지 못함; 재제출 전에 상당한 재작업이 필요합니다.",
-      "8": "보류됨",
-      "8.tooltip": "검토가 일시 중지됨(예: 리소스 제약 또는 애플리케이션 변경으로 인해); 재개가 계획됨.",
-      "9": "종료됨",
-      "9.tooltip": "검토가 완전히 완료되고 보관되었으며 추가 조치가 필요하지 않습니다."
+      "approved": "승인됨",
+      "approved.tooltip": "모든 문제가 해결되고 검증됨; 애플리케이션이 릴리스 또는 배포를 위한 보안 기준을 충족합니다.",
+      "closed": "종료됨",
+      "closed.tooltip": "검토가 완전히 완료되고 보관되었으며 추가 조치가 필요하지 않습니다.",
+      "deferred": "보류됨",
+      "deferred.tooltip": "검토가 일시 중지됨(예: 리소스 제약 또는 애플리케이션 변경으로 인해); 재개가 계획됨.",
+      "inProgress": "진행 중",
+      "inProgress.tooltip": "위협 모델링, 코드 검토 또는 테스트를 포함한 활성 평가가 진행 중입니다.",
+      "notStarted": "시작 안 됨",
+      "notStarted.tooltip": "보안 검토가 시작되었지만 평가 활동이 시작되지 않았습니다.",
+      "pendingReview": "검토 대기 중",
+      "pendingReview.tooltip": "평가 산출물(예: 보고서, 발견)이 보안 책임자 또는 승인자의 공식 검토를 대기 중입니다.",
+      "rejected": "거부됨",
+      "rejected.tooltip": "검토가 중요한 기준을 충족하지 못함; 재제출 전에 상당한 재작업이 필요합니다.",
+      "remediationInProgress": "수정 진행 중",
+      "remediationInProgress.tooltip": "식별된 문제에 대한 수정이 개발팀에 의해 구현되고 있습니다.",
+      "remediationRequired": "수정 필요",
+      "remediationRequired.tooltip": "취약점 또는 문제가 식별되었으며 개발팀이 해결해야 합니다.",
+      "verificationPending": "검증 대기 중",
+      "verificationPending.tooltip": "수정이 완료됨; 보안 팀이 효과를 검증해야 합니다."
     },
     "statusLastUpdated": "상태 마지막 업데이트",
     "tag": "태그",
@@ -1245,6 +1362,16 @@
     },
     "queue": "트리아지 대기열",
     "returnToSubmitted": "제출됨으로 되돌리기",
+    "reviewerAssignment": {
+      "assign": "할당",
+      "assignToMe": "자신에게 할당",
+      "errorLoading": "할당되지 않은 위협 모델을 불러오지 못했습니다",
+      "loading": "할당되지 않은 검토 로딩 중...",
+      "noUnassigned": "할당되지 않은 검토 없음",
+      "noUnassignedDescription": "모든 활성 위협 모델에 보안 검토자가 할당되었습니다",
+      "reviewer": "보안 검토자",
+      "selectReviewer": "검토자 선택..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "수정이 필요한 사항을 설명하는 노트를 제공하십시오. 제출자는 응답을 검토할 때 이 노트를 보게 됩니다.",
@@ -1252,6 +1379,10 @@
       "label": "수정 노트",
       "placeholder": "필요한 수정 사항 설명...",
       "title": "수정 요청 반환"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "할당되지 않은 검토"
     },
     "title": "트리아지",
     "viewDetails": "세부 정보 보기"
@@ -1324,7 +1455,7 @@
     "sections": {
       "developer": "개발자",
       "diagramEditor": "다이어그램 편집기",
-      "securityReviewer": "보안 검토자"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "개발자 도구 표시",
     "tabs": {

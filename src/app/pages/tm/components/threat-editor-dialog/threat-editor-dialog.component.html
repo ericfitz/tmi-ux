@@ -158,8 +158,8 @@
       </mat-form-field>
     </div>
 
-    <!-- Status and Mitigated row -->
-    <div class="form-field-row two-columns">
+    <!-- Status, Mitigated, and Include in Report row -->
+    <div class="form-field-row three-columns">
       <!-- Status field -->
       <mat-form-field appearance="outline" floatLabel="always">
         <mat-label>{{ 'common.status' | transloco }}</mat-label>
@@ -180,6 +180,13 @@
       <div class="checkbox-field">
         <mat-checkbox formControlName="mitigated" tabindex="11">
           {{ 'common.mitigated' | transloco }}
+        </mat-checkbox>
+      </div>
+
+      <!-- Include in Report field -->
+      <div class="checkbox-field">
+        <mat-checkbox formControlName="include_in_report" tabindex="12">
+          {{ 'common.includeInReport' | transloco }}
         </mat-checkbox>
       </div>
     </div>
@@ -209,7 +216,7 @@
                 matInput
                 formControlName="issue_uri"
                 type="url"
-                tabindex="12"
+                tabindex="13"
                 (blur)="onIssueUriBlur()"
               />
             }
@@ -223,7 +230,7 @@
               (click)="editIssueUri()"
               [matTooltip]="'common.edit' | transloco"
               [attr.aria-label]="'common.edit' | transloco"
-              tabindex="13"
+              tabindex="14"
             >
               <mat-icon>edit</mat-icon>
             </button>
@@ -255,7 +262,7 @@
           matInput
           formControlName="mitigation"
           rows="3"
-          tabindex="14"
+          tabindex="15"
           placeholder="{{ 'common.mitigationPlaceholder' | transloco }}"
         ></textarea>
         @if (threatForm.get('mitigation')?.hasError('maxlength')) {
@@ -271,7 +278,7 @@
   <button
     mat-button
     (click)="onCancel()"
-    tabindex="15"
+    tabindex="16"
     [attr.aria-label]="'common.cancel' | transloco"
   >
     {{ 'common.cancel' | transloco }}
@@ -282,7 +289,7 @@
       color="primary"
       [disabled]="threatForm.invalid"
       (click)="onSubmit()"
-      tabindex="16"
+      tabindex="17"
       [attr.aria-label]="'common.save' | transloco"
     >
       {{ 'common.save' | transloco }}
@@ -294,7 +301,7 @@
       mat-raised-button
       color="primary"
       (click)="onCancel()"
-      tabindex="15"
+      tabindex="16"
       [attr.aria-label]="'common.close' | transloco"
     >
       {{ 'common.close' | transloco }}

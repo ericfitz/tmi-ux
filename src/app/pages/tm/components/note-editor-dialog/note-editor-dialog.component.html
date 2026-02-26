@@ -49,6 +49,13 @@
       }
     </mat-form-field>
 
+    <!-- Include in Report -->
+    <div class="checkbox-field">
+      <mat-checkbox formControlName="include_in_report">
+        {{ 'common.includeInReport' | transloco }}
+      </mat-checkbox>
+    </div>
+
     <!-- Markdown Editor Toolbar -->
     @if (!isReadOnly) {
       <div class="markdown-toolbar">

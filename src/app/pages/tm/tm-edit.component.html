@@ -155,6 +155,80 @@
                 </div>
               }
             </div>
+
+            <!-- Security Reviewer row -->
+            <div class="info-row info-row-security-reviewer">
+              <div class="info-field">
+                @if (canEdit && securityReviewerMode === 'dropdown') {
+                  <mat-form-field appearance="outline" class="security-reviewer-dropdown">
+                    <mat-label>{{ 'threatModels.securityReviewer' | transloco }}</mat-label>
+                    <mat-select
+                      [value]="threatModel.security_reviewer"
+                      [compareWith]="compareReviewers"
+                      (selectionChange)="onSecurityReviewerChange($event)"
+                    >
+                      <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+                      @for (reviewer of securityReviewerOptions; track reviewer.provider_id) {
+                        <mat-option [value]="reviewer">
+                          {{ reviewer.display_name || reviewer.email }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                } @else if (canEdit && securityReviewerMode === 'picker') {
+                  <span class="info-label">{{ 'threatModels.securityReviewer' | transloco }}:</span>
+                  @if (threatModel.security_reviewer) {
+                    <span class="info-value"
+                      ><app-user-display [user]="threatModel.security_reviewer"
+                    /></span>
+                  } @else {
+                    <span class="info-value">—</span>
+                  }
+                  <button
+                    mat-icon-button
+                    (click)="openSecurityReviewerPicker()"
+                    [matTooltip]="'threatModels.changeSecurityReviewer' | transloco"
+                    [attr.aria-label]="'threatModels.changeSecurityReviewer' | transloco"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  @if (threatModel.security_reviewer) {
+                    <button
+                      mat-icon-button
+                      (click)="clearSecurityReviewer()"
+                      [matTooltip]="'threatModels.clearSecurityReviewer' | transloco"
+                      [attr.aria-label]="'threatModels.clearSecurityReviewer' | transloco"
+                    >
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  }
+                } @else if (securityReviewerMode !== 'loading') {
+                  <span class="info-label">{{ 'threatModels.securityReviewer' | transloco }}:</span>
+                  @if (threatModel.security_reviewer) {
+                    <span class="info-value"
+                      ><app-user-display [user]="threatModel.security_reviewer"
+                    /></span>
+                  } @else {
+                    <span class="info-value">—</span>
+                  }
+                }
+              </div>
+            </div>
+
+            <!-- Project picker row -->
+            <div class="info-row info-row-project">
+              <div class="info-field">
+                @if (canEdit) {
+                  <app-project-picker
+                    [projectId]="threatModel.project_id ?? null"
+                    (projectChange)="onProjectChange($event)"
+                  />
+                } @else {
+                  <span class="info-label">{{ 'common.project' | transloco }}:</span>
+                  <span class="info-value">{{ projectName || '—' }}</span>
+                }
+              </div>
+            </div>
           </div>
 
           <form [formGroup]="threatModelForm" class="threat-model-form">
@@ -278,10 +352,16 @@
           <mat-icon class="section-toggle-icon" [class.collapsed]="!inputsSectionExpanded">
             expand_more
           </mat-icon>
-          <span class="section-title" [transloco]="'threatModels.sections.inputs'">Inputs</span>
-          <span class="section-description" [transloco]="'threatModels.sections.inputsDescription'">
-            Assets, documents, and source code repositories that describe the system under analysis
-          </span>
+          <div class="section-text">
+            <span class="section-title" [transloco]="'threatModels.sections.inputs'">Inputs</span>
+            <span
+              class="section-description"
+              [transloco]="'threatModels.sections.inputsDescription'"
+            >
+              Assets, documents, and source code repositories that describe the system under
+              analysis
+            </span>
+          </div>
         </button>
         <div class="section-body" id="inputs-section-body" [hidden]="!inputsSectionExpanded">
           <!-- Assets Card -->
@@ -860,13 +940,15 @@
           <mat-icon class="section-toggle-icon" [class.collapsed]="!outputsSectionExpanded">
             expand_more
           </mat-icon>
-          <span class="section-title" [transloco]="'threatModels.sections.outputs'">Outputs</span>
-          <span
-            class="section-description"
-            [transloco]="'threatModels.sections.outputsDescription'"
-          >
-            Notes, diagrams, and threats produced during security analysis
-          </span>
+          <div class="section-text">
+            <span class="section-title" [transloco]="'threatModels.sections.outputs'">Outputs</span>
+            <span
+              class="section-description"
+              [transloco]="'threatModels.sections.outputsDescription'"
+            >
+              Notes, diagrams, and threats produced during security analysis
+            </span>
+          </div>
         </button>
         <div class="section-body" id="outputs-section-body" [hidden]="!outputsSectionExpanded">
           <!-- Notes Card -->
@@ -1327,7 +1409,7 @@
                     <td mat-cell *matCellDef="let threat" class="column-status">
                       @if (threat.status) {
                         <span class="status-badge">
-                          {{ 'threatEditor.threatStatus.' + threat.status | transloco }}
+                          {{ getThreatStatusLabel(threat.status) }}
                         </span>
                       } @else {
                         -
@@ -1354,8 +1436,11 @@
                     </th>
                     <td mat-cell *matCellDef="let threat" class="column-severity">
                       @if (threat.severity) {
-                        <span class="severity-badge" [ngClass]="'severity-' + threat.severity">
-                          {{ 'threatEditor.threatSeverity.' + threat.severity | transloco }}
+                        <span
+                          class="severity-badge"
+                          [ngClass]="getThreatSeverityClass(threat.severity)"
+                        >
+                          {{ getThreatSeverityLabel(threat.severity) }}
                         </span>
                       } @else {
                         <span class="severity-badge severity-unknown">

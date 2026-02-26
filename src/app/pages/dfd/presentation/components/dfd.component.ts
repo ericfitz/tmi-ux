@@ -32,8 +32,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, Subscription } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable, of, Subject, Subscription } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
+import { Cell } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { AuthService } from '../../../../auth/services/auth.service';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
@@ -113,6 +114,11 @@ import {
 
 import { HelpDialogComponent } from './help-dialog/help-dialog.component';
 
+import {
+  ConfirmActionDialogComponent,
+  ConfirmActionDialogData,
+  ConfirmActionDialogResult,
+} from '../../../../shared/components/confirm-action-dialog/confirm-action-dialog.component';
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
 import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
@@ -205,6 +211,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // Diagram data
   diagramName: string | null = null;
   diagramDescription: string | null = null;
+  includeInReport = true;
   threatModelName: string | null = null;
   threatModelPermission: 'reader' | 'writer' | null = null;
 
@@ -629,6 +636,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         if (state.diagramDescription !== undefined) {
           this.diagramDescription = state.diagramDescription ?? null;
         }
+        if (state.includeInReport !== undefined) {
+          this.includeInReport = state.includeInReport;
+        }
         if (state.threatModelName) {
           this.threatModelName = state.threatModelName;
         }
@@ -1051,17 +1061,21 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.appDfdOrchestrator.deleteSelectedCells().subscribe({
-      next: result => {
-        if (result.success) {
-          this.logger.debugComponent('DfdComponent', 'Selected cells deleted successfully');
-        } else {
-          this.logger.error('Failed to delete selected cells', { error: result.error });
-        }
-      },
-      error: error => {
-        this.logger.error('Error deleting selected cells', { error });
-      },
+    this._confirmDeletionIfNeeded().subscribe(confirmed => {
+      if (!confirmed) return;
+
+      this.appDfdOrchestrator.deleteSelectedCells().subscribe({
+        next: result => {
+          if (result.success) {
+            this.logger.debugComponent('DfdComponent', 'Selected cells deleted successfully');
+          } else {
+            this.logger.error('Failed to delete selected cells', { error: result.error });
+          }
+        },
+        error: error => {
+          this.logger.error('Error deleting selected cells', { error });
+        },
+      });
     });
   }
 
@@ -1104,19 +1118,23 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   onCut(): void {
     if (!this.hasSelectedCells || this.isReadOnlyMode) return;
 
-    this.logger.debugComponent('DfdComponent', 'Cut operation initiated');
-    this.dfdInfrastructure.cut().subscribe({
-      next: result => {
-        if (result.success) {
-          this.logger.info('Cut operation completed', { cutCount: result.cutCount });
-          this.updateClipboardState();
-        } else {
-          this.logger.error('Cut operation failed');
-        }
-      },
-      error: error => {
-        this.logger.error('Error during cut operation', { error });
-      },
+    this._confirmDeletionIfNeeded().subscribe(confirmed => {
+      if (!confirmed) return;
+
+      this.logger.debugComponent('DfdComponent', 'Cut operation initiated');
+      this.dfdInfrastructure.cut().subscribe({
+        next: result => {
+          if (result.success) {
+            this.logger.info('Cut operation completed', { cutCount: result.cutCount });
+            this.updateClipboardState();
+          } else {
+            this.logger.error('Cut operation failed');
+          }
+        },
+        error: error => {
+          this.logger.error('Error during cut operation', { error });
+        },
+      });
     });
   }
 
@@ -1230,6 +1248,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         next: updatedDiagram => {
           this.diagramName = updatedDiagram.name;
+          this.appDfdOrchestrator.updateDiagramMetadata({
+            diagramName: updatedDiagram.name,
+          });
           this.cdr.detectChanges();
           this.logger.info('Diagram name updated successfully', { name: updatedDiagram.name });
         },
@@ -1260,6 +1281,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         next: updatedDiagram => {
           this.diagramDescription = updatedDiagram.description ?? null;
+          this.appDfdOrchestrator.updateDiagramMetadata({
+            diagramDescription: updatedDiagram.description,
+          });
           this.cdr.detectChanges();
           this.logger.info('Diagram description updated successfully', {
             description: updatedDiagram.description,
@@ -1267,6 +1291,33 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         error: error => {
           this.logger.error('Failed to update diagram description', { error });
+        },
+      });
+  }
+
+  onIncludeInReportChange(event: { checked: boolean }): void {
+    if (!this.threatModelId || !this.dfdId || this.isReadOnlyMode || this.isCollaborating) {
+      return;
+    }
+
+    this.threatModelService
+      .patchDiagramProperties(this.threatModelId, this.dfdId, {
+        include_in_report: event.checked,
+      })
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: updatedDiagram => {
+          this.includeInReport = updatedDiagram.include_in_report ?? event.checked;
+          this.appDfdOrchestrator.updateDiagramMetadata({
+            includeInReport: this.includeInReport,
+          });
+          this.cdr.detectChanges();
+          this.logger.info('Diagram include_in_report updated', {
+            include_in_report: this.includeInReport,
+          });
+        },
+        error: error => {
+          this.logger.error('Failed to update diagram include_in_report', { error });
         },
       });
   }
@@ -2078,6 +2129,19 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           }),
       );
 
+      // Subscribe to cell deletion requests from the button-remove tool
+      this._subscriptions.add(
+        this.dfdInfrastructure.cellDeletionRequested$
+          .pipe(takeUntil(this._destroy$))
+          .subscribe((cell: Cell) => {
+            this._confirmDeletionIfNeeded([cell]).subscribe(confirmed => {
+              if (confirmed) {
+                this.dfdInfrastructure.executeDirectCellDeletion(cell);
+              }
+            });
+          }),
+      );
+
       this.logger.debugComponent(
         'DfdComponent',
         'Edge and history observable subscriptions set up successfully',
@@ -2237,6 +2301,22 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    // Intercept Delete/Backspace at the presentation layer for metadata confirmation
+    if (event.key === 'Delete' || event.key === 'Backspace') {
+      if (this.dialog.openDialogs.length > 0) return;
+      if (this.isReadOnlyMode || !this.hasSelectedCells) return;
+      const activeElement = document.activeElement;
+      const isInputFocused =
+        activeElement &&
+        (activeElement.tagName === 'INPUT' ||
+          activeElement.tagName === 'TEXTAREA' ||
+          (activeElement as HTMLElement).contentEditable === 'true');
+      if (isInputFocused) return;
+      event.preventDefault();
+      this.onDeleteSelected();
+      return;
+    }
+
     // Delegate other keyboard events to orchestrator for centralized keyboard handling
     this.appDfdOrchestrator.onKeyDown(event);
   }
@@ -2325,6 +2405,49 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       default:
         return 'process';
     }
+  }
+
+  /**
+   * Check if any of the given cells have non-empty _metadata entries.
+   * If no cells are provided, checks all currently selected cells.
+   */
+  private _selectedCellsHaveMetadata(cells?: Cell[]): boolean {
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) return false;
+
+    const cellsToCheck =
+      cells ||
+      this.appDfdOrchestrator
+        .getSelectedCells()
+        .map((id: string) => graph.getCellById(id))
+        .filter(Boolean);
+
+    return cellsToCheck.some((cell: Cell) => (cell.getData()?._metadata?.length ?? 0) > 0);
+  }
+
+  /**
+   * Show metadata loss confirmation dialog if any target cells have metadata.
+   * Returns Observable<boolean> — true if deletion should proceed.
+   */
+  private _confirmDeletionIfNeeded(cells?: Cell[]): Observable<boolean> {
+    if (!this._selectedCellsHaveMetadata(cells)) {
+      return of(true);
+    }
+
+    const dialogRef = this.dialog.open(ConfirmActionDialogComponent, {
+      width: '450px',
+      data: {
+        title: 'editor.deleteMetadataWarning.title',
+        message: 'editor.deleteMetadataWarning.message',
+        confirmLabel: 'editor.deleteMetadataWarning.confirm',
+        confirmIsDestructive: true,
+      } as ConfirmActionDialogData,
+      disableClose: true,
+    });
+
+    return dialogRef
+      .afterClosed()
+      .pipe(map((result: ConfirmActionDialogResult | undefined) => result?.confirmed ?? false));
   }
 
   private _navigateAway(): void {

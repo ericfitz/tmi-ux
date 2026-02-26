@@ -24,6 +24,8 @@ RUN pnpm run build:hosted-container
 
 # Stage 2: Production server
 FROM node:22-alpine
+ARG APP_VERSION=unknown
+LABEL org.opencontainers.image.version=$APP_VERSION
 
 # Set working directory
 WORKDIR /app

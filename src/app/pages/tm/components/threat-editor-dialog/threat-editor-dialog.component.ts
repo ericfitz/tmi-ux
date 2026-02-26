@@ -39,6 +39,7 @@ interface ThreatFormValues {
   status?: string | null;
   mitigation?: string;
   issue_uri?: string;
+  include_in_report?: boolean;
 }
 
 /**
@@ -164,6 +165,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       status: [null],
       mitigation: ['', Validators.maxLength(1024)],
       issue_uri: [''],
+      include_in_report: [true],
     });
   }
 
@@ -569,228 +571,11 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
     const currentLang = this.translocoService.getActiveLang();
     this.logger.debugComponent('ThreatEditorDialog', 'Current language:', currentLang);
 
-    // First load English as fallback
-    this.translocoService.load('en-US').subscribe({
-      next: () => {
-        this.logger.debugComponent(
-          'ThreatEditorDialog',
-          'English translations loaded successfully',
-        );
+    this._loadTranslationsAndInitialize(currentLang);
 
-        // Then load current language if not English
-        if (currentLang !== 'en-US') {
-          this.translocoService.load(currentLang).subscribe({
-            next: () => {
-              // Note: We don't call setActiveLang here since it's already the active language.
-              // Calling setActiveLang triggers LanguageService.langChanges$ which can cause
-              // unintended side effects like closing dialogs via DialogDirectionService.
-              this.logger.debugComponent(
-                'ThreatEditorDialog',
-                'Translations loaded successfully for language: ' + currentLang,
-              );
-
-              // Initialize dropdown options after translations are loaded
-              this.initializeDiagramOptions();
-              this.initializeCellOptions();
-              this.initializeAssetOptions();
-              this.initializeThreatTypeOptions();
-              this.initializeFieldOptions();
-
-              // Force change detection to update the translations
-              setTimeout(() => {
-                this.dialogRef.updateSize();
-                this.logger.debugComponent(
-                  'ThreatEditorDialog',
-                  'Dialog size updated to force refresh',
-                );
-              }, 100);
-            },
-            error: (err: unknown) => {
-              const errorMessage = err instanceof Error ? err.message : String(err);
-              this.logger.error(
-                'Failed to load translations for language: ' + currentLang,
-                errorMessage,
-              );
-              // Fallback to English
-              this.translocoService.setActiveLang('en-US');
-
-              // Initialize dropdown options with English translations
-              this.initializeDiagramOptions();
-              this.initializeCellOptions();
-              this.initializeAssetOptions();
-              this.initializeThreatTypeOptions();
-              this.initializeFieldOptions();
-            },
-          });
-        } else {
-          // Initialize dropdown options with English translations
-          this.initializeDiagramOptions();
-          this.initializeCellOptions();
-          this.initializeAssetOptions();
-          this.initializeThreatTypeOptions();
-          this.initializeFieldOptions();
-
-          // Force change detection to update the translations
-          setTimeout(() => {
-            this.dialogRef.updateSize();
-            this.logger.debugComponent(
-              'ThreatEditorDialog',
-              'Dialog size updated to force refresh',
-            );
-          }, 100);
-        }
-      },
-      error: (err: unknown) => {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        this.logger.error('Failed to load English translations', errorMessage);
-
-        // Initialize dropdown options even if translations failed
-        this.initializeDiagramOptions();
-        this.initializeCellOptions();
-        this.initializeAssetOptions();
-        this.initializeThreatTypeOptions();
-      },
-    });
-
-    // Set dialog title based on mode
-    if (this.data.mode === 'create') {
-      this.dialogTitle = 'threatEditor.createNewThreat';
-
-      // Initialize with empty data for new threats
-      if (!this.data.threat) {
-        this.data.threat = {
-          threat_model_id: this.data.threatModelId,
-          name: '',
-          description: '',
-          created_at: new Date().toISOString(),
-          modified_at: new Date().toISOString(),
-          severity: '1', // High (using numeric key: Critical=0, High=1, Medium=2, Low=3, Info=4, Unknown=5)
-          threat_type: [],
-          diagram_id: this.data.diagramId || '',
-          cell_id: this.data.cellId || '',
-          score: 10.0,
-          priority: '1', // High (using numeric key: Immediate=0, High=1, Medium=2, Low=3, Deferred=4)
-          mitigated: false,
-          status: '0', // Open (using numeric key)
-          mitigation: '',
-          issue_uri: '',
-          metadata: [],
-        } as unknown as Threat;
-      }
-    } else if (this.data.mode === 'edit') {
-      this.dialogTitle = 'common.editThreat';
-    } else {
-      this.dialogTitle = 'common.viewThreat';
-    }
-
-    // Initialize form with empty values for text fields and default values for other fields
-    // We're using floatLabel="always" in the HTML to ensure labels are always visible
-
-    this.threatForm.patchValue({
-      name: '',
-      asset_id: this.NOT_ASSOCIATED_VALUE,
-      description: '',
-      severity: null,
-      threat_type: [],
-      diagram_id: this.data.diagramId || this.NOT_ASSOCIATED_VALUE,
-      cell_id: this.data.cellId || this.NOT_ASSOCIATED_VALUE,
-      score: null,
-      priority: null,
-      mitigated: false,
-      status: null,
-      mitigation: '',
-      issue_uri: '',
-    });
-
-    // If editing or viewing, populate form with threat data
-    if (this.data.threat) {
-      // Store the initial issue URI value
-      this.initialIssueUriValue = this.data.threat.issue_uri || '';
-
-      // Debug log the threat data being used for form population
-      this.logger.debugComponent(
-        'ThreatEditorDialog',
-        'Populating threat editor form with threat data',
-        {
-          threatId: this.data.threat.id,
-          name: this.data.threat.name,
-          description: this.data.threat.description,
-          severity: this.data.threat.severity,
-          threat_type: this.data.threat.threat_type,
-          diagram_id: this.data.threat.diagram_id,
-          cell_id: this.data.threat.cell_id,
-          score: this.data.threat.score,
-          priority: this.data.threat.priority,
-          mitigated: this.data.threat.mitigated,
-          status: this.data.threat.status,
-          mitigation: this.data.threat.mitigation,
-          issue_uri: this.data.threat.issue_uri,
-        },
-      );
-
-      // Determine asset_id value: use threat's asset_id if it exists in assets list, otherwise blank
-      let assetIdValue = this.NOT_ASSOCIATED_VALUE;
-      if (this.data.threat.asset_id) {
-        const assetExists = this.data.assets?.some(
-          asset => asset.id === this.data.threat!.asset_id,
-        );
-        if (assetExists) {
-          assetIdValue = this.data.threat.asset_id;
-        }
-      }
-
-      // Migrate old string values to numeric keys
-      const migratedSeverity = migrateFieldValue(
-        this.data.threat.severity,
-        'threatEditor.threatSeverity',
-        this.translocoService,
-      );
-      const migratedStatus = migrateFieldValue(
-        this.data.threat.status,
-        'threatEditor.threatStatus',
-        this.translocoService,
-      );
-      const migratedPriority = migrateFieldValue(
-        this.data.threat.priority,
-        'threatEditor.threatPriority',
-        this.translocoService,
-      );
-
-      this.logger.debugComponent('ThreatEditorDialog', 'Migrated field values', {
-        originalSeverity: this.data.threat.severity,
-        migratedSeverity,
-        originalStatus: this.data.threat.status,
-        migratedStatus,
-        originalPriority: this.data.threat.priority,
-        migratedPriority,
-      });
-
-      this.threatForm.patchValue({
-        name: this.data.threat.name,
-        asset_id: assetIdValue,
-        description: this.data.threat.description || '',
-        severity: migratedSeverity,
-        threat_type: this.data.threat.threat_type || [],
-        diagram_id: this.data.threat.diagram_id || this.NOT_ASSOCIATED_VALUE,
-        cell_id: this.data.threat.cell_id || this.NOT_ASSOCIATED_VALUE,
-        score: this.data.threat.score || null,
-        priority: migratedPriority,
-        mitigated: this.data.threat.mitigated || false,
-        status: migratedStatus,
-        mitigation: this.data.threat.mitigation || '',
-        issue_uri: this.initialIssueUriValue,
-      });
-
-      // Debug log the form values after patching
-      this.logger.debugComponent('ThreatEditorDialog', 'Form values after patching', {
-        formValues: this.threatForm.value as ThreatFormValues,
-      });
-
-      // If view only, disable the form
-      if (this.isViewOnly) {
-        this.threatForm.disable();
-      }
-    }
+    this._initializeDialogTitleAndDefaults();
+    this._initializeFormValues();
+    this._populateFormFromThreat();
 
     // Force translations to be applied
     this.forceTranslationUpdate();
@@ -806,11 +591,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         this.forceTranslationUpdate();
 
         // Reinitialize dropdown options when language changes
-        this.initializeDiagramOptions();
-        this.initializeCellOptions();
-        this.initializeAssetOptions();
-        this.initializeThreatTypeOptions();
-        this.initializeFieldOptions();
+        this._initializeAllDropdownOptions();
       });
 
     // Also subscribe to direction changes
@@ -825,6 +606,218 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
 
     // Initialize enhanced save behavior
     this.initializeEnhancedSaveBehavior();
+  }
+
+  /**
+   * Sets the dialog title and initializes default threat data for create mode.
+   */
+  private _initializeDialogTitleAndDefaults(): void {
+    if (this.data.mode === 'create') {
+      this.dialogTitle = 'threatEditor.createNewThreat';
+
+      if (!this.data.threat) {
+        this.data.threat = {
+          threat_model_id: this.data.threatModelId,
+          name: '',
+          description: '',
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+          severity: 'high',
+          threat_type: [],
+          diagram_id: this.data.diagramId || '',
+          cell_id: this.data.cellId || '',
+          score: 10.0,
+          priority: 'high',
+          mitigated: false,
+          status: 'open',
+          mitigation: '',
+          issue_uri: '',
+          metadata: [],
+        } as unknown as Threat;
+      }
+    } else if (this.data.mode === 'edit') {
+      this.dialogTitle = 'common.editThreat';
+    } else {
+      this.dialogTitle = 'common.viewThreat';
+    }
+  }
+
+  /**
+   * Sets the form to default empty/null values.
+   */
+  private _initializeFormValues(): void {
+    this.threatForm.patchValue({
+      name: '',
+      asset_id: this.NOT_ASSOCIATED_VALUE,
+      description: '',
+      severity: null,
+      threat_type: [],
+      diagram_id: this.data.diagramId || this.NOT_ASSOCIATED_VALUE,
+      cell_id: this.data.cellId || this.NOT_ASSOCIATED_VALUE,
+      score: null,
+      priority: null,
+      mitigated: false,
+      status: null,
+      mitigation: '',
+      issue_uri: '',
+      include_in_report: true,
+    });
+  }
+
+  /**
+   * Populates the form from existing threat data (for edit/view modes).
+   */
+  private _populateFormFromThreat(): void {
+    if (!this.data.threat) return;
+
+    this.initialIssueUriValue = this.data.threat.issue_uri || '';
+
+    this.logger.debugComponent(
+      'ThreatEditorDialog',
+      'Populating threat editor form with threat data',
+      {
+        threatId: this.data.threat.id,
+        name: this.data.threat.name,
+        description: this.data.threat.description,
+        severity: this.data.threat.severity,
+        threat_type: this.data.threat.threat_type,
+        diagram_id: this.data.threat.diagram_id,
+        cell_id: this.data.threat.cell_id,
+        score: this.data.threat.score,
+        priority: this.data.threat.priority,
+        mitigated: this.data.threat.mitigated,
+        status: this.data.threat.status,
+        mitigation: this.data.threat.mitigation,
+        issue_uri: this.data.threat.issue_uri,
+      },
+    );
+
+    let assetIdValue = this.NOT_ASSOCIATED_VALUE;
+    if (this.data.threat.asset_id) {
+      const assetExists = this.data.assets?.some(asset => asset.id === this.data.threat!.asset_id);
+      if (assetExists) {
+        assetIdValue = this.data.threat.asset_id;
+      }
+    }
+
+    const migratedSeverity = migrateFieldValue(
+      this.data.threat.severity,
+      'threatEditor.threatSeverity',
+      this.translocoService,
+    );
+    const migratedStatus = migrateFieldValue(
+      this.data.threat.status,
+      'threatEditor.threatStatus',
+      this.translocoService,
+    );
+    const migratedPriority = migrateFieldValue(
+      this.data.threat.priority,
+      'threatEditor.threatPriority',
+      this.translocoService,
+    );
+
+    this.logger.debugComponent('ThreatEditorDialog', 'Migrated field values', {
+      originalSeverity: this.data.threat.severity,
+      migratedSeverity,
+      originalStatus: this.data.threat.status,
+      migratedStatus,
+      originalPriority: this.data.threat.priority,
+      migratedPriority,
+    });
+
+    this.threatForm.patchValue({
+      name: this.data.threat.name,
+      asset_id: assetIdValue,
+      description: this.data.threat.description || '',
+      severity: migratedSeverity,
+      threat_type: this.data.threat.threat_type || [],
+      diagram_id: this.data.threat.diagram_id || this.NOT_ASSOCIATED_VALUE,
+      cell_id: this.data.threat.cell_id || this.NOT_ASSOCIATED_VALUE,
+      score: this.data.threat.score || null,
+      priority: migratedPriority,
+      mitigated: this.data.threat.mitigated || false,
+      status: migratedStatus,
+      mitigation: this.data.threat.mitigation || '',
+      issue_uri: this.initialIssueUriValue,
+      include_in_report: this.data.threat.include_in_report,
+    });
+
+    this.logger.debugComponent('ThreatEditorDialog', 'Form values after patching', {
+      formValues: this.threatForm.value as ThreatFormValues,
+    });
+
+    if (this.isViewOnly) {
+      this.threatForm.disable();
+    }
+  }
+
+  /**
+   * Loads translations (English first, then current language) and initializes all dropdown options.
+   */
+  private _loadTranslationsAndInitialize(currentLang: string): void {
+    this.translocoService.load('en-US').subscribe({
+      next: () => {
+        this.logger.debugComponent(
+          'ThreatEditorDialog',
+          'English translations loaded successfully',
+        );
+
+        if (currentLang !== 'en-US') {
+          this._loadLanguageAndInitialize(currentLang);
+        } else {
+          this._initializeAllDropdownOptions();
+          this._refreshDialogSize();
+        }
+      },
+      error: (err: unknown) => {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        this.logger.error('Failed to load English translations', errorMessage);
+        this._initializeAllDropdownOptions();
+      },
+    });
+  }
+
+  /**
+   * Loads a non-English language translation and initializes dropdown options.
+   */
+  private _loadLanguageAndInitialize(lang: string): void {
+    this.translocoService.load(lang).subscribe({
+      next: () => {
+        this.logger.debugComponent(
+          'ThreatEditorDialog',
+          'Translations loaded successfully for language: ' + lang,
+        );
+        this._initializeAllDropdownOptions();
+        this._refreshDialogSize();
+      },
+      error: (err: unknown) => {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        this.logger.error('Failed to load translations for language: ' + lang, errorMessage);
+        this.translocoService.setActiveLang('en-US');
+        this._initializeAllDropdownOptions();
+      },
+    });
+  }
+
+  /**
+   * Initializes all dropdown option lists from translations.
+   */
+  private _initializeAllDropdownOptions(): void {
+    this.initializeDiagramOptions();
+    this.initializeCellOptions();
+    this.initializeAssetOptions();
+    this.initializeThreatTypeOptions();
+    this.initializeFieldOptions();
+  }
+
+  /**
+   * Forces a dialog size update to refresh translations in the UI.
+   */
+  private _refreshDialogSize(): void {
+    setTimeout(() => {
+      this.dialogRef.updateSize();
+      this.logger.debugComponent('ThreatEditorDialog', 'Dialog size updated to force refresh');
+    }, 100);
   }
 
   /**
@@ -1041,6 +1034,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       status: formValues.status || undefined,
       mitigation: formValues.mitigation || undefined,
       issue_uri: formValues.issue_uri || undefined,
+      include_in_report: formValues.include_in_report,
       metadata: this.data.threat?.metadata || [],
     });
   }

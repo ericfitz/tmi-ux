@@ -157,6 +157,16 @@ Automatic semantic versioning via git hooks using [Conventional Commits](https:/
 - `fix:`/`chore:`/`docs:`/`perf:`/`test:`/`ci:`/`build:` → patch bump (0.0.x)
 - Version bumps happen on commit, not build
 
+## Branching Strategy
+
+Feature development for a release uses a `release/<semver>` branch:
+
+1. **Release branch**: Created from `main` (e.g., `release/1.2.0`) with a prerelease version in `package.json` (e.g., `1.2.0-rc.0`)
+2. **Feature branches**: Created from the release branch as `feature/<name>`, merged back when complete
+3. **Release merge**: When all features are ready, the release branch merges into `main` with the prerelease suffix cleared for the stable release
+
+The post-commit hook only auto-bumps versions on `main`, so the `rc.0` prerelease label stays stable throughout development on the release branch. Deploy scripts pass the version from `package.json` as a `--build-arg APP_VERSION` to Docker builds for OCI image labels.
+
 ## UI Terminology
 
 - **Action button**: A `mat-icon-button` that displays only an icon (no text label) and uses `matTooltip` to show the button's localized label. Action buttons must not implement any button styling locally — centering and icon sizing are handled globally by the `.mat-mdc-icon-button` override in `src/styles/component-overrides.scss`.

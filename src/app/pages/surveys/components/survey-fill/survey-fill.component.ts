@@ -12,11 +12,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Model } from 'survey-core';
 import { SurveyModule } from 'survey-angular-ui';
+import { MatCardModule } from '@angular/material/card';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
+import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
+import { ProjectPickerComponent } from '@app/shared/components/project-picker/project-picker.component';
 import { LoggerService } from '@app/core/services/logger.service';
 import { ThemeService } from '@app/core/services/theme.service';
 import { SurveyService } from '../../services/survey.service';
@@ -37,8 +40,11 @@ import { Observable } from 'rxjs';
     ...COMMON_IMPORTS,
     ...CORE_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
+    MatCardModule,
     SurveyModule,
     TranslocoModule,
+    UserDisplayComponent,
+    ProjectPickerComponent,
   ],
   templateUrl: './survey-fill.component.html',
   styleUrl: './survey-fill.component.scss',
@@ -337,6 +343,35 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
    */
   goBack(): void {
     void this.router.navigate(['/intake']);
+  }
+
+  /**
+   * Handle project picker selection change
+   */
+  onProjectChange(projectId: string | null): void {
+    if (!this.response || !this.responseId) return;
+
+    const previousProjectId = this.response.project_id ?? null;
+    this.response.project_id = projectId;
+
+    this.responseService
+      .patchProjectId(this.responseId, projectId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: updated => {
+          if (this.response) {
+            this.response.project_id = updated.project_id;
+            this.cdr.markForCheck();
+          }
+        },
+        error: error => {
+          this.logger.error('Failed to update project', error);
+          if (this.response) {
+            this.response.project_id = previousProjectId;
+            this.cdr.markForCheck();
+          }
+        },
+      });
   }
 
   /**

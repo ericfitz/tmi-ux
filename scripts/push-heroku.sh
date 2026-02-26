@@ -13,8 +13,15 @@ echo "🔐 Authenticating with Heroku container registry..."
 docker login --username=_ --password=$(heroku auth:token) registry.heroku.com 2>&1 | grep -v "WARNING"
 echo ""
 
-echo "🐳 Building and pushing Docker container..."
-heroku container:push web --app=tmi-ux
+APP_VERSION=$(node -p "require('./package.json').version")
+HEROKU_IMAGE="registry.heroku.com/tmi-ux/web"
+
+echo "🐳 Building Docker container (version: ${APP_VERSION})..."
+docker build --build-arg APP_VERSION="${APP_VERSION}" -t "${HEROKU_IMAGE}" .
+
+echo ""
+echo "📤 Pushing Docker container to Heroku registry..."
+docker push "${HEROKU_IMAGE}"
 
 echo ""
 echo "🚢 Releasing container to Heroku..."

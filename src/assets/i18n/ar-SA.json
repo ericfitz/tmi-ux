@@ -439,10 +439,13 @@
     "collaboratorsHeader": "المشاركون",
     "copyLink": "نسخ الرابط",
     "denyPresenterRequest": "رفض طلب المقدم",
+    "endCollaboration": "إنهاء التعاون",
     "hostedBy": "مستضاف من قبل",
     "isRequestingPresenterPrivileges": "يطلب امتيازات المقدم",
     "joinSession": "الانضمام إلى الجلسة",
     "justNow": "الآن",
+    "leaveSession": "مغادرة الجلسة",
+    "loadingDiagramContext": "جارٍ تحميل سياق المخطط...",
     "manageParticipants": "إدارة المشاركين",
     "noActiveSessions": "لا توجد جلسات تعاون نشطة",
     "participantRequestsPresenterRole": "المشارك يطلب دور المقدم",
@@ -450,6 +453,7 @@
     "removeFromSession": "إزالة من الجلسة",
     "requestPresenter": "طلب المقدم",
     "sessionStarted": "بدأت",
+    "startCollaboration": "بدء التعاون",
     "takeBackPresenter": "استرداد المقدم",
     "title": "مشاركو جلسة التعاون",
     "userJoined": "انضم {{user}} إلى جلسة التعاون",
@@ -485,6 +489,7 @@
     "copyToClipboard": "نسخ إلى الحافظة",
     "create": "إنشاء",
     "created": "تم الإنشاء",
+    "createdBy": "تم إنشاؤه بواسطة",
     "criticality": "الحرجية",
     "cut": "قص",
     "deactivate": "إلغاء التفعيل",
@@ -512,6 +517,7 @@
     "groups": "المجموعات",
     "id": "المعرّف",
     "identityProvider": "مزود الهوية",
+    "includeInReport": "تضمين في التقرير",
     "issueUri": "رابط المشكلة",
     "language": "{{language}}",
     "lastModified": "آخر تعديل",
@@ -565,6 +571,7 @@
     "paste": "لصق",
     "permissions": "الأذونات",
     "priority": "الأولوية",
+    "project": "مشروع",
     "provider": "المزود",
     "readOnly": "للقراءة فقط",
     "readOnlyTooltip": "لديك صلاحيات قراءة فقط لنموذج التهديد هذا. اتصل بالمالك لطلب صلاحيات التحرير.",
@@ -576,6 +583,7 @@
     },
     "save": "حفظ",
     "saveAndClose": "حفظ وإغلاق",
+    "saveFailed": "فشل الحفظ",
     "savedSuccessfully": "تم الحفظ بنجاح",
     "score": "النتيجة",
     "search": "بحث",
@@ -592,6 +600,7 @@
       "group": "مجموعة",
       "user": "مستخدم"
     },
+    "team": "فريق",
     "template": "قالب",
     "threatDescription": "وصف التهديد",
     "threatDescriptionPlaceholder": "وصف التهديد بالتفصيل",
@@ -602,8 +611,10 @@
     "type": "النوع",
     "unarchive": "إلغاء الأرشفة",
     "unsavedChangesWarning": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد الإغلاق؟",
+    "uri": "URI",
     "userId": "معرف المستخدم",
     "validation": {
+      "email": "يرجى إدخال عنوان بريد إلكتروني صحيح",
       "invalidUrl": "يرجى إدخال رابط صحيح",
       "maxLength": "الحد الأقصى للطول هو {{max}} حرف",
       "nameRequired": "الاسم مطلوب",
@@ -636,10 +647,27 @@
     "title": "إنشاء نموذج تهديد"
   },
   "dashboard": {
-    "clearFilter": "مسح الفلتر",
-    "filterLabel": "تصفية نماذج التهديدات",
-    "filterPlaceholder": "البحث حسب الاسم أو الوصف أو المالك أو الحالة",
-    "noMatchingThreatModels": "لا توجد نماذج تهديدات تطابق الفلتر الخاص بك.",
+    "clearAllFilters": "مسح جميع الفلاتر",
+    "clearSearch": "مسح البحث",
+    "createdAfter": "تاريخ الإنشاء بعد",
+    "createdBefore": "تاريخ الإنشاء قبل",
+    "descriptionFilter": "{{common.description}}",
+    "descriptionPlaceholder": "تصفية حسب الوصف",
+    "issueUriFilter": "{{common.issueUri}}",
+    "issueUriPlaceholder": "تصفية حسب رابط المشكلة",
+    "lessFilters": "فلاتر أقل",
+    "modifiedAfter": "تاريخ التعديل بعد",
+    "modifiedBefore": "تاريخ التعديل قبل",
+    "moreFilters": "فلاتر إضافية",
+    "nameFilter": "{{common.name}}",
+    "namePlaceholder": "تصفية حسب الاسم",
+    "noMatchingThreatModels": "لا توجد نماذج تهديدات تطابق بحثك أو الفلاتر المحددة.",
+    "ownerFilter": "{{common.roles.owner}}",
+    "ownerPlaceholder": "تصفية حسب اسم المالك أو البريد الإلكتروني",
+    "searchLabel": "{{common.search}}",
+    "searchPlaceholder": "البحث حسب الاسم أو الوصف أو المالك أو الحالة",
+    "statusUpdatedAfter": "تاريخ تحديث الحالة بعد",
+    "statusUpdatedBefore": "تاريخ تحديث الحالة قبل",
     "tableHeaders": {
       "actions": "{{common.actions}}",
       "created": "{{common.created}}",
@@ -698,6 +726,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "واحد أو أكثر من العناصر المحددة يحتوي على إدخالات بيانات وصفية. سيؤدي حذف هذه العناصر إلى إزالة بيانات الوصف الخاصة بها بشكل دائم. هل تريد المتابعة؟",
+      "title": "سيتم فقدان البيانات الوصفية"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "أدخل وصف المخطط",
     "diagramNamePlaceholder": "أدخل اسم المخطط",
@@ -755,10 +788,12 @@
     "support": "الدعم"
   },
   "getStarted": "ابدأ",
-  "homeDescription": "TMI هي أداة تدير وتعزز عمليات المراجعة الأمنية ونمذجة التهديدات لمؤسستك. تدير سير عمل المراجعة الأمنية، وتنظم المعلومات للمراجعات الأمنية، وتمكّن من بناء مخططات تدفق البيانات بشكل تعاوني، وتتيح ربط الأتمتة لتقليل الجهد في عملية المراجعة وتحليل التهديدات الأمنية.",
+  "homeDescription": "TMI هي أداة تُبسّط عمليات المراجعة الأمنية ونمذجة التهديدات في مؤسستك. تقود سير العمل في المراجعة، وتُنظّم المعلومات الأساسية، وتمكّن الفرق من بناء رسوم تدفق البيانات بشكل تعاوني. كما تتصل بأتمتة العمليات، مما يساعد على تقليل الأعمال اليدوية والكشف عن التهديدات الأمنية بكفاءة أعلى.",
   "homeWelcomeTitle": "مرحبا بكم في تي إم آي: نمذجة التهديدات المحسنة",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "حفظ وخروج",
       "submitResponses": "إرسال الردود"
     }
@@ -818,6 +853,53 @@
       "view": "عرض الملاحظة"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "تسجيل الدخول"
+    },
+    "operationError": "فشل في {{operation}}: {{errorMessage}}",
+    "operationFailed": "فشلت العملية",
+    "operations": {
+      "collaboration": "التعاون",
+      "denyPresenterRequest": "رفض طلب مقدم العرض",
+      "sendPresenterRequest": "إرسال طلب مقدم العرض",
+      "startCollaboration": "بدء التعاون",
+      "updatePresenter": "تحديث مقدم العرض"
+    },
+    "presenter": {
+      "assigned": "{{user}} هو مقدم العرض الآن",
+      "assignedYou": "أنت مقدم العرض الآن",
+      "cleared": "تم إلغاء وضع مقدم العرض",
+      "cursorMoved": "تحرك مؤشر مقدم العرض",
+      "modeChanged": "تغيّر وضع مقدم العرض",
+      "privilegesRequested": "تم طلب صلاحيات مقدم العرض",
+      "removed": "{{user}} لم يعد مقدم العرض",
+      "removedYou": "لم تعد مقدم العرض",
+      "requestDenied": "تم رفض طلب مقدم العرض الخاص بك",
+      "requestSent": "تم إرسال طلب مقدم العرض إلى مالك الجلسة",
+      "requesting": "{{user}} يطلب صلاحيات مقدم العرض",
+      "selectionChanged": "تغيّر تحديد مقدم العرض"
+    },
+    "session": {
+      "disconnected": "تم قطع الاتصال بجلسة التعاون",
+      "reconnected": "تمت إعادة الاتصال بجلسة التعاون",
+      "reconnecting": "جارٍ إعادة الاتصال بجلسة التعاون...",
+      "userRemoved": "تمت إزالة {{user}} من الجلسة",
+      "youWereRemoved": "تمت إزالتك من جلسة التعاون"
+    },
+    "unknownError": "خطأ غير معروف",
+    "websocket": {
+      "authenticationFailed": "فشلت المصادقة. يرجى تسجيل الدخول مرة أخرى.",
+      "communicationError": "خطأ في الاتصال بالخادم. قد لا تتم مزامنة بعض التحديثات.",
+      "connectionError": "خطأ في الاتصال. العمل في وضع عدم الاتصال.",
+      "connectionFailed": "فشل الاتصال بخادم التعاون.",
+      "connectionTimeout": "انتهت مهلة الاتصال. قد يكون الخادم محملاً بشكل زائد.",
+      "disconnected": "تم قطع الاتصال بخادم التعاون. سيتم حفظ التغييرات محلياً.",
+      "messageSendFailed": "فشل إرسال الرسالة. قد لا تتم مزامنة تغييراتك.",
+      "multipleFailed": "فشل الاتصال بعد عدة محاولات. العمل في وضع عدم الاتصال.",
+      "unknownError": "حدث خطأ غير معروف في WebSocket"
+    }
+  },
   "pagination": {
     "ariaLabel": "اختر صفحة العناصر",
     "firstPage": "الصفحة الأولى",
@@ -870,6 +952,23 @@
     "userRightsContent2": "يتيح هذا الخيار الحذف الفوري لجميع البيانات التي يخزنها المشغل نيابة عنك، بما في ذلك معلومات الملف الشخصي وسجلات المصادقة. عند التفعيل، سيتم إزالة بياناتك بشكل دائم من أنظمة المشغل ومزودي الطرف الثالث، مع مراعاة أي التزامات قانونية للاحتفاظ بالبيانات.",
     "userRightsTitle": "حقوق المستخدم"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "أدخل وصف المشروع",
+      "namePlaceholder": "أدخل اسم المشروع",
+      "nameRequired": "اسم المشروع مطلوب",
+      "statusPlaceholder": "مثال: active, planning, archived",
+      "teamRequired": "الفريق مطلوب",
+      "title": "إنشاء مشروع",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "إنشاء مشروع جديد",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "لا يوجد مشروع"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "تمديد الجلسة",
     "extending": "جاري تمديد جلستك، يرجى الانتظار...",
@@ -883,7 +982,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "فشل الحفظ",
+      "error": "{{common.saveFailed}}",
       "saved": "تم الحفظ",
       "saving": "جاري الحفظ..."
     },
@@ -952,69 +1051,86 @@
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "عرض الرد"
   },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "أدخل وصف الفريق",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "أدخل اسم الفريق",
+      "nameRequired": "اسم الفريق مطلوب",
+      "statusPlaceholder": "مثال: active, archived",
+      "title": "إنشاء فريق",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "إنشاء فريق جديد"
+  },
   "threatEditor": {
     "createNewThreat": "إنشاء تهديد جديد",
     "notAssociatedWithAsset": "غير مرتبط بأصل",
     "notAssociatedWithCell": "غير مرتبط بخلية",
     "notAssociatedWithDiagram": "غير مرتبط بمخطط",
     "threatPriority": {
-      "0": "فوري (P0)",
-      "0.description": "يجب معالجته بشكل عاجل؛ استغلال نشط، انتهاك تنظيمي، أو تعرض حرج للأعمال.",
-      "1": "عالي (P1)",
-      "1.description": "يتطلب حلاً سريعاً؛ تعرض عالي المخاطر أو موعد إصدار قادم.",
-      "2": "متوسط (P2)",
-      "2.description": "المعالجة ضمن دورات التطوير القياسية؛ تعرض معتدل.",
-      "3": "منخفض (P3)",
-      "3.description": "الإدراج في قائمة الانتظار للدورات المستقبلية؛ لا يوجد تعرض فوري.",
-      "4": "مؤجل (P4)",
-      "4.description": "تم تأجيله بموافقة موثقة من الأعمال؛ يُتابع ولكن غير مجدول."
+      "deferred": "مؤجل (P4)",
+      "deferred.description": "تم تأجيله بموافقة موثقة من الأعمال؛ يُتابع ولكن غير مجدول.",
+      "high": "عالي (P1)",
+      "high.description": "يتطلب حلاً سريعاً؛ تعرض عالي المخاطر أو موعد إصدار قادم.",
+      "immediate": "فوري (P0)",
+      "immediate.description": "يجب معالجته بشكل عاجل؛ استغلال نشط، انتهاك تنظيمي، أو تعرض حرج للأعمال.",
+      "low": "منخفض (P3)",
+      "low.description": "الإدراج في قائمة الانتظار للدورات المستقبلية؛ لا يوجد تعرض فوري.",
+      "medium": "متوسط (P2)",
+      "medium.description": "المعالجة ضمن دورات التطوير القياسية؛ تعرض معتدل."
     },
     "threatSeverity": {
-      "0": "حرج",
-      "0.description": "ثغرة قابلة للاستغلال تمكن من اختراق كامل للنظام، خرق البيانات، أو تأثير على السلامة؛ تتطلب إجراءً فورياً.",
-      "1": "عالي",
-      "1.description": "تأثير كبير أو احتمالية عالية؛ تمكن من وصول غير مصرح به كبير، تصعيد الصلاحيات، أو تعطيل الخدمة.",
-      "2": "متوسط",
-      "2.description": "تأثير أو احتمالية معتدلة؛ تعرض محدود للبيانات، ضعف جزئي في الوظائف، أو تتطلب استغلالات متسلسلة.",
-      "3": "منخفض",
-      "3.description": "تأثير ضئيل أو احتمالية منخفضة؛ تأثير ضئيل على الأعمال، تتطلب شروطاً محددة أو تفاعل المستخدم.",
-      "4": "معلوماتي",
-      "4.description": "لا توجد قابلية للاستغلال المباشر؛ توصية، انحراف عن أفضل الممارسات، أو تحسين في التكوين.",
-      "5": "غير معروف",
-      "5.description": "لم يتم تقييم شدة التهديد بعد."
+      "critical": "حرج",
+      "critical.description": "ثغرة قابلة للاستغلال تمكن من اختراق كامل للنظام، خرق البيانات، أو تأثير على السلامة؛ تتطلب إجراءً فورياً.",
+      "high": "عالي",
+      "high.description": "تأثير كبير أو احتمالية عالية؛ تمكن من وصول غير مصرح به كبير، تصعيد الصلاحيات، أو تعطيل الخدمة.",
+      "informational": "معلوماتي",
+      "informational.description": "لا توجد قابلية للاستغلال المباشر؛ توصية، انحراف عن أفضل الممارسات، أو تحسين في التكوين.",
+      "low": "منخفض",
+      "low.description": "تأثير ضئيل أو احتمالية منخفضة؛ تأثير ضئيل على الأعمال، تتطلب شروطاً محددة أو تفاعل المستخدم.",
+      "medium": "متوسط",
+      "medium.description": "تأثير أو احتمالية معتدلة؛ تعرض محدود للبيانات، ضعف جزئي في الوظائف، أو تتطلب استغلالات متسلسلة.",
+      "unknown": "غير معروف",
+      "unknown.description": "لم يتم تقييم شدة التهديد بعد."
     },
     "threatStatus": {
-      "0": "مفتوح",
-      "0.description": "تم تحديد النتيجة وتوثيقها ولكن لم يتم اتخاذ أي إجراء.",
-      "1": "مؤكد",
-      "1.description": "تم التحقق من صحة التهديد من خلال التحليل أو الأدلة.",
-      "2": "خطة التخفيف",
-      "2.description": "تم تحديد وتعيين استراتيجية المعالجة أو التخفيف.",
-      "3": "التخفيف قيد التنفيذ",
-      "3.description": "جاري تنفيذ الضوابط أو تغييرات الكود أو الإجراءات المضادة.",
-      "4": "في انتظار التحقق",
-      "4.description": "اكتمل التخفيف؛ يجب على فريق الأمان اختبار أو مراجعة الفعالية.",
-      "5": "تم الحل",
-      "5.description": "تم تخفيف التهديد بالكامل والتحقق منه؛ المخاطر المتبقية مقبولة.",
-      "6": "مقبول",
-      "6.description": "تم الاعتراف بالتهديد ولكن لم يتم تخفيفه عمداً (مثل: بسبب مبرر تجاري)؛ يتطلب قبولاً رسمياً للمخاطر.",
-      "7": "إيجابي كاذب",
-      "7.description": "حدد التحقيق أن النتيجة ليست تهديداً صالحاً؛ لا يلزم اتخاذ مزيد من الإجراءات.",
-      "8": "مؤجل",
-      "8.description": "تم تأجيل الإجراء بموافقة (مثل: للسباقات المستقبلية)؛ يتضمن المبرر وتاريخ الاستحقاق.",
-      "9": "مغلق",
-      "9.description": "تمت أرشفة النتيجة بعد الحل أو القبول أو الإبطال، مع سجل التدقيق."
+      "accepted": "مقبول",
+      "accepted.description": "تم الاعتراف بالتهديد ولكن لم يتم تخفيفه عمداً (مثل: بسبب مبرر تجاري)؛ يتطلب قبولاً رسمياً للمخاطر.",
+      "closed": "مغلق",
+      "closed.description": "تمت أرشفة النتيجة بعد الحل أو القبول أو الإبطال، مع سجل التدقيق.",
+      "confirmed": "مؤكد",
+      "confirmed.description": "تم التحقق من صحة التهديد من خلال التحليل أو الأدلة.",
+      "deferred": "مؤجل",
+      "deferred.description": "تم تأجيل الإجراء بموافقة (مثل: للسباقات المستقبلية)؛ يتضمن المبرر وتاريخ الاستحقاق.",
+      "falsePositive": "إيجابي كاذب",
+      "falsePositive.description": "حدد التحقيق أن النتيجة ليست تهديداً صالحاً؛ لا يلزم اتخاذ مزيد من الإجراءات.",
+      "mitigationInProgress": "التخفيف قيد التنفيذ",
+      "mitigationInProgress.description": "جاري تنفيذ الضوابط أو تغييرات الكود أو الإجراءات المضادة.",
+      "mitigationPlanned": "خطة التخفيف",
+      "mitigationPlanned.description": "تم تحديد وتعيين استراتيجية المعالجة أو التخفيف.",
+      "open": "مفتوح",
+      "open.description": "تم تحديد النتيجة وتوثيقها ولكن لم يتم اتخاذ أي إجراء.",
+      "resolved": "تم الحل",
+      "resolved.description": "تم تخفيف التهديد بالكامل والتحقق منه؛ المخاطر المتبقية مقبولة.",
+      "verificationPending": "في انتظار التحقق",
+      "verificationPending.description": "اكتمل التخفيف؛ يجب على فريق الأمان اختبار أو مراجعة الفعالية."
     }
   },
   "threatModels": {
     "addPermission": "إضافة إذن",
     "branch": "فرع",
+    "changeSecurityReviewer": "تغيير مراجع الأمان",
+    "clearSecurityReviewer": "مسح مراجع الأمان",
     "commit": "التزام",
     "createFirstButton": "أنشئ نموذج التهديد الأول",
     "createNewDiagram": "إنشاء مخطط جديد",
     "createNewRepository": "إضافة مرجع مستودع",
     "created": "{{common.created}}",
-    "createdBy": "تم إنشاؤه بواسطة",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "مخطط تدفق البيانات",
     "deleteWarningPermanent": "لا يمكن التراجع عن هذا الإجراء وسيحذف نهائياً جميع المخططات والتهديدات والبيانات الوصفية المرتبطة.",
@@ -1078,29 +1194,30 @@
       "outputs": "المخرجات",
       "outputsDescription": "الملاحظات والمخططات والتهديدات التي تم إنتاجها أثناء تحليل الأمان"
     },
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "تعيين كمالك",
     "sourcesCount": "مستودعات",
     "status": {
-      "0": "لم يبدأ",
-      "0.tooltip": "تم بدء مراجعة الأمان ولكن لم تبدأ أنشطة التقييم.",
-      "1": "قيد التنفيذ",
-      "1.tooltip": "التقييم النشط جارٍ، بما في ذلك نمذجة التهديدات أو مراجعة الكود أو الاختبار.",
-      "2": "في انتظار المراجعة",
-      "2.tooltip": "مصنفات التقييم (مثل التقارير والنتائج) في انتظار المراجعة الرسمية من قبل قادة الأمان أو المعتمدين.",
-      "3": "مطلوب المعالجة",
-      "3.tooltip": "تم تحديد الثغرات الأمنية أو المشكلات؛ يجب على فريق التطوير معالجتها.",
-      "4": "المعالجة قيد التنفيذ",
-      "4.tooltip": "يتم تنفيذ إصلاحات للمشكلات المحددة من قبل فريق التطوير.",
-      "5": "في انتظار التحقق",
-      "5.tooltip": "اكتملت المعالجة؛ يجب على فريق الأمان اختبار أو مراجعة الفعالية.",
-      "6": "موافق عليه",
-      "6.tooltip": "تم حل جميع المشكلات والتحقق منها؛ يلبي التطبيق معايير الأمان للإصدار أو النشر.",
-      "7": "مرفوض",
-      "7.tooltip": "فشلت المراجعة في المعايير الحرجة؛ مطلوب إعادة عمل كبيرة قبل إعادة التقديم.",
-      "8": "مؤجل",
-      "8.tooltip": "تم إيقاف المراجعة مؤقتًا (على سبيل المثال، بسبب قيود الموارد أو تغييرات التطبيق)؛ من المخطط استئنافها.",
-      "9": "مغلق",
-      "9.tooltip": "اكتملت المراجعة بالكامل وتم أرشفتها، ولا حاجة لاتخاذ مزيد من الإجراءات."
+      "approved": "موافق عليه",
+      "approved.tooltip": "تم حل جميع المشكلات والتحقق منها؛ يلبي التطبيق معايير الأمان للإصدار أو النشر.",
+      "closed": "مغلق",
+      "closed.tooltip": "اكتملت المراجعة بالكامل وتم أرشفتها، ولا حاجة لاتخاذ مزيد من الإجراءات.",
+      "deferred": "مؤجل",
+      "deferred.tooltip": "تم إيقاف المراجعة مؤقتًا (على سبيل المثال، بسبب قيود الموارد أو تغييرات التطبيق)؛ من المخطط استئنافها.",
+      "inProgress": "قيد التنفيذ",
+      "inProgress.tooltip": "التقييم النشط جارٍ، بما في ذلك نمذجة التهديدات أو مراجعة الكود أو الاختبار.",
+      "notStarted": "لم يبدأ",
+      "notStarted.tooltip": "تم بدء مراجعة الأمان ولكن لم تبدأ أنشطة التقييم.",
+      "pendingReview": "في انتظار المراجعة",
+      "pendingReview.tooltip": "مصنفات التقييم (مثل التقارير والنتائج) في انتظار المراجعة الرسمية من قبل قادة الأمان أو المعتمدين.",
+      "rejected": "مرفوض",
+      "rejected.tooltip": "فشلت المراجعة في المعايير الحرجة؛ مطلوب إعادة عمل كبيرة قبل إعادة التقديم.",
+      "remediationInProgress": "المعالجة قيد التنفيذ",
+      "remediationInProgress.tooltip": "يتم تنفيذ إصلاحات للمشكلات المحددة من قبل فريق التطوير.",
+      "remediationRequired": "مطلوب المعالجة",
+      "remediationRequired.tooltip": "تم تحديد الثغرات الأمنية أو المشكلات؛ يجب على فريق التطوير معالجتها.",
+      "verificationPending": "في انتظار التحقق",
+      "verificationPending.tooltip": "اكتملت المعالجة؛ يجب على فريق الأمان اختبار أو مراجعة الفعالية."
     },
     "statusLastUpdated": "آخر تحديث للحالة",
     "tag": "علامة",
@@ -1245,6 +1362,16 @@
     },
     "queue": "قائمة انتظار الفرز",
     "returnToSubmitted": "الإرجاع إلى مقدم",
+    "reviewerAssignment": {
+      "assign": "تعيين",
+      "assignToMe": "تعيين لي",
+      "errorLoading": "فشل في تحميل نماذج التهديد غير المعينة",
+      "loading": "جارٍ تحميل المراجعات غير المعينة...",
+      "noUnassigned": "لا توجد مراجعات غير معينة",
+      "noUnassignedDescription": "جميع نماذج التهديد النشطة لديها مراجع أمان معين",
+      "reviewer": "مراجع الأمان",
+      "selectReviewer": "اختر مراجعاً..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "قدّم ملاحظات توضح ما يحتاج إلى مراجعة. سيرى مقدّم الطلب هذه الملاحظات عند مراجعة رده.",
@@ -1252,6 +1379,10 @@
       "label": "ملاحظات المراجعة",
       "placeholder": "صف المراجعات المطلوبة...",
       "title": "إعادة للمراجعة"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "المراجعات غير المعينة"
     },
     "title": "الفرز",
     "viewDetails": "عرض التفاصيل"
@@ -1324,7 +1455,7 @@
     "sections": {
       "developer": "المطوّر",
       "diagramEditor": "محرر المخططات",
-      "securityReviewer": "مراجع الأمان"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "عرض أدوات المطور",
     "tabs": {

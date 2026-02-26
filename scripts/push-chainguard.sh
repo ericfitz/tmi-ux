@@ -34,8 +34,10 @@ if ! command -v docker &> /dev/null; then
   exit 1
 fi
 
-echo "Building Docker image with Chainguard base..."
-docker build -f Dockerfile.chainguard -t "${FULL_IMAGE_NAME}" .
+APP_VERSION=$(node -p "require('./package.json').version")
+
+echo "Building Docker image with Chainguard base (version: ${APP_VERSION})..."
+docker build --build-arg APP_VERSION="${APP_VERSION}" -f Dockerfile.chainguard -t "${FULL_IMAGE_NAME}" .
 
 echo ""
 echo "Pushing image to registry..."

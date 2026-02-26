@@ -24,6 +24,7 @@ import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter, takeUntil, distinctUntilChanged, shareReplay } from 'rxjs/operators';
 
 import { LoggerService } from './logger.service';
+import { redactSensitiveData } from '../utils/redact-sensitive-data.util';
 import { TMIWebSocketMessage, TMIMessageType } from '../types/websocket-message.types';
 import type { IAuthService } from '../interfaces/auth.interface';
 
@@ -353,7 +354,7 @@ export class WebSocketAdapter {
           sessionId: fullMessage.sessionId,
           userId: fullMessage.userId,
           requiresAck: fullMessage.requiresAck,
-          body: this._redactSensitiveData(fullMessage.data),
+          body: redactSensitiveData(fullMessage.data),
         });
 
         this._socket!.send(JSON.stringify(fullMessage));
@@ -625,7 +626,7 @@ export class WebSocketAdapter {
           userEmail: userInfo?.email,
           operationId: messageData.operation_id,
           hasOperation: !!messageData.operation,
-          body: this._redactSensitiveData(message),
+          body: redactSensitiveData(message),
         });
 
         this._socket!.send(JSON.stringify(message));
@@ -728,7 +729,7 @@ export class WebSocketAdapter {
           userId: message.userId,
           timestamp: message.timestamp,
           requiresAck: message.requiresAck,
-          body: this._redactSensitiveData(message.data),
+          body: redactSensitiveData(message.data),
         });
 
         this._messages$.next(message);
@@ -1107,88 +1108,90 @@ export class WebSocketAdapter {
    * Validate TMI collaborative message structure
    */
   private _validateTMIMessage(message: unknown): { isValid: boolean; error?: string } {
-    // Check if message is an object
     if (!message || typeof message !== 'object') {
       return { isValid: false, error: 'TMI message must be an object' };
     }
 
-    // Type guard to safely access properties
-    const msg = message as {
-      message_type?: unknown;
-      event?: unknown;
-      user?: unknown;
-      user_id?: unknown; // Legacy field
-      operation_id?: unknown;
-      operation?: unknown;
-      cursor_position?: unknown;
-      selected_cells?: unknown;
-    };
+    const msg = message as Record<string, unknown>;
 
-    // Check for message_type or event field
-    const messageType = msg.message_type || msg.event;
+    // Validate message_type or event field
+    const messageType = msg['message_type'] || msg['event'];
     if (typeof messageType !== 'string' || !messageType.trim()) {
       return { isValid: false, error: 'TMI message must have message_type or event string' };
     }
 
-    // Validate user object if present
-    if (msg.user !== undefined) {
-      if (typeof msg.user !== 'object' || msg.user === null) {
-        return { isValid: false, error: 'user must be an object if provided' };
-      }
-      const userObj = msg.user as { user_id?: unknown; email?: unknown };
-      if (userObj.user_id !== undefined && typeof userObj.user_id !== 'string') {
-        return { isValid: false, error: 'user.user_id must be a string if provided' };
-      }
-      if (userObj.email !== undefined && typeof userObj.email !== 'string') {
-        return { isValid: false, error: 'user.email must be a string if provided' };
-      }
-    }
-
-    // Legacy: Validate user_id if present (for backward compatibility)
-    if (msg.user_id !== undefined && typeof msg.user_id !== 'string') {
-      return { isValid: false, error: 'user_id must be a string if provided' };
-    }
-
-    // Validate operation_id if present
-    if (msg.operation_id !== undefined && typeof msg.operation_id !== 'string') {
-      return { isValid: false, error: 'operation_id must be a string if provided' };
+    // Validate common fields
+    const commonError = this._validateTMICommonFields(msg);
+    if (commonError) {
+      return { isValid: false, error: commonError };
     }
 
     // Type-specific validation
+    const typeError = this._validateTMIMessageType(messageType, msg);
+    if (typeError) {
+      return { isValid: false, error: typeError };
+    }
+
+    return { isValid: true };
+  }
+
+  /** Validate common optional fields shared across all TMI message types. */
+  private _validateTMICommonFields(msg: Record<string, unknown>): string | null {
+    // Validate user object if present
+    if (msg['user'] !== undefined) {
+      if (typeof msg['user'] !== 'object' || msg['user'] === null) {
+        return 'user must be an object if provided';
+      }
+      const userObj = msg['user'] as Record<string, unknown>;
+      if (userObj['user_id'] !== undefined && typeof userObj['user_id'] !== 'string') {
+        return 'user.user_id must be a string if provided';
+      }
+      if (userObj['email'] !== undefined && typeof userObj['email'] !== 'string') {
+        return 'user.email must be a string if provided';
+      }
+    }
+
+    if (msg['user_id'] !== undefined && typeof msg['user_id'] !== 'string') {
+      return 'user_id must be a string if provided';
+    }
+
+    if (msg['operation_id'] !== undefined && typeof msg['operation_id'] !== 'string') {
+      return 'operation_id must be a string if provided';
+    }
+
+    return null;
+  }
+
+  /** Validate type-specific payload requirements. */
+  private _validateTMIMessageType(
+    messageType: string,
+    msg: Record<string, unknown>,
+  ): string | null {
     if (messageType === 'diagram_operation') {
-      if (!msg.operation || typeof msg.operation !== 'object') {
-        return { isValid: false, error: 'diagram_operation message must have operation object' };
+      if (!msg['operation'] || typeof msg['operation'] !== 'object') {
+        return 'diagram_operation message must have operation object';
       }
-
-      const operation = msg.operation as { type?: unknown; cells?: unknown };
-
-      if (typeof operation.type !== 'string') {
-        return { isValid: false, error: 'operation must have type string' };
+      const operation = msg['operation'] as Record<string, unknown>;
+      if (typeof operation['type'] !== 'string') {
+        return 'operation must have type string';
       }
-
-      if (!Array.isArray(operation.cells)) {
-        return { isValid: false, error: 'operation must have cells array' };
+      if (!Array.isArray(operation['cells'])) {
+        return 'operation must have cells array';
       }
     }
 
     if (
       messageType === 'presenter_cursor' &&
-      (!msg.cursor_position || typeof msg.cursor_position !== 'object')
+      (!msg['cursor_position'] || typeof msg['cursor_position'] !== 'object')
     ) {
-      return { isValid: false, error: 'presenter_cursor message must have cursor_position object' };
+      return 'presenter_cursor message must have cursor_position object';
     }
 
-    if (messageType === 'presenter_selection') {
-      const selectionMsg = msg as { selected_cells?: unknown };
-      if (!Array.isArray(selectionMsg.selected_cells)) {
-        return {
-          isValid: false,
-          error: 'presenter_selection message must have selected_cells array',
-        };
-      }
+    if (messageType === 'presenter_selection' && !Array.isArray(msg['selected_cells'])) {
+      return 'presenter_selection message must have selected_cells array';
     }
 
-    return { isValid: true };
+    return null;
   }
 
   /**
@@ -1219,79 +1222,5 @@ export class WebSocketAdapter {
     });
 
     this._errors$.next(wsError);
-  }
-
-  /**
-   * Redact sensitive information from WebSocket message data
-   * @param data Message data that may contain sensitive information
-   * @returns Object with sensitive values redacted
-   */
-  private _redactSensitiveData(data: unknown): unknown {
-    if (!data || typeof data !== 'object') {
-      return data;
-    }
-
-    // Create a null-prototype object to prevent prototype pollution
-    const redacted = Object.create(null) as Record<string, unknown>;
-    const source = data as Record<string, unknown>;
-    const sensitiveKeys = [
-      'bearer',
-      'token',
-      'password',
-      'secret',
-      'jwt',
-      'refresh_token',
-      'access_token',
-      'api_key',
-      'apikey',
-      'authorization',
-      'auth',
-    ];
-
-    // Use Object.keys to only iterate own enumerable properties (not inherited)
-    for (const key of Object.keys(source)) {
-      // Skip prototype-polluting keys as an extra safeguard
-      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
-        continue;
-      }
-
-      const value = source[key];
-      const lowerKey = key.toLowerCase();
-
-      // Check if the key contains sensitive information
-      // Note: redacted is a null-prototype object created via Object.create(null),
-      // and dangerous keys (__proto__, constructor, prototype) are explicitly skipped above.
-      // This prevents prototype pollution even though CodeQL may still flag the pattern.
-      if (sensitiveKeys.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
-        if (typeof value === 'string' && value.length > 0) {
-          redacted[key] = this._redactToken(value); // lgtm[js/remote-property-injection]
-        } else {
-          redacted[key] = '[REDACTED]'; // lgtm[js/remote-property-injection]
-        }
-      } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-        // Recursively redact nested objects
-        redacted[key] = this._redactSensitiveData(value); // lgtm[js/remote-property-injection]
-      } else {
-        // Copy non-sensitive, non-object values as-is
-        redacted[key] = value; // lgtm[js/remote-property-injection]
-      }
-    }
-
-    return redacted;
-  }
-
-  /**
-   * Redact a token while showing first and last few characters for debugging
-   * @param token The token to redact
-   * @returns Redacted token string
-   */
-  private _redactToken(token: string): string {
-    if (token.length <= 8) {
-      return '[REDACTED]';
-    }
-    const start = token.substring(0, 4);
-    const end = token.substring(token.length - 4);
-    const middle = '*'.repeat(Math.min(12, token.length - 8));
-    return `${start}${middle}${end}`;
   }
 }

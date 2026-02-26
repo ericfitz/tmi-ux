@@ -439,10 +439,13 @@
     "collaboratorsHeader": "شرکاء",
     "copyLink": "لنک کاپی کریں",
     "denyPresenterRequest": "پیش کنندہ کی درخواست مسترد کریں",
+    "endCollaboration": "تعاون ختم کریں",
     "hostedBy": "میزبان",
     "isRequestingPresenterPrivileges": "پیش کنندہ کے مراعات کی درخواست کر رہا ہے",
     "joinSession": "سیشن میں شامل ہوں",
     "justNow": "ابھی ابھی",
+    "leaveSession": "سیشن چھوڑیں",
+    "loadingDiagramContext": "خاکے کا سیاق و سباق لوڈ ہو رہا ہے...",
     "manageParticipants": "شرکاء کا انتظام کریں",
     "noActiveSessions": "کوئی فعال تعاون سیشن نہیں",
     "participantRequestsPresenterRole": "شریک پیش کنندہ کے کردار کی درخواست کر رہا ہے",
@@ -450,6 +453,7 @@
     "removeFromSession": "سیشن سے ہٹائیں",
     "requestPresenter": "پیش کنندہ کی درخواست کریں",
     "sessionStarted": "شروع ہوا",
+    "startCollaboration": "تعاون شروع کریں",
     "takeBackPresenter": "پیش کنندہ واپس لیں",
     "title": "تعاون سیشن کے شرکاء",
     "userJoined": "{{user}} تعاون میں شامل ہوا",
@@ -485,6 +489,7 @@
     "copyToClipboard": "کلپ بورڈ پر کاپی کریں",
     "create": "بنائیں",
     "created": "بنایا گیا",
+    "createdBy": "بنانے والا",
     "criticality": "اہمیت",
     "cut": "کاٹیں",
     "deactivate": "غیر فعال کریں",
@@ -512,6 +517,7 @@
     "groups": "گروپس",
     "id": "شناخت",
     "identityProvider": "شناختی فراہم کنندہ",
+    "includeInReport": "رپورٹ میں شامل کریں",
     "issueUri": "مسئلہ URL",
     "language": "{{language}}",
     "lastModified": "آخری ترمیم",
@@ -565,6 +571,7 @@
     "paste": "پیسٹ کریں",
     "permissions": "اجازتیں",
     "priority": "ترجیح",
+    "project": "پروجیکٹ",
     "provider": "فراہم کنندہ",
     "readOnly": "صرف پڑھنے کے لیے",
     "readOnlyTooltip": "آپ کے پاس اس خطرے کے ماڈل کی صرف پڑھنے کی رسائی ہے۔ ترمیم کی اجازت کے لیے مالک سے رابطہ کریں۔",
@@ -576,6 +583,7 @@
     },
     "save": "محفوظ کریں",
     "saveAndClose": "محفوظ کریں اور بند کریں",
+    "saveFailed": "محفوظ کرنا ناکام",
     "savedSuccessfully": "کامیابی سے محفوظ ہو گیا",
     "score": "سکور",
     "search": "تلاش",
@@ -592,6 +600,7 @@
       "group": "گروپ",
       "user": "صارف"
     },
+    "team": "ٹیم",
     "template": "ٹیمپلیٹ",
     "threatDescription": "خطرے کی تفصیل",
     "threatDescriptionPlaceholder": "خطرے کی تفصیل بیان کریں",
@@ -602,8 +611,10 @@
     "type": "قسم",
     "unarchive": "آرکائیو ختم کریں",
     "unsavedChangesWarning": "آپ کے پاس غیر محفوظ شدہ تبدیلیاں ہیں۔ کیا آپ واقعی بند کرنا چاہتے ہیں؟",
+    "uri": "URI",
     "userId": "صارف ID",
     "validation": {
+      "email": "براہ کرم ایک درست ای میل ایڈریس درج کریں",
       "invalidUrl": "براہ کرم درست URL درج کریں",
       "maxLength": "زیادہ سے زیادہ لمبائی {{max}} حروف ہے",
       "nameRequired": "نام ضروری ہے",
@@ -636,10 +647,27 @@
     "title": "خطرے کا ماڈل بنائیں"
   },
   "dashboard": {
-    "clearFilter": "فلٹر صاف کریں",
-    "filterLabel": "خطرے کے ماڈلز فلٹر کریں",
-    "filterPlaceholder": "نام، تفصیل، مالک، یا حالت سے تلاش کریں",
-    "noMatchingThreatModels": "آپ کے فلٹر سے کوئی خطرے کا ماڈل میل نہیں کھاتا۔",
+    "clearAllFilters": "تمام فلٹرز صاف کریں",
+    "clearSearch": "تلاش صاف کریں",
+    "createdAfter": "اس تاریخ کے بعد بنایا گیا",
+    "createdBefore": "اس تاریخ سے پہلے بنایا گیا",
+    "descriptionFilter": "{{common.description}}",
+    "descriptionPlaceholder": "تفصیل سے فلٹر کریں",
+    "issueUriFilter": "{{common.issueUri}}",
+    "issueUriPlaceholder": "ایشو URL سے فلٹر کریں",
+    "lessFilters": "کم فلٹرز",
+    "modifiedAfter": "اس تاریخ کے بعد ترمیم شدہ",
+    "modifiedBefore": "اس تاریخ سے پہلے ترمیم شدہ",
+    "moreFilters": "مزید فلٹرز",
+    "nameFilter": "{{common.name}}",
+    "namePlaceholder": "نام سے فلٹر کریں",
+    "noMatchingThreatModels": "آپ کی تلاش یا فلٹرز سے کوئی خطرے کا ماڈل میل نہیں کھاتا۔",
+    "ownerFilter": "{{common.roles.owner}}",
+    "ownerPlaceholder": "مالک کے نام یا ای میل سے فلٹر کریں",
+    "searchLabel": "{{common.search}}",
+    "searchPlaceholder": "نام، تفصیل، مالک، یا حالت سے تلاش کریں",
+    "statusUpdatedAfter": "اس تاریخ کے بعد حالت تبدیل شدہ",
+    "statusUpdatedBefore": "اس تاریخ سے پہلے حالت تبدیل شدہ",
     "tableHeaders": {
       "actions": "{{common.actions}}",
       "created": "{{common.created}}",
@@ -698,6 +726,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "ایک یا زیادہ منتخب عناصر میں میٹاڈیٹا اندراجات ہیں۔ ان عناصر کو حذف کرنے سے ان کی میٹاڈیٹا مستقل طور پر ہٹ جائے گی۔ کیا آپ جاری رکھنا چاہتے ہیں؟",
+      "title": "میٹاڈیٹا ضائع ہو جائے گا"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "ڈایاگرام کی تفصیل درج کریں",
     "diagramNamePlaceholder": "ڈایاگرام کا نام درج کریں",
@@ -755,10 +788,12 @@
     "support": "سپورٹ"
   },
   "getStarted": "شروع کریں",
-  "homeDescription": "TMI ایک ٹول ہے جو آپ کی تنظیم کے لیے سیکیورٹی جائزے اور خطرے کی ماڈلنگ کے عمل کو منظم اور بہتر بناتا ہے۔ یہ سیکیورٹی جائزے کے ورک فلو کو چلاتا ہے، سیکیورٹی جائزوں کے لیے معلومات کو منظم کرتا ہے، مشترکہ طور پر ڈیٹا فلو ڈایاگرام بنانے کی سہولت فراہم کرتا ہے، اور جائزے کے عمل میں محنت کو کم کرنے اور سیکیورٹی خطرات کا تجزیہ کرنے کے لیے آٹومیشن سے منسلک ہونے کی اجازت دیتا ہے۔",
+  "homeDescription": "TMI ایک ایسا ٹول ہے جو آپ کی تنظیم کے سیکیورٹی ریویو اور ہماہنگی ماڈلنگ کے عمل کو سادہ بناتا ہے۔ یہ ریویو کے بہاؤ کو چلاتا ہے، اہم معلومات کو منظم کرتا ہے، اور ٹیموں کو ڈیٹا فلو ڈائاگرام بنانے میں تعاون کرتا ہے۔ یہ خودکار نظام سے بھی جڑا ہوتا ہے، جو دستی محنت کو کم کرنے اور سیکیورٹی کے خطرات کو زیادہ موثر انداز میں ظاہر کرنے میں مدد دیتا ہے۔",
   "homeWelcomeTitle": "TMI میں خوش آمدید: Threat Modeling Improved",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "محفوظ کریں اور باہر نکلیں",
       "submitResponses": "جوابات جمع کرائیں"
     }
@@ -818,6 +853,53 @@
       "view": "نوٹ دیکھیں"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "لاگ ان"
+    },
+    "operationError": "{{operation}} ناکام: {{errorMessage}}",
+    "operationFailed": "آپریشن ناکام ہو گیا",
+    "operations": {
+      "collaboration": "تعاون",
+      "denyPresenterRequest": "پریزینٹر کی درخواست مسترد کریں",
+      "sendPresenterRequest": "پریزینٹر کی درخواست بھیجیں",
+      "startCollaboration": "تعاون شروع کریں",
+      "updatePresenter": "پریزینٹر کو اپ ڈیٹ کریں"
+    },
+    "presenter": {
+      "assigned": "{{user}} اب پریزینٹر ہے",
+      "assignedYou": "اب آپ پریزینٹر ہیں",
+      "cleared": "پریزینٹر موڈ ختم کر دیا گیا ہے",
+      "cursorMoved": "پریزینٹر کا کرسر منتقل ہوا",
+      "modeChanged": "پریزینٹر موڈ تبدیل ہو گیا",
+      "privilegesRequested": "پریزینٹر کے مراعات کی درخواست کی گئی",
+      "removed": "{{user}} اب پریزینٹر نہیں ہے",
+      "removedYou": "آپ اب پریزینٹر نہیں ہیں",
+      "requestDenied": "آپ کی پریزینٹر کی درخواست مسترد کر دی گئی",
+      "requestSent": "پریزینٹر کی درخواست سیشن کے مالک کو بھیج دی گئی",
+      "requesting": "{{user}} پریزینٹر کے مراعات کی درخواست کر رہا ہے",
+      "selectionChanged": "پریزینٹر کا انتخاب تبدیل ہو گیا"
+    },
+    "session": {
+      "disconnected": "تعاون کے سیشن سے منقطع ہو گیا",
+      "reconnected": "تعاون کے سیشن سے دوبارہ جڑ گیا",
+      "reconnecting": "تعاون کے سیشن سے دوبارہ جڑ رہا ہے...",
+      "userRemoved": "{{user}} کو سیشن سے ہٹا دیا گیا",
+      "youWereRemoved": "آپ کو تعاون کے سیشن سے ہٹا دیا گیا ہے"
+    },
+    "unknownError": "نامعلوم خرابی",
+    "websocket": {
+      "authenticationFailed": "توثیق ناکام ہو گئی۔ براہ کرم دوبارہ لاگ ان کریں۔",
+      "communicationError": "سرور سے مواصلاتی خرابی۔ کچھ اپ ڈیٹس سنک نہیں ہو سکتیں۔",
+      "connectionError": "کنکشن میں خرابی۔ آف لائن موڈ میں کام ہو رہا ہے۔",
+      "connectionFailed": "تعاون کے سرور سے جڑنے میں ناکامی۔",
+      "connectionTimeout": "کنکشن کا وقت ختم ہو گیا۔ سرور پر زیادہ بوجھ ہو سکتا ہے۔",
+      "disconnected": "تعاون کے سرور سے منقطع ہو گیا۔ تبدیلیاں مقامی طور پر محفوظ ہوں گی۔",
+      "messageSendFailed": "پیغام بھیجنے میں ناکامی۔ آپ کی تبدیلیاں سنک نہیں ہو سکتیں۔",
+      "multipleFailed": "متعدد کوششوں کے بعد کنکشن ناکام ہو گیا۔ آف لائن موڈ میں کام ہو رہا ہے۔",
+      "unknownError": "نامعلوم WebSocket خرابی واقع ہوئی"
+    }
+  },
   "pagination": {
     "ariaLabel": "آئٹمز کا صفحہ منتخب کریں",
     "firstPage": "پہلا صفحہ",
@@ -870,6 +952,23 @@
     "userRightsContent2": "یہ آپشن آپریٹر کے ذخیرہ کردہ تمام ڈیٹا کو فوری طور پر حذف کرنے کی اجازت دیتا ہے، بشمول پروفائل معلومات اور توثیق کے ریکارڈز۔ فعال ہونے پر، آپ کا ڈیٹا آپریٹر کے سسٹمز اور فریق ثالث فراہم کنندگان سے مستقل طور پر ہٹا دیا جائے گا، کسی بھی قانونی برقرار رکھنے کی ذمہ داریوں کے تابع۔",
     "userRightsTitle": "صارف کے حقوق"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "پروجیکٹ کی تفصیل درج کریں",
+      "namePlaceholder": "پروجیکٹ کا نام درج کریں",
+      "nameRequired": "پروجیکٹ کا نام ضروری ہے",
+      "statusPlaceholder": "مثلاً active, planning, archived",
+      "teamRequired": "ٹیم ضروری ہے",
+      "title": "پروجیکٹ بنائیں",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "نیا پروجیکٹ بنائیں",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "کوئی پروجیکٹ نہیں"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "سیشن بڑھائیں",
     "extending": "آپ کا سیشن بڑھایا جا رہا ہے، براہ کرم انتظار کریں...",
@@ -883,7 +982,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "محفوظ کرنا ناکام",
+      "error": "{{common.saveFailed}}",
       "saved": "محفوظ ہوگیا",
       "saving": "محفوظ ہو رہا ہے..."
     },
@@ -952,69 +1051,86 @@
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "جواب دیکھیں"
   },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "ٹیم کی تفصیل درج کریں",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "ٹیم کا نام درج کریں",
+      "nameRequired": "ٹیم کا نام ضروری ہے",
+      "statusPlaceholder": "مثلاً active, archived",
+      "title": "ٹیم بنائیں",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "نئی ٹیم بنائیں"
+  },
   "threatEditor": {
     "createNewThreat": "نیا خطرہ بنائیں",
     "notAssociatedWithAsset": "کسی اثاثے سے منسلک نہیں",
     "notAssociatedWithCell": "کسی سیل سے منسلک نہیں",
     "notAssociatedWithDiagram": "کسی ڈایاگرام سے منسلک نہیں",
     "threatPriority": {
-      "0": "فوری (P0)",
-      "0.description": "فوری طور پر حل کرنا ضروری ہے؛ فعال استحصال، ریگولیٹری خلاف ورزی، یا اہم کاروباری خطرہ۔",
-      "1": "اعلیٰ (P1)",
-      "1.description": "فوری حل درکار ہے؛ اعلیٰ خطرے کی نمائش یا آنے والی ریلیز کی آخری تاریخ۔",
-      "2": "درمیانی (P2)",
-      "2.description": "معیاری ترقیاتی سائیکلز میں حل کریں؛ معتدل نمائش۔",
-      "3": "کم (P3)",
-      "3.description": "مستقبل کے سائیکلز کے لیے بیک لاگ میں شامل کریں؛ کوئی فوری خطرہ نہیں۔",
-      "4": "ملتوی (P4)",
-      "4.description": "دستاویزی کاروباری منظوری کے ساتھ ملتوی؛ ٹریک کیا گیا لیکن شیڈول نہیں۔"
+      "deferred": "ملتوی (P4)",
+      "deferred.description": "دستاویزی کاروباری منظوری کے ساتھ ملتوی؛ ٹریک کیا گیا لیکن شیڈول نہیں۔",
+      "high": "اعلیٰ (P1)",
+      "high.description": "فوری حل درکار ہے؛ اعلیٰ خطرے کی نمائش یا آنے والی ریلیز کی آخری تاریخ۔",
+      "immediate": "فوری (P0)",
+      "immediate.description": "فوری طور پر حل کرنا ضروری ہے؛ فعال استحصال، ریگولیٹری خلاف ورزی، یا اہم کاروباری خطرہ۔",
+      "low": "کم (P3)",
+      "low.description": "مستقبل کے سائیکلز کے لیے بیک لاگ میں شامل کریں؛ کوئی فوری خطرہ نہیں۔",
+      "medium": "درمیانی (P2)",
+      "medium.description": "معیاری ترقیاتی سائیکلز میں حل کریں؛ معتدل نمائش۔"
     },
     "threatSeverity": {
-      "0": "اہم",
-      "0.description": "قابل استحصال کمزوری مکمل سسٹم سمجھوتہ، ڈیٹا کی خلاف ورزی، یا حفاظتی اثر کو ممکن بناتی ہے؛ فوری کارروائی درکار ہے۔",
-      "1": "اعلیٰ",
-      "1.description": "اہم اثر یا اعلیٰ امکان؛ بڑی غیر مجاز رسائی، مراعات کی ترقی، یا خدمات میں خلل کو ممکن بناتا ہے۔",
-      "2": "درمیانی",
-      "2.description": "معتدل اثر یا امکان؛ محدود ڈیٹا نمائش، جزوی فعالیت میں خرابی، یا زنجیری استحصال کی ضرورت ہے۔",
-      "3": "کم",
-      "3.description": "کم سے کم اثر یا کم امکان؛ نہ ہونے کے برابر کاروباری اثر، مخصوص حالات یا صارف کی تعامل درکار ہے۔",
-      "4": "معلوماتی",
-      "4.description": "براہ راست استحصال نہیں؛ سفارش، بہترین طریقہ کار سے انحراف، یا ترتیب میں بہتری۔",
-      "5": "نامعلوم",
-      "5.description": "خطرے کی شدت کا ابھی تک جائزہ نہیں لیا گیا۔"
+      "critical": "اہم",
+      "critical.description": "قابل استحصال کمزوری مکمل سسٹم سمجھوتہ، ڈیٹا کی خلاف ورزی، یا حفاظتی اثر کو ممکن بناتی ہے؛ فوری کارروائی درکار ہے۔",
+      "high": "اعلیٰ",
+      "high.description": "اہم اثر یا اعلیٰ امکان؛ بڑی غیر مجاز رسائی، مراعات کی ترقی، یا خدمات میں خلل کو ممکن بناتا ہے۔",
+      "informational": "معلوماتی",
+      "informational.description": "براہ راست استحصال نہیں؛ سفارش، بہترین طریقہ کار سے انحراف، یا ترتیب میں بہتری۔",
+      "low": "کم",
+      "low.description": "کم سے کم اثر یا کم امکان؛ نہ ہونے کے برابر کاروباری اثر، مخصوص حالات یا صارف کی تعامل درکار ہے۔",
+      "medium": "درمیانی",
+      "medium.description": "معتدل اثر یا امکان؛ محدود ڈیٹا نمائش، جزوی فعالیت میں خرابی، یا زنجیری استحصال کی ضرورت ہے۔",
+      "unknown": "نامعلوم",
+      "unknown.description": "خطرے کی شدت کا ابھی تک جائزہ نہیں لیا گیا۔"
     },
     "threatStatus": {
-      "0": "کھلا",
-      "0.description": "نتیجہ شناخت اور دستاویز کیا گیا ہے لیکن کوئی کارروائی شروع نہیں کی گئی۔",
-      "1": "تصدیق شدہ",
-      "1.description": "تجزیہ یا ثبوت کے ذریعے خطرے کی جائز تصدیق ہو گئی ہے۔",
-      "2": "تخفیف منصوبہ بند",
-      "2.description": "تدارک یا تخفیف کی حکمت عملی طے اور تفویض کر دی گئی ہے۔",
-      "3": "تخفیف جاری",
-      "3.description": "کنٹرولز، کوڈ تبدیلیوں، یا جوابی اقدامات کا نفاذ جاری ہے۔",
-      "4": "تصدیق زیر التواء",
-      "4.description": "تخفیف مکمل ہے؛ سیکیورٹی ٹیم کو تاثیر کی جانچ یا جائزہ لینا ہوگا۔",
-      "5": "حل شدہ",
-      "5.description": "خطرے کی مکمل تخفیف اور تصدیق ہو گئی ہے؛ باقی خطرہ قابل قبول ہے۔",
-      "6": "قبول شدہ",
-      "6.description": "خطرے کو تسلیم کیا گیا لیکن جان بوجھ کر تخفیف نہیں کی گئی (مثلاً، کاروباری جواز کی وجہ سے)؛ رسمی خطرے کی قبولیت درکار ہے۔",
-      "7": "غلط مثبت",
-      "7.description": "تحقیقات نے طے کیا کہ نتیجہ درست خطرہ نہیں ہے؛ مزید کارروائی کی ضرورت نہیں۔",
-      "8": "ملتوی",
-      "8.description": "منظوری کے ساتھ کارروائی ملتوی کر دی گئی (مثلاً، مستقبل کے سپرنٹس کے لیے)؛ وجوہات اور مقررہ تاریخ شامل ہے۔",
-      "9": "بند",
-      "9.description": "حل، قبولیت، یا منسوخی کے بعد نتیجہ آرکائیو کیا گیا، آڈٹ ٹریل کے ساتھ۔"
+      "accepted": "قبول شدہ",
+      "accepted.description": "خطرے کو تسلیم کیا گیا لیکن جان بوجھ کر تخفیف نہیں کی گئی (مثلاً، کاروباری جواز کی وجہ سے)؛ رسمی خطرے کی قبولیت درکار ہے۔",
+      "closed": "بند",
+      "closed.description": "حل، قبولیت، یا منسوخی کے بعد نتیجہ آرکائیو کیا گیا، آڈٹ ٹریل کے ساتھ۔",
+      "confirmed": "تصدیق شدہ",
+      "confirmed.description": "تجزیہ یا ثبوت کے ذریعے خطرے کی جائز تصدیق ہو گئی ہے۔",
+      "deferred": "ملتوی",
+      "deferred.description": "منظوری کے ساتھ کارروائی ملتوی کر دی گئی (مثلاً، مستقبل کے سپرنٹس کے لیے)؛ وجوہات اور مقررہ تاریخ شامل ہے۔",
+      "falsePositive": "غلط مثبت",
+      "falsePositive.description": "تحقیقات نے طے کیا کہ نتیجہ درست خطرہ نہیں ہے؛ مزید کارروائی کی ضرورت نہیں۔",
+      "mitigationInProgress": "تخفیف جاری",
+      "mitigationInProgress.description": "کنٹرولز، کوڈ تبدیلیوں، یا جوابی اقدامات کا نفاذ جاری ہے۔",
+      "mitigationPlanned": "تخفیف منصوبہ بند",
+      "mitigationPlanned.description": "تدارک یا تخفیف کی حکمت عملی طے اور تفویض کر دی گئی ہے۔",
+      "open": "کھلا",
+      "open.description": "نتیجہ شناخت اور دستاویز کیا گیا ہے لیکن کوئی کارروائی شروع نہیں کی گئی۔",
+      "resolved": "حل شدہ",
+      "resolved.description": "خطرے کی مکمل تخفیف اور تصدیق ہو گئی ہے؛ باقی خطرہ قابل قبول ہے۔",
+      "verificationPending": "تصدیق زیر التواء",
+      "verificationPending.description": "تخفیف مکمل ہے؛ سیکیورٹی ٹیم کو تاثیر کی جانچ یا جائزہ لینا ہوگا۔"
     }
   },
   "threatModels": {
     "addPermission": "اجازت شامل کریں",
     "branch": "برانچ",
+    "changeSecurityReviewer": "سیکیورٹی جائزہ کار تبدیل کریں",
+    "clearSecurityReviewer": "سیکیورٹی جائزہ کار صاف کریں",
     "commit": "کمٹ",
     "createFirstButton": "اپنا پہلا خطرے کا ماڈل بنائیں",
     "createNewDiagram": "نیا ڈایاگرام بنائیں",
     "createNewRepository": "ریپوزٹری حوالہ شامل کریں",
     "created": "{{common.created}}",
-    "createdBy": "بنانے والا",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "ڈیٹا فلو ڈایاگرام",
     "deleteWarningPermanent": "یہ عمل واپس نہیں ہو سکتا اور تمام متعلقہ ڈایاگرامز، خطرات، اور میٹا ڈیٹا کو مستقل طور پر حذف کر دے گا۔",
@@ -1078,29 +1194,30 @@
       "outputs": "آؤٹ پٹ",
       "outputsDescription": "نوٹس، ڈایاگرامز، اور خطرات جو سیکیورٹی تجزیہ کے دوران تیار ہوتے ہیں"
     },
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "مالک کے طور پر مقرر کریں",
     "sourcesCount": "ریپوز",
     "status": {
-      "0": "شروع نہیں ہوا",
-      "0.tooltip": "سیکیورٹی جائزہ شروع کیا گیا ہے لیکن کوئی تشخیصی سرگرمیاں شروع نہیں ہوئیں۔",
-      "1": "جاری ہے",
-      "1.tooltip": "فعال تشخیص جاری ہے، بشمول خطرے کی ماڈلنگ، کوڈ ریویو، یا ٹیسٹنگ۔",
-      "2": "جائزہ زیر التواء",
-      "2.tooltip": "تشخیصی مواد (مثلاً، رپورٹس، نتائج) سیکیورٹی لیڈز یا منظور کنندگان کی طرف سے رسمی جائزے کا انتظار کر رہے ہیں۔",
-      "3": "تدارک درکار",
-      "3.tooltip": "کمزوریاں یا مسائل کی شناخت ہو گئی ہے؛ ترقی کو ان کو حل کرنا ہوگا۔",
-      "4": "تدارک جاری",
-      "4.tooltip": "شناخت شدہ مسائل کے حل ترقیاتی ٹیم کی طرف سے نافذ کیے جا رہے ہیں۔",
-      "5": "تصدیق زیر التواء",
-      "5.tooltip": "تدارک مکمل ہے؛ سیکیورٹی ٹیم کو تاثیر کی تصدیق کرنی ہوگی۔",
-      "6": "منظور شدہ",
-      "6.tooltip": "تمام مسائل حل اور تصدیق شدہ ہیں؛ ایپلیکیشن ریلیز یا تعیناتی کے سیکیورٹی معیار پر پورا اترتی ہے۔",
-      "7": "مسترد",
-      "7.tooltip": "جائزہ اہم معیار پر ناکام رہا؛ دوبارہ جمع کرانے سے پہلے اہم دوبارہ کام درکار ہے۔",
-      "8": "ملتوی",
-      "8.tooltip": "جائزہ روک دیا گیا ہے (مثلاً، وسائل کی کمی یا ایپلیکیشن تبدیلیوں کی وجہ سے)؛ دوبارہ شروع کرنے کا منصوبہ ہے۔",
-      "9": "بند",
-      "9.tooltip": "جائزہ مکمل طور پر مکمل اور آرکائیو ہو گیا ہے، مزید کارروائی کی ضرورت نہیں۔"
+      "approved": "منظور شدہ",
+      "approved.tooltip": "تمام مسائل حل اور تصدیق شدہ ہیں؛ ایپلیکیشن ریلیز یا تعیناتی کے سیکیورٹی معیار پر پورا اترتی ہے۔",
+      "closed": "بند",
+      "closed.tooltip": "جائزہ مکمل طور پر مکمل اور آرکائیو ہو گیا ہے، مزید کارروائی کی ضرورت نہیں۔",
+      "deferred": "ملتوی",
+      "deferred.tooltip": "جائزہ روک دیا گیا ہے (مثلاً، وسائل کی کمی یا ایپلیکیشن تبدیلیوں کی وجہ سے)؛ دوبارہ شروع کرنے کا منصوبہ ہے۔",
+      "inProgress": "جاری ہے",
+      "inProgress.tooltip": "فعال تشخیص جاری ہے، بشمول خطرے کی ماڈلنگ، کوڈ ریویو، یا ٹیسٹنگ۔",
+      "notStarted": "شروع نہیں ہوا",
+      "notStarted.tooltip": "سیکیورٹی جائزہ شروع کیا گیا ہے لیکن کوئی تشخیصی سرگرمیاں شروع نہیں ہوئیں۔",
+      "pendingReview": "جائزہ زیر التواء",
+      "pendingReview.tooltip": "تشخیصی مواد (مثلاً، رپورٹس، نتائج) سیکیورٹی لیڈز یا منظور کنندگان کی طرف سے رسمی جائزے کا انتظار کر رہے ہیں۔",
+      "rejected": "مسترد",
+      "rejected.tooltip": "جائزہ اہم معیار پر ناکام رہا؛ دوبارہ جمع کرانے سے پہلے اہم دوبارہ کام درکار ہے۔",
+      "remediationInProgress": "تدارک جاری",
+      "remediationInProgress.tooltip": "شناخت شدہ مسائل کے حل ترقیاتی ٹیم کی طرف سے نافذ کیے جا رہے ہیں۔",
+      "remediationRequired": "تدارک درکار",
+      "remediationRequired.tooltip": "کمزوریاں یا مسائل کی شناخت ہو گئی ہے؛ ترقی کو ان کو حل کرنا ہوگا۔",
+      "verificationPending": "تصدیق زیر التواء",
+      "verificationPending.tooltip": "تدارک مکمل ہے؛ سیکیورٹی ٹیم کو تاثیر کی تصدیق کرنی ہوگی۔"
     },
     "statusLastUpdated": "حیثیت آخری بار اپ ڈیٹ ہوئی",
     "tag": "ٹیگ",
@@ -1245,6 +1362,16 @@
     },
     "queue": "ٹرائیج قطار",
     "returnToSubmitted": "جمع شدہ پر واپس جائیں",
+    "reviewerAssignment": {
+      "assign": "تفویض کریں",
+      "assignToMe": "مجھے تفویض کریں",
+      "errorLoading": "غیر تفویض شدہ خطرے کی ماڈلز لوڈ کرنے میں ناکام",
+      "loading": "غیر تفویض شدہ جائزے لوڈ ہو رہے ہیں...",
+      "noUnassigned": "کوئی غیر تفویض شدہ جائزے نہیں",
+      "noUnassignedDescription": "تمام فعال خطرے کی ماڈلز میں سیکیورٹی جائزہ کار تفویض ہے",
+      "reviewer": "سیکیورٹی جائزہ کار",
+      "selectReviewer": "جائزہ کار منتخب کریں..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "نوٹس فراہم کریں جو وضاحت کریں کہ کیا نظرثانی کی ضرورت ہے۔ جمع کرانے والا یہ نوٹس دیکھے گا جب وہ اپنے جواب کا جائزہ لیں گے۔",
@@ -1252,6 +1379,10 @@
       "label": "نظرثانی نوٹس",
       "placeholder": "ضروری نظرثانی کی تفصیل بیان کریں...",
       "title": "نظرثانی کے لیے واپس کریں"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "غیر تفویض شدہ جائزے"
     },
     "title": "ٹرائیج",
     "viewDetails": "تفصیلات دیکھیں"
@@ -1324,7 +1455,7 @@
     "sections": {
       "developer": "ڈویلپر",
       "diagramEditor": "ڈایاگرام ایڈیٹر",
-      "securityReviewer": "سیکیورٹی جائزہ کار"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "ڈویلپر ٹولز دکھائیں",
     "tabs": {

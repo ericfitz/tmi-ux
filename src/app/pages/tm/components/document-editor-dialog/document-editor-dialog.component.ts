@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -21,6 +22,7 @@ interface DocumentFormValues {
   name: string;
   uri: string;
   description?: string;
+  include_in_report?: boolean;
 }
 
 /**
@@ -42,6 +44,7 @@ export interface DocumentEditorDialogData {
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    MatCheckboxModule,
     MatTooltipModule,
     ReactiveFormsModule,
     TranslocoModule,
@@ -75,6 +78,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
         ],
       ],
       description: [data.document?.description || '', Validators.maxLength(1024)],
+      include_in_report: [data.mode === 'create' ? true : data.document?.include_in_report],
     });
 
     if (this.isReadOnly) {

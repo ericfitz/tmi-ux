@@ -26,6 +26,8 @@ RUN pnpm run build:oci
 
 # Stage 2: Production server on Oracle Linux 10
 FROM oraclelinux:10-slim
+ARG APP_VERSION=unknown
+LABEL org.opencontainers.image.version=$APP_VERSION
 
 # Install Node.js 22 LTS
 # Oracle Linux 10 slim uses microdnf instead of dnf

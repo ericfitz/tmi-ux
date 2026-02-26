@@ -108,11 +108,6 @@ export class GeneralOperationValidator extends BaseOperationValidator {
         }
       }
     }
-
-    // Validate description
-    if (operation.description && typeof operation.description !== 'string') {
-      errors.push('Operation description must be a string');
-    }
   }
 
   private validateContext(context: OperationContext, errors: string[], warnings: string[]): void {
@@ -143,19 +138,6 @@ export class GeneralOperationValidator extends BaseOperationValidator {
     // Validate collaboration mode
     if (typeof context.isCollaborating !== 'boolean') {
       warnings.push('Collaboration mode not clearly specified in context');
-    }
-
-    // Validate suppression flags
-    if (typeof context.suppressValidation !== 'boolean') {
-      // This is fine - defaults to false
-    }
-
-    if (typeof context.suppressHistory !== 'boolean') {
-      // This is fine - defaults to false
-    }
-
-    if (typeof context.suppressBroadcast !== 'boolean') {
-      // This is fine - defaults to false
     }
   }
 
@@ -199,7 +181,7 @@ export class GeneralOperationValidator extends BaseOperationValidator {
     }
 
     // Check for concurrent modification protection
-    if (operation.source === 'user-interaction' && !context.suppressBroadcast) {
+    if (operation.source === 'user-interaction') {
       // This operation will be broadcast to other users
       if (!context.sessionId) {
         warnings.push('Session ID not provided for collaborative operation');
@@ -220,7 +202,7 @@ export class GeneralOperationValidator extends BaseOperationValidator {
     }
 
     // Validate collaborative operation metadata
-    if (operation.source === 'websocket-message') {
+    if (operation.source === 'remote-collaboration') {
       // This operation came from another user
       if (!context.originUserId) {
         warnings.push('Origin user ID not provided for collaborative operation');

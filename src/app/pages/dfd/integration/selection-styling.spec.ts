@@ -23,7 +23,7 @@ import { createMockLoggerService, type MockLoggerService } from '../../../../tes
 
 import { InfraX6GraphAdapter } from '../infrastructure/adapters/infra-x6-graph.adapter';
 import { InfraX6SelectionAdapter } from '../infrastructure/adapters/infra-x6-selection.adapter';
-import { SelectionService } from '../presentation/services/ui-presenter-selection.service';
+import { UiPresenterSelectionService as SelectionService } from '../presentation/services/ui-presenter-selection.service';
 import { InfraEdgeQueryService } from '../infrastructure/services/infra-edge-query.service';
 import { InfraNodeConfigurationService } from '../infrastructure/services/infra-node-configuration.service';
 import { InfraEmbeddingService } from '../infrastructure/services/infra-embedding.service';
@@ -32,7 +32,7 @@ import { InfraX6KeyboardAdapter } from '../infrastructure/adapters/infra-x6-keyb
 import { ZOrderService } from '../infrastructure/services/infra-z-order.service';
 import { InfraX6ZOrderAdapter } from '../infrastructure/adapters/infra-x6-z-order.adapter';
 import { InfraX6EmbeddingAdapter } from '../infrastructure/adapters/infra-x6-embedding.adapter';
-import { InfraX6EventLoggerAdapter } from '../../../../core/services/logger.service';
+import { InfraX6EventLoggerAdapter } from '../infrastructure/adapters/infra-x6-event-logger.adapter';
 import { AppEdgeService } from '../application/services/app-edge.service';
 import { AppEventHandlersService } from '../application/services/app-event-handlers.service';
 import { AppOperationStateManager } from '../application/services/app-operation-state-manager.service';

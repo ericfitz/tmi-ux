@@ -6,6 +6,7 @@ import { LanguageService } from '../../../i18n/language.service';
 import { UserPreferencesService } from '../../../core/services/user-preferences.service';
 import { BrandingConfigService } from '../../../core/services/branding-config.service';
 import { ThreatModel, Threat, Document, Repository } from '../models/threat-model.model';
+import { getFieldLabel } from '../../../shared/utils/field-value-helpers';
 import { getPrincipalDisplayName } from '../../../shared/utils/principal-display.utils';
 import * as fontkit from 'fontkit';
 
@@ -925,11 +926,12 @@ export class ThreatModelReportService {
         yPosition = this.getStartingYPosition();
       }
 
+      const noData = this.transloco.translate('common.noDataAvailable');
       const rowData: string[] = [
-        threat.name || this.transloco.translate('common.noDataAvailable'),
-        threat.severity || this.transloco.translate('common.noDataAvailable'),
-        threat.status || this.transloco.translate('common.noDataAvailable'),
-        threat.priority?.toString() || this.transloco.translate('common.noDataAvailable'),
+        threat.name || noData,
+        getFieldLabel(threat.severity, 'threatEditor.threatSeverity', this.transloco) || noData,
+        getFieldLabel(threat.status, 'threatEditor.threatStatus', this.transloco) || noData,
+        getFieldLabel(threat.priority, 'threatEditor.threatPriority', this.transloco) || noData,
       ];
 
       yPosition = this.drawTableRow(page, rowData, yPosition, false);

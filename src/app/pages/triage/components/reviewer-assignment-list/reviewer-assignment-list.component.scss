@@ -1,0 +1,105 @@
+.loading-container,
+.error-container,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  text-align: center;
+
+  > mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+  }
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 20px;
+  }
+
+  p {
+    margin: 0 0 24px;
+    color: var(--color-text-secondary);
+  }
+}
+
+.assignment-table-container {
+  background: var(--color-surface);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.assignment-table {
+  width: 100%;
+
+  .tm-name {
+    font-weight: 500;
+  }
+
+  .tm-row {
+    cursor: pointer;
+
+    &:hover {
+      background: var(--color-surface-hover);
+    }
+  }
+
+  th.mat-header-cell {
+    font-weight: 600;
+    color: var(--color-text-secondary);
+  }
+
+  td.mat-cell {
+    padding: 12px 16px;
+  }
+
+  .reviewer-select {
+    min-width: 180px;
+  }
+
+  .picker-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .selected-reviewer {
+      font-size: 14px;
+    }
+  }
+
+  .row-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    button[mat-raised-button] {
+      white-space: nowrap;
+    }
+  }
+}
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(255 255 255 / 70%);
+  z-index: 10;
+}
+
+// Responsive adjustments
+@media (width <= 768px) {
+  .assignment-table {
+    [matColumnDef='created_at'],
+    [matColumnDef='status'] {
+      display: none;
+    }
+  }
+}

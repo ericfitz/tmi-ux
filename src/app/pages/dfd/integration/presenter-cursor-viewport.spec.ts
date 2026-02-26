@@ -177,10 +177,12 @@ describe('Presenter Cursor Viewport Change Integration', () => {
   });
 
   afterEach(() => {
-    displayService.ngOnDestroy();
-    cursorService.ngOnDestroy();
-    graph.dispose();
-    document.body.removeChild(container);
+    displayService?.ngOnDestroy();
+    cursorService?.ngOnDestroy();
+    graph?.dispose();
+    if (container && document.body.contains(container)) {
+      document.body.removeChild(container);
+    }
   });
 
   describe('Display Service - Coordinate Recalculation on Viewport Changes', () => {

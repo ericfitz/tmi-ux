@@ -40,6 +40,12 @@ export interface IGraphAdapter {
   selectionChanged$: Observable<{ selected: string[]; deselected: string[] }>;
 
   /**
+   * Observable for cell deletion requests from the button-remove tool.
+   * The presentation layer subscribes to gate deletion with confirmation dialogs.
+   */
+  cellDeletionRequested$: Observable<Cell>;
+
+  /**
    * Initialize the graph with the given container element
    */
   initialize(container: HTMLElement): void;

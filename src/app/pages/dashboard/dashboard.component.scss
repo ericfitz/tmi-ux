@@ -39,10 +39,59 @@
   }
 }
 
-// Filter field
-.filter-field {
-  width: 100%;
+// Primary filters row
+.filters-row {
+  display: flex;
+  gap: 12px;
   margin-bottom: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .search-field {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .name-filter {
+    width: 200px;
+  }
+
+  .status-filter {
+    width: 200px;
+  }
+
+  .filter-toggle-active {
+    color: var(--mdc-theme-primary);
+  }
+
+  .clear-filters-button {
+    white-space: nowrap;
+  }
+
+  // Hide subscript wrapper in filter fields to save vertical space
+  mat-form-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+// Advanced filters row (expandable)
+.advanced-filters-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+
+  .text-filter {
+    width: 200px;
+  }
+
+  .date-filter {
+    min-width: 200px;
+  }
+
+  mat-form-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
 }
 
 // Cards grid layout
@@ -411,6 +460,18 @@ button.delete-button {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  // Override cell padding/border in collapsed detail rows to eliminate
+  // visible gaps between regular rows (needs to be here for specificity)
+  .detail-row td.mat-mdc-cell {
+    padding: 0;
+    border-bottom-width: 0;
+  }
+
+  .detail-row.expanded td.mat-mdc-cell {
+    padding: 8px 16px 16px;
+    border-bottom-width: 1px;
   }
 }
 

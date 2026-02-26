@@ -6,6 +6,7 @@
 @use 'styles/fonts';
 @use 'styles/material-theme';
 @use 'styles/component-overrides';
+@use 'styles/notification-styles';
 @use 'app/shared/directives/scroll-indicator.directive';
 
 // Import Prism.js themes for syntax highlighting
@@ -79,25 +80,6 @@ html[dir='rtl'] {
 // Common card styles
 .mat-card {
   margin-bottom: 16px;
-}
-
-// Threat Editor Dialog specific width and height
-.threat-editor-dialog-650 {
-  width: 650px !important;
-  max-width: 650px !important;
-  min-height: 550px !important;
-}
-
-.threat-editor-dialog-650 .mat-mdc-dialog-container {
-  width: 650px !important;
-  max-width: 650px !important;
-  min-height: 550px !important;
-}
-
-.threat-editor-dialog-650 .mat-mdc-dialog-surface {
-  width: 650px !important;
-  max-width: 650px !important;
-  min-height: 550px !important;
 }
 
 // Multiline tooltip support

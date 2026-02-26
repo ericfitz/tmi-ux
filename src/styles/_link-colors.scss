@@ -1,0 +1,20 @@
+/**
+ * Shared link/URL styling for readonly hyperlink display fields.
+ *
+ * Used by tm-edit, threat-editor-dialog, and threat-page for URL view content.
+ * Must use !important on pseudo-class colors to override inherited/cascading styles.
+ */
+
+@mixin url-link-styles {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--color-primary-dark) !important;
+  }
+
+  &:visited {
+    color: var(--color-link-visited) !important;
+  }
+}

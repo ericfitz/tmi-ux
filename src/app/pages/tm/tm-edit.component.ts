@@ -30,6 +30,8 @@ import { LoggerService } from '../../core/services/logger.service';
 import { SvgCacheService } from './services/svg-cache.service';
 import { ApiService } from '../../core/services/api.service';
 import { AddonService } from '../../core/services/addon.service';
+import { AuthService } from '../../auth/services/auth.service';
+import { SecurityReviewerService } from '../../shared/services/security-reviewer.service';
 import { Addon, AddonObjectType } from '../../types/addon.types';
 
 import {
@@ -91,13 +93,26 @@ import { ThreatModelReportService } from './services/threat-model-report.service
 import { FrameworkService } from '../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../shared/models/framework.model';
-import { FieldOption, getFieldOptions } from '../../shared/utils/field-value-helpers';
+import {
+  FieldOption,
+  getFieldKeysForFieldType,
+  getFieldLabel,
+  getFieldOptions,
+  migrateFieldValue,
+} from '../../shared/utils/field-value-helpers';
 import {
   DeleteConfirmationDialogComponent,
   DeleteConfirmationDialogData,
   DeleteConfirmationDialogResult,
 } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
+import {
+  UserPickerDialogComponent,
+  UserPickerDialogData,
+} from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
+import { AdminUser } from '@app/types/user.types';
+import { ProjectPickerComponent } from '@app/shared/components/project-picker/project-picker.component';
+import { ProjectService } from '@app/core/services/project.service';
 
 // Define form value interface
 interface ThreatModelFormValues {
@@ -113,6 +128,7 @@ interface DocumentFormResult {
   name: string;
   uri: string;
   description?: string;
+  include_in_report?: boolean;
 }
 
 // Define repository form result interface
@@ -126,6 +142,7 @@ interface RepositoryFormResult {
     refValue: string;
     subPath?: string;
   };
+  include_in_report?: boolean;
 }
 
 @Component({
@@ -142,6 +159,7 @@ interface RepositoryFormResult {
     MatSortModule,
     TranslocoModule,
     UserDisplayComponent,
+    ProjectPickerComponent,
   ],
   templateUrl: './tm-edit.component.html',
   styleUrls: ['./tm-edit.component.scss'],
@@ -176,6 +194,13 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Status dropdown options
   statusOptions: FieldOption[] = [];
+
+  // Security reviewer dropdown
+  securityReviewerOptions: User[] = [];
+  securityReviewerMode: 'dropdown' | 'picker' | 'loading' = 'loading';
+
+  // Project picker
+  projectName: string | null = null;
 
   // Addon cache - filtered lists by object type
   addonsForThreatModel: Addon[] = [];
@@ -306,6 +331,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private addonService: AddonService,
     private snackBar: MatSnackBar,
+    private authService: AuthService,
+    private securityReviewerService: SecurityReviewerService,
+    private projectService: ProjectService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -333,73 +361,71 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Hardcoded mapping from old string values to new numeric keys
-   * Used for migrating legacy data
-   * Mapping: Critical=0, High=1, Medium=2, Low=3, Informational=4, Unknown=5
+   * Hardcoded mapping from old values (numeric keys and English strings) to camelCase keys.
+   * Used for migrating legacy data synchronously before Transloco translations are loaded.
    */
   private readonly severityMap: Record<string, string> = {
-    Critical: '0',
-    High: '1',
-    Medium: '2',
-    Low: '3',
-    Informational: '4',
-    Info: '4',
-    Unknown: '5',
-    None: '5',
-    critical: '0',
-    high: '1',
-    medium: '2',
-    low: '3',
-    informational: '4',
-    info: '4',
-    unknown: '5',
-    none: '5',
+    '0': 'critical',
+    '1': 'high',
+    '2': 'medium',
+    '3': 'low',
+    '4': 'informational',
+    '5': 'unknown',
+    Critical: 'critical',
+    High: 'high',
+    Medium: 'medium',
+    Low: 'low',
+    Informational: 'informational',
+    Info: 'informational',
+    Unknown: 'unknown',
+    None: 'unknown',
   };
 
   private readonly statusMap: Record<string, string> = {
-    Open: '0',
-    Confirmed: '1',
-    'Mitigation Planned': '2',
-    'Mitigation In Progress': '3',
-    'Verification Pending': '4',
-    Resolved: '5',
-    Accepted: '6',
-    'False Positive': '7',
-    Deferred: '8',
-    Closed: '9',
-    // Lowercase variants
-    open: '0',
-    confirmed: '1',
-    'mitigation planned': '2',
-    'mitigation in progress': '3',
-    'verification pending': '4',
-    resolved: '5',
-    accepted: '6',
-    'false positive': '7',
-    deferred: '8',
-    closed: '9',
+    '0': 'open',
+    '1': 'confirmed',
+    '2': 'mitigationPlanned',
+    '3': 'mitigationInProgress',
+    '4': 'verificationPending',
+    '5': 'resolved',
+    '6': 'accepted',
+    '7': 'falsePositive',
+    '8': 'deferred',
+    '9': 'closed',
+    Open: 'open',
+    Confirmed: 'confirmed',
+    'Mitigation Planned': 'mitigationPlanned',
+    'Mitigation In Progress': 'mitigationInProgress',
+    'Verification Pending': 'verificationPending',
+    Resolved: 'resolved',
+    Accepted: 'accepted',
+    'False Positive': 'falsePositive',
+    Deferred: 'deferred',
+    Closed: 'closed',
   };
 
   private readonly priorityMap: Record<string, string> = {
-    'Immediate (P0)': '0',
-    'High (P1)': '1',
-    'Medium (P2)': '2',
-    'Low (P3)': '3',
-    'Deferred (P4)': '4',
-    Immediate: '0',
-    High: '1',
-    Medium: '2',
-    Low: '3',
-    Deferred: '4',
-    immediate: '0',
-    high: '1',
-    medium: '2',
-    low: '3',
-    deferred: '4',
+    '0': 'immediate',
+    '1': 'high',
+    '2': 'medium',
+    '3': 'low',
+    '4': 'deferred',
+    'Immediate (P0)': 'immediate',
+    'High (P1)': 'high',
+    'Medium (P2)': 'medium',
+    'Low (P3)': 'low',
+    'Deferred (P4)': 'deferred',
+    Immediate: 'immediate',
+    High: 'high',
+    Medium: 'medium',
+    Low: 'low',
   };
 
+  private readonly severityKeys = getFieldKeysForFieldType('threatEditor.threatSeverity');
+  private readonly threatStatusKeys = getFieldKeysForFieldType('threatEditor.threatStatus');
+
   /**
-   * Migrates old field values to new numeric keys for a single threat
+   * Migrates old field values (numeric keys or English strings) to camelCase keys
    * @param threat The threat to migrate
    * @returns Migrated threat
    */
@@ -409,7 +435,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     // Migrate severity
     if (
       migratedThreat.severity &&
-      !/^\d+$/.test(migratedThreat.severity) &&
+      !this.severityKeys.includes(migratedThreat.severity) &&
       this.severityMap[migratedThreat.severity]
     ) {
       migratedThreat.severity = this.severityMap[migratedThreat.severity];
@@ -418,39 +444,23 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     // Migrate status
     if (
       migratedThreat.status &&
-      !/^\d+$/.test(migratedThreat.status) &&
+      !this.threatStatusKeys.includes(migratedThreat.status) &&
       this.statusMap[migratedThreat.status]
     ) {
       migratedThreat.status = this.statusMap[migratedThreat.status];
     }
 
     // Migrate priority
+    const priorityKeys = getFieldKeysForFieldType('threatEditor.threatPriority');
     if (
       migratedThreat.priority &&
-      !/^\d+$/.test(migratedThreat.priority) &&
+      !priorityKeys.includes(migratedThreat.priority) &&
       this.priorityMap[migratedThreat.priority]
     ) {
       migratedThreat.priority = this.priorityMap[migratedThreat.priority];
     }
 
     return migratedThreat;
-  }
-
-  /**
-   * Migrates old severity values in all threats to new numeric keys
-   * This ensures that old string values like "High" are converted to "4"
-   * Uses a hardcoded mapping for immediate conversion without waiting for translations
-   */
-  private migrateThreatSeverityValues(): void {
-    if (!this.threatModel?.threats) {
-      this.threatsDataSource.data = [];
-      return;
-    }
-
-    this.threatModel.threats = this.threatModel.threats.map(threat =>
-      this.migrateThreatFieldValues(threat),
-    );
-    this.threatsDataSource.data = this.threatModel.threats;
   }
 
   /**
@@ -500,6 +510,24 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     } catch {
       return false;
     }
+  }
+
+  /** Gets the translated label for a threat severity value, handling legacy numeric values. */
+  getThreatSeverityLabel(severity: string | null | undefined): string {
+    return getFieldLabel(severity, 'threatEditor.threatSeverity', this.transloco);
+  }
+
+  /** Gets the translated label for a threat status value, handling legacy numeric values. */
+  getThreatStatusLabel(status: string | null | undefined): string {
+    return getFieldLabel(status, 'threatEditor.threatStatus', this.transloco);
+  }
+
+  /** Gets the CSS class for a threat severity value, handling legacy numeric values. */
+  getThreatSeverityClass(severity: string | null | undefined): string {
+    const key = severity
+      ? (migrateFieldValue(severity, 'threatEditor.threatSeverity', this.transloco) ?? 'unknown')
+      : 'unknown';
+    return 'severity-' + key;
   }
 
   ngOnInit(): void {
@@ -576,7 +604,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this.threatModel = threatModel;
     this.isNewThreatModel = false; // Resolved threat models are not new
 
-    // Load threats via API with pagination (migration happens in service)
+    // Load threats via API with pagination
     this.loadThreats(id);
 
     // Subscribe to authorization changes
@@ -634,6 +662,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     // Load addons for menus
     this.loadAddons();
 
+    // Load security reviewers for the reviewer dropdown
+    this.loadSecurityReviewers();
+
     // Re-enable auto-save after initial population is complete
     setTimeout(() => {
       this._isLoadingInitialData = false;
@@ -667,7 +698,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
           case 'severity':
             return this.getSeverityOrder(threat.severity);
           case 'status':
-            return threat.status ? parseInt(threat.status, 10) : 999;
+            return this.getStatusOrder(threat.status);
           case 'name':
             return threat.name?.toLowerCase() ?? '';
           default:
@@ -690,12 +721,36 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Get numeric order for severity (lower = more severe)
+   * Get ordinal position for severity (lower index = more severe).
+   * Falls back to severityMap for legacy values that bypassed migration.
    */
-  private getSeverityOrder(severity: string | null): number {
+  private getSeverityOrder(severity: string | null | undefined): number {
     if (!severity) return 999;
-    const order = parseInt(severity, 10);
-    return isNaN(order) ? 999 : order;
+    const idx = this.severityKeys.indexOf(severity);
+    if (idx >= 0) return idx;
+    // Defense-in-depth: try mapping legacy values (numeric or English strings)
+    const migrated = this.severityMap[severity];
+    if (migrated) {
+      const migratedIdx = this.severityKeys.indexOf(migrated);
+      return migratedIdx >= 0 ? migratedIdx : 999;
+    }
+    return 999;
+  }
+
+  /**
+   * Get ordinal position for threat status.
+   * Falls back to statusMap for legacy values that bypassed migration.
+   */
+  private getStatusOrder(status: string | null | undefined): number {
+    if (!status) return 999;
+    const idx = this.threatStatusKeys.indexOf(status);
+    if (idx >= 0) return idx;
+    const migrated = this.statusMap[status];
+    if (migrated) {
+      const migratedIdx = this.threatStatusKeys.indexOf(migrated);
+      return migratedIdx >= 0 ? migratedIdx : 999;
+    }
+    return 999;
   }
 
   ngOnDestroy(): void {
@@ -806,6 +861,154 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
+
+  // ─── Security Reviewer ───────────────────────────────────────────────
+
+  /**
+   * Load security reviewer options via shared SecurityReviewerService.
+   */
+  private loadSecurityReviewers(): void {
+    this._subscriptions.add(
+      this.securityReviewerService
+        .loadReviewerOptions(this.threatModel?.security_reviewer)
+        .subscribe(result => {
+          if (result.mode === 'dropdown') {
+            this.securityReviewerOptions = result.reviewers;
+            this.securityReviewerMode = 'dropdown';
+          } else {
+            this.securityReviewerMode = 'picker';
+          }
+          this.cdr.detectChanges();
+        }),
+    );
+  }
+
+  /**
+   * Handle security reviewer dropdown selection change.
+   * Persists immediately via PATCH (not through form auto-save).
+   */
+  onSecurityReviewerChange(event: { value: unknown }): void {
+    if (!this.threatModel || !this.canEdit) return;
+
+    const selectedUser = event.value as User | null;
+    const previousReviewer = this.threatModel.security_reviewer ?? null;
+
+    // Update local model immediately for responsive UI
+    this.threatModel.security_reviewer = selectedUser;
+
+    this._subscriptions.add(
+      this.threatModelService
+        .patchThreatModel(this.threatModel.id, { security_reviewer: selectedUser })
+        .subscribe({
+          next: result => {
+            if (result && this.threatModel) {
+              this.threatModel.security_reviewer = result.security_reviewer;
+              this.threatModel.modified_at = result.modified_at;
+              this.cdr.detectChanges();
+              this.logger.info('Security reviewer updated', {
+                threatModelId: this.threatModel.id,
+                reviewer: selectedUser?.email ?? 'none',
+              });
+            }
+          },
+          error: error => {
+            this.logger.error('Failed to update security reviewer', error);
+            // Rollback on error
+            if (this.threatModel) {
+              this.threatModel.security_reviewer = previousReviewer;
+              this.cdr.detectChanges();
+            }
+          },
+        }),
+    );
+  }
+
+  /**
+   * Open user picker dialog for security reviewer (fallback when group list unavailable)
+   */
+  openSecurityReviewerPicker(): void {
+    if (!this.threatModel || !this.canEdit) return;
+
+    const dialogRef = this.dialog.open(UserPickerDialogComponent, {
+      data: {
+        title: this.transloco.translate('threatModels.changeSecurityReviewer'),
+      } as UserPickerDialogData,
+    });
+
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe((selectedAdminUser: AdminUser | undefined) => {
+        if (!selectedAdminUser || !this.threatModel) return;
+
+        const user: User = {
+          principal_type: 'user',
+          provider: selectedAdminUser.provider,
+          provider_id: selectedAdminUser.provider_user_id,
+          email: selectedAdminUser.email,
+          display_name: selectedAdminUser.name,
+        };
+
+        this.onSecurityReviewerChange({ value: user });
+      }),
+    );
+  }
+
+  /**
+   * Clear the security reviewer assignment
+   */
+  clearSecurityReviewer(): void {
+    this.onSecurityReviewerChange({ value: null });
+  }
+
+  /**
+   * Compare function for mat-select to match User objects by provider identity
+   */
+  compareReviewers = (a: User | null, b: User | null): boolean =>
+    this.securityReviewerService.compareReviewers(a, b);
+
+  // ─── End Security Reviewer ─────────────────────────────────────────
+
+  // ─── Project Picker ───────────────────────────────────────────────
+
+  /**
+   * Handle project picker selection change.
+   * Persists immediately via PATCH (not through form auto-save).
+   */
+  onProjectChange(projectId: string | null): void {
+    if (!this.threatModel || !this.canEdit) return;
+
+    const previousProjectId = this.threatModel.project_id ?? null;
+
+    // Update local model immediately for responsive UI
+    this.threatModel.project_id = projectId;
+
+    this._subscriptions.add(
+      this.threatModelService
+        .patchThreatModel(this.threatModel.id, { project_id: projectId })
+        .subscribe({
+          next: result => {
+            if (result && this.threatModel) {
+              this.threatModel.project_id = result.project_id;
+              this.threatModel.modified_at = result.modified_at;
+              this.cdr.detectChanges();
+              this.logger.info('Project updated', {
+                threatModelId: this.threatModel.id,
+                projectId: projectId ?? 'none',
+              });
+            }
+          },
+          error: error => {
+            this.logger.error('Failed to update project', error);
+            // Rollback on error
+            if (this.threatModel) {
+              this.threatModel.project_id = previousProjectId;
+              this.cdr.detectChanges();
+            }
+          },
+        }),
+    );
+  }
+
+  // ─── End Project Picker ───────────────────────────────────────────
 
   /**
    * Simplified field blur handler (mainly for UI state like issue URL editing)
@@ -919,7 +1122,11 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       shapeType,
     };
 
-    const dialogRef = this.dialog.open(ThreatEditorDialogComponent, {
+    const dialogRef = this.dialog.open<
+      ThreatEditorDialogComponent,
+      ThreatEditorDialogData,
+      Partial<Threat>
+    >(ThreatEditorDialogComponent, {
       width: '650px',
       maxHeight: '90vh',
       panelClass: 'threat-editor-dialog-650',
@@ -928,120 +1135,97 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this._subscriptions.add(
       dialogRef.afterClosed().subscribe(result => {
-        if (result && this.threatModel) {
-          // Type the result to avoid unsafe assignments
-          interface ThreatFormResult {
-            name: string;
-            description: string;
-            severity: 'Unknown' | 'None' | 'Low' | 'Medium' | 'High' | 'Critical';
-            threat_type: string[];
-            asset_id?: string;
-            diagram_id?: string;
-            cell_id?: string;
-            score?: number;
-            priority?: string;
-            mitigated?: boolean;
-            status?: string;
-            issue_uri?: string;
-          }
-          const formResult = result as ThreatFormResult;
+        if (!result || !this.threatModel) return;
 
-          if (mode === 'create') {
-            // Create a new threat via API
-            const newThreatData: Partial<Threat> = {
-              name: formResult.name,
-              description: formResult.description,
-              severity: formResult.severity || 'High',
-              threat_type: formResult.threat_type || [],
-              mitigated: formResult.mitigated || false,
-              status: formResult.status || 'Open',
-              metadata: [],
-            };
-
-            // Only include optional fields if they have values
-            if (formResult.asset_id !== undefined) {
-              newThreatData.asset_id = formResult.asset_id;
-            }
-            if (formResult.diagram_id !== undefined) {
-              newThreatData.diagram_id = formResult.diagram_id;
-            }
-            if (formResult.cell_id !== undefined) {
-              newThreatData.cell_id = formResult.cell_id;
-            }
-            if (formResult.score !== undefined) {
-              newThreatData.score = formResult.score;
-            }
-            if (formResult.priority !== undefined) {
-              newThreatData.priority = formResult.priority;
-            }
-            if (formResult.issue_uri !== undefined) {
-              newThreatData.issue_uri = formResult.issue_uri;
-            }
-
-            this._subscriptions.add(
-              this.threatModelService
-                .createThreat(this.threatModel.id, newThreatData)
-                .subscribe(newThreat => {
-                  // Add the new threat to local state (check for duplicates first)
-                  // Use spread to create new array and update data source for immediate UI refresh
-                  if (!this.threatModel!.threats?.find(t => t.id === newThreat.id)) {
-                    this.threatModel!.threats = [...(this.threatModel!.threats || []), newThreat];
-                    this.threatsDataSource.data = this.threatModel!.threats;
-                  }
-
-                  // Update framework control state since we added a threat
-                  this.updateFrameworkControlState();
-                }),
-            );
-          } else if (mode === 'edit' && threat) {
-            // Update an existing threat via API
-            const updatedThreatData: Partial<Threat> = {
-              name: formResult.name,
-              description: formResult.description,
-              severity: formResult.severity || threat.severity,
-              threat_type: formResult.threat_type || threat.threat_type || [],
-            };
-
-            // Only include optional fields if they have values
-            if (formResult.asset_id !== undefined) {
-              updatedThreatData.asset_id = formResult.asset_id;
-            }
-            if (formResult.diagram_id !== undefined) {
-              updatedThreatData.diagram_id = formResult.diagram_id;
-            }
-            if (formResult.cell_id !== undefined) {
-              updatedThreatData.cell_id = formResult.cell_id;
-            }
-            if (formResult.score !== undefined) {
-              updatedThreatData.score = formResult.score;
-            }
-            if (formResult.priority !== undefined) {
-              updatedThreatData.priority = formResult.priority;
-            }
-            if (formResult.mitigated !== undefined) {
-              updatedThreatData.mitigated = formResult.mitigated;
-            }
-            if (formResult.status !== undefined) {
-              updatedThreatData.status = formResult.status;
-            }
-            if (formResult.issue_uri !== undefined) {
-              updatedThreatData.issue_uri = formResult.issue_uri;
-            }
-
-            this._subscriptions.add(
-              this.threatModelService
-                .updateThreat(this.threatModel.id, threat.id, updatedThreatData)
-                .subscribe(updatedThreat => {
-                  // Update the threat in local state
-                  const index = this.threatModel?.threats?.findIndex(t => t.id === threat.id) ?? -1;
-                  if (index !== -1 && this.threatModel?.threats) {
-                    this.threatModel.threats[index] = updatedThreat;
-                  }
-                }),
-            );
-          }
+        if (mode === 'create') {
+          this._handleCreateThreatResult(result);
+        } else if (mode === 'edit' && threat) {
+          this._handleEditThreatResult(result, threat);
         }
       }),
+    );
+  }
+
+  /** Build threat data from form result, copying only defined optional fields. */
+  private _copyDefinedFields(
+    source: Partial<Threat>,
+    target: Partial<Threat>,
+    fields: (keyof Threat)[],
+  ): void {
+    for (const field of fields) {
+      if (source[field] !== undefined) {
+        Object.assign(target, { [field]: source[field] });
+      }
+    }
+  }
+
+  /** Handle creating a new threat from dialog result. */
+  private _handleCreateThreatResult(result: Partial<Threat>): void {
+    const newThreatData: Partial<Threat> = {
+      name: result.name,
+      description: result.description,
+      severity: result.severity || 'high',
+      threat_type: result.threat_type || [],
+      mitigated: result.mitigated || false,
+      status: result.status || 'open',
+      metadata: [],
+    };
+
+    this._copyDefinedFields(result, newThreatData, [
+      'asset_id',
+      'diagram_id',
+      'cell_id',
+      'score',
+      'priority',
+      'issue_uri',
+      'include_in_report',
+    ]);
+
+    this._subscriptions.add(
+      this.threatModelService.createThreat(this.threatModel!.id, newThreatData).subscribe({
+        next: () => {
+          if (this.threatModel) {
+            this.loadThreats(this.threatModel.id);
+          }
+          this.updateFrameworkControlState();
+        },
+        error: error => {
+          this.logger.error('Failed to create threat', error);
+        },
+      }),
+    );
+  }
+
+  /** Handle updating an existing threat from dialog result. */
+  private _handleEditThreatResult(result: Partial<Threat>, threat: Threat): void {
+    const updatedThreatData: Partial<Threat> = {
+      name: result.name,
+      description: result.description,
+      severity: result.severity || threat.severity,
+      threat_type: result.threat_type || threat.threat_type || [],
+    };
+
+    this._copyDefinedFields(result, updatedThreatData, [
+      'asset_id',
+      'diagram_id',
+      'cell_id',
+      'score',
+      'priority',
+      'mitigated',
+      'status',
+      'issue_uri',
+      'include_in_report',
+    ]);
+
+    this._subscriptions.add(
+      this.threatModelService
+        .updateThreat(this.threatModel!.id, threat.id, updatedThreatData)
+        .subscribe(updatedThreat => {
+          const index = this.threatModel?.threats?.findIndex(t => t.id === threat.id) ?? -1;
+          if (index !== -1 && this.threatModel?.threats) {
+            this.threatModel.threats[index] = updatedThreat;
+          }
+        }),
     );
   }
 
@@ -1126,45 +1310,14 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
             // Create a new diagram via API
             const newDiagramData: Partial<Diagram> = {
               name: diagramData.name,
-              type: diagramData.type,
+              type: diagramData.type as Diagram['type'],
             };
 
             this._subscriptions.add(
               this.threatModelService.createDiagram(this.threatModel.id, newDiagramData).subscribe({
-                next: newDiagram => {
-                  // Add the diagram to the DIAGRAMS_BY_ID map for backward compatibility
-                  DIAGRAMS_BY_ID.set(newDiagram.id, newDiagram);
-
-                  // Add the new diagram to local state (check for duplicates first)
-                  // Use spread to create new array and update data source for immediate UI refresh
-                  const isDuplicate = this.threatModel?.diagrams?.find(d => {
-                    if (typeof d === 'string') return d === newDiagram.id;
-                    return d.id === newDiagram.id;
-                  });
-
-                  if (!isDuplicate) {
-                    // Handle both string ID arrays and Diagram object arrays
-                    if (
-                      this.threatModel!.diagrams?.length &&
-                      typeof this.threatModel!.diagrams[0] === 'string'
-                    ) {
-                      this.threatModel!.diagrams = [
-                        ...((this.threatModel!.diagrams || []) as unknown as string[]),
-                        newDiagram.id,
-                      ] as unknown as Diagram[];
-                    } else {
-                      this.threatModel!.diagrams = [
-                        ...(this.threatModel!.diagrams || []),
-                        newDiagram,
-                      ];
-                    }
-                  }
-
-                  // Always update the display diagrams array (these are always Diagram objects)
-                  if (!this._diagrams.find(d => d.id === newDiagram.id)) {
-                    this._diagrams = [...this._diagrams, newDiagram];
-                    this.diagramsDataSource.data = this._diagrams;
-                    this.computeDiagramSvgData();
+                next: () => {
+                  if (this.threatModel) {
+                    this.loadDiagrams(this.threatModel.id);
                   }
                 },
                 error: error => {
@@ -1261,22 +1414,20 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
             name: result.name,
             uri: result.uri,
             description: result.description || undefined,
+            include_in_report: result.include_in_report,
           };
 
           this._subscriptions.add(
-            this.threatModelService
-              .createDocument(this.threatModel.id, newDocumentData)
-              .subscribe(newDocument => {
-                // Add the new document to local state (check for duplicates first)
-                // Use spread to create new array and update data source for immediate UI refresh
-                if (!this.threatModel!.documents?.find(d => d.id === newDocument.id)) {
-                  this.threatModel!.documents = [
-                    ...(this.threatModel!.documents || []),
-                    newDocument,
-                  ];
-                  this.documentsDataSource.data = this.threatModel!.documents;
+            this.threatModelService.createDocument(this.threatModel.id, newDocumentData).subscribe({
+              next: () => {
+                if (this.threatModel) {
+                  this.loadDocuments(this.threatModel.id);
                 }
-              }),
+              },
+              error: error => {
+                this.logger.error('Failed to create document', error);
+              },
+            }),
           );
         }
       }),
@@ -1318,6 +1469,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
             name: result.name,
             uri: result.uri,
             description: result.description || undefined,
+            include_in_report: result.include_in_report,
           };
 
           this._subscriptions.add(
@@ -1435,21 +1587,21 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
             type: result.type,
             uri: result.uri,
             parameters: result.parameters,
+            include_in_report: result.include_in_report,
           };
 
           this._subscriptions.add(
             this.threatModelService
               .createRepository(this.threatModel.id, newRepositoryData)
-              .subscribe(newRepository => {
-                // Add the new repository to local state (check for duplicates first)
-                // Use spread to create new array and update data source for immediate UI refresh
-                if (!this.threatModel!.repositories?.find(r => r.id === newRepository.id)) {
-                  this.threatModel!.repositories = [
-                    ...(this.threatModel!.repositories || []),
-                    newRepository,
-                  ];
-                  this.repositoriesDataSource.data = this.threatModel!.repositories;
-                }
+              .subscribe({
+                next: () => {
+                  if (this.threatModel) {
+                    this.loadRepositories(this.threatModel.id);
+                  }
+                },
+                error: error => {
+                  this.logger.error('Failed to create repository', error);
+                },
               }),
           );
         }
@@ -1494,6 +1646,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
             type: result.type,
             uri: result.uri,
             parameters: result.parameters,
+            include_in_report: result.include_in_report,
           };
 
           this._subscriptions.add(
@@ -1666,23 +1819,18 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
       this._subscriptions.add(
-        this.threatModelService.createNote(this.threatModel.id, noteResult).subscribe(
-          createdNote => {
+        this.threatModelService.createNote(this.threatModel.id, noteResult).subscribe({
+          next: createdNote => {
             if (this.threatModel) {
-              // Use spread to create new array and update data source for immediate UI refresh
-              if (!this.threatModel.notes?.find(n => n.id === createdNote.id)) {
-                this.threatModel.notes = [...(this.threatModel.notes || []), createdNote];
-                this.notesDataSource.data = this.threatModel.notes;
-              }
-              this.logger.info('Created note via API', { note: createdNote });
+              this.loadNotes(this.threatModel.id);
               // Notify the dialog that the note was created
               dialogRef.componentInstance.setCreatedNoteId(createdNote.id);
             }
           },
-          error => {
+          error: error => {
             this.logger.error('Failed to create note', error);
           },
-        ),
+        }),
       );
     });
 
@@ -1715,21 +1863,16 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
           } else {
             // Note was not created yet, create it now
             this._subscriptions.add(
-              this.threatModelService.createNote(this.threatModel.id, result.formValue).subscribe(
-                createdNote => {
+              this.threatModelService.createNote(this.threatModel.id, result.formValue).subscribe({
+                next: () => {
                   if (this.threatModel) {
-                    // Use spread to create new array and update data source for immediate UI refresh
-                    if (!this.threatModel.notes?.find(n => n.id === createdNote.id)) {
-                      this.threatModel.notes = [...(this.threatModel.notes || []), createdNote];
-                      this.notesDataSource.data = this.threatModel.notes;
-                    }
-                    this.logger.info('Created note via API', { note: createdNote });
+                    this.loadNotes(this.threatModel.id);
                   }
                 },
-                error => {
+                error: error => {
                   this.logger.error('Failed to create note', error);
                 },
-              ),
+              }),
             );
           }
         }
@@ -3151,8 +3294,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         .subscribe({
           next: response => {
             if (this.threatModel) {
-              this.threatModel.threats = response.threats;
-              this.threatsDataSource.data = response.threats;
+              this.threatModel.threats = response.threats.map(t =>
+                this.migrateThreatFieldValues(t),
+              );
+              this.threatsDataSource.data = this.threatModel.threats;
               this.totalThreats = response.total;
             }
           },
@@ -3203,21 +3348,16 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       dialogRef.afterClosed().subscribe((result: Partial<Asset> | undefined) => {
         if (result && this.threatModel) {
           this._subscriptions.add(
-            this.threatModelService.createAsset(this.threatModel.id, result).subscribe(
-              createdAsset => {
+            this.threatModelService.createAsset(this.threatModel.id, result).subscribe({
+              next: () => {
                 if (this.threatModel) {
-                  // Use spread to create new array and update data source for immediate UI refresh
-                  if (!this.threatModel.assets?.find(a => a.id === createdAsset.id)) {
-                    this.threatModel.assets = [...(this.threatModel.assets || []), createdAsset];
-                    this.assetsDataSource.data = this.threatModel.assets;
-                  }
-                  this.logger.info('Created asset via API', { asset: createdAsset });
+                  this.loadAssets(this.threatModel.id);
                 }
               },
-              error => {
+              error: error => {
                 this.logger.error('Failed to create asset', error);
               },
-            ),
+            }),
           );
         }
       }),

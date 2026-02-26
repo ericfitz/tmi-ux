@@ -205,7 +205,7 @@ export class AppOperationStateManager {
     }
 
     // Set new timer to detect drag completion
-    const timer = setTimeout(() => {
+    const timer = window.setTimeout(() => {
       this._finalizeDrag(cellId);
     }, this.DRAG_COMPLETION_DELAY);
 

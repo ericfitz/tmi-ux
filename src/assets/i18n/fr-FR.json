@@ -439,10 +439,13 @@
     "collaboratorsHeader": "Participants",
     "copyLink": "Copier le lien",
     "denyPresenterRequest": "Refuser la demande de presentateur",
+    "endCollaboration": "Terminer la collaboration",
     "hostedBy": "Anime par",
     "isRequestingPresenterPrivileges": "demande les privileges de presentateur",
     "joinSession": "Rejoindre la session",
     "justNow": "a l'instant",
+    "leaveSession": "Quitter la session",
+    "loadingDiagramContext": "Chargement du contexte du diagramme...",
     "manageParticipants": "Gerer les participants",
     "noActiveSessions": "Aucune session de collaboration active",
     "participantRequestsPresenterRole": "Un participant demande le role de presentateur",
@@ -450,6 +453,7 @@
     "removeFromSession": "Retirer de la session",
     "requestPresenter": "Demander le role de presentateur",
     "sessionStarted": "Demarree",
+    "startCollaboration": "Démarrer la collaboration",
     "takeBackPresenter": "Reprendre le role de presentateur",
     "title": "Participants de la Session de Collaboration",
     "userJoined": "{{user}} a rejoint la collaboration",
@@ -485,6 +489,7 @@
     "copyToClipboard": "Copier dans le Presse-papiers",
     "create": "Creer",
     "created": "Cree",
+    "createdBy": "Créé par",
     "criticality": "Criticité",
     "cut": "Couper",
     "deactivate": "Désactiver",
@@ -512,6 +517,7 @@
     "groups": "Groupes",
     "id": "ID",
     "identityProvider": "Fournisseur d'Identite",
+    "includeInReport": "Inclure dans le Rapport",
     "issueUri": "URL du Probleme",
     "language": "{{language}}",
     "lastModified": "Derniere Modification",
@@ -565,6 +571,7 @@
     "paste": "Coller",
     "permissions": "Permissions",
     "priority": "Priorite",
+    "project": "Projet",
     "provider": "Fournisseur",
     "readOnly": "Lecture Seule",
     "readOnlyTooltip": "Vous avez un acces en lecture seule a ce modele de menaces. Contactez le proprietaire pour demander des permissions de modification.",
@@ -576,6 +583,7 @@
     },
     "save": "Enregistrer",
     "saveAndClose": "Enregistrer et Fermer",
+    "saveFailed": "Échec de la sauvegarde",
     "savedSuccessfully": "Enregistré avec succès",
     "score": "Score",
     "search": "Rechercher",
@@ -592,6 +600,7 @@
       "group": "Groupe",
       "user": "Utilisateur"
     },
+    "team": "Equipe",
     "template": "Modèle",
     "threatDescription": "Description de la Menace",
     "threatDescriptionPlaceholder": "Decrivez la Menace en Detail",
@@ -602,8 +611,10 @@
     "type": "Type",
     "unarchive": "Désarchiver",
     "unsavedChangesWarning": "Vous avez des modifications non enregistrees. Etes-vous sur de vouloir fermer ?",
+    "uri": "URI",
     "userId": "ID Utilisateur",
     "validation": {
+      "email": "Veuillez saisir une adresse e-mail valide",
       "invalidUrl": "Veuillez entrer une URL valide",
       "maxLength": "La longueur maximale est de {{max}} caracteres",
       "nameRequired": "Le nom est obligatoire",
@@ -636,10 +647,27 @@
     "title": "Créer un modèle de menace"
   },
   "dashboard": {
-    "clearFilter": "Effacer le filtre",
-    "filterLabel": "Filtrer les modèles de menaces",
-    "filterPlaceholder": "Rechercher par nom, description, propriétaire ou statut",
-    "noMatchingThreatModels": "Aucun modèle de menaces ne correspond à votre filtre.",
+    "clearAllFilters": "Effacer tous les filtres",
+    "clearSearch": "Effacer la recherche",
+    "createdAfter": "Créé après",
+    "createdBefore": "Créé avant",
+    "descriptionFilter": "{{common.description}}",
+    "descriptionPlaceholder": "Filtrer par description",
+    "issueUriFilter": "{{common.issueUri}}",
+    "issueUriPlaceholder": "Filtrer par URL de suivi",
+    "lessFilters": "Moins de filtres",
+    "modifiedAfter": "Modifié après",
+    "modifiedBefore": "Modifié avant",
+    "moreFilters": "Plus de filtres",
+    "nameFilter": "{{common.name}}",
+    "namePlaceholder": "Filtrer par nom",
+    "noMatchingThreatModels": "Aucun modèle de menaces ne correspond à votre recherche ou à vos filtres.",
+    "ownerFilter": "{{common.roles.owner}}",
+    "ownerPlaceholder": "Filtrer par nom ou email du propriétaire",
+    "searchLabel": "{{common.search}}",
+    "searchPlaceholder": "Rechercher par nom, description, propriétaire ou statut",
+    "statusUpdatedAfter": "Statut mis à jour après",
+    "statusUpdatedBefore": "Statut mis à jour avant",
     "tableHeaders": {
       "actions": "{{common.actions}}",
       "created": "{{common.created}}",
@@ -698,6 +726,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "Un ou plusieurs éléments sélectionnés comportent des entrées de métadonnées. La suppression de ces éléments supprimera définitivement leurs métadonnées. Voulez-vous continuer ?",
+      "title": "Les métadonnées seront perdues"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "Saisir la description du diagramme",
     "diagramNamePlaceholder": "Saisir le nom du diagramme",
@@ -755,10 +788,12 @@
     "support": "Assistance"
   },
   "getStarted": "Commencer",
-  "homeDescription": "TMI est un outil qui gère et améliore les processus de revue de sécurité et de modélisation des menaces pour votre organisation. Il pilote le workflow de revue de sécurité, organise les informations des revues de sécurité, permet de créer des diagrammes de flux de données de manière collaborative et permet de connecter l'automatisation pour réduire les tâches répétitives dans le processus de revue et pour analyser les menaces de sécurité.",
+  "homeDescription": "TMI est un outil qui rationalise les processus d'examen de sécurité et de modélisation des menaces de votre organisation. Il pilote les workflows d'examen, organise les informations clés et permet aux équipes de construire collaborativement des diagrammes de flux de données. Il se connecte également à l'automatisation, aidant à réduire les tâches manuelles et à identifier plus efficacement les menaces de sécurité.",
   "homeWelcomeTitle": "Bienvenue sur TMI : Modelisation des Menaces Amelioree",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "Enregistrer et quitter",
       "submitResponses": "Soumettre les réponses"
     }
@@ -818,6 +853,53 @@
       "view": "Voir la Note"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "Se connecter"
+    },
+    "operationError": "Échec de {{operation}} : {{errorMessage}}",
+    "operationFailed": "Opération échouée",
+    "operations": {
+      "collaboration": "Collaboration",
+      "denyPresenterRequest": "refuser la demande de présentateur",
+      "sendPresenterRequest": "envoyer la demande de présentateur",
+      "startCollaboration": "démarrer la collaboration",
+      "updatePresenter": "mettre à jour le présentateur"
+    },
+    "presenter": {
+      "assigned": "{{user}} est maintenant le présentateur",
+      "assignedYou": "Vous êtes maintenant le présentateur",
+      "cleared": "Le mode présentateur a été désactivé",
+      "cursorMoved": "Le curseur du présentateur a bougé",
+      "modeChanged": "Le mode présentateur a changé",
+      "privilegesRequested": "Privilèges de présentateur demandés",
+      "removed": "{{user}} n'est plus le présentateur",
+      "removedYou": "Vous n'êtes plus le présentateur",
+      "requestDenied": "Votre demande de présentateur a été refusée",
+      "requestSent": "Demande de présentateur envoyée au propriétaire de la session",
+      "requesting": "{{user}} demande les privilèges de présentateur",
+      "selectionChanged": "La sélection du présentateur a changé"
+    },
+    "session": {
+      "disconnected": "Déconnecté de la session de collaboration",
+      "reconnected": "Reconnecté à la session de collaboration",
+      "reconnecting": "Reconnexion à la session de collaboration...",
+      "userRemoved": "{{user}} a été retiré de la session",
+      "youWereRemoved": "Vous avez été retiré de la session de collaboration"
+    },
+    "unknownError": "Erreur inconnue",
+    "websocket": {
+      "authenticationFailed": "Échec de l'authentification. Veuillez vous reconnecter.",
+      "communicationError": "Erreur de communication avec le serveur. Certaines mises à jour pourraient ne pas être synchronisées.",
+      "connectionError": "Erreur de connexion. Travail en mode hors ligne.",
+      "connectionFailed": "Échec de la connexion au serveur de collaboration.",
+      "connectionTimeout": "Délai de connexion dépassé. Le serveur est peut-être surchargé.",
+      "disconnected": "Déconnecté du serveur de collaboration. Les modifications seront enregistrées localement.",
+      "messageSendFailed": "Échec de l'envoi du message. Vos modifications pourraient ne pas être synchronisées.",
+      "multipleFailed": "Échec de connexion après plusieurs tentatives. Travail en mode hors ligne.",
+      "unknownError": "Erreur WebSocket inconnue survenue"
+    }
+  },
   "pagination": {
     "ariaLabel": "Sélectionner la page des éléments",
     "firstPage": "Première page",
@@ -870,6 +952,23 @@
     "userRightsContent2": "Cette option permet la suppression immediate de toutes les donnees que l'operateur stocke en votre nom, y compris les informations de profil et les enregistrements d'authentification. Lors de l'activation, vos donnees seront definitivement supprimees des systemes de l'operateur et des fournisseurs tiers, sous reserve de toute obligation legale de conservation.",
     "userRightsTitle": "Droits des Utilisateurs"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "Saisir la description du projet",
+      "namePlaceholder": "Saisir le nom du projet",
+      "nameRequired": "Le nom du projet est requis",
+      "statusPlaceholder": "p. ex. active, planning, archived",
+      "teamRequired": "L'equipe est requise",
+      "title": "Creer un Projet",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Creer un Nouveau Projet",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "Aucun Projet"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "Prolonger la Session",
     "extending": "Extension de votre session, veuillez patienter...",
@@ -883,7 +982,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "Échec de l'enregistrement",
+      "error": "{{common.saveFailed}}",
       "saved": "Enregistré",
       "saving": "Enregistrement en cours..."
     },
@@ -952,69 +1051,86 @@
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Voir la réponse"
   },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "Saisir la description de l'equipe",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "Saisir le nom de l'equipe",
+      "nameRequired": "Le nom de l'equipe est requis",
+      "statusPlaceholder": "p. ex. active, archived",
+      "title": "Creer une Equipe",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Creer une Nouvelle Equipe"
+  },
   "threatEditor": {
     "createNewThreat": "Creer une nouvelle menace",
     "notAssociatedWithAsset": "Non associe a un actif",
     "notAssociatedWithCell": "Non associe a une cellule",
     "notAssociatedWithDiagram": "Non associe a un diagramme",
     "threatPriority": {
-      "0": "Immediat (P0)",
-      "0.description": "Doit etre traite d'urgence ; exploitation active, violation reglementaire ou exposition critique de l'entreprise.",
-      "1": "Eleve (P1)",
-      "1.description": "Necessite une resolution rapide ; exposition a haut risque ou echeance de publication imminente.",
-      "2": "Moyen (P2)",
-      "2.description": "A traiter dans les cycles de developpement standards ; exposition moderee.",
-      "3": "Faible (P3)",
-      "3.description": "A inclure dans le backlog pour les cycles futurs ; aucune exposition immediate.",
-      "4": "Differe (P4)",
-      "4.description": "Reporte avec approbation documentee de l'entreprise ; suivi mais non planifie."
+      "deferred": "Differe (P4)",
+      "deferred.description": "Reporte avec approbation documentee de l'entreprise ; suivi mais non planifie.",
+      "high": "Eleve (P1)",
+      "high.description": "Necessite une resolution rapide ; exposition a haut risque ou echeance de publication imminente.",
+      "immediate": "Immediat (P0)",
+      "immediate.description": "Doit etre traite d'urgence ; exploitation active, violation reglementaire ou exposition critique de l'entreprise.",
+      "low": "Faible (P3)",
+      "low.description": "A inclure dans le backlog pour les cycles futurs ; aucune exposition immediate.",
+      "medium": "Moyen (P2)",
+      "medium.description": "A traiter dans les cycles de developpement standards ; exposition moderee."
     },
     "threatSeverity": {
-      "0": "Critique",
-      "0.description": "Une vulnerabilite exploitable permet une compromission complete du systeme, une violation de donnees ou un impact sur la securite ; necessite une action immediate.",
-      "1": "Eleve",
-      "1.description": "Impact significatif ou probabilite elevee ; permet un acces non autorise majeur, une elevation de privileges ou une interruption de service.",
-      "2": "Moyen",
-      "2.description": "Impact ou probabilite modere ; exposition limitee des donnees, alteration partielle des fonctionnalites ou necessite des exploits chaines.",
-      "3": "Faible",
-      "3.description": "Impact minimal ou faible probabilite ; impact negligeable sur l'activite, necessite des conditions specifiques ou une interaction utilisateur.",
-      "4": "Informationnel",
-      "4.description": "Pas d'exploitabilite directe ; recommandation, ecart par rapport aux bonnes pratiques ou amelioration de configuration.",
-      "5": "Inconnu",
-      "5.description": "La severite de la menace n'a pas encore ete evaluee."
+      "critical": "Critique",
+      "critical.description": "Une vulnerabilite exploitable permet une compromission complete du systeme, une violation de donnees ou un impact sur la securite ; necessite une action immediate.",
+      "high": "Eleve",
+      "high.description": "Impact significatif ou probabilite elevee ; permet un acces non autorise majeur, une elevation de privileges ou une interruption de service.",
+      "informational": "Informationnel",
+      "informational.description": "Pas d'exploitabilite directe ; recommandation, ecart par rapport aux bonnes pratiques ou amelioration de configuration.",
+      "low": "Faible",
+      "low.description": "Impact minimal ou faible probabilite ; impact negligeable sur l'activite, necessite des conditions specifiques ou une interaction utilisateur.",
+      "medium": "Moyen",
+      "medium.description": "Impact ou probabilite modere ; exposition limitee des donnees, alteration partielle des fonctionnalites ou necessite des exploits chaines.",
+      "unknown": "Inconnu",
+      "unknown.description": "La severite de la menace n'a pas encore ete evaluee."
     },
     "threatStatus": {
-      "0": "Ouvert",
-      "0.description": "La constatation a ete identifiee et documentee mais aucune action n'a ete initiee.",
-      "1": "Confirme",
-      "1.description": "La menace a ete validee comme legitime par analyse ou preuve.",
-      "2": "Attenuation planifiee",
-      "2.description": "Une strategie de remediation ou d'attenuation a ete definie et assignee.",
-      "3": "Attenuation en cours",
-      "3.description": "La mise en oeuvre des controles, des modifications de code ou des contre-mesures est en cours.",
-      "4": "Verification en attente",
-      "4.description": "L'attenuation est terminee ; l'equipe de securite doit tester ou verifier l'efficacite.",
-      "5": "Resolu",
-      "5.description": "La menace est entierement attenuee et verifiee ; le risque residuel est acceptable.",
-      "6": "Accepte",
-      "6.description": "La menace est reconnue mais intentionnellement non attenuee (par exemple, en raison d'une justification commerciale) ; necessite une acceptation formelle du risque.",
-      "7": "Faux positif",
-      "7.description": "L'investigation a determine que la constatation n'est pas une menace valide ; aucune action supplementaire requise.",
-      "8": "Differe",
-      "8.description": "L'action est reportee avec approbation (par exemple, pour les sprints futurs) ; inclut la justification et la date d'echeance.",
-      "9": "Clos",
-      "9.description": "La constatation est archivee apres resolution, acceptation ou invalidation, avec piste d'audit."
+      "accepted": "Accepte",
+      "accepted.description": "La menace est reconnue mais intentionnellement non attenuee (par exemple, en raison d'une justification commerciale) ; necessite une acceptation formelle du risque.",
+      "closed": "Clos",
+      "closed.description": "La constatation est archivee apres resolution, acceptation ou invalidation, avec piste d'audit.",
+      "confirmed": "Confirme",
+      "confirmed.description": "La menace a ete validee comme legitime par analyse ou preuve.",
+      "deferred": "Differe",
+      "deferred.description": "L'action est reportee avec approbation (par exemple, pour les sprints futurs) ; inclut la justification et la date d'echeance.",
+      "falsePositive": "Faux positif",
+      "falsePositive.description": "L'investigation a determine que la constatation n'est pas une menace valide ; aucune action supplementaire requise.",
+      "mitigationInProgress": "Attenuation en cours",
+      "mitigationInProgress.description": "La mise en oeuvre des controles, des modifications de code ou des contre-mesures est en cours.",
+      "mitigationPlanned": "Attenuation planifiee",
+      "mitigationPlanned.description": "Une strategie de remediation ou d'attenuation a ete definie et assignee.",
+      "open": "Ouvert",
+      "open.description": "La constatation a ete identifiee et documentee mais aucune action n'a ete initiee.",
+      "resolved": "Resolu",
+      "resolved.description": "La menace est entierement attenuee et verifiee ; le risque residuel est acceptable.",
+      "verificationPending": "Verification en attente",
+      "verificationPending.description": "L'attenuation est terminee ; l'equipe de securite doit tester ou verifier l'efficacite."
     }
   },
   "threatModels": {
     "addPermission": "Ajouter une permission",
     "branch": "Branche",
+    "changeSecurityReviewer": "Changer le réviseur de sécurité",
+    "clearSecurityReviewer": "Retirer le réviseur de sécurité",
     "commit": "Valider",
     "createFirstButton": "Creer Votre Premier Modele de Menaces",
     "createNewDiagram": "Creer un nouveau diagramme",
     "createNewRepository": "Ajouter une reference de depot",
     "created": "{{common.created}}",
-    "createdBy": "Cree par",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Diagramme de flux de donnees",
     "deleteWarningPermanent": "Cette action est irreversible et supprimera definitivement tous les diagrammes, menaces et metadonnees associes.",
@@ -1078,29 +1194,30 @@
       "outputs": "Sorties",
       "outputsDescription": "Notes, diagrammes et menaces produits lors de l'analyse de sécurité"
     },
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Definir comme proprietaire",
     "sourcesCount": "Depots",
     "status": {
-      "0": "Non demarre",
-      "0.tooltip": "La revue de securite a ete initiee mais aucune activite d'evaluation n'a commence.",
-      "1": "En cours",
-      "1.tooltip": "L'evaluation active est en cours, incluant la modelisation des menaces, la revue de code ou les tests.",
-      "2": "En attente de revue",
-      "2.tooltip": "Les artefacts d'evaluation (par exemple, rapports, constats) attendent une revue formelle par les responsables securite ou les approbateurs.",
-      "3": "Remediation requise",
-      "3.tooltip": "Des vulnerabilites ou problemes ont ete identifies ; le developpement doit les traiter.",
-      "4": "Remediation en cours",
-      "4.tooltip": "Les corrections pour les problemes identifies sont en cours d'implementation par l'equipe de developpement.",
-      "5": "Verification en attente",
-      "5.tooltip": "La remediation est terminee ; l'equipe de securite doit verifier l'efficacite.",
-      "6": "Approuve",
-      "6.tooltip": "Tous les problemes sont resolus et verifies ; l'application repond aux criteres de securite pour la mise en production ou le deploiement.",
-      "7": "Rejete",
-      "7.tooltip": "La revue a echoue sur des criteres critiques ; une reprise significative est necessaire avant une nouvelle soumission.",
-      "8": "Differe",
-      "8.tooltip": "La revue est suspendue (par exemple, en raison de contraintes de ressources ou de changements d'application) ; la reprise est planifiee.",
-      "9": "Clos",
-      "9.tooltip": "La revue est entierement terminee et archivee, sans autre action necessaire."
+      "approved": "Approuve",
+      "approved.tooltip": "Tous les problemes sont resolus et verifies ; l'application repond aux criteres de securite pour la mise en production ou le deploiement.",
+      "closed": "Clos",
+      "closed.tooltip": "La revue est entierement terminee et archivee, sans autre action necessaire.",
+      "deferred": "Differe",
+      "deferred.tooltip": "La revue est suspendue (par exemple, en raison de contraintes de ressources ou de changements d'application) ; la reprise est planifiee.",
+      "inProgress": "En cours",
+      "inProgress.tooltip": "L'evaluation active est en cours, incluant la modelisation des menaces, la revue de code ou les tests.",
+      "notStarted": "Non demarre",
+      "notStarted.tooltip": "La revue de securite a ete initiee mais aucune activite d'evaluation n'a commence.",
+      "pendingReview": "En attente de revue",
+      "pendingReview.tooltip": "Les artefacts d'evaluation (par exemple, rapports, constats) attendent une revue formelle par les responsables securite ou les approbateurs.",
+      "rejected": "Rejete",
+      "rejected.tooltip": "La revue a echoue sur des criteres critiques ; une reprise significative est necessaire avant une nouvelle soumission.",
+      "remediationInProgress": "Remediation en cours",
+      "remediationInProgress.tooltip": "Les corrections pour les problemes identifies sont en cours d'implementation par l'equipe de developpement.",
+      "remediationRequired": "Remediation requise",
+      "remediationRequired.tooltip": "Des vulnerabilites ou problemes ont ete identifies ; le developpement doit les traiter.",
+      "verificationPending": "Verification en attente",
+      "verificationPending.tooltip": "La remediation est terminee ; l'equipe de securite doit verifier l'efficacite."
     },
     "statusLastUpdated": "Derniere mise a jour du statut",
     "tag": "Étiquette",
@@ -1192,12 +1309,12 @@
       "noNotes": "Aucune note de triage pour le moment",
       "noResponses": "Aucune réponse enregistrée",
       "noRevisionNotes": "Aucune note de révision",
-      "note": "note",
+      "note": "Note",
       "noteContentLabel": "{{noteEditor.content}}",
       "noteContentPlaceholder": "Saisir le contenu de la note...",
       "noteNameLabel": "{{common.title}}",
       "noteNamePlaceholder": "Titre bref de la note",
-      "notes": "notes",
+      "notes": "Notes",
       "responseDetails": "Détails de la réponse",
       "reviewedAt": "Révisé le",
       "reviewedBy": "Révisé par",
@@ -1245,6 +1362,16 @@
     },
     "queue": "File de triage",
     "returnToSubmitted": "Retourner à soumis",
+    "reviewerAssignment": {
+      "assign": "Assigner",
+      "assignToMe": "M'assigner",
+      "errorLoading": "Échec du chargement des modèles de menace non attribués",
+      "loading": "Chargement des évaluations non attribuées...",
+      "noUnassigned": "Aucune évaluation non attribuée",
+      "noUnassignedDescription": "Tous les modèles de menace actifs ont un évaluateur de sécurité attribué",
+      "reviewer": "Évaluateur de sécurité",
+      "selectReviewer": "Sélectionner un évaluateur..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "Fournissez des notes expliquant ce qui doit être révisé. Le soumissionnaire verra ces notes lorsqu'il examinera sa réponse.",
@@ -1252,6 +1379,10 @@
       "label": "Notes de révision",
       "placeholder": "Décrire les révisions nécessaires...",
       "title": "Retourner pour révision"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "Évaluations non attribuées"
     },
     "title": "Triage",
     "viewDetails": "Voir les détails"
@@ -1324,7 +1455,7 @@
     "sections": {
       "developer": "Développeur",
       "diagramEditor": "Éditeur de diagrammes",
-      "securityReviewer": "Réviseur de sécurité"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "Afficher les outils de développement",
     "tabs": {

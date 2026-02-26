@@ -183,75 +183,11 @@ export class ThreatModelAuthorizationService implements OnDestroy {
     }
 
     // Step 1: Check if user is the owner (owner field takes absolute precedence)
-    if (this._currentOwner) {
-      this.logger.debugComponent(
-        'ThreatModelAuthorizationService',
-        'Comparing user against owner field',
-        {
-          currentOwner: this._currentOwner,
-          currentUser: {
-            provider: currentUserProvider,
-            provider_id: currentUserProviderId,
-          },
-          providerMatch: this._currentOwner.provider === currentUserProvider,
-          providerIdMatch: this._currentOwner.provider_id === currentUserProviderId,
-        },
-      );
-
-      // Primary match: provider and provider_id
-      const providerMatches = this._currentOwner.provider === currentUserProvider;
-      const providerIdMatches = this._currentOwner.provider_id === currentUserProviderId;
-
-      // Fallback match: If provider_id doesn't match but is an email, compare against user's email
-      // This handles a backend bug where owner.provider_id contains email instead of OAuth provider ID
-      const emailFallbackMatches =
-        !providerIdMatches &&
-        this._currentOwner.email &&
-        currentUserEmail &&
-        this._currentOwner.provider_id === currentUserEmail;
-
-      if (providerMatches && (providerIdMatches || emailFallbackMatches)) {
-        if (emailFallbackMatches) {
-          this.logger.warn(
-            'Owner matched via email fallback - backend is storing email in provider_id field',
-            {
-              owner: getCompositeKey(this._currentOwner),
-              currentUser: `${currentUserProvider}:${currentUserProviderId}`,
-              matchedVia: 'email',
-            },
-          );
-        }
-        this.logger.debugComponent('ThreatModelAuthorizationService', 'User matches owner field', {
-          owner: getCompositeKey(this._currentOwner),
-          currentUser: `${currentUserProvider}:${currentUserProviderId}`,
-          matchMethod: emailFallbackMatches ? 'email' : 'provider_id',
-        });
-        return 'owner';
-      } else {
-        this.logger.debugComponent(
-          'ThreatModelAuthorizationService',
-          'User does NOT match owner field',
-          {
-            owner: getCompositeKey(this._currentOwner),
-            currentUser: `${currentUserProvider}:${currentUserProviderId}`,
-            providerMatches,
-            providerIdMatches,
-            emailFallbackMatches,
-          },
-        );
-      }
-    } else {
-      this.logger.debugComponent(
-        'ThreatModelAuthorizationService',
-        'No owner set for threat model',
-        {
-          threatModelId: this._currentThreatModelId,
-        },
-      );
+    if (this._checkOwnerMatch(currentUserProvider, currentUserProviderId, currentUserEmail)) {
+      return 'owner';
     }
 
     // Step 2: If not owner, check authorization list
-    // No authorizations means no access
     if (!authorizations || authorizations.length === 0) {
       this.logger.debugComponent(
         'ThreatModelAuthorizationService',
@@ -264,98 +200,14 @@ export class ThreatModelAuthorizationService implements OnDestroy {
       return null;
     }
 
-    // Track the highest permission found (owner > writer > reader)
-    let highestPermission: 'reader' | 'writer' | 'owner' | null = null;
+    // Step 3: Find highest permission from authorization entries
+    const highestPermission = this._findHighestPermission(
+      authorizations,
+      currentUserProvider,
+      currentUserProviderId,
+      currentUserGroups,
+    );
 
-    // Helper to update highest permission
-    const updatePermission = (newRole: 'reader' | 'writer' | 'owner'): boolean => {
-      const roleRank = { reader: 1, writer: 2, owner: 3 };
-      const currentRank = highestPermission ? roleRank[highestPermission] : 0;
-      const newRank = roleRank[newRole];
-
-      if (newRank > currentRank) {
-        highestPermission = newRole;
-        this.logger.debugComponent(
-          'ThreatModelAuthorizationService',
-          'Updated highest permission',
-          {
-            from: highestPermission || 'none',
-            to: newRole,
-          },
-        );
-      }
-
-      // Return true if we've reached owner (can short-circuit)
-      return newRole === 'owner';
-    };
-
-    // Step 3: Loop through authorization entries
-    for (const auth of authorizations) {
-      // Step 3A: Check user-type authorizations
-      if (auth.principal_type === 'user') {
-        // Match by (provider, provider_id) composite key
-        if (auth.provider === currentUserProvider && auth.provider_id === currentUserProviderId) {
-          this.logger.debugComponent(
-            'ThreatModelAuthorizationService',
-            'User matches authorization entry',
-            {
-              authEntry: `${auth.provider}:${auth.provider_id}`,
-              role: auth.role,
-              currentUser: `${currentUserProvider}:${currentUserProviderId}`,
-            },
-          );
-          // Update permission and short-circuit if owner
-          if (updatePermission(auth.role)) {
-            return 'owner';
-          }
-        }
-      }
-      // Step 3B & 3C: Check group-type authorizations
-      else if (auth.principal_type === 'group') {
-        // Step 3B: Check for "everyone" pseudo-group (case-insensitive)
-        if (auth.provider_id.toLowerCase() === 'everyone') {
-          this.logger.debugComponent(
-            'ThreatModelAuthorizationService',
-            'User matches "everyone" group',
-            {
-              role: auth.role,
-            },
-          );
-          updatePermission(auth.role);
-          // Note: "everyone" typically won't have owner role, but handle it anyway
-          if (auth.role === 'owner') {
-            return 'owner';
-          }
-        }
-        // Step 3C: Check actual group memberships
-        // Groups in currentUserGroups are just group names/identifiers
-        // We need to match against the auth entry's composite key
-        else {
-          // Build composite key for this group auth entry
-          const groupCompositeKey = `${auth.provider}:${auth.provider_id}`;
-
-          // Check if user is a member of this group
-          // currentUserGroups contains group identifiers that should match provider_id
-          if (currentUserGroups.includes(auth.provider_id)) {
-            this.logger.debugComponent(
-              'ThreatModelAuthorizationService',
-              'User is member of group',
-              {
-                group: groupCompositeKey,
-                role: auth.role,
-                userGroups: currentUserGroups,
-              },
-            );
-            // Update permission and short-circuit if owner
-            if (updatePermission(auth.role)) {
-              return 'owner';
-            }
-          }
-        }
-      }
-    }
-
-    // Return the highest permission found
     this.logger.debugComponent('ThreatModelAuthorizationService', 'User permission determined', {
       threatModelId: this._currentThreatModelId,
       permission: highestPermission,
@@ -366,6 +218,160 @@ export class ThreatModelAuthorizationService implements OnDestroy {
     });
 
     return highestPermission;
+  }
+
+  /**
+   * Check if the current user matches the threat model owner.
+   * Uses primary (provider, provider_id) match with email fallback.
+   */
+  private _checkOwnerMatch(
+    currentUserProvider: string,
+    currentUserProviderId: string,
+    currentUserEmail: string | null,
+  ): boolean {
+    if (!this._currentOwner) {
+      this.logger.debugComponent(
+        'ThreatModelAuthorizationService',
+        'No owner set for threat model',
+        { threatModelId: this._currentThreatModelId },
+      );
+      return false;
+    }
+
+    this.logger.debugComponent(
+      'ThreatModelAuthorizationService',
+      'Comparing user against owner field',
+      {
+        currentOwner: this._currentOwner,
+        currentUser: { provider: currentUserProvider, provider_id: currentUserProviderId },
+        providerMatch: this._currentOwner.provider === currentUserProvider,
+        providerIdMatch: this._currentOwner.provider_id === currentUserProviderId,
+      },
+    );
+
+    const providerMatches = this._currentOwner.provider === currentUserProvider;
+    const providerIdMatches = this._currentOwner.provider_id === currentUserProviderId;
+
+    // Fallback: backend bug where owner.provider_id contains email instead of OAuth provider ID
+    const emailFallbackMatches =
+      !providerIdMatches &&
+      !!this._currentOwner.email &&
+      !!currentUserEmail &&
+      this._currentOwner.provider_id === currentUserEmail;
+
+    if (!providerMatches || (!providerIdMatches && !emailFallbackMatches)) {
+      this.logger.debugComponent(
+        'ThreatModelAuthorizationService',
+        'User does NOT match owner field',
+        {
+          owner: getCompositeKey(this._currentOwner),
+          currentUser: `${currentUserProvider}:${currentUserProviderId}`,
+          providerMatches,
+          providerIdMatches,
+          emailFallbackMatches,
+        },
+      );
+      return false;
+    }
+
+    if (emailFallbackMatches) {
+      this.logger.warn(
+        'Owner matched via email fallback - backend is storing email in provider_id field',
+        {
+          owner: getCompositeKey(this._currentOwner),
+          currentUser: `${currentUserProvider}:${currentUserProviderId}`,
+          matchedVia: 'email',
+        },
+      );
+    }
+
+    this.logger.debugComponent('ThreatModelAuthorizationService', 'User matches owner field', {
+      owner: getCompositeKey(this._currentOwner),
+      currentUser: `${currentUserProvider}:${currentUserProviderId}`,
+      matchMethod: emailFallbackMatches ? 'email' : 'provider_id',
+    });
+
+    return true;
+  }
+
+  /**
+   * Find the highest permission from authorization entries.
+   * Short-circuits when 'owner' is found (maximum possible).
+   */
+  private _findHighestPermission(
+    authorizations: Authorization[],
+    currentUserProvider: string,
+    currentUserProviderId: string,
+    currentUserGroups: string[],
+  ): 'reader' | 'writer' | 'owner' | null {
+    const ROLE_RANK: Record<string, number> = { reader: 1, writer: 2, owner: 3 };
+    let highestPermission: 'reader' | 'writer' | 'owner' | null = null;
+
+    for (const auth of authorizations) {
+      const matchedRole = this._matchAuthorizationEntry(
+        auth,
+        currentUserProvider,
+        currentUserProviderId,
+        currentUserGroups,
+      );
+
+      if (!matchedRole) continue;
+
+      const currentRank = highestPermission ? ROLE_RANK[highestPermission] : 0;
+      if (ROLE_RANK[matchedRole] > currentRank) {
+        highestPermission = matchedRole;
+      }
+
+      if (highestPermission === 'owner') return 'owner';
+    }
+
+    return highestPermission;
+  }
+
+  /**
+   * Check if a single authorization entry matches the current user.
+   * Returns the entry's role if matched, null otherwise.
+   */
+  private _matchAuthorizationEntry(
+    auth: Authorization,
+    currentUserProvider: string,
+    currentUserProviderId: string,
+    currentUserGroups: string[],
+  ): 'reader' | 'writer' | 'owner' | null {
+    if (auth.principal_type === 'user') {
+      if (auth.provider === currentUserProvider && auth.provider_id === currentUserProviderId) {
+        this.logger.debugComponent(
+          'ThreatModelAuthorizationService',
+          'User matches authorization entry',
+          {
+            authEntry: `${auth.provider}:${auth.provider_id}`,
+            role: auth.role,
+            currentUser: `${currentUserProvider}:${currentUserProviderId}`,
+          },
+        );
+        return auth.role;
+      }
+    } else if (auth.principal_type === 'group') {
+      if (auth.provider_id.toLowerCase() === 'everyone') {
+        this.logger.debugComponent(
+          'ThreatModelAuthorizationService',
+          'User matches "everyone" group',
+          { role: auth.role },
+        );
+        return auth.role;
+      }
+
+      if (currentUserGroups.includes(auth.provider_id)) {
+        this.logger.debugComponent('ThreatModelAuthorizationService', 'User is member of group', {
+          group: `${auth.provider}:${auth.provider_id}`,
+          role: auth.role,
+          userGroups: currentUserGroups,
+        });
+        return auth.role;
+      }
+    }
+
+    return null;
   }
 
   /**

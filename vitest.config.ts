@@ -27,9 +27,10 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['src/**/*.spec.ts'],
     exclude: [
-      // Exclude integration tests that have been converted to Cypress
+      // Integration tests have transitive Angular Material dependencies that
+      // can't compile in vitest/JSDOM. Keep excluded until migrated to Playwright.
       'src/app/pages/dfd/integration/**',
-      'src/app/pages/dfd/infrastructure/adapters/x6-graph.adapter.spec.ts'
+      'src/app/pages/dfd/infrastructure/adapters/x6-graph.adapter.spec.ts',
     ],
     setupFiles: ['src/test-setup.ts'],
     server: {
@@ -49,8 +50,10 @@ export default defineConfig({
         'unused/**',
       ],
     },
-    // Add these options for better Zone.js compatibility
-    isolate: false,
-    pool: 'forks', // Use 'forks' instead of 'threads' for better Zone.js compatibility
+    // Use 'forks' pool for Zone.js compatibility
+    isolate: true,
+    pool: 'forks',
+    restoreMocks: true,
+    clearMocks: true,
   },
 });

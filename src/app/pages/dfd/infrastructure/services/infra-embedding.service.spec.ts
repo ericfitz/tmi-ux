@@ -11,6 +11,12 @@ import { Graph, Node } from '@antv/x6';
 import { InfraEmbeddingService } from './infra-embedding.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
+import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
+
+// Ensure cell extensions are initialized (as they are in production)
+// This makes tests deterministic regardless of execution order since
+// other test files may also initialize extensions on the shared Cell prototype
+initializeX6CellExtensions();
 
 // Mock SVG methods for X6 compatibility
 const mockMatrix = {
@@ -297,7 +303,11 @@ describe('InfraEmbeddingService', () => {
       expect(config.fillColor).toBe('#FFFFFF');
     });
 
-    it('should handle nodes without getNodeTypeInfo method', () => {
+    it('should handle nodes with generic rect shape (no DFD-specific shape)', () => {
+      // In production, initializeX6CellExtensions() adds getNodeTypeInfo to
+      // Cell.prototype, so it's always available. A node with shape 'rect'
+      // (X6 built-in) gets type 'rect' from getNodeTypeInfo(), not a DFD
+      // type like 'process'. This verifies embedding handles non-DFD shapes.
       const node = graph.addNode({
         id: 'node1',
         shape: 'rect',
@@ -309,12 +319,13 @@ describe('InfraEmbeddingService', () => {
 
       const config = service.getEmbeddingConfiguration(node);
 
-      expect(config.shouldUpdateColor).toBe(true); // Default to process type
+      // Non-text-box shapes should update color
+      expect(config.shouldUpdateColor).toBe(true);
       expect(mockLogger.debugComponent).toHaveBeenCalledWith(
         'Embedding',
         'Calculated embedding configuration',
         expect.objectContaining({
-          nodeType: 'process',
+          nodeType: 'rect',
         }),
       );
     });
@@ -389,7 +400,7 @@ describe('InfraEmbeddingService', () => {
       );
     });
 
-    it('should handle nodes without getNodeTypeInfo method', () => {
+    it('should allow embedding between generic rect-shaped nodes', () => {
       const parent = graph.addNode({
         id: 'parent',
         shape: 'rect',
@@ -409,75 +420,12 @@ describe('InfraEmbeddingService', () => {
 
       const result = service.validateEmbedding(parent, child);
 
-      expect(result.isValid).toBe(true); // Default to process type
+      // 'rect' shape is not text-box or security-boundary, so embedding is allowed
+      expect(result.isValid).toBe(true);
     });
   });
 
   describe('Z-Index Calculations', () => {
-    describe('Embedding Z-Indexes', () => {
-      it('should calculate z-indexes for process nodes embedding', () => {
-        const parent = createMockNodeWithType('parent', 'process');
-        const child = createMockNodeWithType('child', 'process');
-
-        const result = service.calculateEmbeddingZIndexes(parent, child);
-
-        expect(result).toEqual({
-          parentZIndex: 10,
-          childZIndex: 15,
-        });
-      });
-
-      it('should calculate z-indexes for security boundary parent', () => {
-        const parent = createMockNodeWithType('parent', 'security-boundary');
-        const child = createMockNodeWithType('child', 'process');
-
-        const result = service.calculateEmbeddingZIndexes(parent, child);
-
-        expect(result).toEqual({
-          parentZIndex: 1, // Security boundaries stay at back
-          childZIndex: 15,
-        });
-      });
-
-      it('should calculate z-indexes for security boundary child', () => {
-        const parent = createMockNodeWithType('parent', 'security-boundary');
-        const child = createMockNodeWithType('child', 'security-boundary');
-
-        const result = service.calculateEmbeddingZIndexes(parent, child);
-
-        expect(result).toEqual({
-          parentZIndex: 1,
-          childZIndex: 2, // Security boundary child slightly higher but still behind regular nodes
-        });
-      });
-
-      it('should handle nodes without getNodeTypeInfo method', () => {
-        const parent = graph.addNode({
-          id: 'parent',
-          shape: 'rect',
-          x: 100,
-          y: 100,
-          width: 100,
-          height: 50,
-        });
-        const child = graph.addNode({
-          id: 'child',
-          shape: 'rect',
-          x: 150,
-          y: 150,
-          width: 80,
-          height: 40,
-        });
-
-        const result = service.calculateEmbeddingZIndexes(parent, child);
-
-        expect(result).toEqual({
-          parentZIndex: 10, // Default to process type
-          childZIndex: 15,
-        });
-      });
-    });
-
     describe('Unembedding Z-Index', () => {
       it('should return default z-index for process node', () => {
         const node = createMockNodeWithType('node1', 'process');
@@ -503,7 +451,7 @@ describe('InfraEmbeddingService', () => {
         expect(zIndex).toBe(10);
       });
 
-      it('should handle nodes without getNodeTypeInfo method', () => {
+      it('should return default z-index for generic rect-shaped node', () => {
         const node = graph.addNode({
           id: 'node1',
           shape: 'rect',
@@ -515,7 +463,8 @@ describe('InfraEmbeddingService', () => {
 
         const zIndex = service.calculateUnembeddingZIndex(node);
 
-        expect(zIndex).toBe(10); // Default to process type
+        // 'rect' shape is not a security-boundary, so gets default z-index
+        expect(zIndex).toBe(10);
       });
     });
 
@@ -544,7 +493,7 @@ describe('InfraEmbeddingService', () => {
         expect(zIndex).toBe(20);
       });
 
-      it('should handle nodes without getNodeTypeInfo method', () => {
+      it('should return high temporary z-index for generic rect-shaped node', () => {
         const node = graph.addNode({
           id: 'node1',
           shape: 'rect',
@@ -556,7 +505,8 @@ describe('InfraEmbeddingService', () => {
 
         const zIndex = service.getTemporaryEmbeddingZIndex(node);
 
-        expect(zIndex).toBe(20); // Default to process type
+        // 'rect' shape is not a security-boundary, so gets high z-index
+        expect(zIndex).toBe(20);
       });
     });
   });
@@ -592,20 +542,6 @@ describe('InfraEmbeddingService', () => {
 
       expect(result.isValid).toBe(false); // Self-embedding should be prevented (circular embedding)
       expect(result.reason).toContain('Circular embedding');
-    });
-
-    it('should handle z-index calculations with mixed node types', () => {
-      const securityBoundary = createMockNodeWithType('sb1', 'security-boundary');
-      const actor = createMockNodeWithType('actor1', 'actor');
-      const store = createMockNodeWithType('store1', 'store');
-
-      const result1 = service.calculateEmbeddingZIndexes(securityBoundary, actor);
-      const result2 = service.calculateEmbeddingZIndexes(actor, store);
-
-      expect(result1.parentZIndex).toBe(1); // Security boundary parent
-      expect(result1.childZIndex).toBe(15); // Regular node child
-      expect(result2.parentZIndex).toBe(10); // Regular node parent
-      expect(result2.childZIndex).toBe(15); // Regular node child
     });
   });
 });

@@ -439,10 +439,13 @@
     "collaboratorsHeader": "Participantes",
     "copyLink": "Copiar Link",
     "denyPresenterRequest": "Recusar Solicitacao de Apresentador",
+    "endCollaboration": "Encerrar colaboração",
     "hostedBy": "Hospedado por",
     "isRequestingPresenterPrivileges": "esta solicitando privilegios de apresentador",
     "joinSession": "Entrar na Sessao",
     "justNow": "agora mesmo",
+    "leaveSession": "Sair da sessão",
+    "loadingDiagramContext": "Carregando contexto do diagrama...",
     "manageParticipants": "Gerenciar Participantes",
     "noActiveSessions": "Nenhuma Sessao de Colaboracao Ativa",
     "participantRequestsPresenterRole": "Participante Solicita Funcao de Apresentador",
@@ -450,6 +453,7 @@
     "removeFromSession": "Remover da Sessao",
     "requestPresenter": "Solicitar Apresentador",
     "sessionStarted": "Iniciada",
+    "startCollaboration": "Iniciar colaboração",
     "takeBackPresenter": "Retomar Apresentador",
     "title": "Participantes da Sessao de Colaboracao",
     "userJoined": "{{user}} entrou na colaboracao",
@@ -485,6 +489,7 @@
     "copyToClipboard": "Copiar para a Area de Transferencia",
     "create": "Criar",
     "created": "Criado",
+    "createdBy": "Criado por",
     "criticality": "Criticidade",
     "cut": "Recortar",
     "deactivate": "Desativar",
@@ -512,6 +517,7 @@
     "groups": "Grupos",
     "id": "ID",
     "identityProvider": "Provedor de Identidade",
+    "includeInReport": "Incluir no Relatório",
     "issueUri": "URL do Problema",
     "language": "{{language}}",
     "lastModified": "Ultima Modificacao",
@@ -565,6 +571,7 @@
     "paste": "Colar",
     "permissions": "Permissoes",
     "priority": "Prioridade",
+    "project": "Projeto",
     "provider": "Provedor",
     "readOnly": "Somente Leitura",
     "readOnlyTooltip": "Voce tem acesso somente leitura a este modelo de ameacas. Entre em contato com o proprietario para solicitar permissoes de edicao.",
@@ -576,6 +583,7 @@
     },
     "save": "Salvar",
     "saveAndClose": "Salvar e Fechar",
+    "saveFailed": "Falha ao salvar",
     "savedSuccessfully": "Salvo com sucesso",
     "score": "Pontuacao",
     "search": "Pesquisar",
@@ -592,6 +600,7 @@
       "group": "Grupo",
       "user": "Usuario"
     },
+    "team": "Equipe",
     "template": "Modelo",
     "threatDescription": "Descricao da Ameaca",
     "threatDescriptionPlaceholder": "Descreva a Ameaca em Detalhes",
@@ -602,8 +611,10 @@
     "type": "Tipo",
     "unarchive": "Desarquivar",
     "unsavedChangesWarning": "Voce tem alteracoes nao salvas. Tem certeza de que deseja fechar?",
+    "uri": "URI",
     "userId": "ID do Usuario",
     "validation": {
+      "email": "Por favor, insira um endereço de e-mail válido",
       "invalidUrl": "Por favor, insira uma URL valida",
       "maxLength": "O comprimento maximo e {{max}} caracteres",
       "nameRequired": "Nome e obrigatorio",
@@ -636,10 +647,27 @@
     "title": "Criar Modelo de Ameaça"
   },
   "dashboard": {
-    "clearFilter": "Limpar Filtro",
-    "filterLabel": "Filtrar Modelos de Ameaça",
-    "filterPlaceholder": "Pesquisar por nome, descrição, proprietário ou status",
-    "noMatchingThreatModels": "Nenhum modelo de ameaça corresponde ao seu filtro.",
+    "clearAllFilters": "Limpar Todos os Filtros",
+    "clearSearch": "Limpar Pesquisa",
+    "createdAfter": "Criado Após",
+    "createdBefore": "Criado Antes",
+    "descriptionFilter": "{{common.description}}",
+    "descriptionPlaceholder": "Filtrar por descrição",
+    "issueUriFilter": "{{common.issueUri}}",
+    "issueUriPlaceholder": "Filtrar por URL do problema",
+    "lessFilters": "Menos Filtros",
+    "modifiedAfter": "Modificado Após",
+    "modifiedBefore": "Modificado Antes",
+    "moreFilters": "Mais Filtros",
+    "nameFilter": "{{common.name}}",
+    "namePlaceholder": "Filtrar por nome",
+    "noMatchingThreatModels": "Nenhum modelo de ameaça corresponde à sua pesquisa ou filtros.",
+    "ownerFilter": "{{common.roles.owner}}",
+    "ownerPlaceholder": "Filtrar por nome ou e-mail do proprietário",
+    "searchLabel": "{{common.search}}",
+    "searchPlaceholder": "Pesquisar por nome, descrição, proprietário ou status",
+    "statusUpdatedAfter": "Status Atualizado Após",
+    "statusUpdatedBefore": "Status Atualizado Antes",
     "tableHeaders": {
       "actions": "{{common.actions}}",
       "created": "{{common.created}}",
@@ -698,6 +726,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "Um ou mais elementos selecionados têm entradas de metadados. Deletar estes elementos removerá permanentemente seus metadados. Deseja continuar?",
+      "title": "Metadados Serão Perdidos"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "Insira a descrição do diagrama",
     "diagramNamePlaceholder": "Insira o nome do diagrama",
@@ -755,10 +788,12 @@
     "support": "Suporte"
   },
   "getStarted": "Comecar",
-  "homeDescription": "TMI é uma ferramenta que gerencia e aprimora os processos de revisão de segurança e modelagem de ameaças para sua organização. Ela conduz o fluxo de trabalho de revisão de segurança, organiza as informações para revisões de segurança, permite a criação colaborativa de diagramas de fluxo de dados e possibilita a conexão de automação para reduzir esforços no processo de revisão e analisar ameaças de segurança.",
+  "homeDescription": "TMI é uma ferramenta que simplifica os processos de análise de segurança e modelagem de ameaças da sua organização. Ela impulsiona fluxos de trabalho de revisão, organiza informações importantes e permite que as equipes construam colaborativamente diagramas de fluxo de dados. Também se conecta a automações, ajudando a reduzir trabalho manual e identificar ameaças de segurança com mais eficiência.",
   "homeWelcomeTitle": "Bem-vindo ao TMI: Modelagem de Ameacas Aprimorada",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "Salvar e Sair",
       "submitResponses": "Enviar Respostas"
     }
@@ -818,6 +853,53 @@
       "view": "Visualizar Nota"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "Entrar"
+    },
+    "operationError": "Falha ao {{operation}}: {{errorMessage}}",
+    "operationFailed": "Operação falhou",
+    "operations": {
+      "collaboration": "colaboração",
+      "denyPresenterRequest": "negar solicitação de apresentador",
+      "sendPresenterRequest": "enviar solicitação de apresentador",
+      "startCollaboration": "iniciar colaboração",
+      "updatePresenter": "atualizar apresentador"
+    },
+    "presenter": {
+      "assigned": "{{user}} agora é o apresentador",
+      "assignedYou": "Você agora é o apresentador",
+      "cleared": "O modo de apresentador foi desativado",
+      "cursorMoved": "Cursor do apresentador movido",
+      "modeChanged": "Modo de apresentador alterado",
+      "privilegesRequested": "Privilégios de apresentador solicitados",
+      "removed": "{{user}} não é mais o apresentador",
+      "removedYou": "Você não é mais o apresentador",
+      "requestDenied": "Sua solicitação de apresentador foi negada",
+      "requestSent": "Solicitação de apresentador enviada ao proprietário da sessão",
+      "requesting": "{{user}} está solicitando privilégios de apresentador",
+      "selectionChanged": "Seleção do apresentador alterada"
+    },
+    "session": {
+      "disconnected": "Desconectado da sessão de colaboração",
+      "reconnected": "Reconectado à sessão de colaboração",
+      "reconnecting": "Reconectando à sessão de colaboração...",
+      "userRemoved": "{{user}} foi removido da sessão",
+      "youWereRemoved": "Você foi removido da sessão de colaboração"
+    },
+    "unknownError": "Erro desconhecido",
+    "websocket": {
+      "authenticationFailed": "Falha na autenticação. Faça login novamente.",
+      "communicationError": "Erro de comunicação com o servidor. Algumas atualizações podem não sincronizar.",
+      "connectionError": "Erro de conexão. Trabalhando no modo offline.",
+      "connectionFailed": "Falha ao conectar ao servidor de colaboração.",
+      "connectionTimeout": "Tempo de conexão esgotado. O servidor pode estar sobrecarregado.",
+      "disconnected": "Desconectado do servidor de colaboração. As alterações serão salvas localmente.",
+      "messageSendFailed": "Falha ao enviar mensagem. Suas alterações podem não ser sincronizadas.",
+      "multipleFailed": "Conexão falhou após várias tentativas. Trabalhando no modo offline.",
+      "unknownError": "Ocorreu um erro desconhecido de WebSocket"
+    }
+  },
   "pagination": {
     "ariaLabel": "Selecionar página de itens",
     "firstPage": "Primeira página",
@@ -870,6 +952,23 @@
     "userRightsContent2": "Esta opcao permite a exclusao imediata de todos os dados que o Operador armazena em seu nome, incluindo informacoes de perfil e registros de autenticacao. Apos a ativacao, seus dados serao permanentemente removidos dos sistemas do Operador e de provedores terceiros, sujeitos a quaisquer obrigacoes legais de retencao.",
     "userRightsTitle": "Direitos do Usuario"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "Insira a descrição do projeto",
+      "namePlaceholder": "Insira o nome do projeto",
+      "nameRequired": "O nome do projeto é obrigatório",
+      "statusPlaceholder": "ex.: active, planning, archived",
+      "teamRequired": "A equipe é obrigatória",
+      "title": "Criar Projeto",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Criar Novo Projeto",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "Nenhum Projeto"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "Estender Sessao",
     "extending": "Estendendo sua sessao, por favor aguarde...",
@@ -883,7 +982,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "Falha ao salvar",
+      "error": "{{common.saveFailed}}",
       "saved": "Salvo",
       "saving": "Salvando..."
     },
@@ -952,69 +1051,86 @@
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Ver Resposta"
   },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "Insira a descrição da equipe",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "Insira o nome da equipe",
+      "nameRequired": "O nome da equipe é obrigatório",
+      "statusPlaceholder": "ex.: active, archived",
+      "title": "Criar Equipe",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Criar Nova Equipe"
+  },
   "threatEditor": {
     "createNewThreat": "Criar Nova Ameaca",
     "notAssociatedWithAsset": "Nao associado a um ativo",
     "notAssociatedWithCell": "Nao Associado a uma Celula",
     "notAssociatedWithDiagram": "Nao Associado a um Diagrama",
     "threatPriority": {
-      "0": "Imediata (P0)",
-      "0.description": "Deve ser tratada com urgencia; exploracao ativa, violacao regulatoria ou exposicao critica de negocios.",
-      "1": "Alta (P1)",
-      "1.description": "Requer resolucao rapida; exposicao de alto risco ou prazo de lancamento proximo.",
-      "2": "Media (P2)",
-      "2.description": "Tratar dentro dos ciclos de desenvolvimento padrao; exposicao moderada.",
-      "3": "Baixa (P3)",
-      "3.description": "Incluir no backlog para ciclos futuros; sem exposicao imediata.",
-      "4": "Adiada (P4)",
-      "4.description": "Adiada com aprovacao comercial documentada; rastreada mas nao agendada."
+      "deferred": "Adiada (P4)",
+      "deferred.description": "Adiada com aprovacao comercial documentada; rastreada mas nao agendada.",
+      "high": "Alta (P1)",
+      "high.description": "Requer resolucao rapida; exposicao de alto risco ou prazo de lancamento proximo.",
+      "immediate": "Imediata (P0)",
+      "immediate.description": "Deve ser tratada com urgencia; exploracao ativa, violacao regulatoria ou exposicao critica de negocios.",
+      "low": "Baixa (P3)",
+      "low.description": "Incluir no backlog para ciclos futuros; sem exposicao imediata.",
+      "medium": "Media (P2)",
+      "medium.description": "Tratar dentro dos ciclos de desenvolvimento padrao; exposicao moderada."
     },
     "threatSeverity": {
-      "0": "Critica",
-      "0.description": "Vulnerabilidade exploravel permite comprometimento completo do sistema, violacao de dados ou impacto na seguranca; requer acao imediata.",
-      "1": "Alta",
-      "1.description": "Impacto significativo ou alta probabilidade; permite acesso nao autorizado importante, escalacao de privilegios ou interrupcao de servico.",
-      "2": "Media",
-      "2.description": "Impacto ou probabilidade moderada; exposicao limitada de dados, comprometimento parcial de funcionalidade ou requer exploits encadeados.",
-      "3": "Baixa",
-      "3.description": "Impacto minimo ou baixa probabilidade; impacto negligenciavel nos negocios, requer condicoes especificas ou interacao do usuario.",
-      "4": "Informativo",
-      "4.description": "Sem explorabilidade direta; recomendacao, desvio de melhores praticas ou melhoria de configuracao.",
-      "5": "Desconhecida",
-      "5.description": "A severidade da ameaca ainda nao foi avaliada."
+      "critical": "Critica",
+      "critical.description": "Vulnerabilidade exploravel permite comprometimento completo do sistema, violacao de dados ou impacto na seguranca; requer acao imediata.",
+      "high": "Alta",
+      "high.description": "Impacto significativo ou alta probabilidade; permite acesso nao autorizado importante, escalacao de privilegios ou interrupcao de servico.",
+      "informational": "Informativo",
+      "informational.description": "Sem explorabilidade direta; recomendacao, desvio de melhores praticas ou melhoria de configuracao.",
+      "low": "Baixa",
+      "low.description": "Impacto minimo ou baixa probabilidade; impacto negligenciavel nos negocios, requer condicoes especificas ou interacao do usuario.",
+      "medium": "Media",
+      "medium.description": "Impacto ou probabilidade moderada; exposicao limitada de dados, comprometimento parcial de funcionalidade ou requer exploits encadeados.",
+      "unknown": "Desconhecida",
+      "unknown.description": "A severidade da ameaca ainda nao foi avaliada."
     },
     "threatStatus": {
-      "0": "Aberta",
-      "0.description": "A descoberta foi identificada e documentada, mas nenhuma acao foi iniciada.",
-      "1": "Confirmada",
-      "1.description": "A ameaca foi validada como legitima atraves de analise ou evidencia.",
-      "2": "Mitigacao Planejada",
-      "2.description": "Uma estrategia de remediacao ou mitigacao foi definida e atribuida.",
-      "3": "Mitigacao em Andamento",
-      "3.description": "A implementacao de controles, alteracoes de codigo ou contramedidas esta em andamento.",
-      "4": "Verificacao Pendente",
-      "4.description": "A mitigacao esta completa; a equipe de seguranca deve testar ou revisar a eficacia.",
-      "5": "Resolvida",
-      "5.description": "A ameaca esta totalmente mitigada e verificada; o risco residual e aceitavel.",
-      "6": "Aceita",
-      "6.description": "A ameaca e reconhecida mas intencionalmente nao mitigada (ex: devido a justificativa comercial); requer aceitacao formal de risco.",
-      "7": "Falso Positivo",
-      "7.description": "A investigacao determinou que a descoberta nao e uma ameaca valida; nenhuma acao adicional necessaria.",
-      "8": "Adiada",
-      "8.description": "A acao foi adiada com aprovacao (ex: para sprints futuros); inclui justificativa e data prevista.",
-      "9": "Fechada",
-      "9.description": "A descoberta esta arquivada apos resolucao, aceitacao ou invalidacao, com trilha de auditoria."
+      "accepted": "Aceita",
+      "accepted.description": "A ameaca e reconhecida mas intencionalmente nao mitigada (ex: devido a justificativa comercial); requer aceitacao formal de risco.",
+      "closed": "Fechada",
+      "closed.description": "A descoberta esta arquivada apos resolucao, aceitacao ou invalidacao, com trilha de auditoria.",
+      "confirmed": "Confirmada",
+      "confirmed.description": "A ameaca foi validada como legitima atraves de analise ou evidencia.",
+      "deferred": "Adiada",
+      "deferred.description": "A acao foi adiada com aprovacao (ex: para sprints futuros); inclui justificativa e data prevista.",
+      "falsePositive": "Falso Positivo",
+      "falsePositive.description": "A investigacao determinou que a descoberta nao e uma ameaca valida; nenhuma acao adicional necessaria.",
+      "mitigationInProgress": "Mitigacao em Andamento",
+      "mitigationInProgress.description": "A implementacao de controles, alteracoes de codigo ou contramedidas esta em andamento.",
+      "mitigationPlanned": "Mitigacao Planejada",
+      "mitigationPlanned.description": "Uma estrategia de remediacao ou mitigacao foi definida e atribuida.",
+      "open": "Aberta",
+      "open.description": "A descoberta foi identificada e documentada, mas nenhuma acao foi iniciada.",
+      "resolved": "Resolvida",
+      "resolved.description": "A ameaca esta totalmente mitigada e verificada; o risco residual e aceitavel.",
+      "verificationPending": "Verificacao Pendente",
+      "verificationPending.description": "A mitigacao esta completa; a equipe de seguranca deve testar ou revisar a eficacia."
     }
   },
   "threatModels": {
     "addPermission": "Adicionar Permissao",
     "branch": "Ramo",
+    "changeSecurityReviewer": "Alterar Revisor de Segurança",
+    "clearSecurityReviewer": "Remover Revisor de Segurança",
     "commit": "Commit",
     "createFirstButton": "Crie Seu Primeiro Modelo de Ameacas",
     "createNewDiagram": "Criar Novo Diagrama",
     "createNewRepository": "Adicionar Referencia de Repositorio",
     "created": "{{common.created}}",
-    "createdBy": "Criado Por",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Diagrama de Fluxo de Dados",
     "deleteWarningPermanent": "Esta acao nao pode ser desfeita e excluira permanentemente todos os diagramas, ameacas e metadados associados.",
@@ -1078,29 +1194,30 @@
       "outputs": "Saídas",
       "outputsDescription": "Notas, diagramas e ameaças produzidas durante a análise de segurança"
     },
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Definir como Proprietario",
     "sourcesCount": "Repositorios",
     "status": {
-      "0": "Nao Iniciada",
-      "0.tooltip": "A revisao de seguranca foi iniciada, mas nenhuma atividade de avaliacao comecou.",
-      "1": "Em Andamento",
-      "1.tooltip": "A avaliacao ativa esta em andamento, incluindo modelagem de ameacas, revisao de codigo ou testes.",
-      "2": "Pendente de Revisao",
-      "2.tooltip": "Os artefatos de avaliacao (ex: relatorios, descobertas) aguardam revisao formal pelos lideres de seguranca ou aprovadores.",
-      "3": "Remediacao Necessaria",
-      "3.tooltip": "Vulnerabilidades ou problemas foram identificados; o desenvolvimento deve trata-los.",
-      "4": "Remediacao em Andamento",
-      "4.tooltip": "Correcoes para os problemas identificados estao sendo implementadas pela equipe de desenvolvimento.",
-      "5": "Verificacao Pendente",
-      "5.tooltip": "A remediacao esta completa; a equipe de seguranca deve verificar a eficacia.",
-      "6": "Aprovada",
-      "6.tooltip": "Todos os problemas foram resolvidos e verificados; a aplicacao atende aos criterios de seguranca para lancamento ou implantacao.",
-      "7": "Rejeitada",
-      "7.tooltip": "A revisao falhou em criterios criticos; retrabalho significativo e necessario antes da resubmissao.",
-      "8": "Adiada",
-      "8.tooltip": "A revisao esta pausada (ex: devido a restricoes de recursos ou alteracoes na aplicacao); a retomada esta planejada.",
-      "9": "Fechada",
-      "9.tooltip": "A revisao esta totalmente concluida e arquivada, sem necessidade de acao adicional."
+      "approved": "Aprovada",
+      "approved.tooltip": "Todos os problemas foram resolvidos e verificados; a aplicacao atende aos criterios de seguranca para lancamento ou implantacao.",
+      "closed": "Fechada",
+      "closed.tooltip": "A revisao esta totalmente concluida e arquivada, sem necessidade de acao adicional.",
+      "deferred": "Adiada",
+      "deferred.tooltip": "A revisao esta pausada (ex: devido a restricoes de recursos ou alteracoes na aplicacao); a retomada esta planejada.",
+      "inProgress": "Em Andamento",
+      "inProgress.tooltip": "A avaliacao ativa esta em andamento, incluindo modelagem de ameacas, revisao de codigo ou testes.",
+      "notStarted": "Nao Iniciada",
+      "notStarted.tooltip": "A revisao de seguranca foi iniciada, mas nenhuma atividade de avaliacao comecou.",
+      "pendingReview": "Pendente de Revisao",
+      "pendingReview.tooltip": "Os artefatos de avaliacao (ex: relatorios, descobertas) aguardam revisao formal pelos lideres de seguranca ou aprovadores.",
+      "rejected": "Rejeitada",
+      "rejected.tooltip": "A revisao falhou em criterios criticos; retrabalho significativo e necessario antes da resubmissao.",
+      "remediationInProgress": "Remediacao em Andamento",
+      "remediationInProgress.tooltip": "Correcoes para os problemas identificados estao sendo implementadas pela equipe de desenvolvimento.",
+      "remediationRequired": "Remediacao Necessaria",
+      "remediationRequired.tooltip": "Vulnerabilidades ou problemas foram identificados; o desenvolvimento deve trata-los.",
+      "verificationPending": "Verificacao Pendente",
+      "verificationPending.tooltip": "A remediacao esta completa; a equipe de seguranca deve verificar a eficacia."
     },
     "statusLastUpdated": "Ultima Atualizacao do Status",
     "tag": "Etiqueta",
@@ -1245,6 +1362,16 @@
     },
     "queue": "Fila de Triagem",
     "returnToSubmitted": "Retornar para Enviado",
+    "reviewerAssignment": {
+      "assign": "Atribuir",
+      "assignToMe": "Atribuir para Mim",
+      "errorLoading": "Falha ao carregar modelos de ameaça não atribuídos",
+      "loading": "Carregando revisões não atribuídas...",
+      "noUnassigned": "Nenhuma Revisão Não Atribuída",
+      "noUnassignedDescription": "Todos os modelos de ameaça ativos têm um revisor de segurança atribuído",
+      "reviewer": "Revisor de Segurança",
+      "selectReviewer": "Selecionar revisor..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "Forneça notas explicando o que precisa ser revisado. O remetente verá estas notas quando revisar sua resposta.",
@@ -1252,6 +1379,10 @@
       "label": "Notas de Revisão",
       "placeholder": "Descreva as revisões necessárias...",
       "title": "Devolver para Revisão"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "Revisões Não Atribuídas"
     },
     "title": "Triagem",
     "viewDetails": "Ver Detalhes"
@@ -1324,7 +1455,7 @@
     "sections": {
       "developer": "Desenvolvedor",
       "diagramEditor": "Editor de Diagramas",
-      "securityReviewer": "Revisor de Segurança"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "Mostrar Ferramentas do Desenvolvedor",
     "tabs": {

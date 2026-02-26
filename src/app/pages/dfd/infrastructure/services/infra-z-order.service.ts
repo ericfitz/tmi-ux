@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Cell, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 
 /**
  * Z-Order Service
@@ -30,14 +31,7 @@ export class ZOrderService {
    * Get default z-index for a node type (business rule)
    */
   getDefaultZIndex(nodeType: string): number {
-    switch (nodeType) {
-      case 'security-boundary':
-        return 1; // Security boundaries stay behind other nodes
-      case 'text-box':
-        return 20; // Textboxes appear above all other shapes
-      default:
-        return 10; // Default z-index for regular nodes
-    }
+    return DFD_STYLING_HELPERS.getDefaultZIndex(nodeType);
   }
 
   /**
@@ -673,64 +667,9 @@ export class ZOrderService {
       // Iterate through each cell and check for violations
       for (const cell of sortedCells) {
         if (cell.isNode()) {
-          const node = cell;
-          const parent = node.getParent();
-
-          if (parent && parent.isNode()) {
-            const nodeZIndex = node.getZIndex() ?? 1;
-            const parentZIndex = parent.getZIndex() ?? 1;
-
-            // Violation: child z-index must be > parent z-index
-            if (nodeZIndex <= parentZIndex) {
-              const newZIndex = parentZIndex + 3;
-              node.setZIndex(newZIndex);
-              changed = true;
-
-              this.logger.debugComponent(
-                'ZOrderService',
-                'Adjusted node z-index (parent violation)',
-                {
-                  nodeId: node.id,
-                  oldZIndex: nodeZIndex,
-                  newZIndex,
-                  parentZIndex,
-                  iteration,
-                },
-              );
-            }
-          }
+          if (this._fixNodeParentViolation(cell, iteration)) changed = true;
         } else if (cell.isEdge()) {
-          const edge = cell;
-          const sourceId = edge.getSourceCellId();
-          const targetId = edge.getTargetCellId();
-
-          if (sourceId && targetId) {
-            // Find source and target nodes in cells array
-            const sourceNode = cells.find(c => c.id === sourceId && c.isNode()) as Node | undefined;
-            const targetNode = cells.find(c => c.id === targetId && c.isNode()) as Node | undefined;
-
-            if (sourceNode && targetNode) {
-              const edgeZIndex = edge.getZIndex() ?? 1;
-              const sourceZIndex = sourceNode.getZIndex() ?? 1;
-              const targetZIndex = targetNode.getZIndex() ?? 1;
-              const requiredZIndex = Math.max(sourceZIndex, targetZIndex);
-
-              // Violation: edge z-index must be >= max(source, target)
-              if (edgeZIndex < requiredZIndex) {
-                edge.setZIndex(requiredZIndex);
-                changed = true;
-
-                this.logger.debugComponent('ZOrderService', 'Adjusted edge z-index', {
-                  edgeId: edge.id,
-                  oldZIndex: edgeZIndex,
-                  newZIndex: requiredZIndex,
-                  sourceZIndex,
-                  targetZIndex,
-                  iteration,
-                });
-              }
-            }
-          }
+          if (this._fixEdgeEndpointViolation(cell, cells, iteration)) changed = true;
         }
       }
     }
@@ -752,5 +691,66 @@ export class ZOrderService {
     }
 
     return iteration;
+  }
+
+  /**
+   * Fixes a node's z-index if it violates the parent > child rule.
+   * Returns true if a change was made.
+   */
+  private _fixNodeParentViolation(node: Cell, iteration: number): boolean {
+    const parent = node.getParent();
+    if (!parent || !parent.isNode()) return false;
+
+    const nodeZIndex = node.getZIndex() ?? 1;
+    const parentZIndex = parent.getZIndex() ?? 1;
+
+    if (nodeZIndex <= parentZIndex) {
+      const newZIndex = parentZIndex + 3;
+      node.setZIndex(newZIndex);
+
+      this.logger.debugComponent('ZOrderService', 'Adjusted node z-index (parent violation)', {
+        nodeId: node.id,
+        oldZIndex: nodeZIndex,
+        newZIndex,
+        parentZIndex,
+        iteration,
+      });
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Fixes an edge's z-index if it's below its source/target nodes.
+   * Returns true if a change was made.
+   */
+  private _fixEdgeEndpointViolation(edge: Cell, cells: Cell[], iteration: number): boolean {
+    const sourceId = (edge as Edge).getSourceCellId();
+    const targetId = (edge as Edge).getTargetCellId();
+    if (!sourceId || !targetId) return false;
+
+    const sourceNode = cells.find(c => c.id === sourceId && c.isNode()) as Node | undefined;
+    const targetNode = cells.find(c => c.id === targetId && c.isNode()) as Node | undefined;
+    if (!sourceNode || !targetNode) return false;
+
+    const edgeZIndex = edge.getZIndex() ?? 1;
+    const sourceZIndex = sourceNode.getZIndex() ?? 1;
+    const targetZIndex = targetNode.getZIndex() ?? 1;
+    const requiredZIndex = Math.max(sourceZIndex, targetZIndex);
+
+    if (edgeZIndex < requiredZIndex) {
+      edge.setZIndex(requiredZIndex);
+
+      this.logger.debugComponent('ZOrderService', 'Adjusted edge z-index', {
+        edgeId: edge.id,
+        oldZIndex: edgeZIndex,
+        newZIndex: requiredZIndex,
+        sourceZIndex,
+        targetZIndex,
+        iteration,
+      });
+      return true;
+    }
+    return false;
   }
 }

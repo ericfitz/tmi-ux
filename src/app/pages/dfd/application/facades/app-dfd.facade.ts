@@ -20,6 +20,7 @@
 
 import { Injectable } from '@angular/core';
 import { Observable, of, forkJoin } from 'rxjs';
+import { Cell } from '@antv/x6';
 import { tap, map } from 'rxjs/operators';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { NodeType } from '../../domain/value-objects/node-info';
@@ -591,6 +592,22 @@ export class AppDfdFacade {
   removeNodeEdges(nodeId: string): void {
     const graph = this.infraX6GraphAdapter.getGraph();
     this.appEdgeService.removeNodeEdges(graph, nodeId);
+  }
+
+  /**
+   * Observable for cell deletion requests from the button-remove tool.
+   * The presentation layer subscribes to gate deletion with confirmation dialogs.
+   */
+  get cellDeletionRequested$(): Observable<Cell> {
+    return this.infraX6GraphAdapter.cellDeletionRequested$;
+  }
+
+  /**
+   * Execute a direct cell deletion (called after any confirmation has been obtained).
+   * Delegates to the graph adapter for proper history and port visibility handling.
+   */
+  executeDirectCellDeletion(cell: Cell): void {
+    this.infraX6GraphAdapter.executeCellDeletion(cell);
   }
 
   /**

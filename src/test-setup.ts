@@ -6,13 +6,15 @@ import './testing/compiler-setup';
 // Import our zone setup to ensure proper Zone.js initialization
 import './testing/zone-setup';
 
-// Additional global test setup can go here
+// Polyfill Web Crypto API for JSDOM environment
+// JSDOM does not provide crypto.getRandomValues or crypto.subtle,
+// which are required by PKCE authentication utilities
+import { webcrypto } from 'node:crypto';
 
-// Global cleanup to prevent test pollution
-import { afterEach, vi } from 'vitest';
+if (!globalThis.crypto?.subtle) {
+  Object.defineProperty(globalThis, 'crypto', {
+    value: webcrypto,
+  });
+}
 
-afterEach(() => {
-  // Restore all mocks/spies after each test to prevent cross-test contamination
-  // This is critical for tests that spy on global objects like crypto, window, etc.
-  vi.restoreAllMocks();
-});
+// Mock cleanup is handled by vitest config: restoreMocks: true, clearMocks: true

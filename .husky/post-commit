@@ -90,7 +90,7 @@ if echo "$COMMIT_MSG_FIRST_LINE" | grep -qE "^(feat|fix|docs|refactor|perf|test|
     # Parse version components
     MAJOR=$(echo "$CURRENT_VERSION" | cut -d. -f1)
     MINOR=$(echo "$CURRENT_VERSION" | cut -d. -f2)
-    PATCH=$(echo "$CURRENT_VERSION" | cut -d. -f3)
+    PATCH=$(echo "$CURRENT_VERSION" | cut -d. -f3 | sed 's/-.*//')
 
     # Calculate new version
     if [ "$BUMP_TYPE" = "minor" ]; then

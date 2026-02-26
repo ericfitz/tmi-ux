@@ -70,9 +70,6 @@
   padding: 16px 24px;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-divider);
-  position: sticky;
-  top: 0;
-  z-index: 10;
 
   .survey-title {
     flex: 1;
@@ -111,6 +108,53 @@
 
   .close-button {
     margin-left: 16px;
+  }
+}
+
+// Project picker section
+.project-picker-section {
+  padding: 0 24px;
+  max-width: 400px;
+}
+
+// Revision Notes Card (shown when survey returned for revision)
+.revision-notes-card {
+  border-left: 4px solid var(--color-warning, #ff9800);
+  margin: 0 24px;
+
+  mat-card-header {
+    padding: 16px 16px 0;
+  }
+
+  mat-card-content {
+    padding: 16px;
+  }
+}
+
+.revision-notes-content {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 12px;
+  background: var(--color-background-light);
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.revision-notes-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+
+  /* stylelint-disable-next-line no-descending-specificity */
+  mat-icon {
+    color: var(--color-warning, #ff9800);
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -176,6 +220,10 @@ button mat-icon {
       order: 2;
       margin-left: auto;
     }
+  }
+
+  .revision-notes-card {
+    margin: 0 16px;
   }
 
   .survey-content {

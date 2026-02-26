@@ -4,7 +4,7 @@
 
 import { Graph } from '@antv/x6';
 import { Observable } from 'rxjs';
-import { CellOperation } from '../../../../core/types/websocket-message.types';
+import { CellOperation } from '../../../core/types/websocket-message.types';
 
 /**
  * Types of persistence strategies

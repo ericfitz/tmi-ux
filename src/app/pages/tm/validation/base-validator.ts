@@ -87,6 +87,14 @@ export class ValidationUtils {
     return `${basePath}.${key}`;
   }
 
+  /** Format type validators keyed by type name. */
+  private static readonly FORMAT_VALIDATORS: Record<string, (v: string) => boolean> = {
+    uuid: (v: string) => ValidationUtils.isValidUUID(v),
+    email: (v: string) => ValidationUtils.isValidEmail(v),
+    url: (v: string) => ValidationUtils.isValidURL(v),
+    'date-time': (v: string) => ValidationUtils.isValidDateTime(v),
+  };
+
   /**
    * Validate a single field according to validation rules
    */
@@ -95,20 +103,10 @@ export class ValidationUtils {
     rule: FieldValidationRule,
     context: ValidationContext,
   ): ValidationError | null {
-    const {
-      field,
-      required,
-      type,
-      minLength,
-      maxLength,
-      enum: enumValues,
-      pattern,
-      customValidator,
-    } = rule;
+    const { field } = rule;
     const path = context.currentPath ? `${context.currentPath}.${field}` : field;
 
-    // Check if required field is missing
-    if (required && (value === undefined || value === null)) {
+    if (rule.required && (value === undefined || value === null)) {
       return ValidationUtils.createError(
         'FIELD_REQUIRED',
         `Required field '${field}' is missing`,
@@ -116,97 +114,112 @@ export class ValidationUtils {
       );
     }
 
-    // Skip validation if field is optional and not present
     if (value === undefined || value === null) {
       return null;
     }
 
-    // Type validation
-    if (type) {
-      const actualType = ValidationUtils.getType(value);
-      let typeValid = false;
+    return (
+      ValidationUtils.validateType(value, rule, path) ??
+      ValidationUtils.validateLength(value, rule, path) ??
+      ValidationUtils.validateEnum(value, rule, path) ??
+      ValidationUtils.validatePattern(value, rule, path) ??
+      (rule.customValidator ? rule.customValidator(value, { ...context, currentPath: path }) : null)
+    );
+  }
 
-      switch (type) {
-        case 'uuid':
-          typeValid = actualType === 'string' && ValidationUtils.isValidUUID(value as string);
-          break;
-        case 'email':
-          typeValid = actualType === 'string' && ValidationUtils.isValidEmail(value as string);
-          break;
-        case 'url':
-          typeValid = actualType === 'string' && ValidationUtils.isValidURL(value as string);
-          break;
-        case 'date-time':
-          typeValid = actualType === 'string' && ValidationUtils.isValidDateTime(value as string);
-          break;
-        default:
-          typeValid = actualType === type;
-      }
-
-      if (!typeValid) {
-        return ValidationUtils.createError(
-          'INVALID_TYPE',
-          `Field '${field}' expected type '${type}' but got '${actualType}'`,
-          path,
-          'error',
-          { expectedType: type, actualType, value },
-        );
-      }
+  /** Validate field type, including format types (uuid, email, url, date-time). */
+  private static validateType(
+    value: unknown,
+    rule: FieldValidationRule,
+    path: string,
+  ): ValidationError | null {
+    if (!rule.type) {
+      return null;
     }
+    const actualType = ValidationUtils.getType(value);
+    const formatValidator = ValidationUtils.FORMAT_VALIDATORS[rule.type];
+    const typeValid = formatValidator
+      ? actualType === 'string' && formatValidator(value as string)
+      : actualType === rule.type;
 
-    // Length validation
-    if (typeof value === 'string' || Array.isArray(value)) {
-      if (minLength !== undefined && value.length < minLength) {
-        return ValidationUtils.createError(
-          'MIN_LENGTH_VIOLATION',
-          `Field '${field}' length ${value.length} is less than minimum ${minLength}`,
-          path,
-          'error',
-          { minLength, actualLength: value.length },
-        );
-      }
-
-      if (maxLength !== undefined && value.length > maxLength) {
-        return ValidationUtils.createError(
-          'MAX_LENGTH_VIOLATION',
-          `Field '${field}' length ${value.length} exceeds maximum ${maxLength}`,
-          path,
-          'error',
-          { maxLength, actualLength: value.length },
-        );
-      }
-    }
-
-    // Enum validation
-    if (enumValues && !enumValues.includes(value as string)) {
-      const displayValue =
-        typeof value === 'string' ? value : typeof value === 'number' ? value : '[object]';
+    if (!typeValid) {
       return ValidationUtils.createError(
-        'INVALID_ENUM_VALUE',
-        `Field '${field}' value '${displayValue}' is not one of allowed values: ${enumValues.join(', ')}`,
+        'INVALID_TYPE',
+        `Field '${rule.field}' expected type '${rule.type}' but got '${actualType}'`,
         path,
         'error',
-        { allowedValues: enumValues, actualValue: value },
+        { expectedType: rule.type, actualType, value },
       );
     }
-
-    // Pattern validation
-    if (pattern && typeof value === 'string' && !pattern.test(value)) {
-      return ValidationUtils.createError(
-        'PATTERN_MISMATCH',
-        `Field '${field}' value '${value}' does not match required pattern`,
-        path,
-        'error',
-        { pattern: pattern.source, value },
-      );
-    }
-
-    // Custom validation
-    if (customValidator) {
-      return customValidator(value, { ...context, currentPath: path });
-    }
-
     return null;
+  }
+
+  /** Validate field length (for strings and arrays). */
+  private static validateLength(
+    value: unknown,
+    rule: FieldValidationRule,
+    path: string,
+  ): ValidationError | null {
+    if (typeof value !== 'string' && !Array.isArray(value)) {
+      return null;
+    }
+    if (rule.minLength !== undefined && value.length < rule.minLength) {
+      return ValidationUtils.createError(
+        'MIN_LENGTH_VIOLATION',
+        `Field '${rule.field}' length ${value.length} is less than minimum ${rule.minLength}`,
+        path,
+        'error',
+        { minLength: rule.minLength, actualLength: value.length },
+      );
+    }
+    if (rule.maxLength !== undefined && value.length > rule.maxLength) {
+      return ValidationUtils.createError(
+        'MAX_LENGTH_VIOLATION',
+        `Field '${rule.field}' length ${value.length} exceeds maximum ${rule.maxLength}`,
+        path,
+        'error',
+        { maxLength: rule.maxLength, actualLength: value.length },
+      );
+    }
+    return null;
+  }
+
+  /** Validate field value against allowed enum values. */
+  private static validateEnum(
+    value: unknown,
+    rule: FieldValidationRule,
+    path: string,
+  ): ValidationError | null {
+    if (!rule.enum || rule.enum.includes(value as string)) {
+      return null;
+    }
+    const displayValue =
+      typeof value === 'string' ? value : typeof value === 'number' ? value : '[object]';
+    return ValidationUtils.createError(
+      'INVALID_ENUM_VALUE',
+      `Field '${rule.field}' value '${displayValue}' is not one of allowed values: ${rule.enum.join(', ')}`,
+      path,
+      'error',
+      { allowedValues: rule.enum, actualValue: value },
+    );
+  }
+
+  /** Validate field value against a regex pattern. */
+  private static validatePattern(
+    value: unknown,
+    rule: FieldValidationRule,
+    path: string,
+  ): ValidationError | null {
+    if (!rule.pattern || typeof value !== 'string' || rule.pattern.test(value)) {
+      return null;
+    }
+    return ValidationUtils.createError(
+      'PATTERN_MISMATCH',
+      `Field '${rule.field}' value '${value}' does not match required pattern`,
+      path,
+      'error',
+      { pattern: rule.pattern.source, value },
+    );
   }
 }
 

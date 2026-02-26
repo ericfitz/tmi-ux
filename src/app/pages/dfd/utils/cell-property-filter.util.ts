@@ -220,57 +220,11 @@ function buildChangeObject(
     const currentValue = current[key];
     const previousValue = previous[key];
 
-    // If values differ
-    if (!deepEqual(previousValue, currentValue)) {
-      // Handle arrays - compare element by element
-      if (Array.isArray(currentValue) && Array.isArray(previousValue)) {
-        const arrayChanges: any[] = [];
-        const maxLength = Math.max(currentValue.length, previousValue.length);
+    if (deepEqual(previousValue, currentValue)) continue;
 
-        for (let i = 0; i < maxLength; i++) {
-          if (i >= currentValue.length) {
-            // Element was removed (array got shorter)
-            arrayChanges[i] = undefined;
-          } else if (i >= previousValue.length) {
-            // Element was added (array got longer)
-            arrayChanges[i] = currentValue[i];
-          } else if (!deepEqual(previousValue[i], currentValue[i])) {
-            // Element changed
-            if (
-              currentValue[i] &&
-              previousValue[i] &&
-              typeof currentValue[i] === 'object' &&
-              typeof previousValue[i] === 'object'
-            ) {
-              // Recursively compare objects in array
-              arrayChanges[i] = buildChangeObject(previousValue[i], currentValue[i]);
-            } else {
-              arrayChanges[i] = currentValue[i];
-            }
-          }
-        }
-
-        if (arrayChanges.some(item => item !== undefined)) {
-          changes[key] = arrayChanges;
-        }
-      }
-      // If both are objects (not arrays), recursively compare
-      else if (
-        currentValue &&
-        previousValue &&
-        typeof currentValue === 'object' &&
-        typeof previousValue === 'object' &&
-        !Array.isArray(currentValue) &&
-        !Array.isArray(previousValue)
-      ) {
-        const nestedChanges = buildChangeObject(previousValue, currentValue);
-        if (Object.keys(nestedChanges).length > 0) {
-          changes[key] = nestedChanges;
-        }
-      } else {
-        // Primitive value changed, or one side is null/undefined, or types differ
-        changes[key] = currentValue;
-      }
+    const change = compareValues(previousValue, currentValue);
+    if (change !== undefined) {
+      changes[key] = change;
     }
   }
 
@@ -283,6 +237,63 @@ function buildChangeObject(
   }
 
   return changes;
+}
+
+/**
+ * Compare two non-equal values and return the change representation.
+ * Returns undefined if there's no meaningful change to record.
+ */
+function compareValues(previousValue: any, currentValue: any): any {
+  // Handle arrays - compare element by element
+  if (Array.isArray(currentValue) && Array.isArray(previousValue)) {
+    return compareArrayElements(previousValue, currentValue);
+  }
+
+  // If both are plain objects, recursively compare
+  if (areBothPlainObjects(previousValue, currentValue)) {
+    const nestedChanges = buildChangeObject(previousValue, currentValue);
+    return Object.keys(nestedChanges).length > 0 ? nestedChanges : undefined;
+  }
+
+  // Primitive value changed, one side is null/undefined, or types differ
+  return currentValue;
+}
+
+/**
+ * Compare two arrays element by element, returning only changed elements.
+ * Returns undefined if no elements changed.
+ */
+function compareArrayElements(previousArr: any[], currentArr: any[]): any[] | undefined {
+  const arrayChanges: any[] = [];
+  const maxLength = Math.max(currentArr.length, previousArr.length);
+
+  for (let i = 0; i < maxLength; i++) {
+    if (i >= currentArr.length) {
+      arrayChanges[i] = undefined; // Element was removed
+    } else if (i >= previousArr.length) {
+      arrayChanges[i] = currentArr[i]; // Element was added
+    } else if (!deepEqual(previousArr[i], currentArr[i])) {
+      arrayChanges[i] = areBothPlainObjects(previousArr[i], currentArr[i])
+        ? buildChangeObject(previousArr[i], currentArr[i])
+        : currentArr[i];
+    }
+  }
+
+  return arrayChanges.some(item => item !== undefined) ? arrayChanges : undefined;
+}
+
+/**
+ * Check if both values are non-null, non-array objects (plain objects).
+ */
+function areBothPlainObjects(a: any, b: any): boolean {
+  return (
+    a != null &&
+    b != null &&
+    typeof a === 'object' &&
+    typeof b === 'object' &&
+    !Array.isArray(a) &&
+    !Array.isArray(b)
+  );
 }
 
 /**

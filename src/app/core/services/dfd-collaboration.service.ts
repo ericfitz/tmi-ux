@@ -2,6 +2,7 @@ import { Injectable, OnDestroy, Optional, Inject } from '@angular/core';
 import { BehaviorSubject, Observable, throwError, Subscription, Subject } from 'rxjs';
 import { map, catchError, tap, skip, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from './logger.service';
 import { WebSocketAdapter, WebSocketState, WebSocketErrorType } from './websocket.adapter';
 import {
@@ -152,6 +153,7 @@ export class DfdCollaborationService implements OnDestroy {
     @Inject(COLLABORATION_NOTIFICATION_SERVICE)
     private _notificationService: ICollaborationNotificationService | null,
     private _router: Router,
+    private _transloco: TranslocoService,
   ) {
     // this._logger.info('DfdCollaborationService initialized', {
     //   instanceId: this._instanceId,
@@ -1188,6 +1190,25 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
+   * Toggle collaboration: start/join if not active, end (host) or leave (participant) if active.
+   * Returns Observable<boolean> indicating success. Emits an error if the diagram context is not set.
+   */
+  public toggleCollaboration(): Observable<boolean> {
+    if (!this.isDiagramContextSet()) {
+      this._logger.error('Cannot toggle collaboration: diagram context not ready', {
+        context: this.getDiagramContext(),
+      });
+      return throwError(() => new Error('Diagram context not ready'));
+    }
+
+    if (this.isCollaborating()) {
+      return this.isCurrentUserHost() ? this.endCollaboration() : this.leaveSession();
+    }
+
+    return this.startOrJoinCollaboration();
+  }
+
+  /**
    * Get the current presenter's email
    * @returns The presenter's email or null if no presenter
    */
@@ -1235,9 +1256,15 @@ export class DfdCollaborationService implements OnDestroy {
         this._logger.error('Failed to send presenter request', error);
         // Revert state on error
         this.updateUserPresenterRequestState(currentUserEmail, 'hand_down');
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : this._transloco.translate('notifications.unknownError');
         this._notificationService
-          ?.showOperationError('send presenter request', errorMessage)
+          ?.showOperationError(
+            this._transloco.translate('notifications.operations.sendPresenterRequest'),
+            errorMessage,
+          )
           .subscribe();
         return throwError(() => error);
       }),
@@ -1301,9 +1328,15 @@ export class DfdCollaborationService implements OnDestroy {
       }),
       catchError((error: unknown) => {
         this._logger.error('Failed to send presenter denial', error);
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : this._transloco.translate('notifications.unknownError');
         this._notificationService
-          ?.showOperationError('deny presenter request', errorMessage)
+          ?.showOperationError(
+            this._transloco.translate('notifications.operations.denyPresenterRequest'),
+            errorMessage,
+          )
           .subscribe();
         return throwError(() => error);
       }),
@@ -1366,8 +1399,16 @@ export class DfdCollaborationService implements OnDestroy {
         // Revert local state on error
         this._updateState({ currentPresenterEmail: null });
         this._updateUsersPresenterStatus(null);
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        this._notificationService?.showOperationError('update presenter', errorMessage).subscribe();
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : this._transloco.translate('notifications.unknownError');
+        this._notificationService
+          ?.showOperationError(
+            this._transloco.translate('notifications.operations.updatePresenter'),
+            errorMessage,
+          )
+          .subscribe();
         return throwError(() => error);
       }),
     );
@@ -1849,7 +1890,10 @@ export class DfdCollaborationService implements OnDestroy {
 
       // Show error notification but keep session active
       this._notificationService
-        ?.showOperationError('collaboration', message.message || 'Operation failed')
+        ?.showOperationError(
+          this._transloco.translate('notifications.operations.collaboration'),
+          message.message || this._transloco.translate('notifications.operationFailed'),
+        )
         .subscribe();
       return;
     }
@@ -1868,7 +1912,10 @@ export class DfdCollaborationService implements OnDestroy {
 
     // Show error notification to user
     this._notificationService
-      ?.showOperationError('start collaboration', message.message || 'Unknown error')
+      ?.showOperationError(
+        this._transloco.translate('notifications.operations.startCollaboration'),
+        message.message || this._transloco.translate('notifications.unknownError'),
+      )
       .subscribe();
 
     // Navigate back to threat model editor (user stays in context)

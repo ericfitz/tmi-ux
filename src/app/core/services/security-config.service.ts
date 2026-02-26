@@ -46,6 +46,11 @@ export class SecurityConfigService {
   public readonly recommendedHeaders$: Observable<SecurityHeaders> =
     this._recommendedHeaders$.asObservable();
 
+  /** Synchronous access to the current recommended headers value */
+  get recommendedHeaders(): SecurityHeaders {
+    return this._recommendedHeaders$.value;
+  }
+
   constructor(
     private logger: LoggerService,
     @Inject(DOCUMENT) private document: Document,

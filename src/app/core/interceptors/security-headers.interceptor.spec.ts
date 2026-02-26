@@ -38,13 +38,11 @@ describe('SecurityHeadersInterceptor', () => {
     } as any;
 
     securityConfigSpy = {
-      recommendedHeaders$: {
-        value: {
-          'X-Frame-Options': 'DENY',
-          'X-Content-Type-Options': 'nosniff',
-          'Strict-Transport-Security': 'max-age=31536000',
-        },
-      } as any,
+      recommendedHeaders: {
+        'X-Frame-Options': 'DENY',
+        'X-Content-Type-Options': 'nosniff',
+        'Strict-Transport-Security': 'max-age=31536000',
+      },
     };
 
     // Mock the inject function to return our spies

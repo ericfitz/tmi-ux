@@ -134,6 +134,19 @@ $dark-colorblind-theme: mat.define-theme(
   border-radius: 8px;
 }
 
+// Vertically center prefix/suffix icons in form fields.
+// The icon (display: inline-block from .material-symbols-outlined) sits inside
+// a prefix container with line-height: 0. This collapses the inline formatting
+// context, causing vertical-align: middle to misposition the icon. Switching the
+// icon to display: flex eliminates the inline layout and centers it properly.
+.mat-mdc-form-field-icon-prefix,
+.mat-mdc-form-field-icon-suffix {
+  > .mat-icon {
+    display: flex;
+    align-items: center;
+  }
+}
+
 // =============================================================================
 // CARD STYLING
 // =============================================================================
@@ -188,6 +201,26 @@ body {
 // =============================================================================
 // DIALOG STYLING
 // =============================================================================
+
+// Threat Editor Dialog — fixed 650x550 size via panelClass
+// Uses !important to override Material's internal dialog container and surface sizing
+.threat-editor-dialog-650 {
+  width: 650px !important;
+  max-width: 650px !important;
+  min-height: 550px !important;
+}
+
+.threat-editor-dialog-650 .mat-mdc-dialog-container {
+  width: 650px !important;
+  max-width: 650px !important;
+  min-height: 550px !important;
+}
+
+.threat-editor-dialog-650 .mat-mdc-dialog-surface {
+  width: 650px !important;
+  max-width: 650px !important;
+  min-height: 550px !important;
+}
 
 .mat-mdc-dialog-container {
   background-color: var(--theme-card);
@@ -271,7 +304,7 @@ body {
 
 // Note: Snackbar styling is handled by notification-specific classes
 // (notification-success, notification-info, notification-warning, notification-error)
-// in _notification-styles.scss to ensure proper color contrast
+// in src/styles/_notification-styles.scss (global scope) to ensure proper color contrast
 
 // =============================================================================
 // TABLE STYLING
@@ -390,8 +423,8 @@ body {
   align-items: center;
   vertical-align: middle;
   margin-left: 8px;
-  color: var(--color-warning) !important;
-  font-size: 24px !important;
+  color: var(--color-warning);
+  font-size: 24px;
   width: 24px;
   height: 24px;
 }

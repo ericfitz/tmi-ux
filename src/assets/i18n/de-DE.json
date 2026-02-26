@@ -439,10 +439,13 @@
     "collaboratorsHeader": "Teilnehmer",
     "copyLink": "Link kopieren",
     "denyPresenterRequest": "Präsentator-Anfrage ablehnen",
+    "endCollaboration": "Zusammenarbeit beenden",
     "hostedBy": "Gehostet von",
     "isRequestingPresenterPrivileges": "fordert Präsentatorrechte an",
     "joinSession": "Sitzung beitreten",
     "justNow": "gerade eben",
+    "leaveSession": "Sitzung verlassen",
+    "loadingDiagramContext": "Diagrammkontext wird geladen...",
     "manageParticipants": "Teilnehmer verwalten",
     "noActiveSessions": "Keine aktiven Zusammenarbeitssitzungen",
     "participantRequestsPresenterRole": "Teilnehmer fordert Präsentatorrolle an",
@@ -450,6 +453,7 @@
     "removeFromSession": "Aus Sitzung entfernen",
     "requestPresenter": "Präsentator anfordern",
     "sessionStarted": "Gestartet",
+    "startCollaboration": "Zusammenarbeit starten",
     "takeBackPresenter": "Präsentator zurückholen",
     "title": "Teilnehmer der Zusammenarbeitssitzung",
     "userJoined": "{{user}} ist der Zusammenarbeit beigetreten",
@@ -485,6 +489,7 @@
     "copyToClipboard": "In die Zwischenablage kopieren",
     "create": "Erstellen",
     "created": "Erstellt",
+    "createdBy": "Erstellt von",
     "criticality": "Kritikalität",
     "cut": "Ausschneiden",
     "deactivate": "Deaktivieren",
@@ -512,6 +517,7 @@
     "groups": "Gruppen",
     "id": "ID",
     "identityProvider": "Identitätsanbieter",
+    "includeInReport": "In Bericht aufnehmen",
     "issueUri": "Problem-URL",
     "language": "{{language}}",
     "lastModified": "Zuletzt geändert",
@@ -565,6 +571,7 @@
     "paste": "Einfügen",
     "permissions": "Berechtigungen",
     "priority": "Priorität",
+    "project": "Projekt",
     "provider": "Anbieter",
     "readOnly": "Schreibgeschützt",
     "readOnlyTooltip": "Sie haben schreibgeschützten Zugriff auf dieses Bedrohungsmodell. Kontaktieren Sie den Eigentümer, um Bearbeitungsrechte anzufordern.",
@@ -576,6 +583,7 @@
     },
     "save": "Speichern",
     "saveAndClose": "Speichern und Schließen",
+    "saveFailed": "Speichern fehlgeschlagen",
     "savedSuccessfully": "Erfolgreich gespeichert",
     "score": "Bewertung",
     "search": "Suche",
@@ -592,6 +600,7 @@
       "group": "Gruppe",
       "user": "Benutzer"
     },
+    "team": "Team",
     "template": "Vorlage",
     "threatDescription": "Bedrohungsbeschreibung",
     "threatDescriptionPlaceholder": "Beschreiben Sie die Bedrohung im Detail",
@@ -602,8 +611,10 @@
     "type": "Typ",
     "unarchive": "Dearchivieren",
     "unsavedChangesWarning": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie schließen möchten?",
+    "uri": "URI",
     "userId": "Benutzer-ID",
     "validation": {
+      "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
       "invalidUrl": "Bitte geben Sie eine gültige URL ein",
       "maxLength": "Maximale Länge ist {{max}} Zeichen",
       "nameRequired": "Name ist erforderlich",
@@ -636,10 +647,27 @@
     "title": "Bedrohungsmodell erstellen"
   },
   "dashboard": {
-    "clearFilter": "Filter löschen",
-    "filterLabel": "Bedrohungsmodelle filtern",
-    "filterPlaceholder": "Nach Name, Beschreibung, Eigentümer oder Status suchen",
-    "noMatchingThreatModels": "Keine Bedrohungsmodelle entsprechen Ihrem Filter.",
+    "clearAllFilters": "Alle Filter löschen",
+    "clearSearch": "Suche löschen",
+    "createdAfter": "Erstellt nach",
+    "createdBefore": "Erstellt vor",
+    "descriptionFilter": "{{common.description}}",
+    "descriptionPlaceholder": "Nach Beschreibung filtern",
+    "issueUriFilter": "{{common.issueUri}}",
+    "issueUriPlaceholder": "Nach Issue-URL filtern",
+    "lessFilters": "Weniger Filter",
+    "modifiedAfter": "Geändert nach",
+    "modifiedBefore": "Geändert vor",
+    "moreFilters": "Mehr Filter",
+    "nameFilter": "{{common.name}}",
+    "namePlaceholder": "Nach Name filtern",
+    "noMatchingThreatModels": "Keine Bedrohungsmodelle entsprechen Ihrer Suche oder Ihren Filtern.",
+    "ownerFilter": "{{common.roles.owner}}",
+    "ownerPlaceholder": "Nach Name oder E-Mail des Eigentümers filtern",
+    "searchLabel": "{{common.search}}",
+    "searchPlaceholder": "Nach Name, Beschreibung, Eigentümer oder Status suchen",
+    "statusUpdatedAfter": "Status aktualisiert nach",
+    "statusUpdatedBefore": "Status aktualisiert vor",
     "tableHeaders": {
       "actions": "{{common.actions}}",
       "created": "{{common.created}}",
@@ -698,6 +726,11 @@
     }
   },
   "editor": {
+    "deleteMetadataWarning": {
+      "confirm": "{{common.delete}}",
+      "message": "Ein oder mehrere ausgewählte Elemente enthalten Metadaten-Einträge. Das Löschen dieser Elemente entfernt ihre Metadaten dauerhaft. Möchten Sie fortfahren?",
+      "title": "Metadaten gehen verloren"
+    },
     "description": "{{common.description}}",
     "diagramDescriptionPlaceholder": "Diagrammbeschreibung eingeben",
     "diagramNamePlaceholder": "Diagrammname eingeben",
@@ -755,10 +788,12 @@
     "support": "Unterstützung"
   },
   "getStarted": "Loslegen",
-  "homeDescription": "TMI ist ein Werkzeug zur Verwaltung und Verbesserung der Sicherheitsüberprüfungs- und Bedrohungsmodellierungsprozesse in Ihrer Organisation. Es steuert den Workflow für Sicherheitsüberprüfungen, organisiert Informationen für Sicherheitsüberprüfungen, ermöglicht die gemeinsame Erstellung von Datenflussdiagrammen und erlaubt die Integration von Automatisierung, um Routineaufgaben im Überprüfungsprozess zu reduzieren und Sicherheitsbedrohungen zu analysieren.",
+  "homeDescription": "TMI ist ein Tool, das die Sicherheitsüberprüfungs- und Threat-Modeling-Prozesse deiner Organisation optimiert. Es steuert Review-Workflows, organisiert wichtige Informationen und ermöglicht es Teams, gemeinsam Data-Flow-Diagramme zu erstellen. Es verbindet sich auch mit Automatisierungen und hilft, manuelle Arbeit zu reduzieren und Sicherheitsrisiken effizienter zu identifizieren.",
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
   "intake": {
     "fill": {
+      "reviewedBy": "{{triage.detail.reviewedBy}}",
+      "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
       "saveAndExit": "Speichern & Beenden",
       "submitResponses": "Antworten absenden"
     }
@@ -818,6 +853,53 @@
       "view": "Notiz anzeigen"
     }
   },
+  "notifications": {
+    "actions": {
+      "login": "Anmelden"
+    },
+    "operationError": "{{operation}} fehlgeschlagen: {{errorMessage}}",
+    "operationFailed": "Vorgang fehlgeschlagen",
+    "operations": {
+      "collaboration": "Zusammenarbeit",
+      "denyPresenterRequest": "Präsentator-Anfrage ablehnen",
+      "sendPresenterRequest": "Präsentator-Anfrage senden",
+      "startCollaboration": "Zusammenarbeit starten",
+      "updatePresenter": "Präsentator aktualisieren"
+    },
+    "presenter": {
+      "assigned": "{{user}} ist jetzt Präsentator",
+      "assignedYou": "Sie sind jetzt Präsentator",
+      "cleared": "Präsentatormodus wurde aufgehoben",
+      "cursorMoved": "Präsentator-Cursor bewegt",
+      "modeChanged": "Präsentatormodus geändert",
+      "privilegesRequested": "Präsentator-Berechtigungen angefordert",
+      "removed": "{{user}} ist nicht mehr Präsentator",
+      "removedYou": "Sie sind nicht mehr Präsentator",
+      "requestDenied": "Ihre Präsentator-Anfrage wurde abgelehnt",
+      "requestSent": "Präsentator-Anfrage an Sitzungsinhaber gesendet",
+      "requesting": "{{user}} fordert Präsentator-Berechtigungen an",
+      "selectionChanged": "Präsentator-Auswahl geändert"
+    },
+    "session": {
+      "disconnected": "Verbindung zur Zusammenarbeitssitzung getrennt",
+      "reconnected": "Wieder mit Zusammenarbeitssitzung verbunden",
+      "reconnecting": "Verbindung zur Zusammenarbeitssitzung wird wiederhergestellt...",
+      "userRemoved": "{{user}} wurde aus der Sitzung entfernt",
+      "youWereRemoved": "Sie wurden aus der Zusammenarbeitssitzung entfernt"
+    },
+    "unknownError": "Unbekannter Fehler",
+    "websocket": {
+      "authenticationFailed": "Authentifizierung fehlgeschlagen. Bitte melden Sie sich erneut an.",
+      "communicationError": "Kommunikationsfehler mit dem Server. Einige Aktualisierungen werden möglicherweise nicht synchronisiert.",
+      "connectionError": "Verbindungsfehler. Arbeit im Offlinemodus.",
+      "connectionFailed": "Verbindung zum Zusammenarbeitsserver fehlgeschlagen.",
+      "connectionTimeout": "Zeitüberschreitung der Verbindung. Der Server ist möglicherweise überlastet.",
+      "disconnected": "Verbindung zum Zusammenarbeitsserver getrennt. Änderungen werden lokal gespeichert.",
+      "messageSendFailed": "Nachricht konnte nicht gesendet werden. Ihre Änderungen werden möglicherweise nicht synchronisiert.",
+      "multipleFailed": "Verbindung nach mehreren Versuchen fehlgeschlagen. Arbeit im Offlinemodus.",
+      "unknownError": "Unbekannter WebSocket-Fehler aufgetreten"
+    }
+  },
   "pagination": {
     "ariaLabel": "Seite mit Einträgen auswählen",
     "firstPage": "Erste Seite",
@@ -870,6 +952,23 @@
     "userRightsContent2": "Diese Option ermöglicht die sofortige Löschung aller Daten, die der Betreiber in Ihrem Namen speichert, einschließlich Profilinformationen und Authentifizierungsdatensätzen. Bei Aktivierung werden Ihre Daten dauerhaft aus den Systemen des Betreibers und von Drittanbietern entfernt, vorbehaltlich gesetzlicher Aufbewahrungspflichten.",
     "userRightsTitle": "Nutzerrechte"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "Projektbeschreibung eingeben",
+      "namePlaceholder": "Projektname eingeben",
+      "nameRequired": "Projektname ist erforderlich",
+      "statusPlaceholder": "z.B. active, planning, archived",
+      "teamRequired": "Team ist erforderlich",
+      "title": "Projekt erstellen",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Neues Projekt erstellen",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "Kein Projekt"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "Sitzung verlängern",
     "extending": "Ihre Sitzung wird verlängert, bitte warten...",
@@ -883,7 +982,7 @@
   },
   "surveys": {
     "autoSave": {
-      "error": "Speichern fehlgeschlagen",
+      "error": "{{common.saveFailed}}",
       "saved": "Gespeichert",
       "saving": "Speichert..."
     },
@@ -952,69 +1051,86 @@
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Antwort anzeigen"
   },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "Teambeschreibung eingeben",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "Teamname eingeben",
+      "nameRequired": "Teamname ist erforderlich",
+      "statusPlaceholder": "z.B. active, archived",
+      "title": "Team erstellen",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Neues Team erstellen"
+  },
   "threatEditor": {
     "createNewThreat": "Neue Bedrohung erstellen",
     "notAssociatedWithAsset": "Nicht mit einem Vermögenswert verknüpft",
     "notAssociatedWithCell": "Nicht mit einer Zelle verknüpft",
     "notAssociatedWithDiagram": "Nicht mit einem Diagramm verknüpft",
     "threatPriority": {
-      "0": "Sofort (P0)",
-      "0.description": "Muss dringend behandelt werden; aktive Ausnutzung, Regulierungsverstoß oder kritische Geschäftsexposition.",
-      "1": "Hoch (P1)",
-      "1.description": "Erfordert schnelle Lösung; hohes Risiko oder bevorstehende Veröffentlichungsfrist.",
-      "2": "Mittel (P2)",
-      "2.description": "Innerhalb der normalen Entwicklungszyklen behandeln; moderate Exposition.",
-      "3": "Niedrig (P3)",
-      "3.description": "Im Backlog für zukünftige Zyklen aufnehmen; keine unmittelbare Exposition.",
-      "4": "Aufgeschoben (P4)",
-      "4.description": "Verschoben mit dokumentierter Geschäftsgenehmigung; verfolgt, aber nicht geplant."
+      "deferred": "Aufgeschoben (P4)",
+      "deferred.description": "Verschoben mit dokumentierter Geschäftsgenehmigung; verfolgt, aber nicht geplant.",
+      "high": "Hoch (P1)",
+      "high.description": "Erfordert schnelle Lösung; hohes Risiko oder bevorstehende Veröffentlichungsfrist.",
+      "immediate": "Sofort (P0)",
+      "immediate.description": "Muss dringend behandelt werden; aktive Ausnutzung, Regulierungsverstoß oder kritische Geschäftsexposition.",
+      "low": "Niedrig (P3)",
+      "low.description": "Im Backlog für zukünftige Zyklen aufnehmen; keine unmittelbare Exposition.",
+      "medium": "Mittel (P2)",
+      "medium.description": "Innerhalb der normalen Entwicklungszyklen behandeln; moderate Exposition."
     },
     "threatSeverity": {
-      "0": "Kritisch",
-      "0.description": "Ausnutzbare Schwachstelle ermöglicht vollständige Systemkompromittierung, Datenpanne oder Sicherheitsbeeinträchtigung; erfordert sofortiges Handeln.",
-      "1": "Hoch",
-      "1.description": "Erhebliche Auswirkungen oder hohe Wahrscheinlichkeit; ermöglicht größeren unberechtigten Zugriff, Rechteeskalation oder Dienstunterbrechung.",
-      "2": "Mittel",
-      "2.description": "Moderate Auswirkungen oder Wahrscheinlichkeit; begrenzte Datenexposition, teilweise Funktionsbeeinträchtigung oder erfordert verkettete Exploits.",
-      "3": "Niedrig",
-      "3.description": "Minimale Auswirkungen oder geringe Wahrscheinlichkeit; vernachlässigbare Geschäftsauswirkungen, erfordert bestimmte Bedingungen oder Benutzerinteraktion.",
-      "4": "Informativ",
-      "4.description": "Keine direkte Ausnutzbarkeit; Empfehlung, Abweichung von Best Practices oder Konfigurationsverbesserung.",
-      "5": "Unbekannt",
-      "5.description": "Schweregrad der Bedrohung wurde noch nicht bewertet."
+      "critical": "Kritisch",
+      "critical.description": "Ausnutzbare Schwachstelle ermöglicht vollständige Systemkompromittierung, Datenpanne oder Sicherheitsbeeinträchtigung; erfordert sofortiges Handeln.",
+      "high": "Hoch",
+      "high.description": "Erhebliche Auswirkungen oder hohe Wahrscheinlichkeit; ermöglicht größeren unberechtigten Zugriff, Rechteeskalation oder Dienstunterbrechung.",
+      "informational": "Informativ",
+      "informational.description": "Keine direkte Ausnutzbarkeit; Empfehlung, Abweichung von Best Practices oder Konfigurationsverbesserung.",
+      "low": "Niedrig",
+      "low.description": "Minimale Auswirkungen oder geringe Wahrscheinlichkeit; vernachlässigbare Geschäftsauswirkungen, erfordert bestimmte Bedingungen oder Benutzerinteraktion.",
+      "medium": "Mittel",
+      "medium.description": "Moderate Auswirkungen oder Wahrscheinlichkeit; begrenzte Datenexposition, teilweise Funktionsbeeinträchtigung oder erfordert verkettete Exploits.",
+      "unknown": "Unbekannt",
+      "unknown.description": "Schweregrad der Bedrohung wurde noch nicht bewertet."
     },
     "threatStatus": {
-      "0": "Offen",
-      "0.description": "Die Feststellung wurde identifiziert und dokumentiert, aber es wurde noch keine Maßnahme eingeleitet.",
-      "1": "Bestätigt",
-      "1.description": "Die Bedrohung wurde durch Analyse oder Beweise als legitim validiert.",
-      "2": "Minderung geplant",
-      "2.description": "Eine Behebungs- oder Minderungsstrategie wurde definiert und zugewiesen.",
-      "3": "Minderung in Bearbeitung",
-      "3.description": "Implementierung von Kontrollen, Codeänderungen oder Gegenmaßnahmen ist im Gange.",
-      "4": "Überprüfung ausstehend",
-      "4.description": "Minderung ist abgeschlossen; Sicherheitsteam muss Wirksamkeit testen oder überprüfen.",
-      "5": "Behoben",
-      "5.description": "Die Bedrohung ist vollständig gemindert und verifiziert; Restrisiko ist akzeptabel.",
-      "6": "Akzeptiert",
-      "6.description": "Die Bedrohung wird anerkannt, aber absichtlich nicht gemindert (z.B. aufgrund geschäftlicher Begründung); erfordert formale Risikoakzeptanz.",
-      "7": "Falsch-Positiv",
-      "7.description": "Die Untersuchung hat ergeben, dass die Feststellung keine gültige Bedrohung ist; keine weitere Maßnahme erforderlich.",
-      "8": "Aufgeschoben",
-      "8.description": "Maßnahme wurde mit Genehmigung verschoben (z.B. für zukünftige Sprints); enthält Begründung und Fälligkeitsdatum.",
-      "9": "Geschlossen",
-      "9.description": "Die Feststellung wird nach Lösung, Akzeptanz oder Ungültigmachung archiviert, mit Prüfprotokoll."
+      "accepted": "Akzeptiert",
+      "accepted.description": "Die Bedrohung wird anerkannt, aber absichtlich nicht gemindert (z.B. aufgrund geschäftlicher Begründung); erfordert formale Risikoakzeptanz.",
+      "closed": "Geschlossen",
+      "closed.description": "Die Feststellung wird nach Lösung, Akzeptanz oder Ungültigmachung archiviert, mit Prüfprotokoll.",
+      "confirmed": "Bestätigt",
+      "confirmed.description": "Die Bedrohung wurde durch Analyse oder Beweise als legitim validiert.",
+      "deferred": "Aufgeschoben",
+      "deferred.description": "Maßnahme wurde mit Genehmigung verschoben (z.B. für zukünftige Sprints); enthält Begründung und Fälligkeitsdatum.",
+      "falsePositive": "Falsch-Positiv",
+      "falsePositive.description": "Die Untersuchung hat ergeben, dass die Feststellung keine gültige Bedrohung ist; keine weitere Maßnahme erforderlich.",
+      "mitigationInProgress": "Minderung in Bearbeitung",
+      "mitigationInProgress.description": "Implementierung von Kontrollen, Codeänderungen oder Gegenmaßnahmen ist im Gange.",
+      "mitigationPlanned": "Minderung geplant",
+      "mitigationPlanned.description": "Eine Behebungs- oder Minderungsstrategie wurde definiert und zugewiesen.",
+      "open": "Offen",
+      "open.description": "Die Feststellung wurde identifiziert und dokumentiert, aber es wurde noch keine Maßnahme eingeleitet.",
+      "resolved": "Behoben",
+      "resolved.description": "Die Bedrohung ist vollständig gemindert und verifiziert; Restrisiko ist akzeptabel.",
+      "verificationPending": "Überprüfung ausstehend",
+      "verificationPending.description": "Minderung ist abgeschlossen; Sicherheitsteam muss Wirksamkeit testen oder überprüfen."
     }
   },
   "threatModels": {
     "addPermission": "Berechtigung hinzufügen",
     "branch": "Branch",
+    "changeSecurityReviewer": "Sicherheitsprüfer ändern",
+    "clearSecurityReviewer": "Sicherheitsprüfer entfernen",
     "commit": "Commit",
     "createFirstButton": "Erstellen Sie Ihr erstes Bedrohungsmodell",
     "createNewDiagram": "Neues Diagramm erstellen",
     "createNewRepository": "Repository-Referenz hinzufügen",
     "created": "{{common.created}}",
-    "createdBy": "Erstellt von",
+    "createdBy": "{{common.createdBy}}",
     "dashboard": "{{navbar.dashboard}}",
     "dataFlowDiagram": "Datenflussdiagramm",
     "deleteWarningPermanent": "Diese Aktion kann nicht rückgängig gemacht werden und löscht dauerhaft alle zugehörigen Diagramme, Bedrohungen und Metadaten.",
@@ -1078,29 +1194,30 @@
       "outputs": "Ausgaben",
       "outputsDescription": "Notizen, Diagramme und Bedrohungen, die während der Sicherheitsanalyse erstellt werden"
     },
+    "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Als Besitzer festlegen",
     "sourcesCount": "Repos",
     "status": {
-      "0": "Nicht begonnen",
-      "0.tooltip": "Die Sicherheitsüberprüfung wurde eingeleitet, aber es wurden noch keine Bewertungsaktivitäten begonnen.",
-      "1": "In Bearbeitung",
-      "1.tooltip": "Aktive Bewertung läuft, einschließlich Bedrohungsmodellierung, Code-Überprüfung oder Tests.",
-      "2": "Ausstehende Überprüfung",
-      "2.tooltip": "Bewertungsartefakte (z.B. Berichte, Ergebnisse) warten auf formelle Überprüfung durch Sicherheitsleiter oder Genehmiger.",
-      "3": "Behebung erforderlich",
-      "3.tooltip": "Schwachstellen oder Probleme wurden identifiziert; Entwicklung muss sie beheben.",
-      "4": "Behebung läuft",
-      "4.tooltip": "Korrekturen für identifizierte Probleme werden vom Entwicklungsteam implementiert.",
-      "5": "Überprüfung ausstehend",
-      "5.tooltip": "Behebung ist abgeschlossen; Sicherheitsteam muss Wirksamkeit testen oder überprüfen.",
-      "6": "Genehmigt",
-      "6.tooltip": "Alle Probleme sind gelöst und verifiziert; die Anwendung erfüllt Sicherheitskriterien für Freigabe oder Bereitstellung.",
-      "7": "Abgelehnt",
-      "7.tooltip": "Die Überprüfung hat kritische Kriterien nicht erfüllt; erhebliche Nachbesserung ist erforderlich, bevor eine erneute Einreichung erfolgt.",
-      "8": "Aufgeschoben",
-      "8.tooltip": "Die Überprüfung wurde pausiert (z.B. aufgrund von Ressourcenbeschränkungen oder Anwendungsänderungen); Wiederaufnahme ist geplant.",
-      "9": "Geschlossen",
-      "9.tooltip": "Die Überprüfung ist vollständig abgeschlossen und archiviert, keine weiteren Maßnahmen erforderlich."
+      "approved": "Genehmigt",
+      "approved.tooltip": "Alle Probleme sind gelöst und verifiziert; die Anwendung erfüllt Sicherheitskriterien für Freigabe oder Bereitstellung.",
+      "closed": "Geschlossen",
+      "closed.tooltip": "Die Überprüfung ist vollständig abgeschlossen und archiviert, keine weiteren Maßnahmen erforderlich.",
+      "deferred": "Aufgeschoben",
+      "deferred.tooltip": "Die Überprüfung wurde pausiert (z.B. aufgrund von Ressourcenbeschränkungen oder Anwendungsänderungen); Wiederaufnahme ist geplant.",
+      "inProgress": "In Bearbeitung",
+      "inProgress.tooltip": "Aktive Bewertung läuft, einschließlich Bedrohungsmodellierung, Code-Überprüfung oder Tests.",
+      "notStarted": "Nicht begonnen",
+      "notStarted.tooltip": "Die Sicherheitsüberprüfung wurde eingeleitet, aber es wurden noch keine Bewertungsaktivitäten begonnen.",
+      "pendingReview": "Ausstehende Überprüfung",
+      "pendingReview.tooltip": "Bewertungsartefakte (z.B. Berichte, Ergebnisse) warten auf formelle Überprüfung durch Sicherheitsleiter oder Genehmiger.",
+      "rejected": "Abgelehnt",
+      "rejected.tooltip": "Die Überprüfung hat kritische Kriterien nicht erfüllt; erhebliche Nachbesserung ist erforderlich, bevor eine erneute Einreichung erfolgt.",
+      "remediationInProgress": "Behebung läuft",
+      "remediationInProgress.tooltip": "Korrekturen für identifizierte Probleme werden vom Entwicklungsteam implementiert.",
+      "remediationRequired": "Behebung erforderlich",
+      "remediationRequired.tooltip": "Schwachstellen oder Probleme wurden identifiziert; Entwicklung muss sie beheben.",
+      "verificationPending": "Überprüfung ausstehend",
+      "verificationPending.tooltip": "Behebung ist abgeschlossen; Sicherheitsteam muss Wirksamkeit testen oder überprüfen."
     },
     "statusLastUpdated": "Status zuletzt aktualisiert",
     "tag": "Tag",
@@ -1245,6 +1362,16 @@
     },
     "queue": "Triage-Warteschlange",
     "returnToSubmitted": "Zurück zu eingereicht",
+    "reviewerAssignment": {
+      "assign": "Zuweisen",
+      "assignToMe": "Mir zuweisen",
+      "errorLoading": "Unzugewiesene Bedrohungsmodelle konnten nicht geladen werden",
+      "loading": "Unzugewiesene Überprüfungen werden geladen...",
+      "noUnassigned": "Keine unzugewiesenen Überprüfungen",
+      "noUnassignedDescription": "Alle aktiven Bedrohungsmodelle haben einen Sicherheitsprüfer zugewiesen",
+      "reviewer": "Sicherheitsprüfer",
+      "selectReviewer": "Prüfer auswählen..."
+    },
     "revisionDialog": {
       "confirm": "{{triage.revisionDialog.title}}",
       "description": "Geben Sie Notizen an, die erläutern, was überarbeitet werden muss. Der Einreicher sieht diese Notizen, wenn er seine Antwort überprüft.",
@@ -1252,6 +1379,10 @@
       "label": "Überarbeitungsnotizen",
       "placeholder": "Beschreiben Sie die erforderlichen Überarbeitungen...",
       "title": "Zur Überarbeitung zurücksenden"
+    },
+    "tabs": {
+      "surveyResponses": "{{common.objectTypes.surveyResponses}}",
+      "unassignedReviews": "Unzugewiesene Überprüfungen"
     },
     "title": "Triage",
     "viewDetails": "Details anzeigen"
@@ -1324,7 +1455,7 @@
     "sections": {
       "developer": "Entwickler",
       "diagramEditor": "Diagramm-Editor",
-      "securityReviewer": "Sicherheitsprüfer"
+      "securityReviewer": "{{threatModels.securityReviewer}}"
     },
     "showDeveloperTools": "Entwicklertools anzeigen",
     "tabs": {

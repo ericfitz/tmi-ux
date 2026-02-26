@@ -90,7 +90,6 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
       type: NotificationType.ERROR,
       duration: 0, // Persistent - requires user action
       panelClass: ['notification-error'],
-      actionLabel: 'Retry',
     },
 
     // Collaboration session events
@@ -152,13 +151,11 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
       type: NotificationType.ERROR,
       duration: 0, // Persistent - requires user action
       panelClass: ['notification-error'],
-      actionLabel: 'Login',
     },
     networkError: {
       type: NotificationType.ERROR,
       duration: 5000,
       panelClass: ['notification-error'],
-      actionLabel: 'Retry',
     },
 
     // General notifications
@@ -237,7 +234,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
         // Show the notification
         const snackBarRef = this._snackBar.open(
           message,
-          config.actionLabel || 'Dismiss',
+          config.actionLabel || this._transloco.translate('common.dismiss'),
           snackBarConfig,
         );
 
@@ -308,7 +305,7 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
 
       case WebSocketState.DISCONNECTED:
         // Show warning for disconnection (user should know data might not sync)
-        message = 'Disconnected from collaboration server. Changes will be saved locally.';
+        message = this._transloco.translate('notifications.websocket.disconnected');
         presetKey = 'websocketDisconnected';
         this._dismissWebSocketNotifications();
         return this.showPreset(presetKey, message);
@@ -318,12 +315,15 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
         // Show error notifications with retry option
         message =
           state === WebSocketState.FAILED
-            ? 'Connection failed after multiple attempts. Working in offline mode.'
-            : 'Connection error. Working in offline mode.';
+            ? this._transloco.translate('notifications.websocket.multipleFailed')
+            : this._transloco.translate('notifications.websocket.connectionError');
         presetKey = 'websocketFailed';
 
         this._dismissWebSocketNotifications();
-        return this.showPreset(presetKey, message, { actionCallback: retryCallback });
+        return this.showPreset(presetKey, message, {
+          actionLabel: this._transloco.translate('common.retry'),
+          actionCallback: retryCallback,
+        });
 
       default:
         this._logger.warn('Unknown WebSocket state', { state });
@@ -344,43 +344,51 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
     let presetKey: string;
     let actionCallback: (() => void) | undefined = retryCallback;
 
+    let actionLabel: string | undefined;
+
     switch (error.type) {
       case WebSocketErrorType.AUTHENTICATION_FAILED:
-        message = 'Authentication failed. Please log in again.';
+        message = this._transloco.translate('notifications.websocket.authenticationFailed');
         presetKey = 'authenticationError';
+        actionLabel = this._transloco.translate('notifications.actions.login');
         break;
       case WebSocketErrorType.NETWORK_ERROR:
-        message = 'Network connection issue. Check your internet connection.';
+        message = this._transloco.translate('notifications.websocket.connectionError');
         presetKey = 'networkError';
+        actionLabel = this._transloco.translate('common.retry');
         break;
       case WebSocketErrorType.CONNECTION_FAILED:
-        message = 'Failed to connect to collaboration server.';
+        message = this._transloco.translate('notifications.websocket.connectionFailed');
         presetKey = 'networkError';
+        actionLabel = this._transloco.translate('common.retry');
         break;
       case WebSocketErrorType.TIMEOUT:
-        message = 'Connection timeout. The server may be overloaded.';
+        message = this._transloco.translate('notifications.websocket.connectionTimeout');
         presetKey = 'networkError';
+        actionLabel = this._transloco.translate('common.retry');
         break;
       case WebSocketErrorType.MESSAGE_SEND_FAILED:
-        message = 'Failed to send message. Your changes may not be synced.';
+        message = this._transloco.translate('notifications.websocket.messageSendFailed');
         presetKey = 'operationError';
         break;
       case WebSocketErrorType.PARSE_ERROR:
-        message = 'Communication error with server. Some updates may not sync.';
+        message = this._transloco.translate('notifications.websocket.communicationError');
         presetKey = 'warning';
         actionCallback = undefined; // Parse errors usually don't need retry
         break;
       default:
-        message = error.message || 'Unknown WebSocket error occurred';
+        message =
+          error.message || this._transloco.translate('notifications.websocket.unknownError');
         presetKey = 'operationError';
     }
 
     // Don't provide retry for non-retryable errors
     if (!error.retryable) {
       actionCallback = undefined;
+      actionLabel = undefined;
     }
 
-    return this.showPreset(presetKey, message, { actionCallback });
+    return this.showPreset(presetKey, message, { actionLabel, actionCallback });
   }
 
   /**
@@ -423,19 +431,30 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
         break;
       case 'userRemoved':
         if (displayName) {
-          const message = `${displayName} was removed from the session`;
-          return this.showPreset('userLeft', message); // Reuse userLeft preset for similar styling
+          const message = this._transloco.translate('notifications.session.userRemoved', {
+            user: displayName,
+          });
+          return this.showPreset('userLeft', message);
         } else {
-          const message = 'You have been removed from the collaboration session';
+          const message = this._transloco.translate('notifications.session.youWereRemoved');
           return this.showPreset('userLeft', message);
         }
         break;
       case 'disconnected':
-        return this.showPreset('warning', 'Disconnected from collaboration session');
+        return this.showPreset(
+          'warning',
+          this._transloco.translate('notifications.session.disconnected'),
+        );
       case 'reconnecting':
-        return this.showPreset('info', 'Reconnecting to collaboration session...');
+        return this.showPreset(
+          'info',
+          this._transloco.translate('notifications.session.reconnecting'),
+        );
       case 'reconnected':
-        return this.showPreset('success', 'Reconnected to collaboration session');
+        return this.showPreset(
+          'success',
+          this._transloco.translate('notifications.session.reconnected'),
+        );
       default:
         this._logger.warn('Unknown session event', { eventType });
         break;
@@ -459,51 +478,45 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
 
     switch (eventType) {
       case 'assigned':
-        if (displayName) {
-          message = `${displayName} is now the presenter`;
-        } else {
-          message = 'You are now the presenter';
-        }
+        message = displayName
+          ? this._transloco.translate('notifications.presenter.assigned', { user: displayName })
+          : this._transloco.translate('notifications.presenter.assignedYou');
         presetKey = 'presenterAssigned';
         break;
       case 'requestSent':
-        message = 'Presenter request sent to session owner';
+        message = this._transloco.translate('notifications.presenter.requestSent');
         presetKey = 'presenterRequestSent';
         break;
       case 'requestDenied':
-        message = 'Your presenter request was denied';
+        message = this._transloco.translate('notifications.presenter.requestDenied');
         presetKey = 'presenterRequestDenied';
         break;
       case 'cleared':
-        message = 'Presenter mode has been cleared';
+        message = this._transloco.translate('notifications.presenter.cleared');
         presetKey = 'info';
         break;
       case 'requested':
-        if (displayName) {
-          message = `${displayName} is requesting presenter privileges`;
-        } else {
-          message = 'Presenter privileges requested';
-        }
+        message = displayName
+          ? this._transloco.translate('notifications.presenter.requesting', { user: displayName })
+          : this._transloco.translate('notifications.presenter.privilegesRequested');
         presetKey = 'info';
         break;
       case 'removed':
-        if (displayName) {
-          message = `${displayName} is no longer the presenter`;
-        } else {
-          message = 'You are no longer the presenter';
-        }
+        message = displayName
+          ? this._transloco.translate('notifications.presenter.removed', { user: displayName })
+          : this._transloco.translate('notifications.presenter.removedYou');
         presetKey = 'info';
         break;
       case 'cursorMoved':
-        message = 'Presenter cursor moved';
+        message = this._transloco.translate('notifications.presenter.cursorMoved');
         presetKey = 'info';
         break;
       case 'selectionChanged':
-        message = 'Presenter selection changed';
+        message = this._transloco.translate('notifications.presenter.selectionChanged');
         presetKey = 'info';
         break;
       default:
-        message = 'Presenter mode changed';
+        message = this._transloco.translate('notifications.presenter.modeChanged');
         presetKey = 'info';
     }
 
@@ -516,7 +529,10 @@ export class AppNotificationService implements OnDestroy, ICollaborationNotifica
    * @param errorMessage The error message
    */
   showOperationError(operation: string, errorMessage: string): Observable<void> {
-    const message = `Failed to ${operation}: ${errorMessage}`;
+    const message = this._transloco.translate('notifications.operationError', {
+      operation,
+      errorMessage,
+    });
     return this.showPreset('operationError', message);
   }
 
