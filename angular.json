@@ -81,7 +81,8 @@
               "@braintree/sanitize-url",
               "dayjs",
               "debug",
-              "vscode-jsonrpc"
+              "vscode-jsonrpc",
+              "vscode-languageserver-protocol"
             ],
             "assets": [
               {
