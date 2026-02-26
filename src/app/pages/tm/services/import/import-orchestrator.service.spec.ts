@@ -112,6 +112,7 @@ describe('ImportOrchestratorService', () => {
         metadata: undefined,
         cells: undefined,
         description: undefined,
+        includeInReport: undefined,
         image: undefined,
       }),
       filterThreat: vi.fn().mockReturnValue(defaultFilterResult()),
@@ -348,6 +349,7 @@ describe('ImportOrchestratorService', () => {
         metadata: undefined,
         cells: [{ id: 'cell-1', shape: 'process' }],
         description: undefined,
+        includeInReport: undefined,
         image: undefined,
       });
       const deps = createMockDeps();
@@ -369,6 +371,7 @@ describe('ImportOrchestratorService', () => {
         metadata: undefined,
         cells: [{ id: 'cell-1', data: cellData }],
         description: undefined,
+        includeInReport: undefined,
         image: undefined,
       });
       const deps = createMockDeps();
@@ -384,6 +387,7 @@ describe('ImportOrchestratorService', () => {
         metadata: undefined,
         cells: undefined,
         description: 'A data flow diagram',
+        includeInReport: undefined,
         image: 'data:image/png;base64,abc',
       });
       const deps = createMockDeps();
@@ -400,6 +404,28 @@ describe('ImportOrchestratorService', () => {
       );
     });
 
+    it('should include include_in_report in diagram update when present', async () => {
+      mockFieldFilter.filterDiagram.mockReturnValue({
+        filtered: { name: 'DFD', type: 'dfd' },
+        metadata: undefined,
+        cells: undefined,
+        description: undefined,
+        includeInReport: true,
+        image: undefined,
+      });
+      const deps = createMockDeps();
+
+      await lastValueFrom(service.orchestrateImport({ diagrams: [{ id: 'd1' }] }, deps));
+
+      expect(deps.updateDiagram).toHaveBeenCalledWith(
+        'new-tm-1',
+        'new-diagram-1',
+        expect.objectContaining({
+          include_in_report: true,
+        }),
+      );
+    });
+
     it('should report success even when updateDiagram fails (silent data loss)', async () => {
       // This test documents a known issue: cells are silently lost when updateDiagram fails
       mockFieldFilter.filterDiagram.mockReturnValue({
@@ -407,6 +433,7 @@ describe('ImportOrchestratorService', () => {
         metadata: undefined,
         cells: [{ id: 'cell-1', shape: 'process' }],
         description: undefined,
+        includeInReport: undefined,
         image: undefined,
       });
       const deps = createMockDeps({
@@ -424,12 +451,13 @@ describe('ImportOrchestratorService', () => {
       expect(mockLogger.warn).toHaveBeenCalled();
     });
 
-    it('should not call updateDiagram when no cells/description/image', async () => {
+    it('should not call updateDiagram when no cells/description/includeInReport/image', async () => {
       mockFieldFilter.filterDiagram.mockReturnValue({
         filtered: { name: 'DFD', type: 'dfd' },
         metadata: undefined,
         cells: undefined,
         description: undefined,
+        includeInReport: undefined,
         image: undefined,
       });
       const deps = createMockDeps();
@@ -499,6 +527,24 @@ describe('ImportOrchestratorService', () => {
       expect(deps.createNote).toHaveBeenCalled();
       expect(mockIdTranslation.setNoteId).toHaveBeenCalledWith('n1', 'new-note-1');
       expect(result.counts.notes.success).toBe(1);
+    });
+
+    it('should provide default content when note has no content field', async () => {
+      mockFieldFilter.filterNote.mockReturnValue({
+        filtered: { name: 'Note Without Content' },
+        metadata: undefined,
+      });
+      mockReferenceRewriter.rewriteNoteReferences.mockImplementation((data: unknown) => data);
+      const deps = createMockDeps();
+
+      await lastValueFrom(
+        service.orchestrateImport({ notes: [{ id: 'n1', name: 'Note Without Content' }] }, deps),
+      );
+
+      expect(deps.createNote).toHaveBeenCalledWith(
+        'new-tm-1',
+        expect.objectContaining({ content: '(imported note)' }),
+      );
     });
 
     it('should import documents and track ID translation', async () => {

@@ -144,18 +144,20 @@ describe('ReadonlyFieldFilterService', () => {
         update_vector: 'abc123',
         cells: [{ id: 'cell-1', shape: 'node' }],
         description: 'Main diagram',
+        include_in_report: true,
         image: { svg: 'base64...' },
         created_at: '2024-01-01',
         modified_at: '2024-01-02',
       };
 
-      const { filtered, metadata, cells } = service.filterDiagram(data);
+      const { filtered, metadata, cells, includeInReport } = service.filterDiagram(data);
 
       expect(filtered).toEqual({
         name: 'System Architecture',
         type: 'dfd',
       });
       expect(cells).toEqual([{ id: 'cell-1', shape: 'node' }]);
+      expect(includeInReport).toBe(true);
       expect(metadata).toBeUndefined();
     });
 
@@ -189,18 +191,20 @@ describe('ReadonlyFieldFilterService', () => {
         name: 'My Diagram',
         type: 'dfd',
         description: 'This should be filtered',
+        include_in_report: false,
         cells: [],
         image: {},
         metadata: [],
       };
 
-      const { filtered } = service.filterDiagram(data);
+      const { filtered, includeInReport } = service.filterDiagram(data);
 
       // Only name and type should remain for CreateDiagramRequest
       expect(filtered).toEqual({
         name: 'My Diagram',
         type: 'dfd',
       });
+      expect(includeInReport).toBe(false);
     });
   });
 

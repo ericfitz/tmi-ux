@@ -59,6 +59,7 @@ export class ReadonlyFieldFilterService {
     'cells',
     'description',
     'image',
+    'include_in_report',
     'created_at',
     'modified_at',
     'metadata',
@@ -145,18 +146,20 @@ export class ReadonlyFieldFilterService {
     metadata: Metadata[] | undefined;
     cells: unknown[] | undefined;
     description: string | undefined;
+    includeInReport: boolean | undefined;
     image: Record<string, unknown> | undefined;
   } {
     const metadata = data['metadata'] as Metadata[] | undefined;
     const cells = data['cells'] as unknown[] | undefined;
     const description = data['description'] as string | undefined;
+    const includeInReport = data['include_in_report'] as boolean | undefined;
     const image = data['image'] as Record<string, unknown> | undefined;
 
     // Combine both readonly and create-only fields for filtering
     const allFieldsToFilter = [...this._diagramReadOnlyFields, ...this._diagramCreateOnlyFields];
     const filtered = this._filterFields(data, allFieldsToFilter);
 
-    return { filtered, metadata, cells, description, image };
+    return { filtered, metadata, cells, description, includeInReport, image };
   }
 
   /**
