@@ -1132,13 +1132,18 @@ export class AppDiagramService {
     if (cellData && cellData._metadata) {
       // Already in hybrid format
       return cellData;
-    } else if (cellData && cellData.metadata && typeof cellData.metadata === 'object') {
-      // Legacy format - convert to hybrid format
-      const metadataArray: any[] = [];
-      Object.entries(cellData.metadata).forEach(([key, value]) => {
-        metadataArray.push({ key, value: String(value) });
-      });
-      return { _metadata: metadataArray };
+    } else if (cellData && cellData.metadata) {
+      if (Array.isArray(cellData.metadata)) {
+        // Legacy array format - already [{key, value}, ...], use directly
+        return { _metadata: cellData.metadata };
+      } else if (typeof cellData.metadata === 'object') {
+        // Legacy Record format - convert to hybrid format
+        const metadataArray: any[] = [];
+        Object.entries(cellData.metadata).forEach(([key, value]) => {
+          metadataArray.push({ key, value: String(value) });
+        });
+        return { _metadata: metadataArray };
+      }
     }
 
     // Default empty hybrid format
