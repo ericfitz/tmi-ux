@@ -571,6 +571,7 @@
     "paste": "粘贴",
     "permissions": "权限",
     "priority": "优先级",
+    "project": "项目",
     "provider": "提供商",
     "readOnly": "只读",
     "readOnlyTooltip": "您对此威胁模型具有只读访问权限。请联系所有者请求编辑权限。",
@@ -599,6 +600,7 @@
       "group": "组",
       "user": "用户"
     },
+    "team": "团队",
     "template": "模板",
     "threatDescription": "威胁描述",
     "threatDescriptionPlaceholder": "详细描述威胁",
@@ -609,8 +611,10 @@
     "type": "类型",
     "unarchive": "取消归档",
     "unsavedChangesWarning": "您有未保存的更改。确定要关闭吗？",
+    "uri": "URI",
     "userId": "User ID",
     "validation": {
+      "email": "请输入有效的电子邮件地址",
       "invalidUrl": "请输入有效的 URL",
       "maxLength": "最大长度为{{max}}个字符",
       "nameRequired": "名称为必填项",
@@ -948,6 +952,23 @@
     "userRightsContent2": "此选项可立即删除运营商代表您存储的所有数据，包括个人资料信息和身份验证记录。激活后，您的数据将从运营商的系统和第三方提供商中永久删除，但须遵守任何法律保留义务。",
     "userRightsTitle": "用户权利"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "输入项目描述",
+      "namePlaceholder": "输入项目名称",
+      "nameRequired": "项目名称为必填项",
+      "statusPlaceholder": "例如 active, planning, archived",
+      "teamRequired": "团队为必填项",
+      "title": "创建项目",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "创建新项目",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "无项目"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "延长会话",
     "extending": "正在延长您的会话，请稍候...",
@@ -1029,6 +1050,21 @@
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "查看回复"
+  },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "输入团队描述",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "输入团队名称",
+      "nameRequired": "团队名称为必填项",
+      "statusPlaceholder": "例如 active, archived",
+      "title": "创建团队",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "创建新团队"
   },
   "threatEditor": {
     "createNewThreat": "创建新威胁",

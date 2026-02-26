@@ -326,6 +326,8 @@ export interface SurveyResponse {
   reviewed_by?: User;
   /** User who created the response (server-generated) */
   created_by?: User;
+  /** Optional reference to the project this survey response belongs to */
+  project_id?: string | null;
 }
 
 /**
@@ -352,6 +354,8 @@ export interface SurveyResponseListItem {
   modified_at?: string;
   /** When the response was submitted */
   submitted_at?: string;
+  /** Optional reference to the project this survey response belongs to */
+  project_id?: string | null;
 }
 
 // ============================================
@@ -476,6 +480,8 @@ export interface CreateSurveyResponseRequest {
   authorization?: Authorization[];
   /** Whether to exclude Security Reviewers group */
   is_confidential?: boolean;
+  /** Optional reference to the project this survey response belongs to */
+  project_id?: string | null;
 }
 
 /**
@@ -492,6 +498,8 @@ export interface UpdateSurveyResponseRequest {
   linked_threat_model_id?: string;
   /** Access control list */
   authorization?: Authorization[];
+  /** Optional reference to the project this survey response belongs to */
+  project_id?: string | null;
 }
 
 /**

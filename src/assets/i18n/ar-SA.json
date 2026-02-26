@@ -571,6 +571,7 @@
     "paste": "لصق",
     "permissions": "الأذونات",
     "priority": "الأولوية",
+    "project": "مشروع",
     "provider": "المزود",
     "readOnly": "للقراءة فقط",
     "readOnlyTooltip": "لديك صلاحيات قراءة فقط لنموذج التهديد هذا. اتصل بالمالك لطلب صلاحيات التحرير.",
@@ -599,6 +600,7 @@
       "group": "مجموعة",
       "user": "مستخدم"
     },
+    "team": "فريق",
     "template": "قالب",
     "threatDescription": "وصف التهديد",
     "threatDescriptionPlaceholder": "وصف التهديد بالتفصيل",
@@ -609,8 +611,10 @@
     "type": "النوع",
     "unarchive": "إلغاء الأرشفة",
     "unsavedChangesWarning": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد الإغلاق؟",
+    "uri": "URI",
     "userId": "معرف المستخدم",
     "validation": {
+      "email": "يرجى إدخال عنوان بريد إلكتروني صحيح",
       "invalidUrl": "يرجى إدخال رابط صحيح",
       "maxLength": "الحد الأقصى للطول هو {{max}} حرف",
       "nameRequired": "الاسم مطلوب",
@@ -948,6 +952,23 @@
     "userRightsContent2": "يتيح هذا الخيار الحذف الفوري لجميع البيانات التي يخزنها المشغل نيابة عنك، بما في ذلك معلومات الملف الشخصي وسجلات المصادقة. عند التفعيل، سيتم إزالة بياناتك بشكل دائم من أنظمة المشغل ومزودي الطرف الثالث، مع مراعاة أي التزامات قانونية للاحتفاظ بالبيانات.",
     "userRightsTitle": "حقوق المستخدم"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "أدخل وصف المشروع",
+      "namePlaceholder": "أدخل اسم المشروع",
+      "nameRequired": "اسم المشروع مطلوب",
+      "statusPlaceholder": "مثال: active, planning, archived",
+      "teamRequired": "الفريق مطلوب",
+      "title": "إنشاء مشروع",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "إنشاء مشروع جديد",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "لا يوجد مشروع"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "تمديد الجلسة",
     "extending": "جاري تمديد جلستك، يرجى الانتظار...",
@@ -1029,6 +1050,21 @@
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "عرض الرد"
+  },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "أدخل وصف الفريق",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "أدخل اسم الفريق",
+      "nameRequired": "اسم الفريق مطلوب",
+      "statusPlaceholder": "مثال: active, archived",
+      "title": "إنشاء فريق",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "إنشاء فريق جديد"
   },
   "threatEditor": {
     "createNewThreat": "إنشاء تهديد جديد",

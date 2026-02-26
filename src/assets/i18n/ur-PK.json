@@ -571,6 +571,7 @@
     "paste": "پیسٹ کریں",
     "permissions": "اجازتیں",
     "priority": "ترجیح",
+    "project": "پروجیکٹ",
     "provider": "فراہم کنندہ",
     "readOnly": "صرف پڑھنے کے لیے",
     "readOnlyTooltip": "آپ کے پاس اس خطرے کے ماڈل کی صرف پڑھنے کی رسائی ہے۔ ترمیم کی اجازت کے لیے مالک سے رابطہ کریں۔",
@@ -599,6 +600,7 @@
       "group": "گروپ",
       "user": "صارف"
     },
+    "team": "ٹیم",
     "template": "ٹیمپلیٹ",
     "threatDescription": "خطرے کی تفصیل",
     "threatDescriptionPlaceholder": "خطرے کی تفصیل بیان کریں",
@@ -609,8 +611,10 @@
     "type": "قسم",
     "unarchive": "آرکائیو ختم کریں",
     "unsavedChangesWarning": "آپ کے پاس غیر محفوظ شدہ تبدیلیاں ہیں۔ کیا آپ واقعی بند کرنا چاہتے ہیں؟",
+    "uri": "URI",
     "userId": "صارف ID",
     "validation": {
+      "email": "براہ کرم ایک درست ای میل ایڈریس درج کریں",
       "invalidUrl": "براہ کرم درست URL درج کریں",
       "maxLength": "زیادہ سے زیادہ لمبائی {{max}} حروف ہے",
       "nameRequired": "نام ضروری ہے",
@@ -948,6 +952,23 @@
     "userRightsContent2": "یہ آپشن آپریٹر کے ذخیرہ کردہ تمام ڈیٹا کو فوری طور پر حذف کرنے کی اجازت دیتا ہے، بشمول پروفائل معلومات اور توثیق کے ریکارڈز۔ فعال ہونے پر، آپ کا ڈیٹا آپریٹر کے سسٹمز اور فریق ثالث فراہم کنندگان سے مستقل طور پر ہٹا دیا جائے گا، کسی بھی قانونی برقرار رکھنے کی ذمہ داریوں کے تابع۔",
     "userRightsTitle": "صارف کے حقوق"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "پروجیکٹ کی تفصیل درج کریں",
+      "namePlaceholder": "پروجیکٹ کا نام درج کریں",
+      "nameRequired": "پروجیکٹ کا نام ضروری ہے",
+      "statusPlaceholder": "مثلاً active, planning, archived",
+      "teamRequired": "ٹیم ضروری ہے",
+      "title": "پروجیکٹ بنائیں",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "نیا پروجیکٹ بنائیں",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "کوئی پروجیکٹ نہیں"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "سیشن بڑھائیں",
     "extending": "آپ کا سیشن بڑھایا جا رہا ہے، براہ کرم انتظار کریں...",
@@ -1029,6 +1050,21 @@
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "جواب دیکھیں"
+  },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "ٹیم کی تفصیل درج کریں",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "ٹیم کا نام درج کریں",
+      "nameRequired": "ٹیم کا نام ضروری ہے",
+      "statusPlaceholder": "مثلاً active, archived",
+      "title": "ٹیم بنائیں",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "نئی ٹیم بنائیں"
   },
   "threatEditor": {
     "createNewThreat": "نیا خطرہ بنائیں",

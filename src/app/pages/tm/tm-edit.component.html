@@ -214,6 +214,21 @@
                 }
               </div>
             </div>
+
+            <!-- Project picker row -->
+            <div class="info-row info-row-project">
+              <div class="info-field">
+                @if (canEdit) {
+                  <app-project-picker
+                    [projectId]="threatModel.project_id ?? null"
+                    (projectChange)="onProjectChange($event)"
+                  />
+                } @else {
+                  <span class="info-label">{{ 'common.project' | transloco }}:</span>
+                  <span class="info-value">{{ projectName || '—' }}</span>
+                }
+              </div>
+            </div>
           </div>
 
           <form [formGroup]="threatModelForm" class="threat-model-form">

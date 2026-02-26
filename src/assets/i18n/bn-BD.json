@@ -571,6 +571,7 @@
     "paste": "পেস্ট",
     "permissions": "অনুমতি",
     "priority": "অগ্রাধিকার",
+    "project": "প্রকল্প",
     "provider": "প্রদানকারী",
     "readOnly": "শুধুমাত্র পড়ার জন্য",
     "readOnlyTooltip": "এই থ্রেট মডেলে আপনার শুধুমাত্র পড়ার অ্যাক্সেস রয়েছে। সম্পাদনার অনুমতির জন্য মালিকের সাথে যোগাযোগ করুন।",
@@ -599,6 +600,7 @@
       "group": "গ্রুপ",
       "user": "ব্যবহারকারী"
     },
+    "team": "দল",
     "template": "টেমপ্লেট",
     "threatDescription": "হুমকির বিবরণ",
     "threatDescriptionPlaceholder": "বিস্তারিতভাবে হুমকি বর্ণনা করুন",
@@ -609,8 +611,10 @@
     "type": "ধরন",
     "unarchive": "আনআর্কাইভ",
     "unsavedChangesWarning": "আপনার অসংরক্ষিত পরিবর্তন আছে। আপনি কি নিশ্চিত যে আপনি বন্ধ করতে চান?",
+    "uri": "URI",
     "userId": "ব্যবহারকারী আইডি",
     "validation": {
+      "email": "অনুগ্রহ করে একটি বৈধ ইমেইল ঠিকানা লিখুন",
       "invalidUrl": "একটি বৈধ URL লিখুন",
       "maxLength": "সর্বোচ্চ দৈর্ঘ্য {{max}} অক্ষর",
       "nameRequired": "নাম প্রয়োজন",
@@ -948,6 +952,23 @@
     "userRightsContent2": "এই অপশনটি আপনার পক্ষে অপারেটর সংরক্ষিত সমস্ত ডেটা অবিলম্বে মুছে ফেলার সুবিধা দেয়, প্রোফাইল তথ্য এবং প্রমাণীকরণ রেকর্ড সহ। সক্রিয় করার পর, আপনার ডেটা অপারেটরের সিস্টেম এবং তৃতীয়-পক্ষের প্রদানকারীদের থেকে স্থায়ীভাবে সরানো হবে, যেকোনো আইনি ধারণ বাধ্যবাধকতার অধীনে।",
     "userRightsTitle": "ব্যবহারকারীর অধিকার"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "প্রকল্পের বিবরণ লিখুন",
+      "namePlaceholder": "প্রকল্পের নাম লিখুন",
+      "nameRequired": "প্রকল্পের নাম আবশ্যক",
+      "statusPlaceholder": "যেমন: active, planning, archived",
+      "teamRequired": "দল আবশ্যক",
+      "title": "প্রকল্প তৈরি করুন",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "নতুন প্রকল্প তৈরি করুন",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "কোনো প্রকল্প নেই"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "সেশন বাড়ান",
     "extending": "আপনার সেশন বাড়ানো হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...",
@@ -1029,6 +1050,21 @@
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "প্রতিক্রিয়া দেখুন"
+  },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "দলের বিবরণ লিখুন",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "দলের নাম লিখুন",
+      "nameRequired": "দলের নাম আবশ্যক",
+      "statusPlaceholder": "যেমন: active, archived",
+      "title": "দল তৈরি করুন",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "নতুন দল তৈরি করুন"
   },
   "threatEditor": {
     "createNewThreat": "নতুন হুমকি তৈরি করুন",

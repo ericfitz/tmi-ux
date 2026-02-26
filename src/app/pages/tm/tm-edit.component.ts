@@ -111,6 +111,8 @@ import {
   UserPickerDialogData,
 } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { AdminUser } from '@app/types/user.types';
+import { ProjectPickerComponent } from '@app/shared/components/project-picker/project-picker.component';
+import { ProjectService } from '@app/core/services/project.service';
 
 // Define form value interface
 interface ThreatModelFormValues {
@@ -157,6 +159,7 @@ interface RepositoryFormResult {
     MatSortModule,
     TranslocoModule,
     UserDisplayComponent,
+    ProjectPickerComponent,
   ],
   templateUrl: './tm-edit.component.html',
   styleUrls: ['./tm-edit.component.scss'],
@@ -195,6 +198,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   // Security reviewer dropdown
   securityReviewerOptions: User[] = [];
   securityReviewerMode: 'dropdown' | 'picker' | 'loading' = 'loading';
+
+  // Project picker
+  projectName: string | null = null;
 
   // Addon cache - filtered lists by object type
   addonsForThreatModel: Addon[] = [];
@@ -327,6 +333,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private snackBar: MatSnackBar,
     private authService: AuthService,
     private securityReviewerService: SecurityReviewerService,
+    private projectService: ProjectService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -959,6 +966,49 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this.securityReviewerService.compareReviewers(a, b);
 
   // ─── End Security Reviewer ─────────────────────────────────────────
+
+  // ─── Project Picker ───────────────────────────────────────────────
+
+  /**
+   * Handle project picker selection change.
+   * Persists immediately via PATCH (not through form auto-save).
+   */
+  onProjectChange(projectId: string | null): void {
+    if (!this.threatModel || !this.canEdit) return;
+
+    const previousProjectId = this.threatModel.project_id ?? null;
+
+    // Update local model immediately for responsive UI
+    this.threatModel.project_id = projectId;
+
+    this._subscriptions.add(
+      this.threatModelService
+        .patchThreatModel(this.threatModel.id, { project_id: projectId })
+        .subscribe({
+          next: result => {
+            if (result && this.threatModel) {
+              this.threatModel.project_id = result.project_id;
+              this.threatModel.modified_at = result.modified_at;
+              this.cdr.detectChanges();
+              this.logger.info('Project updated', {
+                threatModelId: this.threatModel.id,
+                projectId: projectId ?? 'none',
+              });
+            }
+          },
+          error: error => {
+            this.logger.error('Failed to update project', error);
+            // Rollback on error
+            if (this.threatModel) {
+              this.threatModel.project_id = previousProjectId;
+              this.cdr.detectChanges();
+            }
+          },
+        }),
+    );
+  }
+
+  // ─── End Project Picker ───────────────────────────────────────────
 
   /**
    * Simplified field blur handler (mainly for UI state like issue URL editing)

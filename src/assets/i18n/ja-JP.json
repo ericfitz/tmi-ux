@@ -571,6 +571,7 @@
     "paste": "貼り付け",
     "permissions": "権限",
     "priority": "優先度",
+    "project": "プロジェクト",
     "provider": "プロバイダー",
     "readOnly": "読み取り専用",
     "readOnlyTooltip": "この脅威モデルへの読み取り専用アクセス権があります。編集権限についてはオーナーにお問い合わせください。",
@@ -599,6 +600,7 @@
       "group": "グループ",
       "user": "ユーザー"
     },
+    "team": "チーム",
     "template": "テンプレート",
     "threatDescription": "脅威の説明",
     "threatDescriptionPlaceholder": "脅威を詳細に説明してください",
@@ -609,8 +611,10 @@
     "type": "タイプ",
     "unarchive": "アーカイブ解除",
     "unsavedChangesWarning": "保存されていない変更があります。閉じてもよろしいですか？",
+    "uri": "URI",
     "userId": "ユーザーID",
     "validation": {
+      "email": "有効なメールアドレスを入力してください",
       "invalidUrl": "有効なURLを入力してください",
       "maxLength": "最大文字数は{{max}}文字です",
       "nameRequired": "名前は必須です",
@@ -948,6 +952,23 @@
     "userRightsContent2": "このオプションを使用すると、運営者がお客様に代わって保存しているすべてのデータ（プロフィール情報や認証記録を含む）を即座に削除できます。有効化すると、法的保持義務に従い、お客様のデータは運営者のシステムおよびサードパーティプロバイダーから永久に削除されます。",
     "userRightsTitle": "ユーザーの権利"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "プロジェクトの説明を入力",
+      "namePlaceholder": "プロジェクト名を入力",
+      "nameRequired": "プロジェクト名は必須です",
+      "statusPlaceholder": "例: active, planning, archived",
+      "teamRequired": "チームは必須です",
+      "title": "プロジェクトを作成",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "新しいプロジェクトを作成",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "プロジェクトなし"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "セッションを延長",
     "extending": "セッションを延長中です。しばらくお待ちください...",
@@ -1029,6 +1050,21 @@
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "回答を表示"
+  },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "チームの説明を入力",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "チーム名を入力",
+      "nameRequired": "チーム名は必須です",
+      "statusPlaceholder": "例: active, archived",
+      "title": "チームを作成",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "新しいチームを作成"
   },
   "threatEditor": {
     "createNewThreat": "新しい脅威を作成",

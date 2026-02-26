@@ -571,6 +571,7 @@
     "paste": "Colar",
     "permissions": "Permissoes",
     "priority": "Prioridade",
+    "project": "Projeto",
     "provider": "Provedor",
     "readOnly": "Somente Leitura",
     "readOnlyTooltip": "Voce tem acesso somente leitura a este modelo de ameacas. Entre em contato com o proprietario para solicitar permissoes de edicao.",
@@ -599,6 +600,7 @@
       "group": "Grupo",
       "user": "Usuario"
     },
+    "team": "Equipe",
     "template": "Modelo",
     "threatDescription": "Descricao da Ameaca",
     "threatDescriptionPlaceholder": "Descreva a Ameaca em Detalhes",
@@ -609,8 +611,10 @@
     "type": "Tipo",
     "unarchive": "Desarquivar",
     "unsavedChangesWarning": "Voce tem alteracoes nao salvas. Tem certeza de que deseja fechar?",
+    "uri": "URI",
     "userId": "ID do Usuario",
     "validation": {
+      "email": "Por favor, insira um endereço de e-mail válido",
       "invalidUrl": "Por favor, insira uma URL valida",
       "maxLength": "O comprimento maximo e {{max}} caracteres",
       "nameRequired": "Nome e obrigatorio",
@@ -948,6 +952,23 @@
     "userRightsContent2": "Esta opcao permite a exclusao imediata de todos os dados que o Operador armazena em seu nome, incluindo informacoes de perfil e registros de autenticacao. Apos a ativacao, seus dados serao permanentemente removidos dos sistemas do Operador e de provedores terceiros, sujeitos a quaisquer obrigacoes legais de retencao.",
     "userRightsTitle": "Direitos do Usuario"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "Insira a descrição do projeto",
+      "namePlaceholder": "Insira o nome do projeto",
+      "nameRequired": "O nome do projeto é obrigatório",
+      "statusPlaceholder": "ex.: active, planning, archived",
+      "teamRequired": "A equipe é obrigatória",
+      "title": "Criar Projeto",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Criar Novo Projeto",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "Nenhum Projeto"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "Estender Sessao",
     "extending": "Estendendo sua sessao, por favor aguarde...",
@@ -1029,6 +1050,21 @@
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Ver Resposta"
+  },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "Insira a descrição da equipe",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "Insira o nome da equipe",
+      "nameRequired": "O nome da equipe é obrigatório",
+      "statusPlaceholder": "ex.: active, archived",
+      "title": "Criar Equipe",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Criar Nova Equipe"
   },
   "threatEditor": {
     "createNewThreat": "Criar Nova Ameaca",

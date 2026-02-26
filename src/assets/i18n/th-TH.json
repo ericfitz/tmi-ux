@@ -571,6 +571,7 @@
     "paste": "วาง",
     "permissions": "สิทธิ์การเข้าถึง",
     "priority": "ความสำคัญ",
+    "project": "โปรเจกต์",
     "provider": "ผู้ให้บริการ",
     "readOnly": "อ่านอย่างเดียว",
     "readOnlyTooltip": "คุณมีสิทธิ์เข้าถึงแบบอ่านอย่างเดียวสำหรับแบบจำลองภัยคุกคามนี้ ติดต่อเจ้าของเพื่อขอสิทธิ์การแก้ไข",
@@ -599,6 +600,7 @@
       "group": "กลุ่ม",
       "user": "ผู้ใช้"
     },
+    "team": "ทีม",
     "template": "เทมเพลต",
     "threatDescription": "คำอธิบายภัยคุกคาม",
     "threatDescriptionPlaceholder": "อธิบายภัยคุกคามโดยละเอียด",
@@ -609,8 +611,10 @@
     "type": "ประเภท",
     "unarchive": "ยกเลิกการเก็บถาวร",
     "unsavedChangesWarning": "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก คุณแน่ใจหรือไม่ว่าต้องการปิด?",
+    "uri": "URI",
     "userId": "รหัสผู้ใช้",
     "validation": {
+      "email": "กรุณากรอกที่อยู่อีเมลที่ถูกต้อง",
       "invalidUrl": "กรุณาใส่ URL ที่ถูกต้อง",
       "maxLength": "ความยาวสูงสุดคือ {{max}} ตัวอักษร",
       "nameRequired": "จำเป็นต้องระบุชื่อ",
@@ -948,6 +952,23 @@
     "userRightsContent2": "ตัวเลือกนี้ช่วยให้สามารถลบข้อมูลทั้งหมดที่ผู้ดำเนินการจัดเก็บในนามของคุณได้ทันที รวมถึงข้อมูลโปรไฟล์และบันทึกการตรวจสอบสิทธิ์ เมื่อเปิดใช้งาน ข้อมูลของคุณจะถูกลบออกจากระบบของผู้ดำเนินการและผู้ให้บริการบุคคลที่สามอย่างถาวร โดยขึ้นอยู่กับภาระผูกพันในการเก็บรักษาตามกฎหมาย",
     "userRightsTitle": "สิทธิของผู้ใช้"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "กรอกคำอธิบายโปรเจกต์",
+      "namePlaceholder": "กรอกชื่อโปรเจกต์",
+      "nameRequired": "ต้องระบุชื่อโปรเจกต์",
+      "statusPlaceholder": "เช่น active, planning, archived",
+      "teamRequired": "ต้องระบุทีม",
+      "title": "สร้างโปรเจกต์",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "สร้างโปรเจกต์ใหม่",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "ไม่มีโปรเจกต์"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "ขยายเวลาเซสชัน",
     "extending": "กำลังขยายเวลาเซสชันของคุณ กรุณารอสักครู่...",
@@ -1029,6 +1050,21 @@
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "ดูคำตอบ"
+  },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "กรอกคำอธิบายทีม",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "กรอกชื่อทีม",
+      "nameRequired": "ต้องระบุชื่อทีม",
+      "statusPlaceholder": "เช่น active, archived",
+      "title": "สร้างทีม",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "สร้างทีมใหม่"
   },
   "threatEditor": {
     "createNewThreat": "สร้างภัยคุกคามใหม่",

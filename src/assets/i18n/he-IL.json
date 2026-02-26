@@ -571,6 +571,7 @@
     "paste": "הדבק",
     "permissions": "הרשאות",
     "priority": "עדיפות",
+    "project": "פרויקט",
     "provider": "ספק",
     "readOnly": "קריאה בלבד",
     "readOnlyTooltip": "יש לך גישה לקריאה בלבד למודל איומים זה. פנה לבעלים לבקשת הרשאות עריכה.",
@@ -599,6 +600,7 @@
       "group": "קבוצה",
       "user": "משתמש"
     },
+    "team": "צוות",
     "template": "תבנית",
     "threatDescription": "תיאור האיום",
     "threatDescriptionPlaceholder": "תאר את האיום בפירוט",
@@ -609,8 +611,10 @@
     "type": "סוג",
     "unarchive": "ביטול ארכיון",
     "unsavedChangesWarning": "יש לך שינויים שלא נשמרו. האם אתה בטוח שברצונך לסגור?",
+    "uri": "URI",
     "userId": "מזהה משתמש",
     "validation": {
+      "email": "אנא הזן כתובת דוא\"ל חוקית",
       "invalidUrl": "אנא הזן כתובת URL חוקית",
       "maxLength": "האורך המרבי הוא {{max}} תווים",
       "nameRequired": "השם נדרש",
@@ -948,6 +952,23 @@
     "userRightsContent2": "אפשרות זו מאפשרת מחיקה מיידית של כל הנתונים שהמפעיל מאחסן עבורך, כולל מידע פרופיל ורשומות אימות. עם ההפעלה, הנתונים שלך יוסרו לצמיתות ממערכות המפעיל ומספקי צד שלישי, בכפוף לכל חובות שמירה חוקיות.",
     "userRightsTitle": "זכויות המשתמש"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "הזן תיאור פרויקט",
+      "namePlaceholder": "הזן שם פרויקט",
+      "nameRequired": "שם הפרויקט נדרש",
+      "statusPlaceholder": "למשל active, planning, archived",
+      "teamRequired": "צוות נדרש",
+      "title": "צור פרויקט",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "צור פרויקט חדש",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "ללא פרויקט"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "הארך הפעלה",
     "extending": "מאריך את ההפעלה שלך, אנא המתן...",
@@ -1029,6 +1050,21 @@
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "הצג תגובה"
+  },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "הזן תיאור צוות",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "הזן שם צוות",
+      "nameRequired": "שם הצוות נדרש",
+      "statusPlaceholder": "למשל active, archived",
+      "title": "צור צוות",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "צור צוות חדש"
   },
   "threatEditor": {
     "createNewThreat": "צור איום חדש",

@@ -571,6 +571,7 @@
     "paste": "Вставить",
     "permissions": "Разрешения",
     "priority": "Приоритет",
+    "project": "Проект",
     "provider": "Поставщик",
     "readOnly": "Только Чтение",
     "readOnlyTooltip": "У вас есть доступ только для чтения к этой модели угроз. Свяжитесь с владельцем для запроса прав редактирования.",
@@ -599,6 +600,7 @@
       "group": "Группа",
       "user": "Пользователь"
     },
+    "team": "Команда",
     "template": "Шаблон",
     "threatDescription": "Описание Угрозы",
     "threatDescriptionPlaceholder": "Подробно опишите угрозу",
@@ -609,8 +611,10 @@
     "type": "Тип",
     "unarchive": "Разархивировать",
     "unsavedChangesWarning": "У вас есть несохранённые изменения. Вы уверены, что хотите закрыть?",
+    "uri": "URI",
     "userId": "ID Пользователя",
     "validation": {
+      "email": "Пожалуйста, введите действительный адрес электронной почты",
       "invalidUrl": "Пожалуйста, введите корректный URL",
       "maxLength": "Максимальная длина {{max}} символов",
       "nameRequired": "Название обязательно",
@@ -948,6 +952,23 @@
     "userRightsContent2": "Эта опция позволяет немедленно удалить все данные, которые Оператор хранит от вашего имени, включая информацию профиля и записи аутентификации. После активации ваши данные будут безвозвратно удалены из систем Оператора и сторонних поставщиков, с учётом любых требований законодательства о хранении данных.",
     "userRightsTitle": "Права Пользователей"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "Введите описание проекта",
+      "namePlaceholder": "Введите название проекта",
+      "nameRequired": "Название проекта обязательно",
+      "statusPlaceholder": "напр., active, planning, archived",
+      "teamRequired": "Команда обязательна",
+      "title": "Создать проект",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Создать новый проект",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "Без проекта"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "Продлить Сеанс",
     "extending": "Продление вашего сеанса, пожалуйста, подождите...",
@@ -1029,6 +1050,21 @@
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Просмотреть ответ"
+  },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "Введите описание команды",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "Введите название команды",
+      "nameRequired": "Название команды обязательно",
+      "statusPlaceholder": "напр., active, archived",
+      "title": "Создать команду",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Создать новую команду"
   },
   "threatEditor": {
     "createNewThreat": "Создать новую угрозу",

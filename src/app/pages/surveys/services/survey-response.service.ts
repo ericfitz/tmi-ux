@@ -280,6 +280,25 @@ export class SurveyResponseService {
   }
 
   /**
+   * Update the project_id on a survey response
+   */
+  public patchProjectId(responseId: string, projectId: string | null): Observable<SurveyResponse> {
+    return this.apiService
+      .patch<SurveyResponse>(`intake/survey_responses/${responseId}`, [
+        { op: 'replace', path: '/project_id', value: projectId },
+      ])
+      .pipe(
+        tap(() => {
+          this.logger.info('Response project_id updated', { responseId, projectId });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to update response project_id', error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
    * Link a response to an existing threat model
    */
   public linkToThreatModel(responseId: string, threatModelId: string): Observable<SurveyResponse> {

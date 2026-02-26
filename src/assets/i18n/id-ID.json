@@ -571,6 +571,7 @@
     "paste": "Tempel",
     "permissions": "Izin",
     "priority": "Prioritas",
+    "project": "Proyek",
     "provider": "Penyedia",
     "readOnly": "Hanya Baca",
     "readOnlyTooltip": "Anda memiliki akses hanya baca ke model ancaman ini. Hubungi pemilik untuk meminta izin edit.",
@@ -599,6 +600,7 @@
       "group": "Grup",
       "user": "Pengguna"
     },
+    "team": "Tim",
     "template": "Templat",
     "threatDescription": "Deskripsi Ancaman",
     "threatDescriptionPlaceholder": "Jelaskan Ancaman Secara Detail",
@@ -609,8 +611,10 @@
     "type": "Jenis",
     "unarchive": "Batalkan Arsip",
     "unsavedChangesWarning": "Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin menutup?",
+    "uri": "URI",
     "userId": "ID Pengguna",
     "validation": {
+      "email": "Harap masukkan alamat email yang valid",
       "invalidUrl": "Masukkan URL yang valid",
       "maxLength": "Panjang maksimum adalah {{max}} karakter",
       "nameRequired": "Nama wajib diisi",
@@ -948,6 +952,23 @@
     "userRightsContent2": "Opsi ini memungkinkan penghapusan segera semua data yang disimpan Operator atas nama Anda, termasuk informasi profil dan catatan autentikasi. Setelah diaktifkan, data Anda akan dihapus secara permanen dari sistem Operator dan penyedia pihak ketiga, tunduk pada kewajiban retensi hukum apa pun.",
     "userRightsTitle": "Hak Pengguna"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "Masukkan deskripsi proyek",
+      "namePlaceholder": "Masukkan nama proyek",
+      "nameRequired": "Nama proyek wajib diisi",
+      "statusPlaceholder": "mis. active, planning, archived",
+      "teamRequired": "Tim wajib diisi",
+      "title": "Buat Proyek",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Buat Proyek Baru",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "Tanpa Proyek"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "Perpanjang Sesi",
     "extending": "Memperpanjang sesi Anda, harap tunggu...",
@@ -1029,6 +1050,21 @@
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Lihat Respons"
+  },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "Masukkan deskripsi tim",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "Masukkan nama tim",
+      "nameRequired": "Nama tim wajib diisi",
+      "statusPlaceholder": "mis. active, archived",
+      "title": "Buat Tim",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Buat Tim Baru"
   },
   "threatEditor": {
     "createNewThreat": "Buat Ancaman Baru",

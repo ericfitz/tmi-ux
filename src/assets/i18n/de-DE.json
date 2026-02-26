@@ -571,6 +571,7 @@
     "paste": "Einfügen",
     "permissions": "Berechtigungen",
     "priority": "Priorität",
+    "project": "Projekt",
     "provider": "Anbieter",
     "readOnly": "Schreibgeschützt",
     "readOnlyTooltip": "Sie haben schreibgeschützten Zugriff auf dieses Bedrohungsmodell. Kontaktieren Sie den Eigentümer, um Bearbeitungsrechte anzufordern.",
@@ -599,6 +600,7 @@
       "group": "Gruppe",
       "user": "Benutzer"
     },
+    "team": "Team",
     "template": "Vorlage",
     "threatDescription": "Bedrohungsbeschreibung",
     "threatDescriptionPlaceholder": "Beschreiben Sie die Bedrohung im Detail",
@@ -609,8 +611,10 @@
     "type": "Typ",
     "unarchive": "Dearchivieren",
     "unsavedChangesWarning": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie schließen möchten?",
+    "uri": "URI",
     "userId": "Benutzer-ID",
     "validation": {
+      "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
       "invalidUrl": "Bitte geben Sie eine gültige URL ein",
       "maxLength": "Maximale Länge ist {{max}} Zeichen",
       "nameRequired": "Name ist erforderlich",
@@ -948,6 +952,23 @@
     "userRightsContent2": "Diese Option ermöglicht die sofortige Löschung aller Daten, die der Betreiber in Ihrem Namen speichert, einschließlich Profilinformationen und Authentifizierungsdatensätzen. Bei Aktivierung werden Ihre Daten dauerhaft aus den Systemen des Betreibers und von Drittanbietern entfernt, vorbehaltlich gesetzlicher Aufbewahrungspflichten.",
     "userRightsTitle": "Nutzerrechte"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "Projektbeschreibung eingeben",
+      "namePlaceholder": "Projektname eingeben",
+      "nameRequired": "Projektname ist erforderlich",
+      "statusPlaceholder": "z.B. active, planning, archived",
+      "teamRequired": "Team ist erforderlich",
+      "title": "Projekt erstellen",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Neues Projekt erstellen",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "Kein Projekt"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "Sitzung verlängern",
     "extending": "Ihre Sitzung wird verlängert, bitte warten...",
@@ -1029,6 +1050,21 @@
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Antwort anzeigen"
+  },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "Teambeschreibung eingeben",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "Teamname eingeben",
+      "nameRequired": "Teamname ist erforderlich",
+      "statusPlaceholder": "z.B. active, archived",
+      "title": "Team erstellen",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Neues Team erstellen"
   },
   "threatEditor": {
     "createNewThreat": "Neue Bedrohung erstellen",

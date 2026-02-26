@@ -591,6 +591,7 @@
     "paste": "Paste",
     "permissions": "Permissions",
     "priority": "Priority",
+    "project": "Project",
     "provider": "Provider",
     "readOnly": "Read-Only",
     "readOnlyTooltip": "You have read-only access to this threat model. Contact the owner to request edit permissions.",
@@ -620,6 +621,7 @@
       "group": "Group",
       "user": "User"
     },
+    "team": "Team",
     "template": "Template",
     "threatDescription": "Threat Description",
     "threatDescriptionPlaceholder": "Describe the Threat in Detail",
@@ -630,8 +632,10 @@
     "type": "Type",
     "unarchive": "Unarchive",
     "unsavedChangesWarning": "You have unsaved changes. Are you sure you want to close?",
+    "uri": "URI",
     "userId": "User ID",
     "validation": {
+      "email": "Please enter a valid email address",
       "invalidUrl": "Please enter a valid URL",
       "maxLength": "Maximum length is {{max}} characters",
       "nameRequired": "Name is required",
@@ -971,6 +975,23 @@
     "userRightsContent2": "This option enables immediate deletion of all data The Operator stores on your behalf, including profile information and authentication records. Upon activation, your data will be permanently removed from The Operator's systems and third-party providers, subject to any legal retention obligations.",
     "userRightsTitle": "User Rights"
   },
+  "projects": {
+    "createDialog": {
+      "descriptionPlaceholder": "Enter project description",
+      "namePlaceholder": "Enter project name",
+      "nameRequired": "Project name is required",
+      "statusPlaceholder": "e.g. active, planning, archived",
+      "teamRequired": "Team is required",
+      "title": "Create Project",
+      "uriPlaceholder": "https://wiki.example.com/projects/my-project",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Create New Project",
+    "picker": {
+      "label": "{{common.project}}",
+      "none": "No Project"
+    }
+  },
   "sessionExpiry": {
     "extendButton": "Extend Session",
     "extending": "Extending your session, please wait...",
@@ -1052,6 +1073,21 @@
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "View Response"
+  },
+  "teams": {
+    "createDialog": {
+      "descriptionPlaceholder": "Enter team description",
+      "emailAddress": "{{common.emailLabel}}",
+      "emailPlaceholder": "team@example.com",
+      "emailPlaceholder.comment": "This is an example email and should not be translated.",
+      "namePlaceholder": "Enter team name",
+      "nameRequired": "Team name is required",
+      "statusPlaceholder": "e.g. active, archived",
+      "title": "Create Team",
+      "uriPlaceholder": "https://wiki.example.com/teams/my-team",
+      "uriPlaceholder.comment": "This is an example URL and should not be translated."
+    },
+    "createNew": "Create New Team"
   },
   "threatEditor": {
     "createNewThreat": "Create New Threat",
