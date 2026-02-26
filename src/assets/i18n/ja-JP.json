@@ -349,7 +349,7 @@
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "パレットから質問タイプをクリックして追加してください",
       "noQuestionsYet": "まだ質問がありません",
-      "pageIndicator": "ページ {{current}} / {{total}}",
+      "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "質問のプロパティ",
       "questionTypeDescriptions": {
@@ -968,6 +968,17 @@
       "label": "{{common.project}}",
       "none": "プロジェクトなし"
     }
+  },
+  "report": {
+    "cvss": "CVSS",
+    "cweIds": "CWE IDs",
+    "diagramImageUnavailable": "ダイアグラム画像が利用できません",
+    "diagramRenderFailed": "ダイアグラムをレンダリングできませんでした",
+    "generatedAt": "レポート生成日時",
+    "linkedAsset": "リンク済みアセット",
+    "linkedDiagram": "リンク済みダイアグラム",
+    "pageOf": "ページ {{current}} / {{total}}",
+    "refLabel": "Ref"
   },
   "sessionExpiry": {
     "extendButton": "セッションを延長",

@@ -362,7 +362,7 @@
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "Click a question type from the palette to add it",
       "noQuestionsYet": "No questions yet",
-      "pageIndicator": "Page {{current}} of {{total}}",
+      "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "Question Properties",
       "questionTypeDescriptions": {
@@ -991,6 +991,22 @@
       "label": "{{common.project}}",
       "none": "No Project"
     }
+  },
+  "report": {
+    "cvss": "CVSS",
+    "cvss.comment": "Common Vulnerability Scoring System label. This is a proper name abbreviation and should not be translated.",
+    "cweIds": "CWE IDs",
+    "cweIds.comment": "Common Weakness Enumeration identifiers for a threat. This is a proper name abbreviation.",
+    "diagramImageUnavailable": "Diagram image not available",
+    "diagramRenderFailed": "Diagram could not be rendered",
+    "generatedAt": "Report Generated",
+    "generatedAt.comment": "Label for the date/time the PDF report was generated.",
+    "linkedAsset": "Linked Asset",
+    "linkedDiagram": "Linked Diagram",
+    "pageOf": "Page {{current}} of {{total}}",
+    "pageOf.comment": "Page number footer shown at the bottom of each page in PDF reports.",
+    "refLabel": "Ref",
+    "refLabel.comment": "Short label for repository reference (e.g., branch: main, tag: v1.0)."
   },
   "sessionExpiry": {
     "extendButton": "Extend Session",

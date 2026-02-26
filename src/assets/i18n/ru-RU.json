@@ -349,7 +349,7 @@
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "Нажмите на тип вопроса из палитры, чтобы добавить его",
       "noQuestionsYet": "Вопросов пока нет",
-      "pageIndicator": "Страница {{current}} из {{total}}",
+      "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "Свойства вопроса",
       "questionTypeDescriptions": {
@@ -968,6 +968,17 @@
       "label": "{{common.project}}",
       "none": "Без проекта"
     }
+  },
+  "report": {
+    "cvss": "CVSS",
+    "cweIds": "CWE IDs",
+    "diagramImageUnavailable": "Изображение диаграммы недоступно",
+    "diagramRenderFailed": "Не удалось отобразить диаграмму",
+    "generatedAt": "Отчёт создан",
+    "linkedAsset": "Связанный ресурс",
+    "linkedDiagram": "Связанная диаграмма",
+    "pageOf": "Страница {{current}} из {{total}}",
+    "refLabel": "Ref"
   },
   "sessionExpiry": {
     "extendButton": "Продлить Сеанс",

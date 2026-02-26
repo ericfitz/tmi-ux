@@ -349,7 +349,7 @@
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "इसे जोड़ने के लिए पैलेट से एक प्रश्न प्रकार पर क्लिक करें",
       "noQuestionsYet": "अभी तक कोई प्रश्न नहीं",
-      "pageIndicator": "पृष्ठ {{current}} / {{total}}",
+      "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "प्रश्न गुण",
       "questionTypeDescriptions": {
@@ -968,6 +968,17 @@
       "label": "{{common.project}}",
       "none": "कोई प्रोजेक्ट नहीं"
     }
+  },
+  "report": {
+    "cvss": "CVSS",
+    "cweIds": "CWE IDs",
+    "diagramImageUnavailable": "आरेख छवि उपलब्ध नहीं है",
+    "diagramRenderFailed": "आरेख प्रस्तुत नहीं किया जा सका",
+    "generatedAt": "रिपोर्ट जेनरेट की गई",
+    "linkedAsset": "लिंक किया गया संपत्ति",
+    "linkedDiagram": "लिंक किया गया आरेख",
+    "pageOf": "पृष्ठ {{current}} / {{total}}",
+    "refLabel": "Ref"
   },
   "sessionExpiry": {
     "extendButton": "सत्र बढ़ाएं",

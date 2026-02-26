@@ -349,7 +349,7 @@
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "প্যালেট থেকে একটি প্রশ্ন প্রকার ক্লিক করুন যোগ করতে",
       "noQuestionsYet": "এখনও কোনো প্রশ্ন নেই",
-      "pageIndicator": "পৃষ্ঠা {{current}}/{{total}}",
+      "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "প্রশ্নের বৈশিষ্ট্য",
       "questionTypeDescriptions": {
@@ -968,6 +968,17 @@
       "label": "{{common.project}}",
       "none": "কোনো প্রকল্প নেই"
     }
+  },
+  "report": {
+    "cvss": "CVSS",
+    "cweIds": "CWE IDs",
+    "diagramImageUnavailable": "ডায়াগ্রাম ছবি উপলব্ধ নেই",
+    "diagramRenderFailed": "ডায়াগ্রাম রেন্ডার করা যায়নি",
+    "generatedAt": "রিপোর্ট তৈরি করা হয়েছে",
+    "linkedAsset": "যুক্ত সম্পদ",
+    "linkedDiagram": "যুক্ত ডায়াগ্রাম",
+    "pageOf": "পৃষ্ঠা {{current}}/{{total}}",
+    "refLabel": "Ref"
   },
   "sessionExpiry": {
     "extendButton": "সেশন বাড়ান",

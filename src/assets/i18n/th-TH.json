@@ -349,7 +349,7 @@
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "คลิกประเภทคำถามจากพาเลทเพื่อเพิ่มคำถาม",
       "noQuestionsYet": "ยังไม่มีคำถาม",
-      "pageIndicator": "หน้า {{current}} จาก {{total}}",
+      "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "คุณสมบัติคำถาม",
       "questionTypeDescriptions": {
@@ -968,6 +968,17 @@
       "label": "{{common.project}}",
       "none": "ไม่มีโปรเจกต์"
     }
+  },
+  "report": {
+    "cvss": "CVSS",
+    "cweIds": "CWE IDs",
+    "diagramImageUnavailable": "ไม่มีภาพแผนภาพ",
+    "diagramRenderFailed": "ไม่สามารถแสดงแผนภาพได้",
+    "generatedAt": "รายงานที่สร้างขึ้น",
+    "linkedAsset": "สินทรัพย์ที่เชื่อมโยง",
+    "linkedDiagram": "แผนภาพที่เชื่อมโยง",
+    "pageOf": "หน้า {{current}} จาก {{total}}",
+    "refLabel": "Ref"
   },
   "sessionExpiry": {
     "extendButton": "ขยายเวลาเซสชัน",

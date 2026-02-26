@@ -349,7 +349,7 @@
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "לחץ על סוג שאלה מהלוח כדי להוסיף אותו",
       "noQuestionsYet": "אין עדיין שאלות",
-      "pageIndicator": "עמוד {{current}} מתוך {{total}}",
+      "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "מאפייני שאלה",
       "questionTypeDescriptions": {
@@ -968,6 +968,17 @@
       "label": "{{common.project}}",
       "none": "ללא פרויקט"
     }
+  },
+  "report": {
+    "cvss": "CVSS",
+    "cweIds": "CWE IDs",
+    "diagramImageUnavailable": "תמונת דיאגרמה אינה זמינה",
+    "diagramRenderFailed": "לא ניתן היה להציג את הדיאגרמה",
+    "generatedAt": "דוח שנוצר",
+    "linkedAsset": "נכס קשור",
+    "linkedDiagram": "דיאגרמה קשורה",
+    "pageOf": "עמוד {{current}} מתוך {{total}}",
+    "refLabel": "Ref"
   },
   "sessionExpiry": {
     "extendButton": "הארך הפעלה",

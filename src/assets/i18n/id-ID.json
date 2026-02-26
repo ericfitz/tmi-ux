@@ -349,7 +349,7 @@
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "Klik jenis pertanyaan dari palet untuk menambahkannya",
       "noQuestionsYet": "Belum ada pertanyaan",
-      "pageIndicator": "Halaman {{current}} dari {{total}}",
+      "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "Properti Pertanyaan",
       "questionTypeDescriptions": {
@@ -968,6 +968,17 @@
       "label": "{{common.project}}",
       "none": "Tanpa Proyek"
     }
+  },
+  "report": {
+    "cvss": "CVSS",
+    "cweIds": "CWE IDs",
+    "diagramImageUnavailable": "Gambar diagram tidak tersedia",
+    "diagramRenderFailed": "Diagram tidak dapat dirender",
+    "generatedAt": "Laporan Dihasilkan",
+    "linkedAsset": "Aset Tertaut",
+    "linkedDiagram": "Diagram Tertaut",
+    "pageOf": "Halaman {{current}} dari {{total}}",
+    "refLabel": "Ref"
   },
   "sessionExpiry": {
     "extendButton": "Perpanjang Sesi",

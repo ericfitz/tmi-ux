@@ -349,7 +349,7 @@
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "Klicken Sie auf einen Fragetyp aus der Palette, um ihn hinzuzufügen",
       "noQuestionsYet": "Noch keine Fragen",
-      "pageIndicator": "Seite {{current}} von {{total}}",
+      "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "Frageeigenschaften",
       "questionTypeDescriptions": {
@@ -968,6 +968,17 @@
       "label": "{{common.project}}",
       "none": "Kein Projekt"
     }
+  },
+  "report": {
+    "cvss": "CVSS",
+    "cweIds": "CWE IDs",
+    "diagramImageUnavailable": "Diagrammbild nicht verfügbar",
+    "diagramRenderFailed": "Diagramm konnte nicht gerendert werden",
+    "generatedAt": "Bericht erstellt",
+    "linkedAsset": "Verknüpftes Asset",
+    "linkedDiagram": "Verknüpftes Diagramm",
+    "pageOf": "Seite {{current}} von {{total}}",
+    "refLabel": "Ref"
   },
   "sessionExpiry": {
     "extendButton": "Sitzung verlängern",

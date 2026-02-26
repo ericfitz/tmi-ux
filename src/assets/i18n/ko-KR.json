@@ -349,7 +349,7 @@
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "팔레트에서 질문 유형을 클릭하여 추가하세요",
       "noQuestionsYet": "아직 질문이 없습니다",
-      "pageIndicator": "페이지 {{current}} / {{total}}",
+      "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "질문 속성",
       "questionTypeDescriptions": {
@@ -968,6 +968,17 @@
       "label": "{{common.project}}",
       "none": "프로젝트 없음"
     }
+  },
+  "report": {
+    "cvss": "CVSS",
+    "cweIds": "CWE IDs",
+    "diagramImageUnavailable": "다이어그램 이미지를 사용할 수 없습니다",
+    "diagramRenderFailed": "다이어그램을 렌더링할 수 없습니다",
+    "generatedAt": "보고서 생성됨",
+    "linkedAsset": "연결된 자산",
+    "linkedDiagram": "연결된 다이어그램",
+    "pageOf": "페이지 {{current}} / {{total}}",
+    "refLabel": "Ref"
   },
   "sessionExpiry": {
     "extendButton": "세션 연장",

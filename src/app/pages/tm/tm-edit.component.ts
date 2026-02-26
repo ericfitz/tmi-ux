@@ -89,7 +89,7 @@ import {
   User,
 } from './models/threat-model.model';
 import { ThreatModelService } from './services/threat-model.service';
-import { ThreatModelReportService } from './services/threat-model-report.service';
+import { ThreatModelReportService } from './services/report/threat-model-report.service';
 import { FrameworkService } from '../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
 import { FrameworkModel } from '../../shared/models/framework.model';

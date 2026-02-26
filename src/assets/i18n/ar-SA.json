@@ -349,7 +349,7 @@
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "انقر على نوع سؤال من اللوحة لإضافته",
       "noQuestionsYet": "لا توجد أسئلة بعد",
-      "pageIndicator": "الصفحة {{current}} من {{total}}",
+      "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "خصائص السؤال",
       "questionTypeDescriptions": {
@@ -968,6 +968,17 @@
       "label": "{{common.project}}",
       "none": "لا يوجد مشروع"
     }
+  },
+  "report": {
+    "cvss": "CVSS",
+    "cweIds": "CWE IDs",
+    "diagramImageUnavailable": "صورة المخطط غير متاحة",
+    "diagramRenderFailed": "تعذر عرض المخطط",
+    "generatedAt": "تم إنشاء التقرير",
+    "linkedAsset": "الأصل المرتبط",
+    "linkedDiagram": "المخطط المرتبط",
+    "pageOf": "الصفحة {{current}} من {{total}}",
+    "refLabel": "Ref"
   },
   "sessionExpiry": {
     "extendButton": "تمديد الجلسة",

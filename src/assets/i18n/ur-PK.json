@@ -349,7 +349,7 @@
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "سوال شامل کرنے کے لیے پیلیٹ سے سوال کی قسم پر کلک کریں",
       "noQuestionsYet": "ابھی تک کوئی سوالات نہیں",
-      "pageIndicator": "صفحہ {{current}} از {{total}}",
+      "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "سوال کی خصوصیات",
       "questionTypeDescriptions": {
@@ -968,6 +968,17 @@
       "label": "{{common.project}}",
       "none": "کوئی پروجیکٹ نہیں"
     }
+  },
+  "report": {
+    "cvss": "CVSS",
+    "cweIds": "CWE IDs",
+    "diagramImageUnavailable": "ڈایاگرام کی تصویر دستیاب نہیں ہے",
+    "diagramRenderFailed": "ڈایاگرام کو رینڈر نہیں کیا جا سکا",
+    "generatedAt": "رپورٹ تیار کی گئی",
+    "linkedAsset": "منسلک اثاثہ",
+    "linkedDiagram": "منسلک ڈایاگرام",
+    "pageOf": "صفحہ {{current}} از {{total}}",
+    "refLabel": "Ref"
   },
   "sessionExpiry": {
     "extendButton": "سیشن بڑھائیں",

@@ -349,7 +349,7 @@
       "nextPage": "{{pagination.nextPage}}",
       "noQuestionsHint": "从调色板点击问题类型以添加它",
       "noQuestionsYet": "暂无问题",
-      "pageIndicator": "第 {{current}} 页，共 {{total}} 页",
+      "pageIndicator": "{{report.pageOf}}",
       "previousPage": "{{pagination.previousPage}}",
       "questionProperties": "问题属性",
       "questionTypeDescriptions": {
@@ -968,6 +968,17 @@
       "label": "{{common.project}}",
       "none": "无项目"
     }
+  },
+  "report": {
+    "cvss": "CVSS",
+    "cweIds": "CWE IDs",
+    "diagramImageUnavailable": "图表图像不可用",
+    "diagramRenderFailed": "无法呈现图表",
+    "generatedAt": "报告生成时间",
+    "linkedAsset": "关联资产",
+    "linkedDiagram": "关联图表",
+    "pageOf": "第 {{current}} 页，共 {{total}} 页",
+    "refLabel": "Ref"
   },
   "sessionExpiry": {
     "extendButton": "延长会话",
