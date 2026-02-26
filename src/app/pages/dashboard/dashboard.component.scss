@@ -461,6 +461,18 @@ button.delete-button {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  // Override cell padding/border in collapsed detail rows to eliminate
+  // visible gaps between regular rows (needs to be here for specificity)
+  .detail-row td.mat-mdc-cell {
+    padding: 0;
+    border-bottom-width: 0;
+  }
+
+  .detail-row.expanded td.mat-mdc-cell {
+    padding: 8px 16px 16px;
+    border-bottom-width: 1px;
+  }
 }
 
 .clickable-row {
@@ -480,20 +492,9 @@ button.delete-button {
   font-size: 20px;
 }
 
-// Expandable detail row — hide borders and padding when collapsed
-// to prevent visible gaps between regular rows
+// Expandable detail row
 .detail-row {
   height: 0;
-
-  td {
-    padding: 0;
-    border-bottom-width: 0;
-  }
-
-  &.expanded td {
-    padding: 8px 16px 16px;
-    border-bottom-width: 1px;
-  }
 }
 
 .expanded-session-detail {
