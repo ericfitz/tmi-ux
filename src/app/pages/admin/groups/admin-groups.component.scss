@@ -26,10 +26,6 @@
     margin: 0;
     font-size: 14px;
   }
-
-  .close-button {
-    margin-left: 16px;
-  }
 }
 
 .filter-card {
@@ -64,7 +60,7 @@
       margin: 0;
     }
 
-    .header-actions {
+    .action-buttons {
       margin-left: auto;
 
       button {
@@ -196,12 +192,6 @@
       }
     }
   }
-
-  .action-buttons {
-    display: flex;
-    gap: 4px;
-    align-items: center;
-  }
 }
 
 .no-items-message {
@@ -255,10 +245,6 @@
     h1 {
       font-size: 24px;
     }
-
-    .close-button {
-      margin-left: 8px;
-    }
   }
 
   .groups-card {
@@ -267,7 +253,7 @@
       align-items: flex-start;
       gap: 12px;
 
-      .header-actions {
+      .action-buttons {
         width: 100%;
         margin-left: 0;
 

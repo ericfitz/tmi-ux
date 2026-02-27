@@ -26,10 +26,6 @@
     margin: 0;
     font-size: 14px;
   }
-
-  .close-button {
-    margin-left: 16px;
-  }
 }
 
 .filter-card {
@@ -62,7 +58,7 @@
       margin: 0;
     }
 
-    .header-actions {
+    .action-buttons {
       margin-left: auto;
     }
   }
@@ -270,10 +266,6 @@
     h1 {
       font-size: 24px;
     }
-
-    .close-button {
-      margin-left: 8px;
-    }
   }
 
   .webhooks-card {
@@ -282,7 +274,7 @@
       align-items: flex-start;
       gap: 12px;
 
-      .header-actions {
+      .action-buttons {
         width: 100%;
         margin-left: 0;
 
@@ -348,7 +340,7 @@
   }
 }
 
-.webhooks-card mat-card-header .header-actions button {
+.webhooks-card mat-card-header .action-buttons button {
   display: flex;
   align-items: center;
   gap: 8px;

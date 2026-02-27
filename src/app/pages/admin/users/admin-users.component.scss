@@ -26,10 +26,6 @@
     margin: 0;
     font-size: 14px;
   }
-
-  .close-button {
-    margin-left: 16px;
-  }
 }
 
 .filter-card {
@@ -179,13 +175,6 @@
     font-style: italic;
     font-size: 14px;
   }
-
-  .action-buttons {
-    display: flex;
-    gap: 2px;
-    align-items: center;
-    justify-content: flex-end;
-  }
 }
 
 .no-items-message {
@@ -238,10 +227,6 @@
   .admin-header {
     h1 {
       font-size: 24px;
-    }
-
-    .close-button {
-      margin-left: 8px;
     }
   }
 
