@@ -19,7 +19,9 @@ export class ReadonlyFieldFilterService {
   constructor(private readonly _logger: LoggerService) {}
 
   /**
-   * Read-only fields on ThreatModel that should be stripped before POST/PUT
+   * Read-only fields on ThreatModel that should be stripped before POST/PUT.
+   * After filtering, the remaining fields should match ApiThreatModelInput.
+   * @see ApiThreatModelInput in @app/generated/api-type-helpers
    */
   private readonly _threatModelReadOnlyFields = [
     'id',
@@ -37,7 +39,9 @@ export class ReadonlyFieldFilterService {
   ] as const;
 
   /**
-   * Read-only fields on Threat that should be stripped before POST/PUT
+   * Read-only fields on Threat that should be stripped before POST/PUT.
+   * After filtering, the remaining fields should match ApiThreatInput (= ThreatBase).
+   * @see ApiThreatInput in @app/generated/api-type-helpers
    */
   private readonly _threatReadOnlyFields = [
     'id',
@@ -47,13 +51,16 @@ export class ReadonlyFieldFilterService {
   ] as const;
 
   /**
-   * Read-only fields on Diagram (BaseDiagram) that should be stripped before POST/PUT
+   * Read-only fields on Diagram that should be stripped before POST/PUT.
+   * @see ApiDfdDiagramInput, ApiBaseDiagramInput in @app/generated/api-type-helpers
    */
   private readonly _diagramReadOnlyFields = ['id', 'update_vector'] as const;
 
   /**
-   * Fields that should be stripped before POST (create) but allowed in PUT (update)
-   * CreateDiagramRequest only accepts 'name' and 'type' fields
+   * Fields that should be stripped before POST (create) but allowed in PUT (update).
+   * ApiCreateDiagramRequest only accepts 'name' and 'type' fields.
+   * These fields are extracted and sent via a subsequent PUT using ApiDfdDiagramInput.
+   * @see ApiCreateDiagramRequest, ApiDfdDiagramInput in @app/generated/api-type-helpers
    */
   private readonly _diagramCreateOnlyFields = [
     'cells',
@@ -66,14 +73,18 @@ export class ReadonlyFieldFilterService {
   ] as const;
 
   /**
-   * Read-only fields on Note that should be stripped before POST/PUT
-   * Note: metadata is NOT read-only despite what the schema says - it's managed via separate endpoints
+   * Read-only fields on Note that should be stripped before POST/PUT.
+   * After filtering, the remaining fields should match ApiNoteInput (= NoteBase).
+   * Metadata is managed via separate endpoint, not included in NoteInput.
+   * @see ApiNoteInput in @app/generated/api-type-helpers
    */
   private readonly _noteReadOnlyFields = ['id', 'created_at', 'modified_at', 'metadata'] as const;
 
   /**
-   * Read-only fields on Asset that should be stripped before POST/PUT
-   * Note: metadata is NOT read-only despite what the schema says - it's managed via separate endpoints
+   * Read-only fields on Asset that should be stripped before POST/PUT.
+   * After filtering, the remaining fields should match ApiAssetInput (= AssetBase).
+   * Metadata is managed via separate endpoint, not included in AssetInput.
+   * @see ApiAssetInput in @app/generated/api-type-helpers
    */
   private readonly _assetReadOnlyFields = [
     'id',
@@ -84,7 +95,10 @@ export class ReadonlyFieldFilterService {
   ] as const;
 
   /**
-   * Read-only fields on Document that should be stripped before POST/PUT
+   * Read-only fields on Document that should be stripped before POST/PUT.
+   * After filtering, the remaining fields should match ApiDocumentInput (= DocumentBase).
+   * Metadata is managed via separate endpoint, not included in DocumentInput.
+   * @see ApiDocumentInput in @app/generated/api-type-helpers
    */
   private readonly _documentReadOnlyFields = [
     'id',
@@ -94,7 +108,10 @@ export class ReadonlyFieldFilterService {
   ] as const;
 
   /**
-   * Read-only fields on Repository that should be stripped before POST/PUT
+   * Read-only fields on Repository that should be stripped before POST/PUT.
+   * After filtering, the remaining fields should match ApiRepositoryInput (= RepositoryBase).
+   * Metadata is managed via separate endpoint, not included in RepositoryInput.
+   * @see ApiRepositoryInput in @app/generated/api-type-helpers
    */
   private readonly _repositoryReadOnlyFields = [
     'id',
@@ -104,8 +121,9 @@ export class ReadonlyFieldFilterService {
   ] as const;
 
   /**
-   * Read-only fields on Authorization that should be stripped before POST/PUT/PATCH
-   * display_name is populated by the server based on the principal identity
+   * Read-only fields on Authorization that should be stripped before POST/PUT/PATCH.
+   * display_name is populated by the server based on the principal identity.
+   * @see ApiAuthorization in @app/generated/api-type-helpers
    */
   private readonly _authorizationReadOnlyFields = ['display_name'] as const;
 
