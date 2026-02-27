@@ -3050,6 +3050,46 @@ export interface paths {
     patch: operations['BulkUpsertProjectMetadata'];
     trace?: never;
   };
+  '/me/groups': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List my groups
+     * @description Returns the TMI-managed groups that the authenticated user belongs to. Returns direct memberships only (excludes the implicit everyone pseudo-group). Each group includes its internal_uuid which can be used to query group members via GET /me/groups/{internal_uuid}/members.
+     */
+    get: operations['listMyGroups'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/me/groups/{internal_uuid}/members': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List members of my group
+     * @description Returns a paginated list of members for a group that the authenticated user belongs to. Only effective members (direct or via nested group membership) can list a group's members. Admin audit fields (added_by, notes) are redacted from the response.
+     */
+    get: operations['listMyGroupMembers'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3244,7 +3284,8 @@ export interface components {
      *       ],
      *       "created_at": "2024-01-17T14:00:00Z",
      *       "modified_at": "2024-01-17T14:00:00Z",
-     *       "uri": "https://example.com/docs/security-policy.pdf"
+     *       "uri": "https://example.com/docs/security-policy.pdf",
+     *       "include_in_report": true
      *     }
      */
     Document: components['schemas']['DocumentBase'] & {
@@ -3274,7 +3315,8 @@ export interface components {
      *       "name": "System Architecture",
      *       "description": "High-level system architecture diagram",
      *       "created_at": "2024-01-15T10:00:00Z",
-     *       "modified_at": "2024-01-15T10:00:00Z"
+     *       "modified_at": "2024-01-15T10:00:00Z",
+     *       "include_in_report": true
      *     }
      */
     BaseDiagram: {
@@ -3322,13 +3364,19 @@ export interface components {
       } | null;
       /** @description Optional description of the diagram */
       description?: string | null;
+      /**
+       * @description Whether this item should be included in generated reports
+       * @default true
+       */
+      include_in_report: boolean;
     };
     /**
      * @description Base diagram input for PUT/PATCH requests - excludes readOnly server-managed fields
      * @example {
      *       "type": "DFD-1.0.0",
      *       "name": "New Architecture Diagram",
-     *       "description": "Draft architecture for microservices migration"
+     *       "description": "Draft architecture for microservices migration",
+     *       "include_in_report": true
      *     }
      */
     BaseDiagramInput: {
@@ -3356,6 +3404,11 @@ export interface components {
       } | null;
       /** @description Optional description of the diagram */
       description?: string | null;
+      /**
+       * @description Whether this item should be included in generated reports
+       * @default true
+       */
+      include_in_report: boolean;
     };
     /**
      * @description Data Flow Diagram with cells, edges, and visual styling for JointJS rendering
@@ -3375,7 +3428,8 @@ export interface components {
      *           "width": 140,
      *           "height": 70
      *         }
-     *       ]
+     *       ],
+     *       "include_in_report": true
      *     }
      */
     DfdDiagram: Omit<components['schemas']['BaseDiagram'], 'type'> & {
@@ -3392,7 +3446,7 @@ export interface components {
        * @enum {string}
        */
       type: 'DFD-1.0.0';
-    };
+    }  ;
     /**
      * @description Input schema for creating or updating a Data Flow Diagram
      * @example {
@@ -3408,7 +3462,8 @@ export interface components {
      *           "width": 60,
      *           "height": 60
      *         }
-     *       ]
+     *       ],
+     *       "include_in_report": true
      *     }
      */
     DfdDiagramInput: Omit<components['schemas']['BaseDiagramInput'], 'type'> & {
@@ -3658,7 +3713,8 @@ export interface components {
      *       "modified_at": "2024-01-16T09:00:00Z",
      *       "threat_type": [
      *         "spoofing"
-     *       ]
+     *       ],
+     *       "include_in_report": true
      *     }
      */
     Threat: components['schemas']['ThreatBase'] & {
@@ -3854,7 +3910,8 @@ export interface components {
      *       "description": "Data flow diagram showing payment processing flow",
      *       "created_at": "2025-01-15T10:30:00Z",
      *       "modified_at": "2025-01-15T14:22:00Z",
-     *       "image": null
+     *       "image": null,
+     *       "include_in_report": true
      *     }
      */
     DiagramListItem: {
@@ -3895,6 +3952,11 @@ export interface components {
          */
         update_vector?: number;
       } | null;
+      /**
+       * @description Whether this item should be included in generated reports
+       * @default true
+       */
+      include_in_report: boolean;
     };
     /**
      * @description Enhanced item for threat model list endpoints with key metadata and counts
@@ -3976,7 +4038,7 @@ export interface components {
        * @description Timestamp when the status field was last modified (RFC3339). Automatically updated by the server when status changes.
        */
       readonly status_updated?: string | null;
-      /** @description Security reviewer assigned to this threat model */
+      /** @description Security reviewer assigned to this threat model. The assigned security reviewer automatically has the owner role on this threat model. */
       security_reviewer?: components['schemas']['User'] | null;
     };
     /**
@@ -4307,7 +4369,7 @@ export interface components {
       status?: string | null;
       /** @description Alternative names or identifiers for the threat model */
       alias?: string[];
-      /** @description Security reviewer assigned to this threat model. Informational only, used for filtering list views. Has no authorization implications. */
+      /** @description Security reviewer assigned to this threat model. When set, the security reviewer is automatically added to the authorization list with the owner role. The security reviewer's owner role cannot be removed via authorization changes while they remain assigned as security reviewer. To change the security reviewer's authorization, first unassign them as security reviewer. */
       security_reviewer?: components['schemas']['User'] | null;
       /**
        * Format: uuid
@@ -4373,7 +4435,8 @@ export interface components {
      *           "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
      *           "score": 9.8
      *         }
-     *       ]
+     *       ],
+     *       "include_in_report": true
      *     }
      */
     ThreatBase: {
@@ -4424,6 +4487,11 @@ export interface components {
       cwe_id?: string[];
       /** @description CVSS scoring information for this threat */
       cvss?: components['schemas']['CVSSScore'][];
+      /**
+       * @description Whether this item should be included in generated reports
+       * @default true
+       */
+      include_in_report: boolean;
     };
     /**
      * @description Input schema for creating/updating Threat
@@ -4441,7 +4509,8 @@ export interface components {
      *       ],
      *       "threat_type": [
      *         "spoofing"
-     *       ]
+     *       ],
+     *       "include_in_report": true
      *     }
      */
     ThreatInput: components['schemas']['ThreatBase'];
@@ -4529,7 +4598,8 @@ export interface components {
      *       ],
      *       "created_at": "2024-01-15T10:00:00Z",
      *       "modified_at": "2024-01-15T10:00:00Z",
-     *       "uri": "https://github.com/example/repo"
+     *       "uri": "https://github.com/example/repo",
+     *       "include_in_report": true
      *     }
      */
     Repository: components['schemas']['RepositoryBase'] & {
@@ -4615,7 +4685,8 @@ export interface components {
      *       "name": "Payment Database",
      *       "type": "data",
      *       "description": "PostgreSQL database storing customer payment information",
-     *       "criticality": "high"
+     *       "criticality": "high",
+     *       "include_in_report": true
      *     }
      */
     AssetBase: {
@@ -4634,13 +4705,19 @@ export interface components {
       classification?: string[] | null;
       /** @description Sensitivity label for the asset */
       sensitivity?: string | null;
+      /**
+       * @description Whether this item should be included in generated reports
+       * @default true
+       */
+      include_in_report: boolean;
     };
     /**
      * @description Input schema for creating or updating Asset
      * @example {
      *       "name": "User Database",
      *       "type": "data",
-     *       "description": "Primary database storing user credentials"
+     *       "description": "Primary database storing user credentials",
+     *       "include_in_report": true
      *     }
      */
     AssetInput: components['schemas']['AssetBase'];
@@ -4649,7 +4726,8 @@ export interface components {
      * @example {
      *       "name": "Payment System Architecture",
      *       "uri": "https://docs.example.com/architecture/payment-system.pdf",
-     *       "description": "High-level architecture diagram and documentation"
+     *       "description": "High-level architecture diagram and documentation",
+     *       "include_in_report": true
      *     }
      */
     DocumentBase: {
@@ -4662,6 +4740,11 @@ export interface components {
        * @description URL location of the document
        */
       uri: string;
+      /**
+       * @description Whether this item should be included in generated reports
+       * @default true
+       */
+      include_in_report: boolean;
     };
     /**
      * @description Input schema for creating or updating Document
@@ -4676,7 +4759,8 @@ export interface components {
      *           "value": "SecureTest Inc"
      *         }
      *       ],
-     *       "uri": "https://example.com/docs/security-policy.pdf"
+     *       "uri": "https://example.com/docs/security-policy.pdf",
+     *       "include_in_report": true
      *     }
      */
     DocumentInput: components['schemas']['DocumentBase'];
@@ -4684,7 +4768,8 @@ export interface components {
      * @description Base fields for Note (user-writable only)
      * @example {
      *       "name": "Security Review Notes",
-     *       "content": "Reviewed payment flow with security team. Key findings:\n- Need additional input validation\n- Consider rate limiting on payment endpoint"
+     *       "content": "Reviewed payment flow with security team. Key findings:\n- Need additional input validation\n- Consider rate limiting on payment endpoint",
+     *       "include_in_report": true
      *     }
      */
     NoteBase: {
@@ -4694,12 +4779,18 @@ export interface components {
       content: string;
       /** @description Description of note purpose or context */
       description?: string | null;
+      /**
+       * @description Whether this item should be included in generated reports
+       * @default true
+       */
+      include_in_report: boolean;
     };
     /**
      * @description Input schema for creating or updating Note
      * @example {
      *       "name": "Security Analysis Notes",
-     *       "content": "Initial security analysis of the authentication flow."
+     *       "content": "Initial security analysis of the authentication flow.",
+     *       "include_in_report": true
      *     }
      */
     NoteInput: components['schemas']['NoteBase'];
@@ -4709,7 +4800,8 @@ export interface components {
      *       "id": "ff0e8400-e29b-41d4-a716-44665544000a",
      *       "name": "Security Review Notes",
      *       "created_at": "2024-01-17T14:30:00Z",
-     *       "modified_at": "2024-01-17T15:00:00Z"
+     *       "modified_at": "2024-01-17T15:00:00Z",
+     *       "include_in_report": true
      *     }
      */
     NoteListItem: {
@@ -4734,12 +4826,18 @@ export interface components {
        * @description Last modification timestamp (RFC3339)
        */
       readonly modified_at?: string;
+      /**
+       * @description Whether this item should be included in generated reports
+       * @default true
+       */
+      include_in_report: boolean;
     };
     /**
      * @description Base fields for Repository (user-writable only)
      * @example {
      *       "uri": "https://github.com/example/payment-service",
-     *       "description": "Main repository for payment processing service"
+     *       "description": "Main repository for payment processing service",
+     *       "include_in_report": true
      *     }
      */
     RepositoryBase: {
@@ -4769,6 +4867,11 @@ export interface components {
        * @description URL to retrieve the referenced source code
        */
       uri: string;
+      /**
+       * @description Whether this item should be included in generated reports
+       * @default true
+       */
+      include_in_report: boolean;
     };
     /**
      * @description Input schema for creating or updating Repository
@@ -4783,7 +4886,8 @@ export interface components {
      *           "value": "Security"
      *         }
      *       ],
-     *       "uri": "https://github.com/example/repo"
+     *       "uri": "https://github.com/example/repo",
+     *       "include_in_report": true
      *     }
      */
     RepositoryInput: components['schemas']['RepositoryBase'];
@@ -7913,6 +8017,25 @@ export interface components {
        * @example 0
        */
       offset: number;
+    };
+    /**
+     * @description List of TMI-managed groups that the authenticated user belongs to
+     * @example {
+     *       "groups": [
+     *         {
+     *           "internal_uuid": "e50eabcd-e89b-41d4-a716-446655440014",
+     *           "group_name": "security-reviewers",
+     *           "name": "Security Reviewers"
+     *         }
+     *       ],
+     *       "total": 1
+     *     }
+     */
+    MyGroupListResponse: {
+      /** @description List of groups the user is a direct member of */
+      groups: components['schemas']['UserGroupMembership'][];
+      /** @description Total number of groups */
+      total: number;
     };
   };
   responses: {
@@ -28466,6 +28589,205 @@ export interface operations {
       };
       429: components['responses']['TooManyRequests'];
       500: components['responses']['Error'];
+    };
+  };
+  listMyGroups: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description List of groups the user belongs to */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['MyGroupListResponse'];
+        };
+      };
+      /** @description Unauthorized - invalid or missing authentication */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Too many requests */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until the rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  listMyGroupMembers: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of results to return */
+        limit?: components['parameters']['LimitQueryParam'];
+        /** @description Number of results to skip */
+        offset?: components['parameters']['OffsetQueryParam'];
+      };
+      header?: never;
+      path: {
+        /** @description Internal system UUID of the user */
+        internal_uuid: components['parameters']['InternalUuidPathParam'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Paginated list of group members */
+      200: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['GroupMemberListResponse'];
+        };
+      };
+      /** @description Bad Request - Invalid parameters or malformed UUIDs */
+      400: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Unauthorized - invalid or missing authentication */
+      401: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden - not a member of this group */
+      403: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Group not found */
+      404: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Too many requests */
+      429: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          /** @description Seconds until the rate limit resets */
+          'Retry-After'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          /** @description Maximum number of requests allowed in the current time window */
+          'X-RateLimit-Limit'?: number;
+          /** @description Number of requests remaining in the current time window */
+          'X-RateLimit-Remaining'?: number;
+          /** @description Unix epoch seconds when the rate limit window resets */
+          'X-RateLimit-Reset'?: number;
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
     };
   };
 }

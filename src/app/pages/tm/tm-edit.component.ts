@@ -23,7 +23,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ThreatModelAuthorizationService } from './services/threat-model-authorization.service';
 import { AuthorizationPrepareService } from './services/providers/authorization-prepare.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { Subscription, Subject } from 'rxjs';
+import { Subscription, Subject, firstValueFrom } from 'rxjs';
 import { debounceTime, filter, distinctUntilChanged } from 'rxjs/operators';
 import { LanguageService } from '../../i18n/language.service';
 import { LoggerService } from '../../core/services/logger.service';
@@ -2505,9 +2505,11 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Downloads the threat model as a JSON file to the desktop
+   * Downloads the threat model as a JSON file to the desktop.
+   * Re-fetches the full threat model from the API to ensure all sub-entity
+   * data is complete (paginated loads strip note content and diagram cells).
    */
-  downloadToDesktop(): void {
+  async downloadToDesktop(): Promise<void> {
     if (!this.threatModel) {
       this.logger.warn('Cannot download threat model: no threat model loaded');
       return;
@@ -2519,20 +2521,29 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     try {
+      // Re-fetch the full threat model to get complete sub-entity data
+      // (paginated loads replace notes with NoteListItem and diagrams with DiagramListItem)
+      const fullThreatModel = await firstValueFrom(
+        this.threatModelService.getThreatModelById(this.threatModel.id, true),
+      );
+
+      if (!fullThreatModel) {
+        this.logger.error('Failed to fetch full threat model for export');
+        return;
+      }
+
       // Generate filename: threat model name (truncated to 63 chars) + "-threat-model.json"
-      const filename = this.generateThreatModelFilename(this.threatModel.name);
+      const filename = this.generateThreatModelFilename(fullThreatModel.name);
 
       // Normalize the threat model to ensure consistent date formats
-      const normalizedThreatModel = this.normalizeThreatModelForExport(this.threatModel);
+      const normalizedThreatModel = this.normalizeThreatModelForExport(fullThreatModel);
 
       // Serialize the complete threat model as JSON
       const jsonContent = JSON.stringify(normalizedThreatModel, null, 2);
       const blob = new Blob([jsonContent], { type: 'application/json' });
 
       // Use the same file picker pattern as DFD exports
-      this.handleThreatModelExport(blob, filename).catch(error => {
-        this.logger.error('Error downloading threat model', error);
-      });
+      await this.handleThreatModelExport(blob, filename);
     } catch (error) {
       this.logger.error('Error preparing threat model download', error);
     }
@@ -2550,7 +2561,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     normalized.created_at = this.normalizeDate(threatModel.created_at);
     normalized.modified_at = this.normalizeDate(threatModel.modified_at);
 
-    // Normalize diagram dates
+    // Normalize dates for all sub-entity types
     if (normalized.diagrams) {
       normalized.diagrams = normalized.diagrams.map(diagram => ({
         ...diagram,
@@ -2559,12 +2570,43 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       }));
     }
 
-    // Normalize threat dates
     if (normalized.threats) {
       normalized.threats = normalized.threats.map(threat => ({
         ...threat,
         created_at: this.normalizeDate(threat.created_at),
         modified_at: this.normalizeDate(threat.modified_at),
+      }));
+    }
+
+    if (normalized.notes) {
+      normalized.notes = normalized.notes.map(note => ({
+        ...note,
+        created_at: this.normalizeDate(note.created_at),
+        modified_at: this.normalizeDate(note.modified_at),
+      }));
+    }
+
+    if (normalized.assets) {
+      normalized.assets = normalized.assets.map(asset => ({
+        ...asset,
+        created_at: this.normalizeDate(asset.created_at),
+        modified_at: this.normalizeDate(asset.modified_at),
+      }));
+    }
+
+    if (normalized.documents) {
+      normalized.documents = normalized.documents.map(doc => ({
+        ...doc,
+        created_at: this.normalizeDate(doc.created_at),
+        modified_at: this.normalizeDate(doc.modified_at),
+      }));
+    }
+
+    if (normalized.repositories) {
+      normalized.repositories = normalized.repositories.map(repo => ({
+        ...repo,
+        created_at: this.normalizeDate(repo.created_at),
+        modified_at: this.normalizeDate(repo.modified_at),
       }));
     }
 

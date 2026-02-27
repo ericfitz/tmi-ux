@@ -563,33 +563,25 @@ export class ThreatModelService implements OnDestroy {
     // Use orchestrator to handle the complete import
     return this.importOrchestrator
       .orchestrateImport(data as Record<string, unknown>, {
-        // Threat Model creation
-        // Per OpenAPI ThreatModelInput, only these fields are allowed:
-        // name (required), description, threat_model_framework, authorization, metadata, issue_uri
+        // Threat Model creation — tmData is typed as ApiThreatModelInput
         // For import, we exclude authorization (server sets current user as owner)
+        // and metadata (imported separately via metadata endpoint)
         createThreatModel: tmData => {
           const body: Record<string, unknown> = {
-            name: (tmData['name'] as string) || 'Untitled',
+            name: tmData.name || 'Untitled',
+            is_confidential: tmData.is_confidential ?? false,
           };
-          // Add optional fields only if present
-          if (tmData['description'] && typeof tmData['description'] === 'string') {
-            body['description'] = tmData['description'];
+          if (tmData.description) {
+            body['description'] = tmData.description;
           }
-          if (
-            tmData['threat_model_framework'] &&
-            typeof tmData['threat_model_framework'] === 'string' &&
-            tmData['threat_model_framework'].trim() !== ''
-          ) {
-            body['threat_model_framework'] = tmData['threat_model_framework'];
+          if (tmData.threat_model_framework?.trim()) {
+            body['threat_model_framework'] = tmData.threat_model_framework;
           } else {
             body['threat_model_framework'] = 'STRIDE';
           }
-          if (tmData['issue_uri'] && typeof tmData['issue_uri'] === 'string') {
-            body['issue_uri'] = tmData['issue_uri'];
+          if (tmData.issue_uri) {
+            body['issue_uri'] = tmData.issue_uri;
           }
-          // Note: authorization and metadata are intentionally not included
-          // - authorization: server sets current user as owner with default permissions
-          // - metadata: will be imported separately via metadata endpoint
           return this.apiService.post<ThreatModel>('threat_models', body);
         },
 

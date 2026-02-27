@@ -394,12 +394,53 @@ describe('ImportOrchestratorService', () => {
         'new-tm-1',
         'new-diagram-1',
         expect.objectContaining({
+          cells: [],
           description: 'A data flow diagram',
           image: 'data:image/png;base64,abc',
         }),
       );
     });
 
+    it('should include include_in_report in diagram update when present', async () => {
+      mockFieldFilter.filterDiagram.mockReturnValue({
+        filtered: { name: 'DFD', type: 'dfd' },
+        metadata: undefined,
+        cells: undefined,
+        description: undefined,
+        includeInReport: true,
+        image: undefined,
+      });
+      const deps = createMockDeps();
+
+      await lastValueFrom(service.orchestrateImport({ diagrams: [{ id: 'd1' }] }, deps));
+
+      expect(deps.updateDiagram).toHaveBeenCalledWith(
+        'new-tm-1',
+        'new-diagram-1',
+        expect.objectContaining({
+          cells: [],
+          include_in_report: true,
+        }),
+      );
+    });
+
+    it('should always include cells array in diagram PUT even when no cells present', async () => {
+      mockFieldFilter.filterDiagram.mockReturnValue({
+        filtered: { name: 'DFD', type: 'dfd' },
+        metadata: undefined,
+        cells: undefined,
+        description: 'Description only',
+        includeInReport: undefined,
+        image: undefined,
+      });
+      const deps = createMockDeps();
+
+      await lastValueFrom(service.orchestrateImport({ diagrams: [{ id: 'd1' }] }, deps));
+
+      const updateCall = (deps.updateDiagram as ReturnType<typeof vi.fn>).mock.calls[0];
+      const payload = updateCall[2] as Record<string, unknown>;
+      expect(payload['cells']).toEqual([]);
+    });
     it('should report success even when updateDiagram fails (silent data loss)', async () => {
       // This test documents a known issue: cells are silently lost when updateDiagram fails
       mockFieldFilter.filterDiagram.mockReturnValue({
