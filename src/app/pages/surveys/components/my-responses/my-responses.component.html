@@ -2,7 +2,7 @@
   <div class="page-header">
     <h1 class="page-title">{{ 'surveys.responses.pageTitle' | transloco }}</h1>
 
-    <div class="header-actions">
+    <div class="action-buttons">
       <mat-form-field appearance="outline" class="status-filter">
         <mat-label>{{ 'surveys.responses.filterByStatus' | transloco }}</mat-label>
         <mat-select multiple [(value)]="statusFilter" (selectionChange)="onFilterChange()">
@@ -12,12 +12,7 @@
         </mat-select>
       </mat-form-field>
 
-      <button
-        mat-icon-button
-        class="close-button"
-        (click)="goBack()"
-        [attr.aria-label]="'common.close' | transloco"
-      >
+      <button mat-icon-button (click)="goBack()" [attr.aria-label]="'common.close' | transloco">
         <mat-icon>close</mat-icon>
       </button>
     </div>

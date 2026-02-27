@@ -6,14 +6,11 @@
         Configure webhook subscriptions for event notifications
       </p>
     </div>
-    <button
-      mat-icon-button
-      class="close-button"
-      (click)="onClose()"
-      [attr.aria-label]="'common.close' | transloco"
-    >
-      <mat-icon>close</mat-icon>
-    </button>
+    <div class="action-buttons">
+      <button mat-icon-button (click)="onClose()" [attr.aria-label]="'common.close' | transloco">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
 
   <mat-card class="filter-card">
@@ -36,7 +33,7 @@
       <mat-card-title [transloco]="'admin.webhooks.listTitle'"
         >Webhook Subscriptions</mat-card-title
       >
-      <div class="header-actions">
+      <div class="action-buttons">
         <button mat-raised-button color="primary" (click)="onAddWebhook()">
           <mat-icon>add</mat-icon>
           <span [transloco]="'admin.webhooks.addButton'">Add Webhook</span>

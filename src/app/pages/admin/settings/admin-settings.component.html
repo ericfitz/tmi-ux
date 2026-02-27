@@ -6,15 +6,16 @@
         View and manage system configuration settings
       </p>
     </div>
-    <button
-      mat-icon-button
-      class="close-button"
-      (click)="onClose()"
-      [attr.aria-label]="'common.close' | transloco"
-      [matTooltip]="'common.close' | transloco"
-    >
-      <mat-icon>close</mat-icon>
-    </button>
+    <div class="action-buttons">
+      <button
+        mat-icon-button
+        (click)="onClose()"
+        [attr.aria-label]="'common.close' | transloco"
+        [matTooltip]="'common.close' | transloco"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
 
   <mat-card class="filter-card">
@@ -35,7 +36,7 @@
   <mat-card class="settings-card">
     <mat-card-header>
       <mat-card-title [transloco]="'admin.settings.listTitle'">System Settings</mat-card-title>
-      <div class="header-actions">
+      <div class="action-buttons">
         <button mat-stroked-button (click)="onMigrateSettings()">
           <mat-icon>sync</mat-icon>
           <span [transloco]="'admin.settings.migrateButton'">Migrate Settings</span>

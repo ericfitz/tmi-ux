@@ -4,14 +4,11 @@
       <h1 [transloco]="'admin.users.title'">Manage Users</h1>
       <p class="subtitle" [transloco]="'admin.users.subtitle'">View and manage system users</p>
     </div>
-    <button
-      mat-icon-button
-      class="close-button"
-      (click)="onClose()"
-      [attr.aria-label]="'common.close' | transloco"
-    >
-      <mat-icon>close</mat-icon>
-    </button>
+    <div class="action-buttons">
+      <button mat-icon-button (click)="onClose()" [attr.aria-label]="'common.close' | transloco">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
 
   <mat-card class="filter-card">

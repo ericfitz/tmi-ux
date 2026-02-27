@@ -6,15 +6,16 @@
         Manage system settings and configurations
       </p>
     </div>
-    <button
-      mat-icon-button
-      class="close-button"
-      (click)="onClose()"
-      [attr.aria-label]="'common.close' | transloco"
-      [matTooltip]="'common.close' | transloco"
-    >
-      <mat-icon>close</mat-icon>
-    </button>
+    <div class="action-buttons">
+      <button
+        mat-icon-button
+        (click)="onClose()"
+        [attr.aria-label]="'common.close' | transloco"
+        [matTooltip]="'common.close' | transloco"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
 
   <div class="admin-grid">

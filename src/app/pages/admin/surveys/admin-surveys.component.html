@@ -1,14 +1,11 @@
 <div class="admin-surveys-container">
   <div class="page-header">
     <h1 class="page-title">{{ 'adminSurveys.pageTitle' | transloco }}</h1>
-    <button
-      mat-icon-button
-      class="close-button"
-      (click)="onClose()"
-      [attr.aria-label]="'common.close' | transloco"
-    >
-      <mat-icon>close</mat-icon>
-    </button>
+    <div class="action-buttons">
+      <button mat-icon-button (click)="onClose()" [attr.aria-label]="'common.close' | transloco">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
 
   <div class="filters-row">

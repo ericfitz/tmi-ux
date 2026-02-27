@@ -17,22 +17,12 @@
     font-weight: 500;
   }
 
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
   .status-filter {
     width: 200px;
 
     ::ng-deep .mat-mdc-form-field-subscript-wrapper {
       display: none;
     }
-  }
-
-  .close-button {
-    margin-left: 8px;
   }
 }
 
@@ -143,7 +133,7 @@
   .page-header {
     flex-wrap: wrap;
 
-    .header-actions {
+    .action-buttons {
       .status-filter {
         width: 160px;
       }

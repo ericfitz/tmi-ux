@@ -105,10 +105,6 @@
       color: var(--color-error);
     }
   }
-
-  .close-button {
-    margin-left: 16px;
-  }
 }
 
 // Project picker section (inside .survey-content, inherits its padding)
@@ -216,7 +212,7 @@ button mat-icon {
       margin-top: 8px;
     }
 
-    .close-button {
+    .action-buttons {
       order: 2;
       margin-left: auto;
     }

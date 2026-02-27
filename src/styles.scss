@@ -77,6 +77,13 @@ html[dir='rtl'] {
   margin-bottom: 24px;
 }
 
+// Standard container for grouping action buttons
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 // Common card styles
 .mat-card {
   margin-bottom: 16px;

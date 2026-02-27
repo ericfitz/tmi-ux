@@ -25,14 +25,11 @@
           </mat-chip>
         </div>
       </div>
-      <button
-        mat-icon-button
-        class="close-button"
-        (click)="goBack()"
-        [attr.aria-label]="'common.close' | transloco"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
+      <div class="action-buttons">
+        <button mat-icon-button (click)="goBack()" [attr.aria-label]="'common.close' | transloco">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
     </div>
 
     <!-- Response info card -->

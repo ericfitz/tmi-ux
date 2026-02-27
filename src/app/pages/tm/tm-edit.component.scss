@@ -27,12 +27,6 @@
   }
 }
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
 .content-container {
   display: flex;
   flex-direction: column;
@@ -213,12 +207,6 @@ mat-card-header {
     font-size: var(--font-size-md);
     margin-bottom: 0;
     font-weight: var(--font-weight-bold);
-  }
-
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 4px;
   }
 }
 
@@ -729,14 +717,6 @@ mat-card-header {
   min-width: 160px;
   text-align: right;
   padding-right: 8px !important;
-}
-
-// Action buttons in table (matches HTML class="action-buttons")
-.action-buttons {
-  display: flex;
-  gap: 2px;
-  align-items: center;
-  justify-content: flex-end;
 }
 
 // Hyperlink button in table

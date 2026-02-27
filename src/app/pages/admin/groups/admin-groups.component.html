@@ -4,14 +4,11 @@
       <h1 [transloco]="'admin.groups.title'">Manage Groups</h1>
       <p class="subtitle" [transloco]="'admin.groups.subtitle'">View and manage system groups</p>
     </div>
-    <button
-      mat-icon-button
-      class="close-button"
-      (click)="onClose()"
-      [attr.aria-label]="'common.close' | transloco"
-    >
-      <mat-icon>close</mat-icon>
-    </button>
+    <div class="action-buttons">
+      <button mat-icon-button (click)="onClose()" [attr.aria-label]="'common.close' | transloco">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
 
   <mat-card class="filter-card">
@@ -33,7 +30,7 @@
   <mat-card class="groups-card">
     <mat-card-header>
       <mat-card-title [transloco]="'admin.groups.listTitle'">Groups</mat-card-title>
-      <div class="header-actions">
+      <div class="action-buttons">
         <button mat-raised-button color="primary" (click)="onAddGroup()">
           <mat-icon>add</mat-icon>
           <span [transloco]="'admin.groups.addButton'">Add Group</span>
