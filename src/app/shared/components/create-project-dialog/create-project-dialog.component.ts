@@ -149,6 +149,10 @@ export interface CreateProjectDialogResult {
         display: flex;
         align-items: flex-start;
         gap: 4px;
+
+        > button {
+          margin-top: 8px;
+        }
       }
 
       .team-field {

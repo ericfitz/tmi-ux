@@ -70,15 +70,12 @@
               </a>
             </div>
           }
-          <div class="info-item">
-            <span class="info-label">{{ 'common.project' | transloco }}</span>
-            <span class="info-value">
-              <app-project-picker
-                [projectId]="response.project_id ?? null"
-                (projectChange)="onProjectChange($event)"
-              />
-            </span>
-          </div>
+        </div>
+        <div class="project-picker-section">
+          <app-project-picker
+            [projectId]="response.project_id ?? null"
+            (projectChange)="onProjectChange($event)"
+          />
         </div>
       </mat-card-content>
     </mat-card>

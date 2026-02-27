@@ -76,6 +76,10 @@ import {
         display: flex;
         align-items: flex-start;
         gap: 4px;
+
+        > button {
+          margin-top: 8px;
+        }
       }
 
       .project-field {

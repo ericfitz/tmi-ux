@@ -71,16 +71,6 @@
       </button>
     </div>
 
-    <!-- Project picker -->
-    @if (response) {
-      <div class="project-picker-section">
-        <app-project-picker
-          [projectId]="response.project_id ?? null"
-          (projectChange)="onProjectChange($event)"
-        />
-      </div>
-    }
-
     <!-- Revision notes (shown when returned for revision) -->
     @if (response?.status === 'needs_revision') {
       <mat-card class="revision-notes-card">
@@ -109,6 +99,15 @@
 
     <!-- Survey content -->
     <div class="survey-content">
+      <!-- Project picker -->
+      @if (response) {
+        <div class="project-picker-section">
+          <app-project-picker
+            [projectId]="response.project_id ?? null"
+            (projectChange)="onProjectChange($event)"
+          />
+        </div>
+      }
       @if (surveyModel) {
         <survey [model]="surveyModel"></survey>
       }

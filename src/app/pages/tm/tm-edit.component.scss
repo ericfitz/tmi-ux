@@ -318,6 +318,14 @@ mat-card-header {
   }
 }
 
+.info-row-project {
+  .info-field:first-child {
+    width: 66.67%;
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
 .security-reviewer-dropdown {
   width: 100%;
   margin-left: 0;

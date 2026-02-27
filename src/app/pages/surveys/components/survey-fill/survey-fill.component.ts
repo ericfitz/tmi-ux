@@ -174,6 +174,10 @@ export class SurveyFillComponent implements OnInit, OnDestroy {
     // Create the survey model
     this.surveyModel = new Model(this.surveyJson);
 
+    // Suppress SurveyJS built-in title/description (already shown in page header)
+    this.surveyModel.showTitle = false;
+    this.surveyModel['showDescription'] = false;
+
     // Customize the complete button text
     this.surveyModel.completeText = this.translocoService.translate('intake.fill.submitResponses');
 

@@ -111,10 +111,10 @@
   }
 }
 
-// Project picker section
+// Project picker section (inside .survey-content, inherits its padding)
 .project-picker-section {
-  padding: 0 24px;
   max-width: 400px;
+  margin-bottom: 16px;
 }
 
 // Revision Notes Card (shown when survey returned for revision)
