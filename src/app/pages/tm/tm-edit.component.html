@@ -85,6 +85,47 @@
           </div>
         </mat-card-header>
         <mat-card-content>
+          <!-- Name and Description fields -->
+          <div [formGroup]="threatModelForm" class="details-name-description">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label [transloco]="'common.name'">Name</mat-label>
+              <input
+                matInput
+                formControlName="name"
+                tabindex="1"
+                (blur)="onFieldBlur('name', $event)"
+              />
+              @if (threatModelForm.get('name')?.hasError('required')) {
+                <mat-error>
+                  {{ 'common.validation.required' | transloco }}
+                </mat-error>
+              }
+
+              @if (threatModelForm.get('name')?.hasError('maxlength')) {
+                <mat-error>
+                  {{ 'common.validation.maxLength' | transloco: { max: 100 } }}
+                </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label [transloco]="'common.description'">Description</mat-label>
+              <textarea
+                matInput
+                formControlName="description"
+                rows="4"
+                tabindex="2"
+                placeholder="{{ 'threatModels.descriptionPlaceholder' | transloco }}"
+                (blur)="onFieldBlur('description', $event)"
+              ></textarea>
+              @if (threatModelForm.get('description')?.hasError('maxlength')) {
+                <mat-error>
+                  {{ 'common.validation.maxLength' | transloco: { max: 500 } }}
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+
           <!-- Two-column details: pickers (left 2/3) + metadata (right 1/3) -->
           <div class="details-columns" [dir]="currentDirection">
             <!-- Left column: interactive pickers -->
@@ -208,6 +249,16 @@
 
             <!-- Right column: static metadata -->
             <div class="details-metadata">
+              <!-- Status Last Updated -->
+              <div class="metadata-field">
+                <span class="info-label">{{ 'threatModels.statusLastUpdated' | transloco }}:</span>
+                <span class="info-value">{{
+                  threatModel.status_updated
+                    ? (threatModel.status_updated | date: 'short' : undefined : currentLocale)
+                    : '—'
+                }}</span>
+              </div>
+
               <!-- Threat Model ID -->
               <div class="metadata-field">
                 <span class="info-label">{{ 'threatModels.idLabel' | transloco }}:</span>
@@ -256,59 +307,11 @@
                     : '—'
                 }}</span>
               </div>
-
-              <!-- Status Last Updated -->
-              <div class="metadata-field">
-                <span class="info-label">{{ 'threatModels.statusLastUpdated' | transloco }}:</span>
-                <span class="info-value">{{
-                  threatModel.status_updated
-                    ? (threatModel.status_updated | date: 'short' : undefined : currentLocale)
-                    : '—'
-                }}</span>
-              </div>
             </div>
           </div>
 
           <form [formGroup]="threatModelForm" class="threat-model-form">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label [transloco]="'common.name'">Name</mat-label>
-              <input
-                matInput
-                formControlName="name"
-                tabindex="1"
-                (blur)="onFieldBlur('name', $event)"
-              />
-              @if (threatModelForm.get('name')?.hasError('required')) {
-                <mat-error>
-                  {{ 'common.validation.required' | transloco }}
-                </mat-error>
-              }
-
-              @if (threatModelForm.get('name')?.hasError('maxlength')) {
-                <mat-error>
-                  {{ 'common.validation.maxLength' | transloco: { max: 100 } }}
-                </mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label [transloco]="'common.description'">Description</mat-label>
-              <textarea
-                matInput
-                formControlName="description"
-                rows="4"
-                tabindex="2"
-                placeholder="{{ 'threatModels.descriptionPlaceholder' | transloco }}"
-                (blur)="onFieldBlur('description', $event)"
-              ></textarea>
-              @if (threatModelForm.get('description')?.hasError('maxlength')) {
-                <mat-error>
-                  {{ 'common.validation.maxLength' | transloco: { max: 500 } }}
-                </mat-error>
-              }
-            </mat-form-field>
-
-            <!-- New fields for threat model framework and issue URL -->
+            <!-- Threat model framework and issue URL -->
             <div class="form-fields-row">
               <mat-form-field appearance="outline">
                 <mat-label [transloco]="'threatModels.threatModelFramework'"

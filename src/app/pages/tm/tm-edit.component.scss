@@ -231,6 +231,14 @@ mat-card-header {
   width: 100%;
 }
 
+// Name and Description fields above the two-column layout
+.details-name-description {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0 0;
+}
+
 // Two-column details layout: pickers (left 2/3) + metadata (right 1/3)
 .details-columns {
   display: grid;
