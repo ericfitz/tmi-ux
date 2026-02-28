@@ -573,14 +573,15 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
    */
   private loadProviders(): void {
     this.providersLoading = true;
+    const builtInProviders = this.providerAdapter.getBuiltInProviders();
     this._subscriptions.add(
       this.authService.getAvailableProviders().subscribe({
         next: providers => {
-          this.availableProviders = providers;
+          this.availableProviders = [...providers, ...builtInProviders];
           this.providersLoading = false;
         },
         error: () => {
-          this.availableProviders = [];
+          this.availableProviders = builtInProviders;
           this.providersLoading = false;
         },
       }),
@@ -691,6 +692,15 @@ export class PermissionsDialogComponent implements OnInit, OnDestroy {
     if (index >= 0 && index < this.permissionsDataSource.data.length) {
       const auth = this.permissionsDataSource.data[index];
       auth.provider = event.value;
+
+      // Auto-constrain principal type if current type is invalid for this provider
+      if (!this.providerAdapter.isValidForPrincipalType(event.value, auth.principal_type)) {
+        if (this.providerAdapter.isValidForPrincipalType(event.value, 'group')) {
+          auth.principal_type = 'group';
+        } else if (this.providerAdapter.isValidForPrincipalType(event.value, 'user')) {
+          auth.principal_type = 'user';
+        }
+      }
 
       // Auto-populate subject with default if available
       const defaultSubject = this.providerAdapter.getDefaultSubject(

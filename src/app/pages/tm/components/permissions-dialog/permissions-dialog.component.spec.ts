@@ -3,7 +3,7 @@
 
 import '@angular/compiler';
 
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import {
@@ -24,6 +24,8 @@ describe('PermissionsDialogComponent', () => {
   };
   let mockProviderAdapter: {
     getDefaultSubject: ReturnType<typeof vi.fn>;
+    getBuiltInProviders: ReturnType<typeof vi.fn>;
+    isValidForPrincipalType: ReturnType<typeof vi.fn>;
   };
   let dialogData: PermissionsDialogData;
 
@@ -58,6 +60,12 @@ describe('PermissionsDialogComponent', () => {
     };
     mockProviderAdapter = {
       getDefaultSubject: vi.fn().mockReturnValue(null),
+      getBuiltInProviders: vi
+        .fn()
+        .mockReturnValue([
+          { id: 'tmi', name: 'TMI', icon: '', auth_url: '', redirect_uri: '', client_id: '' },
+        ]),
+      isValidForPrincipalType: vi.fn().mockReturnValue(true),
     };
 
     dialogData = {
@@ -391,6 +399,55 @@ describe('PermissionsDialogComponent', () => {
     it('should close dialog without result', () => {
       component.close();
       expect(mockDialogRef.close).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('loadProviders (built-in providers)', () => {
+    it('should include TMI in available providers after loading', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      expect(component.availableProviders).toHaveLength(3); // 2 OAuth + 1 TMI
+      expect(component.availableProviders.some(p => p.id === 'tmi')).toBe(true);
+    });
+
+    it('should include built-in providers even when OAuth loading fails', () => {
+      mockAuthService.getAvailableProviders.mockReturnValue(
+        throwError(() => new Error('API error')),
+      );
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      expect(component.availableProviders).toHaveLength(1);
+      expect(component.availableProviders[0].id).toBe('tmi');
+    });
+  });
+
+  describe('updatePermissionProvider (principal type auto-constraint)', () => {
+    it('should auto-constrain principal type to group when TMI is selected', () => {
+      mockProviderAdapter.isValidForPrincipalType.mockImplementation(
+        (provider: string, type: string) => {
+          if (provider === 'tmi') return type === 'group';
+          return true;
+        },
+      );
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      expect(component.permissionsDataSource.data[0].principal_type).toBe('user');
+
+      component.updatePermissionProvider(0, { value: 'tmi' });
+
+      expect(component.permissionsDataSource.data[0].principal_type).toBe('group');
+    });
+
+    it('should not change principal type when provider supports it', () => {
+      component.permissionsTable = { renderRows: vi.fn() } as never;
+      component.ngOnInit();
+
+      component.updatePermissionProvider(0, { value: 'google' });
+
+      expect(component.permissionsDataSource.data[0].principal_type).toBe('user');
     });
   });
 });
