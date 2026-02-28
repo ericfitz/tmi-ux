@@ -192,7 +192,13 @@ export class NotePageComponent implements OnInit, OnDestroy, AfterViewChecked {
             return;
           }
 
-          this.note = note;
+          // Merge with cached note to ensure server-managed fields (created_at,
+          // modified_at) are present even if the individual note endpoint omits them.
+          this.note = {
+            ...note,
+            created_at: note.created_at || cachedNote?.created_at || '',
+            modified_at: note.modified_at || cachedNote?.modified_at || '',
+          };
           this.initializeAfterNoteLoaded();
         },
         error: () => {

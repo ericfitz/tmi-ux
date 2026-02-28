@@ -171,7 +171,7 @@ describe('NotePageComponent', () => {
       expect(component.threatModelId).toBe('tm-1');
       expect(component.noteId).toBe('note-1');
       expect(component.threatModel).toBe(mockThreatModel);
-      expect(component.note).toBe(mockNote);
+      expect(component.note).toEqual(mockNote);
     });
 
     it('should navigate to dashboard if threat model is not found', () => {
@@ -192,6 +192,38 @@ describe('NotePageComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/tm', 'tm-1'], {
         queryParams: { error: 'note_not_found' },
       });
+    });
+
+    it('should use cached note timestamps when API response omits them', () => {
+      const noteWithoutTimestamps = {
+        id: 'note-1',
+        name: 'Test Note',
+        content: '# Test Content\n\nSome markdown content.',
+        description: 'Test description',
+        created_at: '',
+        modified_at: '',
+        metadata: [],
+      };
+      threatModelService.getNoteById.mockReturnValue(of(noteWithoutTimestamps));
+
+      component.ngOnInit();
+
+      expect(component.note?.created_at).toBe('2024-01-01T00:00:00Z');
+      expect(component.note?.modified_at).toBe('2024-01-01T00:00:00Z');
+    });
+
+    it('should prefer API timestamps over cached timestamps', () => {
+      const noteWithTimestamps = {
+        ...mockNote,
+        created_at: '2025-06-01T12:00:00Z',
+        modified_at: '2025-06-02T12:00:00Z',
+      };
+      threatModelService.getNoteById.mockReturnValue(of(noteWithTimestamps));
+
+      component.ngOnInit();
+
+      expect(component.note?.created_at).toBe('2025-06-01T12:00:00Z');
+      expect(component.note?.modified_at).toBe('2025-06-02T12:00:00Z');
     });
 
     it('should subscribe to canEdit$ and update form editability', () => {
