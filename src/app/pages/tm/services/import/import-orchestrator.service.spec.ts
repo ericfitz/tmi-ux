@@ -446,7 +446,6 @@ describe('ImportOrchestratorService', () => {
       expect(payload['cells']).toEqual([]);
     });
 
-
     it('should report success even when updateDiagram fails (silent data loss)', async () => {
       // This test documents a known issue: cells are silently lost when updateDiagram fails
       mockFieldFilter.filterDiagram.mockReturnValue({
