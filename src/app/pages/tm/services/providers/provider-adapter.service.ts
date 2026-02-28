@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { OAuthProviderInfo } from '@app/auth/models/auth.models';
 import { PrincipalType } from '../../models/threat-model.model';
 
 /**
@@ -129,6 +130,23 @@ export class ProviderAdapterService {
     }
     // If no match found, return as-is
     return provider;
+  }
+
+  /**
+   * Get built-in pseudo-providers as OAuthProviderInfo-compatible objects.
+   * These are not real OAuth providers but appear in the permissions UI
+   * for managing provider-independent group permissions (e.g., TMI).
+   * @returns Array of OAuthProviderInfo objects for built-in providers
+   */
+  getBuiltInProviders(): OAuthProviderInfo[] {
+    return Object.entries(this.providerRules).map(([id, rule]) => ({
+      id,
+      name: rule.displayName || id,
+      icon: '',
+      auth_url: '',
+      redirect_uri: '',
+      client_id: '',
+    }));
   }
 
   /**

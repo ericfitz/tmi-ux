@@ -228,6 +228,38 @@ describe('ProviderAdapterService', () => {
     });
   });
 
+  describe('getBuiltInProviders()', () => {
+    it('should return TMI as a built-in provider', () => {
+      const providers = service.getBuiltInProviders();
+
+      expect(providers).toHaveLength(1);
+      expect(providers[0].id).toBe('tmi');
+      expect(providers[0].name).toBe('TMI');
+    });
+
+    it('should return OAuthProviderInfo-compatible objects', () => {
+      const providers = service.getBuiltInProviders();
+
+      for (const provider of providers) {
+        expect(provider).toHaveProperty('id');
+        expect(provider).toHaveProperty('name');
+        expect(provider).toHaveProperty('icon');
+        expect(provider).toHaveProperty('auth_url');
+        expect(provider).toHaveProperty('redirect_uri');
+        expect(provider).toHaveProperty('client_id');
+      }
+    });
+
+    it('should set empty strings for OAuth-specific fields', () => {
+      const providers = service.getBuiltInProviders();
+      const tmi = providers.find(p => p.id === 'tmi');
+
+      expect(tmi?.auth_url).toBe('');
+      expect(tmi?.redirect_uri).toBe('');
+      expect(tmi?.client_id).toBe('');
+    });
+  });
+
   describe('Provider Rule Integration', () => {
     it('should consistently handle tmi provider across all methods', () => {
       // tmi provider rules
