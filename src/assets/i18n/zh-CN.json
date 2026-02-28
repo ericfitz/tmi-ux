@@ -1080,6 +1080,8 @@
   },
   "threatEditor": {
     "createNewThreat": "创建新威胁",
+    "cvssVectorPlaceholder": "例如，CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cweIdPlaceholder": "输入 CWE ID（例如，CWE-79）",
     "notAssociatedWithAsset": "未关联资产",
     "notAssociatedWithCell": "未关联单元格",
     "notAssociatedWithDiagram": "未关联图表",

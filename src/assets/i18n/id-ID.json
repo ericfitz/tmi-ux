@@ -1080,6 +1080,8 @@
   },
   "threatEditor": {
     "createNewThreat": "Buat Ancaman Baru",
+    "cvssVectorPlaceholder": "mis., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cweIdPlaceholder": "Masukkan ID CWE (mis., CWE-79)",
     "notAssociatedWithAsset": "Tidak terkait dengan aset",
     "notAssociatedWithCell": "Tidak Terkait dengan Sel",
     "notAssociatedWithDiagram": "Tidak Terkait dengan Diagram",

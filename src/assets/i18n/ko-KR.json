@@ -1080,6 +1080,8 @@
   },
   "threatEditor": {
     "createNewThreat": "새 위협 생성",
+    "cvssVectorPlaceholder": "예: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cweIdPlaceholder": "CWE ID 입력 (예: CWE-79)",
     "notAssociatedWithAsset": "자산과 연결되지 않음",
     "notAssociatedWithCell": "셀과 연결되지 않음",
     "notAssociatedWithDiagram": "다이어그램과 연결되지 않음",

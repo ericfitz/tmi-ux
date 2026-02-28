@@ -1080,6 +1080,8 @@
   },
   "threatEditor": {
     "createNewThreat": "إنشاء تهديد جديد",
+    "cvssVectorPlaceholder": "مثال، CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cweIdPlaceholder": "أدخل معرف CWE (مثال، CWE-79)",
     "notAssociatedWithAsset": "غير مرتبط بأصل",
     "notAssociatedWithCell": "غير مرتبط بخلية",
     "notAssociatedWithDiagram": "غير مرتبط بمخطط",

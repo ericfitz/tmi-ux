@@ -6,6 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent } from '@angular/material/chips';
 import { identity, MonoTypeOperatorFunction, Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
 
@@ -23,7 +25,7 @@ import { ThreatModelService } from '../../services/threat-model.service';
 import { ThreatModelAuthorizationService } from '../../services/threat-model-authorization.service';
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
-import { Threat, ThreatModel } from '../../models/threat-model.model';
+import { CVSSScore, Threat, ThreatModel } from '../../models/threat-model.model';
 import { FrameworkModel } from '../../../../shared/models/framework.model';
 import {
   FieldOption,
@@ -70,6 +72,8 @@ interface ThreatFormValues {
   mitigation?: string;
   issue_uri?: string;
   include_in_report?: boolean;
+  cwe_id: string[];
+  cvss: CVSSScore[];
 }
 
 /**
@@ -127,6 +131,13 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   // Complete cell data (all cells from all diagrams) for filtering
   private allCellOptions: CellOption[] = [];
 
+  // Chip input configuration
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+
+  // CVSS add form scratch inputs
+  newCvssVector = '';
+  newCvssScore: number | null = null;
+
   // Special option for "Not associated" selection
   readonly NOT_ASSOCIATED_VALUE = '';
 
@@ -175,6 +186,8 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       mitigation: ['', Validators.maxLength(1024)],
       issue_uri: [''],
       include_in_report: [true],
+      cwe_id: [[]],
+      cvss: [[]],
     });
   }
 
@@ -497,6 +510,8 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       mitigation: this.threat.mitigation || '',
       issue_uri: this.initialIssueUriValue,
       include_in_report: this.threat.include_in_report,
+      cwe_id: this.threat.cwe_id || [],
+      cvss: this.threat.cvss || [],
     });
 
     // Mark form as pristine after initial population
@@ -573,6 +588,8 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       mitigation: formValues.mitigation || undefined,
       issue_uri: formValues.issue_uri || undefined,
       include_in_report: formValues.include_in_report,
+      cwe_id: formValues.cwe_id?.length ? formValues.cwe_id : undefined,
+      cvss: formValues.cvss?.length ? formValues.cvss : undefined,
     };
 
     this.threatModelService
@@ -731,6 +748,77 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   openUriInNewTab(uri: string): void {
     if (uri?.trim()) {
       window.open(uri, '_blank', 'noopener,noreferrer');
+    }
+  }
+
+  /**
+   * Add a CWE ID chip.
+   * Normalizes input to "CWE-" prefix format.
+   */
+  addCweId(event: MatChipInputEvent): void {
+    const raw = (event.value || '').trim();
+    if (!raw) {
+      event.chipInput.clear();
+      return;
+    }
+
+    // Normalize: accept "79", "CWE79", "CWE-79", "cwe-79" -> "CWE-79"
+    const stripped = raw.toUpperCase().replace(/^CWE-?/, '');
+    const normalized = `CWE-${stripped}`;
+
+    const current = this.threatForm.get('cwe_id')?.value as string[];
+    if (!current.includes(normalized)) {
+      this.threatForm.patchValue({ cwe_id: [...current, normalized] });
+      this.threatForm.markAsDirty();
+    }
+
+    event.chipInput.clear();
+  }
+
+  /**
+   * Remove a CWE ID chip
+   */
+  removeCweId(cweId: string): void {
+    const current = this.threatForm.get('cwe_id')?.value as string[];
+    const index = current.indexOf(cweId);
+    if (index >= 0) {
+      const updated = [...current];
+      updated.splice(index, 1);
+      this.threatForm.patchValue({ cwe_id: updated });
+      this.threatForm.markAsDirty();
+    }
+  }
+
+  /**
+   * Add a CVSS vector/score pair
+   */
+  addCvssEntry(): void {
+    const vector = this.newCvssVector.trim();
+    const score = this.newCvssScore;
+
+    if (!vector || score === null || score === undefined) return;
+    if (score < 0 || score > 10) return;
+
+    const current = this.threatForm.get('cvss')?.value as CVSSScore[];
+    if (current.some(entry => entry.vector === vector)) return;
+
+    this.threatForm.patchValue({ cvss: [...current, { vector, score }] });
+    this.threatForm.markAsDirty();
+
+    this.newCvssVector = '';
+    this.newCvssScore = null;
+  }
+
+  /**
+   * Remove a CVSS entry by index
+   */
+  removeCvssEntry(index: number): void {
+    const current = this.threatForm.get('cvss')?.value as CVSSScore[];
+    if (index >= 0 && index < current.length) {
+      const updated = [...current];
+      updated.splice(index, 1);
+      this.threatForm.patchValue({ cvss: updated });
+      this.threatForm.markAsDirty();
     }
   }
 

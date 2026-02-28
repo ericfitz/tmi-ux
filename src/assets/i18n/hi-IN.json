@@ -1080,6 +1080,8 @@
   },
   "threatEditor": {
     "createNewThreat": "नया खतरा बनाएं",
+    "cvssVectorPlaceholder": "उदा., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cweIdPlaceholder": "CWE ID दर्ज करें (उदा., CWE-79)",
     "notAssociatedWithAsset": "किसी एसेट से संबद्ध नहीं",
     "notAssociatedWithCell": "किसी सेल से संबद्ध नहीं",
     "notAssociatedWithDiagram": "किसी डायग्राम से संबद्ध नहीं",

@@ -1080,6 +1080,8 @@
   },
   "threatEditor": {
     "createNewThreat": "新しい脅威を作成",
+    "cvssVectorPlaceholder": "例: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cweIdPlaceholder": "CWE IDを入力（例: CWE-79）",
     "notAssociatedWithAsset": "アセットに関連付けられていません",
     "notAssociatedWithCell": "セルに関連付けられていません",
     "notAssociatedWithDiagram": "ダイアグラムに関連付けられていません",

@@ -1080,6 +1080,8 @@
   },
   "threatEditor": {
     "createNewThreat": "Создать новую угрозу",
+    "cvssVectorPlaceholder": "напр., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cweIdPlaceholder": "Введите идентификатор CWE (напр., CWE-79)",
     "notAssociatedWithAsset": "Не связано с активом",
     "notAssociatedWithCell": "Не связано с ячейкой",
     "notAssociatedWithDiagram": "Не связано с диаграммой",

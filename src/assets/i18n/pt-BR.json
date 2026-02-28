@@ -1080,6 +1080,8 @@
   },
   "threatEditor": {
     "createNewThreat": "Criar Nova Ameaca",
+    "cvssVectorPlaceholder": "ex., CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cweIdPlaceholder": "Insira o ID CWE (ex., CWE-79)",
     "notAssociatedWithAsset": "Nao associado a um ativo",
     "notAssociatedWithCell": "Nao Associado a uma Celula",
     "notAssociatedWithDiagram": "Nao Associado a um Diagrama",

@@ -7,8 +7,10 @@ import { vi, expect, beforeEach, describe, it } from 'vitest';
 import { of, BehaviorSubject } from 'rxjs';
 import { FormBuilder } from '@angular/forms';
 
+import { MatChipInputEvent } from '@angular/material/chips';
+
 import { ThreatPageComponent } from './threat-page.component';
-import { ThreatModel, Threat } from '../../models/threat-model.model';
+import { CVSSScore, ThreatModel, Threat } from '../../models/threat-model.model';
 import {
   createTypedMockLoggerService,
   createTypedMockRouter,
@@ -91,6 +93,8 @@ describe('ThreatPageComponent', () => {
     created_at: '2024-01-01T00:00:00Z',
     modified_at: '2024-01-01T00:00:00Z',
     metadata: [],
+    cwe_id: ['CWE-79', 'CWE-89'],
+    cvss: [{ vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H', score: 9.8 }],
   };
 
   const mockThreatModel: ThreatModel = {
@@ -365,6 +369,275 @@ describe('ThreatPageComponent', () => {
       component.initialIssueUriValue = 'https://example.com';
       component.isEditingIssueUri = true;
       expect(component.shouldShowIssueUriHyperlink()).toBe(false);
+    });
+  });
+
+  describe('CWE ID management', () => {
+    beforeEach(() => {
+      component.ngOnInit();
+    });
+
+    it('should populate CWE IDs from threat data', () => {
+      expect(component.threatForm.get('cwe_id')?.value).toEqual(['CWE-79', 'CWE-89']);
+    });
+
+    it('should add a CWE ID via chip input', () => {
+      const mockEvent = {
+        value: 'CWE-22',
+        chipInput: { clear: vi.fn() },
+      } as unknown as MatChipInputEvent;
+
+      component.addCweId(mockEvent);
+
+      expect(component.threatForm.get('cwe_id')?.value).toContain('CWE-22');
+      expect(mockEvent.chipInput.clear).toHaveBeenCalled();
+    });
+
+    it('should normalize numeric-only CWE ID input', () => {
+      const mockEvent = {
+        value: '22',
+        chipInput: { clear: vi.fn() },
+      } as unknown as MatChipInputEvent;
+
+      component.addCweId(mockEvent);
+
+      expect(component.threatForm.get('cwe_id')?.value).toContain('CWE-22');
+    });
+
+    it('should normalize CWE ID without hyphen', () => {
+      const mockEvent = {
+        value: 'CWE22',
+        chipInput: { clear: vi.fn() },
+      } as unknown as MatChipInputEvent;
+
+      component.addCweId(mockEvent);
+
+      expect(component.threatForm.get('cwe_id')?.value).toContain('CWE-22');
+    });
+
+    it('should not add duplicate CWE IDs', () => {
+      const mockEvent = {
+        value: 'CWE-79',
+        chipInput: { clear: vi.fn() },
+      } as unknown as MatChipInputEvent;
+
+      component.addCweId(mockEvent);
+
+      const values = component.threatForm.get('cwe_id')?.value as string[];
+      expect(values.filter(v => v === 'CWE-79').length).toBe(1);
+    });
+
+    it('should clear input even when adding duplicate', () => {
+      const mockEvent = {
+        value: 'CWE-79',
+        chipInput: { clear: vi.fn() },
+      } as unknown as MatChipInputEvent;
+
+      component.addCweId(mockEvent);
+
+      expect(mockEvent.chipInput.clear).toHaveBeenCalled();
+    });
+
+    it('should handle empty input gracefully', () => {
+      const mockEvent = {
+        value: '',
+        chipInput: { clear: vi.fn() },
+      } as unknown as MatChipInputEvent;
+
+      component.addCweId(mockEvent);
+
+      expect(component.threatForm.get('cwe_id')?.value).toEqual(['CWE-79', 'CWE-89']);
+      expect(mockEvent.chipInput.clear).toHaveBeenCalled();
+    });
+
+    it('should remove a CWE ID', () => {
+      component.removeCweId('CWE-79');
+
+      expect(component.threatForm.get('cwe_id')?.value).not.toContain('CWE-79');
+      expect(component.threatForm.get('cwe_id')?.value).toContain('CWE-89');
+    });
+
+    it('should mark form dirty when adding a CWE ID', () => {
+      component.threatForm.markAsPristine();
+      const mockEvent = {
+        value: 'CWE-22',
+        chipInput: { clear: vi.fn() },
+      } as unknown as MatChipInputEvent;
+
+      component.addCweId(mockEvent);
+
+      expect(component.threatForm.dirty).toBe(true);
+    });
+
+    it('should mark form dirty when removing a CWE ID', () => {
+      component.threatForm.markAsPristine();
+      component.removeCweId('CWE-79');
+
+      expect(component.threatForm.dirty).toBe(true);
+    });
+  });
+
+  describe('CVSS entry management', () => {
+    beforeEach(() => {
+      component.ngOnInit();
+    });
+
+    it('should populate CVSS entries from threat data', () => {
+      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
+      expect(cvssValues).toHaveLength(1);
+      expect(cvssValues[0].vector).toBe('CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H');
+      expect(cvssValues[0].score).toBe(9.8);
+    });
+
+    it('should add a CVSS entry', () => {
+      component.newCvssVector = 'CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:L/I:L/A:L';
+      component.newCvssScore = 3.7;
+
+      component.addCvssEntry();
+
+      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
+      expect(cvssValues).toHaveLength(2);
+      expect(cvssValues[1].vector).toBe('CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:L/I:L/A:L');
+      expect(cvssValues[1].score).toBe(3.7);
+    });
+
+    it('should clear scratch inputs after adding', () => {
+      component.newCvssVector = 'CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:L/I:L/A:L';
+      component.newCvssScore = 3.7;
+
+      component.addCvssEntry();
+
+      expect(component.newCvssVector).toBe('');
+      expect(component.newCvssScore).toBeNull();
+    });
+
+    it('should not add CVSS entry with empty vector', () => {
+      component.newCvssVector = '';
+      component.newCvssScore = 5.0;
+
+      component.addCvssEntry();
+
+      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
+      expect(cvssValues).toHaveLength(1);
+    });
+
+    it('should not add CVSS entry with null score', () => {
+      component.newCvssVector = 'CVSS:3.1/AV:N/AC:L';
+      component.newCvssScore = null;
+
+      component.addCvssEntry();
+
+      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
+      expect(cvssValues).toHaveLength(1);
+    });
+
+    it('should not add CVSS entry with score above 10', () => {
+      component.newCvssVector = 'CVSS:3.1/AV:N/AC:L';
+      component.newCvssScore = 11.0;
+
+      component.addCvssEntry();
+
+      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
+      expect(cvssValues).toHaveLength(1);
+    });
+
+    it('should not add CVSS entry with negative score', () => {
+      component.newCvssVector = 'CVSS:3.1/AV:N/AC:L';
+      component.newCvssScore = -1;
+
+      component.addCvssEntry();
+
+      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
+      expect(cvssValues).toHaveLength(1);
+    });
+
+    it('should not add duplicate CVSS vector', () => {
+      component.newCvssVector = 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H';
+      component.newCvssScore = 9.8;
+
+      component.addCvssEntry();
+
+      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
+      expect(cvssValues).toHaveLength(1);
+    });
+
+    it('should remove a CVSS entry by index', () => {
+      component.removeCvssEntry(0);
+
+      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
+      expect(cvssValues).toHaveLength(0);
+    });
+
+    it('should not remove with invalid index', () => {
+      component.removeCvssEntry(5);
+
+      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
+      expect(cvssValues).toHaveLength(1);
+    });
+
+    it('should mark form dirty when adding a CVSS entry', () => {
+      component.threatForm.markAsPristine();
+      component.newCvssVector = 'CVSS:4.0/AV:N';
+      component.newCvssScore = 5.0;
+
+      component.addCvssEntry();
+
+      expect(component.threatForm.dirty).toBe(true);
+    });
+
+    it('should mark form dirty when removing a CVSS entry', () => {
+      component.threatForm.markAsPristine();
+      component.removeCvssEntry(0);
+
+      expect(component.threatForm.dirty).toBe(true);
+    });
+  });
+
+  describe('save with CWE and CVSS', () => {
+    beforeEach(() => {
+      component.ngOnInit();
+    });
+
+    it('should include cwe_id and cvss in save payload', () => {
+      component.threatForm.markAsDirty();
+      component.save();
+
+      expect(threatModelService.updateThreat).toHaveBeenCalledWith(
+        'tm-1',
+        'threat-1',
+        expect.objectContaining({
+          cwe_id: ['CWE-79', 'CWE-89'],
+          cvss: [{ vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H', score: 9.8 }],
+        }),
+      );
+    });
+
+    it('should send undefined for empty cwe_id array', () => {
+      component.threatForm.patchValue({ cwe_id: [] });
+      component.threatForm.markAsDirty();
+      component.save();
+
+      expect(threatModelService.updateThreat).toHaveBeenCalledWith(
+        'tm-1',
+        'threat-1',
+        expect.objectContaining({
+          cwe_id: undefined,
+        }),
+      );
+    });
+
+    it('should send undefined for empty cvss array', () => {
+      component.threatForm.patchValue({ cvss: [] });
+      component.threatForm.markAsDirty();
+      component.save();
+
+      expect(threatModelService.updateThreat).toHaveBeenCalledWith(
+        'tm-1',
+        'threat-1',
+        expect.objectContaining({
+          cvss: undefined,
+        }),
+      );
     });
   });
 

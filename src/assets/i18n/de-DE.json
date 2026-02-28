@@ -1080,6 +1080,8 @@
   },
   "threatEditor": {
     "createNewThreat": "Neue Bedrohung erstellen",
+    "cvssVectorPlaceholder": "z.B. CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cweIdPlaceholder": "CWE-ID eingeben (z.B. CWE-79)",
     "notAssociatedWithAsset": "Nicht mit einem Vermögenswert verknüpft",
     "notAssociatedWithCell": "Nicht mit einer Zelle verknüpft",
     "notAssociatedWithDiagram": "Nicht mit einem Diagramm verknüpft",

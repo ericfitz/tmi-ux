@@ -160,6 +160,33 @@
           </mat-form-field>
         </div>
 
+        <!-- CWE IDs chip input -->
+        <div class="chip-input-section">
+          <mat-label class="chip-label">{{ 'threatEditor.cweIds' | transloco }}</mat-label>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-chip-grid #cweChipGrid>
+              @for (cweId of threatForm.get('cwe_id')?.value; track cweId) {
+                <mat-chip-row (removed)="canEdit ? removeCweId(cweId) : null" [removable]="canEdit">
+                  {{ cweId }}
+                  @if (canEdit) {
+                    <button matChipRemove [attr.aria-label]="'Remove ' + cweId">
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  }
+                </mat-chip-row>
+              }
+            </mat-chip-grid>
+            @if (canEdit) {
+              <input
+                [placeholder]="'threatEditor.cweIdPlaceholder' | transloco"
+                [matChipInputFor]="cweChipGrid"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="addCweId($event)"
+              />
+            }
+          </mat-form-field>
+        </div>
+
         <!-- Severity, Score, Priority row -->
         <div class="form-field-row three-columns">
           <!-- Severity field -->
@@ -193,6 +220,64 @@
               }
             </mat-select>
           </mat-form-field>
+        </div>
+
+        <!-- CVSS Entries -->
+        <div class="cvss-section">
+          <mat-label class="section-label">{{ 'threatEditor.cvss' | transloco }}</mat-label>
+
+          @if (threatForm.get('cvss')?.value?.length > 0) {
+            <mat-chip-set class="cvss-chip-set">
+              @for (entry of threatForm.get('cvss')?.value; track entry.vector; let i = $index) {
+                <mat-chip [removable]="canEdit" (removed)="removeCvssEntry(i)">
+                  {{ entry.vector }} ({{ entry.score }})
+                  @if (canEdit) {
+                    <button matChipRemove [attr.aria-label]="'Remove CVSS entry'">
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  }
+                </mat-chip>
+              }
+            </mat-chip-set>
+          }
+
+          @if (canEdit) {
+            <div class="cvss-add-row">
+              <mat-form-field appearance="outline" class="cvss-vector-field" floatLabel="always">
+                <mat-label>{{ 'threatEditor.cvssVector' | transloco }}</mat-label>
+                <input
+                  matInput
+                  [(ngModel)]="newCvssVector"
+                  [ngModelOptions]="{ standalone: true }"
+                  [placeholder]="'threatEditor.cvssVectorPlaceholder' | transloco"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="cvss-score-field" floatLabel="always">
+                <mat-label>{{ 'common.score' | transloco }}</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  [(ngModel)]="newCvssScore"
+                  [ngModelOptions]="{ standalone: true }"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                />
+              </mat-form-field>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="addCvssEntry()"
+                [disabled]="
+                  !newCvssVector.trim() || newCvssScore === null || newCvssScore === undefined
+                "
+                [matTooltip]="'threatEditor.addCvssEntry' | transloco"
+                [attr.aria-label]="'threatEditor.addCvssEntry' | transloco"
+              >
+                <mat-icon>add_circle</mat-icon>
+              </button>
+            </div>
+          }
         </div>
 
         <!-- Issue URI field -->

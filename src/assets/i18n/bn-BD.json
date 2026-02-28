@@ -1080,6 +1080,8 @@
   },
   "threatEditor": {
     "createNewThreat": "নতুন হুমকি তৈরি করুন",
+    "cvssVectorPlaceholder": "যেমন, CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cweIdPlaceholder": "CWE আইডি লিখুন (যেমন, CWE-79)",
     "notAssociatedWithAsset": "কোনো অ্যাসেটের সাথে সম্পর্কিত নয়",
     "notAssociatedWithCell": "কোনো সেলের সাথে সম্পর্কিত নয়",
     "notAssociatedWithDiagram": "কোনো ডায়াগ্রামের সাথে সম্পর্কিত নয়",

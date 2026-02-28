@@ -1080,6 +1080,8 @@
   },
   "threatEditor": {
     "createNewThreat": "צור איום חדש",
+    "cvssVectorPlaceholder": "למשל, CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cweIdPlaceholder": "הזן מזהה CWE (למשל, CWE-79)",
     "notAssociatedWithAsset": "לא משויך לנכס",
     "notAssociatedWithCell": "לא משויך לתא",
     "notAssociatedWithDiagram": "לא משויך לדיאגרמה",

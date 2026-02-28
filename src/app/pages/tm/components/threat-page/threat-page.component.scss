@@ -189,6 +189,63 @@
   }
 }
 
+// CWE chip input section
+.chip-input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+
+  .chip-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--theme-text-primary);
+    margin-bottom: 4px;
+  }
+
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 0;
+  }
+}
+
+// CVSS section
+.cvss-section {
+  margin-top: 4px;
+  margin-bottom: 4px;
+
+  .section-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--theme-text-primary);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .cvss-chip-set {
+    margin-bottom: 8px;
+  }
+}
+
+.cvss-add-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  .cvss-vector-field {
+    flex: 2;
+  }
+
+  .cvss-score-field {
+    flex: 0 0 120px;
+  }
+
+  button {
+    margin-top: 4px;
+  }
+}
+
 // Responsive styles
 @media (width <= 800px) {
   .threat-page-container {
@@ -223,6 +280,20 @@
   .form-field-row.three-columns,
   .form-field-row.two-columns {
     grid-template-columns: 1fr;
+  }
+
+  .cvss-add-row {
+    flex-direction: column;
+    align-items: stretch;
+
+    .cvss-vector-field,
+    .cvss-score-field {
+      flex: 1;
+    }
+
+    button {
+      align-self: flex-end;
+    }
   }
 
   .page-title {
