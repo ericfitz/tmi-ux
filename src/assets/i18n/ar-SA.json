@@ -485,6 +485,7 @@
     "confirm": "تأكيد",
     "confirmDelete": "هل أنت متأكد أنك تريد حذف {{item}} \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
     "confirmDeleteMessage": "هل أنت متأكد أنك تريد حذف {{objectType}} \"{{name}}\"؟",
+    "copiedToClipboard": "تم النسخ إلى الحافظة",
     "copy": "نسخ",
     "copyToClipboard": "نسخ إلى الحافظة",
     "create": "إنشاء",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} حرف",
     "content": "المحتوى",
     "contentPlaceholder": "أدخل محتوى الملاحظة بتنسيق markdown. يدعم GitHub Flavored Markdown ومخططات Mermaid.",
-    "copiedToClipboard": "تم النسخ إلى الحافظة",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "وصف اختياري",
     "editMode": "وضع التحرير",
     "errors": {

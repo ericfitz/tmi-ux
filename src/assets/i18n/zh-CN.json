@@ -485,6 +485,7 @@
     "confirm": "确认",
     "confirmDelete": "您确定要删除{{item}}\"{{name}}\"吗？此操作无法撤销。",
     "confirmDeleteMessage": "您确定要删除{{objectType}}\"{{name}}\"吗？",
+    "copiedToClipboard": "已复制到剪贴板",
     "copy": "复制",
     "copyToClipboard": "复制到剪贴板",
     "create": "创建",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} 个字符",
     "content": "内容",
     "contentPlaceholder": "以 markdown 格式输入笔记内容。支持 GitHub Flavored Markdown 和 Mermaid 图表。",
-    "copiedToClipboard": "已复制到剪贴板",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "可选描述",
     "editMode": "编辑模式",
     "errors": {

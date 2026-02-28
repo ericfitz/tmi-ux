@@ -485,6 +485,7 @@
     "confirm": "확인",
     "confirmDelete": "{{item}} \"{{name}}\"을(를) 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
     "confirmDeleteMessage": "\"{{name}}\" {{objectType}}을(를) 삭제하시겠습니까?",
+    "copiedToClipboard": "클립보드에 복사됨",
     "copy": "복사",
     "copyToClipboard": "클립보드에 복사",
     "create": "생성",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} 자",
     "content": "내용",
     "contentPlaceholder": "마크다운 형식으로 노트 내용을 입력하세요. GitHub Flavored Markdown과 Mermaid 다이어그램을 지원합니다.",
-    "copiedToClipboard": "클립보드에 복사됨",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "설명 (선택사항)",
     "editMode": "편집 모드",
     "errors": {

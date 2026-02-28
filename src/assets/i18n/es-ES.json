@@ -485,6 +485,7 @@
     "confirm": "Confirmar",
     "confirmDelete": "¿Está seguro de que desea eliminar {{item}} \"{{name}}\"? Esta acción no se puede deshacer.",
     "confirmDeleteMessage": "¿Está seguro de que desea eliminar {{objectType}} \"{{name}}\"?",
+    "copiedToClipboard": "Copiado al portapapeles",
     "copy": "Copiar",
     "copyToClipboard": "Copiar al Portapapeles",
     "create": "Crear",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} caracteres",
     "content": "Contenido",
     "contentPlaceholder": "Introduzca el contenido de la nota en formato markdown. Admite GitHub Flavored Markdown y diagramas Mermaid.",
-    "copiedToClipboard": "Copiado al portapapeles",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "Descripción opcional",
     "editMode": "Modo Edición",
     "errors": {

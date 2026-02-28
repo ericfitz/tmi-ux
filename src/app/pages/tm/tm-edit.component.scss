@@ -231,132 +231,67 @@ mat-card-header {
   width: 100%;
 }
 
-// Info section styles
-.info-section {
-  // Remove background color to inherit card background for consistency
-  border-radius: 8px;
-  padding: 8px 0; // Remove left/right padding to align with form fields below
+// Two-column details layout: pickers (left 2/3) + metadata (right 1/3)
+.details-columns {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  padding: 8px 0;
   margin-bottom: 12px;
   font-family: var(--font-family-primary);
-}
 
-.info-field {
-  display: flex;
-  margin-bottom: 6px;
-  font-size: 14px;
-  align-items: center;
-  min-width: 0;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  // No special styling needed for individual info-field elements anymore
-}
-
-.info-row {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 8px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  .info-field {
-    width: 50%;
-    margin-bottom: 0;
+  @media (width < 768px) {
+    grid-template-columns: 1fr;
   }
 }
 
-.info-row-three-col {
-  .info-field {
-    width: 33.33%;
-    margin-bottom: 0;
-  }
-}
-
-.info-row-status {
-  .info-field:first-child {
-    width: 66.67%;
-    flex-direction: row;
-    align-items: center;
-    padding-right: 16px;
-  }
-
-  .info-field:last-child {
-    width: 33.33%;
-  }
-}
-
-// Status dropdown styling - uses standard Material form field dimensions
-// Top margin to vertically center-align with "Status Last Updated" label
-.status-dropdown {
-  width: 100%;
-  margin-left: 0;
-  margin-right: 0;
-  margin-top: 8px;
-}
-
-.info-row-security-reviewer {
-  .info-field:first-child {
-    width: 66.67%;
-    flex-direction: row;
-    align-items: center;
-  }
-}
-
-.info-row-project {
-  .info-field:first-child {
-    width: 66.67%;
-    flex-direction: row;
-    align-items: center;
-  }
-}
-
-.security-reviewer-dropdown {
-  width: 100%;
-  margin-left: 0;
-  margin-right: 0;
-  margin-top: 8px;
-}
-
-.status-chips-container {
+// Left column: interactive pickers
+.details-pickers {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  flex: 1;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+// Right column: static metadata
+.details-metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+// Individual metadata field (label + value on one line)
+.metadata-field {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
   min-width: 0;
+  gap: 4px;
+}
 
-  mat-chip-grid {
-    width: 100%;
-  }
+// Read-only field display in pickers column (non-edit mode)
+.readonly-field {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  min-height: 40px;
+  gap: 8px;
+}
 
-  input {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    border: 1px solid var(--theme-divider);
-    border-radius: 4px;
-    padding: 6px 8px;
-    height: 32px;
-    min-height: 32px;
-    max-height: 32px;
-    line-height: 1;
-    font-size: 14px;
-    font-family: var(--font-family-primary);
-    outline: none;
-    box-sizing: border-box;
+// Compact copy button for the ID field
+.copy-id-button {
+  flex-shrink: 0;
+}
 
-    &:focus {
-      border-color: var(--theme-primary);
-    }
-
-    &::placeholder {
-      color: var(--theme-text-secondary);
-      opacity: 0.7;
-    }
-  }
+// Truncate long IDs with ellipsis
+.metadata-id {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .info-label {

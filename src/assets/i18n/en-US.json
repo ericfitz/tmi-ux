@@ -503,6 +503,7 @@
     "confirm": "Confirm",
     "confirmDelete": "Are you sure you want to delete the {{item}} \"{{name}}\"? This action cannot be undone.",
     "confirmDeleteMessage": "Are you sure you want to delete the {{objectType}} \"{{name}}\"?",
+    "copiedToClipboard": "Copied to clipboard",
     "copy": "Copy",
     "copyToClipboard": "Copy to Clipboard",
     "create": "Create",
@@ -860,7 +861,7 @@
     "characterCount": "{{current}} / {{max}} characters",
     "content": "Content",
     "contentPlaceholder": "Enter note content in markdown format. Supports GitHub Flavored Markdown and Mermaid diagrams.",
-    "copiedToClipboard": "Copied to clipboard",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "Optional description",
     "editMode": "Edit Mode",
     "errors": {

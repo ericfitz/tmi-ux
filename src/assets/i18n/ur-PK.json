@@ -485,6 +485,7 @@
     "confirm": "تصدیق کریں",
     "confirmDelete": "کیا آپ واقعی {{item}} \"{{name}}\" کو حذف کرنا چاہتے ہیں؟ یہ عمل واپس نہیں ہو سکتا۔",
     "confirmDeleteMessage": "کیا آپ واقعی {{objectType}} \"{{name}}\" کو حذف کرنا چاہتے ہیں؟",
+    "copiedToClipboard": "کلپ بورڈ پر کاپی ہو گیا",
     "copy": "کاپی کریں",
     "copyToClipboard": "کلپ بورڈ پر کاپی کریں",
     "create": "بنائیں",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} حروف",
     "content": "مواد",
     "contentPlaceholder": "مارک ڈاؤن فارمیٹ میں نوٹ کا مواد درج کریں۔ GitHub Flavored Markdown اور Mermaid ڈایاگرامز کی حمایت کرتا ہے۔",
-    "copiedToClipboard": "کلپ بورڈ پر کاپی ہو گیا",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "اختیاری تفصیل",
     "editMode": "ترمیم موڈ",
     "errors": {

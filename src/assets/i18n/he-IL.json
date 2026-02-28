@@ -485,6 +485,7 @@
     "confirm": "אישור",
     "confirmDelete": "האם אתה בטוח שברצונך למחוק את {{item}} \"{{name}}\"? פעולה זו אינה ניתנת לביטול.",
     "confirmDeleteMessage": "האם אתה בטוח שברצונך למחוק את {{objectType}} \"{{name}}\"?",
+    "copiedToClipboard": "הועתק ללוח",
     "copy": "העתק",
     "copyToClipboard": "העתק ללוח",
     "create": "צור",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} תווים",
     "content": "תוכן",
     "contentPlaceholder": "הזן תוכן הערה בפורמט markdown. תומך ב-GitHub Flavored Markdown ודיאגרמות Mermaid.",
-    "copiedToClipboard": "הועתק ללוח",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "תיאור אופציונלי",
     "editMode": "מצב עריכה",
     "errors": {

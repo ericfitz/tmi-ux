@@ -485,6 +485,7 @@
     "confirm": "নিশ্চিত করুন",
     "confirmDelete": "আপনি কি নিশ্চিত যে আপনি {{item}} \"{{name}}\" মুছতে চান? এই ক্রিয়া পূর্বাবস্থায় ফেরানো যাবে না।",
     "confirmDeleteMessage": "আপনি কি নিশ্চিত যে আপনি {{objectType}} \"{{name}}\" মুছে ফেলতে চান?",
+    "copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে",
     "copy": "কপি",
     "copyToClipboard": "ক্লিপবোর্ডে কপি করুন",
     "create": "তৈরি করুন",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} অক্ষর",
     "content": "বিষয়বস্তু",
     "contentPlaceholder": "মার্কডাউন ফরম্যাটে নোটের বিষয়বস্তু লিখুন। GitHub Flavored Markdown এবং Mermaid ডায়াগ্রাম সমর্থিত।",
-    "copiedToClipboard": "ক্লিপবোর্ডে কপি করা হয়েছে",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "ঐচ্ছিক বিবরণ",
     "editMode": "সম্পাদনা মোড",
     "errors": {

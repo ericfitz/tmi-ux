@@ -485,6 +485,7 @@
     "confirm": "確認",
     "confirmDelete": "{{item}}「{{name}}」を削除してもよろしいですか？この操作は元に戻せません。",
     "confirmDeleteMessage": "{{objectType}}「{{name}}」を削除してもよろしいですか？",
+    "copiedToClipboard": "クリップボードにコピーしました",
     "copy": "コピー",
     "copyToClipboard": "クリップボードにコピー",
     "create": "作成",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} 文字",
     "content": "内容",
     "contentPlaceholder": "マークダウン形式でノートの内容を入力してください。GitHub Flavored MarkdownとMermaidダイアグラムに対応しています。",
-    "copiedToClipboard": "クリップボードにコピーしました",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "説明（任意）",
     "editMode": "編集モード",
     "errors": {

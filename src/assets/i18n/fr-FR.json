@@ -485,6 +485,7 @@
     "confirm": "Confirmer",
     "confirmDelete": "Etes-vous sur de vouloir supprimer {{item}} \"{{name}}\" ? Cette action est irreversible.",
     "confirmDeleteMessage": "Êtes-vous sûr de vouloir supprimer {{objectType}} « {{name}} » ?",
+    "copiedToClipboard": "Copie dans le presse-papiers",
     "copy": "Copier",
     "copyToClipboard": "Copier dans le Presse-papiers",
     "create": "Creer",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} caracteres",
     "content": "Contenu",
     "contentPlaceholder": "Entrez le contenu de la note au format markdown. Prend en charge GitHub Flavored Markdown et les diagrammes Mermaid.",
-    "copiedToClipboard": "Copie dans le presse-papiers",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "Description optionnelle",
     "editMode": "Mode edition",
     "errors": {

@@ -345,19 +345,31 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Copy text to clipboard
+   * Copy text to clipboard with snackbar feedback
    * @param text Text to copy
    */
   copyToClipboard(text: string): void {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        // Could add a snackbar notification here if desired
-        this.logger.info('Text copied to clipboard');
+        this.snackBar.open(
+          this.transloco.translate('common.copiedToClipboard'),
+          this.transloco.translate('common.close'),
+          { duration: 2000 },
+        );
       })
-      .catch(err => {
+      .catch((err: unknown) => {
         this.logger.error('Could not copy text: ', err);
       });
+  }
+
+  /**
+   * Copy the threat model ID to clipboard
+   */
+  copyThreatModelId(): void {
+    if (this.threatModel?.id) {
+      this.copyToClipboard(this.threatModel.id);
+    }
   }
 
   /**

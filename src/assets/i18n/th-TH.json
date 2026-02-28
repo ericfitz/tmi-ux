@@ -485,6 +485,7 @@
     "confirm": "ยืนยัน",
     "confirmDelete": "คุณแน่ใจหรือไม่ว่าต้องการลบ {{item}} \"{{name}}\"? การกระทำนี้ไม่สามารถย้อนกลับได้",
     "confirmDeleteMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบ{{objectType}} \"{{name}}\"?",
+    "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
     "copy": "คัดลอก",
     "copyToClipboard": "คัดลอกไปยังคลิปบอร์ด",
     "create": "สร้าง",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} ตัวอักษร",
     "content": "เนื้อหา",
     "contentPlaceholder": "ป้อนเนื้อหาหมายเหตุในรูปแบบ markdown รองรับ GitHub Flavored Markdown และแผนภาพ Mermaid",
-    "copiedToClipboard": "คัดลอกไปยังคลิปบอร์ดแล้ว",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "คำอธิบายเพิ่มเติม (ถ้ามี)",
     "editMode": "โหมดแก้ไข",
     "errors": {

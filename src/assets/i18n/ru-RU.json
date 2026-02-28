@@ -485,6 +485,7 @@
     "confirm": "Подтвердить",
     "confirmDelete": "Вы уверены, что хотите удалить {{item}} \"{{name}}\"? Это действие нельзя отменить.",
     "confirmDeleteMessage": "Вы уверены, что хотите удалить {{objectType}} \"{{name}}\"?",
+    "copiedToClipboard": "Скопировано в буфер обмена",
     "copy": "Копировать",
     "copyToClipboard": "Копировать в Буфер Обмена",
     "create": "Создать",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} символов",
     "content": "Содержимое",
     "contentPlaceholder": "Введите содержимое заметки в формате markdown. Поддерживается GitHub Flavored Markdown и диаграммы Mermaid.",
-    "copiedToClipboard": "Скопировано в буфер обмена",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "Необязательное описание",
     "editMode": "Режим редактирования",
     "errors": {

@@ -485,6 +485,7 @@
     "confirm": "पुष्टि करें",
     "confirmDelete": "क्या आप वाकई {{item}} \"{{name}}\" को हटाना चाहते हैं? यह कार्य पूर्ववत नहीं किया जा सकता।",
     "confirmDeleteMessage": "क्या आप वाकई {{objectType}} \"{{name}}\" को हटाना चाहते हैं?",
+    "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया",
     "copy": "कॉपी",
     "copyToClipboard": "क्लिपबोर्ड पर कॉपी करें",
     "create": "बनाएं",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} अक्षर",
     "content": "सामग्री",
     "contentPlaceholder": "मार्कडाउन प्रारूप में नोट सामग्री दर्ज करें। GitHub Flavored Markdown और Mermaid डायग्राम का समर्थन करता है।",
-    "copiedToClipboard": "क्लिपबोर्ड पर कॉपी किया गया",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "वैकल्पिक विवरण",
     "editMode": "संपादन मोड",
     "errors": {

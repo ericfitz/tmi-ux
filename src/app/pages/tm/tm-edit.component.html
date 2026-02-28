@@ -85,37 +85,14 @@
           </div>
         </mat-card-header>
         <mat-card-content>
-          <!-- Threat Model metadata section -->
-          <div class="info-section" [dir]="currentDirection">
-            <!-- First row: Last Modified, Created By, Created (only for existing models) -->
-            @if (threatModel && !isNewThreatModel) {
-              <div class="info-row info-row-three-col">
-                <div class="info-field">
-                  <span class="info-label">{{ 'common.lastModified' | transloco }}:</span>
-                  <span class="info-value">{{
-                    threatModel.modified_at | date: 'short' : undefined : currentLocale
-                  }}</span>
-                </div>
-                <div class="info-field">
-                  <span class="info-label">{{ 'threatModels.createdBy' | transloco }}:</span>
-                  <span class="info-value"
-                    ><app-user-display [user]="threatModel.created_by"
-                  /></span>
-                </div>
-                <div class="info-field">
-                  <span class="info-label">{{ 'threatModels.created' | transloco }}:</span>
-                  <span class="info-value">{{
-                    threatModel.created_at | date: 'short' : undefined : currentLocale
-                  }}</span>
-                </div>
-              </div>
-            }
-
-            <!-- Status row: Status dropdown and Status Last Updated (always visible) -->
-            <div class="info-row info-row-status" [formGroup]="threatModelForm">
-              <div class="info-field">
+          <!-- Two-column details: pickers (left 2/3) + metadata (right 1/3) -->
+          <div class="details-columns" [dir]="currentDirection">
+            <!-- Left column: interactive pickers -->
+            <div class="details-pickers">
+              <!-- Status -->
+              <div [formGroup]="threatModelForm">
                 @if (canEdit) {
-                  <mat-form-field appearance="outline" class="status-dropdown">
+                  <mat-form-field appearance="outline" class="full-width">
                     <mat-label>{{ 'common.status' | transloco }}</mat-label>
                     <mat-select formControlName="status">
                       <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
@@ -132,38 +109,26 @@
                     </mat-select>
                   </mat-form-field>
                 } @else {
-                  <span class="info-label">{{ 'common.status' | transloco }}:</span>
-                  @if (
-                    threatModelForm.get('status')?.value &&
-                    threatModelForm.get('status')?.value !== 'none'
-                  ) {
-                    <span class="info-value">{{
-                      'threatModels.status.' + threatModelForm.get('status')?.value | transloco
-                    }}</span>
-                  } @else {
-                    <span class="info-value">—</span>
-                  }
+                  <div class="readonly-field">
+                    <span class="info-label">{{ 'common.status' | transloco }}:</span>
+                    @if (
+                      threatModelForm.get('status')?.value &&
+                      threatModelForm.get('status')?.value !== 'none'
+                    ) {
+                      <span class="info-value">{{
+                        'threatModels.status.' + threatModelForm.get('status')?.value | transloco
+                      }}</span>
+                    } @else {
+                      <span class="info-value">—</span>
+                    }
+                  </div>
                 }
               </div>
-              @if (threatModel && !isNewThreatModel) {
-                <div class="info-field">
-                  <span class="info-label"
-                    >{{ 'threatModels.statusLastUpdated' | transloco }}:</span
-                  >
-                  <span class="info-value">{{
-                    threatModel.status_updated
-                      ? (threatModel.status_updated | date: 'short' : undefined : currentLocale)
-                      : '—'
-                  }}</span>
-                </div>
-              }
-            </div>
 
-            <!-- Security Reviewer row -->
-            <div class="info-row info-row-security-reviewer">
-              <div class="info-field">
+              <!-- Security Reviewer -->
+              <div>
                 @if (canEdit && securityReviewerMode === 'dropdown') {
-                  <mat-form-field appearance="outline" class="security-reviewer-dropdown">
+                  <mat-form-field appearance="outline" class="full-width">
                     <mat-label>{{ 'threatModels.securityReviewer' | transloco }}</mat-label>
                     <mat-select
                       [value]="threatModel.security_reviewer"
@@ -179,57 +144,127 @@
                     </mat-select>
                   </mat-form-field>
                 } @else if (canEdit && securityReviewerMode === 'picker') {
-                  <span class="info-label">{{ 'threatModels.securityReviewer' | transloco }}:</span>
-                  @if (threatModel.security_reviewer) {
-                    <span class="info-value"
-                      ><app-user-display [user]="threatModel.security_reviewer"
-                    /></span>
-                  } @else {
-                    <span class="info-value">—</span>
-                  }
-                  <button
-                    mat-icon-button
-                    (click)="openSecurityReviewerPicker()"
-                    [matTooltip]="'threatModels.changeSecurityReviewer' | transloco"
-                    [attr.aria-label]="'threatModels.changeSecurityReviewer' | transloco"
-                  >
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                  @if (threatModel.security_reviewer) {
+                  <div class="readonly-field">
+                    <span class="info-label"
+                      >{{ 'threatModels.securityReviewer' | transloco }}:</span
+                    >
+                    @if (threatModel.security_reviewer) {
+                      <span class="info-value"
+                        ><app-user-display [user]="threatModel.security_reviewer"
+                      /></span>
+                    } @else {
+                      <span class="info-value">—</span>
+                    }
                     <button
                       mat-icon-button
-                      (click)="clearSecurityReviewer()"
-                      [matTooltip]="'threatModels.clearSecurityReviewer' | transloco"
-                      [attr.aria-label]="'threatModels.clearSecurityReviewer' | transloco"
+                      (click)="openSecurityReviewerPicker()"
+                      [matTooltip]="'threatModels.changeSecurityReviewer' | transloco"
+                      [attr.aria-label]="'threatModels.changeSecurityReviewer' | transloco"
                     >
-                      <mat-icon>close</mat-icon>
+                      <mat-icon>edit</mat-icon>
                     </button>
-                  }
+                    @if (threatModel.security_reviewer) {
+                      <button
+                        mat-icon-button
+                        (click)="clearSecurityReviewer()"
+                        [matTooltip]="'threatModels.clearSecurityReviewer' | transloco"
+                        [attr.aria-label]="'threatModels.clearSecurityReviewer' | transloco"
+                      >
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    }
+                  </div>
                 } @else if (securityReviewerMode !== 'loading') {
-                  <span class="info-label">{{ 'threatModels.securityReviewer' | transloco }}:</span>
-                  @if (threatModel.security_reviewer) {
-                    <span class="info-value"
-                      ><app-user-display [user]="threatModel.security_reviewer"
-                    /></span>
-                  } @else {
-                    <span class="info-value">—</span>
-                  }
+                  <div class="readonly-field">
+                    <span class="info-label"
+                      >{{ 'threatModels.securityReviewer' | transloco }}:</span
+                    >
+                    @if (threatModel.security_reviewer) {
+                      <span class="info-value"
+                        ><app-user-display [user]="threatModel.security_reviewer"
+                      /></span>
+                    } @else {
+                      <span class="info-value">—</span>
+                    }
+                  </div>
                 }
               </div>
-            </div>
 
-            <!-- Project picker row -->
-            <div class="info-row info-row-project">
-              <div class="info-field">
+              <!-- Project -->
+              <div>
                 @if (canEdit) {
                   <app-project-picker
                     [projectId]="threatModel.project_id ?? null"
                     (projectChange)="onProjectChange($event)"
                   />
                 } @else {
-                  <span class="info-label">{{ 'common.project' | transloco }}:</span>
-                  <span class="info-value">{{ projectName || '—' }}</span>
+                  <div class="readonly-field">
+                    <span class="info-label">{{ 'common.project' | transloco }}:</span>
+                    <span class="info-value">{{ projectName || '—' }}</span>
+                  </div>
                 }
+              </div>
+            </div>
+
+            <!-- Right column: static metadata -->
+            <div class="details-metadata">
+              <!-- Threat Model ID -->
+              <div class="metadata-field">
+                <span class="info-label">{{ 'threatModels.idLabel' | transloco }}:</span>
+                <span class="info-value metadata-id">{{ threatModel.id || '—' }}</span>
+                @if (threatModel.id) {
+                  <button
+                    mat-icon-button
+                    class="copy-id-button"
+                    (click)="copyThreatModelId()"
+                    [matTooltip]="'common.copyToClipboard' | transloco"
+                    [attr.aria-label]="'common.copyToClipboard' | transloco"
+                  >
+                    <mat-icon>content_copy</mat-icon>
+                  </button>
+                }
+              </div>
+
+              <!-- Created By -->
+              <div class="metadata-field">
+                <span class="info-label">{{ 'threatModels.createdBy' | transloco }}:</span>
+                @if (threatModel.created_by) {
+                  <span class="info-value"
+                    ><app-user-display [user]="threatModel.created_by"
+                  /></span>
+                } @else {
+                  <span class="info-value">—</span>
+                }
+              </div>
+
+              <!-- Created -->
+              <div class="metadata-field">
+                <span class="info-label">{{ 'threatModels.created' | transloco }}:</span>
+                <span class="info-value">{{
+                  !isNewThreatModel && threatModel.created_at
+                    ? (threatModel.created_at | date: 'short' : undefined : currentLocale)
+                    : '—'
+                }}</span>
+              </div>
+
+              <!-- Last Modified -->
+              <div class="metadata-field">
+                <span class="info-label">{{ 'common.lastModified' | transloco }}:</span>
+                <span class="info-value">{{
+                  !isNewThreatModel && threatModel.modified_at
+                    ? (threatModel.modified_at | date: 'short' : undefined : currentLocale)
+                    : '—'
+                }}</span>
+              </div>
+
+              <!-- Status Last Updated -->
+              <div class="metadata-field">
+                <span class="info-label">{{ 'threatModels.statusLastUpdated' | transloco }}:</span>
+                <span class="info-value">{{
+                  threatModel.status_updated
+                    ? (threatModel.status_updated | date: 'short' : undefined : currentLocale)
+                    : '—'
+                }}</span>
               </div>
             </div>
           </div>

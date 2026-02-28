@@ -485,6 +485,7 @@
     "confirm": "Confirmar",
     "confirmDelete": "Tem certeza de que deseja excluir {{item}} \"{{name}}\"? Esta acao nao pode ser desfeita.",
     "confirmDeleteMessage": "Tem certeza de que deseja excluir {{objectType}} \"{{name}}\"?",
+    "copiedToClipboard": "Copiado para a area de transferencia",
     "copy": "Copiar",
     "copyToClipboard": "Copiar para a Area de Transferencia",
     "create": "Criar",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} caracteres",
     "content": "Conteudo",
     "contentPlaceholder": "Insira o conteudo da nota em formato markdown. Suporta GitHub Flavored Markdown e diagramas Mermaid.",
-    "copiedToClipboard": "Copiado para a area de transferencia",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "Descricao opcional",
     "editMode": "Modo de Edicao",
     "errors": {

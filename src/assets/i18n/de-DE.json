@@ -485,6 +485,7 @@
     "confirm": "Bestätigen",
     "confirmDelete": "Sind Sie sicher, dass Sie {{item}} \"{{name}}\" löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
     "confirmDeleteMessage": "Sind Sie sicher, dass Sie {{objectType}} \"{{name}}\" löschen möchten?",
+    "copiedToClipboard": "In die Zwischenablage kopiert",
     "copy": "Kopieren",
     "copyToClipboard": "In die Zwischenablage kopieren",
     "create": "Erstellen",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} Zeichen",
     "content": "Inhalt",
     "contentPlaceholder": "Geben Sie den Notizeninhalt im Markdown-Format ein. Unterstützt GitHub Flavored Markdown und Mermaid-Diagramme.",
-    "copiedToClipboard": "In die Zwischenablage kopiert",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "Optionale Beschreibung",
     "editMode": "Bearbeitungsmodus",
     "errors": {

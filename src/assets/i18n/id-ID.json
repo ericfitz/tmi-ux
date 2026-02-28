@@ -485,6 +485,7 @@
     "confirm": "Konfirmasi",
     "confirmDelete": "Apakah Anda yakin ingin menghapus {{item}} \"{{name}}\"? Tindakan ini tidak dapat dibatalkan.",
     "confirmDeleteMessage": "Apakah Anda yakin ingin menghapus {{objectType}} \"{{name}}\"?",
+    "copiedToClipboard": "Disalin ke papan klip",
     "copy": "Salin",
     "copyToClipboard": "Salin ke Papan Klip",
     "create": "Buat",
@@ -838,7 +839,7 @@
     "characterCount": "{{current}} / {{max}} karakter",
     "content": "Konten",
     "contentPlaceholder": "Masukkan konten catatan dalam format markdown. Mendukung GitHub Flavored Markdown dan diagram Mermaid.",
-    "copiedToClipboard": "Disalin ke papan klip",
+    "copiedToClipboard": "{{common.copiedToClipboard}}",
     "descriptionPlaceholder": "Deskripsi opsional",
     "editMode": "Mode Edit",
     "errors": {
