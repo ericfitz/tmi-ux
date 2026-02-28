@@ -217,6 +217,8 @@ function markedOptionsFactory(): MarkedOptions {
         'li',
         'blockquote',
         'table',
+        'colgroup',
+        'col',
         'thead',
         'tbody',
         'tr',
