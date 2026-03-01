@@ -343,7 +343,7 @@ export class FormValidationService {
         FormValidationService.validators.required,
         FormValidationService.validators.maxLength(100),
       ],
-      description: [FormValidationService.validators.maxLength(1000)],
+      description: [FormValidationService.validators.maxLength(2048)],
       severity: [FormValidationService.validators.required],
       threat_type: [FormValidationService.validators.required],
       score: [FormValidationService.validators.positiveNumber],

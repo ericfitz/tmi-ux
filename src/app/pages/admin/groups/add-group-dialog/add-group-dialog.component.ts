@@ -168,7 +168,7 @@ export class AddGroupDialogComponent implements OnInit {
         [Validators.required, Validators.pattern(/^[a-zA-Z0-9_-]+$/), Validators.maxLength(500)],
       ],
       name: ['', [Validators.required, Validators.maxLength(256)]],
-      description: ['', Validators.maxLength(1000)],
+      description: ['', Validators.maxLength(2048)],
     });
 
     // Auto-populate group_name from name until user manually edits it

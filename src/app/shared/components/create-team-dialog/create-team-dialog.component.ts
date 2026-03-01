@@ -133,7 +133,7 @@ export class CreateTeamDialogComponent {
   ) {
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(256)]],
-      description: ['', [Validators.maxLength(1024)]],
+      description: ['', [Validators.maxLength(2048)]],
       email_address: ['', [Validators.email]],
       uri: [''],
       status: [''],

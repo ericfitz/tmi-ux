@@ -83,7 +83,7 @@ export class AssetEditorDialogComponent implements OnInit, OnDestroy {
 
     this.assetForm = this.fb.group({
       name: [data.asset?.name || '', [Validators.required, Validators.maxLength(256)]],
-      description: [data.asset?.description || '', Validators.maxLength(1024)],
+      description: [data.asset?.description || '', Validators.maxLength(2048)],
       type: [data.asset?.type || ''],
       criticality: [data.asset?.criticality || '', Validators.maxLength(64)],
       classification: [data.asset?.classification || []],

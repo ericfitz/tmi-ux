@@ -77,7 +77,7 @@ export class DocumentEditorDialogComponent implements OnInit, OnDestroy {
           FormValidationService.validators.uriGuidance,
         ],
       ],
-      description: [data.document?.description || '', Validators.maxLength(1024)],
+      description: [data.document?.description || '', Validators.maxLength(2048)],
       include_in_report: [data.mode === 'create' ? true : data.document?.include_in_report],
     });
 

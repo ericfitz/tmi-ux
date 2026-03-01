@@ -64,10 +64,10 @@ describe('CreateThreatModelDialogComponent', () => {
       expect(component.form.get('name')?.hasError('maxlength')).toBe(true);
     });
 
-    it('should be invalid when description exceeds 1024 characters', () => {
+    it('should be invalid when description exceeds 2048 characters', () => {
       component.form.patchValue({
         name: 'Valid Name',
-        description: 'a'.repeat(1025),
+        description: 'a'.repeat(2049),
       });
       expect(component.form.get('description')?.hasError('maxlength')).toBe(true);
     });
@@ -75,7 +75,7 @@ describe('CreateThreatModelDialogComponent', () => {
     it('should accept description at max length', () => {
       component.form.patchValue({
         name: 'Valid Name',
-        description: 'a'.repeat(1024),
+        description: 'a'.repeat(2048),
       });
       expect(component.form.valid).toBe(true);
     });

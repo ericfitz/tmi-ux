@@ -78,9 +78,9 @@ export class NoteEditorDialogComponent implements OnInit, AfterViewChecked {
   private taskListCheckboxesInitialized = false;
   private anchorClickHandler?: (event: Event) => void;
 
-  readonly maxContentLength = 65536;
+  readonly maxContentLength = 262144;
   readonly maxNameLength = 256;
-  readonly maxDescriptionLength = 1024;
+  readonly maxDescriptionLength = 2048;
 
   // Clipboard state
   hasSelection = false;

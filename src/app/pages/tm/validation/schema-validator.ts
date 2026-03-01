@@ -75,7 +75,7 @@ export class SchemaValidator extends BaseValidator {
     { field: 'authorization', required: true, type: 'array' },
 
     // Optional fields
-    { field: 'description', required: false, type: 'string', maxLength: 1024 },
+    { field: 'description', required: false, type: 'string', maxLength: 2048 },
     // Note: issue_uri accepts any string per RFC 3986 (URI-reference)
     { field: 'issue_uri', required: false, type: 'string', maxLength: 1024 },
     { field: 'metadata', required: false, type: 'array' },

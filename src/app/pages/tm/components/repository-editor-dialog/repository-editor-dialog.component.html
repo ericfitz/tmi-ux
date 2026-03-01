@@ -46,7 +46,7 @@
         ></textarea>
         @if (repositoryForm.get('description')?.hasError('maxlength')) {
           <mat-error>
-            {{ 'common.validation.maxLength' | transloco: { max: 1024 } }}
+            {{ 'common.validation.maxLength' | transloco: { max: 2048 } }}
           </mat-error>
         }
       </mat-form-field>

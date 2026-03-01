@@ -116,9 +116,9 @@ export class NotePageComponent implements OnInit, OnDestroy, AfterViewChecked {
   addonsForNote: Addon[] = [];
 
   // Max lengths
-  readonly maxContentLength = 65536;
+  readonly maxContentLength = 262144;
   readonly maxNameLength = 256;
-  readonly maxDescriptionLength = 1024;
+  readonly maxDescriptionLength = 2048;
 
   constructor(
     private route: ActivatedRoute,

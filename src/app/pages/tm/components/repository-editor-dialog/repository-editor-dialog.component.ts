@@ -75,7 +75,7 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
 
     this.repositoryForm = this.fb.group({
       name: [data.repository?.name || '', [Validators.required, Validators.maxLength(256)]],
-      description: [data.repository?.description || '', Validators.maxLength(1024)],
+      description: [data.repository?.description || '', Validators.maxLength(2048)],
       type: [data.repository?.type || 'git', Validators.required],
       uri: [
         data.repository?.uri || '',

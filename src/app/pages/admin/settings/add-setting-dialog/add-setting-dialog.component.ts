@@ -226,7 +226,7 @@ export class AddSettingDialogComponent implements OnInit {
       type: ['string', Validators.required],
       value: ['', Validators.required],
       boolValue: [false],
-      description: ['', Validators.maxLength(1024)],
+      description: ['', Validators.maxLength(2048)],
     });
   }
 
