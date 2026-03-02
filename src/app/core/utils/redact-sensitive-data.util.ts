@@ -37,6 +37,7 @@ export interface RedactOptions {
  * - Creates null-prototype objects to prevent prototype pollution
  * - Skips __proto__, constructor, and prototype keys
  * - Uses Object.keys() for own-property iteration only
+ * - Uses Object.fromEntries() to avoid bracket-notation property writes
  *
  * @param data Object that may contain sensitive data
  * @param options Redaction options
@@ -47,43 +48,38 @@ export function redactSensitiveData(data: unknown, options: RedactOptions = {}):
     return data;
   }
 
-  const redacted = Object.create(null) as Record<string, unknown>;
   const source = data as Record<string, unknown>;
 
-  for (const key of Object.keys(source)) {
-    if (PROTOTYPE_POLLUTION_KEYS.has(key)) {
-      continue;
-    }
+  const entries = Object.keys(source)
+    .filter(key => !PROTOTYPE_POLLUTION_KEYS.has(key))
+    .map(key => [key, redactValue(key, source[key], options)] as [string, unknown]);
 
-    const value = source[key];
-    const lowerKey = key.toLowerCase();
-    const isAuthorizationField = lowerKey === 'authorization';
+  return Object.assign(Object.create(null) as Record<string, unknown>, Object.fromEntries(entries));
+}
 
-    if (isAuthorizationField && options.isHeaderContext) {
-      if (typeof value === 'string' && value.length > 0) {
-        if (value.startsWith('Bearer ')) {
-          const tokenPart = value.substring(7);
-          redacted[key] = `Bearer ${redactToken(tokenPart)}`;
-        } else {
-          redacted[key] = redactToken(value);
-        }
-      } else {
-        redacted[key] = '[REDACTED]';
-      }
-    } else if (SENSITIVE_KEYS.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
-      if (typeof value === 'string' && value.length > 0) {
-        redacted[key] = redactToken(value);
-      } else {
-        redacted[key] = '[REDACTED]';
-      }
-    } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      redacted[key] = redactSensitiveData(value, options);
-    } else {
-      redacted[key] = value;
+/** Determine the redacted value for a single key-value pair. */
+function redactValue(key: string, value: unknown, options: RedactOptions): unknown {
+  const lowerKey = key.toLowerCase();
+  const isAuthorizationField = lowerKey === 'authorization';
+
+  if (isAuthorizationField && options.isHeaderContext) {
+    if (typeof value === 'string' && value.length > 0) {
+      return value.startsWith('Bearer ')
+        ? `Bearer ${redactToken(value.substring(7))}`
+        : redactToken(value);
     }
+    return '[REDACTED]';
   }
 
-  return redacted;
+  if (SENSITIVE_KEYS.some(sensitiveKey => lowerKey.includes(sensitiveKey))) {
+    return typeof value === 'string' && value.length > 0 ? redactToken(value) : '[REDACTED]';
+  }
+
+  if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+    return redactSensitiveData(value, options);
+  }
+
+  return value;
 }
 
 /**
