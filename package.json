@@ -82,7 +82,7 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
     "fontkit": "^2.0.4",
-    "hono": "4.12.2",
+    "hono": "4.12.3",
     "marked": "^17.0.3",
     "mermaid": "^11.12.3",
     "ngx-markdown": "^21.1.0",
