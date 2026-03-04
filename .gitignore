@@ -73,3 +73,5 @@ deliverables/**
 # local copy of server docs
 docs-server
 docs-server/**
+workspace
+workspace/**
