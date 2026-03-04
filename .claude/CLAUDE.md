@@ -49,6 +49,24 @@ When code changes are associated with a GitHub issue, also:
 1. **Reference the Commit**: Add a comment to the issue referencing the commit
 2. **Close the Issue**: Close the issue as "done"
 
+### When Creating GitHub Issues
+
+1. **Project**: Always associate the issue with the `tmi` project
+2. **Labels**: Tag issues with appropriate labels
+3. **Title Prefix**: Always prefix the issue title with a conventional commit type followed by a colon:
+   - `feat:` - Add, adjust, or remove a feature in the API or UI
+   - `fix:` - Fix an API or UI bug
+   - `refactor:` - Rewrite or restructure code without altering API or UI behavior
+   - `perf:` - Improve performance (special type of refactor)
+   - `style:` - Address code style (white-space, formatting, missing semi-colons) without affecting behavior
+   - `test:` - Add missing tests or correct existing ones
+   - `docs:` - Changes that exclusively affect documentation
+   - `build:` - Changes to build tools, dependencies, project version, etc.
+   - `ops:` - Changes to infrastructure (IaC), deployment, CI/CD, backups, monitoring, recovery, etc.
+   - `chore:` - Miscellaneous tasks (utility scripts, .gitignore, etc.)
+
+   Examples: `fix: control X on page Y not working`, `feat: add ability to do Z`
+
 ### General Guidelines
 
 - Remove unused references rather than prefixing with underscore (unless placeholders)
