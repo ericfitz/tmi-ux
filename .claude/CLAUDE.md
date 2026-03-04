@@ -61,7 +61,8 @@ When code changes are associated with a GitHub issue, also:
    - `style:` - Address code style (white-space, formatting, missing semi-colons) without affecting behavior
    - `test:` - Add missing tests or correct existing ones
    - `docs:` - Changes that exclusively affect documentation
-   - `build:` - Changes to build tools, dependencies, project version, etc.
+   - `build:` - Changes to build tools, project version, etc.
+   - `deps:` - Changes to dependencies (additions, removals, updates, evaluations)
    - `ops:` - Changes to infrastructure (IaC), deployment, CI/CD, backups, monitoring, recovery, etc.
    - `chore:` - Miscellaneous tasks (utility scripts, .gitignore, etc.)
 
