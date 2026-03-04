@@ -1,0 +1,17 @@
+{
+  "framework-name": "DIE",
+  "threat-types": [
+    {
+      "name": "Distributed",
+      "applies-to": ["Actor", "Store", "Flow", "Process"]
+    },
+    {
+      "name": "Immutable",
+      "applies-to": ["Actor", "Store", "Flow", "Process"]
+    },
+    {
+      "name": "Ephemeral",
+      "applies-to": ["Actor", "Store", "Flow", "Process"]
+    }
+  ]
+}
