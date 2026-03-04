@@ -20,8 +20,6 @@ import {
   ICollaborationNotificationService,
 } from '../interfaces';
 
-
-
 describe('DfdCollaborationService', () => {
   let service: DfdCollaborationService;
   let mockLogger: {
