@@ -489,13 +489,56 @@ describe('ThreatPageComponent', () => {
       expect(cvssValues[0].score).toBe(9.8);
     });
 
-    it('should open CVSS calculator dialog for new entry', () => {
+    it('should open CVSS calculator dialog with existing versions', () => {
       const mockAfterClosed = { subscribe: vi.fn() };
       dialog.open.mockReturnValue({ afterClosed: () => ({ pipe: () => mockAfterClosed }) });
 
       component.openCvssCalculator();
 
-      expect(dialog.open).toHaveBeenCalled();
+      expect(dialog.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({
+            existingVersions: ['3.1'],
+          }),
+        }),
+      );
+    });
+
+    it('canAddCvss should be true when only one version exists', () => {
+      expect(component.canAddCvss).toBe(true);
+    });
+
+    it('canAddCvss should be false when both versions exist', () => {
+      const current = component.threatForm.get('cvss')?.value as CVSSScore[];
+      component.threatForm.patchValue({
+        cvss: [
+          ...current,
+          {
+            vector: 'CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N',
+            score: 9.3,
+          },
+        ],
+      });
+      expect(component.canAddCvss).toBe(false);
+    });
+
+    it('canAddCvss should re-enable after removing all entries of a version', () => {
+      const current = component.threatForm.get('cvss')?.value as CVSSScore[];
+      component.threatForm.patchValue({
+        cvss: [
+          ...current,
+          {
+            vector: 'CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N',
+            score: 9.3,
+          },
+        ],
+      });
+      expect(component.canAddCvss).toBe(false);
+
+      // Remove the 4.0 entry (index 1)
+      component.removeCvssEntry(1);
+      expect(component.canAddCvss).toBe(true);
     });
 
     it('should open CVSS calculator dialog for editing', () => {

@@ -652,7 +652,7 @@
     "apply.comment": "Button to apply the calculated CVSS vector and score.",
     "metricsSet": "{{count}}/{{total}} সেট",
     "metricsSet.comment": "Summary showing how many metrics have been configured in a category. The word 'set' means 'configured' or 'defined'.",
-    "openCalculator": "CVSS গণনা করুন",
+    "openCalculator": "CVSS যোগ করুন",
     "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "বিদ্যমান CVSS ভেক্টর স্ট্রিং পার্স করা যায়নি",
     "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",

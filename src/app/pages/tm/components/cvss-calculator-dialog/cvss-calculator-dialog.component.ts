@@ -49,6 +49,7 @@ export class CvssCalculatorDialogComponent implements OnInit {
   severityClass = '';
   severityLabel = '';
   isEditMode = false;
+  isVersionLocked = false;
   isValid = false;
   currentDirection: 'ltr' | 'rtl' = 'ltr';
 
@@ -73,9 +74,18 @@ export class CvssCalculatorDialogComponent implements OnInit {
 
     if (this.data.existingEntry) {
       this.isEditMode = true;
+      this.isVersionLocked = true;
       this.selectedVersion = this._detectVersion(this.data.existingEntry.vector);
       this._initializeFromVector(this.data.existingEntry.vector);
     } else {
+      const existing = this.data.existingVersions ?? [];
+      if (existing.includes('3.1') && !existing.includes('4.0')) {
+        this.selectedVersion = '4.0';
+        this.isVersionLocked = true;
+      } else if (existing.includes('4.0') && !existing.includes('3.1')) {
+        this.selectedVersion = '3.1';
+        this.isVersionLocked = true;
+      }
       this._initializeFresh();
     }
   }

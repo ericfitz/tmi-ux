@@ -50,6 +50,7 @@ import { CvssCalculatorDialogComponent } from '../cvss-calculator-dialog/cvss-ca
 import {
   CvssCalculatorDialogData,
   CvssCalculatorDialogResult,
+  CvssVersion,
 } from '../cvss-calculator-dialog/cvss-calculator-dialog.types';
 import { AddonService } from '../../../../core/services/addon.service';
 import { Addon } from '../../../../types/addon.types';
@@ -791,6 +792,15 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Whether the Add CVSS button should be enabled.
+   * Disabled when both 3.1 and 4.0 versions already have entries.
+   */
+  get canAddCvss(): boolean {
+    const versions = this._getExistingCvssVersions();
+    return !versions.includes('3.1') || !versions.includes('4.0');
+  }
+
+  /**
    * Open the CVSS calculator dialog to create a new entry
    */
   openCvssCalculator(): void {
@@ -798,7 +808,9 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       width: '800px',
       maxWidth: '95vw',
       maxHeight: '90vh',
-      data: {} as CvssCalculatorDialogData,
+      data: {
+        existingVersions: this._getExistingCvssVersions(),
+      } as CvssCalculatorDialogData,
     });
 
     dialogRef
@@ -854,6 +866,14 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       this.threatForm.patchValue({ cvss: updated });
       this.threatForm.markAsDirty();
     }
+  }
+
+  private _getExistingCvssVersions(): CvssVersion[] {
+    const entries = (this.threatForm.get('cvss')?.value as CVSSScore[]) ?? [];
+    const versions: CvssVersion[] = [];
+    if (entries.some(e => e.vector?.startsWith('CVSS:3.'))) versions.push('3.1');
+    if (entries.some(e => e.vector?.startsWith('CVSS:4.0'))) versions.push('4.0');
+    return versions;
   }
 
   /**

@@ -85,6 +85,7 @@ describe('CvssCalculatorDialogComponent', () => {
       component.ngOnInit();
       expect(component.selectedVersion).toBe('3.1');
       expect(component.isEditMode).toBe(false);
+      expect(component.isVersionLocked).toBe(false);
     });
 
     it('should detect CVSS 3.1 from existing vector string', () => {
@@ -98,6 +99,7 @@ describe('CvssCalculatorDialogComponent', () => {
       component.ngOnInit();
       expect(component.selectedVersion).toBe('3.1');
       expect(component.isEditMode).toBe(true);
+      expect(component.isVersionLocked).toBe(true);
     });
 
     it('should detect CVSS 4.0 from existing vector string', () => {
@@ -111,6 +113,30 @@ describe('CvssCalculatorDialogComponent', () => {
       component.ngOnInit();
       expect(component.selectedVersion).toBe('4.0');
       expect(component.isEditMode).toBe(true);
+      expect(component.isVersionLocked).toBe(true);
+    });
+
+    it('should default to 4.0 and lock when 3.1 already exists', () => {
+      createComponent({ existingVersions: ['3.1'] });
+      component.ngOnInit();
+      expect(component.selectedVersion).toBe('4.0');
+      expect(component.isVersionLocked).toBe(true);
+      expect(component.isEditMode).toBe(false);
+    });
+
+    it('should default to 3.1 and lock when 4.0 already exists', () => {
+      createComponent({ existingVersions: ['4.0'] });
+      component.ngOnInit();
+      expect(component.selectedVersion).toBe('3.1');
+      expect(component.isVersionLocked).toBe(true);
+      expect(component.isEditMode).toBe(false);
+    });
+
+    it('should not lock version when no existing versions', () => {
+      createComponent({ existingVersions: [] });
+      component.ngOnInit();
+      expect(component.selectedVersion).toBe('3.1');
+      expect(component.isVersionLocked).toBe(false);
     });
 
     it('should populate metric groups on init', () => {

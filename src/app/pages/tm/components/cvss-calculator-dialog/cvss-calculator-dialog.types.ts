@@ -8,6 +8,8 @@ export interface CvssCalculatorDialogData {
   existingEntry?: CVSSScore;
   /** Index of existing entry in the array (for replacement) */
   existingIndex?: number;
+  /** CVSS versions that already have entries (used to constrain Add mode) */
+  existingVersions?: CvssVersion[];
 }
 
 /** Result returned from the CVSS calculator dialog */

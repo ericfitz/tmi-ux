@@ -652,7 +652,7 @@
     "apply.comment": "Button to apply the calculated CVSS vector and score.",
     "metricsSet": "{{count}}/{{total}} festgelegt",
     "metricsSet.comment": "Summary showing how many metrics have been configured in a category. The word 'set' means 'configured' or 'defined'.",
-    "openCalculator": "CVSS berechnen",
+    "openCalculator": "CVSS hinzufügen",
     "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
     "parseError": "Der vorhandene CVSS-Vektorstring konnte nicht analysiert werden",
     "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",

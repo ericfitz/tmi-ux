@@ -251,9 +251,10 @@
               mat-stroked-button
               color="primary"
               (click)="openCvssCalculator()"
+              [disabled]="!canAddCvss"
               class="cvss-calculator-button"
             >
-              <mat-icon>calculate</mat-icon>
+              <mat-icon>add</mat-icon>
               {{ 'cvssCalculator.openCalculator' | transloco }}
             </button>
           }

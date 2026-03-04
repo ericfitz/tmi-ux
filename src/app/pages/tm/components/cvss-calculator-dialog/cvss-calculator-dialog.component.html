@@ -17,7 +17,7 @@
       <mat-button-toggle-group
         [value]="selectedVersion"
         (change)="onVersionChange($event.value)"
-        [disabled]="isEditMode"
+        [disabled]="isVersionLocked"
       >
         <mat-button-toggle value="3.1">CVSS 3.1</mat-button-toggle>
         <mat-button-toggle value="4.0">CVSS 4.0</mat-button-toggle>
