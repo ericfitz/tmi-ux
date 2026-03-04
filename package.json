@@ -155,6 +155,7 @@
       "body-parser": ">=2.2.1",
       "@modelcontextprotocol/sdk": "^1.26.0",
       "qs": "^6.14.2",
+      "@hono/node-server": ">=1.19.10",
       "hono": "4.12.4",
       "tar": ">=7.5.9",
       "webpack": ">=5.104.1",
