@@ -647,6 +647,22 @@
     "nameRequired": "{{common.validation.nameRequired}}",
     "title": "Criar Modelo de Ameaça"
   },
+  "cvssCalculator": {
+    "apply": "Aplicar",
+    "apply.comment": "Button to apply the calculated CVSS vector and score.",
+    "metricsSet": "{{count}}/{{total}} definidos",
+    "metricsSet.comment": "Summary showing how many metrics have been configured in a category. The word 'set' means 'configured' or 'defined'.",
+    "openCalculator": "Calcular CVSS",
+    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "parseError": "Não foi possível analisar a string de vetor CVSS existente",
+    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "title": "Calculadora CVSS",
+    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "vectorString": "String do vetor",
+    "vectorString.comment": "Label for the CVSS vector string display.",
+    "version": "Versão do CVSS",
+    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+  },
   "dashboard": {
     "clearAllFilters": "Limpar Todos os Filtros",
     "clearSearch": "Limpar Pesquisa",

@@ -489,76 +489,37 @@ describe('ThreatPageComponent', () => {
       expect(cvssValues[0].score).toBe(9.8);
     });
 
-    it('should add a CVSS entry', () => {
-      component.newCvssVector = 'CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:L/I:L/A:L';
-      component.newCvssScore = 3.7;
+    it('should open CVSS calculator dialog for new entry', () => {
+      const mockAfterClosed = { subscribe: vi.fn() };
+      dialog.open.mockReturnValue({ afterClosed: () => ({ pipe: () => mockAfterClosed }) });
 
-      component.addCvssEntry();
+      component.openCvssCalculator();
 
-      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
-      expect(cvssValues).toHaveLength(2);
-      expect(cvssValues[1].vector).toBe('CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:L/I:L/A:L');
-      expect(cvssValues[1].score).toBe(3.7);
+      expect(dialog.open).toHaveBeenCalled();
     });
 
-    it('should clear scratch inputs after adding', () => {
-      component.newCvssVector = 'CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:L/I:L/A:L';
-      component.newCvssScore = 3.7;
+    it('should open CVSS calculator dialog for editing', () => {
+      const mockAfterClosed = { subscribe: vi.fn() };
+      dialog.open.mockReturnValue({ afterClosed: () => ({ pipe: () => mockAfterClosed }) });
 
-      component.addCvssEntry();
+      component.editCvssEntry(0);
 
-      expect(component.newCvssVector).toBe('');
-      expect(component.newCvssScore).toBeNull();
+      expect(dialog.open).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          data: expect.objectContaining({
+            existingEntry: expect.objectContaining({
+              vector: 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H',
+            }),
+            existingIndex: 0,
+          }),
+        }),
+      );
     });
 
-    it('should not add CVSS entry with empty vector', () => {
-      component.newCvssVector = '';
-      component.newCvssScore = 5.0;
-
-      component.addCvssEntry();
-
-      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
-      expect(cvssValues).toHaveLength(1);
-    });
-
-    it('should not add CVSS entry with null score', () => {
-      component.newCvssVector = 'CVSS:3.1/AV:N/AC:L';
-      component.newCvssScore = null;
-
-      component.addCvssEntry();
-
-      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
-      expect(cvssValues).toHaveLength(1);
-    });
-
-    it('should not add CVSS entry with score above 10', () => {
-      component.newCvssVector = 'CVSS:3.1/AV:N/AC:L';
-      component.newCvssScore = 11.0;
-
-      component.addCvssEntry();
-
-      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
-      expect(cvssValues).toHaveLength(1);
-    });
-
-    it('should not add CVSS entry with negative score', () => {
-      component.newCvssVector = 'CVSS:3.1/AV:N/AC:L';
-      component.newCvssScore = -1;
-
-      component.addCvssEntry();
-
-      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
-      expect(cvssValues).toHaveLength(1);
-    });
-
-    it('should not add duplicate CVSS vector', () => {
-      component.newCvssVector = 'CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H';
-      component.newCvssScore = 9.8;
-
-      component.addCvssEntry();
-
-      const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
-      expect(cvssValues).toHaveLength(1);
+    it('should not edit with invalid index', () => {
+      component.editCvssEntry(5);
+      expect(dialog.open).not.toHaveBeenCalled();
     });
 
     it('should remove a CVSS entry by index', () => {
@@ -573,16 +534,6 @@ describe('ThreatPageComponent', () => {
 
       const cvssValues = component.threatForm.get('cvss')?.value as CVSSScore[];
       expect(cvssValues).toHaveLength(1);
-    });
-
-    it('should mark form dirty when adding a CVSS entry', () => {
-      component.threatForm.markAsPristine();
-      component.newCvssVector = 'CVSS:4.0/AV:N';
-      component.newCvssScore = 5.0;
-
-      component.addCvssEntry();
-
-      expect(component.threatForm.dirty).toBe(true);
     });
 
     it('should mark form dirty when removing a CVSS entry', () => {

@@ -647,6 +647,22 @@
     "nameRequired": "{{common.validation.nameRequired}}",
     "title": "Создать Модель Угроз"
   },
+  "cvssCalculator": {
+    "apply": "Применить",
+    "apply.comment": "Button to apply the calculated CVSS vector and score.",
+    "metricsSet": "{{count}}/{{total}} задано",
+    "metricsSet.comment": "Summary showing how many metrics have been configured in a category. The word 'set' means 'configured' or 'defined'.",
+    "openCalculator": "Рассчитать CVSS",
+    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "parseError": "Не удалось разобрать существующую строку вектора CVSS",
+    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "title": "Калькулятор CVSS",
+    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "vectorString": "Строка вектора",
+    "vectorString.comment": "Label for the CVSS vector string display.",
+    "version": "Версия CVSS",
+    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+  },
   "dashboard": {
     "clearAllFilters": "Сбросить все фильтры",
     "clearSearch": "Очистить поиск",

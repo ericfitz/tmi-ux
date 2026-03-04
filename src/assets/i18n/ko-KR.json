@@ -647,6 +647,22 @@
     "nameRequired": "{{common.validation.nameRequired}}",
     "title": "위협 모델 생성"
   },
+  "cvssCalculator": {
+    "apply": "적용",
+    "apply.comment": "Button to apply the calculated CVSS vector and score.",
+    "metricsSet": "{{count}}/{{total}} 설정됨",
+    "metricsSet.comment": "Summary showing how many metrics have been configured in a category. The word 'set' means 'configured' or 'defined'.",
+    "openCalculator": "CVSS 계산",
+    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "parseError": "기존 CVSS 벡터 문자열을 구문 분석할 수 없습니다",
+    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "title": "CVSS 계산기",
+    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "vectorString": "벡터 문자열",
+    "vectorString.comment": "Label for the CVSS vector string display.",
+    "version": "CVSS 버전",
+    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+  },
   "dashboard": {
     "clearAllFilters": "모든 필터 지우기",
     "clearSearch": "검색 지우기",

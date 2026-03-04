@@ -647,6 +647,22 @@
     "nameRequired": "{{common.validation.nameRequired}}",
     "title": "खतरा मॉडल बनाएं"
   },
+  "cvssCalculator": {
+    "apply": "लागू करें",
+    "apply.comment": "Button to apply the calculated CVSS vector and score.",
+    "metricsSet": "{{count}}/{{total}} सेट",
+    "metricsSet.comment": "Summary showing how many metrics have been configured in a category. The word 'set' means 'configured' or 'defined'.",
+    "openCalculator": "CVSS की गणना करें",
+    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "parseError": "मौजूदा CVSS वेक्टर स्ट्रिंग को पार्स नहीं किया जा सका",
+    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "title": "CVSS कैलकुलेटर",
+    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "vectorString": "वेक्टर स्ट्रिंग",
+    "vectorString.comment": "Label for the CVSS vector string display.",
+    "version": "CVSS संस्करण",
+    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+  },
   "dashboard": {
     "clearAllFilters": "सभी फ़िल्टर साफ़ करें",
     "clearSearch": "खोज साफ़ करें",

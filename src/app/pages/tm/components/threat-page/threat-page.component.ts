@@ -46,6 +46,11 @@ import {
   InvokeAddonDialogData,
   InvokeAddonDialogResult,
 } from '../invoke-addon-dialog/invoke-addon-dialog.component';
+import { CvssCalculatorDialogComponent } from '../cvss-calculator-dialog/cvss-calculator-dialog.component';
+import {
+  CvssCalculatorDialogData,
+  CvssCalculatorDialogResult,
+} from '../cvss-calculator-dialog/cvss-calculator-dialog.types';
 import { AddonService } from '../../../../core/services/addon.service';
 import { Addon } from '../../../../types/addon.types';
 import {
@@ -133,10 +138,6 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
 
   // Chip input configuration
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
-
-  // CVSS add form scratch inputs
-  newCvssVector = '';
-  newCvssScore: number | null = null;
 
   // Special option for "Not associated" selection
   readonly NOT_ASSOCIATED_VALUE = '';
@@ -790,23 +791,56 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Add a CVSS vector/score pair
+   * Open the CVSS calculator dialog to create a new entry
    */
-  addCvssEntry(): void {
-    const vector = this.newCvssVector.trim();
-    const score = this.newCvssScore;
+  openCvssCalculator(): void {
+    const dialogRef = this.dialog.open(CvssCalculatorDialogComponent, {
+      width: '800px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: {} as CvssCalculatorDialogData,
+    });
 
-    if (!vector || score === null || score === undefined) return;
-    if (score < 0 || score > 10) return;
+    dialogRef
+      .afterClosed()
+      .pipe(this.untilDestroyed())
+      .subscribe((result: CvssCalculatorDialogResult | undefined) => {
+        if (!result) return;
+        const current = this.threatForm.get('cvss')?.value as CVSSScore[];
+        this.threatForm.patchValue({
+          cvss: [...current, result.entry],
+        });
+        this.threatForm.markAsDirty();
+      });
+  }
 
+  /**
+   * Open the CVSS calculator dialog to edit an existing entry
+   */
+  editCvssEntry(index: number): void {
     const current = this.threatForm.get('cvss')?.value as CVSSScore[];
-    if (current.some(entry => entry.vector === vector)) return;
+    if (index < 0 || index >= current.length) return;
 
-    this.threatForm.patchValue({ cvss: [...current, { vector, score }] });
-    this.threatForm.markAsDirty();
+    const dialogRef = this.dialog.open(CvssCalculatorDialogComponent, {
+      width: '800px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: {
+        existingEntry: current[index],
+        existingIndex: index,
+      } as CvssCalculatorDialogData,
+    });
 
-    this.newCvssVector = '';
-    this.newCvssScore = null;
+    dialogRef
+      .afterClosed()
+      .pipe(this.untilDestroyed())
+      .subscribe((result: CvssCalculatorDialogResult | undefined) => {
+        if (!result || result.editIndex === undefined) return;
+        const updated = [...current];
+        updated[result.editIndex] = result.entry;
+        this.threatForm.patchValue({ cvss: updated });
+        this.threatForm.markAsDirty();
+      });
   }
 
   /**

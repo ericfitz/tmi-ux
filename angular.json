@@ -82,7 +82,8 @@
               "dayjs",
               "debug",
               "vscode-jsonrpc",
-              "vscode-languageserver-protocol"
+              "vscode-languageserver-protocol",
+              "ae-cvss-calculator"
             ],
             "assets": [
               {

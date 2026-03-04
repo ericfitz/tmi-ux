@@ -228,22 +228,12 @@
   }
 }
 
-.cvss-add-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
+.cvss-calculator-button {
+  margin-top: 4px;
+}
 
-  .cvss-vector-field {
-    flex: 2;
-  }
-
-  .cvss-score-field {
-    flex: 0 0 120px;
-  }
-
-  button {
-    margin-top: 4px;
-  }
+.clickable {
+  cursor: pointer;
 }
 
 // Responsive styles

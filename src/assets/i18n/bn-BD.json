@@ -647,6 +647,22 @@
     "nameRequired": "{{common.validation.nameRequired}}",
     "title": "হুমকি মডেল তৈরি করুন"
   },
+  "cvssCalculator": {
+    "apply": "প্রয়োগ",
+    "apply.comment": "Button to apply the calculated CVSS vector and score.",
+    "metricsSet": "{{count}}/{{total}} সেট",
+    "metricsSet.comment": "Summary showing how many metrics have been configured in a category. The word 'set' means 'configured' or 'defined'.",
+    "openCalculator": "CVSS গণনা করুন",
+    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "parseError": "বিদ্যমান CVSS ভেক্টর স্ট্রিং পার্স করা যায়নি",
+    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "title": "CVSS ক্যালকুলেটর",
+    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "vectorString": "ভেক্টর স্ট্রিং",
+    "vectorString.comment": "Label for the CVSS vector string display.",
+    "version": "CVSS সংস্করণ",
+    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+  },
   "dashboard": {
     "clearAllFilters": "সমস্ত ফিল্টার সাফ করুন",
     "clearSearch": "অনুসন্ধান সাফ করুন",

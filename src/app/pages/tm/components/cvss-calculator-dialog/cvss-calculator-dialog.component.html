@@ -1,0 +1,111 @@
+<div class="cvss-calculator-dialog" [dir]="currentDirection">
+  <h2 mat-dialog-title class="dialog-title">
+    <span>{{ 'cvssCalculator.title' | transloco }}</span>
+    @if (currentScore !== null) {
+      <span class="score-badge" [ngClass]="severityClass">
+        {{ currentScore }}
+      </span>
+    }
+  </h2>
+
+  <mat-dialog-content class="dialog-content" appScrollIndicator>
+    <!-- Version selector -->
+    <div class="version-selector">
+      <mat-label class="version-label">
+        {{ 'cvssCalculator.version' | transloco }}
+      </mat-label>
+      <mat-button-toggle-group
+        [value]="selectedVersion"
+        (change)="onVersionChange($event.value)"
+        [disabled]="isEditMode"
+      >
+        <mat-button-toggle value="3.1">CVSS 3.1</mat-button-toggle>
+        <mat-button-toggle value="4.0">CVSS 4.0</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <!-- Metric groups -->
+    <mat-accordion multi>
+      @for (group of metricGroups; track group.categoryName) {
+        <mat-expansion-panel [expanded]="group.isBase">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ group.categoryName }}
+            </mat-panel-title>
+            <mat-panel-description>
+              {{ getGroupSummary(group) }}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          @for (metric of group.metrics; track metric.shortName) {
+            <div class="metric-row">
+              <div class="metric-info">
+                <span class="metric-name"> {{ metric.name }} ({{ metric.shortName }}) </span>
+                <mat-icon
+                  class="metric-help-icon"
+                  [matTooltip]="metric.description"
+                  matTooltipClass="metric-tooltip"
+                  >help_outline</mat-icon
+                >
+              </div>
+              <mat-button-toggle-group
+                [value]="metric.selectedValue"
+                (change)="onMetricChange(metric.shortName, $event.value)"
+                class="metric-toggle-group"
+              >
+                @for (val of metric.values; track val.shortName) {
+                  <mat-button-toggle
+                    [value]="val.shortName"
+                    [matTooltip]="val.name + ': ' + val.description"
+                    matTooltipClass="metric-tooltip"
+                    [class.not-defined]="val.shortName === 'X'"
+                  >
+                    {{ val.shortName }}
+                  </mat-button-toggle>
+                }
+              </mat-button-toggle-group>
+            </div>
+          }
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-footer">
+    <div class="score-display">
+      <div class="vector-string-row">
+        <span class="vector-label"> {{ 'cvssCalculator.vectorString' | transloco }}: </span>
+        <code class="vector-value">{{ vectorString || '--' }}</code>
+        @if (vectorString) {
+          <button
+            mat-icon-button
+            (click)="copyVector()"
+            [matTooltip]="'common.copy' | transloco"
+            [attr.aria-label]="'common.copy' | transloco"
+          >
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        }
+      </div>
+      <div class="score-info">
+        <span class="score-label"> {{ 'common.score' | transloco }}: </span>
+        <span class="score-value" [ngClass]="severityClass">
+          {{ currentScore !== null ? currentScore : '--' }}
+        </span>
+        @if (currentScore !== null) {
+          <span class="severity-label" [ngClass]="severityClass">
+            {{ severityLabel | transloco }}
+          </span>
+        }
+      </div>
+    </div>
+    <div class="action-buttons">
+      <button mat-button (click)="cancel()">
+        {{ 'common.cancel' | transloco }}
+      </button>
+      <button mat-raised-button color="primary" (click)="apply()" [disabled]="!isValid">
+        {{ (isEditMode ? 'common.save' : 'cvssCalculator.apply') | transloco }}
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div>

@@ -30,6 +30,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
@@ -83,6 +84,7 @@ export const FORM_MATERIAL_IMPORTS = [
   MatCheckboxModule,
   MatRadioModule,
   MatSlideToggleModule,
+  MatButtonToggleModule,
 ] as const;
 
 /**

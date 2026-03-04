@@ -647,6 +647,22 @@
     "nameRequired": "{{common.validation.nameRequired}}",
     "title": "خطرے کا ماڈل بنائیں"
   },
+  "cvssCalculator": {
+    "apply": "لاگو کریں",
+    "apply.comment": "Button to apply the calculated CVSS vector and score.",
+    "metricsSet": "{{count}}/{{total}} مقرر",
+    "metricsSet.comment": "Summary showing how many metrics have been configured in a category. The word 'set' means 'configured' or 'defined'.",
+    "openCalculator": "CVSS کا حساب لگائیں",
+    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "parseError": "موجودہ CVSS ویکٹر سٹرنگ کو پارس نہیں کیا جا سکا",
+    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "title": "CVSS کیلکولیٹر",
+    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "vectorString": "ویکٹر سٹرنگ",
+    "vectorString.comment": "Label for the CVSS vector string display.",
+    "version": "CVSS ورژن",
+    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+  },
   "dashboard": {
     "clearAllFilters": "تمام فلٹرز صاف کریں",
     "clearSearch": "تلاش صاف کریں",

@@ -229,7 +229,12 @@
           @if (threatForm.get('cvss')?.value?.length > 0) {
             <mat-chip-set class="cvss-chip-set">
               @for (entry of threatForm.get('cvss')?.value; track entry.vector; let i = $index) {
-                <mat-chip [removable]="canEdit" (removed)="removeCvssEntry(i)">
+                <mat-chip
+                  [removable]="canEdit"
+                  (removed)="removeCvssEntry(i)"
+                  (click)="canEdit ? editCvssEntry(i) : null"
+                  [class.clickable]="canEdit"
+                >
                   {{ entry.vector }} ({{ entry.score }})
                   @if (canEdit) {
                     <button matChipRemove [attr.aria-label]="'Remove CVSS entry'">
@@ -242,41 +247,15 @@
           }
 
           @if (canEdit) {
-            <div class="cvss-add-row">
-              <mat-form-field appearance="outline" class="cvss-vector-field" floatLabel="always">
-                <mat-label>{{ 'threatEditor.cvssVector' | transloco }}</mat-label>
-                <input
-                  matInput
-                  [(ngModel)]="newCvssVector"
-                  [ngModelOptions]="{ standalone: true }"
-                  [placeholder]="'threatEditor.cvssVectorPlaceholder' | transloco"
-                />
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="cvss-score-field" floatLabel="always">
-                <mat-label>{{ 'common.score' | transloco }}</mat-label>
-                <input
-                  matInput
-                  type="number"
-                  [(ngModel)]="newCvssScore"
-                  [ngModelOptions]="{ standalone: true }"
-                  min="0"
-                  max="10"
-                  step="0.1"
-                />
-              </mat-form-field>
-              <button
-                mat-icon-button
-                color="primary"
-                (click)="addCvssEntry()"
-                [disabled]="
-                  !newCvssVector.trim() || newCvssScore === null || newCvssScore === undefined
-                "
-                [matTooltip]="'threatEditor.addCvssEntry' | transloco"
-                [attr.aria-label]="'threatEditor.addCvssEntry' | transloco"
-              >
-                <mat-icon>add_circle</mat-icon>
-              </button>
-            </div>
+            <button
+              mat-stroked-button
+              color="primary"
+              (click)="openCvssCalculator()"
+              class="cvss-calculator-button"
+            >
+              <mat-icon>calculate</mat-icon>
+              {{ 'cvssCalculator.openCalculator' | transloco }}
+            </button>
           }
         </div>
 

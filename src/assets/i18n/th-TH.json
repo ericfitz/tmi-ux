@@ -647,6 +647,22 @@
     "nameRequired": "{{common.validation.nameRequired}}",
     "title": "สร้างแบบจำลองภัยคุกคาม"
   },
+  "cvssCalculator": {
+    "apply": "นำไปใช้",
+    "apply.comment": "Button to apply the calculated CVSS vector and score.",
+    "metricsSet": "{{count}}/{{total}} กำหนดแล้ว",
+    "metricsSet.comment": "Summary showing how many metrics have been configured in a category. The word 'set' means 'configured' or 'defined'.",
+    "openCalculator": "คำนวณ CVSS",
+    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "parseError": "ไม่สามารถแยกวิเคราะห์สตริงเวกเตอร์ CVSS ที่มีอยู่ได้",
+    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "title": "เครื่องคำนวณ CVSS",
+    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "vectorString": "สตริงเวกเตอร์",
+    "vectorString.comment": "Label for the CVSS vector string display.",
+    "version": "เวอร์ชัน CVSS",
+    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+  },
   "dashboard": {
     "clearAllFilters": "ล้างตัวกรองทั้งหมด",
     "clearSearch": "ล้างการค้นหา",

@@ -669,6 +669,22 @@
     "nameRequired": "{{common.validation.nameRequired}}",
     "title": "Create Threat Model"
   },
+  "cvssCalculator": {
+    "apply": "Apply",
+    "apply.comment": "Button to apply the calculated CVSS vector and score.",
+    "metricsSet": "{{count}}/{{total}} set",
+    "metricsSet.comment": "Summary showing how many metrics have been configured in a category. The word 'set' means 'configured' or 'defined'.",
+    "openCalculator": "Calculate CVSS",
+    "openCalculator.comment": "Button to open the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "parseError": "Could not parse the existing CVSS vector string",
+    "parseError.comment": "Error shown when an existing CVSS vector string cannot be parsed.",
+    "title": "CVSS Calculator",
+    "title.comment": "Title for the CVSS calculator dialog. CVSS is a proper name and should not be translated.",
+    "vectorString": "Vector String",
+    "vectorString.comment": "Label for the CVSS vector string display.",
+    "version": "CVSS Version",
+    "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
+  },
   "dashboard": {
     "clearAllFilters": "Clear All Filters",
     "clearSearch": "Clear Search",
