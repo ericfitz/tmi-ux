@@ -160,7 +160,8 @@
       "hono": "4.12.4",
       "tar": ">=7.5.9",
       "webpack": ">=5.104.1",
-      "serialize-javascript": ">=7.0.3"
+      "serialize-javascript": ">=7.0.3",
+      "immutable": ">=5.1.5"
     },
     "peerDependencyRules": {
       "ignoreMissing": [
