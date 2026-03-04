@@ -766,6 +766,10 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
 
     // Normalize: accept "79", "CWE79", "CWE-79", "cwe-79" -> "CWE-79"
     const stripped = raw.toUpperCase().replace(/^CWE-?/, '');
+    if (!/^\d{1,4}$/.test(stripped)) {
+      event.chipInput.clear();
+      return;
+    }
     const normalized = `CWE-${stripped}`;
 
     const current = this.threatForm.get('cwe_id')?.value as string[];

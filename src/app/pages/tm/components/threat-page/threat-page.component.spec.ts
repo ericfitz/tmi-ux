@@ -450,6 +450,53 @@ describe('ThreatPageComponent', () => {
       expect(mockEvent.chipInput.clear).toHaveBeenCalled();
     });
 
+    it('should reject non-numeric CWE input', () => {
+      const mockEvent = {
+        value: 'a1b2c3',
+        chipInput: { clear: vi.fn() },
+      } as unknown as MatChipInputEvent;
+
+      component.addCweId(mockEvent);
+
+      expect(component.threatForm.get('cwe_id')?.value).toEqual(['CWE-79', 'CWE-89']);
+      expect(mockEvent.chipInput.clear).toHaveBeenCalled();
+    });
+
+    it('should reject CWE input with more than 4 digits', () => {
+      const mockEvent = {
+        value: '12345',
+        chipInput: { clear: vi.fn() },
+      } as unknown as MatChipInputEvent;
+
+      component.addCweId(mockEvent);
+
+      expect(component.threatForm.get('cwe_id')?.value).toEqual(['CWE-79', 'CWE-89']);
+      expect(mockEvent.chipInput.clear).toHaveBeenCalled();
+    });
+
+    it('should reject CWE- prefix with non-numeric suffix', () => {
+      const mockEvent = {
+        value: 'CWE-abc',
+        chipInput: { clear: vi.fn() },
+      } as unknown as MatChipInputEvent;
+
+      component.addCweId(mockEvent);
+
+      expect(component.threatForm.get('cwe_id')?.value).toEqual(['CWE-79', 'CWE-89']);
+      expect(mockEvent.chipInput.clear).toHaveBeenCalled();
+    });
+
+    it('should accept case-insensitive cwe- prefix', () => {
+      const mockEvent = {
+        value: 'cwe-22',
+        chipInput: { clear: vi.fn() },
+      } as unknown as MatChipInputEvent;
+
+      component.addCweId(mockEvent);
+
+      expect(component.threatForm.get('cwe_id')?.value).toContain('CWE-22');
+    });
+
     it('should remove a CWE ID', () => {
       component.removeCweId('CWE-79');
 
