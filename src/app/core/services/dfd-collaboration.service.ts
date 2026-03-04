@@ -18,9 +18,9 @@ import {
   ChangePresenterRequestMessage,
   RemoveParticipantRequestMessage,
   PresenterRequestMessage,
-  PresenterRequestMessageWithUser,
-  PresenterDeniedMessage,
-  CurrentPresenterMessage,
+  PresenterRequestEventMessage,
+  PresenterDeniedRequestMessage,
+  PresenterDeniedEventMessage,
   Participant,
   User,
   WebSocketErrorMessage,
@@ -966,9 +966,24 @@ export class DfdCollaborationService implements OnDestroy {
       isActive: true,
     };
 
-    // Store presenter email for backwards compatibility with UI
+    // Store presenter email and show notification if presenter changed
     if (currentPresenter !== undefined) {
-      stateUpdate.currentPresenterEmail = currentPresenter?.email ?? null;
+      const previousPresenterEmail = this._collaborationState$.value.currentPresenterEmail;
+      const newPresenterEmail = currentPresenter?.email ?? null;
+      stateUpdate.currentPresenterEmail = newPresenterEmail;
+
+      // Show presenter change notification when presenter actually changes
+      if (newPresenterEmail !== previousPresenterEmail && newPresenterEmail) {
+        const currentUserEmail = this.getCurrentUserEmail();
+        if (newPresenterEmail === currentUserEmail) {
+          this._notificationService?.showPresenterEvent('assigned').subscribe();
+        } else {
+          const displayName = currentPresenter?.display_name || newPresenterEmail;
+          this._notificationService?.showPresenterEvent('assigned', displayName).subscribe();
+        }
+      } else if (newPresenterEmail === null && previousPresenterEmail !== null) {
+        this._notificationService?.showPresenterEvent('cleared').subscribe();
+      }
     }
 
     this._updateState(stateUpdate);
@@ -1311,14 +1326,21 @@ export class DfdCollaborationService implements OnDestroy {
     });
 
     // Send denial via WebSocket
-    const userProfile = this._authService.userProfile;
-    if (!userProfile) {
-      return throwError(() => new Error('User profile not available'));
+    // Find the denied user from the collaboration users list
+    const deniedUser = this._collaborationState$.value.users.find(u => u.email === userEmail);
+    if (!deniedUser) {
+      return throwError(() => new Error('Denied user not found in collaboration session'));
     }
-    // Per AsyncAPI schema, presenter_denied should include current_presenter User object
-    const denyMessage: PresenterDeniedMessage = {
-      message_type: 'presenter_denied',
-      current_presenter: this._mapToAsyncApiUser(userProfile),
+    // Per AsyncAPI schema, presenter_denied_request includes denied_user
+    const denyMessage: PresenterDeniedRequestMessage = {
+      message_type: 'presenter_denied_request',
+      denied_user: {
+        principal_type: 'user',
+        provider: deniedUser.provider,
+        provider_id: deniedUser.provider_id,
+        email: deniedUser.email,
+        display_name: deniedUser.name,
+      },
     };
     return this._webSocketAdapter.sendTMIMessage(denyMessage).pipe(
       map(() => {
@@ -1720,19 +1742,13 @@ export class DfdCollaborationService implements OnDestroy {
     // NOTE: join/leave events are now handled by WebSocketService
     // to avoid duplicate handling and conflicts with local state updates
 
-    // Listen to TMI presenter change events
-    this._subscriptions.add(
-      this._webSocketAdapter
-        .getTMIMessagesOfType<CurrentPresenterMessage>('current_presenter')
-        .subscribe(message => {
-          this._handlePresenterChanged(message);
-        }),
-    );
+    // Note: presenter changes are broadcast via participants_update (current_presenter field)
+    // The dedicated current_presenter message type is not in the AsyncAPI spec
 
     // Listen to presenter request events (for host/owner)
     this._subscriptions.add(
       this._webSocketAdapter
-        .getTMIMessagesOfType<PresenterRequestMessageWithUser>('presenter_request')
+        .getTMIMessagesOfType<PresenterRequestEventMessage>('presenter_request_event')
         .subscribe(message => {
           this._handlePresenterRequest(message);
         }),
@@ -1741,7 +1757,7 @@ export class DfdCollaborationService implements OnDestroy {
     // Listen to presenter denied events (for participants)
     this._subscriptions.add(
       this._webSocketAdapter
-        .getTMIMessagesOfType<PresenterDeniedMessage>('presenter_denied')
+        .getTMIMessagesOfType<PresenterDeniedEventMessage>('presenter_denied_event')
         .subscribe(message => {
           this._handlePresenterDenied(message);
         }),
@@ -1926,75 +1942,34 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   // join/leave handlers removed - now handled by WebSocketService
-
-  /**
-   * Handle presenter changed event
-   * Calls REST API to get updated session status and refresh participants list
-   */
-  private _handlePresenterChanged(message: CurrentPresenterMessage): void {
-    this._logger.debugComponent(
-      'DfdCollaborationService',
-      'Presenter changed event received',
-      message,
-    );
-
-    if (!message || !message.current_presenter) {
-      this._logger.warn('Invalid presenter changed message received', message);
-      return;
-    }
-
-    // Extract user_id with email fallback
-    const presenterUserId = this._getUserIdentifier(message.current_presenter);
-    const initiatingUserId = message.initiating_user
-      ? this._getUserIdentifier(message.initiating_user)
-      : null;
-
-    this._logger.info('Presenter changed', {
-      newPresenter: presenterUserId,
-      initiatedBy: initiatingUserId,
-    });
-
-    // Update local presenter state
-    this._updateState({ currentPresenterEmail: presenterUserId });
-    this._updateUsersPresenterStatus(presenterUserId);
-
-    // Show notification about presenter change
-    if (this._isCurrentUser(message.current_presenter)) {
-      this._notificationService?.showPresenterEvent('assigned').subscribe();
-    } else {
-      const displayName = message.current_presenter.display_name || presenterUserId;
-      this._notificationService?.showPresenterEvent('assigned', displayName).subscribe();
-    }
-
-    // Presenter info will be updated through participants_update WebSocket message
-  }
+  // _handlePresenterChanged removed - presenter changes now come via participants_update
+  // and are handled in updateAllParticipants()
 
   /**
    * Handle presenter request event (host receives this when a participant requests presenter)
    */
-  private _handlePresenterRequest(message: PresenterRequestMessageWithUser): void {
-    // Defensive: The server should add user field per PresenterRequestMessageWithUser,
-    // but we need to handle cases where it's missing
-    if (!message.user) {
-      this._logger.error(
-        'Received presenter_request without user field - server not conforming to expected schema',
-        { message },
-      );
+  private _handlePresenterRequest(message: PresenterRequestEventMessage): void {
+    // Defensive: The server should always include requesting_user per AsyncAPI spec
+    if (!message.requesting_user) {
+      this._logger.error('Received presenter_request_event without requesting_user field', {
+        message,
+      });
       return;
     }
 
     // Extract user identifier with fallback
-    const userIdentifier = this._getUserIdentifier(message.user);
-    const displayName = message.user.display_name || message.user.email || userIdentifier;
+    const userIdentifier = this._getUserIdentifier(message.requesting_user);
+    const displayName =
+      message.requesting_user.display_name || message.requesting_user.email || userIdentifier;
 
     this._logger.info('Presenter request received', {
-      providerId: message.user.provider_id,
-      userEmail: message.user.email,
+      providerId: message.requesting_user.provider_id,
+      userEmail: message.requesting_user.email,
       displayName: displayName,
     });
 
     // Add to pending requests list (using email for backward compatibility)
-    const userEmail = message.user.email || userIdentifier;
+    const userEmail = message.requesting_user.email || userIdentifier;
     this.addPresenterRequest(userEmail);
 
     // Update the user's presenterRequestState to 'hand_raised'
@@ -2035,12 +2010,12 @@ export class DfdCollaborationService implements OnDestroy {
   /**
    * Handle presenter denied event (participant receives this when their request is denied)
    */
-  private _handlePresenterDenied(message: PresenterDeniedMessage): void {
+  private _handlePresenterDenied(message: PresenterDeniedEventMessage): void {
     this._logger.info('Presenter request denied', {
-      currentPresenter: message.current_presenter,
+      deniedUser: message.denied_user,
     });
 
-    // Per schema, presenter_denied only includes current_presenter (User object)
+    // Per AsyncAPI spec, presenter_denied_event includes denied_user
     // This message is sent only to the requester, so always show notification
     this._notificationService?.showPresenterEvent('requestDenied').subscribe();
   }

@@ -23,7 +23,6 @@ import {
   AuthorizationDeniedMessage,
   DiagramStateMessage,
   SyncStatusResponseMessage,
-  CurrentPresenterMessage,
   PresenterCursorMessage,
   PresenterSelectionMessage,
   ParticipantsUpdateMessage,
@@ -296,16 +295,8 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
         }),
     );
 
-    // Subscribe to presenter messages
-    this._subscriptions.add(
-      this._webSocketAdapter
-        .getTMIMessagesOfType<CurrentPresenterMessage>('current_presenter')
-        .pipe(takeUntil(this._destroy$))
-        .subscribe({
-          next: message => this._handleCurrentPresenter(message),
-          error: error => this._logger.error('Error in current presenter subscription', error),
-        }),
-    );
+    // Note: presenter changes are broadcast via participants_update (current_presenter field)
+    // The dedicated current_presenter message type is not in the AsyncAPI spec
 
     this._subscriptions.add(
       this._webSocketAdapter
@@ -432,22 +423,6 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
     this._domainEvents$.next({
       type: 'sync-status-response',
       update_vector: message.update_vector,
-    });
-  }
-
-  private _handleCurrentPresenter(message: CurrentPresenterMessage): void {
-    this._logger.debugComponent('InfraDfdWebsocketAdapter', 'Current presenter update', {
-      presenter: message.current_presenter,
-      initiatingUser: message.initiating_user,
-    });
-
-    // Extract provider_id from User object (with email fallback)
-    const presenterProviderId =
-      message.current_presenter?.provider_id || message.current_presenter?.email || null;
-
-    this._domainEvents$.next({
-      type: 'presenter-changed',
-      presenterEmail: presenterProviderId,
     });
   }
 

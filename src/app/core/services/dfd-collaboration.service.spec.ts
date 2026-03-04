@@ -10,6 +10,7 @@ import '@angular/compiler';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { BehaviorSubject, of } from 'rxjs';
 import { Router } from '@angular/router';
+import { TranslocoService } from '@jsverse/transloco';
 import { DfdCollaborationService } from './dfd-collaboration.service';
 import { LoggerService } from './logger.service';
 import { WebSocketAdapter, WebSocketState } from './websocket.adapter';
@@ -18,6 +19,8 @@ import {
   IThreatModelService,
   ICollaborationNotificationService,
 } from '../interfaces';
+
+
 
 describe('DfdCollaborationService', () => {
   let service: DfdCollaborationService;
@@ -44,9 +47,19 @@ describe('DfdCollaborationService', () => {
   };
   let mockNotificationService: {
     showNotification: ReturnType<typeof vi.fn>;
+    showPresenterRequestReceived: ReturnType<typeof vi.fn>;
+    showPresenterEvent: ReturnType<typeof vi.fn>;
+    showSessionEvent: ReturnType<typeof vi.fn>;
+    showOperationError: ReturnType<typeof vi.fn>;
+    showWebSocketStatus: ReturnType<typeof vi.fn>;
+    showWebSocketError: ReturnType<typeof vi.fn>;
+    showError: ReturnType<typeof vi.fn>;
   };
   let mockRouter: {
     navigate: ReturnType<typeof vi.fn>;
+  };
+  let mockTransloco: {
+    translate: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(() => {
@@ -91,10 +104,21 @@ describe('DfdCollaborationService', () => {
 
     mockNotificationService = {
       showNotification: vi.fn(),
+      showPresenterRequestReceived: vi.fn().mockReturnValue(of(null)),
+      showPresenterEvent: vi.fn().mockReturnValue(of(undefined)),
+      showSessionEvent: vi.fn().mockReturnValue(of(undefined)),
+      showOperationError: vi.fn().mockReturnValue(of(undefined)),
+      showWebSocketStatus: vi.fn().mockReturnValue(of(undefined)),
+      showWebSocketError: vi.fn().mockReturnValue(of(undefined)),
+      showError: vi.fn().mockReturnValue(of(undefined)),
     };
 
     mockRouter = {
       navigate: vi.fn().mockResolvedValue(true),
+    };
+
+    mockTransloco = {
+      translate: vi.fn().mockImplementation((key: string) => key),
     };
 
     service = new DfdCollaborationService(
@@ -104,6 +128,7 @@ describe('DfdCollaborationService', () => {
       mockWebSocketAdapter as unknown as WebSocketAdapter,
       mockNotificationService as unknown as ICollaborationNotificationService,
       mockRouter as unknown as Router,
+      mockTransloco as unknown as TranslocoService,
     );
   });
 
@@ -321,6 +346,185 @@ describe('DfdCollaborationService', () => {
 
       expect(startSpy).toHaveBeenCalled();
       expect(result).toBe(true);
+    });
+  });
+
+  describe('denyPresenterRequest()', () => {
+    it('should send presenter_denied_request with denied_user field', () => {
+      // Set up collaboration state with host and a requesting user
+      service.updateAllParticipants(
+        [
+          {
+            user: {
+              principal_type: 'user',
+              provider: 'google',
+              provider_id: 'google-123',
+              email: 'user@example.com',
+              name: 'Test User',
+            },
+            permissions: 'writer',
+            last_activity: new Date().toISOString(),
+          },
+          {
+            user: {
+              principal_type: 'user',
+              provider: 'github',
+              provider_id: 'github-456',
+              email: 'requester@example.com',
+              name: 'Requester',
+            },
+            permissions: 'writer',
+            last_activity: new Date().toISOString(),
+          },
+        ],
+        {
+          principal_type: 'user',
+          provider: 'google',
+          provider_id: 'google-123',
+          email: 'user@example.com',
+          display_name: 'Test User',
+        },
+      );
+
+      // Add a pending request
+      service.addPresenterRequest('requester@example.com');
+
+      let result: boolean | undefined;
+      service.denyPresenterRequest('requester@example.com').subscribe(val => {
+        result = val;
+      });
+
+      expect(result).toBe(true);
+
+      // Verify the message sent has the correct structure
+      const sentMessage = mockWebSocketAdapter.sendTMIMessage.mock.calls[0][0];
+      expect(sentMessage.message_type).toBe('presenter_denied_request');
+      expect(sentMessage.denied_user).toBeDefined();
+      expect(sentMessage.denied_user.email).toBe('requester@example.com');
+      expect(sentMessage.denied_user.principal_type).toBe('user');
+      // Should NOT have current_presenter field (old format)
+      expect(sentMessage.current_presenter).toBeUndefined();
+    });
+
+    it('should error when denied user not found in session', () => {
+      // Set up as host but without the target user
+      service.updateAllParticipants(
+        [
+          {
+            user: {
+              principal_type: 'user',
+              provider: 'google',
+              provider_id: 'google-123',
+              email: 'user@example.com',
+              name: 'Test User',
+            },
+            permissions: 'writer',
+            last_activity: new Date().toISOString(),
+          },
+        ],
+        {
+          principal_type: 'user',
+          provider: 'google',
+          provider_id: 'google-123',
+          email: 'user@example.com',
+          display_name: 'Test User',
+        },
+      );
+
+      let error: Error | undefined;
+      service.denyPresenterRequest('nonexistent@example.com').subscribe({
+        error: (err: Error) => {
+          error = err;
+        },
+      });
+
+      expect(error).toBeDefined();
+      expect(error!.message).toContain('not found');
+    });
+  });
+
+  describe('updateAllParticipants() presenter notifications', () => {
+    it('should show presenter assigned notification when presenter changes', () => {
+      const newPresenter = {
+        principal_type: 'user' as const,
+        provider: 'github',
+        provider_id: 'github-456',
+        email: 'presenter@example.com',
+        display_name: 'New Presenter',
+      };
+
+      service.updateAllParticipants(
+        [
+          {
+            user: {
+              principal_type: 'user',
+              provider: 'github',
+              provider_id: 'github-456',
+              email: 'presenter@example.com',
+              name: 'New Presenter',
+            },
+            permissions: 'writer',
+            last_activity: new Date().toISOString(),
+          },
+        ],
+        undefined,
+        newPresenter,
+      );
+
+      expect(mockNotificationService.showPresenterEvent).toHaveBeenCalledWith(
+        'assigned',
+        'New Presenter',
+      );
+    });
+
+    it('should show cleared notification when presenter is removed', () => {
+      // First set a presenter
+      service.updateAllParticipants(
+        [
+          {
+            user: {
+              principal_type: 'user',
+              provider: 'github',
+              provider_id: 'github-456',
+              email: 'presenter@example.com',
+              name: 'Presenter',
+            },
+            permissions: 'writer',
+            last_activity: new Date().toISOString(),
+          },
+        ],
+        undefined,
+        {
+          principal_type: 'user',
+          provider: 'github',
+          provider_id: 'github-456',
+          email: 'presenter@example.com',
+          display_name: 'Presenter',
+        },
+      );
+
+      mockNotificationService.showPresenterEvent.mockClear();
+
+      // Now clear the presenter
+      service.updateAllParticipants(
+        [
+          {
+            user: {
+              principal_type: 'user',
+              provider: 'github',
+              provider_id: 'github-456',
+              email: 'presenter@example.com',
+              name: 'Presenter',
+            },
+            permissions: 'writer',
+            last_activity: new Date().toISOString(),
+          },
+        ],
+        undefined,
+        null,
+      );
+
+      expect(mockNotificationService.showPresenterEvent).toHaveBeenCalledWith('cleared');
     });
   });
 

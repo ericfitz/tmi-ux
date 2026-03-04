@@ -97,23 +97,38 @@ export interface DiagramOperationEventMessage {
  */
 export type DiagramOperationMessage = DiagramOperationEventMessage;
 
+/**
+ * Client-to-server presenter request
+ * Client does not send requesting_user - server uses authenticated context
+ */
 export interface PresenterRequestMessage {
   message_type: 'presenter_request';
 }
 
 /**
- * Extended version of PresenterRequestMessage with server-added user field
- * NOTE: The AsyncAPI schema does not include a user field (clients send without it),
- * but the server includes it when broadcasting the request to the host.
- * This is a gap between the schema and implementation.
+ * Server-to-host event sent when a participant requests to become the presenter
+ * Only sent to the session host for approval
  */
-export interface PresenterRequestMessageWithUser extends PresenterRequestMessage {
-  user: User;
+export interface PresenterRequestEventMessage {
+  message_type: 'presenter_request_event';
+  requesting_user: User;
 }
 
-export interface PresenterDeniedMessage {
-  message_type: 'presenter_denied';
-  current_presenter: User;
+/**
+ * Client-to-server request from host to deny a presenter request
+ */
+export interface PresenterDeniedRequestMessage {
+  message_type: 'presenter_denied_request';
+  denied_user: User;
+}
+
+/**
+ * Server-to-requester event sent when a presenter request is denied
+ * Only sent to the user whose request was denied
+ */
+export interface PresenterDeniedEventMessage {
+  message_type: 'presenter_denied_event';
+  denied_user: User;
 }
 
 /**
@@ -132,8 +147,9 @@ export interface ChangePresenterRequestMessage {
 export type ChangePresenterMessage = ChangePresenterRequestMessage;
 
 /**
- * Server-to-client event broadcasting current presenter (broadcast to all)
- * Includes initiating_user showing who triggered the presenter change
+ * @deprecated Server does not send a dedicated current_presenter message.
+ * Presenter changes are broadcast via participants_update with current_presenter field.
+ * Kept for backward compatibility during transition.
  */
 export interface CurrentPresenterMessage {
   message_type: 'current_presenter';
@@ -328,9 +344,11 @@ export type TMIWebSocketMessage =
   | DiagramOperationRequestMessage
   | DiagramOperationEventMessage
   | PresenterRequestMessage
-  | PresenterDeniedMessage
+  | PresenterRequestEventMessage
+  | PresenterDeniedRequestMessage
+  | PresenterDeniedEventMessage
   | ChangePresenterRequestMessage
-  | CurrentPresenterMessage
+  | CurrentPresenterMessage // deprecated - kept for backward compatibility
   | PresenterCursorMessage
   | PresenterSelectionMessage
   | AuthorizationDeniedMessage
@@ -351,9 +369,11 @@ export type TMIMessageType =
   | 'diagram_operation_request'
   | 'diagram_operation_event'
   | 'presenter_request'
-  | 'presenter_denied'
+  | 'presenter_request_event'
+  | 'presenter_denied_request'
+  | 'presenter_denied_event'
   | 'change_presenter_request'
-  | 'current_presenter'
+  | 'current_presenter' // deprecated - kept for backward compatibility
   | 'presenter_cursor'
   | 'presenter_selection'
   | 'authorization_denied'
