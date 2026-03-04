@@ -663,6 +663,16 @@
     "version": "CVSS ورژن",
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
+  "cwePicker": {
+    "addCweReference": "خطرے میں CWE حوالہ شامل کریں",
+    "chooseCwe": "{{cwePicker.title}}",
+    "extendedDescription": "تفصیلی وضاحت",
+    "loading": "کمزوریاں لوڈ ہو رہی ہیں...",
+    "matchingWeaknesses": "مطابق کمزوریاں",
+    "noResults": "آپ کی تلاش سے کوئی کمزوری مطابقت نہیں رکھتی",
+    "searchLabel": "کمزوریاں تلاش کریں",
+    "title": "CWE منتخب کریں"
+  },
   "dashboard": {
     "clearAllFilters": "تمام فلٹرز صاف کریں",
     "clearSearch": "تلاش صاف کریں",

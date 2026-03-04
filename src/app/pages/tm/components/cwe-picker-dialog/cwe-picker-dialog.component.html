@@ -1,0 +1,60 @@
+<div class="cwe-picker-dialog" [dir]="currentDirection">
+  <h2 mat-dialog-title>{{ 'cwePicker.title' | transloco }}</h2>
+
+  <mat-dialog-content appScrollIndicator>
+    <!-- Search field -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'cwePicker.searchLabel' | transloco }}</mat-label>
+      <input matInput [formControl]="searchControl" />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <!-- Matching Weaknesses list -->
+    <mat-label class="section-label">{{ 'cwePicker.matchingWeaknesses' | transloco }}</mat-label>
+
+    @if (isLoading) {
+      <div class="loading-container">
+        <mat-spinner diameter="32"></mat-spinner>
+        <span>{{ 'cwePicker.loading' | transloco }}</span>
+      </div>
+    } @else if (filteredWeaknesses.length === 0) {
+      <div class="no-results">{{ 'cwePicker.noResults' | transloco }}</div>
+    } @else {
+      <mat-selection-list
+        [multiple]="false"
+        [hideSingleSelectionIndicator]="true"
+        (selectionChange)="onSelectionChange($event)"
+        class="weakness-list"
+      >
+        @for (cwe of filteredWeaknesses; track cwe.cwe_id) {
+          <mat-list-option [value]="cwe" [selected]="selectedCwe?.cwe_id === cwe.cwe_id">
+            <span matListItemTitle>{{ cwe.cwe_id }}</span>
+            <span matListItemLine>{{ cwe.name }}</span>
+          </mat-list-option>
+        }
+      </mat-selection-list>
+    }
+
+    <!-- Extended Description -->
+    @if (selectedCwe) {
+      <mat-form-field appearance="outline" class="full-width extended-desc">
+        <mat-label>{{ 'cwePicker.extendedDescription' | transloco }}</mat-label>
+        <textarea
+          matInput
+          readonly
+          [value]="selectedCwe.extended_description || selectedCwe.description"
+          rows="4"
+        ></textarea>
+      </mat-form-field>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="action-buttons">
+    <button mat-button (click)="cancel()">
+      {{ 'common.cancel' | transloco }}
+    </button>
+    <button mat-raised-button color="primary" (click)="addCwe()" [disabled]="!selectedCwe">
+      {{ 'cwePicker.addCweReference' | transloco }}
+    </button>
+  </mat-dialog-actions>
+</div>

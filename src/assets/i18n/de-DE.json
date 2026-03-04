@@ -663,6 +663,16 @@
     "version": "CVSS-Version",
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
+  "cwePicker": {
+    "addCweReference": "CWE-Referenz zur Bedrohung hinzufügen",
+    "chooseCwe": "{{cwePicker.title}}",
+    "extendedDescription": "Erweiterte Beschreibung",
+    "loading": "Schwachstellen werden geladen...",
+    "matchingWeaknesses": "Übereinstimmende Schwachstellen",
+    "noResults": "Keine Schwachstellen entsprechen Ihrer Suche",
+    "searchLabel": "Schwachstellen durchsuchen",
+    "title": "CWE auswählen"
+  },
   "dashboard": {
     "clearAllFilters": "Alle Filter löschen",
     "clearSearch": "Suche löschen",

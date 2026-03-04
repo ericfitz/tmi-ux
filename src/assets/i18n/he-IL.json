@@ -663,6 +663,16 @@
     "version": "גרסת CVSS",
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
+  "cwePicker": {
+    "addCweReference": "הוסף הפניית CWE לאיום",
+    "chooseCwe": "{{cwePicker.title}}",
+    "extendedDescription": "תיאור מורחב",
+    "loading": "טוען חולשות...",
+    "matchingWeaknesses": "חולשות תואמות",
+    "noResults": "לא נמצאו חולשות התואמות לחיפוש שלך",
+    "searchLabel": "חפש חולשות",
+    "title": "בחר CWE"
+  },
   "dashboard": {
     "clearAllFilters": "נקה את כל המסננים",
     "clearSearch": "נקה חיפוש",

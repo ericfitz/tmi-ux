@@ -663,6 +663,16 @@
     "version": "CVSSバージョン",
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
+  "cwePicker": {
+    "addCweReference": "CWEリファレンスを脅威に追加",
+    "chooseCwe": "{{cwePicker.title}}",
+    "extendedDescription": "拡張説明",
+    "loading": "脆弱性を読み込み中...",
+    "matchingWeaknesses": "一致する脆弱性",
+    "noResults": "検索に一致する脆弱性がありません",
+    "searchLabel": "脆弱性を検索",
+    "title": "CWEを選択"
+  },
   "dashboard": {
     "clearAllFilters": "すべてのフィルターをクリア",
     "clearSearch": "検索をクリア",

@@ -663,6 +663,16 @@
     "version": "Versão do CVSS",
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
+  "cwePicker": {
+    "addCweReference": "Adicionar Referência CWE à Ameaça",
+    "chooseCwe": "{{cwePicker.title}}",
+    "extendedDescription": "Descrição Estendida",
+    "loading": "Carregando fraquezas...",
+    "matchingWeaknesses": "Fraquezas Correspondentes",
+    "noResults": "Nenhuma fraqueza corresponde à sua pesquisa",
+    "searchLabel": "Pesquisar fraquezas",
+    "title": "Escolher um CWE"
+  },
   "dashboard": {
     "clearAllFilters": "Limpar Todos os Filtros",
     "clearSearch": "Limpar Pesquisa",

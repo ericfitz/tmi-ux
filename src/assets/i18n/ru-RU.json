@@ -663,6 +663,16 @@
     "version": "Версия CVSS",
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
+  "cwePicker": {
+    "addCweReference": "Добавить ссылку CWE к угрозе",
+    "chooseCwe": "{{cwePicker.title}}",
+    "extendedDescription": "Расширенное описание",
+    "loading": "Загрузка уязвимостей...",
+    "matchingWeaknesses": "Совпадающие уязвимости",
+    "noResults": "Уязвимости, соответствующие запросу, не найдены",
+    "searchLabel": "Поиск уязвимостей",
+    "title": "Выбрать CWE"
+  },
   "dashboard": {
     "clearAllFilters": "Сбросить все фильтры",
     "clearSearch": "Очистить поиск",

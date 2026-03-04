@@ -1,0 +1,60 @@
+.cwe-picker-dialog {
+  min-width: 550px;
+
+  // Prevent the floating label from being clipped by the dialog content edge
+  mat-dialog-content {
+    padding-top: 8px;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.section-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--theme-text-primary);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.weakness-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--theme-divider, #e0e0e0);
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  color: var(--theme-text-secondary, #666);
+}
+
+.no-results {
+  padding: 24px;
+  text-align: center;
+  color: var(--theme-text-secondary, #666);
+}
+
+.extended-desc {
+  margin-top: 16px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+// Responsive
+@media (width <= 768px) {
+  .cwe-picker-dialog {
+    min-width: 320px;
+  }
+}

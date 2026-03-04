@@ -663,6 +663,16 @@
     "version": "Versi CVSS",
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
+  "cwePicker": {
+    "addCweReference": "Tambahkan Referensi CWE ke Ancaman",
+    "chooseCwe": "{{cwePicker.title}}",
+    "extendedDescription": "Deskripsi Lengkap",
+    "loading": "Memuat kelemahan...",
+    "matchingWeaknesses": "Kelemahan yang Cocok",
+    "noResults": "Tidak ada kelemahan yang sesuai dengan pencarian Anda",
+    "searchLabel": "Cari kelemahan",
+    "title": "Pilih CWE"
+  },
   "dashboard": {
     "clearAllFilters": "Hapus Semua Filter",
     "clearSearch": "Hapus Pencarian",

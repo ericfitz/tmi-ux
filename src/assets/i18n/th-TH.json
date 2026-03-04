@@ -663,6 +663,16 @@
     "version": "เวอร์ชัน CVSS",
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
+  "cwePicker": {
+    "addCweReference": "เพิ่มการอ้างอิง CWE ไปยังภัยคุกคาม",
+    "chooseCwe": "{{cwePicker.title}}",
+    "extendedDescription": "คำอธิบายเพิ่มเติม",
+    "loading": "กำลังโหลดจุดอ่อน...",
+    "matchingWeaknesses": "จุดอ่อนที่ตรงกัน",
+    "noResults": "ไม่มีจุดอ่อนที่ตรงกับการค้นหาของคุณ",
+    "searchLabel": "ค้นหาจุดอ่อน",
+    "title": "เลือก CWE"
+  },
   "dashboard": {
     "clearAllFilters": "ล้างตัวกรองทั้งหมด",
     "clearSearch": "ล้างการค้นหา",

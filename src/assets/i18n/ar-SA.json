@@ -663,6 +663,16 @@
     "version": "إصدار CVSS",
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
+  "cwePicker": {
+    "addCweReference": "إضافة مرجع CWE إلى التهديد",
+    "chooseCwe": "{{cwePicker.title}}",
+    "extendedDescription": "الوصف الموسَّع",
+    "loading": "جارٍ تحميل الثغرات...",
+    "matchingWeaknesses": "الثغرات المطابقة",
+    "noResults": "لا توجد ثغرات تطابق بحثك",
+    "searchLabel": "البحث في الثغرات",
+    "title": "اختر CWE"
+  },
   "dashboard": {
     "clearAllFilters": "مسح جميع الفلاتر",
     "clearSearch": "مسح البحث",

@@ -204,8 +204,20 @@
     margin-bottom: 4px;
   }
 
+  .chip-input-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+
+    // Vertically center the action button with the mat-form-field input area,
+    // offsetting for the subscript space mat-form-field reserves at the bottom.
+    > button {
+      margin-top: 4px;
+    }
+  }
+
   mat-form-field {
-    width: 100%;
+    flex: 1;
     margin-bottom: 0;
   }
 }

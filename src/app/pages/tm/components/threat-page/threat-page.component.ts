@@ -52,6 +52,11 @@ import {
   CvssCalculatorDialogResult,
   CvssVersion,
 } from '../cvss-calculator-dialog/cvss-calculator-dialog.types';
+import { CwePickerDialogComponent } from '../cwe-picker-dialog/cwe-picker-dialog.component';
+import {
+  CwePickerDialogData,
+  CwePickerDialogResult,
+} from '../cwe-picker-dialog/cwe-picker-dialog.types';
 import { AddonService } from '../../../../core/services/addon.service';
 import { Addon } from '../../../../types/addon.types';
 import {
@@ -793,6 +798,32 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       this.threatForm.patchValue({ cwe_id: updated });
       this.threatForm.markAsDirty();
     }
+  }
+
+  /**
+   * Open the CWE picker dialog to browse and select a CWE
+   */
+  openCwePicker(): void {
+    const dialogRef = this.dialog.open(CwePickerDialogComponent, {
+      width: '700px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: {
+        existingCweIds: this.threatForm.get('cwe_id')?.value as string[],
+      } as CwePickerDialogData,
+    });
+
+    dialogRef
+      .afterClosed()
+      .pipe(this.untilDestroyed())
+      .subscribe((result: CwePickerDialogResult | undefined) => {
+        if (!result) return;
+        const current = this.threatForm.get('cwe_id')?.value as string[];
+        if (!current.includes(result.cweId)) {
+          this.threatForm.patchValue({ cwe_id: [...current, result.cweId] });
+          this.threatForm.markAsDirty();
+        }
+      });
   }
 
   /**

@@ -663,6 +663,16 @@
     "version": "CVSS 버전",
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
+  "cwePicker": {
+    "addCweReference": "위협에 CWE 참조 추가",
+    "chooseCwe": "{{cwePicker.title}}",
+    "extendedDescription": "확장 설명",
+    "loading": "취약점 로드 중...",
+    "matchingWeaknesses": "일치하는 취약점",
+    "noResults": "검색과 일치하는 취약점이 없습니다",
+    "searchLabel": "취약점 검색",
+    "title": "CWE 선택"
+  },
   "dashboard": {
     "clearAllFilters": "모든 필터 지우기",
     "clearSearch": "검색 지우기",

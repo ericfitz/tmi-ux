@@ -685,6 +685,24 @@
     "version": "CVSS Version",
     "version.comment": "Label for the CVSS version selector. CVSS is a proper name and should not be translated."
   },
+  "cwePicker": {
+    "addCweReference": "Add CWE Reference to Threat",
+    "addCweReference.comment": "Button label to add the selected CWE weakness to the threat. CWE = Common Weakness Enumeration.",
+    "chooseCwe": "{{cwePicker.title}}",
+    "chooseCwe.comment": "Tooltip for the action button that opens the CWE picker dialog. CWE = Common Weakness Enumeration.",
+    "extendedDescription": "Extended Description",
+    "extendedDescription.comment": "Label for the extended description field shown when a CWE weakness is selected.",
+    "loading": "Loading weaknesses...",
+    "loading.comment": "Message shown while CWE weakness data is loading.",
+    "matchingWeaknesses": "Matching Weaknesses",
+    "matchingWeaknesses.comment": "Label for the list of CWE weaknesses matching the search query.",
+    "noResults": "No weaknesses match your search",
+    "noResults.comment": "Message shown when no CWE weaknesses match the search query.",
+    "searchLabel": "Search weaknesses",
+    "searchLabel.comment": "Label for the search input in the CWE picker dialog.",
+    "title": "Choose a CWE",
+    "title.comment": "Dialog title for CWE weakness picker. CWE = Common Weakness Enumeration."
+  },
   "dashboard": {
     "clearAllFilters": "Clear All Filters",
     "clearSearch": "Clear Search",
