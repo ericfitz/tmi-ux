@@ -62,6 +62,8 @@ localization_dedup_plan.*
 .ck/**
 *.log
 .version-bump-type
+deliverables
+deliverables/**
 
 # Playwright
 /test-results
