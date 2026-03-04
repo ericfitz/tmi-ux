@@ -1,11 +1,16 @@
 .cvss-calculator-dialog {
   min-width: 550px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: inherit;
 }
 
 .dialog-title {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .score-badge {
@@ -15,6 +20,12 @@
   font-size: 14px;
   font-weight: 600;
   background-color: var(--theme-hover, #f0f0f0);
+}
+
+.dialog-content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 // Version selector
@@ -86,6 +97,7 @@
   padding: 12px 24px !important;
   border-top: 1px solid var(--theme-divider, #e0e0e0);
   background-color: var(--theme-surface, #fff);
+  flex-shrink: 0;
 }
 
 .score-display {
