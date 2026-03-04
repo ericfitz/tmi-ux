@@ -240,9 +240,21 @@
   }
 }
 
-.cvss-calculator-button {
-  margin-top: 4px;
+.cvss-input-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   margin-bottom: 16px;
+
+  .cvss-vector-input {
+    flex: 1;
+  }
+
+  .cvss-calculator-button {
+    // Vertically center with the outline form field input area
+    // (outline form field is ~56px tall with ~10px top padding for the notch)
+    margin-top: 10px;
+  }
 }
 
 .clickable {

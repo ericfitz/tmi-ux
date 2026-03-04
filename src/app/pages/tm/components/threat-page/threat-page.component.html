@@ -263,16 +263,38 @@
           }
 
           @if (canEdit) {
-            <button
-              mat-stroked-button
-              color="primary"
-              (click)="openCvssCalculator()"
-              [disabled]="!canAddCvss"
-              class="cvss-calculator-button"
-            >
-              <mat-icon>add</mat-icon>
-              {{ 'cvssCalculator.openCalculator' | transloco }}
-            </button>
+            <div class="cvss-input-row">
+              <mat-form-field
+                appearance="outline"
+                class="cvss-vector-input"
+                subscriptSizing="dynamic"
+              >
+                <input
+                  matInput
+                  [placeholder]="'cvssCalculator.vectorPlaceholder' | transloco"
+                  [formControl]="cvssVectorControl"
+                  (keydown.enter)="$event.preventDefault(); addCvssFromVector()"
+                  [disabled]="!canAddCvss"
+                />
+                @if (cvssVectorControl.hasError('invalidVector')) {
+                  <mat-error>{{ 'cvssCalculator.vectorInvalid' | transloco }}</mat-error>
+                } @else if (cvssVectorControl.hasError('duplicateVersion')) {
+                  <mat-error>{{ 'cvssCalculator.vectorDuplicateVersion' | transloco }}</mat-error>
+                } @else if (cvssVectorControl.hasError('unsupportedVersion')) {
+                  <mat-error>{{ 'cvssCalculator.vectorUnsupportedVersion' | transloco }}</mat-error>
+                }
+              </mat-form-field>
+              <button
+                mat-stroked-button
+                color="primary"
+                (click)="openCvssCalculator()"
+                [disabled]="!canAddCvss"
+                class="cvss-calculator-button"
+              >
+                <mat-icon>add</mat-icon>
+                {{ 'cvssCalculator.openCalculator' | transloco }}
+              </button>
+            </div>
           }
         </div>
 
