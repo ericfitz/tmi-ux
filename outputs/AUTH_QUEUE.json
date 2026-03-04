@@ -1,0 +1,322 @@
+{
+  "vulnerabilities": [
+    {
+      "id": "AUTH-001",
+      "title": "JWT Tokens Exposed in WebSocket URL Query Parameters",
+      "severity": "critical",
+      "confidence": "high",
+      "category": "authentication",
+      "cwe": "CWE-598",
+      "owasp": "A02:2021 - Cryptographic Failures",
+      "description": "JWT authentication tokens are passed as query parameters in WebSocket URLs (wss://domain/ws?token=JWT). This exposes sensitive tokens to server logs, browser history, network monitoring tools, and potential referrer leakage.",
+      "location": {
+        "file": "/app/repos/tmi-ux/src/app/core/services/dfd-collaboration.service.ts",
+        "line": 1643,
+        "code": "fullUrl = `${fullUrl}${separator}token=${encodeURIComponent(token.token)}`"
+      },
+      "additional_locations": [
+        {
+          "file": "/app/repos/tmi-ux/src/app/core/services/websocket.adapter.ts",
+          "line": 248,
+          "code": "this._socket = new WebSocket(url);  // URL contains token in query string"
+        }
+      ],
+      "impact": "High - JWT tokens can be extracted from web server logs, proxy logs, browser debugging tools, and network traffic analysis. Attackers with access to logs can steal valid authentication tokens and impersonate users.",
+      "exploitation": {
+        "difficulty": "low",
+        "prerequisites": [
+          "Access to server logs, proxy logs, or network monitoring tools",
+          "User must initiate WebSocket collaboration session"
+        ],
+        "steps": [
+          "Monitor WebSocket connection establishment (server logs, network capture)",
+          "Extract JWT token from query parameter: wss://api.example.com/ws?token=eyJhbGc...",
+          "Use extracted token to authenticate API requests or WebSocket connections",
+          "Impersonate victim user until token expires"
+        ]
+      },
+      "recommendation": "Replace query parameter authentication with one of the following secure alternatives:\n\n**Option 1 (Preferred): WebSocket Subprotocol Authentication**\n```typescript\n// Instead of token in URL, use subprotocol:\nconst socket = new WebSocket(url, ['authorization', `Bearer.${token}`]);\n```\n\n**Option 2: Initial Message Authentication**\n```typescript\nconst socket = new WebSocket(url);\nsocket.onopen = () => {\n  socket.send(JSON.stringify({\n    type: 'authenticate',\n    token: authService.getStoredToken().token\n  }));\n};\n```\n\n**Option 3: Cookie-Based Authentication**\nUse httpOnly, secure cookies for WebSocket authentication. Backend validates cookie on WebSocket upgrade request.",
+      "references": [
+        "CWE-598: Use of GET Request Method With Sensitive Query Strings",
+        "OWASP Top 10 2021 - A02: Cryptographic Failures",
+        "RFC 6455 (WebSocket Protocol) Section 1.3 - Opening Handshake"
+      ],
+      "cvss_score": 7.5,
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+      "test_case": {
+        "type": "manual",
+        "steps": [
+          "Open browser developer tools (F12)",
+          "Authenticate to TMI application",
+          "Navigate to DFD collaboration feature",
+          "In Network tab, filter for WebSocket connections (WS/WSS)",
+          "Inspect WebSocket connection details",
+          "Verify token appears in URL query string: ?token=eyJhbGc..."
+        ],
+        "expected_result": "Token should NOT be visible in WebSocket URL. Should use alternative authentication method."
+      }
+    },
+    {
+      "id": "AUTH-002",
+      "title": "Open Redirect Vulnerability in Authentication Flow",
+      "severity": "high",
+      "confidence": "high",
+      "category": "authentication",
+      "cwe": "CWE-601",
+      "owasp": "A01:2021 - Broken Access Control",
+      "description": "The authentication flow accepts an unvalidated returnUrl parameter that is used to redirect users after successful login. An attacker can manipulate this parameter to redirect victims to malicious websites for phishing, session theft, or malware distribution.",
+      "location": {
+        "file": "/app/repos/tmi-ux/src/app/auth/services/auth.service.ts",
+        "line": 1090,
+        "code": "const navigationPromise = returnUrl ? this.router.navigateByUrl(returnUrl) : this.router.navigate([this.getLandingPage()]);"
+      },
+      "additional_locations": [
+        {
+          "file": "/app/repos/tmi-ux/src/app/auth/services/auth.service.ts",
+          "line": 1250,
+          "code": "if (returnUrl) { void this.router.navigateByUrl(returnUrl); }"
+        },
+        {
+          "file": "/app/repos/tmi-ux/src/app/auth/components/login/login.component.ts",
+          "line": 66,
+          "code": "this.returnUrl = (queryParams['returnUrl'] as string | undefined) || null;"
+        }
+      ],
+      "impact": "High - Attackers can redirect authenticated users to malicious websites that impersonate the application, harvest credentials, steal session tokens, or distribute malware. The redirect occurs after successful authentication, increasing user trust in the destination.",
+      "exploitation": {
+        "difficulty": "low",
+        "prerequisites": [
+          "None - any user can be targeted",
+          "User must click crafted link and authenticate"
+        ],
+        "steps": [
+          "Craft malicious login URL: https://tmi-app.com/login?returnUrl=https://evil-tmi.com/phishing",
+          "Send link to victim via phishing email or social engineering",
+          "Victim clicks link and authenticates successfully",
+          "Application redirects victim to attacker's site: https://evil-tmi.com/phishing",
+          "Attacker's site displays fake \"session expired\" message",
+          "Victim re-enters credentials on attacker's phishing page",
+          "Attacker harvests victim's credentials"
+        ]
+      },
+      "recommendation": "Implement strict returnUrl validation to only allow same-origin redirects:\n\n```typescript\n/**\n * Validate returnUrl to prevent open redirect vulnerabilities\n * Only allow relative URLs or URLs on the same origin\n */\nprivate isValidReturnUrl(url: string | undefined): boolean {\n  if (!url) return false;\n\n  try {\n    // Allow relative URLs (start with /) but not protocol-relative (//)\n    if (url.startsWith('/') && !url.startsWith('//')) {\n      // Ensure it doesn't contain protocol\n      if (!url.includes(':')) {\n        return true;\n      }\n    }\n\n    // For absolute URLs, validate same origin\n    const returnUrl = new URL(url, window.location.origin);\n    const currentOrigin = new URL(window.location.href);\n\n    return returnUrl.origin === currentOrigin.origin;\n  } catch {\n    // Invalid URL format\n    return false;\n  }\n}\n\n// Use in navigation:\nconst navigationPromise = returnUrl && this.isValidReturnUrl(returnUrl)\n  ? this.router.navigateByUrl(returnUrl)\n  : this.router.navigate([this.getLandingPage()]);\n```\n\n**Alternative: Path Whitelist**\n```typescript\nprivate readonly ALLOWED_RETURN_PATHS = [\n  '/dashboard', '/intake', '/admin', '/threat-models'\n];\n\nprivate isValidReturnUrl(url: string | undefined): boolean {\n  if (!url || !url.startsWith('/')) return false;\n  const path = url.split('?')[0];\n  return this.ALLOWED_RETURN_PATHS.some(allowed => \n    path === allowed || path.startsWith(allowed + '/')\n  );\n}\n```",
+      "references": [
+        "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')",
+        "OWASP Top 10 2021 - A01: Broken Access Control",
+        "OWASP Cheat Sheet: Unvalidated Redirects and Forwards"
+      ],
+      "cvss_score": 6.8,
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:L/A:N",
+      "test_case": {
+        "type": "manual",
+        "steps": [
+          "Logout of TMI application",
+          "Navigate to: https://tmi-app.com/login?returnUrl=https://evil.com",
+          "Complete authentication with valid credentials",
+          "Observe redirect destination after successful login"
+        ],
+        "expected_result": "Application should redirect to safe default page (dashboard/intake), NOT to https://evil.com",
+        "actual_result": "Application redirects to https://evil.com - Open Redirect confirmed"
+      }
+    },
+    {
+      "id": "AUTH-003",
+      "title": "WebSocket Token Expiration Not Handled",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "authentication",
+      "cwe": "CWE-613",
+      "owasp": "A07:2021 - Identification and Authentication Failures",
+      "description": "When JWT tokens are refreshed during an active WebSocket session, the WebSocket connection continues to use the original (potentially expired) token from the URL. There is no mechanism to update the WebSocket connection with the new token, leading to potential authentication failures or use of expired credentials.",
+      "location": {
+        "file": "/app/repos/tmi-ux/src/app/core/services/websocket.adapter.ts",
+        "line": 551,
+        "code": "// Token refresh triggered on WebSocket activity but connection not updated"
+      },
+      "additional_locations": [
+        {
+          "file": "/app/repos/tmi-ux/src/app/core/services/dfd-collaboration.service.ts",
+          "line": 1643,
+          "code": "// WebSocket URL created with token at connection time"
+        },
+        {
+          "file": "/app/repos/tmi-ux/src/app/auth/services/auth.service.ts",
+          "line": 1463,
+          "code": "// New token stored but WebSocket not notified"
+        }
+      ],
+      "impact": "Medium - WebSocket connections may fail authentication if backend invalidates old tokens on refresh. Long-running collaboration sessions could be interrupted. If backend doesn't invalidate old tokens, expired tokens remain active longer than intended.",
+      "exploitation": {
+        "difficulty": "medium",
+        "prerequisites": [
+          "Active WebSocket collaboration session",
+          "Token refresh occurs during session (after 45 minutes)"
+        ],
+        "steps": [
+          "User establishes WebSocket collaboration session",
+          "Wait 45+ minutes for token to approach expiration",
+          "Token refresh occurs (new token stored in AuthService)",
+          "WebSocket continues using old token from URL",
+          "If backend invalidates old tokens: WebSocket authentication fails",
+          "Collaboration session breaks without automatic recovery"
+        ]
+      },
+      "recommendation": "Implement WebSocket reconnection on token refresh:\n\n```typescript\n// In websocket.adapter.ts, add token update listener:\nprivate setupTokenRefreshListener(): void {\n  this._authService.onTokenRefreshed$.subscribe(() => {\n    if (this.isConnected) {\n      this.logger.info('Token refreshed, reconnecting WebSocket');\n      \n      // Store current state\n      const currentUrl = this._url;\n      \n      // Disconnect old connection\n      this.disconnect();\n      \n      // Reconnect with new token\n      if (currentUrl) {\n        // Remove old token from URL\n        const baseUrl = currentUrl.split('?')[0];\n        this.connect(baseUrl).subscribe();\n      }\n    }\n  });\n}\n```\n\nOr implement periodic token check:\n```typescript\nprivate startTokenValidityCheck(): void {\n  interval(60000).subscribe(() => {  // Check every minute\n    const token = this._authService.getStoredToken();\n    if (token && !this._authService.isTokenValid(token)) {\n      this.logger.warn('WebSocket token expired, reconnecting');\n      void this.reconnect();\n    }\n  });\n}\n```",
+      "references": [
+        "CWE-613: Insufficient Session Expiration",
+        "OWASP Top 10 2021 - A07: Identification and Authentication Failures"
+      ],
+      "cvss_score": 5.3,
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+      "test_case": {
+        "type": "manual",
+        "steps": [
+          "Authenticate to TMI application",
+          "Start DFD collaboration session (WebSocket connection established)",
+          "Wait 50 minutes (past 15-minute refresh threshold)",
+          "Monitor browser console for token refresh events",
+          "Verify WebSocket connection continues functioning",
+          "Check if WebSocket uses old or new token"
+        ],
+        "expected_result": "WebSocket should reconnect with new token after refresh",
+        "actual_result": "WebSocket continues using original token from URL"
+      }
+    },
+    {
+      "id": "AUTH-004",
+      "title": "Relaxed OAuth State Validation for TMI Proxy",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "authentication",
+      "cwe": "CWE-352",
+      "owasp": "A01:2021 - Broken Access Control",
+      "description": "OAuth state parameter validation is relaxed when response.access_token is present, trusting the TMI server's state management. If an attacker can inject a response with an access_token, they might bypass CSRF checks that would normally validate the state parameter.",
+      "location": {
+        "file": "/app/repos/tmi-ux/src/app/auth/services/auth.service.ts",
+        "line": 914,
+        "code": "if (response.access_token) { /* Flexible state validation - trusts server */ }"
+      },
+      "impact": "Medium - If an attacker can control the OAuth callback response and inject an access_token, they might bypass state parameter CSRF validation. However, this requires compromising the OAuth flow or the TMI backend server.",
+      "exploitation": {
+        "difficulty": "high",
+        "prerequisites": [
+          "Ability to inject OAuth callback response with access_token",
+          "Compromise of TMI backend server OR man-in-the-middle position",
+          "Valid state parameter from legitimate flow (to bypass basic checks)"
+        ],
+        "steps": [
+          "Attacker initiates legitimate OAuth flow to obtain valid state parameter",
+          "Attacker crafts malicious callback with injected access_token",
+          "Frontend detects access_token presence and relaxes state validation",
+          "Attacker bypasses CSRF checks that would validate state parameter",
+          "Malicious authentication potentially accepted"
+        ]
+      },
+      "recommendation": "Document the trust assumptions for TMI OAuth proxy and implement additional validation:\n\n```typescript\n// Add explicit validation even for TMI proxy responses\nif (response.access_token) {\n  // TMI OAuth proxy detected - validate token authenticity\n  this.logger.debugComponent('Auth', 'TMI OAuth proxy detected', {\n    receivedState: response.state,\n    storedState: storedState,\n  });\n  \n  // Additional validation: verify token signature or issuer\n  if (!this.validateTokenIssuer(response.access_token)) {\n    this.logger.error('Invalid token issuer in TMI proxy response');\n    this.handleAuthError({\n      code: 'invalid_token_issuer',\n      message: 'Token issuer validation failed',\n      retryable: false,\n    });\n    return of(false);\n  }\n  \n  // Still validate state if available\n  if (decodedStoredState && decodedReceivedState.csrf !== decodedStoredState.csrf) {\n    this.logger.warn('State mismatch in TMI proxy response');\n  }\n}\n```\n\nDocument trust model:\n```typescript\n/**\n * TMI OAuth Proxy Security Model:\n * \n * The TMI backend server acts as an OAuth proxy, handling:\n * 1. OAuth provider communication\n * 2. Authorization code exchange\n * 3. Token validation and issuance\n * \n * Security assumptions:\n * - TMI backend is trusted and secure\n * - Backend validates OAuth state parameters\n * - Backend issues signed JWT tokens\n * - Backend prevents token injection attacks\n * \n * Frontend validation:\n * - Verifies JWT signature and issuer\n * - Checks token expiration\n * - Validates state parameter when possible\n */\n```",
+      "references": [
+        "CWE-352: Cross-Site Request Forgery (CSRF)",
+        "RFC 6749 (OAuth 2.0) Section 10.12 - Cross-Site Request Forgery",
+        "OWASP Top 10 2021 - A01: Broken Access Control"
+      ],
+      "cvss_score": 5.0,
+      "cvss_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:L",
+      "test_case": {
+        "type": "architecture_review",
+        "steps": [
+          "Review trust assumptions between frontend and TMI backend",
+          "Document OAuth proxy security model",
+          "Verify backend implements state validation",
+          "Confirm backend prevents token injection",
+          "Add tests for malicious callback responses"
+        ]
+      }
+    },
+    {
+      "id": "AUTH-INFO-001",
+      "title": "No SAML RelayState Validation",
+      "severity": "low",
+      "confidence": "low",
+      "category": "authentication",
+      "cwe": "CWE-352",
+      "owasp": "A01:2021 - Broken Access Control",
+      "description": "SAML authentication flows do not validate RelayState parameters. While returnUrl is stored in sessionStorage, there is no verification that the RelayState from the SAML response matches expectations or that the correct SAML provider completed the authentication.",
+      "location": {
+        "file": "/app/repos/tmi-ux/src/app/auth/services/auth.service.ts",
+        "line": 719,
+        "code": "if (returnUrl) { sessionStorage.setItem('saml_return_url', returnUrl); }"
+      },
+      "impact": "Low - Limited impact as SAML assertions are validated by backend. Frontend RelayState validation provides defense-in-depth but is not primary security control.",
+      "exploitation": {
+        "difficulty": "high",
+        "prerequisites": [
+          "Compromise of SAML flow",
+          "Backend SAML validation must also be bypassed",
+          "Deep understanding of SAML protocol"
+        ]
+      },
+      "recommendation": "Add RelayState validation for defense-in-depth:\n\n```typescript\nprivate initiateTMISAMLLogin(provider: SAMLProviderInfo, returnUrl?: string): void {\n  // Generate unique RelayState\n  const relayState = this.generateRandomState(returnUrl);\n  \n  // Store RelayState for validation on callback\n  sessionStorage.setItem('saml_relay_state', relayState);\n  sessionStorage.setItem('saml_provider_id', provider.id);\n  \n  // Include RelayState in SAML request\n  const authUrl = `${provider.auth_url}${separator}RelayState=${encodeURIComponent(relayState)}`;\n  \n  window.location.href = authUrl;\n}\n\n// On SAML callback:\nprivate handleSAMLCallback(response: SAMLResponse): void {\n  const storedRelayState = sessionStorage.getItem('saml_relay_state');\n  const storedProviderId = sessionStorage.getItem('saml_provider_id');\n  \n  if (response.RelayState !== storedRelayState) {\n    this.logger.error('SAML RelayState mismatch');\n    // Handle error\n  }\n  \n  // Clear stored values\n  sessionStorage.removeItem('saml_relay_state');\n  sessionStorage.removeItem('saml_provider_id');\n}\n```",
+      "references": [
+        "SAML 2.0 Technical Overview",
+        "OWASP SAML Security Cheat Sheet"
+      ],
+      "cvss_score": 3.1,
+      "cvss_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:N/A:N"
+    },
+    {
+      "id": "AUTH-INFO-002",
+      "title": "Development Mode Uses Unencrypted WebSocket",
+      "severity": "medium",
+      "confidence": "high",
+      "category": "configuration",
+      "cwe": "CWE-319",
+      "owasp": "A02:2021 - Cryptographic Failures",
+      "description": "In development mode with HTTP API URLs, WebSocket connections use unencrypted ws:// protocol instead of wss://. This exposes JWT tokens and collaboration data in plaintext over the network.",
+      "location": {
+        "file": "/app/repos/tmi-ux/src/app/core/services/dfd-collaboration.service.ts",
+        "line": 1626,
+        "code": "wsUrl = apiUrl.replace('http://', 'ws://');"
+      },
+      "additional_locations": [
+        {
+          "file": "/app/repos/tmi-ux/src/app/core/services/dfd-collaboration.service.ts",
+          "line": 1630,
+          "code": "wsUrl = `ws://${apiUrl}`;  // Default fallback"
+        }
+      ],
+      "impact": "Medium (Development Only) - JWT tokens and collaboration data transmitted in plaintext during development. Not an issue in production if HTTPS is enforced, but could affect development security.",
+      "exploitation": {
+        "difficulty": "low",
+        "prerequisites": [
+          "Development environment with HTTP (not HTTPS)",
+          "Network access to development machine (same network or MITM)"
+        ],
+        "steps": [
+          "Position on same network as developer",
+          "Sniff network traffic (e.g., Wireshark)",
+          "Capture ws:// WebSocket connections",
+          "Extract JWT token from WebSocket upgrade request",
+          "Extract collaboration data from WebSocket messages"
+        ]
+      },
+      "recommendation": "Enforce wss:// even in development or use localhost with TLS:\n\n```typescript\nprivate _getFullWebSocketUrl(websocketUrl: string): string {\n  // ...\n  \n  if (apiUrl.startsWith('https://')) {\n    wsUrl = apiUrl.replace('https://', 'wss://');\n  } else if (apiUrl.startsWith('http://')) {\n    // For development, warn and upgrade to wss://\n    this.logger.warn('HTTP API URL detected, upgrading to WSS for security');\n    wsUrl = apiUrl.replace('http://', 'wss://');\n  } else {\n    // Default to wss:// instead of ws://\n    wsUrl = `wss://${apiUrl}`;\n  }\n  \n  // ...\n}\n```\n\nOr use environment-based configuration:\n```typescript\nif (environment.production) {\n  // Production: require wss://\n  if (!wsUrl.startsWith('wss://')) {\n    throw new Error('Production requires secure WebSocket (wss://)');\n  }\n} else if (environment.enforceTLS) {\n  // Development with TLS enforcement\n  wsUrl = wsUrl.replace('ws://', 'wss://');\n}\n```",
+      "references": [
+        "CWE-319: Cleartext Transmission of Sensitive Information",
+        "OWASP Top 10 2021 - A02: Cryptographic Failures"
+      ],
+      "cvss_score": 5.9,
+      "cvss_vector": "CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+      "test_case": {
+        "type": "manual",
+        "steps": [
+          "Configure development environment with HTTP API URL",
+          "Start network packet capture (Wireshark/tcpdump)",
+          "Initiate WebSocket collaboration session",
+          "Filter for WebSocket traffic (port 80, ws://)",
+          "Verify plaintext JWT token in WebSocket upgrade request"
+        ],
+        "expected_result": "Development should use wss:// or warn about security risk",
+        "actual_result": "Development uses ws:// with plaintext token transmission"
+      }
+    }
+  ]
+}
