@@ -1047,14 +1047,21 @@ describe('AuthService', () => {
       });
     });
 
-    it('should skip server logout for test users', () => {
+    it('should call server logout for test users', () => {
       const testUserProfile = { ...mockUserProfile, email: 'user1@example.com' };
       service['isAuthenticatedSubject'].next(true);
       service['userProfileSubject'].next(testUserProfile);
 
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return JSON.stringify(mockJwtToken);
+        return null;
+      });
+
+      vi.mocked(httpClient.post).mockReturnValue(of({}));
+
       service.logout();
 
-      expect(httpClient.post).not.toHaveBeenCalled();
+      expect(httpClient.post).toHaveBeenCalled();
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();
       expect(router.navigate).toHaveBeenCalledWith(['/']);
@@ -1144,7 +1151,7 @@ describe('AuthService', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/']);
     });
 
-    it('should handle different test user email patterns', () => {
+    it('should call server logout for all test user email patterns', () => {
       const testUsers = [
         'user1@example.com',
         'user2@example.com',
@@ -1156,10 +1163,18 @@ describe('AuthService', () => {
         const testUserProfile = { ...mockUserProfile, email };
         service['isAuthenticatedSubject'].next(true);
         service['userProfileSubject'].next(testUserProfile);
+        service['isLoggingOut'] = false;
+
+        localStorageMock.getItem.mockImplementation((key: string) => {
+          if (key === 'auth_token') return JSON.stringify(mockJwtToken);
+          return null;
+        });
+
+        vi.mocked(httpClient.post).mockReturnValue(of({}));
 
         service.logout();
 
-        expect(httpClient.post).not.toHaveBeenCalled();
+        expect(httpClient.post).toHaveBeenCalled();
         expect(service.isAuthenticated).toBe(false);
 
         // Reset for next iteration
@@ -1167,7 +1182,7 @@ describe('AuthService', () => {
       });
     });
 
-    it('should not skip server logout for regular users', () => {
+    it('should call server logout for regular users', () => {
       const regularUserProfile = { ...mockUserProfile, email: 'regular.user@company.com' };
       service['isAuthenticatedSubject'].next(true);
       service['userProfileSubject'].next(regularUserProfile);
@@ -1182,10 +1197,6 @@ describe('AuthService', () => {
       service.logout();
 
       expect(httpClient.post).toHaveBeenCalled();
-      expect(loggerService.debugComponent).not.toHaveBeenCalledWith(
-        'Auth',
-        'Skipping server logout for test user',
-      );
     });
 
     it('should clear provider cache on logout', () => {
@@ -1209,6 +1220,41 @@ describe('AuthService', () => {
       // Verify auth data is also cleared
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();
+    });
+    it('should prevent re-entrant logout calls', () => {
+      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
+
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return JSON.stringify(mockJwtToken);
+        return null;
+      });
+
+      vi.mocked(httpClient.post).mockReturnValue(of({}));
+
+      // First call should proceed
+      service.logout();
+      expect(httpClient.post).toHaveBeenCalledTimes(1);
+
+      // Reset the authenticated state as if re-entry happened before completion
+      service['isAuthenticatedSubject'].next(true);
+      service['isLoggingOut'] = true;
+
+      // Second call while first is in progress should be ignored
+      service.logout();
+      expect(httpClient.post).toHaveBeenCalledTimes(1);
+    });
+
+    it('should reset re-entrancy guard after logout completes', () => {
+      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
+
+      vi.mocked(httpClient.post).mockReturnValue(of({}));
+
+      service.logout();
+
+      // After logout completes, the guard should be reset
+      expect(service['isLoggingOut']).toBe(false);
     });
   }); /* End of Enhanced Logout Functionality describe block */
 

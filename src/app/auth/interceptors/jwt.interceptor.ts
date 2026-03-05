@@ -10,7 +10,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, throwError, switchMap } from '../../core/rxjs-imports';
 
 import { LoggerService } from '../../core/services/logger.service';
-import { IS_AUTH_RETRY } from '../../core/tokens/http-context.tokens';
+import { IS_AUTH_RETRY, IS_LOGOUT_REQUEST } from '../../core/tokens/http-context.tokens';
 import { AuthService } from '../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { AuthError } from '../models/auth.models';
@@ -45,6 +45,12 @@ export class JwtInterceptor implements HttpInterceptor {
    * @returns An observable of the HTTP event
    */
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    // Logout requests manage their own auth headers and error handling.
+    // Skip interceptor to prevent 401 retry loops during logout.
+    if (request.context.get(IS_LOGOUT_REQUEST)) {
+      return next.handle(request);
+    }
+
     // Only add token to requests to our API that are not public endpoints
     if (this.isApiRequest(request.url) && !this.isPublicEndpoint(request.url)) {
       // Get a valid token (with automatic refresh if needed)
@@ -169,8 +175,8 @@ export class JwtInterceptor implements HttpInterceptor {
     const isRetry = request.context.get(IS_AUTH_RETRY);
 
     if (isRetry) {
-      // Already retried once - propagate error without retry or logout
-      this.logger.warn('401 on retry request - propagating error without logout', {
+      // Already retried once - authentication is unrecoverable, trigger full logout
+      this.logger.warn('401 on retry request - triggering logout', {
         url: request.url,
         method: request.method,
       });
@@ -182,6 +188,9 @@ export class JwtInterceptor implements HttpInterceptor {
         retryable: false,
       };
       this.authService.handleAuthError(authError);
+
+      // Full logout: server revocation, cross-tab sync, navigate home
+      this.authService.logout();
 
       return throwError(
         () =>
@@ -213,17 +222,19 @@ export class JwtInterceptor implements HttpInterceptor {
         return next.handle(retryRequest);
       }),
       catchError((refreshError: unknown) => {
-        // Token refresh failed - propagate error WITHOUT logout
-        // Let the component/service handle the error appropriately
-        this.logger.error('Forced token refresh failed - propagating error', refreshError);
+        // Token refresh failed - trigger full logout
+        this.logger.error('Forced token refresh failed - triggering logout', refreshError);
 
-        // Emit auth error for interested subscribers (e.g., showing login prompt)
+        // Emit auth error for interested subscribers
         const authError: AuthError = {
           code: 'token_refresh_failed',
           message: 'Unable to refresh authentication token',
-          retryable: true,
+          retryable: false,
         };
         this.authService.handleAuthError(authError);
+
+        // Full logout: server revocation, cross-tab sync, navigate home
+        this.authService.logout();
 
         return throwError(() => refreshError);
       }),

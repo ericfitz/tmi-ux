@@ -1932,8 +1932,10 @@ export class AuthService {
         headers['Authorization'] = `Bearer ${token.token}`;
       }
 
+      const context = new HttpContext().set(IS_LOGOUT_REQUEST, true);
+
       this.http
-        .post(`${environment.apiUrl}/me/logout`, null, { headers })
+        .post(`${environment.apiUrl}/me/logout`, null, { headers, context })
         .pipe(
           catchError((error: HttpErrorResponse) => {
             // Log the error but don't fail the logout process
