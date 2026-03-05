@@ -253,7 +253,7 @@ ${Object.entries(headers)
     // and must be set via HTTP headers at the server level
     const cspDirectives = [
       `default-src 'self'`,
-      `script-src 'self' 'unsafe-inline' 'unsafe-eval'`,
+      `script-src 'self' 'unsafe-inline'`,
       `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com`,
       `font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:`,
       `img-src ${imgSources.join(' ')}`,
