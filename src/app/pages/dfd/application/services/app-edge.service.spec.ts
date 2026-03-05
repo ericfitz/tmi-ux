@@ -90,8 +90,28 @@ describe('AppEdgeService - Comprehensive Tests', () => {
         const allowed = rules[sourceNode.shape];
         return allowed ? allowed.includes(targetNode.shape) : false;
       }),
-      validateNodeShape: vi.fn(),
-      validateX6NodeShape: vi.fn(),
+      validateNodeShape: vi.fn((nodeType: string, nodeId: string) => {
+        const validShapes = ['process', 'store', 'actor', 'security-boundary', 'text-box'];
+        if (!nodeType || typeof nodeType !== 'string') {
+          throw new Error(
+            `[DFD] Invalid node shape: shape property must be a non-empty string. Node ID: ${nodeId}, shape: ${nodeType}`,
+          );
+        }
+        if (!validShapes.includes(nodeType)) {
+          throw new Error(
+            `[DFD] Invalid node shape: '${nodeType}' is not a recognized shape type. Valid shapes: ${validShapes.join(', ')}. Node ID: ${nodeId}`,
+          );
+        }
+      }),
+      validateX6NodeShape: vi.fn((x6Node: any) => {
+        const nodeShape = x6Node.shape;
+        const nodeId = x6Node.id;
+        if (!nodeShape || typeof nodeShape !== 'string') {
+          throw new Error(
+            `[DFD] X6 node created without valid shape property. Node ID: ${nodeId}, shape: ${nodeShape}`,
+          );
+        }
+      }),
       canShapesConnect: vi.fn((src: string, tgt: string) => {
         const rules: Record<string, string[]> = {
           process: ['store', 'actor', 'process'],
@@ -109,8 +129,14 @@ describe('AppEdgeService - Comprehensive Tests', () => {
         };
         return rules[shape] || [];
       }),
-      getValidNodeShapes: vi.fn(() => ['process', 'store', 'actor', 'security-boundary', 'text-box']),
-      getLocalizedFlowLabel: vi.fn(() => 'editor.flowLabel'),
+      getValidNodeShapes: vi.fn(() => [
+        'process',
+        'store',
+        'actor',
+        'security-boundary',
+        'text-box',
+      ]),
+      getLocalizedFlowLabel: vi.fn(() => 'Flow'),
     };
 
     mockX6ZOrderAdapter = {
@@ -919,15 +945,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
       const result = service.isMagnetValid(args);
 
       expect(result).toBe(true);
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DfdEdge',
-        'isMagnetValid result',
-        expect.objectContaining({
-          magnetAttribute: 'true',
-          portGroup: 'top',
-          isValid: true,
-        }),
-      );
+      expect(mockDfdValidation.isMagnetValid).toHaveBeenCalledWith(args);
     });
 
     it('should reject magnet with invalid attributes', () => {
@@ -945,10 +963,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
       const result = service.isMagnetValid(args);
 
       expect(result).toBe(false);
-      expect(mockLogger.debugComponent).toHaveBeenCalledWith(
-        'DfdEdge',
-        'isMagnetValid: no magnet found',
-      );
+      expect(mockDfdValidation.isMagnetValid).toHaveBeenCalledWith(args);
     });
 
     it('should validate connection between different ports', () => {
@@ -1120,7 +1135,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
       }).not.toThrow();
     });
 
-    it('should warn for unexpected X6 node shape', () => {
+    it('should delegate X6 node shape validation to InfraDfdValidationService', () => {
       const mockX6Node = {
         id: 'test-node',
         shape: 'unexpected-shape',
@@ -1128,13 +1143,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
 
       service.validateX6NodeShape(mockX6Node);
 
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'X6 node created with unexpected shape',
-        expect.objectContaining({
-          nodeId: 'test-node',
-          shape: 'unexpected-shape',
-        }),
-      );
+      expect(mockDfdValidation.validateX6NodeShape).toHaveBeenCalledWith(mockX6Node);
     });
   });
 
