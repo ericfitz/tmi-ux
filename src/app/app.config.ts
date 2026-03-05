@@ -48,6 +48,7 @@ import DOMPurify from 'dompurify';
 
 import { routes } from './app.routes';
 import { TranslocoRootModule } from './i18n/transloco.module';
+import { CacheControlInterceptor } from './core/interceptors/cache-control.interceptor';
 import { HttpLoggingInterceptor } from './core/interceptors/http-logging.interceptor';
 import { JwtInterceptor } from './auth/interceptors/jwt.interceptor';
 import { SecurityConfigService } from './core/services/security-config.service';
@@ -347,7 +348,13 @@ export const appConfig: ApplicationConfig = {
       useClass: JwtInterceptor,
       multi: true,
     },
-    // 2. HttpLoggingInterceptor - logs all HTTP requests/responses with auth header present
+    // 2. CacheControlInterceptor - prevents caching of sensitive API responses (AUTH-VULN-006)
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: CacheControlInterceptor,
+      multi: true,
+    },
+    // 3. HttpLoggingInterceptor - logs all HTTP requests/responses with all headers present
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpLoggingInterceptor,
