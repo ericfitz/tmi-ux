@@ -11,6 +11,7 @@ import '@angular/compiler';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
+import { CryptoKeyStorageService } from './crypto-key-storage.service';
 import { LoggerService } from '../../core/services/logger.service';
 import {
   ServerConnectionService,
@@ -80,6 +81,10 @@ describe('AuthService', () => {
   let sessionStorageMock: MockStorage;
   let cryptoMock: MockCrypto;
   let mockPkceService: any;
+  let mockCryptoKeyStorage: {
+    getOrCreateTokenKey: ReturnType<typeof vi.fn>;
+    deleteTokenKey: ReturnType<typeof vi.fn>;
+  };
 
   // Store original globals for restoration after tests
   const originalCrypto = global.crypto;
@@ -270,6 +275,13 @@ describe('AuthService', () => {
       },
     };
 
+    // Create mock CryptoKeyStorageService
+    // The mock CryptoKey object works with the XOR-based crypto mock above
+    mockCryptoKeyStorage = {
+      getOrCreateTokenKey: vi.fn().mockResolvedValue({} as CryptoKey),
+      deleteTokenKey: vi.fn().mockResolvedValue(undefined),
+    };
+
     // Create mock PKCE service
     mockPkceService = {
       generatePkceParameters: vi.fn().mockResolvedValue({
@@ -290,6 +302,7 @@ describe('AuthService', () => {
       loggerService as unknown as LoggerService,
       serverConnectionService as unknown as ServerConnectionService,
       mockPkceService,
+      mockCryptoKeyStorage as unknown as CryptoKeyStorageService,
     );
   });
 
@@ -376,13 +389,6 @@ describe('AuthService', () => {
         }
         if (key === 'user_profile') {
           return xorEncrypt(JSON.stringify(mockUserProfile));
-        }
-        return null;
-      });
-
-      sessionStorageMock.getItem.mockImplementation((key: string) => {
-        if (key === '_ts') {
-          return 'test-session-salt-base64';
         }
         return null;
       });

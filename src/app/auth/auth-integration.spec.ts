@@ -14,6 +14,7 @@ import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { AuthService } from './services/auth.service';
+import { CryptoKeyStorageService } from './services/crypto-key-storage.service';
 import { JwtInterceptor } from './interceptors/jwt.interceptor';
 import { authGuard } from './guards/auth.guard';
 
@@ -63,6 +64,10 @@ describe('Authentication Integration', () => {
   let cryptoMock: MockCrypto;
   let serverConnectionService: { currentStatus: string };
   let mockPkceService: any;
+  let mockCryptoKeyStorage: {
+    getOrCreateTokenKey: ReturnType<typeof vi.fn>;
+    deleteTokenKey: ReturnType<typeof vi.fn>;
+  };
 
   // Store original globals for restoration after tests
   const originalCrypto = global.crypto;
@@ -167,6 +172,12 @@ describe('Authentication Integration', () => {
       currentStatus: 'connected',
     };
 
+    // Create mock CryptoKeyStorageService
+    mockCryptoKeyStorage = {
+      getOrCreateTokenKey: vi.fn().mockResolvedValue({} as CryptoKey),
+      deleteTokenKey: vi.fn().mockResolvedValue(undefined),
+    };
+
     // Create mock PKCE service
     mockPkceService = {
       generatePkceParameters: vi.fn().mockResolvedValue({
@@ -187,6 +198,7 @@ describe('Authentication Integration', () => {
       logger as unknown as LoggerService,
       serverConnectionService as unknown as ServerConnectionService,
       mockPkceService,
+      mockCryptoKeyStorage as unknown as CryptoKeyStorageService,
     );
   });
 
@@ -588,14 +600,6 @@ describe('Authentication Integration', () => {
           }
         });
 
-        // Provide session salt for encryption key derivation
-        sessionStorageMock.getItem.mockImplementation((key: string) => {
-          if (key === '_ts') {
-            return 'test-session-salt-base64';
-          }
-          return null;
-        });
-
         // Create a new service instance to test initialization
         const restoredAuthService = new AuthService(
           router as unknown as Router,
@@ -603,6 +607,7 @@ describe('Authentication Integration', () => {
           logger as unknown as LoggerService,
           serverConnectionService as unknown as ServerConnectionService,
           mockPkceService,
+          mockCryptoKeyStorage as unknown as CryptoKeyStorageService,
         );
 
         // Trigger async authentication restoration
@@ -641,6 +646,7 @@ describe('Authentication Integration', () => {
           logger as unknown as LoggerService,
           serverConnectionService as unknown as ServerConnectionService,
           mockPkceService,
+          mockCryptoKeyStorage as unknown as CryptoKeyStorageService,
         );
 
         // Should not restore authentication state with expired token

@@ -51,6 +51,7 @@ import {
   SAMLProvidersResponse,
 } from '../models/auth.models';
 import { PkceService } from './pkce.service';
+import { CryptoKeyStorageService } from './crypto-key-storage.service';
 import { PkceError } from '../models/pkce.models';
 import { IS_LOGOUT_REQUEST } from '../../core/tokens/http-context.tokens';
 
@@ -134,6 +135,7 @@ export class AuthService {
     private logger: LoggerService,
     private serverConnectionService: ServerConnectionService,
     private pkceService: PkceService,
+    private cryptoKeyStorage: CryptoKeyStorageService,
   ) {
     // this.logger.info('Auth Service initialized');
     // Initialize from localStorage on service creation
@@ -1869,6 +1871,8 @@ export class AuthService {
   private clearAuthData(): void {
     localStorage.removeItem(this.tokenStorageKey);
     localStorage.removeItem(this.profileStorageKey);
+    // Clean up legacy session salt (remove after one release cycle)
+    sessionStorage.removeItem('_ts');
     this.isAuthenticatedSubject.next(false);
     this.userProfileSubject.next(null);
     this.jwtTokenSubject.next(null);
@@ -1973,37 +1977,12 @@ export class AuthService {
   }
 
   /**
-   * Generate encryption key for token storage based on browser fingerprint.
-   *
-   * SECURITY NOTE: This provides defense-in-depth only, not strong protection.
-   * The fingerprint components (user agent, language, screen size, timezone) are
-   * easily enumerable by an attacker with localStorage access. The session salt
-   * in sessionStorage is lost on tab close, making tokens unrecoverable.
-   *
-   * Future enhancement: Consider using Web Crypto API to generate a random key
-   * stored in IndexedDB for stronger protection, while accepting the trade-off
-   * that tokens become unrecoverable if IndexedDB is cleared.
+   * Get the AES-256-GCM CryptoKey for token encryption/decryption.
+   * Key is generated once and stored in IndexedDB for persistence across sessions.
+   * @returns CryptoKey or null if IndexedDB is unavailable
    */
-  private getTokenEncryptionKey(): string {
-    // Get or create session-specific salt
-    let sessionSalt = sessionStorage.getItem('_ts');
-    if (!sessionSalt) {
-      const saltArray = new Uint8Array(16);
-      crypto.getRandomValues(saltArray);
-      sessionSalt = this.uint8ToB64(saltArray);
-      sessionStorage.setItem('_ts', sessionSalt);
-    }
-
-    // Create browser fingerprint components
-    const fingerprint = [
-      navigator.userAgent,
-      navigator.language,
-      screen.width + 'x' + screen.height,
-      new Date().getTimezoneOffset().toString(),
-      sessionSalt,
-    ].join('|');
-
-    return fingerprint;
+  private async getTokenCryptoKey(): Promise<CryptoKey | null> {
+    return this.cryptoKeyStorage.getOrCreateTokenKey();
   }
 
   /**
@@ -2011,8 +1990,11 @@ export class AuthService {
    */
   private async storeTokenEncrypted(token: JwtToken): Promise<void> {
     try {
-      const keyMaterial = this.getTokenEncryptionKey();
-      const encryptedToken = await this.encryptToken(token, keyMaterial);
+      const key = await this.getTokenCryptoKey();
+      if (!key) {
+        throw new Error('Token encryption key unavailable (IndexedDB inaccessible)');
+      }
+      const encryptedToken = await this.encryptToken(token, key);
       localStorage.setItem(this.tokenStorageKey, encryptedToken);
     } catch (error) {
       this.logger.error('Failed to encrypt token for storage', error);
@@ -2029,15 +2011,18 @@ export class AuthService {
       return null;
     }
 
-    const keyMaterial = this.getTokenEncryptionKey();
-    return await this.decryptToken(encryptedToken, keyMaterial);
+    const key = await this.getTokenCryptoKey();
+    if (!key) {
+      this.logger.debug('Cannot decrypt token - IndexedDB unavailable');
+      return null;
+    }
+    return await this.decryptToken(encryptedToken, key);
   }
 
   /**
    * Encrypt JWT token using AES-GCM
    */
-  private async encryptToken(token: JwtToken, keyStr: string): Promise<string> {
-    const key = await this.getAesKeyFromString(keyStr);
+  private async encryptToken(token: JwtToken, key: CryptoKey): Promise<string> {
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const plaintext = new TextEncoder().encode(JSON.stringify(token));
     const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext);
@@ -2049,12 +2034,11 @@ export class AuthService {
   /**
    * Decrypt JWT token using AES-GCM
    */
-  private async decryptToken(encryptedToken: string, keyStr: string): Promise<JwtToken | null> {
+  private async decryptToken(encryptedToken: string, key: CryptoKey): Promise<JwtToken | null> {
     const [b64Iv, b64Cipher] = encryptedToken.split(':');
     if (!b64Iv || !b64Cipher) return null;
 
     try {
-      const key = await this.getAesKeyFromString(keyStr);
       const iv = this.b64ToUint8(b64Iv);
       const ciphertext = this.b64ToUint8(b64Cipher);
       const plaintextBuf = await crypto.subtle.decrypt(
@@ -2064,16 +2048,14 @@ export class AuthService {
       );
       const plaintext = new TextDecoder().decode(plaintextBuf);
       const parsed = JSON.parse(plaintext) as JwtToken;
-      // Convert expiresAt string back to Date object if needed
       if (typeof parsed.expiresAt === 'string') {
         parsed.expiresAt = new Date(parsed.expiresAt);
       }
       return parsed;
     } catch (error) {
-      // Decryption failure is expected when browser session context changes
-      // (different fingerprint/salt makes the encryption key invalid)
+      // Decryption failure is expected after upgrade (old fingerprint-derived key)
+      // or if IndexedDB was cleared
       this.logger.debug('Token decryption failed - clearing stale encrypted data', error);
-      // Clear stale encrypted data to prevent confusion and ensure clean state
       localStorage.removeItem(this.tokenStorageKey);
       localStorage.removeItem(this.profileStorageKey);
       return null;
