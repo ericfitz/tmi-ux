@@ -15,7 +15,7 @@
  * - Provides backward compatibility for legacy components
  */
 
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -52,6 +52,7 @@ import {
 } from '../models/auth.models';
 import { PkceService } from './pkce.service';
 import { PkceError } from '../models/pkce.models';
+import { IS_LOGOUT_REQUEST } from '../../core/tokens/http-context.tokens';
 
 interface JwtPayload {
   sub?: string; // Provider-assigned user ID (maps to provider_id)
@@ -113,6 +114,9 @@ export class AuthService {
 
   // Refresh request deduplication - prevents concurrent refresh calls
   private refreshInProgress$: Observable<JwtToken> | null = null;
+
+  // Re-entrancy guard - prevents multiple logout calls from overlapping
+  private isLoggingOut = false;
 
   private get defaultProvider(): string {
     return environment.defaultAuthProvider || 'google';
@@ -307,26 +311,29 @@ export class AuthService {
    * This method is critical for preventing "zombie sessions" where the user
    * appears authenticated but their token has actually expired (e.g., after
    * returning from a backgrounded browser tab where timers were throttled).
+   *
+   * Triggers full logout (including server-side session revocation and
+   * cross-tab synchronization) when invalid state is detected.
    */
   validateAndUpdateAuthState(): void {
     const token = this.getStoredToken();
 
-    // No token found but we think we're authenticated - clear state
+    // No token found but we think we're authenticated - full logout
     if (!token) {
       if (this.isAuthenticatedSubject.value) {
-        this.logger.warn('No token found but auth state was true, clearing auth state');
-        this.clearAuthData();
+        this.logger.warn('No token found but auth state was true, triggering logout');
+        this.logout();
       }
       return;
     }
 
-    // Token expired but we think we're authenticated - clear state
+    // Token expired but we think we're authenticated - full logout
     if (!this.isTokenValid(token) && this.isAuthenticatedSubject.value) {
-      this.logger.warn('Token expired during background period, clearing auth state', {
+      this.logger.warn('Token expired during background period, triggering logout', {
         tokenExpiry: token.expiresAt.toISOString(),
         currentTime: new Date().toISOString(),
       });
-      this.clearAuthData();
+      this.logout();
     }
   }
 
@@ -1897,13 +1904,17 @@ export class AuthService {
    * Clears all authentication data and redirects to home page
    */
   logout(): void {
-    // const userEmail = this.userEmail;
-    // this.logger.info(`Logging out user: ${userEmail}`);
+    // Re-entrancy guard: prevent multiple simultaneous logout calls
+    // (e.g., from token expiry detection + cross-tab broadcast firing together)
+    if (this.isLoggingOut) {
+      return;
+    }
+    this.isLoggingOut = true;
 
     // Determine if we should call server logout endpoint
     const isConnectedToServer =
       this.serverConnectionService.currentStatus === ServerConnectionStatus.CONNECTED;
-    const shouldCallServerLogout = this.isAuthenticated && isConnectedToServer && !this.isTestUser;
+    const shouldCallServerLogout = this.isAuthenticated && isConnectedToServer;
 
     if (shouldCallServerLogout) {
       // this.logger.debugComponent('Auth', 'Calling server logout endpoint', {
@@ -1947,20 +1958,14 @@ export class AuthService {
           complete: () => {
             // Clear authentication data after server request completes (or fails)
             this.clearAuthData();
-            // this.logger.info('User logged out successfully');
+            this.isLoggingOut = false;
             void this.router.navigate(['/']);
           },
         });
     } else {
       // Skip server logout and just clear client-side data
-      // this.logger.debugComponent('Auth', 'Skipping server logout', {
-      //   isConnectedToServer,
-      //   isTestUser: this.isTestUser,
-      //   isAuthenticated: this.isAuthenticated,
-      // });
-
       this.clearAuthData();
-      // this.logger.info('User logged out successfully (client-side only)');
+      this.isLoggingOut = false;
       void this.router.navigate(['/']);
     }
   }

@@ -12,3 +12,10 @@ export const SKIP_ERROR_HANDLING = new HttpContextToken<boolean>(() => false);
  * flag set receives a 401, we don't attempt another refresh/retry
  */
 export const IS_AUTH_RETRY = new HttpContextToken<boolean>(() => false);
+
+/**
+ * HTTP context token to mark a request as a logout request
+ * Prevents the JWT interceptor from attempting token refresh or triggering
+ * another logout when the logout POST itself receives a 401
+ */
+export const IS_LOGOUT_REQUEST = new HttpContextToken<boolean>(() => false);
