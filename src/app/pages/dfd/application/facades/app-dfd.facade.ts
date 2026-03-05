@@ -40,7 +40,6 @@ import { InfraEmbeddingService } from '../../infrastructure/services/infra-embed
 import { AppGraphOperationManager } from '../services/app-graph-operation-manager.service';
 import {
   CreateNodeOperation,
-  DeleteNodeOperation,
   DeleteEdgeOperation,
   OperationContext,
   NodeData,
@@ -611,8 +610,10 @@ export class AppDfdFacade {
   }
 
   /**
-   * Delete selected cells from the graph via GraphOperations for history tracking
-   * Creates DeleteNodeOperation or DeleteEdgeOperation for each cell
+   * Delete selected cells from the graph.
+   * Nodes are deleted via InfraNodeService.removeNode() which handles embedding
+   * cleanup, edge removal, port visibility, and z-order updates.
+   * Edges are deleted via the operation manager.
    */
   deleteSelectedCells(): Observable<{ success: boolean; deletedCount: number }> {
     try {
@@ -623,35 +624,59 @@ export class AppDfdFacade {
         return of({ success: true, deletedCount: 0 });
       }
 
-      this.logger.debugComponent('AppDfdFacade', 'Deleting selected cells via GraphOperations', {
+      this.logger.debugComponent('AppDfdFacade', 'Deleting selected cells', {
         cellCount: selectedCells.length,
       });
 
-      // Create delete operations for each cell
-      const deleteOperations: Observable<any>[] = [];
+      // Separate nodes and edges
+      const nodes = selectedCells.filter((cell: any) => cell.isNode?.());
+      const edges = selectedCells.filter((cell: any) => cell.isEdge?.());
 
-      selectedCells.forEach((cell: any) => {
-        if (cell.isNode()) {
-          deleteOperations.push(this._createDeleteNodeOperation(cell, graph));
-        } else if (cell.isEdge()) {
-          deleteOperations.push(this._createDeleteEdgeOperation(cell, graph));
+      // Sort nodes deepest-first so children are deleted before parents
+      // when both are selected
+      nodes.sort((a: any, b: any) => {
+        const depthA = this.infraEmbeddingService.calculateEmbeddingDepth(a);
+        const depthB = this.infraEmbeddingService.calculateEmbeddingDepth(b);
+        return depthB - depthA;
+      });
+
+      // Delete nodes via InfraNodeService (handles embedding, edges, z-order)
+      let nodeSuccessCount = 0;
+      nodes.forEach((node: any) => {
+        const success = this.infraNodeService.removeNode(graph, node.id);
+        if (success) {
+          nodeSuccessCount++;
+        } else {
+          this.logger.error('Failed to delete node', { nodeId: node.id });
         }
       });
 
-      // Execute all delete operations in parallel
-      return forkJoin(deleteOperations).pipe(
+      // Delete edges via operation manager
+      const edgeOperations: Observable<any>[] = edges.map((edge: any) =>
+        this._createDeleteEdgeOperation(edge, graph),
+      );
+
+      if (edgeOperations.length === 0) {
+        return of({
+          success: nodeSuccessCount === nodes.length,
+          deletedCount: nodeSuccessCount,
+        });
+      }
+
+      return forkJoin(edgeOperations).pipe(
         map(results => {
-          const successCount = results.filter(r => r.success).length;
-          const allSuccess = successCount === results.length;
+          const edgeSuccessCount = results.filter(r => r.success).length;
+          const totalSuccess = nodeSuccessCount + edgeSuccessCount;
+          const totalCount = nodes.length + edges.length;
 
           this.logger.debugComponent('AppDfdFacade', 'Delete operations completed', {
-            total: results.length,
-            successful: successCount,
+            total: totalCount,
+            successful: totalSuccess,
           });
 
           return {
-            success: allSuccess,
-            deletedCount: successCount,
+            success: totalSuccess === totalCount,
+            deletedCount: totalSuccess,
           };
         }),
       );
@@ -659,47 +684,6 @@ export class AppDfdFacade {
       this.logger.error('Error deleting selected cells via facade', { error });
       return of({ success: false, deletedCount: 0 });
     }
-  }
-
-  /**
-   * Create and execute a DeleteNodeOperation
-   */
-  private _createDeleteNodeOperation(node: any, graph: any): Observable<any> {
-    const nodeId = node.id;
-
-    this.logger.debugComponent('AppDfdFacade', 'Creating DeleteNodeOperation', { nodeId });
-
-    const operation: DeleteNodeOperation = {
-      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      type: 'delete-node',
-      source: 'user-interaction',
-      timestamp: Date.now(),
-      priority: 'normal',
-      nodeId,
-      includeInHistory: true,
-    };
-
-    const context: OperationContext = {
-      graph,
-      diagramId: '', // Will be set by caller if needed
-      threatModelId: '',
-      userId: '',
-      isCollaborating: false,
-      permissions: [],
-    };
-
-    return this.graphOperationManager.execute(operation, context).pipe(
-      tap(result => {
-        if (!result.success) {
-          this.logger.error('Failed to delete node', {
-            nodeId,
-            error: result.error,
-          });
-        } else {
-          this.logger.debugComponent('AppDfdFacade', 'Node deleted successfully', { nodeId });
-        }
-      }),
-    );
   }
 
   /**

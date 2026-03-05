@@ -39,6 +39,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { InfraEdgeQueryService } from '../services/infra-edge-query.service';
 import { InfraNodeConfigurationService } from '../services/infra-node-configuration.service';
+import { InfraNodeService } from '../services/infra-node.service';
 import { InfraEmbeddingService } from '../services/infra-embedding.service';
 import { InfraPortStateService } from '../services/infra-port-state.service';
 import { InfraVisualEffectsService } from '../services/infra-visual-effects.service';
@@ -1741,45 +1742,53 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   /**
    * Execute cell deletion directly with proper history and port visibility handling.
    * Called by the presentation layer after any confirmation has been obtained.
+   * Node deletion delegates to InfraNodeService.removeNode() for proper embedding cleanup.
    */
   executeCellDeletion(cell: Cell): void {
     if (!this._graph) return;
 
     const cellType = cell.isNode() ? 'node' : 'edge';
 
-    // For edges, capture the source and target nodes before deletion for port visibility update
-    let sourceNodeId: string | undefined;
-    let targetNodeId: string | undefined;
+    if (cell.isNode()) {
+      // Delegate node deletion to InfraNodeService for proper embedding,
+      // edge, port visibility, and z-order handling
+      const nodeService = this._injector.get(InfraNodeService);
+      nodeService.removeNode(this._graph, cell.id);
+    } else {
+      // For edges, capture the source and target nodes before deletion for port visibility update
+      let sourceNodeId: string | undefined;
+      let targetNodeId: string | undefined;
 
-    if (cell.isEdge()) {
-      sourceNodeId = cell.getSourceCellId();
-      targetNodeId = cell.getTargetCellId();
-    }
+      if (cell.isEdge()) {
+        sourceNodeId = cell.getSourceCellId();
+        targetNodeId = cell.getTargetCellId();
+      }
 
-    // Delete the cell atomically
-    this._historyCoordinator.executeAtomicOperation(this._graph, () => {
-      this._x6CoreOps.removeCellObject(this._graph!, cell);
-    });
-
-    // Update port visibility for affected nodes (edges only)
-    if (cell.isEdge() && (sourceNodeId || targetNodeId)) {
-      this._historyCoordinator.executeVisualEffect(this._graph, () => {
-        if (sourceNodeId) {
-          const sourceNode = this._graph!.getCellById(sourceNodeId);
-          if (sourceNode && sourceNode.isNode()) {
-            this._portStateManager.updateNodePortVisibility(this._graph!, sourceNode);
-          }
-        }
-        if (targetNodeId) {
-          const targetNode = this._graph!.getCellById(targetNodeId);
-          if (targetNode && targetNode.isNode()) {
-            this._portStateManager.updateNodePortVisibility(this._graph!, targetNode);
-          }
-        }
+      // Delete the edge atomically
+      this._historyCoordinator.executeAtomicOperation(this._graph, () => {
+        this._x6CoreOps.removeCellObject(this._graph!, cell);
       });
+
+      // Update port visibility for affected nodes
+      if (sourceNodeId || targetNodeId) {
+        this._historyCoordinator.executeVisualEffect(this._graph, () => {
+          if (sourceNodeId) {
+            const sourceNode = this._graph!.getCellById(sourceNodeId);
+            if (sourceNode && sourceNode.isNode()) {
+              this._portStateManager.updateNodePortVisibility(this._graph!, sourceNode);
+            }
+          }
+          if (targetNodeId) {
+            const targetNode = this._graph!.getCellById(targetNodeId);
+            if (targetNode && targetNode.isNode()) {
+              this._portStateManager.updateNodePortVisibility(this._graph!, targetNode);
+            }
+          }
+        });
+      }
     }
 
-    this.logger.info(`[DFD] ${cellType} removed via atomic operation with port visibility`, {
+    this.logger.info(`[DFD] ${cellType} removed with proper cleanup`, {
       cellId: cell.id,
     });
   }

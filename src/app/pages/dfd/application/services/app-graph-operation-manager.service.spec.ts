@@ -2,6 +2,7 @@
  * Test suite for AppGraphOperationManager
  */
 
+import '@angular/compiler';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of } from 'rxjs';
 
@@ -41,7 +42,10 @@ describe('AppGraphOperationManager', () => {
     };
 
     // Create service directly without TestBed
-    service = new AppGraphOperationManager(mockLogger);
+    const mockNodeService = {
+      removeNode: vi.fn().mockReturnValue(true),
+    };
+    service = new AppGraphOperationManager(mockLogger, mockNodeService as any);
 
     // Create operation context
     operationContext = {

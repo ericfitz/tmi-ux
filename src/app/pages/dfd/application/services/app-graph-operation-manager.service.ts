@@ -14,6 +14,7 @@ import { Observable, Subject, BehaviorSubject, throwError, of, forkJoin } from '
 import { catchError, timeout, tap, finalize } from 'rxjs/operators';
 
 import { LoggerService } from '../../../../core/services/logger.service';
+import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
 import { NodeOperationExecutor } from '../executors/node-operation-executor';
 import { EdgeOperationExecutor } from '../executors/edge-operation-executor';
 import { BatchOperationExecutor } from '../executors/batch-operation-executor';
@@ -60,7 +61,10 @@ export class AppGraphOperationManager implements IGraphOperationManager {
 
   private _totalExecutionTimeMs = 0;
 
-  constructor(private readonly logger: LoggerService) {
+  constructor(
+    private readonly logger: LoggerService,
+    private readonly infraNodeService: InfraNodeService,
+  ) {
     this.logger.debugComponent('AppGraphOperationManager', 'initialized');
     this._initializeBuiltInExecutors();
   }
@@ -70,7 +74,7 @@ export class AppGraphOperationManager implements IGraphOperationManager {
    */
   private _initializeBuiltInExecutors(): void {
     // Register all built-in executors
-    const nodeExecutor = new NodeOperationExecutor(this.logger);
+    const nodeExecutor = new NodeOperationExecutor(this.logger, this.infraNodeService);
     const edgeExecutor = new EdgeOperationExecutor(this.logger);
     const batchExecutor = new BatchOperationExecutor(this.logger);
     const loadDiagramExecutor = new LoadDiagramExecutor(this.logger);

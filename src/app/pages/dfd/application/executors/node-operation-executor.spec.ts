@@ -16,6 +16,7 @@ describe('NodeOperationExecutor', () => {
   let executor: NodeOperationExecutor;
   let mockLogger: any;
   let mockGraph: any;
+  let mockNodeService: any;
   let operationContext: OperationContext;
 
   beforeEach(() => {
@@ -33,8 +34,12 @@ describe('NodeOperationExecutor', () => {
       getConnectedEdges: vi.fn(),
     };
 
+    mockNodeService = {
+      removeNode: vi.fn().mockReturnValue(true),
+    };
+
     // Create executor directly without TestBed
-    executor = new NodeOperationExecutor(mockLogger);
+    executor = new NodeOperationExecutor(mockLogger, mockNodeService);
 
     operationContext = {
       graph: mockGraph,
@@ -409,6 +414,10 @@ describe('NodeOperationExecutor', () => {
         getAttrByPath: vi.fn().mockReturnValue('Test Node'),
         getZIndex: vi.fn().mockReturnValue(1),
         getData: vi.fn().mockReturnValue({ nodeType: 'process' }),
+        getPorts: vi.fn().mockReturnValue([]),
+        isVisible: vi.fn().mockReturnValue(true),
+        getParent: vi.fn().mockReturnValue(null),
+        getChildren: vi.fn().mockReturnValue([]),
         id: 'node-to-delete',
         shape: 'rect',
       };
@@ -437,7 +446,7 @@ describe('NodeOperationExecutor', () => {
       ];
     });
 
-    it('should delete node successfully', () => {
+    it('should delete node successfully via InfraNodeService', () => {
       mockGraph.getCellById.mockReturnValue(mockNode);
       mockGraph.getConnectedEdges.mockReturnValue(mockConnectedEdges);
 
@@ -451,7 +460,9 @@ describe('NodeOperationExecutor', () => {
               expect(result.affectedCellIds).toContain('edge-1');
               expect(result.affectedCellIds).toContain('edge-2');
 
-              expect(mockGraph.removeNode).toHaveBeenCalledWith('node-to-delete');
+              expect(mockNodeService.removeNode).toHaveBeenCalledWith(mockGraph, 'node-to-delete', {
+                suppressHistory: true,
+              });
               expect(result.metadata?.connectedEdgesCount).toBe(2);
 
               resolve();
@@ -480,10 +491,31 @@ describe('NodeOperationExecutor', () => {
       });
     });
 
-    it('should handle deletion errors', () => {
+    it('should handle deletion failure from InfraNodeService', () => {
       mockGraph.getCellById.mockReturnValue(mockNode);
       mockGraph.getConnectedEdges.mockReturnValue([]);
-      mockGraph.removeNode.mockImplementation(() => {
+      mockNodeService.removeNode.mockReturnValue(false);
+
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(deleteNodeOperation, operationContext).subscribe({
+          next: result => {
+            try {
+              expect(result.success).toBe(false);
+              expect(result.error).toContain('InfraNodeService.removeNode failed');
+              resolve();
+            } catch (error) {
+              reject(error instanceof Error ? error : new Error(String(error)));
+            }
+          },
+          error: reject,
+        });
+      });
+    });
+
+    it('should handle deletion exception', () => {
+      mockGraph.getCellById.mockReturnValue(mockNode);
+      mockGraph.getConnectedEdges.mockReturnValue([]);
+      mockNodeService.removeNode.mockImplementation(() => {
         throw new Error('Deletion failed');
       });
 
@@ -537,6 +569,110 @@ describe('NodeOperationExecutor', () => {
               expect(result.success).toBe(true);
               expect(result.affectedCellIds).toEqual(['node-to-delete']);
               expect(result.metadata?.connectedEdgesCount).toBe(0);
+              expect(mockNodeService.removeNode).toHaveBeenCalledWith(mockGraph, 'node-to-delete', {
+                suppressHistory: true,
+              });
+              resolve();
+            } catch (error) {
+              reject(error instanceof Error ? error : new Error(String(error)));
+            }
+          },
+          error: reject,
+        });
+      });
+    });
+
+    it('should include unembedded child IDs in affectedCellIds', () => {
+      const mockChild1 = {
+        id: 'child-1',
+        isNode: vi.fn().mockReturnValue(true),
+      };
+      const mockChild2 = {
+        id: 'child-2',
+        isNode: vi.fn().mockReturnValue(true),
+      };
+      mockNode.getChildren.mockReturnValue([mockChild1, mockChild2]);
+      mockGraph.getCellById.mockReturnValue(mockNode);
+      mockGraph.getConnectedEdges.mockReturnValue([]);
+
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(deleteNodeOperation, operationContext).subscribe({
+          next: result => {
+            try {
+              expect(result.success).toBe(true);
+              expect(result.affectedCellIds).toContain('node-to-delete');
+              expect(result.affectedCellIds).toContain('child-1');
+              expect(result.affectedCellIds).toContain('child-2');
+              expect(result.metadata?.unembeddedChildIds).toEqual(['child-1', 'child-2']);
+              resolve();
+            } catch (error) {
+              reject(error instanceof Error ? error : new Error(String(error)));
+            }
+          },
+          error: reject,
+        });
+      });
+    });
+
+    it('should capture parent reference in previousState', () => {
+      const mockParent = {
+        id: 'parent-node',
+        isNode: vi.fn().mockReturnValue(true),
+      };
+      mockNode.getParent.mockReturnValue(mockParent);
+      mockGraph.getCellById.mockReturnValue(mockNode);
+      mockGraph.getConnectedEdges.mockReturnValue([]);
+
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(deleteNodeOperation, operationContext).subscribe({
+          next: result => {
+            try {
+              expect(result.success).toBe(true);
+              expect(result.previousState).toBeDefined();
+              const nodeState = result.previousState?.find((s: any) => s.id === 'node-to-delete');
+              expect(nodeState?.parent).toBe('parent-node');
+              resolve();
+            } catch (error) {
+              reject(error instanceof Error ? error : new Error(String(error)));
+            }
+          },
+          error: reject,
+        });
+      });
+    });
+
+    it('should capture children state in previousState for undo', () => {
+      const mockChild = {
+        id: 'child-node',
+        shape: 'rect',
+        isNode: vi.fn().mockReturnValue(true),
+        getPosition: vi.fn().mockReturnValue({ x: 150, y: 150 }),
+        getSize: vi.fn().mockReturnValue({ width: 80, height: 40 }),
+        getAttrs: vi.fn().mockReturnValue({}),
+        getPorts: vi.fn().mockReturnValue([]),
+        getData: vi.fn().mockReturnValue({}),
+        isVisible: vi.fn().mockReturnValue(true),
+        getZIndex: vi.fn().mockReturnValue(2),
+        getParent: vi.fn().mockReturnValue(mockNode),
+      };
+      mockNode.getChildren.mockReturnValue([mockChild]);
+
+      mockGraph.getCellById.mockImplementation((id: string) => {
+        if (id === 'node-to-delete') return mockNode;
+        if (id === 'child-node') return mockChild;
+        return null;
+      });
+      mockGraph.getConnectedEdges.mockReturnValue([]);
+
+      return new Promise<void>((resolve, reject) => {
+        executor.execute(deleteNodeOperation, operationContext).subscribe({
+          next: result => {
+            try {
+              expect(result.success).toBe(true);
+              expect(result.previousState).toBeDefined();
+              const childState = result.previousState?.find((s: any) => s.id === 'child-node');
+              expect(childState).toBeDefined();
+              expect(childState?.parent).toBe('node-to-delete');
               resolve();
             } catch (error) {
               reject(error instanceof Error ? error : new Error(String(error)));

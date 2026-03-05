@@ -12,6 +12,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { Graph } from '@antv/x6';
 
 import { LoggerService } from '../../../../core/services/logger.service';
+import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 import { NodeInfo } from '../../domain/value-objects/node-info';
 import { getX6ShapeForNodeType } from '../../infrastructure/adapters/infra-x6-shape-definitions';
@@ -31,7 +32,10 @@ import { normalizeCell } from '../../utils/cell-normalization.util';
 export class NodeOperationExecutor implements OperationExecutor {
   readonly priority = 100; // Standard priority for node operations
 
-  constructor(private readonly logger: LoggerService) {}
+  constructor(
+    private readonly logger: LoggerService,
+    private readonly nodeService: InfraNodeService,
+  ) {}
 
   canExecute(operation: GraphOperation): boolean {
     return (
@@ -252,7 +256,11 @@ export class NodeOperationExecutor implements OperationExecutor {
   }
 
   /**
-   * Delete a node and its connected edges
+   * Delete a node with full embedding, edge, and visual cleanup.
+   * Delegates to InfraNodeService.removeNode() which handles:
+   * - Re-parenting embedded children to grandparent or unembedding
+   * - Removing connected edges
+   * - Updating port visibility and z-order
    */
   private _deleteNode(
     operation: DeleteNodeOperation,
@@ -265,7 +273,6 @@ export class NodeOperationExecutor implements OperationExecutor {
       // Find the node
       const node = graph.getCellById(nodeId);
       if (!node || !node.isNode?.()) {
-        // Node doesn't exist, consider it a successful no-op
         this.logger.debugComponent(
           'NodeOperationExecutor',
           'Node not found for deletion, treating as success',
@@ -283,14 +290,15 @@ export class NodeOperationExecutor implements OperationExecutor {
         });
       }
 
-      // Capture previous state (node + connected edges) before deletion
+      // Capture previous state (node + connected edges + children) before deletion
       const previousState = this._captureCascadedState(graph, nodeId);
 
-      // Get connected edges before deletion
+      // Capture metadata before deletion
       const connectedEdges = graph.getConnectedEdges(node) || [];
       const connectedEdgeIds = connectedEdges.map(edge => edge.id);
+      const children = node.getChildren?.() || [];
+      const childNodeIds = children.filter(c => c.isNode?.()).map(c => c.id);
 
-      // Store node data for undo functionality
       const nodeData = {
         id: node.id,
         shape: node.shape,
@@ -300,30 +308,41 @@ export class NodeOperationExecutor implements OperationExecutor {
         data: node.getData(),
       };
 
-      // Remove the node (this will also remove connected edges)
-      if (node.isNode?.()) {
-        graph.removeNode(node.id);
-      } else {
-        graph.removeCell(node);
+      // Delegate to InfraNodeService for proper embedding/edge/visual cleanup.
+      // suppressHistory: true because the caller (remote handler) manages history.
+      const success = this.nodeService.removeNode(graph, nodeId, {
+        suppressHistory: true,
+      });
+
+      if (!success) {
+        return of({
+          success: false,
+          operationType: 'delete-node',
+          affectedCellIds: [],
+          timestamp: Date.now(),
+          error: `InfraNodeService.removeNode failed for node: ${nodeId}`,
+        });
       }
 
       this.logger.debugComponent('NodeOperationExecutor', 'Node deleted successfully', {
         nodeId,
         connectedEdgesCount: connectedEdgeIds.length,
+        unembeddedChildCount: childNodeIds.length,
       });
 
       return of({
         success: true,
         operationType: 'delete-node',
-        affectedCellIds: [nodeId, ...connectedEdgeIds],
+        affectedCellIds: [nodeId, ...connectedEdgeIds, ...childNodeIds],
         timestamp: Date.now(),
-        previousState, // State before deletion (node + edges)
-        currentState: [], // No current state after deletion
+        previousState,
+        currentState: [],
         metadata: {
           nodeId,
           connectedEdgesCount: connectedEdgeIds.length,
           deletedNodeData: nodeData,
           deletedEdgeIds: connectedEdgeIds,
+          unembeddedChildIds: childNodeIds,
         },
       });
     } catch (error) {
@@ -546,6 +565,7 @@ export class NodeOperationExecutor implements OperationExecutor {
     const typedNode = node;
     const attrs = typedNode.getAttrs();
 
+    const parent = typedNode.getParent?.();
     const cellData: Cell = {
       id: typedNode.id,
       shape: typedNode.shape,
@@ -556,14 +576,16 @@ export class NodeOperationExecutor implements OperationExecutor {
       data: typedNode.getData(),
       visible: typedNode.isVisible?.(),
       zIndex: typedNode.getZIndex(),
+      parent: parent?.isNode?.() ? parent.id : undefined,
     };
 
     return normalizeCell(cellData);
   }
 
   /**
-   * Capture state for multiple nodes and their connected edges
-   * Uses normalizeCell to ensure consistency with persistence filtering
+   * Capture state for a node, its connected edges, and direct embedded children.
+   * Children state is captured so undo can restore embedding relationships.
+   * Uses normalizeCell to ensure consistency with persistence filtering.
    */
   private _captureCascadedState(graph: Graph, nodeId: string): Cell[] {
     const states: Cell[] = [];
@@ -574,7 +596,7 @@ export class NodeOperationExecutor implements OperationExecutor {
       states.push(nodeState);
     }
 
-    // Capture connected edges
+    // Capture connected edges and embedded children
     const node = graph.getCellById(nodeId);
     if (node && node.isNode?.()) {
       const connectedEdges = graph.getConnectedEdges(node) || [];
@@ -591,6 +613,17 @@ export class NodeOperationExecutor implements OperationExecutor {
         };
 
         states.push(normalizeCell(edgeCellData));
+      });
+
+      // Capture direct children state (for undo to restore embeddings)
+      const children = node.getChildren?.() || [];
+      children.forEach(child => {
+        if (child.isNode?.()) {
+          const childState = this._captureCellState(graph, child.id);
+          if (childState) {
+            states.push(childState);
+          }
+        }
       });
     }
 
