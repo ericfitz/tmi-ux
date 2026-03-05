@@ -831,12 +831,16 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/me/logout`, null, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${mockJwtToken.token}`,
-        },
-      });
+      expect(httpClient.post).toHaveBeenCalledWith(
+        `${environment.apiUrl}/me/logout`,
+        null,
+        expect.objectContaining({
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${mockJwtToken.token}`,
+          },
+        }),
+      );
       expect(service.isAuthenticated).toBe(false);
       expect(service.userProfile).toBeNull();
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token');
@@ -1001,12 +1005,16 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/me/logout`, null, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${mockJwtToken.token}`,
-        },
-      });
+      expect(httpClient.post).toHaveBeenCalledWith(
+        `${environment.apiUrl}/me/logout`,
+        null,
+        expect.objectContaining({
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${mockJwtToken.token}`,
+          },
+        }),
+      );
     });
 
     it('should exclude Authorization header when no token is available', () => {
@@ -1021,11 +1029,15 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/me/logout`, null, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      expect(httpClient.post).toHaveBeenCalledWith(
+        `${environment.apiUrl}/me/logout`,
+        null,
+        expect.objectContaining({
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }),
+      );
     });
 
     it('should handle malformed token gracefully', () => {
@@ -1040,11 +1052,15 @@ describe('AuthService', () => {
 
       service.logout();
 
-      expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/me/logout`, null, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      expect(httpClient.post).toHaveBeenCalledWith(
+        `${environment.apiUrl}/me/logout`,
+        null,
+        expect.objectContaining({
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }),
+      );
     });
 
     it('should call server logout for test users', () => {
@@ -1299,10 +1315,8 @@ describe('AuthService', () => {
         expiresAt: new Date(Date.now() + 3600000), // expires in 1 hour
       };
 
-      localStorageMock.getItem.mockImplementation((key: string) => {
-        if (key === 'auth_token') return JSON.stringify(validToken);
-        return null;
-      });
+      // Set token in memory cache (jwtTokenSubject) so getStoredToken() returns it
+      service['jwtTokenSubject'].next(validToken);
 
       const logoutSpy = vi.spyOn(service, 'logout');
 

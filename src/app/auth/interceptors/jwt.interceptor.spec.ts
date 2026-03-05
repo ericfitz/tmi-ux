@@ -8,7 +8,7 @@ import { JwtInterceptor } from './jwt.interceptor';
 import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { JwtToken } from '../models/auth.models';
-import { IS_AUTH_RETRY } from '../../core/tokens/http-context.tokens';
+import { IS_AUTH_RETRY, IS_LOGOUT_REQUEST } from '../../core/tokens/http-context.tokens';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../testing/mocks';
 
 // Mock the environment module
@@ -71,6 +71,7 @@ describe('JwtInterceptor', () => {
       getValidToken: vi.fn(),
       forceRefreshToken: vi.fn(),
       handleAuthError: vi.fn(),
+      logout: vi.fn(),
     };
 
     authService = mockAuthService as unknown as AuthService;
@@ -109,6 +110,7 @@ describe('JwtInterceptor', () => {
     it('should not add Authorization header to non-API requests', async () => {
       const mockRequest = {
         url: 'https://external-api.com/test',
+        context: new HttpContext(),
       } as unknown as HttpRequest<unknown>;
 
       const mockHandler = {
@@ -622,6 +624,72 @@ describe('JwtInterceptor', () => {
               message: 'Authentication required',
               retryable: true,
             });
+            resolve();
+          },
+        });
+      });
+    });
+  });
+
+  describe('IS_LOGOUT_REQUEST handling', () => {
+    it('should pass through logout requests without auth handling', async () => {
+      const logoutContext = new HttpContext().set(IS_LOGOUT_REQUEST, true);
+      const mockRequest = createMockRequest(
+        `${environment.apiUrl}/me/logout`,
+        'POST',
+        false,
+        logoutContext,
+      );
+
+      const mockHandler = {
+        handle: vi.fn().mockReturnValue(of({ success: true })),
+      } as unknown as HttpHandler;
+
+      await new Promise<void>(resolve => {
+        const result$ = interceptor.intercept(mockRequest, mockHandler);
+        result$.subscribe({
+          next: () => {
+            // Should pass through without calling getValidToken
+            expect(authService.getValidToken).not.toHaveBeenCalled();
+            expect(mockHandler.handle).toHaveBeenCalledWith(mockRequest);
+            resolve();
+          },
+          error: () => {
+            expect(true).toBe(false); // Should not error
+          },
+        });
+      });
+    });
+
+    it('should not retry 401 on logout requests', async () => {
+      const logoutContext = new HttpContext().set(IS_LOGOUT_REQUEST, true);
+      const mockRequest = createMockRequest(
+        `${environment.apiUrl}/me/logout`,
+        'POST',
+        false,
+        logoutContext,
+      );
+
+      const unauthorizedError = new HttpErrorResponse({
+        status: 401,
+        statusText: 'Unauthorized',
+        url: `${environment.apiUrl}/me/logout`,
+      });
+
+      const mockHandler = {
+        handle: vi.fn().mockReturnValue(throwError(() => unauthorizedError)),
+      } as unknown as HttpHandler;
+
+      await new Promise<void>(resolve => {
+        const result$ = interceptor.intercept(mockRequest, mockHandler);
+        result$.subscribe({
+          next: () => {
+            expect(true).toBe(false); // Should not succeed
+          },
+          error: () => {
+            // Error passes through without refresh attempt or logout loop
+            expect(authService.forceRefreshToken).not.toHaveBeenCalled();
+            expect(authService.logout).not.toHaveBeenCalled();
             resolve();
           },
         });
