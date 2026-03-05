@@ -274,7 +274,7 @@ describe('JwtInterceptor', () => {
       });
     });
 
-    it('should handle 401 errors with forced refresh failure (propagates error without logout)', async () => {
+    it('should trigger full logout on forced refresh failure', async () => {
       // First call returns token, then fails with 401, then forceRefreshToken fails
       vi.mocked(authService.getValidToken).mockReturnValueOnce(of(mockJwtToken));
       vi.mocked(authService.forceRefreshToken).mockReturnValueOnce(
@@ -300,28 +300,29 @@ describe('JwtInterceptor', () => {
             expect(true).toBe(false); // Should not succeed
           },
           error: error => {
-            // Error propagates but NO logout occurs
             expect(error.message).toContain('Token refresh failed');
             expect(loggerService.warn).toHaveBeenCalledWith(
               'Received 401 Unauthorized - attempting forced token refresh',
             );
             expect(loggerService.error).toHaveBeenCalledWith(
-              'Forced token refresh failed - propagating error',
+              'Forced token refresh failed - triggering logout',
               expect.any(Error),
             );
             // handleAuthError is called to notify subscribers
             expect(authService.handleAuthError).toHaveBeenCalledWith({
               code: 'token_refresh_failed',
               message: 'Unable to refresh authentication token',
-              retryable: true,
+              retryable: false,
             });
+            // Full logout is triggered
+            expect(authService.logout).toHaveBeenCalled();
             resolve();
           },
         });
       });
     });
 
-    it('should not retry on 401 if request is already a retry (prevents infinite loop)', async () => {
+    it('should trigger logout on 401 if request is already a retry (prevents infinite loop)', async () => {
       // Create a request that's already marked as a retry
       const retryContext = new HttpContext().set(IS_AUTH_RETRY, true);
       const mockRequest = createMockRequest(
@@ -350,16 +351,18 @@ describe('JwtInterceptor', () => {
             expect(true).toBe(false); // Should not succeed
           },
           error: error => {
-            // Should NOT attempt refresh - just propagate error
+            // Should NOT attempt refresh - trigger logout instead
             expect(error.status).toBe(401);
             expect(authService.forceRefreshToken).not.toHaveBeenCalled();
             expect(loggerService.warn).toHaveBeenCalledWith(
-              '401 on retry request - propagating error without logout',
+              '401 on retry request - triggering logout',
               expect.objectContaining({
                 url: `${environment.apiUrl}/test`,
                 method: 'GET',
               }),
             );
+            // Full logout is triggered
+            expect(authService.logout).toHaveBeenCalled();
             resolve();
           },
         });

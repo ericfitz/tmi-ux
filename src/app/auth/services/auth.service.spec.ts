@@ -1258,6 +1258,71 @@ describe('AuthService', () => {
     });
   }); /* End of Enhanced Logout Functionality describe block */
 
+  describe('validateAndUpdateAuthState()', () => {
+    it('should call logout when no token found but auth state is true', () => {
+      service['isAuthenticatedSubject'].next(true);
+
+      localStorageMock.getItem.mockReturnValue(null);
+
+      const logoutSpy = vi.spyOn(service, 'logout');
+
+      service.validateAndUpdateAuthState();
+
+      expect(logoutSpy).toHaveBeenCalled();
+    });
+
+    it('should call logout when token is expired but auth state is true', () => {
+      service['isAuthenticatedSubject'].next(true);
+
+      const expiredToken: JwtToken = {
+        ...mockJwtToken,
+        expiresAt: new Date(Date.now() - 60000), // expired 1 minute ago
+      };
+
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return JSON.stringify(expiredToken);
+        return null;
+      });
+
+      const logoutSpy = vi.spyOn(service, 'logout');
+
+      service.validateAndUpdateAuthState();
+
+      expect(logoutSpy).toHaveBeenCalled();
+    });
+
+    it('should not call logout when token is valid', () => {
+      service['isAuthenticatedSubject'].next(true);
+
+      const validToken: JwtToken = {
+        ...mockJwtToken,
+        expiresAt: new Date(Date.now() + 3600000), // expires in 1 hour
+      };
+
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return JSON.stringify(validToken);
+        return null;
+      });
+
+      const logoutSpy = vi.spyOn(service, 'logout');
+
+      service.validateAndUpdateAuthState();
+
+      expect(logoutSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not call logout when not authenticated', () => {
+      service['isAuthenticatedSubject'].next(false);
+      localStorageMock.getItem.mockReturnValue(null);
+
+      const logoutSpy = vi.spyOn(service, 'logout');
+
+      service.validateAndUpdateAuthState();
+
+      expect(logoutSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('Token Refresh Functionality', () => {
     describe('refreshToken()', () => {
       it('should successfully refresh token with valid refresh token', () => {
