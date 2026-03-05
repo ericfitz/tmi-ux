@@ -65,6 +65,10 @@ localization_dedup_plan.*
 deliverables
 deliverables/**
 
+# Security analysis outputs
+outputs
+outputs/**
+
 # Playwright
 /test-results
 /playwright-report

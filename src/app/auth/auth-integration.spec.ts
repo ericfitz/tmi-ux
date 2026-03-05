@@ -8,7 +8,7 @@
 
 import '@angular/compiler';
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
@@ -769,6 +769,7 @@ describe('Authentication Integration', () => {
           method: 'GET',
           clone: vi.fn().mockReturnThis(),
           setHeaders: vi.fn(),
+          context: new HttpContext(),
         } as any;
 
         const mockHandler = {
