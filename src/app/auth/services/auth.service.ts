@@ -714,8 +714,8 @@ export class AuthService {
       //   finalAuthUrl: authUrl.replace(/\?.*$/, ''), // Log without query params for security
       // });
 
-      // Store return URL if provided
-      if (returnUrl) {
+      // Store return URL if provided and valid
+      if (returnUrl && this.isValidReturnUrl(returnUrl)) {
         sessionStorage.setItem('saml_return_url', returnUrl);
       }
 
@@ -870,6 +870,18 @@ export class AuthService {
   }
 
   /**
+   * Validate that a return URL is safe for navigation.
+   * Only allows relative URLs starting with a single slash to prevent open redirect attacks.
+   * @param url URL to validate
+   * @returns true if the URL is a safe relative path
+   */
+  private isValidReturnUrl(url: string): boolean {
+    if (!url) return false;
+    // Only allow relative URLs starting with / but not // (protocol-relative)
+    return url.startsWith('/') && !url.startsWith('//');
+  }
+
+  /**
    * Handle OAuth callback from TMI OAuth proxy
    * TMI now handles all OAuth complexity and returns tokens directly
    * @param response OAuth response containing tokens or error
@@ -902,6 +914,15 @@ export class AuthService {
       const decodedStoredState = storedState ? this.decodeState(storedState) : null;
       const decodedReceivedState = this.decodeState(receivedState);
       returnUrl = decodedReceivedState.returnUrl;
+
+      // For SAML flows, fall back to sessionStorage if state didn't carry a return URL
+      if (!returnUrl) {
+        const samlReturnUrl = sessionStorage.getItem('saml_return_url');
+        if (samlReturnUrl) {
+          returnUrl = samlReturnUrl;
+          sessionStorage.removeItem('saml_return_url');
+        }
+      }
 
       // this.logger.debugComponent('Auth', 'State parameter validation starting', {
       //   receivedState: response.state,
@@ -954,6 +975,13 @@ export class AuthService {
           });
           return of(false);
         }
+      }
+    } else {
+      // No state parameter — check sessionStorage for SAML return URL
+      const samlReturnUrl = sessionStorage.getItem('saml_return_url');
+      if (samlReturnUrl) {
+        returnUrl = samlReturnUrl;
+        sessionStorage.removeItem('saml_return_url');
       }
     }
 
@@ -1084,10 +1112,11 @@ export class AuthService {
       // Fire and forget - don't block navigation on this
       this.refreshUserProfile().subscribe();
 
-      // Navigate to return URL if provided, otherwise to role-based landing page
+      // Navigate to return URL if provided and valid, otherwise to role-based landing page
       // Wait for navigation to complete before emitting success
-      const navigationPromise = returnUrl
-        ? this.router.navigateByUrl(returnUrl)
+      const validReturnUrl = returnUrl && this.isValidReturnUrl(returnUrl) ? returnUrl : undefined;
+      const navigationPromise = validReturnUrl
+        ? this.router.navigateByUrl(validReturnUrl)
         : this.router.navigate([this.getLandingPage()]);
 
       return from(navigationPromise).pipe(
@@ -1243,10 +1272,10 @@ export class AuthService {
           // Fire and forget - don't block navigation on this
           this.refreshUserProfile().subscribe();
 
-          // Navigate to return URL if provided, otherwise to role-based landing page
+          // Navigate to return URL if provided and valid, otherwise to role-based landing page
           // Note: We can't use from() here because we're inside a map() - just fire and forget
           // The main navigation fix is in handleTMITokenResponse above
-          if (returnUrl) {
+          if (returnUrl && this.isValidReturnUrl(returnUrl)) {
             void this.router.navigateByUrl(returnUrl);
           } else {
             void this.router.navigate([this.getLandingPage()]);
