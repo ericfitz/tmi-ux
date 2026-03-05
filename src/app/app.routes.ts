@@ -120,6 +120,7 @@ export const routes: Routes = [
           import(
             /* webpackChunkName: "admin-webhooks" */ './pages/admin/webhooks/admin-webhooks.component'
           ).then(c => c.AdminWebhooksComponent),
+        canActivate: [adminGuard],
       },
       {
         path: 'addons',
@@ -127,6 +128,7 @@ export const routes: Routes = [
           import(
             /* webpackChunkName: "admin-addons" */ './pages/admin/addons/admin-addons.component'
           ).then(c => c.AdminAddonsComponent),
+        canActivate: [adminGuard],
       },
       {
         path: 'settings',
