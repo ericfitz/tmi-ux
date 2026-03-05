@@ -23,10 +23,14 @@ import { tap, map } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 import { Graph, Node, Edge } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { TranslocoService } from '@jsverse/transloco';
 import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
+import {
+  InfraDfdValidationService,
+  ConnectionValidationArgs,
+  MagnetValidationArgs,
+} from '../../infrastructure/services/infra-dfd-validation.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import {
   AppOperationStateManager,
@@ -38,45 +42,14 @@ import { CreateEdgeOperation, OperationContext } from '../../types/graph-operati
 import { DFD_STYLING } from '../../constants/styling-constants';
 
 /**
- * Interface for connection validation arguments from X6
- */
-export interface ConnectionValidationArgs {
-  sourceView: any;
-  targetView: any;
-  sourceMagnet: Element;
-  targetMagnet: Element;
-}
-
-/**
- * Interface for magnet validation arguments from X6
- */
-export interface MagnetValidationArgs {
-  magnet: Element;
-}
-
-/**
  * Consolidated service for edge handling, operations, and management in DFD diagrams
  * Combines the functionality of DfdEdgeManagerService and X6EdgeOperations
  */
 @Injectable()
 export class AppEdgeService {
-  /**
-   * Valid DFD node shape types
-   */
-  private readonly validNodeShapes = ['process', 'store', 'actor', 'security-boundary', 'text-box'];
-
-  /**
-   * DFD connection rules - which shapes can connect to which other shapes
-   */
-  private readonly connectionRules: Record<string, string[]> = {
-    process: ['store', 'actor', 'process'],
-    store: ['process'],
-    actor: ['process'],
-  };
-
   constructor(
     private logger: LoggerService,
-    private transloco: TranslocoService,
+    private dfdValidation: InfraDfdValidationService,
     private infraX6ZOrderAdapter: InfraX6ZOrderAdapter,
     private infraVisualEffectsService: InfraVisualEffectsService,
     private infraEdgeService: InfraEdgeService,
@@ -600,7 +573,7 @@ export class AppEdgeService {
    * Validate if a connection between two nodes is allowed
    */
   validateConnection(sourceNode: Node, targetNode: Node): boolean {
-    return this.isNodeConnectionValid(sourceNode, targetNode);
+    return this.dfdValidation.isNodeConnectionValid(sourceNode, targetNode);
   }
 
   /**

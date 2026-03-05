@@ -51,7 +51,7 @@ import { InfraX6EventLoggerAdapter } from './infra-x6-event-logger.adapter';
 import { X6TooltipAdapter } from './infra-x6-tooltip.adapter';
 import { normalizeCell } from '../../utils/cell-normalization.util';
 import { Cell as WebSocketCell } from '../../../../core/types/websocket-message.types';
-import { AppEdgeService } from '../../application/services/app-edge.service';
+import { InfraDfdValidationService } from '../services/infra-dfd-validation.service';
 import {
   AppOperationStateManager,
   HISTORY_OPERATION_TYPES,
@@ -162,7 +162,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     private readonly _selectionAdapter: InfraX6SelectionAdapter,
     private readonly _x6EventLogger: InfraX6EventLoggerAdapter,
     private readonly _tooltipAdapter: X6TooltipAdapter,
-    private readonly _edgeService: AppEdgeService,
+    private readonly _dfdValidation: InfraDfdValidationService,
     private readonly _historyCoordinator: AppOperationStateManager,
     private readonly _x6CoreOps: InfraX6CoreOperationsService,
     private readonly _injector: Injector,
@@ -431,7 +431,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         highlight: true, // Highlight available connection points
         // Validate magnets (ports) during connection
         validateMagnet: ({ magnet }) => {
-          return this._edgeService?.isMagnetValid({ magnet }) ?? true;
+          return this._dfdValidation?.isMagnetValid({ magnet }) ?? true;
         },
         // Validate connections between nodes
         validateConnection: ({ sourceView, targetView, sourceMagnet, targetMagnet }) => {
@@ -447,7 +447,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
           }
 
           return (
-            this._edgeService?.isConnectionValid({
+            this._dfdValidation?.isConnectionValid({
               sourceView,
               targetView,
               sourceMagnet,
@@ -457,7 +457,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         },
         // Create edges with proper styling and attributes
         createEdge: () => {
-          const defaultLabel = this._edgeService.getLocalizedFlowLabel();
+          const defaultLabel = this._dfdValidation.getLocalizedFlowLabel();
           return this._graph!.createEdge({
             shape: 'edge', // Use standard X6 edge shape
             connector: DFD_STYLING.EDGES.CONNECTOR,
@@ -576,7 +576,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
     const nodeType = node.type;
 
     // Validate that shape property is set correctly
-    this._edgeService.validateNodeShape(nodeType, node.id);
+    this._dfdValidation.validateNodeShape(nodeType, node.id);
 
     // Use InfraNodeConfigurationService for node configuration (except z-index)
     const nodeAttrs = this._nodeConfigurationService.getNodeAttrs(nodeType);
@@ -609,7 +609,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       }
 
       // Validate that the X6 node was created with the correct shape
-      this._edgeService.validateX6NodeShape(createdNode);
+      this._dfdValidation.validateX6NodeShape(createdNode);
 
       // Apply proper z-index using ZOrderService after node creation
       this._zOrderAdapter.applyNodeCreationZIndex(graph, createdNode);
