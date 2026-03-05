@@ -72,8 +72,15 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
   ) {
     this.mode = data.mode;
     this.isReadOnly = data.isReadOnly || false;
+    this.repositoryForm = this.buildForm(data);
 
-    this.repositoryForm = this.fb.group({
+    if (this.isReadOnly) {
+      this.repositoryForm.disable();
+    }
+  }
+
+  private buildForm(data: RepositoryEditorDialogData): FormGroup {
+    return this.fb.group({
       name: [data.repository?.name || '', [Validators.required, Validators.maxLength(256)]],
       description: [data.repository?.description || '', Validators.maxLength(2048)],
       type: [data.repository?.type || 'git', Validators.required],
@@ -90,10 +97,6 @@ export class RepositoryEditorDialogComponent implements OnInit, OnDestroy {
       subPath: [data.repository?.parameters?.subPath || '', Validators.maxLength(256)],
       include_in_report: [data.mode === 'create' ? true : data.repository?.include_in_report],
     });
-
-    if (this.isReadOnly) {
-      this.repositoryForm.disable();
-    }
   }
 
   ngOnInit(): void {

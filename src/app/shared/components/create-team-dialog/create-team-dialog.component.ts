@@ -145,7 +145,13 @@ export class CreateTeamDialogComponent {
       return;
     }
 
-    const value = this.form.value;
+    const value = this.form.value as {
+      name: string;
+      description: string;
+      email_address: string;
+      uri: string;
+      status: string;
+    };
     const result: CreateTeamDialogResult = {
       name: value.name.trim(),
     };

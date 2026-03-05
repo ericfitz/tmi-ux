@@ -560,6 +560,107 @@ async function renderDiagramsSection(
 // Threats Section (card-style blocks)
 // ────────────────────────────────────────────────────────────────────
 
+function buildThreatKvPairs(
+  threat: Threat,
+  tm: ThreatModel,
+  transloco: TranslocoService,
+): { label: string; value: string }[] {
+  const kvPairs: { label: string; value: string }[] = [];
+
+  if (threat.description) {
+    kvPairs.push({
+      label: transloco.translate('common.description'),
+      value: threat.description,
+    });
+  }
+  if (threat.severity) {
+    kvPairs.push({
+      label: transloco.translate('common.severity'),
+      value: getFieldLabel(threat.severity, 'threatEditor.threatSeverity' as FieldType, transloco),
+    });
+  }
+  if (threat.score != null) {
+    kvPairs.push({
+      label: transloco.translate('common.score'),
+      value: String(threat.score),
+    });
+  }
+  if (threat.status) {
+    kvPairs.push({
+      label: transloco.translate('common.status'),
+      value: getFieldLabel(threat.status, 'threatEditor.threatStatus' as FieldType, transloco),
+    });
+  }
+  if (threat.priority) {
+    kvPairs.push({
+      label: transloco.translate('common.priority'),
+      value: getFieldLabel(threat.priority, 'threatEditor.threatPriority' as FieldType, transloco),
+    });
+  }
+  if (threat.threat_type && threat.threat_type.length > 0) {
+    kvPairs.push({
+      label: transloco.translate('common.threatType'),
+      value: threat.threat_type.join(', '),
+    });
+  }
+  if (threat.mitigation) {
+    kvPairs.push({
+      label: transloco.translate('common.mitigation'),
+      value: threat.mitigation,
+    });
+  }
+  if (threat.cwe_id && threat.cwe_id.length > 0) {
+    kvPairs.push({
+      label: transloco.translate('report.cweIds'),
+      value: threat.cwe_id.join(', '),
+    });
+  }
+  if (threat.cvss && threat.cvss.length > 0) {
+    for (const cvss of threat.cvss) {
+      kvPairs.push({
+        label: transloco.translate('report.cvss'),
+        value: `${cvss.vector} (${cvss.score})`,
+      });
+    }
+  }
+
+  addLinkedEntityPairs(kvPairs, threat, tm, transloco);
+
+  return kvPairs;
+}
+
+function addLinkedEntityPairs(
+  kvPairs: { label: string; value: string }[],
+  threat: Threat,
+  tm: ThreatModel,
+  transloco: TranslocoService,
+): void {
+  if (threat.asset_id) {
+    const asset = tm.assets?.find(a => a.id === threat.asset_id);
+    if (asset) {
+      kvPairs.push({
+        label: transloco.translate('report.linkedAsset'),
+        value: asset.name,
+      });
+    }
+  }
+  if (threat.diagram_id) {
+    const diagram = tm.diagrams?.find(d => d.id === threat.diagram_id);
+    if (diagram) {
+      kvPairs.push({
+        label: transloco.translate('report.linkedDiagram'),
+        value: diagram.name,
+      });
+    }
+  }
+  if (threat.issue_uri) {
+    kvPairs.push({
+      label: transloco.translate('common.issueUri'),
+      value: threat.issue_uri,
+    });
+  }
+}
+
 function renderThreatsSection(
   ctx: SectionRenderContext,
   cursor: Cursor,
@@ -593,97 +694,7 @@ function renderThreatsSection(
     );
     cursor = engine.advanceCursor(cursor, REPORT_STYLES.cardTitle.spaceAfter);
 
-    // Build key-value pairs from all non-empty fields
-    const kvPairs: { label: string; value: string }[] = [];
-
-    if (threat.description) {
-      kvPairs.push({
-        label: transloco.translate('common.description'),
-        value: threat.description,
-      });
-    }
-    if (threat.severity) {
-      kvPairs.push({
-        label: transloco.translate('common.severity'),
-        value: getFieldLabel(
-          threat.severity,
-          'threatEditor.threatSeverity' as FieldType,
-          transloco,
-        ),
-      });
-    }
-    if (threat.score != null) {
-      kvPairs.push({
-        label: transloco.translate('common.score'),
-        value: String(threat.score),
-      });
-    }
-    if (threat.status) {
-      kvPairs.push({
-        label: transloco.translate('common.status'),
-        value: getFieldLabel(threat.status, 'threatEditor.threatStatus' as FieldType, transloco),
-      });
-    }
-    if (threat.priority) {
-      kvPairs.push({
-        label: transloco.translate('common.priority'),
-        value: getFieldLabel(
-          threat.priority,
-          'threatEditor.threatPriority' as FieldType,
-          transloco,
-        ),
-      });
-    }
-    if (threat.threat_type && threat.threat_type.length > 0) {
-      kvPairs.push({
-        label: transloco.translate('common.threatType'),
-        value: threat.threat_type.join(', '),
-      });
-    }
-    if (threat.mitigation) {
-      kvPairs.push({
-        label: transloco.translate('common.mitigation'),
-        value: threat.mitigation,
-      });
-    }
-    if (threat.cwe_id && threat.cwe_id.length > 0) {
-      kvPairs.push({
-        label: transloco.translate('report.cweIds'),
-        value: threat.cwe_id.join(', '),
-      });
-    }
-    if (threat.cvss && threat.cvss.length > 0) {
-      for (const cvss of threat.cvss) {
-        kvPairs.push({
-          label: transloco.translate('report.cvss'),
-          value: `${cvss.vector} (${cvss.score})`,
-        });
-      }
-    }
-    if (threat.asset_id) {
-      const asset = tm.assets?.find(a => a.id === threat.asset_id);
-      if (asset) {
-        kvPairs.push({
-          label: transloco.translate('report.linkedAsset'),
-          value: asset.name,
-        });
-      }
-    }
-    if (threat.diagram_id) {
-      const diagram = tm.diagrams?.find(d => d.id === threat.diagram_id);
-      if (diagram) {
-        kvPairs.push({
-          label: transloco.translate('report.linkedDiagram'),
-          value: diagram.name,
-        });
-      }
-    }
-    if (threat.issue_uri) {
-      kvPairs.push({
-        label: transloco.translate('common.issueUri'),
-        value: threat.issue_uri,
-      });
-    }
+    const kvPairs = buildThreatKvPairs(threat, tm, transloco);
 
     // Draw all key-value pairs
     for (const kv of kvPairs) {

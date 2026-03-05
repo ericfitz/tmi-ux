@@ -313,66 +313,76 @@ export class EdgeOperationValidator extends BaseOperationValidator {
   }
 
   private validateEdgeAttrs(attrs: EdgeAttrs, errors: string[], warnings: string[]): void {
-    // Validate line styling
     if (attrs.line) {
-      // Validate stroke color
-      if (attrs.line.stroke && !isValidColor(attrs.line.stroke)) {
-        errors.push(`Invalid stroke color: ${attrs.line.stroke}`);
-      }
+      this.validateLineAttrs(attrs.line, errors, warnings);
+    }
+    if (attrs.text) {
+      this.validateTextAttrs(attrs.text, errors, warnings);
+    }
+  }
 
-      // Validate stroke width
-      if (attrs.line.strokeWidth !== undefined) {
-        const strokeWidthError = this.validatePositive(attrs.line.strokeWidth, 'Stroke width');
-        if (strokeWidthError) {
-          errors.push(strokeWidthError);
-        } else if (attrs.line.strokeWidth > 10) {
-          warnings.push('Very thick stroke width may affect visual appearance');
-        }
-      }
+  private validateLineAttrs(
+    line: NonNullable<EdgeAttrs['line']>,
+    errors: string[],
+    warnings: string[],
+  ): void {
+    if (line.stroke && !isValidColor(line.stroke)) {
+      errors.push(`Invalid stroke color: ${line.stroke}`);
+    }
 
-      // Validate stroke dash array
-      if (attrs.line.strokeDasharray !== undefined && attrs.line.strokeDasharray !== null) {
-        if (typeof attrs.line.strokeDasharray === 'string') {
-          if (!/^[\d\s,.-]+$/.test(attrs.line.strokeDasharray)) {
-            errors.push('Invalid stroke dash array format');
-          }
-        } else {
-          errors.push('Stroke dash array must be a string or null');
-        }
-      }
-
-      // Validate target marker
-      if (attrs.line.targetMarker?.fill && !isValidColor(attrs.line.targetMarker.fill)) {
-        errors.push(`Invalid target marker fill color: ${attrs.line.targetMarker.fill}`);
-      }
-      if (attrs.line.targetMarker?.stroke && !isValidColor(attrs.line.targetMarker.stroke)) {
-        errors.push(`Invalid target marker stroke color: ${attrs.line.targetMarker.stroke}`);
-      }
-
-      // Validate source marker
-      if (attrs.line.sourceMarker?.fill && !isValidColor(attrs.line.sourceMarker.fill)) {
-        errors.push(`Invalid source marker fill color: ${attrs.line.sourceMarker.fill}`);
-      }
-      if (attrs.line.sourceMarker?.stroke && !isValidColor(attrs.line.sourceMarker.stroke)) {
-        errors.push(`Invalid source marker stroke color: ${attrs.line.sourceMarker.stroke}`);
+    if (line.strokeWidth !== undefined) {
+      const strokeWidthError = this.validatePositive(line.strokeWidth, 'Stroke width');
+      if (strokeWidthError) {
+        errors.push(strokeWidthError);
+      } else if (line.strokeWidth > 10) {
+        warnings.push('Very thick stroke width may affect visual appearance');
       }
     }
 
-    // Validate text styling
-    if (attrs.text) {
-      if (attrs.text.fill && !isValidColor(attrs.text.fill)) {
-        errors.push(`Invalid text color: ${attrs.text.fill}`);
-      }
-
-      if (attrs.text.fontSize !== undefined) {
-        const fontSizeError = this.validatePositive(attrs.text.fontSize, 'Font size');
-        if (fontSizeError) {
-          errors.push(fontSizeError);
-        } else if (attrs.text.fontSize < 8) {
-          warnings.push('Very small font size may be difficult to read');
-        } else if (attrs.text.fontSize > 18) {
-          warnings.push('Very large font size may not fit well on edge');
+    if (line.strokeDasharray !== undefined && line.strokeDasharray !== null) {
+      if (typeof line.strokeDasharray === 'string') {
+        if (!/^[\d\s,.-]+$/.test(line.strokeDasharray)) {
+          errors.push('Invalid stroke dash array format');
         }
+      } else {
+        errors.push('Stroke dash array must be a string or null');
+      }
+    }
+
+    this.validateMarkerColors(line.targetMarker, 'target', errors);
+    this.validateMarkerColors(line.sourceMarker, 'source', errors);
+  }
+
+  private validateMarkerColors(
+    marker: { fill?: string; stroke?: string } | undefined,
+    label: string,
+    errors: string[],
+  ): void {
+    if (marker?.fill && !isValidColor(marker.fill)) {
+      errors.push(`Invalid ${label} marker fill color: ${marker.fill}`);
+    }
+    if (marker?.stroke && !isValidColor(marker.stroke)) {
+      errors.push(`Invalid ${label} marker stroke color: ${marker.stroke}`);
+    }
+  }
+
+  private validateTextAttrs(
+    text: NonNullable<EdgeAttrs['text']>,
+    errors: string[],
+    warnings: string[],
+  ): void {
+    if (text.fill && !isValidColor(text.fill)) {
+      errors.push(`Invalid text color: ${text.fill}`);
+    }
+
+    if (text.fontSize !== undefined) {
+      const fontSizeError = this.validatePositive(text.fontSize, 'Font size');
+      if (fontSizeError) {
+        errors.push(fontSizeError);
+      } else if (text.fontSize < 8) {
+        warnings.push('Very small font size may be difficult to read');
+      } else if (text.fontSize > 18) {
+        warnings.push('Very large font size may not fit well on edge');
       }
     }
   }

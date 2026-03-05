@@ -246,7 +246,13 @@ export class CreateProjectDialogComponent implements OnInit {
       return;
     }
 
-    const value = this.form.value;
+    const value = this.form.value as {
+      name: string;
+      description: string;
+      team_id: string;
+      uri: string;
+      status: string;
+    };
     const result: CreateProjectDialogResult = {
       name: value.name.trim(),
       team_id: value.team_id,

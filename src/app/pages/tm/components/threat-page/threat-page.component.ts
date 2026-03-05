@@ -583,9 +583,37 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
 
     this.isSaving = true;
 
+    const threatData = this.buildThreatData();
+
+    this.threatModelService
+      .updateThreat(this.threatModelId, this.threatId, threatData)
+      .pipe(this.untilDestroyed())
+      .subscribe({
+        next: () => {
+          this.isSaving = false;
+          this.snackBar.open(
+            this.translocoService.translate('common.savedSuccessfully'),
+            this.translocoService.translate('common.close'),
+            { duration: 3000 },
+          );
+          this.navigateBack();
+        },
+        error: err => {
+          this.isSaving = false;
+          this.logger.error('Failed to save threat', err);
+          this.snackBar.open(
+            this.translocoService.translate('common.saveFailed'),
+            this.translocoService.translate('common.close'),
+            { duration: 5000 },
+          );
+        },
+      });
+  }
+
+  private buildThreatData(): Partial<Threat> {
     const formValues = this.threatForm.getRawValue() as ThreatFormValues;
 
-    const threatData: Partial<Threat> = {
+    return {
       ...this.threat,
       name: formValues.name,
       description: formValues.description || undefined,
@@ -613,30 +641,6 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       cwe_id: formValues.cwe_id?.length ? formValues.cwe_id : undefined,
       cvss: formValues.cvss?.length ? formValues.cvss : undefined,
     };
-
-    this.threatModelService
-      .updateThreat(this.threatModelId, this.threatId, threatData)
-      .pipe(this.untilDestroyed())
-      .subscribe({
-        next: () => {
-          this.isSaving = false;
-          this.snackBar.open(
-            this.translocoService.translate('common.savedSuccessfully'),
-            this.translocoService.translate('common.close'),
-            { duration: 3000 },
-          );
-          this.navigateBack();
-        },
-        error: err => {
-          this.isSaving = false;
-          this.logger.error('Failed to save threat', err);
-          this.snackBar.open(
-            this.translocoService.translate('common.saveFailed'),
-            this.translocoService.translate('common.close'),
-            { duration: 5000 },
-          );
-        },
-      });
   }
 
   /**

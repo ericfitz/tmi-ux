@@ -72,7 +72,7 @@ export class CwePickerDialogComponent implements OnInit {
           this.isLoading = false;
           this.cdr.markForCheck();
         },
-        error: err => {
+        error: (err: unknown) => {
           this.logger.error('Failed to load CWE weaknesses', { error: err });
           this.isLoading = false;
           this.cdr.markForCheck();
