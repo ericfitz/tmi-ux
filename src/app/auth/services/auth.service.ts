@@ -940,50 +940,17 @@ export class AuthService {
       //   hasAccessToken: !!response.access_token,
       // });
 
-      // For TMI OAuth proxy flows, be more flexible due to server-side state management
-      if (response.access_token) {
-        // If we have an access token, this is a TMI OAuth proxy response
-        // The TMI server manages OAuth security, so we can be more lenient with state validation
-        // this.logger.debugComponent(
-        //   'Auth',
-        //   'TMI OAuth proxy detected - using flexible state validation',
-        //   {
-        //     receivedState: response.state,
-        //     storedState: storedState,
-        //     reason: 'TMI server manages OAuth security and may transform state parameters',
-        //   },
-        // );
-        // Log the decoded state information for TMI OAuth proxy
-        // this.logger.debugComponent('Auth', 'TMI OAuth proxy state decoded', {
-        //   originalState: response.state,
-        //   decodedCsrf: decodedReceivedState.csrf,
-        //   returnUrl: returnUrl,
-        //   storedCsrf: decodedStoredState?.csrf,
-        // });
-        // For TMI OAuth proxy with access tokens, we trust the server's state management
-        // The security is provided by the TMI server's OAuth implementation
-        // this.logger.debugComponent(
-        //   'Auth',
-        //   'Accepting TMI OAuth proxy state (server manages security)',
-        //   {
-        //     receivedState: response.state,
-        //     storedState: storedState,
-        //   },
-        // );
-      }
-      // For other flows without access tokens, enforce strict validation
-      else {
-        if (!decodedStoredState || decodedStoredState.csrf !== decodedReceivedState.csrf) {
-          this.logger.error(
-            `State parameter mismatch for ${providerId || 'unknown'} provider: received CSRF "${decodedReceivedState.csrf}", stored CSRF "${decodedStoredState?.csrf}"`,
-          );
-          this.handleAuthError({
-            code: 'invalid_state',
-            message: 'Invalid state parameter, possible CSRF attack',
-            retryable: false,
-          });
-          return of(false);
-        }
+      // Enforce strict CSRF state validation for all flows
+      if (!decodedStoredState || decodedStoredState.csrf !== decodedReceivedState.csrf) {
+        this.logger.error(
+          `State parameter mismatch for ${providerId || 'unknown'} provider: received CSRF "${decodedReceivedState.csrf}", stored CSRF "${decodedStoredState?.csrf}"`,
+        );
+        this.handleAuthError({
+          code: 'invalid_state',
+          message: 'Invalid state parameter, possible CSRF attack',
+          retryable: false,
+        });
+        return of(false);
       }
     } else {
       // No state parameter — check sessionStorage for SAML return URL

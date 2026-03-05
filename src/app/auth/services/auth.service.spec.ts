@@ -687,11 +687,11 @@ describe('AuthService', () => {
     });
 
     it('should handle Base64 encoded state parameter from TMI server', async () => {
-      const originalState = 'test-state-12345';
-      const base64State = btoa(originalState); // Base64 encode the state
+      const stateData = { csrf: 'test-csrf-12345', returnUrl: '/dashboard' };
+      const encodedState = btoa(JSON.stringify(stateData));
 
       localStorageMock.getItem.mockImplementation((key: string) => {
-        if (key === 'oauth_state') return originalState;
+        if (key === 'oauth_state') return encodedState;
         if (key === 'oauth_provider') return 'google';
         return null;
       });
@@ -700,7 +700,7 @@ describe('AuthService', () => {
         access_token: mockJwtToken.token, // Use valid mock JWT token
         refresh_token: 'mock-refresh-token',
         expires_in: 3600,
-        state: base64State, // TMI server returns Base64 encoded state
+        state: encodedState, // Matching state from server
       };
 
       router.navigate = vi.fn().mockResolvedValue(true);
@@ -1796,16 +1796,14 @@ describe('AuthService', () => {
     });
 
     describe('handleOAuthCallback() CSRF state validation', () => {
-      it('should skip state validation when access_token is present (TMI proxy flow)', () => {
+      it('should reject mismatched state even when access_token is present', () => {
+        const handleAuthErrorSpy = vi.spyOn(service, 'handleAuthError');
         const forgedState = 'completely-forged-state';
         localStorageMock.getItem.mockImplementation((key: string) => {
           if (key === 'oauth_state') return 'original-state-value';
           if (key === 'oauth_provider') return 'tmi';
           return null;
         });
-
-        // Mock GET /me call
-        vi.mocked(httpClient.get).mockReturnValue(of(mockUserProfile));
 
         const response: OAuthResponse = {
           access_token: mockJwtToken.token,
@@ -1817,7 +1815,36 @@ describe('AuthService', () => {
         const result$ = service.handleOAuthCallback(response);
 
         result$.subscribe(result => {
-          // Should succeed despite state mismatch because access_token is present
+          expect(result).toBe(false);
+          expect(handleAuthErrorSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+              code: 'invalid_state',
+              message: expect.stringContaining('possible CSRF attack'),
+            }),
+          );
+        });
+      });
+
+      it('should accept matching state when access_token is present', () => {
+        localStorageMock.getItem.mockImplementation((key: string) => {
+          if (key === 'oauth_state') return 'matching-state';
+          if (key === 'oauth_provider') return 'tmi';
+          return null;
+        });
+
+        // Mock GET /me call
+        vi.mocked(httpClient.get).mockReturnValue(of(mockUserProfile));
+
+        const response: OAuthResponse = {
+          access_token: mockJwtToken.token,
+          refresh_token: 'mock-refresh-token',
+          expires_in: 3600,
+          state: 'matching-state',
+        };
+
+        const result$ = service.handleOAuthCallback(response);
+
+        result$.subscribe(result => {
           expect(result).toBe(true);
         });
       });
