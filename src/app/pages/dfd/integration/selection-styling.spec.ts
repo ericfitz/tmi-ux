@@ -33,7 +33,6 @@ import { ZOrderService } from '../infrastructure/services/infra-z-order.service'
 import { InfraX6ZOrderAdapter } from '../infrastructure/adapters/infra-x6-z-order.adapter';
 import { InfraX6EmbeddingAdapter } from '../infrastructure/adapters/infra-x6-embedding.adapter';
 import { InfraX6EventLoggerAdapter } from '../infrastructure/adapters/infra-x6-event-logger.adapter';
-import { AppEdgeService } from '../application/services/app-edge.service';
 import { AppEventHandlersService } from '../application/services/app-event-handlers.service';
 import { AppOperationStateManager } from '../application/services/app-operation-state-manager.service';
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -125,7 +124,6 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
   let embeddingAdapter: InfraX6EmbeddingAdapter;
   let selectionService: SelectionService;
   let x6EventLogger: InfraX6EventLoggerAdapter;
-  let appEdgeService: AppEdgeService;
   let eventHandlersService: AppEventHandlersService;
   let historyCoordinator: AppOperationStateManager;
 
@@ -155,7 +153,6 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
     );
     historyManager = new InfraX6HistoryAdapter(mockLogger as unknown as LoggerService);
     x6EventLogger = new InfraX6EventLoggerAdapter(mockLogger as unknown as LoggerService);
-    appEdgeService = new AppEdgeService(mockLogger as unknown as LoggerService);
     eventHandlersService = new AppEventHandlersService(mockLogger as unknown as LoggerService);
     selectionService = new SelectionService(mockLogger as unknown as LoggerService);
     historyCoordinator = new AppOperationStateManager(mockLogger as unknown as LoggerService);
@@ -179,9 +176,9 @@ describe.skip('DFD Integration - Selection Styling (CRITICAL)', () => {
       historyManager,
       selectionAdapter,
       x6EventLogger,
-      appEdgeService,
-      eventHandlersService,
+      {} as any, // InfraDfdValidationService
       historyCoordinator,
+      {} as any, // InfraX6CoreOperationsService
     );
 
     adapter.initialize(container);

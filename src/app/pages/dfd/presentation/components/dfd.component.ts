@@ -83,6 +83,7 @@ import { InfraNodeService } from '../../infrastructure/services/infra-node.servi
 import { InfraX6CoreOperationsService } from '../../infrastructure/services/infra-x6-core-operations.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
+import { InfraDfdValidationService } from '../../infrastructure/services/infra-dfd-validation.service';
 
 // Essential v1 components still needed
 import { NodeType } from '../../domain/value-objects/node-info';
@@ -187,6 +188,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     InfraNodeService,
     InfraX6CoreOperationsService,
     InfraEdgeService,
+    InfraDfdValidationService,
   ],
   templateUrl: './dfd.component.html',
   styleUrls: ['./dfd.component.scss'],

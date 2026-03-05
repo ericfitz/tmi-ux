@@ -28,9 +28,10 @@ import { InfraVisualEffectsService } from '../../infrastructure/services/infra-v
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
 import {
   InfraDfdValidationService,
-  ConnectionValidationArgs,
-  MagnetValidationArgs,
+  type ConnectionValidationArgs,
+  type MagnetValidationArgs,
 } from '../../infrastructure/services/infra-dfd-validation.service';
+export type { ConnectionValidationArgs, MagnetValidationArgs };
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import {
   AppOperationStateManager,
@@ -779,173 +780,43 @@ export class AppEdgeService {
   }
 
   // ========================================
-  // Connection Validation Methods (formerly DfdConnectionValidationService)
+  // Connection Validation Methods (delegated to InfraDfdValidationService)
   // ========================================
 
-  /**
-   * Check if a magnet (port) is valid for connection
-   */
   isMagnetValid(args: MagnetValidationArgs): boolean {
-    const magnet = args.magnet;
-    if (!magnet) {
-      this.logger.debugComponent('DfdEdge', 'isMagnetValid: no magnet found');
-      return false;
-    }
-
-    // Check for magnet="true" or magnet="active" to match port configuration
-    const magnetAttr = magnet.getAttribute('magnet');
-    const isValid = magnetAttr === 'true' || magnetAttr === 'active';
-
-    this.logger.debugComponent('DfdEdge', 'isMagnetValid result', {
-      magnetAttribute: magnetAttr,
-      portGroup: magnet.getAttribute('port-group'),
-      isValid,
-    });
-
-    return isValid;
+    return this.dfdValidation.isMagnetValid(args);
   }
 
-  /**
-   * Check if a connection can be made between two ports
-   */
   isConnectionValid(args: ConnectionValidationArgs): boolean {
-    const { sourceView, targetView, sourceMagnet, targetMagnet } = args;
-
-    // Prevent creating an edge if source and target are the same port on the same node
-    if (sourceView === targetView && sourceMagnet === targetMagnet) {
-      // this.logger.debugComponent('DfdEdge', 'Connection rejected: same port on same node');
-      return false;
-    }
-
-    if (!targetMagnet || !sourceMagnet) {
-      this.logger.debugComponent('DfdEdge', 'isConnectionValid: missing magnet', {
-        hasSourceMagnet: !!sourceMagnet,
-        hasTargetMagnet: !!targetMagnet,
-      });
-      return false;
-    }
-
-    // Check if ports have valid port groups
-    const sourcePortGroup = sourceMagnet.getAttribute('port-group');
-    const targetPortGroup = targetMagnet.getAttribute('port-group');
-
-    if (!sourcePortGroup || !targetPortGroup) {
-      this.logger.debugComponent('DfdEdge', 'isConnectionValid: missing port groups', {
-        sourcePortGroup,
-        targetPortGroup,
-      });
-      return false;
-    }
-
-    // this.logger.debugComponent('DfdEdge', 'Connection validation passed');
-    return true;
+    return this.dfdValidation.isConnectionValid(args);
   }
 
-  /**
-   * Check if a connection can be made between two nodes based on DFD rules
-   */
   isNodeConnectionValid(sourceNode: Node, targetNode: Node): boolean {
-    const sourceShape = sourceNode.shape;
-    const targetShape = targetNode.shape;
-
-    const allowedTargets = this.connectionRules[sourceShape];
-    if (!allowedTargets) {
-      this.logger.warn('Unknown source shape type for connection validation', { sourceShape });
-      return false;
-    }
-
-    const isValid = allowedTargets.includes(targetShape);
-    if (!isValid) {
-      this.logger.info('Connection not allowed by DFD rules', {
-        sourceShape,
-        targetShape,
-        allowedTargets,
-      });
-    }
-
-    return isValid;
+    return this.dfdValidation.isNodeConnectionValid(sourceNode, targetNode);
   }
 
-  /**
-   * Validate node shape type
-   */
   validateNodeShape(nodeType: string, nodeId: string): void {
-    if (!nodeType || typeof nodeType !== 'string') {
-      const error = `[DFD] Invalid node shape: shape property must be a non-empty string. Node ID: ${nodeId}, shape: ${nodeType}`;
-      this.logger.error(error);
-      throw new Error(error);
-    }
-
-    if (!this.validNodeShapes.includes(nodeType)) {
-      const error = `[DFD] Invalid node shape: '${nodeType}' is not a recognized shape type. Valid shapes: ${this.validNodeShapes.join(', ')}. Node ID: ${nodeId}`;
-      this.logger.error(error);
-      throw new Error(error);
-    }
+    this.dfdValidation.validateNodeShape(nodeType, nodeId);
   }
 
-  /**
-   * Validate that an X6 node was created with the correct shape property
-   */
   validateX6NodeShape(x6Node: Node): void {
-    const nodeShape = x6Node.shape;
-    const nodeId = x6Node.id;
-
-    if (!nodeShape || typeof nodeShape !== 'string') {
-      const error = `[DFD] X6 node created without valid shape property. Node ID: ${nodeId}, shape: ${nodeShape}`;
-      this.logger.error(error);
-      throw new Error(error);
-    }
-
-    // Validate the shape matches expected X6 shape names
-    const expectedX6Shapes = ['process', 'store', 'actor', 'security-boundary', 'text-box'];
-    if (!expectedX6Shapes.includes(nodeShape)) {
-      this.logger.warn('X6 node created with unexpected shape', {
-        nodeId,
-        shape: nodeShape,
-        expectedShapes: expectedX6Shapes,
-      });
-    }
+    this.dfdValidation.validateX6NodeShape(x6Node);
   }
 
-  /**
-   * Get valid connection targets for a given source shape
-   */
   getValidConnectionTargets(sourceShape: string): string[] {
-    return this.connectionRules[sourceShape] || [];
+    return this.dfdValidation.getValidConnectionTargets(sourceShape);
   }
 
-  /**
-   * Get all valid node shape types
-   */
   getValidNodeShapes(): string[] {
-    return [...this.validNodeShapes];
+    return this.dfdValidation.getValidNodeShapes();
   }
 
-  /**
-   * Check if two shapes can be connected according to DFD rules
-   */
   canShapesConnect(sourceShape: string, targetShape: string): boolean {
-    const allowedTargets = this.connectionRules[sourceShape];
-    return allowedTargets ? allowedTargets.includes(targetShape) : false;
+    return this.dfdValidation.canShapesConnect(sourceShape, targetShape);
   }
 
-  /**
-   * Get localized flow label with fallback for when translations aren't loaded yet
-   */
   getLocalizedFlowLabel(): string {
-    const translatedLabel = this.transloco.translate('editor.flowLabel');
-
-    // If translation service returns the key itself, it means the translation wasn't found
-    // This can happen if translations aren't loaded yet or the key doesn't exist
-    if (translatedLabel === 'editor.flowLabel') {
-      this.logger.warn('Translation not available for editor.flowLabel, using fallback', {
-        currentLanguage: this.transloco.getActiveLang(),
-        returnedValue: translatedLabel,
-      });
-      return 'Flow';
-    }
-
-    return translatedLabel;
+    return this.dfdValidation.getLocalizedFlowLabel();
   }
 
   /**

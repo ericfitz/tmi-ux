@@ -83,7 +83,8 @@ describe('DFD Architecture Integration', () => {
     document.body.appendChild(mockContainerElement);
 
     // Create services directly without TestBed
-    appGraphOperationManager = new AppGraphOperationManager(mockLogger);
+    const mockInfraNodeService = {} as any;
+    appGraphOperationManager = new AppGraphOperationManager(mockLogger, mockInfraNodeService);
     appPersistenceCoordinator = new AppPersistenceCoordinator(mockLogger);
     appAutoSaveManager = new AppAutoSaveManager(mockLogger, appPersistenceCoordinator);
     appDfdOrchestrator = new AppDfdOrchestrator(

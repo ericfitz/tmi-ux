@@ -15,6 +15,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraX6ZOrderAdapter } from '../../infrastructure/adapters/infra-x6-z-order.adapter';
 import { InfraVisualEffectsService } from '../../infrastructure/services/infra-visual-effects.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
+import { InfraDfdValidationService } from '../../infrastructure/services/infra-dfd-validation.service';
 import { AppOperationStateManager } from './app-operation-state-manager.service';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
 import { registerCustomShapes } from '../../infrastructure/adapters/infra-x6-shape-definitions';
@@ -44,7 +45,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
   let service: AppEdgeService;
   let graph: Graph;
   let mockLogger: MockLoggerService;
-  let mockTransloco: any;
+  let mockDfdValidation: any;
   let mockX6ZOrderAdapter: MockX6ZOrderAdapter;
   let mockVisualEffectsService: MockVisualEffectsService;
   let mockEdgeService: MockEdgeService;
@@ -65,9 +66,51 @@ describe('AppEdgeService - Comprehensive Tests', () => {
     // Create mocks for complex dependencies
     mockLogger = createTypedMockLoggerService();
 
-    mockTransloco = {
-      translate: vi.fn((key: string) => key),
-      getActiveLang: vi.fn(() => 'en'),
+    mockDfdValidation = {
+      isMagnetValid: vi.fn((args: any) => {
+        const magnet = args.magnet;
+        if (!magnet) return false;
+        const attr = magnet.getAttribute('magnet');
+        return attr === 'true' || attr === 'active';
+      }),
+      isConnectionValid: vi.fn((args: any) => {
+        const { sourceView, targetView, sourceMagnet, targetMagnet } = args;
+        if (sourceView === targetView && sourceMagnet === targetMagnet) return false;
+        if (!targetMagnet || !sourceMagnet) return false;
+        const sg = sourceMagnet.getAttribute('port-group');
+        const tg = targetMagnet.getAttribute('port-group');
+        return !!(sg && tg);
+      }),
+      isNodeConnectionValid: vi.fn((sourceNode: any, targetNode: any) => {
+        const rules: Record<string, string[]> = {
+          process: ['store', 'actor', 'process'],
+          store: ['process'],
+          actor: ['process'],
+        };
+        const allowed = rules[sourceNode.shape];
+        return allowed ? allowed.includes(targetNode.shape) : false;
+      }),
+      validateNodeShape: vi.fn(),
+      validateX6NodeShape: vi.fn(),
+      canShapesConnect: vi.fn((src: string, tgt: string) => {
+        const rules: Record<string, string[]> = {
+          process: ['store', 'actor', 'process'],
+          store: ['process'],
+          actor: ['process'],
+        };
+        const allowed = rules[src];
+        return allowed ? allowed.includes(tgt) : false;
+      }),
+      getValidConnectionTargets: vi.fn((shape: string) => {
+        const rules: Record<string, string[]> = {
+          process: ['store', 'actor', 'process'],
+          store: ['process'],
+          actor: ['process'],
+        };
+        return rules[shape] || [];
+      }),
+      getValidNodeShapes: vi.fn(() => ['process', 'store', 'actor', 'security-boundary', 'text-box']),
+      getLocalizedFlowLabel: vi.fn(() => 'editor.flowLabel'),
     };
 
     mockX6ZOrderAdapter = {
@@ -104,7 +147,7 @@ describe('AppEdgeService - Comprehensive Tests', () => {
     // Create service instance
     service = new AppEdgeService(
       mockLogger as unknown as LoggerService,
-      mockTransloco,
+      mockDfdValidation as unknown as InfraDfdValidationService,
       mockX6ZOrderAdapter as unknown as InfraX6ZOrderAdapter,
       mockVisualEffectsService as unknown as InfraVisualEffectsService,
       mockEdgeService as unknown as InfraEdgeService,
