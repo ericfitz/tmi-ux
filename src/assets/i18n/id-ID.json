@@ -9,6 +9,9 @@
     "description1": "TMI (Threat Modeling Improved) adalah platform kolaboratif untuk mengelola proses tinjauan keamanan organisasi, termasuk pemodelan ancaman. Misi kami adalah mengurangi beban kerja tinjauan keamanan, dan menjadikan pemodelan ancaman lebih mudah diakses, efisien, dan terintegrasi dalam siklus pengembangan perangkat lunak.",
     "description2": "Platform ini menawarkan organisasi tinjauan keamanan dan manajemen status, pembuatan diagram aliran data interaktif dengan kolaborasi waktu nyata, dan kemampuan dokumentasi ancaman yang komprehensif. Dibangun dengan teknologi web modern, TMI membantu tim mengelola proses tinjauan keamanan dan mengidentifikasi, menganalisis, serta memitigasi ancaman keamanan melalui pemodelan kolaboratif.",
     "opensource": {
+      "categoryInputSanitization": "Sanitasi Input",
+      "categoryNoteEditing": "Pengeditan Catatan",
+      "categoryPdfProcessing": "Pemrosesan PDF",
       "paragraph1": "Aplikasi ini dibangun dengan dukungan proyek sumber terbuka yang luar biasa. Kami berterima kasih kepada komunitas di balik proyek-proyek ini karena menyediakan kemampuan yang mewujudkan antarmuka dan fungsionalitas kami.",
       "paragraph2": "Terima kasih khusus atas inspirasi yang membantu membentuk visi dan pendekatan kami dalam membangun aplikasi yang aman dan ramah pengguna kepada "
     },

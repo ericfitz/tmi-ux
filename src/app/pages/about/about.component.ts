@@ -30,7 +30,7 @@ export class AboutComponent implements OnInit {
 
   otherOpenSourceProjects = [
     {
-      name: 'Note Editing',
+      nameKey: 'about.opensource.categoryNoteEditing',
       links: [
         { name: 'marked', url: 'https://marked.js.org/' },
         { name: 'mermaid', url: 'https://mermaid.js.org/' },
@@ -39,14 +39,23 @@ export class AboutComponent implements OnInit {
       ],
     },
     {
-      name: 'Input Sanitization',
+      nameKey: 'about.opensource.categoryInputSanitization',
       links: [{ name: 'dompurify', url: 'https://cure53.de/purify' }],
     },
     {
-      name: 'PDF Processing',
+      nameKey: 'about.opensource.categoryPdfProcessing',
       links: [
         { name: 'pdf-lib', url: 'https://pdf-lib.js.org/' },
         { name: 'fontkit', url: 'https://github.com/foliojs/fontkit' },
+      ],
+    },
+    {
+      nameKey: 'cvssCalculator.title',
+      links: [
+        {
+          name: 'ae-cvss-calculator',
+          url: 'https://github.com/org-metaeffekt/metaeffekt-universal-cvss-calculator',
+        },
       ],
     },
   ];

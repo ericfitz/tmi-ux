@@ -9,6 +9,9 @@
     "description1": "TMI (Threat Modeling Improved) ist eine kollaborative Plattform zur Verwaltung des Sicherheitsüberprüfungsprozesses einer Organisation, einschließlich Bedrohungsmodellierung. Unsere Mission ist es, den Aufwand bei Sicherheitsüberprüfungen zu reduzieren und die Bedrohungsmodellierung zugänglich, effizient und in den Softwareentwicklungszyklus integriert zu machen.",
     "description2": "Die Plattform bietet Organisation und Statusverwaltung von Sicherheitsüberprüfungen, interaktive Erstellung von Datenflussdiagrammen mit Echtzeit-Zusammenarbeit und umfassende Bedrohungsdokumentationsfunktionen. Mit modernen Webtechnologien entwickelt, hilft TMI Teams bei der Verwaltung des Sicherheitsüberprüfungsprozesses und der Identifizierung, Analyse und Minderung von Sicherheitsbedrohungen durch kollaborative Modellierung.",
     "opensource": {
+      "categoryInputSanitization": "Eingabebereinigung",
+      "categoryNoteEditing": "Notizbearbeitung",
+      "categoryPdfProcessing": "PDF-Verarbeitung",
       "paragraph1": "Diese Anwendung wird mit Unterstützung von außergewöhnlichen Open-Source-Projekten erstellt. Wir sind den Gemeinschaften hinter diesen Projekten dankbar für die Bereitstellung der Funktionen, die unsere Benutzeroberfläche und Funktionalität zum Leben erwecken.",
       "paragraph2": "Ein besonderer Dank für die Bereitstellung von Inspiration, die uns geholfen hat, unsere Vision und unseren Ansatz zum Aufbau einer sicheren und benutzerfreundlichen Anwendung zu gestalten, geht an "
     },

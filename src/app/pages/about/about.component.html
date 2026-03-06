@@ -114,7 +114,7 @@
         {{ 'common.other' | transloco }}
         <ul class="other-projects-list">
           <li *ngFor="let category of otherOpenSourceProjects">
-            {{ category.name }}:
+            {{ category.nameKey | transloco }}:
             <ng-container *ngFor="let link of category.links; let i = index">
               @if (i > 0) {
                 <ng-container>, </ng-container>

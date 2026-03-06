@@ -9,6 +9,9 @@
     "description1": "TMI (Threat Modeling Improved) e uma plataforma colaborativa para gerenciar o processo de revisao de seguranca de uma organizacao, incluindo modelagem de ameacas. Nossa missao e reduzir o trabalho de revisao de seguranca e tornar a modelagem de ameacas acessivel, eficiente e integrada ao ciclo de vida de desenvolvimento de software.",
     "description2": "A plataforma oferece organizacao e gerenciamento de estado de revisoes de seguranca, criacao interativa de diagramas de fluxo de dados com colaboracao em tempo real e recursos abrangentes de documentacao de ameacas. Construido com tecnologias web modernas, o TMI ajuda equipes a gerenciar o processo de revisao de seguranca e identificar, analisar e mitigar ameacas de seguranca atraves de modelagem colaborativa.",
     "opensource": {
+      "categoryInputSanitization": "Sanitização de Entrada",
+      "categoryNoteEditing": "Edição de Notas",
+      "categoryPdfProcessing": "Processamento de PDF",
       "paragraph1": "Este aplicativo e construido com o suporte de projetos de codigo aberto excepcionais. Somos gratos as comunidades por tras desses projetos por fornecerem as capacidades que dao vida a nossa interface e funcionalidade.",
       "paragraph2": "Um agradecimento especial por fornecer inspiracao que ajudou a moldar nossa visao e abordagem para construir um aplicativo seguro e amigavel ao usuario vai para "
     },
