@@ -775,6 +775,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         file = await this.selectFileViaInput();
       }
 
+      // Reject oversized files to prevent memory exhaustion
+      const MAX_IMPORT_SIZE = 10 * 1024 * 1024; // 10 MB
+      if (file.size > MAX_IMPORT_SIZE) {
+        this.showError('File exceeds maximum import size of 10 MB');
+        return;
+      }
+
       const content = await file.text();
       const threatModelData = JSON.parse(content) as Record<string, unknown>;
 

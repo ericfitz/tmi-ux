@@ -393,6 +393,13 @@ export class TmComponent implements OnInit, OnDestroy {
         file = await this.selectFileViaInput();
       }
 
+      // Reject oversized files to prevent memory exhaustion
+      const MAX_IMPORT_SIZE = 10 * 1024 * 1024; // 10 MB
+      if (file.size > MAX_IMPORT_SIZE) {
+        this.showError('File exceeds maximum import size of 10 MB');
+        return;
+      }
+
       // Read and parse the file content
       const content = await file.text();
       const threatModelData = JSON.parse(content) as Record<string, unknown>;
