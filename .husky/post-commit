@@ -3,7 +3,7 @@
 # Automatic Version Bumping Hook
 # Bumps version based on conventional commit message format
 # - feat:, refactor: → minor version bump (0.x.0)
-# - fix:, chore:, docs:, perf:, test:, ci:, build: → patch version bump (0.0.x)
+# - fix:, chore:, docs:, perf:, test:, ci:, build:, deps:, ops: → patch version bump (0.0.x)
 #
 # Only bumps version when relevant files are modified:
 # - Files in src/ (excluding tests, testing utilities, and environment configs)
@@ -43,7 +43,7 @@ COMMIT_MSG_FIRST_LINE=$(echo "$COMMIT_MSG" | head -n 1)
 
 # Parse conventional commit format
 # Pattern: type(optional-scope): description
-if echo "$COMMIT_MSG_FIRST_LINE" | grep -qE "^(feat|fix|docs|refactor|perf|test|build|ci|chore)(\(.+\))?\s*:.+"; then
+if echo "$COMMIT_MSG_FIRST_LINE" | grep -qE "^(feat|fix|docs|refactor|perf|test|build|ci|chore|deps|ops)(\(.+\))?\s*:.+"; then
   # Extract the commit type from first line only
   COMMIT_TYPE=$(echo "$COMMIT_MSG_FIRST_LINE" | sed -E 's/^([a-z]+)(\(.+\))?\s*:.*/\1/')
 
@@ -53,7 +53,7 @@ if echo "$COMMIT_MSG_FIRST_LINE" | grep -qE "^(feat|fix|docs|refactor|perf|test|
     feat|refactor)
       BUMP_TYPE="minor"
       ;;
-    fix|chore|docs|perf|test|build|ci)
+    fix|chore|docs|perf|test|build|ci|deps|ops)
       BUMP_TYPE="patch"
       ;;
   esac

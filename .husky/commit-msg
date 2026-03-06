@@ -18,7 +18,7 @@ if echo "$COMMIT_MSG" | grep -qE "^chore: bump version"; then
 fi
 
 # Conventional commit pattern
-PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore)(\(.+\))?\s*:.+"
+PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|deps|ops)(\(.+\))?\s*:.+"
 
 if ! echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then
   echo ""
@@ -28,7 +28,7 @@ if ! echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then
   echo "   Example: feat: add user authentication"
   echo "   Example: fix: correct login validation bug"
   echo ""
-  echo "   Valid types: feat, fix, docs, style, refactor, perf, test, build, ci, chore"
+  echo "   Valid types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, deps, ops"
   echo ""
   echo "   Your commit will proceed, but this may affect automatic versioning."
   echo "   See: https://www.conventionalcommits.org/"
