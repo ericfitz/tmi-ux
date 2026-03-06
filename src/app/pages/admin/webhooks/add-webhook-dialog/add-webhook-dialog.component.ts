@@ -197,6 +197,12 @@ export class AddWebhookDialogComponent implements OnInit {
     'metadata.updated',
     'metadata.deleted',
     'addon.invoked',
+    'survey.created',
+    'survey.updated',
+    'survey.deleted',
+    'survey_response.created',
+    'survey_response.updated',
+    'survey_response.deleted',
   ];
 
   constructor(
