@@ -682,7 +682,7 @@
     "title": "CWE منتخب کریں"
   },
   "dashboard": {
-    "clearAllFilters": "تمام فلٹرز صاف کریں",
+    "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "تلاش صاف کریں",
     "createdAfter": "اس تاریخ کے بعد بنایا گیا",
     "createdBefore": "اس تاریخ سے پہلے بنایا گیا",
@@ -1294,6 +1294,20 @@
     },
     "viewDiagramName": "ڈایاگرام کی خصوصیات دیکھیں",
     "yourThreatModels": "آپ کے خطرے کے ماڈلز"
+  },
+  "threats": {
+    "filters": {
+      "clearAll": "تمام فلٹرز صاف کریں",
+      "clearName": "نام کا فلٹر صاف کریں",
+      "lessFilters": "{{dashboard.lessFilters}}",
+      "mitigatedTooltip": "چکر: تمام / تخفیف شدہ / غیر تخفیف شدہ",
+      "moreFilters": "{{dashboard.moreFilters}}",
+      "nameLabel": "{{common.search}}",
+      "namePlaceholder": "{{dashboard.namePlaceholder}}",
+      "noMatchingThreats": "آپ کے موجودہ فلٹرز سے کوئی خطرہ مماثل نہیں ہے۔",
+      "priority": "{{common.priority}}",
+      "threatType": "{{common.threatType}}"
+    }
   },
   "tos": {
     "contactInfo": {

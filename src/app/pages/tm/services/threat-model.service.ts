@@ -115,6 +115,34 @@ export interface ThreatModelListParams {
   status_updated_before?: string;
 }
 
+/**
+ * Parameters for listing and filtering threats via
+ * GET /threat_models/{threat_model_id}/threats.
+ */
+export interface ThreatListParams {
+  limit?: number;
+  offset?: number;
+  sort?: string;
+  name?: string;
+  description?: string;
+  threat_type?: string[];
+  severity?: string;
+  priority?: string;
+  status?: string;
+  mitigated?: boolean;
+  diagram_id?: string;
+  cell_id?: string;
+  score_gt?: number;
+  score_lt?: number;
+  score_eq?: number;
+  score_ge?: number;
+  score_le?: number;
+  created_after?: string;
+  created_before?: string;
+  modified_after?: string;
+  modified_before?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -894,16 +922,13 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /**
-   * Get threats for a threat model with optional pagination
+   * Get threats for a threat model with optional filtering, sorting, and pagination
    */
   getThreatsForThreatModel(
     threatModelId: string,
-    limit?: number,
-    offset?: number,
+    listParams?: ThreatListParams,
   ): Observable<ListThreatsResponse> {
-    const params: Record<string, string> = {};
-    if (limit !== undefined) params['limit'] = limit.toString();
-    if (offset !== undefined) params['offset'] = offset.toString();
+    const params = listParams ? this.buildThreatQueryParams(listParams) : {};
 
     return this.apiService
       .get<ListThreatsResponse>(`threat_models/${threatModelId}/threats`, params)
@@ -917,6 +942,57 @@ export class ThreatModelService implements OnDestroy {
           return of({ threats: [], total: 0, limit: 0, offset: 0 });
         }),
       );
+  }
+
+  /** Build query parameter record from ThreatListParams */
+  private buildThreatQueryParams(p: ThreatListParams): Record<string, string | boolean> {
+    const params: Record<string, string | boolean> = {};
+
+    // Numeric fields — convert to string
+    const numericFields: (keyof ThreatListParams)[] = [
+      'limit',
+      'offset',
+      'score_gt',
+      'score_lt',
+      'score_eq',
+      'score_ge',
+      'score_le',
+    ];
+    for (const key of numericFields) {
+      if (p[key] !== undefined) params[key] = String(p[key]);
+    }
+
+    // String fields — include if truthy
+    const stringFields: (keyof ThreatListParams)[] = [
+      'sort',
+      'severity',
+      'priority',
+      'status',
+      'diagram_id',
+      'cell_id',
+      'created_after',
+      'created_before',
+      'modified_after',
+      'modified_before',
+    ];
+    for (const key of stringFields) {
+      if (p[key]) params[key] = p[key] as string;
+    }
+
+    // Text search fields — trim before sending
+    const textFields: (keyof ThreatListParams)[] = ['name', 'description'];
+    for (const key of textFields) {
+      const val = p[key] as string | undefined;
+      if (val?.trim()) params[key] = val.trim();
+    }
+
+    // Boolean field
+    if (p.mitigated !== undefined) params['mitigated'] = p.mitigated;
+
+    // Array field — join as comma-separated
+    if (p.threat_type?.length) params['threat_type'] = p.threat_type.join(',');
+
+    return params;
   }
 
   /**

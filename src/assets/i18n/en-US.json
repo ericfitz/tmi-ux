@@ -712,7 +712,7 @@
     "title.comment": "Dialog title for CWE weakness picker. CWE = Common Weakness Enumeration."
   },
   "dashboard": {
-    "clearAllFilters": "Clear All Filters",
+    "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "Clear Search",
     "createdAfter": "Created After",
     "createdBefore": "Created Before",
@@ -1345,6 +1345,20 @@
     },
     "viewDiagramName": "View Diagram Properties",
     "yourThreatModels": "Your Threat Models"
+  },
+  "threats": {
+    "filters": {
+      "clearAll": "Clear All Filters",
+      "clearName": "Clear Name Filter",
+      "lessFilters": "{{dashboard.lessFilters}}",
+      "mitigatedTooltip": "Cycle: All / Mitigated / Not Mitigated",
+      "moreFilters": "{{dashboard.moreFilters}}",
+      "nameLabel": "{{common.search}}",
+      "namePlaceholder": "{{dashboard.namePlaceholder}}",
+      "noMatchingThreats": "No threats match your current filters.",
+      "priority": "{{common.priority}}",
+      "threatType": "{{common.threatType}}"
+    }
   },
   "tos": {
     "contactInfo": {

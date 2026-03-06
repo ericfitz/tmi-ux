@@ -1405,15 +1405,152 @@
               }
             </mat-card-header>
             <mat-card-content>
+              <!-- Threat Filters Row -->
+              <div class="threat-filters-row">
+                <mat-form-field appearance="outline" class="threat-name-filter">
+                  <mat-label>{{ 'threats.filters.nameLabel' | transloco }}</mat-label>
+                  <mat-icon matPrefix>search</mat-icon>
+                  <input
+                    matInput
+                    [value]="threatFilters.name"
+                    (input)="onThreatNameFilterChange($any($event.target).value)"
+                    [placeholder]="'threats.filters.namePlaceholder' | transloco"
+                  />
+                  @if (threatFilters.name) {
+                    <button
+                      matSuffix
+                      mat-icon-button
+                      (click)="threatFilters.name = ''; onThreatFilterChange()"
+                      [matTooltip]="'threats.filters.clearName' | transloco"
+                    >
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="threat-severity-filter">
+                  <mat-label>{{ 'common.severity' | transloco }}</mat-label>
+                  <mat-select
+                    [(ngModel)]="threatFilters.severities"
+                    (selectionChange)="onThreatFilterChange()"
+                    multiple
+                  >
+                    @for (option of threatSeverityOptions; track option.key) {
+                      <mat-option [value]="option.key" [matTooltip]="option.tooltip">
+                        {{ option.label }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="threat-status-filter">
+                  <mat-label>{{ 'common.status' | transloco }}</mat-label>
+                  <mat-select
+                    [(ngModel)]="threatFilters.statuses"
+                    (selectionChange)="onThreatFilterChange()"
+                    multiple
+                  >
+                    @for (option of threatStatusOptions; track option.key) {
+                      <mat-option [value]="option.key" [matTooltip]="option.tooltip">
+                        {{ option.label }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                <button
+                  mat-stroked-button
+                  class="threat-mitigated-filter"
+                  (click)="toggleMitigatedFilter()"
+                  [matTooltip]="'threats.filters.mitigatedTooltip' | transloco"
+                >
+                  <mat-icon>
+                    @if (threatFilters.mitigated === true) {
+                      check_box
+                    } @else if (threatFilters.mitigated === false) {
+                      check_box_outline_blank
+                    } @else {
+                      indeterminate_check_box
+                    }
+                  </mat-icon>
+                  {{ 'common.mitigated' | transloco }}
+                </button>
+
+                <button
+                  mat-icon-button
+                  (click)="showAdvancedThreatFilters = !showAdvancedThreatFilters"
+                  [matTooltip]="
+                    showAdvancedThreatFilters
+                      ? ('threats.filters.lessFilters' | transloco)
+                      : ('threats.filters.moreFilters' | transloco)
+                  "
+                  [class.filter-toggle-active]="
+                    showAdvancedThreatFilters || hasAdvancedThreatFiltersActive
+                  "
+                >
+                  <mat-icon>
+                    {{ showAdvancedThreatFilters ? 'filter_list_off' : 'filter_list' }}
+                  </mat-icon>
+                </button>
+
+                @if (hasActiveThreatFilters) {
+                  <button
+                    mat-stroked-button
+                    class="clear-threat-filters-button"
+                    (click)="clearAllThreatFilters()"
+                  >
+                    <mat-icon>filter_list_off</mat-icon>
+                    {{ 'threats.filters.clearAll' | transloco }}
+                  </button>
+                }
+              </div>
+
+              <!-- Advanced Threat Filters Row -->
+              @if (showAdvancedThreatFilters) {
+                <div class="threat-advanced-filters-row">
+                  @if (threatTypeOptions.length > 0) {
+                    <mat-form-field appearance="outline" class="threat-type-filter">
+                      <mat-label>{{ 'threats.filters.threatType' | transloco }}</mat-label>
+                      <mat-select
+                        [(ngModel)]="threatFilters.threatTypes"
+                        (selectionChange)="onThreatFilterChange()"
+                        multiple
+                      >
+                        @for (type of threatTypeOptions; track type) {
+                          <mat-option [value]="type">
+                            {{ type }}
+                          </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  }
+
+                  <mat-form-field appearance="outline" class="threat-priority-filter">
+                    <mat-label>{{ 'threats.filters.priority' | transloco }}</mat-label>
+                    <mat-select
+                      [(ngModel)]="threatFilters.priorities"
+                      (selectionChange)="onThreatFilterChange()"
+                      multiple
+                    >
+                      @for (option of threatPriorityOptions; track option.key) {
+                        <mat-option [value]="option.key" [matTooltip]="option.tooltip">
+                          {{ option.label }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              }
+
               <div class="table-container">
                 <table
                   mat-table
                   [dataSource]="threatsDataSource"
                   class="entity-table threats-table"
                   matSort
-                  #threatsSort="matSort"
-                  matSortActive="severity"
-                  matSortDirection="asc"
+                  [matSortActive]="threatSortActive"
+                  [matSortDirection]="threatSortDirection"
+                  (matSortChange)="onThreatSortChange($event)"
                 >
                   <!-- Icon Column -->
                   <ng-container matColumnDef="icon">
@@ -1590,7 +1727,11 @@
                   ></tr>
                 </table>
               </div>
-              @if (!threatsDataSource.data.length) {
+              @if (!threatsDataSource.data.length && hasActiveThreatFilters) {
+                <div class="no-items-message">
+                  {{ 'threats.filters.noMatchingThreats' | transloco }}
+                </div>
+              } @else if (!threatsDataSource.data.length) {
                 <div class="no-items-message">
                   {{ 'threatModels.noThreats' | transloco }}
                 </div>

@@ -682,7 +682,7 @@
     "title": "एक CWE चुनें"
   },
   "dashboard": {
-    "clearAllFilters": "सभी फ़िल्टर साफ़ करें",
+    "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "खोज साफ़ करें",
     "createdAfter": "निर्माण की तिथि के बाद",
     "createdBefore": "निर्माण की तिथि से पहले",
@@ -1294,6 +1294,20 @@
     },
     "viewDiagramName": "डायग्राम गुण देखें",
     "yourThreatModels": "आपके थ्रेट मॉडल"
+  },
+  "threats": {
+    "filters": {
+      "clearAll": "सभी फ़िल्टर साफ़ करें",
+      "clearName": "नाम फ़िल्टर साफ़ करें",
+      "lessFilters": "{{dashboard.lessFilters}}",
+      "mitigatedTooltip": "चक्र: सभी / शमन किया गया / शमन नहीं किया गया",
+      "moreFilters": "{{dashboard.moreFilters}}",
+      "nameLabel": "{{common.search}}",
+      "namePlaceholder": "{{dashboard.namePlaceholder}}",
+      "noMatchingThreats": "आपके वर्तमान फ़िल्टर से कोई खतरा मेल नहीं खाता।",
+      "priority": "{{common.priority}}",
+      "threatType": "{{common.threatType}}"
+    }
   },
   "tos": {
     "contactInfo": {

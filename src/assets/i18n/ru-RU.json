@@ -682,7 +682,7 @@
     "title": "Выбрать CWE"
   },
   "dashboard": {
-    "clearAllFilters": "Сбросить все фильтры",
+    "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "Очистить поиск",
     "createdAfter": "Создано после",
     "createdBefore": "Создано до",
@@ -1294,6 +1294,20 @@
     },
     "viewDiagramName": "Просмотреть свойства диаграммы",
     "yourThreatModels": "Ваши модели угроз"
+  },
+  "threats": {
+    "filters": {
+      "clearAll": "Сбросить все фильтры",
+      "clearName": "Сбросить фильтр по имени",
+      "lessFilters": "{{dashboard.lessFilters}}",
+      "mitigatedTooltip": "Цикл: Все / Устранённые / Неустранённые",
+      "moreFilters": "{{dashboard.moreFilters}}",
+      "nameLabel": "{{common.search}}",
+      "namePlaceholder": "{{dashboard.namePlaceholder}}",
+      "noMatchingThreats": "Нет угроз, соответствующих текущим фильтрам.",
+      "priority": "{{common.priority}}",
+      "threatType": "{{common.threatType}}"
+    }
   },
   "tos": {
     "contactInfo": {

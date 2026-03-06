@@ -682,7 +682,7 @@
     "title": "CWE 선택"
   },
   "dashboard": {
-    "clearAllFilters": "모든 필터 지우기",
+    "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "검색 지우기",
     "createdAfter": "생성일 이후",
     "createdBefore": "생성일 이전",
@@ -1294,6 +1294,20 @@
     },
     "viewDiagramName": "다이어그램 속성 보기",
     "yourThreatModels": "내 위협 모델"
+  },
+  "threats": {
+    "filters": {
+      "clearAll": "모든 필터 지우기",
+      "clearName": "이름 필터 지우기",
+      "lessFilters": "{{dashboard.lessFilters}}",
+      "mitigatedTooltip": "순환: 전체 / 완화됨 / 미완화",
+      "moreFilters": "{{dashboard.moreFilters}}",
+      "nameLabel": "{{common.search}}",
+      "namePlaceholder": "{{dashboard.namePlaceholder}}",
+      "noMatchingThreats": "현재 필터와 일치하는 위협이 없습니다.",
+      "priority": "{{common.priority}}",
+      "threatType": "{{common.threatType}}"
+    }
   },
   "tos": {
     "contactInfo": {

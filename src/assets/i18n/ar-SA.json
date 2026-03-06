@@ -682,7 +682,7 @@
     "title": "اختر CWE"
   },
   "dashboard": {
-    "clearAllFilters": "مسح جميع الفلاتر",
+    "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "مسح البحث",
     "createdAfter": "تاريخ الإنشاء بعد",
     "createdBefore": "تاريخ الإنشاء قبل",
@@ -1294,6 +1294,20 @@
     },
     "viewDiagramName": "عرض خصائص المخطط",
     "yourThreatModels": "نماذج التهديدات الخاصة بك"
+  },
+  "threats": {
+    "filters": {
+      "clearAll": "مسح جميع المرشحات",
+      "clearName": "مسح مرشح الاسم",
+      "lessFilters": "{{dashboard.lessFilters}}",
+      "mitigatedTooltip": "تدوير: الكل / تم التخفيف / لم يتم التخفيف",
+      "moreFilters": "{{dashboard.moreFilters}}",
+      "nameLabel": "{{common.search}}",
+      "namePlaceholder": "{{dashboard.namePlaceholder}}",
+      "noMatchingThreats": "لا توجد تهديدات تطابق المرشحات الحالية.",
+      "priority": "{{common.priority}}",
+      "threatType": "{{common.threatType}}"
+    }
   },
   "tos": {
     "contactInfo": {

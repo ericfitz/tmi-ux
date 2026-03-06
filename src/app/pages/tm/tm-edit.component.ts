@@ -24,7 +24,7 @@ import { ThreatModelAuthorizationService } from './services/threat-model-authori
 import { AuthorizationPrepareService } from './services/providers/authorization-prepare.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Subscription, Subject, firstValueFrom } from 'rxjs';
-import { debounceTime, filter, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, filter, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { LanguageService } from '../../i18n/language.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { SvgCacheService } from './services/svg-cache.service';
@@ -88,7 +88,14 @@ import {
   ThreatModel,
   User,
 } from './models/threat-model.model';
-import { ThreatModelService } from './services/threat-model.service';
+import { ThreatModelService, ThreatListParams } from './services/threat-model.service';
+import { ThreatFilterStateService } from './services/threat-filter-state.service';
+import {
+  ThreatFilters,
+  createDefaultThreatFilters,
+  hasAdvancedThreatFilters,
+  hasAnyThreatFilters,
+} from './models/threat-filter.model';
 import { ThreatModelReportService } from './services/report/threat-model-report.service';
 import { FrameworkService } from '../../shared/services/framework.service';
 import { CellDataExtractionService } from '../../shared/services/cell-data-extraction.service';
@@ -195,6 +202,18 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   // Status dropdown options
   statusOptions: FieldOption[] = [];
 
+  // Threat card filter state
+  threatFilters: ThreatFilters = createDefaultThreatFilters();
+  showAdvancedThreatFilters = false;
+  threatSeverityOptions: FieldOption[] = [];
+  threatStatusOptions: FieldOption[] = [];
+  threatPriorityOptions: FieldOption[] = [];
+  threatTypeOptions: string[] = [];
+  threatSortActive = 'severity';
+  threatSortDirection: 'asc' | 'desc' | '' = 'asc';
+  private threatNameFilterChanged$ = new Subject<string>();
+  private destroy$ = new Subject<void>();
+
   // Security reviewer dropdown
   securityReviewerOptions: User[] = [];
   securityReviewerMode: 'dropdown' | 'picker' | 'loading' = 'loading';
@@ -228,7 +247,6 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Table sort ViewChildren
   @ViewChild('assetsSort') assetsSort!: MatSort;
-  @ViewChild('threatsSort') threatsSort!: MatSort;
   @ViewChild('diagramsSort') diagramsSort!: MatSort;
   @ViewChild('notesSort') notesSort!: MatSort;
   @ViewChild('documentsSort') documentsSort!: MatSort;
@@ -334,6 +352,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     private authService: AuthService,
     private securityReviewerService: SecurityReviewerService,
     private projectService: ProjectService,
+    private threatFilterStateService: ThreatFilterStateService,
   ) {
     this.threatModelForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -546,6 +565,20 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     // Initialize status dropdown options
     this.statusOptions = getFieldOptions('threatModels.status', this.transloco);
 
+    // Initialize threat filter dropdown options
+    this.threatSeverityOptions = getFieldOptions('threatEditor.threatSeverity', this.transloco);
+    this.threatStatusOptions = getFieldOptions('threatEditor.threatStatus', this.transloco);
+    this.threatPriorityOptions = getFieldOptions('threatEditor.threatPriority', this.transloco);
+
+    // Set up debounced name filter for threats
+    this.threatNameFilterChanged$
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(value => {
+        this.threatFilters.name = value;
+        this.threatsPageIndex = 0;
+        this.loadThreatsAndSaveState();
+      });
+
     // Disable auto-save during initial data loading
     this._isLoadingInitialData = true;
 
@@ -565,6 +598,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       this.frameworkService.loadAllFrameworks().subscribe({
         next: frameworks => {
           this.frameworks = frameworks;
+          this.updateThreatTypeOptions();
           // this.logger.info('Loaded frameworks for threat model editor', {
           //   count: frameworks.length,
           //   frameworks: frameworks.map(f => f.name),
@@ -592,6 +626,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         this.currentDirection = language.rtl ? 'rtl' : 'ltr';
         // Refresh status dropdown options for new language
         this.statusOptions = getFieldOptions('threatModels.status', this.transloco);
+        this.threatSeverityOptions = getFieldOptions('threatEditor.threatSeverity', this.transloco);
+        this.threatStatusOptions = getFieldOptions('threatEditor.threatStatus', this.transloco);
+        this.threatPriorityOptions = getFieldOptions('threatEditor.threatPriority', this.transloco);
       }),
     );
 
@@ -616,7 +653,13 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     this.threatModel = threatModel;
     this.isNewThreatModel = false; // Resolved threat models are not new
 
-    // Load threats via API with pagination
+    // Populate threat type options from the threat model's framework
+    this.updateThreatTypeOptions();
+
+    // Restore threat card state if returning to the same threat model
+    this.restoreThreatCardState(id);
+
+    // Load threats via API with filters, sorting, and pagination
     this.loadThreats(id);
 
     // Subscribe to authorization changes
@@ -699,25 +742,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.assetsSort) {
       this.assetsDataSource.sort = this.assetsSort;
     }
-    if (this.threatsSort) {
-      this.threatsDataSource.sort = this.threatsSort;
-      // Custom sorting for threats - severity ordering
-      this.threatsDataSource.sortingDataAccessor = (
-        threat: Threat,
-        property: string,
-      ): string | number => {
-        switch (property) {
-          case 'severity':
-            return this.getSeverityOrder(threat.severity);
-          case 'status':
-            return this.getStatusOrder(threat.status);
-          case 'name':
-            return threat.name?.toLowerCase() ?? '';
-          default:
-            return (threat as unknown as Record<string, string>)[property] ?? '';
-        }
-      };
-    }
+    // Threats table uses server-side sorting — no client-side MatSort setup needed
     if (this.diagramsSort) {
       this.diagramsDataSource.sort = this.diagramsSort;
     }
@@ -732,40 +757,14 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  /**
-   * Get ordinal position for severity (lower index = more severe).
-   * Falls back to severityMap for legacy values that bypassed migration.
-   */
-  private getSeverityOrder(severity: string | null | undefined): number {
-    if (!severity) return 999;
-    const idx = this.severityKeys.indexOf(severity);
-    if (idx >= 0) return idx;
-    // Defense-in-depth: try mapping legacy values (numeric or English strings)
-    const migrated = this.severityMap[severity];
-    if (migrated) {
-      const migratedIdx = this.severityKeys.indexOf(migrated);
-      return migratedIdx >= 0 ? migratedIdx : 999;
-    }
-    return 999;
-  }
-
-  /**
-   * Get ordinal position for threat status.
-   * Falls back to statusMap for legacy values that bypassed migration.
-   */
-  private getStatusOrder(status: string | null | undefined): number {
-    if (!status) return 999;
-    const idx = this.threatStatusKeys.indexOf(status);
-    if (idx >= 0) return idx;
-    const migrated = this.statusMap[status];
-    if (migrated) {
-      const migratedIdx = this.threatStatusKeys.indexOf(migrated);
-      return migratedIdx >= 0 ? migratedIdx : 999;
-    }
-    return 999;
-  }
-
   ngOnDestroy(): void {
+    // Save threat card state for restoration if returning to same TM
+    this.saveThreatCardState();
+
+    // Complete destroy subject for takeUntil subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
+
     // Clean up subscriptions
     this._subscriptions.unsubscribe();
 
@@ -3337,34 +3336,57 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Load threats for the threat model using separate API call with pagination
+   * Load threats for the threat model using API with filters, sorting, and pagination
    */
   private loadThreats(threatModelId: string): void {
     const offset = calculateOffset(this.threatsPageIndex, this.threatsPageSize);
+    const filters = this.threatFilters;
+
+    const params: ThreatListParams = {
+      limit: this.threatsPageSize,
+      offset,
+    };
+
+    // Server-side sort
+    if (this.threatSortActive && this.threatSortDirection) {
+      params.sort = `${this.threatSortActive}:${this.threatSortDirection}`;
+    }
+
+    // Filters
+    if (filters.name.trim()) params.name = filters.name.trim();
+    if (filters.severities.length > 0) params.severity = filters.severities.join(',');
+    if (filters.statuses.length > 0) params.status = filters.statuses.join(',');
+    if (filters.priorities.length > 0) params.priority = filters.priorities.join(',');
+    if (filters.threatTypes.length > 0) params.threat_type = filters.threatTypes;
+    if (filters.mitigated !== null) params.mitigated = filters.mitigated;
 
     this._subscriptions.add(
-      this.threatModelService
-        .getThreatsForThreatModel(threatModelId, this.threatsPageSize, offset)
-        .subscribe({
-          next: response => {
-            if (this.threatModel) {
-              this.threatModel.threats = response.threats.map(t =>
-                this.migrateThreatFieldValues(t),
-              );
-              this.threatsDataSource.data = this.threatModel.threats;
-              this.totalThreats = response.total;
-            }
-          },
-          error: error => {
-            this.logger.error('Failed to load threats', error);
-            if (this.threatModel) {
-              this.threatModel.threats = [];
-              this.threatsDataSource.data = [];
-              this.totalThreats = 0;
-            }
-          },
-        }),
+      this.threatModelService.getThreatsForThreatModel(threatModelId, params).subscribe({
+        next: response => {
+          if (this.threatModel) {
+            this.threatModel.threats = response.threats.map(t => this.migrateThreatFieldValues(t));
+            this.threatsDataSource.data = this.threatModel.threats;
+            this.totalThreats = response.total;
+          }
+        },
+        error: error => {
+          this.logger.error('Failed to load threats', error);
+          if (this.threatModel) {
+            this.threatModel.threats = [];
+            this.threatsDataSource.data = [];
+            this.totalThreats = 0;
+          }
+        },
+      }),
     );
+  }
+
+  /** Reload threats and persist current filter state */
+  private loadThreatsAndSaveState(): void {
+    if (this.threatModel) {
+      this.loadThreats(this.threatModel.id);
+      this.saveThreatCardState();
+    }
   }
 
   /**
@@ -3373,8 +3395,88 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   onThreatsPageChange(event: { pageIndex: number; pageSize: number }): void {
     this.threatsPageIndex = event.pageIndex;
     this.threatsPageSize = event.pageSize;
-    if (this.threatModel) {
-      this.loadThreats(this.threatModel.id);
+    this.loadThreatsAndSaveState();
+  }
+
+  /** Handle threat name filter input */
+  onThreatNameFilterChange(value: string): void {
+    this.threatNameFilterChanged$.next(value);
+  }
+
+  /** Handle server-side filter change (dropdowns, toggles) — immediate reload */
+  onThreatFilterChange(): void {
+    this.threatsPageIndex = 0;
+    this.loadThreatsAndSaveState();
+  }
+
+  /** Handle sort change from the threats table header */
+  onThreatSortChange(sort: { active: string; direction: 'asc' | 'desc' | '' }): void {
+    this.threatSortActive = sort.active;
+    this.threatSortDirection = sort.direction;
+    this.threatsPageIndex = 0;
+    this.loadThreatsAndSaveState();
+  }
+
+  /** Clear all threat filters and reset to defaults */
+  clearAllThreatFilters(): void {
+    this.threatFilters = createDefaultThreatFilters();
+    this.threatsPageIndex = 0;
+    this.showAdvancedThreatFilters = false;
+    this.loadThreatsAndSaveState();
+  }
+
+  /** Toggle the mitigated filter: null → true → false → null */
+  toggleMitigatedFilter(): void {
+    if (this.threatFilters.mitigated === null) {
+      this.threatFilters.mitigated = true;
+    } else if (this.threatFilters.mitigated === true) {
+      this.threatFilters.mitigated = false;
+    } else {
+      this.threatFilters.mitigated = null;
+    }
+    this.onThreatFilterChange();
+  }
+
+  get hasActiveThreatFilters(): boolean {
+    return hasAnyThreatFilters(this.threatFilters);
+  }
+
+  get hasAdvancedThreatFiltersActive(): boolean {
+    return hasAdvancedThreatFilters(this.threatFilters);
+  }
+
+  /** Update threat type options from the current framework */
+  private updateThreatTypeOptions(): void {
+    if (!this.threatModel) return;
+    const frameworkName = this.threatModel.threat_model_framework || 'STRIDE';
+    const framework = this.frameworks.find(f => f.name === frameworkName);
+    this.threatTypeOptions = framework?.threatTypes?.map(tt => tt.name) ?? [];
+  }
+
+  /** Save current threat card state for later restoration */
+  private saveThreatCardState(): void {
+    if (!this.threatModel) return;
+    this.threatFilterStateService.saveState({
+      threatModelId: this.threatModel.id,
+      filters: { ...this.threatFilters },
+      sortActive: this.threatSortActive,
+      sortDirection: this.threatSortDirection,
+      pageIndex: this.threatsPageIndex,
+      pageSize: this.threatsPageSize,
+      showAdvancedFilters: this.showAdvancedThreatFilters,
+    });
+  }
+
+  /** Restore threat card state if returning to the same threat model */
+  private restoreThreatCardState(threatModelId: string): void {
+    const saved = this.threatFilterStateService.getState(threatModelId);
+    if (saved) {
+      this.threatFilters = { ...saved.filters };
+      this.threatSortActive = saved.sortActive;
+      this.threatSortDirection = saved.sortDirection;
+      this.threatsPageIndex = saved.pageIndex;
+      this.threatsPageSize = saved.pageSize;
+      this.showAdvancedThreatFilters = saved.showAdvancedFilters;
     }
   }
 

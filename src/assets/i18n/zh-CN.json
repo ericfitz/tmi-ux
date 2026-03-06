@@ -682,7 +682,7 @@
     "title": "选择 CWE"
   },
   "dashboard": {
-    "clearAllFilters": "清除所有筛选",
+    "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "清除搜索",
     "createdAfter": "创建于之后",
     "createdBefore": "创建于之前",
@@ -1294,6 +1294,20 @@
     },
     "viewDiagramName": "查看图表属性",
     "yourThreatModels": "您的威胁模型"
+  },
+  "threats": {
+    "filters": {
+      "clearAll": "清除所有筛选条件",
+      "clearName": "清除名称筛选",
+      "lessFilters": "{{dashboard.lessFilters}}",
+      "mitigatedTooltip": "循环切换：全部 / 已缓解 / 未缓解",
+      "moreFilters": "{{dashboard.moreFilters}}",
+      "nameLabel": "{{common.search}}",
+      "namePlaceholder": "{{dashboard.namePlaceholder}}",
+      "noMatchingThreats": "没有与当前筛选条件匹配的威胁。",
+      "priority": "{{common.priority}}",
+      "threatType": "{{common.threatType}}"
+    }
   },
   "tos": {
     "contactInfo": {

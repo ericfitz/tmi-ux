@@ -190,6 +190,57 @@
   overflow: hidden; /* Ensure content doesn't exceed card boundaries */
 }
 
+// Threat card filter rows
+.threat-filters-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .threat-name-filter {
+    flex: 1;
+    min-width: 180px;
+  }
+
+  .threat-severity-filter,
+  .threat-status-filter {
+    width: 160px;
+  }
+
+  .threat-mitigated-filter {
+    white-space: nowrap;
+  }
+
+  .filter-toggle-active {
+    color: var(--mdc-theme-primary);
+  }
+
+  .clear-threat-filters-button {
+    white-space: nowrap;
+  }
+
+  mat-form-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+.threat-advanced-filters-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+
+  .threat-type-filter,
+  .threat-priority-filter {
+    width: 200px;
+  }
+
+  mat-form-field ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
 .metadata-card {
   @media (width >= 768px) {
     grid-column: auto;

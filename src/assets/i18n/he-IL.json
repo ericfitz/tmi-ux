@@ -682,7 +682,7 @@
     "title": "בחר CWE"
   },
   "dashboard": {
-    "clearAllFilters": "נקה את כל המסננים",
+    "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "נקה חיפוש",
     "createdAfter": "נוצר אחרי",
     "createdBefore": "נוצר לפני",
@@ -1294,6 +1294,20 @@
     },
     "viewDiagramName": "הצג מאפייני דיאגרמה",
     "yourThreatModels": "מודלי האיומים שלך"
+  },
+  "threats": {
+    "filters": {
+      "clearAll": "נקה את כל המסננים",
+      "clearName": "נקה מסנן שם",
+      "lessFilters": "{{dashboard.lessFilters}}",
+      "mitigatedTooltip": "מחזור: הכל / מטופלים / לא מטופלים",
+      "moreFilters": "{{dashboard.moreFilters}}",
+      "nameLabel": "{{common.search}}",
+      "namePlaceholder": "{{dashboard.namePlaceholder}}",
+      "noMatchingThreats": "אין איומים התואמים למסננים הנוכחיים שלך.",
+      "priority": "{{common.priority}}",
+      "threatType": "{{common.threatType}}"
+    }
   },
   "tos": {
     "contactInfo": {

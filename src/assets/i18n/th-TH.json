@@ -682,7 +682,7 @@
     "title": "เลือก CWE"
   },
   "dashboard": {
-    "clearAllFilters": "ล้างตัวกรองทั้งหมด",
+    "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "ล้างการค้นหา",
     "createdAfter": "สร้างหลังจาก",
     "createdBefore": "สร้างก่อน",
@@ -1294,6 +1294,20 @@
     },
     "viewDiagramName": "ดูคุณสมบัติของแผนภาพ",
     "yourThreatModels": "แบบจำลองภัยคุกคามของคุณ"
+  },
+  "threats": {
+    "filters": {
+      "clearAll": "ล้างตัวกรองทั้งหมด",
+      "clearName": "ล้างตัวกรองชื่อ",
+      "lessFilters": "{{dashboard.lessFilters}}",
+      "mitigatedTooltip": "สลับ: ทั้งหมด / บรรเทาแล้ว / ยังไม่บรรเทา",
+      "moreFilters": "{{dashboard.moreFilters}}",
+      "nameLabel": "{{common.search}}",
+      "namePlaceholder": "{{dashboard.namePlaceholder}}",
+      "noMatchingThreats": "ไม่มีภัยคุกคามที่ตรงกับตัวกรองปัจจุบันของคุณ",
+      "priority": "{{common.priority}}",
+      "threatType": "{{common.threatType}}"
+    }
   },
   "tos": {
     "contactInfo": {

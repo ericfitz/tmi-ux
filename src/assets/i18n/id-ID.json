@@ -682,7 +682,7 @@
     "title": "Pilih CWE"
   },
   "dashboard": {
-    "clearAllFilters": "Hapus Semua Filter",
+    "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "Hapus Pencarian",
     "createdAfter": "Dibuat Setelah",
     "createdBefore": "Dibuat Sebelum",
@@ -1294,6 +1294,20 @@
     },
     "viewDiagramName": "Lihat Properti Diagram",
     "yourThreatModels": "Model Ancaman Anda"
+  },
+  "threats": {
+    "filters": {
+      "clearAll": "Hapus Semua Filter",
+      "clearName": "Hapus Filter Nama",
+      "lessFilters": "{{dashboard.lessFilters}}",
+      "mitigatedTooltip": "Siklus: Semua / Dimitigasi / Belum Dimitigasi",
+      "moreFilters": "{{dashboard.moreFilters}}",
+      "nameLabel": "{{common.search}}",
+      "namePlaceholder": "{{dashboard.namePlaceholder}}",
+      "noMatchingThreats": "Tidak ada ancaman yang cocok dengan filter Anda saat ini.",
+      "priority": "{{common.priority}}",
+      "threatType": "{{common.threatType}}"
+    }
   },
   "tos": {
     "contactInfo": {

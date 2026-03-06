@@ -682,7 +682,7 @@
     "title": "CWE auswählen"
   },
   "dashboard": {
-    "clearAllFilters": "Alle Filter löschen",
+    "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "Suche löschen",
     "createdAfter": "Erstellt nach",
     "createdBefore": "Erstellt vor",
@@ -1294,6 +1294,20 @@
     },
     "viewDiagramName": "Diagrammeigenschaften anzeigen",
     "yourThreatModels": "Ihre Bedrohungsmodelle"
+  },
+  "threats": {
+    "filters": {
+      "clearAll": "Alle Filter löschen",
+      "clearName": "Namensfilter löschen",
+      "lessFilters": "{{dashboard.lessFilters}}",
+      "mitigatedTooltip": "Wechsel: Alle / Mitigiert / Nicht mitigiert",
+      "moreFilters": "{{dashboard.moreFilters}}",
+      "nameLabel": "{{common.search}}",
+      "namePlaceholder": "{{dashboard.namePlaceholder}}",
+      "noMatchingThreats": "Keine Bedrohungen entsprechen Ihren aktuellen Filtern.",
+      "priority": "{{common.priority}}",
+      "threatType": "{{common.threatType}}"
+    }
   },
   "tos": {
     "contactInfo": {

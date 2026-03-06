@@ -682,7 +682,7 @@
     "title": "CWEを選択"
   },
   "dashboard": {
-    "clearAllFilters": "すべてのフィルターをクリア",
+    "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "検索をクリア",
     "createdAfter": "作成日（以降）",
     "createdBefore": "作成日（以前）",
@@ -1294,6 +1294,20 @@
     },
     "viewDiagramName": "ダイアグラムのプロパティを表示",
     "yourThreatModels": "あなたの脅威モデル"
+  },
+  "threats": {
+    "filters": {
+      "clearAll": "すべてのフィルタをクリア",
+      "clearName": "名前フィルタをクリア",
+      "lessFilters": "{{dashboard.lessFilters}}",
+      "mitigatedTooltip": "切替: すべて / 軽減済み / 未軽減",
+      "moreFilters": "{{dashboard.moreFilters}}",
+      "nameLabel": "{{common.search}}",
+      "namePlaceholder": "{{dashboard.namePlaceholder}}",
+      "noMatchingThreats": "現在のフィルタに一致する脅威はありません。",
+      "priority": "{{common.priority}}",
+      "threatType": "{{common.threatType}}"
+    }
   },
   "tos": {
     "contactInfo": {

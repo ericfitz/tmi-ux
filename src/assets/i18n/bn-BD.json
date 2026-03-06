@@ -682,7 +682,7 @@
     "title": "একটি CWE বেছে নিন"
   },
   "dashboard": {
-    "clearAllFilters": "সমস্ত ফিল্টার সাফ করুন",
+    "clearAllFilters": "{{threats.filters.clearAll}}",
     "clearSearch": "অনুসন্ধান সাফ করুন",
     "createdAfter": "এর পরে তৈরি",
     "createdBefore": "এর আগে তৈরি",
@@ -1294,6 +1294,20 @@
     },
     "viewDiagramName": "ডায়াগ্রাম বৈশিষ্ট্য দেখুন",
     "yourThreatModels": "আপনার থ্রেট মডেল"
+  },
+  "threats": {
+    "filters": {
+      "clearAll": "সকল ফিল্টার মুছুন",
+      "clearName": "নামের ফিল্টার মুছুন",
+      "lessFilters": "{{dashboard.lessFilters}}",
+      "mitigatedTooltip": "চক্র: সকল / প্রশমিত / অপ্রশমিত",
+      "moreFilters": "{{dashboard.moreFilters}}",
+      "nameLabel": "{{common.search}}",
+      "namePlaceholder": "{{dashboard.namePlaceholder}}",
+      "noMatchingThreats": "আপনার বর্তমান ফিল্টারের সাথে কোনো হুমকি মেলেনি।",
+      "priority": "{{common.priority}}",
+      "threatType": "{{common.threatType}}"
+    }
   },
   "tos": {
     "contactInfo": {
