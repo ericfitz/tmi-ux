@@ -542,9 +542,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         this.threatModelService.deleteThreatModel(id).subscribe({
           next: success => {
             if (success) {
-              this.snackBar.open(`Threat model "${threatModel.name}" has been deleted.`, 'Close', {
-                duration: 3000,
-              });
+              this.snackBar.open(
+                this.transloco.translate('threatModels.deleteSuccess', {
+                  name: threatModel.name,
+                }),
+                this.transloco.translate('common.close'),
+                { duration: 3000 },
+              );
 
               const itemsOnPageAfterDelete = this.threatModels.length - 1;
               const newTotal = this.totalItems - 1;
@@ -560,9 +564,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           },
           error: error => {
             this.logger.error('Error deleting threat model', error);
-            this.snackBar.open('Failed to delete threat model. Please try again.', 'Close', {
-              duration: 5000,
-            });
+            this.snackBar.open(
+              this.transloco.translate('threatModels.deleteError', {
+                error: error instanceof Error ? error.message : String(error),
+              }),
+              this.transloco.translate('common.close'),
+              { duration: 5000 },
+            );
           },
         });
       }
@@ -778,7 +786,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       // Reject oversized files to prevent memory exhaustion
       const MAX_IMPORT_SIZE = 10 * 1024 * 1024; // 10 MB
       if (file.size > MAX_IMPORT_SIZE) {
-        this.showError('File exceeds maximum import size of 10 MB');
+        this.showError(this.transloco.translate('threatModels.fileSizeExceeded', { maxSize: 10 }));
         return;
       }
 
@@ -822,7 +830,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isImporting = true;
     try {
       if (typeof data['id'] !== 'string' || typeof data['name'] !== 'string') {
-        this.showError('Invalid threat model format: missing required fields (id, name)');
+        this.showError(this.transloco.translate('threatModels.importFormatError'));
         return;
       }
 
@@ -830,7 +838,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       if (!validationResult.valid) {
         this.logger.error('Threat model validation failed', validationResult.errors);
         this.showError(
-          `Threat model validation failed: ${validationResult.errors.map(e => e.message).join(', ')}`,
+          this.transloco.translate('threatModels.importValidationError', {
+            errors: validationResult.errors.map(e => e.message).join(', '),
+          }),
         );
         return;
       }
@@ -849,7 +859,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     } catch (error) {
       this.logger.error('Failed to import threat model', error);
       this.showError(
-        `Failed to import threat model: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        this.transloco.translate('threatModels.importError', {
+          error: error instanceof Error ? error.message : String(error),
+        }),
       );
     } finally {
       this.isImporting = false;
@@ -857,15 +869,17 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private navigateToImportedModel(model: ThreatModel): void {
-    this.snackBar.open(`Threat model "${model.name}" imported successfully`, 'Close', {
-      duration: 3000,
-    });
+    this.snackBar.open(
+      this.transloco.translate('threatModels.importSuccess', { name: model.name }),
+      this.transloco.translate('common.close'),
+      { duration: 3000 },
+    );
 
     void this.router.navigate(['/tm', model.id]);
   }
 
   private showError(message: string): void {
-    this.snackBar.open(message, 'Close', {
+    this.snackBar.open(message, this.transloco.translate('common.close'), {
       duration: 5000,
       panelClass: ['error-snackbar'],
     });
