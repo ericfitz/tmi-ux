@@ -22,6 +22,7 @@ import {
   Observable,
   catchError,
   filter,
+  firstValueFrom,
   from,
   map,
   of,
@@ -396,10 +397,9 @@ export class AuthService {
       // SKIP_ERROR_HANDLING prevents the interceptor from attempting token refresh
       // on 401 — a 401 here simply means "not logged in," not a session error.
       const context = new HttpContext().set(SKIP_ERROR_HANDLING, true);
-      const response = await this.http
-        .get<UserMeResponse>(`${environment.apiUrl}/me`, { context })
-        .toPromise()
-        .catch(() => null);
+      const response = await firstValueFrom(
+        this.http.get<UserMeResponse>(`${environment.apiUrl}/me`, { context }),
+      ).catch(() => null);
 
       if (response) {
         // Session cookie is valid - we're authenticated

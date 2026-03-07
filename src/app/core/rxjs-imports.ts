@@ -23,4 +23,7 @@ export { takeUntil } from 'rxjs/internal/operators/takeUntil';
 export { throwError } from 'rxjs/internal/observable/throwError';
 export { shareReplay } from 'rxjs/internal/operators/shareReplay';
 
+// Utility functions
+export { firstValueFrom } from 'rxjs';
+
 // Add more operators as needed
