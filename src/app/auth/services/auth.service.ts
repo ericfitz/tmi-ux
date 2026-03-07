@@ -117,8 +117,8 @@ export class AuthService {
     private serverConnectionService: ServerConnectionService,
     private pkceService: PkceService,
   ) {
-    // Check auth status by calling GET /me on service creation
-    void this.checkAuthStatus();
+    // Auth status check (GET /me) is triggered via APP_INITIALIZER,
+    // not here, to avoid HTTP calls during DI resolution.
   }
 
   /**

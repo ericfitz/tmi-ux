@@ -243,8 +243,8 @@ describe('AuthService', () => {
       hasStoredVerifier: vi.fn().mockReturnValue(false),
     };
 
-    // Default httpClient.get to return 401 so the constructor's checkAuthStatus()
-    // treats the user as unauthenticated. Individual tests override this as needed.
+    // Default httpClient.get to return 401 so tests that call checkAuthStatus()
+    // treat the user as unauthenticated. Individual tests override this as needed.
     vi.mocked(httpClient.get).mockReturnValue(
       throwError(() => new HttpErrorResponse({ status: 401 })),
     );
@@ -447,14 +447,12 @@ describe('AuthService', () => {
       // Mock HTTP response
       vi.mocked(httpClient.get).mockReturnValue(of(mockProvidersResponse));
 
-      // First call - this also triggers the constructor's checkAuthStatus GET /me
+      // First call
       service.getAvailableProviders().subscribe();
       // Second call should use cache
       service.getAvailableProviders().subscribe();
 
       // httpClient.get is called once for getAvailableProviders (second call uses cache)
-      // plus once for checkAuthStatus in the constructor (GET /me)
-      // So we check that getAvailableProviders only called the providers URL once
       const providerCalls = vi
         .mocked(httpClient.get)
         .mock.calls.filter(call => call[0] === `${environment.apiUrl}/oauth2/providers`);
@@ -775,11 +773,7 @@ describe('AuthService', () => {
       const authStates: boolean[] = [];
       service.isAuthenticated$.subscribe(state => authStates.push(state));
 
-      // The constructor calls checkAuthStatus which calls GET /me.
-      // Since httpClient.get returns undefined by default, it will eventually
-      // resolve. We need to check the initial state from the BehaviorSubject.
-      // The first emission comes from the BehaviorSubject's initial value (false)
-      // or from the constructor's checkAuthStatus.
+      // The first emission comes from the BehaviorSubject's initial value (false).
 
       // Simulate successful login
       service['isAuthenticatedSubject'].next(true);

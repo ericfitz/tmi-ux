@@ -1,6 +1,7 @@
 import '@angular/compiler';
 
 import { HttpRequest, HttpHandler, HttpErrorResponse, HttpContext } from '@angular/common/http';
+import { Injector } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { vi, beforeEach, describe, it, expect } from 'vitest';
 
@@ -70,7 +71,11 @@ describe('JwtInterceptor', () => {
     authService = mockAuthService as unknown as AuthService;
     loggerService = createTypedMockLoggerService();
 
-    interceptor = new JwtInterceptor(authService, loggerService as unknown as LoggerService);
+    const mockInjector = {
+      get: vi.fn().mockReturnValue(authService),
+    } as unknown as Injector;
+
+    interceptor = new JwtInterceptor(mockInjector, loggerService as unknown as LoggerService);
   });
 
   describe('Core Functionality', () => {

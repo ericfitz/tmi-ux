@@ -111,7 +111,7 @@ describe('Authentication Integration', () => {
       hasStoredVerifier: vi.fn().mockReturnValue(false),
     };
 
-    // Mock httpClient.get to return 401 by default so constructor's checkAuthStatus()
+    // Mock httpClient.get to return 401 by default so checkAuthStatus()
     // does not auto-authenticate
     vi.mocked(httpClient.get).mockReturnValue(
       throwError(() => ({ status: 401, statusText: 'Unauthorized' })),
@@ -428,7 +428,7 @@ describe('Authentication Integration', () => {
           }),
         );
 
-        // Create a new service instance to test initialization (constructor calls checkAuthStatus)
+        // Create a new service instance to test initialization
         const restoredAuthService = new AuthService(
           router as unknown as Router,
           httpClient as unknown as HttpClient,

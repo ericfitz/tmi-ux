@@ -134,6 +134,14 @@ function initializeWebSocketAuth(
   };
 }
 
+// Auth status check initialization function
+// Calls GET /me to detect an existing session cookie on page load.
+// Runs via APP_INITIALIZER so the HTTP call happens after DI is complete,
+// not during AuthService construction (which would cause circular deps).
+function initializeAuthStatus(authService: AuthService): () => Promise<void> {
+  return () => authService.checkAuthStatus();
+}
+
 // Token validity guard initialization function
 function initializeTokenValidityGuard(tokenValidityGuard: TokenValidityGuardService): () => void {
   return () => {
@@ -395,7 +403,14 @@ export const appConfig: ApplicationConfig = {
       deps: [MatIconRegistry, DomSanitizer],
       multi: true,
     },
-    // Initialize user preferences (must run before theme service)
+    // Check auth status via GET /me (detects existing session cookie on page load)
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeAuthStatus,
+      deps: [AuthService],
+      multi: true,
+    },
+    // Initialize user preferences (must run after auth status check and before theme service)
     {
       provide: APP_INITIALIZER,
       useFactory: initializeUserPreferences,

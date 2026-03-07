@@ -6,7 +6,7 @@ import {
   HttpInterceptor,
   HttpRequest,
 } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { Observable, catchError, throwError, switchMap } from '../../core/rxjs-imports';
 
 import { LoggerService } from '../../core/services/logger.service';
@@ -36,10 +36,21 @@ export class JwtInterceptor implements HttpInterceptor {
     '/saml/providers',
   ];
 
+  private _authService: AuthService | null = null;
+
   constructor(
-    private authService: AuthService,
+    private injector: Injector,
     private logger: LoggerService,
   ) {}
+
+  /** Lazily resolve AuthService to break the circular dependency:
+   *  HTTP_INTERCEPTORS → JwtInterceptor → AuthService → HttpClient → HTTP_INTERCEPTORS */
+  private get authService(): AuthService {
+    if (!this._authService) {
+      this._authService = this.injector.get(AuthService);
+    }
+    return this._authService;
+  }
 
   /**
    * Intercept HTTP requests to handle auth errors.
