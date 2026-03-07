@@ -29,6 +29,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 import { LoggerService } from '../services/logger.service';
+import { SKIP_ERROR_HANDLING } from '../tokens/http-context.tokens';
 import { redactSensitiveData } from '../utils/redact-sensitive-data.util';
 
 @Injectable()
@@ -49,8 +50,10 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
         }
       }),
       catchError((error: HttpErrorResponse) => {
-        // Log and categorize errors
-        this.logAndCategorizeError(error, request);
+        // Skip error logging for requests that handle their own errors (e.g. session probes)
+        if (!request.context.get(SKIP_ERROR_HANDLING)) {
+          this.logAndCategorizeError(error, request);
+        }
         return throwError(() => error);
       }),
     );
