@@ -19,20 +19,8 @@ import { appConfig } from './app/app.config';
 import { environment } from './environments/environment';
 import { Environment } from './environments/environment.interface';
 
-// Import Prism for syntax highlighting in markdown code blocks
-import 'prismjs';
-import 'prismjs/components/prism-typescript';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-css';
-import 'prismjs/components/prism-scss';
-import 'prismjs/components/prism-json';
-import 'prismjs/components/prism-bash';
-import 'prismjs/components/prism-python';
-import 'prismjs/components/prism-yaml';
-import 'prismjs/components/prism-markdown';
-import 'prismjs/components/prism-sql';
-
-// Mermaid is imported and configured in app.config.ts for diagram rendering
+// Prism, Mermaid, and Markdown are lazy-loaded via provideMarkdownConfig()
+// in tm.routes.ts and triage.routes.ts to reduce initial bundle size
 
 // Import locale data for date/number localization
 // These must match the languages defined in language.service.ts

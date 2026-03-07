@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '../../auth/guards/auth.guard';
+import { provideMarkdownConfig } from '@app/shared/markdown-providers';
 import { threatModelResolver } from './resolvers/threat-model.resolver';
 
 /**
@@ -7,47 +8,58 @@ import { threatModelResolver } from './resolvers/threat-model.resolver';
  * /tm/:id - Threat model editor
  * /tm/:id/threat/:threatId - Threat detail page
  * /tm/:id/dfd/:dfdId - Data flow diagram editor
+ *
+ * Markdown/Mermaid/Prism providers are loaded here (not at app root)
+ * to keep them out of the initial bundle.
  */
 export const TM_ROUTES: Routes = [
   {
-    path: ':id',
-    loadComponent: () =>
-      import(/* webpackChunkName: "tm-edit" */ './tm-edit.component').then(c => c.TmEditComponent),
-    resolve: {
-      threatModel: threatModelResolver,
-    },
-  },
-  {
-    path: ':id/threat/:threatId',
-    loadComponent: () =>
-      import(
-        /* webpackChunkName: "threat-page" */ './components/threat-page/threat-page.component'
-      ).then(c => c.ThreatPageComponent),
-    canActivate: [authGuard],
-    resolve: {
-      threatModel: threatModelResolver,
-    },
-  },
-  {
-    path: ':id/note/:noteId',
-    loadComponent: () =>
-      import(/* webpackChunkName: "note-page" */ './components/note-page/note-page.component').then(
-        c => c.NotePageComponent,
-      ),
-    canActivate: [authGuard],
-    resolve: {
-      threatModel: threatModelResolver,
-    },
-  },
-  {
-    path: ':id/dfd/:dfdId',
-    loadComponent: () =>
-      import(/* webpackChunkName: "dfd" */ '../dfd/presentation/components/dfd.component').then(
-        c => c.DfdComponent,
-      ),
-    canActivate: [authGuard],
-    resolve: {
-      threatModel: threatModelResolver,
-    },
+    path: '',
+    providers: [...provideMarkdownConfig()],
+    children: [
+      {
+        path: ':id',
+        loadComponent: () =>
+          import(/* webpackChunkName: "tm-edit" */ './tm-edit.component').then(
+            c => c.TmEditComponent,
+          ),
+        resolve: {
+          threatModel: threatModelResolver,
+        },
+      },
+      {
+        path: ':id/threat/:threatId',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "threat-page" */ './components/threat-page/threat-page.component'
+          ).then(c => c.ThreatPageComponent),
+        canActivate: [authGuard],
+        resolve: {
+          threatModel: threatModelResolver,
+        },
+      },
+      {
+        path: ':id/note/:noteId',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "note-page" */ './components/note-page/note-page.component'
+          ).then(c => c.NotePageComponent),
+        canActivate: [authGuard],
+        resolve: {
+          threatModel: threatModelResolver,
+        },
+      },
+      {
+        path: ':id/dfd/:dfdId',
+        loadComponent: () =>
+          import(/* webpackChunkName: "dfd" */ '../dfd/presentation/components/dfd.component').then(
+            c => c.DfdComponent,
+          ),
+        canActivate: [authGuard],
+        resolve: {
+          threatModel: threatModelResolver,
+        },
+      },
+    ],
   },
 ];

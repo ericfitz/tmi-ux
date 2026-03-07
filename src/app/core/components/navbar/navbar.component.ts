@@ -36,8 +36,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from '../../../../environments/environment';
 import { BrandingConfigService } from '../../services/branding-config.service';
 
-import { UserPreferencesDialogComponent } from '../user-preferences-dialog/user-preferences-dialog.component';
-
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -210,7 +208,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
   }
 
-  openUserPreferences(): void {
+  async openUserPreferences(): Promise<void> {
+    const { UserPreferencesDialogComponent } =
+      await import('../user-preferences-dialog/user-preferences-dialog.component');
     this.dialog.open(UserPreferencesDialogComponent, {
       width: '800px',
       disableClose: false,
