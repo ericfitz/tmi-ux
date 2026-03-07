@@ -165,7 +165,7 @@ export const MOCK_THREAT_MODELS: ThreatModel[] = [
     },
     threat_model_framework: 'STRIDE',
     issue_uri: 'https://issues.example.com/browse/TM-123',
-    status: 'inProgress',
+    status: 'in_progress',
     status_updated: new Date(Date.now() - 1 * 86400000).toISOString(), // 1 day ago
     authorization: [
       {
@@ -451,7 +451,7 @@ Schedule follow-up review in 2 weeks to assess progress.`,
         score: 7.0,
         priority: 'medium',
         mitigated: false,
-        status: 'mitigationInProgress',
+        status: 'mitigation_in_progress',
         threat_type: ['Tampering'],
         issue_uri: 'https://issues.example.com/browse/SEC-458',
         metadata: [],

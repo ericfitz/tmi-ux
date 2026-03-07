@@ -26,12 +26,12 @@ export function getFieldKeysForFieldType(keyPrefix: FieldType): string[] {
   switch (keyPrefix) {
     case 'threatModels.status':
       return [
-        'notStarted',
-        'inProgress',
-        'pendingReview',
-        'remediationRequired',
-        'remediationInProgress',
-        'verificationPending',
+        'not_started',
+        'in_progress',
+        'pending_review',
+        'remediation_required',
+        'remediation_in_progress',
+        'verification_pending',
         'approved',
         'rejected',
         'deferred',
@@ -41,12 +41,12 @@ export function getFieldKeysForFieldType(keyPrefix: FieldType): string[] {
       return [
         'open',
         'confirmed',
-        'mitigationPlanned',
-        'mitigationInProgress',
-        'verificationPending',
+        'mitigation_planned',
+        'mitigation_in_progress',
+        'verification_pending',
         'resolved',
         'accepted',
-        'falsePositive',
+        'false_positive',
         'deferred',
         'closed',
       ];

@@ -34,12 +34,12 @@ describe('field-value-helpers', () => {
       threatStatus: {
         open: 'Open',
         confirmed: 'Confirmed',
-        mitigationPlanned: 'Mitigation Planned',
-        mitigationInProgress: 'Mitigation In Progress',
-        verificationPending: 'Verification Pending',
+        mitigation_planned: 'Mitigation Planned',
+        mitigation_in_progress: 'Mitigation In Progress',
+        verification_pending: 'Verification Pending',
         resolved: 'Resolved',
         accepted: 'Accepted',
-        falsePositive: 'False Positive',
+        false_positive: 'False Positive',
         deferred: 'Deferred',
         closed: 'Closed',
       },
@@ -53,12 +53,12 @@ describe('field-value-helpers', () => {
     },
     threatModels: {
       status: {
-        notStarted: 'Not Started',
-        inProgress: 'In Progress',
-        pendingReview: 'Pending Review',
-        remediationRequired: 'Remediation Required',
-        remediationInProgress: 'Remediation In Progress',
-        verificationPending: 'Verification Pending',
+        not_started: 'Not Started',
+        in_progress: 'In Progress',
+        pending_review: 'Pending Review',
+        remediation_required: 'Remediation Required',
+        remediation_in_progress: 'Remediation In Progress',
+        verification_pending: 'Verification Pending',
         approved: 'Approved',
         rejected: 'Rejected',
         deferred: 'Deferred',
@@ -125,7 +125,7 @@ describe('field-value-helpers', () => {
       expect(getFieldKeysForFieldType('unknown.field' as FieldType)).toHaveLength(0);
     });
 
-    it('should return camelCase keys in order', () => {
+    it('should return snake_case keys in order', () => {
       const keys = getFieldKeysForFieldType('threatEditor.threatSeverity');
       expect(keys).toEqual(['critical', 'high', 'medium', 'low', 'informational', 'unknown']);
     });
@@ -150,17 +150,17 @@ describe('field-value-helpers', () => {
       ).toBeNull();
     });
 
-    it('should pass through already-valid camelCase keys', () => {
+    it('should pass through already-valid snake_case keys', () => {
       expect(
         migrateFieldValue('high', 'threatEditor.threatSeverity', mockTranslocoService as never),
       ).toBe('high');
       expect(
         migrateFieldValue(
-          'mitigationPlanned',
+          'mitigation_planned',
           'threatEditor.threatStatus',
           mockTranslocoService as never,
         ),
-      ).toBe('mitigationPlanned');
+      ).toBe('mitigation_planned');
     });
 
     it('should migrate numeric key to camelCase by index position', () => {
@@ -221,9 +221,9 @@ describe('field-value-helpers', () => {
     it('should handle threat model status field type', () => {
       expect(
         migrateFieldValue('Not Started', 'threatModels.status', mockTranslocoService as never),
-      ).toBe('notStarted');
+      ).toBe('not_started');
       expect(migrateFieldValue('0', 'threatModels.status', mockTranslocoService as never)).toBe(
-        'notStarted',
+        'not_started',
       );
     });
 
@@ -233,7 +233,7 @@ describe('field-value-helpers', () => {
       ).toBe('open');
       expect(
         migrateFieldValue('7', 'threatEditor.threatStatus', mockTranslocoService as never),
-      ).toBe('falsePositive');
+      ).toBe('false_positive');
     });
 
     it('should migrate numeric priority keys', () => {
@@ -267,7 +267,7 @@ describe('field-value-helpers', () => {
       expect(options).toHaveLength(10);
     });
 
-    it('should return options with camelCase keys, labels, and tooltips', () => {
+    it('should return options with snake_case keys, labels, and tooltips', () => {
       const options = getFieldOptions('threatEditor.threatSeverity', mockTranslocoService as never);
       expect(options[0]).toHaveProperty('key');
       expect(options[0]).toHaveProperty('label');
@@ -347,9 +347,9 @@ describe('field-value-helpers', () => {
     });
 
     it('should use "tooltip" suffix for threatModels.status', () => {
-      getFieldTooltip('notStarted', 'threatModels.status', mockTranslocoService as never);
+      getFieldTooltip('not_started', 'threatModels.status', mockTranslocoService as never);
       expect(mockTranslocoService.translate).toHaveBeenCalledWith(
-        'threatModels.status.notStarted.tooltip',
+        'threatModels.status.not_started.tooltip',
       );
     });
 

@@ -87,7 +87,7 @@ describe('ReviewerAssignmentListComponent', () => {
       display_name: 'Owner',
     },
     threat_model_framework: 'STRIDE',
-    status: 'notStarted',
+    status: 'not_started',
     security_reviewer: null,
     document_count: 0,
     repo_count: 0,
