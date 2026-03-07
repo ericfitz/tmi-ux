@@ -72,16 +72,31 @@
 
     <!-- Right side: Server status, User info and logout button -->
     <div class="navbar-right">
-      <!-- Feedback button -->
+      <!-- Feedback menu -->
       <button
         mat-icon-button
         [matTooltip]="'navbar.feedback' | transloco"
         matTooltipPosition="below"
-        (click)="openFeedbackUrl()"
+        [matMenuTriggerFor]="feedbackMenu"
         class="feedback-button"
       >
         <mat-icon fontSet="material-symbols-outlined">feedback</mat-icon>
       </button>
+
+      <mat-menu #feedbackMenu="matMenu">
+        <button mat-menu-item (click)="openFeedbackUrl()">
+          <mat-icon>chat</mat-icon>
+          <span [transloco]="'navbar.feedbackMenu.provideFeedback'">Provide Feedback</span>
+        </button>
+        <button mat-menu-item (click)="reportBug()">
+          <mat-icon>bug_report</mat-icon>
+          <span [transloco]="'navbar.feedbackMenu.reportBug'">Report a Bug</span>
+        </button>
+        <button mat-menu-item (click)="requestFeature()">
+          <mat-icon>lightbulb</mat-icon>
+          <span [transloco]="'navbar.feedbackMenu.requestFeature'">Request a Feature</span>
+        </button>
+      </mat-menu>
 
       <!-- WebSocket connection indicator -->
       @if (showWebSocketStatus) {

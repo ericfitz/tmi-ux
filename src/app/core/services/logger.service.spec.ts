@@ -8,7 +8,7 @@
 
 import '@angular/compiler';
 
-import { LoggerService, LogLevel } from './logger.service';
+import { LoggerService, LogLevel, LogEntry } from './logger.service';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 
 // Mock the environment module
@@ -232,24 +232,37 @@ describe('LoggerService', () => {
   });
 
   describe('Performance Considerations', () => {
-    it('should not format messages when log level prevents logging', () => {
+    it('should not output to console when log level prevents logging', () => {
       service.setLogLevel(LogLevel.ERROR);
 
-      // Mock Date.prototype.toISOString to verify it's not called for filtered logs
-      const toISOStringSpy = vi.spyOn(Date.prototype, 'toISOString');
+      service.debug('This should not be output');
+      service.info('This should not be output');
+      service.warn('This should not be output');
 
-      service.debug('This should not be processed');
-      service.info('This should not be processed');
-      service.warn('This should not be processed');
+      expect(consoleSpy.debug).not.toHaveBeenCalled();
+      expect(consoleSpy.info).not.toHaveBeenCalled();
+      expect(consoleSpy.warn).not.toHaveBeenCalled();
 
-      // toISOString should not be called for filtered messages
-      expect(toISOStringSpy).not.toHaveBeenCalled();
+      // But should output error messages
+      service.error('This should be output');
+      expect(consoleSpy.error).toHaveBeenCalled();
+    });
 
-      // But should be called for error messages
-      service.error('This should be processed');
-      expect(toISOStringSpy).toHaveBeenCalled();
+    it('should still buffer entries even when console output is filtered', () => {
+      service.setLogLevel(LogLevel.ERROR);
 
-      toISOStringSpy.mockRestore();
+      service.debug('buffered debug');
+      service.info('buffered info');
+      service.warn('buffered warn');
+
+      // Not output to console
+      expect(consoleSpy.debug).not.toHaveBeenCalled();
+      expect(consoleSpy.info).not.toHaveBeenCalled();
+      expect(consoleSpy.warn).not.toHaveBeenCalled();
+
+      // But captured in buffer
+      const entries = service.getLogEntries();
+      expect(entries).toHaveLength(3);
     });
   });
 
@@ -389,6 +402,122 @@ describe('LoggerService', () => {
       expect(redactedUrl).not.toContain(
         'eyJhbGciOiJIUzI1NiIsInR5YzRhOGIzZGMyNTE5ZWRlMTYiLCJyZXR1cm5VcmwiOiIvdG0ifQ==',
       ); // Full token
+    });
+  });
+
+  describe('Ring Buffer', () => {
+    beforeEach(() => {
+      service.setLogLevel(LogLevel.ERROR); // Only errors to console
+    });
+
+    it('should buffer all log entries regardless of console log level', () => {
+      service.debug('debug msg');
+      service.info('info msg');
+      service.warn('warn msg');
+      service.error('error msg');
+
+      const entries = service.getLogEntries();
+      expect(entries).toHaveLength(4);
+      expect(entries[0].level).toBe(LogLevel.DEBUG);
+      expect(entries[0].message).toBe('debug msg');
+      expect(entries[1].level).toBe(LogLevel.INFO);
+      expect(entries[2].level).toBe(LogLevel.WARN);
+      expect(entries[3].level).toBe(LogLevel.ERROR);
+    });
+
+    it('should include timestamp and level in each entry', () => {
+      service.info('test');
+      const entries = service.getLogEntries();
+      expect(entries[0].timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+      expect(entries[0].level).toBe(LogLevel.INFO);
+      expect(entries[0].message).toBe('test');
+    });
+
+    it('should include params when provided', () => {
+      service.info('msg', { key: 'value' });
+      const entries = service.getLogEntries();
+      expect(entries[0].params).toEqual([{ key: 'value' }]);
+    });
+
+    it('should omit params when none provided', () => {
+      service.info('msg');
+      const entries = service.getLogEntries();
+      expect(entries[0].params).toBeUndefined();
+    });
+
+    it('should buffer debugComponent entries', () => {
+      service.debugComponent('TestComp', 'comp msg');
+      const entries = service.getLogEntries();
+      expect(entries).toHaveLength(1);
+      expect(entries[0].message).toBe('[TestComp] comp msg');
+      expect(entries[0].level).toBe(LogLevel.DEBUG);
+    });
+
+    it('should wrap around when buffer is full', () => {
+      // Fill buffer beyond capacity (1500)
+      for (let i = 0; i < 1510; i++) {
+        service.debug(`msg-${i}`);
+      }
+
+      const entries = service.getLogEntries();
+      expect(entries).toHaveLength(1500);
+      // Oldest should be msg-10 (first 10 were overwritten)
+      expect(entries[0].message).toBe('msg-10');
+      // Newest should be msg-1509
+      expect(entries[entries.length - 1].message).toBe('msg-1509');
+    });
+
+    it('should return entries in chronological order after wrap', () => {
+      for (let i = 0; i < 1505; i++) {
+        service.debug(`msg-${i}`);
+      }
+
+      const entries = service.getLogEntries();
+      for (let i = 1; i < entries.length; i++) {
+        expect(entries[i].timestamp >= entries[i - 1].timestamp).toBe(true);
+      }
+    });
+
+    it('should return a copy of the buffer, not a reference', () => {
+      service.info('original');
+      const entries1 = service.getLogEntries();
+      service.info('added');
+      const entries2 = service.getLogEntries();
+      expect(entries1).toHaveLength(1);
+      expect(entries2).toHaveLength(2);
+    });
+
+    it('should redact sensitive data in buffered params', () => {
+      const url = 'https://example.com?access_token=supersecrettoken123';
+      service.info('request', url);
+      const entries = service.getLogEntries();
+      const param = entries[0].params?.[0] as string;
+      expect(param).toContain('%5BREDACTED%5D');
+      expect(param).not.toContain('supersecrettoken123');
+    });
+  });
+
+  describe('Export', () => {
+    it('should export entries as JSONL format', () => {
+      service.setLogLevel(LogLevel.DEBUG);
+      service.info('line1');
+      service.warn('line2');
+
+      const jsonl = service.exportAsJsonl();
+      const lines = jsonl.split('\n');
+      expect(lines).toHaveLength(2);
+
+      const entry1: LogEntry = JSON.parse(lines[0]);
+      expect(entry1.level).toBe(LogLevel.INFO);
+      expect(entry1.message).toBe('line1');
+
+      const entry2: LogEntry = JSON.parse(lines[1]);
+      expect(entry2.level).toBe(LogLevel.WARN);
+      expect(entry2.message).toBe('line2');
+    });
+
+    it('should return empty string when buffer is empty', () => {
+      expect(service.exportAsJsonl()).toBe('');
     });
   });
 });

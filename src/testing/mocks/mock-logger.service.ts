@@ -21,6 +21,9 @@ export function createMockLoggerService(): LoggerService {
     error: vi.fn(),
     warn: vi.fn(),
     setLogLevel: vi.fn(),
+    getLogEntries: vi.fn().mockReturnValue([]),
+    exportAsJsonl: vi.fn().mockReturnValue(''),
+    downloadLog: vi.fn(),
   } as unknown as LoggerService;
 }
 
@@ -35,6 +38,9 @@ export interface MockLoggerService {
   error: ReturnType<typeof vi.fn>;
   warn: ReturnType<typeof vi.fn>;
   setLogLevel: ReturnType<typeof vi.fn>;
+  getLogEntries: ReturnType<typeof vi.fn>;
+  exportAsJsonl: ReturnType<typeof vi.fn>;
+  downloadLog: ReturnType<typeof vi.fn>;
 }
 
 /**

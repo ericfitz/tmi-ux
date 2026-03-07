@@ -890,6 +890,12 @@
     "copyUserEmail": "Copy User Email to Clipboard",
     "dashboard": "Dashboard",
     "feedback": "Report a bug, request a feature or provide feedback",
+    "feedbackMenu": {
+      "provideFeedback": "Provide Feedback",
+      "reportBug": "Report a Bug",
+      "reportBugCopied": "Application log copied to clipboard. Paste it into the GitHub issue.",
+      "requestFeature": "Request a Feature"
+    },
     "home": "Home",
     "intake": "Intake",
     "logoutButton": "Sign Out",
@@ -1563,6 +1569,10 @@
     },
     "diagramAnimationEffects": "Enable Animation Effects in Diagram Editor",
     "displayPreferences": "Display Preferences",
+    "exportLog": {
+      "hint": "Downloads the most recent application log entries as a JSONL file for troubleshooting.",
+      "title": "Export Application Log"
+    },
     "hoverShowMetadata": "Show cell metadata on hover",
     "marginSize": {
       "narrow": "Narrow",

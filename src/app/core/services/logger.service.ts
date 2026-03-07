@@ -41,6 +41,11 @@ const LOG_LEVEL_PRIORITY = {
 };
 
 /**
+ * Maximum number of log entries to retain in the ring buffer
+ */
+const LOG_BUFFER_SIZE = 1500;
+
+/**
  * URL query parameters that should be redacted in logs
  */
 const SENSITIVE_URL_PARAMS = ['access_token', 'token', 'refresh_token', 'api_key', 'apikey'];
@@ -51,8 +56,20 @@ const SENSITIVE_URL_PARAMS = ['access_token', 'token', 'refresh_token', 'api_key
 const REDACTION_VISIBLE_CHARS = 4;
 
 /**
+ * Structured log entry stored in the ring buffer
+ */
+export interface LogEntry {
+  timestamp: string;
+  level: LogLevel;
+  message: string;
+  params?: unknown[];
+}
+
+/**
  * A service for standardized application logging
- * Logs are formatted with ISO8601 timestamps and configurable log levels
+ * Logs are formatted with ISO8601 timestamps and configurable log levels.
+ * All log calls (regardless of console log level) are captured in a ring buffer
+ * for export and bug reporting.
  */
 @Injectable({
   providedIn: 'root',
@@ -61,6 +78,9 @@ export class LoggerService {
   // Private members
   private logLevel: LogLevel;
   private debugComponents: Set<string>;
+  private buffer: LogEntry[] = [];
+  private bufferIndex = 0;
+  private bufferWrapped = false;
 
   constructor() {
     // Get log level from environment, default to ERROR if not set
@@ -86,8 +106,9 @@ export class LoggerService {
    * Log a debug message
    */
   debug(message: string, ...optionalParams: unknown[]): void {
+    const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
+    this.bufferEntry(LogLevel.DEBUG, message, redactedParams);
     if (this.shouldLog(LogLevel.DEBUG)) {
-      const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
       console.debug(this.formatMessage(LogLevel.DEBUG, message), ...redactedParams);
     }
   }
@@ -98,16 +119,14 @@ export class LoggerService {
    * regardless of the global log level
    */
   debugComponent(component: string, message: string, ...optionalParams: unknown[]): void {
+    const sanitizedComponent = this.sanitizeForLog(component);
+    const sanitizedMessage = this.sanitizeForLog(message);
+    const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
+    const formattedMessage = `[${sanitizedComponent}] ${sanitizedMessage}`;
+    this.bufferEntry(LogLevel.DEBUG, formattedMessage, redactedParams);
     if (this.shouldLogComponent(component, LogLevel.DEBUG)) {
-      // Sanitize inputs to remove control characters that could be used for log injection
-      const sanitizedComponent = this.sanitizeForLog(component);
-      const sanitizedMessage = this.sanitizeForLog(message);
-      const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
       // lgtm[js/log-injection] - inputs are sanitized above via sanitizeForLog()
-      console.debug(
-        this.formatMessage(LogLevel.DEBUG, `[${sanitizedComponent}] ${sanitizedMessage}`),
-        ...redactedParams,
-      );
+      console.debug(this.formatMessage(LogLevel.DEBUG, formattedMessage), ...redactedParams);
     }
   }
 
@@ -115,8 +134,9 @@ export class LoggerService {
    * Log an info message
    */
   info(message: string, ...optionalParams: unknown[]): void {
+    const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
+    this.bufferEntry(LogLevel.INFO, message, redactedParams);
     if (this.shouldLog(LogLevel.INFO)) {
-      const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
       console.info(this.formatMessage(LogLevel.INFO, message), ...redactedParams);
     }
   }
@@ -125,8 +145,9 @@ export class LoggerService {
    * Log a warning message
    */
   warn(message: string, ...optionalParams: unknown[]): void {
+    const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
+    this.bufferEntry(LogLevel.WARN, message, redactedParams);
     if (this.shouldLog(LogLevel.WARN)) {
-      const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
       console.warn(this.formatMessage(LogLevel.WARN, message), ...redactedParams);
     }
   }
@@ -135,10 +156,67 @@ export class LoggerService {
    * Log an error message
    */
   error(message: string, ...optionalParams: unknown[]): void {
+    const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
+    this.bufferEntry(LogLevel.ERROR, message, redactedParams);
     if (this.shouldLog(LogLevel.ERROR)) {
-      const redactedParams = optionalParams.map(p => this.redactSensitiveData(p));
       console.error(this.formatMessage(LogLevel.ERROR, message), ...redactedParams);
     }
+  }
+
+  /**
+   * Returns a copy of the buffered log entries in chronological order
+   */
+  getLogEntries(): LogEntry[] {
+    if (this.bufferWrapped) {
+      return [...this.buffer.slice(this.bufferIndex), ...this.buffer.slice(0, this.bufferIndex)];
+    }
+    return this.buffer.slice(0, this.bufferIndex);
+  }
+
+  /**
+   * Exports all buffered log entries as a JSONL string (one JSON object per line)
+   */
+  exportAsJsonl(): string {
+    return this.getLogEntries()
+      .map(entry => JSON.stringify(entry))
+      .join('\n');
+  }
+
+  /**
+   * Downloads the buffered log entries as a JSONL file
+   */
+  downloadLog(): void {
+    const jsonl = this.exportAsJsonl();
+    const blob = new Blob([jsonl], { type: 'application/jsonl' });
+    const url = URL.createObjectURL(blob);
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `tmi-log-${timestamp}.jsonl`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  /**
+   * Appends a log entry to the ring buffer.
+   * Always captures regardless of current console log level.
+   */
+  private bufferEntry(level: LogLevel, message: string, params: unknown[]): void {
+    const entry: LogEntry = {
+      timestamp: new Date().toISOString(),
+      level,
+      message,
+    };
+    if (params.length > 0) {
+      entry.params = params;
+    }
+    if (this.buffer.length < LOG_BUFFER_SIZE) {
+      this.buffer.push(entry);
+    } else {
+      this.buffer[this.bufferIndex] = entry;
+      this.bufferWrapped = true;
+    }
+    this.bufferIndex = (this.bufferIndex + 1) % LOG_BUFFER_SIZE;
   }
 
   /**

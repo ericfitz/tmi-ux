@@ -419,6 +419,17 @@ interface CheckboxChangeEvent {
         <mat-tab [label]="'userPreferences.tabs.danger' | transloco">
           <div class="tab-content danger-tab">
             <div class="preference-item">
+              <button mat-raised-button (click)="onExportLog()" class="export-log-button">
+                <mat-icon>download</mat-icon>
+                <span [transloco]="'userPreferences.exportLog.title'">Export Application Log</span>
+              </button>
+              <p class="danger-hint" [transloco]="'userPreferences.exportLog.hint'">
+                Downloads the most recent application log entries as a JSONL file for
+                troubleshooting.
+              </p>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="preference-item">
               <button
                 mat-raised-button
                 color="warn"
@@ -692,6 +703,19 @@ interface CheckboxChangeEvent {
         padding-top: 8px;
       }
 
+      .export-log-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .export-log-button mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+      }
+
       .transfer-button {
         display: flex;
         align-items: center;
@@ -807,6 +831,10 @@ export class UserPreferencesDialogComponent implements OnInit {
   onHoverShowMetadataChange(event: CheckboxChangeEvent): void {
     this.preferences.hoverShowMetadata = event.checked;
     this.userPreferencesService.updatePreferences({ hoverShowMetadata: event.checked });
+  }
+
+  onExportLog(): void {
+    this.logger.downloadLog();
   }
 
   onTransferData(): void {

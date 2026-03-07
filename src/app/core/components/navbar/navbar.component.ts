@@ -32,6 +32,7 @@ import {
 import { WebSocketAdapter, WebSocketState } from '../../services/websocket.adapter';
 import { DfdCollaborationService } from '../../services/dfd-collaboration.service';
 import { TranslocoService } from '@jsverse/transloco';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from '../../../../environments/environment';
 import { BrandingConfigService } from '../../services/branding-config.service';
 
@@ -102,6 +103,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private webSocketAdapter: WebSocketAdapter,
     private collaborationService: DfdCollaborationService,
     private translocoService: TranslocoService,
+    private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
   ) {
     // Get available languages
@@ -386,9 +388,48 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Open the feedback URL in a new browser window
+   * Open the general feedback URL in a new browser window
    */
   openFeedbackUrl(): void {
+    window.open('https://github.com/ericfitz/tmi-ux/issues/new', '_blank');
+  }
+
+  /**
+   * Copy application log to clipboard and open a pre-filled bug report issue
+   */
+  reportBug(): void {
+    const jsonl = this.logger.exportAsJsonl();
+
+    navigator.clipboard.writeText(jsonl).then(
+      () => {
+        this.snackBar.open(
+          this.translocoService.translate('navbar.feedbackMenu.reportBugCopied'),
+          undefined,
+          { duration: 5000 },
+        );
+      },
+      () => {
+        this.logger.warn('Failed to copy log to clipboard, falling back to download');
+        this.logger.downloadLog();
+      },
+    );
+
+    const title = encodeURIComponent('bug: ');
+    const body = encodeURIComponent(
+      '## Description\n\nDescribe the bug here.\n\n## Steps to Reproduce\n\n1. \n2. \n3. \n\n' +
+        '## Application Log\n\nPlease paste the application log from your clipboard below, ' +
+        'or attach the downloaded JSONL file.\n\n```\n(paste log here)\n```\n',
+    );
+    window.open(
+      `https://github.com/ericfitz/tmi-ux/issues/new?title=${title}&body=${body}&labels=bug`,
+      '_blank',
+    );
+  }
+
+  /**
+   * Open a pre-filled feature request issue
+   */
+  requestFeature(): void {
     window.open('https://github.com/ericfitz/tmi-ux/issues/new', '_blank');
   }
 }
