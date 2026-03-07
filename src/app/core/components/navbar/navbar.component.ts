@@ -81,8 +81,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   contextMenuPosition = { x: '0px', y: '0px' };
 
   // Subscriptions
-  private authSubscription: Subscription | null = null;
-  private usernameSubscription: Subscription | null = null;
   private languageSubscription: Subscription | null = null;
   private serverConnectionSubscription: Subscription | null = null;
   private webSocketConnectionSubscription: Subscription | null = null;
@@ -114,20 +112,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     // Initialize current page state
     this.isOnDfdPage = this.router.url.includes('/dfd');
 
-    // Subscribe to auth state
-    this.authSubscription = this.authService.isAuthenticated$.subscribe(isAuthenticated => {
-      this.isAuthenticated = isAuthenticated;
-      this.updateHomeLink();
-    });
-
-    // Subscribe to username
-    this.usernameSubscription = this.authService.username$.subscribe(username => {
-      this.username = username;
-      this.loadUserEmail();
-    });
-
-    // Subscribe to user profile for role-based nav button states
+    // Subscribe to user profile — single source of truth for auth state, username, and roles
     this.userProfileSubscription = this.authService.userProfile$.subscribe(profile => {
+      this.isAuthenticated = profile !== null;
+      this.username = profile?.display_name || '';
+      this.userEmail = profile?.email || '';
       this.isAdmin = profile?.is_admin === true;
       this.isSecurityReviewer = profile?.is_security_reviewer === true;
       this.updateHomeLink();
@@ -170,14 +159,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     // Clean up subscriptions
-    if (this.authSubscription) {
-      this.authSubscription.unsubscribe();
-    }
-
-    if (this.usernameSubscription) {
-      this.usernameSubscription.unsubscribe();
-    }
-
     if (this.languageSubscription) {
       this.languageSubscription.unsubscribe();
     }
@@ -225,12 +206,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (lang.code !== this.currentLanguage.code) {
       this.languageService.setLanguage(lang.code);
     }
-  }
-
-  private loadUserEmail(): void {
-    // Use auth service's userEmail getter instead of parsing localStorage directly
-    // The auth service handles encrypted user profiles properly
-    this.userEmail = this.authService.userEmail;
   }
 
   openUserPreferences(): void {

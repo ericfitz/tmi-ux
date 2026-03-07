@@ -29,10 +29,7 @@ describe('NavbarComponent', () => {
     navigate: ReturnType<typeof vi.fn>;
   };
   let mockAuthService: {
-    isAuthenticated$: BehaviorSubject<boolean>;
-    username$: BehaviorSubject<string>;
     userProfile$: BehaviorSubject<unknown>;
-    userEmail: string;
     logout: ReturnType<typeof vi.fn>;
     getLandingPage: ReturnType<typeof vi.fn>;
   };
@@ -76,10 +73,7 @@ describe('NavbarComponent', () => {
     };
 
     mockAuthService = {
-      isAuthenticated$: new BehaviorSubject(false),
-      username$: new BehaviorSubject(''),
       userProfile$: new BehaviorSubject(null),
-      userEmail: 'user@example.com',
       logout: vi.fn(),
       getLandingPage: vi.fn().mockReturnValue('/dashboard'),
     };
@@ -171,32 +165,56 @@ describe('NavbarComponent', () => {
   });
 
   describe('ngOnInit', () => {
-    it('should subscribe to auth state', () => {
+    it('should set isAuthenticated from user profile', () => {
       component.ngOnInit();
 
-      mockAuthService.isAuthenticated$.next(true);
+      mockAuthService.userProfile$.next({
+        display_name: 'John Doe',
+        email: 'john@example.com',
+        is_admin: false,
+        is_security_reviewer: false,
+      });
       expect(component.isAuthenticated).toBe(true);
+
+      mockAuthService.userProfile$.next(null);
+      expect(component.isAuthenticated).toBe(false);
     });
 
-    it('should subscribe to username', () => {
+    it('should derive username and email from user profile', () => {
       component.ngOnInit();
 
-      mockAuthService.username$.next('John Doe');
+      mockAuthService.userProfile$.next({
+        display_name: 'John Doe',
+        email: 'john@example.com',
+        is_admin: false,
+        is_security_reviewer: false,
+      });
       expect(component.username).toBe('John Doe');
+      expect(component.userEmail).toBe('john@example.com');
     });
 
-    it('should subscribe to user profile for admin flag', () => {
+    it('should derive admin flag from user profile', () => {
       component.ngOnInit();
 
-      mockAuthService.userProfile$.next({ is_admin: true, is_security_reviewer: false });
+      mockAuthService.userProfile$.next({
+        display_name: 'Admin',
+        email: 'admin@example.com',
+        is_admin: true,
+        is_security_reviewer: false,
+      });
       expect(component.isAdmin).toBe(true);
       expect(component.isSecurityReviewer).toBe(false);
     });
 
-    it('should subscribe to user profile for security reviewer flag', () => {
+    it('should derive security reviewer flag from user profile', () => {
       component.ngOnInit();
 
-      mockAuthService.userProfile$.next({ is_admin: false, is_security_reviewer: true });
+      mockAuthService.userProfile$.next({
+        display_name: 'Reviewer',
+        email: 'reviewer@example.com',
+        is_admin: false,
+        is_security_reviewer: true,
+      });
       expect(component.isSecurityReviewer).toBe(true);
     });
 
