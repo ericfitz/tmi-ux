@@ -188,6 +188,18 @@ describe('ServerConnectionService', () => {
       expect(detailed.consecutiveFailures).toBeGreaterThan(0);
       expect(detailed.isServerReachable).toBe(false);
     });
+
+    it('should handle lowercase status code from server', async () => {
+      const lowercaseResponse = {
+        ...mockHealthResponse,
+        status: { code: 'ok' as const, time: '2024-01-01T00:00:00Z' },
+      };
+      mockHttpClient.get.mockReturnValue(of(lowercaseResponse));
+
+      await vi.advanceTimersByTimeAsync(1);
+
+      expect(service.currentStatus).toBe(ServerConnectionStatus.CONNECTED);
+    });
   });
 
   describe('checkServerConnectivity()', () => {

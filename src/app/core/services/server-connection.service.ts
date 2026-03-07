@@ -364,7 +364,7 @@ export class ServerConnectionService implements OnDestroy {
 
     return this.http.get<ServerHealthResponse>(statusEndpoint).pipe(
       map(response => {
-        const statusCode = response.status?.code;
+        const statusCode = response.status?.code?.toUpperCase();
 
         // Store server version from health response regardless of status
         if (response.service?.build) {
@@ -404,8 +404,6 @@ export class ServerConnectionService implements OnDestroy {
             status: ServerConnectionStatus.DEGRADED,
           });
 
-          // Reset backoff delay since server is reachable
-          this.resetBackoffDelay();
           this._healthCheckNeeded = true;
         } else {
           // ERROR status or unknown status code
@@ -423,8 +421,6 @@ export class ServerConnectionService implements OnDestroy {
             status: ServerConnectionStatus.ERROR,
           });
 
-          // Reset backoff delay since server is reachable
-          this.resetBackoffDelay();
           this._healthCheckNeeded = true;
         }
       }),
@@ -611,12 +607,12 @@ export class ServerConnectionService implements OnDestroy {
    */
   private getHealthCheckDelay(): number {
     const currentStatus = this._connectionStatus$.value;
-    if (currentStatus === ServerConnectionStatus.CONNECTED) {
-      // Use normal interval when connected
-      return this.HEALTH_CHECK_INTERVAL;
-    } else {
-      // Use current backoff delay when not connected
+    if (currentStatus === ServerConnectionStatus.OFFLINE) {
+      // Use backoff delay only when server is unreachable
       return this._currentBackoffDelay;
+    } else {
+      // Use normal interval when server is reachable (CONNECTED, DEGRADED, ERROR)
+      return this.HEALTH_CHECK_INTERVAL;
     }
   }
 
