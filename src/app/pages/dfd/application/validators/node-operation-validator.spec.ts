@@ -49,7 +49,7 @@ describe('NodeOperationValidator', () => {
       graph,
       diagramId: 'diagram-1',
       threatModelId: 'tm-1',
-      userId: 'user-1',
+      providerId: 'user-1',
       isCollaborating: false,
       permissions: [],
       ...overrides,

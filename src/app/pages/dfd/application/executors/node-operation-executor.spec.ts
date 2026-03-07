@@ -45,7 +45,7 @@ describe('NodeOperationExecutor', () => {
       graph: mockGraph,
       diagramId: 'test-diagram',
       threatModelId: 'test-tm',
-      userId: 'test-user',
+      providerId: 'test-user',
       isCollaborating: false,
       permissions: ['read', 'write'],
       suppressValidation: false,

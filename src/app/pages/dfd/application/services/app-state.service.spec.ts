@@ -170,7 +170,7 @@ describe('AppStateService', () => {
       service.initialize();
 
       mockEventProcessor.diagramOperations$.next({
-        userId: 'user1',
+        email: 'user1',
         displayName: 'User One',
         operationId: 'op1',
         operations: [{ type: 'add', id: 'cell1' }],
@@ -408,7 +408,7 @@ describe('AppStateService', () => {
       service.applyBatchedOperationsEvents$.subscribe(op => batchedOps.push(op));
 
       mockEventProcessor.diagramOperations$.next({
-        userId: 'user1',
+        email: 'user1',
         displayName: 'User One',
         operationId: 'op1',
         operations: [{ type: 'add', id: 'cell1' }],
@@ -417,7 +417,7 @@ describe('AppStateService', () => {
       expect(batchedOps).toHaveLength(1);
       expect(batchedOps[0]).toMatchObject({
         operations: [{ type: 'add', id: 'cell1' }],
-        userId: 'user1',
+        email: 'user1',
         displayName: 'User One',
         operationId: 'op1',
       });
@@ -425,7 +425,7 @@ describe('AppStateService', () => {
 
     it('should add to pending remote operations', () => {
       mockEventProcessor.diagramOperations$.next({
-        userId: 'user1',
+        email: 'user1',
         displayName: 'User One',
         operationId: 'op1',
         operations: [{ type: 'add', id: 'cell1' }],
@@ -438,7 +438,7 @@ describe('AppStateService', () => {
 
     it('should update last operation ID', () => {
       mockEventProcessor.diagramOperations$.next({
-        userId: 'user1',
+        email: 'user1',
         displayName: 'User One',
         operationId: 'op1',
         operations: [{ type: 'add', id: 'cell1' }],
@@ -456,7 +456,7 @@ describe('AppStateService', () => {
       });
 
       mockEventProcessor.diagramOperations$.next({
-        userId: 'user1',
+        email: 'user1',
         displayName: 'User One',
         operationId: 'op1',
         operations: [],
@@ -468,7 +468,7 @@ describe('AppStateService', () => {
 
     it('should not go below 0 pending operations', () => {
       mockEventProcessor.diagramOperations$.next({
-        userId: 'user1',
+        email: 'user1',
         displayName: 'User One',
         operationId: 'op1',
         operations: [],
@@ -480,7 +480,7 @@ describe('AppStateService', () => {
 
     it('should skip duplicate operations', () => {
       mockEventProcessor.diagramOperations$.next({
-        userId: 'user1',
+        email: 'user1',
         displayName: 'User One',
         operationId: 'op1',
         operations: [{ type: 'add', id: 'cell1' }],
@@ -490,7 +490,7 @@ describe('AppStateService', () => {
       const opCount1 = state1.pendingRemoteOperations.length;
 
       mockEventProcessor.diagramOperations$.next({
-        userId: 'user1',
+        email: 'user1',
         displayName: 'User One',
         operationId: 'op1',
         operations: [{ type: 'add', id: 'cell1' }],
@@ -504,7 +504,7 @@ describe('AppStateService', () => {
       const beforeTimestamp = Date.now();
 
       mockEventProcessor.diagramOperations$.next({
-        userId: 'user1',
+        email: 'user1',
         displayName: 'User One',
         operationId: 'op1',
         operations: [],
@@ -627,7 +627,7 @@ describe('AppStateService', () => {
       service.initialize();
 
       mockEventProcessor.diagramOperations$.next({
-        userId: 'user1',
+        email: 'user1',
         displayName: 'User One',
         operationId: 'op1',
         operations: [],
@@ -672,7 +672,7 @@ describe('AppStateService', () => {
 
     it('should remove operation from pending list', () => {
       mockEventProcessor.diagramOperations$.next({
-        userId: 'user1',
+        email: 'user1',
         displayName: 'User One',
         operationId: 'op1',
         operations: [],
@@ -686,14 +686,14 @@ describe('AppStateService', () => {
 
     it('should not affect other operations', () => {
       mockEventProcessor.diagramOperations$.next({
-        userId: 'user1',
+        email: 'user1',
         displayName: 'User One',
         operationId: 'op1',
         operations: [],
       });
 
       mockEventProcessor.diagramOperations$.next({
-        userId: 'user2',
+        email: 'user2',
         displayName: 'User Two',
         operationId: 'op2',
         operations: [],
@@ -756,7 +756,7 @@ describe('AppStateService', () => {
 
       // Emit after destroy - should not be received
       mockEventProcessor.diagramOperations$.next({
-        userId: 'user1',
+        email: 'user1',
         displayName: 'User One',
         operationId: 'op1',
         operations: [],

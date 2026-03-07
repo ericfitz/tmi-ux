@@ -291,7 +291,7 @@ describe('DFD Architecture Integration', () => {
       // Create context
       const context: AutoSaveContext = {
         diagramId: 'test-diagram',
-        userId: 'test-user',
+        providerId: 'test-user',
         diagramData: { nodes: [], edges: [] },
         preferredStrategy: 'test-strategy',
       };
@@ -676,7 +676,7 @@ describe('DFD Architecture Integration', () => {
         graph: slowMockGraph,
         diagramId: 'timeout-test',
         threatModelId: 'test-tm',
-        userId: 'test-user',
+        providerId: 'test-user',
         isCollaborating: false,
         permissions: ['read', 'write'],
         suppressValidation: false,

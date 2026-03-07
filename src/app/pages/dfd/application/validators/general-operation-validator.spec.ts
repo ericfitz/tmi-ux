@@ -33,7 +33,7 @@ describe('GeneralOperationValidator', () => {
       graph: {}, // Non-null graph
       diagramId: 'diagram-1',
       threatModelId: 'tm-1',
-      userId: 'user-1',
+      providerId: 'user-1',
       isCollaborating: false,
       permissions: [],
       ...overrides,
@@ -103,17 +103,19 @@ describe('GeneralOperationValidator', () => {
       expect(result.errors.some((e: string) => e.includes('graph instance'))).toBe(true);
     });
 
-    it('should reject empty-string userId', () => {
-      const result = validator.validate(baseOperation(), baseContext({ userId: '  ' }));
+    it('should reject empty-string providerId', () => {
+      const result = validator.validate(baseOperation(), baseContext({ providerId: '  ' }));
       expect(result.valid).toBe(false);
-      expect(result.errors.some((e: string) => e.includes('User ID must be a non-empty'))).toBe(
-        true,
-      );
+      expect(
+        result.errors.some((e: string) => e.includes('Provider ID must be a non-empty')),
+      ).toBe(true);
     });
 
-    it('should warn when userId is missing', () => {
-      const result = validator.validate(baseOperation(), baseContext({ userId: undefined }));
-      expect(result.warnings.some((w: string) => w.includes('User ID not provided'))).toBe(true);
+    it('should warn when providerId is missing', () => {
+      const result = validator.validate(baseOperation(), baseContext({ providerId: undefined }));
+      expect(result.warnings.some((w: string) => w.includes('Provider ID not provided'))).toBe(
+        true,
+      );
     });
 
     it('should warn when diagramId is missing', () => {
@@ -200,8 +202,8 @@ describe('GeneralOperationValidator', () => {
         baseOperation({ source: 'remote-collaboration' }),
         baseContext({
           isCollaborating: true,
-          userId: 'user-1',
-          originUserId: 'user-1',
+          providerId: 'user-1',
+          originProviderId: 'user-1',
           permissions: ['write'],
         }),
       );
