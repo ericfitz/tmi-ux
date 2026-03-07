@@ -417,8 +417,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
     const title = encodeURIComponent('bug: ');
     const body = encodeURIComponent(
       '## Description\n\nDescribe the bug here.\n\n## Steps to Reproduce\n\n1. \n2. \n3. \n\n' +
-        '## Application Log\n\nPlease paste the application log from your clipboard below, ' +
-        'or attach the downloaded JSONL file.\n\n```\n(paste log here)\n```\n',
+        '## Application Log\n\nThe application log has been copied to your clipboard. ' +
+        'Please paste it below, between the tick marks. Alternatively, if you downloaded ' +
+        'the application log file from the preferences dialog, please attach the file to ' +
+        'this issue.\n\n```\n(paste log here)\n```\n',
     );
     window.open(
       `https://github.com/ericfitz/tmi-ux/issues/new?title=${title}&body=${body}&labels=bug`,
