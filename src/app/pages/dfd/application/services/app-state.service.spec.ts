@@ -559,9 +559,9 @@ describe('AppStateService', () => {
     });
 
     it('should update collaboration service with participants', () => {
-      const participants = [{ userId: 'user1' }, { userId: 'user2' }];
-      const host = { userId: 'host1' };
-      const currentPresenter = { userId: 'presenter1' };
+      const participants = [{ provider_id: 'user1' }, { provider_id: 'user2' }];
+      const host = { provider_id: 'host1' };
+      const currentPresenter = { provider_id: 'presenter1' };
 
       mockEventProcessor.participantsUpdates$.next({
         participants,
@@ -577,7 +577,7 @@ describe('AppStateService', () => {
     });
 
     it('should log participants update', () => {
-      const participants = [{ userId: 'user1' }];
+      const participants = [{ provider_id: 'user1' }];
 
       mockEventProcessor.participantsUpdates$.next({
         participants,

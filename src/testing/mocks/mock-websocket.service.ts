@@ -32,7 +32,7 @@ export class MockWebSocketService {
   private _connected = new BehaviorSubject<boolean>(false);
   private _messages = new Subject<WebSocketMessage>();
   private _connectedUsers = new BehaviorSubject<ConnectedUser[]>([]);
-  private _currentUserId = 'current-user-id';
+  private _currentProviderId = 'current-user-id';
   private _currentUserName = 'Current User';
 
   /**
@@ -57,10 +57,10 @@ export class MockWebSocketService {
   }
 
   /**
-   * Get the current user ID
+   * Get the current provider ID
    */
-  get currentUserId(): string {
-    return this._currentUserId;
+  get currentProviderId(): string {
+    return this._currentProviderId;
   }
 
   /**
@@ -71,10 +71,10 @@ export class MockWebSocketService {
   }
 
   /**
-   * Set the current user ID
+   * Set the current provider ID
    */
-  set currentUserId(id: string) {
-    this._currentUserId = id;
+  set currentProviderId(id: string) {
+    this._currentProviderId = id;
   }
 
   /**
@@ -95,7 +95,7 @@ export class MockWebSocketService {
       this._connected.next(true);
 
       // Simulate user joined message
-      this.simulateUserJoined(this._currentUserId, this._currentUserName, 'owner');
+      this.simulateUserJoined(this._currentProviderId, this._currentUserName, 'owner');
     }, 100);
   }
 
@@ -106,7 +106,7 @@ export class MockWebSocketService {
     this._connected.next(false);
 
     // Remove current user from connected users
-    const users = this._connectedUsers.value.filter(user => user.id !== this._currentUserId);
+    const users = this._connectedUsers.value.filter(user => user.id !== this._currentProviderId);
     this._connectedUsers.next(users);
   }
 
@@ -123,7 +123,7 @@ export class MockWebSocketService {
     // Add user ID, name, and timestamp if not provided
     const fullMessage: WebSocketMessage = {
       ...message,
-      userId: message.userId || this._currentUserId,
+      userId: message.userId || this._currentProviderId,
       userName: message.userName || this._currentUserName,
       timestamp: message.timestamp || Date.now(),
     };

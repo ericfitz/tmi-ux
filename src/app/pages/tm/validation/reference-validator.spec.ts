@@ -202,10 +202,10 @@ describe('InternalReferenceValidator', () => {
   });
 
   describe('cross-references — owner in authorization', () => {
-    it('should never fire OWNER_NOT_IN_AUTHORIZATION (buildReferenceMap adds owner to userIds)', () => {
+    it('should never fire OWNER_NOT_IN_AUTHORIZATION (buildReferenceMap adds owner to principalKeys)', () => {
       // BUG DOCUMENTATION: buildReferenceMap() always adds owner's composite key
-      // to referenceMap.userIds (line 112), then validateCrossReferences() checks
-      // if ownerCompositeKey is in userIds — it always is, making this warning
+      // to referenceMap.principalKeys (line 112), then validateCrossReferences() checks
+      // if ownerCompositeKey is in principalKeys — it always is, making this warning
       // impossible to trigger. The check is dead code.
       const tm = validThreatModel({
         owner: validPrincipal({ provider: 'external', provider_id: 'ext-user' }),
@@ -219,7 +219,7 @@ describe('InternalReferenceValidator', () => {
         ],
       });
       const errors = validator.validateReferences(tm, baseContext);
-      // The warning can never fire because owner is always in userIds
+      // The warning can never fire because owner is always in principalKeys
       expect(hasError(errors, 'OWNER_NOT_IN_AUTHORIZATION')).toBe(false);
     });
 
@@ -241,9 +241,9 @@ describe('InternalReferenceValidator', () => {
   });
 
   describe('cross-references — creator in authorization', () => {
-    it('should never fire CREATOR_NOT_IN_AUTHORIZATION (buildReferenceMap adds created_by to userIds)', () => {
+    it('should never fire CREATOR_NOT_IN_AUTHORIZATION (buildReferenceMap adds created_by to principalKeys)', () => {
       // BUG DOCUMENTATION: Same as owner — buildReferenceMap() always adds
-      // created_by's composite key to referenceMap.userIds (line 115-117),
+      // created_by's composite key to referenceMap.principalKeys (line 115-117),
       // making the CREATOR_NOT_IN_AUTHORIZATION check dead code.
       const tm = validThreatModel({
         created_by: validPrincipal({ provider: 'old-provider', provider_id: 'old-user' }),

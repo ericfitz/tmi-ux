@@ -595,7 +595,7 @@ describe('InfraVisualEffectsService', () => {
 
     it('should use white text on dark backgrounds', () => {
       const cell = createMockCellWithBBox('node1');
-      // Force a dark color by finding a userId that maps to Blue (0, 114, 178)
+      // Force a dark color by finding an email that maps to Blue (0, 114, 178)
       // We test the private helper directly via observable behavior
       service.showUserLabel(cell as unknown as Cell, mockGraph, 'user-1', 'Alice');
 

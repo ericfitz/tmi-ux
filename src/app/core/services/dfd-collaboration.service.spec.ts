@@ -221,16 +221,16 @@ describe('DfdCollaborationService', () => {
     });
   });
 
-  describe('getCurrentUserId()', () => {
+  describe('getCurrentProviderId()', () => {
     it('should return provider_id from user profile', () => {
-      const userId = service.getCurrentUserId();
-      expect(userId).toBe('google-123');
+      const providerId = service.getCurrentProviderId();
+      expect(providerId).toBe('google-123');
     });
 
     it('should return null when no user profile', () => {
       (mockAuthService as { userProfile: { display_name: string } | null }).userProfile = null;
-      const userId = service.getCurrentUserId();
-      expect(userId).toBeNull();
+      const providerId = service.getCurrentProviderId();
+      expect(providerId).toBeNull();
     });
   });
 

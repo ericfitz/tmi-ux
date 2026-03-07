@@ -106,9 +106,9 @@ describe('GeneralOperationValidator', () => {
     it('should reject empty-string providerId', () => {
       const result = validator.validate(baseOperation(), baseContext({ providerId: '  ' }));
       expect(result.valid).toBe(false);
-      expect(
-        result.errors.some((e: string) => e.includes('Provider ID must be a non-empty')),
-      ).toBe(true);
+      expect(result.errors.some((e: string) => e.includes('Provider ID must be a non-empty'))).toBe(
+        true,
+      );
     });
 
     it('should warn when providerId is missing', () => {

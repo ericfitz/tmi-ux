@@ -34,10 +34,10 @@ describe('QuotaService', () => {
   };
 
   // Test data
-  const testUserId = 'user-123';
+  const testInternalUuid = 'user-123';
 
   const mockUserAPIQuota: UserAPIQuota = {
-    user_id: testUserId,
+    user_id: testInternalUuid,
     requests_per_day: 1000,
     requests_per_hour: 100,
     created_at: '2024-01-01T00:00:00Z',
@@ -45,7 +45,7 @@ describe('QuotaService', () => {
   };
 
   const mockWebhookQuota: WebhookQuota = {
-    owner_id: testUserId,
+    owner_id: testInternalUuid,
     max_webhooks: 10,
     max_deliveries_per_day: 1000,
     created_at: '2024-01-01T00:00:00Z',
@@ -53,7 +53,7 @@ describe('QuotaService', () => {
   };
 
   const mockAdminUser: AdminUser = {
-    internal_uuid: testUserId,
+    internal_uuid: testInternalUuid,
     provider: 'google',
     provider_user_id: 'google-123',
     email: 'test@example.com',
@@ -107,7 +107,7 @@ describe('QuotaService', () => {
     it('should call API with correct endpoint', () => {
       mockApiService.get.mockReturnValue(of(mockUserAPIQuota));
 
-      service.getUserAPIQuota(testUserId).subscribe(quota => {
+      service.getUserAPIQuota(testInternalUuid).subscribe(quota => {
         expect(mockApiService.get).toHaveBeenCalledWith('/admin/quotas/users/user-123');
         expect(quota).toEqual(mockUserAPIQuota);
       });
@@ -117,7 +117,7 @@ describe('QuotaService', () => {
       const error = new Error('Not found');
       mockApiService.get.mockReturnValue(throwError(() => error));
 
-      service.getUserAPIQuota(testUserId).subscribe({
+      service.getUserAPIQuota(testInternalUuid).subscribe({
         error: err => {
           expect(err).toBe(error);
         },
@@ -130,7 +130,7 @@ describe('QuotaService', () => {
       const updateData = { requests_per_day: 2000 };
       mockApiService.put.mockReturnValue(of(mockUserAPIQuota));
 
-      service.updateUserAPIQuota(testUserId, updateData).subscribe(quota => {
+      service.updateUserAPIQuota(testInternalUuid, updateData).subscribe(quota => {
         expect(mockApiService.put).toHaveBeenCalledWith('/admin/quotas/users/user-123', updateData);
         expect(quota).toEqual(mockUserAPIQuota);
       });
@@ -141,7 +141,7 @@ describe('QuotaService', () => {
     it('should call API with correct endpoint', () => {
       mockApiService.delete.mockReturnValue(of(undefined));
 
-      service.deleteUserAPIQuota(testUserId).subscribe(() => {
+      service.deleteUserAPIQuota(testInternalUuid).subscribe(() => {
         expect(mockApiService.delete).toHaveBeenCalledWith('/admin/quotas/users/user-123');
       });
     });
@@ -151,7 +151,7 @@ describe('QuotaService', () => {
     it('should call API with correct endpoint', () => {
       mockApiService.get.mockReturnValue(of(mockWebhookQuota));
 
-      service.getWebhookQuota(testUserId).subscribe(quota => {
+      service.getWebhookQuota(testInternalUuid).subscribe(quota => {
         expect(mockApiService.get).toHaveBeenCalledWith('/admin/quotas/webhooks/user-123');
         expect(quota).toEqual(mockWebhookQuota);
       });
@@ -163,7 +163,7 @@ describe('QuotaService', () => {
       const updateData = { max_webhooks: 20 };
       mockApiService.put.mockReturnValue(of(mockWebhookQuota));
 
-      service.updateWebhookQuota(testUserId, updateData).subscribe(quota => {
+      service.updateWebhookQuota(testInternalUuid, updateData).subscribe(quota => {
         expect(mockApiService.put).toHaveBeenCalledWith(
           '/admin/quotas/webhooks/user-123',
           updateData,
@@ -177,7 +177,7 @@ describe('QuotaService', () => {
     it('should call API with correct endpoint', () => {
       mockApiService.delete.mockReturnValue(of(undefined));
 
-      service.deleteWebhookQuota(testUserId).subscribe(() => {
+      service.deleteWebhookQuota(testInternalUuid).subscribe(() => {
         expect(mockApiService.delete).toHaveBeenCalledWith('/admin/quotas/webhooks/user-123');
       });
     });
@@ -282,7 +282,7 @@ describe('QuotaService', () => {
     it('should call API with correct endpoint', () => {
       mockApiService.get.mockReturnValue(of(mockAdminUser));
 
-      service.getUser(testUserId).subscribe(user => {
+      service.getUser(testInternalUuid).subscribe(user => {
         expect(mockApiService.get).toHaveBeenCalledWith('/admin/users/user-123');
         expect(user).toEqual(mockAdminUser);
       });
@@ -301,7 +301,7 @@ describe('QuotaService', () => {
         return of(null);
       });
 
-      service.getEnrichedUserAPIQuota(testUserId).subscribe(enrichedQuota => {
+      service.getEnrichedUserAPIQuota(testInternalUuid).subscribe(enrichedQuota => {
         expect(enrichedQuota).toEqual({
           ...mockUserAPIQuota,
           provider: 'google',
@@ -324,7 +324,7 @@ describe('QuotaService', () => {
         return of(null);
       });
 
-      service.getEnrichedWebhookQuota(testUserId).subscribe(enrichedQuota => {
+      service.getEnrichedWebhookQuota(testInternalUuid).subscribe(enrichedQuota => {
         expect(enrichedQuota).toEqual({
           ...mockWebhookQuota,
           provider: 'google',
