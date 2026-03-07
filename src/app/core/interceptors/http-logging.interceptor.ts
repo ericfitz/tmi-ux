@@ -29,12 +29,16 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 import { LoggerService } from '../services/logger.service';
+import { ServerConnectionService } from '../services/server-connection.service';
 import { SKIP_ERROR_HANDLING } from '../tokens/http-context.tokens';
 import { redactSensitiveData } from '../utils/redact-sensitive-data.util';
 
 @Injectable()
 export class HttpLoggingInterceptor implements HttpInterceptor {
-  constructor(private logger: LoggerService) {}
+  constructor(
+    private logger: LoggerService,
+    private serverConnectionService: ServerConnectionService,
+  ) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Log the outgoing request (if not excluded)
@@ -54,6 +58,13 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
         if (!request.context.get(SKIP_ERROR_HANDLING)) {
           this.logAndCategorizeError(error, request);
         }
+
+        // Trigger reactive health check on network errors (status 0) or server errors (5xx),
+        // but not for health check requests themselves
+        if ((error.status === 0 || error.status >= 500) && !this.isHealthCheckRequest(request)) {
+          this.serverConnectionService.triggerReactiveHealthCheck();
+        }
+
         return throwError(() => error);
       }),
     );
@@ -181,6 +192,19 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
 
     // Log the categorized error
     this.logger.error(errorMessage, error);
+  }
+
+  /**
+   * Determine if a request is a health check (API root path).
+   * Used to avoid triggering reactive health checks from health check failures.
+   */
+  private isHealthCheckRequest(request: HttpRequest<unknown>): boolean {
+    try {
+      const urlObj = new URL(request.url);
+      return urlObj.pathname === '' || urlObj.pathname === '/';
+    } catch {
+      return false;
+    }
   }
 
   /**

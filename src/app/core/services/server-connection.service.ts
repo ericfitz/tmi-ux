@@ -77,14 +77,20 @@ export class ServerConnectionService implements OnDestroy {
     status: ServerConnectionStatus.NOT_CONFIGURED,
   });
   private _healthCheckSubscription: Subscription | null = null;
-  private readonly HEALTH_CHECK_INTERVAL = 30000; // 30 seconds
+  private readonly HEALTH_CHECK_INTERVAL = 120000; // 2 minutes
   private readonly MIN_BACKOFF_DELAY = 1000; // 1 second
-  private readonly MAX_BACKOFF_DELAY = 30000; // 30 seconds
+  private readonly MAX_BACKOFF_DELAY = 300000; // 5 minutes
   private _currentBackoffDelay = this.MIN_BACKOFF_DELAY;
   private _isMonitoring = false;
-  private _baseRetryDelay = 1000;
-  private _maxRetryInterval = 300000; // 5 minutes
   private _serverVersion: string | null = null;
+
+  /**
+   * Flag indicating whether a reactive health check should be triggered on API failure.
+   * Set to true on startup and after any successful health check.
+   * Set to false when a reactive health check is triggered, preventing pile-up
+   * from multiple concurrent API failures while the server is down.
+   */
+  private _healthCheckNeeded = true;
 
   constructor(
     private http: HttpClient,
@@ -382,6 +388,7 @@ export class ServerConnectionService implements OnDestroy {
 
           // Reset backoff delay on successful connection
           this.resetBackoffDelay();
+          this._healthCheckNeeded = true;
         } else if (statusCode === 'DEGRADED') {
           this.logger.warn('Server status check returned DEGRADED status');
           this._connectionStatus$.next(ServerConnectionStatus.DEGRADED);
@@ -399,6 +406,7 @@ export class ServerConnectionService implements OnDestroy {
 
           // Reset backoff delay since server is reachable
           this.resetBackoffDelay();
+          this._healthCheckNeeded = true;
         } else {
           // ERROR status or unknown status code
           this.logger.warn(`Server status check returned ERROR status: ${statusCode}`);
@@ -417,6 +425,7 @@ export class ServerConnectionService implements OnDestroy {
 
           // Reset backoff delay since server is reachable
           this.resetBackoffDelay();
+          this._healthCheckNeeded = true;
         }
       }),
       catchError((error: HttpErrorResponse) => {
@@ -494,6 +503,7 @@ export class ServerConnectionService implements OnDestroy {
           // Also update simple status
           this._connectionStatus$.next(ServerConnectionStatus.CONNECTED);
           this.resetBackoffDelay();
+          this._healthCheckNeeded = true;
 
           // this.logger.debugComponent('ServerConnection', 'Server ping successful');
         }),
@@ -558,6 +568,28 @@ export class ServerConnectionService implements OnDestroy {
       //   'Connection check skipped - server not configured',
       // );
     }
+  }
+
+  /**
+   * Trigger a reactive health check in response to an API call failure.
+   * Guarded by _healthCheckNeeded flag to prevent pile-up from multiple
+   * concurrent API failures. The flag is set to true only after a successful
+   * health check, so at most one reactive check runs per outage.
+   */
+  triggerReactiveHealthCheck(): void {
+    if (!this._healthCheckNeeded || !this.shouldConnectToServer()) {
+      return;
+    }
+
+    this._healthCheckNeeded = false;
+
+    this.performHealthCheck().subscribe({
+      complete: () => {
+        // Reset the scheduled timer so we don't double-check soon after
+        const nextDelay = this.getHealthCheckDelay();
+        this.scheduleNextHealthCheck(nextDelay);
+      },
+    });
   }
 
   /**

@@ -243,9 +243,9 @@ describe('ServerConnectionService', () => {
 
       await vi.advanceTimersByTimeAsync(1);
 
-      // Then succeed
+      // Then succeed — advance past the backoff delay (min 1s, doubled to 2s after first failure)
       mockHttpClient.get.mockReturnValue(of(mockHealthResponse));
-      await vi.advanceTimersByTimeAsync(30001);
+      await vi.advanceTimersByTimeAsync(2001);
 
       expect(service.wasConnectionRecentlyRestored()).toBe(true);
     });
@@ -292,6 +292,53 @@ describe('ServerConnectionService', () => {
 
       // The error is caught and logged via warn, not error
       expect(mockLoggerService.warn).toHaveBeenCalled();
+    });
+  });
+
+  describe('triggerReactiveHealthCheck()', () => {
+    it('should perform a health check on first call', async () => {
+      mockHttpClient.get.mockReturnValue(of(mockHealthResponse));
+
+      // Advance past initial health check
+      await vi.advanceTimersByTimeAsync(1);
+      const callCountAfterInit = mockHttpClient.get.mock.calls.length;
+
+      service.triggerReactiveHealthCheck();
+
+      // Should have made one additional call
+      expect(mockHttpClient.get.mock.calls.length).toBe(callCountAfterInit + 1);
+    });
+
+    it('should not perform health check on second consecutive call (flag guard)', async () => {
+      const error = new HttpErrorResponse({ status: 500, statusText: 'Server Error' });
+
+      // Advance past initial health check (which fails, so flag stays true)
+      mockHttpClient.get.mockReturnValue(throwError(() => error));
+      await vi.advanceTimersByTimeAsync(1);
+      const callCountAfterInit = mockHttpClient.get.mock.calls.length;
+
+      // First reactive call — should proceed (flag is true)
+      service.triggerReactiveHealthCheck();
+      expect(mockHttpClient.get.mock.calls.length).toBe(callCountAfterInit + 1);
+
+      // Second reactive call — should be suppressed (flag is false)
+      service.triggerReactiveHealthCheck();
+      expect(mockHttpClient.get.mock.calls.length).toBe(callCountAfterInit + 1);
+    });
+
+    it('should re-enable reactive checks after successful health check', async () => {
+      mockHttpClient.get.mockReturnValue(of(mockHealthResponse));
+
+      // Initial health check succeeds, flag is true
+      await vi.advanceTimersByTimeAsync(1);
+
+      // First reactive call (flag is true) — succeeds, flag reset to true
+      service.triggerReactiveHealthCheck();
+
+      // Second reactive call — should also work since previous succeeded
+      const callCountBefore = mockHttpClient.get.mock.calls.length;
+      service.triggerReactiveHealthCheck();
+      expect(mockHttpClient.get.mock.calls.length).toBe(callCountBefore + 1);
     });
   });
 

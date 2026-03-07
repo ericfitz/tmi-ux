@@ -16,6 +16,7 @@ const TEST_API_URL = 'http://test.example.com/api/test';
 describe('HttpLoggingInterceptor', () => {
   let interceptor: HttpLoggingInterceptor;
   let loggerService: any;
+  let serverConnectionService: any;
   let httpHandler: any;
 
   beforeEach(() => {
@@ -24,9 +25,14 @@ describe('HttpLoggingInterceptor', () => {
       error: vi.fn(),
     };
 
+    const serverConnectionServiceMock = {
+      triggerReactiveHealthCheck: vi.fn(),
+    };
+
     // Create interceptor directly without TestBed for simpler testing
     loggerService = loggerServiceMock;
-    interceptor = new HttpLoggingInterceptor(loggerService);
+    serverConnectionService = serverConnectionServiceMock;
+    interceptor = new HttpLoggingInterceptor(loggerService, serverConnectionService);
 
     httpHandler = {
       handle: vi.fn(),
@@ -218,6 +224,68 @@ describe('HttpLoggingInterceptor', () => {
           );
         },
       });
+    });
+  });
+
+  describe('Reactive Health Check', () => {
+    it('should trigger reactive health check on 500 error', () => {
+      const mockRequest = new HttpRequest('GET', TEST_API_URL);
+      const mockError = new HttpErrorResponse({
+        status: 500,
+        statusText: 'Internal Server Error',
+        url: TEST_API_URL,
+      });
+
+      httpHandler.handle.mockReturnValue(throwError(() => mockError));
+
+      interceptor.intercept(mockRequest, httpHandler).subscribe({ error: () => {} });
+
+      expect(serverConnectionService.triggerReactiveHealthCheck).toHaveBeenCalled();
+    });
+
+    it('should trigger reactive health check on network error (status 0)', () => {
+      const mockRequest = new HttpRequest('GET', TEST_API_URL);
+      const mockError = new HttpErrorResponse({
+        status: 0,
+        statusText: 'Unknown Error',
+        url: TEST_API_URL,
+      });
+
+      httpHandler.handle.mockReturnValue(throwError(() => mockError));
+
+      interceptor.intercept(mockRequest, httpHandler).subscribe({ error: () => {} });
+
+      expect(serverConnectionService.triggerReactiveHealthCheck).toHaveBeenCalled();
+    });
+
+    it('should not trigger reactive health check on 4xx errors', () => {
+      const mockRequest = new HttpRequest('GET', TEST_API_URL);
+      const mockError = new HttpErrorResponse({
+        status: 400,
+        statusText: 'Bad Request',
+        url: TEST_API_URL,
+      });
+
+      httpHandler.handle.mockReturnValue(throwError(() => mockError));
+
+      interceptor.intercept(mockRequest, httpHandler).subscribe({ error: () => {} });
+
+      expect(serverConnectionService.triggerReactiveHealthCheck).not.toHaveBeenCalled();
+    });
+
+    it('should not trigger reactive health check for health check requests', () => {
+      const mockRequest = new HttpRequest('GET', 'http://localhost:8080/');
+      const mockError = new HttpErrorResponse({
+        status: 500,
+        statusText: 'Internal Server Error',
+        url: 'http://localhost:8080/',
+      });
+
+      httpHandler.handle.mockReturnValue(throwError(() => mockError));
+
+      interceptor.intercept(mockRequest, httpHandler).subscribe({ error: () => {} });
+
+      expect(serverConnectionService.triggerReactiveHealthCheck).not.toHaveBeenCalled();
     });
   });
 
