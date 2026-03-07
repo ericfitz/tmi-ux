@@ -111,6 +111,7 @@ export class AppStateService implements OnDestroy {
   private readonly _applyBatchedOperationsEvent$ = new Subject<{
     operations: CellOperation[];
     userId: string;
+    displayName: string;
     operationId: string;
   }>();
   private readonly _applyCorrectionEvent$ = new Subject<WSCell[]>();
@@ -339,6 +340,7 @@ export class AppStateService implements OnDestroy {
     this._applyBatchedOperationsEvent$.next({
       operations: operation.operations,
       userId: operation.userId,
+      displayName: operation.displayName,
       operationId: operation.operationId,
     });
 

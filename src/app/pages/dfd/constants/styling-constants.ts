@@ -291,6 +291,28 @@ export const DFD_STYLING = {
     FADE_OPACITY_THRESHOLD: 0.05, // Below this, use 'none' instead of filter
   },
 
+  // User label overlay for remote collaboration changes
+  USER_LABEL: {
+    FADE_DURATION_MS: 2500,
+    FONT_SIZE: 11,
+    PADDING_X: 6,
+    PADDING_Y: 3,
+    BORDER_RADIUS: 4,
+    OFFSET_Y: -20, // pixels above the cell's top edge
+    STACK_GAP: 2, // pixels between stacked labels
+    Z_INDEX: 9999,
+    // Okabe-Ito palette (excluding black for legibility on backgrounds)
+    COLOR_PALETTE: [
+      { r: 230, g: 159, b: 0 }, // Orange
+      { r: 86, g: 180, b: 233 }, // Sky Blue
+      { r: 0, g: 158, b: 115 }, // Bluish Green
+      { r: 240, g: 228, b: 66 }, // Yellow
+      { r: 0, g: 114, b: 178 }, // Blue
+      { r: 213, g: 94, b: 0 }, // Vermilion
+      { r: 204, g: 121, b: 167 }, // Reddish Purple
+    ],
+  },
+
   // Z-Index constants for proper layering
   Z_INDEX: {
     SECURITY_BOUNDARY: 1, // Security boundaries go behind regular nodes
@@ -592,6 +614,20 @@ export const DFD_STYLING_HELPERS = {
           height: DFD_STYLING.NODES.ACTOR.DEFAULT_HEIGHT,
         };
     }
+  },
+
+  /**
+   * Get a deterministic color for a user based on their userId
+   * Uses a simple hash to map userId to the Okabe-Ito palette
+   */
+  getUserLabelColor(userId: string): { r: number; g: number; b: number } {
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      hash = (hash * 31 + userId.charCodeAt(i)) | 0;
+    }
+    const palette = DFD_STYLING.USER_LABEL.COLOR_PALETTE;
+    const index = Math.abs(hash) % palette.length;
+    return palette[index];
   },
 
   /**

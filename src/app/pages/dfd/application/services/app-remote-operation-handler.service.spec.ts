@@ -13,6 +13,7 @@ describe('AppRemoteOperationHandler', () => {
   let mockAppStateService: any;
   let mockGraphOperationManager: any;
   let mockHistoryCoordinator: any;
+  let mockVisualEffectsService: any;
   let mockGraph: Graph;
 
   beforeEach(() => {
@@ -49,6 +50,12 @@ describe('AppRemoteOperationHandler', () => {
       executeRemoteOperation: vi.fn((graph, callback) => callback()),
     };
 
+    mockVisualEffectsService = {
+      applyCreationHighlight: vi.fn(),
+      showUserLabel: vi.fn(),
+      cleanup: vi.fn(),
+    };
+
     // Create mock graph
     mockGraph = new Graph({
       container: document.createElement('div'),
@@ -62,6 +69,7 @@ describe('AppRemoteOperationHandler', () => {
       mockAppStateService,
       mockGraphOperationManager,
       mockHistoryCoordinator,
+      mockVisualEffectsService,
     );
   });
 
@@ -88,7 +96,7 @@ describe('AppRemoteOperationHandler', () => {
 
       // Act: Manually trigger operation handling
       const privateService = service as any;
-      privateService._handleRemoteOperation(cellOperation, 'user-123', 'op-123');
+      privateService._handleRemoteOperation(cellOperation, 'user-123', 'Test User', 'op-123');
 
       // Assert: executeRemoteOperation should be called immediately (synchronously)
       expect(mockHistoryCoordinator.executeRemoteOperation).toHaveBeenCalledWith(
@@ -127,7 +135,7 @@ describe('AppRemoteOperationHandler', () => {
 
       // Act: Manually trigger operation handling
       const privateService = service as any;
-      privateService._handleRemoteOperation(cellOperation, 'user-123', 'op-123');
+      privateService._handleRemoteOperation(cellOperation, 'user-123', 'Test User', 'op-123');
 
       // Assert
       expect(flagWasSet).toBe(true);
@@ -169,7 +177,7 @@ describe('AppRemoteOperationHandler', () => {
 
       // Act: Manually trigger operation handling
       const privateService = service as any;
-      privateService._handleRemoteOperation(cellOperation, 'user-123', 'op-123');
+      privateService._handleRemoteOperation(cellOperation, 'user-123', 'Test User', 'op-123');
 
       // Assert: callback should have executed despite error
       expect(callbackExecuted).toBe(true);

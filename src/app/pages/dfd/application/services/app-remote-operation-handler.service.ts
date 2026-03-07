@@ -75,7 +75,12 @@ export class AppRemoteOperationHandler implements OnDestroy {
     this._subscriptions.add(
       this.appStateService.applyBatchedOperationsEvents$.pipe(takeUntil(this._destroy$)).subscribe({
         next: event => {
-          this._handleBatchedRemoteOperations(event.operations, event.userId, event.operationId);
+          this._handleBatchedRemoteOperations(
+            event.operations,
+            event.userId,
+            event.displayName,
+            event.operationId,
+          );
         },
         error: error => {
           this.logger.error('Error in batched remote operation event stream', { error });
@@ -87,7 +92,12 @@ export class AppRemoteOperationHandler implements OnDestroy {
     this._subscriptions.add(
       this.appStateService.applyOperationEvents$.pipe(takeUntil(this._destroy$)).subscribe({
         next: event => {
-          this._handleRemoteOperation(event.operation, event.userId, event.operationId);
+          this._handleRemoteOperation(
+            event.operation,
+            event.userId,
+            event.userId,
+            event.operationId,
+          );
         },
         error: error => {
           this.logger.error('Error in remote operation event stream', { error });
@@ -133,6 +143,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
   private _handleBatchedRemoteOperations(
     cellOperations: CellOperation[],
     userId: string,
+    displayName: string,
     operationId: string,
   ): void {
     if (!this._graph || !this._operationContext) {
@@ -148,7 +159,12 @@ export class AppRemoteOperationHandler implements OnDestroy {
 
     // Process each cell operation in the batch sequentially
     for (const cellOperation of cellOperations) {
-      this._handleRemoteOperation(cellOperation, userId, `${operationId}-${cellOperation.id}`);
+      this._handleRemoteOperation(
+        cellOperation,
+        userId,
+        displayName,
+        `${operationId}-${cellOperation.id}`,
+      );
     }
   }
 
@@ -158,6 +174,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
   private _handleRemoteOperation(
     cellOperation: CellOperation,
     userId: string,
+    displayName: string,
     operationId: string,
   ): void {
     if (!this._graph || !this._operationContext) {
@@ -216,6 +233,16 @@ export class AppRemoteOperationHandler implements OnDestroy {
                 result.affectedCellIds.length > 0
               ) {
                 this._applyRemoteCreationEffects(graph, result.affectedCellIds);
+              }
+
+              // Show user label for non-delete operations
+              if (
+                graphOperation.type !== 'delete-node' &&
+                graphOperation.type !== 'delete-edge' &&
+                result.affectedCellIds &&
+                result.affectedCellIds.length > 0
+              ) {
+                this._showRemoteUserLabels(graph, result.affectedCellIds, userId, displayName);
               }
             } else {
               this._stats.failedOperations++;
@@ -425,6 +452,23 @@ export class AppRemoteOperationHandler implements OnDestroy {
       default:
         this.logger.warn('Unknown cell operation type', { operation: cellOp.operation });
         return null;
+    }
+  }
+
+  /**
+   * Show user display name labels near remotely modified cells
+   */
+  private _showRemoteUserLabels(
+    graph: Graph,
+    cellIds: string[],
+    userId: string,
+    displayName: string,
+  ): void {
+    for (const cellId of cellIds) {
+      const cell = graph.getCellById(cellId);
+      if (cell) {
+        this.visualEffectsService.showUserLabel(cell, graph, userId, displayName);
+      }
     }
   }
 

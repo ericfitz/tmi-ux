@@ -34,6 +34,7 @@ import {
  */
 export interface ProcessedDiagramOperation {
   userId: string;
+  displayName: string; // Human-readable name for the user (display_name, email, or userId fallback)
   operationId: string;
   sequenceNumber: number; // Server-assigned sequence number for operation ordering
   updateVector: number; // New diagram update_vector after this operation
@@ -124,6 +125,8 @@ export class AppWebSocketEventProcessor implements OnDestroy {
     }
 
     const userId = message.initiating_user.email || 'unknown';
+    const displayName =
+      message.initiating_user.display_name || message.initiating_user.email || userId;
 
     this._logger.info('Processing remote diagram operation', {
       userId,
@@ -137,6 +140,7 @@ export class AppWebSocketEventProcessor implements OnDestroy {
     if (message.operation?.cells && message.operation.cells.length > 0) {
       this._diagramOperation$.next({
         userId,
+        displayName,
         operationId: message.operation_id,
         sequenceNumber: message.sequence_number,
         updateVector: message.update_vector,

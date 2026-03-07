@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Cell } from '@antv/x6';
+import { Cell, Graph } from '@antv/x6';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
@@ -32,6 +32,11 @@ export class InfraVisualEffectsService {
 
   // Track active effects to prevent conflicts and memory leaks
   private activeEffects = new Map<string, ActiveEffect>();
+
+  // Track active user label overlays (keyed by `${cellId}-${userId}`)
+  private _activeLabels = new Map<string, HTMLElement>();
+  // Track label count per cell for vertical stacking
+  private _cellLabelCounts = new Map<string, number>();
 
   /**
    * Apply creation highlight with fade-out effect to a newly created cell
@@ -139,6 +144,136 @@ export class InfraVisualEffectsService {
   }
 
   /**
+   * Show a user display name label near a cell for remote collaboration feedback.
+   * Creates a DOM overlay that fades out over USER_LABEL.FADE_DURATION_MS.
+   */
+  showUserLabel(cell: Cell, graph: Graph, userId: string, displayName: string): void {
+    if (!cell || !graph?.container) {
+      return;
+    }
+
+    if (!this.areAnimationsEnabled()) {
+      return;
+    }
+
+    const cellId = cell.id;
+    const labelKey = `${cellId}-${userId}`;
+
+    // Remove existing label for same cell+user if present
+    this._removeLabel(labelKey, cellId);
+
+    // Get cell position in client coordinates
+    const bbox = cell.getBBox();
+    const clientPoint = graph.localToClient(bbox.x + bbox.width / 2, bbox.y);
+
+    // Calculate vertical offset for stacking
+    const currentCount = this._cellLabelCounts.get(cellId) || 0;
+    const stackOffset =
+      currentCount *
+      (DFD_STYLING.USER_LABEL.FONT_SIZE +
+        DFD_STYLING.USER_LABEL.PADDING_Y * 2 +
+        DFD_STYLING.USER_LABEL.STACK_GAP);
+
+    // Get user color and contrasting text color
+    const color = DFD_STYLING_HELPERS.getUserLabelColor(userId);
+    const textColor = this._getUserLabelTextColor(color);
+
+    // Create and position the label element
+    const label = this._createUserLabelElement(
+      displayName,
+      color,
+      textColor,
+      clientPoint.x,
+      clientPoint.y + DFD_STYLING.USER_LABEL.OFFSET_Y - stackOffset,
+    );
+
+    graph.container.appendChild(label);
+
+    // Track the label
+    this._activeLabels.set(labelKey, label);
+    this._cellLabelCounts.set(cellId, currentCount + 1);
+
+    // Start fade after a frame to ensure initial opacity is painted
+    requestAnimationFrame(() => {
+      label.style.opacity = '0';
+    });
+
+    // Clean up after transition ends
+    label.addEventListener(
+      'transitionend',
+      () => {
+        this._removeLabel(labelKey, cellId);
+      },
+      { once: true },
+    );
+
+    // Fallback cleanup in case transitionend doesn't fire
+    setTimeout(() => {
+      if (this._activeLabels.has(labelKey)) {
+        this._removeLabel(labelKey, cellId);
+      }
+    }, DFD_STYLING.USER_LABEL.FADE_DURATION_MS + 500);
+  }
+
+  /**
+   * Create a styled DOM element for the user label overlay
+   */
+  private _createUserLabelElement(
+    displayName: string,
+    color: { r: number; g: number; b: number },
+    textColor: string,
+    x: number,
+    y: number,
+  ): HTMLElement {
+    const el = document.createElement('div');
+    el.className = 'dfd-user-label';
+    el.textContent = displayName;
+    el.style.cssText = `
+      position: fixed;
+      left: ${x}px;
+      top: ${y}px;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: ${DFD_STYLING.USER_LABEL.Z_INDEX};
+      font-size: ${DFD_STYLING.USER_LABEL.FONT_SIZE}px;
+      font-family: ${DFD_STYLING.TEXT_FONT_FAMILY};
+      padding: ${DFD_STYLING.USER_LABEL.PADDING_Y}px ${DFD_STYLING.USER_LABEL.PADDING_X}px;
+      border-radius: ${DFD_STYLING.USER_LABEL.BORDER_RADIUS}px;
+      white-space: nowrap;
+      background-color: rgba(${color.r}, ${color.g}, ${color.b}, 0.85);
+      color: ${textColor};
+      opacity: 1;
+      transition: opacity ${DFD_STYLING.USER_LABEL.FADE_DURATION_MS}ms ease-out;
+    `;
+    return el;
+  }
+
+  /**
+   * Get contrasting text color (white or black) based on background luminance
+   */
+  private _getUserLabelTextColor(color: { r: number; g: number; b: number }): string {
+    const luminance = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
+    return luminance > 186 ? '#000000' : '#ffffff';
+  }
+
+  /**
+   * Remove a user label element and update tracking maps
+   */
+  private _removeLabel(labelKey: string, cellId: string): void {
+    const existing = this._activeLabels.get(labelKey);
+    if (existing) {
+      existing.remove();
+      this._activeLabels.delete(labelKey);
+      const count = this._cellLabelCounts.get(cellId) || 0;
+      if (count <= 1) {
+        this._cellLabelCounts.delete(cellId);
+      } else {
+        this._cellLabelCounts.set(cellId, count - 1);
+      }
+    }
+  }
+
+  /**
    * Clean up all active effects (useful for component destruction)
    */
   cleanup(): void {
@@ -151,6 +286,11 @@ export class InfraVisualEffectsService {
       });
     });
     this.activeEffects.clear();
+
+    // Clean up user label overlays
+    this._activeLabels.forEach(label => label.remove());
+    this._activeLabels.clear();
+    this._cellLabelCounts.clear();
   }
 
   /**
