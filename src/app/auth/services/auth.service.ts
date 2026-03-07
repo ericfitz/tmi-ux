@@ -52,7 +52,7 @@ import {
 } from '../models/auth.models';
 import { PkceService } from './pkce.service';
 import { PkceError } from '../models/pkce.models';
-import { IS_LOGOUT_REQUEST } from '../../core/tokens/http-context.tokens';
+import { IS_LOGOUT_REQUEST, SKIP_ERROR_HANDLING } from '../../core/tokens/http-context.tokens';
 
 /**
  * Service for handling authentication with the TMI server.
@@ -392,9 +392,12 @@ export class AuthService {
         return;
       }
 
-      // Call GET /me to check if we have a valid session cookie
+      // Call GET /me to check if we have a valid session cookie.
+      // SKIP_ERROR_HANDLING prevents the interceptor from attempting token refresh
+      // on 401 — a 401 here simply means "not logged in," not a session error.
+      const context = new HttpContext().set(SKIP_ERROR_HANDLING, true);
       const response = await this.http
-        .get<UserMeResponse>(`${environment.apiUrl}/me`)
+        .get<UserMeResponse>(`${environment.apiUrl}/me`, { context })
         .toPromise()
         .catch(() => null);
 

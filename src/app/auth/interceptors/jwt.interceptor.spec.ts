@@ -9,7 +9,11 @@ import { JwtInterceptor } from './jwt.interceptor';
 import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../../core/services/logger.service';
 import { AuthSession } from '../models/auth.models';
-import { IS_AUTH_RETRY, IS_LOGOUT_REQUEST } from '../../core/tokens/http-context.tokens';
+import {
+  IS_AUTH_RETRY,
+  IS_LOGOUT_REQUEST,
+  SKIP_ERROR_HANDLING,
+} from '../../core/tokens/http-context.tokens';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../testing/mocks';
 
 // Mock the environment module
@@ -575,6 +579,39 @@ describe('JwtInterceptor', () => {
           error: () => {
             // Error passes through without refresh attempt or logout loop
             expect(authService.forceRefreshToken).not.toHaveBeenCalled();
+            expect(authService.logout).not.toHaveBeenCalled();
+            resolve();
+          },
+        });
+      });
+    });
+  });
+
+  describe('SKIP_ERROR_HANDLING handling', () => {
+    it('should pass through requests with SKIP_ERROR_HANDLING without auth retry', async () => {
+      const skipContext = new HttpContext().set(SKIP_ERROR_HANDLING, true);
+      const mockRequest = createMockRequest(`${environment.apiUrl}/me`, 'GET', false, skipContext);
+
+      const unauthorizedError = new HttpErrorResponse({
+        status: 401,
+        statusText: 'Unauthorized',
+        url: `${environment.apiUrl}/me`,
+      });
+
+      const mockHandler = {
+        handle: vi.fn().mockReturnValue(throwError(() => unauthorizedError)),
+      } as unknown as HttpHandler;
+
+      await new Promise<void>(resolve => {
+        const result$ = interceptor.intercept(mockRequest, mockHandler);
+        result$.subscribe({
+          next: () => {
+            expect(true).toBe(false); // Should not succeed
+          },
+          error: () => {
+            // Error passes through without refresh attempt or logout
+            expect(authService.forceRefreshToken).not.toHaveBeenCalled();
+            expect(authService.handleAuthError).not.toHaveBeenCalled();
             expect(authService.logout).not.toHaveBeenCalled();
             resolve();
           },

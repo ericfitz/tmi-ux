@@ -10,7 +10,11 @@ import { Injectable, Injector } from '@angular/core';
 import { Observable, catchError, throwError, switchMap } from '../../core/rxjs-imports';
 
 import { LoggerService } from '../../core/services/logger.service';
-import { IS_AUTH_RETRY, IS_LOGOUT_REQUEST } from '../../core/tokens/http-context.tokens';
+import {
+  IS_AUTH_RETRY,
+  IS_LOGOUT_REQUEST,
+  SKIP_ERROR_HANDLING,
+} from '../../core/tokens/http-context.tokens';
 import { AuthService } from '../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { AuthError } from '../models/auth.models';
@@ -57,9 +61,9 @@ export class JwtInterceptor implements HttpInterceptor {
    * No token is attached — cookies are sent automatically by the browser.
    */
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Logout requests manage their own error handling.
-    // Skip interceptor to prevent 401 retry loops during logout.
-    if (request.context.get(IS_LOGOUT_REQUEST)) {
+    // Logout requests and session probes manage their own error handling.
+    // Skip interceptor to prevent retry loops.
+    if (request.context.get(IS_LOGOUT_REQUEST) || request.context.get(SKIP_ERROR_HANDLING)) {
       return next.handle(request);
     }
 
