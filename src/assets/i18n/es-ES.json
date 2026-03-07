@@ -752,14 +752,14 @@
       "noUndoEntries": "No hay entradas para deshacer",
       "operationId": "ID de Operación",
       "previousCells": "Celdas Anteriores",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "Pila de Rehacer",
       "redoStackSize": "Tamaño de Pila de Rehacer",
       "summary": "Resumen",
       "timestamp": "Marca de Tiempo",
       "title": "Historial",
       "undoStack": "Pila de Deshacer",
-      "undoStackSize": "Tamaño de Pila de Deshacer",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "Tamaño de Pila de Deshacer"
     }
   },
   "editor": {
@@ -860,6 +860,12 @@
     "copyUserEmail": "Copiar Correo del Usuario al Portapapeles",
     "dashboard": "Panel",
     "feedback": "Informar de un error, solicitar una funcionalidad o enviar comentarios",
+    "feedbackMenu": {
+      "provideFeedback": "Enviar comentarios",
+      "reportBug": "Informar de un error",
+      "reportBugCopied": "Registro de la aplicación copiado al portapapeles. Péguelo en la incidencia de GitHub.",
+      "requestFeature": "Solicitar una funcionalidad"
+    },
     "home": "Inicio",
     "intake": "Recepción",
     "logoutButton": "Cerrar Sesión",
@@ -1510,6 +1516,10 @@
     },
     "diagramAnimationEffects": "Activar Efectos de Animación en el Editor de Diagramas",
     "displayPreferences": "Preferencias de Visualización",
+    "exportLog": {
+      "hint": "Descarga las entradas más recientes del registro de la aplicación como un archivo JSONL para la resolución de problemas.",
+      "title": "Exportar registro de la aplicación"
+    },
     "hoverShowMetadata": "Mostrar metadatos de celda al pasar el cursor",
     "marginSize": {
       "narrow": "Estrecho",

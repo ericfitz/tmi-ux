@@ -752,14 +752,14 @@
       "noUndoEntries": "אין רשומות לביטול",
       "operationId": "מזהה פעולה",
       "previousCells": "תאים קודמים",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "מחסנית ביצוע שוב",
       "redoStackSize": "גודל מחסנית ביצוע שוב",
       "summary": "סיכום",
       "timestamp": "חותמת זמן",
       "title": "היסטוריה",
       "undoStack": "מחסנית ביטול",
-      "undoStackSize": "גודל מחסנית ביטול",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "גודל מחסנית ביטול"
     }
   },
   "editor": {
@@ -860,6 +860,12 @@
     "copyUserEmail": "העתק דוא\"ל משתמש ללוח",
     "dashboard": "לוח בקרה",
     "feedback": "דווח על באג, בקש תכונה או ספק משוב",
+    "feedbackMenu": {
+      "provideFeedback": "שליחת משוב",
+      "reportBug": "דיווח על באג",
+      "reportBugCopied": "יומן האפליקציה הועתק ללוח. הדביקו אותו בדיווח ב-GitHub.",
+      "requestFeature": "בקשת תכונה חדשה"
+    },
     "home": "דף הבית",
     "intake": "קליטה",
     "logoutButton": "התנתק",
@@ -1510,6 +1516,10 @@
     },
     "diagramAnimationEffects": "הפעל אפקטי אנימציה בעורך הדיאגרמות",
     "displayPreferences": "העדפות תצוגה",
+    "exportLog": {
+      "hint": "מוריד את רשומות יומן האפליקציה האחרונות כקובץ JSONL לצורך פתרון בעיות.",
+      "title": "ייצוא יומן אפליקציה"
+    },
     "hoverShowMetadata": "הצג מטא-נתוני תא בריחוף",
     "marginSize": {
       "narrow": "צרים",

@@ -752,14 +752,14 @@
       "noUndoEntries": "Tidak ada entri untuk dibatalkan",
       "operationId": "ID Operasi",
       "previousCells": "Sel Sebelumnya",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "Tumpukan Ulangi",
       "redoStackSize": "Ukuran Tumpukan Ulangi",
       "summary": "Ringkasan",
       "timestamp": "Stempel Waktu",
       "title": "Riwayat",
       "undoStack": "Tumpukan Batalkan",
-      "undoStackSize": "Ukuran Tumpukan Batalkan",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "Ukuran Tumpukan Batalkan"
     }
   },
   "editor": {
@@ -860,6 +860,12 @@
     "copyUserEmail": "Salin Email Pengguna ke Papan Klip",
     "dashboard": "Dasbor",
     "feedback": "Laporkan bug, minta fitur, atau berikan umpan balik",
+    "feedbackMenu": {
+      "provideFeedback": "Berikan Umpan Balik",
+      "reportBug": "Laporkan Bug",
+      "reportBugCopied": "Log aplikasi disalin ke papan klip. Tempelkan ke dalam isu GitHub.",
+      "requestFeature": "Minta Fitur"
+    },
     "home": "Beranda",
     "intake": "Penerimaan",
     "logoutButton": "Keluar",
@@ -1510,6 +1516,10 @@
     },
     "diagramAnimationEffects": "Aktifkan Efek Animasi di Editor Diagram",
     "displayPreferences": "Preferensi Tampilan",
+    "exportLog": {
+      "hint": "Mengunduh entri log aplikasi terbaru sebagai file JSONL untuk pemecahan masalah.",
+      "title": "Ekspor Log Aplikasi"
+    },
     "hoverShowMetadata": "Tampilkan metadata sel saat mengarahkan kursor",
     "marginSize": {
       "narrow": "Sempit",

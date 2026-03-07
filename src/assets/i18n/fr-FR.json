@@ -752,14 +752,14 @@
       "noUndoEntries": "Aucune entree a annuler",
       "operationId": "ID de l'operation",
       "previousCells": "Cellules precedentes",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "Pile de retablissement",
       "redoStackSize": "Taille de la pile de retablissement",
       "summary": "Resume",
       "timestamp": "Horodatage",
       "title": "Historique",
       "undoStack": "Pile d'annulation",
-      "undoStackSize": "Taille de la pile d'annulation",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "Taille de la pile d'annulation"
     }
   },
   "editor": {
@@ -860,6 +860,12 @@
     "copyUserEmail": "Copier l'e-mail de l'utilisateur dans le presse-papiers",
     "dashboard": "Tableau de bord",
     "feedback": "Signaler un bug, demander une fonctionnalite ou donner votre avis",
+    "feedbackMenu": {
+      "provideFeedback": "Donner un avis",
+      "reportBug": "Signaler un bug",
+      "reportBugCopied": "Journal de l'application copié dans le presse-papiers. Collez-le dans le ticket GitHub.",
+      "requestFeature": "Demander une fonctionnalité"
+    },
     "home": "Accueil",
     "intake": "Admission",
     "logoutButton": "Deconnexion",
@@ -1510,6 +1516,10 @@
     },
     "diagramAnimationEffects": "Activer les effets d'animation dans l'editeur de diagrammes",
     "displayPreferences": "Preferences d'affichage",
+    "exportLog": {
+      "hint": "Télécharge les entrées les plus récentes du journal de l'application sous forme de fichier JSONL pour le dépannage.",
+      "title": "Exporter le journal de l'application"
+    },
     "hoverShowMetadata": "Afficher les métadonnées de cellule au survol",
     "marginSize": {
       "narrow": "Etroit",

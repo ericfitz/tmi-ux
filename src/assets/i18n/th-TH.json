@@ -752,14 +752,14 @@
       "noUndoEntries": "ไม่มีรายการเลิกทำ",
       "operationId": "ID การดำเนินการ",
       "previousCells": "เซลล์ก่อนหน้า",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "สแต็กทำซ้ำ",
       "redoStackSize": "ขนาดสแต็กทำซ้ำ",
       "summary": "สรุป",
       "timestamp": "ประทับเวลา",
       "title": "ประวัติ",
       "undoStack": "สแต็กเลิกทำ",
-      "undoStackSize": "ขนาดสแต็กเลิกทำ",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "ขนาดสแต็กเลิกทำ"
     }
   },
   "editor": {
@@ -860,6 +860,12 @@
     "copyUserEmail": "คัดลอกอีเมลผู้ใช้ไปยังคลิปบอร์ด",
     "dashboard": "แดชบอร์ด",
     "feedback": "รายงานข้อบกพร่อง ขอคุณสมบัติ หรือให้ข้อเสนอแนะ",
+    "feedbackMenu": {
+      "provideFeedback": "ให้ข้อเสนอแนะ",
+      "reportBug": "รายงานข้อบกพร่อง",
+      "reportBugCopied": "คัดลอกบันทึกแอปพลิเคชันไปยังคลิปบอร์ดแล้ว วางลงใน GitHub issue ได้เลย",
+      "requestFeature": "ขอฟีเจอร์ใหม่"
+    },
     "home": "หน้าแรก",
     "intake": "รับเรื่อง",
     "logoutButton": "ออกจากระบบ",
@@ -1510,6 +1516,10 @@
     },
     "diagramAnimationEffects": "เปิดใช้งานเอฟเฟกต์แอนิเมชันในโปรแกรมแก้ไขแผนภาพ",
     "displayPreferences": "การตั้งค่าการแสดงผล",
+    "exportLog": {
+      "hint": "ดาวน์โหลดรายการบันทึกแอปพลิเคชันล่าสุดเป็นไฟล์ JSONL สำหรับการแก้ไขปัญหา",
+      "title": "ส่งออกบันทึกแอปพลิเคชัน"
+    },
     "hoverShowMetadata": "แสดงข้อมูลเมตาของเซลล์เมื่อวางเมาส์",
     "marginSize": {
       "narrow": "แคบ",

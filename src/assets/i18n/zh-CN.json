@@ -752,14 +752,14 @@
       "noUndoEntries": "没有撤销条目",
       "operationId": "操作ID",
       "previousCells": "之前的单元格",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "重做堆栈",
       "redoStackSize": "重做堆栈大小",
       "summary": "摘要",
       "timestamp": "时间戳",
       "title": "历史记录",
       "undoStack": "撤销堆栈",
-      "undoStackSize": "撤销堆栈大小",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "撤销堆栈大小"
     }
   },
   "editor": {
@@ -860,6 +860,12 @@
     "copyUserEmail": "复制用户邮箱到剪贴板",
     "dashboard": "仪表盘",
     "feedback": "报告错误、请求功能或提供反馈",
+    "feedbackMenu": {
+      "provideFeedback": "提供反馈",
+      "reportBug": "报告错误",
+      "reportBugCopied": "应用程序日志已复制到剪贴板。请将其粘贴到 GitHub issue 中。",
+      "requestFeature": "请求新功能"
+    },
     "home": "主页",
     "intake": "受理",
     "logoutButton": "退出登录",
@@ -1510,6 +1516,10 @@
     },
     "diagramAnimationEffects": "在图表编辑器中启用动画效果",
     "displayPreferences": "显示偏好设置",
+    "exportLog": {
+      "hint": "将最近的应用程序日志条目下载为 JSONL 文件，用于故障排除。",
+      "title": "导出应用程序日志"
+    },
     "hoverShowMetadata": "悬停时显示单元格元数据",
     "marginSize": {
       "narrow": "窄",

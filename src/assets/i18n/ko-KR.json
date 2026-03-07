@@ -752,14 +752,14 @@
       "noUndoEntries": "실행 취소할 항목 없음",
       "operationId": "작업 ID",
       "previousCells": "이전 셀",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "다시 실행 스택",
       "redoStackSize": "다시 실행 스택 크기",
       "summary": "요약",
       "timestamp": "타임스탬프",
       "title": "기록",
       "undoStack": "실행 취소 스택",
-      "undoStackSize": "실행 취소 스택 크기",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "실행 취소 스택 크기"
     }
   },
   "editor": {
@@ -860,6 +860,12 @@
     "copyUserEmail": "사용자 이메일을 클립보드에 복사",
     "dashboard": "대시보드",
     "feedback": "버그 신고, 기능 요청 또는 피드백 제공",
+    "feedbackMenu": {
+      "provideFeedback": "피드백 제공",
+      "reportBug": "버그 신고",
+      "reportBugCopied": "애플리케이션 로그가 클립보드에 복사되었습니다. GitHub 이슈에 붙여넣기 하세요.",
+      "requestFeature": "기능 요청"
+    },
     "home": "홈",
     "intake": "접수",
     "logoutButton": "로그아웃",
@@ -1510,6 +1516,10 @@
     },
     "diagramAnimationEffects": "다이어그램 편집기에서 애니메이션 효과 활성화",
     "displayPreferences": "디스플레이 설정",
+    "exportLog": {
+      "hint": "문제 해결을 위해 최근 애플리케이션 로그 항목을 JSONL 파일로 다운로드합니다.",
+      "title": "애플리케이션 로그 내보내기"
+    },
     "hoverShowMetadata": "호버 시 셀 메타데이터 표시",
     "marginSize": {
       "narrow": "좁게",

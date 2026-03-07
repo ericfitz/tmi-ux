@@ -752,14 +752,14 @@
       "noUndoEntries": "কোনো আনডু এন্ট্রি নেই",
       "operationId": "অপারেশন আইডি",
       "previousCells": "পূর্ববর্তী সেল",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "রিডু স্ট্যাক",
       "redoStackSize": "রিডু স্ট্যাক সাইজ",
       "summary": "সারসংক্ষেপ",
       "timestamp": "সময়চিহ্ন",
       "title": "ইতিহাস",
       "undoStack": "আনডু স্ট্যাক",
-      "undoStackSize": "আনডু স্ট্যাক সাইজ",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "আনডু স্ট্যাক সাইজ"
     }
   },
   "editor": {
@@ -860,6 +860,12 @@
     "copyUserEmail": "ব্যবহারকারীর ইমেইল ক্লিপবোর্ডে কপি করুন",
     "dashboard": "ড্যাশবোর্ড",
     "feedback": "একটি বাগ রিপোর্ট করুন, একটি ফিচার অনুরোধ করুন বা মতামত দিন",
+    "feedbackMenu": {
+      "provideFeedback": "মতামত প্রদান করুন",
+      "reportBug": "একটি বাগ রিপোর্ট করুন",
+      "reportBugCopied": "অ্যাপ্লিকেশন লগ ক্লিপবোর্ডে কপি করা হয়েছে। এটি GitHub ইস্যুতে পেস্ট করুন।",
+      "requestFeature": "একটি ফিচার অনুরোধ করুন"
+    },
     "home": "হোম",
     "intake": "ইনটেক",
     "logoutButton": "সাইন আউট",
@@ -1510,6 +1516,10 @@
     },
     "diagramAnimationEffects": "ডায়াগ্রাম এডিটরে অ্যানিমেশন ইফেক্ট সক্রিয় করুন",
     "displayPreferences": "প্রদর্শন পছন্দ",
+    "exportLog": {
+      "hint": "সমস্যা সমাধানের জন্য সাম্প্রতিক অ্যাপ্লিকেশন লগ এন্ট্রিগুলি JSONL ফাইল হিসেবে ডাউনলোড করে।",
+      "title": "অ্যাপ্লিকেশন লগ এক্সপোর্ট করুন"
+    },
     "hoverShowMetadata": "হোভারে সেল মেটাডেটা দেখান",
     "marginSize": {
       "narrow": "সরু",

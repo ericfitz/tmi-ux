@@ -752,14 +752,14 @@
       "noUndoEntries": "لا توجد إدخالات للتراجع",
       "operationId": "معرف العملية",
       "previousCells": "الخلايا السابقة",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "مكدس الإعادة",
       "redoStackSize": "حجم مكدس الإعادة",
       "summary": "ملخص",
       "timestamp": "الطابع الزمني",
       "title": "السجل",
       "undoStack": "مكدس التراجع",
-      "undoStackSize": "حجم مكدس التراجع",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "حجم مكدس التراجع"
     }
   },
   "editor": {
@@ -860,6 +860,12 @@
     "copyUserEmail": "نسخ البريد الإلكتروني للمستخدم إلى الحافظة",
     "dashboard": "لوحة التحكم",
     "feedback": "الإبلاغ عن خطأ أو طلب ميزة أو تقديم ملاحظات",
+    "feedbackMenu": {
+      "provideFeedback": "تقديم ملاحظات",
+      "reportBug": "الإبلاغ عن خطأ",
+      "reportBugCopied": "تم نسخ سجل التطبيق إلى الحافظة. الصقه في مشكلة GitHub.",
+      "requestFeature": "طلب ميزة جديدة"
+    },
     "home": "الصفحة الرئيسية",
     "intake": "استقبال",
     "logoutButton": "تسجيل الخروج",
@@ -1510,6 +1516,10 @@
     },
     "diagramAnimationEffects": "تفعيل تأثيرات الرسوم المتحركة في محرر المخططات",
     "displayPreferences": "تفضيلات العرض",
+    "exportLog": {
+      "hint": "يقوم بتنزيل أحدث إدخالات سجل التطبيق كملف JSONL لاستكشاف الأخطاء وإصلاحها.",
+      "title": "تصدير سجل التطبيق"
+    },
     "hoverShowMetadata": "إظهار بيانات الخلية الوصفية عند التمرير",
     "marginSize": {
       "narrow": "ضيق",

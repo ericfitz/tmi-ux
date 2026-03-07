@@ -752,14 +752,14 @@
       "noUndoEntries": "元に戻す履歴なし",
       "operationId": "操作ID",
       "previousCells": "前のセル",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "やり直しスタック",
       "redoStackSize": "やり直しスタックサイズ",
       "summary": "概要",
       "timestamp": "タイムスタンプ",
       "title": "履歴",
       "undoStack": "元に戻すスタック",
-      "undoStackSize": "元に戻すスタックサイズ",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "元に戻すスタックサイズ"
     }
   },
   "editor": {
@@ -860,6 +860,12 @@
     "copyUserEmail": "ユーザーのメールアドレスをクリップボードにコピー",
     "dashboard": "ダッシュボード",
     "feedback": "バグ報告、機能リクエスト、フィードバックを送信",
+    "feedbackMenu": {
+      "provideFeedback": "フィードバックを送信",
+      "reportBug": "バグを報告",
+      "reportBugCopied": "アプリケーションログがクリップボードにコピーされました。GitHub issueに貼り付けてください。",
+      "requestFeature": "機能をリクエスト"
+    },
     "home": "ホーム",
     "intake": "受付",
     "logoutButton": "サインアウト",
@@ -1510,6 +1516,10 @@
     },
     "diagramAnimationEffects": "ダイアグラムエディターでアニメーション効果を有効にする",
     "displayPreferences": "表示設定",
+    "exportLog": {
+      "hint": "トラブルシューティング用に、最新のアプリケーションログエントリをJSONLファイルとしてダウンロードします。",
+      "title": "アプリケーションログをエクスポート"
+    },
     "hoverShowMetadata": "ホバー時にセルのメタデータを表示",
     "marginSize": {
       "narrow": "狭い",

@@ -752,14 +752,14 @@
       "noUndoEntries": "واپس کرنے کی کوئی اندراجات نہیں",
       "operationId": "آپریشن ID",
       "previousCells": "پچھلے سیلز",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "دوبارہ کرنے کا اسٹیک",
       "redoStackSize": "دوبارہ کرنے کے اسٹیک کا سائز",
       "summary": "خلاصہ",
       "timestamp": "ٹائم اسٹیمپ",
       "title": "تاریخ",
       "undoStack": "واپس کرنے کا اسٹیک",
-      "undoStackSize": "واپس کرنے کے اسٹیک کا سائز",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "واپس کرنے کے اسٹیک کا سائز"
     }
   },
   "editor": {
@@ -860,6 +860,12 @@
     "copyUserEmail": "صارف کا ای میل کلپ بورڈ پر کاپی کریں",
     "dashboard": "ڈیش بورڈ",
     "feedback": "بگ رپورٹ کریں، فیچر کی درخواست کریں یا تاثرات فراہم کریں",
+    "feedbackMenu": {
+      "provideFeedback": "رائے دیں",
+      "reportBug": "بگ کی اطلاع دیں",
+      "reportBugCopied": "ایپلیکیشن لاگ کلپ بورڈ پر کاپی ہو گئی۔ اسے GitHub ایشو میں پیسٹ کریں۔",
+      "requestFeature": "فیچر کی درخواست کریں"
+    },
     "home": "ہوم",
     "intake": "انٹیک",
     "logoutButton": "سائن آؤٹ",
@@ -1510,6 +1516,10 @@
     },
     "diagramAnimationEffects": "ڈایاگرام ایڈیٹر میں اینیمیشن اثرات فعال کریں",
     "displayPreferences": "ڈسپلے کی ترجیحات",
+    "exportLog": {
+      "hint": "خرابی کی تشخیص کے لیے ایپلیکیشن لاگ کے تازہ ترین اندراجات JSONL فائل کے طور پر ڈاؤن لوڈ کرتا ہے۔",
+      "title": "ایپلیکیشن لاگ برآمد کریں"
+    },
     "hoverShowMetadata": "ہوور پر سیل میٹا ڈیٹا دکھائیں",
     "marginSize": {
       "narrow": "تنگ",

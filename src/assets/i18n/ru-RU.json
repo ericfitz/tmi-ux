@@ -752,14 +752,14 @@
       "noUndoEntries": "Нет записей для отмены",
       "operationId": "ID операции",
       "previousCells": "Предыдущие ячейки",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "Стек повтора",
       "redoStackSize": "Размер стека повтора",
       "summary": "Сводка",
       "timestamp": "Временная метка",
       "title": "История",
       "undoStack": "Стек отмены",
-      "undoStackSize": "Размер стека отмены",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "Размер стека отмены"
     }
   },
   "editor": {
@@ -860,6 +860,12 @@
     "copyUserEmail": "Копировать email пользователя в буфер обмена",
     "dashboard": "Панель",
     "feedback": "Сообщить об ошибке, запросить функцию или оставить отзыв",
+    "feedbackMenu": {
+      "provideFeedback": "Оставить отзыв",
+      "reportBug": "Сообщить об ошибке",
+      "reportBugCopied": "Журнал приложения скопирован в буфер обмена. Вставьте его в задачу на GitHub.",
+      "requestFeature": "Предложить функцию"
+    },
     "home": "Главная",
     "intake": "Приём",
     "logoutButton": "Выйти",
@@ -1510,6 +1516,10 @@
     },
     "diagramAnimationEffects": "Включить эффекты анимации в редакторе диаграмм",
     "displayPreferences": "Настройки отображения",
+    "exportLog": {
+      "hint": "Загружает последние записи журнала приложения в формате JSONL для диагностики.",
+      "title": "Экспорт журнала приложения"
+    },
     "hoverShowMetadata": "Показывать метаданные ячейки при наведении",
     "marginSize": {
       "narrow": "Узкие",

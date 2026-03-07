@@ -752,14 +752,14 @@
       "noUndoEntries": "Keine Rückgängig-Einträge",
       "operationId": "Vorgangs-ID",
       "previousCells": "Vorherige Zellen",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "Wiederholungsstapel",
       "redoStackSize": "Größe des Wiederholungsstapels",
       "summary": "Zusammenfassung",
       "timestamp": "Zeitstempel",
       "title": "Verlauf",
       "undoStack": "Rückgängig-Stapel",
-      "undoStackSize": "Größe des Rückgängig-Stapels",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "Größe des Rückgängig-Stapels"
     }
   },
   "editor": {
@@ -860,6 +860,12 @@
     "copyUserEmail": "Benutzer-E-Mail in Zwischenablage kopieren",
     "dashboard": "Dashboard",
     "feedback": "Fehler melden, Funktion anfordern oder Feedback geben",
+    "feedbackMenu": {
+      "provideFeedback": "Feedback geben",
+      "reportBug": "Fehler melden",
+      "reportBugCopied": "Anwendungsprotokoll in die Zwischenablage kopiert. Fügen Sie es in das GitHub-Issue ein.",
+      "requestFeature": "Funktion anfragen"
+    },
     "home": "Startseite",
     "intake": "Aufnahme",
     "logoutButton": "Abmelden",
@@ -1510,6 +1516,10 @@
     },
     "diagramAnimationEffects": "Animationseffekte im Diagramm-Editor aktivieren",
     "displayPreferences": "Anzeigeeinstellungen",
+    "exportLog": {
+      "hint": "Lädt die neuesten Anwendungsprotokolleinträge als JSONL-Datei zur Fehlerbehebung herunter.",
+      "title": "Anwendungsprotokoll exportieren"
+    },
     "hoverShowMetadata": "Zell-Metadaten beim Überfahren anzeigen",
     "marginSize": {
       "narrow": "Schmal",

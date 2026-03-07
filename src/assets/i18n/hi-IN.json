@@ -752,14 +752,14 @@
       "noUndoEntries": "कोई undo प्रविष्टियां नहीं",
       "operationId": "ऑपरेशन ID",
       "previousCells": "पिछले सेल",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "Redo स्टैक",
       "redoStackSize": "Redo स्टैक आकार",
       "summary": "सारांश",
       "timestamp": "टाइमस्टैम्प",
       "title": "इतिहास",
       "undoStack": "Undo स्टैक",
-      "undoStackSize": "Undo स्टैक आकार",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "Undo स्टैक आकार"
     }
   },
   "editor": {
@@ -860,6 +860,12 @@
     "copyUserEmail": "उपयोगकर्ता ईमेल क्लिपबोर्ड पर कॉपी करें",
     "dashboard": "डैशबोर्ड",
     "feedback": "बग रिपोर्ट करें, सुविधा का अनुरोध करें या प्रतिक्रिया दें",
+    "feedbackMenu": {
+      "provideFeedback": "प्रतिक्रिया दें",
+      "reportBug": "बग की रिपोर्ट करें",
+      "reportBugCopied": "एप्लिकेशन लॉग क्लिपबोर्ड पर कॉपी किया गया। इसे GitHub इश्यू में पेस्ट करें।",
+      "requestFeature": "सुविधा का अनुरोध करें"
+    },
     "home": "होम",
     "intake": "इनटेक",
     "logoutButton": "साइन आउट",
@@ -1510,6 +1516,10 @@
     },
     "diagramAnimationEffects": "डायग्राम एडिटर में एनिमेशन प्रभाव सक्षम करें",
     "displayPreferences": "प्रदर्शन प्राथमिकताएं",
+    "exportLog": {
+      "hint": "समस्या निवारण के लिए सबसे हालिया एप्लिकेशन लॉग प्रविष्टियों को JSONL फ़ाइल के रूप में डाउनलोड करता है।",
+      "title": "एप्लिकेशन लॉग निर्यात करें"
+    },
     "hoverShowMetadata": "होवर पर सेल मेटाडेटा दिखाएं",
     "marginSize": {
       "narrow": "संकीर्ण",

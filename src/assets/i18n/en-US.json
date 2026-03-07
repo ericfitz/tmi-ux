@@ -782,14 +782,14 @@
       "noUndoEntries": "No undo entries",
       "operationId": "Operation ID",
       "previousCells": "Previous Cells",
+      "providerId": "{{settings.userProfile.providerId}}",
       "redoStack": "Redo Stack",
       "redoStackSize": "Redo Stack Size",
       "summary": "Summary",
       "timestamp": "Timestamp",
       "title": "History",
       "undoStack": "Undo Stack",
-      "undoStackSize": "Undo Stack Size",
-      "providerId": "{{settings.userProfile.providerId}}"
+      "undoStackSize": "Undo Stack Size"
     }
   },
   "editor": {
