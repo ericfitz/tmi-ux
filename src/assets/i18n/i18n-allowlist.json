@@ -132,7 +132,7 @@
     "userPreferences.credentials.clientSecret"
   ],
   "ur-PK": [],
-  "zh-CN": ["common.userId"],
+  "zh-CN": [],
   "surveys": {
     "autoSave": {
       "error": "{{common.saveFailed}}"

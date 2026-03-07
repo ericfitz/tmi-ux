@@ -616,7 +616,6 @@
     "unarchive": "Dearchivieren",
     "unsavedChangesWarning": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie schließen möchten?",
     "uri": "URI",
-    "userId": "Benutzer-ID",
     "validation": {
       "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
       "invalidUrl": "Bitte geben Sie eine gültige URL ein",
@@ -760,7 +759,7 @@
       "title": "Verlauf",
       "undoStack": "Rückgängig-Stapel",
       "undoStackSize": "Größe des Rückgängig-Stapels",
-      "userId": "{{common.userId}}"
+      "providerId": "{{settings.userProfile.providerId}}"
     }
   },
   "editor": {
@@ -1558,8 +1557,7 @@
       "jwtGroups": "JWT-Gruppen",
       "provider": "{{common.identityProvider}}",
       "providerId": "Anbieter-ID",
-      "title": "Benutzerprofil",
-      "userId": "{{common.userId}}"
+      "title": "Benutzerprofil"
     }
   }
 }

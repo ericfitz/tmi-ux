@@ -616,7 +616,6 @@
     "unarchive": "アーカイブ解除",
     "unsavedChangesWarning": "保存されていない変更があります。閉じてもよろしいですか？",
     "uri": "URI",
-    "userId": "ユーザーID",
     "validation": {
       "email": "有効なメールアドレスを入力してください",
       "invalidUrl": "有効なURLを入力してください",
@@ -760,7 +759,7 @@
       "title": "履歴",
       "undoStack": "元に戻すスタック",
       "undoStackSize": "元に戻すスタックサイズ",
-      "userId": "{{common.userId}}"
+      "providerId": "{{settings.userProfile.providerId}}"
     }
   },
   "editor": {
@@ -1558,8 +1557,7 @@
       "jwtGroups": "JWTグループ",
       "provider": "{{common.identityProvider}}",
       "providerId": "プロバイダーID",
-      "title": "ユーザープロフィール",
-      "userId": "{{common.userId}}"
+      "title": "ユーザープロフィール"
     }
   }
 }

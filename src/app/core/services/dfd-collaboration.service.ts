@@ -1173,20 +1173,20 @@ export class DfdCollaborationService implements OnDestroy {
   }
 
   /**
-   * Check if a specific user is the current user (by composite key)
-   * @param userId The user ID to check
+   * Check if a specific user is the current user (by provider ID)
+   * @param providerId The provider ID to check
    * @returns boolean indicating if this is the current user
    */
-  public isCurrentUser(userId: string): boolean {
-    const currentUserId = this.getCurrentUserId();
-    return !!currentUserId && userId === currentUserId;
+  public isCurrentUser(providerId: string): boolean {
+    const currentProviderId = this.getCurrentProviderId();
+    return !!currentProviderId && providerId === currentProviderId;
   }
 
   /**
-   * Get the current user's ID
-   * @returns The current user's ID or null if not authenticated
+   * Get the current user's provider ID
+   * @returns The current user's provider ID or null if not authenticated
    */
-  public getCurrentUserId(): string | null {
+  public getCurrentProviderId(): string | null {
     return this._authService.userProfile?.provider_id || null;
   }
 

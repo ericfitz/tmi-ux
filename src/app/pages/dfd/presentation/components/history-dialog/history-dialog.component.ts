@@ -45,7 +45,7 @@ interface ProcessedHistoryEntry {
   description: string;
   affectedCellCount: number;
   affectedCellIds: string[];
-  userId?: string;
+  providerId?: string;
   operationId?: string;
   metadata?: Record<string, unknown>;
   cellsJson: string;
@@ -136,7 +136,7 @@ export class HistoryDialogComponent {
       description: entry.description,
       affectedCellCount: entry.cells.length,
       affectedCellIds: entry.metadata?.affectedCellIds || [],
-      userId: entry.userId,
+      providerId: entry.providerId,
       operationId: entry.operationId,
       metadata: entry.metadata,
       cellsJson: safeStringify(entry.cells, 2, { maxArrayLength: 10, maxProperties: 20 }),
@@ -171,7 +171,7 @@ export class HistoryDialogComponent {
           description: entry.description,
           affectedCellCount: entry.cells.length,
           affectedCellIds: entry.metadata?.affectedCellIds || [],
-          userId: entry.userId,
+          providerId: entry.providerId,
           operationId: entry.operationId,
           metadata: entry.metadata,
           // Include full cells for detailed inspection
@@ -187,7 +187,7 @@ export class HistoryDialogComponent {
           description: entry.description,
           affectedCellCount: entry.cells.length,
           affectedCellIds: entry.metadata?.affectedCellIds || [],
-          userId: entry.userId,
+          providerId: entry.providerId,
           operationId: entry.operationId,
           metadata: entry.metadata,
           // Include full cells for detailed inspection

@@ -616,7 +616,6 @@
     "unarchive": "Batalkan Arsip",
     "unsavedChangesWarning": "Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin menutup?",
     "uri": "URI",
-    "userId": "ID Pengguna",
     "validation": {
       "email": "Harap masukkan alamat email yang valid",
       "invalidUrl": "Masukkan URL yang valid",
@@ -760,7 +759,7 @@
       "title": "Riwayat",
       "undoStack": "Tumpukan Batalkan",
       "undoStackSize": "Ukuran Tumpukan Batalkan",
-      "userId": "{{common.userId}}"
+      "providerId": "{{settings.userProfile.providerId}}"
     }
   },
   "editor": {
@@ -1558,8 +1557,7 @@
       "jwtGroups": "Grup JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID Penyedia",
-      "title": "Profil Pengguna",
-      "userId": "{{common.userId}}"
+      "title": "Profil Pengguna"
     }
   }
 }

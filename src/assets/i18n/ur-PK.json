@@ -616,7 +616,6 @@
     "unarchive": "آرکائیو ختم کریں",
     "unsavedChangesWarning": "آپ کے پاس غیر محفوظ شدہ تبدیلیاں ہیں۔ کیا آپ واقعی بند کرنا چاہتے ہیں؟",
     "uri": "URI",
-    "userId": "صارف ID",
     "validation": {
       "email": "براہ کرم ایک درست ای میل ایڈریس درج کریں",
       "invalidUrl": "براہ کرم درست URL درج کریں",
@@ -760,7 +759,7 @@
       "title": "تاریخ",
       "undoStack": "واپس کرنے کا اسٹیک",
       "undoStackSize": "واپس کرنے کے اسٹیک کا سائز",
-      "userId": "{{common.userId}}"
+      "providerId": "{{settings.userProfile.providerId}}"
     }
   },
   "editor": {
@@ -1558,8 +1557,7 @@
       "jwtGroups": "JWT گروپس",
       "provider": "{{common.identityProvider}}",
       "providerId": "فراہم کنندہ ID",
-      "title": "صارف پروفائل",
-      "userId": "{{common.userId}}"
+      "title": "صارف پروفائل"
     }
   }
 }

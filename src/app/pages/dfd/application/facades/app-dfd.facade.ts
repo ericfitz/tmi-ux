@@ -204,7 +204,7 @@ export class AppDfdFacade {
       graph,
       diagramId,
       threatModelId: '',
-      userId: '',
+      providerId: '',
       isCollaborating: false,
       permissions: [],
     };
@@ -273,7 +273,7 @@ export class AppDfdFacade {
       graph,
       diagramId,
       threatModelId: '',
-      userId: '',
+      providerId: '',
       isCollaborating: false,
       permissions: [],
     };
@@ -340,7 +340,7 @@ export class AppDfdFacade {
       graph,
       diagramId,
       threatModelId: '',
-      userId: '',
+      providerId: '',
       isCollaborating: false,
       permissions: [],
     };
@@ -454,7 +454,7 @@ export class AppDfdFacade {
       graph,
       diagramId,
       threatModelId: '', // Will be populated by persistence layer if needed
-      userId: '', // Will be populated by auth service if needed
+      providerId: '', // Will be populated by auth service if needed
       isCollaborating: false,
       permissions: [],
     };
@@ -708,7 +708,7 @@ export class AppDfdFacade {
       graph,
       diagramId: '', // Will be set by caller if needed
       threatModelId: '',
-      userId: '',
+      providerId: '',
       isCollaborating: false,
       permissions: [],
     };
@@ -1005,7 +1005,7 @@ export class AppDfdFacade {
       graph,
       diagramId,
       threatModelId: '',
-      userId: '',
+      providerId: '',
       isCollaborating: false,
       permissions: [],
     };
@@ -1061,7 +1061,7 @@ export class AppDfdFacade {
       graph,
       diagramId,
       threatModelId: '',
-      userId: '',
+      providerId: '',
       isCollaborating: false,
       permissions: [],
     };
@@ -1157,7 +1157,7 @@ export class AppDfdFacade {
       graph,
       diagramId,
       threatModelId: '',
-      userId: '',
+      providerId: '',
       isCollaborating: false,
       permissions: [],
     };
@@ -1233,7 +1233,7 @@ export class AppDfdFacade {
       graph,
       diagramId,
       threatModelId: '',
-      userId: '',
+      providerId: '',
       isCollaborating: false,
       permissions: [],
     };
@@ -1300,7 +1300,7 @@ export class AppDfdFacade {
       graph,
       diagramId,
       threatModelId: '',
-      userId: '',
+      providerId: '',
       isCollaborating: false,
       permissions: [],
     };

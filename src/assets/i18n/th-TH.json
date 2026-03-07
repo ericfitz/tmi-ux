@@ -616,7 +616,6 @@
     "unarchive": "ยกเลิกการเก็บถาวร",
     "unsavedChangesWarning": "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก คุณแน่ใจหรือไม่ว่าต้องการปิด?",
     "uri": "URI",
-    "userId": "รหัสผู้ใช้",
     "validation": {
       "email": "กรุณากรอกที่อยู่อีเมลที่ถูกต้อง",
       "invalidUrl": "กรุณาใส่ URL ที่ถูกต้อง",
@@ -760,7 +759,7 @@
       "title": "ประวัติ",
       "undoStack": "สแต็กเลิกทำ",
       "undoStackSize": "ขนาดสแต็กเลิกทำ",
-      "userId": "{{common.userId}}"
+      "providerId": "{{settings.userProfile.providerId}}"
     }
   },
   "editor": {
@@ -1558,8 +1557,7 @@
       "jwtGroups": "กลุ่ม JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "รหัสผู้ให้บริการ",
-      "title": "โปรไฟล์ผู้ใช้",
-      "userId": "{{common.userId}}"
+      "title": "โปรไฟล์ผู้ใช้"
     }
   }
 }

@@ -617,13 +617,13 @@ export const DFD_STYLING_HELPERS = {
   },
 
   /**
-   * Get a deterministic color for a user based on their userId
-   * Uses a simple hash to map userId to the Okabe-Ito palette
+   * Get a deterministic color for a user based on their email
+   * Uses a simple hash to map email to the Okabe-Ito palette
    */
-  getUserLabelColor(userId: string): { r: number; g: number; b: number } {
+  getUserLabelColor(email: string): { r: number; g: number; b: number } {
     let hash = 0;
-    for (let i = 0; i < userId.length; i++) {
-      hash = (hash * 31 + userId.charCodeAt(i)) | 0;
+    for (let i = 0; i < email.length; i++) {
+      hash = (hash * 31 + email.charCodeAt(i)) | 0;
     }
     const palette = DFD_STYLING.USER_LABEL.COLOR_PALETTE;
     const index = Math.abs(hash) % palette.length;

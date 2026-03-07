@@ -68,24 +68,24 @@ export interface PresenterChangedEvent {
 
 export interface PresenterCursorEvent {
   type: 'presenter-cursor';
-  userId: string;
+  providerId: string;
   position: { x: number; y: number };
 }
 
 export interface PresenterSelectionEvent {
   type: 'presenter-selection';
-  userId: string;
+  providerId: string;
   selectedCells: string[];
 }
 
 export interface PresenterRequestEvent {
   type: 'presenter-request';
-  userId: string;
+  providerId: string;
 }
 
 export interface PresenterDeniedEvent {
   type: 'presenter-denied';
-  userId: string;
+  providerId: string;
   targetUser: string;
 }
 
@@ -433,11 +433,11 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       position: message.cursor_position,
     });
 
-    // Use empty string for userId since spec doesn't include it
+    // Use empty string for providerId since spec doesn't include it
     // The presenter tracking is handled by current_presenter message
     this._domainEvents$.next({
       type: 'presenter-cursor',
-      userId: '', // Schema doesn't include user field
+      providerId: '', // Schema doesn't include user field
       position: message.cursor_position,
     });
   }
@@ -449,11 +449,11 @@ export class InfraDfdWebsocketAdapter implements OnDestroy {
       cellCount: message.selected_cells.length,
     });
 
-    // Use empty string for userId since spec doesn't include it
+    // Use empty string for providerId since spec doesn't include it
     // The presenter tracking is handled by current_presenter message
     this._domainEvents$.next({
       type: 'presenter-selection',
-      userId: '', // Schema doesn't include user field
+      providerId: '', // Schema doesn't include user field
       selectedCells: message.selected_cells,
     });
   }

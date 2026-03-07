@@ -105,7 +105,7 @@ export interface WebSocketMessage {
   id: string;
   type: MessageType;
   sessionId?: string;
-  userId?: string;
+  providerId?: string;
   timestamp: number;
   data: Record<string, unknown>;
   requiresAck?: boolean;
@@ -352,7 +352,7 @@ export class WebSocketAdapter {
           messageId: fullMessage.id,
           messageType: fullMessage.type,
           sessionId: fullMessage.sessionId,
-          userId: fullMessage.userId,
+          providerId: fullMessage.providerId,
           requiresAck: fullMessage.requiresAck,
           body: redactSensitiveData(fullMessage.data),
         });
@@ -615,15 +615,15 @@ export class WebSocketAdapter {
 
         this.logger.debugComponent('websocket-api', 'Sending TMI message', {
           type: messageData.message_type,
-          userId: userInfo?.user_id || messageData.user_id,
-          userEmail: userInfo?.email,
+          user_id: userInfo?.user_id || messageData.user_id,
+          email: userInfo?.email,
         });
 
         // Send message
         this.logger.debugComponent('websocket-api', 'WebSocket message sent:', {
           messageType: messageData.message_type,
-          userId: userInfo?.user_id || messageData.user_id,
-          userEmail: userInfo?.email,
+          user_id: userInfo?.user_id || messageData.user_id,
+          email: userInfo?.email,
           operationId: messageData.operation_id,
           hasOperation: !!messageData.operation,
           body: redactSensitiveData(message),
@@ -726,7 +726,7 @@ export class WebSocketAdapter {
           messageId: message.id,
           messageType: message.type,
           sessionId: message.sessionId,
-          userId: message.userId,
+          providerId: message.providerId,
           timestamp: message.timestamp,
           requiresAck: message.requiresAck,
           body: redactSensitiveData(message.data),
@@ -1073,7 +1073,7 @@ export class WebSocketAdapter {
       data: Record<string, unknown>;
       requiresAck?: boolean;
       sessionId?: string;
-      userId?: string;
+      providerId?: string;
     };
 
     // Validate that message type is a known MessageType
@@ -1097,8 +1097,8 @@ export class WebSocketAdapter {
       return { isValid: false, error: 'sessionId must be a string if provided' };
     }
 
-    if (typedMessage.userId !== undefined && typeof typedMessage.userId !== 'string') {
-      return { isValid: false, error: 'userId must be a string if provided' };
+    if (typedMessage.providerId !== undefined && typeof typedMessage.providerId !== 'string') {
+      return { isValid: false, error: 'providerId must be a string if provided' };
     }
 
     return { isValid: true };

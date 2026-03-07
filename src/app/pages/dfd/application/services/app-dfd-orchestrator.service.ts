@@ -349,7 +349,7 @@ export class AppDfdOrchestrator {
       data: this._getGraphData(),
       metadata: {
         saveType: 'manual',
-        userId: this.authService.providerId,
+        providerId: this.authService.providerId,
         userEmail: this.authService.userEmail,
         userName: this.authService.username,
       },
@@ -793,7 +793,7 @@ export class AppDfdOrchestrator {
                   description: `Create ${nodeType}`,
                   cells,
                   previousCells: cells.filter((c: any) => c.id !== nodeId), // All cells except the new one
-                  userId: this.authService.providerId,
+                  providerId: this.authService.providerId,
                   metadata: {
                     nodeType,
                     usedIntelligentPositioning: true,
@@ -1225,7 +1225,7 @@ export class AppDfdOrchestrator {
       graph: this.dfdInfrastructure.getGraph(),
       diagramId: params.diagramId,
       threatModelId: params.threatModelId,
-      userId: this.authService.providerId,
+      providerId: this.authService.providerId,
       isCollaborating: this.collaborationService.isCollaborating(),
       permissions: ['read', 'write'],
     };
@@ -1461,7 +1461,7 @@ export class AppDfdOrchestrator {
     _context: OperationContext,
   ): any {
     const timestamp = Date.now();
-    const userId = this.authService.providerId;
+    const providerId = this.authService.providerId;
 
     // Use state snapshots from the operation result
     // IMPORTANT: Normalize cells to remove excluded properties (visual effects, tools, etc.)
@@ -1481,7 +1481,7 @@ export class AppDfdOrchestrator {
       description,
       cells: currentCells,
       previousCells,
-      userId,
+      providerId,
       operationId: operation.id,
       metadata: {
         affectedCellCount: result.affectedCellIds.length,
@@ -1553,7 +1553,7 @@ export class AppDfdOrchestrator {
       description: this._dragDescription(dragType),
       cells: currentCells,
       previousCells,
-      userId: this.authService.providerId,
+      providerId: this.authService.providerId,
       metadata: {
         dragType,
         dragDuration: dragCompletion.duration || 0,
@@ -1893,7 +1893,7 @@ export class AppDfdOrchestrator {
       metadata: {
         saveType: 'auto',
         historyIndex,
-        userId: this.authService.providerId,
+        providerId: this.authService.providerId,
         userEmail: this.authService.userEmail,
         userName: this.authService.username,
       },

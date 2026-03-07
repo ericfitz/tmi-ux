@@ -616,7 +616,6 @@
     "unarchive": "ביטול ארכיון",
     "unsavedChangesWarning": "יש לך שינויים שלא נשמרו. האם אתה בטוח שברצונך לסגור?",
     "uri": "URI",
-    "userId": "מזהה משתמש",
     "validation": {
       "email": "אנא הזן כתובת דוא\"ל חוקית",
       "invalidUrl": "אנא הזן כתובת URL חוקית",
@@ -760,7 +759,7 @@
       "title": "היסטוריה",
       "undoStack": "מחסנית ביטול",
       "undoStackSize": "גודל מחסנית ביטול",
-      "userId": "{{common.userId}}"
+      "providerId": "{{settings.userProfile.providerId}}"
     }
   },
   "editor": {
@@ -1558,8 +1557,7 @@
       "jwtGroups": "קבוצות JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "מזהה ספק",
-      "title": "פרופיל משתמש",
-      "userId": "{{common.userId}}"
+      "title": "פרופיל משתמש"
     }
   }
 }

@@ -50,7 +50,7 @@ export interface SyncState {
  */
 export interface PendingRemoteOperation {
   operationId: string;
-  userId: string;
+  email: string;
   operation: CellPatchOperation;
   timestamp: number;
 }
@@ -105,12 +105,12 @@ export class AppStateService implements OnDestroy {
   // Event emitters for operations that need to be applied to the graph
   private readonly _applyOperationEvent$ = new Subject<{
     operation: CellOperation;
-    userId: string;
+    email: string;
     operationId: string;
   }>();
   private readonly _applyBatchedOperationsEvent$ = new Subject<{
     operations: CellOperation[];
-    userId: string;
+    email: string;
     displayName: string;
     operationId: string;
   }>();
@@ -326,7 +326,7 @@ export class AppStateService implements OnDestroy {
         ...this.getCurrentState().pendingRemoteOperations,
         {
           operationId: operation.operationId,
-          userId: operation.userId,
+          email: operation.email,
           operation: {
             type: 'patch',
             cells: operation.operations,
@@ -339,7 +339,7 @@ export class AppStateService implements OnDestroy {
     // Emit batched operation event to preserve semantic grouping
     this._applyBatchedOperationsEvent$.next({
       operations: operation.operations,
-      userId: operation.userId,
+      email: operation.email,
       displayName: operation.displayName,
       operationId: operation.operationId,
     });

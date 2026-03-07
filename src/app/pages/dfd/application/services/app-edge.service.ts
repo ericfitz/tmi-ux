@@ -184,12 +184,12 @@ export class AppEdgeService {
     };
 
     // Create minimal operation context with required fields
-    // Note: threatModelId and userId will be populated by the orchestrator if needed
+    // Note: threatModelId and providerId will be populated by the orchestrator if needed
     const context: OperationContext = {
       graph,
       diagramId,
       threatModelId: '', // Will be populated by persistence layer if needed
-      userId: '', // Will be populated by auth service if needed
+      providerId: '', // Will be populated by auth service if needed
       isCollaborating: false,
       permissions: [],
     };

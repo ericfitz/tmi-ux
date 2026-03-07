@@ -170,7 +170,7 @@ export class AddQuotaDialogComponent implements OnInit {
         webhookQuota$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: () => {
             this.logger.info('Quotas created successfully', {
-              userId: this.selectedUser?.internal_uuid,
+              internalUuid: this.selectedUser?.internal_uuid,
             });
             this.saving = false;
             this.dialogRef.close(true);

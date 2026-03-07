@@ -616,7 +616,6 @@
     "unarchive": "보관 취소",
     "unsavedChangesWarning": "저장되지 않은 변경 사항이 있습니다. 닫으시겠습니까?",
     "uri": "URI",
-    "userId": "사용자 ID",
     "validation": {
       "email": "유효한 이메일 주소를 입력해 주세요",
       "invalidUrl": "유효한 URL을 입력하세요",
@@ -760,7 +759,7 @@
       "title": "기록",
       "undoStack": "실행 취소 스택",
       "undoStackSize": "실행 취소 스택 크기",
-      "userId": "{{common.userId}}"
+      "providerId": "{{settings.userProfile.providerId}}"
     }
   },
   "editor": {
@@ -1558,8 +1557,7 @@
       "jwtGroups": "JWT 그룹",
       "provider": "{{common.identityProvider}}",
       "providerId": "공급자 ID",
-      "title": "사용자 프로필",
-      "userId": "{{common.userId}}"
+      "title": "사용자 프로필"
     }
   }
 }

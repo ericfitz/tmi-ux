@@ -33,7 +33,7 @@ export class InfraVisualEffectsService {
   // Track active effects to prevent conflicts and memory leaks
   private activeEffects = new Map<string, ActiveEffect>();
 
-  // Track active user label overlays (keyed by `${cellId}-${userId}`)
+  // Track active user label overlays (keyed by `${cellId}-${email}`)
   private _activeLabels = new Map<string, HTMLElement>();
   // Track label count per cell for vertical stacking
   private _cellLabelCounts = new Map<string, number>();
@@ -147,7 +147,7 @@ export class InfraVisualEffectsService {
    * Show a user display name label near a cell for remote collaboration feedback.
    * Creates a DOM overlay that fades out over USER_LABEL.FADE_DURATION_MS.
    */
-  showUserLabel(cell: Cell, graph: Graph, userId: string, displayName: string): void {
+  showUserLabel(cell: Cell, graph: Graph, email: string, displayName: string): void {
     if (!cell || !graph?.container) {
       return;
     }
@@ -157,7 +157,7 @@ export class InfraVisualEffectsService {
     }
 
     const cellId = cell.id;
-    const labelKey = `${cellId}-${userId}`;
+    const labelKey = `${cellId}-${email}`;
 
     // Remove existing label for same cell+user if present
     this._removeLabel(labelKey, cellId);
@@ -175,7 +175,7 @@ export class InfraVisualEffectsService {
         DFD_STYLING.USER_LABEL.STACK_GAP);
 
     // Get user color and contrasting text color
-    const color = DFD_STYLING_HELPERS.getUserLabelColor(userId);
+    const color = DFD_STYLING_HELPERS.getUserLabelColor(email);
     const textColor = this._getUserLabelTextColor(color);
 
     // Create and position the label element

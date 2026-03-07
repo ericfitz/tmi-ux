@@ -69,9 +69,9 @@ export interface HistoryEntry {
   previousCells: Cell[];
 
   /**
-   * User who performed the operation (if in collaboration mode)
+   * Provider ID of user who performed the operation (if in collaboration mode)
    */
-  userId?: string;
+  providerId?: string;
 
   /**
    * Operation ID from the graph operation system

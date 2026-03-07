@@ -647,7 +647,7 @@ export class CollaborationDialogComponent implements OnInit, OnDestroy {
    * Track users by composite key for efficient rendering
    * This ensures proper deduplication using the principal-based composite key (provider:provider_id)
    */
-  trackByUserId(_index: number, user: CollaborationUser): string {
+  trackByPrincipalKey(_index: number, user: CollaborationUser): string {
     return `${user.provider}:${user.provider_id}`;
   }
 

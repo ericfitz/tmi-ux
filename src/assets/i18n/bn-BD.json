@@ -616,7 +616,6 @@
     "unarchive": "আনআর্কাইভ",
     "unsavedChangesWarning": "আপনার অসংরক্ষিত পরিবর্তন আছে। আপনি কি নিশ্চিত যে আপনি বন্ধ করতে চান?",
     "uri": "URI",
-    "userId": "ব্যবহারকারী আইডি",
     "validation": {
       "email": "অনুগ্রহ করে একটি বৈধ ইমেইল ঠিকানা লিখুন",
       "invalidUrl": "একটি বৈধ URL লিখুন",
@@ -760,7 +759,7 @@
       "title": "ইতিহাস",
       "undoStack": "আনডু স্ট্যাক",
       "undoStackSize": "আনডু স্ট্যাক সাইজ",
-      "userId": "{{common.userId}}"
+      "providerId": "{{settings.userProfile.providerId}}"
     }
   },
   "editor": {
@@ -1558,8 +1557,7 @@
       "jwtGroups": "JWT গ্রুপ",
       "provider": "{{common.identityProvider}}",
       "providerId": "প্রদানকারী আইডি",
-      "title": "ব্যবহারকারীর প্রোফাইল",
-      "userId": "{{common.userId}}"
+      "title": "ব্যবহারকারীর প্রোফাইল"
     }
   }
 }

@@ -406,7 +406,7 @@ export interface RemoteOperationOptions {
 export interface CollaborativeOperationConfig {
   diagramId: string;
   threatModelId: string;
-  userId: string;
+  providerId: string;
   threatModelPermission?: 'reader' | 'writer';
   enableThrottling?: boolean;
   cursorThrottleMs?: number;

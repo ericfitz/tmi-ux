@@ -76,10 +76,12 @@
                   <code class="value">{{ entry.affectedCellIds.join(', ') }}</code>
                 </div>
               }
-              @if (entry.userId) {
+              @if (entry.providerId) {
                 <div class="entry-detail">
-                  <span class="label">{{ 'debugDialogs.historyDialog.userId' | transloco }}:</span>
-                  <code class="value">{{ entry.userId }}</code>
+                  <span class="label"
+                    >{{ 'debugDialogs.historyDialog.providerId' | transloco }}:</span
+                  >
+                  <code class="value">{{ entry.providerId }}</code>
                 </div>
               }
               @if (entry.operationId) {
@@ -159,10 +161,12 @@
                   <code class="value">{{ entry.affectedCellIds.join(', ') }}</code>
                 </div>
               }
-              @if (entry.userId) {
+              @if (entry.providerId) {
                 <div class="entry-detail">
-                  <span class="label">{{ 'debugDialogs.historyDialog.userId' | transloco }}:</span>
-                  <code class="value">{{ entry.userId }}</code>
+                  <span class="label"
+                    >{{ 'debugDialogs.historyDialog.providerId' | transloco }}:</span
+                  >
+                  <code class="value">{{ entry.providerId }}</code>
                 </div>
               }
               @if (entry.operationId) {

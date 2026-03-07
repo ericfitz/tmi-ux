@@ -616,7 +616,6 @@
     "unarchive": "取消归档",
     "unsavedChangesWarning": "您有未保存的更改。确定要关闭吗？",
     "uri": "URI",
-    "userId": "User ID",
     "validation": {
       "email": "请输入有效的电子邮件地址",
       "invalidUrl": "请输入有效的 URL",
@@ -760,7 +759,7 @@
       "title": "历史记录",
       "undoStack": "撤销堆栈",
       "undoStackSize": "撤销堆栈大小",
-      "userId": "{{common.userId}}"
+      "providerId": "{{settings.userProfile.providerId}}"
     }
   },
   "editor": {
@@ -1558,8 +1557,7 @@
       "jwtGroups": "JWT 组",
       "provider": "{{common.identityProvider}}",
       "providerId": "提供商ID",
-      "title": "用户资料",
-      "userId": "{{common.userId}}"
+      "title": "用户资料"
     }
   }
 }

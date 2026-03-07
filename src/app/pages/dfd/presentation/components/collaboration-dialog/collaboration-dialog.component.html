@@ -16,7 +16,10 @@
       <mat-divider></mat-divider>
       <h4 class="section-title">{{ 'collaboration.collaboratorsHeader' | transloco }}</h4>
       <div class="users-list">
-        <div *ngFor="let user of collaborationUsers; trackBy: trackByUserId" class="user-item">
+        <div
+          *ngFor="let user of collaborationUsers; trackBy: trackByPrincipalKey"
+          class="user-item"
+        >
           <!-- Column 1: User Type -->
           <div class="user-type-column">
             <mat-icon

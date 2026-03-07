@@ -15,7 +15,7 @@ import { AutoSaveState } from '../types/auto-save.types';
 export interface DfdOperationContext {
   readonly diagramId: string;
   readonly threatModelId: string;
-  readonly userId: string;
+  readonly providerId: string;
   readonly isCollaborating: boolean;
   readonly permissions: string[];
 }

@@ -33,49 +33,49 @@ export class QuotaService {
   /**
    * Get user API quota for a specific user
    */
-  getUserAPIQuota(userId: string): Observable<UserAPIQuota> {
-    return this.apiService.get<UserAPIQuota>(`/admin/quotas/users/${userId}`);
+  getUserAPIQuota(internalUuid: string): Observable<UserAPIQuota> {
+    return this.apiService.get<UserAPIQuota>(`/admin/quotas/users/${internalUuid}`);
   }
 
   /**
    * Update or create user API quota
    */
   updateUserAPIQuota(
-    userId: string,
+    internalUuid: string,
     quota: Partial<Omit<UserAPIQuota, 'user_id' | 'created_at' | 'modified_at'>>,
   ): Observable<UserAPIQuota> {
-    return this.apiService.put<UserAPIQuota>(`/admin/quotas/users/${userId}`, quota);
+    return this.apiService.put<UserAPIQuota>(`/admin/quotas/users/${internalUuid}`, quota);
   }
 
   /**
    * Delete user API quota (reverts to system defaults)
    */
-  deleteUserAPIQuota(userId: string): Observable<void> {
-    return this.apiService.delete<void>(`/admin/quotas/users/${userId}`);
+  deleteUserAPIQuota(internalUuid: string): Observable<void> {
+    return this.apiService.delete<void>(`/admin/quotas/users/${internalUuid}`);
   }
 
   /**
    * Get webhook quota for a specific user
    */
-  getWebhookQuota(userId: string): Observable<WebhookQuota> {
-    return this.apiService.get<WebhookQuota>(`/admin/quotas/webhooks/${userId}`);
+  getWebhookQuota(internalUuid: string): Observable<WebhookQuota> {
+    return this.apiService.get<WebhookQuota>(`/admin/quotas/webhooks/${internalUuid}`);
   }
 
   /**
    * Update or create webhook quota
    */
   updateWebhookQuota(
-    userId: string,
+    internalUuid: string,
     quota: Partial<Omit<WebhookQuota, 'owner_id' | 'created_at' | 'modified_at'>>,
   ): Observable<WebhookQuota> {
-    return this.apiService.put<WebhookQuota>(`/admin/quotas/webhooks/${userId}`, quota);
+    return this.apiService.put<WebhookQuota>(`/admin/quotas/webhooks/${internalUuid}`, quota);
   }
 
   /**
    * Delete webhook quota (reverts to system defaults)
    */
-  deleteWebhookQuota(userId: string): Observable<void> {
-    return this.apiService.delete<void>(`/admin/quotas/webhooks/${userId}`);
+  deleteWebhookQuota(internalUuid: string): Observable<void> {
+    return this.apiService.delete<void>(`/admin/quotas/webhooks/${internalUuid}`);
   }
 
   /**
@@ -148,20 +148,20 @@ export class QuotaService {
   /**
    * Get enriched user API quota (includes user information)
    */
-  getEnrichedUserAPIQuota(userId: string): Observable<EnrichedUserAPIQuota> {
+  getEnrichedUserAPIQuota(internalUuid: string): Observable<EnrichedUserAPIQuota> {
     return forkJoin({
-      quota: this.getUserAPIQuota(userId),
-      user: this.getUser(userId),
+      quota: this.getUserAPIQuota(internalUuid),
+      user: this.getUser(internalUuid),
     }).pipe(map(({ quota, user }) => this.enrichUserAPIQuota(quota, user)));
   }
 
   /**
    * Get enriched webhook quota (includes user information)
    */
-  getEnrichedWebhookQuota(userId: string): Observable<EnrichedWebhookQuota> {
+  getEnrichedWebhookQuota(internalUuid: string): Observable<EnrichedWebhookQuota> {
     return forkJoin({
-      quota: this.getWebhookQuota(userId),
-      user: this.getUser(userId),
+      quota: this.getWebhookQuota(internalUuid),
+      user: this.getUser(internalUuid),
     }).pipe(map(({ quota, user }) => this.enrichWebhookQuota(quota, user)));
   }
 

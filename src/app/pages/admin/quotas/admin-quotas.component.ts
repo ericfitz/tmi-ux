@@ -419,7 +419,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
           quota.editing = false;
           quota.editValues = undefined;
           quota.saving = false;
-          this.logger.info('User API quota updated', { userId: quota.user_id });
+          this.logger.info('User API quota updated', { internalUuid: quota.user_id });
         },
         error: error => {
           quota.saving = false;
@@ -439,7 +439,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
-            this.logger.info('User API quota deleted', { userId: quota.user_id });
+            this.logger.info('User API quota deleted', { internalUuid: quota.user_id });
 
             // Adjust page if we deleted the last item on the current page
             const itemsOnPageAfterDelete = this.userAPIQuotas.length - 1;
@@ -493,7 +493,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
           quota.editing = false;
           quota.editValues = undefined;
           quota.saving = false;
-          this.logger.info('Webhook quota updated', { userId: quota.owner_id });
+          this.logger.info('Webhook quota updated', { internalUuid: quota.owner_id });
         },
         error: error => {
           quota.saving = false;
@@ -513,7 +513,7 @@ export class AdminQuotasComponent implements OnInit, AfterViewInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
-            this.logger.info('Webhook quota deleted', { userId: quota.owner_id });
+            this.logger.info('Webhook quota deleted', { internalUuid: quota.owner_id });
 
             // Adjust page if we deleted the last item on the current page
             const itemsOnPageAfterDelete = this.webhookQuotas.length - 1;

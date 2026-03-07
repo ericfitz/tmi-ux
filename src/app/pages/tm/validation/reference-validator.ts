@@ -57,7 +57,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
       cellIds: new Map(), // diagram_id -> Set<cell_id>
       documentIds: new Set(),
       threatIds: new Set(),
-      userIds: new Set(),
+      principalKeys: new Set(),
     };
 
     // Collect diagram IDs and cell IDs
@@ -102,17 +102,19 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
     if (Array.isArray(threatModel.authorization)) {
       threatModel.authorization.forEach(auth => {
         if (auth?.provider && auth?.provider_id) {
-          referenceMap.userIds.add(`${auth.provider}:${auth.provider_id}`);
+          referenceMap.principalKeys.add(`${auth.provider}:${auth.provider_id}`);
         }
       });
     }
 
     // Add owner and creator (using composite keys)
     if (threatModel.owner) {
-      referenceMap.userIds.add(`${threatModel.owner.provider}:${threatModel.owner.provider_id}`);
+      referenceMap.principalKeys.add(
+        `${threatModel.owner.provider}:${threatModel.owner.provider_id}`,
+      );
     }
     if (threatModel.created_by) {
-      referenceMap.userIds.add(
+      referenceMap.principalKeys.add(
         `${threatModel.created_by.provider}:${threatModel.created_by.provider_id}`,
       );
     }
@@ -275,7 +277,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
     const ownerCompositeKey = threatModel.owner
       ? `${threatModel.owner.provider}:${threatModel.owner.provider_id}`
       : null;
-    if (ownerCompositeKey && !referenceMap.userIds.has(ownerCompositeKey)) {
+    if (ownerCompositeKey && !referenceMap.principalKeys.has(ownerCompositeKey)) {
       this.addError(
         ValidationUtils.createError(
           'OWNER_NOT_IN_AUTHORIZATION',
@@ -284,7 +286,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
           'warning',
           {
             owner: ownerCompositeKey,
-            authorizedUsers: Array.from(referenceMap.userIds),
+            authorizedPrincipals: Array.from(referenceMap.principalKeys),
           },
         ),
       );
@@ -294,7 +296,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
     const creatorCompositeKey = threatModel.created_by
       ? `${threatModel.created_by.provider}:${threatModel.created_by.provider_id}`
       : null;
-    if (creatorCompositeKey && !referenceMap.userIds.has(creatorCompositeKey)) {
+    if (creatorCompositeKey && !referenceMap.principalKeys.has(creatorCompositeKey)) {
       this.addError(
         ValidationUtils.createError(
           'CREATOR_NOT_IN_AUTHORIZATION',
@@ -303,7 +305,7 @@ export class InternalReferenceValidator extends BaseValidator implements Referen
           'info',
           {
             creator: creatorCompositeKey,
-            authorizedUsers: Array.from(referenceMap.userIds),
+            authorizedPrincipals: Array.from(referenceMap.principalKeys),
           },
         ),
       );
@@ -397,5 +399,5 @@ interface ReferenceMap {
   cellIds: Map<string, Set<string>>; // diagram_id -> cell_ids
   documentIds: Set<string>;
   threatIds: Set<string>;
-  userIds: Set<string>;
+  principalKeys: Set<string>;
 }

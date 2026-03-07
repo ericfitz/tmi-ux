@@ -616,7 +616,6 @@
     "unarchive": "Désarchiver",
     "unsavedChangesWarning": "Vous avez des modifications non enregistrees. Etes-vous sur de vouloir fermer ?",
     "uri": "URI",
-    "userId": "ID Utilisateur",
     "validation": {
       "email": "Veuillez saisir une adresse e-mail valide",
       "invalidUrl": "Veuillez entrer une URL valide",
@@ -760,7 +759,7 @@
       "title": "Historique",
       "undoStack": "Pile d'annulation",
       "undoStackSize": "Taille de la pile d'annulation",
-      "userId": "{{common.userId}}"
+      "providerId": "{{settings.userProfile.providerId}}"
     }
   },
   "editor": {
@@ -1558,8 +1557,7 @@
       "jwtGroups": "Groupes JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID du fournisseur",
-      "title": "Profil Utilisateur",
-      "userId": "{{common.userId}}"
+      "title": "Profil Utilisateur"
     }
   }
 }

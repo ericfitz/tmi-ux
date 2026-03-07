@@ -49,7 +49,7 @@ export interface SaveOperation {
   readonly priority: SavePriority;
   readonly context: SaveContext;
   readonly timestamp: number;
-  readonly userId?: string;
+  readonly providerId?: string;
   readonly cellOperations?: CellOperation[];
   readonly imageData?: {
     svg?: string;

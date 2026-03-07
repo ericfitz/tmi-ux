@@ -117,10 +117,10 @@ export class GeneralOperationValidator extends BaseOperationValidator {
     }
 
     // Validate user context
-    if (!context.userId) {
-      warnings.push('User ID not provided in operation context');
-    } else if (typeof context.userId !== 'string' || context.userId.trim() === '') {
-      errors.push('User ID must be a non-empty string');
+    if (!context.providerId) {
+      warnings.push('Provider ID not provided in operation context');
+    } else if (typeof context.providerId !== 'string' || context.providerId.trim() === '') {
+      errors.push('Provider ID must be a non-empty string');
     }
 
     // Validate diagram context
@@ -204,9 +204,9 @@ export class GeneralOperationValidator extends BaseOperationValidator {
     // Validate collaborative operation metadata
     if (operation.source === 'remote-collaboration') {
       // This operation came from another user
-      if (!context.originUserId) {
-        warnings.push('Origin user ID not provided for collaborative operation');
-      } else if (context.originUserId === context.userId) {
+      if (!context.originProviderId) {
+        warnings.push('Origin provider ID not provided for collaborative operation');
+      } else if (context.originProviderId === context.providerId) {
         warnings.push('Received collaborative operation from same user');
       }
     }

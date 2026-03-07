@@ -33,8 +33,8 @@ import {
  * Processed event types emitted to application layer
  */
 export interface ProcessedDiagramOperation {
-  userId: string;
-  displayName: string; // Human-readable name for the user (display_name, email, or userId fallback)
+  email: string;
+  displayName: string; // Human-readable name for the user (display_name, email fallback)
   operationId: string;
   sequenceNumber: number; // Server-assigned sequence number for operation ordering
   updateVector: number; // New diagram update_vector after this operation
@@ -124,12 +124,12 @@ export class AppWebSocketEventProcessor implements OnDestroy {
       return;
     }
 
-    const userId = message.initiating_user.email || 'unknown';
+    const email = message.initiating_user.email || 'unknown';
     const displayName =
-      message.initiating_user.display_name || message.initiating_user.email || userId;
+      message.initiating_user.display_name || message.initiating_user.email || email;
 
     this._logger.info('Processing remote diagram operation', {
-      userId,
+      email,
       operationId: message.operation_id,
       sequenceNumber: message.sequence_number,
       updateVector: message.update_vector,
@@ -139,7 +139,7 @@ export class AppWebSocketEventProcessor implements OnDestroy {
 
     if (message.operation?.cells && message.operation.cells.length > 0) {
       this._diagramOperation$.next({
-        userId,
+        email,
         displayName,
         operationId: message.operation_id,
         sequenceNumber: message.sequence_number,

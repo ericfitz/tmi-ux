@@ -616,7 +616,6 @@
     "unarchive": "إلغاء الأرشفة",
     "unsavedChangesWarning": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد الإغلاق؟",
     "uri": "URI",
-    "userId": "معرف المستخدم",
     "validation": {
       "email": "يرجى إدخال عنوان بريد إلكتروني صحيح",
       "invalidUrl": "يرجى إدخال رابط صحيح",
@@ -760,7 +759,7 @@
       "title": "السجل",
       "undoStack": "مكدس التراجع",
       "undoStackSize": "حجم مكدس التراجع",
-      "userId": "{{common.userId}}"
+      "providerId": "{{settings.userProfile.providerId}}"
     }
   },
   "editor": {
@@ -1558,8 +1557,7 @@
       "jwtGroups": "مجموعات JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "معرف الموفر",
-      "title": "ملف المستخدم",
-      "userId": "{{common.userId}}"
+      "title": "ملف المستخدم"
     }
   }
 }

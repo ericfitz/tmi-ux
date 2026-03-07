@@ -44,7 +44,7 @@ export interface GraphOperation {
   readonly source: OperationSource;
   readonly priority: OperationPriority;
   readonly timestamp: number;
-  readonly userId?: string;
+  readonly providerId?: string;
   readonly metadata?: Record<string, unknown>;
   readonly includeInHistory?: boolean;
 }
@@ -177,12 +177,12 @@ export interface OperationContext {
   readonly graph: Graph;
   readonly diagramId: string;
   readonly threatModelId: string;
-  readonly userId: string;
+  readonly providerId: string;
   readonly isCollaborating: boolean;
   readonly permissions: string[];
   readonly lastOperationTime?: number;
   readonly sessionId?: string;
-  readonly originUserId?: string;
+  readonly originProviderId?: string;
 }
 
 /**

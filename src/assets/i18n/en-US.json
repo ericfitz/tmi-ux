@@ -637,7 +637,6 @@
     "unarchive": "Unarchive",
     "unsavedChangesWarning": "You have unsaved changes. Are you sure you want to close?",
     "uri": "URI",
-    "userId": "User ID",
     "validation": {
       "email": "Please enter a valid email address",
       "invalidUrl": "Please enter a valid URL",
@@ -790,7 +789,7 @@
       "title": "History",
       "undoStack": "Undo Stack",
       "undoStackSize": "Undo Stack Size",
-      "userId": "{{common.userId}}"
+      "providerId": "{{settings.userProfile.providerId}}"
     }
   },
   "editor": {
@@ -1614,8 +1613,7 @@
       "jwtGroups": "JWT Groups",
       "provider": "{{common.identityProvider}}",
       "providerId": "Provider ID",
-      "title": "User Profile",
-      "userId": "{{common.userId}}"
+      "title": "User Profile"
     }
   }
 }

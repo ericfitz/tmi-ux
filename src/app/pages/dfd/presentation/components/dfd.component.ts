@@ -582,7 +582,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
               this.websocketCollaborationAdapter.initialize({
                 diagramId: this.dfdId,
                 threatModelId: this.threatModelId,
-                userId: this.authService.providerId,
+                providerId: this.authService.providerId,
                 threatModelPermission: this.threatModelPermission || 'reader',
               });
               this.logger.debugComponent('DFD', 'WebSocket collaboration adapter initialized', {

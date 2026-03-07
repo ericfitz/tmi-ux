@@ -616,7 +616,6 @@
     "unarchive": "Разархивировать",
     "unsavedChangesWarning": "У вас есть несохранённые изменения. Вы уверены, что хотите закрыть?",
     "uri": "URI",
-    "userId": "ID Пользователя",
     "validation": {
       "email": "Пожалуйста, введите действительный адрес электронной почты",
       "invalidUrl": "Пожалуйста, введите корректный URL",
@@ -760,7 +759,7 @@
       "title": "История",
       "undoStack": "Стек отмены",
       "undoStackSize": "Размер стека отмены",
-      "userId": "{{common.userId}}"
+      "providerId": "{{settings.userProfile.providerId}}"
     }
   },
   "editor": {
@@ -1558,8 +1557,7 @@
       "jwtGroups": "Группы JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID провайдера",
-      "title": "Профиль Пользователя",
-      "userId": "{{common.userId}}"
+      "title": "Профиль Пользователя"
     }
   }
 }

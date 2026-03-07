@@ -77,7 +77,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
         next: event => {
           this._handleBatchedRemoteOperations(
             event.operations,
-            event.userId,
+            event.email,
             event.displayName,
             event.operationId,
           );
@@ -92,12 +92,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
     this._subscriptions.add(
       this.appStateService.applyOperationEvents$.pipe(takeUntil(this._destroy$)).subscribe({
         next: event => {
-          this._handleRemoteOperation(
-            event.operation,
-            event.userId,
-            event.userId,
-            event.operationId,
-          );
+          this._handleRemoteOperation(event.operation, event.email, event.email, event.operationId);
         },
         error: error => {
           this.logger.error('Error in remote operation event stream', { error });
@@ -142,7 +137,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
    */
   private _handleBatchedRemoteOperations(
     cellOperations: CellOperation[],
-    userId: string,
+    email: string,
     displayName: string,
     operationId: string,
   ): void {
@@ -153,7 +148,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
 
     this.logger.info('Handling batched remote operations', {
       operationCount: cellOperations.length,
-      userId,
+      email,
       operationId,
     });
 
@@ -161,7 +156,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
     for (const cellOperation of cellOperations) {
       this._handleRemoteOperation(
         cellOperation,
-        userId,
+        email,
         displayName,
         `${operationId}-${cellOperation.id}`,
       );
@@ -173,7 +168,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
    */
   private _handleRemoteOperation(
     cellOperation: CellOperation,
-    userId: string,
+    email: string,
     displayName: string,
     operationId: string,
   ): void {
@@ -187,7 +182,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
     this.logger.debugComponent('AppRemoteOperationHandler', 'Handling remote operation', {
       cellId: cellOperation.id,
       operation: cellOperation.operation,
-      userId,
+      email,
       operationId,
     });
 
@@ -195,7 +190,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
       // Convert CellOperation to GraphOperation
       const graphOperation = this._convertCellOperationToGraphOperation(
         cellOperation,
-        userId,
+        email,
         operationId,
       );
 
@@ -242,7 +237,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
                 result.affectedCellIds &&
                 result.affectedCellIds.length > 0
               ) {
-                this._showRemoteUserLabels(graph, result.affectedCellIds, userId, displayName);
+                this._showRemoteUserLabels(graph, result.affectedCellIds, email, displayName);
               }
             } else {
               this._stats.failedOperations++;
@@ -275,7 +270,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
    */
   private _convertCellOperationToGraphOperation(
     cellOp: CellOperation,
-    userId: string,
+    _email: string,
     operationId: string,
   ): GraphOperation | null {
     const baseOperation = {
@@ -283,7 +278,6 @@ export class AppRemoteOperationHandler implements OnDestroy {
       source: 'remote-collaboration' as const,
       priority: 'normal' as const,
       timestamp: Date.now(),
-      userId,
     };
 
     // Determine if this is a node or edge based on cell data
@@ -461,13 +455,13 @@ export class AppRemoteOperationHandler implements OnDestroy {
   private _showRemoteUserLabels(
     graph: Graph,
     cellIds: string[],
-    userId: string,
+    email: string,
     displayName: string,
   ): void {
     for (const cellId of cellIds) {
       const cell = graph.getCellById(cellId);
       if (cell) {
-        this.visualEffectsService.showUserLabel(cell, graph, userId, displayName);
+        this.visualEffectsService.showUserLabel(cell, graph, email, displayName);
       }
     }
   }

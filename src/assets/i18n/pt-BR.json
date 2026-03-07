@@ -616,7 +616,6 @@
     "unarchive": "Desarquivar",
     "unsavedChangesWarning": "Voce tem alteracoes nao salvas. Tem certeza de que deseja fechar?",
     "uri": "URI",
-    "userId": "ID do Usuario",
     "validation": {
       "email": "Por favor, insira um endereço de e-mail válido",
       "invalidUrl": "Por favor, insira uma URL valida",
@@ -760,7 +759,7 @@
       "title": "Historico",
       "undoStack": "Pilha de Desfazer",
       "undoStackSize": "Tamanho da Pilha de Desfazer",
-      "userId": "{{common.userId}}"
+      "providerId": "{{settings.userProfile.providerId}}"
     }
   },
   "editor": {
@@ -1558,8 +1557,7 @@
       "jwtGroups": "Grupos JWT",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID do Provedor",
-      "title": "Perfil do Usuario",
-      "userId": "{{common.userId}}"
+      "title": "Perfil do Usuario"
     }
   }
 }

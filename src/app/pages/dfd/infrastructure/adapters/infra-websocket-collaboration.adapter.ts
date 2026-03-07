@@ -88,7 +88,7 @@ export class InfraWebsocketCollaborationAdapter {
       {
         diagramId: config.diagramId,
         threatModelId: config.threatModelId,
-        userId: config.userId,
+        providerId: config.providerId,
       },
     );
   }
