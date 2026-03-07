@@ -16,8 +16,11 @@ import { environment } from '../../../environments/environment';
 import { AuthError } from '../models/auth.models';
 
 /**
- * Interceptor to add JWT token to API requests
- * Also handles authentication errors
+ * Interceptor to handle authentication errors on API requests.
+ * With HttpOnly cookie auth, no Authorization header is injected —
+ * the browser sends cookies automatically via withCredentials.
+ * This interceptor handles 401 errors by triggering a cookie-based
+ * token refresh and retrying the original request.
  */
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
@@ -39,74 +42,28 @@ export class JwtInterceptor implements HttpInterceptor {
   ) {}
 
   /**
-   * Intercept HTTP requests to add JWT token and handle auth errors
-   * @param request The original request
-   * @param next The next handler
-   * @returns An observable of the HTTP event
+   * Intercept HTTP requests to handle auth errors.
+   * No token is attached — cookies are sent automatically by the browser.
    */
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Logout requests manage their own auth headers and error handling.
+    // Logout requests manage their own error handling.
     // Skip interceptor to prevent 401 retry loops during logout.
     if (request.context.get(IS_LOGOUT_REQUEST)) {
       return next.handle(request);
     }
 
-    // Only add token to requests to our API that are not public endpoints
+    // For authenticated API endpoints, handle 401 errors with refresh/retry
     if (this.isApiRequest(request.url) && !this.isPublicEndpoint(request.url)) {
-      // Get a valid token (with automatic refresh if needed)
-      return this.authService.getValidToken().pipe(
-        switchMap(token => {
-          // this.logger.debugComponent('api', 'JWT Interceptor adding token to request', {
-          //   url: request.url,
-          //   method: request.method,
-          //   tokenLength: token.token?.length,
-          //   tokenPrefix: token.token?.substring(0, 20) + '...',
-          //   expiresAt: token.expiresAt.toISOString(),
-          // });
-
-          const tokenizedRequest = request.clone({
-            setHeaders: {
-              Authorization: `Bearer ${token.token}`,
-            },
-          });
-
-          return next.handle(tokenizedRequest).pipe();
-        }),
+      return next.handle(request).pipe(
         catchError((error: HttpErrorResponse) => {
-          // Log the 401 error details for diagnosis
           if (error.status === 401) {
-            this.logger.error('❌ 401 UNAUTHORIZED ERROR ANALYSIS', {
+            this.logger.error('401 UNAUTHORIZED on API request', {
               url: request.url,
               method: request.method,
               status: error.status,
               statusText: error.statusText,
               errorMessage: error.message,
               serverErrorBody: error.error as Record<string, unknown>,
-              responseHeaders: error.headers?.keys()?.reduce(
-                (acc, key) => {
-                  const value = error.headers.get(key);
-                  if (value) {
-                    acc[key] = value;
-                  }
-                  return acc;
-                },
-                {} as Record<string, string>,
-              ),
-              requestHeaders: request.headers?.keys()?.reduce(
-                (acc, key) => {
-                  const value = request.headers.get(key);
-                  if (value) {
-                    if (key.toLowerCase() === 'authorization') {
-                      // Show only the Bearer prefix and token type for debugging
-                      acc[key] = value.substring(0, 20) + '...[redacted]';
-                    } else {
-                      acc[key] = value;
-                    }
-                  }
-                  return acc;
-                },
-                {} as Record<string, string>,
-              ),
             });
             return this.handleUnauthorizedErrorWithRefresh(request, next);
           }
@@ -116,41 +73,26 @@ export class JwtInterceptor implements HttpInterceptor {
     }
 
     // For public endpoints or non-API requests, just pass through
-    // Public endpoints shouldn't require auth, so no special 401 handling needed
     return next
       .handle(request)
       .pipe(catchError((error: HttpErrorResponse) => this.handleError(error, request)));
   }
 
-  /**
-   * Check if the request is to our API
-   * @param url Request URL
-   * @returns True if the request is to our API
-   */
   private isApiRequest(url: string): boolean {
     return url.startsWith(environment.apiUrl);
   }
 
-  /**
-   * Check if the request is to a public endpoint that doesn't require authentication
-   * @param url Request URL
-   * @returns True if the request is to a public endpoint
-   */
   private isPublicEndpoint(url: string): boolean {
     if (!this.isApiRequest(url)) {
       return false;
     }
 
-    // Extract the path from the API URL
     let path = url.replace(environment.apiUrl, '');
-
-    // If path is empty (root request), treat it as "/"
     if (path === '') {
       path = '/';
     }
 
     return this.publicEndpoints.some(endpoint => {
-      // Handle exact matches and wildcard matches (for paths like /oauth2/authorize/* and /oauth2/token/*)
       if (endpoint.endsWith('/*')) {
         const baseEndpoint = endpoint.slice(0, -2);
         return path.startsWith(baseEndpoint);
@@ -160,36 +102,27 @@ export class JwtInterceptor implements HttpInterceptor {
   }
 
   /**
-   * Handle 401 Unauthorized errors with forced token refresh.
+   * Handle 401 errors with cookie-based token refresh.
    * Uses IS_AUTH_RETRY context to prevent infinite retry loops.
-   * Does NOT automatically logout - errors propagate to components for appropriate handling.
-   * @param request Original request that failed
-   * @param next HTTP handler
-   * @returns Observable of the retried request or error
    */
   private handleUnauthorizedErrorWithRefresh(
     request: HttpRequest<unknown>,
     next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
-    // Check if this request has already been retried (prevents infinite loops)
     const isRetry = request.context.get(IS_AUTH_RETRY);
 
     if (isRetry) {
-      // Already retried once - authentication is unrecoverable, trigger full logout
       this.logger.warn('401 on retry request - triggering logout', {
         url: request.url,
         method: request.method,
       });
 
-      // Emit auth error for interested subscribers
       const authError: AuthError = {
         code: 'unauthorized_after_refresh',
         message: 'Authentication failed after token refresh',
         retryable: false,
       };
       this.authService.handleAuthError(authError);
-
-      // Full logout: server revocation, cross-tab sync, navigate home
       this.authService.logout();
 
       return throwError(
@@ -203,37 +136,30 @@ export class JwtInterceptor implements HttpInterceptor {
       );
     }
 
-    this.logger.warn('Received 401 Unauthorized - attempting forced token refresh');
+    this.logger.warn('Received 401 Unauthorized - attempting cookie-based token refresh');
 
-    // Force a token refresh (even if current token appears valid by expiry)
     return this.authService.forceRefreshToken().pipe(
-      switchMap(newToken => {
-        this.logger.info('Forced token refresh successful - retrying original request');
+      switchMap(() => {
+        this.logger.info('Token refresh successful - retrying original request');
 
-        // Clone the request with new token AND mark as retry to prevent loops
+        // Retry the original request with IS_AUTH_RETRY set to prevent loops.
+        // No need to clone headers — the browser sends the refreshed cookie automatically.
         const retryContext = new HttpContext().set(IS_AUTH_RETRY, true);
         const retryRequest = request.clone({
-          setHeaders: {
-            Authorization: `Bearer ${newToken.token}`,
-          },
           context: retryContext,
         });
 
         return next.handle(retryRequest);
       }),
       catchError((refreshError: unknown) => {
-        // Token refresh failed - trigger full logout
-        this.logger.error('Forced token refresh failed - triggering logout', refreshError);
+        this.logger.error('Token refresh failed - triggering logout', refreshError);
 
-        // Emit auth error for interested subscribers
         const authError: AuthError = {
           code: 'token_refresh_failed',
           message: 'Unable to refresh authentication token',
           retryable: false,
         };
         this.authService.handleAuthError(authError);
-
-        // Full logout: server revocation, cross-tab sync, navigate home
         this.authService.logout();
 
         return throwError(() => refreshError);
@@ -241,15 +167,7 @@ export class JwtInterceptor implements HttpInterceptor {
     );
   }
 
-  /**
-   * Handle authentication errors (401/403).
-   * Emits errors for subscribers but does NOT logout or redirect.
-   * @param error HTTP error response
-   * @param _request Original request
-   * @returns Observable that throws the error
-   */
   private handleError(error: HttpErrorResponse, _request: HttpRequest<unknown>): Observable<never> {
-    // Emit auth errors for interested subscribers, but don't take destructive action
     if (error.status === 401) {
       const authError: AuthError = {
         code: 'unauthorized',
@@ -266,7 +184,6 @@ export class JwtInterceptor implements HttpInterceptor {
       this.authService.handleAuthError(authError);
     }
 
-    // Return the original error - let components handle it
     return throwError(() => error);
   }
 }

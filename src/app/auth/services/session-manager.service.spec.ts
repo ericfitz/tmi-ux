@@ -21,12 +21,10 @@ describe('SessionManagerService', () => {
 
   beforeEach(() => {
     mockAuthService = {
-      getStoredToken: vi.fn(),
+      getSessionInfo: vi.fn(),
       getValidToken: vi.fn(),
-      refreshToken: vi
-        .fn()
-        .mockReturnValue(of({ token: 'mock', expiresAt: new Date(), expiresIn: 0 })),
-      storeToken: vi.fn(),
+      refreshToken: vi.fn().mockReturnValue(of({ expiresAt: new Date(), expiresIn: 0 })),
+      storeSessionInfo: vi.fn(),
       createLocalTokenWithExpiry: vi.fn(),
       logout: vi.fn(),
       setSessionManager: vi.fn(),
@@ -89,24 +87,22 @@ describe('SessionManagerService', () => {
 
   it('should start timers when user becomes authenticated', () => {
     const mockToken: JwtToken = {
-      token: 'mock.jwt.token',
       expiresAt: new Date(Date.now() + 600000), // 10 minutes from now
       expiresIn: 600,
     };
-    mockAuthService.getStoredToken.mockReturnValue(mockToken);
+    mockAuthService.getSessionInfo.mockReturnValue(mockToken);
 
     mockIsAuthenticated$.next(true);
 
-    expect(mockAuthService.getStoredToken).toHaveBeenCalled();
+    expect(mockAuthService.getSessionInfo).toHaveBeenCalled();
   });
 
   it('should logout immediately if token is already expired', () => {
     const mockToken: JwtToken = {
-      token: 'mock.jwt.token',
       expiresAt: new Date(Date.now() - 1000), // 1 second ago (expired)
       expiresIn: 0,
     };
-    mockAuthService.getStoredToken.mockReturnValue(mockToken);
+    mockAuthService.getSessionInfo.mockReturnValue(mockToken);
 
     mockIsAuthenticated$.next(true);
 
@@ -115,7 +111,6 @@ describe('SessionManagerService', () => {
 
   it('should handle extend session for OAuth users', () => {
     const mockToken: JwtToken = {
-      token: 'mock.jwt.token',
       expiresAt: new Date(Date.now() + 600000),
       expiresIn: 600,
     };
@@ -132,7 +127,7 @@ describe('SessionManagerService', () => {
     (service as any).handleExtendSession();
 
     expect(mockAuthService.refreshToken).toHaveBeenCalled();
-    expect(mockAuthService.storeToken).toHaveBeenCalledWith(mockToken);
+    expect(mockAuthService.storeSessionInfo).toHaveBeenCalledWith(mockToken);
     expect(mockDialogRef.close).toHaveBeenCalledWith('extend');
   });
 
@@ -149,16 +144,15 @@ describe('SessionManagerService', () => {
 
   it('should reset timers when onTokenRefreshed is called', () => {
     const mockToken: JwtToken = {
-      token: 'mock.jwt.token',
       expiresAt: new Date(Date.now() + 600000),
       expiresIn: 600,
     };
-    mockAuthService.getStoredToken.mockReturnValue(mockToken);
+    mockAuthService.getSessionInfo.mockReturnValue(mockToken);
     mockAuthService.isAuthenticated = true;
 
     service.onTokenRefreshed();
 
-    expect(mockAuthService.getStoredToken).toHaveBeenCalled();
+    expect(mockAuthService.getSessionInfo).toHaveBeenCalled();
   });
 
   it('should handle session timeout', () => {
@@ -181,23 +175,22 @@ describe('SessionManagerService', () => {
   });
 
   it('should not start timers if no token is available', () => {
-    mockAuthService.getStoredToken.mockReturnValue(null);
+    mockAuthService.getSessionInfo.mockReturnValue(null);
 
     mockIsAuthenticated$.next(true);
 
     expect(mockLogger.debugComponent).toHaveBeenCalledWith(
       'SessionManager',
-      'No token found, cannot start expiry timers',
+      'No session found, cannot start expiry timers',
     );
   });
 
   it('should show warning dialog when token expires soon', () => {
     const mockToken: JwtToken = {
-      token: 'mock.jwt.token',
       expiresAt: new Date(Date.now() + 250000), // 4 minutes from now (past warning threshold)
       expiresIn: 250,
     };
-    mockAuthService.getStoredToken.mockReturnValue(mockToken);
+    mockAuthService.getSessionInfo.mockReturnValue(mockToken);
 
     const mockDialogRef = {
       afterClosed: vi.fn().mockReturnValue(of('extend')),
@@ -212,11 +205,10 @@ describe('SessionManagerService', () => {
 
   it('should handle dialog close with expired result', () => {
     const mockToken: JwtToken = {
-      token: 'mock.jwt.token',
       expiresAt: new Date(Date.now() + 250000),
       expiresIn: 250,
     };
-    mockAuthService.getStoredToken.mockReturnValue(mockToken);
+    mockAuthService.getSessionInfo.mockReturnValue(mockToken);
 
     const mockDialogRef = {
       afterClosed: vi.fn().mockReturnValue(of('expired')),
@@ -234,11 +226,10 @@ describe('SessionManagerService', () => {
       mockActivityTracker.isUserActive.mockReturnValue(true);
 
       const mockToken: JwtToken = {
-        token: 'mock.jwt.token',
         expiresAt: new Date(Date.now() + 250000), // 4 minutes from now
         expiresIn: 250,
       };
-      mockAuthService.getStoredToken.mockReturnValue(mockToken);
+      mockAuthService.getSessionInfo.mockReturnValue(mockToken);
 
       mockIsAuthenticated$.next(true);
 
@@ -250,11 +241,10 @@ describe('SessionManagerService', () => {
       mockActivityTracker.isUserActive.mockReturnValue(false);
 
       const mockToken: JwtToken = {
-        token: 'mock.jwt.token',
         expiresAt: new Date(Date.now() + 250000), // 4 minutes from now
         expiresIn: 250,
       };
-      mockAuthService.getStoredToken.mockReturnValue(mockToken);
+      mockAuthService.getSessionInfo.mockReturnValue(mockToken);
 
       const mockDialogRef = {
         afterClosed: vi.fn().mockReturnValue(of('extend')),
@@ -272,17 +262,15 @@ describe('SessionManagerService', () => {
       mockActivityTracker.isUserActive.mockReturnValue(true);
 
       const currentToken: JwtToken = {
-        token: 'mock.jwt.token',
         expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes from now
         expiresIn: 600,
       };
       const newToken: JwtToken = {
-        token: 'new.jwt.token',
         expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 60 minutes from now
         expiresIn: 3600,
       };
 
-      mockAuthService.getStoredToken.mockReturnValue(currentToken);
+      mockAuthService.getSessionInfo.mockReturnValue(currentToken);
 
       // Ensure refreshToken returns an observable before the test calls checkActivityAndRefreshIfNeeded
       const refreshSpy = vi.spyOn(mockAuthService, 'refreshToken').mockReturnValue(of(newToken));
@@ -291,18 +279,17 @@ describe('SessionManagerService', () => {
       (service as any).checkActivityAndRefreshIfNeeded();
 
       expect(refreshSpy).toHaveBeenCalled();
-      expect(mockAuthService.storeToken).toHaveBeenCalledWith(newToken);
+      expect(mockAuthService.storeSessionInfo).toHaveBeenCalledWith(newToken);
     });
 
     it('should not proactively refresh token when user is inactive', () => {
       mockActivityTracker.isUserActive.mockReturnValue(false);
 
       const mockToken: JwtToken = {
-        token: 'mock.jwt.token',
         expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes from now
         expiresIn: 600,
       };
-      mockAuthService.getStoredToken.mockReturnValue(mockToken);
+      mockAuthService.getSessionInfo.mockReturnValue(mockToken);
 
       // Trigger activity check
       (service as any).checkActivityAndRefreshIfNeeded();
@@ -315,11 +302,10 @@ describe('SessionManagerService', () => {
       mockActivityTracker.isUserActive.mockReturnValue(true);
 
       const mockToken: JwtToken = {
-        token: 'mock.jwt.token',
         expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes from now
         expiresIn: 1800,
       };
-      mockAuthService.getStoredToken.mockReturnValue(mockToken);
+      mockAuthService.getSessionInfo.mockReturnValue(mockToken);
 
       // Trigger activity check
       (service as any).checkActivityAndRefreshIfNeeded();
@@ -332,11 +318,10 @@ describe('SessionManagerService', () => {
       mockActivityTracker.isUserActive.mockReturnValue(true);
 
       const mockToken: JwtToken = {
-        token: 'mock.jwt.token',
         expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes from now
         expiresIn: 600,
       };
-      mockAuthService.getStoredToken.mockReturnValue(mockToken);
+      mockAuthService.getSessionInfo.mockReturnValue(mockToken);
       mockAuthService.refreshToken.mockReturnValue(throwError(() => new Error('Refresh failed')));
 
       // Trigger activity check
@@ -350,11 +335,10 @@ describe('SessionManagerService', () => {
       mockActivityTracker.isUserActive.mockReturnValue(true);
 
       const mockToken: JwtToken = {
-        token: 'mock.jwt.token',
         expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes from now
         expiresIn: 600,
       };
-      mockAuthService.getStoredToken.mockReturnValue(mockToken);
+      mockAuthService.getSessionInfo.mockReturnValue(mockToken);
       mockAuthService.refreshToken.mockReturnValue(throwError(() => new Error('Refresh failed')));
 
       // Trigger activity check

@@ -2,14 +2,17 @@ import { Observable } from 'rxjs';
 import { UserGroupMembership, UserProfile } from '@app/auth/models/auth.models';
 
 /**
- * JWT token structure
+ * Authentication session info (no token strings — cookies are HttpOnly)
  */
-export interface IJwtToken {
-  token: string;
-  refreshToken?: string;
+export interface IAuthSession {
   expiresAt: Date;
   expiresIn: number;
 }
+
+/**
+ * @deprecated Use IAuthSession instead. Alias kept during migration.
+ */
+export type IJwtToken = IAuthSession;
 
 /**
  * User profile information
@@ -55,14 +58,19 @@ export interface IAuthService {
   readonly userGroups: string[];
 
   /**
-   * Get the stored JWT token
+   * Whether the user is currently authenticated
    */
-  getStoredToken(): IJwtToken | null;
+  readonly isAuthenticated: boolean;
 
   /**
-   * Get a valid access token, refreshing if necessary
+   * Get session info (expiry timing), or null if not authenticated
    */
-  getValidToken(): Observable<IJwtToken>;
+  getSessionInfo(): IAuthSession | null;
+
+  /**
+   * Ensure the session is valid, refreshing if necessary
+   */
+  ensureValidSession(): Observable<IAuthSession>;
 
   /**
    * Refresh user profile from server to get latest admin status and other fields

@@ -24,7 +24,7 @@ describe('UserPreferencesService', () => {
     put: ReturnType<typeof vi.fn>;
   };
   let mockAuthService: {
-    getStoredToken: ReturnType<typeof vi.fn>;
+    isAuthenticated: boolean;
   };
   let mockLogger: {
     debug: ReturnType<typeof vi.fn>;
@@ -53,7 +53,7 @@ describe('UserPreferencesService', () => {
     };
 
     mockAuthService = {
-      getStoredToken: vi.fn().mockReturnValue(null),
+      isAuthenticated: false,
     };
 
     mockLogger = {
@@ -125,7 +125,7 @@ describe('UserPreferencesService', () => {
     });
 
     it('should load from server when authenticated', async () => {
-      mockAuthService.getStoredToken.mockReturnValue({ access_token: 'abc' });
+      mockAuthService.isAuthenticated = true;
       mockApiService.get.mockReturnValue(
         of({ 'tmi-ux': { ...DEFAULT_PREFERENCES, animations: false } }),
       );
@@ -136,7 +136,7 @@ describe('UserPreferencesService', () => {
     });
 
     it('should sync local to server when server has no preferences', async () => {
-      mockAuthService.getStoredToken.mockReturnValue({ access_token: 'abc' });
+      mockAuthService.isAuthenticated = true;
       mockApiService.get.mockReturnValue(of({}));
 
       await service.initialize();
@@ -145,7 +145,7 @@ describe('UserPreferencesService', () => {
     });
 
     it('should handle server error gracefully and fall back to localStorage', async () => {
-      mockAuthService.getStoredToken.mockReturnValue({ access_token: 'abc' });
+      mockAuthService.isAuthenticated = true;
       mockApiService.get.mockReturnValue(throwError(() => new Error('Server down')));
       localStorage.setItem('tmi_preferences_v2', JSON.stringify({ animations: false }));
 
@@ -155,7 +155,7 @@ describe('UserPreferencesService', () => {
     });
 
     it('should use defaults when initialization fails completely', async () => {
-      mockAuthService.getStoredToken.mockReturnValue({ access_token: 'abc' });
+      mockAuthService.isAuthenticated = true;
       mockApiService.get.mockImplementation(() => {
         throw new Error('Sync error');
       });
@@ -281,7 +281,7 @@ describe('UserPreferencesService', () => {
     });
 
     it('should not trigger server sync when not authenticated', () => {
-      mockAuthService.getStoredToken.mockReturnValue(null);
+      mockAuthService.isAuthenticated = false;
 
       service.updatePreferences({ animations: false });
 
@@ -320,7 +320,7 @@ describe('UserPreferencesService', () => {
   describe('debounced server sync', () => {
     it('should debounce multiple rapid updates to single server call', () => {
       vi.useFakeTimers();
-      mockAuthService.getStoredToken.mockReturnValue({ access_token: 'abc' });
+      mockAuthService.isAuthenticated = true;
 
       service.updatePreferences({ animations: false });
       service.updatePreferences({ themeMode: 'dark' });
@@ -339,7 +339,7 @@ describe('UserPreferencesService', () => {
 
     it('should handle server sync failure silently', () => {
       vi.useFakeTimers();
-      mockAuthService.getStoredToken.mockReturnValue({ access_token: 'abc' });
+      mockAuthService.isAuthenticated = true;
       mockApiService.put.mockReturnValue(throwError(() => new Error('Server error')));
 
       service.updatePreferences({ animations: false });

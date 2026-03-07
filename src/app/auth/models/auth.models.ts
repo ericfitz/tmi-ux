@@ -4,21 +4,13 @@
  */
 
 /**
- * JWT token information
+ * Authentication session information.
+ * With HttpOnly cookie auth, the client no longer has access to token strings.
+ * Session timing is derived from the server's expires_in response.
  */
-export interface JwtToken {
+export interface AuthSession {
   /**
-   * The JWT access token string
-   */
-  token: string;
-
-  /**
-   * The refresh token string (optional)
-   */
-  refreshToken?: string;
-
-  /**
-   * Token expiration time in seconds
+   * Token expiration time in seconds (from server response)
    */
   expiresIn: number;
 
@@ -27,6 +19,11 @@ export interface JwtToken {
    */
   expiresAt: Date;
 }
+
+/**
+ * @deprecated Use AuthSession instead. Alias kept during migration.
+ */
+export type JwtToken = AuthSession;
 
 /**
  * TMI-managed group membership as returned by GET /me

@@ -7,6 +7,7 @@
 
 import '@angular/compiler';
 
+import { HttpClient } from '@angular/common/http';
 import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { BehaviorSubject, of } from 'rxjs';
 import { Router } from '@angular/router';
@@ -22,6 +23,12 @@ import {
 
 describe('DfdCollaborationService', () => {
   let service: DfdCollaborationService;
+  let mockHttpClient: {
+    get: ReturnType<typeof vi.fn>;
+    post: ReturnType<typeof vi.fn>;
+    put: ReturnType<typeof vi.fn>;
+    delete: ReturnType<typeof vi.fn>;
+  };
   let mockLogger: {
     info: ReturnType<typeof vi.fn>;
     warn: ReturnType<typeof vi.fn>;
@@ -30,7 +37,7 @@ describe('DfdCollaborationService', () => {
   };
   let mockAuthService: {
     getCurrentUser: ReturnType<typeof vi.fn>;
-    getValidToken: ReturnType<typeof vi.fn>;
+    ensureValidSession: ReturnType<typeof vi.fn>;
   };
   let mockThreatModelService: {
     getDiagramPermissions: ReturnType<typeof vi.fn>;
@@ -63,6 +70,13 @@ describe('DfdCollaborationService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
+    mockHttpClient = {
+      get: vi.fn().mockReturnValue(of({})),
+      post: vi.fn().mockReturnValue(of({})),
+      put: vi.fn().mockReturnValue(of({})),
+      delete: vi.fn().mockReturnValue(of({})),
+    };
+
     mockLogger = {
       info: vi.fn(),
       warn: vi.fn(),
@@ -77,7 +91,7 @@ describe('DfdCollaborationService', () => {
         provider_id: 'google-123',
         display_name: 'Test User',
       }),
-      getValidToken: vi.fn().mockReturnValue(of('valid-token')),
+      ensureValidSession: vi.fn().mockReturnValue(of({ token: 'valid-token' })),
       userEmail: 'user@example.com',
       userIdp: 'google',
       providerId: 'google-123',
@@ -120,6 +134,7 @@ describe('DfdCollaborationService', () => {
     };
 
     service = new DfdCollaborationService(
+      mockHttpClient as unknown as HttpClient,
       mockLogger as unknown as LoggerService,
       mockAuthService as unknown as IAuthService,
       mockThreatModelService as unknown as IThreatModelService,

@@ -95,14 +95,14 @@ export class SessionManagerService {
    * Sets up activity check timer, warning timer (for inactive users), and logout timer
    */
   private startExpiryTimers(): void {
-    const token = this.authService.getStoredToken();
-    if (!token) {
-      this.logger.debugComponent('SessionManager', 'No token found, cannot start expiry timers');
+    const session = this.authService.getSessionInfo();
+    if (!session) {
+      this.logger.debugComponent('SessionManager', 'No session found, cannot start expiry timers');
       return;
     }
 
-    this.logger.debugComponent('SessionManager', 'Starting token expiry timers', {
-      tokenExpiry: token.expiresAt.toISOString(),
+    this.logger.debugComponent('SessionManager', 'Starting session expiry timers', {
+      sessionExpiry: session.expiresAt.toISOString(),
       currentTime: new Date().toISOString(),
     });
 
@@ -110,12 +110,12 @@ export class SessionManagerService {
     this.stopExpiryTimers();
 
     const now = new Date();
-    const timeToExpiry = token.expiresAt.getTime() - now.getTime();
+    const timeToExpiry = session.expiresAt.getTime() - now.getTime();
     const timeToWarning = timeToExpiry - this.warningTime;
 
-    // If token is already expired, logout immediately
+    // If session is already expired, logout immediately
     if (timeToExpiry <= 0) {
-      this.logger.warn('Token already expired, logging out immediately');
+      this.logger.warn('Session already expired, logging out immediately');
       this.handleSessionTimeout();
       return;
     }
@@ -125,12 +125,12 @@ export class SessionManagerService {
 
     // If we're already past the warning time, check activity and show warning if inactive
     if (timeToWarning <= 0) {
-      this.logger.warn('Token expires very soon, checking activity');
+      this.logger.warn('Session expires very soon, checking activity');
       if (!this.activityTracker.isUserActive()) {
-        this.showExpiryWarning(token.expiresAt);
+        this.showExpiryWarning(session.expiresAt);
       } else {
         this.logger.info(
-          'User is active but token expiring soon - proactive refresh will handle this',
+          'User is active but session expiring soon - proactive refresh will handle this',
         );
       }
     } else {
@@ -140,7 +140,7 @@ export class SessionManagerService {
           this.ngZone.run(() => {
             // Only show warning if user is inactive
             if (!this.activityTracker.isUserActive()) {
-              this.showExpiryWarning(token.expiresAt);
+              this.showExpiryWarning(session.expiresAt);
             } else {
               this.logger.debugComponent(
                 'SessionManager',
@@ -157,13 +157,13 @@ export class SessionManagerService {
     }
 
     // Set logout timer with grace period to allow in-flight refresh requests to complete.
-    // If a refresh succeeds before this timer fires, storeToken() triggers onTokenRefreshed()
-    // which calls startExpiryTimers() and cancels this timer via stopExpiryTimers().
+    // If a refresh succeeds before this timer fires, storeSessionInfo() triggers
+    // onTokenRefreshed() which calls startExpiryTimers() and cancels this timer.
     const logoutDelay = timeToExpiry + this.logoutGracePeriod;
     this.ngZone.runOutsideAngular(() => {
       this.logoutTimer = timer(logoutDelay).subscribe(() => {
         this.ngZone.run(() => {
-          this.logger.warn('Token expired (past grace period), forcing logout');
+          this.logger.warn('Session expired (past grace period), forcing logout');
           this.handleSessionTimeout();
         });
       });
@@ -171,7 +171,7 @@ export class SessionManagerService {
 
     const logoutTime = new Date(now.getTime() + logoutDelay);
     this.logger.debugComponent('SessionManager', 'Logout timer set', {
-      tokenExpiry: token.expiresAt.toISOString(),
+      sessionExpiry: session.expiresAt.toISOString(),
       logoutTime: logoutTime.toISOString(),
       gracePeriodMs: this.logoutGracePeriod,
     });
@@ -204,32 +204,30 @@ export class SessionManagerService {
    * Check if user is active and proactively refresh token if needed
    */
   private checkActivityAndRefreshIfNeeded(): void {
-    const token = this.authService.getStoredToken();
-    if (!token) {
+    const session = this.authService.getSessionInfo();
+    if (!session) {
       return;
     }
 
     const now = new Date();
-    const timeToExpiry = token.expiresAt.getTime() - now.getTime();
+    const timeToExpiry = session.expiresAt.getTime() - now.getTime();
 
-    // If token expires within proactiveRefreshTime AND user is active, refresh proactively
+    // If session expires within proactiveRefreshTime AND user is active, refresh proactively
     if (timeToExpiry <= this.proactiveRefreshTime && this.activityTracker.isUserActive()) {
-      this.logger.info('User is active and token expiring soon - refreshing proactively', {
+      this.logger.info('User is active and session expiring soon - refreshing proactively', {
         timeToExpiry: `${Math.floor(timeToExpiry / 1000)}s`,
       });
 
       this.authService.refreshToken().subscribe({
-        next: newToken => {
-          this.logger.info('Proactive token refresh successful', {
-            newExpiry: newToken.expiresAt.toISOString(),
+        next: newSession => {
+          this.logger.info('Proactive session refresh successful', {
+            newExpiry: newSession.expiresAt.toISOString(),
           });
-          // Store the new token - this will trigger onTokenRefreshed() and restart timers
-          this.authService.storeToken(newToken);
+          // Store the new session - this will trigger onTokenRefreshed() and restart timers
+          this.authService.storeSessionInfo(newSession);
         },
         error: error => {
-          this.logger.error('Proactive token refresh failed', error);
-          // Don't force logout on proactive refresh failure - let normal expiry flow handle it
-          // But notify the user so they can save their work
+          this.logger.error('Proactive session refresh failed', error);
           this.notificationService.showWarning(
             'Session refresh failed. Please save your work to avoid data loss.',
             8000,
@@ -330,12 +328,12 @@ export class SessionManagerService {
     // Since the warning appears 5 minutes before expiry, the token would still be considered
     // "valid" and wouldn't be refreshed, leaving the user with an expiring token.
     this.authService.refreshToken().subscribe({
-      next: newToken => {
+      next: newSession => {
         this.logger.info('Session extension successful', {
-          newExpiry: newToken.expiresAt.toISOString(),
+          newExpiry: newSession.expiresAt.toISOString(),
         });
-        // Store the new token - this triggers onTokenRefreshed() which sets new timers
-        this.authService.storeToken(newToken);
+        // Store the new session - this triggers onTokenRefreshed() which sets new timers
+        this.authService.storeSessionInfo(newSession);
         // Close the warning dialog since session was extended
         if (this.warningDialog) {
           this.warningDialog.close('extend');

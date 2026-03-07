@@ -548,14 +548,14 @@ export class WebSocketAdapter {
               });
             }
 
-            // Check if token needs refresh on WebSocket activity
+            // Check if session needs refresh on WebSocket activity
             if (this._authService) {
-              this._authService.getValidToken().subscribe({
+              this._authService.ensureValidSession().subscribe({
                 next: () => {
-                  // Token refreshed if needed
+                  // Session refreshed if needed
                 },
                 error: (err: unknown) => {
-                  this.logger.error('Token refresh failed on WebSocket activity', err);
+                  this.logger.error('Session refresh failed on WebSocket activity', err);
                 },
               });
             }

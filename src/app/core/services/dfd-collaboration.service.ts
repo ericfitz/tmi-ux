@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable, OnDestroy, Optional, Inject } from '@angular/core';
 import { BehaviorSubject, Observable, throwError, Subscription, Subject } from 'rxjs';
 import { map, catchError, tap, skip, switchMap } from 'rxjs/operators';
@@ -145,6 +146,7 @@ export class DfdCollaborationService implements OnDestroy {
   // Periodic refresh removed - participants now managed through WebSocket messages only
 
   constructor(
+    private _http: HttpClient,
     private _logger: LoggerService,
     @Inject(AUTH_SERVICE) private _authService: IAuthService,
     @Inject(THREAT_MODEL_SERVICE) private _threatModelService: IThreatModelService,
@@ -1585,52 +1587,65 @@ export class DfdCollaborationService implements OnDestroy {
    * @param websocketUrl The WebSocket URL provided by the API
    */
   private _connectToWebSocket(websocketUrl: string): Observable<void> {
-    const fullWebSocketUrl = this._getFullWebSocketUrl(websocketUrl);
-    this._logger.debugComponent(
-      'DfdCollaborationService',
-      'Connecting to collaboration WebSocket',
-      {
-        originalUrl: websocketUrl,
-        fullUrl: fullWebSocketUrl,
-      },
-    );
+    const baseUrl = this._getFullWebSocketUrl(websocketUrl);
 
-    return this._webSocketAdapter.connect(fullWebSocketUrl).pipe(
-      tap(() => {
-        this._logger.info('WebSocket connection established successfully');
-        // The server handles participant tracking when the WebSocket connection is established
-        // Client should not send join messages
-      }),
-      catchError((error: unknown) => {
-        this._logger.error('Failed to connect to WebSocket', error);
+    // Fetch a short-lived ticket for WebSocket authentication (AUTH-VULN-007 remediation)
+    return this._http
+      .get<{ ticket: string }>(`${environment.apiUrl}/ws/ticket`)
+      .pipe(
+        switchMap(response => {
+          const separator = baseUrl.includes('?') ? '&' : '?';
+          const fullWebSocketUrl = `${baseUrl}${separator}ticket=${encodeURIComponent(response.ticket)}`;
 
-        // Type guard for error object
-        const errorMessage =
-          error instanceof Error ? error.message : 'Failed to connect to collaboration server';
-        const errorObj = error as { type?: string; message?: string } | undefined;
-
-        this._notificationService
-          ?.showWebSocketError(
+          this._logger.debugComponent(
+            'DfdCollaborationService',
+            'Connecting to collaboration WebSocket with ticket',
             {
-              type: (errorObj?.type as WebSocketErrorType) || 'connection_failed',
-              message: errorMessage,
-              originalError: error,
-              isRecoverable: true,
-              retryable: true,
+              originalUrl: websocketUrl,
+              fullUrl: baseUrl,
             },
-            // () => this._retryWebSocketConnection(), // COMMENTED OUT
-          )
-          .subscribe();
+          );
 
-        return throwError(() => error);
-      }),
-    );
+          return this._webSocketAdapter.connect(fullWebSocketUrl);
+        }),
+      )
+      .pipe(
+        tap(() => {
+          this._logger.info('WebSocket connection established successfully');
+          // The server handles participant tracking when the WebSocket connection is established
+          // Client should not send join messages
+        }),
+        catchError((error: unknown) => {
+          this._logger.error('Failed to connect to WebSocket', error);
+
+          // Type guard for error object
+          const errorMessage =
+            error instanceof Error ? error.message : 'Failed to connect to collaboration server';
+          const errorObj = error as { type?: string; message?: string } | undefined;
+
+          this._notificationService
+            ?.showWebSocketError(
+              {
+                type: (errorObj?.type as WebSocketErrorType) || 'connection_failed',
+                message: errorMessage,
+                originalError: error,
+                isRecoverable: true,
+                retryable: true,
+              },
+              // () => this._retryWebSocketConnection(), // COMMENTED OUT
+            )
+            .subscribe();
+
+          return throwError(() => error);
+        }),
+      );
   }
 
   /**
-   * Convert relative WebSocket URL from server to absolute URL pointing to API server
+   * Convert relative WebSocket URL from server to absolute URL pointing to API server.
+   * Authentication is handled via a short-lived ticket obtained from GET /ws/ticket.
    * @param websocketUrl The WebSocket URL (may be relative or absolute)
-   * @returns Full WebSocket URL with JWT token as query parameter
+   * @returns Observable resolving to full WebSocket URL with ticket as query parameter
    */
   private _getFullWebSocketUrl(websocketUrl: string): string {
     let fullUrl: string;
@@ -1658,15 +1673,7 @@ export class DfdCollaborationService implements OnDestroy {
       fullUrl = `${wsUrl}${path}`;
     }
 
-    // Add JWT token as query parameter for authentication
-    const token = this._authService.getStoredToken();
-    if (token && token.token) {
-      const separator = fullUrl.includes('?') ? '&' : '?';
-      fullUrl = `${fullUrl}${separator}token=${encodeURIComponent(token.token)}`;
-    } else {
-      this._logger.warn('No JWT token available for WebSocket authentication');
-    }
-
+    // Ticket will be appended by the caller after fetching from GET /ws/ticket
     return fullUrl;
   }
 

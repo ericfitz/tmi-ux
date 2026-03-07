@@ -160,15 +160,6 @@ export class TokenValidityGuardService implements OnDestroy {
         this.ngZone.run(() => {
           this.handleCrossTabLogout();
         });
-        return;
-      }
-
-      // Handle token removal from another tab
-      if (event.key === 'auth_token' && event.newValue === null) {
-        this.logger.info('Token removed in another tab, validating auth state');
-        this.ngZone.run(() => {
-          this.authService.validateAndUpdateAuthState();
-        });
       }
     };
 

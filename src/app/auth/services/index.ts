@@ -5,5 +5,4 @@
 
 // Auth services
 export { AuthService } from './auth.service';
-export { CryptoKeyStorageService } from './crypto-key-storage.service';
 export { SessionManagerService } from './session-manager.service';

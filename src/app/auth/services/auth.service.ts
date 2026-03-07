@@ -2,17 +2,16 @@
  * Authentication Service
  *
  * This service handles all authentication-related functionality for the TMI application.
- * It manages OAuth flows, JWT token storage, user profiles, and session management.
+ * It manages OAuth flows, session state, user profiles, and session management.
  *
  * Key functionality:
  * - Supports multiple OAuth providers (Google, GitHub, etc.) configured via TMI server
- * - Manages JWT token storage and validation with automatic expiration checking
+ * - Manages session state via HttpOnly cookies (tokens are never accessible to JS)
  * - Handles OAuth callback processing with CSRF protection via state parameter
  * - Provides reactive authentication state through observables
- * - Supports role-based access control (placeholder implementation)
- * - Manages user profile data and provides convenient access methods
+ * - Supports role-based access control
+ * - Manages user profile data via GET /me endpoint
  * - Handles authentication errors with retry capabilities
- * - Provides backward compatibility for legacy components
  */
 
 import { HttpClient, HttpContext, HttpErrorResponse } from '@angular/common/http';
@@ -41,6 +40,7 @@ import {
 import { environment } from '../../../environments/environment';
 import {
   AuthError,
+  AuthSession,
   JwtToken,
   OAuthResponse,
   UserProfile,
@@ -51,31 +51,14 @@ import {
   SAMLProvidersResponse,
 } from '../models/auth.models';
 import { PkceService } from './pkce.service';
-import { CryptoKeyStorageService } from './crypto-key-storage.service';
 import { PkceError } from '../models/pkce.models';
 import { IS_LOGOUT_REQUEST } from '../../core/tokens/http-context.tokens';
 
-interface JwtPayload {
-  sub?: string; // Provider-assigned user ID (maps to provider_id)
-  email?: string;
-  name?: string; // Display name (maps to display_name)
-  iat?: number;
-  exp?: number;
-  idp?: string; // OAuth provider (e.g., "google", "github")
-  aud?: string;
-  iss?: string;
-  groups?: string[];
-  providers?: Array<{
-    provider: string;
-    is_primary: boolean;
-  }>;
-  tmi_is_administrator?: boolean;
-  tmi_is_security_reviewer?: boolean;
-}
-
 /**
- * Service for handling authentication with the TMI server
- * Manages OAuth flow, JWT tokens, and user profiles
+ * Service for handling authentication with the TMI server.
+ * Uses HttpOnly cookies for session management — tokens are never accessible to JS.
+ * Session timing is tracked in-memory via AuthSession (expiresIn/expiresAt).
+ * User profile is fetched via GET /me on login and page refresh.
  */
 @Injectable({
   providedIn: 'root',
@@ -84,7 +67,7 @@ export class AuthService {
   // Private subjects
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   private userProfileSubject = new BehaviorSubject<UserProfile | null>(null);
-  private jwtTokenSubject = new BehaviorSubject<JwtToken | null>(null);
+  private sessionSubject = new BehaviorSubject<AuthSession | null>(null);
   private authErrorSubject = new BehaviorSubject<AuthError | null>(null);
   private tokenReadySubject = new BehaviorSubject<boolean>(false);
 
@@ -94,7 +77,7 @@ export class AuthService {
   authError$ = this.authErrorSubject.asObservable();
 
   /**
-   * Observable that emits true when initial token loading/decryption is complete.
+   * Observable that emits true when initial auth check is complete.
    * Use this to wait before making API calls that require authentication.
    */
   tokenReady$ = this.tokenReadySubject.asObservable();
@@ -103,8 +86,6 @@ export class AuthService {
   username$ = this.userProfileSubject.pipe(map(profile => profile?.display_name || ''));
 
   // OAuth configuration
-  private readonly tokenStorageKey = 'auth_token';
-  private readonly profileStorageKey = 'user_profile';
   private readonly providersCacheExpiry = 5 * 60 * 1000; // 5 minutes
 
   // Cached provider information
@@ -114,7 +95,7 @@ export class AuthService {
   private samlProvidersCacheTime = 0;
 
   // Refresh request deduplication - prevents concurrent refresh calls
-  private refreshInProgress$: Observable<JwtToken> | null = null;
+  private refreshInProgress$: Observable<AuthSession> | null = null;
 
   // Re-entrancy guard - prevents multiple logout calls from overlapping
   private isLoggingOut = false;
@@ -135,10 +116,8 @@ export class AuthService {
     private logger: LoggerService,
     private serverConnectionService: ServerConnectionService,
     private pkceService: PkceService,
-    private cryptoKeyStorage: CryptoKeyStorageService,
   ) {
-    // this.logger.info('Auth Service initialized');
-    // Initialize from localStorage on service creation
+    // Check auth status by calling GET /me on service creation
     void this.checkAuthStatus();
   }
 
@@ -187,70 +166,29 @@ export class AuthService {
   }
 
   /**
-   * Get current user's provider ID from user profile or JWT token
-   * Falls back to JWT token's 'sub' field if user profile hasn't loaded yet
+   * Get current user's provider ID from user profile
    * @returns The provider-assigned user ID or empty string if not authenticated
    */
   get providerId(): string {
-    // First try to get from user profile
-    if (this.userProfile?.provider_id) {
-      return this.userProfile.provider_id;
-    }
-
-    // Fall back to JWT token's 'sub' field if profile hasn't loaded yet
-    const token = this.getStoredToken();
-    if (!token) {
-      return '';
-    }
-
-    try {
-      const payload = token.token.split('.')[1];
-      const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
-      return decodedPayload.sub || '';
-    } catch (error) {
-      this.logger.error('Error extracting provider ID from JWT token', error);
-      return '';
-    }
+    return this.userProfile?.provider_id || '';
   }
 
   /**
-   * Get current user's OAuth provider (IDP) from JWT token
+   * Get current user's OAuth provider (IDP) from user profile
    * @returns The OAuth provider (e.g., "google", "github") or empty string if not available
    */
   get userIdp(): string {
-    const token = this.getStoredToken();
-    if (!token) {
-      return '';
-    }
-
-    try {
-      const payload = token.token.split('.')[1];
-      const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
-      return decodedPayload.idp || '';
-    } catch (error) {
-      this.logger.error('Error extracting IDP from JWT token', error);
-      return '';
-    }
+    return this.userProfile?.provider || '';
   }
 
   /**
-   * Get current user groups from JWT token
+   * Get current user groups from user profile
    * @returns Array of group names the user belongs to, or empty array if not available
    */
   get userGroups(): string[] {
-    const token = this.getStoredToken();
-    if (!token) {
-      return [];
-    }
-
-    try {
-      const payload = token.token.split('.')[1];
-      const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
-      return decodedPayload.groups || [];
-    } catch (error) {
-      this.logger.warn('Could not decode token to get groups', error);
-      return [];
-    }
+    const groups = this.userProfile?.groups;
+    if (!groups) return [];
+    return groups.map(g => g.group_name);
   }
 
   /**
@@ -290,49 +228,47 @@ export class AuthService {
   }
 
   /**
-   * Check if the current JWT token is valid and not expired
-   * @param token Optional token to check, otherwise retrieves from storage
-   * @returns True if the token is valid and not expired
+   * Check if the current session is valid (not expired)
+   * @param session Optional session to check, otherwise retrieves from memory
+   * @returns True if the session is valid and not expired
    */
-  private isTokenValid(token?: JwtToken | null): boolean {
-    const tokenToCheck = token || this.getStoredToken();
-    if (!tokenToCheck) {
+  isSessionValid(session?: AuthSession | null): boolean {
+    const sessionToCheck = session || this.getSessionInfo();
+    if (!sessionToCheck) {
       return false;
     }
-
-    // Check if token is expired
     const now = new Date();
-    return tokenToCheck.expiresAt > now;
+    return sessionToCheck.expiresAt > now;
   }
 
   /**
-   * Validates token expiry and updates auth state if expired.
+   * Validates session expiry and updates auth state if expired.
    * Called by TokenValidityGuardService when browser resumes from background,
    * and by authGuard as defense-in-depth before checking isAuthenticated$.
    *
    * This method is critical for preventing "zombie sessions" where the user
-   * appears authenticated but their token has actually expired (e.g., after
+   * appears authenticated but their session has actually expired (e.g., after
    * returning from a backgrounded browser tab where timers were throttled).
    *
    * Triggers full logout (including server-side session revocation and
    * cross-tab synchronization) when invalid state is detected.
    */
   validateAndUpdateAuthState(): void {
-    const token = this.getStoredToken();
+    const session = this.getSessionInfo();
 
-    // No token found but we think we're authenticated - full logout
-    if (!token) {
+    // No session found but we think we're authenticated - full logout
+    if (!session) {
       if (this.isAuthenticatedSubject.value) {
-        this.logger.warn('No token found but auth state was true, triggering logout');
+        this.logger.warn('No session info but auth state was true, triggering logout');
         this.logout();
       }
       return;
     }
 
-    // Token expired but we think we're authenticated - full logout
-    if (!this.isTokenValid(token) && this.isAuthenticatedSubject.value) {
-      this.logger.warn('Token expired during background period, triggering logout', {
-        tokenExpiry: token.expiresAt.toISOString(),
+    // Session expired but we think we're authenticated - full logout
+    if (!this.isSessionValid(session) && this.isAuthenticatedSubject.value) {
+      this.logger.warn('Session expired during background period, triggering logout', {
+        sessionExpiry: session.expiresAt.toISOString(),
         currentTime: new Date().toISOString(),
       });
       this.logout();
@@ -340,183 +276,162 @@ export class AuthService {
   }
 
   /**
-   * Check if token needs refreshing (expires within 15 minutes)
-   * @param token Optional token to check, otherwise retrieves from storage
-   * @returns True if token should be refreshed
+   * Check if session needs refreshing (expires within 15 minutes)
+   * @param session Optional session to check, otherwise retrieves from memory
+   * @returns True if session should be refreshed
    */
-  private shouldRefreshToken(token?: JwtToken | null): boolean {
-    const tokenToCheck = token || this.getStoredToken();
-    if (!tokenToCheck || !tokenToCheck.refreshToken) {
+  private shouldRefreshSession(session?: AuthSession | null): boolean {
+    const sessionToCheck = session || this.getSessionInfo();
+    if (!sessionToCheck) {
       return false;
     }
 
     const now = new Date();
-    const fifteenMinutesFromNow = new Date(now.getTime() + 15 * 60 * 1000); // 15 minute buffer
-    return tokenToCheck.expiresAt <= fifteenMinutesFromNow;
+    const fifteenMinutesFromNow = new Date(now.getTime() + 15 * 60 * 1000);
+    return sessionToCheck.expiresAt <= fifteenMinutesFromNow;
   }
 
   /**
-   * Get a valid access token, refreshing if necessary.
-   * If token decryption is still in progress, waits for it to complete.
-   * @returns Observable that resolves to a valid JWT token
+   * Ensure the session is valid, refreshing if necessary.
+   * If auth check is still in progress, waits for it to complete.
+   * @returns Observable that resolves to a valid AuthSession
    */
-  getValidToken(): Observable<JwtToken> {
-    // this.logger.debugComponent('Auth', 'getValidToken called');
+  ensureValidSession(): Observable<AuthSession> {
+    const session = this.getSessionInfo();
 
-    // Check if we have a token in cache
-    const token = this.getStoredToken();
-
-    if (token) {
-      // Token is available, validate and potentially refresh it
-      return this.processValidToken(token);
+    if (session) {
+      return this.processValidSession(session);
     }
 
-    // No token in cache - check if we need to wait for decryption
+    // No session in memory - check if we need to wait for initial auth check
     if (!this.tokenReadySubject.value) {
-      // Token initialization is still in progress, wait for it
       return this.tokenReady$.pipe(
         filter(ready => ready),
         take(1),
         switchMap(() => {
-          // Now check for token again after initialization complete
-          const decryptedToken = this.getStoredToken();
-          if (!decryptedToken) {
-            return throwError(() => new Error('No token available'));
+          const resolvedSession = this.getSessionInfo();
+          if (!resolvedSession) {
+            return throwError(() => new Error('No session available'));
           }
-          return this.processValidToken(decryptedToken);
+          return this.processValidSession(resolvedSession);
         }),
       );
     }
 
-    // Token initialization complete but no token found
-    // this.logger.debugComponent('Auth', 'getValidToken: No token available');
-    return throwError(() => new Error('No token available'));
+    return throwError(() => new Error('No session available'));
   }
 
   /**
-   * Process a valid token - validate and refresh if needed
-   * @param token JWT token to process
-   * @returns Observable that resolves to a valid JWT token
+   * @deprecated Use ensureValidSession() instead
    */
-  private processValidToken(token: JwtToken): Observable<JwtToken> {
-    // Use the retrieved token for validation to avoid multiple storage calls
-    const isValid = this.isTokenValid(token);
-    const shouldRefresh = this.shouldRefreshToken(token);
+  getValidToken(): Observable<JwtToken> {
+    return this.ensureValidSession();
+  }
 
-    // this.logger.debugComponent('Auth', 'Token validation status', {
-    //   isValid,
-    //   shouldRefresh,
-    //   hasRefreshToken: !!token.refreshToken,
-    // });
+  /**
+   * Process a session - validate and refresh if needed
+   */
+  private processValidSession(session: AuthSession): Observable<AuthSession> {
+    const isValid = this.isSessionValid(session);
+    const shouldRefresh = this.shouldRefreshSession(session);
 
-    // If token is still valid and doesn't need refresh, return it
     if (isValid && !shouldRefresh) {
-      // this.logger.debugComponent('Auth', 'getValidToken: Returning valid token');
-      return of(token);
+      return of(session);
     }
 
-    // If token needs refresh and we have a refresh token, refresh it
-    if (token.refreshToken) {
-      // this.logger.debugComponent('Auth', 'getValidToken: Attempting token refresh');
+    // Session needs refresh - attempt cookie-based refresh
+    if (isValid || shouldRefresh) {
       return this.refreshToken().pipe(
-        map(newToken => {
-          // this.logger.debugComponent('Auth', 'getValidToken: Token refresh successful');
-          this.storeToken(newToken);
-          return newToken;
+        map(newSession => {
+          this.storeSessionInfo(newSession);
+          return newSession;
         }),
       );
     }
 
-    // Token is expired and no refresh token available
-    // this.logger.debugComponent('Auth', 'getValidToken: Token expired, no refresh token available');
+    // Session is fully expired
     this.clearAuthData();
-    return throwError(() => new Error('Token expired and no refresh token available'));
+    return throwError(() => new Error('Session expired'));
   }
 
   /**
-   * Get a valid access token if available, returns null for public endpoints
-   * @returns Observable that resolves to a valid JWT token or null if no token is available
+   * Get session info if available, returns null if not authenticated
    */
-  getValidTokenIfAvailable(): Observable<JwtToken | null> {
-    const token = this.getStoredToken();
-    if (!token) {
+  getValidTokenIfAvailable(): Observable<AuthSession | null> {
+    const session = this.getSessionInfo();
+    if (!session) {
       return of(null);
     }
 
-    // If token is still valid and doesn't need refresh, return it
-    if (this.isTokenValid() && !this.shouldRefreshToken()) {
-      return of(token);
+    if (this.isSessionValid() && !this.shouldRefreshSession()) {
+      return of(session);
     }
 
-    // If token needs refresh and we have a refresh token, refresh it
-    if (token.refreshToken) {
-      return this.refreshToken().pipe(
-        map(newToken => {
-          this.storeToken(newToken);
-          return newToken;
-        }),
-        catchError(() => {
-          // If refresh fails, clear auth data and return null instead of error
-          this.clearAuthData();
-          return of(null);
-        }),
-      );
-    }
-
-    // Token is expired and no refresh token available
-    this.clearAuthData();
-    return of(null);
+    return this.refreshToken().pipe(
+      map(newSession => {
+        this.storeSessionInfo(newSession);
+        return newSession;
+      }),
+      catchError(() => {
+        this.clearAuthData();
+        return of(null);
+      }),
+    );
   }
 
   /**
-   * Check auth status from local storage
-   * Loads JWT token and user profile if available
-   * Sets tokenReady$ to true when complete (even on error)
+   * Check auth status by calling GET /me.
+   * If the server responds successfully (cookie is valid), we're authenticated.
+   * Sets tokenReady$ to true when complete (even on error).
    */
   async checkAuthStatus(): Promise<void> {
     try {
-      // Try to get token from cache first (fast path)
-      let token = this.jwtTokenSubject.value;
-
-      // If no cached token, try to decrypt from storage
-      if (!token) {
-        token = await this.getStoredTokenDecrypted();
-        if (token) {
-          this.jwtTokenSubject.next(token);
-        }
+      // If we already have a session in memory, use it
+      if (this.sessionSubject.value && this.isSessionValid()) {
+        this.tokenReadySubject.next(true);
+        return;
       }
 
-      const isAuthenticated = this.isTokenValid(token);
-      // this.logger.debugComponent(
-      //   'Auth',
-      //   `Variable 'isAuthenticated' in AuthService.checkAuthStatus initialized to: ${isAuthenticated}`,
-      // );
-      this.isAuthenticatedSubject.next(isAuthenticated);
+      // Call GET /me to check if we have a valid session cookie
+      const response = await this.http
+        .get<UserMeResponse>(`${environment.apiUrl}/me`)
+        .toPromise()
+        .catch(() => null);
 
-      // Load user profile if authenticated
-      if (isAuthenticated && token) {
-        const userProfile = await this.getStoredUserProfile();
-        if (userProfile) {
-          // this.logger.debugComponent(
-          //   'Auth',
-          //   `Variable 'userProfile' in AuthService.checkAuthStatus initialized to:`,
-          //   userProfile,
-          // );
-          this.userProfileSubject.next(userProfile);
+      if (response) {
+        // Session cookie is valid - we're authenticated
+        const profile: UserProfile = {
+          provider: response.provider,
+          provider_id: response.provider_id,
+          display_name: response.name,
+          email: response.email,
+          groups: response.groups ?? null,
+          jwt_groups: null,
+          is_admin: response.is_admin,
+          is_security_reviewer: response.is_security_reviewer,
+        };
+
+        this.isAuthenticatedSubject.next(true);
+        this.userProfileSubject.next(profile);
+
+        // If we don't have session timing info yet, set a default
+        // (will be updated on next refresh)
+        if (!this.sessionSubject.value) {
+          const defaultExpiresIn = environment.authTokenExpiryMinutes * 60;
+          const expiresAt = new Date();
+          expiresAt.setSeconds(expiresAt.getSeconds() + defaultExpiresIn);
+          this.sessionSubject.next({ expiresIn: defaultExpiresIn, expiresAt });
         }
       } else {
+        // No valid session - not authenticated
+        this.isAuthenticatedSubject.next(false);
         this.userProfileSubject.next(null);
+        this.sessionSubject.next(null);
       }
-
-      // this.logger.debugComponent(
-      //   'Auth',
-      //   `Auth status checked: authenticated=${isAuthenticated}, user=${this.userEmail}`,
-      // );
     } catch (error) {
       this.logger.error('Error checking auth status', error);
       this.clearAuthData();
     } finally {
-      // Signal that token initialization is complete (success or failure)
       this.tokenReadySubject.next(true);
     }
   }
@@ -998,120 +913,53 @@ export class AuthService {
     returnUrl?: string,
   ): Observable<boolean> {
     try {
-      // this.logger.debugComponent('Auth', 'Processing TMI token response', {
-      //   providerId,
-      //   expiresIn: response.expires_in,
-      //   hasRefreshToken: !!response.refresh_token,
-      //   accessTokenLength: response.access_token?.length,
-      //   accessTokenPrefix: response.access_token?.substring(0, 30) + '...',
-      //   refreshTokenLength: response.refresh_token?.length,
-      //   refreshTokenPrefix: response.refresh_token?.substring(0, 20) + '...',
-      // });
+      // With HttpOnly cookies, the server sets tokens as cookies.
+      // We only extract expires_in from the response body for session timing.
+      const expiresIn = response.expires_in || 3600;
+      const expiresAt = new Date();
+      expiresAt.setSeconds(expiresAt.getSeconds() + expiresIn);
 
-      // Validate the access token format
-      if (!response.access_token) {
-        this.logger.error('No access token in TMI response');
-        throw new Error('No access token provided');
-      }
-
-      const tokenParts = response.access_token.split('.');
-      if (tokenParts.length !== 3) {
-        this.logger.error('Invalid JWT token format', {
-          tokenParts: tokenParts.length,
-          token: response.access_token.substring(0, 50) + '...',
-        });
-        throw new Error('Invalid JWT token format');
-      }
-
-      // Extract expiration from JWT exp claim (preferred) or fall back to expires_in
-      let expiresAt = this.extractExpirationFromToken(response.access_token);
-      let expiresIn = response.expires_in || 3600;
-
-      if (expiresAt) {
-        // Calculate expiresIn from exp claim for consistency
-        const now = new Date();
-        expiresIn = Math.floor((expiresAt.getTime() - now.getTime()) / 1000);
-        // this.logger.debugComponent('Auth', 'Using exp claim from JWT', {
-        //   expClaim: expiresAt.toISOString(),
-        //   calculatedExpiresIn: expiresIn,
-        //   providedExpiresIn: response.expires_in,
-        // });
-      } else {
-        // Fall back to expires_in from OAuth response
-        this.logger.warn('JWT missing exp claim, falling back to expires_in', {
-          expiresIn,
-        });
-        expiresAt = new Date();
-        expiresAt.setSeconds(expiresAt.getSeconds() + expiresIn);
-      }
-
-      const token: JwtToken = {
-        token: response.access_token,
-        refreshToken: response.refresh_token,
-        expiresIn,
-        expiresAt,
-      };
-
-      // Check if the created token is valid
-      // const now = new Date();
-      // const isTokenValid = token.expiresAt > now;
-
-      // this.logger.debugComponent('Auth', 'Created JWT token object', {
-      //   expiresAt: token.expiresAt.toISOString(),
-      //   expiresIn: token.expiresIn,
-      //   isValid: isTokenValid,
-      //   currentTime: now.toISOString(),
-      // });
-
-      // Store token and extract user profile
-      this.storeToken(token);
-      const userProfile = this.extractUserProfileFromToken(token);
-      void this.storeUserProfile(userProfile);
-
-      // Update authentication state
+      const session: AuthSession = { expiresIn, expiresAt };
+      this.storeSessionInfo(session);
       this.isAuthenticatedSubject.next(true);
-      this.userProfileSubject.next(userProfile);
 
-      // Verify token was stored correctly
-      // const storedToken = this.getStoredToken();
-      // this.logger.debugComponent('Auth', 'Token storage verification', {
-      //   tokenWasStored: !!storedToken,
-      //   storedTokenLength: storedToken?.token?.length,
-      //   storedTokenMatches: storedToken?.token === token.token,
-      // });
+      // Fetch user profile from server (blocking — we need it before navigation)
+      return this.refreshUserProfile().pipe(
+        switchMap(profile => {
+          this.logger.info(`User ${profile.email} logged in via ${providerId || 'unknown'}`);
 
-      // this.logger.info(`User ${userProfile.email} successfully logged in via ${providerId}`, {
-      //   returnUrl,
-      // });
+          // Navigate to return URL if provided and valid, otherwise to role-based landing page
+          const validReturnUrl =
+            returnUrl && this.isValidReturnUrl(returnUrl) ? returnUrl : undefined;
+          const navigationPromise = validReturnUrl
+            ? this.router.navigateByUrl(validReturnUrl)
+            : this.router.navigate([this.getLandingPage()]);
 
-      // Fetch admin status from server after login
-      // Fire and forget - don't block navigation on this
-      this.refreshUserProfile().subscribe();
-
-      // Navigate to return URL if provided and valid, otherwise to role-based landing page
-      // Wait for navigation to complete before emitting success
-      const validReturnUrl = returnUrl && this.isValidReturnUrl(returnUrl) ? returnUrl : undefined;
-      const navigationPromise = validReturnUrl
-        ? this.router.navigateByUrl(validReturnUrl)
-        : this.router.navigate([this.getLandingPage()]);
-
-      return from(navigationPromise).pipe(
-        map(navigationSuccess => {
-          if (!navigationSuccess) {
-            this.logger.warn('Navigation after OAuth callback failed', { returnUrl });
-          }
-          return true; // Still return true as auth succeeded, even if navigation had issues
+          return from(navigationPromise).pipe(
+            map(navigationSuccess => {
+              if (!navigationSuccess) {
+                this.logger.warn('Navigation after OAuth callback failed', { returnUrl });
+              }
+              return true;
+            }),
+            catchError(navError => {
+              this.logger.error('Error during post-auth navigation', navError);
+              return of(true);
+            }),
+          );
         }),
-        catchError(navError => {
-          this.logger.error('Error during post-auth navigation', navError);
-          return of(true); // Auth succeeded, navigation error is secondary
+        catchError(profileError => {
+          this.logger.error('Failed to fetch user profile after login', profileError);
+          // Auth succeeded (cookies set) but profile fetch failed — still authenticated
+          void this.router.navigate([this.getLandingPage()]);
+          return of(true);
         }),
       );
     } catch (error) {
       this.logger.error('Error processing TMI token response', error);
       this.handleAuthError({
         code: 'token_processing_error',
-        message: 'Failed to process authentication tokens',
+        message: 'Failed to process authentication response',
         retryable: true,
       });
       return of(false);
@@ -1182,85 +1030,47 @@ export class AuthService {
 
     return this.http
       .post<{
-        access_token: string;
-        refresh_token?: string;
         expires_in: number;
         token_type: string;
       }>(exchangeUrl, exchangeRequest)
       .pipe(
-        map(tokenResponse => {
-          // this.logger.debugComponent('Auth', 'Token exchange successful', {
-          //   hasAccessToken: !!tokenResponse.access_token,
-          //   hasRefreshToken: !!tokenResponse.refresh_token,
-          //   expiresIn: tokenResponse.expires_in,
-          //   tokenType: tokenResponse.token_type,
-          // });
-
-          // Extract expiration from JWT exp claim (preferred) or fall back to expires_in
-          let expiresAt = this.extractExpirationFromToken(tokenResponse.access_token);
-          let expiresIn = tokenResponse.expires_in || 3600;
-
-          if (expiresAt) {
-            // Calculate expiresIn from exp claim for consistency
-            const now = new Date();
-            expiresIn = Math.floor((expiresAt.getTime() - now.getTime()) / 1000);
-            // this.logger.debugComponent('Auth', 'Using exp claim from JWT', {
-            //   expClaim: expiresAt.toISOString(),
-            //   calculatedExpiresIn: expiresIn,
-            //   providedExpiresIn: tokenResponse.expires_in,
-            // });
-          } else {
-            // Fall back to expires_in from OAuth response
-            this.logger.warn('JWT missing exp claim, falling back to expires_in', {
-              expiresIn,
-            });
-            expiresAt = new Date();
-            expiresAt.setSeconds(expiresAt.getSeconds() + expiresIn);
-          }
-
-          const token: JwtToken = {
-            token: tokenResponse.access_token,
-            refreshToken: tokenResponse.refresh_token,
-            expiresIn,
-            expiresAt,
-          };
-
+        switchMap(tokenResponse => {
           // Clear PKCE verifier after successful exchange
           this.pkceService.clearVerifier();
 
-          // Store token and extract user profile
-          this.storeToken(token);
-          const userProfile = this.extractUserProfileFromToken(token);
-          void this.storeUserProfile(userProfile);
+          // Server sets HttpOnly cookies; we track session timing from expires_in
+          const expiresIn = tokenResponse.expires_in || 3600;
+          const expiresAt = new Date();
+          expiresAt.setSeconds(expiresAt.getSeconds() + expiresIn);
 
-          // Update authentication state
+          const session: AuthSession = { expiresIn, expiresAt };
+          this.storeSessionInfo(session);
           this.isAuthenticatedSubject.next(true);
-          this.userProfileSubject.next(userProfile);
 
-          // this.logger.info(
-          //   `User ${userProfile.email} successfully logged in via ${providerId} (code exchange)`,
-          //   {
-          //     returnUrl,
-          //   },
-          // );
+          // Fetch user profile from server
+          return this.refreshUserProfile().pipe(
+            map(profile => {
+              this.logger.info(
+                `User ${profile.email} logged in via ${providerId || 'unknown'} (code exchange)`,
+              );
 
-          // Fetch admin status from server after login
-          // Fire and forget - don't block navigation on this
-          this.refreshUserProfile().subscribe();
+              // Navigate to return URL or role-based landing page
+              if (returnUrl && this.isValidReturnUrl(returnUrl)) {
+                void this.router.navigateByUrl(returnUrl);
+              } else {
+                void this.router.navigate([this.getLandingPage()]);
+              }
 
-          // Navigate to return URL if provided and valid, otherwise to role-based landing page
-          // Note: We can't use from() here because we're inside a map() - just fire and forget
-          // The main navigation fix is in handleTMITokenResponse above
-          if (returnUrl && this.isValidReturnUrl(returnUrl)) {
-            void this.router.navigateByUrl(returnUrl);
-          } else {
-            void this.router.navigate([this.getLandingPage()]);
-          }
-
-          return true;
+              return true;
+            }),
+            catchError(profileError => {
+              this.logger.error('Failed to fetch profile after code exchange', profileError);
+              void this.router.navigate([this.getLandingPage()]);
+              return of(true);
+            }),
+          );
         }),
         catchError((error: HttpErrorResponse) => {
-          // Clear PKCE verifier on error
           this.pkceService.clearVerifier();
 
           this.logger.error('Authorization code exchange failed (PKCE)', error);
@@ -1298,67 +1108,6 @@ export class AuthService {
   }
 
   /**
-   * Extract expiration date from JWT token's exp claim
-   * @param token JWT token string
-   * @returns Expiration date or null if exp claim is missing/invalid
-   */
-  private extractExpirationFromToken(token: string): Date | null {
-    try {
-      const payload = token.split('.')[1];
-      const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
-
-      if (decodedPayload.exp) {
-        // exp is in seconds since epoch, convert to milliseconds
-        return new Date(decodedPayload.exp * 1000);
-      }
-
-      this.logger.warn('JWT token missing exp claim');
-      return null;
-    } catch (error) {
-      this.logger.error('Error extracting expiration from JWT', error);
-      return null;
-    }
-  }
-
-  /**
-   * Extract user profile from JWT token
-   * @param token JWT token
-   * @returns User profile
-   */
-  private extractUserProfileFromToken(token: JwtToken): UserProfile {
-    try {
-      // Get the payload part of the JWT (second part)
-      const payload = token.token.split('.')[1];
-      // Base64 decode and parse as JSON
-      const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
-
-      // Extract provider-specific user ID from 'sub' claim (standard JWT)
-      const providerId = decodedPayload.sub;
-
-      if (!providerId || !decodedPayload.email || !decodedPayload.name) {
-        throw new Error('Required user profile fields missing from JWT token');
-      }
-
-      // Extract provider from idp claim (identity provider)
-      const provider = decodedPayload.idp || 'unknown';
-
-      return {
-        provider,
-        provider_id: providerId,
-        display_name: decodedPayload.name,
-        email: decodedPayload.email,
-        groups: null,
-        jwt_groups: decodedPayload.groups || null,
-        is_admin: decodedPayload.tmi_is_administrator ?? false,
-        is_security_reviewer: decodedPayload.tmi_is_security_reviewer ?? false,
-      };
-    } catch (error) {
-      this.logger.error('Error extracting user profile from token', error);
-      throw new Error('Failed to extract user profile from token');
-    }
-  }
-
-  /**
    * Fetch current user profile from server and update cached profile with admin status
    * This should be called after login to get the is_admin flag
    * Calls GET /me directly to avoid circular dependency
@@ -1369,7 +1118,7 @@ export class AuthService {
     return this.http.get<UserMeResponse>(`${environment.apiUrl}/me`).pipe(
       map(response => {
         // Transform API response to UserProfile format
-        const serverProfile: UserProfile = {
+        const profile: UserProfile = {
           provider: response.provider,
           provider_id: response.provider_id,
           display_name: response.name,
@@ -1379,323 +1128,56 @@ export class AuthService {
           is_admin: response.is_admin,
           is_security_reviewer: response.is_security_reviewer,
         };
-
-        // Get current JWT-derived profile
-        const currentProfile = this.userProfile;
-
-        if (!currentProfile) {
-          // No current profile, use server response as-is
-          return serverProfile;
-        }
-
-        // Validate critical identity fields (must match exactly)
-        if (serverProfile.provider !== currentProfile.provider) {
-          this.logger.warn('Provider mismatch between JWT and server response', {
-            jwtProvider: currentProfile.provider,
-            serverProvider: serverProfile.provider,
-          });
-        }
-
-        if (serverProfile.provider_id !== currentProfile.provider_id) {
-          this.logger.error('Provider ID mismatch between JWT and server response', {
-            jwtProviderId: currentProfile.provider_id,
-            serverProviderId: serverProfile.provider_id,
-            provider: serverProfile.provider,
-          });
-        }
-
-        // Merge profiles: use JWT values for identity fields, fill in missing non-identity fields
-        const mergedProfile: UserProfile = {
-          // Identity fields: always use JWT values (authoritative source)
-          provider: currentProfile.provider,
-          provider_id: currentProfile.provider_id,
-
-          // Non-identity fields: prefer server values if present, otherwise keep JWT values
-          display_name: serverProfile.display_name || currentProfile.display_name,
-          email: serverProfile.email || currentProfile.email,
-          groups: serverProfile.groups !== null ? serverProfile.groups : currentProfile.groups,
-          jwt_groups: currentProfile.jwt_groups,
-
-          // Server-verified fields (prefer server values, fall back to JWT-derived values)
-          is_admin: serverProfile.is_admin,
-          is_security_reviewer:
-            serverProfile.is_security_reviewer ?? currentProfile.is_security_reviewer,
-        };
-
-        // Warn about mismatched non-critical fields
-        if (
-          serverProfile.display_name &&
-          serverProfile.display_name !== currentProfile.display_name
-        ) {
-          this.logger.warn('Display name differs between JWT and server', {
-            jwtName: currentProfile.display_name,
-            serverName: serverProfile.display_name,
-            usingServer: true,
-          });
-        }
-
-        if (serverProfile.email && serverProfile.email !== currentProfile.email) {
-          this.logger.warn('Email differs between JWT and server', {
-            jwtEmail: currentProfile.email,
-            serverEmail: serverProfile.email,
-            usingServer: true,
-          });
-        }
-
-        return mergedProfile;
+        return profile;
       }),
       tap(profile => {
-        // Update the cached profile with merged data
         this.userProfileSubject.next(profile);
-        void this.storeUserProfile(profile);
-        this.logger.debugComponent('Auth', 'User profile refreshed with admin status', {
+        this.logger.debugComponent('Auth', 'User profile refreshed', {
           isAdmin: profile.is_admin,
         });
       }),
       catchError((error: HttpErrorResponse) => {
         this.logger.error('Failed to refresh user profile', error);
-        // Don't throw - we already have basic profile from JWT
-        // Just return the current profile without is_admin
-        return of(this.userProfile!);
+        if (this.userProfile) {
+          return of(this.userProfile);
+        }
+        return throwError(() => error);
       }),
     );
   }
 
   /**
-   * Store JWT token in local storage and notify SessionManager
-   * @param token JWT token
+   * Store session info in memory and notify SessionManager
    */
-  storeToken(token: JwtToken): void {
-    // this.logger.debugComponent('Auth', 'Storing JWT token', {
-    //   tokenLength: token.token?.length,
-    //   tokenPrefix: token.token?.substring(0, 20) + '...',
-    //   expiresAt: token.expiresAt.toISOString(),
-    //   expiresIn: token.expiresIn,
-    //   hasRefreshToken: !!token.refreshToken,
-    //   refreshTokenLength: token.refreshToken?.length,
-    // });
+  storeSessionInfo(session: AuthSession): void {
+    this.sessionSubject.next(session);
 
-    try {
-      // Parse the JWT payload to log token contents (without signature)
-      // const payload = token.token.split('.')[1];
-      // const decodedPayload = JSON.parse(atob(payload)) as JwtPayload;
-      // this.logger.debugComponent('Auth', 'JWT token payload', {
-      //   sub: decodedPayload.sub,
-      //   email: decodedPayload.email,
-      //   name: decodedPayload.name,
-      //   iat: decodedPayload.iat,
-      //   exp: decodedPayload.exp,
-      //   provider: decodedPayload.provider,
-      //   aud: decodedPayload.aud,
-      //   iss: decodedPayload.iss,
-      // });
-    } catch (error) {
-      this.logger.warn('Could not decode JWT payload for logging', error);
-    }
-
-    // Store token with encryption - handle errors but don't clear auth immediately
-    this.storeTokenEncrypted(token).catch(error => {
-      this.logger.error('Token storage encryption failed', error);
-      // Don't clear auth data here as it would break the current session
-      // The token is still in memory (jwtTokenSubject) and can be used
-      // Future page refreshes will fail to restore auth state, which is the desired behavior
-      this.handleAuthError({
-        code: 'token_encryption_failed',
-        message: 'Failed to securely store authentication token',
-        retryable: false,
-      });
-    });
-    this.jwtTokenSubject.next(token);
-
-    // Notify SessionManager of new token
+    // Notify SessionManager of refreshed session
     if (this.sessionManagerService) {
       this.sessionManagerService.onTokenRefreshed();
     }
   }
 
   /**
-   * Get stored JWT token from local storage
-   * @returns JWT token or null if not found
+   * @deprecated Use storeSessionInfo() instead
+   */
+  storeToken(token: JwtToken): void {
+    this.storeSessionInfo(token);
+  }
+
+  /**
+   * Get session info from memory
+   * @returns Session info or null if not authenticated
+   */
+  getSessionInfo(): AuthSession | null {
+    return this.sessionSubject.value;
+  }
+
+  /**
+   * @deprecated Use getSessionInfo() instead
    */
   getStoredToken(): JwtToken | null {
-    // First try to get from memory cache (set by jwtTokenSubject)
-    const cachedToken = this.jwtTokenSubject.value;
-    if (cachedToken) {
-      return cachedToken;
-    }
-
-    // If not in cache, try to decrypt from storage synchronously via a promise workaround
-    try {
-      // This is a temporary synchronous fallback - we'll trigger async decryption in background
-      const encryptedToken = localStorage.getItem(this.tokenStorageKey);
-      if (!encryptedToken) {
-        // this.logger.debugComponent('Auth', 'No token found in localStorage');
-        return null;
-      }
-
-      // Check if it's encrypted format (contains ':') vs cleartext (backward compatibility)
-      if (!encryptedToken.includes(':')) {
-        // This is cleartext from previous version, parse and cache
-        const token = JSON.parse(encryptedToken) as JwtToken;
-        if (typeof token.expiresAt === 'string') {
-          token.expiresAt = new Date(token.expiresAt);
-        }
-        // Cache it and trigger re-encryption in background
-        this.jwtTokenSubject.next(token);
-        this.storeTokenEncrypted(token).catch(error => {
-          this.logger.error('Failed to re-encrypt cleartext token', error);
-          // Keep using the token for now since it was already in cleartext
-          // But log the error for security monitoring
-        });
-        return token;
-      }
-
-      // For encrypted tokens, we need async decryption
-      // Trigger async decryption and return null for now
-      void this.getStoredTokenDecrypted().then(token => {
-        if (token) {
-          this.jwtTokenSubject.next(token);
-        }
-      });
-
-      // this.logger.debugComponent('Auth', 'Encrypted token found, decryption in progress');
-      return null;
-    } catch (error) {
-      this.logger.error('Error retrieving stored token', error);
-      return null;
-    }
-  }
-
-  /**
-   * Store user profile in local storage
-   * @param profile User profile
-   */
-  /**
-   * Encrypt and store user profile in local storage
-   * Uses access token as encryption key material
-   */
-  private async storeUserProfile(profile: UserProfile): Promise<void> {
-    // this.logger.debugComponent('Auth', 'Storing encrypted user profile');
-    try {
-      // Use the JWT access token as key material
-      const tokenObj = this.getStoredToken();
-      const keyMaterial = tokenObj?.token;
-      if (!keyMaterial) {
-        throw new Error('Missing access token for profile encryption');
-      }
-      const encProfile = await this.encryptProfile(profile, keyMaterial);
-      localStorage.setItem(this.profileStorageKey, encProfile);
-    } catch (e) {
-      this.logger.error('Error encrypting user profile', e);
-    }
-  }
-
-  /**
-   * Decrypt and get user profile from local storage
-   * Uses access token as decryption key material
-   */
-  async getStoredUserProfile(): Promise<UserProfile | null> {
-    try {
-      const encProfile = localStorage.getItem(this.profileStorageKey);
-      if (!encProfile) return null;
-
-      // Check if it's encrypted format (contains ':') vs cleartext (backward compatibility)
-      if (!encProfile.includes(':')) {
-        // This is cleartext from previous version or test setup
-        try {
-          const profile = JSON.parse(encProfile) as UserProfile;
-          // Re-encrypt and store for future use if we have a token
-          const tokenObj = this.getStoredToken();
-          if (tokenObj?.token) {
-            await this.storeUserProfile(profile);
-          }
-          return profile;
-        } catch (parseError) {
-          this.logger.error('Error parsing cleartext user profile', parseError);
-          return null;
-        }
-      }
-
-      // Encrypted format - decrypt normally
-      const tokenObj = this.getStoredToken();
-      const keyMaterial = tokenObj?.token;
-      if (!keyMaterial) return null;
-      return await this.decryptProfile(encProfile, keyMaterial);
-    } catch (e) {
-      this.logger.error('Error decrypting user profile', e);
-      // Try to parse as cleartext for additional backward compatibility
-      try {
-        const profileJson = localStorage.getItem(this.profileStorageKey);
-        if (profileJson && !profileJson.includes(':')) {
-          return JSON.parse(profileJson) as UserProfile;
-        }
-      } catch (parseError) {
-        this.logger.error('Could not parse user profile as cleartext either', parseError);
-      }
-      return null;
-    }
-  }
-
-  /**
-   * AES-GCM encrypt a profile with given key string
-   */
-  private async encryptProfile(profile: UserProfile, keyStr: string): Promise<string> {
-    // Hash the key string to get a 256-bit key
-    const key = await this.getAesKeyFromString(keyStr);
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const plaintext = new TextEncoder().encode(JSON.stringify(profile));
-    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext);
-    // Encode as base64: iv + ciphertext
-    const b64Iv = this.uint8ToB64(iv);
-    const b64Cipher = this.uint8ToB64(new Uint8Array(ciphertext));
-    return `${b64Iv}:${b64Cipher}`;
-  }
-
-  /**
-   * AES-GCM decrypt a profile with given key string
-   */
-  private async decryptProfile(encProfile: string, keyStr: string): Promise<UserProfile | null> {
-    const [b64Iv, b64Cipher] = encProfile.split(':');
-    if (!b64Iv || !b64Cipher) return null;
-    const key = await this.getAesKeyFromString(keyStr);
-    const iv = this.b64ToUint8(b64Iv);
-    const ciphertext = this.b64ToUint8(b64Cipher);
-    const plaintextBuf = await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv: iv as BufferSource },
-      key,
-      ciphertext as BufferSource,
-    );
-    const profileStr = new TextDecoder().decode(plaintextBuf);
-    return JSON.parse(profileStr) as UserProfile;
-  }
-
-  /**
-   * SHA-256 derive AES key from string
-   */
-  private async getAesKeyFromString(keyStr: string): Promise<CryptoKey> {
-    const enc = new TextEncoder();
-    const hash = await crypto.subtle.digest('SHA-256', enc.encode(keyStr));
-    return await crypto.subtle.importKey('raw', hash, { name: 'AES-GCM', length: 256 }, false, [
-      'encrypt',
-      'decrypt',
-    ]);
-  }
-
-  /**
-   * Helpers to base64 encode/decode Uint8Array
-   */
-  private uint8ToB64(data: Uint8Array): string {
-    // Browser-friendly base64 encoding
-    return btoa(String.fromCharCode(...data));
-  }
-  private b64ToUint8(b64: string): Uint8Array {
-    const binStr = atob(b64);
-    const buffer = new ArrayBuffer(binStr.length);
-    const bytes = new Uint8Array(buffer);
-    for (let i = 0; i < binStr.length; ++i) {
-      bytes[i] = binStr.charCodeAt(i);
-    }
-    return bytes;
+    return this.getSessionInfo();
   }
 
   /**
@@ -1708,88 +1190,26 @@ export class AuthService {
   }
 
   /**
-   * Refresh an expired access token using the refresh token
-   * Uses TMI's refresh endpoint
-   * @returns Observable that resolves to a new JWT token
+   * Refresh the session using cookie-based refresh.
+   * The server reads the refresh token from the HttpOnly cookie.
+   * @returns Observable that resolves to a new AuthSession
    */
-  refreshToken(): Observable<JwtToken> {
-    // this.logger.debugComponent('Auth', 'Refreshing access token via TMI server');
-
-    const currentToken = this.getStoredToken();
-    if (!currentToken?.refreshToken) {
-      // this.logger.debugComponent('Auth', 'No refresh token available');
-      return throwError(() => new Error('No refresh token available'));
-    }
-
-    // this.logger.debugComponent('Auth', 'Sending refresh token request', {
-    //   hasRefreshToken: !!currentToken.refreshToken,
-    //   refreshTokenLength: currentToken.refreshToken?.length,
-    //   refreshTokenPrefix: currentToken.refreshToken?.substring(0, 20) + '...',
-    //   tokenExpiry: currentToken.expiresAt.toISOString(),
-    // });
-
+  refreshToken(): Observable<AuthSession> {
     return this.http
       .post<{
-        access_token: string;
-        refresh_token: string;
         expires_in: number;
-        token_type: string;
-      }>(`${environment.apiUrl}/oauth2/refresh`, {
-        refresh_token: currentToken.refreshToken,
-      })
+      }>(`${environment.apiUrl}/oauth2/refresh`, {})
       .pipe(
         map(response => {
-          // Extract expiration from JWT exp claim (preferred) or fall back to expires_in
-          let expiresAt = this.extractExpirationFromToken(response.access_token);
-          let expiresIn = response.expires_in;
+          const expiresIn = response.expires_in;
+          const expiresAt = new Date();
+          expiresAt.setSeconds(expiresAt.getSeconds() + expiresIn);
 
-          if (expiresAt) {
-            // Calculate expiresIn from exp claim for consistency
-            const now = new Date();
-            expiresIn = Math.floor((expiresAt.getTime() - now.getTime()) / 1000);
-            // this.logger.debugComponent('Auth', 'Using exp claim from refreshed JWT', {
-            //   expClaim: expiresAt.toISOString(),
-            //   calculatedExpiresIn: expiresIn,
-            //   providedExpiresIn: response.expires_in,
-            // });
-          } else {
-            // Fall back to expires_in from refresh response
-            this.logger.warn('Refreshed JWT missing exp claim, falling back to expires_in', {
-              expiresIn,
-            });
-            expiresAt = new Date();
-            expiresAt.setSeconds(expiresAt.getSeconds() + expiresIn);
-          }
-
-          const newToken = {
-            token: response.access_token,
-            refreshToken: response.refresh_token,
-            expiresIn,
-            expiresAt,
-          };
-
-          // Check for refresh token rotation (security audit logging)
-          if (currentToken.refreshToken === response.refresh_token) {
-            this.logger.debug(
-              'Refresh token was not rotated by server (same token returned). ' +
-                'This may indicate the server does not support refresh token rotation.',
-            );
-          }
-
-          // this.logger.debugComponent('Auth', 'Token refresh successful', {
-          //   newExpiry: newToken.expiresAt.toISOString(),
-          //   hasNewRefreshToken: !!newToken.refreshToken,
-          // });
-
-          return newToken;
+          const session: AuthSession = { expiresIn, expiresAt };
+          return session;
         }),
         catchError((error: HttpErrorResponse) => {
           this.logger.error('Token refresh failed', error);
-          // this.logger.debugComponent('Auth', 'Token refresh failed, clearing auth data', {
-          //   status: error.status,
-          //   message: error.message,
-          // });
-          // If refresh fails, clear auth data and redirect to login
           this.clearAuthData();
           return throwError(() => new Error('Token refresh failed - please login again'));
         }),
@@ -1797,12 +1217,12 @@ export class AuthService {
   }
 
   /**
-   * Force refresh token regardless of expiry time.
-   * Used when server rejects a valid-looking token (e.g., "Invalid authentication context").
-   * Deduplicates concurrent refresh requests - multiple callers share the same in-flight request.
-   * @returns Observable that resolves to a new JWT token
+   * Force refresh session regardless of expiry time.
+   * Used when server rejects a request with 401 (e.g., cookie expired server-side).
+   * Deduplicates concurrent refresh requests.
+   * @returns Observable that resolves to a new AuthSession
    */
-  forceRefreshToken(): Observable<JwtToken> {
+  forceRefreshToken(): Observable<AuthSession> {
     // If refresh already in progress, return the same observable (deduplication)
     if (this.refreshInProgress$) {
       this.logger.debugComponent('Auth', 'Refresh already in progress, reusing existing request');
@@ -1811,14 +1231,9 @@ export class AuthService {
 
     this.logger.warn('Forcing token refresh due to server rejection');
 
-    const currentToken = this.getStoredToken();
-    if (!currentToken?.refreshToken) {
-      return throwError(() => new Error('No refresh token available for forced refresh'));
-    }
-
     this.refreshInProgress$ = this.refreshToken().pipe(
-      tap(newToken => {
-        this.storeToken(newToken);
+      tap(newSession => {
+        this.storeSessionInfo(newSession);
         this.refreshInProgress$ = null;
       }),
       catchError((error: unknown) => {
@@ -1833,16 +1248,19 @@ export class AuthService {
   }
 
   /**
-   * Clear all authentication data and notify SessionManager
+   * Clear all authentication data and notify SessionManager.
+   * With HttpOnly cookies, the server clears cookies on logout.
+   * This method clears in-memory state and broadcasts to other tabs.
    */
   private clearAuthData(): void {
-    localStorage.removeItem(this.tokenStorageKey);
-    localStorage.removeItem(this.profileStorageKey);
-    // Clean up legacy session salt (remove after one release cycle)
+    // Clean up any legacy localStorage data from pre-HttpOnly migration
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_profile');
     sessionStorage.removeItem('_ts');
+
     this.isAuthenticatedSubject.next(false);
     this.userProfileSubject.next(null);
-    this.jwtTokenSubject.next(null);
+    this.sessionSubject.next(null);
 
     // Clear cached providers to force re-evaluation on next login
     this.cachedOAuthProviders = null;
@@ -1866,8 +1284,6 @@ export class AuthService {
     } catch {
       // Ignore storage errors (e.g., private browsing mode)
     }
-
-    // this.logger.debugComponent('Auth', 'Cleared authentication data and provider cache');
   }
 
   /**
@@ -1876,7 +1292,6 @@ export class AuthService {
    */
   logout(): void {
     // Re-entrancy guard: prevent multiple simultaneous logout calls
-    // (e.g., from token expiry detection + cross-tab broadcast firing together)
     if (this.isLoggingOut) {
       return;
     }
@@ -1888,28 +1303,13 @@ export class AuthService {
     const shouldCallServerLogout = this.isAuthenticated && isConnectedToServer;
 
     if (shouldCallServerLogout) {
-      // this.logger.debugComponent('Auth', 'Calling server logout endpoint', {
-      //   isConnectedToServer,
-      //   isTestUser: this.isTestUser,
-      // });
-
-      const token = this.getStoredToken();
-      const headers: { [key: string]: string } = {
-        'Content-Type': 'application/json',
-      };
-
-      // Add Authorization header if we have a token
-      if (token?.token) {
-        headers['Authorization'] = `Bearer ${token.token}`;
-      }
-
+      // Cookie is sent automatically via withCredentials (set by CredentialsInterceptor)
       const context = new HttpContext().set(IS_LOGOUT_REQUEST, true);
 
       this.http
-        .post(`${environment.apiUrl}/me/logout`, null, { headers, context })
+        .post(`${environment.apiUrl}/me/logout`, null, { context })
         .pipe(
           catchError((error: HttpErrorResponse) => {
-            // Log the error but don't fail the logout process
             if (error.status === 0 || error.name === 'HttpErrorResponse') {
               this.logger.warn(
                 'Server unavailable during logout - proceeding with client-side logout',
@@ -1921,111 +1321,19 @@ export class AuthService {
           }),
         )
         .subscribe({
-          next: () => {
-            // this.logger.debugComponent('Auth', 'Server logout request completed');
-          },
           error: () => {
-            // This should not happen due to catchError, but handle it just in case
             this.logger.warn('Unexpected error in logout subscription');
           },
           complete: () => {
-            // Clear authentication data after server request completes (or fails)
             this.clearAuthData();
             this.isLoggingOut = false;
             void this.router.navigate(['/']);
           },
         });
     } else {
-      // Skip server logout and just clear client-side data
       this.clearAuthData();
       this.isLoggingOut = false;
       void this.router.navigate(['/']);
-    }
-  }
-
-  /**
-   * Get the AES-256-GCM CryptoKey for token encryption/decryption.
-   * Key is generated once and stored in IndexedDB for persistence across sessions.
-   * @returns CryptoKey or null if IndexedDB is unavailable
-   */
-  private async getTokenCryptoKey(): Promise<CryptoKey | null> {
-    return this.cryptoKeyStorage.getOrCreateTokenKey();
-  }
-
-  /**
-   * Encrypt and store JWT token
-   */
-  private async storeTokenEncrypted(token: JwtToken): Promise<void> {
-    try {
-      const key = await this.getTokenCryptoKey();
-      if (!key) {
-        throw new Error('Token encryption key unavailable (IndexedDB inaccessible)');
-      }
-      const encryptedToken = await this.encryptToken(token, key);
-      localStorage.setItem(this.tokenStorageKey, encryptedToken);
-    } catch (error) {
-      this.logger.error('Failed to encrypt token for storage', error);
-      throw new Error('Token encryption failed - cannot proceed without secure storage');
-    }
-  }
-
-  /**
-   * Decrypt and retrieve JWT token
-   */
-  private async getStoredTokenDecrypted(): Promise<JwtToken | null> {
-    const encryptedToken = localStorage.getItem(this.tokenStorageKey);
-    if (!encryptedToken) {
-      return null;
-    }
-
-    const key = await this.getTokenCryptoKey();
-    if (!key) {
-      this.logger.debug('Cannot decrypt token - IndexedDB unavailable');
-      return null;
-    }
-    return await this.decryptToken(encryptedToken, key);
-  }
-
-  /**
-   * Encrypt JWT token using AES-GCM
-   */
-  private async encryptToken(token: JwtToken, key: CryptoKey): Promise<string> {
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const plaintext = new TextEncoder().encode(JSON.stringify(token));
-    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext);
-    const b64Iv = this.uint8ToB64(iv);
-    const b64Cipher = this.uint8ToB64(new Uint8Array(ciphertext));
-    return `${b64Iv}:${b64Cipher}`;
-  }
-
-  /**
-   * Decrypt JWT token using AES-GCM
-   */
-  private async decryptToken(encryptedToken: string, key: CryptoKey): Promise<JwtToken | null> {
-    const [b64Iv, b64Cipher] = encryptedToken.split(':');
-    if (!b64Iv || !b64Cipher) return null;
-
-    try {
-      const iv = this.b64ToUint8(b64Iv);
-      const ciphertext = this.b64ToUint8(b64Cipher);
-      const plaintextBuf = await crypto.subtle.decrypt(
-        { name: 'AES-GCM', iv: iv as BufferSource },
-        key,
-        ciphertext as BufferSource,
-      );
-      const plaintext = new TextDecoder().decode(plaintextBuf);
-      const parsed = JSON.parse(plaintext) as JwtToken;
-      if (typeof parsed.expiresAt === 'string') {
-        parsed.expiresAt = new Date(parsed.expiresAt);
-      }
-      return parsed;
-    } catch (error) {
-      // Decryption failure is expected after upgrade (old fingerprint-derived key)
-      // or if IndexedDB was cleared
-      this.logger.debug('Token decryption failed - clearing stale encrypted data', error);
-      localStorage.removeItem(this.tokenStorageKey);
-      localStorage.removeItem(this.profileStorageKey);
-      return null;
     }
   }
 }

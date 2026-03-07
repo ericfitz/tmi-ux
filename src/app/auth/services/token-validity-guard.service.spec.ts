@@ -237,21 +237,6 @@ describe('TokenValidityGuardService', () => {
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
     });
 
-    it('should handle token removal from another tab', () => {
-      service.startMonitoring();
-
-      const storageEvent = new StorageEvent('storage', {
-        key: 'auth_token',
-        newValue: null,
-      });
-      window.dispatchEvent(storageEvent);
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Token removed in another tab, validating auth state',
-      );
-      expect(mockAuthService.validateAndUpdateAuthState).toHaveBeenCalled();
-    });
-
     it('should not redirect if still authenticated after cross-tab logout broadcast', () => {
       mockAuthService.isAuthenticated = true; // Still authenticated (maybe re-logged in)
 

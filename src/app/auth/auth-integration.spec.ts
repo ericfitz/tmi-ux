@@ -14,7 +14,6 @@ import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { of, throwError } from 'rxjs';
 
 import { AuthService } from './services/auth.service';
-import { CryptoKeyStorageService } from './services/crypto-key-storage.service';
 import { JwtInterceptor } from './interceptors/jwt.interceptor';
 import { authGuard } from './guards/auth.guard';
 
@@ -40,16 +39,6 @@ interface MockStorage {
   clear: ReturnType<typeof vi.fn>;
 }
 
-interface MockCrypto {
-  getRandomValues: ReturnType<typeof vi.fn>;
-  subtle: {
-    digest: ReturnType<typeof vi.fn>;
-    importKey: ReturnType<typeof vi.fn>;
-    encrypt: ReturnType<typeof vi.fn>;
-    decrypt: ReturnType<typeof vi.fn>;
-  };
-}
-
 /**
  * Integration tests for authentication components
  * Tests that all authentication pieces work together correctly
@@ -61,20 +50,12 @@ describe('Authentication Integration', () => {
   let httpClient: MockHttpClient;
   let localStorageMock: MockStorage;
   let sessionStorageMock: MockStorage;
-  let cryptoMock: MockCrypto;
   let serverConnectionService: { currentStatus: string };
   let mockPkceService: any;
-  let mockCryptoKeyStorage: {
-    getOrCreateTokenKey: ReturnType<typeof vi.fn>;
-    deleteTokenKey: ReturnType<typeof vi.fn>;
-  };
 
   // Store original globals for restoration after tests
-  const originalCrypto = global.crypto;
   const originalLocalStorage = global.localStorage;
   const originalSessionStorage = global.sessionStorage;
-  const originalNavigator = global.navigator;
-  const originalScreen = global.screen;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -100,37 +81,7 @@ describe('Authentication Integration', () => {
       clear: vi.fn(),
     };
 
-    // Create functional crypto mock using XOR encryption
-    const mockArray = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
-    const XOR_KEY = 0x5a; // Simple XOR key for test encryption
-
-    cryptoMock = {
-      getRandomValues: vi.fn().mockReturnValue(mockArray),
-      subtle: {
-        digest: vi.fn().mockResolvedValue(new ArrayBuffer(32)),
-        importKey: vi.fn().mockResolvedValue({}),
-        encrypt: vi.fn().mockImplementation((algorithm, key, plaintext) => {
-          // XOR-based encryption - encrypt the input data
-          const plaintextArray = new Uint8Array(plaintext);
-          const encrypted = new Uint8Array(plaintextArray.length);
-          for (let i = 0; i < plaintextArray.length; i++) {
-            encrypted[i] = plaintextArray[i] ^ XOR_KEY;
-          }
-          return Promise.resolve(encrypted.buffer);
-        }),
-        decrypt: vi.fn().mockImplementation((algorithm, key, ciphertext) => {
-          // XOR-based decryption - decrypt the input data (XOR with same key)
-          const ciphertextArray = new Uint8Array(ciphertext);
-          const decrypted = new Uint8Array(ciphertextArray.length);
-          for (let i = 0; i < ciphertextArray.length; i++) {
-            decrypted[i] = ciphertextArray[i] ^ XOR_KEY;
-          }
-          return Promise.resolve(decrypted.buffer);
-        }),
-      },
-    };
-
-    // Mock global localStorage, sessionStorage, and crypto
+    // Mock global localStorage and sessionStorage
     Object.defineProperty(global, 'localStorage', {
       value: localStorageMock,
       configurable: true,
@@ -141,41 +92,10 @@ describe('Authentication Integration', () => {
       configurable: true,
       writable: true,
     });
-    Object.defineProperty(global, 'crypto', {
-      value: cryptoMock,
-      configurable: true,
-      writable: true,
-    });
-
-    // Mock navigator for browser fingerprinting
-    Object.defineProperty(global, 'navigator', {
-      value: {
-        userAgent: 'Mozilla/5.0 (Test)',
-        language: 'en-US',
-      },
-      configurable: true,
-      writable: true,
-    });
-
-    // Mock screen for browser fingerprinting
-    Object.defineProperty(global, 'screen', {
-      value: {
-        width: 1920,
-        height: 1080,
-      },
-      configurable: true,
-      writable: true,
-    });
 
     // Create mock server connection service
     serverConnectionService = {
       currentStatus: 'connected',
-    };
-
-    // Create mock CryptoKeyStorageService
-    mockCryptoKeyStorage = {
-      getOrCreateTokenKey: vi.fn().mockResolvedValue({} as CryptoKey),
-      deleteTokenKey: vi.fn().mockResolvedValue(undefined),
     };
 
     // Create mock PKCE service
@@ -191,24 +111,24 @@ describe('Authentication Integration', () => {
       hasStoredVerifier: vi.fn().mockReturnValue(false),
     };
 
-    // Create the service with mocked dependencies
+    // Mock httpClient.get to return 401 by default so constructor's checkAuthStatus()
+    // does not auto-authenticate
+    vi.mocked(httpClient.get).mockReturnValue(
+      throwError(() => ({ status: 401, statusText: 'Unauthorized' })),
+    );
+
+    // Create the service with mocked dependencies (5 params, no CryptoKeyStorageService)
     authService = new AuthService(
       router as unknown as Router,
       httpClient as unknown as HttpClient,
       logger as unknown as LoggerService,
       serverConnectionService as unknown as ServerConnectionService,
       mockPkceService,
-      mockCryptoKeyStorage as unknown as CryptoKeyStorageService,
     );
   });
 
   afterEach(() => {
     // Restore original globals to prevent test pollution
-    Object.defineProperty(global, 'crypto', {
-      value: originalCrypto,
-      configurable: true,
-      writable: true,
-    });
     Object.defineProperty(global, 'localStorage', {
       value: originalLocalStorage,
       configurable: true,
@@ -216,16 +136,6 @@ describe('Authentication Integration', () => {
     });
     Object.defineProperty(global, 'sessionStorage', {
       value: originalSessionStorage,
-      configurable: true,
-      writable: true,
-    });
-    Object.defineProperty(global, 'navigator', {
-      value: originalNavigator,
-      configurable: true,
-      writable: true,
-    });
-    Object.defineProperty(global, 'screen', {
-      value: originalScreen,
       configurable: true,
       writable: true,
     });
@@ -253,17 +163,13 @@ describe('Authentication Integration', () => {
 
   describe('JWT Interceptor', () => {
     it('should be created', () => {
-      const interceptor = new JwtInterceptor(
-        authService,
-        router as unknown as Router,
-        logger as unknown as LoggerService,
-      );
+      const interceptor = new JwtInterceptor(authService, logger as unknown as LoggerService);
       expect(interceptor).toBeTruthy();
     });
   });
 
   describe('Authentication State Management', () => {
-    it('should handle manual login state setup correctly', async () => {
+    it('should handle manual login state setup correctly', () => {
       const testEmail = 'test@example.com';
 
       // Before login
@@ -274,7 +180,6 @@ describe('Authentication Integration', () => {
       expiresAt.setHours(expiresAt.getHours() + 1);
 
       const token: JwtToken = {
-        token: 'mock.jwt.token',
         expiresIn: 3600,
         expiresAt,
       };
@@ -289,7 +194,6 @@ describe('Authentication Integration', () => {
       };
 
       authService.storeToken(token);
-      await authService.storeUserProfile(userProfile);
       authService['isAuthenticatedSubject'].next(true);
       authService['userProfileSubject'].next(userProfile);
 
@@ -299,13 +203,12 @@ describe('Authentication Integration', () => {
       expect(authService.username).toBe('test');
     });
 
-    it('should handle logout correctly', async () => {
+    it('should handle logout correctly', () => {
       // Set up authenticated state first
       const expiresAt = new Date();
       expiresAt.setHours(expiresAt.getHours() + 1);
 
       const token: JwtToken = {
-        token: 'mock.jwt.token',
         expiresIn: 3600,
         expiresAt,
       };
@@ -320,7 +223,6 @@ describe('Authentication Integration', () => {
       };
 
       authService.storeToken(token);
-      await authService.storeUserProfile(userProfile);
       authService['isAuthenticatedSubject'].next(true);
       authService['userProfileSubject'].next(userProfile);
 
@@ -338,20 +240,10 @@ describe('Authentication Integration', () => {
 
   describe('OAuth Flow Integration Tests', () => {
     describe('Complete OAuth Login Flow', () => {
-      it('should handle complete Google OAuth login flow with token refresh', () => {
-        // Create a properly formatted JWT token with base64-encoded payload
-        const mockPayload = {
-          sub: '12345678-1234-1234-1234-123456789abc',
-          email: 'user@example.com',
-          name: 'Test User',
-          providers: [{ provider: 'google', is_primary: true }],
-        };
-        const mockJwtToken = 'header.' + btoa(JSON.stringify(mockPayload)) + '.signature';
-
-        // Mock TMI OAuth proxy response with tokens (new pattern)
+      it('should handle complete Google OAuth login flow with token response', () => {
+        // Mock TMI OAuth proxy response (access_token triggers handleTMITokenResponse path)
         const mockOAuthResponse = {
-          access_token: mockJwtToken,
-          refresh_token: 'initial-refresh-token',
+          access_token: 'server-set-cookie-token',
           expires_in: 3600,
           state: 'csrf-state-value',
         };
@@ -368,14 +260,25 @@ describe('Authentication Integration', () => {
           }
         });
 
-        // Execute OAuth callback (no HTTP call needed - TMI provides tokens directly)
+        // Mock GET /me to return user profile (called by handleTMITokenResponse -> refreshUserProfile)
+        vi.mocked(httpClient.get).mockReturnValue(
+          of({
+            provider: 'google',
+            provider_id: 'user@example.com',
+            name: 'Test User',
+            email: 'user@example.com',
+            is_admin: false,
+            groups: null,
+          }),
+        );
+
+        // Execute OAuth callback
         const result$ = authService.handleOAuthCallback(mockOAuthResponse);
 
         result$.subscribe(success => {
           expect(success).toBe(true);
           expect(authService.isAuthenticated).toBe(true);
           expect(authService.userProfile).toBeTruthy();
-          expect(router.navigate).toHaveBeenCalledWith(['/intake']);
         });
 
         // Verify localStorage cleanup
@@ -383,96 +286,47 @@ describe('Authentication Integration', () => {
         expect(localStorageMock.removeItem).toHaveBeenCalledWith('oauth_provider');
       });
 
-      it('should handle OAuth login with automatic token refresh', async () => {
-        // Create JWT token for initial login
-        const initialPayload = {
-          sub: '12345678-1234-1234-1234-123456789abc',
-          email: 'refresh-user@example.com',
-          name: 'Refresh User',
-          providers: [{ provider: 'google', is_primary: true }],
-        };
-        const initialJwtToken = 'header.' + btoa(JSON.stringify(initialPayload)) + '.signature';
-
-        // Set up localStorage to return a token that needs refresh
-        const expiringSoonToken = {
-          token: initialJwtToken,
-          refreshToken: 'valid-refresh-token',
+      it('should handle OAuth login with automatic session refresh', async () => {
+        // Set up an in-memory session that is about to expire (triggers refresh)
+        const expiresAt = new Date(Date.now() + 30000); // 30 seconds from now
+        const expiringSession: JwtToken = {
           expiresIn: 60,
-          expiresAt: new Date(Date.now() + 30000), // 30 seconds from now - will trigger refresh
+          expiresAt,
         };
 
-        localStorageMock.getItem.mockImplementation((key: string) => {
-          switch (key) {
-            case 'oauth_state':
-              return 'test-state';
-            case 'oauth_provider':
-              return 'google';
-            case 'auth_token':
-              return JSON.stringify(expiringSoonToken);
-            default:
-              return null;
-          }
-        });
+        authService.storeToken(expiringSession);
+        authService['isAuthenticatedSubject'].next(true);
 
-        // Create JWT token for refresh response
-        const refreshPayload = {
-          sub: '12345678-1234-1234-1234-123456789abc',
-          email: 'refresh-user@example.com',
-          name: 'Refresh User',
-          providers: [{ provider: 'google', is_primary: true }],
-        };
-        const refreshJwtToken = 'header.' + btoa(JSON.stringify(refreshPayload)) + '.signature';
-
-        // Mock the refresh response
+        // Mock the cookie-based refresh response (POST with empty body)
         const refreshResponse = {
-          access_token: refreshJwtToken,
-          refresh_token: 'new-refresh-token',
           expires_in: 3600,
-          token_type: 'Bearer',
         };
 
         vi.mocked(httpClient.post).mockReturnValueOnce(of(refreshResponse));
 
-        // First, simulate successful OAuth login
-        const oauthResult$ = authService.handleOAuthCallback({
-          access_token: initialJwtToken,
-          refresh_token: 'valid-refresh-token',
-          expires_in: 60,
-          state: 'test-state',
-        });
+        // Test automatic session refresh via getValidToken (deprecated alias for ensureValidSession)
+        const validToken$ = authService.getValidToken();
 
         return new Promise<void>((resolve, reject) => {
-          oauthResult$.subscribe({
-            next: success => {
-              expect(success).toBe(true);
+          validToken$.subscribe({
+            next: session => {
+              try {
+                expect(session.expiresIn).toBe(3600);
+                expect(session.expiresAt).toBeInstanceOf(Date);
 
-              // Now test automatic token refresh
-              const validToken$ = authService.getValidToken();
+                // Verify refresh was called with empty body (cookies sent automatically)
+                expect(httpClient.post).toHaveBeenCalledWith(
+                  `${environment.apiUrl}/oauth2/refresh`,
+                  {},
+                );
 
-              validToken$.subscribe({
-                next: token => {
-                  try {
-                    expect(token.token).toBe(refreshJwtToken);
-                    expect(token.refreshToken).toBe('new-refresh-token');
-
-                    // Verify refresh was called
-                    expect(httpClient.post).toHaveBeenCalledWith(
-                      `${environment.apiUrl}/oauth2/refresh`,
-                      { refresh_token: 'valid-refresh-token' },
-                    );
-
-                    resolve();
-                  } catch (error) {
-                    reject(error instanceof Error ? error : new Error(String(error)));
-                  }
-                },
-                error: error => {
-                  reject(new Error(`Unexpected error in token refresh test: ${error.message}`));
-                },
-              });
+                resolve();
+              } catch (error) {
+                reject(error instanceof Error ? error : new Error(String(error)));
+              }
             },
             error: error => {
-              reject(new Error(`OAuth callback failed: ${error.message}`));
+              reject(new Error(`Unexpected error in session refresh test: ${error.message}`));
             },
           });
         });
@@ -522,17 +376,14 @@ describe('Authentication Integration', () => {
       });
 
       it('should handle token refresh failure and force re-authentication', () => {
-        // Set up an expired token with refresh token
-        const expiredToken = {
-          token: 'expired-access-token',
-          refreshToken: 'invalid-refresh-token',
+        // Set up an expired session in memory
+        const expiredSession: JwtToken = {
           expiresIn: 3600,
           expiresAt: new Date(Date.now() - 1000), // Already expired
         };
 
-        localStorageMock.getItem.mockReturnValue(JSON.stringify(expiredToken));
-        // Also set the in-memory cache so getStoredToken() returns this token
-        authService['jwtTokenSubject'].next(expiredToken);
+        // Set the in-memory session so getSessionInfo() returns it
+        authService['sessionSubject'].next(expiredSession);
 
         // Mock refresh failure
         const refreshError = new Error('Invalid refresh token');
@@ -542,7 +393,7 @@ describe('Authentication Integration', () => {
 
         validToken$.subscribe({
           next: () => {
-            // Should not succeed
+            // Should not succeed — session is expired and not refreshable
             expect(true).toBe(false);
           },
           error: error => {
@@ -555,14 +406,7 @@ describe('Authentication Integration', () => {
     });
 
     describe('Session Management Integration', () => {
-      it('should handle session restoration with refresh tokens', async () => {
-        const storedToken = {
-          token: 'valid-stored-token',
-          refreshToken: 'valid-stored-refresh-token',
-          expiresIn: 3600,
-          expiresAt: new Date(Date.now() + 1800000), // 30 minutes from now
-        };
-
+      it('should handle session restoration via GET /me', async () => {
         const storedProfile: UserProfile = {
           provider: 'google',
           provider_id: 'restored@example.com',
@@ -572,104 +416,66 @@ describe('Authentication Integration', () => {
           jwt_groups: null,
         };
 
-        // Helper function to XOR encrypt data like the real service would
-        const xorEncrypt = (data: string): string => {
-          const XOR_KEY = 0x5a;
-          const plaintext = new TextEncoder().encode(data);
-          const encrypted = new Uint8Array(plaintext.length);
-          for (let i = 0; i < plaintext.length; i++) {
-            encrypted[i] = plaintext[i] ^ XOR_KEY;
-          }
+        // Mock GET /me to return a valid user profile (session cookie is valid)
+        vi.mocked(httpClient.get).mockReturnValue(
+          of({
+            provider: storedProfile.provider,
+            provider_id: storedProfile.provider_id,
+            name: storedProfile.display_name,
+            email: storedProfile.email,
+            is_admin: false,
+            groups: null,
+          }),
+        );
 
-          // Convert to base64 like the real service does (iv:encrypted format)
-          const iv = 'AQEBAQEBAQEBAQEBAQEB'; // Mock IV base64
-          const encryptedB64 = btoa(String.fromCharCode(...encrypted));
-          return `${iv}:${encryptedB64}`;
-        };
-
-        localStorageMock.getItem.mockImplementation((key: string) => {
-          switch (key) {
-            case 'auth_token':
-              // Return encrypted format that our XOR mock can decrypt
-              return xorEncrypt(JSON.stringify(storedToken));
-            case 'user_profile':
-              // Return encrypted format for user profile
-              return xorEncrypt(JSON.stringify(storedProfile));
-            default:
-              return null;
-          }
-        });
-
-        // Create a new service instance to test initialization
+        // Create a new service instance to test initialization (constructor calls checkAuthStatus)
         const restoredAuthService = new AuthService(
           router as unknown as Router,
           httpClient as unknown as HttpClient,
           logger as unknown as LoggerService,
           serverConnectionService as unknown as ServerConnectionService,
           mockPkceService,
-          mockCryptoKeyStorage as unknown as CryptoKeyStorageService,
         );
 
-        // Trigger async authentication restoration
+        // Wait for async checkAuthStatus to complete
         await restoredAuthService.checkAuthStatus();
 
-        // Should restore authentication state
+        // Should restore authentication state from GET /me response
         expect(restoredAuthService.isAuthenticated).toBe(true);
-        expect(restoredAuthService.userProfile).toEqual(storedProfile);
-        expect(restoredAuthService.userEmail).toBe('restored@example.com');
+        expect(restoredAuthService.userProfile?.email).toBe('restored@example.com');
+        expect(restoredAuthService.userProfile?.display_name).toBe('Restored User');
         expect(restoredAuthService.username).toBe('Restored User');
       });
 
-      it('should handle expired session cleanup on initialization', () => {
-        const expiredToken = {
-          token: 'expired-token',
-          refreshToken: 'expired-refresh-token',
-          expiresIn: 3600,
-          expiresAt: new Date(Date.now() - 1000), // 1 second ago
-        };
-
-        localStorageMock.getItem.mockImplementation((key: string) => {
-          switch (key) {
-            case 'auth_token':
-              return JSON.stringify(expiredToken);
-            case 'user_profile':
-              return JSON.stringify({ email: 'test@example.com' });
-            default:
-              return null;
-          }
-        });
+      it('should handle no valid session on initialization', async () => {
+        // Mock GET /me to return 401 (no valid session cookie)
+        vi.mocked(httpClient.get).mockReturnValue(
+          throwError(() => ({ status: 401, statusText: 'Unauthorized' })),
+        );
 
         // Create a new service instance to test initialization
-        const expiredAuthService = new AuthService(
+        const unauthService = new AuthService(
           router as unknown as Router,
           httpClient as unknown as HttpClient,
           logger as unknown as LoggerService,
           serverConnectionService as unknown as ServerConnectionService,
           mockPkceService,
-          mockCryptoKeyStorage as unknown as CryptoKeyStorageService,
         );
 
-        // Should not restore authentication state with expired token
-        expect(expiredAuthService.isAuthenticated).toBe(false);
-        expect(expiredAuthService.userProfile).toBeNull();
+        // Wait for async checkAuthStatus to complete
+        await unauthService.checkAuthStatus();
+
+        // Should not restore authentication state
+        expect(unauthService.isAuthenticated).toBe(false);
+        expect(unauthService.userProfile).toBeNull();
       });
     });
 
     describe('Multi-Provider OAuth Integration', () => {
       it('should handle GitHub OAuth flow', () => {
-        // Create JWT token for GitHub
-        const githubPayload = {
-          sub: '12345678-1234-1234-1234-123456789abc',
-          email: 'github-user@example.com',
-          name: 'GitHub User',
-          providers: [{ provider: 'github', is_primary: true }],
-        };
-        const githubJwtToken = 'header.' + btoa(JSON.stringify(githubPayload)) + '.signature';
-
-        // TMI OAuth proxy response with tokens (new pattern)
+        // TMI OAuth proxy response with tokens
         const githubOAuthResponse = {
-          access_token: githubJwtToken,
-          refresh_token: 'github-refresh-token',
+          access_token: 'github-cookie-token',
           expires_in: 3600,
           state: 'github-state',
         };
@@ -685,6 +491,18 @@ describe('Authentication Integration', () => {
           }
         });
 
+        // Mock GET /me for profile fetch after token response
+        vi.mocked(httpClient.get).mockReturnValue(
+          of({
+            provider: 'github',
+            provider_id: 'github-user@example.com',
+            name: 'GitHub User',
+            email: 'github-user@example.com',
+            is_admin: false,
+            groups: null,
+          }),
+        );
+
         const result$ = authService.handleOAuthCallback(githubOAuthResponse);
 
         result$.subscribe(success => {
@@ -694,19 +512,9 @@ describe('Authentication Integration', () => {
       });
 
       it('should handle Microsoft OAuth flow', () => {
-        // Create JWT token for Microsoft
-        const microsoftPayload = {
-          sub: '12345678-1234-1234-1234-123456789abc',
-          email: 'microsoft-user@example.com',
-          name: 'Microsoft User',
-          providers: [{ provider: 'microsoft', is_primary: true }],
-        };
-        const microsoftJwtToken = 'header.' + btoa(JSON.stringify(microsoftPayload)) + '.signature';
-
-        // TMI OAuth proxy response with tokens (new pattern)
+        // TMI OAuth proxy response with tokens
         const microsoftOAuthResponse = {
-          access_token: microsoftJwtToken,
-          refresh_token: 'microsoft-refresh-token',
+          access_token: 'microsoft-cookie-token',
           expires_in: 3600,
           state: 'microsoft-state',
         };
@@ -722,6 +530,18 @@ describe('Authentication Integration', () => {
           }
         });
 
+        // Mock GET /me for profile fetch after token response
+        vi.mocked(httpClient.get).mockReturnValue(
+          of({
+            provider: 'microsoft',
+            provider_id: 'microsoft-user@example.com',
+            name: 'Microsoft User',
+            email: 'microsoft-user@example.com',
+            is_admin: false,
+            groups: null,
+          }),
+        );
+
         const result$ = authService.handleOAuthCallback(microsoftOAuthResponse);
 
         result$.subscribe(success => {
@@ -732,49 +552,14 @@ describe('Authentication Integration', () => {
     });
 
     describe('JWT Interceptor Integration', () => {
-      it('should integrate with JWT interceptor for automatic token refresh', () => {
-        const interceptor = new JwtInterceptor(
-          authService,
-          router as unknown as Router,
-          logger as unknown as LoggerService,
-        );
+      it('should integrate with JWT interceptor for API request handling', () => {
+        const interceptor = new JwtInterceptor(authService, logger as unknown as LoggerService);
 
-        // Mock a token that needs refresh
-        const soonToExpireToken = {
-          token: 'soon-to-expire-token',
-          refreshToken: 'valid-refresh-token',
-          expiresIn: 3600,
-          expiresAt: new Date(Date.now() + 30000), // 30 seconds from now
-        };
-
-        localStorageMock.getItem.mockReturnValue(JSON.stringify(soonToExpireToken));
-
-        // Create JWT token for refresh response
-        const interceptorRefreshPayload = {
-          sub: '12345678-1234-1234-1234-123456789abc',
-          email: 'interceptor-user@example.com',
-          name: 'Interceptor User',
-          providers: [{ provider: 'google', is_primary: true }],
-        };
-        const interceptorRefreshJwtToken =
-          'header.' + btoa(JSON.stringify(interceptorRefreshPayload)) + '.signature';
-
-        // Mock refresh response
-        const refreshResponse = {
-          access_token: interceptorRefreshJwtToken,
-          refresh_token: 'new-refresh-token',
-          expires_in: 3600,
-          token_type: 'Bearer',
-        };
-
-        vi.mocked(httpClient.post).mockReturnValue(of(refreshResponse));
-
-        // Mock HTTP request and handler
+        // Mock HTTP request and handler for a successful API call
         const mockRequest = {
           url: `${environment.apiUrl}/test`,
           method: 'GET',
           clone: vi.fn().mockReturnThis(),
-          setHeaders: vi.fn(),
           context: new HttpContext(),
         } as any;
 
@@ -782,19 +567,17 @@ describe('Authentication Integration', () => {
           handle: vi.fn().mockReturnValue(of({ data: 'test' })),
         } as any;
 
-        // Test interceptor
+        // Test interceptor passes through successful requests
         const result$ = interceptor.intercept(mockRequest, mockHandler);
 
         result$.subscribe({
-          next: () => {
-            // Verify that getValidToken was called (which triggers refresh)
-            expect(httpClient.post).toHaveBeenCalledWith(`${environment.apiUrl}/oauth2/refresh`, {
-              refresh_token: 'valid-refresh-token',
-            });
+          next: response => {
+            expect(response).toEqual({ data: 'test' });
+            expect(mockHandler.handle).toHaveBeenCalled();
           },
-          error: error => {
-            // Handle any errors that occur during interceptor processing
-            console.warn('Interceptor error (expected in test):', error.message);
+          error: () => {
+            // Should not error on successful request
+            expect(true).toBe(false);
           },
         });
       });
@@ -806,19 +589,9 @@ describe('Authentication Integration', () => {
       // 1. Start unauthenticated
       expect(authService.isAuthenticated).toBe(false);
 
-      // Create JWT token for session
-      const sessionPayload = {
-        sub: '12345678-1234-1234-1234-123456789abc',
-        email: 'session-user@example.com',
-        name: 'Session User',
-        providers: [{ provider: 'google', is_primary: true }],
-      };
-      const sessionJwtToken = 'header.' + btoa(JSON.stringify(sessionPayload)) + '.signature';
-
-      // 2. Simulate TMI OAuth login with tokens (new pattern)
+      // 2. Simulate TMI OAuth login with tokens
       const oauthResponse = {
-        access_token: sessionJwtToken,
-        refresh_token: 'session-refresh-token',
+        access_token: 'session-cookie-token',
         expires_in: 3600,
         state: 'complete-flow-state',
       };
@@ -834,38 +607,35 @@ describe('Authentication Integration', () => {
         }
       });
 
-      // 3. Complete OAuth flow (no HTTP call needed with TMI proxy)
+      // Mock GET /me for profile fetch
+      vi.mocked(httpClient.get).mockReturnValue(
+        of({
+          provider: 'google',
+          provider_id: 'session-user@example.com',
+          name: 'Session User',
+          email: 'session-user@example.com',
+          is_admin: false,
+          groups: null,
+        }),
+      );
+
+      // 3. Complete OAuth flow
       const loginResult$ = authService.handleOAuthCallback(oauthResponse);
 
       loginResult$.subscribe(success => {
         expect(success).toBe(true);
         expect(authService.isAuthenticated).toBe(true);
 
-        // 4. Simulate API usage with automatic token refresh
-        const expiringSoonToken = {
-          token: sessionJwtToken,
-          refreshToken: 'session-refresh-token',
-          expiresIn: 3600,
+        // 4. Simulate session refresh (session about to expire)
+        const expiringSession: JwtToken = {
+          expiresIn: 60,
           expiresAt: new Date(Date.now() + 30000), // Soon to expire
         };
+        authService.storeToken(expiringSession);
 
-        localStorageMock.getItem.mockReturnValue(JSON.stringify(expiringSoonToken));
-
-        // Create JWT token for final refresh
-        const finalRefreshPayload = {
-          sub: '12345678-1234-1234-1234-123456789abc',
-          email: 'session-user@example.com',
-          name: 'Session User',
-          providers: [{ provider: 'google', is_primary: true }],
-        };
-        const finalRefreshJwtToken =
-          'header.' + btoa(JSON.stringify(finalRefreshPayload)) + '.signature';
-
+        // Mock refresh response (empty body POST, cookie-based)
         const refreshResponse = {
-          access_token: finalRefreshJwtToken,
-          refresh_token: 'session-new-refresh-token',
           expires_in: 3600,
-          token_type: 'Bearer',
         };
 
         vi.mocked(httpClient.post).mockReturnValueOnce(of(refreshResponse));
@@ -873,8 +643,8 @@ describe('Authentication Integration', () => {
         // 5. Test automatic refresh
         const validToken$ = authService.getValidToken();
 
-        validToken$.subscribe(token => {
-          expect(token.token).toBe(finalRefreshJwtToken);
+        validToken$.subscribe(session => {
+          expect(session.expiresIn).toBe(3600);
 
           // 6. Test logout
           vi.mocked(httpClient.post).mockReturnValueOnce(of({}));

@@ -49,6 +49,7 @@ import DOMPurify from 'dompurify';
 import { routes } from './app.routes';
 import { TranslocoRootModule } from './i18n/transloco.module';
 import { CacheControlInterceptor } from './core/interceptors/cache-control.interceptor';
+import { CredentialsInterceptor } from './core/interceptors/credentials.interceptor';
 import { HttpLoggingInterceptor } from './core/interceptors/http-logging.interceptor';
 import { JwtInterceptor } from './auth/interceptors/jwt.interceptor';
 import { SecurityConfigService } from './core/services/security-config.service';
@@ -342,19 +343,25 @@ export const appConfig: ApplicationConfig = {
       useFactory: mermaidOptionsFactory,
     },
     // Register HTTP interceptors (order matters - first registered runs first)
-    // 1. JwtInterceptor - adds Authorization header first so it's visible in logs
+    // 1. CredentialsInterceptor - adds withCredentials for cross-origin cookie auth
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: CredentialsInterceptor,
+      multi: true,
+    },
+    // 2. AuthInterceptor - handles 401 errors with cookie-based refresh/retry
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,
       multi: true,
     },
-    // 2. CacheControlInterceptor - prevents caching of sensitive API responses (AUTH-VULN-006)
+    // 3. CacheControlInterceptor - prevents caching of sensitive API responses (AUTH-VULN-006)
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CacheControlInterceptor,
       multi: true,
     },
-    // 3. HttpLoggingInterceptor - logs all HTTP requests/responses with all headers present
+    // 4. HttpLoggingInterceptor - logs all HTTP requests/responses with all headers present
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpLoggingInterceptor,

@@ -130,7 +130,7 @@ export class UserPreferencesService {
       let preferences = this.loadFromLocalStorage();
 
       // Try to load from server if authenticated
-      if (this.authService.getStoredToken()) {
+      if (this.authService.isAuthenticated) {
         const serverPrefs = await this.loadFromServer();
         if (serverPrefs) {
           preferences = serverPrefs;
@@ -174,7 +174,7 @@ export class UserPreferencesService {
     this.saveToLocalStorage(updated);
 
     // Queue debounced server sync if authenticated
-    if (this.authService.getStoredToken()) {
+    if (this.authService.isAuthenticated) {
       this.syncSubject.next(updated);
     }
   }
@@ -260,7 +260,7 @@ export class UserPreferencesService {
    * Sync preferences to server (debounced)
    */
   private syncToServer(preferences: UserPreferencesData): void {
-    if (!this.authService.getStoredToken()) {
+    if (!this.authService.isAuthenticated) {
       return;
     }
 

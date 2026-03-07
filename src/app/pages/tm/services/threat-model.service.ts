@@ -1897,7 +1897,7 @@ export class ThreatModelService implements OnDestroy {
       diagramId,
       currentUser: this.authService.username,
       userEmail: this.authService.userEmail,
-      isAuthenticated: !!this.authService.getStoredToken(),
+      isAuthenticated: this.authService.isAuthenticated,
     });
 
     return this.apiService
