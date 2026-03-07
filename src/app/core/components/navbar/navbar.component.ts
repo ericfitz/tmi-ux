@@ -243,7 +243,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
    */
   copyUserEmailToClipboard(): void {
     try {
-      const userEmail = this.authService.userEmail || '';
+      const userEmail = this.userEmail;
 
       if (!userEmail) {
         this.logger.warn('No user email available to copy');

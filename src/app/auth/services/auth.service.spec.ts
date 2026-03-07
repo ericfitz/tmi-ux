@@ -356,7 +356,7 @@ describe('AuthService', () => {
       // Make checkAuthStatus throw by causing an unexpected error
       // First, clear any existing session so it tries GET /me
       service['sessionSubject'].next(null);
-      service['isAuthenticatedSubject'].next(false);
+      service['userProfileSubject'].next(null);
 
       // Mock GET /me to reject (simulating network error)
       vi.mocked(httpClient.get).mockReturnValue(throwError(() => new Error('Network error')));
@@ -699,7 +699,7 @@ describe('AuthService', () => {
       };
 
       service.storeSessionInfo(session);
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
       service['userProfileSubject'].next(userProfile);
 
       expect(service.isAuthenticated).toBe(true);
@@ -744,7 +744,7 @@ describe('AuthService', () => {
     });
 
     it('should logout and clear state', () => {
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
       service['userProfileSubject'].next(mockUserProfile);
 
       // Set the session in the service
@@ -776,10 +776,10 @@ describe('AuthService', () => {
       // The first emission comes from the BehaviorSubject's initial value (false).
 
       // Simulate successful login
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
 
       // Simulate logout
-      service['isAuthenticatedSubject'].next(false);
+      service['userProfileSubject'].next(null);
 
       // Check that we got false -> true -> false
       // There may be extra emissions from the constructor, so check the last 3
@@ -802,22 +802,6 @@ describe('AuthService', () => {
       // Simulate logout
       service['userProfileSubject'].next(null);
       expect(profiles[profiles.length - 1]).toBeNull();
-    });
-
-    it('should emit username changes', () => {
-      const usernames: string[] = [];
-      service.username$.subscribe(username => usernames.push(username));
-
-      // Initially should be empty
-      expect(usernames[0]).toBe('');
-
-      // Simulate login
-      service['userProfileSubject'].next(mockUserProfile);
-      expect(usernames[1]).toBe('Test User');
-
-      // Simulate logout
-      service['userProfileSubject'].next(null);
-      expect(usernames[2]).toBe('');
     });
   }); /* End of Authentication State Management describe block */
 
@@ -916,7 +900,7 @@ describe('AuthService', () => {
 
   describe('Enhanced Logout Functionality', () => {
     it('should send logout request with context (cookies sent automatically)', () => {
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
       service['userProfileSubject'].next(mockUserProfile);
 
       // Set session in memory
@@ -937,7 +921,7 @@ describe('AuthService', () => {
     });
 
     it('should send logout without Authorization header', () => {
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
       service['userProfileSubject'].next(mockUserProfile);
 
       // Mock the HTTP post method for logout
@@ -952,7 +936,7 @@ describe('AuthService', () => {
     });
 
     it('should handle logout gracefully even without session', () => {
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
       service['userProfileSubject'].next(mockUserProfile);
 
       // No session set
@@ -973,7 +957,7 @@ describe('AuthService', () => {
 
     it('should call server logout for test users', () => {
       const testUserProfile = { ...mockUserProfile, email: 'user1@example.com' };
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
       service['userProfileSubject'].next(testUserProfile);
 
       vi.mocked(httpClient.post).mockReturnValue(of({}));
@@ -987,7 +971,7 @@ describe('AuthService', () => {
     });
 
     it('should handle server unavailable during logout', () => {
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
       service['userProfileSubject'].next(mockUserProfile);
 
       // Mock network error (server unavailable)
@@ -1009,7 +993,7 @@ describe('AuthService', () => {
     });
 
     it('should handle server errors during logout gracefully', () => {
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
       service['userProfileSubject'].next(mockUserProfile);
 
       // Mock server error
@@ -1030,7 +1014,7 @@ describe('AuthService', () => {
     });
 
     it('should handle successful server logout', () => {
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
       service['userProfileSubject'].next(mockUserProfile);
 
       vi.mocked(httpClient.post).mockReturnValue(of({ success: true }));
@@ -1043,7 +1027,7 @@ describe('AuthService', () => {
     });
 
     it('should handle logout when not authenticated', () => {
-      service['isAuthenticatedSubject'].next(false);
+      service['userProfileSubject'].next(null);
 
       service.logout();
 
@@ -1063,7 +1047,7 @@ describe('AuthService', () => {
 
       testUsers.forEach(email => {
         const testUserProfile = { ...mockUserProfile, email };
-        service['isAuthenticatedSubject'].next(true);
+        service['userProfileSubject'].next(mockUserProfile);
         service['userProfileSubject'].next(testUserProfile);
         service['isLoggingOut'] = false;
 
@@ -1081,7 +1065,7 @@ describe('AuthService', () => {
 
     it('should call server logout for regular users', () => {
       const regularUserProfile = { ...mockUserProfile, email: 'regular.user@company.com' };
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
       service['userProfileSubject'].next(regularUserProfile);
 
       vi.mocked(httpClient.post).mockReturnValue(of({}));
@@ -1097,7 +1081,7 @@ describe('AuthService', () => {
       service['oauthProvidersCacheTime'] = Date.now();
       service['samlProvidersCacheTime'] = Date.now();
 
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
       service['userProfileSubject'].next(mockUserProfile);
 
       // Call logout
@@ -1114,7 +1098,7 @@ describe('AuthService', () => {
       expect(service.userProfile).toBeNull();
     });
     it('should prevent re-entrant logout calls', () => {
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
       service['userProfileSubject'].next(mockUserProfile);
 
       vi.mocked(httpClient.post).mockReturnValue(of({}));
@@ -1124,7 +1108,7 @@ describe('AuthService', () => {
       expect(httpClient.post).toHaveBeenCalledTimes(1);
 
       // Reset the authenticated state as if re-entry happened before completion
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
       service['isLoggingOut'] = true;
 
       // Second call while first is in progress should be ignored
@@ -1133,7 +1117,7 @@ describe('AuthService', () => {
     });
 
     it('should reset re-entrancy guard after logout completes', () => {
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
       service['userProfileSubject'].next(mockUserProfile);
 
       vi.mocked(httpClient.post).mockReturnValue(of({}));
@@ -1147,7 +1131,7 @@ describe('AuthService', () => {
 
   describe('validateAndUpdateAuthState()', () => {
     it('should call logout when no session found but auth state is true', () => {
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
 
       // No session in memory
       service['sessionSubject'].next(null);
@@ -1160,7 +1144,7 @@ describe('AuthService', () => {
     });
 
     it('should call logout when session is expired but auth state is true', () => {
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
 
       const expiredSession: AuthSession = {
         expiresIn: 3600,
@@ -1178,7 +1162,7 @@ describe('AuthService', () => {
     });
 
     it('should not call logout when session is valid', () => {
-      service['isAuthenticatedSubject'].next(true);
+      service['userProfileSubject'].next(mockUserProfile);
 
       const validSession: AuthSession = {
         expiresIn: 3600,
@@ -1196,7 +1180,7 @@ describe('AuthService', () => {
     });
 
     it('should not call logout when not authenticated', () => {
-      service['isAuthenticatedSubject'].next(false);
+      service['userProfileSubject'].next(null);
       service['sessionSubject'].next(null);
 
       const logoutSpy = vi.spyOn(service, 'logout');

@@ -65,16 +65,15 @@ import { IS_LOGOUT_REQUEST, SKIP_ERROR_HANDLING } from '../../core/tokens/http-c
   providedIn: 'root',
 })
 export class AuthService {
-  // Private subjects
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
+  // Private subjects — userProfileSubject is the single source of truth for auth state
   private userProfileSubject = new BehaviorSubject<UserProfile | null>(null);
   private sessionSubject = new BehaviorSubject<AuthSession | null>(null);
   private authErrorSubject = new BehaviorSubject<AuthError | null>(null);
   private tokenReadySubject = new BehaviorSubject<boolean>(false);
 
-  // Public observables
-  isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+  // Public observables — isAuthenticated$ is derived from userProfile$
   userProfile$ = this.userProfileSubject.asObservable();
+  isAuthenticated$ = this.userProfileSubject.pipe(map(profile => profile !== null));
   authError$ = this.authErrorSubject.asObservable();
 
   /**
@@ -82,9 +81,6 @@ export class AuthService {
    * Use this to wait before making API calls that require authentication.
    */
   tokenReady$ = this.tokenReadySubject.asObservable();
-
-  // Backward compatibility for existing components
-  username$ = this.userProfileSubject.pipe(map(profile => profile?.display_name || ''));
 
   // OAuth configuration
   private readonly providersCacheExpiry = 5 * 60 * 1000; // 5 minutes
@@ -139,7 +135,7 @@ export class AuthService {
    * @returns True if the user is authenticated
    */
   get isAuthenticated(): boolean {
-    return this.isAuthenticatedSubject.value;
+    return this.userProfileSubject.value !== null;
   }
 
   /**
@@ -259,7 +255,7 @@ export class AuthService {
 
     // No session found but we think we're authenticated - full logout
     if (!session) {
-      if (this.isAuthenticatedSubject.value) {
+      if (this.isAuthenticated) {
         this.logger.warn('No session info but auth state was true, triggering logout');
         this.logout();
       }
@@ -267,7 +263,7 @@ export class AuthService {
     }
 
     // Session expired but we think we're authenticated - full logout
-    if (!this.isSessionValid(session) && this.isAuthenticatedSubject.value) {
+    if (!this.isSessionValid(session) && this.isAuthenticated) {
       this.logger.warn('Session expired during background period, triggering logout', {
         sessionExpiry: session.expiresAt.toISOString(),
         currentTime: new Date().toISOString(),
@@ -414,7 +410,6 @@ export class AuthService {
           is_security_reviewer: response.is_security_reviewer,
         };
 
-        this.isAuthenticatedSubject.next(true);
         this.userProfileSubject.next(profile);
 
         // If we don't have session timing info yet, set a default
@@ -427,7 +422,6 @@ export class AuthService {
         }
       } else {
         // No valid session - not authenticated
-        this.isAuthenticatedSubject.next(false);
         this.userProfileSubject.next(null);
         this.sessionSubject.next(null);
       }
@@ -924,9 +918,9 @@ export class AuthService {
 
       const session: AuthSession = { expiresIn, expiresAt };
       this.storeSessionInfo(session);
-      this.isAuthenticatedSubject.next(true);
 
       // Fetch user profile from server (blocking — we need it before navigation)
+      // Setting the profile also makes isAuthenticated$ emit true
       return this.refreshUserProfile().pipe(
         switchMap(profile => {
           this.logger.info(`User ${profile.email} logged in via ${providerId || 'unknown'}`);
@@ -1048,9 +1042,8 @@ export class AuthService {
 
           const session: AuthSession = { expiresIn, expiresAt };
           this.storeSessionInfo(session);
-          this.isAuthenticatedSubject.next(true);
 
-          // Fetch user profile from server
+          // Fetch user profile from server (also sets isAuthenticated$ to true)
           return this.refreshUserProfile().pipe(
             map(profile => {
               this.logger.info(
@@ -1261,7 +1254,6 @@ export class AuthService {
     localStorage.removeItem('user_profile');
     sessionStorage.removeItem('_ts');
 
-    this.isAuthenticatedSubject.next(false);
     this.userProfileSubject.next(null);
     this.sessionSubject.next(null);
 

@@ -194,7 +194,6 @@ describe('Authentication Integration', () => {
       };
 
       authService.storeToken(token);
-      authService['isAuthenticatedSubject'].next(true);
       authService['userProfileSubject'].next(userProfile);
 
       // After setup
@@ -223,7 +222,6 @@ describe('Authentication Integration', () => {
       };
 
       authService.storeToken(token);
-      authService['isAuthenticatedSubject'].next(true);
       authService['userProfileSubject'].next(userProfile);
 
       expect(authService.isAuthenticated).toBe(true);
@@ -295,7 +293,14 @@ describe('Authentication Integration', () => {
         };
 
         authService.storeToken(expiringSession);
-        authService['isAuthenticatedSubject'].next(true);
+        authService['userProfileSubject'].next({
+          provider: 'tmi',
+          provider_id: 'test@example.com',
+          display_name: 'Test User',
+          email: 'test@example.com',
+          groups: null,
+          jwt_groups: null,
+        });
 
         // Mock the cookie-based refresh response (POST with empty body)
         const refreshResponse = {
