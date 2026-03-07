@@ -102,9 +102,9 @@ export interface UserMeResponse {
   provider_id: string;
 
   /**
-   * User's full name (maps to UserProfile.display_name)
+   * User's display name (matches API field name)
    */
-  name: string;
+  display_name: string;
 
   /**
    * User's email address

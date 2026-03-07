@@ -112,7 +112,7 @@ describe('AuthService', () => {
   const mockUserMeResponse: UserMeResponse = {
     provider: 'tmi',
     provider_id: 'test@example.com',
-    name: 'Test User',
+    display_name: 'Test User',
     email: 'test@example.com',
     is_admin: false,
     groups: null,
@@ -574,7 +574,7 @@ describe('AuthService', () => {
       const johnUserMeResponse: UserMeResponse = {
         provider: 'tmi',
         provider_id: '1234567890',
-        name: 'John Doe',
+        display_name: 'John Doe',
         email: 'john@example.com',
         is_admin: false,
         groups: null,

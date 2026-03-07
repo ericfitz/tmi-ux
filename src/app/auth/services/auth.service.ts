@@ -406,7 +406,7 @@ export class AuthService {
         const profile: UserProfile = {
           provider: response.provider,
           provider_id: response.provider_id,
-          display_name: response.name,
+          display_name: response.display_name,
           email: response.email,
           groups: response.groups ?? null,
           jwt_groups: null,
@@ -1124,7 +1124,7 @@ export class AuthService {
         const profile: UserProfile = {
           provider: response.provider,
           provider_id: response.provider_id,
-          display_name: response.name,
+          display_name: response.display_name,
           email: response.email,
           groups: response.groups ?? null,
           jwt_groups: null,

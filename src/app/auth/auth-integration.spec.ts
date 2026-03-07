@@ -265,7 +265,7 @@ describe('Authentication Integration', () => {
           of({
             provider: 'google',
             provider_id: 'user@example.com',
-            name: 'Test User',
+            display_name: 'Test User',
             email: 'user@example.com',
             is_admin: false,
             groups: null,
@@ -421,7 +421,7 @@ describe('Authentication Integration', () => {
           of({
             provider: storedProfile.provider,
             provider_id: storedProfile.provider_id,
-            name: storedProfile.display_name,
+            display_name: storedProfile.display_name,
             email: storedProfile.email,
             is_admin: false,
             groups: null,
