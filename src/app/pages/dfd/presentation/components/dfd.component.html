@@ -125,6 +125,16 @@
         >
       </button>
 
+      <button
+        mat-icon-button
+        (click)="toggleStylePanel()"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
+        [matTooltip]="'dfd.stylePanel.toggleStylePanel' | transloco"
+        [class.active-toggle]="isStylePanelOpen"
+      >
+        <mat-icon>palette</mat-icon>
+      </button>
+
       <span class="button-spacer"></span>
 
       <button
@@ -306,16 +316,6 @@
             >list</mat-icon
           >
         </div>
-      </button>
-
-      <button
-        mat-icon-button
-        (click)="toggleStylePanel()"
-        [disabled]="isReadOnlyMode || !isSystemInitialized"
-        [matTooltip]="'dfd.stylePanel.toggleStylePanel' | transloco"
-        [class.active-toggle]="isStylePanelOpen"
-      >
-        <mat-icon>palette</mat-icon>
       </button>
 
       <button
