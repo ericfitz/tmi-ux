@@ -235,6 +235,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     type: AddonObjectType;
     id: string;
     name: string;
+    metadata?: Metadata[];
   } | null = null;
 
   // Table data sources
@@ -3793,8 +3794,8 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Set the addon context for row-level invocation
    * Called when a row-level addon menu trigger is clicked
    */
-  setAddonRowContext(type: AddonObjectType, id: string, name: string): void {
-    this.currentAddonRowContext = { type, id, name };
+  setAddonRowContext(type: AddonObjectType, id: string, name: string, metadata?: Metadata[]): void {
+    this.currentAddonRowContext = { type, id, name, metadata };
   }
 
   /**
@@ -3819,6 +3820,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     isBulk: boolean,
     objectId?: string,
     objectName?: string,
+    metadata?: Metadata[],
   ): void {
     if (!this.threatModel) {
       this.logger.error('Cannot invoke addon: no threat model loaded');
@@ -3833,6 +3835,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       isBulk,
       objectId,
       objectName,
+      metadata,
     };
 
     const dialogRef = this.dialog.open(InvokeAddonDialogComponent, {
@@ -3870,6 +3873,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
       false,
       this.currentAddonRowContext.id,
       this.currentAddonRowContext.name,
+      this.currentAddonRowContext.metadata,
     );
   }
 
@@ -3879,7 +3883,14 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Invoke addon for the threat model (card-level)
    */
   invokeAddonForThreatModel(addon: Addon): void {
-    this.openInvokeAddonDialog(addon, 'threat_model', true);
+    this.openInvokeAddonDialog(
+      addon,
+      'threat_model',
+      true,
+      undefined,
+      undefined,
+      this.threatModel?.metadata,
+    );
   }
 
   /**

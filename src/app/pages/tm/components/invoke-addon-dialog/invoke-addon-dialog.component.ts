@@ -1,12 +1,6 @@
 import { Component, DestroyRef, inject, Inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  FormBuilder,
-  FormGroup,
-  AbstractControl,
-  ValidationErrors,
-  ValidatorFn,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
@@ -18,9 +12,11 @@ import {
 import {
   Addon,
   AddonObjectType,
+  AddonParameter,
   InvokeAddonRequest,
   InvokeAddonResponse,
 } from '@app/types/addon.types';
+import { Metadata } from '@app/pages/tm/models/threat-model.model';
 import { AddonService } from '@app/core/services/addon.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { UserPreferencesService } from '@app/core/services/user-preferences.service';
@@ -43,6 +39,8 @@ export interface InvokeAddonDialogData {
   objectId?: string;
   /** Object name for display (optional - only for row-level invocations) */
   objectName?: string;
+  /** Metadata from the context object */
+  metadata?: Metadata[];
 }
 
 /**
@@ -55,29 +53,15 @@ export interface InvokeAddonDialogResult {
   response?: InvokeAddonResponse;
 }
 
-/**
- * Custom validator for JSON format
- */
-function jsonValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const value = control.value as string;
-    if (!value || value.trim() === '') {
-      return null; // Empty is valid (payload is optional)
-    }
-    try {
-      JSON.parse(value);
-      return null;
-    } catch {
-      return { jsonInvalid: true };
-    }
-  };
-}
+/** Allowed characters for string parameter values */
+const STRING_PARAM_PATTERN = /^[a-zA-Z0-9 \-.,/]*$/;
 
 /**
  * Invoke Addon Dialog Component
  *
  * Dialog for invoking addons with context-specific parameters.
- * Displays addon info, context, and optional JSON payload input.
+ * Fetches addon details to get parameter definitions, then renders
+ * appropriate form controls for each parameter type.
  */
 @Component({
   selector: 'app-invoke-addon-dialog',
@@ -97,11 +81,18 @@ export class InvokeAddonDialogComponent implements OnInit {
 
   form!: FormGroup;
   invoking = false;
+  loading = true;
   errorMessage = '';
   showDeveloperTools = false;
 
-  /** Maximum characters allowed in payload */
-  readonly MAX_PAYLOAD_LENGTH = 1000;
+  /** Parameters fetched from addon details */
+  parameters: AddonParameter[] = [];
+
+  /** Tracks which optional parameters the user has included */
+  includedParams: Record<string, boolean> = {};
+
+  /** Validation errors for metadata_key parameters */
+  metadataKeyErrors: Record<string, string> = {};
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: InvokeAddonDialogData,
@@ -114,16 +105,159 @@ export class InvokeAddonDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      payload: ['', [jsonValidator()]],
-    });
+    this.form = this.fb.group({});
 
-    // Subscribe to user preferences to get showDeveloperTools setting
     this.userPreferencesService.preferences$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(prefs => {
         this.showDeveloperTools = prefs.showDeveloperTools;
       });
+
+    // Fetch fresh addon details to get parameters
+    this.addonService
+      .get(this.data.addon.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: addon => {
+          this.parameters = addon.parameters ?? [];
+          this.buildForm();
+          this.loading = false;
+        },
+        error: (error: { error?: { message?: string } }) => {
+          this.logger.error('Failed to fetch addon details', error);
+          // Fall back to the addon data we already have
+          this.parameters = this.data.addon.parameters ?? [];
+          this.buildForm();
+          this.loading = false;
+        },
+      });
+  }
+
+  /**
+   * Build dynamic form controls from parameter definitions
+   */
+  private buildForm(): void {
+    for (const param of this.parameters) {
+      const isRequired = param.required === true;
+      this.includedParams[param.name] = isRequired;
+
+      const control = this.createControlForParam(param);
+      this.form.addControl(param.name, control);
+
+      // Disable controls for optional params by default (not included)
+      if (!isRequired) {
+        control.disable();
+      }
+    }
+  }
+
+  /**
+   * Create a FormControl with appropriate validators for the parameter type
+   */
+  private createControlForParam(param: AddonParameter): FormControl {
+    const validators: ValidatorFn[] = [];
+    if (param.required) {
+      validators.push(Validators.required);
+    }
+
+    const defaultValue = this.resolveDefaultValue(param, validators);
+    return new FormControl(defaultValue, validators);
+  }
+
+  /**
+   * Resolve the default value and add type-specific validators
+   */
+  private resolveDefaultValue(
+    param: AddonParameter,
+    validators: ValidatorFn[],
+  ): string | number | boolean | null {
+    const raw = param.default_value ?? null;
+
+    switch (param.type) {
+      case 'string':
+        this.addStringValidators(param, validators);
+        return raw;
+
+      case 'number':
+        this.addNumberValidators(param, validators);
+        return raw !== null ? Number(raw) : null;
+
+      case 'boolean':
+        return raw !== null ? raw === 'true' : false;
+
+      case 'enum':
+        if (raw && param.enum_values && !param.enum_values.includes(String(raw))) {
+          return null;
+        }
+        return raw;
+
+      case 'metadata_key':
+        return this.resolveMetadataKeyDefault(param);
+
+      default:
+        return raw;
+    }
+  }
+
+  private addStringValidators(param: AddonParameter, validators: ValidatorFn[]): void {
+    validators.push(Validators.maxLength(param.string_max_length ?? 256));
+    validators.push(Validators.pattern(STRING_PARAM_PATTERN));
+    if (param.string_validation_regex) {
+      validators.push(Validators.pattern(param.string_validation_regex));
+    }
+  }
+
+  private addNumberValidators(param: AddonParameter, validators: ValidatorFn[]): void {
+    if (param.number_min !== undefined) {
+      validators.push(Validators.min(param.number_min));
+    }
+    if (param.number_max !== undefined) {
+      validators.push(Validators.max(param.number_max));
+    }
+  }
+
+  private resolveMetadataKeyDefault(param: AddonParameter): string {
+    const metadataValue = this.lookupMetadataValue(param.metadata_key ?? param.name);
+    if (param.required && !metadataValue) {
+      this.metadataKeyErrors[param.name] = this.transloco.translate(
+        'addons.invokeDialog.metadataKeyMissing',
+        { key: param.metadata_key ?? param.name },
+      );
+    }
+    return metadataValue ?? '';
+  }
+
+  /**
+   * Look up a metadata value by key from the context metadata
+   */
+  private lookupMetadataValue(key: string): string | undefined {
+    if (!this.data.metadata) {
+      return undefined;
+    }
+    const entry = this.data.metadata.find(m => m.key === key);
+    return entry?.value;
+  }
+
+  /**
+   * Toggle inclusion of an optional parameter
+   */
+  toggleParam(paramName: string, included: boolean): void {
+    this.includedParams[paramName] = included;
+    const control = this.form.get(paramName);
+    if (control) {
+      if (included) {
+        control.enable();
+      } else {
+        control.disable();
+      }
+    }
+  }
+
+  /**
+   * Check if a parameter is required
+   */
+  isParamRequired(param: AddonParameter): boolean {
+    return param.required === true;
   }
 
   /**
@@ -138,10 +272,9 @@ export class InvokeAddonDialogComponent implements OnInit {
 
   /**
    * Get translation key for object type display
-   * Maps snake_case API values to camelCase translation keys
    */
   getObjectTypeTranslationKey(): string {
-    const typeMap: Record<AddonObjectType, string> = {
+    const typeMap: Record<string, string> = {
       threat_model: 'common.objectTypes.threatModel',
       diagram: 'common.objectTypes.diagram',
       asset: 'common.objectTypes.asset',
@@ -150,6 +283,8 @@ export class InvokeAddonDialogComponent implements OnInit {
       note: 'common.objectTypes.note',
       repository: 'common.objectTypes.repository',
       metadata: 'common.objectTypes.metadata',
+      survey: 'common.objectTypes.survey',
+      survey_response: 'common.objectTypes.surveyResponse',
     };
     return typeMap[this.data.objectType] || this.data.objectType;
   }
@@ -158,13 +293,17 @@ export class InvokeAddonDialogComponent implements OnInit {
    * Check if OK button should be enabled
    */
   get canInvoke(): boolean {
-    return (
-      this.form.valid &&
-      !this.invoking &&
-      !!this.data.addon?.id &&
-      !!this.data.threatModelId &&
-      !!this.data.objectType
-    );
+    if (this.invoking || this.loading) {
+      return false;
+    }
+    if (!this.data.addon?.id || !this.data.threatModelId || !this.data.objectType) {
+      return false;
+    }
+    // Check for metadata_key validation errors
+    if (Object.keys(this.metadataKeyErrors).length > 0) {
+      return false;
+    }
+    return this.form.valid;
   }
 
   /**
@@ -178,19 +317,21 @@ export class InvokeAddonDialogComponent implements OnInit {
     this.invoking = true;
     this.errorMessage = '';
 
-    const payloadStr = this.form.get('payload')?.value as string;
-    let payload: Record<string, unknown> | undefined;
-
-    if (payloadStr && payloadStr.trim()) {
-      try {
-        // Parse and re-stringify to minify and normalize the JSON
-        const parsed = JSON.parse(payloadStr) as Record<string, unknown>;
-        payload = JSON.parse(JSON.stringify(parsed)) as Record<string, unknown>;
-      } catch {
-        // Should not happen due to validator, but handle gracefully
-        this.errorMessage = this.transloco.translate('addons.invokeDialog.invalidJson');
-        this.invoking = false;
-        return;
+    // Build data object from included parameter values
+    const data: Record<string, unknown> = {};
+    for (const param of this.parameters) {
+      if (!this.includedParams[param.name]) {
+        continue;
+      }
+      const value = this.form.get(param.name)?.value as string | number | boolean | null;
+      if (value !== null && value !== undefined && value !== '') {
+        if (param.type === 'boolean') {
+          data[param.name] = String(value);
+        } else if (param.type === 'number') {
+          data[param.name] = Number(value);
+        } else {
+          data[param.name] = value;
+        }
       }
     }
 
@@ -198,7 +339,7 @@ export class InvokeAddonDialogComponent implements OnInit {
       threat_model_id: this.data.threatModelId,
       object_type: this.data.objectType,
       ...(this.data.objectId && { object_id: this.data.objectId }),
-      ...(payload && { payload }),
+      ...(Object.keys(data).length > 0 && { data }),
     };
 
     this.addonService

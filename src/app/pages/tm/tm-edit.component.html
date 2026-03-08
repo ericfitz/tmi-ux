@@ -546,7 +546,7 @@
                             [attr.aria-label]="'common.addons' | transloco"
                             (click)="
                               $event.stopPropagation();
-                              setAddonRowContext('asset', asset.id, asset.name)
+                              setAddonRowContext('asset', asset.id, asset.name, asset.metadata)
                             "
                           >
                             <mat-icon>extension</mat-icon>
@@ -722,7 +722,12 @@
                             [attr.aria-label]="'common.addons' | transloco"
                             (click)="
                               $event.stopPropagation();
-                              setAddonRowContext('document', document.id, document.name)
+                              setAddonRowContext(
+                                'document',
+                                document.id,
+                                document.name,
+                                document.metadata
+                              )
                             "
                           >
                             <mat-icon>extension</mat-icon>
@@ -897,7 +902,12 @@
                             [attr.aria-label]="'common.addons' | transloco"
                             (click)="
                               $event.stopPropagation();
-                              setAddonRowContext('repository', repository.id, repository.name)
+                              setAddonRowContext(
+                                'repository',
+                                repository.id,
+                                repository.name,
+                                repository.metadata
+                              )
                             "
                           >
                             <mat-icon>extension</mat-icon>
@@ -1086,7 +1096,7 @@
                             [attr.aria-label]="'common.addons' | transloco"
                             (click)="
                               $event.stopPropagation();
-                              setAddonRowContext('note', note.id, note.name)
+                              setAddonRowContext('note', note.id, note.name, note.metadata)
                             "
                           >
                             <mat-icon>extension</mat-icon>
@@ -1283,7 +1293,12 @@
                             [attr.aria-label]="'common.addons' | transloco"
                             (click)="
                               $event.stopPropagation();
-                              setAddonRowContext('diagram', diagram.id, diagram.name)
+                              setAddonRowContext(
+                                'diagram',
+                                diagram.id,
+                                diagram.name,
+                                diagram.metadata
+                              )
                             "
                           >
                             <mat-icon>extension</mat-icon>
@@ -1678,7 +1693,7 @@
                             [attr.aria-label]="'common.addons' | transloco"
                             (click)="
                               $event.stopPropagation();
-                              setAddonRowContext('threat', threat.id, threat.name)
+                              setAddonRowContext('threat', threat.id, threat.name, threat.metadata)
                             "
                           >
                             <mat-icon>extension</mat-icon>

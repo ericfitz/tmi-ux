@@ -37,14 +37,15 @@
     "invokeDialog": {
       "allObjects": "(All)",
       "errorInvoking": "Failed to invoke addon. Please try again.",
-      "invalidJson": "Invalid JSON format",
+      "invalidCharacters": "Only alphanumeric characters, spaces, hyphens, periods, commas, and forward slashes are allowed",
       "invocationQueued": "Addon invocation queued",
-      "payload": "Payload (Optional)",
-      "payloadHint": "JSON data to pass to the addon",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
+      "metadataKeyMissing": "Required metadata key \"{{key}}\" is not present on this object",
+      "numberMax": "Value must be at most {{max}}",
+      "numberMin": "Value must be at least {{min}}",
+      "parameters": "Parameters",
       "threatModelId": "Threat Model ID",
-      "title": "Invoke Addon"
+      "title": "Invoke Addon",
+      "valueTooLong": "Value exceeds maximum length"
     }
   },
   "admin": {
@@ -536,6 +537,7 @@
     "email": "Email",
     "emailLabel": "Email Address",
     "error": "Error",
+    "false": "False",
     "fonts": "Fonts",
     "groups": "Groups",
     "id": "ID",
@@ -633,6 +635,7 @@
     "threatType": "Threat Type",
     "title": "Title",
     "tryAdjustingFilters": "Try adjusting your filters.",
+    "true": "True",
     "type": "Type",
     "unarchive": "Unarchive",
     "unsavedChangesWarning": "You have unsaved changes. Are you sure you want to close?",

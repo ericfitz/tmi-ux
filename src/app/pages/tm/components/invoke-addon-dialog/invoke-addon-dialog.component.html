@@ -38,7 +38,6 @@
         <span class="info-label" [transloco]="'common.name'">Name</span>
         <span class="info-value">{{ data.objectName || data.objectId }}</span>
       </div>
-      <!-- Object ID (only shown when showDeveloperTools is enabled) -->
       @if (showDeveloperTools) {
         <div class="info-row">
           <span class="info-label" [transloco]="'common.id'">ID</span>
@@ -52,7 +51,6 @@
       <span class="info-label" [transloco]="'common.objectTypes.threatModel'">Threat Model</span>
       <span class="info-value">{{ data.threatModelName }}</span>
     </div>
-    <!-- Threat Model ID (only shown when showDeveloperTools is enabled) -->
     @if (showDeveloperTools) {
       <div class="info-row">
         <span class="info-label" [transloco]="'addons.invokeDialog.threatModelId'"
@@ -63,32 +61,125 @@
     }
   </div>
 
-  <!-- Payload field (only shown when showDeveloperTools is enabled) -->
-  @if (showDeveloperTools) {
-    <form [formGroup]="form" class="payload-form">
-      <mat-form-field appearance="outline" class="full-width payload-field">
-        <mat-label [transloco]="'addons.invokeDialog.payload'">Payload (Optional)</mat-label>
-        <textarea
-          matInput
-          formControlName="payload"
-          rows="6"
-          [maxlength]="MAX_PAYLOAD_LENGTH"
-          [placeholder]="'addons.invokeDialog.payloadPlaceholder' | transloco"
-          class="payload-textarea"
-        ></textarea>
-        <mat-hint>
-          <span [transloco]="'addons.invokeDialog.payloadHint'"
-            >JSON data to pass to the addon</span
-          >
-          ({{ form.get('payload')?.value?.length || 0 }}/{{ MAX_PAYLOAD_LENGTH }})
-        </mat-hint>
-        @if (form.get('payload')?.hasError('jsonInvalid')) {
-          <mat-error [transloco]="'addons.invokeDialog.invalidJson'">
-            Invalid JSON format
-          </mat-error>
+  <!-- Loading spinner while fetching addon details -->
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="32"></mat-spinner>
+    </div>
+  }
+
+  <!-- Parameter form -->
+  @if (!loading && parameters.length > 0) {
+    <mat-divider></mat-divider>
+
+    <div class="parameters-section">
+      <span class="section-label" [transloco]="'addons.invokeDialog.parameters'">Parameters</span>
+
+      <form [formGroup]="form" class="parameters-form">
+        @for (param of parameters; track param.name) {
+          <div class="parameter-row">
+            <!-- Include checkbox -->
+            <mat-checkbox
+              [checked]="includedParams[param.name]"
+              [disabled]="isParamRequired(param)"
+              (change)="toggleParam(param.name, $event.checked)"
+              class="include-checkbox"
+            >
+            </mat-checkbox>
+
+            <div class="parameter-content" [class.disabled]="!includedParams[param.name]">
+              <div class="parameter-header">
+                <span class="parameter-name">{{ param.name }}</span>
+                @if (isParamRequired(param)) {
+                  <span class="required-indicator">*</span>
+                }
+              </div>
+
+              @if (param.description) {
+                <span class="parameter-description">{{ param.description }}</span>
+              }
+
+              <!-- Enum: drop-down list -->
+              @if (param.type === 'enum') {
+                <mat-form-field appearance="outline" class="parameter-field">
+                  <mat-select [formControlName]="param.name">
+                    @for (value of param.enum_values; track value) {
+                      <mat-option [value]="value">{{ value }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              }
+
+              <!-- Boolean: radio button group -->
+              @if (param.type === 'boolean') {
+                <mat-radio-group [formControlName]="param.name" class="boolean-group">
+                  <mat-radio-button [value]="true">
+                    <span [transloco]="'common.true'">True</span>
+                  </mat-radio-button>
+                  <mat-radio-button [value]="false">
+                    <span [transloco]="'common.false'">False</span>
+                  </mat-radio-button>
+                </mat-radio-group>
+              }
+
+              <!-- String: text input -->
+              @if (param.type === 'string') {
+                <mat-form-field appearance="outline" class="parameter-field">
+                  <input
+                    matInput
+                    [formControlName]="param.name"
+                    [maxlength]="param.string_max_length ?? 256"
+                  />
+                  @if (form.get(param.name)?.hasError('pattern')) {
+                    <mat-error [transloco]="'addons.invokeDialog.invalidCharacters'">
+                      Invalid characters
+                    </mat-error>
+                  }
+                  @if (form.get(param.name)?.hasError('maxlength')) {
+                    <mat-error [transloco]="'addons.invokeDialog.valueTooLong'">
+                      Value too long
+                    </mat-error>
+                  }
+                </mat-form-field>
+              }
+
+              <!-- Number: numeric input -->
+              @if (param.type === 'number') {
+                <mat-form-field appearance="outline" class="parameter-field">
+                  <input
+                    matInput
+                    type="number"
+                    [formControlName]="param.name"
+                    [attr.min]="param.number_min"
+                    [attr.max]="param.number_max"
+                  />
+                  @if (form.get(param.name)?.hasError('min')) {
+                    <mat-error>
+                      {{ 'addons.invokeDialog.numberMin' | transloco: { min: param.number_min } }}
+                    </mat-error>
+                  }
+                  @if (form.get(param.name)?.hasError('max')) {
+                    <mat-error>
+                      {{ 'addons.invokeDialog.numberMax' | transloco: { max: param.number_max } }}
+                    </mat-error>
+                  }
+                </mat-form-field>
+              }
+
+              <!-- Metadata key: read-only pre-populated string -->
+              @if (param.type === 'metadata_key') {
+                <mat-form-field appearance="outline" class="parameter-field">
+                  <input matInput [formControlName]="param.name" [readonly]="true" />
+                  @if (metadataKeyErrors[param.name]) {
+                    <mat-error>{{ metadataKeyErrors[param.name] }}</mat-error>
+                  }
+                </mat-form-field>
+              }
+            </div>
+          </div>
         }
-      </mat-form-field>
-    </form>
+      </form>
+    </div>
   }
 
   @if (errorMessage) {

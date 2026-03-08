@@ -14,7 +14,42 @@ export type AddonObjectType =
   | 'document'
   | 'note'
   | 'repository'
-  | 'metadata';
+  | 'metadata'
+  | 'survey'
+  | 'survey_response';
+
+/**
+ * Parameter type determining client UI control
+ */
+export type AddonParameterType = 'enum' | 'boolean' | 'string' | 'number' | 'metadata_key';
+
+/**
+ * Typed parameter declaration for an add-on, used to drive client UI generation
+ */
+export interface AddonParameter {
+  /** Parameter name (used as key in invocation data payload) */
+  name: string;
+  /** Parameter type determining client UI control */
+  type: AddonParameterType;
+  /** Human-readable description for UI display */
+  description?: string;
+  /** Whether the parameter must be provided on invocation */
+  required?: boolean;
+  /** Allowed values (applicable when type is 'enum') */
+  enum_values?: string[];
+  /** Default value if not provided by user */
+  default_value?: string;
+  /** Metadata key name to auto-populate from TMI object (applicable when type is 'metadata_key') */
+  metadata_key?: string;
+  /** Minimum allowed value (applicable when type is 'number') */
+  number_min?: number;
+  /** Maximum allowed value (applicable when type is 'number') */
+  number_max?: number;
+  /** Maximum string length (applicable when type is 'string') */
+  string_max_length?: number;
+  /** Regular expression for string validation (applicable when type is 'string') */
+  string_validation_regex?: string;
+}
 
 /**
  * Addon for extending TMI functionality via webhooks
@@ -36,6 +71,8 @@ export interface Addon {
   objects?: AddonObjectType[];
   /** Threat model scope (if scoped to specific threat model) */
   threat_model_id?: string;
+  /** Typed parameter declarations for client UI generation */
+  parameters?: AddonParameter[];
 }
 
 /**
@@ -89,7 +126,7 @@ export interface InvokeAddonRequest {
   /** Optional: Specific object ID to operate on */
   object_id?: string;
   /** Optional: User-provided data for the add-on (max 1KB JSON-serialized) */
-  payload?: Record<string, unknown>;
+  data?: Record<string, unknown>;
 }
 
 /**

@@ -61,28 +61,92 @@ mat-divider {
   color: var(--theme-text-secondary);
 }
 
+.id-value {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+}
+
 .bulk-indicator {
   margin-left: 4px;
   font-style: italic;
 }
 
-.object-id-hint {
-  font-size: 11px;
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+.parameters-section {
+  margin-top: 8px;
+}
+
+.section-label {
+  font-weight: 500;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.parameters-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.parameter-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.include-checkbox {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.parameter-content {
+  flex: 1;
+  min-width: 0;
+
+  &.disabled {
+    opacity: 0.5;
+  }
+}
+
+.parameter-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.parameter-name {
+  font-weight: 500;
+  font-size: 13px;
   font-family: 'Roboto Mono', monospace;
-  opacity: 0.7;
 }
 
-.payload-form {
-  margin-top: 16px;
+.required-indicator {
+  color: var(--theme-error);
+  font-weight: 500;
 }
 
-.full-width {
+.parameter-description {
+  color: var(--theme-text-secondary);
+  font-size: 12px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.parameter-field {
   width: 100%;
 }
 
-.payload-textarea {
-  font-family: 'Roboto Mono', monospace;
-  font-size: 13px;
+.boolean-group {
+  display: flex;
+  gap: 16px;
+  padding: 4px 0;
 }
 
 .form-error {
