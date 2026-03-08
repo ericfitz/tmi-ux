@@ -55,8 +55,14 @@ function checkCSPImplementation(): SecurityCheckResult {
     }
 
     // Warnings for dynamic CSP
-    result.warnings.push("CSP uses 'unsafe-inline' - consider implementing nonce-based CSP");
-    result.warnings.push("CSP uses 'unsafe-eval' - review if necessary for your framework");
+    if (serviceContent.includes("'unsafe-inline'")) {
+      result.warnings.push(
+        "CSP uses 'unsafe-inline' in style-src (required by Angular inline styles)",
+      );
+    }
+    if (serviceContent.includes("'unsafe-eval'")) {
+      result.warnings.push("CSP uses 'unsafe-eval' - review if necessary for your framework");
+    }
   } else if (cspMatch) {
     console.log('⚠️ Static CSP meta tag found - consider using dynamic CSP for API flexibility');
     result.warnings.push('Static CSP may not accommodate dynamic API URLs');
