@@ -1,0 +1,95 @@
+<div class="style-panel" cdkDrag cdkDragBoundary=".dfd-container">
+  <div class="panel-header" cdkDragHandle>
+    <mat-icon class="drag-handle-icon">drag_indicator</mat-icon>
+    <span class="panel-title">{{ 'dfd.stylePanel.title' | transloco }}</span>
+  </div>
+
+  <div class="panel-body">
+    @if (noSelection) {
+      <div class="no-selection-hint">
+        {{ 'dfd.stylePanel.noSelection' | transloco }}
+      </div>
+    } @else {
+      <mat-tab-group>
+        <!-- Stroke tab -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon [matTooltip]="'dfd.stylePanel.strokeTab' | transloco">border_color</mat-icon>
+          </ng-template>
+          <div class="tab-content" [class.tab-disabled]="!strokeEnabled">
+            @if (!strokeEnabled) {
+              <div class="tab-hint">
+                {{ 'dfd.stylePanel.strokeNotApplicable' | transloco }}
+              </div>
+            } @else {
+              <app-color-picker
+                [selectedColor]="currentStrokeColor"
+                [diagramPalette]="diagramPalette"
+                [disabled]="disabled || !strokeEnabled"
+                (colorSelected)="onStrokeColorSelected($event)"
+                (diagramPaletteChanged)="onDiagramPaletteChanged($event)"
+              ></app-color-picker>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- Fill tab -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon [matTooltip]="'dfd.stylePanel.fillTab' | transloco"
+              >format_color_fill</mat-icon
+            >
+          </ng-template>
+          <div class="tab-content" [class.tab-disabled]="!fillEnabled">
+            @if (!fillEnabled) {
+              <div class="tab-hint">
+                {{ 'dfd.stylePanel.fillNotApplicable' | transloco }}
+              </div>
+            } @else {
+              <app-color-picker
+                [selectedColor]="currentFillColor"
+                [diagramPalette]="diagramPalette"
+                [disabled]="disabled || !fillEnabled"
+                (colorSelected)="onFillColorSelected($event)"
+                (diagramPaletteChanged)="onDiagramPaletteChanged($event)"
+              ></app-color-picker>
+
+              <div class="opacity-section">
+                <div class="opacity-label">
+                  {{ 'dfd.stylePanel.opacity' | transloco }}
+                </div>
+                <div class="opacity-controls">
+                  <mat-slider
+                    [min]="0"
+                    [max]="100"
+                    [step]="1"
+                    [disabled]="disabled || !fillEnabled"
+                    class="opacity-slider"
+                  >
+                    <input
+                      matSliderThumb
+                      [ngModel]="opacityDisplayValue"
+                      (ngModelChange)="onOpacityChange($event)"
+                    />
+                  </mat-slider>
+                  <span class="opacity-value">{{ opacityDisplayValue }}%</span>
+                </div>
+              </div>
+            }
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    }
+  </div>
+
+  <div class="panel-footer">
+    <button
+      mat-icon-button
+      [disabled]="disabled || noSelection || !hasAnyCustomStyles"
+      [matTooltip]="'dfd.stylePanel.clearCustomFormatting' | transloco"
+      (click)="onClearCustomFormatting()"
+    >
+      <mat-icon>format_clear</mat-icon>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,126 @@
+.style-panel {
+  position: absolute;
+  top: 60px;
+  right: 16px;
+  width: 260px;
+  background-color: var(--color-background-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px var(--color-shadow-medium);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  background-color: var(--color-background-lighter);
+  border-bottom: 1px solid var(--color-border-light);
+  cursor: grab;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.drag-handle-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-muted);
+}
+
+.panel-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.panel-body {
+  padding: 8px;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.no-selection-hint {
+  text-align: center;
+  padding: 16px 8px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.tab-content {
+  padding: 8px 0;
+
+  &.tab-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+.tab-hint {
+  text-align: center;
+  padding: 12px 8px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.opacity-section {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.opacity-label {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.opacity-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.opacity-slider {
+  flex: 1;
+}
+
+.opacity-value {
+  font-size: 12px;
+  font-family: monospace;
+  color: var(--color-text-primary);
+  min-width: 36px;
+  text-align: right;
+}
+
+.panel-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 8px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+// Compact tab styling for the panel
+::ng-deep {
+  .style-panel .mat-mdc-tab-labels {
+    justify-content: center;
+  }
+
+  .style-panel .mat-mdc-tab {
+    min-width: 48px;
+    padding: 0 12px;
+  }
+
+  .style-panel .mat-mdc-tab-body-wrapper {
+    flex: 1;
+  }
+}

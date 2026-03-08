@@ -1,0 +1,86 @@
+<div class="color-picker" [class.disabled]="disabled">
+  <!-- Default palette -->
+  <div class="palette-section">
+    <div class="section-label">{{ 'dfd.stylePanel.defaultColors' | transloco }}</div>
+    <div class="swatch-grid">
+      @for (color of defaultColors; track color) {
+        <button
+          class="color-swatch"
+          [class.selected]="isSelected(color, 'default')"
+          [style.background-color]="color"
+          [disabled]="disabled"
+          [matTooltip]="color"
+          (click)="onDefaultColorClick(color)"
+        ></button>
+      }
+    </div>
+  </div>
+
+  <!-- Diagram palette -->
+  <div class="palette-section">
+    <div class="section-label">{{ 'dfd.stylePanel.diagramColors' | transloco }}</div>
+    <div class="swatch-grid">
+      @for (color of diagramPalette; track $index; let i = $index) {
+        <div class="diagram-swatch-container">
+          <button
+            class="color-swatch diagram-swatch"
+            [class.selected]="isSelected(color, 'diagram', i)"
+            [style.background-color]="color"
+            [disabled]="disabled"
+            [matTooltip]="color"
+            (click)="onDiagramColorClick(i)"
+          ></button>
+          <button
+            class="remove-swatch"
+            [disabled]="disabled"
+            [matTooltip]="'dfd.stylePanel.removeDiagramColor' | transloco"
+            (click)="onRemoveDiagramColor($event, i)"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
+      @if (canAddDiagramColor) {
+        <button
+          class="color-swatch empty-slot"
+          [disabled]="disabled"
+          [matTooltip]="'dfd.stylePanel.addDiagramColor' | transloco"
+          (click)="onEmptySlotClick()"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Hex input + OS color picker -->
+  <div class="hex-input-section">
+    <mat-form-field appearance="outline" class="hex-input-field">
+      <mat-label>{{ 'dfd.stylePanel.hexColor' | transloco }}</mat-label>
+      <input
+        matInput
+        [disabled]="!isHexInputEnabled"
+        [ngModel]="hexInputValue"
+        (ngModelChange)="onHexInput($event)"
+        placeholder="#000000"
+        maxlength="7"
+      />
+    </mat-form-field>
+    <button
+      mat-icon-button
+      class="os-picker-button"
+      [disabled]="!isHexInputEnabled"
+      [matTooltip]="'dfd.stylePanel.osColorPicker' | transloco"
+      (click)="onOsColorPickerClick()"
+    >
+      <mat-icon>colorize</mat-icon>
+    </button>
+    <input
+      #osColorInput
+      type="color"
+      class="hidden-color-input"
+      [value]="hexInputValue || '#000000'"
+      (change)="onOsColorChange($event)"
+    />
+  </div>
+</div>

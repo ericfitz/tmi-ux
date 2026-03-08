@@ -126,6 +126,11 @@
         color: var(--color-text-disabled); // Match disabled state color
       }
     }
+
+    &.active-toggle {
+      background-color: var(--color-hover-background);
+      border-radius: 50%;
+    }
   }
 
   .icon-overlay-container {

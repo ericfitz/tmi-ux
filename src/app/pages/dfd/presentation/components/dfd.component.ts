@@ -87,6 +87,7 @@ import { InfraDfdValidationService } from '../../infrastructure/services/infra-d
 
 // Essential v1 components still needed
 import { NodeType } from '../../domain/value-objects/node-info';
+import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
 import { DfdCollaborationComponent } from './collaboration/collaboration.component';
 import { ThreatModelService } from '../../../tm/services/threat-model.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -114,6 +115,11 @@ import {
 } from './clipboard-dialog/clipboard-dialog.component';
 
 import { HelpDialogComponent } from './help-dialog/help-dialog.component';
+import {
+  StylePanelComponent,
+  CellStyleInfo,
+  StyleChangeEvent,
+} from './style-panel/style-panel.component';
 
 import {
   ConfirmActionDialogComponent,
@@ -149,6 +155,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     TranslocoModule,
     DfdCollaborationComponent,
     InlineEditComponent,
+    StylePanelComponent,
   ],
   providers: [
     // DFD v2 Architecture - Component-scoped services
@@ -230,6 +237,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Clipboard state
   hasClipboardContent = false;
+
+  // Style panel state
+  isStylePanelOpen = false;
+  stylePanelCells: CellStyleInfo[] = [];
+  diagramColorPalette: string[] = [];
 
   // Context menu state
   contextMenuPosition = { x: '0px', y: '0px' };
@@ -2372,6 +2384,11 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       this.selectedCellIsSecurityBoundary = false;
     }
 
+    // Update style panel cell info if panel is open
+    if (this.isStylePanelOpen) {
+      this.updateStylePanelCells();
+    }
+
     // Only trigger change detection if state actually changed
     if (
       oldHasSelectedCells !== this.hasSelectedCells ||
@@ -2381,6 +2398,241 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     ) {
       this.cdr.detectChanges();
     }
+  }
+
+  // Style panel methods
+
+  toggleStylePanel(): void {
+    this.isStylePanelOpen = !this.isStylePanelOpen;
+    if (this.isStylePanelOpen) {
+      this.updateStylePanelCells();
+    }
+    this.cdr.detectChanges();
+  }
+
+  private updateStylePanelCells(): void {
+    const selectedCellIds = this.appDfdOrchestrator.getSelectedCells();
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) {
+      this.stylePanelCells = [];
+      return;
+    }
+
+    this.stylePanelCells = selectedCellIds
+      .map(id => graph.getCellById(id))
+      .filter(Boolean)
+      .map(cell => {
+        const isNode = cell.isNode();
+        const isEdge = cell.isEdge();
+        const data = cell.getData() || {};
+        const nodeType = data.nodeType || cell.shape || null;
+        const attrs = cell.getAttrs() || {};
+
+        let strokeColor: string | null = null;
+        let fillColor: string | null = null;
+        let fillOpacity: number | null = null;
+
+        if (isNode) {
+          const body = attrs['body'] || {};
+          strokeColor = ((body as Record<string, any>)['stroke'] as string) || null;
+          fillColor = ((body as Record<string, any>)['fill'] as string) || null;
+          fillOpacity = ((body as Record<string, any>)['fillOpacity'] as number) ?? 1;
+        } else if (isEdge) {
+          const line = attrs['line'] || {};
+          strokeColor = ((line as Record<string, any>)['stroke'] as string) || null;
+        }
+
+        return {
+          cellId: cell.id,
+          isNode,
+          isEdge,
+          nodeType: isNode ? nodeType : null,
+          strokeColor,
+          fillColor,
+          fillOpacity,
+          hasCustomStyles: !!data.customStyles,
+        } as CellStyleInfo;
+      });
+  }
+
+  onStyleChange(event: StyleChangeEvent): void {
+    if (this.isReadOnlyMode) return;
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) return;
+
+    for (const cellId of event.applicableCellIds) {
+      const cell = graph.getCellById(cellId);
+      if (!cell) continue;
+
+      if (cell.isNode()) {
+        this.applyNodeStyleChange(cell, event);
+      } else if (cell.isEdge() && event.property === 'strokeColor') {
+        this.applyEdgeStyleChange(cell, event);
+      }
+    }
+
+    this.updateStylePanelCells();
+    this.cdr.detectChanges();
+  }
+
+  private applyNodeStyleChange(cell: Cell, event: StyleChangeEvent): void {
+    const previousAttrs = cell.getAttrs() || {};
+    const previousBody = (previousAttrs['body'] || {}) as Record<string, any>;
+    const previousData = cell.getData() || {};
+
+    const attrPathMap: Record<string, string> = {
+      strokeColor: 'body/stroke',
+      fillColor: 'body/fill',
+      fillOpacity: 'body/fillOpacity',
+    };
+    const styleKeyMap: Record<string, string> = {
+      strokeColor: 'stroke',
+      fillColor: 'fill',
+      fillOpacity: 'fillOpacity',
+    };
+
+    cell.setAttrByPath(attrPathMap[event.property], event.value);
+    cell.setData({ ...previousData, customStyles: true }, { silent: true });
+
+    const operation = {
+      id: `style-change-${Date.now()}-${cell.id}`,
+      type: 'update-node' as const,
+      source: 'user-interaction' as const,
+      priority: 'normal' as const,
+      timestamp: Date.now(),
+      nodeId: cell.id,
+      updates: {
+        style: { [styleKeyMap[event.property]]: event.value },
+        properties: { customStyles: true },
+      },
+      previousState: {
+        style: {
+          stroke: previousBody['stroke'],
+          fill: previousBody['fill'],
+          fillOpacity: previousBody['fillOpacity'] ?? 1,
+        },
+        properties: { customStyles: previousData.customStyles || false },
+      },
+      includeInHistory: true,
+    };
+
+    this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+      next: result => {
+        if (!result.success) {
+          this.logger.error('Style change operation failed', { error: result.error });
+        }
+      },
+      error: error => {
+        this.logger.error('Error applying style change', { error });
+      },
+    });
+  }
+
+  private applyEdgeStyleChange(cell: Cell, event: StyleChangeEvent): void {
+    const previousAttrs = cell.getAttrs() || {};
+    const previousLine = (previousAttrs['line'] || {}) as Record<string, any>;
+
+    cell.setAttrByPath('line/stroke', event.value);
+
+    const operation = {
+      id: `style-change-${Date.now()}-${cell.id}`,
+      type: 'update-edge' as const,
+      source: 'user-interaction' as const,
+      priority: 'normal' as const,
+      timestamp: Date.now(),
+      edgeId: cell.id,
+      updates: {
+        style: { stroke: event.value },
+      },
+      previousState: {
+        style: { stroke: previousLine['stroke'] },
+      },
+      includeInHistory: true,
+    };
+
+    this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+      next: result => {
+        if (!result.success) {
+          this.logger.error('Edge style change failed', { error: result.error });
+        }
+      },
+      error: error => {
+        this.logger.error('Error applying edge style change', { error });
+      },
+    });
+  }
+
+  onClearCustomFormatting(cellIds: string[]): void {
+    if (this.isReadOnlyMode) return;
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) return;
+
+    for (const cellId of cellIds) {
+      const cell = graph.getCellById(cellId);
+      if (!cell) continue;
+
+      if (cell.isNode()) {
+        const data = cell.getData() || {};
+        const nodeType = data.nodeType || cell.shape || 'process';
+        const defaultFill = DFD_STYLING_HELPERS.getDefaultFill(nodeType as NodeType);
+        const defaultStroke = DFD_STYLING_HELPERS.getDefaultStroke(nodeType as NodeType);
+
+        cell.setAttrByPath('body/fill', defaultFill);
+        cell.setAttrByPath('body/stroke', defaultStroke);
+        cell.setAttrByPath('body/fillOpacity', 1);
+        cell.setData({ ...data, customStyles: undefined }, { silent: true });
+
+        const operation = {
+          id: `clear-style-${Date.now()}-${cellId}`,
+          type: 'update-node' as const,
+          source: 'user-interaction' as const,
+          priority: 'normal' as const,
+          timestamp: Date.now(),
+          nodeId: cellId,
+          updates: {
+            style: { fill: defaultFill, stroke: defaultStroke, fillOpacity: 1 },
+            properties: { customStyles: undefined },
+          },
+          includeInHistory: true,
+        };
+
+        this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+          error: error => {
+            this.logger.error('Error clearing custom formatting', { error });
+          },
+        });
+      } else if (cell.isEdge()) {
+        const defaultStroke = DFD_STYLING.EDGES.DEFAULT_STROKE;
+        cell.setAttrByPath('line/stroke', defaultStroke);
+
+        const operation = {
+          id: `clear-style-${Date.now()}-${cellId}`,
+          type: 'update-edge' as const,
+          source: 'user-interaction' as const,
+          priority: 'normal' as const,
+          timestamp: Date.now(),
+          edgeId: cellId,
+          updates: {
+            style: { stroke: defaultStroke },
+          },
+          includeInHistory: true,
+        };
+
+        this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+          error: error => {
+            this.logger.error('Error clearing edge custom formatting', { error });
+          },
+        });
+      }
+    }
+
+    this.updateStylePanelCells();
+    this.cdr.detectChanges();
+  }
+
+  onDiagramPaletteChanged(palette: string[]): void {
+    this.diagramColorPalette = palette;
+    // Palette persistence would go through diagram data when API supports colorPalette
   }
 
   private updateClipboardState(): void {

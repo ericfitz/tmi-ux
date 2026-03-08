@@ -1,0 +1,140 @@
+.color-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+.palette-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.section-label {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.swatch-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-text-primary);
+  }
+
+  &.selected {
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 0 0 1px var(--color-primary);
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.empty-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border-style: dashed;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--color-text-muted);
+  }
+}
+
+.diagram-swatch-container {
+  position: relative;
+
+  .remove-swatch {
+    display: none;
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-background-white);
+    cursor: pointer;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 12px;
+      width: 12px;
+      height: 12px;
+      color: var(--color-text-secondary);
+    }
+  }
+
+  &:hover .remove-swatch {
+    display: flex;
+  }
+}
+
+.hex-input-section {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hex-input-field {
+  flex: 1;
+
+  // Compact form field sizing
+  ::ng-deep .mat-mdc-form-field-infix {
+    min-height: 32px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    padding: 0 8px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  input {
+    font-family: monospace;
+    font-size: 12px;
+  }
+}
+
+.os-picker-button {
+  flex-shrink: 0;
+}
+
+.hidden-color-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}

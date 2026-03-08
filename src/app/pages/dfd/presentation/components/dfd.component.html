@@ -310,6 +310,16 @@
 
       <button
         mat-icon-button
+        (click)="toggleStylePanel()"
+        [disabled]="isReadOnlyMode || !isSystemInitialized"
+        [matTooltip]="'dfd.stylePanel.toggleStylePanel' | transloco"
+        [class.active-toggle]="isStylePanelOpen"
+      >
+        <mat-icon>palette</mat-icon>
+      </button>
+
+      <button
+        mat-icon-button
         [matMenuTriggerFor]="exportMenu"
         [matTooltip]="'editor.toolbar.tooltips.export' | transloco"
       >
@@ -367,6 +377,18 @@
 
   <div class="graph-container">
     <div #graphContainer class="x6-graph"></div>
+
+    <!-- Style panel -->
+    @if (isStylePanelOpen) {
+      <app-style-panel
+        [selectedCells]="stylePanelCells"
+        [diagramPalette]="diagramColorPalette"
+        [disabled]="isReadOnlyMode"
+        (styleChange)="onStyleChange($event)"
+        (clearCustomFormatting)="onClearCustomFormatting($event)"
+        (diagramPaletteChanged)="onDiagramPaletteChanged($event)"
+      ></app-style-panel>
+    }
 
     <!-- Cell context menu -->
     <div
