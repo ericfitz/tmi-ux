@@ -73,7 +73,7 @@ describe('adminGuard', () => {
       display_name: 'Admin',
       email: 'admin@example.com',
       groups: null,
-      jwt_groups: null,
+
       is_admin: true,
     };
     mockAuthService.refreshUserProfile.mockReturnValue(of(adminProfile));
@@ -98,7 +98,7 @@ describe('adminGuard', () => {
       display_name: 'Regular',
       email: 'regular@example.com',
       groups: null,
-      jwt_groups: null,
+
       is_admin: false,
     };
     mockAuthService.refreshUserProfile.mockReturnValue(of(regularProfile));
@@ -127,7 +127,6 @@ describe('adminGuard', () => {
       display_name: 'User',
       email: 'user@example.com',
       groups: null,
-      jwt_groups: null,
     };
     mockAuthService.refreshUserProfile.mockReturnValue(of(profileWithoutAdmin));
 
@@ -175,7 +174,7 @@ describe('adminGuard', () => {
       display_name: 'Admin',
       email: 'admin@example.com',
       groups: null,
-      jwt_groups: null,
+
       is_admin: true,
     };
     mockAuthService.refreshUserProfile.mockReturnValue(of(adminProfile));

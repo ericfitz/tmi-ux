@@ -23,7 +23,6 @@ export interface IUserProfile {
   display_name: string;
   email: string;
   groups: UserGroupMembership[] | null;
-  jwt_groups: string[] | null;
   is_admin?: boolean;
 }
 

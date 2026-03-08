@@ -88,7 +88,7 @@ describe('SecurityReviewerService', () => {
         name: 'Security Reviewers',
       },
     ],
-    jwt_groups: null,
+
     is_security_reviewer: true,
   };
 
@@ -98,7 +98,7 @@ describe('SecurityReviewerService', () => {
     display_name: 'Admin User',
     email: 'admin@example.com',
     groups: [],
-    jwt_groups: null,
+
     is_admin: true,
   };
 
@@ -108,7 +108,6 @@ describe('SecurityReviewerService', () => {
     display_name: 'Regular User',
     email: 'regular@example.com',
     groups: [],
-    jwt_groups: null,
   };
 
   beforeEach(() => {

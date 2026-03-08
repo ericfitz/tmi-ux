@@ -190,7 +190,6 @@ describe('Authentication Integration', () => {
         display_name: 'test',
         email: testEmail,
         groups: null,
-        jwt_groups: null,
       };
 
       authService.storeToken(token);
@@ -218,7 +217,6 @@ describe('Authentication Integration', () => {
         display_name: 'test',
         email: 'test@example.com',
         groups: null,
-        jwt_groups: null,
       };
 
       authService.storeToken(token);
@@ -299,7 +297,6 @@ describe('Authentication Integration', () => {
           display_name: 'Test User',
           email: 'test@example.com',
           groups: null,
-          jwt_groups: null,
         });
 
         // Mock the cookie-based refresh response (POST with empty body)
@@ -418,7 +415,6 @@ describe('Authentication Integration', () => {
           display_name: 'Restored User',
           email: 'restored@example.com',
           groups: null,
-          jwt_groups: null,
         };
 
         // Mock GET /me to return a valid user profile (session cookie is valid)

@@ -74,7 +74,7 @@ describe('reviewerGuard', () => {
       display_name: 'Reviewer',
       email: 'reviewer@example.com',
       groups: null,
-      jwt_groups: null,
+
       is_security_reviewer: true,
     };
     mockAuthService.refreshUserProfile.mockReturnValue(of(reviewerProfile));
@@ -99,7 +99,7 @@ describe('reviewerGuard', () => {
       display_name: 'Regular',
       email: 'regular@example.com',
       groups: null,
-      jwt_groups: null,
+
       is_security_reviewer: false,
     };
     mockAuthService.refreshUserProfile.mockReturnValue(of(regularProfile));
@@ -142,7 +142,6 @@ describe('reviewerGuard', () => {
       display_name: 'User',
       email: 'user@example.com',
       groups: null,
-      jwt_groups: null,
     };
     mockAuthService.refreshUserProfile.mockReturnValue(of(profileWithoutReviewer));
 

@@ -69,11 +69,6 @@ export interface UserProfile {
   groups: UserGroupMembership[] | null;
 
   /**
-   * Groups from the JWT groups claim (raw group name strings)
-   */
-  jwt_groups: string[] | null;
-
-  /**
    * Whether the user has administrator privileges
    * Populated from JWT tmi_is_administrator claim and verified via GET /users/me
    */

@@ -511,7 +511,6 @@ refreshUserProfile(): Observable<UserProfile> {
         display_name: response.name,
         email: response.email,
         groups: response.groups ?? null,
-        jwt_groups: null,
         is_admin: response.is_admin,
         is_security_reviewer: response.is_security_reviewer,
       };
