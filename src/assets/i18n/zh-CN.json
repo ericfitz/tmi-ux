@@ -105,7 +105,7 @@
       "deleteTooltip": "删除用户组",
       "filterLabel": "筛选用户组",
       "filterPlaceholder": "按组名或提供商搜索",
-      "listTitle": "{{userPreferences.userProfile.groups}}",
+      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
         "addMember": "添加成员",
         "currentMembers": "当前成员",
@@ -1563,8 +1563,7 @@
     },
     "userProfile": {
       "currentRole": "当前威胁模型角色",
-      "groups": "{{common.groups}}",
-      "jwtGroups": "JWT 组",
+      "groupMemberships": "群组成员资格",
       "provider": "{{common.identityProvider}}",
       "providerId": "提供商ID",
       "title": "用户资料"

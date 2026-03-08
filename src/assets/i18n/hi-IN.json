@@ -105,7 +105,7 @@
       "deleteTooltip": "समूह हटाएं",
       "filterLabel": "समूह फ़िल्टर करें",
       "filterPlaceholder": "समूह के नाम या प्रदाता द्वारा खोजें",
-      "listTitle": "{{userPreferences.userProfile.groups}}",
+      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
         "addMember": "सदस्य जोड़ें",
         "currentMembers": "वर्तमान सदस्य",
@@ -1563,8 +1563,7 @@
     },
     "userProfile": {
       "currentRole": "वर्तमान थ्रेट मॉडल भूमिका",
-      "groups": "{{common.groups}}",
-      "jwtGroups": "JWT समूह",
+      "groupMemberships": "समूह सदस्यताएँ",
       "provider": "{{common.identityProvider}}",
       "providerId": "प्रदाता ID",
       "title": "उपयोगकर्ता प्रोफ़ाइल"

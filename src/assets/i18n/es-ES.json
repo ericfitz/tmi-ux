@@ -105,7 +105,7 @@
       "deleteTooltip": "Eliminar grupo",
       "filterLabel": "Filtrar Grupos",
       "filterPlaceholder": "Buscar por nombre de grupo o proveedor",
-      "listTitle": "{{userPreferences.userProfile.groups}}",
+      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
         "addMember": "Añadir Miembro",
         "currentMembers": "Miembros Actuales",
@@ -1563,8 +1563,7 @@
     },
     "userProfile": {
       "currentRole": "Rol Actual en Modelo de Amenazas",
-      "groups": "{{common.groups}}",
-      "jwtGroups": "Grupos JWT",
+      "groupMemberships": "Membresías de grupo",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID del Proveedor",
       "title": "Perfil de Usuario"

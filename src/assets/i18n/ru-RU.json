@@ -105,7 +105,7 @@
       "deleteTooltip": "Удалить группу",
       "filterLabel": "Фильтр групп",
       "filterPlaceholder": "Поиск по названию группы или провайдеру",
-      "listTitle": "{{userPreferences.userProfile.groups}}",
+      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
         "addMember": "Добавить участника",
         "currentMembers": "Текущие участники",
@@ -1563,8 +1563,7 @@
     },
     "userProfile": {
       "currentRole": "Текущая роль в модели угроз",
-      "groups": "{{common.groups}}",
-      "jwtGroups": "Группы JWT",
+      "groupMemberships": "Членство в группах",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID провайдера",
       "title": "Профиль Пользователя"

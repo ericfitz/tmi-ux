@@ -105,7 +105,7 @@
       "deleteTooltip": "حذف المجموعة",
       "filterLabel": "تصفية المجموعات",
       "filterPlaceholder": "البحث بالاسم أو المزود",
-      "listTitle": "{{userPreferences.userProfile.groups}}",
+      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
         "addMember": "إضافة عضو",
         "currentMembers": "الأعضاء الحاليون",
@@ -1563,8 +1563,7 @@
     },
     "userProfile": {
       "currentRole": "دور نموذج التهديد الحالي",
-      "groups": "{{common.groups}}",
-      "jwtGroups": "مجموعات JWT",
+      "groupMemberships": "عضويات المجموعات",
       "provider": "{{common.identityProvider}}",
       "providerId": "معرف الموفر",
       "title": "ملف المستخدم"

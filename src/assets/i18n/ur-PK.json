@@ -105,7 +105,7 @@
       "deleteTooltip": "گروپ حذف کریں",
       "filterLabel": "گروپس فلٹر کریں",
       "filterPlaceholder": "گروپ کے نام یا فراہم کنندہ سے تلاش کریں",
-      "listTitle": "{{userPreferences.userProfile.groups}}",
+      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
         "addMember": "رکن شامل کریں",
         "currentMembers": "موجودہ اراکین",
@@ -1563,8 +1563,7 @@
     },
     "userProfile": {
       "currentRole": "موجودہ خطرے کے ماڈل کا کردار",
-      "groups": "{{common.groups}}",
-      "jwtGroups": "JWT گروپس",
+      "groupMemberships": "گروپ رکنیتیں",
       "provider": "{{common.identityProvider}}",
       "providerId": "فراہم کنندہ ID",
       "title": "صارف پروفائل"

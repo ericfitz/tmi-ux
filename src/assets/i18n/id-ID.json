@@ -105,7 +105,7 @@
       "deleteTooltip": "Hapus grup",
       "filterLabel": "Filter Grup",
       "filterPlaceholder": "Cari berdasarkan nama grup atau penyedia",
-      "listTitle": "{{userPreferences.userProfile.groups}}",
+      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
         "addMember": "Tambah Anggota",
         "currentMembers": "Anggota Saat Ini",
@@ -1563,8 +1563,7 @@
     },
     "userProfile": {
       "currentRole": "Peran Model Ancaman Saat Ini",
-      "groups": "{{common.groups}}",
-      "jwtGroups": "Grup JWT",
+      "groupMemberships": "Keanggotaan Grup",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID Penyedia",
       "title": "Profil Pengguna"

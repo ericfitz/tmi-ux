@@ -104,27 +104,17 @@ interface CheckboxChangeEvent {
                 </div>
               }
 
-              @if (userProfile?.groups && (userProfile?.groups?.length ?? 0) > 0) {
-                <div class="profile-item">
-                  <span class="profile-label" [transloco]="'userPreferences.userProfile.groups'">
-                    Groups
-                  </span>
+              <div class="profile-item">
+                <span
+                  class="profile-label"
+                  [transloco]="'userPreferences.userProfile.groupMemberships'"
+                >
+                  Group Memberships
+                </span>
+                @if (userProfile?.groups && (userProfile?.groups?.length ?? 0) > 0) {
                   <div class="profile-value groups-list">
                     @for (group of userProfile?.groups; track group.internal_uuid) {
                       <span class="group-badge">{{ group.name ?? group.group_name }}</span>
-                    }
-                  </div>
-                </div>
-              }
-
-              <div class="profile-item">
-                <span class="profile-label" [transloco]="'userPreferences.userProfile.jwtGroups'">
-                  JWT Groups
-                </span>
-                @if (userProfile?.jwt_groups && (userProfile?.jwt_groups?.length ?? 0) > 0) {
-                  <div class="profile-value groups-list">
-                    @for (group of userProfile?.jwt_groups; track group) {
-                      <span class="group-badge">{{ group }}</span>
                     }
                   </div>
                 } @else {

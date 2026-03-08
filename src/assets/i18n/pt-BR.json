@@ -105,7 +105,7 @@
       "deleteTooltip": "Excluir grupo",
       "filterLabel": "Filtrar Grupos",
       "filterPlaceholder": "Pesquisar por nome do grupo ou provedor",
-      "listTitle": "{{userPreferences.userProfile.groups}}",
+      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
         "addMember": "Adicionar Membro",
         "currentMembers": "Membros Atuais",
@@ -1563,8 +1563,7 @@
     },
     "userProfile": {
       "currentRole": "Funcao Atual no Modelo de Ameacas",
-      "groups": "{{common.groups}}",
-      "jwtGroups": "Grupos JWT",
+      "groupMemberships": "Associações a grupos",
       "provider": "{{common.identityProvider}}",
       "providerId": "ID do Provedor",
       "title": "Perfil do Usuario"

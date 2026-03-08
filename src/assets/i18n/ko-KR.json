@@ -105,7 +105,7 @@
       "deleteTooltip": "그룹 삭제",
       "filterLabel": "그룹 필터",
       "filterPlaceholder": "그룹 이름 또는 공급자로 검색",
-      "listTitle": "{{userPreferences.userProfile.groups}}",
+      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
         "addMember": "멤버 추가",
         "currentMembers": "현재 멤버",
@@ -1563,8 +1563,7 @@
     },
     "userProfile": {
       "currentRole": "현재 위협 모델 역할",
-      "groups": "{{common.groups}}",
-      "jwtGroups": "JWT 그룹",
+      "groupMemberships": "그룹 멤버십",
       "provider": "{{common.identityProvider}}",
       "providerId": "공급자 ID",
       "title": "사용자 프로필"

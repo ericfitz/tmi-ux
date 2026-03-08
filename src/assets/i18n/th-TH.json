@@ -105,7 +105,7 @@
       "deleteTooltip": "ลบกลุ่ม",
       "filterLabel": "กรองกลุ่ม",
       "filterPlaceholder": "ค้นหาตามชื่อกลุ่มหรือผู้ให้บริการ",
-      "listTitle": "{{userPreferences.userProfile.groups}}",
+      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
         "addMember": "เพิ่มสมาชิก",
         "currentMembers": "สมาชิกปัจจุบัน",
@@ -1563,8 +1563,7 @@
     },
     "userProfile": {
       "currentRole": "บทบาทโมเดลภัยคุกคามปัจจุบัน",
-      "groups": "{{common.groups}}",
-      "jwtGroups": "กลุ่ม JWT",
+      "groupMemberships": "การเป็นสมาชิกกลุ่ม",
       "provider": "{{common.identityProvider}}",
       "providerId": "รหัสผู้ให้บริการ",
       "title": "โปรไฟล์ผู้ใช้"

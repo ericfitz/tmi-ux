@@ -105,7 +105,7 @@
       "deleteTooltip": "מחק קבוצה",
       "filterLabel": "סנן קבוצות",
       "filterPlaceholder": "חפש לפי שם קבוצה או ספק",
-      "listTitle": "{{userPreferences.userProfile.groups}}",
+      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
         "addMember": "הוסף חבר",
         "currentMembers": "חברים נוכחיים",
@@ -1563,8 +1563,7 @@
     },
     "userProfile": {
       "currentRole": "תפקיד נוכחי במודל איומים",
-      "groups": "{{common.groups}}",
-      "jwtGroups": "קבוצות JWT",
+      "groupMemberships": "חברויות בקבוצות",
       "provider": "{{common.identityProvider}}",
       "providerId": "מזהה ספק",
       "title": "פרופיל משתמש"

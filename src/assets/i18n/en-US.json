@@ -113,7 +113,7 @@
       "deleteTooltip": "Delete group",
       "filterLabel": "Filter Groups",
       "filterPlaceholder": "Search by group name or provider",
-      "listTitle": "{{userPreferences.userProfile.groups}}",
+      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
         "addMember": "Add Member",
         "currentMembers": "Current Members",
@@ -1622,8 +1622,7 @@
     },
     "userProfile": {
       "currentRole": "Current Threat Model Role",
-      "groups": "{{common.groups}}",
-      "jwtGroups": "JWT Groups",
+      "groupMemberships": "Group Memberships",
       "provider": "{{common.identityProvider}}",
       "providerId": "Provider ID",
       "title": "User Profile"

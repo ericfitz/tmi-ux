@@ -105,7 +105,7 @@
       "deleteTooltip": "গ্রুপ মুছুন",
       "filterLabel": "গ্রুপ ফিল্টার করুন",
       "filterPlaceholder": "গ্রুপের নাম বা প্রোভাইডার দিয়ে খুঁজুন",
-      "listTitle": "{{userPreferences.userProfile.groups}}",
+      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
         "addMember": "সদস্য যোগ করুন",
         "currentMembers": "বর্তমান সদস্য",
@@ -1563,8 +1563,7 @@
     },
     "userProfile": {
       "currentRole": "বর্তমান থ্রেট মডেল ভূমিকা",
-      "groups": "{{common.groups}}",
-      "jwtGroups": "JWT গ্রুপ",
+      "groupMemberships": "গ্রুপ সদস্যপদ",
       "provider": "{{common.identityProvider}}",
       "providerId": "প্রদানকারী আইডি",
       "title": "ব্যবহারকারীর প্রোফাইল"
