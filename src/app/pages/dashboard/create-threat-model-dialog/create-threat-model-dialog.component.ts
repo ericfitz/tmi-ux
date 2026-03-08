@@ -98,6 +98,7 @@ type FrameworkOption = 'STRIDE' | 'CIA' | 'LINDDUN' | 'DIE' | 'PLOT4ai';
         flex-direction: column;
         gap: 4px;
         min-width: 400px;
+        padding-top: 8px;
       }
 
       .full-width {
