@@ -75,6 +75,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   private _graph: Graph | null = null;
   private readonly _destroy$ = new Subject<void>();
   private _isConnecting = false;
+  private _readOnly = false;
   private _currentEditor: HTMLInputElement | HTMLTextAreaElement | null = null;
 
   // Operation-aware event coordination (replaces timer-based debouncing)
@@ -1495,6 +1496,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
     // Double-click events for label editing
     this._graph.on('cell:dblclick', ({ cell, e }: { cell: Cell; e: MouseEvent }) => {
+      if (this._readOnly) return;
       this.logger.debugComponent('X6Graph', 'Cell double-click triggered', { cellId: cell.id });
 
       // Check if the double-click is on a tool element (like arrowhead)
@@ -2390,6 +2392,8 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       return;
     }
 
+    this._readOnly = readOnly;
+
     if (readOnly) {
       // Disable selection via the selection adapter
       this._selectionAdapter.disableSelection(graph);
@@ -2399,7 +2403,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
 
       // Disable user interactions via global interacting config
       // This blocks UI gestures but allows programmatic API calls (used by remote updates)
-      (graph as any).updateInteracting({
+      graph.options.interacting = {
         nodeMovable: false,
         edgeMovable: false,
         edgeLabelMovable: false,
@@ -2407,8 +2411,11 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         vertexMovable: false,
         vertexAddable: false,
         vertexDeletable: false,
-        magnetConnectable: false, // Disable edge creation
-      });
+        magnetConnectable: false,
+      };
+
+      // Remove resize/transform handles from any selected nodes
+      (graph as any).clearTransformWidgets();
 
       // Remove all editing tools from cells
       graph.getCells().forEach(cell => {
@@ -2424,7 +2431,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
       this._keyboardHandler.setupKeyboardHandling(graph);
 
       // Restore default interactions
-      (graph as any).updateInteracting({
+      graph.options.interacting = {
         nodeMovable: true,
         edgeMovable: true,
         edgeLabelMovable: true,
@@ -2433,7 +2440,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         vertexAddable: true,
         vertexDeletable: true,
         magnetConnectable: true,
-      });
+      };
 
       this.logger.info('Graph set to edit mode');
     }
