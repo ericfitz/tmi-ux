@@ -1087,7 +1087,13 @@
     "linkedAsset": "สินทรัพย์ที่เชื่อมโยง",
     "linkedDiagram": "แผนภาพที่เชื่อมโยง",
     "pageOf": "หน้า {{current}} จาก {{total}}",
-    "refLabel": "Ref"
+    "refLabel": "Ref",
+    "summaryCreatedAt": "แบบจำลองภัยคุกคามสร้างเมื่อ",
+    "summaryCreatedBy": "แบบจำลองภัยคุกคามสร้างโดย",
+    "summaryDescription": "{{common.description}}",
+    "summaryLastModified": "แบบจำลองภัยคุกคามแก้ไขล่าสุด",
+    "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
+    "summaryStatus": "สถานะแบบจำลองภัยคุกคาม"
   },
   "sessionExpiry": {
     "extendButton": "ขยายเวลาเซสชัน",

@@ -1087,7 +1087,13 @@
     "linkedAsset": "リンク済みアセット",
     "linkedDiagram": "リンク済みダイアグラム",
     "pageOf": "ページ {{current}} / {{total}}",
-    "refLabel": "Ref"
+    "refLabel": "Ref",
+    "summaryCreatedAt": "脅威モデル作成日時",
+    "summaryCreatedBy": "脅威モデル作成者",
+    "summaryDescription": "{{common.description}}",
+    "summaryLastModified": "脅威モデル最終更新",
+    "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
+    "summaryStatus": "脅威モデルのステータス"
   },
   "sessionExpiry": {
     "extendButton": "セッションを延長",

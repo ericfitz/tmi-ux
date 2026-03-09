@@ -1087,7 +1087,13 @@
     "linkedAsset": "Aset Tertaut",
     "linkedDiagram": "Diagram Tertaut",
     "pageOf": "Halaman {{current}} dari {{total}}",
-    "refLabel": "Ref"
+    "refLabel": "Ref",
+    "summaryCreatedAt": "Model ancaman dibuat pada",
+    "summaryCreatedBy": "Model ancaman dibuat oleh",
+    "summaryDescription": "{{common.description}}",
+    "summaryLastModified": "Model ancaman terakhir diubah",
+    "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
+    "summaryStatus": "Status model ancaman"
   },
   "sessionExpiry": {
     "extendButton": "Perpanjang Sesi",

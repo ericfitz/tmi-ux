@@ -1087,7 +1087,13 @@
     "linkedAsset": "যুক্ত সম্পদ",
     "linkedDiagram": "যুক্ত ডায়াগ্রাম",
     "pageOf": "পৃষ্ঠা {{current}}/{{total}}",
-    "refLabel": "Ref"
+    "refLabel": "Ref",
+    "summaryCreatedAt": "থ্রেট মডেল তৈরির তারিখ",
+    "summaryCreatedBy": "থ্রেট মডেল তৈরি করেছেন",
+    "summaryDescription": "{{common.description}}",
+    "summaryLastModified": "থ্রেট মডেলের সর্বশেষ পরিবর্তন",
+    "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
+    "summaryStatus": "থ্রেট মডেলের অবস্থা"
   },
   "sessionExpiry": {
     "extendButton": "সেশন বাড়ান",

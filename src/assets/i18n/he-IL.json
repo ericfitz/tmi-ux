@@ -1087,7 +1087,13 @@
     "linkedAsset": "נכס קשור",
     "linkedDiagram": "דיאגרמה קשורה",
     "pageOf": "עמוד {{current}} מתוך {{total}}",
-    "refLabel": "Ref"
+    "refLabel": "Ref",
+    "summaryCreatedAt": "מודל האיומים נוצר בתאריך",
+    "summaryCreatedBy": "מודל האיומים נוצר על ידי",
+    "summaryDescription": "{{common.description}}",
+    "summaryLastModified": "מודל האיומים עודכן לאחרונה",
+    "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
+    "summaryStatus": "סטטוס מודל האיומים"
   },
   "sessionExpiry": {
     "extendButton": "הארך הפעלה",

@@ -1087,7 +1087,13 @@
     "linkedAsset": "关联资产",
     "linkedDiagram": "关联图表",
     "pageOf": "第 {{current}} 页，共 {{total}} 页",
-    "refLabel": "Ref"
+    "refLabel": "Ref",
+    "summaryCreatedAt": "威胁模型创建于",
+    "summaryCreatedBy": "威胁模型创建者",
+    "summaryDescription": "{{common.description}}",
+    "summaryLastModified": "威胁模型最后修改",
+    "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
+    "summaryStatus": "威胁模型状态"
   },
   "sessionExpiry": {
     "extendButton": "延长会话",

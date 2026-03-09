@@ -1087,7 +1087,13 @@
     "linkedAsset": "منسلک اثاثہ",
     "linkedDiagram": "منسلک ڈایاگرام",
     "pageOf": "صفحہ {{current}} از {{total}}",
-    "refLabel": "Ref"
+    "refLabel": "Ref",
+    "summaryCreatedAt": "خطرے کا ماڈل تخلیق کیا گیا",
+    "summaryCreatedBy": "خطرے کا ماڈل تخلیق کنندہ",
+    "summaryDescription": "{{common.description}}",
+    "summaryLastModified": "خطرے کے ماڈل میں آخری ترمیم",
+    "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
+    "summaryStatus": "خطرے کے ماڈل کی حیثیت"
   },
   "sessionExpiry": {
     "extendButton": "سیشن بڑھائیں",

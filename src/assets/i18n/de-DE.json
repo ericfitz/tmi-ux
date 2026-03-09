@@ -1087,7 +1087,13 @@
     "linkedAsset": "Verknüpftes Asset",
     "linkedDiagram": "Verknüpftes Diagramm",
     "pageOf": "Seite {{current}} von {{total}}",
-    "refLabel": "Ref"
+    "refLabel": "Ref",
+    "summaryCreatedAt": "Bedrohungsmodell erstellt am",
+    "summaryCreatedBy": "Bedrohungsmodell erstellt von",
+    "summaryDescription": "{{common.description}}",
+    "summaryLastModified": "Bedrohungsmodell zuletzt geändert",
+    "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
+    "summaryStatus": "Status des Bedrohungsmodells"
   },
   "sessionExpiry": {
     "extendButton": "Sitzung verlängern",

@@ -115,25 +115,25 @@ export function renderSummarySection(
       value: formatDate(new Date().toISOString(), transloco),
     },
     {
-      label: transloco.translate('common.created'),
+      label: transloco.translate('report.summaryCreatedAt'),
       value: formatDate(tm.created_at, transloco),
     },
     {
-      label: transloco.translate('common.createdBy'),
+      label: transloco.translate('report.summaryCreatedBy'),
       value: tm.created_by ? getPrincipalDisplayName(tm.created_by) : noData,
     },
     {
-      label: transloco.translate('common.lastModified'),
+      label: transloco.translate('report.summaryLastModified'),
       value: formatDate(tm.modified_at, transloco),
     },
     {
-      label: transloco.translate('common.status'),
+      label: transloco.translate('report.summaryStatus'),
       value: tm.status
         ? getFieldLabel(tm.status, 'threatModels.status' as FieldType, transloco)
         : noData,
     },
     {
-      label: transloco.translate('threatModels.securityReviewer'),
+      label: transloco.translate('report.summarySecurityReviewer'),
       value: tm.security_reviewer ? getPrincipalDisplayName(tm.security_reviewer) : noData,
     },
   ];
@@ -158,7 +158,7 @@ export function renderSummarySection(
   const description = tm.description || noData;
   cursor = engine.drawKeyValuePair(
     cursor,
-    transloco.translate('common.description'),
+    transloco.translate('report.summaryDescription'),
     description,
     labelFont,
     valueFont,
@@ -182,9 +182,9 @@ export function renderInputsGroup(
   cursor: Cursor,
   tm: ThreatModel,
 ): Cursor {
-  const filteredAssets = (tm.assets ?? []).filter(a => a.include_in_report !== false);
-  const filteredDocs = (tm.documents ?? []).filter(d => d.include_in_report !== false);
-  const filteredRepos = (tm.repositories ?? []).filter(r => r.include_in_report !== false);
+  const filteredAssets = (tm.assets ?? []).filter(a => a.include_in_report === true);
+  const filteredDocs = (tm.documents ?? []).filter(d => d.include_in_report === true);
+  const filteredRepos = (tm.repositories ?? []).filter(r => r.include_in_report === true);
 
   if (!filteredAssets.length && !filteredDocs.length && !filteredRepos.length) {
     return cursor;
@@ -217,9 +217,9 @@ export async function renderOutputsGroup(
   cursor: Cursor,
   tm: ThreatModel,
 ): Promise<Cursor> {
-  const filteredDiagrams = (tm.diagrams ?? []).filter(d => d.include_in_report !== false);
-  const filteredThreats = (tm.threats ?? []).filter(t => t.include_in_report !== false);
-  const filteredNotes = (tm.notes ?? []).filter(n => n.include_in_report !== false);
+  const filteredDiagrams = (tm.diagrams ?? []).filter(d => d.include_in_report === true);
+  const filteredThreats = (tm.threats ?? []).filter(t => t.include_in_report === true);
+  const filteredNotes = (tm.notes ?? []).filter(n => n.include_in_report === true);
 
   if (!filteredDiagrams.length && !filteredThreats.length && !filteredNotes.length) {
     return cursor;

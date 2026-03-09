@@ -94,7 +94,7 @@ export class PdfTableRenderer {
   }
 
   /**
-   * Draw the header row with a horizontal line underneath.
+   * Draw the header row with word-wrapped cells and a horizontal line underneath.
    */
   private drawHeaderRow(cursor: Cursor, columns: TableColumn[], columnWidths: number[]): Cursor {
     const font = this.fonts.getFont(REPORT_STYLES.tableHeader.fontVariant);
@@ -103,31 +103,43 @@ export class PdfTableRenderer {
     const lineHeight = REPORT_STYLES.tableHeader.lineHeight;
     const padding = SPACING.tableCellPadding;
 
-    // Ensure space for header + at least one data row
-    cursor = this.engine.ensureSpace(cursor, lineHeight + 30);
-
-    let x = this.engine.leftX;
-
+    // Pre-compute wrapped lines for each header to find the row height
+    const headerLines: string[][] = [];
     for (let i = 0; i < columns.length && i < columnWidths.length; i++) {
       const cellWidth = columnWidths[i] - padding * 2;
-      const headerText = columns[i].header;
-
-      // Truncate header if necessary (headers should be short)
-      const displayText = this.truncateToFit(headerText, font, fontSize, cellWidth);
-
-      cursor.page.drawText(displayText, {
-        x: x + padding,
-        y: cursor.y,
-        size: fontSize,
-        font,
-        color,
-      });
-
-      x += columnWidths[i];
+      const lines = this.engine.wrapText(columns[i].header, font, fontSize, cellWidth);
+      headerLines.push(lines);
     }
 
-    // Move cursor down and draw separator line
-    cursor = { page: cursor.page, y: cursor.y - lineHeight - 2 };
+    const maxLines = Math.max(...headerLines.map(lines => lines.length), 1);
+    const headerHeight = maxLines * lineHeight;
+
+    // Ensure space for header + at least one data row
+    cursor = this.engine.ensureSpace(cursor, headerHeight + 30);
+
+    const rowStartY = cursor.y;
+
+    // Draw each header cell's wrapped lines
+    for (let lineIdx = 0; lineIdx < maxLines; lineIdx++) {
+      let x = this.engine.leftX;
+
+      for (let colIdx = 0; colIdx < headerLines.length; colIdx++) {
+        const lines = headerLines[colIdx];
+        if (lineIdx < lines.length) {
+          cursor.page.drawText(lines[lineIdx], {
+            x: x + padding,
+            y: rowStartY - lineIdx * lineHeight,
+            size: fontSize,
+            font,
+            color,
+          });
+        }
+        x += columnWidths[colIdx];
+      }
+    }
+
+    // Move cursor down past all header lines and draw separator line
+    cursor = { page: cursor.page, y: rowStartY - headerHeight - 2 };
 
     const lineEndX = this.engine.leftX + columnWidths.reduce((sum, w) => sum + w, 0);
     cursor.page.drawLine({
@@ -185,43 +197,5 @@ export class PdfTableRenderer {
     // Advance cursor past all lines plus padding
     const totalRowHeight = maxLines * lineHeight + padding;
     return { page: cursor.page, y: rowStartY - totalRowHeight };
-  }
-
-  /**
-   * Truncate text to fit within a given width, adding ellipsis if needed.
-   */
-  private truncateToFit(
-    text: string,
-    font: { widthOfTextAtSize(text: string, size: number): number },
-    fontSize: number,
-    maxWidth: number,
-  ): string {
-    const fullWidth = font.widthOfTextAtSize(text, fontSize);
-    if (fullWidth <= maxWidth) {
-      return text;
-    }
-
-    // Binary search for the right truncation point
-    const ellipsis = '...';
-    const ellipsisWidth = font.widthOfTextAtSize(ellipsis, fontSize);
-    const targetWidth = maxWidth - ellipsisWidth;
-
-    if (targetWidth <= 0) {
-      return ellipsis;
-    }
-
-    let lo = 0;
-    let hi = text.length;
-    while (lo < hi) {
-      const mid = Math.floor((lo + hi + 1) / 2);
-      const testWidth = font.widthOfTextAtSize(text.substring(0, mid), fontSize);
-      if (testWidth <= targetWidth) {
-        lo = mid;
-      } else {
-        hi = mid - 1;
-      }
-    }
-
-    return text.substring(0, lo) + ellipsis;
   }
 }

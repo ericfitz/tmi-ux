@@ -30,6 +30,8 @@ export interface DrawWrappedTextOptions {
   indent?: number;
   /** Line height override. Defaults to fontSize * 1.4. */
   lineHeight?: number;
+  /** Center each wrapped line horizontally on the page. */
+  centered?: boolean;
 }
 
 /**
@@ -244,15 +246,22 @@ export class PdfLayoutEngine {
   ): Cursor {
     const maxWidth = options?.maxWidth ?? this.contentWidth;
     const indent = options?.indent ?? 0;
+    const centered = options?.centered ?? false;
     const lineHeight = options?.lineHeight ?? fontSize * 1.4;
     const effectiveMaxWidth = maxWidth - indent;
 
     const lines = this.wrapText(text, font, fontSize, effectiveMaxWidth);
-    const x = this.leftX + indent;
+    const baseX = this.leftX + indent;
 
     for (const line of lines) {
       if (cursor.y - lineHeight < this.bottomBound) {
         cursor = this.newPage();
+      }
+
+      let x = baseX;
+      if (centered) {
+        const lineWidth = font.widthOfTextAtSize(line, fontSize);
+        x = Math.max(this.leftX, (this.config.pageWidth - lineWidth) / 2);
       }
 
       cursor.page.drawText(line, {

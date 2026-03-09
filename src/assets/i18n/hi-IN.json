@@ -1087,7 +1087,13 @@
     "linkedAsset": "लिंक किया गया संपत्ति",
     "linkedDiagram": "लिंक किया गया आरेख",
     "pageOf": "पृष्ठ {{current}} / {{total}}",
-    "refLabel": "Ref"
+    "refLabel": "Ref",
+    "summaryCreatedAt": "खतरा मॉडल निर्माण तिथि",
+    "summaryCreatedBy": "खतरा मॉडल निर्माता",
+    "summaryDescription": "{{common.description}}",
+    "summaryLastModified": "खतरा मॉडल अंतिम संशोधन",
+    "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
+    "summaryStatus": "खतरा मॉडल स्थिति"
   },
   "sessionExpiry": {
     "extendButton": "सत्र बढ़ाएं",

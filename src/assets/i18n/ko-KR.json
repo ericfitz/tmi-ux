@@ -1087,7 +1087,13 @@
     "linkedAsset": "연결된 자산",
     "linkedDiagram": "연결된 다이어그램",
     "pageOf": "페이지 {{current}} / {{total}}",
-    "refLabel": "Ref"
+    "refLabel": "Ref",
+    "summaryCreatedAt": "위협 모델 생성 일시",
+    "summaryCreatedBy": "위협 모델 생성자",
+    "summaryDescription": "{{common.description}}",
+    "summaryLastModified": "위협 모델 최종 수정",
+    "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
+    "summaryStatus": "위협 모델 상태"
   },
   "sessionExpiry": {
     "extendButton": "세션 연장",

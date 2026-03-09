@@ -1087,7 +1087,13 @@
     "linkedAsset": "Activo Vinculado",
     "linkedDiagram": "Diagrama Vinculado",
     "pageOf": "Página {{current}} de {{total}}",
-    "refLabel": "Ref"
+    "refLabel": "Ref",
+    "summaryCreatedAt": "Modelo de amenazas creado el",
+    "summaryCreatedBy": "Modelo de amenazas creado por",
+    "summaryDescription": "{{common.description}}",
+    "summaryLastModified": "Última modificación del modelo de amenazas",
+    "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
+    "summaryStatus": "Estado del modelo de amenazas"
   },
   "sessionExpiry": {
     "extendButton": "Extender Sesión",

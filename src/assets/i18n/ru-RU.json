@@ -1087,7 +1087,13 @@
     "linkedAsset": "Связанный ресурс",
     "linkedDiagram": "Связанная диаграмма",
     "pageOf": "Страница {{current}} из {{total}}",
-    "refLabel": "Ref"
+    "refLabel": "Ref",
+    "summaryCreatedAt": "Модель угроз создана",
+    "summaryCreatedBy": "Модель угроз создал",
+    "summaryDescription": "{{common.description}}",
+    "summaryLastModified": "Последнее изменение модели угроз",
+    "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
+    "summaryStatus": "Статус модели угроз"
   },
   "sessionExpiry": {
     "extendButton": "Продлить Сеанс",

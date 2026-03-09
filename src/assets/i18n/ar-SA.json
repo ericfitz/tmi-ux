@@ -1087,7 +1087,13 @@
     "linkedAsset": "الأصل المرتبط",
     "linkedDiagram": "المخطط المرتبط",
     "pageOf": "الصفحة {{current}} من {{total}}",
-    "refLabel": "Ref"
+    "refLabel": "Ref",
+    "summaryCreatedAt": "تاريخ إنشاء نموذج التهديد",
+    "summaryCreatedBy": "منشئ نموذج التهديد",
+    "summaryDescription": "{{common.description}}",
+    "summaryLastModified": "آخر تعديل لنموذج التهديد",
+    "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}",
+    "summaryStatus": "حالة نموذج التهديد"
   },
   "sessionExpiry": {
     "extendButton": "تمديد الجلسة",

@@ -153,5 +153,9 @@
   },
   "cwePicker": {
     "chooseCwe": "{{cwePicker.title}}"
+  },
+  "report": {
+    "summaryDescription": "{{common.description}}",
+    "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}"
   }
 }

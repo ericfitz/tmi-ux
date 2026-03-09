@@ -35,9 +35,9 @@ type PageSize = keyof typeof PAGE_SIZES;
  * Margin configurations in PDF points.
  */
 const MARGINS = {
-  narrow: 36, // 0.5 inch
-  standard: 54, // 0.75 inch
-  wide: 72, // 1.0 inch
+  narrow: 18, // 0.25 inch
+  standard: 36, // 0.5 inch
+  wide: 54, // 0.75 inch
 } as const;
 
 type MarginSize = keyof typeof MARGINS;
@@ -191,7 +191,8 @@ export class ThreatModelReportService {
   ): Cursor {
     const style = REPORT_STYLES.title;
     const font = fonts.getFont(style.fontVariant);
-    cursor = engine.drawText(cursor, title, font, style.fontSize, style.color, {
+    cursor = engine.drawWrappedText(cursor, title, font, style.fontSize, style.color, {
+      lineHeight: style.lineHeight,
       centered: true,
     });
     return engine.advanceCursor(cursor, 30);
@@ -205,7 +206,8 @@ export class ThreatModelReportService {
   ): Cursor {
     const style = REPORT_STYLES.confidentiality;
     const font = fonts.getFont(style.fontVariant);
-    cursor = engine.drawText(cursor, warning, font, style.fontSize, style.color, {
+    cursor = engine.drawWrappedText(cursor, warning, font, style.fontSize, style.color, {
+      lineHeight: style.lineHeight,
       centered: true,
     });
     return engine.advanceCursor(cursor, 25);
@@ -219,7 +221,8 @@ export class ThreatModelReportService {
   ): Cursor {
     const style = REPORT_STYLES.classification;
     const font = fonts.getFont(style.fontVariant);
-    cursor = engine.drawText(cursor, classification, font, style.fontSize, style.color, {
+    cursor = engine.drawWrappedText(cursor, classification, font, style.fontSize, style.color, {
+      lineHeight: style.lineHeight,
       centered: true,
     });
     return engine.advanceCursor(cursor, 25);
