@@ -322,6 +322,7 @@ export class InfraNodeService {
       width: nodeInfo.width,
       height: nodeInfo.height,
       label: nodeInfo.attrs?.text?.text || '',
+      attrs: nodeInfo.attrs,
       zIndex: nodeInfo.zIndex || this.infraNodeConfigurationService.getNodeZIndex(nodeInfo.type),
     };
 

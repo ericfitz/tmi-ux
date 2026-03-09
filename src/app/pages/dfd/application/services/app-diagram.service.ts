@@ -444,6 +444,7 @@ export class AppDiagramService {
       label,
       zIndex: mockCell.zIndex || 1,
       ports: portConfig,
+      ...(mockCell.attrs ? { attrs: mockCell.attrs } : {}),
       ...this.normalizeMockNodeData(mockCell),
       ...(mockCell.parent ? { parent: mockCell.parent } : {}),
       ...(Array.isArray(mockCell.children) ? { children: mockCell.children } : {}),
