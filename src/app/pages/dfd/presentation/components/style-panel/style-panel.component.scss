@@ -139,7 +139,7 @@
   border-radius: 3px;
 
   &:hover:not(:disabled) {
-    background-color: var(--color-background-hover, rgba(0, 0, 0, 0.04));
+    background-color: var(--color-background-hover, rgb(0 0 0 / 4%));
   }
 
   &:disabled {
@@ -164,7 +164,7 @@
     border-color: var(--color-primary, #1976d2);
   }
 
-  .label-position-cell:hover:not(:disabled):not(.active) & {
+  .label-position-cell:hover:not(:disabled, .active) & {
     border-color: var(--color-text-secondary);
   }
 }
