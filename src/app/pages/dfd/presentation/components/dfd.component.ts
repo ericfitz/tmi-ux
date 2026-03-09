@@ -2527,7 +2527,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           fill: previousBody['fill'],
           fillOpacity: previousBody['fillOpacity'] ?? 1,
         },
-        properties: { customStyles: previousData.customStyles || false },
+        properties: { customStyles: previousData['customStyles'] || false },
       },
       includeInHistory: true,
     };
@@ -2586,7 +2586,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           textAnchor: previousText['textAnchor'] ?? 'middle',
           textVerticalAnchor: previousText['textVerticalAnchor'] ?? 'middle',
         },
-        properties: { customStyles: previousData.customStyles || false },
+        properties: { customStyles: previousData['customStyles'] || false },
       },
       includeInHistory: true,
     };
