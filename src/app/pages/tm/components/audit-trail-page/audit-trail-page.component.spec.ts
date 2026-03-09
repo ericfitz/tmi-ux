@@ -4,7 +4,7 @@
 import '@angular/compiler';
 
 import { vi, expect, beforeEach, describe, it } from 'vitest';
-import { of, BehaviorSubject, throwError } from 'rxjs';
+import { of, BehaviorSubject } from 'rxjs';
 
 import { AuditTrailPageComponent } from './audit-trail-page.component';
 import { AuditEntry, ListAuditTrailResponse } from '../../models/audit-trail.model';
@@ -23,30 +23,13 @@ interface MockRouter {
   navigate: ReturnType<typeof vi.fn>;
 }
 
-interface MockDialog {
-  open: ReturnType<typeof vi.fn>;
-}
-
-interface MockSnackBar {
-  open: ReturnType<typeof vi.fn>;
-}
-
 interface MockAuditTrailService {
   getAuditTrail: ReturnType<typeof vi.fn>;
   getEntityAuditTrail: ReturnType<typeof vi.fn>;
-  rollback: ReturnType<typeof vi.fn>;
-}
-
-interface MockAuthorizationService {
-  canEdit: ReturnType<typeof vi.fn>;
 }
 
 interface MockLanguageService {
   currentLanguage$: BehaviorSubject<{ code: string; rtl: boolean }>;
-}
-
-interface MockTranslocoService {
-  translate: ReturnType<typeof vi.fn>;
 }
 
 interface MockDestroyRef {
@@ -57,12 +40,8 @@ describe('AuditTrailPageComponent', () => {
   let component: AuditTrailPageComponent;
   let route: MockActivatedRoute;
   let router: MockRouter;
-  let dialog: MockDialog;
-  let snackBar: MockSnackBar;
   let auditTrailService: MockAuditTrailService;
-  let authorizationService: MockAuthorizationService;
   let languageService: MockLanguageService;
-  let translocoService: MockTranslocoService;
   let loggerService: MockLoggerService;
   let destroyRef: MockDestroyRef;
 
@@ -81,13 +60,6 @@ describe('AuditTrailPageComponent', () => {
     },
     change_summary: 'Updated threat name',
     created_at: '2024-06-01T10:00:00Z',
-  };
-
-  const mockDeletedEntry: AuditEntry = {
-    ...mockAuditEntry,
-    id: 'entry-2',
-    change_type: 'deleted',
-    version: null,
   };
 
   const mockResponse: ListAuditTrailResponse = {
@@ -126,25 +98,14 @@ describe('AuditTrailPageComponent', () => {
     };
 
     router = { navigate: vi.fn() };
-    dialog = { open: vi.fn() };
-    snackBar = { open: vi.fn() };
 
     auditTrailService = {
       getAuditTrail: vi.fn().mockReturnValue(of(mockResponse)),
       getEntityAuditTrail: vi.fn().mockReturnValue(of(mockResponse)),
-      rollback: vi.fn().mockReturnValue(of(mockAuditEntry)),
-    };
-
-    authorizationService = {
-      canEdit: vi.fn().mockReturnValue(true),
     };
 
     languageService = {
       currentLanguage$: new BehaviorSubject({ code: 'en-US', rtl: false }),
-    };
-
-    translocoService = {
-      translate: vi.fn((key: string) => key),
     };
 
     loggerService = createTypedMockLoggerService();
@@ -156,12 +117,8 @@ describe('AuditTrailPageComponent', () => {
     component = new AuditTrailPageComponent(
       route as any,
       router as any,
-      dialog as any,
-      snackBar as any,
       auditTrailService as any,
-      authorizationService as any,
       languageService as any,
-      translocoService as any,
       loggerService as any,
       destroyRef as any,
     );
@@ -176,20 +133,6 @@ describe('AuditTrailPageComponent', () => {
       component.ngOnInit();
 
       expect(component.threatModel).toBe(mockThreatModel);
-    });
-
-    it('should set canWrite from authorization service', () => {
-      component.ngOnInit();
-
-      expect(component.canWrite).toBe(true);
-      expect(authorizationService.canEdit).toHaveBeenCalled();
-    });
-
-    it('should set canWrite to false when user cannot edit', () => {
-      authorizationService.canEdit.mockReturnValue(false);
-      component.ngOnInit();
-
-      expect(component.canWrite).toBe(false);
     });
 
     it('should load entries on init', () => {
@@ -282,7 +225,6 @@ describe('AuditTrailPageComponent', () => {
     it('should include filter params in request', () => {
       component.filterObjectType = 'diagram';
       component.filterChangeType = 'created';
-      component.filterActorEmail = 'user@example.com';
 
       component.loadEntries();
 
@@ -291,20 +233,6 @@ describe('AuditTrailPageComponent', () => {
         expect.objectContaining({
           object_type: 'diagram',
           change_type: 'created',
-          actor_email: 'user@example.com',
-        }),
-      );
-    });
-
-    it('should trim actor email filter', () => {
-      component.filterActorEmail = '  user@example.com  ';
-
-      component.loadEntries();
-
-      expect(auditTrailService.getAuditTrail).toHaveBeenCalledWith(
-        'tm-1',
-        expect.objectContaining({
-          actor_email: 'user@example.com',
         }),
       );
     });
@@ -312,7 +240,6 @@ describe('AuditTrailPageComponent', () => {
     it('should not include empty string filters', () => {
       component.filterObjectType = '';
       component.filterChangeType = '';
-      component.filterActorEmail = '';
 
       component.loadEntries();
 
@@ -394,13 +321,11 @@ describe('AuditTrailPageComponent', () => {
     it('should reset all filters', () => {
       component.filterObjectType = 'diagram';
       component.filterChangeType = 'created';
-      component.filterActorEmail = 'user@test.com';
 
       component.clearFilters();
 
       expect(component.filterObjectType).toBe('');
       expect(component.filterChangeType).toBe('');
-      expect(component.filterActorEmail).toBe('');
     });
 
     it('should preserve entity type filter when in entity-scoped mode', () => {
@@ -456,172 +381,6 @@ describe('AuditTrailPageComponent', () => {
 
       expect(result).toBeTruthy();
       expect(typeof result).toBe('string');
-    });
-  });
-
-  describe('canRollback', () => {
-    beforeEach(() => {
-      component.ngOnInit();
-    });
-
-    it('should return true when user can write and entry has a version', () => {
-      expect(component.canRollback(mockAuditEntry)).toBe(true);
-    });
-
-    it('should return false when entry has null version', () => {
-      expect(component.canRollback(mockDeletedEntry)).toBe(false);
-    });
-
-    it('should return false when user cannot write', () => {
-      authorizationService.canEdit.mockReturnValue(false);
-      component.ngOnInit(); // re-init to pick up canWrite = false
-
-      expect(component.canRollback(mockAuditEntry)).toBe(false);
-    });
-  });
-
-  describe('onRollback', () => {
-    beforeEach(() => {
-      component.ngOnInit();
-      vi.clearAllMocks();
-      auditTrailService.getAuditTrail.mockReturnValue(of(mockResponse));
-      auditTrailService.rollback.mockReturnValue(of(mockAuditEntry));
-    });
-
-    it('should not open dialog if threat model is undefined', () => {
-      component.threatModel = undefined;
-      component.onRollback(mockAuditEntry);
-
-      expect(dialog.open).not.toHaveBeenCalled();
-    });
-
-    it('should not open dialog if entry cannot be rolled back', () => {
-      component.onRollback(mockDeletedEntry);
-
-      expect(dialog.open).not.toHaveBeenCalled();
-    });
-
-    it('should open rollback confirmation dialog', () => {
-      const mockDialogRef = {
-        afterClosed: vi.fn().mockReturnValue(of({ confirmed: false })),
-      };
-      dialog.open.mockReturnValue(mockDialogRef);
-
-      component.onRollback(mockAuditEntry);
-
-      expect(dialog.open).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          width: '500px',
-          disableClose: true,
-          data: expect.objectContaining({
-            entityName: 'Updated threat name',
-            objectType: 'threat',
-            version: 3,
-            changeSummary: 'Updated threat name',
-            timestamp: '2024-06-01T10:00:00Z',
-          }),
-        }),
-      );
-    });
-
-    it('should use object_id as entity name when change_summary is null', () => {
-      const entryNoSummary: AuditEntry = {
-        ...mockAuditEntry,
-        change_summary: null,
-      };
-      const mockDialogRef = {
-        afterClosed: vi.fn().mockReturnValue(of({ confirmed: false })),
-      };
-      dialog.open.mockReturnValue(mockDialogRef);
-
-      component.onRollback(entryNoSummary);
-
-      expect(dialog.open).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          data: expect.objectContaining({
-            entityName: 'threat-1',
-          }),
-        }),
-      );
-    });
-
-    it('should execute rollback when dialog confirms', () => {
-      const mockDialogRef = {
-        afterClosed: vi.fn().mockReturnValue(of({ confirmed: true })),
-      };
-      dialog.open.mockReturnValue(mockDialogRef);
-
-      component.onRollback(mockAuditEntry);
-
-      expect(auditTrailService.rollback).toHaveBeenCalledWith('tm-1', 'entry-1');
-    });
-
-    it('should not execute rollback when dialog is cancelled', () => {
-      const mockDialogRef = {
-        afterClosed: vi.fn().mockReturnValue(of({ confirmed: false })),
-      };
-      dialog.open.mockReturnValue(mockDialogRef);
-
-      component.onRollback(mockAuditEntry);
-
-      expect(auditTrailService.rollback).not.toHaveBeenCalled();
-    });
-
-    it('should not execute rollback when dialog returns undefined', () => {
-      const mockDialogRef = {
-        afterClosed: vi.fn().mockReturnValue(of(undefined)),
-      };
-      dialog.open.mockReturnValue(mockDialogRef);
-
-      component.onRollback(mockAuditEntry);
-
-      expect(auditTrailService.rollback).not.toHaveBeenCalled();
-    });
-
-    it('should show success snackbar and reload entries after rollback', () => {
-      const mockDialogRef = {
-        afterClosed: vi.fn().mockReturnValue(of({ confirmed: true })),
-      };
-      dialog.open.mockReturnValue(mockDialogRef);
-
-      component.onRollback(mockAuditEntry);
-
-      expect(snackBar.open).toHaveBeenCalledWith('auditTrail.rollback.success', 'common.close', {
-        duration: 3000,
-      });
-      expect(auditTrailService.getAuditTrail).toHaveBeenCalled();
-    });
-
-    it('should show error snackbar on rollback failure', () => {
-      const mockDialogRef = {
-        afterClosed: vi.fn().mockReturnValue(of({ confirmed: true })),
-      };
-      dialog.open.mockReturnValue(mockDialogRef);
-      auditTrailService.rollback.mockReturnValue(throwError(() => ({ status: 500 })));
-
-      component.onRollback(mockAuditEntry);
-
-      expect(snackBar.open).toHaveBeenCalledWith('auditTrail.rollback.error', 'common.close', {
-        duration: 5000,
-      });
-    });
-
-    it('should show version pruned message on 410 error', () => {
-      const mockDialogRef = {
-        afterClosed: vi.fn().mockReturnValue(of({ confirmed: true })),
-      };
-      dialog.open.mockReturnValue(mockDialogRef);
-      auditTrailService.rollback.mockReturnValue(throwError(() => ({ status: 410 })));
-
-      component.onRollback(mockAuditEntry);
-
-      expect(snackBar.open).toHaveBeenCalledWith(
-        'auditTrail.rollback.versionPruned',
-        'common.close',
-        { duration: 5000 },
-      );
     });
   });
 
@@ -700,7 +459,6 @@ describe('AuditTrailPageComponent', () => {
         'changeType',
         'objectType',
         'changeSummary',
-        'rollback',
       ]);
     });
   });

@@ -1,22 +1,19 @@
 import { Component, DestroyRef, OnInit, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
-import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
   COMMON_IMPORTS,
   CORE_MATERIAL_IMPORTS,
   FORM_MATERIAL_IMPORTS,
   DATA_MATERIAL_IMPORTS,
-  FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
 import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
 import { LoggerService } from '@app/core/services/logger.service';
 import { Language, LanguageService } from '@app/i18n/language.service';
-import { ThreatModelAuthorizationService } from '../../services/threat-model-authorization.service';
 import { AuditTrailService } from '../../services/audit-trail.service';
 import {
   AuditChangeType,
@@ -25,11 +22,6 @@ import {
   AuditTrailListParams,
 } from '../../models/audit-trail.model';
 import { ThreatModel } from '../../models/threat-model.model';
-import {
-  RollbackConfirmationDialogComponent,
-  RollbackConfirmationDialogData,
-  RollbackConfirmationDialogResult,
-} from '@app/shared/components/rollback-confirmation-dialog/rollback-confirmation-dialog.component';
 
 /** Threshold in days after which absolute time is shown instead of relative */
 const RELATIVE_TIME_THRESHOLD_DAYS = 30;
@@ -42,7 +34,7 @@ const RELATIVE_TIME_THRESHOLD_DAYS = 30;
     ...CORE_MATERIAL_IMPORTS,
     ...FORM_MATERIAL_IMPORTS,
     ...DATA_MATERIAL_IMPORTS,
-    ...FEEDBACK_MATERIAL_IMPORTS,
+    MatProgressSpinnerModule,
     TranslocoModule,
   ],
   templateUrl: './audit-trail-page.component.html',
@@ -62,15 +54,11 @@ export class AuditTrailPageComponent implements OnInit {
   // Filters
   filterObjectType: AuditObjectType | '' = '';
   filterChangeType: AuditChangeType | '' = '';
-  filterActorEmail = '';
 
   // Entity-scoped mode (when navigating from a sub-entity row)
   entityType: AuditObjectType | null = null;
   entityId: string | null = null;
   entityName: string | null = null;
-
-  // Permissions
-  canWrite = false;
 
   // Locale
   currentLocale = 'en-US';
@@ -100,18 +88,13 @@ export class AuditTrailPageComponent implements OnInit {
     'changeType',
     'objectType',
     'changeSummary',
-    'rollback',
   ];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar,
     private auditTrailService: AuditTrailService,
-    private authorizationService: ThreatModelAuthorizationService,
     private languageService: LanguageService,
-    private transloco: TranslocoService,
     private logger: LoggerService,
     private destroyRef: DestroyRef,
   ) {}
@@ -127,9 +110,6 @@ export class AuditTrailPageComponent implements OnInit {
       this.entityName = qp['entityName'] ? String(qp['entityName']) : null;
       this.filterObjectType = this.entityType;
     }
-
-    // Permissions
-    this.canWrite = this.authorizationService.canEdit();
 
     // Locale
     this.languageService.currentLanguage$
@@ -152,7 +132,6 @@ export class AuditTrailPageComponent implements OnInit {
 
     if (this.filterObjectType) params.object_type = this.filterObjectType;
     if (this.filterChangeType) params.change_type = this.filterChangeType;
-    if (this.filterActorEmail.trim()) params.actor_email = this.filterActorEmail.trim();
 
     const request$ =
       this.entityType && this.entityId
@@ -188,7 +167,6 @@ export class AuditTrailPageComponent implements OnInit {
   clearFilters(): void {
     this.filterObjectType = this.entityType || '';
     this.filterChangeType = '';
-    this.filterActorEmail = '';
     this.applyFilters();
   }
 
@@ -226,36 +204,6 @@ export class AuditTrailPageComponent implements OnInit {
     });
   }
 
-  /** Check if an entry is eligible for rollback */
-  canRollback(entry: AuditEntry): boolean {
-    return this.canWrite && entry.version !== null;
-  }
-
-  /** Initiate rollback with confirmation dialog */
-  onRollback(entry: AuditEntry): void {
-    if (!this.threatModel || !this.canRollback(entry)) return;
-
-    const dialogData: RollbackConfirmationDialogData = {
-      entityName: entry.change_summary || entry.object_id,
-      objectType: entry.object_type,
-      version: entry.version!,
-      changeSummary: entry.change_summary,
-      timestamp: entry.created_at,
-    };
-
-    const dialogRef = this.dialog.open(RollbackConfirmationDialogComponent, {
-      width: '500px',
-      data: dialogData,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result: RollbackConfirmationDialogResult | undefined) => {
-      if (result?.confirmed) {
-        this.executeRollback(entry);
-      }
-    });
-  }
-
   /** Navigate back to the threat model editor */
   goBack(): void {
     if (this.threatModel) {
@@ -271,34 +219,6 @@ export class AuditTrailPageComponent implements OnInit {
   /** Get the translation key for a change type */
   getChangeTypeKey(changeType: AuditChangeType): string {
     return `auditTrail.changeTypes.${changeType}`;
-  }
-
-  private executeRollback(entry: AuditEntry): void {
-    if (!this.threatModel) return;
-
-    this.auditTrailService
-      .rollback(this.threatModel.id, entry.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.snackBar.open(
-            this.transloco.translate('auditTrail.rollback.success'),
-            this.transloco.translate('common.close'),
-            { duration: 3000 },
-          );
-          this.loadEntries();
-        },
-        error: (error: { status?: number }) => {
-          const message =
-            error?.status === 410
-              ? this.transloco.translate('auditTrail.rollback.versionPruned')
-              : this.transloco.translate('auditTrail.rollback.error');
-          this.snackBar.open(message, this.transloco.translate('common.close'), {
-            duration: 5000,
-          });
-          this.logger.error('Rollback failed', error);
-        },
-      });
   }
 
   private formatRelativeTime(diffMs: number): string {

@@ -48,7 +48,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  align-items: center;
+  align-items: baseline;
   margin-bottom: 16px;
 
   .filter-field {
@@ -88,18 +88,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  .column-actions {
-    width: 64px;
-    text-align: center;
-  }
-
-  .pruned-icon {
-    opacity: 0.4;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
   }
 }
 
