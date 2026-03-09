@@ -75,7 +75,10 @@ export class ApiService {
    * @param endpoint The API endpoint (without the base URL)
    * @param params Optional query parameters
    */
-  get<T>(endpoint: string, params?: Record<string, string | number | boolean>): Observable<T> {
+  get<T>(
+    endpoint: string,
+    params?: Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>,
+  ): Observable<T> {
     const url = this.buildUrl(endpoint);
 
     // Request logging handled by JWT interceptor
@@ -97,7 +100,7 @@ export class ApiService {
    */
   getText(
     endpoint: string,
-    params?: Record<string, string | number | boolean>,
+    params?: Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>,
   ): Observable<string> {
     const url = this.buildUrl(endpoint);
 
@@ -165,7 +168,7 @@ export class ApiService {
    */
   deleteWithParams<T>(
     endpoint: string,
-    params?: Record<string, string | number | boolean>,
+    params?: Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>,
   ): Observable<T> {
     const url = this.buildUrl(endpoint);
 

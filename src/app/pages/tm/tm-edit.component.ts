@@ -3379,9 +3379,9 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Filters
     if (filters.name.trim()) params.name = filters.name.trim();
-    if (filters.severities.length > 0) params.severity = filters.severities.join(',');
-    if (filters.statuses.length > 0) params.status = filters.statuses.join(',');
-    if (filters.priorities.length > 0) params.priority = filters.priorities.join(',');
+    if (filters.severities.length > 0) params.severity = filters.severities;
+    if (filters.statuses.length > 0) params.status = filters.statuses;
+    if (filters.priorities.length > 0) params.priority = filters.priorities;
     if (filters.threatTypes.length > 0) params.threat_type = filters.threatTypes;
     if (filters.mitigated !== null) params.mitigated = filters.mitigated;
 

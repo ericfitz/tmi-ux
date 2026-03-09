@@ -6,19 +6,19 @@ export interface ThreatFilters {
   /** Name filter — partial match via API */
   name: string;
 
-  /** Status filter — multi-select, sent as comma-separated values */
+  /** Status filter — multi-select, sent as repeated query params */
   statuses: string[];
 
-  /** Severity filter — multi-select, sent as comma-separated values */
+  /** Severity filter — multi-select, sent as repeated query params */
   severities: string[];
 
   /** Mitigated filter — true/false/null (null = no filter) */
   mitigated: boolean | null;
 
-  /** Threat type filter — multi-select, OR logic */
+  /** Threat type filter — multi-select, sent as repeated query params */
   threatTypes: string[];
 
-  /** Priority filter — multi-select, sent as comma-separated values */
+  /** Priority filter — multi-select, sent as repeated query params */
   priorities: string[];
 }
 

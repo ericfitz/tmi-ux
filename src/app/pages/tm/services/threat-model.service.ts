@@ -126,9 +126,9 @@ export interface ThreatListParams {
   name?: string;
   description?: string;
   threat_type?: string[];
-  severity?: string;
-  priority?: string;
-  status?: string;
+  severity?: string[];
+  priority?: string[];
+  status?: string[];
   mitigated?: boolean;
   diagram_id?: string;
   cell_id?: string;
@@ -945,8 +945,8 @@ export class ThreatModelService implements OnDestroy {
   }
 
   /** Build query parameter record from ThreatListParams */
-  private buildThreatQueryParams(p: ThreatListParams): Record<string, string | boolean> {
-    const params: Record<string, string | boolean> = {};
+  private buildThreatQueryParams(p: ThreatListParams): Record<string, string | boolean | string[]> {
+    const params: Record<string, string | boolean | string[]> = {};
 
     // Numeric fields — convert to string
     const numericFields: (keyof ThreatListParams)[] = [
@@ -965,9 +965,6 @@ export class ThreatModelService implements OnDestroy {
     // String fields — include if truthy
     const stringFields: (keyof ThreatListParams)[] = [
       'sort',
-      'severity',
-      'priority',
-      'status',
       'diagram_id',
       'cell_id',
       'created_after',
@@ -989,8 +986,17 @@ export class ThreatModelService implements OnDestroy {
     // Boolean field
     if (p.mitigated !== undefined) params['mitigated'] = p.mitigated;
 
-    // Array field — join as comma-separated
-    if (p.threat_type?.length) params['threat_type'] = p.threat_type.join(',');
+    // Array fields — pass as arrays for repeated query params (style: form, explode: true)
+    const arrayFields: (keyof ThreatListParams)[] = [
+      'threat_type',
+      'severity',
+      'priority',
+      'status',
+    ];
+    for (const key of arrayFields) {
+      const val = p[key] as string[] | undefined;
+      if (val?.length) params[key] = val;
+    }
 
     return params;
   }
