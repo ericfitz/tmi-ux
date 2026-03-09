@@ -78,6 +78,44 @@
             }
           </div>
         </mat-tab>
+        <!-- Label position tab -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon [matTooltip]="'dfd.stylePanel.labelTab' | transloco">title</mat-icon>
+          </ng-template>
+          <div class="tab-content" [class.tab-disabled]="!labelPositionEnabled">
+            @if (!labelPositionEnabled) {
+              <div class="tab-hint">
+                {{ 'dfd.stylePanel.labelNotApplicable' | transloco }}
+              </div>
+            } @else {
+              <div class="label-position-section">
+                <div class="label-position-grid">
+                  @for (row of verticalPositions; track row) {
+                    <div class="label-position-row">
+                      @for (col of horizontalPositions; track col) {
+                        <button
+                          class="label-position-cell"
+                          [class.active]="isActivePosition(row, col)"
+                          [disabled]="disabled || !labelPositionEnabled"
+                          [matTooltip]="
+                            'dfd.stylePanel.labelPosition.' + row + '-' + col | transloco
+                          "
+                          (click)="onLabelPositionSelected(row, col)"
+                        >
+                          <span class="position-dot"></span>
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+                <div class="label-position-label">
+                  {{ 'dfd.stylePanel.labelPositionLabel' | transloco }}
+                </div>
+              </div>
+            }
+          </div>
+        </mat-tab>
       </mat-tab-group>
     }
   </div>

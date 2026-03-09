@@ -102,6 +102,79 @@
   text-align: right;
 }
 
+// Label position grid
+.label-position-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.label-position-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 4px;
+  background-color: var(--color-background-lighter);
+}
+
+.label-position-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 2px;
+}
+
+.label-position-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 3px;
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-background-hover, rgba(0, 0, 0, 0.04));
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.4;
+  }
+}
+
+.position-dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--color-text-muted);
+  background: transparent;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+
+  .label-position-cell.active & {
+    background-color: var(--color-primary, #1976d2);
+    border-color: var(--color-primary, #1976d2);
+  }
+
+  .label-position-cell:hover:not(:disabled):not(.active) & {
+    border-color: var(--color-text-secondary);
+  }
+}
+
+.label-position-label {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
 .panel-footer {
   display: flex;
   justify-content: flex-end;

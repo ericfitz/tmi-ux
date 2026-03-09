@@ -68,6 +68,21 @@ export interface NodeAttrs {
      * Vertical text alignment
      */
     dominantBaseline?: 'auto' | 'middle' | 'central' | 'text-top' | 'text-bottom';
+
+    /**
+     * Horizontal reference position (X6 percentage-based)
+     */
+    refX?: string | number;
+
+    /**
+     * Vertical reference position (X6 percentage-based)
+     */
+    refY?: string | number;
+
+    /**
+     * Vertical text anchor (X6-specific, maps to dominantBaseline)
+     */
+    textVerticalAnchor?: 'top' | 'middle' | 'bottom';
   };
 }
 

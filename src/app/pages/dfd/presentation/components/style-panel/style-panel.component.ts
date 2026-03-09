@@ -37,6 +37,14 @@ import { TranslocoModule } from '@jsverse/transloco';
 
 import { ColorPickerComponent } from '../../../../../shared/components/color-picker/color-picker.component';
 import { ColorPaletteEntry } from '../../../types/color-palette.types';
+import {
+  LabelPosition,
+  LabelVerticalPosition,
+  LabelHorizontalPosition,
+  VERTICAL_POSITIONS,
+  HORIZONTAL_POSITIONS,
+  getLabelPositionKey,
+} from '../../../types/label-position.types';
 
 /** Represents the style properties readable from selected cells */
 export interface CellStyleInfo {
@@ -48,11 +56,12 @@ export interface CellStyleInfo {
   fillColor: string | null;
   fillOpacity: number | null;
   hasCustomStyles: boolean;
+  labelPosition: LabelPosition | null;
 }
 
 /** Emitted when the user changes a style property */
 export interface StyleChangeEvent {
-  property: 'strokeColor' | 'fillColor' | 'fillOpacity';
+  property: 'strokeColor' | 'fillColor' | 'fillOpacity' | 'labelPosition';
   value: string | number;
   /** Cell IDs this change applies to */
   applicableCellIds: string[];
@@ -101,6 +110,16 @@ export class StylePanelComponent implements OnChanges {
   /** Whether any selected cell has custom styles */
   hasAnyCustomStyles = false;
 
+  /** Current label position (null = indeterminate) */
+  currentLabelPosition: LabelPosition | null = null;
+  /** Whether label position controls should be enabled */
+  labelPositionEnabled = false;
+
+  /** Vertical position values for template iteration */
+  readonly verticalPositions = VERTICAL_POSITIONS;
+  /** Horizontal position values for template iteration */
+  readonly horizontalPositions = HORIZONTAL_POSITIONS;
+
   constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -127,12 +146,19 @@ export class StylePanelComponent implements OnChanges {
     return this.selectedCells.filter(c => c.isNode);
   }
 
+  /** Cells that support label position changes (nodes except text-box) */
+  private get labelApplicableCells(): CellStyleInfo[] {
+    return this.selectedCells.filter(c => c.isNode && c.nodeType !== 'text-box');
+  }
+
   private updateDisplayedValues(): void {
     const strokeCells = this.strokeApplicableCells;
     const fillCells = this.fillApplicableCells;
+    const labelCells = this.labelApplicableCells;
 
     this.strokeEnabled = strokeCells.length > 0;
     this.fillEnabled = fillCells.length > 0;
+    this.labelPositionEnabled = labelCells.length > 0;
     this.hasAnyCustomStyles = this.selectedCells.some(c => c.hasCustomStyles);
 
     // Determine current stroke color
@@ -157,6 +183,18 @@ export class StylePanelComponent implements OnChanges {
     } else {
       const opacities = fillCells.map(c => c.fillOpacity);
       this.currentFillOpacity = opacities.every(o => o === opacities[0]) ? opacities[0] : null;
+    }
+
+    // Determine current label position
+    if (labelCells.length === 0) {
+      this.currentLabelPosition = null;
+    } else {
+      const positions = labelCells.map(c => c.labelPosition);
+      const firstKey = positions[0] ? getLabelPositionKey(positions[0]) : null;
+      const allSame = positions.every(p =>
+        p && firstKey ? getLabelPositionKey(p) === firstKey : p === positions[0],
+      );
+      this.currentLabelPosition = allSame ? positions[0] : null;
     }
 
     this.cdr.markForCheck();
@@ -193,6 +231,29 @@ export class StylePanelComponent implements OnChanges {
       value: value / 100, // Convert percentage to 0-1 range
       applicableCellIds: applicableIds,
     });
+  }
+
+  onLabelPositionSelected(
+    vertical: LabelVerticalPosition,
+    horizontal: LabelHorizontalPosition,
+  ): void {
+    if (this.disabled || !this.labelPositionEnabled) return;
+    const position: LabelPosition = { vertical, horizontal };
+    const applicableIds = this.labelApplicableCells.map(c => c.cellId);
+    this.currentLabelPosition = position;
+    this.styleChange.emit({
+      property: 'labelPosition',
+      value: getLabelPositionKey(position),
+      applicableCellIds: applicableIds,
+    });
+  }
+
+  isActivePosition(vertical: LabelVerticalPosition, horizontal: LabelHorizontalPosition): boolean {
+    if (!this.currentLabelPosition) return false;
+    return (
+      this.currentLabelPosition.vertical === vertical &&
+      this.currentLabelPosition.horizontal === horizontal
+    );
   }
 
   onClearCustomFormatting(): void {

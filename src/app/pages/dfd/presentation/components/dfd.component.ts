@@ -121,6 +121,7 @@ import {
   CellStyleInfo,
   StyleChangeEvent,
 } from './style-panel/style-panel.component';
+import { getLabelPositionFromAttrs, LABEL_POSITION_ATTRS } from '../../types/label-position.types';
 
 import {
   ConfirmActionDialogComponent,
@@ -2443,6 +2444,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           strokeColor = ((line as Record<string, any>)['stroke'] as string) || null;
         }
 
+        let labelPosition = null;
+        if (isNode && nodeType !== 'text-box') {
+          const textAttrs = (attrs['text'] || {}) as Record<string, unknown>;
+          labelPosition = getLabelPositionFromAttrs(textAttrs);
+        }
+
         return {
           cellId: cell.id,
           isNode,
@@ -2452,6 +2459,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           fillColor,
           fillOpacity,
           hasCustomStyles: !!data.customStyles,
+          labelPosition,
         } as CellStyleInfo;
       });
   }
@@ -2479,7 +2487,14 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   private applyNodeStyleChange(cell: Cell, event: StyleChangeEvent): void {
     const previousAttrs = cell.getAttrs() || {};
     const previousBody = (previousAttrs['body'] || {}) as Record<string, any>;
+    const previousText = (previousAttrs['text'] || {}) as Record<string, any>;
     const previousData = cell.getData() || {};
+
+    // Handle label position changes separately
+    if (event.property === 'labelPosition') {
+      this.applyLabelPositionChange(cell, event, previousText, previousData);
+      return;
+    }
 
     const attrPathMap: Record<string, string> = {
       strokeColor: 'body/stroke',
@@ -2525,6 +2540,65 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       error: error => {
         this.logger.error('Error applying style change', { error });
+      },
+    });
+  }
+
+  private applyLabelPositionChange(
+    cell: Cell,
+    event: StyleChangeEvent,
+    previousText: Record<string, any>,
+    previousData: Record<string, any>,
+  ): void {
+    const positionKey = event.value as string;
+    const posAttrs = LABEL_POSITION_ATTRS[positionKey];
+    if (!posAttrs) {
+      this.logger.error('Unknown label position key', { positionKey });
+      return;
+    }
+
+    cell.setAttrByPath('text/refX', posAttrs.refX);
+    cell.setAttrByPath('text/refY', posAttrs.refY);
+    cell.setAttrByPath('text/textAnchor', posAttrs.textAnchor);
+    cell.setAttrByPath('text/textVerticalAnchor', posAttrs.textVerticalAnchor);
+    cell.setData({ ...previousData, customStyles: true }, { silent: true });
+
+    const operation = {
+      id: `label-position-${Date.now()}-${cell.id}`,
+      type: 'update-node' as const,
+      source: 'user-interaction' as const,
+      priority: 'normal' as const,
+      timestamp: Date.now(),
+      nodeId: cell.id,
+      updates: {
+        style: {
+          refX: posAttrs.refX,
+          refY: posAttrs.refY,
+          textAnchor: posAttrs.textAnchor,
+          textVerticalAnchor: posAttrs.textVerticalAnchor,
+        },
+        properties: { customStyles: true },
+      },
+      previousState: {
+        style: {
+          refX: previousText['refX'] ?? '50%',
+          refY: previousText['refY'] ?? '50%',
+          textAnchor: previousText['textAnchor'] ?? 'middle',
+          textVerticalAnchor: previousText['textVerticalAnchor'] ?? 'middle',
+        },
+        properties: { customStyles: previousData.customStyles || false },
+      },
+      includeInHistory: true,
+    };
+
+    this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+      next: result => {
+        if (!result.success) {
+          this.logger.error('Label position change failed', { error: result.error });
+        }
+      },
+      error: error => {
+        this.logger.error('Error applying label position change', { error });
       },
     });
   }
@@ -2581,6 +2655,12 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
         cell.setAttrByPath('body/fill', defaultFill);
         cell.setAttrByPath('body/stroke', defaultStroke);
         cell.setAttrByPath('body/fillOpacity', 1);
+        // Reset label position to shape-specific defaults
+        const defaultRefY = nodeType === 'store' ? '55%' : '50%';
+        cell.setAttrByPath('text/refX', '50%');
+        cell.setAttrByPath('text/refY', defaultRefY);
+        cell.setAttrByPath('text/textAnchor', 'middle');
+        cell.setAttrByPath('text/textVerticalAnchor', 'middle');
         cell.setData({ ...data, customStyles: undefined }, { silent: true });
 
         const operation = {
@@ -2591,7 +2671,15 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
           timestamp: Date.now(),
           nodeId: cellId,
           updates: {
-            style: { fill: defaultFill, stroke: defaultStroke, fillOpacity: 1 },
+            style: {
+              fill: defaultFill,
+              stroke: defaultStroke,
+              fillOpacity: 1,
+              refX: '50%',
+              refY: defaultRefY,
+              textAnchor: 'middle',
+              textVerticalAnchor: 'middle',
+            },
             properties: { customStyles: undefined },
           },
           includeInHistory: true,
