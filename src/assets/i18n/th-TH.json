@@ -33,14 +33,20 @@
     "invokeDialog": {
       "allObjects": "(ทั้งหมด)",
       "errorInvoking": "ไม่สามารถเรียกใช้ส่วนเสริมได้ โปรดลองอีกครั้ง",
+      "invalidCharacters": "อนุญาตเฉพาะตัวอักษรและตัวเลข ช่องว่าง ขีดกลาง จุด จุลภาค และเครื่องหมายทับเท่านั้น",
       "invalidJson": "รูปแบบ JSON ไม่ถูกต้อง",
       "invocationQueued": "การเรียกใช้ส่วนเสริมอยู่ในคิว",
+      "metadataKeyMissing": "คีย์เมตาดาต้าที่จำเป็น \"{{key}}\" ไม่มีอยู่ในออบเจกต์นี้",
+      "numberMax": "ค่าต้องไม่เกิน {{max}}",
+      "numberMin": "ค่าต้องมีอย่างน้อย {{min}}",
+      "parameters": "พารามิเตอร์",
       "payload": "ข้อมูล (ไม่บังคับ)",
       "payloadHint": "ข้อมูล JSON ที่จะส่งไปยังส่วนเสริม",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "รหัส Threat Model",
-      "title": "เรียกใช้ส่วนเสริม"
+      "title": "เรียกใช้ส่วนเสริม",
+      "valueTooLong": "ค่าเกินความยาวสูงสุด"
     }
   },
   "admin": {
@@ -426,6 +432,45 @@
       "software": "ซอฟต์แวร์"
     }
   },
+  "auditTrail": {
+    "changeSummary": "สรุปการเปลี่ยนแปลง",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "ลบแล้ว",
+      "patched": "แก้ไขแล้ว",
+      "restored": "กู้คืนแล้ว",
+      "rolled_back": "ย้อนกลับแล้ว",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "ใคร",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "การดำเนินการ",
+      "objectType": "{{common.type}}",
+      "timestamp": "เมื่อไหร่"
+    },
+    "filters": {
+      "actorEmail": "อีเมลผู้ดำเนินการ",
+      "actorEmailPlaceholder": "กรองตามอีเมล...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "ล้างตัวกรอง",
+      "objectType": "ประเภทออบเจกต์"
+    },
+    "noEntries": "ไม่พบรายการบันทึกการตรวจสอบ",
+    "rollback": {
+      "action": "ย้อนกลับ",
+      "confirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการย้อนกลับ {{objectType}} \"{{name}}\" เป็นเวอร์ชัน {{version}}?",
+      "confirmTitle": "ยืนยันการย้อนกลับ",
+      "confirmationField": "พิมพ์เพื่อยืนยัน",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "การย้อนกลับล้มเหลว กรุณาลองอีกครั้ง",
+      "success": "การย้อนกลับเสร็จสมบูรณ์",
+      "typeConfirmation": "เพื่อยืนยัน พิมพ์ \"{{confirmValue}}\" ด้านล่าง",
+      "versionPruned": "สแนปช็อตเวอร์ชันถูกลบแล้ว การย้อนกลับไม่สามารถใช้งานได้อีกต่อไป",
+      "warning": "การดำเนินการนี้จะเขียนทับสถานะปัจจุบันของเอนทิตีนี้ด้วยเวอร์ชันที่บันทึกไว้ในรายการตรวจสอบนี้ การดำเนินการนี้จะสร้างรายการตรวจสอบใหม่ แต่สถานะปัจจุบันจะสูญหาย"
+    },
+    "title": "บันทึกการตรวจสอบ"
+  },
   "auth": {
     "unauthorized": {
       "401": "401 ไม่ได้รับอนุญาต",
@@ -517,6 +562,7 @@
     "email": "อีเมล",
     "emailLabel": "ที่อยู่อีเมล",
     "error": "ข้อผิดพลาด",
+    "false": "เท็จ",
     "fonts": "แบบอักษร",
     "groups": "กลุ่ม",
     "id": "รหัส",
@@ -611,6 +657,7 @@
     "threatName": "ชื่อภัยคุกคาม",
     "threatType": "ประเภทภัยคุกคาม",
     "title": "ชื่อ",
+    "true": "จริง",
     "tryAdjustingFilters": "ลองปรับตัวกรองของคุณ",
     "type": "ประเภท",
     "unarchive": "ยกเลิกการเก็บถาวร",
@@ -760,6 +807,25 @@
       "title": "ประวัติ",
       "undoStack": "สแต็กเลิกทำ",
       "undoStackSize": "ขนาดสแต็กเลิกทำ"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "เพิ่มสีไดอะแกรม",
+      "clearCustomFormatting": "ล้างการจัดรูปแบบที่กำหนดเอง",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "การเติมสีไม่สามารถใช้กับออบเจกต์ที่เลือกได้",
+      "fillTab": "เติมสี",
+      "hexColor": "Hex",
+      "noSelection": "เลือกออบเจกต์เพื่อแก้ไขสไตล์",
+      "opacity": "ความทึบ",
+      "osColorPicker": "เลือกสีจากระบบ",
+      "removeDiagramColor": "ลบสีไดอะแกรม",
+      "strokeNotApplicable": "เส้นขอบไม่สามารถใช้กับออบเจกต์ที่เลือกได้",
+      "strokeTab": "เส้นขอบ",
+      "title": "สไตล์",
+      "toggleStylePanel": "สลับแผงสไตล์"
     }
   },
   "editor": {
@@ -1403,7 +1469,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "ล้างตัวกรอง",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "ความลับ",
       "confidentialOnly": "เป็นความลับ",
       "nonConfidential": "ไม่เป็นความลับ"

@@ -441,6 +441,45 @@
       "software": "Software"
     }
   },
+  "auditTrail": {
+    "changeSummary": "Change summary",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "Deleted",
+      "patched": "Patched",
+      "restored": "Restored",
+      "rolled_back": "Rolled Back",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "Who",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "Action",
+      "objectType": "{{common.type}}",
+      "timestamp": "When"
+    },
+    "filters": {
+      "actorEmail": "Actor Email",
+      "actorEmailPlaceholder": "Filter by email...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "Clear Filters",
+      "objectType": "Object Type"
+    },
+    "noEntries": "No audit trail entries found.",
+    "rollback": {
+      "action": "Rollback",
+      "confirmMessage": "Are you sure you want to rollback {{objectType}} \"{{name}}\" to version {{version}}?",
+      "confirmTitle": "Confirm Rollback",
+      "confirmationField": "Type to confirm",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "Rollback failed. Please try again.",
+      "success": "Rollback completed successfully.",
+      "typeConfirmation": "To confirm, type \"{{confirmValue}}\" below.",
+      "versionPruned": "Version snapshot has been pruned. Rollback is no longer available.",
+      "warning": "This will overwrite the current state of this entity with the version captured in this audit entry. This action creates a new audit entry but the current state will be lost."
+    },
+    "title": "Audit Trail"
+  },
   "auth": {
     "unauthorized": {
       "401": "401 Unauthorized",
@@ -634,8 +673,8 @@
     "threatName": "Threat Name",
     "threatType": "Threat Type",
     "title": "Title",
-    "tryAdjustingFilters": "Try adjusting your filters.",
     "true": "True",
+    "tryAdjustingFilters": "Try adjusting your filters.",
     "type": "Type",
     "unarchive": "Unarchive",
     "unsavedChangesWarning": "You have unsaved changes. Are you sure you want to close?",
@@ -751,25 +790,6 @@
     "viewAsCards": "View as Cards",
     "viewAsList": "View as List"
   },
-  "dfd": {
-    "stylePanel": {
-      "addDiagramColor": "Add diagram color",
-      "clearCustomFormatting": "Clear custom formatting",
-      "defaultColors": "Default",
-      "diagramColors": "Diagram",
-      "fillNotApplicable": "Fill is not applicable to selected objects",
-      "fillTab": "Fill",
-      "hexColor": "Hex",
-      "noSelection": "Select an object to edit styles",
-      "opacity": "Opacity",
-      "osColorPicker": "Pick color from system",
-      "removeDiagramColor": "Remove diagram color",
-      "strokeNotApplicable": "Stroke is not applicable to selected objects",
-      "strokeTab": "Stroke",
-      "title": "Style",
-      "toggleStylePanel": "Toggle style panel"
-    }
-  },
   "dataAssetDialog": {
     "selectAsset": "Data Asset",
     "title": {
@@ -812,6 +832,25 @@
       "title": "History",
       "undoStack": "Undo Stack",
       "undoStackSize": "Undo Stack Size"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "Add diagram color",
+      "clearCustomFormatting": "Clear custom formatting",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "Fill is not applicable to selected objects",
+      "fillTab": "Fill",
+      "hexColor": "Hex",
+      "noSelection": "Select an object to edit styles",
+      "opacity": "Opacity",
+      "osColorPicker": "Pick color from system",
+      "removeDiagramColor": "Remove diagram color",
+      "strokeNotApplicable": "Stroke is not applicable to selected objects",
+      "strokeTab": "Stroke",
+      "title": "Style",
+      "toggleStylePanel": "Toggle style panel"
     }
   },
   "editor": {
@@ -1477,7 +1516,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "Clear Filters",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "Confidentiality",
       "confidentialOnly": "Confidential",
       "nonConfidential": "Non-confidential"

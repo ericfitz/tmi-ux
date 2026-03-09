@@ -33,14 +33,20 @@
     "invokeDialog": {
       "allObjects": "(Todos)",
       "errorInvoking": "Falha ao invocar o complemento. Por favor, tente novamente.",
+      "invalidCharacters": "Somente caracteres alfanuméricos, espaços, hifens, pontos, vírgulas e barras são permitidos",
       "invalidJson": "Formato JSON inválido",
       "invocationQueued": "Invocação do complemento enfileirada",
+      "metadataKeyMissing": "A chave de metadados obrigatória \"{{key}}\" não está presente neste objeto",
+      "numberMax": "O valor deve ser no máximo {{max}}",
+      "numberMin": "O valor deve ser no mínimo {{min}}",
+      "parameters": "Parâmetros",
       "payload": "Carga (Opcional)",
       "payloadHint": "Dados JSON para passar ao complemento",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "ID do Modelo de Ameaça",
-      "title": "Invocar Complemento"
+      "title": "Invocar Complemento",
+      "valueTooLong": "O valor excede o comprimento máximo"
     }
   },
   "admin": {
@@ -426,6 +432,45 @@
       "software": "Software"
     }
   },
+  "auditTrail": {
+    "changeSummary": "Resumo da alteração",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "Excluído",
+      "patched": "Corrigido",
+      "restored": "Restaurado",
+      "rolled_back": "Revertido",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "Quem",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "Ação",
+      "objectType": "{{common.type}}",
+      "timestamp": "Quando"
+    },
+    "filters": {
+      "actorEmail": "E-mail do Ator",
+      "actorEmailPlaceholder": "Filtrar por e-mail...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "Limpar Filtros",
+      "objectType": "Tipo de Objeto"
+    },
+    "noEntries": "Nenhum registro de trilha de auditoria encontrado.",
+    "rollback": {
+      "action": "Reverter",
+      "confirmMessage": "Tem certeza de que deseja reverter {{objectType}} \"{{name}}\" para a versão {{version}}?",
+      "confirmTitle": "Confirmar Reversão",
+      "confirmationField": "Digite para confirmar",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "Falha na reversão. Por favor, tente novamente.",
+      "success": "Reversão concluída com sucesso.",
+      "typeConfirmation": "Para confirmar, digite \"{{confirmValue}}\" abaixo.",
+      "versionPruned": "O snapshot da versão foi removido. A reversão não está mais disponível.",
+      "warning": "Isso substituirá o estado atual desta entidade pela versão capturada neste registro de auditoria. Esta ação cria um novo registro de auditoria, mas o estado atual será perdido."
+    },
+    "title": "Trilha de Auditoria"
+  },
   "auth": {
     "unauthorized": {
       "401": "401 Nao Autorizado",
@@ -517,6 +562,7 @@
     "email": "E-mail",
     "emailLabel": "Endereco de E-mail",
     "error": "Erro",
+    "false": "Falso",
     "fonts": "Fontes",
     "groups": "Grupos",
     "id": "ID",
@@ -611,6 +657,7 @@
     "threatName": "Nome da Ameaca",
     "threatType": "Tipo de Ameaca",
     "title": "Título",
+    "true": "Verdadeiro",
     "tryAdjustingFilters": "Tente ajustar seus filtros.",
     "type": "Tipo",
     "unarchive": "Desarquivar",
@@ -760,6 +807,25 @@
       "title": "Historico",
       "undoStack": "Pilha de Desfazer",
       "undoStackSize": "Tamanho da Pilha de Desfazer"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "Adicionar cor do diagrama",
+      "clearCustomFormatting": "Limpar formatação personalizada",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "Preenchimento não é aplicável aos objetos selecionados",
+      "fillTab": "Preenchimento",
+      "hexColor": "Hex",
+      "noSelection": "Selecione um objeto para editar estilos",
+      "opacity": "Opacidade",
+      "osColorPicker": "Escolher cor do sistema",
+      "removeDiagramColor": "Remover cor do diagrama",
+      "strokeNotApplicable": "Contorno não é aplicável aos objetos selecionados",
+      "strokeTab": "Contorno",
+      "title": "Estilo",
+      "toggleStylePanel": "Alternar painel de estilo"
     }
   },
   "editor": {
@@ -1403,7 +1469,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "Limpar Filtros",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "Confidencialidade",
       "confidentialOnly": "Confidencial",
       "nonConfidential": "Não-confidencial"

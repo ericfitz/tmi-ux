@@ -33,14 +33,20 @@
     "invokeDialog": {
       "allObjects": "(সব)",
       "errorInvoking": "অ্যাডঅন চালু করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
+      "invalidCharacters": "শুধুমাত্র আলফানিউমেরিক অক্ষর, স্পেস, হাইফেন, পিরিয়ড, কমা এবং ফরওয়ার্ড স্ল্যাশ অনুমোদিত",
       "invalidJson": "অবৈধ JSON ফরম্যাট",
       "invocationQueued": "অ্যাডঅন কল সারিবদ্ধ হয়েছে",
+      "metadataKeyMissing": "প্রয়োজনীয় মেটাডেটা কী \"{{key}}\" এই অবজেক্টে উপস্থিত নেই",
+      "numberMax": "মান সর্বাধিক {{max}} হতে হবে",
+      "numberMin": "মান সর্বনিম্ন {{min}} হতে হবে",
+      "parameters": "প্যারামিটার",
       "payload": "পেলোড (ঐচ্ছিক)",
       "payloadHint": "অ্যাডঅনে পাঠানোর জন্য JSON ডেটা",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "থ্রেট মডেল আইডি",
-      "title": "অ্যাডঅন চালু করুন"
+      "title": "অ্যাডঅন চালু করুন",
+      "valueTooLong": "মান সর্বোচ্চ দৈর্ঘ্য অতিক্রম করেছে"
     }
   },
   "admin": {
@@ -426,6 +432,45 @@
       "software": "সফটওয়্যার"
     }
   },
+  "auditTrail": {
+    "changeSummary": "পরিবর্তনের সারাংশ",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "মুছে ফেলা হয়েছে",
+      "patched": "প্যাচ করা হয়েছে",
+      "restored": "পুনরুদ্ধার করা হয়েছে",
+      "rolled_back": "রোল ব্যাক করা হয়েছে",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "কে",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "কার্যক্রম",
+      "objectType": "{{common.type}}",
+      "timestamp": "কখন"
+    },
+    "filters": {
+      "actorEmail": "কর্তার ইমেইল",
+      "actorEmailPlaceholder": "ইমেইল দিয়ে ফিল্টার করুন...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "ফিল্টার মুছুন",
+      "objectType": "অবজেক্টের ধরন"
+    },
+    "noEntries": "কোনো অডিট ট্রেইল এন্ট্রি পাওয়া যায়নি।",
+    "rollback": {
+      "action": "রোলব্যাক",
+      "confirmMessage": "আপনি কি নিশ্চিত যে আপনি {{objectType}} \"{{name}}\" কে সংস্করণ {{version}}-এ রোলব্যাক করতে চান?",
+      "confirmTitle": "রোলব্যাক নিশ্চিত করুন",
+      "confirmationField": "নিশ্চিত করতে টাইপ করুন",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "রোলব্যাক ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
+      "success": "রোলব্যাক সফলভাবে সম্পন্ন হয়েছে।",
+      "typeConfirmation": "নিশ্চিত করতে, নীচে \"{{confirmValue}}\" টাইপ করুন।",
+      "versionPruned": "সংস্করণ স্ন্যাপশট ছাঁটাই করা হয়েছে। রোলব্যাক আর উপলব্ধ নেই।",
+      "warning": "এটি এই সত্তার বর্তমান অবস্থাকে এই অডিট এন্ট্রিতে ক্যাপচার করা সংস্করণ দিয়ে ওভাররাইট করবে। এই কার্যক্রম একটি নতুন অডিট এন্ট্রি তৈরি করে তবে বর্তমান অবস্থা হারিয়ে যাবে।"
+    },
+    "title": "অডিট ট্রেইল"
+  },
   "auth": {
     "unauthorized": {
       "401": "৪০১ অননুমোদিত",
@@ -517,6 +562,7 @@
     "email": "ইমেইল",
     "emailLabel": "ইমেল ঠিকানা",
     "error": "ত্রুটি",
+    "false": "মিথ্যা",
     "fonts": "ফন্ট",
     "groups": "গ্রুপ",
     "id": "আইডি",
@@ -611,6 +657,7 @@
     "threatName": "হুমকির নাম",
     "threatType": "হুমকির ধরন",
     "title": "শিরোনাম",
+    "true": "সত্য",
     "tryAdjustingFilters": "আপনার ফিল্টার সমন্বয় করে দেখুন।",
     "type": "ধরন",
     "unarchive": "আনআর্কাইভ",
@@ -760,6 +807,25 @@
       "title": "ইতিহাস",
       "undoStack": "আনডু স্ট্যাক",
       "undoStackSize": "আনডু স্ট্যাক সাইজ"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "ডায়াগ্রাম রঙ যোগ করুন",
+      "clearCustomFormatting": "কাস্টম ফরম্যাটিং মুছুন",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "নির্বাচিত অবজেক্টগুলিতে ফিল প্রযোজ্য নয়",
+      "fillTab": "ফিল",
+      "hexColor": "হেক্স",
+      "noSelection": "স্টাইল সম্পাদনা করতে একটি অবজেক্ট নির্বাচন করুন",
+      "opacity": "অস্বচ্ছতা",
+      "osColorPicker": "সিস্টেম থেকে রঙ নির্বাচন করুন",
+      "removeDiagramColor": "ডায়াগ্রাম রঙ সরান",
+      "strokeNotApplicable": "নির্বাচিত অবজেক্টগুলিতে স্ট্রোক প্রযোজ্য নয়",
+      "strokeTab": "স্ট্রোক",
+      "title": "স্টাইল",
+      "toggleStylePanel": "স্টাইল প্যানেল টগল করুন"
     }
   },
   "editor": {
@@ -1403,7 +1469,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "ফিল্টার সাফ করুন",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "গোপনীয়তা",
       "confidentialOnly": "গোপনীয়",
       "nonConfidential": "অ-গোপনীয়"

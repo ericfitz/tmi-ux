@@ -1,0 +1,108 @@
+<h2 mat-dialog-title class="rollback-dialog-title">
+  <mat-icon class="warning-icon">warning</mat-icon>
+  {{ 'auditTrail.rollback.confirmTitle' | transloco }}
+</h2>
+
+<mat-dialog-content appScrollIndicator>
+  <div class="rollback-dialog-content">
+    <p class="confirmation-message">
+      {{
+        'auditTrail.rollback.confirmMessage'
+          | transloco
+            : {
+                objectType: (objectTypeTranslationKey | transloco),
+                name: data.entityName,
+                version: data.version,
+              }
+      }}
+    </p>
+
+    @if (data.changeSummary) {
+      <div class="change-summary">
+        <strong>{{ 'auditTrail.changeSummary' | transloco }}:</strong>
+        {{ data.changeSummary }}
+      </div>
+    }
+
+    <div class="warning-box">
+      <mat-icon class="warning-icon-small">info</mat-icon>
+      <div class="warning-text">
+        <p>{{ 'auditTrail.rollback.warning' | transloco }}</p>
+        @if (requiresTypedConfirmation) {
+          <p>
+            {{
+              'auditTrail.rollback.typeConfirmation'
+                | transloco
+                  : {
+                      confirmValue: ('auditTrail.rollback.confirmationValue' | transloco),
+                    }
+            }}
+          </p>
+        }
+      </div>
+    </div>
+
+    @if (requiresTypedConfirmation) {
+      <div class="confirmation-input-section">
+        <mat-form-field appearance="outline" class="confirmation-input">
+          <mat-label>{{ 'auditTrail.rollback.confirmationField' | transloco }}</mat-label>
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="confirmationInput"
+            [placeholder]="'auditTrail.rollback.confirmationValue' | transloco"
+            autocomplete="off"
+            tabindex="1"
+            cdkFocusInitial
+          />
+          @if (confirmationInput && !isConfirmationValid) {
+            <mat-hint class="error-hint">
+              {{ 'common.deleteWarningConfirmationMismatch' | transloco }}
+            </mat-hint>
+          }
+          @if (isConfirmationValid) {
+            <mat-hint class="success-hint">
+              {{ 'common.deleteWarningConfirmationMatch' | transloco }}
+            </mat-hint>
+          }
+        </mat-form-field>
+      </div>
+    }
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @if (requiresTypedConfirmation) {
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onCancel()"
+      tabindex="2"
+      [attr.aria-label]="'common.cancel' | transloco"
+    >
+      {{ 'common.cancel' | transloco }}
+    </button>
+  } @else {
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onCancel()"
+      cdkFocusInitial
+      tabindex="1"
+      [attr.aria-label]="'common.cancel' | transloco"
+    >
+      {{ 'common.cancel' | transloco }}
+    </button>
+  }
+  <button
+    mat-button
+    color="warn"
+    (click)="onConfirmRollback()"
+    [disabled]="!canRollback"
+    [tabindex]="requiresTypedConfirmation ? 3 : 2"
+    [attr.aria-label]="'auditTrail.rollback.action' | transloco"
+  >
+    <mat-icon>undo</mat-icon>
+    {{ 'auditTrail.rollback.action' | transloco }}
+  </button>
+</mat-dialog-actions>

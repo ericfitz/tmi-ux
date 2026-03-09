@@ -33,14 +33,20 @@
     "invokeDialog": {
       "allObjects": "(すべて)",
       "errorInvoking": "アドオンの呼び出しに失敗しました。もう一度お試しください。",
+      "invalidCharacters": "英数字、スペース、ハイフン、ピリオド、カンマ、スラッシュのみ使用できます",
       "invalidJson": "無効なJSON形式",
       "invocationQueued": "アドオン呼び出しがキューに追加されました",
+      "metadataKeyMissing": "必須メタデータキー「{{key}}」がこのオブジェクトに存在しません",
+      "numberMax": "値は最大{{max}}でなければなりません",
+      "numberMin": "値は最低{{min}}でなければなりません",
+      "parameters": "パラメータ",
       "payload": "ペイロード（オプション）",
       "payloadHint": "アドオンに渡すJSONデータ",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "脅威モデルID",
-      "title": "アドオンを呼び出す"
+      "title": "アドオンを呼び出す",
+      "valueTooLong": "値が最大長を超えています"
     }
   },
   "admin": {
@@ -426,6 +432,45 @@
       "software": "ソフトウェア"
     }
   },
+  "auditTrail": {
+    "changeSummary": "変更概要",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "削除済み",
+      "patched": "パッチ済み",
+      "restored": "復元済み",
+      "rolled_back": "ロールバック済み",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "操作者",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "アクション",
+      "objectType": "{{common.type}}",
+      "timestamp": "日時"
+    },
+    "filters": {
+      "actorEmail": "操作者メール",
+      "actorEmailPlaceholder": "メールでフィルター...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "フィルターをクリア",
+      "objectType": "オブジェクトタイプ"
+    },
+    "noEntries": "監査証跡エントリが見つかりません。",
+    "rollback": {
+      "action": "ロールバック",
+      "confirmMessage": "{{objectType}}「{{name}}」をバージョン{{version}}にロールバックしてもよろしいですか？",
+      "confirmTitle": "ロールバックの確認",
+      "confirmationField": "確認のため入力してください",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "ロールバックに失敗しました。もう一度お試しください。",
+      "success": "ロールバックが正常に完了しました。",
+      "typeConfirmation": "確認のため、下に「{{confirmValue}}」と入力してください。",
+      "versionPruned": "バージョンスナップショットは削除されました。ロールバックは利用できません。",
+      "warning": "この操作により、このエンティティの現在の状態がこの監査エントリに記録されたバージョンで上書きされます。この操作は新しい監査エントリを作成しますが、現在の状態は失われます。"
+    },
+    "title": "監査証跡"
+  },
   "auth": {
     "unauthorized": {
       "401": "401 未認証",
@@ -517,6 +562,7 @@
     "email": "メールアドレス",
     "emailLabel": "メールアドレス",
     "error": "エラー",
+    "false": "偽",
     "fonts": "フォント",
     "groups": "グループ",
     "id": "ID",
@@ -611,6 +657,7 @@
     "threatName": "脅威名",
     "threatType": "脅威タイプ",
     "title": "タイトル",
+    "true": "真",
     "tryAdjustingFilters": "フィルターを調整してみてください。",
     "type": "タイプ",
     "unarchive": "アーカイブ解除",
@@ -760,6 +807,25 @@
       "title": "履歴",
       "undoStack": "元に戻すスタック",
       "undoStackSize": "元に戻すスタックサイズ"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "ダイアグラムカラーを追加",
+      "clearCustomFormatting": "カスタム書式をクリア",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "塗りつぶしは選択されたオブジェクトに適用できません",
+      "fillTab": "塗りつぶし",
+      "hexColor": "16進数",
+      "noSelection": "スタイルを編集するオブジェクトを選択してください",
+      "opacity": "不透明度",
+      "osColorPicker": "システムからカラーを選択",
+      "removeDiagramColor": "ダイアグラムカラーを削除",
+      "strokeNotApplicable": "ストロークは選択されたオブジェクトに適用できません",
+      "strokeTab": "ストローク",
+      "title": "スタイル",
+      "toggleStylePanel": "スタイルパネルの切り替え"
     }
   },
   "editor": {
@@ -1403,7 +1469,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "フィルタをクリア",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "機密性",
       "confidentialOnly": "機密",
       "nonConfidential": "非機密"

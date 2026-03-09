@@ -33,14 +33,20 @@
     "invokeDialog": {
       "allObjects": "(모두)",
       "errorInvoking": "애드온 호출에 실패했습니다. 다시 시도해 주세요.",
+      "invalidCharacters": "영숫자, 공백, 하이픈, 마침표, 쉼표 및 슬래시만 허용됩니다",
       "invalidJson": "잘못된 JSON 형식",
       "invocationQueued": "애드온 호출이 대기열에 추가되었습니다",
+      "metadataKeyMissing": "필수 메타데이터 키 \"{{key}}\"가 이 객체에 존재하지 않습니다",
+      "numberMax": "값은 최대 {{max}}이어야 합니다",
+      "numberMin": "값은 최소 {{min}}이어야 합니다",
+      "parameters": "매개변수",
       "payload": "페이로드 (선택 사항)",
       "payloadHint": "애드온에 전달할 JSON 데이터",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "위협 모델 ID",
-      "title": "애드온 호출"
+      "title": "애드온 호출",
+      "valueTooLong": "값이 최대 길이를 초과합니다"
     }
   },
   "admin": {
@@ -426,6 +432,45 @@
       "software": "소프트웨어"
     }
   },
+  "auditTrail": {
+    "changeSummary": "변경 요약",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "삭제됨",
+      "patched": "패치됨",
+      "restored": "복원됨",
+      "rolled_back": "롤백됨",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "누가",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "작업",
+      "objectType": "{{common.type}}",
+      "timestamp": "시간"
+    },
+    "filters": {
+      "actorEmail": "수행자 이메일",
+      "actorEmailPlaceholder": "이메일로 필터링...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "필터 지우기",
+      "objectType": "객체 유형"
+    },
+    "noEntries": "감사 추적 항목이 없습니다.",
+    "rollback": {
+      "action": "롤백",
+      "confirmMessage": "{{objectType}} \"{{name}}\"을(를) 버전 {{version}}으로 롤백하시겠습니까?",
+      "confirmTitle": "롤백 확인",
+      "confirmationField": "확인을 위해 입력하세요",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "롤백에 실패했습니다. 다시 시도해 주세요.",
+      "success": "롤백이 성공적으로 완료되었습니다.",
+      "typeConfirmation": "확인을 위해 아래에 \"{{confirmValue}}\"을(를) 입력하세요.",
+      "versionPruned": "버전 스냅샷이 정리되었습니다. 롤백을 더 이상 사용할 수 없습니다.",
+      "warning": "이 작업은 이 엔티티의 현재 상태를 이 감사 항목에 캡처된 버전으로 덮어씁니다. 이 작업은 새 감사 항목을 생성하지만 현재 상태는 손실됩니다."
+    },
+    "title": "감사 추적"
+  },
   "auth": {
     "unauthorized": {
       "401": "401 권한 없음",
@@ -517,6 +562,7 @@
     "email": "이메일",
     "emailLabel": "이메일 주소",
     "error": "오류",
+    "false": "거짓",
     "fonts": "글꼴",
     "groups": "그룹",
     "id": "ID",
@@ -611,6 +657,7 @@
     "threatName": "위협 이름",
     "threatType": "위협 유형",
     "title": "제목",
+    "true": "참",
     "tryAdjustingFilters": "필터를 조정해 보세요.",
     "type": "유형",
     "unarchive": "보관 취소",
@@ -760,6 +807,25 @@
       "title": "기록",
       "undoStack": "실행 취소 스택",
       "undoStackSize": "실행 취소 스택 크기"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "다이어그램 색상 추가",
+      "clearCustomFormatting": "사용자 지정 서식 지우기",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "채우기는 선택한 객체에 적용할 수 없습니다",
+      "fillTab": "채우기",
+      "hexColor": "16진수",
+      "noSelection": "스타일을 편집할 객체를 선택하세요",
+      "opacity": "불투명도",
+      "osColorPicker": "시스템에서 색상 선택",
+      "removeDiagramColor": "다이어그램 색상 제거",
+      "strokeNotApplicable": "획은 선택한 객체에 적용할 수 없습니다",
+      "strokeTab": "획",
+      "title": "스타일",
+      "toggleStylePanel": "스타일 패널 전환"
     }
   },
   "editor": {
@@ -1403,7 +1469,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "필터 지우기",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "기밀성",
       "confidentialOnly": "기밀",
       "nonConfidential": "비기밀"

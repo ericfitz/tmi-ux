@@ -58,6 +58,15 @@
             <button
               mat-icon-button
               color="primary"
+              (click)="openAuditTrail()"
+              [matTooltip]="'auditTrail.title' | transloco"
+              [attr.aria-label]="'auditTrail.title' | transloco"
+            >
+              <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="primary"
               (click)="openMetadataDialog()"
               [matTooltip]="'common.manageMetadata' | transloco"
               [attr.aria-label]="'common.manageMetadata' | transloco"
@@ -554,6 +563,14 @@
                         }
                         <button
                           mat-icon-button
+                          (click)="openEntityAuditTrail('asset', asset.id, asset.name, $event)"
+                          [matTooltip]="'auditTrail.title' | transloco"
+                          [attr.aria-label]="'auditTrail.title' | transloco"
+                        >
+                          <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+                        </button>
+                        <button
+                          mat-icon-button
                           (click)="openAssetMetadataDialog(asset, $event)"
                           [matTooltip]="
                             canEdit
@@ -735,6 +752,16 @@
                         }
                         <button
                           mat-icon-button
+                          (click)="
+                            openEntityAuditTrail('document', document.id, document.name, $event)
+                          "
+                          [matTooltip]="'auditTrail.title' | transloco"
+                          [attr.aria-label]="'auditTrail.title' | transloco"
+                        >
+                          <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+                        </button>
+                        <button
+                          mat-icon-button
                           (click)="openDocumentMetadataDialog(document, $event)"
                           [matTooltip]="
                             canEdit
@@ -913,6 +940,21 @@
                             <mat-icon>extension</mat-icon>
                           </button>
                         }
+                        <button
+                          mat-icon-button
+                          (click)="
+                            openEntityAuditTrail(
+                              'repository',
+                              repository.id,
+                              repository.name,
+                              $event
+                            )
+                          "
+                          [matTooltip]="'auditTrail.title' | transloco"
+                          [attr.aria-label]="'auditTrail.title' | transloco"
+                        >
+                          <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+                        </button>
                         <button
                           mat-icon-button
                           (click)="openRepositoryMetadataDialog(repository, $event)"
@@ -1102,6 +1144,14 @@
                             <mat-icon>extension</mat-icon>
                           </button>
                         }
+                        <button
+                          mat-icon-button
+                          (click)="openEntityAuditTrail('note', note.id, note.name, $event)"
+                          [matTooltip]="'auditTrail.title' | transloco"
+                          [attr.aria-label]="'auditTrail.title' | transloco"
+                        >
+                          <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+                        </button>
                         <button
                           mat-icon-button
                           (click)="openNoteMetadataDialog(note, $event)"
@@ -1304,6 +1354,16 @@
                             <mat-icon>extension</mat-icon>
                           </button>
                         }
+                        <button
+                          mat-icon-button
+                          (click)="
+                            openEntityAuditTrail('diagram', diagram.id, diagram.name, $event)
+                          "
+                          [matTooltip]="'auditTrail.title' | transloco"
+                          [attr.aria-label]="'auditTrail.title' | transloco"
+                        >
+                          <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+                        </button>
                         <button
                           mat-icon-button
                           (click)="openDiagramMetadataDialog(diagram, $event)"
@@ -1699,6 +1759,14 @@
                             <mat-icon>extension</mat-icon>
                           </button>
                         }
+                        <button
+                          mat-icon-button
+                          (click)="openEntityAuditTrail('threat', threat.id, threat.name, $event)"
+                          [matTooltip]="'auditTrail.title' | transloco"
+                          [attr.aria-label]="'auditTrail.title' | transloco"
+                        >
+                          <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+                        </button>
                         <button
                           mat-icon-button
                           (click)="openThreatMetadataDialog(threat, $event)"

@@ -33,14 +33,20 @@
     "invokeDialog": {
       "allObjects": "(Tous)",
       "errorInvoking": "Échec de l'invocation du module complémentaire. Veuillez réessayer.",
+      "invalidCharacters": "Seuls les caractères alphanumériques, espaces, tirets, points, virgules et barres obliques sont autorisés",
       "invalidJson": "Format JSON invalide",
       "invocationQueued": "Invocation du module complémentaire mise en file d'attente",
+      "metadataKeyMissing": "La clé de métadonnées requise \"{{key}}\" n'est pas présente sur cet objet",
+      "numberMax": "La valeur doit être au maximum {{max}}",
+      "numberMin": "La valeur doit être au minimum {{min}}",
+      "parameters": "Paramètres",
       "payload": "Charge utile (Facultatif)",
       "payloadHint": "Données JSON à transmettre au module complémentaire",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "ID du modèle de menace",
-      "title": "Invoquer le module complémentaire"
+      "title": "Invoquer le module complémentaire",
+      "valueTooLong": "La valeur dépasse la longueur maximale"
     }
   },
   "admin": {
@@ -426,6 +432,45 @@
       "software": "Logiciel"
     }
   },
+  "auditTrail": {
+    "changeSummary": "Résumé des modifications",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "Supprimé",
+      "patched": "Corrigé",
+      "restored": "Restauré",
+      "rolled_back": "Annulé",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "Qui",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "Action",
+      "objectType": "{{common.type}}",
+      "timestamp": "Quand"
+    },
+    "filters": {
+      "actorEmail": "E-mail de l'acteur",
+      "actorEmailPlaceholder": "Filtrer par e-mail...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "Effacer les filtres",
+      "objectType": "Type d'objet"
+    },
+    "noEntries": "Aucune entrée de piste d'audit trouvée.",
+    "rollback": {
+      "action": "Annuler",
+      "confirmMessage": "Êtes-vous sûr de vouloir annuler {{objectType}} \"{{name}}\" à la version {{version}} ?",
+      "confirmTitle": "Confirmer l'annulation",
+      "confirmationField": "Tapez pour confirmer",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "L'annulation a échoué. Veuillez réessayer.",
+      "success": "Annulation terminée avec succès.",
+      "typeConfirmation": "Pour confirmer, tapez \"{{confirmValue}}\" ci-dessous.",
+      "versionPruned": "L'instantané de version a été élagué. L'annulation n'est plus disponible.",
+      "warning": "Cela écrasera l'état actuel de cette entité avec la version capturée dans cette entrée d'audit. Cette action crée une nouvelle entrée d'audit mais l'état actuel sera perdu."
+    },
+    "title": "Piste d'audit"
+  },
   "auth": {
     "unauthorized": {
       "401": "401 Non autorise",
@@ -517,6 +562,7 @@
     "email": "E-mail",
     "emailLabel": "Adresse E-mail",
     "error": "Erreur",
+    "false": "Faux",
     "fonts": "Polices",
     "groups": "Groupes",
     "id": "ID",
@@ -611,6 +657,7 @@
     "threatName": "Nom de la Menace",
     "threatType": "Type de Menace",
     "title": "Titre",
+    "true": "Vrai",
     "tryAdjustingFilters": "Essayez d'ajuster vos filtres.",
     "type": "Type",
     "unarchive": "Désarchiver",
@@ -760,6 +807,25 @@
       "title": "Historique",
       "undoStack": "Pile d'annulation",
       "undoStackSize": "Taille de la pile d'annulation"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "Ajouter une couleur de diagramme",
+      "clearCustomFormatting": "Effacer le formatage personnalisé",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "Le remplissage n'est pas applicable aux objets sélectionnés",
+      "fillTab": "Remplissage",
+      "hexColor": "Hex",
+      "noSelection": "Sélectionnez un objet pour modifier les styles",
+      "opacity": "Opacité",
+      "osColorPicker": "Choisir une couleur depuis le système",
+      "removeDiagramColor": "Supprimer la couleur du diagramme",
+      "strokeNotApplicable": "Le contour n'est pas applicable aux objets sélectionnés",
+      "strokeTab": "Contour",
+      "title": "Style",
+      "toggleStylePanel": "Basculer le panneau de styles"
     }
   },
   "editor": {
@@ -1403,7 +1469,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "Effacer les filtres",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "Confidentialité",
       "confidentialOnly": "Confidentiel",
       "nonConfidential": "Non confidentiel"

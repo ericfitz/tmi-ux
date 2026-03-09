@@ -33,14 +33,20 @@
     "invokeDialog": {
       "allObjects": "(Semua)",
       "errorInvoking": "Gagal memanggil addon. Silakan coba lagi.",
+      "invalidCharacters": "Hanya karakter alfanumerik, spasi, tanda hubung, titik, koma, dan garis miring yang diperbolehkan",
       "invalidJson": "Format JSON tidak valid",
       "invocationQueued": "Pemanggilan addon dalam antrean",
+      "metadataKeyMissing": "Kunci metadata yang diperlukan \"{{key}}\" tidak ada pada objek ini",
+      "numberMax": "Nilai harus paling banyak {{max}}",
+      "numberMin": "Nilai harus setidaknya {{min}}",
+      "parameters": "Parameter",
       "payload": "Payload (Opsional)",
       "payloadHint": "Data JSON untuk dikirim ke addon",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "ID Model Ancaman",
-      "title": "Panggil Addon"
+      "title": "Panggil Addon",
+      "valueTooLong": "Nilai melebihi panjang maksimum"
     }
   },
   "admin": {
@@ -426,6 +432,45 @@
       "software": "Perangkat Lunak"
     }
   },
+  "auditTrail": {
+    "changeSummary": "Ringkasan perubahan",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "Dihapus",
+      "patched": "Ditambal",
+      "restored": "Dipulihkan",
+      "rolled_back": "Dikembalikan",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "Siapa",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "Tindakan",
+      "objectType": "{{common.type}}",
+      "timestamp": "Kapan"
+    },
+    "filters": {
+      "actorEmail": "Email Pelaku",
+      "actorEmailPlaceholder": "Filter berdasarkan email...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "Hapus Filter",
+      "objectType": "Tipe Objek"
+    },
+    "noEntries": "Tidak ada entri jejak audit yang ditemukan.",
+    "rollback": {
+      "action": "Kembalikan",
+      "confirmMessage": "Apakah Anda yakin ingin mengembalikan {{objectType}} \"{{name}}\" ke versi {{version}}?",
+      "confirmTitle": "Konfirmasi Pengembalian",
+      "confirmationField": "Ketik untuk mengonfirmasi",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "Pengembalian gagal. Silakan coba lagi.",
+      "success": "Pengembalian berhasil diselesaikan.",
+      "typeConfirmation": "Untuk mengonfirmasi, ketik \"{{confirmValue}}\" di bawah.",
+      "versionPruned": "Snapshot versi telah dipangkas. Pengembalian tidak lagi tersedia.",
+      "warning": "Ini akan menimpa status saat ini dari entitas ini dengan versi yang ditangkap dalam entri audit ini. Tindakan ini membuat entri audit baru tetapi status saat ini akan hilang."
+    },
+    "title": "Jejak Audit"
+  },
   "auth": {
     "unauthorized": {
       "401": "401 Tidak Sah",
@@ -517,6 +562,7 @@
     "email": "Email",
     "emailLabel": "Alamat Email",
     "error": "Kesalahan",
+    "false": "Salah",
     "fonts": "Font",
     "groups": "Grup",
     "id": "ID",
@@ -611,6 +657,7 @@
     "threatName": "Nama Ancaman",
     "threatType": "Jenis Ancaman",
     "title": "Judul",
+    "true": "Benar",
     "tryAdjustingFilters": "Coba sesuaikan filter Anda.",
     "type": "Jenis",
     "unarchive": "Batalkan Arsip",
@@ -760,6 +807,25 @@
       "title": "Riwayat",
       "undoStack": "Tumpukan Batalkan",
       "undoStackSize": "Ukuran Tumpukan Batalkan"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "Tambah warna diagram",
+      "clearCustomFormatting": "Hapus format kustom",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "Isian tidak berlaku untuk objek yang dipilih",
+      "fillTab": "Isian",
+      "hexColor": "Heks",
+      "noSelection": "Pilih objek untuk mengedit gaya",
+      "opacity": "Opasitas",
+      "osColorPicker": "Pilih warna dari sistem",
+      "removeDiagramColor": "Hapus warna diagram",
+      "strokeNotApplicable": "Goresan tidak berlaku untuk objek yang dipilih",
+      "strokeTab": "Goresan",
+      "title": "Gaya",
+      "toggleStylePanel": "Alihkan panel gaya"
     }
   },
   "editor": {
@@ -1403,7 +1469,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "Hapus Filter",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "Kerahasiaan",
       "confidentialOnly": "Rahasia",
       "nonConfidential": "Bukan Rahasia"

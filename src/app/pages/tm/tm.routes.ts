@@ -7,7 +7,9 @@ import { threatModelResolver } from './resolvers/threat-model.resolver';
  * Threat Model routes
  * /tm/:id - Threat model editor
  * /tm/:id/threat/:threatId - Threat detail page
+ * /tm/:id/note/:noteId - Note detail page
  * /tm/:id/dfd/:dfdId - Data flow diagram editor
+ * /tm/:id/audit - Audit trail page
  *
  * Markdown/Mermaid/Prism providers are loaded here (not at app root)
  * to keep them out of the initial bundle.
@@ -55,6 +57,17 @@ export const TM_ROUTES: Routes = [
           import(/* webpackChunkName: "dfd" */ '../dfd/presentation/components/dfd.component').then(
             c => c.DfdComponent,
           ),
+        canActivate: [authGuard],
+        resolve: {
+          threatModel: threatModelResolver,
+        },
+      },
+      {
+        path: ':id/audit',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "audit-trail" */ './components/audit-trail-page/audit-trail-page.component'
+          ).then(c => c.AuditTrailPageComponent),
         canActivate: [authGuard],
         resolve: {
           threatModel: threatModelResolver,

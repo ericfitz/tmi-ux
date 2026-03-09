@@ -33,14 +33,20 @@
     "invokeDialog": {
       "allObjects": "（全部）",
       "errorInvoking": "调用插件失败。请重试。",
+      "invalidCharacters": "仅允许使用字母数字字符、空格、连字符、句点、逗号和正斜杠",
       "invalidJson": "无效的JSON格式",
       "invocationQueued": "插件调用已排队",
+      "metadataKeyMissing": "此对象上不存在必需的元数据键 \"{{key}}\"",
+      "numberMax": "值不能超过 {{max}}",
+      "numberMin": "值不能小于 {{min}}",
+      "parameters": "参数",
       "payload": "载荷（可选）",
       "payloadHint": "传递给插件的JSON数据",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "威胁模型ID",
-      "title": "调用插件"
+      "title": "调用插件",
+      "valueTooLong": "值超过最大长度"
     }
   },
   "admin": {
@@ -426,6 +432,45 @@
       "software": "软件"
     }
   },
+  "auditTrail": {
+    "changeSummary": "变更摘要",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "已删除",
+      "patched": "已修补",
+      "restored": "已恢复",
+      "rolled_back": "已回滚",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "操作人",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "操作",
+      "objectType": "{{common.type}}",
+      "timestamp": "时间"
+    },
+    "filters": {
+      "actorEmail": "操作人邮箱",
+      "actorEmailPlaceholder": "按邮箱筛选...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "清除筛选",
+      "objectType": "对象类型"
+    },
+    "noEntries": "未找到审计跟踪条目。",
+    "rollback": {
+      "action": "回滚",
+      "confirmMessage": "您确定要将 {{objectType}} \"{{name}}\" 回滚到版本 {{version}} 吗？",
+      "confirmTitle": "确认回滚",
+      "confirmationField": "输入以确认",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "回滚失败。请重试。",
+      "success": "回滚成功完成。",
+      "typeConfirmation": "要确认，请在下方输入 \"{{confirmValue}}\"。",
+      "versionPruned": "版本快照已被清除。回滚不再可用。",
+      "warning": "这将用此审计条目中捕获的版本覆盖此实体的当前状态。此操作会创建新的审计条目，但当前状态将会丢失。"
+    },
+    "title": "审计跟踪"
+  },
   "auth": {
     "unauthorized": {
       "401": "401 未授权",
@@ -517,6 +562,7 @@
     "email": "邮箱",
     "emailLabel": "电子邮件地址",
     "error": "错误",
+    "false": "假",
     "fonts": "字体",
     "groups": "用户组",
     "id": "ID",
@@ -611,6 +657,7 @@
     "threatName": "威胁名称",
     "threatType": "威胁类型",
     "title": "标题",
+    "true": "真",
     "tryAdjustingFilters": "请尝试调整您的筛选条件。",
     "type": "类型",
     "unarchive": "取消归档",
@@ -760,6 +807,25 @@
       "title": "历史记录",
       "undoStack": "撤销堆栈",
       "undoStackSize": "撤销堆栈大小"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "添加图表颜色",
+      "clearCustomFormatting": "清除自定义格式",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "填充不适用于所选对象",
+      "fillTab": "填充",
+      "hexColor": "Hex",
+      "noSelection": "选择一个对象以编辑样式",
+      "opacity": "不透明度",
+      "osColorPicker": "从系统选取颜色",
+      "removeDiagramColor": "移除图表颜色",
+      "strokeNotApplicable": "描边不适用于所选对象",
+      "strokeTab": "描边",
+      "title": "样式",
+      "toggleStylePanel": "切换样式面板"
     }
   },
   "editor": {
@@ -1403,7 +1469,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "清除筛选",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "机密性",
       "confidentialOnly": "机密",
       "nonConfidential": "非机密"

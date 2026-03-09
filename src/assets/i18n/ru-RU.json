@@ -33,14 +33,20 @@
     "invokeDialog": {
       "allObjects": "(Все)",
       "errorInvoking": "Не удалось вызвать дополнение. Пожалуйста, попробуйте снова.",
+      "invalidCharacters": "Допускаются только буквенно-цифровые символы, пробелы, дефисы, точки, запятые и косые черты",
       "invalidJson": "Неверный формат JSON",
       "invocationQueued": "Вызов дополнения добавлен в очередь",
+      "metadataKeyMissing": "Обязательный ключ метаданных \"{{key}}\" отсутствует у этого объекта",
+      "numberMax": "Значение должно быть не более {{max}}",
+      "numberMin": "Значение должно быть не менее {{min}}",
+      "parameters": "Параметры",
       "payload": "Данные (Необязательно)",
       "payloadHint": "JSON-данные для передачи дополнению",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "Идентификатор модели угроз",
-      "title": "Вызвать дополнение"
+      "title": "Вызвать дополнение",
+      "valueTooLong": "Значение превышает максимальную длину"
     }
   },
   "admin": {
@@ -426,6 +432,45 @@
       "software": "Программное обеспечение"
     }
   },
+  "auditTrail": {
+    "changeSummary": "Сводка изменений",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "Удалено",
+      "patched": "Исправлено",
+      "restored": "Восстановлено",
+      "rolled_back": "Откат выполнен",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "Кто",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "Действие",
+      "objectType": "{{common.type}}",
+      "timestamp": "Когда"
+    },
+    "filters": {
+      "actorEmail": "Email участника",
+      "actorEmailPlaceholder": "Фильтр по email...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "Очистить фильтры",
+      "objectType": "Тип объекта"
+    },
+    "noEntries": "Записи журнала аудита не найдены.",
+    "rollback": {
+      "action": "Откатить",
+      "confirmMessage": "Вы уверены, что хотите откатить {{objectType}} \"{{name}}\" к версии {{version}}?",
+      "confirmTitle": "Подтвердить откат",
+      "confirmationField": "Введите для подтверждения",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "Ошибка отката. Пожалуйста, попробуйте снова.",
+      "success": "Откат выполнен успешно.",
+      "typeConfirmation": "Для подтверждения введите \"{{confirmValue}}\" ниже.",
+      "versionPruned": "Снимок версии был удалён. Откат больше недоступен.",
+      "warning": "Это перезапишет текущее состояние этой сущности версией, сохранённой в этой записи аудита. Это действие создаст новую запись аудита, но текущее состояние будет потеряно."
+    },
+    "title": "Журнал аудита"
+  },
   "auth": {
     "unauthorized": {
       "401": "401 Не авторизован",
@@ -517,6 +562,7 @@
     "email": "Электронная почта",
     "emailLabel": "Адрес Электронной Почты",
     "error": "Ошибка",
+    "false": "Ложь",
     "fonts": "Шрифты",
     "groups": "Группы",
     "id": "Идентификатор",
@@ -611,6 +657,7 @@
     "threatName": "Название Угрозы",
     "threatType": "Тип Угрозы",
     "title": "Название",
+    "true": "Истина",
     "tryAdjustingFilters": "Попробуйте изменить фильтры.",
     "type": "Тип",
     "unarchive": "Разархивировать",
@@ -760,6 +807,25 @@
       "title": "История",
       "undoStack": "Стек отмены",
       "undoStackSize": "Размер стека отмены"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "Добавить цвет диаграммы",
+      "clearCustomFormatting": "Очистить пользовательское форматирование",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "Заливка неприменима к выбранным объектам",
+      "fillTab": "Заливка",
+      "hexColor": "Hex",
+      "noSelection": "Выберите объект для редактирования стилей",
+      "opacity": "Непрозрачность",
+      "osColorPicker": "Выбрать цвет из системы",
+      "removeDiagramColor": "Удалить цвет диаграммы",
+      "strokeNotApplicable": "Обводка неприменима к выбранным объектам",
+      "strokeTab": "Обводка",
+      "title": "Стиль",
+      "toggleStylePanel": "Переключить панель стилей"
     }
   },
   "editor": {
@@ -1403,7 +1469,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "Очистить фильтры",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "Конфиденциальность",
       "confidentialOnly": "Конфиденциальное",
       "nonConfidential": "Неконфиденциальное"

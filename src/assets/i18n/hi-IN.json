@@ -33,14 +33,20 @@
     "invokeDialog": {
       "allObjects": "(सभी)",
       "errorInvoking": "ऐडऑन को आमंत्रित करने में विफल। कृपया पुनः प्रयास करें।",
+      "invalidCharacters": "केवल अल्फान्यूमेरिक अक्षर, रिक्त स्थान, हाइफ़न, अवधि, अल्पविराम और फ़ॉरवर्ड स्लैश की अनुमति है",
       "invalidJson": "अमान्य JSON प्रारूप",
       "invocationQueued": "ऐडऑन आमंत्रण कतार में है",
+      "metadataKeyMissing": "आवश्यक मेटाडेटा कुंजी \"{{key}}\" इस ऑब्जेक्ट पर मौजूद नहीं है",
+      "numberMax": "मान अधिकतम {{max}} होना चाहिए",
+      "numberMin": "मान कम से कम {{min}} होना चाहिए",
+      "parameters": "पैरामीटर",
       "payload": "पेलोड (वैकल्पिक)",
       "payloadHint": "ऐडऑन को भेजने के लिए JSON डेटा",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "थ्रेट मॉडल ID",
-      "title": "ऐडऑन आमंत्रित करें"
+      "title": "ऐडऑन आमंत्रित करें",
+      "valueTooLong": "मान अधिकतम लंबाई से अधिक है"
     }
   },
   "admin": {
@@ -426,6 +432,45 @@
       "software": "सॉफ्टवेयर"
     }
   },
+  "auditTrail": {
+    "changeSummary": "परिवर्तन सारांश",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "हटाया गया",
+      "patched": "पैच किया गया",
+      "restored": "पुनर्स्थापित",
+      "rolled_back": "रोलबैक किया गया",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "कौन",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "कार्रवाई",
+      "objectType": "{{common.type}}",
+      "timestamp": "कब"
+    },
+    "filters": {
+      "actorEmail": "कर्ता ईमेल",
+      "actorEmailPlaceholder": "ईमेल द्वारा फ़िल्टर करें...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "फ़िल्टर साफ़ करें",
+      "objectType": "ऑब्जेक्ट प्रकार"
+    },
+    "noEntries": "कोई ऑडिट ट्रेल प्रविष्टियाँ नहीं मिलीं।",
+    "rollback": {
+      "action": "रोलबैक",
+      "confirmMessage": "क्या आप वाकई {{objectType}} \"{{name}}\" को संस्करण {{version}} पर रोलबैक करना चाहते हैं?",
+      "confirmTitle": "रोलबैक की पुष्टि करें",
+      "confirmationField": "पुष्टि के लिए टाइप करें",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "रोलबैक विफल रहा। कृपया पुनः प्रयास करें।",
+      "success": "रोलबैक सफलतापूर्वक पूरा हुआ।",
+      "typeConfirmation": "पुष्टि के लिए, नीचे \"{{confirmValue}}\" टाइप करें।",
+      "versionPruned": "संस्करण स्नैपशॉट काट दिया गया है। रोलबैक अब उपलब्ध नहीं है।",
+      "warning": "यह इस इकाई की वर्तमान स्थिति को इस ऑडिट प्रविष्टि में कैप्चर किए गए संस्करण से अधिलेखित कर देगा। यह कार्रवाई एक नई ऑडिट प्रविष्टि बनाती है लेकिन वर्तमान स्थिति खो जाएगी।"
+    },
+    "title": "ऑडिट ट्रेल"
+  },
   "auth": {
     "unauthorized": {
       "401": "401 अनधिकृत",
@@ -517,6 +562,7 @@
     "email": "ईमेल",
     "emailLabel": "ईमेल पता",
     "error": "त्रुटि",
+    "false": "असत्य",
     "fonts": "फ़ॉन्ट्स",
     "groups": "समूह",
     "id": "आईडी",
@@ -611,6 +657,7 @@
     "threatName": "खतरे का नाम",
     "threatType": "खतरे का प्रकार",
     "title": "शीर्षक",
+    "true": "सत्य",
     "tryAdjustingFilters": "अपने फ़िल्टर समायोजित करने का प्रयास करें।",
     "type": "प्रकार",
     "unarchive": "अनार्काइव करें",
@@ -760,6 +807,25 @@
       "title": "इतिहास",
       "undoStack": "Undo स्टैक",
       "undoStackSize": "Undo स्टैक आकार"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "आरेख रंग जोड़ें",
+      "clearCustomFormatting": "कस्टम फ़ॉर्मेटिंग साफ़ करें",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "भरण चयनित ऑब्जेक्ट्स पर लागू नहीं है",
+      "fillTab": "भरण",
+      "hexColor": "हेक्स",
+      "noSelection": "शैलियाँ संपादित करने के लिए एक ऑब्जेक्ट चुनें",
+      "opacity": "अपारदर्शिता",
+      "osColorPicker": "सिस्टम से रंग चुनें",
+      "removeDiagramColor": "आरेख रंग हटाएँ",
+      "strokeNotApplicable": "स्ट्रोक चयनित ऑब्जेक्ट्स पर लागू नहीं है",
+      "strokeTab": "स्ट्रोक",
+      "title": "शैली",
+      "toggleStylePanel": "शैली पैनल टॉगल करें"
     }
   },
   "editor": {
@@ -1403,7 +1469,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "फ़िल्टर साफ़ करें",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "गोपनीयता",
       "confidentialOnly": "गोपनीय",
       "nonConfidential": "गैर-गोपनीय"

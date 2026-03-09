@@ -33,14 +33,20 @@
     "invokeDialog": {
       "allObjects": "(الكل)",
       "errorInvoking": "فشل في استدعاء التوسيع. يرجى المحاولة مرة أخرى.",
+      "invalidCharacters": "يُسمح فقط بالأحرف الأبجدية الرقمية والمسافات والواصلات والنقاط والفواصل والشرطات المائلة الأمامية",
       "invalidJson": "تنسيق JSON غير صالح",
       "invocationQueued": "تم وضع استدعاء التوسيع في قائمة الانتظار",
+      "metadataKeyMissing": "مفتاح البيانات الوصفية المطلوب \"{{key}}\" غير موجود في هذا الكائن",
+      "numberMax": "يجب أن تكون القيمة {{max}} على الأكثر",
+      "numberMin": "يجب أن تكون القيمة {{min}} على الأقل",
+      "parameters": "المعلمات",
       "payload": "الحمولة (اختياري)",
       "payloadHint": "بيانات JSON لتمريرها إلى التوسيع",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "معرّف نموذج التهديد",
-      "title": "استدعاء التوسيع"
+      "title": "استدعاء التوسيع",
+      "valueTooLong": "القيمة تتجاوز الحد الأقصى للطول"
     }
   },
   "admin": {
@@ -426,6 +432,45 @@
       "software": "برمجيات"
     }
   },
+  "auditTrail": {
+    "changeSummary": "ملخص التغيير",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "محذوف",
+      "patched": "مُرقَّع",
+      "restored": "مُستعاد",
+      "rolled_back": "تم التراجع",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "من",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "الإجراء",
+      "objectType": "{{common.type}}",
+      "timestamp": "متى"
+    },
+    "filters": {
+      "actorEmail": "البريد الإلكتروني للفاعل",
+      "actorEmailPlaceholder": "تصفية حسب البريد الإلكتروني...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "مسح عوامل التصفية",
+      "objectType": "نوع الكائن"
+    },
+    "noEntries": "لم يتم العثور على إدخالات في سجل التدقيق.",
+    "rollback": {
+      "action": "التراجع",
+      "confirmMessage": "هل أنت متأكد أنك تريد التراجع عن {{objectType}} \"{{name}}\" إلى الإصدار {{version}}؟",
+      "confirmTitle": "تأكيد التراجع",
+      "confirmationField": "اكتب للتأكيد",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "فشل التراجع. يرجى المحاولة مرة أخرى.",
+      "success": "تم التراجع بنجاح.",
+      "typeConfirmation": "للتأكيد، اكتب \"{{confirmValue}}\" أدناه.",
+      "versionPruned": "تم تقليم لقطة الإصدار. لم يعد التراجع متاحًا.",
+      "warning": "سيؤدي هذا إلى الكتابة فوق الحالة الحالية لهذا الكيان بالإصدار المسجل في إدخال التدقيق هذا. ينشئ هذا الإجراء إدخال تدقيق جديدًا ولكن سيتم فقدان الحالة الحالية."
+    },
+    "title": "سجل التدقيق"
+  },
   "auth": {
     "unauthorized": {
       "401": "401 غير مصرح",
@@ -517,6 +562,7 @@
     "email": "البريد الإلكتروني",
     "emailLabel": "عنوان البريد الإلكتروني",
     "error": "خطأ",
+    "false": "خطأ",
     "fonts": "الخطوط",
     "groups": "المجموعات",
     "id": "المعرّف",
@@ -611,6 +657,7 @@
     "threatName": "اسم التهديد",
     "threatType": "نوع التهديد",
     "title": "العنوان",
+    "true": "صحيح",
     "tryAdjustingFilters": "حاول تعديل عوامل التصفية.",
     "type": "النوع",
     "unarchive": "إلغاء الأرشفة",
@@ -760,6 +807,25 @@
       "title": "السجل",
       "undoStack": "مكدس التراجع",
       "undoStackSize": "حجم مكدس التراجع"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "إضافة لون للمخطط",
+      "clearCustomFormatting": "مسح التنسيق المخصص",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "التعبئة غير قابلة للتطبيق على الكائنات المحددة",
+      "fillTab": "تعبئة",
+      "hexColor": "سداسي عشري",
+      "noSelection": "حدد كائنًا لتحرير الأنماط",
+      "opacity": "الشفافية",
+      "osColorPicker": "اختيار لون من النظام",
+      "removeDiagramColor": "إزالة لون المخطط",
+      "strokeNotApplicable": "الحد غير قابل للتطبيق على الكائنات المحددة",
+      "strokeTab": "حد",
+      "title": "النمط",
+      "toggleStylePanel": "تبديل لوحة الأنماط"
     }
   },
   "editor": {
@@ -1403,7 +1469,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "مسح المرشحات",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "السرية",
       "confidentialOnly": "سري",
       "nonConfidential": "غير سري"

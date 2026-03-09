@@ -33,14 +33,20 @@
     "invokeDialog": {
       "allObjects": "(הכל)",
       "errorInvoking": "הפעלת התוסף נכשלה. אנא נסה שוב.",
+      "invalidCharacters": "מותרים רק תווים אלפאנומריים, רווחים, מקפים, נקודות, פסיקים ולוכסנים",
       "invalidJson": "פורמט JSON לא תקין",
       "invocationQueued": "הפעלת התוסף בתור",
+      "metadataKeyMissing": "מפתח מטא-נתונים נדרש \"{{key}}\" אינו קיים באובייקט זה",
+      "numberMax": "הערך חייב להיות לכל היותר {{max}}",
+      "numberMin": "הערך חייב להיות לפחות {{min}}",
+      "parameters": "פרמטרים",
       "payload": "מטען (אופציונלי)",
       "payloadHint": "נתוני JSON להעברה לתוסף",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "מזהה מודל איומים",
-      "title": "הפעל תוסף"
+      "title": "הפעל תוסף",
+      "valueTooLong": "הערך חורג מהאורך המקסימלי"
     }
   },
   "admin": {
@@ -426,6 +432,45 @@
       "software": "תוכנה"
     }
   },
+  "auditTrail": {
+    "changeSummary": "סיכום שינויים",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "נמחק",
+      "patched": "תוקן",
+      "restored": "שוחזר",
+      "rolled_back": "הוחזר לאחור",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "מי",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "פעולה",
+      "objectType": "{{common.type}}",
+      "timestamp": "מתי"
+    },
+    "filters": {
+      "actorEmail": "דוא\"ל הפועל",
+      "actorEmailPlaceholder": "סנן לפי דוא\"ל...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "נקה מסננים",
+      "objectType": "סוג אובייקט"
+    },
+    "noEntries": "לא נמצאו רשומות ביומן הביקורת.",
+    "rollback": {
+      "action": "החזרה לאחור",
+      "confirmMessage": "האם אתה בטוח שברצונך להחזיר לאחור את {{objectType}} \"{{name}}\" לגרסה {{version}}?",
+      "confirmTitle": "אישור החזרה לאחור",
+      "confirmationField": "הקלד לאישור",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "ההחזרה לאחור נכשלה. אנא נסה שוב.",
+      "success": "ההחזרה לאחור הושלמה בהצלחה.",
+      "typeConfirmation": "לאישור, הקלד \"{{confirmValue}}\" למטה.",
+      "versionPruned": "תמונת המצב של הגרסה נגזמה. החזרה לאחור אינה זמינה עוד.",
+      "warning": "פעולה זו תדרוס את המצב הנוכחי של ישות זו עם הגרסה שנלכדה ברשומת ביקורת זו. פעולה זו יוצרת רשומת ביקורת חדשה אך המצב הנוכחי יאבד."
+    },
+    "title": "יומן ביקורת"
+  },
   "auth": {
     "unauthorized": {
       "401": "401 לא מורשה",
@@ -517,6 +562,7 @@
     "email": "דוא\"ל",
     "emailLabel": "כתובת דוא\"ל",
     "error": "שגיאה",
+    "false": "שקר",
     "fonts": "גופנים",
     "groups": "קבוצות",
     "id": "מזהה",
@@ -611,6 +657,7 @@
     "threatName": "שם האיום",
     "threatType": "סוג איום",
     "title": "כותרת",
+    "true": "אמת",
     "tryAdjustingFilters": "נסה להתאים את המסננים שלך.",
     "type": "סוג",
     "unarchive": "ביטול ארכיון",
@@ -760,6 +807,25 @@
       "title": "היסטוריה",
       "undoStack": "מחסנית ביטול",
       "undoStackSize": "גודל מחסנית ביטול"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "הוסף צבע דיאגרמה",
+      "clearCustomFormatting": "נקה עיצוב מותאם אישית",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "מילוי אינו חל על האובייקטים הנבחרים",
+      "fillTab": "מילוי",
+      "hexColor": "הקס",
+      "noSelection": "בחר אובייקט לעריכת סגנונות",
+      "opacity": "שקיפות",
+      "osColorPicker": "בחר צבע מהמערכת",
+      "removeDiagramColor": "הסר צבע דיאגרמה",
+      "strokeNotApplicable": "קו מתאר אינו חל על האובייקטים הנבחרים",
+      "strokeTab": "קו מתאר",
+      "title": "סגנון",
+      "toggleStylePanel": "החלף לוח סגנון"
     }
   },
   "editor": {
@@ -1403,7 +1469,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "נקה מסננים",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "סודיות",
       "confidentialOnly": "סודי",
       "nonConfidential": "לא סודי"

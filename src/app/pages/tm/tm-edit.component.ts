@@ -2517,6 +2517,30 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
+   * Navigate to the audit trail page for the current threat model (all entities).
+   */
+  openAuditTrail(): void {
+    if (!this.threatModel) return;
+    void this.router.navigate(['/tm', this.threatModel.id, 'audit']);
+  }
+
+  /**
+   * Navigate to the audit trail page scoped to a specific sub-entity.
+   */
+  openEntityAuditTrail(
+    objectType: string,
+    entityId: string,
+    entityName: string,
+    event?: MouseEvent,
+  ): void {
+    if (event) event.stopPropagation();
+    if (!this.threatModel) return;
+    void this.router.navigate(['/tm', this.threatModel.id, 'audit'], {
+      queryParams: { objectType, objectId: entityId, entityName },
+    });
+  }
+
+  /**
    * Downloads the threat model as a JSON file to the desktop.
    * Re-fetches the full threat model from the API to ensure all sub-entity
    * data is complete (paginated loads strip note content and diagram cells).

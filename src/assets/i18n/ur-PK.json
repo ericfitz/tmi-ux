@@ -33,14 +33,20 @@
     "invokeDialog": {
       "allObjects": "(سب)",
       "errorInvoking": "ایڈ آن کو کال کرنے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔",
+      "invalidCharacters": "صرف حروف اور اعداد، خالی جگہیں، ہائفن، نقطے، کوما، اور فارورڈ سلیش کی اجازت ہے",
       "invalidJson": "غلط JSON فارمیٹ",
       "invocationQueued": "ایڈ آن کال قطار میں شامل ہو گئی",
+      "metadataKeyMissing": "مطلوبہ میٹا ڈیٹا کلید \"{{key}}\" اس آبجیکٹ پر موجود نہیں ہے",
+      "numberMax": "قدر زیادہ سے زیادہ {{max}} ہونی چاہیے",
+      "numberMin": "قدر کم از کم {{min}} ہونی چاہیے",
+      "parameters": "پیرامیٹرز",
       "payload": "پے لوڈ (اختیاری)",
       "payloadHint": "ایڈ آن کو بھیجنے کے لیے JSON ڈیٹا",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "تھریٹ ماڈل ID",
-      "title": "ایڈ آن کو کال کریں"
+      "title": "ایڈ آن کو کال کریں",
+      "valueTooLong": "قدر زیادہ سے زیادہ طوالت سے تجاوز کرتی ہے"
     }
   },
   "admin": {
@@ -426,6 +432,45 @@
       "software": "سافٹ ویئر"
     }
   },
+  "auditTrail": {
+    "changeSummary": "تبدیلی کا خلاصہ",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "حذف شدہ",
+      "patched": "پیچ شدہ",
+      "restored": "بحال شدہ",
+      "rolled_back": "واپس کیا گیا",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "کس نے",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "عمل",
+      "objectType": "{{common.type}}",
+      "timestamp": "کب"
+    },
+    "filters": {
+      "actorEmail": "عامل کا ای میل",
+      "actorEmailPlaceholder": "ای میل سے فلٹر کریں...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "فلٹرز صاف کریں",
+      "objectType": "آبجیکٹ کی قسم"
+    },
+    "noEntries": "آڈٹ ٹریل کے اندراجات نہیں ملے۔",
+    "rollback": {
+      "action": "واپس کریں",
+      "confirmMessage": "کیا آپ واقعی {{objectType}} \"{{name}}\" کو ورژن {{version}} پر واپس کرنا چاہتے ہیں؟",
+      "confirmTitle": "واپسی کی تصدیق کریں",
+      "confirmationField": "تصدیق کے لیے ٹائپ کریں",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "واپسی ناکام ہوگئی۔ براہ کرم دوبارہ کوشش کریں۔",
+      "success": "واپسی کامیابی سے مکمل ہوگئی۔",
+      "typeConfirmation": "تصدیق کے لیے، نیچے \"{{confirmValue}}\" ٹائپ کریں۔",
+      "versionPruned": "ورژن کا سنیپ شاٹ ہٹا دیا گیا ہے۔ واپسی اب دستیاب نہیں ہے۔",
+      "warning": "یہ اس ہستی کی موجودہ حالت کو اس آڈٹ اندراج میں محفوظ ورژن سے تبدیل کر دے گا۔ یہ عمل ایک نیا آڈٹ اندراج بنائے گا لیکن موجودہ حالت ختم ہو جائے گی۔"
+    },
+    "title": "آڈٹ ٹریل"
+  },
   "auth": {
     "unauthorized": {
       "401": "401 غیر مجاز",
@@ -517,6 +562,7 @@
     "email": "ای میل",
     "emailLabel": "ای میل ایڈریس",
     "error": "خرابی",
+    "false": "غلط",
     "fonts": "فونٹس",
     "groups": "گروپس",
     "id": "شناخت",
@@ -611,6 +657,7 @@
     "threatName": "خطرے کا نام",
     "threatType": "خطرے کی قسم",
     "title": "عنوان",
+    "true": "درست",
     "tryAdjustingFilters": "اپنے فلٹرز کو ایڈجسٹ کرنے کی کوشش کریں۔",
     "type": "قسم",
     "unarchive": "آرکائیو ختم کریں",
@@ -760,6 +807,25 @@
       "title": "تاریخ",
       "undoStack": "واپس کرنے کا اسٹیک",
       "undoStackSize": "واپس کرنے کے اسٹیک کا سائز"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "ڈایاگرام کا رنگ شامل کریں",
+      "clearCustomFormatting": "حسب ضرورت فارمیٹنگ صاف کریں",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "فل منتخب آبجیکٹس پر لاگو نہیں ہوتا",
+      "fillTab": "فل",
+      "hexColor": "Hex",
+      "noSelection": "اسٹائل میں ترمیم کے لیے ایک آبجیکٹ منتخب کریں",
+      "opacity": "شفافیت",
+      "osColorPicker": "سسٹم سے رنگ منتخب کریں",
+      "removeDiagramColor": "ڈایاگرام کا رنگ ہٹائیں",
+      "strokeNotApplicable": "اسٹروک منتخب آبجیکٹس پر لاگو نہیں ہوتا",
+      "strokeTab": "اسٹروک",
+      "title": "اسٹائل",
+      "toggleStylePanel": "اسٹائل پینل ٹوگل کریں"
     }
   },
   "editor": {
@@ -1403,7 +1469,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "فلٹرز صاف کریں",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "رازداریت",
       "confidentialOnly": "رازدارانہ",
       "nonConfidential": "غیر رازدارانہ"

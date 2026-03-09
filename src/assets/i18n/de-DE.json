@@ -33,14 +33,20 @@
     "invokeDialog": {
       "allObjects": "(Alle)",
       "errorInvoking": "Addon konnte nicht aufgerufen werden. Bitte versuchen Sie es erneut.",
+      "invalidCharacters": "Nur alphanumerische Zeichen, Leerzeichen, Bindestriche, Punkte, Kommas und Schrägstriche sind erlaubt",
       "invalidJson": "Ungültiges JSON-Format",
       "invocationQueued": "Addon-Aufruf in Warteschlange",
+      "metadataKeyMissing": "Der erforderliche Metadaten-Schlüssel \"{{key}}\" ist bei diesem Objekt nicht vorhanden",
+      "numberMax": "Der Wert darf höchstens {{max}} betragen",
+      "numberMin": "Der Wert muss mindestens {{min}} betragen",
+      "parameters": "Parameter",
       "payload": "Nutzlast (Optional)",
       "payloadHint": "JSON-Daten zum Übergeben an das Addon",
       "payloadPlaceholder": "{ \"key\": \"value\" }",
       "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "Bedrohungsmodell-ID",
-      "title": "Addon aufrufen"
+      "title": "Addon aufrufen",
+      "valueTooLong": "Der Wert überschreitet die maximale Länge"
     }
   },
   "admin": {
@@ -426,6 +432,45 @@
       "software": "Software"
     }
   },
+  "auditTrail": {
+    "changeSummary": "Änderungszusammenfassung",
+    "changeTypes": {
+      "created": "{{common.created}}",
+      "deleted": "Gelöscht",
+      "patched": "Gepatcht",
+      "restored": "Wiederhergestellt",
+      "rolled_back": "Zurückgesetzt",
+      "updated": "{{surveys.list.updated}}"
+    },
+    "columns": {
+      "actor": "Wer",
+      "changeSummary": "{{debugDialogs.historyDialog.summary}}",
+      "changeType": "Aktion",
+      "objectType": "{{common.type}}",
+      "timestamp": "Wann"
+    },
+    "filters": {
+      "actorEmail": "E-Mail des Akteurs",
+      "actorEmailPlaceholder": "Nach E-Mail filtern...",
+      "changeType": "{{auditTrail.columns.changeType}}",
+      "clear": "Filter löschen",
+      "objectType": "Objekttyp"
+    },
+    "noEntries": "Keine Audit-Trail-Einträge gefunden.",
+    "rollback": {
+      "action": "Zurücksetzen",
+      "confirmMessage": "Sind Sie sicher, dass Sie {{objectType}} \"{{name}}\" auf Version {{version}} zurücksetzen möchten?",
+      "confirmTitle": "Zurücksetzen bestätigen",
+      "confirmationField": "Zur Bestätigung eingeben",
+      "confirmationValue": "{{common.deleteWarningConfirmationValue}}",
+      "error": "Zurücksetzen fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "success": "Zurücksetzen erfolgreich abgeschlossen.",
+      "typeConfirmation": "Zur Bestätigung geben Sie unten \"{{confirmValue}}\" ein.",
+      "versionPruned": "Der Versions-Snapshot wurde bereinigt. Zurücksetzen ist nicht mehr verfügbar.",
+      "warning": "Dies überschreibt den aktuellen Zustand dieser Entität mit der in diesem Audit-Eintrag erfassten Version. Diese Aktion erstellt einen neuen Audit-Eintrag, aber der aktuelle Zustand geht verloren."
+    },
+    "title": "Audit-Trail"
+  },
   "auth": {
     "unauthorized": {
       "401": "401 Nicht autorisiert",
@@ -517,6 +562,7 @@
     "email": "E-Mail",
     "emailLabel": "E-Mail-Adresse",
     "error": "Fehler",
+    "false": "Falsch",
     "fonts": "Schriftarten",
     "groups": "Gruppen",
     "id": "ID",
@@ -611,6 +657,7 @@
     "threatName": "Bedrohungsname",
     "threatType": "Bedrohungstyp",
     "title": "Titel",
+    "true": "Wahr",
     "tryAdjustingFilters": "Versuchen Sie, Ihre Filter anzupassen.",
     "type": "Typ",
     "unarchive": "Dearchivieren",
@@ -760,6 +807,25 @@
       "title": "Verlauf",
       "undoStack": "Rückgängig-Stapel",
       "undoStackSize": "Größe des Rückgängig-Stapels"
+    }
+  },
+  "dfd": {
+    "stylePanel": {
+      "addDiagramColor": "Diagrammfarbe hinzufügen",
+      "clearCustomFormatting": "Benutzerdefinierte Formatierung löschen",
+      "defaultColors": "{{common.objectTypes.diagram}}",
+      "diagramColors": "{{common.objectTypes.diagram}}",
+      "fillNotApplicable": "Füllung ist für ausgewählte Objekte nicht anwendbar",
+      "fillTab": "Füllung",
+      "hexColor": "Hex",
+      "noSelection": "Objekt auswählen, um Stile zu bearbeiten",
+      "opacity": "Deckkraft",
+      "osColorPicker": "Farbe vom System auswählen",
+      "removeDiagramColor": "Diagrammfarbe entfernen",
+      "strokeNotApplicable": "Kontur ist für ausgewählte Objekte nicht anwendbar",
+      "strokeTab": "Kontur",
+      "title": "Stil",
+      "toggleStylePanel": "Stilbereich umschalten"
     }
   },
   "editor": {
@@ -1403,7 +1469,7 @@
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
       "allSurveys": "{{triage.list.allSurveys}}",
-      "clearFilters": "Filter löschen",
+      "clearFilters": "{{auditTrail.filters.clear}}",
       "confidential": "Vertraulichkeit",
       "confidentialOnly": "Vertraulich",
       "nonConfidential": "Nicht vertraulich"

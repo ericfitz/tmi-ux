@@ -1,0 +1,70 @@
+.rollback-dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .warning-icon {
+    color: var(--mat-warn-color, #f44336);
+  }
+}
+
+.rollback-dialog-content {
+  .confirmation-message {
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+
+  .change-summary {
+    margin-bottom: 16px;
+    padding: 8px 12px;
+    background: var(--mat-sys-surface-variant, rgb(0 0 0 / 4%));
+    border-radius: 4px;
+    font-size: 13px;
+  }
+
+  .warning-box {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: rgb(255 152 0 / 8%);
+    border-left: 3px solid #ff9800;
+    border-radius: 4px;
+    margin-bottom: 16px;
+
+    .warning-icon-small {
+      color: #ff9800;
+      flex-shrink: 0;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    .warning-text {
+      font-size: 13px;
+
+      p {
+        margin: 0 0 4px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  .confirmation-input-section {
+    margin-top: 16px;
+
+    .confirmation-input {
+      width: 100%;
+    }
+
+    .error-hint {
+      color: var(--mat-warn-color, #f44336);
+    }
+
+    .success-hint {
+      color: var(--mat-sys-primary, #4caf50);
+    }
+  }
+}

@@ -1,0 +1,195 @@
+<div class="audit-trail-container">
+  <div class="header-row">
+    <h1 class="page-title">
+      <span class="title-prefix">{{ 'auditTrail.title' | transloco }}:</span>
+      {{ ' ' }}
+      <span class="title-name">{{ threatModel?.name }}</span>
+      @if (entityName) {
+        <span class="entity-scope"> / {{ entityName }}</span>
+      }
+    </h1>
+  </div>
+
+  <mat-card class="audit-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'auditTrail.title' | transloco }}</mat-card-title>
+      <div class="action-buttons">
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="goBack()"
+          [matTooltip]="'common.close' | transloco"
+          [attr.aria-label]="'common.close' | transloco"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Filters -->
+      <div class="filters-row">
+        @if (!entityType) {
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>{{ 'auditTrail.filters.objectType' | transloco }}</mat-label>
+            <mat-select [(value)]="filterObjectType" (selectionChange)="applyFilters()">
+              <mat-option value="">{{ 'common.all' | transloco }}</mat-option>
+              @for (opt of objectTypeOptions; track opt) {
+                <mat-option [value]="opt">{{ getObjectTypeKey(opt) | transloco }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>{{ 'auditTrail.filters.changeType' | transloco }}</mat-label>
+          <mat-select [(value)]="filterChangeType" (selectionChange)="applyFilters()">
+            <mat-option value="">{{ 'common.all' | transloco }}</mat-option>
+            @for (opt of changeTypeOptions; track opt) {
+              <mat-option [value]="opt">{{ getChangeTypeKey(opt) | transloco }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>{{ 'auditTrail.filters.actorEmail' | transloco }}</mat-label>
+          <input
+            matInput
+            [(ngModel)]="filterActorEmail"
+            (keyup.enter)="applyFilters()"
+            [placeholder]="'auditTrail.filters.actorEmailPlaceholder' | transloco"
+          />
+        </mat-form-field>
+
+        <button
+          mat-icon-button
+          (click)="clearFilters()"
+          [matTooltip]="'auditTrail.filters.clear' | transloco"
+          [attr.aria-label]="'auditTrail.filters.clear' | transloco"
+        >
+          <mat-icon>filter_list_off</mat-icon>
+        </button>
+      </div>
+
+      <!-- Loading -->
+      @if (loading) {
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      }
+
+      <!-- Table -->
+      @if (!loading) {
+        @if (entries.length === 0) {
+          <div class="empty-state">
+            <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+            <p>{{ 'auditTrail.noEntries' | transloco }}</p>
+          </div>
+        } @else {
+          <table mat-table [dataSource]="entries" class="audit-table">
+            <!-- Timestamp Column -->
+            <ng-container matColumnDef="timestamp">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ 'auditTrail.columns.timestamp' | transloco }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let entry"
+                [matTooltip]="formatAbsoluteTimestamp(entry.created_at)"
+                matTooltipPosition="above"
+              >
+                {{ formatTimestamp(entry.created_at) }}
+              </td>
+            </ng-container>
+
+            <!-- Actor Column -->
+            <ng-container matColumnDef="actor">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ 'auditTrail.columns.actor' | transloco }}
+              </th>
+              <td
+                mat-cell
+                *matCellDef="let entry"
+                [matTooltip]="entry.actor.email"
+                matTooltipPosition="above"
+              >
+                {{ entry.actor.display_name }}
+              </td>
+            </ng-container>
+
+            <!-- Change Type Column -->
+            <ng-container matColumnDef="changeType">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ 'auditTrail.columns.changeType' | transloco }}
+              </th>
+              <td mat-cell *matCellDef="let entry">
+                <span class="change-type-badge" [attr.data-change-type]="entry.change_type">
+                  {{ getChangeTypeKey(entry.change_type) | transloco }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Object Type Column -->
+            <ng-container matColumnDef="objectType">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ 'auditTrail.columns.objectType' | transloco }}
+              </th>
+              <td mat-cell *matCellDef="let entry">
+                {{ getObjectTypeKey(entry.object_type) | transloco }}
+              </td>
+            </ng-container>
+
+            <!-- Change Summary Column -->
+            <ng-container matColumnDef="changeSummary">
+              <th mat-header-cell *matHeaderCellDef>
+                {{ 'auditTrail.columns.changeSummary' | transloco }}
+              </th>
+              <td mat-cell *matCellDef="let entry" class="summary-cell">
+                {{ entry.change_summary || '-' }}
+              </td>
+            </ng-container>
+
+            <!-- Rollback Column -->
+            <ng-container matColumnDef="rollback">
+              <th mat-header-cell *matHeaderCellDef class="column-actions">
+                {{ 'common.actions' | transloco }}
+              </th>
+              <td mat-cell *matCellDef="let entry" class="column-actions">
+                @if (canRollback(entry)) {
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="onRollback(entry)"
+                    [matTooltip]="'auditTrail.rollback.action' | transloco"
+                    [attr.aria-label]="'auditTrail.rollback.action' | transloco"
+                  >
+                    <mat-icon>undo</mat-icon>
+                  </button>
+                } @else if (entry.version === null) {
+                  <mat-icon
+                    class="pruned-icon"
+                    [matTooltip]="'auditTrail.rollback.versionPruned' | transloco"
+                  >
+                    block
+                  </mat-icon>
+                }
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+
+          <mat-paginator
+            [length]="totalEntries"
+            [pageSize]="pageSize"
+            [pageIndex]="pageIndex"
+            [pageSizeOptions]="[10, 20, 50, 100]"
+            (page)="onPageChange($event)"
+            showFirstLastButtons
+          ></mat-paginator>
+        }
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
