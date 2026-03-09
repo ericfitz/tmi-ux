@@ -128,6 +128,14 @@ describe('AuditTrailService', () => {
         expect.any(Error),
       );
     });
+
+    it('should return empty response when API returns null body', () => {
+      (apiService.get as ReturnType<typeof vi.fn>).mockReturnValue(of(null));
+
+      service.getAuditTrail('tm-1').subscribe(response => {
+        expect(response).toEqual({ audit_entries: [], total: 0, limit: 0, offset: 0 });
+      });
+    });
   });
 
   describe('getEntityAuditTrail', () => {
@@ -183,6 +191,14 @@ describe('AuditTrailService', () => {
         'Error fetching audit trail for diagram diag-1',
         expect.any(Error),
       );
+    });
+
+    it('should return empty response when API returns null body', () => {
+      (apiService.get as ReturnType<typeof vi.fn>).mockReturnValue(of(null));
+
+      service.getEntityAuditTrail('tm-1', 'diagram', 'diag-1').subscribe(response => {
+        expect(response).toEqual({ audit_entries: [], total: 0, limit: 0, offset: 0 });
+      });
     });
   });
 

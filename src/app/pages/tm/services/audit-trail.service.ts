@@ -7,7 +7,7 @@
 
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 import { ApiService } from '@app/core/services/api.service';
 import { LoggerService } from '@app/core/services/logger.service';
@@ -17,6 +17,8 @@ import {
   AuditTrailListParams,
   ListAuditTrailResponse,
 } from '../models/audit-trail.model';
+
+const EMPTY_RESPONSE: ListAuditTrailResponse = { audit_entries: [], total: 0, limit: 0, offset: 0 };
 
 @Injectable({
   providedIn: 'root',
@@ -38,9 +40,10 @@ export class AuditTrailService {
     return this.apiService
       .get<ListAuditTrailResponse>(`threat_models/${threatModelId}/audit_trail`, queryParams)
       .pipe(
+        map(response => response ?? EMPTY_RESPONSE),
         catchError(error => {
           this.logger.error(`Error fetching audit trail for threat model: ${threatModelId}`, error);
-          return of({ audit_entries: [], total: 0, limit: 0, offset: 0 });
+          return of(EMPTY_RESPONSE);
         }),
       );
   }
@@ -57,9 +60,10 @@ export class AuditTrailService {
     const endpoint = this.buildEntityEndpoint(threatModelId, entityType, entityId);
     const queryParams = params ? this.buildQueryParams(params) : {};
     return this.apiService.get<ListAuditTrailResponse>(endpoint, queryParams).pipe(
+      map(response => response ?? EMPTY_RESPONSE),
       catchError(error => {
         this.logger.error(`Error fetching audit trail for ${entityType} ${entityId}`, error);
-        return of({ audit_entries: [], total: 0, limit: 0, offset: 0 });
+        return of(EMPTY_RESPONSE);
       }),
     );
   }
