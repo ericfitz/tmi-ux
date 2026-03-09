@@ -20,21 +20,21 @@
   <div class="palette-section">
     <div class="section-label">{{ 'dfd.stylePanel.diagramColors' | transloco }}</div>
     <div class="swatch-grid">
-      @for (color of diagramPalette; track $index; let i = $index) {
+      @for (entry of sortedDiagramEntries; track entry.position) {
         <div class="diagram-swatch-container">
           <button
             class="color-swatch diagram-swatch"
-            [class.selected]="isSelected(color, 'diagram', i)"
-            [style.background-color]="color"
+            [class.selected]="isSelected(entry.color, 'diagram', entry.position)"
+            [style.background-color]="entry.color"
             [disabled]="disabled"
-            [matTooltip]="color"
-            (click)="onDiagramColorClick(i)"
+            [matTooltip]="entry.color"
+            (click)="onDiagramColorClick(entry)"
           ></button>
           <button
             class="remove-swatch"
             [disabled]="disabled"
             [matTooltip]="'dfd.stylePanel.removeDiagramColor' | transloco"
-            (click)="onRemoveDiagramColor($event, i)"
+            (click)="onRemoveDiagramColor($event, entry)"
           >
             <mat-icon>close</mat-icon>
           </button>

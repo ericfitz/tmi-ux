@@ -9,6 +9,9 @@
  * All swatches have a visible border using theme colors for light/dark mode support.
  * Selecting any swatch emits the color and populates the hex input.
  * Diagram colors can be added (up to 8), removed, and edited via hex input or OS picker.
+ *
+ * Diagram colors use the ColorPaletteEntry schema with stable position identifiers
+ * for unambiguous REST/WebSocket updates.
  */
 
 import {
@@ -34,17 +37,13 @@ import { TranslocoModule } from '@jsverse/transloco';
 
 import { DefaultColorsConfig } from '../../../pages/dfd/constants/default-colors';
 import { isValidColor } from '../../utils/color-validation.util';
-
-/** Maximum number of diagram-specific colors */
-const MAX_DIAGRAM_COLORS = 8;
-
-/** Placeholder color for new diagram color slots */
-const PLACEHOLDER_COLOR = '#9E9E9E';
-
-export interface ColorPickerSelection {
-  color: string;
-  source: 'default' | 'diagram';
-}
+import {
+  ColorPaletteEntry,
+  MAX_DIAGRAM_COLORS,
+  PLACEHOLDER_COLOR,
+  normalizeHexColor,
+  nextAvailablePosition,
+} from '../../../pages/dfd/types/color-palette.types';
 
 @Component({
   selector: 'app-color-picker',
@@ -65,11 +64,11 @@ export interface ColorPickerSelection {
 })
 export class ColorPickerComponent {
   @Input() selectedColor: string | null = null;
-  @Input() diagramPalette: string[] = [];
+  @Input() diagramPalette: ColorPaletteEntry[] = [];
   @Input() disabled = false;
 
   @Output() colorSelected = new EventEmitter<string>();
-  @Output() diagramPaletteChanged = new EventEmitter<string[]>();
+  @Output() diagramPaletteChanged = new EventEmitter<ColorPaletteEntry[]>();
 
   @ViewChild('osColorInput') osColorInput!: ElementRef<HTMLInputElement>;
 
@@ -77,14 +76,14 @@ export class ColorPickerComponent {
   readonly maxDiagramColors = MAX_DIAGRAM_COLORS;
 
   hexInputValue = '';
-  selectedDiagramIndex: number | null = null;
+  selectedDiagramPosition: number | null = null;
   selectedSource: 'default' | 'diagram' | null = null;
 
   constructor(private cdr: ChangeDetectorRef) {}
 
   get isHexInputEnabled(): boolean {
     return (
-      !this.disabled && this.selectedSource === 'diagram' && this.selectedDiagramIndex !== null
+      !this.disabled && this.selectedSource === 'diagram' && this.selectedDiagramPosition !== null
     );
   }
 
@@ -92,42 +91,46 @@ export class ColorPickerComponent {
     return !this.disabled && this.diagramPalette.length < MAX_DIAGRAM_COLORS;
   }
 
-  get emptySlotCount(): number {
-    return MAX_DIAGRAM_COLORS - this.diagramPalette.length;
+  /** Diagram entries sorted by position for display */
+  get sortedDiagramEntries(): ColorPaletteEntry[] {
+    return [...this.diagramPalette].sort((a, b) => a.position - b.position);
   }
 
-  isSelected(color: string, source: 'default' | 'diagram', index?: number): boolean {
+  isSelected(color: string, source: 'default' | 'diagram', position?: number): boolean {
     if (source === 'default') {
       return this.selectedSource === 'default' && this.selectedColor === color;
     }
-    return this.selectedSource === 'diagram' && this.selectedDiagramIndex === index;
+    return this.selectedSource === 'diagram' && this.selectedDiagramPosition === position;
   }
 
   onDefaultColorClick(color: string): void {
     if (this.disabled) return;
     this.selectedSource = 'default';
-    this.selectedDiagramIndex = null;
+    this.selectedDiagramPosition = null;
     this.selectedColor = color;
     this.hexInputValue = color;
     this.colorSelected.emit(color);
   }
 
-  onDiagramColorClick(index: number): void {
+  onDiagramColorClick(entry: ColorPaletteEntry): void {
     if (this.disabled) return;
     this.selectedSource = 'diagram';
-    this.selectedDiagramIndex = index;
-    this.selectedColor = this.diagramPalette[index];
-    this.hexInputValue = this.diagramPalette[index];
-    this.colorSelected.emit(this.diagramPalette[index]);
+    this.selectedDiagramPosition = entry.position;
+    this.selectedColor = entry.color;
+    this.hexInputValue = entry.color;
+    this.colorSelected.emit(entry.color);
   }
 
   onEmptySlotClick(): void {
     if (this.disabled || !this.canAddDiagramColor) return;
-    const newPalette = [...this.diagramPalette, PLACEHOLDER_COLOR];
-    const newIndex = newPalette.length - 1;
+    const position = nextAvailablePosition(this.diagramPalette);
+    if (position === null) return;
+
+    const newEntry: ColorPaletteEntry = { position, color: PLACEHOLDER_COLOR };
+    const newPalette = [...this.diagramPalette, newEntry];
     this.diagramPalette = newPalette;
     this.selectedSource = 'diagram';
-    this.selectedDiagramIndex = newIndex;
+    this.selectedDiagramPosition = position;
     this.selectedColor = PLACEHOLDER_COLOR;
     this.hexInputValue = PLACEHOLDER_COLOR;
     this.diagramPaletteChanged.emit(newPalette);
@@ -135,16 +138,14 @@ export class ColorPickerComponent {
     this.cdr.markForCheck();
   }
 
-  onRemoveDiagramColor(event: MouseEvent, index: number): void {
+  onRemoveDiagramColor(event: MouseEvent, entry: ColorPaletteEntry): void {
     event.stopPropagation();
     if (this.disabled) return;
-    const newPalette = this.diagramPalette.filter((_, i) => i !== index);
-    if (this.selectedDiagramIndex === index) {
-      this.selectedDiagramIndex = null;
+    const newPalette = this.diagramPalette.filter(e => e.position !== entry.position);
+    if (this.selectedDiagramPosition === entry.position) {
+      this.selectedDiagramPosition = null;
       this.selectedSource = null;
       this.hexInputValue = '';
-    } else if (this.selectedDiagramIndex !== null && this.selectedDiagramIndex > index) {
-      this.selectedDiagramIndex--;
     }
     this.diagramPalette = newPalette;
     this.diagramPaletteChanged.emit(newPalette);
@@ -152,17 +153,18 @@ export class ColorPickerComponent {
   }
 
   onHexInput(value: string): void {
-    if (!this.isHexInputEnabled || this.selectedDiagramIndex === null) return;
+    if (!this.isHexInputEnabled || this.selectedDiagramPosition === null) return;
     this.hexInputValue = value;
-    const normalized = value.startsWith('#') ? value : `#${value}`;
-    if (isValidColor(normalized)) {
-      const upperColor = normalized.toUpperCase();
-      const newPalette = [...this.diagramPalette];
-      newPalette[this.selectedDiagramIndex] = upperColor;
+    const prefixed = value.startsWith('#') ? value : `#${value}`;
+    if (isValidColor(prefixed)) {
+      const normalized = normalizeHexColor(prefixed);
+      const newPalette = this.diagramPalette.map(e =>
+        e.position === this.selectedDiagramPosition ? { ...e, color: normalized } : e,
+      );
       this.diagramPalette = newPalette;
-      this.selectedColor = upperColor;
+      this.selectedColor = normalized;
       this.diagramPaletteChanged.emit(newPalette);
-      this.colorSelected.emit(upperColor);
+      this.colorSelected.emit(normalized);
       this.cdr.markForCheck();
     }
   }
@@ -174,11 +176,12 @@ export class ColorPickerComponent {
 
   onOsColorChange(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const color = input.value.toUpperCase();
-    if (this.selectedDiagramIndex === null) return;
+    const color = normalizeHexColor(input.value);
+    if (this.selectedDiagramPosition === null) return;
     this.hexInputValue = color;
-    const newPalette = [...this.diagramPalette];
-    newPalette[this.selectedDiagramIndex] = color;
+    const newPalette = this.diagramPalette.map(e =>
+      e.position === this.selectedDiagramPosition ? { ...e, color } : e,
+    );
     this.diagramPalette = newPalette;
     this.selectedColor = color;
     this.diagramPaletteChanged.emit(newPalette);

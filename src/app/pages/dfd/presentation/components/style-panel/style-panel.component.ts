@@ -36,6 +36,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { TranslocoModule } from '@jsverse/transloco';
 
 import { ColorPickerComponent } from '../../../../../shared/components/color-picker/color-picker.component';
+import { ColorPaletteEntry } from '../../../types/color-palette.types';
 
 /** Represents the style properties readable from selected cells */
 export interface CellStyleInfo {
@@ -79,12 +80,12 @@ export interface StyleChangeEvent {
 })
 export class StylePanelComponent implements OnChanges {
   @Input() selectedCells: CellStyleInfo[] = [];
-  @Input() diagramPalette: string[] = [];
+  @Input() diagramPalette: ColorPaletteEntry[] = [];
   @Input() disabled = false;
 
   @Output() styleChange = new EventEmitter<StyleChangeEvent>();
   @Output() clearCustomFormatting = new EventEmitter<string[]>();
-  @Output() diagramPaletteChanged = new EventEmitter<string[]>();
+  @Output() diagramPaletteChanged = new EventEmitter<ColorPaletteEntry[]>();
 
   /** Current stroke color shown in the picker (null = indeterminate) */
   currentStrokeColor: string | null = null;
@@ -200,7 +201,7 @@ export class StylePanelComponent implements OnChanges {
     this.clearCustomFormatting.emit(allIds);
   }
 
-  onDiagramPaletteChanged(palette: string[]): void {
+  onDiagramPaletteChanged(palette: ColorPaletteEntry[]): void {
     this.diagramPaletteChanged.emit(palette);
   }
 

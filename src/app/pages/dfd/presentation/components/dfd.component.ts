@@ -88,6 +88,7 @@ import { InfraDfdValidationService } from '../../infrastructure/services/infra-d
 // Essential v1 components still needed
 import { NodeType } from '../../domain/value-objects/node-info';
 import { DFD_STYLING, DFD_STYLING_HELPERS } from '../../constants/styling-constants';
+import { ColorPaletteEntry } from '../../types/color-palette.types';
 import { DfdCollaborationComponent } from './collaboration/collaboration.component';
 import { ThreatModelService } from '../../../tm/services/threat-model.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -241,7 +242,7 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // Style panel state
   isStylePanelOpen = false;
   stylePanelCells: CellStyleInfo[] = [];
-  diagramColorPalette: string[] = [];
+  diagramColorPalette: ColorPaletteEntry[] = [];
 
   // Context menu state
   contextMenuPosition = { x: '0px', y: '0px' };
@@ -2630,9 +2631,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  onDiagramPaletteChanged(palette: string[]): void {
+  onDiagramPaletteChanged(palette: ColorPaletteEntry[]): void {
     this.diagramColorPalette = palette;
-    // Palette persistence would go through diagram data when API supports colorPalette
+    // TODO: persist palette via REST/WebSocket diagram update using color_palette field
   }
 
   private updateClipboardState(): void {
