@@ -131,6 +131,16 @@ The application has three sets of users:
 
 - API specs: `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json` (REST), `https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-asyncapi.yaml` (WebSocket)
 - Integration: `https://github.com/ericfitz/tmi/wiki/API-Integration`
+- Server repo: `https://github.com/ericfitz/tmi`
+
+### Suspected Server Bugs
+
+When you encounter a problem during development or debugging that appears to originate from the TMI server/API rather than the client code (e.g., the server returns unexpected data, mutates fields it shouldn't, returns wrong status codes, or behaves contrary to the API spec):
+
+1. **Stop** working on the current task
+2. **Explain** why you believe the problem is a server-side bug, including the evidence (request/response payloads, log entries, spec violations, etc.)
+3. **Ask** the user whether to file a server bug report
+4. If the user confirms, use the `/file_server_bug` skill to create the issue in the server repo
 
 ## Development Commands
 
