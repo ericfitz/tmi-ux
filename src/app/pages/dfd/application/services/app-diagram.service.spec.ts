@@ -719,4 +719,117 @@ describe('AppDiagramService', () => {
       expect(result[0].ports.groups.top.attrs.circle.style).toBeUndefined();
     });
   });
+
+  describe('server data corruption resilience', () => {
+    const NIL_UUID = '00000000-0000-0000-0000-000000000000';
+    const mockNodeConfigService = {
+      getNodePorts: vi.fn(() => ({ items: [] })),
+    };
+
+    it('should strip nil-UUID source/target from node cells and load them as nodes', () => {
+      const corruptedNode = {
+        id: 'node-1',
+        shape: 'actor',
+        attrs: {},
+        data: { _metadata: [] },
+        source: { cell: NIL_UUID, port: null },
+        target: { cell: NIL_UUID, port: null },
+      };
+
+      const mockNodeCell = { id: 'node-1', setZIndex: vi.fn() };
+      mockInfraNodeService.createNodeFromInfo.mockReturnValue(mockNodeCell);
+
+      service.loadDiagramCellsBatch([corruptedNode], mockGraph, 'diagram-1', mockNodeConfigService);
+
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('Stripping nil-UUID source/target'),
+        expect.objectContaining({ cellId: 'node-1', shape: 'actor' }),
+      );
+      expect(mockInfraNodeService.createNodeFromInfo).toHaveBeenCalled();
+      expect(mockInfraEdgeService.createEdge).not.toHaveBeenCalled();
+    });
+
+    it('should reconstruct default attrs when node has empty attrs', () => {
+      const nodeWithEmptyAttrs = {
+        id: 'node-1',
+        shape: 'process',
+        x: 100,
+        y: 200,
+        width: 80,
+        height: 60,
+        attrs: {},
+        data: { _metadata: [] },
+      };
+
+      const mockNodeCell = { id: 'node-1', setZIndex: vi.fn() };
+      mockInfraNodeService.createNodeFromInfo.mockReturnValue(mockNodeCell);
+
+      service.loadDiagramCellsBatch(
+        [nodeWithEmptyAttrs],
+        mockGraph,
+        'diagram-1',
+        mockNodeConfigService,
+      );
+
+      expect(mockInfraNodeService.createNodeFromInfo).toHaveBeenCalled();
+      const nodeInfoArg = mockInfraNodeService.createNodeFromInfo.mock.calls[0][1];
+      // NodeInfo should have default attrs with a label
+      expect(nodeInfoArg.attrs.text.text).toBe('Process');
+      expect(nodeInfoArg.attrs.body.fill).toBeDefined();
+    });
+
+    it('should classify cells with non-nil source/target as edges regardless of shape', () => {
+      const mislabeledEdge = {
+        id: 'edge-1',
+        shape: 'actor',
+        source: { cell: 'node-a', port: 'right' },
+        target: { cell: 'node-b', port: 'left' },
+        attrs: { line: { stroke: '#000' } },
+        data: { _metadata: [] },
+      };
+
+      const mockEdgeCell = { id: 'edge-1', setZIndex: vi.fn() };
+      mockInfraEdgeService.createEdge.mockReturnValue(mockEdgeCell);
+
+      service.loadDiagramCellsBatch(
+        [mislabeledEdge],
+        mockGraph,
+        'diagram-1',
+        mockNodeConfigService,
+      );
+
+      expect(mockInfraEdgeService.createEdge).toHaveBeenCalled();
+      expect(mockInfraNodeService.createNodeFromInfo).not.toHaveBeenCalled();
+    });
+
+    it('should preserve valid attrs when present', () => {
+      const nodeWithValidAttrs = {
+        id: 'node-1',
+        shape: 'actor',
+        x: 100,
+        y: 200,
+        width: 120,
+        height: 60,
+        attrs: {
+          body: { fill: '#e8f4fd', stroke: '#1f77b4' },
+          text: { text: 'My Actor', fontSize: 12 },
+        },
+        data: { _metadata: [] },
+      };
+
+      const mockNodeCell = { id: 'node-1', setZIndex: vi.fn() };
+      mockInfraNodeService.createNodeFromInfo.mockReturnValue(mockNodeCell);
+
+      service.loadDiagramCellsBatch(
+        [nodeWithValidAttrs],
+        mockGraph,
+        'diagram-1',
+        mockNodeConfigService,
+      );
+
+      const nodeInfoArg = mockInfraNodeService.createNodeFromInfo.mock.calls[0][1];
+      expect(nodeInfoArg.attrs.text.text).toBe('My Actor');
+      expect(nodeInfoArg.attrs.body.fill).toBe('#e8f4fd');
+    });
+  });
 });

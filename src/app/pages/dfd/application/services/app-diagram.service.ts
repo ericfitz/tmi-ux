@@ -10,6 +10,7 @@ import { getX6ShapeForNodeType } from '../../infrastructure/adapters/infra-x6-sh
 import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
 import { NodeInfo, NodeType } from '../../domain/value-objects/node-info';
+import { createDefaultNodeAttrs } from '../../domain/value-objects/node-attrs';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { DFD_STYLING } from '../../constants/styling-constants';
 import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
@@ -209,19 +210,28 @@ export class AppDiagramService {
         });
       }
 
+      // Sanitize cells from server to handle known data corruption issues
+      // (e.g., nodes returned with spurious source/target, empty attrs)
+      const sanitizedCells = deduplicatedCells.map(cell => this.sanitizeCellFromServer(cell));
+
       // Convert all cells to X6 format
       const convertedCells: any[] = [];
       const nodes: any[] = [];
       const edges: any[] = [];
 
-      deduplicatedCells.forEach(cell => {
+      sanitizedCells.forEach(cell => {
         try {
           const convertedCell = this.convertMockCellToX6Format(cell, infraNodeConfigurationService);
           convertedCells.push(convertedCell);
 
           // Separate nodes and edges for proper ordering
           // Use isEdgeShape to handle both 'edge' (legacy) and 'flow' (canonical) shapes
-          if (isEdgeShape(cell.shape) || cell['edge'] === true) {
+          // Also check structural properties: cells with non-nil source/target are edges
+          if (
+            isEdgeShape(cell.shape) ||
+            cell['edge'] === true ||
+            this.hasNonNilSourceTarget(cell)
+          ) {
             edges.push(convertedCell);
           } else {
             nodes.push(convertedCell);
@@ -411,7 +421,12 @@ export class AppDiagramService {
    */
   private convertMockCellToX6Format(mockCell: any, infraNodeConfigurationService: any): any {
     // Handle edges - use isEdgeShape to handle both 'edge' (legacy) and 'flow' (canonical) shapes
-    if (isEdgeShape(mockCell.shape) || mockCell.edge === true) {
+    // Also check structural properties: cells with non-nil source/target are edges
+    if (
+      isEdgeShape(mockCell.shape) ||
+      mockCell.edge === true ||
+      this.hasNonNilSourceTarget(mockCell)
+    ) {
       return this.convertMockEdgeToX6Format(mockCell);
     }
 
@@ -431,6 +446,12 @@ export class AppDiagramService {
       mockCell.label ||
       this.getDefaultLabelForType(nodeType);
 
+    // If attrs are empty or missing key properties, reconstruct defaults for the node type.
+    // This handles server-side data corruption where node attrs are returned as {}.
+    const hasValidAttrs =
+      mockCell.attrs && (mockCell.attrs.text?.text || mockCell.attrs.body?.fill);
+    const nodeAttrs = hasValidAttrs ? mockCell.attrs : createDefaultNodeAttrs(nodeType, label);
+
     const portConfig = mockCell.ports || infraNodeConfigurationService.getNodePorts(nodeType);
     const { x, y, width, height } = this.extractMockNodeGeometry(mockCell, nodeType);
 
@@ -444,7 +465,7 @@ export class AppDiagramService {
       label,
       zIndex: mockCell.zIndex || 1,
       ports: portConfig,
-      ...(mockCell.attrs ? { attrs: mockCell.attrs } : {}),
+      attrs: nodeAttrs,
       ...this.normalizeMockNodeData(mockCell),
       ...(mockCell.parent ? { parent: mockCell.parent } : {}),
       ...(Array.isArray(mockCell.children) ? { children: mockCell.children } : {}),
@@ -506,6 +527,59 @@ export class AppDiagramService {
       return { data: { _metadata: metadataArray } };
     }
     return { data: mockCell.data };
+  }
+
+  private static readonly NIL_UUID = '00000000-0000-0000-0000-000000000000';
+
+  /**
+   * Sanitize a cell received from the server to handle known data corruption.
+   * The server may add spurious source/target with nil UUIDs to node cells
+   * and return empty attrs. This method strips those artefacts so downstream
+   * classification and conversion work correctly.
+   */
+  private sanitizeCellFromServer(cell: any): any {
+    // If the cell has a node shape but carries source/target with nil UUIDs,
+    // strip those edge-only properties so the cell is treated as a node.
+    if (!isEdgeShape(cell.shape) && cell.source && cell.target) {
+      const sourceCell = cell.source?.cell || cell.source;
+      const targetCell = cell.target?.cell || cell.target;
+      const sourceIsNil =
+        sourceCell === AppDiagramService.NIL_UUID ||
+        sourceCell === null ||
+        sourceCell === undefined;
+      const targetIsNil =
+        targetCell === AppDiagramService.NIL_UUID ||
+        targetCell === null ||
+        targetCell === undefined;
+
+      if (sourceIsNil && targetIsNil) {
+        this.logger.warn('Stripping nil-UUID source/target from node cell (server data issue)', {
+          cellId: cell.id,
+          shape: cell.shape,
+        });
+        const { source: _s, target: _t, ...cleanedCell } = cell;
+        return cleanedCell;
+      }
+    }
+    return cell;
+  }
+
+  /**
+   * Check whether a cell has non-nil source and target references,
+   * indicating it is structurally an edge regardless of its shape value.
+   */
+  private hasNonNilSourceTarget(cell: any): boolean {
+    if (!cell.source || !cell.target) return false;
+    const sourceCell = cell.source?.cell || cell.source;
+    const targetCell = cell.target?.cell || cell.target;
+    return (
+      typeof sourceCell === 'string' &&
+      typeof targetCell === 'string' &&
+      sourceCell !== AppDiagramService.NIL_UUID &&
+      targetCell !== AppDiagramService.NIL_UUID &&
+      sourceCell.length > 0 &&
+      targetCell.length > 0
+    );
   }
 
   /**
