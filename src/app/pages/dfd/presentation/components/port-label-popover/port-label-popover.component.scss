@@ -57,18 +57,19 @@
 }
 
 .position-compass {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  justify-items: center;
+  gap: 2px 0;
 }
 
-.compass-row {
-  display: flex;
-  justify-content: center;
+.compass-top,
+.compass-bottom {
+  grid-column: 2;
 }
 
 .compass-middle {
+  grid-column: 1 / -1;
   display: flex;
   justify-content: space-between;
   width: 100%;
