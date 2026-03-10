@@ -810,6 +810,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "Inferior",
+      "position.inside": "Interior",
+      "position.left": "Esquerda",
+      "position.outside": "Exterior",
+      "position.right": "Direita",
+      "position.top": "Superior",
+      "positionLabel": "Posição",
+      "textLabel": "Texto do rótulo",
+      "textPlaceholder": "Inserir rótulo da porta",
+      "title": "Rótulo da porta"
+    },
     "stylePanel": {
       "addDiagramColor": "Adicionar cor do diagrama",
       "clearCustomFormatting": "Limpar formatação personalizada",

@@ -810,6 +810,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "नीचे",
+      "position.inside": "अंदर",
+      "position.left": "बाएँ",
+      "position.outside": "बाहर",
+      "position.right": "दाएँ",
+      "position.top": "ऊपर",
+      "positionLabel": "स्थिति",
+      "textLabel": "लेबल टेक्स्ट",
+      "textPlaceholder": "पोर्ट लेबल दर्ज करें",
+      "title": "पोर्ट लेबल"
+    },
     "stylePanel": {
       "addDiagramColor": "आरेख रंग जोड़ें",
       "clearCustomFormatting": "कस्टम फ़ॉर्मेटिंग साफ़ करें",

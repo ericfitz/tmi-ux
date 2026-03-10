@@ -810,6 +810,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "Bawah",
+      "position.inside": "Dalam",
+      "position.left": "Kiri",
+      "position.outside": "Luar",
+      "position.right": "Kanan",
+      "position.top": "Atas",
+      "positionLabel": "Posisi",
+      "textLabel": "Teks label",
+      "textPlaceholder": "Masukkan label port",
+      "title": "Label Port"
+    },
     "stylePanel": {
       "addDiagramColor": "Tambah warna diagram",
       "clearCustomFormatting": "Hapus format kustom",

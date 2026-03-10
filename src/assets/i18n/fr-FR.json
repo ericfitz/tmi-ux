@@ -810,6 +810,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "Bas",
+      "position.inside": "Intérieur",
+      "position.left": "Gauche",
+      "position.outside": "Extérieur",
+      "position.right": "Droite",
+      "position.top": "Haut",
+      "positionLabel": "Position",
+      "textLabel": "Texte du libellé",
+      "textPlaceholder": "Saisir le libellé du port",
+      "title": "Libellé du port"
+    },
     "stylePanel": {
       "addDiagramColor": "Ajouter une couleur de diagramme",
       "clearCustomFormatting": "Effacer le formatage personnalisé",

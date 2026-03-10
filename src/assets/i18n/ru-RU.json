@@ -810,6 +810,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "Снизу",
+      "position.inside": "Внутри",
+      "position.left": "Слева",
+      "position.outside": "Снаружи",
+      "position.right": "Справа",
+      "position.top": "Сверху",
+      "positionLabel": "Позиция",
+      "textLabel": "Текст метки",
+      "textPlaceholder": "Введите метку порта",
+      "title": "Метка порта"
+    },
     "stylePanel": {
       "addDiagramColor": "Добавить цвет диаграммы",
       "clearCustomFormatting": "Очистить пользовательское форматирование",

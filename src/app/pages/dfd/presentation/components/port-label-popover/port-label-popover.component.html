@@ -1,0 +1,63 @@
+<div class="port-label-popover" [style.left.px]="positionX" [style.top.px]="positionY">
+  <div class="popover-header">
+    <span class="popover-title">{{ 'dfd.portLabel.title' | transloco }}</span>
+    <button mat-icon-button [matTooltip]="'common.actions.close' | transloco" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="popover-body">
+    <mat-form-field appearance="outline" class="label-text-field">
+      <mat-label>{{ 'dfd.portLabel.textLabel' | transloco }}</mat-label>
+      <input
+        matInput
+        [ngModel]="labelText"
+        (ngModelChange)="onTextChange($event)"
+        [placeholder]="'dfd.portLabel.textPlaceholder' | transloco"
+        autocomplete="off"
+      />
+    </mat-form-field>
+
+    <div class="position-section">
+      <div class="position-label">{{ 'dfd.portLabel.positionLabel' | transloco }}</div>
+
+      <mat-radio-group
+        [ngModel]="labelPosition"
+        (ngModelChange)="onPositionChange($event)"
+        class="position-radio-group"
+      >
+        <!-- Outside / Inside row -->
+        <div class="position-row position-row-relative">
+          <mat-radio-button value="outside">
+            {{ 'dfd.portLabel.position.outside' | transloco }}
+          </mat-radio-button>
+          <mat-radio-button value="inside">
+            {{ 'dfd.portLabel.position.inside' | transloco }}
+          </mat-radio-button>
+        </div>
+
+        <!-- Compass layout for directional positions -->
+        <div class="position-compass">
+          <div class="compass-row compass-top">
+            <mat-radio-button value="top">
+              {{ 'dfd.portLabel.position.top' | transloco }}
+            </mat-radio-button>
+          </div>
+          <div class="compass-row compass-middle">
+            <mat-radio-button value="left">
+              {{ 'dfd.portLabel.position.left' | transloco }}
+            </mat-radio-button>
+            <mat-radio-button value="right">
+              {{ 'dfd.portLabel.position.right' | transloco }}
+            </mat-radio-button>
+          </div>
+          <div class="compass-row compass-bottom">
+            <mat-radio-button value="bottom">
+              {{ 'dfd.portLabel.position.bottom' | transloco }}
+            </mat-radio-button>
+          </div>
+        </div>
+      </mat-radio-group>
+    </div>
+  </div>
+</div>

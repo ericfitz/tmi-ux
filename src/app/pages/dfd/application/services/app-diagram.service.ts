@@ -431,7 +431,7 @@ export class AppDiagramService {
       mockCell.label ||
       this.getDefaultLabelForType(nodeType);
 
-    const portConfig = infraNodeConfigurationService.getNodePorts(nodeType);
+    const portConfig = mockCell.ports || infraNodeConfigurationService.getNodePorts(nodeType);
     const { x, y, width, height } = this.extractMockNodeGeometry(mockCell, nodeType);
 
     return {
@@ -1031,7 +1031,8 @@ export class AppDiagramService {
     graphCells.forEach(cell => {
       try {
         if (cell.isNode()) {
-          // Convert node to cell format
+          // Convert node to cell format, preserving actual attrs and ports
+          const currentAttrs = cell.getAttrs() || {};
           const nodeCell: any = {
             id: cell.id,
             shape: cell.shape,
@@ -1046,15 +1047,20 @@ export class AppDiagramService {
                 fill: '#ffffff',
                 stroke: '#000000',
                 strokeWidth: 2,
+                ...(currentAttrs['body'] as Record<string, unknown>),
               },
               text: {
                 text: (cell as any).getLabel
                   ? (cell as any).getLabel()
-                  : (cell.getAttrs() as any)?.text?.text || '',
+                  : (currentAttrs as any)?.text?.text || '',
                 fontSize: DFD_STYLING.DEFAULT_FONT_SIZE,
                 fill: DFD_STYLING.NODES.LABEL_TEXT_COLOR,
+                ...(currentAttrs['text'] as Record<string, unknown>),
               },
             },
+            ports: cell.isNode()
+              ? this.cleanPortsForSave((cell as any).getProp('ports'))
+              : undefined,
             data: this.convertCellDataToArray(cell.getData()),
           };
 
@@ -1149,5 +1155,52 @@ export class AppDiagramService {
 
     // Default empty hybrid format
     return { _metadata: [] };
+  }
+
+  /**
+   * Strip runtime-only port state (visibility) before saving.
+   * Preserves label text and position which are user-defined.
+   */
+  private cleanPortsForSave(ports: any): any {
+    if (!ports) return undefined;
+
+    const cleaned = JSON.parse(JSON.stringify(ports));
+
+    if (cleaned.groups) {
+      for (const group of Object.values(cleaned.groups)) {
+        this.stripVisibilityFromPortAttrs(group);
+      }
+    }
+
+    if (cleaned.items) {
+      for (const item of cleaned.items) {
+        this.stripVisibilityFromPortAttrs(item);
+      }
+    }
+
+    return cleaned;
+  }
+
+  /**
+   * Remove the runtime visibility style from a port element's attrs,
+   * cleaning up empty parent objects.
+   */
+  private stripVisibilityFromPortAttrs(portElement: any): void {
+    if (!portElement?.attrs) return;
+    for (const selector of ['circle', 'text']) {
+      const selectorAttrs = portElement.attrs[selector];
+      if (selectorAttrs?.style?.visibility) {
+        delete selectorAttrs.style.visibility;
+        if (Object.keys(selectorAttrs.style).length === 0) {
+          delete selectorAttrs.style;
+        }
+        if (Object.keys(selectorAttrs).length === 0) {
+          delete portElement.attrs[selector];
+        }
+      }
+    }
+    if (Object.keys(portElement.attrs).length === 0) {
+      delete portElement.attrs;
+    }
   }
 }

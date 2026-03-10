@@ -835,6 +835,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "Bottom",
+      "position.inside": "Inside",
+      "position.left": "Left",
+      "position.outside": "Outside",
+      "position.right": "Right",
+      "position.top": "Top",
+      "positionLabel": "Position",
+      "textLabel": "Label text",
+      "textPlaceholder": "Enter port label",
+      "title": "Port Label"
+    },
     "stylePanel": {
       "addDiagramColor": "Add diagram color",
       "clearCustomFormatting": "Clear custom formatting",

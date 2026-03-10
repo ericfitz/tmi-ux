@@ -810,6 +810,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "Unten",
+      "position.inside": "Innen",
+      "position.left": "Links",
+      "position.outside": "Außen",
+      "position.right": "Rechts",
+      "position.top": "Oben",
+      "positionLabel": "Position",
+      "textLabel": "Beschriftungstext",
+      "textPlaceholder": "Port-Beschriftung eingeben",
+      "title": "Port-Beschriftung"
+    },
     "stylePanel": {
       "addDiagramColor": "Diagrammfarbe hinzufügen",
       "clearCustomFormatting": "Benutzerdefinierte Formatierung löschen",

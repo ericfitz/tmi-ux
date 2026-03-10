@@ -1,0 +1,84 @@
+.port-label-popover {
+  position: fixed;
+  z-index: 1000;
+  background: var(--mat-sys-surface-container);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  min-width: 220px;
+  max-width: 280px;
+}
+
+.popover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 8px 4px 16px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.popover-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.popover-body {
+  padding: 12px 16px;
+}
+
+.label-text-field {
+  width: 100%;
+}
+
+.position-section {
+  margin-top: 4px;
+}
+
+.position-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+  margin-bottom: 8px;
+}
+
+.position-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.position-row-relative {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.position-compass {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.compass-row {
+  display: flex;
+  justify-content: center;
+}
+
+.compass-middle {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 8px;
+}
+
+::ng-deep .port-label-popover .mat-mdc-radio-button .mdc-label {
+  font-size: 12px;
+}
+
+::ng-deep .port-label-popover .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}

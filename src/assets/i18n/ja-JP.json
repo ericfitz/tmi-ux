@@ -810,6 +810,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "下",
+      "position.inside": "内側",
+      "position.left": "左",
+      "position.outside": "外側",
+      "position.right": "右",
+      "position.top": "上",
+      "positionLabel": "位置",
+      "textLabel": "ラベルテキスト",
+      "textPlaceholder": "ポートラベルを入力",
+      "title": "ポートラベル"
+    },
     "stylePanel": {
       "addDiagramColor": "ダイアグラムカラーを追加",
       "clearCustomFormatting": "カスタム書式をクリア",

@@ -810,6 +810,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "نیچے",
+      "position.inside": "اندر",
+      "position.left": "بائیں",
+      "position.outside": "باہر",
+      "position.right": "دائیں",
+      "position.top": "اوپر",
+      "positionLabel": "پوزیشن",
+      "textLabel": "لیبل ٹیکسٹ",
+      "textPlaceholder": "پورٹ لیبل درج کریں",
+      "title": "پورٹ لیبل"
+    },
     "stylePanel": {
       "addDiagramColor": "ڈایاگرام کا رنگ شامل کریں",
       "clearCustomFormatting": "حسب ضرورت فارمیٹنگ صاف کریں",

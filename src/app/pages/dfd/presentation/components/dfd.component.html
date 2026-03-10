@@ -390,6 +390,17 @@
       ></app-style-panel>
     }
 
+    <!-- Port label popover -->
+    @if (isPortLabelPopoverOpen) {
+      <app-port-label-popover
+        [portLabel]="portLabelData"
+        [positionX]="portLabelPopoverPosition.x"
+        [positionY]="portLabelPopoverPosition.y"
+        (labelChanged)="onPortLabelChanged($event)"
+        (closed)="closePortLabelPopover()"
+      ></app-port-label-popover>
+    }
+
     <!-- Cell context menu -->
     <div
       style="visibility: hidden; position: fixed"

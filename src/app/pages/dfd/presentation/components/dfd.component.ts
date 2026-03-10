@@ -121,6 +121,13 @@ import {
   CellStyleInfo,
   StyleChangeEvent,
 } from './style-panel/style-panel.component';
+import {
+  PortLabelPopoverComponent,
+  PortLabelData,
+  PortLabelChangeEvent,
+  DEFAULT_PORT_LABEL_POSITION,
+  PortLabelPosition,
+} from './port-label-popover/port-label-popover.component';
 import { getLabelPositionFromAttrs, LABEL_POSITION_ATTRS } from '../../types/label-position.types';
 
 import {
@@ -158,6 +165,7 @@ type ExportFormat = 'png' | 'jpeg' | 'svg';
     DfdCollaborationComponent,
     InlineEditComponent,
     StylePanelComponent,
+    PortLabelPopoverComponent,
   ],
   providers: [
     // DFD v2 Architecture - Component-scoped services
@@ -248,6 +256,16 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
   // Context menu state
   contextMenuPosition = { x: '0px', y: '0px' };
   private _rightClickedCell: any = null;
+
+  // Port label popover state
+  isPortLabelPopoverOpen = false;
+  portLabelPopoverPosition = { x: 0, y: 0 };
+  portLabelData: PortLabelData = {
+    nodeId: '',
+    portId: '',
+    text: '',
+    position: DEFAULT_PORT_LABEL_POSITION,
+  };
 
   // Data assets sub-menu state
   dataAssets: Array<{ id: string; name: string }> = [];
@@ -720,6 +738,9 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Set up context menu handlers
     this.setupContextMenuHandlers();
+
+    // Set up port click handlers for port label editing
+    this.setupPortClickHandlers();
   }
 
   private handleNodeAdded(node: any): void {
@@ -2227,6 +2248,122 @@ export class DfdComponent implements OnInit, AfterViewInit, OnDestroy {
       y: `${event.clientY}px`,
     };
     this.contextMenuTrigger.openMenu();
+  }
+
+  // Port Label Popover Methods
+
+  private setupPortClickHandlers(): void {
+    const graphAdapter = this.dfdInfrastructure.graphAdapter;
+    if (graphAdapter && graphAdapter.portClicked$) {
+      this._subscriptions.add(
+        graphAdapter.portClicked$
+          .pipe(takeUntil(this._destroy$))
+          .subscribe(({ node, portId, x, y }) => {
+            this.openPortLabelPopover(node, portId, x, y);
+          }),
+      );
+      this.logger.debugComponent('DfdComponent', 'Port click handlers registered');
+    }
+  }
+
+  private openPortLabelPopover(node: any, portId: string, x: number, y: number): void {
+    if (this.isReadOnlyMode) return;
+
+    // Read current port label data from the node
+    const ports = node.getPorts();
+    const port = ports.find((p: any) => p.id === portId);
+
+    let currentText = '';
+    let currentPosition: PortLabelPosition = DEFAULT_PORT_LABEL_POSITION;
+
+    if (port?.label) {
+      currentText = port.label.text || '';
+      const posName =
+        typeof port.label.position === 'string' ? port.label.position : port.label.position?.name;
+      if (posName && ['outside', 'inside', 'top', 'bottom', 'left', 'right'].includes(posName)) {
+        currentPosition = posName as PortLabelPosition;
+      }
+    }
+
+    this.portLabelData = {
+      nodeId: node.id,
+      portId,
+      text: currentText,
+      position: currentPosition,
+    };
+
+    this.portLabelPopoverPosition = { x, y };
+    this.isPortLabelPopoverOpen = true;
+    this.cdr.detectChanges();
+  }
+
+  onPortLabelChanged(event: PortLabelChangeEvent): void {
+    const graph = this.appDfdOrchestrator.getGraph;
+    if (!graph) return;
+
+    const node = graph.getCellById(event.nodeId);
+    if (!node || !node.isNode()) return;
+
+    // Read previous port label state
+    const ports = node.getPorts();
+    const port = ports.find((p: any) => p.id === event.portId);
+    const previousText = port?.label?.text || '';
+    const previousPosition =
+      (typeof port?.label?.position === 'string'
+        ? port.label.position
+        : port?.label?.position?.name) || DEFAULT_PORT_LABEL_POSITION;
+
+    // Apply port label via X6 API
+    node.setPortProp(event.portId, 'label', {
+      text: event.text,
+      position: { name: event.position },
+    });
+
+    // Create operation for persistence and undo/redo
+    const operation = {
+      id: `port-label-${Date.now()}-${event.nodeId}-${event.portId}`,
+      type: 'update-node' as const,
+      source: 'user-interaction' as const,
+      priority: 'normal' as const,
+      timestamp: Date.now(),
+      nodeId: event.nodeId,
+      updates: {
+        properties: {
+          portLabels: {
+            [event.portId]: { text: event.text, position: event.position },
+          },
+        },
+      },
+      previousState: {
+        properties: {
+          portLabels: {
+            [event.portId]: { text: previousText, position: previousPosition },
+          },
+        },
+      },
+      includeInHistory: true,
+    };
+
+    this.appDfdOrchestrator.executeOperation(operation as any).subscribe({
+      next: result => {
+        if (!result.success) {
+          this.logger.error('Port label change operation failed', { error: result.error });
+        }
+      },
+      error: err => this.logger.error('Failed to persist port label change', { error: err }),
+    });
+
+    this.logger.debugComponent('DfdComponent', 'Port label updated', {
+      nodeId: event.nodeId,
+      portId: event.portId,
+      text: event.text,
+      position: event.position,
+    });
+  }
+
+  closePortLabelPopover(): void {
+    this.isPortLabelPopoverOpen = false;
+    this.cdr.detectChanges();
   }
 
   onEditMetadata(): void {

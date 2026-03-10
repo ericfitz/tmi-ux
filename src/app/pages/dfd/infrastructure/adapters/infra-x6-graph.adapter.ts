@@ -139,6 +139,12 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
   }>();
   private readonly _historyChanged$ = new Subject<{ canUndo: boolean; canRedo: boolean }>();
   private readonly _cellDeletionRequested$ = new Subject<Cell>();
+  private readonly _portClicked$ = new Subject<{
+    node: Node;
+    portId: string;
+    x: number;
+    y: number;
+  }>();
 
   // Private properties to track previous undo/redo states
   private _previousCanUndo = false;
@@ -324,6 +330,13 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
    */
   get cellDeletionRequested$(): Observable<Cell> {
     return this._cellDeletionRequested$.asObservable();
+  }
+
+  /**
+   * Observable for port click events
+   */
+  get portClicked$(): Observable<{ node: Node; portId: string; x: number; y: number }> {
+    return this._portClicked$.asObservable();
   }
 
   /**
@@ -1493,6 +1506,24 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         y: e.clientY,
       });
     });
+
+    // Port click events for port label editing
+    this._graph.on(
+      'node:port:click',
+      ({ node, port, e }: { node: Node; port?: string; e: MouseEvent }) => {
+        if (this._readOnly || !port) return;
+        this.logger.debugComponent('X6Graph', 'Port click triggered', {
+          nodeId: node.id,
+          portId: port,
+        });
+        this._portClicked$.next({
+          node,
+          portId: port,
+          x: e.clientX,
+          y: e.clientY,
+        });
+      },
+    );
 
     // Double-click events for label editing
     this._graph.on('cell:dblclick', ({ cell, e }: { cell: Cell; e: MouseEvent }) => {

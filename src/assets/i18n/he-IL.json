@@ -810,6 +810,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "למטה",
+      "position.inside": "פנים",
+      "position.left": "שמאל",
+      "position.outside": "חוץ",
+      "position.right": "ימין",
+      "position.top": "למעלה",
+      "positionLabel": "מיקום",
+      "textLabel": "טקסט תווית",
+      "textPlaceholder": "הזן תווית יציאה",
+      "title": "תווית יציאה"
+    },
     "stylePanel": {
       "addDiagramColor": "הוסף צבע דיאגרמה",
       "clearCustomFormatting": "נקה עיצוב מותאם אישית",

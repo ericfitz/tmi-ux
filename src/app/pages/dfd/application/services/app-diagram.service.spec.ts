@@ -594,6 +594,7 @@ describe('AppDiagramService', () => {
         getAttrs: () => ({ text: { text: 'Test' } }),
         getData: () => ({ _metadata: [] }),
         getParent: () => null,
+        getProp: () => undefined,
       };
 
       mockGraph.getCells.mockReturnValue([mockNode]);
@@ -648,6 +649,7 @@ describe('AppDiagramService', () => {
         getAttrs: () => ({ text: { text: 'Test' } }),
         getData: () => ({ _metadata: [] }),
         getParent: () => mockParent,
+        getProp: () => undefined,
       };
 
       mockGraph.getCells.mockReturnValue([mockNode]);
@@ -673,6 +675,48 @@ describe('AppDiagramService', () => {
 
       expect(result).toHaveLength(0);
       expect(mockLogger.error).toHaveBeenCalled();
+    });
+
+    it('should include ports and preserve actual attrs when saving nodes', () => {
+      const mockPorts = {
+        groups: {
+          top: { position: 'top', attrs: { circle: { r: 5, style: { visibility: 'hidden' } } } },
+        },
+        items: [
+          { group: 'top', id: 'top', label: { text: 'HTTP', position: { name: 'outside' } } },
+        ],
+      };
+
+      const mockNode = {
+        id: 'node-1',
+        shape: 'process',
+        isNode: () => true,
+        isEdge: () => false,
+        position: () => ({ x: 100, y: 200 }),
+        size: () => ({ width: 80, height: 60 }),
+        getZIndex: () => 1,
+        getAttrs: () => ({
+          body: { fill: '#ff0000', stroke: '#000' },
+          text: { text: 'Test', refX: '5%', refY: '5%' },
+        }),
+        getData: () => ({ _metadata: [] }),
+        getParent: () => null,
+        getProp: (key: string) => (key === 'ports' ? mockPorts : undefined),
+      };
+
+      mockGraph.getCells.mockReturnValue([mockNode]);
+
+      const result = (service as any).convertGraphToCellsFormat(mockGraph);
+
+      expect(result).toHaveLength(1);
+      // Attrs should merge defaults with actual values
+      expect(result[0].attrs.body.fill).toBe('#ff0000');
+      expect(result[0].attrs.text.refX).toBe('5%');
+      // Ports should be present with visibility stripped
+      expect(result[0].ports).toBeDefined();
+      expect(result[0].ports.items[0].label.text).toBe('HTTP');
+      // Visibility should be stripped from saved ports
+      expect(result[0].ports.groups.top.attrs.circle.style).toBeUndefined();
     });
   });
 });

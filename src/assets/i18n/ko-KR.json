@@ -810,6 +810,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "하단",
+      "position.inside": "내부",
+      "position.left": "왼쪽",
+      "position.outside": "외부",
+      "position.right": "오른쪽",
+      "position.top": "상단",
+      "positionLabel": "위치",
+      "textLabel": "라벨 텍스트",
+      "textPlaceholder": "포트 라벨 입력",
+      "title": "포트 라벨"
+    },
     "stylePanel": {
       "addDiagramColor": "다이어그램 색상 추가",
       "clearCustomFormatting": "사용자 지정 서식 지우기",

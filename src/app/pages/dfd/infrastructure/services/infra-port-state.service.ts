@@ -74,8 +74,21 @@ export class InfraPortStateService {
     operationName: string,
   ): void {
     this._executePortOperation(graph, operationName, () => {
-      node.setPortProp(portId, 'attrs/circle/style/visibility', visibility);
+      this._setPortElementVisibility(node, portId, visibility);
     });
+  }
+
+  /**
+   * Set visibility on both the port circle and port label text elements.
+   * This must be called inside an executePortOperation wrapper.
+   */
+  private _setPortElementVisibility(
+    node: any,
+    portId: string,
+    visibility: 'visible' | 'hidden',
+  ): void {
+    node.setPortProp(portId, 'attrs/circle/style/visibility', visibility);
+    node.setPortProp(portId, 'attrs/text/style/visibility', visibility);
   }
 
   /**
@@ -113,12 +126,12 @@ export class InfraPortStateService {
 
       if (isConnected) {
         // Keep connected ports visible
-        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
+        this._setPortElementVisibility(node, port.id!, 'visible');
         connectedPorts.add(port.id!);
         visiblePorts.add(port.id!);
       } else {
         // Hide unconnected ports
-        node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
+        this._setPortElementVisibility(node, port.id!, 'hidden');
       }
     });
 
@@ -151,7 +164,7 @@ export class InfraPortStateService {
       nodes.forEach(node => {
         const ports = node.getPorts();
         ports.forEach(port => {
-          node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
+          this._setPortElementVisibility(node, port.id!, 'visible');
         });
 
         // Update state cache
@@ -226,7 +239,7 @@ export class InfraPortStateService {
           const portExists = ports.some(port => port.id === sourcePortId);
 
           if (portExists) {
-            sourceNode.setPortProp(sourcePortId, 'attrs/circle/style/visibility', 'visible');
+            this._setPortElementVisibility(sourceNode, sourcePortId, 'visible');
             this._updatePortStateCache(sourceNode.id, sourcePortId, true, true);
 
             // this._logger.debugComponent('DfdPortStateManager', 'Made source port visible', {
@@ -253,7 +266,7 @@ export class InfraPortStateService {
           const portExists = ports.some(port => port.id === targetPortId);
 
           if (portExists) {
-            targetNode.setPortProp(targetPortId, 'attrs/circle/style/visibility', 'visible');
+            this._setPortElementVisibility(targetNode, targetPortId, 'visible');
             this._updatePortStateCache(targetNode.id, targetPortId, true, true);
 
             // this._logger.debugComponent('DfdPortStateManager', 'Made target port visible', {
@@ -345,7 +358,7 @@ export class InfraPortStateService {
       const ports = node.getPorts();
       this._executePortOperation(graph, `show-ports-hover-${node.id}`, () => {
         ports.forEach(port => {
-          node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'visible');
+          this._setPortElementVisibility(node, port.id!, 'visible');
         });
       });
     });
@@ -357,7 +370,7 @@ export class InfraPortStateService {
         ports.forEach(port => {
           // Only hide ports that are not connected
           if (!this.isPortConnected(graph, node.id, port.id!)) {
-            node.setPortProp(port.id!, 'attrs/circle/style/visibility', 'hidden');
+            this._setPortElementVisibility(node, port.id!, 'hidden');
           }
         });
       });
@@ -378,7 +391,7 @@ export class InfraPortStateService {
 
     this._executePortOperation(graph, `show-node-ports-${node.id}`, () => {
       ports.forEach((port: any) => {
-        node.setPortProp(port.id, 'attrs/circle/style/visibility', 'visible');
+        this._setPortElementVisibility(node, port.id, 'visible');
       });
     });
   }
@@ -397,7 +410,7 @@ export class InfraPortStateService {
       ports.forEach((port: any) => {
         // Only hide ports that are not connected
         if (!this.isPortConnected(graph, node.id, port.id)) {
-          node.setPortProp(port.id, 'attrs/circle/style/visibility', 'hidden');
+          this._setPortElementVisibility(node, port.id, 'hidden');
         }
       });
     });

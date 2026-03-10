@@ -810,6 +810,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "ด้านล่าง",
+      "position.inside": "ด้านใน",
+      "position.left": "ซ้าย",
+      "position.outside": "ด้านนอก",
+      "position.right": "ขวา",
+      "position.top": "ด้านบน",
+      "positionLabel": "ตำแหน่ง",
+      "textLabel": "ข้อความป้ายกำกับ",
+      "textPlaceholder": "ป้อนป้ายกำกับพอร์ต",
+      "title": "ป้ายกำกับพอร์ต"
+    },
     "stylePanel": {
       "addDiagramColor": "เพิ่มสีไดอะแกรม",
       "clearCustomFormatting": "ล้างการจัดรูปแบบที่กำหนดเอง",

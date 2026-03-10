@@ -810,6 +810,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "أسفل",
+      "position.inside": "داخل",
+      "position.left": "يسار",
+      "position.outside": "خارج",
+      "position.right": "يمين",
+      "position.top": "أعلى",
+      "positionLabel": "الموضع",
+      "textLabel": "نص التسمية",
+      "textPlaceholder": "أدخل تسمية المنفذ",
+      "title": "تسمية المنفذ"
+    },
     "stylePanel": {
       "addDiagramColor": "إضافة لون للمخطط",
       "clearCustomFormatting": "مسح التنسيق المخصص",

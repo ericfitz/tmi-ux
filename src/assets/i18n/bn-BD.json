@@ -810,6 +810,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "নিচে",
+      "position.inside": "ভিতরে",
+      "position.left": "বামে",
+      "position.outside": "বাইরে",
+      "position.right": "ডানে",
+      "position.top": "উপরে",
+      "positionLabel": "অবস্থান",
+      "textLabel": "লেবেল টেক্সট",
+      "textPlaceholder": "পোর্ট লেবেল লিখুন",
+      "title": "পোর্ট লেবেল"
+    },
     "stylePanel": {
       "addDiagramColor": "ডায়াগ্রাম রঙ যোগ করুন",
       "clearCustomFormatting": "কাস্টম ফরম্যাটিং মুছুন",

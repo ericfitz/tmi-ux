@@ -741,14 +741,19 @@ describe('InfraPortStateService', () => {
       // Call service again to capture the spy
       service.updateNodePortVisibility(graph, nodeWithManyPorts);
 
-      // Should have called setPortProp for each of the 100 ports
-      expect(setPortPropSpy).toHaveBeenCalledTimes(100);
+      // Should have called setPortProp twice per port (circle + text visibility)
+      expect(setPortPropSpy).toHaveBeenCalledTimes(200);
 
       // All ports should be hidden since none are connected
       for (let i = 0; i < 100; i++) {
         expect(setPortPropSpy).toHaveBeenCalledWith(
           `port${i}`,
           'attrs/circle/style/visibility',
+          'hidden',
+        );
+        expect(setPortPropSpy).toHaveBeenCalledWith(
+          `port${i}`,
+          'attrs/text/style/visibility',
           'hidden',
         );
       }

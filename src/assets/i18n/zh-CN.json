@@ -810,6 +810,18 @@
     }
   },
   "dfd": {
+    "portLabel": {
+      "position.bottom": "底部",
+      "position.inside": "内部",
+      "position.left": "左侧",
+      "position.outside": "外部",
+      "position.right": "右侧",
+      "position.top": "顶部",
+      "positionLabel": "位置",
+      "textLabel": "标签文本",
+      "textPlaceholder": "输入端口标签",
+      "title": "端口标签"
+    },
     "stylePanel": {
       "addDiagramColor": "添加图表颜色",
       "clearCustomFormatting": "清除自定义格式",
