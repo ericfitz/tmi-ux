@@ -55,6 +55,8 @@
     "deploy:oci": "./scripts/push-oci.sh",
     "build:container": "ng build --configuration=container",
     "deploy:chainguard": "./scripts/push-chainguard.sh",
+    "deploy:ecr": "./scripts/push-ecr.sh",
+    "deploy:ecr:rollout": "aws eks update-kubeconfig --region us-east-1 --name tmi-eks && kubectl rollout restart deployment/tmi-ux -n tmi && kubectl get pods -n tmi -l app=tmi-ux -w",
     "generate:api-types": "openapi-typescript ${OPENAPI_SPEC:-https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json} -o src/app/generated/api-types.d.ts"
   },
   "private": true,
