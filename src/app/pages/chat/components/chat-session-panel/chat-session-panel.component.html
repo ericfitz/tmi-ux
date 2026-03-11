@@ -1,0 +1,42 @@
+<ng-container *transloco="let t">
+  <div class="session-header">
+    <button mat-raised-button color="primary" (click)="onCreate()">
+      <mat-icon>add</mat-icon>
+      {{ t('chat.newSession') }}
+    </button>
+  </div>
+
+  @if (sessions.length === 0) {
+    <div class="empty-sessions">
+      <mat-icon>forum</mat-icon>
+      <p>{{ t('chat.noSessions') }}</p>
+    </div>
+  }
+
+  <mat-list>
+    @for (session of sessions; track trackBySessionId($index, session)) {
+      <mat-list-item
+        class="session-item"
+        [class.active]="session.id === activeSessionId"
+        (click)="onSelect(session.id)"
+      >
+        <div class="session-info">
+          <span class="session-title">{{ session.title }}</span>
+          <span class="session-meta">
+            {{ formatDate(session.lastMessageAt) }}
+            &middot;
+            {{ session.messages.length }} {{ t('chat.messages') }}
+          </span>
+        </div>
+        <button
+          mat-icon-button
+          class="delete-btn"
+          [matTooltip]="t('chat.deleteSession')"
+          (click)="onDelete($event, session.id)"
+        >
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+      </mat-list-item>
+    }
+  </mat-list>
+</ng-container>

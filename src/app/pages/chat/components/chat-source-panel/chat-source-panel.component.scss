@@ -1,0 +1,66 @@
+:host {
+  display: block;
+  padding: 8px;
+}
+
+.empty-sources {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  color: var(--color-text-secondary, #666);
+  text-align: center;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    opacity: 0.4;
+    margin-bottom: 8px;
+  }
+}
+
+mat-expansion-panel {
+  margin-bottom: 8px;
+}
+
+mat-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.group-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.count-chip {
+  margin-left: auto;
+  font-size: 12px;
+}
+
+.group-actions {
+  display: flex;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.select-action {
+  font-size: 12px;
+}
+
+mat-list-item {
+  height: auto !important;
+  padding: 4px 0;
+}
+
+.entity-name {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  display: inline-block;
+}

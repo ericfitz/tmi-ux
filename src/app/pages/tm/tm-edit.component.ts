@@ -2517,6 +2517,14 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
+   * Navigate to the Timmy chat page for the current threat model.
+   */
+  openChat(): void {
+    if (!this.threatModel) return;
+    void this.router.navigate(['/tm', this.threatModel.id, 'chat']);
+  }
+
+  /**
    * Navigate to the audit trail page for the current threat model (all entities).
    */
   openAuditTrail(): void {

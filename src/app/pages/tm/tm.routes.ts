@@ -9,6 +9,7 @@ import { threatModelResolver } from './resolvers/threat-model.resolver';
  * /tm/:id/threat/:threatId - Threat detail page
  * /tm/:id/note/:noteId - Note detail page
  * /tm/:id/dfd/:dfdId - Data flow diagram editor
+ * /tm/:id/chat - Timmy chat bot page
  * /tm/:id/audit - Audit trail page
  *
  * Markdown/Mermaid/Prism providers are loaded here (not at app root)
@@ -25,6 +26,17 @@ export const TM_ROUTES: Routes = [
           import(/* webpackChunkName: "tm-edit" */ './tm-edit.component').then(
             c => c.TmEditComponent,
           ),
+        resolve: {
+          threatModel: threatModelResolver,
+        },
+      },
+      {
+        path: ':id/chat',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "chat" */ '../chat/components/chat-page/chat-page.component'
+          ).then(c => c.ChatPageComponent),
+        canActivate: [authGuard],
         resolve: {
           threatModel: threatModelResolver,
         },

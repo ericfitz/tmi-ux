@@ -1,0 +1,55 @@
+<ng-container *transloco="let t">
+  @if (groups.length === 0) {
+    <div class="empty-sources">
+      <mat-icon>folder_open</mat-icon>
+      <p>{{ t('chat.noSources') }}</p>
+    </div>
+  }
+
+  @for (group of groups; track group.type) {
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon class="group-icon">{{ group.icon }}</mat-icon>
+          <span>{{ t(group.label) }}</span>
+          <mat-chip class="count-chip">
+            {{ getEnabledCount(group) }}/{{ group.entities.length }}
+          </mat-chip>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="group-actions">
+        <button
+          mat-button
+          (click)="toggleAll(group, true)"
+          [disabled]="allEnabled(group)"
+          class="select-action"
+        >
+          {{ t('chat.selectAll') }}
+        </button>
+        <button
+          mat-button
+          (click)="toggleAll(group, false)"
+          [disabled]="getEnabledCount(group) === 0"
+          class="select-action"
+        >
+          {{ t('chat.deselectAll') }}
+        </button>
+      </div>
+
+      <mat-list>
+        @for (entity of group.entities; track entity.id) {
+          <mat-list-item>
+            <mat-slide-toggle
+              [checked]="entity.enabled"
+              (change)="onToggle(entity)"
+              labelPosition="before"
+            >
+              <span class="entity-name">{{ entity.name }}</span>
+            </mat-slide-toggle>
+          </mat-list-item>
+        }
+      </mat-list>
+    </mat-expansion-panel>
+  }
+</ng-container>

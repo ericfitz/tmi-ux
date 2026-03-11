@@ -441,6 +441,40 @@
       "software": "Software"
     }
   },
+  "chat": {
+    "title": "Timmy",
+    "back": "Back to threat model",
+    "sources": "Sources",
+    "sessions": "Sessions",
+    "messages": "messages",
+    "newSession": "New Session",
+    "deleteSession": "Delete session",
+    "noSessions": "No chat sessions yet. Start a conversation!",
+    "noSources": "This threat model has no entities.",
+    "send": "Send message",
+    "inputPlaceholder": "Ask Timmy about this threat model...",
+    "hideSidePanel": "Hide side panel",
+    "showSidePanel": "Show side panel",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "emptyState": {
+      "title": "Chat with Timmy",
+      "description": "Ask questions about your threat model. Timmy can help analyze threats, review assets, and discuss your security posture."
+    },
+    "suggestedPrompts": {
+      "summary": "Give me a summary of this threat model",
+      "threats": "What threats have been identified?",
+      "assets": "What assets are in scope?"
+    },
+    "entityGroups": {
+      "documents": "Documents",
+      "repositories": "Repositories",
+      "notes": "Notes",
+      "assets": "Assets",
+      "threats": "Threats",
+      "diagrams": "Diagrams"
+    }
+  },
   "auditTrail": {
     "changeSummary": "Change summary",
     "changeTypes": {

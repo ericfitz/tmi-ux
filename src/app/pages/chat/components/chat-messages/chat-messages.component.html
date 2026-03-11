@@ -1,0 +1,85 @@
+<ng-container *transloco="let t">
+  <div class="chat-messages" #messagesContainer>
+    @if (messages.length === 0 && !loading) {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">smart_toy</mat-icon>
+        <h3>{{ t('chat.emptyState.title') }}</h3>
+        <p>{{ t('chat.emptyState.description') }}</p>
+        <div class="suggested-prompts">
+          <button
+            mat-stroked-button
+            (click)="messageText = t('chat.suggestedPrompts.summary'); onSend()"
+          >
+            {{ t('chat.suggestedPrompts.summary') }}
+          </button>
+          <button
+            mat-stroked-button
+            (click)="messageText = t('chat.suggestedPrompts.threats'); onSend()"
+          >
+            {{ t('chat.suggestedPrompts.threats') }}
+          </button>
+          <button
+            mat-stroked-button
+            (click)="messageText = t('chat.suggestedPrompts.assets'); onSend()"
+          >
+            {{ t('chat.suggestedPrompts.assets') }}
+          </button>
+        </div>
+      </div>
+    }
+
+    @for (message of messages; track trackByMessageId($index, message)) {
+      <div
+        class="message"
+        [class.user]="message.role === 'user'"
+        [class.assistant]="message.role === 'assistant'"
+      >
+        <div class="message-avatar">
+          <mat-icon>{{ message.role === 'user' ? 'person' : 'smart_toy' }}</mat-icon>
+        </div>
+        <div class="message-content">
+          @if (message.role === 'assistant') {
+            <markdown [data]="message.content"></markdown>
+          } @else {
+            <p>{{ message.content }}</p>
+          }
+        </div>
+      </div>
+    }
+
+    @if (loading) {
+      <div class="message assistant loading">
+        <div class="message-avatar">
+          <mat-icon>smart_toy</mat-icon>
+        </div>
+        <div class="message-content">
+          <mat-spinner diameter="24"></mat-spinner>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="chat-input">
+    <mat-form-field appearance="outline" class="message-input">
+      <textarea
+        matInput
+        [(ngModel)]="messageText"
+        (keydown)="onKeydown($event)"
+        [placeholder]="t('chat.inputPlaceholder')"
+        rows="1"
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="1"
+        cdkAutosizeMaxRows="5"
+      ></textarea>
+    </mat-form-field>
+    <button
+      mat-icon-button
+      [matTooltip]="t('chat.send')"
+      (click)="onSend()"
+      [disabled]="!messageText.trim() || loading"
+      color="primary"
+    >
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
+</ng-container>

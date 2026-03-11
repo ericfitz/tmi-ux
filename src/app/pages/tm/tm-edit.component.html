@@ -58,6 +58,15 @@
             <button
               mat-icon-button
               color="primary"
+              (click)="openChat()"
+              [matTooltip]="'chat.title' | transloco"
+              [attr.aria-label]="'chat.title' | transloco"
+            >
+              <mat-icon>smart_toy</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="primary"
               (click)="openAuditTrail()"
               [matTooltip]="'auditTrail.title' | transloco"
               [attr.aria-label]="'auditTrail.title' | transloco"

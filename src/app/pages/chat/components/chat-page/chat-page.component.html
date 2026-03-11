@@ -1,0 +1,49 @@
+<ng-container *transloco="let t">
+  <mat-toolbar class="chat-toolbar" color="primary">
+    <button mat-icon-button [matTooltip]="t('chat.back')" (click)="navigateBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <mat-icon class="timmy-icon">smart_toy</mat-icon>
+    <span class="toolbar-title">{{ t('chat.title') }}</span>
+    <span class="toolbar-spacer"></span>
+    <button
+      mat-icon-button
+      [matTooltip]="t(sidePanelOpen ? 'chat.hideSidePanel' : 'chat.showSidePanel')"
+      (click)="toggleSidePanel()"
+    >
+      <mat-icon>{{ sidePanelOpen ? 'right_panel_close' : 'right_panel_open' }}</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="chat-layout">
+    <div class="chat-main">
+      <app-chat-messages
+        [messages]="messages"
+        [loading]="loading"
+        (messageSent)="onMessageSent($event)"
+      ></app-chat-messages>
+    </div>
+
+    @if (sidePanelOpen) {
+      <div class="side-panel">
+        <mat-tab-group>
+          <mat-tab [label]="t('chat.sources')">
+            <app-chat-source-panel
+              [threatModel]="threatModel"
+              (sourceToggled)="onSourceToggled($event)"
+            ></app-chat-source-panel>
+          </mat-tab>
+          <mat-tab [label]="t('chat.sessions')">
+            <app-chat-session-panel
+              [sessions]="sessions"
+              [activeSessionId]="activeSessionId"
+              (sessionSelected)="onSessionSelected($event)"
+              (sessionCreated)="onSessionCreated()"
+              (sessionDeleted)="onSessionDeleted($event)"
+            ></app-chat-session-panel>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    }
+  </div>
+</ng-container>
