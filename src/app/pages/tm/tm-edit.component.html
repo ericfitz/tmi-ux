@@ -18,6 +18,15 @@
         >
       }
     </h1>
+    <button
+      mat-icon-button
+      class="timmy-header-button"
+      (click)="openChat()"
+      [matTooltip]="'chat.title' | transloco"
+      [attr.aria-label]="'chat.title' | transloco"
+    >
+      <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="timmy-header-icon" />
+    </button>
   </div>
 
   @if (threatModel) {
@@ -54,19 +63,6 @@
               [attr.aria-label]="'common.objectTypes.report' | transloco"
             >
               <mat-icon fontSet="material-symbols-outlined">assignment</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              color="primary"
-              (click)="openChat()"
-              [matTooltip]="'chat.title' | transloco"
-              [attr.aria-label]="'chat.title' | transloco"
-            >
-              <img
-                src="TMI-IconOnly-Transparent-NoBuffer.png"
-                alt="Timmy"
-                class="timmy-button-icon"
-              />
             </button>
             <button
               mat-icon-button
