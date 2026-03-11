@@ -15,12 +15,8 @@ yarn-error.log
 .idea/
 .project
 .classpath
-.c9/
 *.launch
 .settings/
-*.sublime-workspace
-.codesandbox/
-.codesandbox/*
 
 # Visual Studio Code
 .vscode/*
@@ -38,13 +34,7 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
-thunder-tests
-thunder-tests/**
-.42c/conf.yaml
 .mcp.json
-.dedupe/
-.trunk
-.trunk/**
 
 # System files
 .DS_Store
@@ -53,12 +43,10 @@ Thumbs.db
 # Local environment files
 src/environments/environment.local.ts
 src/environments/environment.dev.ts
-unused/*
-unused
+unused/**
 
 # temporary files
 localization_dedup_plan.*
-.ck/
 .ck/**
 *.log
 .version-bump-type
@@ -69,10 +57,9 @@ localization_dedup_plan.*
 /playwright/.cache
 
 # local copy of server docs
-docs-server
 docs-server/**
-deliverables
-deliverables/**
-workspace
-workspace/**
 
+# automated pen test artifacts
+deliverables/**
+workspace/**
+outputs/**
