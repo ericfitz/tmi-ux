@@ -8,8 +8,11 @@
   flex-shrink: 0;
 
   .timmy-icon {
+    width: 28px;
+    height: 28px;
     margin-left: 8px;
     margin-right: 8px;
+    object-fit: contain;
   }
 
   .toolbar-title {

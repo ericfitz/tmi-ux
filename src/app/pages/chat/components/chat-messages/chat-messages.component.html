@@ -2,7 +2,7 @@
   <div class="chat-messages" #messagesContainer>
     @if (messages.length === 0 && !loading) {
       <div class="empty-state">
-        <mat-icon class="empty-icon">smart_toy</mat-icon>
+        <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="empty-icon" />
         <h3>{{ t('chat.emptyState.title') }}</h3>
         <p>{{ t('chat.emptyState.description') }}</p>
         <div class="suggested-prompts">
@@ -35,7 +35,11 @@
         [class.assistant]="message.role === 'assistant'"
       >
         <div class="message-avatar">
-          <mat-icon>{{ message.role === 'user' ? 'person' : 'smart_toy' }}</mat-icon>
+          @if (message.role === 'user') {
+            <mat-icon>person</mat-icon>
+          } @else {
+            <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="timmy-avatar" />
+          }
         </div>
         <div class="message-content">
           @if (message.role === 'assistant') {
@@ -50,7 +54,7 @@
     @if (loading) {
       <div class="message assistant loading">
         <div class="message-avatar">
-          <mat-icon>smart_toy</mat-icon>
+          <img src="TMI-IconOnly-Transparent-NoBuffer.png" alt="Timmy" class="timmy-avatar" />
         </div>
         <div class="message-content">
           <mat-spinner diameter="24"></mat-spinner>
