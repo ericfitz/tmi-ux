@@ -358,7 +358,7 @@ export class ServerConnectionService implements OnDestroy {
 
     return this.http.get<ServerHealthResponse>(statusEndpoint).pipe(
       map(response => {
-        const statusCode = response.status?.code;
+        const statusCode = response.status?.code?.toUpperCase();
 
         // Store server version from health response regardless of status
         if (response.service?.build) {
