@@ -26,6 +26,7 @@
 #
 # Environment Variables:
 #   CONTAINER_REPO_OCID   Container repository OCID (alternative to --repo-ocid)
+#   OCI_COMPARTMENT_ID    Compartment OCID to search for repos (searched first if set)
 #   OCI_REGION            OCI region (alternative to --region)
 #   OCI_TENANCY_NAMESPACE Override tenancy namespace (auto-detected if not set)
 #
@@ -210,41 +211,53 @@ select_repo_from_list() {
 discover_repo() {
     log_info "CONTAINER_REPO_OCID not set, discovering from OCI..."
 
-    # Get tenancy OCID (root compartment)
-    TENANCY_OCID=$(oci iam compartment list --query 'data[0]."compartment-id"' --raw-output 2>/dev/null || true)
-    if [[ -z "$TENANCY_OCID" ]]; then
-        log_error "Could not determine tenancy. Set CONTAINER_REPO_OCID or use --repo-ocid"
-        exit 1
+    # Try OCI_COMPARTMENT_ID first for targeted search
+    local compartment_id="${OCI_COMPARTMENT_ID:-}"
+    local repos_json="[]"
+    if [[ -n "$compartment_id" ]]; then
+        log_info "Found compartment_id from OCI_COMPARTMENT_ID"
+        repos_json=$(search_repos_in_compartment "$compartment_id")
     fi
 
-    # Search root compartment
-    local repos_json
-    repos_json=$(search_repos_in_compartment "$TENANCY_OCID" "root tenancy")
+    # If no compartment found or no repos in it, search tenancy + child compartments
+    if [[ -z "$compartment_id" ]] || [[ "$repos_json" == "[]" || "$repos_json" == "null" || -z "$repos_json" ]]; then
+        log_info "No repos found in target compartment, searching tenancy..."
 
-    # If not found in root, search child compartments
-    if [[ "$repos_json" == "[]" || "$repos_json" == "null" || -z "$repos_json" ]]; then
-        log_info "No repos in root tenancy, searching child compartments..."
+        # Get tenancy OCID (root compartment)
+        TENANCY_OCID=$(oci iam compartment list --query 'data[0]."compartment-id"' --raw-output 2>/dev/null || true)
+        if [[ -z "$TENANCY_OCID" ]]; then
+            log_error "Could not determine tenancy. Set CONTAINER_REPO_OCID, OCI_COMPARTMENT_ID, or use --repo-ocid"
+            exit 1
+        fi
 
-        local compartments_json
-        compartments_json=$(oci iam compartment list \
-            --compartment-id "$TENANCY_OCID" \
-            --compartment-id-in-subtree true \
-            --access-level ACCESSIBLE \
-            --lifecycle-state ACTIVE \
-            --query 'data[*].{name:name,id:id}' \
-            --output json 2>/dev/null || echo "[]")
+        # Search root compartment
+        repos_json=$(search_repos_in_compartment "$TENANCY_OCID" "root tenancy")
 
-        local comp_count
-        comp_count=$(echo "$compartments_json" | jq 'length')
-        for i in $(seq 0 $((comp_count - 1))); do
-            local comp_id comp_name
-            comp_id=$(echo "$compartments_json" | jq -r ".[$i].id")
-            comp_name=$(echo "$compartments_json" | jq -r ".[$i].name")
-            repos_json=$(search_repos_in_compartment "$comp_id" "$comp_name")
-            if [[ "$repos_json" != "[]" && "$repos_json" != "null" && -n "$repos_json" ]]; then
-                break
-            fi
-        done
+        # If not found in root, search child compartments
+        if [[ "$repos_json" == "[]" || "$repos_json" == "null" || -z "$repos_json" ]]; then
+            log_info "No repos in root tenancy, searching child compartments..."
+
+            local compartments_json
+            compartments_json=$(oci iam compartment list \
+                --compartment-id "$TENANCY_OCID" \
+                --compartment-id-in-subtree true \
+                --access-level ACCESSIBLE \
+                --lifecycle-state ACTIVE \
+                --query 'data[*].{name:name,id:id}' \
+                --output json 2>/dev/null || echo "[]")
+
+            local comp_count
+            comp_count=$(echo "$compartments_json" | jq 'length')
+            for i in $(seq 0 $((comp_count - 1))); do
+                local comp_id comp_name
+                comp_id=$(echo "$compartments_json" | jq -r ".[$i].id")
+                comp_name=$(echo "$compartments_json" | jq -r ".[$i].name")
+                repos_json=$(search_repos_in_compartment "$comp_id" "$comp_name")
+                if [[ "$repos_json" != "[]" && "$repos_json" != "null" && -n "$repos_json" ]]; then
+                    break
+                fi
+            done
+        fi
     fi
 
     # Validate we found repos
