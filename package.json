@@ -1,6 +1,6 @@
 {
   "name": "tmi-ux",
-  "version": "1.2.12",
+  "version": "1.2.13",
   "type": "module",
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
@@ -51,7 +51,7 @@
     "heroku-postbuild": "ng build --configuration=hosted-container",
     "deploy:heroku": "./scripts/push-heroku.sh",
     "build:oci": "ng build --configuration=oci",
-    "deploy:oci": "./scripts/push-oci.sh",
+    "deploy:oci": "OCI_COMPARTMENT_ID=tmi ./scripts/push-oci.sh",
     "build:container": "ng build --configuration=container",
     "deploy:chainguard": "./scripts/push-chainguard.sh",
     "generate:api-types": "openapi-typescript ${OPENAPI_SPEC:-https://raw.githubusercontent.com/ericfitz/tmi/refs/heads/main/api-schema/tmi-openapi.json} -o src/app/generated/api-types.d.ts"
