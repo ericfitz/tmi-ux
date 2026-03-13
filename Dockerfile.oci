@@ -1,13 +1,13 @@
 # Multi-stage build for TMI-UX on Oracle Cloud Infrastructure (OCI) Container Instances
 # Uses oci configuration (environment.oci.ts)
-# Runtime: Oracle Linux 10
+# Runtime: Oracle Linux 9
 
 # Stage 1: Build the Angular application
-# Using Oracle Linux for build stage to avoid Docker Hub dependency
-FROM oraclelinux:10-slim AS builder
+FROM container-registry.oracle.com/os/oraclelinux:9-slim AS builder
 
-# Install Node.js 22 LTS and npm for build tooling
-RUN microdnf install -y nodejs npm && \
+# Install Node.js 22 LTS from Oracle AppStream
+RUN microdnf module enable -y nodejs:22 && \
+    microdnf install -y nodejs npm && \
     microdnf clean all && \
     rm -rf /var/cache/yum
 
@@ -29,14 +29,21 @@ COPY . .
 # Build the application with OCI configuration
 RUN pnpm run build:oci
 
-# Stage 2: Production server on Oracle Linux 10
-FROM oraclelinux:10-slim
+# Isolate runtime dependencies (express, express-rate-limit) for stage 2
+# This runs in the builder stage which has npm registry access
+RUN mkdir /runtime && \
+    cd /runtime && \
+    echo '{"name":"tmi-ux-server","version":"1.0.0","type":"module","dependencies":{"express":"^5.2.1","express-rate-limit":"^8.3.1"}}' > package.json && \
+    npm install --omit=dev
+
+# Stage 2: Production server on Oracle Linux 9
+FROM container-registry.oracle.com/os/oraclelinux:9-slim
 ARG APP_VERSION=unknown
 LABEL org.opencontainers.image.version=$APP_VERSION
 
-# Install Node.js 22 LTS
-# Oracle Linux 10 slim uses microdnf instead of dnf
-RUN microdnf install -y nodejs npm && \
+# Install Node.js 22 LTS from Oracle AppStream
+RUN microdnf module enable -y nodejs:22 && \
+    microdnf install -y nodejs && \
     microdnf clean all && \
     rm -rf /var/cache/yum
 
@@ -46,11 +53,9 @@ WORKDIR /app
 # Create non-root user for security
 RUN useradd -r -u 1001 -g root appuser
 
-# Create minimal package.json for runtime dependencies only
-RUN echo '{"name":"tmi-ux-server","version":"1.0.0","type":"module","dependencies":{"express":"^5.1.0","express-rate-limit":"^8.1.0"}}' > package.json
-
-# Install only runtime dependencies
-RUN npm install --omit=dev --production
+# Copy runtime node_modules from builder (no npm registry access needed)
+COPY --from=builder /runtime/node_modules ./node_modules
+COPY --from=builder /runtime/package.json ./
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
