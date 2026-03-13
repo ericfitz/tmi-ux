@@ -31,7 +31,7 @@ Before completing any task:
 
 ### For Any File Changes
 
-1. **Format and Lint**: Run `pnpm run format` and `pnpm run lint:all`, fix any issues
+1. **Lint**: Run `pnpm run lint:all`, fix any issues (formatting is handled automatically by a PostToolUse hook)
 2. **Git Commit**: Use conventional commit messages (e.g., `feat:`, `fix:`, `chore:`, `refactor:`). Do not run `git diff` or `git log` before committing - just commit directly with an appropriate message based on the work done.
 
 ### For Code Changes
