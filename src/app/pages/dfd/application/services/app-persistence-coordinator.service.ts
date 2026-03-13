@@ -20,6 +20,7 @@ export interface SaveOperation {
   readonly diagramId: string;
   readonly threatModelId: string;
   readonly data: any;
+  readonly imageData?: { svg?: string; update_vector?: number };
   readonly metadata?: Record<string, any>;
 }
 

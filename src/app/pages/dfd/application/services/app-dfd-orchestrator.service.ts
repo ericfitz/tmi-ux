@@ -48,7 +48,11 @@ import {
 } from '../../types/graph-operation.types';
 import { HistoryOperationType } from '../../types/history.types';
 import { normalizeCells } from '../../utils/cell-normalization.util';
-import { shouldTriggerHistoryOrPersistence } from '../../utils/cell-property-filter.util';
+import {
+  shouldTriggerHistoryOrPersistence,
+  sanitizeCellForApi,
+} from '../../utils/cell-property-filter.util';
+import { extractCellsFromGraph } from '../../utils/cell-extraction.util';
 import { DFD_STYLING } from '../../constants/styling-constants';
 
 // Simple interfaces that match what the tests expect
@@ -955,31 +959,39 @@ export class AppDfdOrchestrator {
       hasSvg: !!imageData.svg,
     });
 
-    const graph = this.dfdInfrastructure.getGraph();
+    const isCollaborating = this.collaborationService.isCollaborating();
+    const useWebSocket = isCollaborating;
 
-    // Use AppDiagramService (accessed via loading service) to save with image data
-    return (this.appDiagramLoadingService as any).diagramService
-      .saveDiagramChangesWithImage(
-        graph,
-        this._initParams.diagramId,
-        this._initParams.threatModelId,
-        imageData,
-      )
-      .pipe(
-        tap((success: boolean) => {
-          if (success) {
-            this._updateState({
-              hasUnsavedChanges: false,
-              lastSaved: new Date(),
-            });
-            this.logger.info('Diagram saved with image successfully');
-          }
-        }),
-        catchError((error: unknown) => {
-          this.logger.error('Manual save with image failed', { error });
-          return throwError(() => error);
-        }),
-      );
+    const saveOperation = {
+      diagramId: this._initParams.diagramId,
+      threatModelId: this._initParams.threatModelId,
+      data: this._getGraphData(),
+      imageData,
+      metadata: {
+        saveType: 'manual-with-image',
+        providerId: this.authService.providerId,
+        userEmail: this.authService.userEmail,
+        userName: this.authService.username,
+      },
+    };
+
+    return this.appPersistenceCoordinator.save(saveOperation, useWebSocket).pipe(
+      map(result => {
+        if (result.success) {
+          this._stats.autoSaves++;
+          this._updateState({
+            hasUnsavedChanges: false,
+            lastSaved: new Date(),
+          });
+          return true;
+        }
+        return false;
+      }),
+      catchError(error => {
+        this.logger.error('Manual save with image failed', { error });
+        return throwError(() => error);
+      }),
+    );
   }
 
   loadDiagram(forceLoad?: boolean): Observable<any>;
@@ -1941,24 +1953,17 @@ export class AppDfdOrchestrator {
       return null;
     }
 
-    const graphJson = graph.toJSON();
-    const cells = graphJson.cells || [];
+    const rawCells = extractCellsFromGraph(graph);
+    const normalizedCells = normalizeCells(rawCells);
+    const apiCells = normalizedCells.map(cell => sanitizeCellForApi(cell, this.logger));
 
-    const normalizedCells = normalizeCells(cells);
-
-    const nodes = normalizedCells
+    const nodes = apiCells
       .filter((cell: any) => cell.shape !== 'edge')
-      .map((cell: any) => ({
-        ...cell,
-        type: 'node',
-      }));
+      .map((cell: any) => ({ ...cell, type: 'node' }));
 
-    const edges = normalizedCells
+    const edges = apiCells
       .filter((cell: any) => cell.shape === 'edge')
-      .map((cell: any) => ({
-        ...cell,
-        type: 'edge',
-      }));
+      .map((cell: any) => ({ ...cell, type: 'edge' }));
 
     return { nodes, edges };
   }

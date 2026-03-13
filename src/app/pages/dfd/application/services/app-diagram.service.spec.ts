@@ -16,9 +16,6 @@ import { AppOperationStateManager } from './app-operation-state-manager.service'
 import { InfraPortStateService } from '../../infrastructure/services/infra-port-state.service';
 import { InfraNodeService } from '../../infrastructure/services/infra-node.service';
 import { InfraEdgeService } from '../../infrastructure/services/infra-edge.service';
-import { DfdCollaborationService } from '../../../../core/services/dfd-collaboration.service';
-import { InfraWebsocketCollaborationAdapter } from '../../infrastructure/adapters/infra-websocket-collaboration.adapter';
-import { CellOperation } from '../../../../core/types/websocket-message.types';
 
 describe('AppDiagramService', () => {
   let service: AppDiagramService;
@@ -31,8 +28,6 @@ describe('AppDiagramService', () => {
   let mockThreatModelService: {
     getDiagramById: ReturnType<typeof vi.fn>;
     getThreatModelById: ReturnType<typeof vi.fn>;
-    patchDiagramCells: ReturnType<typeof vi.fn>;
-    patchDiagramWithImage: ReturnType<typeof vi.fn>;
   };
   let mockHistoryCoordinator: {
     executeRemoteOperation: ReturnType<typeof vi.fn>;
@@ -46,12 +41,6 @@ describe('AppDiagramService', () => {
   };
   let mockInfraEdgeService: {
     createEdge: ReturnType<typeof vi.fn>;
-  };
-  let mockCollaborationService: {
-    isCollaborating: ReturnType<typeof vi.fn>;
-  };
-  let mockCollaborativeOperationService: {
-    sendDiagramOperation: ReturnType<typeof vi.fn>;
   };
   let mockGraph: any;
 
@@ -68,8 +57,6 @@ describe('AppDiagramService', () => {
     mockThreatModelService = {
       getDiagramById: vi.fn(),
       getThreatModelById: vi.fn(),
-      patchDiagramCells: vi.fn(),
-      patchDiagramWithImage: vi.fn(),
     };
 
     mockHistoryCoordinator = {
@@ -87,14 +74,6 @@ describe('AppDiagramService', () => {
 
     mockInfraEdgeService = {
       createEdge: vi.fn(),
-    };
-
-    mockCollaborationService = {
-      isCollaborating: vi.fn(),
-    };
-
-    mockCollaborativeOperationService = {
-      sendDiagramOperation: vi.fn(),
     };
 
     mockGraph = {
@@ -122,8 +101,6 @@ describe('AppDiagramService', () => {
       mockPortStateManager as unknown as InfraPortStateService,
       mockInfraNodeService as unknown as InfraNodeService,
       mockInfraEdgeService as unknown as InfraEdgeService,
-      mockCollaborationService as unknown as DfdCollaborationService,
-      mockCollaborativeOperationService as unknown as InfraWebsocketCollaborationAdapter,
     );
   });
 
@@ -407,316 +384,6 @@ describe('AppDiagramService', () => {
         expect.stringContaining('Error converting cell to X6 format'),
         expect.any(Object),
       );
-    });
-  });
-
-  describe('saveDiagramChanges', () => {
-    it('should use REST in solo mode', () => {
-      mockCollaborationService.isCollaborating.mockReturnValue(false);
-      mockThreatModelService.patchDiagramCells.mockReturnValue(of({ name: 'Updated' }));
-
-      const cells = [{ id: 'node-1', isNode: () => true, isEdge: () => false }];
-      mockGraph.getCells.mockReturnValue(cells);
-
-      const results: any[] = [];
-      service
-        .saveDiagramChanges(mockGraph, 'diagram-1', 'tm-1')
-        .subscribe(result => results.push(result));
-
-      expect(results).toHaveLength(1);
-      expect(results[0]).toBe(true);
-      expect(mockThreatModelService.patchDiagramCells).toHaveBeenCalled();
-    });
-
-    it('should handle REST save error in solo mode', () => {
-      mockCollaborationService.isCollaborating.mockReturnValue(false);
-      mockThreatModelService.patchDiagramCells.mockReturnValue(
-        throwError(() => new Error('Save failed')),
-      );
-
-      mockGraph.getCells.mockReturnValue([]);
-
-      const results: any[] = [];
-      service
-        .saveDiagramChanges(mockGraph, 'diagram-1', 'tm-1')
-        .subscribe(result => results.push(result));
-
-      expect(results).toHaveLength(1);
-      expect(results[0]).toBe(false);
-      expect(mockLogger.error).toHaveBeenCalled();
-    });
-  });
-
-  describe('saveDiagramChangesWithImage', () => {
-    it('should save with image data in solo mode', () => {
-      mockCollaborationService.isCollaborating.mockReturnValue(false);
-      mockThreatModelService.patchDiagramWithImage.mockReturnValue(of({ name: 'Updated' }));
-
-      const cells = [{ id: 'node-1', isNode: () => true, isEdge: () => false }];
-      mockGraph.getCells.mockReturnValue(cells);
-
-      const imageData = { svg: '<svg></svg>', update_vector: 5 };
-
-      const results: any[] = [];
-      service
-        .saveDiagramChangesWithImage(mockGraph, 'diagram-1', 'tm-1', imageData)
-        .subscribe(result => results.push(result));
-
-      expect(results).toHaveLength(1);
-      expect(results[0]).toBe(true);
-      expect(mockThreatModelService.patchDiagramWithImage).toHaveBeenCalledWith(
-        'tm-1',
-        'diagram-1',
-        expect.any(Array),
-        imageData,
-      );
-    });
-
-    it('should handle save error with image data', () => {
-      mockCollaborationService.isCollaborating.mockReturnValue(false);
-      mockThreatModelService.patchDiagramWithImage.mockReturnValue(
-        throwError(() => new Error('Save failed')),
-      );
-
-      mockGraph.getCells.mockReturnValue([]);
-      const imageData = { svg: '<svg></svg>' };
-
-      const results: any[] = [];
-      service
-        .saveDiagramChangesWithImage(mockGraph, 'diagram-1', 'tm-1', imageData)
-        .subscribe(result => results.push(result));
-
-      expect(results).toHaveLength(1);
-      expect(results[0]).toBe(false);
-    });
-  });
-
-  describe('sendCollaborativeOperation', () => {
-    it('should send operations in collaborative mode', () => {
-      mockCollaborationService.isCollaborating.mockReturnValue(true);
-      mockCollaborativeOperationService.sendDiagramOperation.mockReturnValue(of(undefined));
-
-      const operations: CellOperation[] = [
-        { id: 'cell-1', operation: 'add', data: { id: 'cell-1' } },
-      ];
-
-      const results: any[] = [];
-      service.sendCollaborativeOperation(operations).subscribe(() => results.push(true));
-
-      expect(results).toHaveLength(1);
-      expect(mockCollaborativeOperationService.sendDiagramOperation).toHaveBeenCalledWith(
-        operations,
-      );
-    });
-
-    it('should reject when not in collaborative mode', () => {
-      mockCollaborationService.isCollaborating.mockReturnValue(false);
-
-      const operations: CellOperation[] = [];
-
-      const errors: any[] = [];
-      service.sendCollaborativeOperation(operations).subscribe({
-        error: error => errors.push(error),
-      });
-
-      expect(errors).toHaveLength(1);
-      expect(errors[0].message).toBe('Not in collaborative mode');
-    });
-
-    it('should reject authentication errors without fallback', () => {
-      mockCollaborationService.isCollaborating.mockReturnValue(true);
-      mockCollaborativeOperationService.sendDiagramOperation.mockReturnValue(
-        throwError(() => new Error('401 Unauthorized')),
-      );
-
-      const operations: CellOperation[] = [];
-
-      const errors: any[] = [];
-      service.sendCollaborativeOperation(operations).subscribe({
-        error: error => errors.push(error),
-      });
-
-      expect(errors).toHaveLength(1);
-      expect(errors[0].message).toContain('401');
-    });
-
-    it('should fallback to REST on WebSocket error when parameters provided', () => {
-      mockCollaborationService.isCollaborating.mockReturnValue(true);
-      mockCollaborativeOperationService.sendDiagramOperation.mockReturnValue(
-        throwError(() => new Error('WebSocket error')),
-      );
-      mockThreatModelService.patchDiagramCells.mockReturnValue(of({ name: 'Updated' }));
-
-      mockGraph.getCells.mockReturnValue([]);
-
-      const operations: CellOperation[] = [];
-
-      const results: any[] = [];
-      service
-        .sendCollaborativeOperation(operations, mockGraph, 'diagram-1', 'tm-1')
-        .subscribe(() => results.push(true));
-
-      expect(results).toHaveLength(1);
-      expect(mockThreatModelService.patchDiagramCells).toHaveBeenCalled();
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining('REST fallback successful'),
-      );
-    });
-
-    it('should reject when WebSocket fails and no fallback parameters', () => {
-      mockCollaborationService.isCollaborating.mockReturnValue(true);
-      mockCollaborativeOperationService.sendDiagramOperation.mockReturnValue(
-        throwError(() => new Error('WebSocket error')),
-      );
-
-      const operations: CellOperation[] = [];
-
-      const errors: any[] = [];
-      service.sendCollaborativeOperation(operations).subscribe({
-        error: error => errors.push(error),
-      });
-
-      expect(errors).toHaveLength(1);
-      expect(errors[0].message).toContain('REST fallback not available');
-    });
-  });
-
-  describe('convertGraphToCellsFormat', () => {
-    it('should convert graph nodes to cell format', () => {
-      const mockNode = {
-        id: 'node-1',
-        shape: 'process',
-        isNode: () => true,
-        isEdge: () => false,
-        position: () => ({ x: 100, y: 200 }),
-        size: () => ({ width: 80, height: 60 }),
-        getZIndex: () => 1,
-        getAttrs: () => ({ text: { text: 'Test' } }),
-        getData: () => ({ _metadata: [] }),
-        getParent: () => null,
-        getProp: () => undefined,
-      };
-
-      mockGraph.getCells.mockReturnValue([mockNode]);
-
-      const result = (service as any).convertGraphToCellsFormat(mockGraph);
-
-      expect(result).toHaveLength(1);
-      expect(result[0].id).toBe('node-1');
-      expect(result[0].shape).toBe('process');
-      expect(result[0].x).toBe(100);
-      expect(result[0].y).toBe(200);
-    });
-
-    it('should convert graph edges to cell format', () => {
-      const mockEdge = {
-        id: 'edge-1',
-        shape: 'edge',
-        isNode: () => false,
-        isEdge: () => true,
-        getSource: () => ({ cell: 'node-1', port: 'right' }),
-        getTarget: () => ({ cell: 'node-2', port: 'left' }),
-        getVertices: () => [],
-        getZIndex: () => 1,
-        getData: () => ({ _metadata: [] }),
-      };
-
-      mockGraph.getCells.mockReturnValue([mockEdge]);
-
-      const result = (service as any).convertGraphToCellsFormat(mockGraph);
-
-      expect(result).toHaveLength(1);
-      expect(result[0].id).toBe('edge-1');
-      expect(result[0].shape).toBe('edge');
-      expect(result[0].source.cell).toBe('node-1');
-      expect(result[0].target.cell).toBe('node-2');
-    });
-
-    it('should handle nodes with parent relationships', () => {
-      const mockParent = {
-        id: 'parent-1',
-        isNode: () => true,
-      };
-
-      const mockNode = {
-        id: 'node-1',
-        shape: 'process',
-        isNode: () => true,
-        isEdge: () => false,
-        position: () => ({ x: 100, y: 200 }),
-        size: () => ({ width: 80, height: 60 }),
-        getZIndex: () => 1,
-        getAttrs: () => ({ text: { text: 'Test' } }),
-        getData: () => ({ _metadata: [] }),
-        getParent: () => mockParent,
-        getProp: () => undefined,
-      };
-
-      mockGraph.getCells.mockReturnValue([mockNode]);
-
-      const result = (service as any).convertGraphToCellsFormat(mockGraph);
-
-      expect(result[0].parent).toBe('parent-1');
-    });
-
-    it('should handle errors during conversion', () => {
-      const mockNode = {
-        id: 'bad-node',
-        isNode: () => true,
-        isEdge: () => false,
-        position: () => {
-          throw new Error('Invalid position');
-        },
-      };
-
-      mockGraph.getCells.mockReturnValue([mockNode]);
-
-      const result = (service as any).convertGraphToCellsFormat(mockGraph);
-
-      expect(result).toHaveLength(0);
-      expect(mockLogger.error).toHaveBeenCalled();
-    });
-
-    it('should include ports and preserve actual attrs when saving nodes', () => {
-      const mockPorts = {
-        groups: {
-          top: { position: 'top', attrs: { circle: { r: 5, style: { visibility: 'hidden' } } } },
-        },
-        items: [
-          { group: 'top', id: 'top', label: { text: 'HTTP', position: { name: 'outside' } } },
-        ],
-      };
-
-      const mockNode = {
-        id: 'node-1',
-        shape: 'process',
-        isNode: () => true,
-        isEdge: () => false,
-        position: () => ({ x: 100, y: 200 }),
-        size: () => ({ width: 80, height: 60 }),
-        getZIndex: () => 1,
-        getAttrs: () => ({
-          body: { fill: '#ff0000', stroke: '#000' },
-          text: { text: 'Test', refX: '5%', refY: '5%' },
-        }),
-        getData: () => ({ _metadata: [] }),
-        getParent: () => null,
-        getProp: (key: string) => (key === 'ports' ? mockPorts : undefined),
-      };
-
-      mockGraph.getCells.mockReturnValue([mockNode]);
-
-      const result = (service as any).convertGraphToCellsFormat(mockGraph);
-
-      expect(result).toHaveLength(1);
-      // Attrs should merge defaults with actual values
-      expect(result[0].attrs.body.fill).toBe('#ff0000');
-      expect(result[0].attrs.text.refX).toBe('5%');
-      // Ports should be present with visibility stripped
-      expect(result[0].ports).toBeDefined();
-      expect(result[0].ports.items[0].label.text).toBe('HTTP');
-      // Visibility should be stripped from saved ports
-      expect(result[0].ports.groups.top.attrs.circle.style).toBeUndefined();
     });
   });
 

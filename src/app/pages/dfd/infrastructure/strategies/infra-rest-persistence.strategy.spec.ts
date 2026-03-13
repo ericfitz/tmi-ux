@@ -26,7 +26,10 @@ describe('InfraRestPersistenceStrategy', () => {
   let loggerService: MockLoggerService;
   let mockHttpClient: { get: ReturnType<typeof vi.fn>; patch: ReturnType<typeof vi.fn> };
   let mockDiagramService: { loadDiagram: ReturnType<typeof vi.fn> };
-  let mockThreatModelService: { patchDiagramCells: ReturnType<typeof vi.fn> };
+  let mockThreatModelService: {
+    patchDiagramCells: ReturnType<typeof vi.fn>;
+    patchDiagramWithImage: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
     loggerService = createTypedMockLoggerService();
@@ -42,6 +45,7 @@ describe('InfraRestPersistenceStrategy', () => {
 
     mockThreatModelService = {
       patchDiagramCells: vi.fn(),
+      patchDiagramWithImage: vi.fn(),
     };
 
     strategy = new InfraRestPersistenceStrategy(
@@ -172,6 +176,48 @@ describe('InfraRestPersistenceStrategy', () => {
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Unknown error');
+    });
+
+    it('should call patchDiagramWithImage when imageData.svg is present', () => {
+      const mockResponse = { update_vector: 6, cells: [] };
+      mockThreatModelService.patchDiagramWithImage.mockReturnValue(of(mockResponse));
+
+      const operation: SaveOperation = {
+        diagramId: 'diag-1',
+        threatModelId: 'tm-1',
+        data: { nodes: [{ id: 'n1', shape: 'process' }], edges: [] },
+        imageData: { svg: 'base64svgdata' },
+      };
+
+      let result: any;
+      strategy.save(operation).subscribe(r => (result = r));
+
+      expect(result.success).toBe(true);
+      expect(mockThreatModelService.patchDiagramWithImage).toHaveBeenCalledWith(
+        'tm-1',
+        'diag-1',
+        expect.any(Array),
+        { svg: 'base64svgdata' },
+      );
+      expect(mockThreatModelService.patchDiagramCells).not.toHaveBeenCalled();
+    });
+
+    it('should call patchDiagramCells when imageData is absent', () => {
+      const mockResponse = { update_vector: 3, cells: [] };
+      mockThreatModelService.patchDiagramCells.mockReturnValue(of(mockResponse));
+
+      const operation: SaveOperation = {
+        diagramId: 'diag-1',
+        threatModelId: 'tm-1',
+        data: { nodes: [{ id: 'n1', shape: 'process' }], edges: [] },
+      };
+
+      let result: any;
+      strategy.save(operation).subscribe(r => (result = r));
+
+      expect(result.success).toBe(true);
+      expect(mockThreatModelService.patchDiagramCells).toHaveBeenCalled();
+      expect(mockThreatModelService.patchDiagramWithImage).not.toHaveBeenCalled();
     });
   });
 
