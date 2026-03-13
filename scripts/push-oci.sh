@@ -26,7 +26,7 @@
 #
 # Environment Variables:
 #   CONTAINER_REPO_OCID   Container repository OCID (alternative to --repo-ocid)
-#   OCI_COMPARTMENT_ID    Compartment OCID to search for repos (searched first if set)
+#   OCI_COMPARTMENT_ID    Compartment name or OCID to search for repos (searched first if set)
 #   OCI_REGION            OCI region (alternative to --region)
 #   OCI_TENANCY_NAMESPACE Override tenancy namespace (auto-detected if not set)
 #
@@ -211,12 +211,32 @@ select_repo_from_list() {
 discover_repo() {
     log_info "CONTAINER_REPO_OCID not set, discovering from OCI..."
 
-    # Try OCI_COMPARTMENT_ID first for targeted search
+    # Try OCI_COMPARTMENT_ID first for targeted search (accepts OCID or name)
     local compartment_id="${OCI_COMPARTMENT_ID:-}"
     local repos_json="[]"
     if [[ -n "$compartment_id" ]]; then
-        log_info "Found compartment_id from OCI_COMPARTMENT_ID"
-        repos_json=$(search_repos_in_compartment "$compartment_id")
+        # Resolve compartment name to OCID if not already an OCID
+        if [[ "$compartment_id" != ocid1.compartment.* ]]; then
+            log_info "Resolving compartment name '${compartment_id}' to OCID..."
+            local resolved_id
+            resolved_id=$(oci iam compartment list \
+                --compartment-id-in-subtree true \
+                --access-level ACCESSIBLE \
+                --lifecycle-state ACTIVE \
+                --query "data[?name=='${compartment_id}'].id | [0]" \
+                --raw-output 2>/dev/null || true)
+            if [[ -n "$resolved_id" && "$resolved_id" != "null" ]]; then
+                log_info "Resolved compartment '${compartment_id}' to ${resolved_id}"
+                compartment_id="$resolved_id"
+            else
+                log_warn "Could not resolve compartment name '${compartment_id}', falling back to tenancy search"
+                compartment_id=""
+            fi
+        fi
+        if [[ -n "$compartment_id" ]]; then
+            log_info "Searching compartment ${compartment_id}..."
+            repos_json=$(search_repos_in_compartment "$compartment_id")
+        fi
     fi
 
     # If no compartment found or no repos in it, search tenancy + child compartments
