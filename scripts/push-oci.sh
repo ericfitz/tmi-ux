@@ -60,6 +60,9 @@ echo ""
 
 APP_VERSION=$(node -p "require('./package.json').version")
 
+# Generate build-info.json on host (git not available inside Docker build)
+sh scripts/generate-build-info.sh
+
 echo "Building Docker image for OCI (version: ${APP_VERSION})..."
 docker build --build-arg APP_VERSION="${APP_VERSION}" -f Dockerfile.oci -t "${FULL_IMAGE_NAME}" .
 echo ""

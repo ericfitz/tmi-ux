@@ -16,6 +16,9 @@ echo ""
 APP_VERSION=$(node -p "require('./package.json').version")
 HEROKU_IMAGE="registry.heroku.com/tmi-ux/web"
 
+# Generate build-info.json on host (git not available inside Docker build)
+sh scripts/generate-build-info.sh
+
 echo "🐳 Building Docker container (version: ${APP_VERSION})..."
 docker build --platform linux/amd64 --provenance=false --build-arg APP_VERSION="${APP_VERSION}" -t "${HEROKU_IMAGE}" .
 

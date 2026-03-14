@@ -5,6 +5,9 @@
   "scripts": {
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true",
     "ng": "ng",
+    "generate-build-info": "sh scripts/generate-build-info.sh",
+    "prebuild": "pnpm run generate-build-info",
+    "predev": "pnpm run generate-build-info",
     "start": "node server.js",
     "start:dev": "ng serve",
     "build": "ng build",

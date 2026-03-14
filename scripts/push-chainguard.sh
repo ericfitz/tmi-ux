@@ -36,6 +36,9 @@ fi
 
 APP_VERSION=$(node -p "require('./package.json').version")
 
+# Generate build-info.json on host (git not available inside Docker build)
+sh scripts/generate-build-info.sh
+
 echo "Building Docker image with Chainguard base (version: ${APP_VERSION})..."
 docker build --build-arg APP_VERSION="${APP_VERSION}" -f Dockerfile.chainguard -t "${FULL_IMAGE_NAME}" .
 
