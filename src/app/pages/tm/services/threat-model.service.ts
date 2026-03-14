@@ -637,8 +637,7 @@ export class ThreatModelService implements OnDestroy {
 
         // Diagram operations
         createDiagram: (tmId, diagram) => this.createDiagram(tmId, diagram),
-        updateDiagram: (tmId, diagramId, diagram) =>
-          this.updateDiagram(tmId, diagramId, diagram),
+        updateDiagram: (tmId, diagramId, diagram) => this.updateDiagram(tmId, diagramId, diagram),
 
         // Threat operations
         createThreat: (tmId, threat) => this.createThreat(tmId, threat),
@@ -690,10 +689,7 @@ export class ThreatModelService implements OnDestroy {
     data: Partial<ApiThreatModelInput>,
   ): Observable<ThreatModel> {
     return this.apiService
-      .put<ThreatModel>(
-        `threat_models/${threatModelId}`,
-        data as Record<string, unknown>,
-      )
+      .put<ThreatModel>(`threat_models/${threatModelId}`, data as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating threat model with ID: ${threatModelId}`, error);
@@ -998,10 +994,7 @@ export class ThreatModelService implements OnDestroy {
    */
   createThreat(threatModelId: string, threat: Partial<ApiThreatInput>): Observable<Threat> {
     return this.apiService
-      .post<Threat>(
-        `threat_models/${threatModelId}/threats`,
-        threat as Record<string, unknown>,
-      )
+      .post<Threat>(`threat_models/${threatModelId}/threats`, threat as Record<string, unknown>)
       .pipe(
         tap(newThreat => {
           const cached = this._cachedThreatModels.get(threatModelId);
@@ -1187,15 +1180,9 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Create a new diagram in a threat model
    */
-  createDiagram(
-    threatModelId: string,
-    diagram: Partial<ApiBaseDiagramInput>,
-  ): Observable<Diagram> {
+  createDiagram(threatModelId: string, diagram: Partial<ApiBaseDiagramInput>): Observable<Diagram> {
     return this.apiService
-      .post<Diagram>(
-        `threat_models/${threatModelId}/diagrams`,
-        diagram as Record<string, unknown>,
-      )
+      .post<Diagram>(`threat_models/${threatModelId}/diagrams`, diagram as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error creating diagram in threat model ID: ${threatModelId}`, error);
@@ -1585,10 +1572,7 @@ export class ThreatModelService implements OnDestroy {
    */
   createNote(threatModelId: string, note: Partial<ApiNoteInput>): Observable<Note> {
     return this.apiService
-      .post<Note>(
-        `threat_models/${threatModelId}/notes`,
-        note as Record<string, unknown>,
-      )
+      .post<Note>(`threat_models/${threatModelId}/notes`, note as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error creating note for threat model ID: ${threatModelId}`, error);
@@ -1614,10 +1598,7 @@ export class ThreatModelService implements OnDestroy {
    */
   updateNote(threatModelId: string, noteId: string, note: Partial<ApiNoteInput>): Observable<Note> {
     return this.apiService
-      .put<Note>(
-        `threat_models/${threatModelId}/notes/${noteId}`,
-        note as Record<string, unknown>,
-      )
+      .put<Note>(`threat_models/${threatModelId}/notes/${noteId}`, note as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error updating note ID: ${noteId}`, error);
@@ -1703,10 +1684,7 @@ export class ThreatModelService implements OnDestroy {
    */
   createAsset(threatModelId: string, asset: Partial<ApiAssetInput>): Observable<Asset> {
     return this.apiService
-      .post<Asset>(
-        `threat_models/${threatModelId}/assets`,
-        asset as Record<string, unknown>,
-      )
+      .post<Asset>(`threat_models/${threatModelId}/assets`, asset as Record<string, unknown>)
       .pipe(
         catchError(error => {
           this.logger.error(`Error creating asset for threat model ID: ${threatModelId}`, error);
@@ -1718,7 +1696,11 @@ export class ThreatModelService implements OnDestroy {
   /**
    * Update an existing asset
    */
-  updateAsset(threatModelId: string, assetId: string, asset: Partial<ApiAssetInput>): Observable<Asset> {
+  updateAsset(
+    threatModelId: string,
+    assetId: string,
+    asset: Partial<ApiAssetInput>,
+  ): Observable<Asset> {
     return this.apiService
       .put<Asset>(
         `threat_models/${threatModelId}/assets/${assetId}`,
