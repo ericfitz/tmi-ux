@@ -212,7 +212,10 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
    */
   private formatAnswer(value: unknown): string {
     if (value === null || value === undefined) return '';
-    if (Array.isArray(value)) return (value as unknown[]).map(v => String(v)).join(', ');
+    if (Array.isArray(value))
+      return value
+        .map(v => (typeof v === 'object' && v !== null ? JSON.stringify(v) : String(v)))
+        .join(', ');
     if (typeof value === 'object') return JSON.stringify(value, null, 2);
     if (typeof value === 'string') return value;
     if (typeof value === 'number' || typeof value === 'boolean') return String(value);
