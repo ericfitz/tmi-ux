@@ -8,6 +8,7 @@ import { take } from 'rxjs';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { DIALOG_IMPORTS, DATA_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { Threat } from '../../models/threat-model.model';
+import type { ApiThreatInput } from '@app/generated/api-type-helpers';
 import {
   ThreatEditorDialogComponent,
   ThreatEditorDialogData,
@@ -197,7 +198,7 @@ export class ThreatsDialogComponent implements OnInit {
         this.logger.info('Threat editor closed with changes, updating threat');
 
         // Update the threat with new data
-        const updatedThreatData: Partial<Threat> = {
+        const updatedThreatData: Partial<ApiThreatInput> = {
           name: result.name,
           description: result.description,
           severity: result.severity ?? undefined,
@@ -205,9 +206,9 @@ export class ThreatsDialogComponent implements OnInit {
           diagram_id: result.diagram_id,
           cell_id: result.cell_id,
           score: result.score,
-          priority: result.priority,
+          priority: result.priority ?? undefined,
           mitigated: result.mitigated,
-          status: result.status,
+          status: result.status ?? undefined,
           issue_uri: result.issue_uri,
           metadata: result.metadata || threat.metadata || [],
         };

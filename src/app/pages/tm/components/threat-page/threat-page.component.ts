@@ -35,6 +35,7 @@ import { ThreatModelAuthorizationService } from '../../services/threat-model-aut
 import { CellDataExtractionService } from '../../../../shared/services/cell-data-extraction.service';
 import { FrameworkService } from '../../../../shared/services/framework.service';
 import { CVSSScore, Threat, ThreatModel } from '../../models/threat-model.model';
+import type { ApiThreatInput } from '@app/generated/api-type-helpers';
 import { FrameworkModel } from '../../../../shared/models/framework.model';
 import {
   FieldOption,
@@ -610,11 +611,10 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       });
   }
 
-  private buildThreatData(): Partial<Threat> {
+  private buildThreatData(): Partial<ApiThreatInput> {
     const formValues = this.threatForm.getRawValue() as ThreatFormValues;
 
     return {
-      ...this.threat,
       name: formValues.name,
       description: formValues.description || undefined,
       severity: formValues.severity || undefined,

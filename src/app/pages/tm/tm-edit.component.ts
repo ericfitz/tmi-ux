@@ -88,6 +88,7 @@ import {
   ThreatModel,
   User,
 } from './models/threat-model.model';
+import type { ApiThreatInput } from '@app/generated/api-type-helpers';
 import { ThreatModelService, ThreatListParams } from './services/threat-model.service';
 import { ThreatFilterStateService } from './services/threat-filter-state.service';
 import {
@@ -1159,10 +1160,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /** Build threat data from form result, copying only defined optional fields. */
-  private _copyDefinedFields(
-    source: Partial<Threat>,
-    target: Partial<Threat>,
-    fields: (keyof Threat)[],
+  private _copyDefinedFields<S, T>(
+    source: Partial<S>,
+    target: Partial<T>,
+    fields: (keyof S & keyof T)[],
   ): void {
     for (const field of fields) {
       if (source[field] !== undefined) {
@@ -1173,7 +1174,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /** Handle creating a new threat from dialog result. */
   private _handleCreateThreatResult(result: Partial<Threat>): void {
-    const newThreatData: Partial<Threat> = {
+    const newThreatData: Partial<ApiThreatInput> = {
       name: result.name,
       description: result.description,
       severity: result.severity || 'high',
@@ -1210,7 +1211,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /** Handle updating an existing threat from dialog result. */
   private _handleEditThreatResult(result: Partial<Threat>, threat: Threat): void {
-    const updatedThreatData: Partial<Threat> = {
+    const updatedThreatData: Partial<ApiThreatInput> = {
       name: result.name,
       description: result.description,
       severity: result.severity || threat.severity,
