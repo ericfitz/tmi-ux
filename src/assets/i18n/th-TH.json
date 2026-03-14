@@ -34,16 +34,11 @@
       "allObjects": "(ทั้งหมด)",
       "errorInvoking": "ไม่สามารถเรียกใช้ส่วนเสริมได้ โปรดลองอีกครั้ง",
       "invalidCharacters": "อนุญาตเฉพาะตัวอักษรและตัวเลข ช่องว่าง ขีดกลาง จุด จุลภาค และเครื่องหมายทับเท่านั้น",
-      "invalidJson": "รูปแบบ JSON ไม่ถูกต้อง",
       "invocationQueued": "การเรียกใช้ส่วนเสริมอยู่ในคิว",
       "metadataKeyMissing": "คีย์เมตาดาต้าที่จำเป็น \"{{key}}\" ไม่มีอยู่ในออบเจกต์นี้",
       "numberMax": "ค่าต้องไม่เกิน {{max}}",
       "numberMin": "ค่าต้องมีอย่างน้อย {{min}}",
       "parameters": "พารามิเตอร์",
-      "payload": "ข้อมูล (ไม่บังคับ)",
-      "payloadHint": "ข้อมูล JSON ที่จะส่งไปยังส่วนเสริม",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "รหัส Threat Model",
       "title": "เรียกใช้ส่วนเสริม",
       "valueTooLong": "ค่าเกินความยาวสูงสุด"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "ทำเครื่องหมายว่ากำลังตรวจสอบ",
     "markPendingTriage": "ทำเครื่องหมายว่ารอคัดกรอง",
+    "messages": {
+      "approveError": "ไม่สามารถอนุมัติคำตอบได้",
+      "approveSuccess": "อนุมัติคำตอบแล้ว",
+      "createThreatModelError": "ไม่สามารถสร้างแบบจำลองภัยคุกคามได้",
+      "createThreatModelSuccess": "สร้างแบบจำลองภัยคุกคามสำเร็จ",
+      "returnForRevisionError": "ไม่สามารถส่งคำตอบกลับเพื่อแก้ไขได้",
+      "returnForRevisionSuccess": "ส่งคำตอบกลับเพื่อแก้ไขแล้ว"
+    },
     "noResponses": "ไม่มีคำตอบที่ต้องคัดกรอง",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

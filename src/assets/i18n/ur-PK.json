@@ -34,16 +34,11 @@
       "allObjects": "(سب)",
       "errorInvoking": "ایڈ آن کو کال کرنے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔",
       "invalidCharacters": "صرف حروف اور اعداد، خالی جگہیں، ہائفن، نقطے، کوما، اور فارورڈ سلیش کی اجازت ہے",
-      "invalidJson": "غلط JSON فارمیٹ",
       "invocationQueued": "ایڈ آن کال قطار میں شامل ہو گئی",
       "metadataKeyMissing": "مطلوبہ میٹا ڈیٹا کلید \"{{key}}\" اس آبجیکٹ پر موجود نہیں ہے",
       "numberMax": "قدر زیادہ سے زیادہ {{max}} ہونی چاہیے",
       "numberMin": "قدر کم از کم {{min}} ہونی چاہیے",
       "parameters": "پیرامیٹرز",
-      "payload": "پے لوڈ (اختیاری)",
-      "payloadHint": "ایڈ آن کو بھیجنے کے لیے JSON ڈیٹا",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "تھریٹ ماڈل ID",
       "title": "ایڈ آن کو کال کریں",
       "valueTooLong": "قدر زیادہ سے زیادہ طوالت سے تجاوز کرتی ہے"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "جائزے میں نشان زد کریں",
     "markPendingTriage": "زیر التواء ٹرائیج نشان زد کریں",
+    "messages": {
+      "approveError": "جواب کی منظوری دینے میں ناکام",
+      "approveSuccess": "جواب منظور ہو گیا",
+      "createThreatModelError": "تھریٹ ماڈل بنانے میں ناکام",
+      "createThreatModelSuccess": "تھریٹ ماڈل کامیابی سے بنایا گیا",
+      "returnForRevisionError": "جواب نظرثانی کے لیے واپس کرنے میں ناکام",
+      "returnForRevisionSuccess": "جواب نظرثانی کے لیے واپس کر دیا گیا"
+    },
     "noResponses": "ٹرائیج کے لیے کوئی جواب نہیں",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

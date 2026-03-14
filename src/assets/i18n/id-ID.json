@@ -34,16 +34,11 @@
       "allObjects": "(Semua)",
       "errorInvoking": "Gagal memanggil addon. Silakan coba lagi.",
       "invalidCharacters": "Hanya karakter alfanumerik, spasi, tanda hubung, titik, koma, dan garis miring yang diperbolehkan",
-      "invalidJson": "Format JSON tidak valid",
       "invocationQueued": "Pemanggilan addon dalam antrean",
       "metadataKeyMissing": "Kunci metadata yang diperlukan \"{{key}}\" tidak ada pada objek ini",
       "numberMax": "Nilai harus paling banyak {{max}}",
       "numberMin": "Nilai harus setidaknya {{min}}",
       "parameters": "Parameter",
-      "payload": "Payload (Opsional)",
-      "payloadHint": "Data JSON untuk dikirim ke addon",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "ID Model Ancaman",
       "title": "Panggil Addon",
       "valueTooLong": "Nilai melebihi panjang maksimum"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "Tandai Sedang Ditinjau",
     "markPendingTriage": "Tandai Menunggu Triase",
+    "messages": {
+      "approveError": "Gagal menyetujui tanggapan",
+      "approveSuccess": "Tanggapan disetujui",
+      "createThreatModelError": "Gagal membuat model ancaman",
+      "createThreatModelSuccess": "Model ancaman berhasil dibuat",
+      "returnForRevisionError": "Gagal mengembalikan tanggapan untuk revisi",
+      "returnForRevisionSuccess": "Tanggapan dikembalikan untuk revisi"
+    },
     "noResponses": "Tidak ada respons untuk ditriase",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

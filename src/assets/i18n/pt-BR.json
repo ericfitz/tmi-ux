@@ -34,16 +34,11 @@
       "allObjects": "(Todos)",
       "errorInvoking": "Falha ao invocar o complemento. Por favor, tente novamente.",
       "invalidCharacters": "Somente caracteres alfanuméricos, espaços, hifens, pontos, vírgulas e barras são permitidos",
-      "invalidJson": "Formato JSON inválido",
       "invocationQueued": "Invocação do complemento enfileirada",
       "metadataKeyMissing": "A chave de metadados obrigatória \"{{key}}\" não está presente neste objeto",
       "numberMax": "O valor deve ser no máximo {{max}}",
       "numberMin": "O valor deve ser no mínimo {{min}}",
       "parameters": "Parâmetros",
-      "payload": "Carga (Opcional)",
-      "payloadHint": "Dados JSON para passar ao complemento",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "ID do Modelo de Ameaça",
       "title": "Invocar Complemento",
       "valueTooLong": "O valor excede o comprimento máximo"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "Marcar em Revisão",
     "markPendingTriage": "Marcar Triagem Pendente",
+    "messages": {
+      "approveError": "Falha ao aprovar resposta",
+      "approveSuccess": "Resposta aprovada",
+      "createThreatModelError": "Falha ao criar modelo de ameaça",
+      "createThreatModelSuccess": "Modelo de ameaça criado com sucesso",
+      "returnForRevisionError": "Falha ao devolver resposta para revisão",
+      "returnForRevisionSuccess": "Resposta devolvida para revisão"
+    },
     "noResponses": "Nenhuma resposta para triagem",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

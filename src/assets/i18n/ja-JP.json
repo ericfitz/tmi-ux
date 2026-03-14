@@ -34,16 +34,11 @@
       "allObjects": "(すべて)",
       "errorInvoking": "アドオンの呼び出しに失敗しました。もう一度お試しください。",
       "invalidCharacters": "英数字、スペース、ハイフン、ピリオド、カンマ、スラッシュのみ使用できます",
-      "invalidJson": "無効なJSON形式",
       "invocationQueued": "アドオン呼び出しがキューに追加されました",
       "metadataKeyMissing": "必須メタデータキー「{{key}}」がこのオブジェクトに存在しません",
       "numberMax": "値は最大{{max}}でなければなりません",
       "numberMin": "値は最低{{min}}でなければなりません",
       "parameters": "パラメータ",
-      "payload": "ペイロード（オプション）",
-      "payloadHint": "アドオンに渡すJSONデータ",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "脅威モデルID",
       "title": "アドオンを呼び出す",
       "valueTooLong": "値が最大長を超えています"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "レビュー中に設定",
     "markPendingTriage": "トリアージ待ちに設定",
+    "messages": {
+      "approveError": "回答の承認に失敗しました",
+      "approveSuccess": "回答が承認されました",
+      "createThreatModelError": "脅威モデルの作成に失敗しました",
+      "createThreatModelSuccess": "脅威モデルが正常に作成されました",
+      "returnForRevisionError": "修正依頼への差し戻しに失敗しました",
+      "returnForRevisionSuccess": "回答が修正依頼として差し戻されました"
+    },
     "noResponses": "トリアージする回答がありません",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

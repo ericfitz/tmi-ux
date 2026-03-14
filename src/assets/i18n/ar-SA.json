@@ -34,16 +34,11 @@
       "allObjects": "(الكل)",
       "errorInvoking": "فشل في استدعاء التوسيع. يرجى المحاولة مرة أخرى.",
       "invalidCharacters": "يُسمح فقط بالأحرف الأبجدية الرقمية والمسافات والواصلات والنقاط والفواصل والشرطات المائلة الأمامية",
-      "invalidJson": "تنسيق JSON غير صالح",
       "invocationQueued": "تم وضع استدعاء التوسيع في قائمة الانتظار",
       "metadataKeyMissing": "مفتاح البيانات الوصفية المطلوب \"{{key}}\" غير موجود في هذا الكائن",
       "numberMax": "يجب أن تكون القيمة {{max}} على الأكثر",
       "numberMin": "يجب أن تكون القيمة {{min}} على الأقل",
       "parameters": "المعلمات",
-      "payload": "الحمولة (اختياري)",
-      "payloadHint": "بيانات JSON لتمريرها إلى التوسيع",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "معرّف نموذج التهديد",
       "title": "استدعاء التوسيع",
       "valueTooLong": "القيمة تتجاوز الحد الأقصى للطول"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "وضع علامة قيد المراجعة",
     "markPendingTriage": "وضع علامة في انتظار الفرز",
+    "messages": {
+      "approveError": "فشل في الموافقة على الرد",
+      "approveSuccess": "تمت الموافقة على الرد",
+      "createThreatModelError": "فشل في إنشاء نموذج التهديد",
+      "createThreatModelSuccess": "تم إنشاء نموذج التهديد بنجاح",
+      "returnForRevisionError": "فشل في إعادة الرد للمراجعة",
+      "returnForRevisionSuccess": "تمت إعادة الرد للمراجعة"
+    },
     "noResponses": "لا توجد ردود للفرز",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

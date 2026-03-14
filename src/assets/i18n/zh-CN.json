@@ -34,16 +34,11 @@
       "allObjects": "（全部）",
       "errorInvoking": "调用插件失败。请重试。",
       "invalidCharacters": "仅允许使用字母数字字符、空格、连字符、句点、逗号和正斜杠",
-      "invalidJson": "无效的JSON格式",
       "invocationQueued": "插件调用已排队",
       "metadataKeyMissing": "此对象上不存在必需的元数据键 \"{{key}}\"",
       "numberMax": "值不能超过 {{max}}",
       "numberMin": "值不能小于 {{min}}",
       "parameters": "参数",
-      "payload": "载荷（可选）",
-      "payloadHint": "传递给插件的JSON数据",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "威胁模型ID",
       "title": "调用插件",
       "valueTooLong": "值超过最大长度"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "标记为审核中",
     "markPendingTriage": "标记为待分诊",
+    "messages": {
+      "approveError": "批准回复失败",
+      "approveSuccess": "回复已批准",
+      "createThreatModelError": "创建威胁模型失败",
+      "createThreatModelSuccess": "威胁模型创建成功",
+      "returnForRevisionError": "退回修订失败",
+      "returnForRevisionSuccess": "回复已退回修订"
+    },
     "noResponses": "暂无待分诊回复",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

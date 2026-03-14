@@ -34,16 +34,11 @@
       "allObjects": "(सभी)",
       "errorInvoking": "ऐडऑन को आमंत्रित करने में विफल। कृपया पुनः प्रयास करें।",
       "invalidCharacters": "केवल अल्फान्यूमेरिक अक्षर, रिक्त स्थान, हाइफ़न, अवधि, अल्पविराम और फ़ॉरवर्ड स्लैश की अनुमति है",
-      "invalidJson": "अमान्य JSON प्रारूप",
       "invocationQueued": "ऐडऑन आमंत्रण कतार में है",
       "metadataKeyMissing": "आवश्यक मेटाडेटा कुंजी \"{{key}}\" इस ऑब्जेक्ट पर मौजूद नहीं है",
       "numberMax": "मान अधिकतम {{max}} होना चाहिए",
       "numberMin": "मान कम से कम {{min}} होना चाहिए",
       "parameters": "पैरामीटर",
-      "payload": "पेलोड (वैकल्पिक)",
-      "payloadHint": "ऐडऑन को भेजने के लिए JSON डेटा",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "थ्रेट मॉडल ID",
       "title": "ऐडऑन आमंत्रित करें",
       "valueTooLong": "मान अधिकतम लंबाई से अधिक है"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "समीक्षा में चिह्नित करें",
     "markPendingTriage": "लंबित ट्राइएज चिह्नित करें",
+    "messages": {
+      "approveError": "प्रतिक्रिया स्वीकृत करने में विफल",
+      "approveSuccess": "प्रतिक्रिया स्वीकृत की गई",
+      "createThreatModelError": "खतरा मॉडल बनाने में विफल",
+      "createThreatModelSuccess": "खतरा मॉडल सफलतापूर्वक बनाया गया",
+      "returnForRevisionError": "प्रतिक्रिया संशोधन के लिए वापस करने में विफल",
+      "returnForRevisionSuccess": "प्रतिक्रिया संशोधन के लिए वापस की गई"
+    },
     "noResponses": "ट्राइएज करने के लिए कोई प्रतिक्रिया नहीं",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

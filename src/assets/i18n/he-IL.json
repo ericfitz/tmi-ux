@@ -34,16 +34,11 @@
       "allObjects": "(הכל)",
       "errorInvoking": "הפעלת התוסף נכשלה. אנא נסה שוב.",
       "invalidCharacters": "מותרים רק תווים אלפאנומריים, רווחים, מקפים, נקודות, פסיקים ולוכסנים",
-      "invalidJson": "פורמט JSON לא תקין",
       "invocationQueued": "הפעלת התוסף בתור",
       "metadataKeyMissing": "מפתח מטא-נתונים נדרש \"{{key}}\" אינו קיים באובייקט זה",
       "numberMax": "הערך חייב להיות לכל היותר {{max}}",
       "numberMin": "הערך חייב להיות לפחות {{min}}",
       "parameters": "פרמטרים",
-      "payload": "מטען (אופציונלי)",
-      "payloadHint": "נתוני JSON להעברה לתוסף",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "מזהה מודל איומים",
       "title": "הפעל תוסף",
       "valueTooLong": "הערך חורג מהאורך המקסימלי"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "סמן בבדיקה",
     "markPendingTriage": "סמן ממתין לטריאז'",
+    "messages": {
+      "approveError": "אישור התגובה נכשל",
+      "approveSuccess": "התגובה אושרה",
+      "createThreatModelError": "יצירת מודל האיומים נכשלה",
+      "createThreatModelSuccess": "מודל האיומים נוצר בהצלחה",
+      "returnForRevisionError": "החזרת התגובה לתיקון נכשלה",
+      "returnForRevisionSuccess": "התגובה הוחזרה לתיקון"
+    },
     "noResponses": "אין תגובות לטריאז'",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

@@ -34,16 +34,11 @@
       "allObjects": "(সব)",
       "errorInvoking": "অ্যাডঅন চালু করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
       "invalidCharacters": "শুধুমাত্র আলফানিউমেরিক অক্ষর, স্পেস, হাইফেন, পিরিয়ড, কমা এবং ফরওয়ার্ড স্ল্যাশ অনুমোদিত",
-      "invalidJson": "অবৈধ JSON ফরম্যাট",
       "invocationQueued": "অ্যাডঅন কল সারিবদ্ধ হয়েছে",
       "metadataKeyMissing": "প্রয়োজনীয় মেটাডেটা কী \"{{key}}\" এই অবজেক্টে উপস্থিত নেই",
       "numberMax": "মান সর্বাধিক {{max}} হতে হবে",
       "numberMin": "মান সর্বনিম্ন {{min}} হতে হবে",
       "parameters": "প্যারামিটার",
-      "payload": "পেলোড (ঐচ্ছিক)",
-      "payloadHint": "অ্যাডঅনে পাঠানোর জন্য JSON ডেটা",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "থ্রেট মডেল আইডি",
       "title": "অ্যাডঅন চালু করুন",
       "valueTooLong": "মান সর্বোচ্চ দৈর্ঘ্য অতিক্রম করেছে"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "পর্যালোচনায় চিহ্নিত করুন",
     "markPendingTriage": "ট্রায়াজ মুলতুবি চিহ্নিত করুন",
+    "messages": {
+      "approveError": "প্রতিক্রিয়া অনুমোদন করতে ব্যর্থ",
+      "approveSuccess": "প্রতিক্রিয়া অনুমোদিত হয়েছে",
+      "createThreatModelError": "থ্রেট মডেল তৈরি করতে ব্যর্থ",
+      "createThreatModelSuccess": "থ্রেট মডেল সফলভাবে তৈরি হয়েছে",
+      "returnForRevisionError": "সংশোধনের জন্য প্রতিক্রিয়া ফেরত পাঠাতে ব্যর্থ",
+      "returnForRevisionSuccess": "প্রতিক্রিয়া সংশোধনের জন্য ফেরত পাঠানো হয়েছে"
+    },
     "noResponses": "ট্রায়াজ করার জন্য কোনো প্রতিক্রিয়া নেই",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

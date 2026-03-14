@@ -34,16 +34,11 @@
       "allObjects": "(Alle)",
       "errorInvoking": "Addon konnte nicht aufgerufen werden. Bitte versuchen Sie es erneut.",
       "invalidCharacters": "Nur alphanumerische Zeichen, Leerzeichen, Bindestriche, Punkte, Kommas und Schrägstriche sind erlaubt",
-      "invalidJson": "Ungültiges JSON-Format",
       "invocationQueued": "Addon-Aufruf in Warteschlange",
       "metadataKeyMissing": "Der erforderliche Metadaten-Schlüssel \"{{key}}\" ist bei diesem Objekt nicht vorhanden",
       "numberMax": "Der Wert darf höchstens {{max}} betragen",
       "numberMin": "Der Wert muss mindestens {{min}} betragen",
       "parameters": "Parameter",
-      "payload": "Nutzlast (Optional)",
-      "payloadHint": "JSON-Daten zum Übergeben an das Addon",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "Bedrohungsmodell-ID",
       "title": "Addon aufrufen",
       "valueTooLong": "Der Wert überschreitet die maximale Länge"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "Als geprüft markieren",
     "markPendingTriage": "Als ausstehend markieren",
+    "messages": {
+      "approveError": "Antwort konnte nicht genehmigt werden",
+      "approveSuccess": "Antwort genehmigt",
+      "createThreatModelError": "Bedrohungsmodell konnte nicht erstellt werden",
+      "createThreatModelSuccess": "Bedrohungsmodell erfolgreich erstellt",
+      "returnForRevisionError": "Antwort konnte nicht zur Überarbeitung zurückgesendet werden",
+      "returnForRevisionSuccess": "Antwort zur Überarbeitung zurückgesendet"
+    },
     "noResponses": "Keine Antworten zur Triage",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

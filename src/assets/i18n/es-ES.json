@@ -34,16 +34,11 @@
       "allObjects": "(Todos)",
       "errorInvoking": "Error al invocar el complemento. Por favor, inténtelo de nuevo.",
       "invalidCharacters": "Solo se permiten caracteres alfanuméricos, espacios, guiones, puntos, comas y barras diagonales",
-      "invalidJson": "Formato JSON no válido",
       "invocationQueued": "Invocación del complemento en cola",
       "metadataKeyMissing": "La clave de metadatos requerida \"{{key}}\" no está presente en este objeto",
       "numberMax": "El valor debe ser como máximo {{max}}",
       "numberMin": "El valor debe ser como mínimo {{min}}",
       "parameters": "Parámetros",
-      "payload": "Carga útil (Opcional)",
-      "payloadHint": "Datos JSON para pasar al complemento",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "ID del modelo de amenazas",
       "title": "Invocar complemento",
       "valueTooLong": "El valor excede la longitud máxima"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "Marcar en Revisión",
     "markPendingTriage": "Marcar Pendiente de Clasificación",
+    "messages": {
+      "approveError": "Error al aprobar la respuesta",
+      "approveSuccess": "Respuesta aprobada",
+      "createThreatModelError": "Error al crear el modelo de amenazas",
+      "createThreatModelSuccess": "Modelo de amenazas creado correctamente",
+      "returnForRevisionError": "Error al devolver la respuesta para revisión",
+      "returnForRevisionSuccess": "Respuesta devuelta para revisión"
+    },
     "noResponses": "No hay respuestas para clasificar",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

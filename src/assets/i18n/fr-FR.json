@@ -34,16 +34,11 @@
       "allObjects": "(Tous)",
       "errorInvoking": "Échec de l'invocation du module complémentaire. Veuillez réessayer.",
       "invalidCharacters": "Seuls les caractères alphanumériques, espaces, tirets, points, virgules et barres obliques sont autorisés",
-      "invalidJson": "Format JSON invalide",
       "invocationQueued": "Invocation du module complémentaire mise en file d'attente",
       "metadataKeyMissing": "La clé de métadonnées requise \"{{key}}\" n'est pas présente sur cet objet",
       "numberMax": "La valeur doit être au maximum {{max}}",
       "numberMin": "La valeur doit être au minimum {{min}}",
       "parameters": "Paramètres",
-      "payload": "Charge utile (Facultatif)",
-      "payloadHint": "Données JSON à transmettre au module complémentaire",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "ID du modèle de menace",
       "title": "Invoquer le module complémentaire",
       "valueTooLong": "La valeur dépasse la longueur maximale"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "Marquer en révision",
     "markPendingTriage": "Marquer en attente de triage",
+    "messages": {
+      "approveError": "Échec de l'approbation de la réponse",
+      "approveSuccess": "Réponse approuvée",
+      "createThreatModelError": "Échec de la création du modèle de menace",
+      "createThreatModelSuccess": "Modèle de menace créé avec succès",
+      "returnForRevisionError": "Échec du renvoi de la réponse pour révision",
+      "returnForRevisionSuccess": "Réponse renvoyée pour révision"
+    },
     "noResponses": "Aucune réponse à trier",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

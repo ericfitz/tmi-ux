@@ -1573,6 +1573,8 @@
       "submitted": "Submitted",
       "submitter": "Submitter"
     },
+    "markInReview": "Mark In Review",
+    "markPendingTriage": "Mark Pending Triage",
     "messages": {
       "approveError": "Failed to approve response",
       "approveSuccess": "Response approved",
@@ -1581,8 +1583,6 @@
       "returnForRevisionError": "Failed to return response for revision",
       "returnForRevisionSuccess": "Response returned for revision"
     },
-    "markInReview": "Mark In Review",
-    "markPendingTriage": "Mark Pending Triage",
     "noResponses": "No responses to triage",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

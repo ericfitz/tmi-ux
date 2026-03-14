@@ -34,16 +34,11 @@
       "allObjects": "(모두)",
       "errorInvoking": "애드온 호출에 실패했습니다. 다시 시도해 주세요.",
       "invalidCharacters": "영숫자, 공백, 하이픈, 마침표, 쉼표 및 슬래시만 허용됩니다",
-      "invalidJson": "잘못된 JSON 형식",
       "invocationQueued": "애드온 호출이 대기열에 추가되었습니다",
       "metadataKeyMissing": "필수 메타데이터 키 \"{{key}}\"가 이 객체에 존재하지 않습니다",
       "numberMax": "값은 최대 {{max}}이어야 합니다",
       "numberMin": "값은 최소 {{min}}이어야 합니다",
       "parameters": "매개변수",
-      "payload": "페이로드 (선택 사항)",
-      "payloadHint": "애드온에 전달할 JSON 데이터",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "위협 모델 ID",
       "title": "애드온 호출",
       "valueTooLong": "값이 최대 길이를 초과합니다"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "검토 중으로 표시",
     "markPendingTriage": "트리아지 대기로 표시",
+    "messages": {
+      "approveError": "응답 승인에 실패했습니다",
+      "approveSuccess": "응답이 승인되었습니다",
+      "createThreatModelError": "위협 모델 생성에 실패했습니다",
+      "createThreatModelSuccess": "위협 모델이 성공적으로 생성되었습니다",
+      "returnForRevisionError": "수정 요청 반환에 실패했습니다",
+      "returnForRevisionSuccess": "응답이 수정을 위해 반환되었습니다"
+    },
     "noResponses": "트리아지할 응답이 없습니다",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",

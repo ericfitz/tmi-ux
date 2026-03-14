@@ -34,16 +34,11 @@
       "allObjects": "(Все)",
       "errorInvoking": "Не удалось вызвать дополнение. Пожалуйста, попробуйте снова.",
       "invalidCharacters": "Допускаются только буквенно-цифровые символы, пробелы, дефисы, точки, запятые и косые черты",
-      "invalidJson": "Неверный формат JSON",
       "invocationQueued": "Вызов дополнения добавлен в очередь",
       "metadataKeyMissing": "Обязательный ключ метаданных \"{{key}}\" отсутствует у этого объекта",
       "numberMax": "Значение должно быть не более {{max}}",
       "numberMin": "Значение должно быть не менее {{min}}",
       "parameters": "Параметры",
-      "payload": "Данные (Необязательно)",
-      "payloadHint": "JSON-данные для передачи дополнению",
-      "payloadPlaceholder": "{ \"key\": \"value\" }",
-      "payloadPlaceholder.comment": "This is JSON example syntax and should not be translated.",
       "threatModelId": "Идентификатор модели угроз",
       "title": "Вызвать дополнение",
       "valueTooLong": "Значение превышает максимальную длину"
@@ -1522,6 +1517,14 @@
     },
     "markInReview": "Отметить на проверке",
     "markPendingTriage": "Отметить ожидающим сортировки",
+    "messages": {
+      "approveError": "Не удалось утвердить ответ",
+      "approveSuccess": "Ответ утверждён",
+      "createThreatModelError": "Не удалось создать модель угроз",
+      "createThreatModelSuccess": "Модель угроз успешно создана",
+      "returnForRevisionError": "Не удалось вернуть ответ на доработку",
+      "returnForRevisionSuccess": "Ответ возвращён на доработку"
+    },
     "noResponses": "Нет ответов для сортировки",
     "noteEditor": {
       "contentLabel": "{{noteEditor.content}}",
