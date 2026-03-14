@@ -1573,6 +1573,14 @@
       "submitted": "Submitted",
       "submitter": "Submitter"
     },
+    "messages": {
+      "approveError": "Failed to approve response",
+      "approveSuccess": "Response approved",
+      "createThreatModelError": "Failed to create threat model",
+      "createThreatModelSuccess": "Threat model created successfully",
+      "returnForRevisionError": "Failed to return response for revision",
+      "returnForRevisionSuccess": "Response returned for revision"
+    },
     "markInReview": "Mark In Review",
     "markPendingTriage": "Mark Pending Triage",
     "noResponses": "No responses to triage",

@@ -13,6 +13,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { MatTabsModule } from '@angular/material/tabs';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
@@ -119,6 +120,7 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private router: Router,
+    private snackBar: MatSnackBar,
     private responseService: SurveyResponseService,
     private surveyService: SurveyService,
     private logger: LoggerService,
@@ -268,9 +270,19 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         next: () => {
           this.loadResponses();
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.approveSuccess'),
+            this.transloco.translate('common.close'),
+            { duration: 3000 },
+          );
         },
         error: (err: unknown) => {
           this.logger.error('Failed to approve response', err);
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.approveError'),
+            this.transloco.translate('common.close'),
+            { duration: 5000 },
+          );
         },
       });
   }
@@ -299,9 +311,19 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe({
               next: () => {
                 this.loadResponses();
+                this.snackBar.open(
+                  this.transloco.translate('triage.messages.returnForRevisionSuccess'),
+                  this.transloco.translate('common.close'),
+                  { duration: 3000 },
+                );
               },
               error: (err: unknown) => {
                 this.logger.error('Failed to return response for revision', err);
+                this.snackBar.open(
+                  this.transloco.translate('triage.messages.returnForRevisionError'),
+                  this.transloco.translate('common.close'),
+                  { duration: 5000 },
+                );
               },
             });
         }
@@ -321,10 +343,20 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
             responseId: result.survey_response_id,
             threatModelId: result.threat_model_id,
           });
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.createThreatModelSuccess'),
+            this.transloco.translate('common.close'),
+            { duration: 3000 },
+          );
           void this.router.navigate(['/tm', result.threat_model_id]);
         },
         error: (err: unknown) => {
           this.logger.error('Failed to create threat model from response', err);
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.createThreatModelError'),
+            this.transloco.translate('common.close'),
+            { duration: 5000 },
+          );
         },
       });
   }

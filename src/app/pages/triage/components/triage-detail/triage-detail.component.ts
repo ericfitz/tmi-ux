@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { MarkdownModule } from 'ngx-markdown';
 import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
 import { SurveyService } from '../../../surveys/services/survey.service';
@@ -93,6 +94,8 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private transloco: TranslocoService,
     private responseService: SurveyResponseService,
     private surveyService: SurveyService,
     private triageNoteService: TriageNoteService,
@@ -285,10 +288,20 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
           this.buildStatusTimeline(updatedResponse);
           this.isUpdatingStatus = false;
           this.logger.info('Response approved', { id: updatedResponse.id });
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.approveSuccess'),
+            this.transloco.translate('common.close'),
+            { duration: 3000 },
+          );
         },
         error: (err: unknown) => {
           this.isUpdatingStatus = false;
           this.logger.error('Failed to approve response', err);
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.approveError'),
+            this.transloco.translate('common.close'),
+            { duration: 5000 },
+          );
         },
       });
   }
@@ -333,10 +346,20 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
           this.buildStatusTimeline(updatedResponse);
           this.isUpdatingStatus = false;
           this.logger.info('Response returned for revision', { id: updatedResponse.id });
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.returnForRevisionSuccess'),
+            this.transloco.translate('common.close'),
+            { duration: 3000 },
+          );
         },
         error: err => {
           this.isUpdatingStatus = false;
           this.logger.error('Failed to return response for revision', err);
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.returnForRevisionError'),
+            this.transloco.translate('common.close'),
+            { duration: 5000 },
+          );
         },
       });
   }
@@ -359,11 +382,21 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
             responseId: result.survey_response_id,
             threatModelId: result.threat_model_id,
           });
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.createThreatModelSuccess'),
+            this.transloco.translate('common.close'),
+            { duration: 3000 },
+          );
           void this.router.navigate(['/tm', result.threat_model_id]);
         },
         error: err => {
           this.isUpdatingStatus = false;
           this.logger.error('Failed to create threat model from response', err);
+          this.snackBar.open(
+            this.transloco.translate('triage.messages.createThreatModelError'),
+            this.transloco.translate('common.close'),
+            { duration: 5000 },
+          );
         },
       });
   }
