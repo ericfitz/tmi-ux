@@ -515,6 +515,33 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Copy text to clipboard with snackbar feedback
+   */
+  copyToClipboard(text: string): void {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        this.snackBar.open(
+          this.transloco.translate('common.copiedToClipboard'),
+          this.transloco.translate('common.close'),
+          { duration: 2000 },
+        );
+      })
+      .catch((err: unknown) => {
+        this.logger.error('Could not copy text: ', err);
+      });
+  }
+
+  /**
+   * Copy the response ID to clipboard
+   */
+  copyResponseId(): void {
+    if (this.response?.id) {
+      this.copyToClipboard(this.response.id);
+    }
+  }
+
+  /**
    * Navigate back to triage list
    */
   goBack(): void {

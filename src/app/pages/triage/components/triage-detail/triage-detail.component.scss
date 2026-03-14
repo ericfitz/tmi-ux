@@ -283,6 +283,16 @@
   }
 }
 
+.id-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.copy-id-button {
+  flex-shrink: 0;
+}
+
 // Status chip colors
 .status-draft {
   --mdc-chip-label-text-color: #666;

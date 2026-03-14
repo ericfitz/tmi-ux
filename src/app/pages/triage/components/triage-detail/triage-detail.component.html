@@ -156,6 +156,13 @@
                 </div>
               }
 
+              @if (surveyJson?.title) {
+                <div class="info-item">
+                  <span class="info-label">{{ 'common.objectTypes.survey' | transloco }}</span>
+                  <span class="info-value">{{ surveyJson?.title }}</span>
+                </div>
+              }
+
               <div class="info-item">
                 <span class="info-label">{{ 'common.version' | transloco }}</span>
                 <span class="info-value">v{{ response.survey_version }}</span>
@@ -182,13 +189,6 @@
                 </div>
               }
 
-              @if (response.reviewed_at) {
-                <div class="info-item">
-                  <span class="info-label">{{ 'triage.detail.reviewedAt' | transloco }}</span>
-                  <span class="info-value">{{ response.reviewed_at | date: 'medium' }}</span>
-                </div>
-              }
-
               <div class="info-item">
                 <span class="info-label">{{ 'common.lastModified' | transloco }}</span>
                 <span class="info-value">{{ response.modified_at | date: 'medium' }}</span>
@@ -205,7 +205,20 @@
 
               <div class="info-item">
                 <span class="info-label">{{ 'common.id' | transloco }}</span>
-                <span class="info-value monospace">{{ response.id }}</span>
+                <div class="id-row">
+                  <span class="info-value monospace">{{ response.id }}</span>
+                  @if (response.id) {
+                    <button
+                      mat-icon-button
+                      class="copy-id-button"
+                      (click)="copyResponseId()"
+                      [matTooltip]="'common.copyToClipboard' | transloco"
+                      [attr.aria-label]="'common.copyToClipboard' | transloco"
+                    >
+                      <mat-icon>content_copy</mat-icon>
+                    </button>
+                  }
+                </div>
               </div>
             </div>
           </mat-card-content>
