@@ -41,6 +41,7 @@ Also:
 1. **Build**: Run `pnpm run build` and fix all build errors, regardless of whether they were pre-existing or caused by the current changes. Test isn't meaningful against a failing build.
 2. **Test**: Run related tests and fix any failures
 3. **Never Skip Tests**: Always troubleshoot to root cause and fix, or ask what to do
+4. **Code Review**: Run the code review skill (`superpowers:requesting-code-review`) before committing
 
 ### For GitHub Issue-Related Changes
 
