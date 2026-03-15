@@ -85,3 +85,4 @@ deliverables/**
 workspace
 workspace/**
 docs/superpowers/**
+.superpowers/**
