@@ -191,12 +191,19 @@
                     </button>
                     <button
                       mat-icon-button
-                      color="warn"
-                      (click)="onDeleteSetting(setting)"
-                      [matTooltip]="'admin.settings.deleteTooltip' | transloco"
+                      [matMenuTriggerFor]="settingRowKebabMenu"
+                      [matTooltip]="'common.actions' | transloco"
+                      [attr.aria-label]="'common.actions' | transloco"
+                      (click)="$event.stopPropagation()"
                     >
-                      <mat-icon>delete</mat-icon>
+                      <mat-icon>more_vert</mat-icon>
                     </button>
+                    <mat-menu #settingRowKebabMenu="matMenu">
+                      <button mat-menu-item (click)="onDeleteSetting(setting)">
+                        <mat-icon>delete</mat-icon>
+                        <span [transloco]="'admin.settings.deleteTooltip'">Delete</span>
+                      </button>
+                    </mat-menu>
                   </div>
                 }
               </td>

@@ -168,12 +168,19 @@
                     </button>
                     <button
                       mat-icon-button
-                      color="warn"
-                      (click)="onDeleteUserAPIQuota(quota)"
-                      [matTooltip]="'admin.quotas.deleteTooltip' | transloco"
+                      [matMenuTriggerFor]="userAPIQuotaKebabMenu"
+                      [matTooltip]="'common.actions' | transloco"
+                      [attr.aria-label]="'common.actions' | transloco"
+                      (click)="$event.stopPropagation()"
                     >
-                      <mat-icon>delete</mat-icon>
+                      <mat-icon>more_vert</mat-icon>
                     </button>
+                    <mat-menu #userAPIQuotaKebabMenu="matMenu">
+                      <button mat-menu-item (click)="onDeleteUserAPIQuota(quota)">
+                        <mat-icon>delete</mat-icon>
+                        <span [transloco]="'admin.quotas.deleteTooltip'">Delete</span>
+                      </button>
+                    </mat-menu>
                   </div>
                 }
               </td>
@@ -414,12 +421,19 @@
                     </button>
                     <button
                       mat-icon-button
-                      color="warn"
-                      (click)="onDeleteWebhookQuota(quota)"
-                      [matTooltip]="'admin.quotas.deleteTooltip' | transloco"
+                      [matMenuTriggerFor]="webhookQuotaKebabMenu"
+                      [matTooltip]="'common.actions' | transloco"
+                      [attr.aria-label]="'common.actions' | transloco"
+                      (click)="$event.stopPropagation()"
                     >
-                      <mat-icon>delete</mat-icon>
+                      <mat-icon>more_vert</mat-icon>
                     </button>
+                    <mat-menu #webhookQuotaKebabMenu="matMenu">
+                      <button mat-menu-item (click)="onDeleteWebhookQuota(quota)">
+                        <mat-icon>delete</mat-icon>
+                        <span [transloco]="'admin.quotas.deleteTooltip'">Delete</span>
+                      </button>
+                    </mat-menu>
                   </div>
                 }
               </td>

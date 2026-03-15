@@ -80,12 +80,19 @@
               <div class="webhook-actions">
                 <button
                   mat-icon-button
-                  color="warn"
-                  (click)="onDeleteWebhook(webhook)"
-                  [matTooltip]="'admin.webhooks.deleteTooltip' | transloco"
+                  [matMenuTriggerFor]="webhookKebabMenu"
+                  [matTooltip]="'common.actions' | transloco"
+                  [attr.aria-label]="'common.actions' | transloco"
+                  (click)="$event.stopPropagation()"
                 >
-                  <mat-icon>delete</mat-icon>
+                  <mat-icon>more_vert</mat-icon>
                 </button>
+                <mat-menu #webhookKebabMenu="matMenu">
+                  <button mat-menu-item (click)="onDeleteWebhook(webhook)">
+                    <mat-icon>delete</mat-icon>
+                    <span [transloco]="'admin.webhooks.deleteTooltip'">Delete</span>
+                  </button>
+                </mat-menu>
               </div>
 
               <!-- Row 2 Columns -->

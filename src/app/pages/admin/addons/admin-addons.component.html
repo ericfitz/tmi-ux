@@ -60,12 +60,19 @@
               <div class="addon-actions">
                 <button
                   mat-icon-button
-                  color="warn"
-                  (click)="onDeleteAddon(addon)"
-                  [matTooltip]="'admin.addons.deleteTooltip' | transloco"
+                  [matMenuTriggerFor]="addonKebabMenu"
+                  [matTooltip]="'common.actions' | transloco"
+                  [attr.aria-label]="'common.actions' | transloco"
+                  (click)="$event.stopPropagation()"
                 >
-                  <mat-icon>delete</mat-icon>
+                  <mat-icon>more_vert</mat-icon>
                 </button>
+                <mat-menu #addonKebabMenu="matMenu">
+                  <button mat-menu-item (click)="onDeleteAddon(addon)">
+                    <mat-icon>delete</mat-icon>
+                    <span [transloco]="'admin.addons.deleteTooltip'">Delete</span>
+                  </button>
+                </mat-menu>
               </div>
 
               @if (addon.description) {

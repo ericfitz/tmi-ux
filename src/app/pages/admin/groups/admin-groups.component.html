@@ -116,13 +116,23 @@
                   </button>
                   <button
                     mat-icon-button
-                    color="warn"
-                    (click)="onDeleteGroup(group)"
-                    [disabled]="isEveryoneGroup(group)"
-                    [matTooltip]="'admin.groups.deleteTooltip' | transloco"
+                    [matMenuTriggerFor]="groupRowKebabMenu"
+                    [matTooltip]="'common.actions' | transloco"
+                    [attr.aria-label]="'common.actions' | transloco"
+                    (click)="$event.stopPropagation()"
                   >
-                    <mat-icon>delete</mat-icon>
+                    <mat-icon>more_vert</mat-icon>
                   </button>
+                  <mat-menu #groupRowKebabMenu="matMenu">
+                    <button
+                      mat-menu-item
+                      (click)="onDeleteGroup(group)"
+                      [disabled]="isEveryoneGroup(group)"
+                    >
+                      <mat-icon>delete</mat-icon>
+                      <span [transloco]="'admin.groups.deleteTooltip'">Delete</span>
+                    </button>
+                  </mat-menu>
                 </div>
               </td>
             </ng-container>
