@@ -90,7 +90,7 @@ export class AboutComponent implements OnInit {
     this.operatorContact = this.operatorService.getOperatorContact();
     this.operatorJurisdiction = this.operatorService.getOperatorJurisdiction();
     this.webApplicationVersion = `${version} (${gitCommit})`;
-    this.serverVersion = this.serverConnectionService.getServerVersion() || '';
+    this.serverVersion = this.serverConnectionService.getFormattedServerVersion();
   }
 
   goBack(): void {

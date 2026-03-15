@@ -416,7 +416,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       },
     );
 
-    const serverVersion = this.serverConnectionService.getServerVersion() || 'unknown';
+    const serverVersion = this.serverConnectionService.getFormattedServerVersion() || 'unknown';
     const title = encodeURIComponent('bug: ');
     const body = encodeURIComponent(
       `## Environment\n\n- Client: ${version} (${gitCommit})\n- Server: ${serverVersion}\n\n` +
