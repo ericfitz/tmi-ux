@@ -50,8 +50,9 @@ export interface TmiLoginDialogResult {
   `,
   styles: [
     `
-      mat-dialog-content {
+      :host ::ng-deep .mat-mdc-dialog-content {
         padding-top: 12px;
+        overflow: visible;
       }
 
       .full-width {
