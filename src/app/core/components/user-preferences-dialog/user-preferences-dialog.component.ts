@@ -70,71 +70,94 @@ interface CheckboxChangeEvent {
               User Profile
             </h3>
 
-            <div class="profile-info">
-              <div class="profile-item">
-                <span class="profile-label" [transloco]="'common.name'">Name</span>
-                <span class="profile-value"
-                  ><app-user-display [user]="userProfile" fallback="N/A"
-                /></span>
-              </div>
-
-              <div class="profile-item">
-                <span class="profile-label" [transloco]="'common.emailLabel'">Email</span>
-                <span class="profile-value">{{ userProfile?.email || 'N/A' }}</span>
-              </div>
-
-              @if (userProfile?.provider) {
+            <div class="profile-layout">
+              <div class="profile-info">
                 <div class="profile-item">
-                  <span class="profile-label" [transloco]="'userPreferences.userProfile.provider'">
-                    Identity Provider
-                  </span>
-                  <span class="profile-value">{{ userProfile?.provider }}</span>
+                  <span class="profile-label" [transloco]="'common.name'">Name</span>
+                  <span class="profile-value"
+                    ><app-user-display [user]="userProfile" fallback="N/A"
+                  /></span>
                 </div>
-              }
 
-              @if (userProfile?.provider_id) {
+                <div class="profile-item">
+                  <span class="profile-label" [transloco]="'common.emailLabel'">Email</span>
+                  <span class="profile-value">{{ userProfile?.email || 'N/A' }}</span>
+                </div>
+
+                @if (userProfile?.provider) {
+                  <div class="profile-item">
+                    <span
+                      class="profile-label"
+                      [transloco]="'userPreferences.userProfile.provider'"
+                    >
+                      Identity Provider
+                    </span>
+                    <span class="profile-value">{{ userProfile?.provider }}</span>
+                  </div>
+                }
+
+                @if (userProfile?.provider_id) {
+                  <div class="profile-item">
+                    <span
+                      class="profile-label"
+                      [transloco]="'userPreferences.userProfile.providerId'"
+                    >
+                      Provider ID
+                    </span>
+                    <span class="profile-value user-id">{{ userProfile?.provider_id }}</span>
+                  </div>
+                }
+
                 <div class="profile-item">
                   <span
                     class="profile-label"
-                    [transloco]="'userPreferences.userProfile.providerId'"
+                    [transloco]="'userPreferences.userProfile.groupMemberships'"
                   >
-                    Provider ID
+                    Group Memberships
                   </span>
-                  <span class="profile-value user-id">{{ userProfile?.provider_id }}</span>
+                  @if (userProfile?.groups && (userProfile?.groups?.length ?? 0) > 0) {
+                    <div class="profile-value groups-list">
+                      @for (group of userProfile?.groups; track group.internal_uuid) {
+                        <span class="group-badge">{{ group.name ?? group.group_name }}</span>
+                      }
+                    </div>
+                  } @else {
+                    <span class="profile-value" [transloco]="'common.none'">None</span>
+                  }
                 </div>
-              }
 
-              <div class="profile-item">
-                <span
-                  class="profile-label"
-                  [transloco]="'userPreferences.userProfile.groupMemberships'"
-                >
-                  Group Memberships
-                </span>
-                @if (userProfile?.groups && (userProfile?.groups?.length ?? 0) > 0) {
-                  <div class="profile-value groups-list">
-                    @for (group of userProfile?.groups; track group.internal_uuid) {
-                      <span class="group-badge">{{ group.name ?? group.group_name }}</span>
-                    }
+                @if (currentThreatModelRole) {
+                  <div class="profile-item">
+                    <span
+                      class="profile-label"
+                      [transloco]="'userPreferences.userProfile.currentRole'"
+                    >
+                      Current Threat Model Role
+                    </span>
+                    <span class="profile-value">
+                      {{ 'common.roles.' + currentThreatModelRole | transloco }}
+                    </span>
                   </div>
-                } @else {
-                  <span class="profile-value" [transloco]="'common.none'">None</span>
                 }
               </div>
-
-              @if (currentThreatModelRole) {
-                <div class="profile-item">
-                  <span
-                    class="profile-label"
-                    [transloco]="'userPreferences.userProfile.currentRole'"
+              <mat-divider [vertical]="true"></mat-divider>
+              <div class="profile-actions">
+                <div class="profile-actions-content">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="onExportLog()"
+                    class="download-log-button"
                   >
-                    Current Threat Model Role
-                  </span>
-                  <span class="profile-value">
-                    {{ 'common.roles.' + currentThreatModelRole | transloco }}
-                  </span>
+                    <mat-icon>download</mat-icon>
+                    <span [transloco]="'userPreferences.downloadLog.title'">Download Log</span>
+                  </button>
+                  <p class="download-log-hint" [transloco]="'userPreferences.downloadLog.hint'">
+                    Downloads the most recent application log entries as a JSONL file for
+                    troubleshooting.
+                  </p>
                 </div>
-              }
+              </div>
             </div>
           </div>
         </mat-tab>
@@ -409,17 +432,6 @@ interface CheckboxChangeEvent {
         <mat-tab [label]="'userPreferences.tabs.danger' | transloco">
           <div class="tab-content danger-tab">
             <div class="preference-item">
-              <button mat-raised-button (click)="onExportLog()" class="export-log-button">
-                <mat-icon>download</mat-icon>
-                <span [transloco]="'userPreferences.exportLog.title'">Export Application Log</span>
-              </button>
-              <p class="danger-hint" [transloco]="'userPreferences.exportLog.hint'">
-                Downloads the most recent application log entries as a JSONL file for
-                troubleshooting.
-              </p>
-            </div>
-            <mat-divider></mat-divider>
-            <div class="preference-item">
               <button
                 mat-raised-button
                 color="warn"
@@ -527,10 +539,46 @@ interface CheckboxChangeEvent {
         line-height: 20px;
       }
 
+      .profile-layout {
+        display: flex;
+        gap: 24px;
+      }
+
       .profile-info {
+        flex: 1;
         display: flex;
         flex-direction: column;
         gap: 12px;
+      }
+
+      .profile-actions {
+        display: flex;
+        align-items: center;
+        padding-left: 16px;
+      }
+
+      .profile-actions-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .download-log-button {
+        border-radius: 24px;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .download-log-hint {
+        margin: 0;
+        font-size: 12px;
+        color: var(--theme-text-secondary);
+        text-align: center;
+        max-width: 160px;
+        line-height: 1.4;
       }
 
       .profile-item {
@@ -691,19 +739,6 @@ interface CheckboxChangeEvent {
       /* Danger tab styles */
       .danger-tab {
         padding-top: 8px;
-      }
-
-      .export-log-button {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .export-log-button mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-        line-height: 20px;
       }
 
       .transfer-button {

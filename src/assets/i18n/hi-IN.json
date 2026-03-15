@@ -1481,7 +1481,7 @@
       "addNote": "नोट जोड़ें",
       "columns": {
         "answer": "उत्तर",
-        "group": "समूह",
+        "group": "{{common.subjectTypes.group}}",
         "question": "प्रश्न"
       },
       "markdownSupported": "Markdown समर्थित",
@@ -1626,9 +1626,9 @@
     },
     "diagramAnimationEffects": "डायग्राम एडिटर में एनिमेशन प्रभाव सक्षम करें",
     "displayPreferences": "प्रदर्शन प्राथमिकताएं",
-    "exportLog": {
+    "downloadLog": {
       "hint": "समस्या निवारण के लिए सबसे हालिया एप्लिकेशन लॉग प्रविष्टियों को JSONL फ़ाइल के रूप में डाउनलोड करता है।",
-      "title": "एप्लिकेशन लॉग निर्यात करें"
+      "title": "लॉग डाउनलोड करें"
     },
     "hoverShowMetadata": "होवर पर सेल मेटाडेटा दिखाएं",
     "marginSize": {

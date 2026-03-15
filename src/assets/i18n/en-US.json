@@ -1539,7 +1539,7 @@
       "addNote": "Add Note",
       "columns": {
         "answer": "Answer",
-        "group": "Group",
+        "group": "{{common.subjectTypes.group}}",
         "question": "Question"
       },
       "markdownSupported": "Markdown supported",
@@ -1685,9 +1685,9 @@
     },
     "diagramAnimationEffects": "Enable Animation Effects in Diagram Editor",
     "displayPreferences": "Display Preferences",
-    "exportLog": {
+    "downloadLog": {
       "hint": "Downloads the most recent application log entries as a JSONL file for troubleshooting.",
-      "title": "Export Application Log"
+      "title": "Download Log"
     },
     "hoverShowMetadata": "Show cell metadata on hover",
     "marginSize": {

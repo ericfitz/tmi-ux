@@ -1481,7 +1481,7 @@
       "addNote": "إضافة ملاحظة",
       "columns": {
         "answer": "إجابة",
-        "group": "مجموعة",
+        "group": "{{common.subjectTypes.group}}",
         "question": "سؤال"
       },
       "markdownSupported": "يدعم Markdown",
@@ -1626,9 +1626,9 @@
     },
     "diagramAnimationEffects": "تفعيل تأثيرات الرسوم المتحركة في محرر المخططات",
     "displayPreferences": "تفضيلات العرض",
-    "exportLog": {
+    "downloadLog": {
       "hint": "يقوم بتنزيل أحدث إدخالات سجل التطبيق كملف JSONL لاستكشاف الأخطاء وإصلاحها.",
-      "title": "تصدير سجل التطبيق"
+      "title": "تنزيل السجل"
     },
     "hoverShowMetadata": "إظهار بيانات الخلية الوصفية عند التمرير",
     "marginSize": {

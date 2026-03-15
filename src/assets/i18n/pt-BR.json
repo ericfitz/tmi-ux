@@ -1481,7 +1481,7 @@
       "addNote": "Adicionar Nota",
       "columns": {
         "answer": "Resposta",
-        "group": "Grupo",
+        "group": "{{common.subjectTypes.group}}",
         "question": "Pergunta"
       },
       "markdownSupported": "Markdown suportado",
@@ -1626,9 +1626,9 @@
     },
     "diagramAnimationEffects": "Habilitar Efeitos de Animacao no Editor de Diagramas",
     "displayPreferences": "Preferencias de Exibicao",
-    "exportLog": {
+    "downloadLog": {
       "hint": "Baixa as entradas mais recentes do log da aplicação como um arquivo JSONL para solução de problemas.",
-      "title": "Exportar Log da Aplicação"
+      "title": "Baixar registro"
     },
     "hoverShowMetadata": "Mostrar metadados da célula ao passar o cursor",
     "marginSize": {

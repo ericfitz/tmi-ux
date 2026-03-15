@@ -1481,7 +1481,7 @@
       "addNote": "Notiz hinzufügen",
       "columns": {
         "answer": "Antwort",
-        "group": "Gruppe",
+        "group": "{{common.subjectTypes.group}}",
         "question": "Frage"
       },
       "markdownSupported": "Markdown unterstützt",
@@ -1626,9 +1626,9 @@
     },
     "diagramAnimationEffects": "Animationseffekte im Diagramm-Editor aktivieren",
     "displayPreferences": "Anzeigeeinstellungen",
-    "exportLog": {
+    "downloadLog": {
       "hint": "Lädt die neuesten Anwendungsprotokolleinträge als JSONL-Datei zur Fehlerbehebung herunter.",
-      "title": "Anwendungsprotokoll exportieren"
+      "title": "Protokoll herunterladen"
     },
     "hoverShowMetadata": "Zell-Metadaten beim Überfahren anzeigen",
     "marginSize": {

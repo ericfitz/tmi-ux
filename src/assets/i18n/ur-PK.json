@@ -1481,7 +1481,7 @@
       "addNote": "نوٹ شامل کریں",
       "columns": {
         "answer": "جواب",
-        "group": "گروپ",
+        "group": "{{common.subjectTypes.group}}",
         "question": "سوال"
       },
       "markdownSupported": "Markdown تعاون یافتہ",
@@ -1626,9 +1626,9 @@
     },
     "diagramAnimationEffects": "ڈایاگرام ایڈیٹر میں اینیمیشن اثرات فعال کریں",
     "displayPreferences": "ڈسپلے کی ترجیحات",
-    "exportLog": {
+    "downloadLog": {
       "hint": "خرابی کی تشخیص کے لیے ایپلیکیشن لاگ کے تازہ ترین اندراجات JSONL فائل کے طور پر ڈاؤن لوڈ کرتا ہے۔",
-      "title": "ایپلیکیشن لاگ برآمد کریں"
+      "title": "لاگ ڈاؤن لوڈ کریں"
     },
     "hoverShowMetadata": "ہوور پر سیل میٹا ڈیٹا دکھائیں",
     "marginSize": {

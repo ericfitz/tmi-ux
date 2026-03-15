@@ -1481,7 +1481,7 @@
       "addNote": "เพิ่มหมายเหตุ",
       "columns": {
         "answer": "คำตอบ",
-        "group": "กลุ่ม",
+        "group": "{{common.subjectTypes.group}}",
         "question": "คำถาม"
       },
       "markdownSupported": "รองรับ Markdown",
@@ -1626,9 +1626,9 @@
     },
     "diagramAnimationEffects": "เปิดใช้งานเอฟเฟกต์แอนิเมชันในโปรแกรมแก้ไขแผนภาพ",
     "displayPreferences": "การตั้งค่าการแสดงผล",
-    "exportLog": {
+    "downloadLog": {
       "hint": "ดาวน์โหลดรายการบันทึกแอปพลิเคชันล่าสุดเป็นไฟล์ JSONL สำหรับการแก้ไขปัญหา",
-      "title": "ส่งออกบันทึกแอปพลิเคชัน"
+      "title": "ดาวน์โหลดบันทึก"
     },
     "hoverShowMetadata": "แสดงข้อมูลเมตาของเซลล์เมื่อวางเมาส์",
     "marginSize": {

@@ -1481,7 +1481,7 @@
       "addNote": "הוסף הערה",
       "columns": {
         "answer": "תשובה",
-        "group": "קבוצה",
+        "group": "{{common.subjectTypes.group}}",
         "question": "שאלה"
       },
       "markdownSupported": "תומך ב-Markdown",
@@ -1626,9 +1626,9 @@
     },
     "diagramAnimationEffects": "הפעל אפקטי אנימציה בעורך הדיאגרמות",
     "displayPreferences": "העדפות תצוגה",
-    "exportLog": {
+    "downloadLog": {
       "hint": "מוריד את רשומות יומן האפליקציה האחרונות כקובץ JSONL לצורך פתרון בעיות.",
-      "title": "ייצוא יומן אפליקציה"
+      "title": "הורד יומן"
     },
     "hoverShowMetadata": "הצג מטא-נתוני תא בריחוף",
     "marginSize": {

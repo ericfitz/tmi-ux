@@ -1481,7 +1481,7 @@
       "addNote": "ノートを追加",
       "columns": {
         "answer": "回答",
-        "group": "グループ",
+        "group": "{{common.subjectTypes.group}}",
         "question": "質問"
       },
       "markdownSupported": "Markdown対応",
@@ -1626,9 +1626,9 @@
     },
     "diagramAnimationEffects": "ダイアグラムエディターでアニメーション効果を有効にする",
     "displayPreferences": "表示設定",
-    "exportLog": {
+    "downloadLog": {
       "hint": "トラブルシューティング用に、最新のアプリケーションログエントリをJSONLファイルとしてダウンロードします。",
-      "title": "アプリケーションログをエクスポート"
+      "title": "ログをダウンロード"
     },
     "hoverShowMetadata": "ホバー時にセルのメタデータを表示",
     "marginSize": {

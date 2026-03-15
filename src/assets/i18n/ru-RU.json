@@ -1481,7 +1481,7 @@
       "addNote": "Добавить заметку",
       "columns": {
         "answer": "Ответ",
-        "group": "Группа",
+        "group": "{{common.subjectTypes.group}}",
         "question": "Вопрос"
       },
       "markdownSupported": "Поддерживается Markdown",
@@ -1626,9 +1626,9 @@
     },
     "diagramAnimationEffects": "Включить эффекты анимации в редакторе диаграмм",
     "displayPreferences": "Настройки отображения",
-    "exportLog": {
+    "downloadLog": {
       "hint": "Загружает последние записи журнала приложения в формате JSONL для диагностики.",
-      "title": "Экспорт журнала приложения"
+      "title": "Скачать журнал"
     },
     "hoverShowMetadata": "Показывать метаданные ячейки при наведении",
     "marginSize": {

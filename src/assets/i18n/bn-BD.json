@@ -1481,7 +1481,7 @@
       "addNote": "নোট যোগ করুন",
       "columns": {
         "answer": "উত্তর",
-        "group": "গ্রুপ",
+        "group": "{{common.subjectTypes.group}}",
         "question": "প্রশ্ন"
       },
       "markdownSupported": "মার্কডাউন সমর্থিত",
@@ -1626,9 +1626,9 @@
     },
     "diagramAnimationEffects": "ডায়াগ্রাম এডিটরে অ্যানিমেশন ইফেক্ট সক্রিয় করুন",
     "displayPreferences": "প্রদর্শন পছন্দ",
-    "exportLog": {
+    "downloadLog": {
       "hint": "সমস্যা সমাধানের জন্য সাম্প্রতিক অ্যাপ্লিকেশন লগ এন্ট্রিগুলি JSONL ফাইল হিসেবে ডাউনলোড করে।",
-      "title": "অ্যাপ্লিকেশন লগ এক্সপোর্ট করুন"
+      "title": "লগ ডাউনলোড করুন"
     },
     "hoverShowMetadata": "হোভারে সেল মেটাডেটা দেখান",
     "marginSize": {

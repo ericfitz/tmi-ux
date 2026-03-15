@@ -1481,7 +1481,7 @@
       "addNote": "노트 추가",
       "columns": {
         "answer": "답변",
-        "group": "그룹",
+        "group": "{{common.subjectTypes.group}}",
         "question": "질문"
       },
       "markdownSupported": "Markdown 지원",
@@ -1626,9 +1626,9 @@
     },
     "diagramAnimationEffects": "다이어그램 편집기에서 애니메이션 효과 활성화",
     "displayPreferences": "디스플레이 설정",
-    "exportLog": {
+    "downloadLog": {
       "hint": "문제 해결을 위해 최근 애플리케이션 로그 항목을 JSONL 파일로 다운로드합니다.",
-      "title": "애플리케이션 로그 내보내기"
+      "title": "로그 다운로드"
     },
     "hoverShowMetadata": "호버 시 셀 메타데이터 표시",
     "marginSize": {

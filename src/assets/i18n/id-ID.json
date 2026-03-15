@@ -1481,7 +1481,7 @@
       "addNote": "Tambah Catatan",
       "columns": {
         "answer": "Jawaban",
-        "group": "Grup",
+        "group": "{{common.subjectTypes.group}}",
         "question": "Pertanyaan"
       },
       "markdownSupported": "Markdown didukung",
@@ -1626,9 +1626,9 @@
     },
     "diagramAnimationEffects": "Aktifkan Efek Animasi di Editor Diagram",
     "displayPreferences": "Preferensi Tampilan",
-    "exportLog": {
+    "downloadLog": {
       "hint": "Mengunduh entri log aplikasi terbaru sebagai file JSONL untuk pemecahan masalah.",
-      "title": "Ekspor Log Aplikasi"
+      "title": "Unduh Log"
     },
     "hoverShowMetadata": "Tampilkan metadata sel saat mengarahkan kursor",
     "marginSize": {
