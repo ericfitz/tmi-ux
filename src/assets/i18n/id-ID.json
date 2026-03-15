@@ -815,6 +815,15 @@
     "signingIn": "Sedang masuk...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Masuk ke TMI",
+    "tmiDialog": {
+      "errorMaxLength": "Nama pengguna harus maksimal 20 karakter",
+      "errorMinLength": "Nama pengguna harus minimal 3 karakter",
+      "errorPattern": "Nama pengguna hanya boleh mengandung huruf dan angka",
+      "signIn": "Masuk",
+      "title": "Masuk dengan TMI Provider",
+      "usernameLabel": "Nama pengguna",
+      "usernamePlaceholder": "Masukkan nama pengguna (opsional)"
+    },
     "unexpectedError": "Terjadi kesalahan yang tidak terduga selama OAuth."
   },
   "navbar": {

@@ -28,6 +28,7 @@ describe('LoginComponent', () => {
     error: ReturnType<typeof vi.fn>;
     debugComponent: ReturnType<typeof vi.fn>;
   };
+  let mockDialog: { open: ReturnType<typeof vi.fn> };
 
   const mockOAuthProviders: OAuthProviderInfo[] = [
     {
@@ -91,6 +92,12 @@ describe('LoginComponent', () => {
       debugComponent: vi.fn(),
     };
 
+    mockDialog = {
+      open: vi.fn().mockReturnValue({
+        afterClosed: () => of({ loginHint: '' }),
+      }),
+    };
+
     // Clear sessionStorage before each test
     sessionStorage.clear();
 
@@ -99,6 +106,7 @@ describe('LoginComponent', () => {
       mockRoute as any,
       mockRouter as any,
       mockLogger as any,
+      mockDialog as any,
     );
   });
 
@@ -239,12 +247,59 @@ describe('LoginComponent', () => {
           providerName: 'GitHub',
           providerType: 'oauth',
           returnUrl: undefined,
+          loginHint: undefined,
         },
       });
     });
 
     it('should not navigate for unknown provider', () => {
       component.loginWithOAuth('nonexistent');
+
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+    });
+
+    it('should open TMI login dialog when provider is tmi', () => {
+      component.loginWithOAuth('tmi');
+      expect(mockDialog.open).toHaveBeenCalled();
+    });
+
+    it('should navigate with loginHint when dialog returns a value', () => {
+      mockDialog.open.mockReturnValue({
+        afterClosed: () => of({ loginHint: 'testuser' }),
+      });
+
+      component.loginWithOAuth('tmi');
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/oauth2/callback'], {
+        queryParams: expect.objectContaining({
+          loginHint: 'testuser',
+        }),
+      });
+    });
+
+    it('should navigate without loginHint when dialog returns empty string', () => {
+      mockDialog.open.mockReturnValue({
+        afterClosed: () => of({ loginHint: '' }),
+      });
+
+      component.loginWithOAuth('tmi');
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/oauth2/callback'], {
+        queryParams: expect.objectContaining({
+          providerId: 'tmi',
+        }),
+      });
+      // loginHint should be undefined (omitted) when empty
+      const queryParams = mockRouter.navigate.mock.calls[0][1].queryParams;
+      expect(queryParams.loginHint).toBeUndefined();
+    });
+
+    it('should not navigate when dialog is cancelled', () => {
+      mockDialog.open.mockReturnValue({
+        afterClosed: () => of(undefined),
+      });
+
+      component.loginWithOAuth('tmi');
 
       expect(mockRouter.navigate).not.toHaveBeenCalled();
     });

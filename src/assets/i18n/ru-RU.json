@@ -815,6 +815,15 @@
     "signingIn": "Вход в систему...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Вход в TMI",
+    "tmiDialog": {
+      "errorMaxLength": "Имя пользователя должно содержать не более 20 символов",
+      "errorMinLength": "Имя пользователя должно содержать не менее 3 символов",
+      "errorPattern": "Имя пользователя должно содержать только буквы и цифры",
+      "signIn": "Войти",
+      "title": "Войти с TMI Provider",
+      "usernameLabel": "Имя пользователя",
+      "usernamePlaceholder": "Введите имя пользователя (необязательно)"
+    },
     "unexpectedError": "Произошла непредвиденная ошибка во время OAuth."
   },
   "navbar": {

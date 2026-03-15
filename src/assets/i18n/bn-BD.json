@@ -815,6 +815,15 @@
     "signingIn": "সাইন ইন করা হচ্ছে...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "TMI-তে সাইন ইন করুন",
+    "tmiDialog": {
+      "errorMaxLength": "ব্যবহারকারীর নাম সর্বোচ্চ 20 অক্ষরের হতে হবে",
+      "errorMinLength": "ব্যবহারকারীর নাম কমপক্ষে 3 অক্ষরের হতে হবে",
+      "errorPattern": "ব্যবহারকারীর নামে শুধুমাত্র অক্ষর এবং সংখ্যা থাকতে পারে",
+      "signIn": "সাইন ইন",
+      "title": "TMI Provider দিয়ে সাইন ইন করুন",
+      "usernameLabel": "ব্যবহারকারীর নাম",
+      "usernamePlaceholder": "ব্যবহারকারীর নাম লিখুন (ঐচ্ছিক)"
+    },
     "unexpectedError": "OAuth এর সময় একটি অপ্রত্যাশিত ত্রুটি ঘটেছে।"
   },
   "navbar": {

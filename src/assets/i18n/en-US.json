@@ -837,6 +837,15 @@
     "signingIn": "Signing in...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Sign In to TMI",
+    "tmiDialog": {
+      "errorMaxLength": "Username must be at most 20 characters",
+      "errorMinLength": "Username must be at least 3 characters",
+      "errorPattern": "Username must contain only letters and digits",
+      "signIn": "Sign In",
+      "title": "Sign In with TMI Provider",
+      "usernameLabel": "Username",
+      "usernamePlaceholder": "Enter username (optional)"
+    },
     "unexpectedError": "An unexpected error occurred during OAuth."
   },
   "navbar": {

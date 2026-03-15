@@ -815,6 +815,15 @@
     "signingIn": "ログイン中...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "TMIにサインイン",
+    "tmiDialog": {
+      "errorMaxLength": "ユーザー名は最大20文字でなければなりません",
+      "errorMinLength": "ユーザー名は最低3文字でなければなりません",
+      "errorPattern": "ユーザー名は文字と数字のみ使用できます",
+      "signIn": "サインイン",
+      "title": "TMI Providerでサインイン",
+      "usernameLabel": "ユーザー名",
+      "usernamePlaceholder": "ユーザー名を入力（任意）"
+    },
     "unexpectedError": "OAuth中に予期しないエラーが発生しました。"
   },
   "navbar": {

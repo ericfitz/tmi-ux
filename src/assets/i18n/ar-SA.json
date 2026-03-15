@@ -815,6 +815,15 @@
     "signingIn": "جارٍ تسجيل الدخول...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "تسجيل الدخول إلى تي إم آي",
+    "tmiDialog": {
+      "errorMaxLength": "يجب ألا يتجاوز اسم المستخدم 20 حرفاً",
+      "errorMinLength": "يجب أن يتكون اسم المستخدم من 3 أحرف على الأقل",
+      "errorPattern": "يجب أن يحتوي اسم المستخدم على أحرف وأرقام فقط",
+      "signIn": "تسجيل الدخول",
+      "title": "تسجيل الدخول باستخدام TMI Provider",
+      "usernameLabel": "اسم المستخدم",
+      "usernamePlaceholder": "أدخل اسم المستخدم (اختياري)"
+    },
     "unexpectedError": "حدث خطأ غير متوقع أثناء مصادقة OAuth."
   },
   "navbar": {

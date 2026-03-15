@@ -815,6 +815,15 @@
     "signingIn": "로그인 중...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "TMI 로그인",
+    "tmiDialog": {
+      "errorMaxLength": "사용자 이름은 최대 20자여야 합니다",
+      "errorMinLength": "사용자 이름은 최소 3자여야 합니다",
+      "errorPattern": "사용자 이름은 문자와 숫자만 포함해야 합니다",
+      "signIn": "로그인",
+      "title": "TMI Provider로 로그인",
+      "usernameLabel": "사용자 이름",
+      "usernamePlaceholder": "사용자 이름 입력 (선택 사항)"
+    },
     "unexpectedError": "OAuth 중 예기치 않은 오류가 발생했습니다."
   },
   "navbar": {

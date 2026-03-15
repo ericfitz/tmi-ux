@@ -624,7 +624,7 @@ export class AuthService {
    * @param providerId Optional provider ID to use
    * @param returnUrl Optional URL to return to after authentication
    */
-  initiateLogin(providerId?: string, returnUrl?: string): void {
+  initiateLogin(providerId?: string, returnUrl?: string, loginHint?: string): void {
     this.getAvailableProviders().subscribe({
       next: providers => {
         const selectedProviderId = providerId || this.defaultProvider;
@@ -642,7 +642,7 @@ export class AuthService {
         // this.logger.info(`Initiating TMI OAuth login for provider: ${selectedProviderId}`, {
         //   returnUrl,
         // });
-        void this.initiateTMIOAuthLogin(provider, returnUrl);
+        void this.initiateTMIOAuthLogin(provider, returnUrl, loginHint);
       },
       error: error => {
         this.handleAuthError({
@@ -738,6 +738,7 @@ export class AuthService {
   private async initiateTMIOAuthLogin(
     provider: OAuthProviderInfo,
     returnUrl?: string,
+    loginHint?: string,
   ): Promise<void> {
     try {
       // this.logger.info(`Initiating TMI OAuth login with ${provider.name}`);
@@ -766,7 +767,8 @@ export class AuthService {
         `&client_callback=${encodeURIComponent(clientCallbackUrl)}` +
         `&scope=${scope}` +
         `&code_challenge=${encodeURIComponent(pkceParams.codeChallenge)}` +
-        `&code_challenge_method=${pkceParams.codeChallengeMethod}`;
+        `&code_challenge_method=${pkceParams.codeChallengeMethod}` +
+        (loginHint ? `&login_hint=${encodeURIComponent(loginHint)}` : '');
 
       // this.logger.debugComponent('Auth', 'Initiating OAuth with PKCE', {
       //   providerId: provider.id,

@@ -815,6 +815,15 @@
     "signingIn": "Anmeldung läuft...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Bei TMI Anmelden",
+    "tmiDialog": {
+      "errorMaxLength": "Der Benutzername darf maximal 20 Zeichen lang sein",
+      "errorMinLength": "Der Benutzername muss mindestens 3 Zeichen lang sein",
+      "errorPattern": "Der Benutzername darf nur Buchstaben und Ziffern enthalten",
+      "signIn": "Anmelden",
+      "title": "Mit TMI Provider anmelden",
+      "usernameLabel": "Benutzername",
+      "usernamePlaceholder": "Benutzername eingeben (optional)"
+    },
     "unexpectedError": "Ein unerwarteter Fehler ist während der OAuth-Authentifizierung aufgetreten."
   },
   "navbar": {

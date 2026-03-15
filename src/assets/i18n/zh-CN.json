@@ -815,6 +815,15 @@
     "signingIn": "正在登录...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "登录到TMI",
+    "tmiDialog": {
+      "errorMaxLength": "用户名最多为20个字符",
+      "errorMinLength": "用户名至少为3个字符",
+      "errorPattern": "用户名只能包含字母和数字",
+      "signIn": "登录",
+      "title": "使用TMI Provider登录",
+      "usernameLabel": "用户名",
+      "usernamePlaceholder": "输入用户名（可选）"
+    },
     "unexpectedError": "OAuth身份验证过程中发生意外错误。"
   },
   "navbar": {

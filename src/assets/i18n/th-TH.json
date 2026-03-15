@@ -815,6 +815,15 @@
     "signingIn": "กำลังลงชื่อเข้าใช้...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "เข้าสู่ระบบ TMI",
+    "tmiDialog": {
+      "errorMaxLength": "ชื่อผู้ใช้ต้องมีไม่เกิน 20 ตัวอักษร",
+      "errorMinLength": "ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร",
+      "errorPattern": "ชื่อผู้ใช้ต้องประกอบด้วยตัวอักษรและตัวเลขเท่านั้น",
+      "signIn": "เข้าสู่ระบบ",
+      "title": "เข้าสู่ระบบด้วย TMI Provider",
+      "usernameLabel": "ชื่อผู้ใช้",
+      "usernamePlaceholder": "กรอกชื่อผู้ใช้ (ไม่บังคับ)"
+    },
     "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิดระหว่างการตรวจสอบสิทธิ์ OAuth"
   },
   "navbar": {
