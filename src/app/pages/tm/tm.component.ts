@@ -72,6 +72,9 @@ import {
 export class TmComponent implements OnInit, OnDestroy {
   threatModels: TMListItem[] = [];
 
+  /** Tracks which TM card's kebab menu was opened, so the menu action knows the target ID */
+  selectedTmId: string | null = null;
+
   // Observable streams
   collaborationSessions$!: Observable<CollaborationSession[]>;
   shouldShowCollaboration$!: Observable<boolean>;

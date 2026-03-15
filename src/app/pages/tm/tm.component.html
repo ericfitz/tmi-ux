@@ -9,18 +9,18 @@
       <button
         mat-icon-button
         color="primary"
-        (click)="import()"
-        [matTooltip]="'threatModels.tooltips.import' | transloco"
-      >
-        <mat-icon>file_open</mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        color="primary"
         (click)="createThreatModel()"
         [matTooltip]="'common.create' | transloco"
       >
         <mat-icon>add</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="tmListKebabMenu"
+        [matTooltip]="'common.actions' | transloco"
+        [attr.aria-label]="'common.actions' | transloco"
+      >
+        <mat-icon>more_vert</mat-icon>
       </button>
     </div>
   </div>
@@ -114,12 +114,13 @@
         </div>
         <button
           mat-icon-button
-          color="warn"
           class="delete-button"
-          (click)="deleteThreatModel(threatModel.id, $event)"
-          [matTooltip]="'common.delete' | transloco"
+          [matMenuTriggerFor]="tmCardKebabMenu"
+          [matTooltip]="'common.actions' | transloco"
+          [attr.aria-label]="'common.actions' | transloco"
+          (click)="$event.stopPropagation(); selectedTmId = threatModel.id"
         >
-          <mat-icon>delete</mat-icon>
+          <mat-icon>more_vert</mat-icon>
         </button>
       </mat-card-content>
     </mat-card>
@@ -207,6 +208,22 @@
     </div>
   </div>
 }
+
+<!-- TM List Kebab Menu -->
+<mat-menu #tmListKebabMenu="matMenu">
+  <button mat-menu-item (click)="import()">
+    <mat-icon>file_open</mat-icon>
+    <span>{{ 'threatModels.tooltips.import' | transloco }}</span>
+  </button>
+</mat-menu>
+
+<!-- TM Card Kebab Menu -->
+<mat-menu #tmCardKebabMenu="matMenu">
+  <button mat-menu-item (click)="deleteThreatModel(selectedTmId!, $event)">
+    <mat-icon color="warn">delete</mat-icon>
+    <span>{{ 'common.delete' | transloco }}</span>
+  </button>
+</mat-menu>
 
 <!-- Import overlay spinner -->
 @if (isImporting) {
