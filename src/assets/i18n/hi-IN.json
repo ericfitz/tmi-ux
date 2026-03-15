@@ -1358,10 +1358,12 @@
     "repositoryType": "रिपॉजिटरी का प्रकार",
     "repositoryUri": "रिपॉजिटरी URL",
     "sections": {
+      "audit": "ऑडिट",
       "inputs": "इनपुट",
       "inputsDescription": "संपत्तियां, दस्तावेज़, और स्रोत कोड भंडार जो विश्लेषण के अंतर्गत सिस्टम का वर्णन करते हैं",
       "outputs": "आउटपुट",
-      "outputsDescription": "सुरक्षा विश्लेषण के दौरान उत्पादित नोट्स, आरेख और खतरे"
+      "outputsDescription": "सुरक्षा विश्लेषण के दौरान उत्पादित नोट्स, आरेख और खतरे",
+      "reviewProcess": "समीक्षा प्रक्रिया"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "स्वामी के रूप में सेट करें",

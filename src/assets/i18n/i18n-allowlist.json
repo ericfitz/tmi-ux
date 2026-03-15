@@ -76,6 +76,7 @@
     "createThreatModel.framework",
     "navbar.admin",
     "privacy.introductionTitle",
+    "threatModels.sections.audit",
     "triage.title",
     "userPreferences.marginSize.standard",
     "userPreferences.tabs.danger"
@@ -105,6 +106,7 @@
     "navbar.appTitle",
     "threatModels.commit",
     "threatModels.repositorySubPath",
+    "threatModels.sections.audit",
     "threatModels.tag"
   ],
   "ja-JP": [

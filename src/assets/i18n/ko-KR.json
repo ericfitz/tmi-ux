@@ -1358,10 +1358,12 @@
     "repositoryType": "저장소 유형",
     "repositoryUri": "저장소 URL",
     "sections": {
+      "audit": "감사",
       "inputs": "입력",
       "inputsDescription": "분석 대상 시스템을 설명하는 자산, 문서 및 소스 코드 저장소",
       "outputs": "출력",
-      "outputsDescription": "보안 분석 중 생성된 노트, 다이어그램 및 위협"
+      "outputsDescription": "보안 분석 중 생성된 노트, 다이어그램 및 위협",
+      "reviewProcess": "검토 프로세스"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "소유자로 설정",

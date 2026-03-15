@@ -1412,12 +1412,16 @@
     "repositoryType": "Repository Type",
     "repositoryUri": "Repository URL",
     "sections": {
+      "audit": "Audit",
+      "audit.comment": "Section heading for the audit panel containing ID, creator, and timestamps",
       "inputs": "Inputs",
       "inputs.comment": "Section heading for threat model input entities (assets, documents, repositories)",
       "inputsDescription": "Assets, documents, and source code repositories that describe the system under analysis",
       "outputs": "Outputs",
       "outputs.comment": "Section heading for threat model output entities (notes, diagrams, threats)",
-      "outputsDescription": "Notes, diagrams, and threats produced during security analysis"
+      "outputsDescription": "Notes, diagrams, and threats produced during security analysis",
+      "reviewProcess": "Review Process",
+      "reviewProcess.comment": "Section heading for the review process panel containing status, reviewer, framework, and issue URI"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Set as Owner",

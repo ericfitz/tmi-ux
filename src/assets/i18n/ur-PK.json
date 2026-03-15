@@ -1358,10 +1358,12 @@
     "repositoryType": "ریپوزٹری کی قسم",
     "repositoryUri": "ریپوزٹری URL",
     "sections": {
+      "audit": "آڈٹ",
       "inputs": "ان پٹ",
       "inputsDescription": "اثاثے، دستاویزات، اور سورس کوڈ ریپوزٹریز جو تجزیہ کے تحت نظام کی وضاحت کرتے ہیں",
       "outputs": "آؤٹ پٹ",
-      "outputsDescription": "نوٹس، ڈایاگرامز، اور خطرات جو سیکیورٹی تجزیہ کے دوران تیار ہوتے ہیں"
+      "outputsDescription": "نوٹس، ڈایاگرامز، اور خطرات جو سیکیورٹی تجزیہ کے دوران تیار ہوتے ہیں",
+      "reviewProcess": "جائزہ کا عمل"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "مالک کے طور پر مقرر کریں",

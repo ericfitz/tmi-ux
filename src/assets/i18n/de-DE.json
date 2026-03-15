@@ -1358,10 +1358,12 @@
     "repositoryType": "Repository-Typ",
     "repositoryUri": "Repository-URL",
     "sections": {
+      "audit": "Prüfung",
       "inputs": "Eingaben",
       "inputsDescription": "Assets, Dokumente und Quellcode-Repositories, die das analysierte System beschreiben",
       "outputs": "Ausgaben",
-      "outputsDescription": "Notizen, Diagramme und Bedrohungen, die während der Sicherheitsanalyse erstellt werden"
+      "outputsDescription": "Notizen, Diagramme und Bedrohungen, die während der Sicherheitsanalyse erstellt werden",
+      "reviewProcess": "Überprüfungsprozess"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Als Besitzer festlegen",

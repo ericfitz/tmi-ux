@@ -1358,10 +1358,12 @@
     "repositoryType": "סוג מאגר",
     "repositoryUri": "כתובת URL של המאגר",
     "sections": {
+      "audit": "ביקורת",
       "inputs": "קלטים",
       "inputsDescription": "נכסים, מסמכים ומאגרי קוד מקור המתארים את המערכת הנתונה לניתוח",
       "outputs": "פלטים",
-      "outputsDescription": "הערות, דיאגרמות ואיומים המיוצרים במהלך ניתוח אבטחה"
+      "outputsDescription": "הערות, דיאגרמות ואיומים המיוצרים במהלך ניתוח אבטחה",
+      "reviewProcess": "תהליך הסקירה"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "הגדר כבעלים",

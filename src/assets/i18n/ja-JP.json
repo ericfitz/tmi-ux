@@ -1358,10 +1358,12 @@
     "repositoryType": "リポジトリタイプ",
     "repositoryUri": "リポジトリURL",
     "sections": {
+      "audit": "監査",
       "inputs": "入力",
       "inputsDescription": "分析対象のシステムを説明するアセット、ドキュメント、およびソースコードリポジトリ",
       "outputs": "出力",
-      "outputsDescription": "セキュリティ分析中に作成されたノート、図、および脅威"
+      "outputsDescription": "セキュリティ分析中に作成されたノート、図、および脅威",
+      "reviewProcess": "レビュープロセス"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "オーナーに設定",

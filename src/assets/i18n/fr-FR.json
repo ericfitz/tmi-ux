@@ -1358,10 +1358,12 @@
     "repositoryType": "Type de depot",
     "repositoryUri": "URL du depot",
     "sections": {
+      "audit": "Audit",
       "inputs": "Entrées",
       "inputsDescription": "Actifs, documents et dépôts de code source qui décrivent le système en cours d'analyse",
       "outputs": "Sorties",
-      "outputsDescription": "Notes, diagrammes et menaces produits lors de l'analyse de sécurité"
+      "outputsDescription": "Notes, diagrammes et menaces produits lors de l'analyse de sécurité",
+      "reviewProcess": "Processus de révision"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Definir comme proprietaire",

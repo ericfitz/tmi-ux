@@ -1358,10 +1358,12 @@
     "repositoryType": "Tipo de Repositorio",
     "repositoryUri": "URL del Repositorio",
     "sections": {
+      "audit": "Auditoría",
       "inputs": "Entradas",
       "inputsDescription": "Activos, documentos y repositorios de código fuente que describen el sistema bajo análisis",
       "outputs": "Salidas",
-      "outputsDescription": "Notas, diagramas y amenazas producidas durante el análisis de seguridad"
+      "outputsDescription": "Notas, diagramas y amenazas producidas durante el análisis de seguridad",
+      "reviewProcess": "Proceso de revisión"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Establecer como Propietario",

@@ -1358,10 +1358,12 @@
     "repositoryType": "Тип репозитория",
     "repositoryUri": "URL репозитория",
     "sections": {
+      "audit": "Аудит",
       "inputs": "Входные данные",
       "inputsDescription": "Активы, документы и репозитории исходного кода, которые описывают анализируемую систему",
       "outputs": "Выходные данные",
-      "outputsDescription": "Заметки, диаграммы и угрозы, созданные во время анализа безопасности"
+      "outputsDescription": "Заметки, диаграммы и угрозы, созданные во время анализа безопасности",
+      "reviewProcess": "Процесс проверки"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Назначить владельцем",

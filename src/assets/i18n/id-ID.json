@@ -1358,10 +1358,12 @@
     "repositoryType": "Jenis Repositori",
     "repositoryUri": "URL Repositori",
     "sections": {
+      "audit": "Audit",
       "inputs": "Input",
       "inputsDescription": "Aset, dokumen, dan repositori kode sumber yang menjelaskan sistem yang dianalisis",
       "outputs": "Output",
-      "outputsDescription": "Catatan, diagram, dan ancaman yang dihasilkan selama analisis keamanan"
+      "outputsDescription": "Catatan, diagram, dan ancaman yang dihasilkan selama analisis keamanan",
+      "reviewProcess": "Proses Tinjauan"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "Tetapkan sebagai Pemilik",

@@ -1358,10 +1358,12 @@
     "repositoryType": "نوع المستودع",
     "repositoryUri": "رابط المستودع",
     "sections": {
+      "audit": "التدقيق",
       "inputs": "المدخلات",
       "inputsDescription": "الأصول والمستندات ومستودعات الأكواد المصدرية التي تصف النظام قيد التحليل",
       "outputs": "المخرجات",
-      "outputsDescription": "الملاحظات والمخططات والتهديدات التي تم إنتاجها أثناء تحليل الأمان"
+      "outputsDescription": "الملاحظات والمخططات والتهديدات التي تم إنتاجها أثناء تحليل الأمان",
+      "reviewProcess": "عملية المراجعة"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "تعيين كمالك",

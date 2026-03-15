@@ -1358,10 +1358,12 @@
     "repositoryType": "ประเภทที่เก็บ",
     "repositoryUri": "URL ที่เก็บ",
     "sections": {
+      "audit": "การตรวจสอบ",
       "inputs": "ข้อมูลเข้า",
       "inputsDescription": "สินทรัพย์ เอกสาร และที่เก็บโค้ดต้นฉบับที่อธิบายระบบที่กำลังวิเคราะห์",
       "outputs": "ผลลัพธ์",
-      "outputsDescription": "หมายเหตุ แผนภาพ และภัยคุกคามที่สร้างขึ้นระหว่างการวิเคราะห์ความปลอดภัย"
+      "outputsDescription": "หมายเหตุ แผนภาพ และภัยคุกคามที่สร้างขึ้นระหว่างการวิเคราะห์ความปลอดภัย",
+      "reviewProcess": "กระบวนการตรวจสอบ"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "ตั้งเป็นเจ้าของ",

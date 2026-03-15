@@ -1358,10 +1358,12 @@
     "repositoryType": "রিপোজিটরির ধরন",
     "repositoryUri": "রিপোজিটরি URL",
     "sections": {
+      "audit": "অডিট",
       "inputs": "ইনপুট",
       "inputsDescription": "অ্যাসেট, ডকুমেন্ট এবং বিশ্লেষণ অধীন সিস্টেম বর্ণনা করে এমন উৎস কোড রিপোজিটরি",
       "outputs": "আউটপুট",
-      "outputsDescription": "নোট, ডায়াগ্রাম এবং নিরাপত্তা বিশ্লেষণের সময় উৎপাদিত হুমকি"
+      "outputsDescription": "নোট, ডায়াগ্রাম এবং নিরাপত্তা বিশ্লেষণের সময় উৎপাদিত হুমকি",
+      "reviewProcess": "পর্যালোচনা প্রক্রিয়া"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "মালিক হিসেবে সেট করুন",

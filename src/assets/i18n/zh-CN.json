@@ -1358,10 +1358,12 @@
     "repositoryType": "存储库类型",
     "repositoryUri": "存储库URL",
     "sections": {
+      "audit": "审计",
       "inputs": "输入",
       "inputsDescription": "描述被分析系统的资产、文档和源代码仓库",
       "outputs": "输出",
-      "outputsDescription": "安全分析过程中产生的笔记、图表和威胁"
+      "outputsDescription": "安全分析过程中产生的笔记、图表和威胁",
+      "reviewProcess": "审查流程"
     },
     "securityReviewer": "{{triage.reviewerAssignment.reviewer}}",
     "setAsOwner": "设为所有者",
