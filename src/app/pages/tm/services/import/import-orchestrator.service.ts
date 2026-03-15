@@ -624,7 +624,7 @@ export class ImportOrchestratorService {
     deps: ImportDependencies,
   ): Observable<ImportResult<Diagram>> {
     const originalId = diagram['id'] as string | undefined;
-    const { filtered, metadata, cells, description, image } =
+    const { filtered, metadata, cells, description, includeInReport, image } =
       this._fieldFilter.filterDiagram(diagram);
     const rewritten = this._referenceRewriter.rewriteDiagramReferences(filtered);
 
@@ -639,9 +639,10 @@ export class ImportOrchestratorService {
         // (cells, description, image) that couldn't be set in the CREATE request
         const hasCells = cells && cells.length > 0;
         const hasDescription = description !== undefined;
+        const hasIncludeInReport = includeInReport !== undefined;
         const hasImage = image !== undefined;
 
-        if (hasCells || hasDescription || hasImage) {
+        if (hasCells || hasDescription || hasIncludeInReport || hasImage) {
           // Build update payload with all available fields
           // DfdDiagramInput requires cells — default to empty array
           const diagramUpdate: Record<string, unknown> = {
@@ -668,6 +669,10 @@ export class ImportOrchestratorService {
 
           if (hasDescription) {
             diagramUpdate['description'] = description;
+          }
+
+          if (hasIncludeInReport) {
+            diagramUpdate['include_in_report'] = includeInReport;
           }
 
           if (hasImage) {
