@@ -1479,6 +1479,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "ノートを追加",
+      "columns": {
+        "answer": "回答",
+        "group": "グループ",
+        "question": "質問"
+      },
       "markdownSupported": "Markdown対応",
       "noNotes": "トリアージノートはまだありません",
       "noResponses": "記録された回答がありません",

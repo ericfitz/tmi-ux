@@ -1479,6 +1479,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "नोट जोड़ें",
+      "columns": {
+        "answer": "उत्तर",
+        "group": "समूह",
+        "question": "प्रश्न"
+      },
       "markdownSupported": "Markdown समर्थित",
       "noNotes": "अभी तक कोई ट्राइएज नोट नहीं",
       "noResponses": "कोई प्रतिक्रिया दर्ज नहीं की गई",

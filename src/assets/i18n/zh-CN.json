@@ -1479,6 +1479,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "添加备注",
+      "columns": {
+        "answer": "回答",
+        "group": "分组",
+        "question": "问题"
+      },
       "markdownSupported": "支持 Markdown",
       "noNotes": "暂无分诊备注",
       "noResponses": "无回复记录",

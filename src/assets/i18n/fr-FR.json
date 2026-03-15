@@ -1479,6 +1479,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "Ajouter une note",
+      "columns": {
+        "answer": "Réponse",
+        "group": "Groupe",
+        "question": "Question"
+      },
       "markdownSupported": "Markdown pris en charge",
       "noNotes": "Aucune note de triage pour le moment",
       "noResponses": "Aucune réponse enregistrée",

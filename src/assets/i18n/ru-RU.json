@@ -1479,6 +1479,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "Добавить заметку",
+      "columns": {
+        "answer": "Ответ",
+        "group": "Группа",
+        "question": "Вопрос"
+      },
       "markdownSupported": "Поддерживается Markdown",
       "noNotes": "Заметок триажа пока нет",
       "noResponses": "Ответы не записаны",

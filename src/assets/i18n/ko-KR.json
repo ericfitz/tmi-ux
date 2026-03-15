@@ -1479,6 +1479,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "노트 추가",
+      "columns": {
+        "answer": "답변",
+        "group": "그룹",
+        "question": "질문"
+      },
       "markdownSupported": "Markdown 지원",
       "noNotes": "아직 트리아지 노트가 없습니다",
       "noResponses": "기록된 응답 없음",

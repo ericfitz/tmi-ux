@@ -1537,6 +1537,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "Add Note",
+      "columns": {
+        "answer": "Answer",
+        "group": "Group",
+        "question": "Question"
+      },
       "markdownSupported": "Markdown supported",
       "noNotes": "No triage notes yet",
       "noResponses": "No responses recorded",
@@ -1553,12 +1558,7 @@
       "revisionNotesTitle": "Revision Requested",
       "statusTimeline": "Status Timeline",
       "surveyResponses": "{{common.objectTypes.surveyResponses}}",
-      "triageNotes": "Triage Notes",
-      "columns": {
-        "group": "Group",
-        "question": "Question",
-        "answer": "Answer"
-      }
+      "triageNotes": "Triage Notes"
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",

@@ -1479,6 +1479,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "הוסף הערה",
+      "columns": {
+        "answer": "תשובה",
+        "group": "קבוצה",
+        "question": "שאלה"
+      },
       "markdownSupported": "תומך ב-Markdown",
       "noNotes": "אין עדיין הערות טריאז'",
       "noResponses": "לא נרשמו תגובות",

@@ -1479,6 +1479,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "Tambah Catatan",
+      "columns": {
+        "answer": "Jawaban",
+        "group": "Grup",
+        "question": "Pertanyaan"
+      },
       "markdownSupported": "Markdown didukung",
       "noNotes": "Belum ada catatan triage",
       "noResponses": "Tidak ada respons tercatat",

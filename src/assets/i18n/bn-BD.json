@@ -1479,6 +1479,11 @@
     "createTm": "{{createThreatModel.title}}",
     "detail": {
       "addNote": "নোট যোগ করুন",
+      "columns": {
+        "answer": "উত্তর",
+        "group": "গ্রুপ",
+        "question": "প্রশ্ন"
+      },
       "markdownSupported": "মার্কডাউন সমর্থিত",
       "noNotes": "এখনো কোনো ট্রায়াজ নোট নেই",
       "noResponses": "কোনো প্রতিক্রিয়া রেকর্ড করা হয়নি",
