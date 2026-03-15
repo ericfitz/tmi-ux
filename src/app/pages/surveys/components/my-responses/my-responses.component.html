@@ -121,12 +121,19 @@
               </button>
               <button
                 mat-icon-button
-                (click)="deleteDraft(row)"
-                [matTooltip]="'surveys.list.deleteDraft' | transloco"
-                color="warn"
+                [matMenuTriggerFor]="draftResponseKebabMenu"
+                [matTooltip]="'common.actions' | transloco"
+                [attr.aria-label]="'common.actions' | transloco"
+                (click)="$event.stopPropagation()"
               >
-                <mat-icon>delete</mat-icon>
+                <mat-icon>more_vert</mat-icon>
               </button>
+              <mat-menu #draftResponseKebabMenu="matMenu">
+                <button mat-menu-item (click)="deleteDraft(row)">
+                  <mat-icon>delete</mat-icon>
+                  <span>{{ 'surveys.list.deleteDraft' | transloco }}</span>
+                </button>
+              </mat-menu>
             } @else {
               <button
                 mat-icon-button
