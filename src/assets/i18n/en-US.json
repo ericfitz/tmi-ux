@@ -1553,7 +1553,12 @@
       "revisionNotesTitle": "Revision Requested",
       "statusTimeline": "Status Timeline",
       "surveyResponses": "{{common.objectTypes.surveyResponses}}",
-      "triageNotes": "Triage Notes"
+      "triageNotes": "Triage Notes",
+      "columns": {
+        "group": "Group",
+        "question": "Question",
+        "answer": "Answer"
+      }
     },
     "filters": {
       "allStatuses": "{{common.allStatuses}}",
