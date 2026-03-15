@@ -43,17 +43,16 @@ COMMIT_MSG_FIRST_LINE=$(echo "$COMMIT_MSG" | head -n 1)
 
 # Parse conventional commit format
 # Pattern: type(optional-scope): description
-if echo "$COMMIT_MSG_FIRST_LINE" | grep -qE "^(feat|fix|docs|refactor|perf|test|build|ci|chore)(\(.+\))?\s*:.+"; then
+if echo "$COMMIT_MSG_FIRST_LINE" | grep -qE "^(feat|fix|docs|refactor|perf|test|build|ci|chore|deps|ops)(\(.+\))?\s*:.+"; then
   # Extract the commit type from first line only
   COMMIT_TYPE=$(echo "$COMMIT_MSG_FIRST_LINE" | sed -E 's/^([a-z]+)(\(.+\))?\s*:.*/\1/')
 
   # Determine bump type
+  # All commit types get patch bumps on main. Minor version bumps only
+  # happen when a release branch (e.g. release/1.3.0) merges into main.
   BUMP_TYPE=""
   case "$COMMIT_TYPE" in
-    feat|refactor)
-      BUMP_TYPE="minor"
-      ;;
-    fix|chore|docs|perf|test|build|ci)
+    feat|refactor|fix|chore|docs|perf|test|build|ci|deps|ops)
       BUMP_TYPE="patch"
       ;;
   esac
