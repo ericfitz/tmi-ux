@@ -17,17 +17,6 @@
       </h1>
     </div>
     <div class="action-buttons">
-      @if (canEdit) {
-        <button
-          mat-icon-button
-          color="primary"
-          [matMenuTriggerFor]="noteAddonsMenu"
-          [matTooltip]="'common.addons' | transloco"
-          [attr.aria-label]="'common.addons' | transloco"
-        >
-          <mat-icon>extension</mat-icon>
-        </button>
-      }
       <button
         mat-icon-button
         (click)="openMetadataDialog()"
@@ -43,17 +32,6 @@
       @if (canEdit) {
         <button
           mat-icon-button
-          color="warn"
-          (click)="deleteNote()"
-          [matTooltip]="'common.delete' | transloco"
-          [attr.aria-label]="'common.delete' | transloco"
-        >
-          <mat-icon>delete</mat-icon>
-        </button>
-      }
-      @if (canEdit) {
-        <button
-          mat-icon-button
           color="primary"
           [disabled]="noteForm.invalid || !noteForm.dirty || isSaving"
           (click)="save()"
@@ -61,6 +39,16 @@
           [attr.aria-label]="'common.save' | transloco"
         >
           <mat-icon>save</mat-icon>
+        </button>
+      }
+      @if (canEdit) {
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="notePageKebabMenu"
+          [matTooltip]="'common.actions' | transloco"
+          [attr.aria-label]="'common.actions' | transloco"
+        >
+          <mat-icon>more_vert</mat-icon>
         </button>
       }
       <button
@@ -250,6 +238,19 @@
       </form>
     </mat-card-content>
   </mat-card>
+
+  <!-- Note Page Kebab Menu -->
+  <mat-menu #notePageKebabMenu="matMenu">
+    <button mat-menu-item [matMenuTriggerFor]="noteAddonsMenu">
+      <mat-icon>extension</mat-icon>
+      <span>{{ 'common.addons' | transloco }}</span>
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="deleteNote()">
+      <mat-icon color="warn">delete</mat-icon>
+      <span>{{ 'common.delete' | transloco }}</span>
+    </button>
+  </mat-menu>
 
   <!-- Note Addons Menu -->
   <mat-menu #noteAddonsMenu="matMenu">
