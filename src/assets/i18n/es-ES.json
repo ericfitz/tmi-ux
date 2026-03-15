@@ -943,6 +943,15 @@
     "signingIn": "Iniciando sesión...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Iniciar Sesión en TMI",
+    "tmiDialog": {
+      "errorMaxLength": "El nombre de usuario debe tener como máximo 20 caracteres",
+      "errorMinLength": "El nombre de usuario debe tener al menos 3 caracteres",
+      "errorPattern": "El nombre de usuario debe contener solo letras y dígitos",
+      "signIn": "Iniciar sesión",
+      "title": "Iniciar sesión con TMI Provider",
+      "usernameLabel": "Nombre de usuario",
+      "usernamePlaceholder": "Introducir nombre de usuario (opcional)"
+    },
     "unexpectedError": "Se ha producido un error inesperado durante la autenticación OAuth."
   },
   "navbar": {

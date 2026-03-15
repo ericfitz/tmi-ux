@@ -135,7 +135,7 @@ describe('AuthCallbackComponent', () => {
       component.ngOnInit();
 
       expect(component.providerName).toBe('Google');
-      expect(mockAuthService.initiateLogin).toHaveBeenCalledWith('google', '/dashboard');
+      expect(mockAuthService.initiateLogin).toHaveBeenCalledWith('google', '/dashboard', undefined);
       expect(mockAuthService.initiateSAMLLogin).not.toHaveBeenCalled();
     });
 
@@ -167,7 +167,38 @@ describe('AuthCallbackComponent', () => {
       component = createComponent();
       component.ngOnInit();
 
-      expect(mockAuthService.initiateLogin).toHaveBeenCalledWith('google', undefined);
+      expect(mockAuthService.initiateLogin).toHaveBeenCalledWith('google', undefined, undefined);
+    });
+
+    it('should pass loginHint to initiateLogin when provided', () => {
+      queryParamsSubject.next({
+        action: 'login',
+        providerId: 'tmi',
+        providerName: 'TMI Provider',
+        providerType: 'oauth',
+        returnUrl: '/dashboard',
+        loginHint: 'testuser',
+      });
+
+      component = createComponent();
+      component.ngOnInit();
+
+      expect(component.providerName).toBe('TMI Provider');
+      expect(mockAuthService.initiateLogin).toHaveBeenCalledWith('tmi', '/dashboard', 'testuser');
+    });
+
+    it('should pass undefined loginHint when not provided', () => {
+      queryParamsSubject.next({
+        action: 'login',
+        providerId: 'google',
+        providerName: 'Google',
+        providerType: 'oauth',
+      });
+
+      component = createComponent();
+      component.ngOnInit();
+
+      expect(mockAuthService.initiateLogin).toHaveBeenCalledWith('google', undefined, undefined);
     });
   });
 

@@ -13,11 +13,8 @@ yarn-error.log
 .idea/**
 .project
 .classpath
-.c9/**
 *.launch
-.settings/**
-*.sublime-workspace
-.codesandbox/**
+.settings/
 
 # Visual Studio Code
 .vscode/*
@@ -36,8 +33,6 @@ yarn-error.log
 testem.log
 /typings
 .mcp.json
-.dedupe/**
-.trunk/**
 
 # System files
 .DS_Store
@@ -67,7 +62,12 @@ deliverables/**
 /playwright/.cache
 
 # local copy of server docs
+docs-server/**
+
+# automated pen test artifacts
+deliverables/**
 workspace/**
+outputs/**
 docs/superpowers/**
-.superpowers/**
 .playwright-mcp/**
+.superpowers/**

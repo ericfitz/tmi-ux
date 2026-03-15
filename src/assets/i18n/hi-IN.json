@@ -943,6 +943,15 @@
     "signingIn": "साइन इन किया जा रहा है...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "TMI में साइन इन करें",
+    "tmiDialog": {
+      "errorMaxLength": "उपयोगकर्ता नाम अधिकतम 20 वर्णों का होना चाहिए",
+      "errorMinLength": "उपयोगकर्ता नाम कम से कम 3 वर्णों का होना चाहिए",
+      "errorPattern": "उपयोगकर्ता नाम में केवल अक्षर और अंक होने चाहिए",
+      "signIn": "साइन इन करें",
+      "title": "TMI Provider से साइन इन करें",
+      "usernameLabel": "उपयोगकर्ता नाम",
+      "usernamePlaceholder": "उपयोगकर्ता नाम दर्ज करें (वैकल्पिक)"
+    },
     "unexpectedError": "OAuth के दौरान एक अप्रत्याशित त्रुटि हुई।"
   },
   "navbar": {

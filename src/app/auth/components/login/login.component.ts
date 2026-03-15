@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -11,6 +12,11 @@ import { LoggerService } from '../../../core/services/logger.service';
 import { AuthError, OAuthProviderInfo, SAMLProviderInfo } from '../../models/auth.models';
 import { take } from 'rxjs';
 import { forkJoin } from 'rxjs';
+import {
+  TmiLoginDialogComponent,
+  TmiLoginDialogData,
+  TmiLoginDialogResult,
+} from './tmi-login-dialog.component';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -42,6 +48,7 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private logger: LoggerService,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -131,7 +138,37 @@ export class LoginComponent implements OnInit {
     const provider = this.oauthProviders.find(p => p.id === providerId);
     if (!provider) return;
 
-    // Navigate to interstitial which will initiate the OAuth flow
+    if (providerId === 'tmi') {
+      this.openTmiLoginDialog(provider);
+      return;
+    }
+
+    this.navigateToOAuth(provider);
+  }
+
+  /**
+   * Open the TMI login dialog to collect login hint before OAuth navigation
+   */
+  private openTmiLoginDialog(provider: OAuthProviderInfo): void {
+    const dialogRef = this.dialog.open<
+      TmiLoginDialogComponent,
+      TmiLoginDialogData,
+      TmiLoginDialogResult | undefined
+    >(TmiLoginDialogComponent, {
+      width: '400px',
+      data: { providerName: provider.name },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === undefined) return;
+      this.navigateToOAuth(provider, result.loginHint || undefined);
+    });
+  }
+
+  /**
+   * Navigate to the OAuth callback interstitial page
+   */
+  private navigateToOAuth(provider: OAuthProviderInfo, loginHint?: string): void {
     void this.router.navigate(['/oauth2/callback'], {
       queryParams: {
         action: 'login',
@@ -139,6 +176,7 @@ export class LoginComponent implements OnInit {
         providerName: provider.name,
         providerType: 'oauth',
         returnUrl: this.returnUrl || undefined,
+        loginHint: loginHint || undefined,
       },
     });
   }

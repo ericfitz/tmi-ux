@@ -943,6 +943,15 @@
     "signingIn": "سائن ان ہو رہے ہیں...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "TMI میں سائن ان کریں",
+    "tmiDialog": {
+      "errorMaxLength": "صارف نام زیادہ سے زیادہ 20 حروف کا ہونا چاہیے",
+      "errorMinLength": "صارف نام کم از کم 3 حروف کا ہونا چاہیے",
+      "errorPattern": "صارف نام میں صرف حروف اور اعداد ہونے چاہئیں",
+      "signIn": "سائن ان",
+      "title": "TMI Provider سے سائن ان کریں",
+      "usernameLabel": "صارف نام",
+      "usernamePlaceholder": "صارف نام درج کریں (اختیاری)"
+    },
     "unexpectedError": "OAuth کے دوران ایک غیر متوقع خرابی ہوئی۔"
   },
   "navbar": {

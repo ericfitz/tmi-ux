@@ -943,6 +943,15 @@
     "signingIn": "מתחבר...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "כניסה ל-TMI",
+    "tmiDialog": {
+      "errorMaxLength": "שם המשתמש חייב להיות לכל היותר 20 תווים",
+      "errorMinLength": "שם המשתמש חייב להיות לפחות 3 תווים",
+      "errorPattern": "שם המשתמש חייב להכיל רק אותיות וספרות",
+      "signIn": "כניסה",
+      "title": "כניסה עם TMI Provider",
+      "usernameLabel": "שם משתמש",
+      "usernamePlaceholder": "הכנס שם משתמש (אופציונלי)"
+    },
     "unexpectedError": "אירעה שגיאה בלתי צפויה במהלך OAuth."
   },
   "navbar": {

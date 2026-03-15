@@ -943,6 +943,15 @@
     "signingIn": "Connexion en cours...",
     "signingInWith": "{{login.loggingInWith}}",
     "title": "Connexion a TMI",
+    "tmiDialog": {
+      "errorMaxLength": "Le nom d'utilisateur doit comporter au maximum 20 caractères",
+      "errorMinLength": "Le nom d'utilisateur doit comporter au moins 3 caractères",
+      "errorPattern": "Le nom d'utilisateur ne doit contenir que des lettres et des chiffres",
+      "signIn": "Se connecter",
+      "title": "Se connecter avec TMI Provider",
+      "usernameLabel": "Nom d'utilisateur",
+      "usernamePlaceholder": "Saisir le nom d'utilisateur (facultatif)"
+    },
     "unexpectedError": "Une erreur inattendue s'est produite lors de l'authentification OAuth."
   },
   "navbar": {
