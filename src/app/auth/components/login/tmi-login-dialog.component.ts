@@ -50,6 +50,10 @@ export interface TmiLoginDialogResult {
   `,
   styles: [
     `
+      mat-dialog-content {
+        padding-top: 12px;
+      }
+
       .full-width {
         width: 100%;
       }
