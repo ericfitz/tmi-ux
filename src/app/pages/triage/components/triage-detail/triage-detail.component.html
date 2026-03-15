@@ -257,13 +257,51 @@
                   <p>{{ 'triage.detail.noResponses' | transloco }}</p>
                 </div>
               } @else {
-                <div class="responses-list">
-                  @for (item of formattedResponses; track $index) {
-                    <div class="response-item">
-                      <div class="response-question">{{ item.question }}</div>
-                      <div class="response-answer">{{ item.answer }}</div>
-                    </div>
-                  }
+                <div class="responses-table-container">
+                  <table mat-table [dataSource]="formattedResponses" class="responses-table">
+                    <!-- Group Column -->
+                    <ng-container matColumnDef="group">
+                      <th mat-header-cell *matHeaderCellDef>
+                        {{ 'triage.detail.columns.group' | transloco }}
+                      </th>
+                      <td
+                        mat-cell
+                        *matCellDef="let row"
+                        class="group-cell"
+                        [matTooltip]="row.groupId"
+                        [matTooltipDisabled]="!row.groupId"
+                      >
+                        {{ row.group }}
+                      </td>
+                    </ng-container>
+
+                    <!-- Question Column -->
+                    <ng-container matColumnDef="question">
+                      <th mat-header-cell *matHeaderCellDef>
+                        {{ 'triage.detail.columns.question' | transloco }}
+                      </th>
+                      <td
+                        mat-cell
+                        *matCellDef="let row"
+                        [matTooltip]="row.questionId"
+                      >
+                        {{ row.question }}
+                      </td>
+                    </ng-container>
+
+                    <!-- Answer Column -->
+                    <ng-container matColumnDef="answer">
+                      <th mat-header-cell *matHeaderCellDef>
+                        {{ 'triage.detail.columns.answer' | transloco }}
+                      </th>
+                      <td mat-cell *matCellDef="let row" class="answer-cell">
+                        {{ row.answer }}
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="responsesDisplayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: responsesDisplayedColumns"></tr>
+                  </table>
                 </div>
               }
             </mat-card-content>
