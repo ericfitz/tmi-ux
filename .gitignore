@@ -1,5 +1,3 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
-
 # Compiled output
 /dist
 /tmp
@@ -12,15 +10,14 @@ npm-debug.log
 yarn-error.log
 
 # IDEs and editors
-.idea/
+.idea/**
 .project
 .classpath
-.c9/
+.c9/**
 *.launch
-.settings/
+.settings/**
 *.sublime-workspace
-.codesandbox/
-.codesandbox/*
+.codesandbox/**
 
 # Visual Studio Code
 .vscode/*
@@ -38,12 +35,8 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
-thunder-tests
-thunder-tests/**
-.42c/conf.yaml
 .mcp.json
-.dedupe/
-.trunk
+.dedupe/**
 .trunk/**
 
 # System files
@@ -53,24 +46,20 @@ Thumbs.db
 # Local environment files
 src/environments/environment.local.ts
 src/environments/environment.dev.ts
-unused/*
-unused
+unused/**
 
 # Generated build info
 src/build-info.json
 
 # temporary files
 localization_dedup_plan.*
-.ck/
 .ck/**
 *.log
 .version-bump-type
-deliverables
-deliverables/**
 
 # Security analysis outputs
-outputs
 outputs/**
+deliverables/**
 
 # Playwright
 /test-results
@@ -78,11 +67,7 @@ outputs/**
 /playwright/.cache
 
 # local copy of server docs
-docs-server
-docs-server/**
-deliverables
-deliverables/**
-workspace
 workspace/**
 docs/superpowers/**
 .superpowers/**
+.playwright-mcp/**

@@ -385,21 +385,24 @@
                     <mat-panel-title>
                       {{ 'adminSurveys.templateBuilder.conditionalLogic' | transloco }}
                     </mat-panel-title>
+                    <mat-panel-description>
+                      <button
+                        mat-icon-button
+                        class="condition-help-button"
+                        (click)="openConditionHelp(); $event.stopPropagation()"
+                        [matTooltip]="
+                          'adminSurveys.templateBuilder.conditionalLogicHelp' | transloco
+                        "
+                        [attr.aria-label]="
+                          'adminSurveys.templateBuilder.conditionalLogicHelp' | transloco
+                        "
+                      >
+                        <mat-icon>help</mat-icon>
+                      </button>
+                    </mat-panel-description>
                   </mat-expansion-panel-header>
 
                   <div class="condition-panel-content">
-                    <button
-                      mat-icon-button
-                      class="condition-help-button"
-                      (click)="openConditionHelp(); $event.stopPropagation()"
-                      [matTooltip]="'adminSurveys.templateBuilder.conditionalLogicHelp' | transloco"
-                      [attr.aria-label]="
-                        'adminSurveys.templateBuilder.conditionalLogicHelp' | transloco
-                      "
-                    >
-                      <mat-icon>help</mat-icon>
-                    </button>
-
                     <mat-form-field appearance="outline" class="full-width">
                       <mat-label>{{
                         'adminSurveys.templateBuilder.visibleIf' | transloco
