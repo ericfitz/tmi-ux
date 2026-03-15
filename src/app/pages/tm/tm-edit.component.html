@@ -412,6 +412,15 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
+                    color="primary"
+                    (click)="addAsset()"
+                    [matTooltip]="'threatModels.tooltips.addAsset' | transloco"
+                    [attr.aria-label]="'threatModels.tooltips.addAsset' | transloco"
+                  >
+                    <mat-icon>add</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
                     [matMenuTriggerFor]="assetsHeaderKebabMenu"
                     [matTooltip]="'common.actions' | transloco"
                     [attr.aria-label]="'common.actions' | transloco"
@@ -425,15 +434,6 @@
                       <span>{{ 'common.addons' | transloco }}</span>
                     </button>
                   </mat-menu>
-                  <button
-                    mat-icon-button
-                    color="primary"
-                    (click)="addAsset()"
-                    [matTooltip]="'threatModels.tooltips.addAsset' | transloco"
-                    [attr.aria-label]="'threatModels.tooltips.addAsset' | transloco"
-                  >
-                    <mat-icon>add</mat-icon>
-                  </button>
                 </div>
               }
             </mat-card-header>
@@ -642,6 +642,14 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
+                    color="primary"
+                    (click)="addDocument()"
+                    [matTooltip]="'threatModels.tooltips.addDocument' | transloco"
+                  >
+                    <mat-icon>add</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
                     [matMenuTriggerFor]="documentsHeaderKebabMenu"
                     [matTooltip]="'common.actions' | transloco"
                     [attr.aria-label]="'common.actions' | transloco"
@@ -655,14 +663,6 @@
                       <span>{{ 'common.addons' | transloco }}</span>
                     </button>
                   </mat-menu>
-                  <button
-                    mat-icon-button
-                    color="primary"
-                    (click)="addDocument()"
-                    [matTooltip]="'threatModels.tooltips.addDocument' | transloco"
-                  >
-                    <mat-icon>add</mat-icon>
-                  </button>
                 </div>
               }
             </mat-card-header>
@@ -842,6 +842,14 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
+                    color="primary"
+                    (click)="addRepository()"
+                    [matTooltip]="'threatModels.createNewRepository' | transloco"
+                  >
+                    <mat-icon>add</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
                     [matMenuTriggerFor]="repositoriesHeaderKebabMenu"
                     [matTooltip]="'common.actions' | transloco"
                     [attr.aria-label]="'common.actions' | transloco"
@@ -855,14 +863,6 @@
                       <span>{{ 'common.addons' | transloco }}</span>
                     </button>
                   </mat-menu>
-                  <button
-                    mat-icon-button
-                    color="primary"
-                    (click)="addRepository()"
-                    [matTooltip]="'threatModels.createNewRepository' | transloco"
-                  >
-                    <mat-icon>add</mat-icon>
-                  </button>
                 </div>
               }
             </mat-card-header>
@@ -1072,6 +1072,15 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
+                    color="primary"
+                    (click)="addNote()"
+                    [matTooltip]="'threatModels.tooltips.addNote' | transloco"
+                    [attr.aria-label]="'threatModels.tooltips.addNote' | transloco"
+                  >
+                    <mat-icon>add</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
                     [matMenuTriggerFor]="notesHeaderKebabMenu"
                     [matTooltip]="'common.actions' | transloco"
                     [attr.aria-label]="'common.actions' | transloco"
@@ -1085,15 +1094,6 @@
                       <span>{{ 'common.addons' | transloco }}</span>
                     </button>
                   </mat-menu>
-                  <button
-                    mat-icon-button
-                    color="primary"
-                    (click)="addNote()"
-                    [matTooltip]="'threatModels.tooltips.addNote' | transloco"
-                    [attr.aria-label]="'threatModels.tooltips.addNote' | transloco"
-                  >
-                    <mat-icon>add</mat-icon>
-                  </button>
                 </div>
               }
             </mat-card-header>
@@ -1251,6 +1251,14 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
+                    color="primary"
+                    (click)="addDiagram()"
+                    [matTooltip]="'threatModels.tooltips.addDiagram' | transloco"
+                  >
+                    <mat-icon>add</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
                     [matMenuTriggerFor]="diagramsHeaderKebabMenu"
                     [matTooltip]="'common.actions' | transloco"
                     [attr.aria-label]="'common.actions' | transloco"
@@ -1264,14 +1272,6 @@
                       <span>{{ 'common.addons' | transloco }}</span>
                     </button>
                   </mat-menu>
-                  <button
-                    mat-icon-button
-                    color="primary"
-                    (click)="addDiagram()"
-                    [matTooltip]="'threatModels.tooltips.addDiagram' | transloco"
-                  >
-                    <mat-icon>add</mat-icon>
-                  </button>
                 </div>
               }
             </mat-card-header>
@@ -1488,6 +1488,14 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
+                    color="primary"
+                    (click)="openThreatEditor()"
+                    [matTooltip]="'common.addThreat' | transloco"
+                  >
+                    <mat-icon>add</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
                     [matMenuTriggerFor]="threatsHeaderKebabMenu"
                     [matTooltip]="'common.actions' | transloco"
                     [attr.aria-label]="'common.actions' | transloco"
@@ -1501,14 +1509,6 @@
                       <span>{{ 'common.addons' | transloco }}</span>
                     </button>
                   </mat-menu>
-                  <button
-                    mat-icon-button
-                    color="primary"
-                    (click)="openThreatEditor()"
-                    [matTooltip]="'common.addThreat' | transloco"
-                  >
-                    <mat-icon>add</mat-icon>
-                  </button>
                 </div>
               }
             </mat-card-header>
