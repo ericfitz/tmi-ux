@@ -61,7 +61,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  displayedColumns = ['key', 'value', 'type', 'description', 'modified_at', 'actions'];
+  displayedColumns = ['key', 'value', 'source', 'actions'];
 
   settings: EditableSystemSetting[] = [];
   dataSource = new MatTableDataSource<EditableSystemSetting>([]);
@@ -95,12 +95,8 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
           return item.key.toLowerCase();
         case 'value':
           return item.value.toLowerCase();
-        case 'type':
-          return item.type.toLowerCase();
-        case 'description':
-          return (item.description || '').toLowerCase();
-        case 'modified_at':
-          return item.modified_at ? new Date(item.modified_at).getTime() : 0;
+        case 'source':
+          return (item.source || '').toLowerCase();
         default:
           return '';
       }
@@ -191,7 +187,8 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
       setting =>
         setting.key.toLowerCase().includes(filter) ||
         setting.value.toLowerCase().includes(filter) ||
-        (setting.description || '').toLowerCase().includes(filter),
+        (setting.description || '').toLowerCase().includes(filter) ||
+        (setting.source || '').toLowerCase().includes(filter),
     );
   }
 
@@ -230,6 +227,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
   }
 
   onEditSetting(setting: EditableSystemSetting): void {
+    if (setting.read_only) return;
     setting.editing = true;
     setting.editValues = {
       value: setting.value,
@@ -261,6 +259,8 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
           setting.description = updated.description;
           setting.modified_at = updated.modified_at;
           setting.modified_by = updated.modified_by;
+          setting.source = updated.source;
+          setting.read_only = updated.read_only;
           setting.editing = false;
           setting.editValues = undefined;
           setting.saving = false;
@@ -274,6 +274,7 @@ export class AdminSettingsComponent implements OnInit, AfterViewInit {
   }
 
   onDeleteSetting(setting: EditableSystemSetting): void {
+    if (setting.read_only) return;
     const message = this.transloco.translate('admin.settings.confirmDelete', {
       key: setting.key,
     });
