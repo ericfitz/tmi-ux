@@ -9,6 +9,7 @@ import { COMMON_IMPORTS, ALL_MATERIAL_IMPORTS } from '@app/shared/imports';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
+import { LanguageService } from '@app/i18n/language.service';
 import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
 import { SurveyService } from '../../../surveys/services/survey.service';
 import { TriageNoteService } from '../../services/triage-note.service';
@@ -120,6 +121,9 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   /** Columns displayed in the triage notes table */
   notesDisplayedColumns: string[] = ['name', 'created_by', 'created_at'];
 
+  /** Current locale for date formatting */
+  currentLocale = 'en-US';
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -130,9 +134,14 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
     private surveyService: SurveyService,
     private triageNoteService: TriageNoteService,
     private logger: LoggerService,
+    private languageService: LanguageService,
   ) {}
 
   ngOnInit(): void {
+    this.languageService.currentLanguage$.pipe(takeUntil(this.destroy$)).subscribe(language => {
+      this.currentLocale = language.code;
+    });
+
     this.route.paramMap
       .pipe(
         switchMap(params => {
@@ -323,11 +332,11 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
    * Build status timeline
    */
   private buildStatusTimeline(response: SurveyResponse): void {
-    const statuses: { key: ResponseStatus; label: string }[] = [
-      { key: 'draft', label: 'Draft' },
-      { key: 'submitted', label: 'Submitted' },
-      { key: 'ready_for_review', label: 'Ready for Review' },
-      { key: 'review_created', label: 'Review Created' },
+    const statuses: { key: ResponseStatus; labelKey: string }[] = [
+      { key: 'draft', labelKey: 'surveys.status.draft' },
+      { key: 'submitted', labelKey: 'surveys.status.submitted' },
+      { key: 'ready_for_review', labelKey: 'surveys.status.readyForReview' },
+      { key: 'review_created', labelKey: 'surveys.status.reviewCreated' },
     ];
 
     const statusOrder: Record<ResponseStatus, number> = {
@@ -342,7 +351,7 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
 
     this.statusTimeline = statuses.map((s, index) => ({
       status: s.key,
-      label: s.label,
+      label: s.labelKey,
       timestamp: this.getTimestampForStatus(response, s.key),
       isActive: index === currentIndex,
       isCompleted: index < currentIndex,
@@ -643,17 +652,17 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get display label for a status
+   * Convert snake_case status to camelCase i18n key
    */
-  getStatusLabel(status: ResponseStatus): string {
-    const labels: Record<ResponseStatus, string> = {
-      draft: 'Draft',
-      submitted: 'Submitted',
-      needs_revision: 'Needs Revision',
-      ready_for_review: 'Ready for Review',
-      review_created: 'Review Created',
+  getStatusKey(status: ResponseStatus): string {
+    const keyMap: Record<ResponseStatus, string> = {
+      draft: 'draft',
+      submitted: 'submitted',
+      needs_revision: 'needsRevision',
+      ready_for_review: 'readyForReview',
+      review_created: 'reviewCreated',
     };
-    return labels[status] ?? status;
+    return keyMap[status] ?? status;
   }
 
   /**

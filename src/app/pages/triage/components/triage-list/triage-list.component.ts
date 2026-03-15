@@ -20,6 +20,7 @@ import { UserDisplayComponent } from '@app/shared/components/user-display/user-d
 import { ReviewerAssignmentListComponent } from '../reviewer-assignment-list/reviewer-assignment-list.component';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { LoggerService } from '@app/core/services/logger.service';
+import { LanguageService } from '@app/i18n/language.service';
 import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
 import { SurveyService } from '../../../surveys/services/survey.service';
 import {
@@ -112,6 +113,9 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Count of unassigned threat models (from child component) */
   unassignedCount = 0;
 
+  /** Current locale for date formatting */
+  currentLocale = 'en-US';
+
   /** Loading state */
   isLoading = false;
 
@@ -126,6 +130,7 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
     private logger: LoggerService,
     private transloco: TranslocoService,
     private dialog: MatDialog,
+    private languageService: LanguageService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -150,6 +155,10 @@ export class TriageListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.languageService.currentLanguage$.pipe(takeUntil(this.destroy$)).subscribe(language => {
+      this.currentLocale = language.code;
+    });
+
     this.loadSurveys();
     this.loadResponses();
   }
