@@ -420,32 +420,22 @@
   }
 }
 
-.responses-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+// Survey Responses Table
+.responses-table-container {
+  overflow-x: auto;
 }
 
-.response-item {
-  padding: 16px 0;
-  border-bottom: 1px solid var(--color-divider);
+.responses-table {
+  width: 100%;
+}
 
-  &:last-child {
-    border-bottom: none;
-  }
+.group-cell {
+  color: var(--color-text-secondary);
+}
 
-  .response-question {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    margin-bottom: 4px;
-  }
-
-  .response-answer {
-    font-size: 15px;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-  }
+.answer-cell {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
 // Triage Notes Card
