@@ -280,11 +280,7 @@
                       <th mat-header-cell *matHeaderCellDef>
                         {{ 'triage.detail.columns.question' | transloco }}
                       </th>
-                      <td
-                        mat-cell
-                        *matCellDef="let row"
-                        [matTooltip]="row.questionId"
-                      >
+                      <td mat-cell *matCellDef="let row" [matTooltip]="row.questionId">
                         {{ row.question }}
                       </td>
                     </ng-container>
