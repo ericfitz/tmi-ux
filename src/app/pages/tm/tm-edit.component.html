@@ -135,11 +135,201 @@
               }
             </div>
           </div>
+        </mat-card-content>
+      </mat-card>
 
-          <form [formGroup]="threatModelForm" class="threat-model-form">
-            <!-- Threat model framework and issue URL -->
-            <div class="form-fields-row">
-              <mat-form-field appearance="outline">
+      <!-- Review Process and Audit panels -->
+      <mat-accordion multi>
+        <!-- Review Process Panel -->
+        <mat-expansion-panel class="review-process-panel">
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{
+              'threatModels.sections.reviewProcess' | transloco
+            }}</mat-panel-title>
+            <mat-panel-description class="panel-summary">
+              <span class="summary-item">
+                <span class="summary-label">{{ 'common.status' | transloco }}:</span>
+                @if (
+                  threatModelForm.get('status')?.value &&
+                  threatModelForm.get('status')?.value !== 'none'
+                ) {
+                  <span class="summary-value">{{
+                    'threatModels.status.' + threatModelForm.get('status')?.value | transloco
+                  }}</span>
+                } @else {
+                  <span class="summary-value">—</span>
+                }
+              </span>
+              <span class="summary-item">
+                <span class="summary-label"
+                  >{{ 'threatModels.statusLastUpdated' | transloco }}:</span
+                >
+                <span>{{
+                  threatModel.status_updated
+                    ? (threatModel.status_updated | date: 'short' : undefined : currentLocale)
+                    : '—'
+                }}</span>
+              </span>
+              <span class="summary-item">
+                <span class="summary-label"
+                  >{{ 'threatModels.securityReviewer' | transloco }}:</span
+                >
+                @if (threatModel.security_reviewer) {
+                  <span class="summary-value">{{
+                    threatModel.security_reviewer.display_name ||
+                      threatModel.security_reviewer.email
+                  }}</span>
+                } @else {
+                  <span class="summary-value">—</span>
+                }
+              </span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <!-- Panel body: 2fr 1fr grid -->
+          <div class="process-grid" [dir]="currentDirection">
+            <!-- Row 1: Status + Status Last Updated -->
+            <div [formGroup]="threatModelForm">
+              @if (canEdit) {
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'common.status' | transloco }}</mat-label>
+                  <mat-select formControlName="status">
+                    <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+                    @for (option of statusOptions; track option.key) {
+                      <mat-option
+                        [value]="option.key"
+                        [matTooltip]="'threatModels.status.' + option.key + '.tooltip' | transloco"
+                      >
+                        {{ 'threatModels.status.' + option.key | transloco }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              } @else {
+                <div class="readonly-field">
+                  <span class="info-label">{{ 'common.status' | transloco }}:</span>
+                  @if (
+                    threatModelForm.get('status')?.value &&
+                    threatModelForm.get('status')?.value !== 'none'
+                  ) {
+                    <span class="info-value">{{
+                      'threatModels.status.' + threatModelForm.get('status')?.value | transloco
+                    }}</span>
+                  } @else {
+                    <span class="info-value">—</span>
+                  }
+                </div>
+              }
+            </div>
+            <div class="metadata-field">
+              <span class="info-label">{{ 'threatModels.statusLastUpdated' | transloco }}:</span>
+              <span class="info-value">{{
+                threatModel.status_updated
+                  ? (threatModel.status_updated | date: 'short' : undefined : currentLocale)
+                  : '—'
+              }}</span>
+            </div>
+
+            <!-- Row 2: Security Reviewer + empty -->
+            <div>
+              @if (canEdit && securityReviewerMode === 'dropdown') {
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'threatModels.securityReviewer' | transloco }}</mat-label>
+                  <mat-select
+                    [value]="threatModel.security_reviewer"
+                    [compareWith]="compareReviewers"
+                    (selectionChange)="onSecurityReviewerChange($event)"
+                  >
+                    <mat-option [value]="null">{{ 'common.none' | transloco }}</mat-option>
+                    @for (reviewer of securityReviewerOptions; track reviewer.provider_id) {
+                      <mat-option [value]="reviewer">
+                        {{ reviewer.display_name || reviewer.email }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              } @else if (canEdit && securityReviewerMode === 'picker') {
+                <div class="readonly-field">
+                  <span class="info-label">{{ 'threatModels.securityReviewer' | transloco }}:</span>
+                  @if (threatModel.security_reviewer) {
+                    <span class="info-value"
+                      ><app-user-display [user]="threatModel.security_reviewer"
+                    /></span>
+                  } @else {
+                    <span class="info-value">—</span>
+                  }
+                  <button
+                    mat-icon-button
+                    (click)="openSecurityReviewerPicker()"
+                    [matTooltip]="'threatModels.changeSecurityReviewer' | transloco"
+                    [attr.aria-label]="'threatModels.changeSecurityReviewer' | transloco"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  @if (threatModel.security_reviewer) {
+                    <button
+                      mat-icon-button
+                      (click)="clearSecurityReviewer()"
+                      [matTooltip]="'threatModels.clearSecurityReviewer' | transloco"
+                      [attr.aria-label]="'threatModels.clearSecurityReviewer' | transloco"
+                    >
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  }
+                </div>
+              } @else if (securityReviewerMode !== 'loading') {
+                <div class="readonly-field">
+                  <span class="info-label">{{ 'threatModels.securityReviewer' | transloco }}:</span>
+                  @if (threatModel.security_reviewer) {
+                    <span class="info-value"
+                      ><app-user-display [user]="threatModel.security_reviewer"
+                    /></span>
+                  } @else {
+                    <span class="info-value">—</span>
+                  }
+                </div>
+              }
+            </div>
+            <div></div>
+
+            <!-- Row 3: Issue URI + Framework -->
+            <div class="issue-uri-container" [formGroup]="threatModelForm">
+              <mat-form-field appearance="outline" class="issue-uri-field">
+                <mat-label [transloco]="'common.issueUri'">Issue URI</mat-label>
+                <input
+                  matInput
+                  formControlName="issue_uri"
+                  type="url"
+                  tabindex="4"
+                  placeholder="https://example.com/issue/123"
+                />
+                <mat-hint>{{ 'threatModels.issueUriHint' | transloco }}</mat-hint>
+                @if (threatModelForm.get('issue_uri')?.hasError('url')) {
+                  <mat-error>
+                    {{ 'common.validation.invalidUrl' | transloco }}
+                  </mat-error>
+                }
+              </mat-form-field>
+              <button
+                mat-icon-button
+                type="button"
+                class="issue-uri-icon-button"
+                [disabled]="!isValidUrl(threatModelForm.get('issue_uri')?.value)"
+                (click)="openUriInNewTab(threatModelForm.get('issue_uri')?.value)"
+                [matTooltip]="
+                  isValidUrl(threatModelForm.get('issue_uri')?.value)
+                    ? threatModelForm.get('issue_uri')?.value
+                    : 'Enter a valid URI to open'
+                "
+                matTooltipPosition="above"
+                tabindex="5"
+                [attr.aria-label]="'common.openInNewTab' | transloco"
+              >
+                <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
+              </button>
+            </div>
+            <div [formGroup]="threatModelForm">
+              <mat-form-field appearance="outline" class="full-width">
                 <mat-label [transloco]="'threatModels.threatModelFramework'"
                   >Threat Model Framework</mat-label
                 >
@@ -149,63 +339,27 @@
                   [attr.aria-label]="'threatModels.threatModelFramework' | transloco"
                   (selectionChange)="onFrameworkChange($event)"
                 >
-                  <mat-option *ngFor="let framework of frameworks" [value]="framework.name">
-                    {{ framework.name }}
-                  </mat-option>
+                  @for (framework of frameworks; track framework.name) {
+                    <mat-option [value]="framework.name">
+                      {{ framework.name }}
+                    </mat-option>
+                  }
                 </mat-select>
                 @if (hasThreats()) {
                   <mat-hint>
                     {{ 'threatModels.frameworkDisabledHint' | transloco }}
                   </mat-hint>
                 }
-
                 @if (threatModelForm.get('threat_model_framework')?.hasError('required')) {
                   <mat-error>
                     {{ 'common.validation.required' | transloco }}
                   </mat-error>
                 }
               </mat-form-field>
-
-              <!-- Issue URI field with hyperlink icon -->
-              <div class="issue-uri-container">
-                <mat-form-field appearance="outline" class="issue-uri-field">
-                  <mat-label [transloco]="'common.issueUri'">Issue URI</mat-label>
-                  <input
-                    matInput
-                    formControlName="issue_uri"
-                    type="url"
-                    tabindex="4"
-                    placeholder="https://example.com/issue/123"
-                  />
-                  <mat-hint>{{ 'threatModels.issueUriHint' | transloco }}</mat-hint>
-                  @if (threatModelForm.get('issue_uri')?.hasError('url')) {
-                    <mat-error>
-                      {{ 'common.validation.invalidUrl' | transloco }}
-                    </mat-error>
-                  }
-                </mat-form-field>
-                <button
-                  mat-icon-button
-                  type="button"
-                  class="issue-uri-icon-button"
-                  [disabled]="!isValidUrl(threatModelForm.get('issue_uri')?.value)"
-                  (click)="openUriInNewTab(threatModelForm.get('issue_uri')?.value)"
-                  [matTooltip]="
-                    isValidUrl(threatModelForm.get('issue_uri')?.value)
-                      ? threatModelForm.get('issue_uri')?.value
-                      : 'Enter a valid URI to open'
-                  "
-                  matTooltipPosition="above"
-                  tabindex="5"
-                  [attr.aria-label]="'common.openInNewTab' | transloco"
-                >
-                  <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
-                </button>
-              </div>
             </div>
-          </form>
-        </mat-card-content>
-      </mat-card>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
 
       <!-- Inputs Section: Assets, Documents, Repositories -->
       <div class="section-group">
