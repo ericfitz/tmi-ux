@@ -258,7 +258,7 @@
                 </div>
               } @else {
                 <div class="responses-list">
-                  @for (item of formattedResponses; track item.name) {
+                  @for (item of formattedResponses; track $index) {
                     <div class="response-item">
                       <div class="response-question">{{ item.question }}</div>
                       <div class="response-answer">{{ item.answer }}</div>

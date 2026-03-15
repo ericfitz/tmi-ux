@@ -12,7 +12,12 @@ import { LoggerService } from '@app/core/services/logger.service';
 import { SurveyResponseService } from '../../../surveys/services/survey-response.service';
 import { SurveyService } from '../../../surveys/services/survey.service';
 import { TriageNoteService } from '../../services/triage-note.service';
-import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
+import {
+  SurveyResponse,
+  SurveyJsonSchema,
+  SurveyQuestion,
+  ResponseStatus,
+} from '@app/types/survey.types';
 import { TriageNoteListItem, TriageNote } from '@app/types/triage-note.types';
 import {
   RevisionNotesDialogComponent,
@@ -23,6 +28,23 @@ import {
   TriageNoteEditorDialogData,
   TriageNoteEditorResult,
 } from '../triage-note-editor-dialog/triage-note-editor-dialog.component';
+
+/**
+ * Flattened survey response row for table display.
+ * Panels and dynamic panels are expanded into individual rows.
+ */
+interface SurveyResponseRow {
+  /** Panel/dynamic panel title; empty for top-level questions */
+  group: string;
+  /** Question ID of the panel (for tooltip); empty for top-level */
+  groupId: string;
+  /** Question title from schema, or raw key without schema */
+  question: string;
+  /** Question ID (for tooltip) */
+  questionId: string;
+  /** Formatted answer value */
+  answer: string;
+}
 
 /**
  * Status timeline entry
@@ -75,7 +97,15 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   statusTimeline: StatusTimelineEntry[] = [];
 
   /** Formatted survey responses for display */
-  formattedResponses: { question: string; answer: string; name: string }[] = [];
+  formattedResponses: SurveyResponseRow[] = [];
+
+  /** Whether survey schema was available for formatting */
+  hasSchema = false;
+
+  /** Columns displayed in the survey responses table */
+  get responsesDisplayedColumns(): string[] {
+    return this.hasSchema ? ['group', 'question', 'answer'] : ['question', 'answer'];
+  }
 
   /** Triage notes for this response */
   triageNotes: TriageNoteListItem[] = [];
@@ -167,7 +197,10 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Format survey responses for display using survey definition
+   * Format survey responses for display using survey definition.
+   * Flattens panels and dynamic panels into individual rows.
+   * Only recurses one level deep (panel > child); nested panels
+   * within panels are treated as leaf elements.
    */
   private formatResponses(surveyJson: SurveyJsonSchema): void {
     if (!this.response?.answers) {
@@ -175,27 +208,85 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const responses: { question: string; answer: string; name: string }[] = [];
+    const rows: SurveyResponseRow[] = [];
     const answers = this.response.answers;
 
-    // Walk through all pages and elements to maintain order
     for (const page of surveyJson.pages ?? []) {
       for (const element of page.elements ?? []) {
-        if (element.name && answers[element.name] !== undefined) {
-          responses.push({
-            name: element.name,
+        if (element.type === 'panel' && element.elements) {
+          this.flattenPanel(element, answers, rows);
+        } else if (element.type === 'paneldynamic' && element.templateElements) {
+          this.flattenDynamicPanel(element, answers, rows);
+        } else if (answers[element.name] !== undefined) {
+          rows.push({
+            group: '',
+            groupId: '',
             question: element.title ?? element.name,
+            questionId: element.name,
             answer: this.formatAnswer(answers[element.name]),
           });
         }
       }
     }
 
-    this.formattedResponses = responses;
+    this.hasSchema = true;
+    this.formattedResponses = rows;
   }
 
   /**
-   * Format responses without a definition (raw key/value display)
+   * Flatten a static panel's child questions into rows.
+   * SurveyJS static panels are visual grouping only — child answers
+   * are stored as flat top-level keys, not nested under the panel name.
+   */
+  private flattenPanel(
+    element: SurveyQuestion,
+    answers: Record<string, unknown>,
+    rows: SurveyResponseRow[],
+  ): void {
+    for (const child of element.elements ?? []) {
+      if (answers[child.name] !== undefined) {
+        rows.push({
+          group: element.title ?? element.name,
+          groupId: element.name,
+          question: child.title ?? child.name,
+          questionId: child.name,
+          answer: this.formatAnswer(answers[child.name]),
+        });
+      }
+    }
+  }
+
+  /**
+   * Flatten a dynamic panel's entries into numbered rows.
+   * Dynamic panel answers are arrays of objects under answers[panelName].
+   */
+  private flattenDynamicPanel(
+    element: SurveyQuestion,
+    answers: Record<string, unknown>,
+    rows: SurveyResponseRow[],
+  ): void {
+    const entries = answers[element.name];
+    if (!Array.isArray(entries)) return;
+
+    for (let i = 0; i < entries.length; i++) {
+      const entry = entries[i] as Record<string, unknown>;
+      for (const child of element.templateElements ?? []) {
+        if (entry[child.name] !== undefined) {
+          rows.push({
+            group: `${element.title ?? element.name} #${i + 1}`,
+            groupId: element.name,
+            question: child.title ?? child.name,
+            questionId: child.name,
+            answer: this.formatAnswer(entry[child.name]),
+          });
+        }
+      }
+    }
+  }
+
+  /**
+   * Format responses without a definition (raw key/value display).
+   * Produces 2-column rows (no group) with raw keys as question names.
    */
   private formatResponsesWithoutDefinition(): void {
     if (!this.response?.answers) {
@@ -203,9 +294,12 @@ export class TriageDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this.hasSchema = false;
     this.formattedResponses = Object.entries(this.response.answers).map(([key, value]) => ({
-      name: key,
+      group: '',
+      groupId: '',
       question: key,
+      questionId: key,
       answer: this.formatAnswer(value),
     }));
   }
