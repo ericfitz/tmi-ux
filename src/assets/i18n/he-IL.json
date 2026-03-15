@@ -204,17 +204,15 @@
       },
       "cancelTooltip": "בטל עריכה",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "מקור",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "האם אתה בטוח שברצונך למחוק את ההגדרה \"{{key}}\"?",
       "deleteTooltip": "מחק הגדרה",
       "editTooltip": "ערוך הגדרה",
       "filterLabel": "סנן",
-      "filterPlaceholder": "סנן לפי מפתח, ערך או תיאור",
+      "filterPlaceholder": "סנן לפי מפתח, ערך, תיאור או מקור",
       "listTitle": "הגדרות מערכת",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -227,7 +225,15 @@
         "title": "העבר הגדרות"
       },
       "noSettings": "לא נמצאו הגדרות",
+      "readOnlyTooltip": "הגדרה זו לקריאה בלבד ולא ניתן לשנות אותה כאן",
       "saveTooltip": "שמור שינויים",
+      "sources": {
+        "config": "קובץ תצורה",
+        "database": "מסד נתונים",
+        "environment": "סביבה",
+        "vault": "כספת",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "צפה ונהל הגדרות תצורת מערכת",
       "title": "ניהול הגדרות",
       "types": {

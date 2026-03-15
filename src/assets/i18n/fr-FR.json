@@ -204,17 +204,15 @@
       },
       "cancelTooltip": "Annuler la modification",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "Source",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "Êtes-vous sûr de vouloir supprimer le paramètre \"{{key}}\" ?",
       "deleteTooltip": "Supprimer le paramètre",
       "editTooltip": "Modifier le paramètre",
       "filterLabel": "Filtrer",
-      "filterPlaceholder": "Filtrer par clé, valeur ou description",
+      "filterPlaceholder": "Filtrer par clé, valeur, description ou source",
       "listTitle": "Paramètres système",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -227,7 +225,15 @@
         "title": "Migrer les paramètres"
       },
       "noSettings": "Aucun paramètre trouvé",
+      "readOnlyTooltip": "Ce paramètre est en lecture seule et ne peut pas être modifié ici",
       "saveTooltip": "Enregistrer les modifications",
+      "sources": {
+        "config": "Fichier de configuration",
+        "database": "Base de données",
+        "environment": "Environnement",
+        "vault": "Coffre-fort",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "Afficher et gérer les paramètres de configuration du système",
       "title": "Gérer les paramètres",
       "types": {

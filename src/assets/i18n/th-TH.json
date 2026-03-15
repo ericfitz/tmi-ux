@@ -204,17 +204,15 @@
       },
       "cancelTooltip": "ยกเลิกการแก้ไข",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "แหล่งที่มา",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "คุณแน่ใจหรือไม่ว่าต้องการลบการตั้งค่า \"{{key}}\"?",
       "deleteTooltip": "ลบการตั้งค่า",
       "editTooltip": "แก้ไขการตั้งค่า",
       "filterLabel": "กรอง",
-      "filterPlaceholder": "กรองตามคีย์ ค่า หรือคำอธิบาย",
+      "filterPlaceholder": "กรองตามคีย์ ค่า คำอธิบาย หรือแหล่งที่มา",
       "listTitle": "การตั้งค่าระบบ",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -227,7 +225,15 @@
         "title": "ย้ายข้อมูลการตั้งค่า"
       },
       "noSettings": "ไม่พบการตั้งค่า",
+      "readOnlyTooltip": "การตั้งค่านี้เป็นแบบอ่านอย่างเดียวและไม่สามารถแก้ไขได้ที่นี่",
       "saveTooltip": "บันทึกการเปลี่ยนแปลง",
+      "sources": {
+        "config": "ไฟล์การกำหนดค่า",
+        "database": "ฐานข้อมูล",
+        "environment": "สภาพแวดล้อม",
+        "vault": "ตู้เซฟ",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "ดูและจัดการการตั้งค่าการกำหนดค่าระบบ",
       "title": "จัดการการตั้งค่า",
       "types": {

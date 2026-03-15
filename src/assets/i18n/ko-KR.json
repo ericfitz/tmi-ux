@@ -204,17 +204,15 @@
       },
       "cancelTooltip": "편집 취소",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "출처",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "설정 \"{{key}}\"을(를) 삭제하시겠습니까?",
       "deleteTooltip": "설정 삭제",
       "editTooltip": "설정 편집",
       "filterLabel": "필터",
-      "filterPlaceholder": "키, 값 또는 설명으로 필터링",
+      "filterPlaceholder": "키, 값, 설명 또는 출처로 필터링",
       "listTitle": "시스템 설정",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -227,7 +225,15 @@
         "title": "설정 마이그레이션"
       },
       "noSettings": "설정을 찾을 수 없습니다",
+      "readOnlyTooltip": "이 설정은 읽기 전용이며 여기에서 수정할 수 없습니다",
       "saveTooltip": "변경 사항 저장",
+      "sources": {
+        "config": "구성 파일",
+        "database": "데이터베이스",
+        "environment": "환경",
+        "vault": "볼트",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "시스템 구성 설정 보기 및 관리",
       "title": "설정 관리",
       "types": {

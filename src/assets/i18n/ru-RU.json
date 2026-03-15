@@ -204,17 +204,15 @@
       },
       "cancelTooltip": "Отменить редактирование",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "Источник",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "Вы уверены, что хотите удалить настройку \"{{key}}\"?",
       "deleteTooltip": "Удалить настройку",
       "editTooltip": "Редактировать настройку",
       "filterLabel": "Фильтр",
-      "filterPlaceholder": "Фильтр по ключу, значению или описанию",
+      "filterPlaceholder": "Фильтр по ключу, значению, описанию или источнику",
       "listTitle": "Системные Настройки",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -227,7 +225,15 @@
         "title": "Мигрировать Настройки"
       },
       "noSettings": "Настройки не найдены",
+      "readOnlyTooltip": "Этот параметр доступен только для чтения и не может быть изменён здесь",
       "saveTooltip": "Сохранить изменения",
+      "sources": {
+        "config": "Файл конфигурации",
+        "database": "База данных",
+        "environment": "Окружение",
+        "vault": "Хранилище",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "Просмотр и управление системными настройками конфигурации",
       "title": "Управление Настройками",
       "types": {

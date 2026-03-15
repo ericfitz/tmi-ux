@@ -204,17 +204,15 @@
       },
       "cancelTooltip": "編集をキャンセル",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "ソース",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "設定「{{key}}」を削除してもよろしいですか？",
       "deleteTooltip": "設定を削除",
       "editTooltip": "設定を編集",
       "filterLabel": "フィルター",
-      "filterPlaceholder": "キー、値、または説明でフィルター",
+      "filterPlaceholder": "キー、値、説明、またはソースでフィルター",
       "listTitle": "システム設定",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -227,7 +225,15 @@
         "title": "設定をマイグレート"
       },
       "noSettings": "設定が見つかりません",
+      "readOnlyTooltip": "この設定は読み取り専用で、ここでは変更できません",
       "saveTooltip": "変更を保存",
+      "sources": {
+        "config": "設定ファイル",
+        "database": "データベース",
+        "environment": "環境変数",
+        "vault": "Vault",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "システム構成設定を表示および管理",
       "title": "設定の管理",
       "types": {

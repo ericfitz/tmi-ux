@@ -204,17 +204,15 @@
       },
       "cancelTooltip": "取消编辑",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "来源",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "您确定要删除设置\"{{key}}\"吗？",
       "deleteTooltip": "删除设置",
       "editTooltip": "编辑设置",
       "filterLabel": "筛选",
-      "filterPlaceholder": "按键、值或描述筛选",
+      "filterPlaceholder": "按键名、值、描述或来源筛选",
       "listTitle": "系统设置",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -227,7 +225,15 @@
         "title": "迁移设置"
       },
       "noSettings": "未找到设置",
+      "readOnlyTooltip": "此设置为只读，无法在此处修改",
       "saveTooltip": "保存更改",
+      "sources": {
+        "config": "配置文件",
+        "database": "数据库",
+        "environment": "环境变量",
+        "vault": "密钥库",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "查看和管理系统配置设置",
       "title": "管理设置",
       "types": {

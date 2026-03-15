@@ -204,17 +204,15 @@
       },
       "cancelTooltip": "संपादन रद्द करें",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "स्रोत",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "क्या आप वाकई \"{{key}}\" सेटिंग को हटाना चाहते हैं?",
       "deleteTooltip": "सेटिंग हटाएं",
       "editTooltip": "सेटिंग संपादित करें",
       "filterLabel": "फ़िल्टर",
-      "filterPlaceholder": "कुंजी, मान या विवरण द्वारा फ़िल्टर करें",
+      "filterPlaceholder": "कुंजी, मान, विवरण या स्रोत द्वारा फ़िल्टर करें",
       "listTitle": "सिस्टम सेटिंग्स",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -227,7 +225,15 @@
         "title": "सेटिंग्स माइग्रेट करें"
       },
       "noSettings": "कोई सेटिंग नहीं मिली",
+      "readOnlyTooltip": "यह सेटिंग केवल पढ़ने योग्य है और इसे यहाँ से संशोधित नहीं किया जा सकता",
       "saveTooltip": "परिवर्तन सहेजें",
+      "sources": {
+        "config": "कॉन्फ़िगरेशन फ़ाइल",
+        "database": "डेटाबेस",
+        "environment": "वातावरण",
+        "vault": "वॉल्ट",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "सिस्टम कॉन्फ़िगरेशन सेटिंग्स देखें और प्रबंधित करें",
       "title": "सेटिंग्स प्रबंधित करें",
       "types": {

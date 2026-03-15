@@ -204,17 +204,15 @@
       },
       "cancelTooltip": "ترمیم منسوخ کریں",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "ماخذ",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "کیا آپ واقعی ترتیب \"{{key}}\" کو حذف کرنا چاہتے ہیں؟",
       "deleteTooltip": "ترتیب حذف کریں",
       "editTooltip": "ترتیب میں ترمیم کریں",
       "filterLabel": "فلٹر",
-      "filterPlaceholder": "کی، قدر، یا تفصیل سے فلٹر کریں",
+      "filterPlaceholder": "کلید، قدر، وضاحت، یا ماخذ کے ذریعے فلٹر کریں",
       "listTitle": "سسٹم کی ترتیبات",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -227,7 +225,15 @@
         "title": "ترتیبات منتقل کریں"
       },
       "noSettings": "کوئی ترتیبات نہیں ملیں",
+      "readOnlyTooltip": "یہ ترتیب صرف پڑھنے کے لیے ہے اور اسے یہاں سے تبدیل نہیں کیا جا سکتا",
       "saveTooltip": "تبدیلیاں محفوظ کریں",
+      "sources": {
+        "config": "ترتیب فائل",
+        "database": "ڈیٹا بیس",
+        "environment": "ماحول",
+        "vault": "والٹ",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "سسٹم کی تشکیل کی ترتیبات دیکھیں اور ان کا انتظام کریں",
       "title": "ترتیبات کا انتظام",
       "types": {

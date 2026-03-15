@@ -204,17 +204,15 @@
       },
       "cancelTooltip": "إلغاء التحرير",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "المصدر",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "هل أنت متأكد من حذف الإعداد \"{{key}}\"؟",
       "deleteTooltip": "حذف الإعداد",
       "editTooltip": "تحرير الإعداد",
       "filterLabel": "تصفية",
-      "filterPlaceholder": "تصفية حسب المفتاح أو القيمة أو الوصف",
+      "filterPlaceholder": "تصفية حسب المفتاح أو القيمة أو الوصف أو المصدر",
       "listTitle": "إعدادات النظام",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -227,7 +225,15 @@
         "title": "ترحيل الإعدادات"
       },
       "noSettings": "لم يتم العثور على إعدادات",
+      "readOnlyTooltip": "هذا الإعداد للقراءة فقط ولا يمكن تعديله من هنا",
       "saveTooltip": "حفظ التغييرات",
+      "sources": {
+        "config": "ملف التكوين",
+        "database": "قاعدة البيانات",
+        "environment": "البيئة",
+        "vault": "المخزن الآمن",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "عرض وإدارة إعدادات تكوين النظام",
       "title": "إدارة الإعدادات",
       "types": {

@@ -204,17 +204,15 @@
       },
       "cancelTooltip": "Batalkan pengeditan",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "Sumber",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "Apakah Anda yakin ingin menghapus pengaturan \"{{key}}\"?",
       "deleteTooltip": "Hapus pengaturan",
       "editTooltip": "Edit pengaturan",
       "filterLabel": "Filter",
-      "filterPlaceholder": "Filter berdasarkan kunci, nilai, atau deskripsi",
+      "filterPlaceholder": "Filter berdasarkan kunci, nilai, deskripsi, atau sumber",
       "listTitle": "Pengaturan Sistem",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -227,7 +225,15 @@
         "title": "Migrasikan Pengaturan"
       },
       "noSettings": "Tidak ada pengaturan ditemukan",
+      "readOnlyTooltip": "Pengaturan ini hanya-baca dan tidak dapat diubah di sini",
       "saveTooltip": "Simpan perubahan",
+      "sources": {
+        "config": "File Konfigurasi",
+        "database": "Basis Data",
+        "environment": "Lingkungan",
+        "vault": "Vault",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "Lihat dan kelola pengaturan konfigurasi sistem",
       "title": "Kelola Pengaturan",
       "types": {

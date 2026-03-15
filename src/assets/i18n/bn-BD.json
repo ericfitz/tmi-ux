@@ -204,17 +204,15 @@
       },
       "cancelTooltip": "সম্পাদনা বাতিল করুন",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
+        "source": "উৎস",
         "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "আপনি কি নিশ্চিত যে \"{{key}}\" সেটিংটি মুছতে চান?",
       "deleteTooltip": "সেটিং মুছুন",
       "editTooltip": "সেটিং সম্পাদনা করুন",
       "filterLabel": "ফিল্টার",
-      "filterPlaceholder": "কী, মান বা বিবরণ দিয়ে ফিল্টার করুন",
+      "filterPlaceholder": "কী, মান, বিবরণ, বা উৎস দিয়ে ফিল্টার করুন",
       "listTitle": "সিস্টেম সেটিংস",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -227,7 +225,15 @@
         "title": "সেটিংস মাইগ্রেট করুন"
       },
       "noSettings": "কোনো সেটিংস পাওয়া যায়নি",
+      "readOnlyTooltip": "এই সেটিংটি শুধুমাত্র পঠনযোগ্য এবং এখান থেকে পরিবর্তন করা যাবে না",
       "saveTooltip": "পরিবর্তনগুলি সংরক্ষণ করুন",
+      "sources": {
+        "config": "কনফিগারেশন ফাইল",
+        "database": "ডাটাবেস",
+        "environment": "পরিবেশ",
+        "vault": "ভল্ট",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "সিস্টেম কনফিগারেশন সেটিংস দেখুন এবং পরিচালনা করুন",
       "title": "সেটিংস পরিচালনা করুন",
       "types": {

@@ -214,8 +214,8 @@
       "cancelTooltip": "Cancel editing",
       "columns": {
         "key": "{{common.metadataKey}}",
-        "value": "{{common.metadataValue}}",
-        "source": "Source"
+        "source": "Source",
+        "value": "{{common.metadataValue}}"
       },
       "confirmDelete": "Are you sure you want to delete the setting \"{{key}}\"?",
       "deleteTooltip": "Delete setting",
@@ -236,6 +236,13 @@
       "noSettings": "No settings found",
       "readOnlyTooltip": "This setting is read-only and cannot be modified here",
       "saveTooltip": "Save changes",
+      "sources": {
+        "config": "Configuration File",
+        "database": "Database",
+        "environment": "Environment",
+        "vault": "Vault",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
+      },
       "subtitle": "View and manage system configuration settings",
       "title": "Manage Settings",
       "types": {
@@ -243,13 +250,6 @@
         "int": "Integer",
         "json": "JSON",
         "string": "String"
-      },
-      "sources": {
-        "database": "Database",
-        "config": "Configuration File",
-        "environment": "Environment",
-        "vault": "Vault",
-        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
       }
     },
     "subtitle": "Manage system settings and configurations",
