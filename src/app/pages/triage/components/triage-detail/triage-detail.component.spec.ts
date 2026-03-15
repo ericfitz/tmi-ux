@@ -83,6 +83,7 @@ describe('TriageDetailComponent', () => {
         { group: '', groupId: '', question: 'Project Name', questionId: 'q1', answer: 'Foo' },
         { group: '', groupId: '', question: 'Description', questionId: 'q2', answer: 'Bar' },
       ]);
+      expect(component.hasSchema).toBe(true);
     });
 
     it('should flatten panel child questions into rows with group', () => {
