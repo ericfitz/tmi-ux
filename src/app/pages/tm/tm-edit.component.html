@@ -359,6 +359,69 @@
             </div>
           </div>
         </mat-expansion-panel>
+
+        <!-- Audit Panel -->
+        <mat-expansion-panel class="audit-panel">
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ 'threatModels.sections.audit' | transloco }}</mat-panel-title>
+            <mat-panel-description class="panel-summary">
+              <span class="summary-item">
+                <span class="summary-label">{{ 'common.lastModified' | transloco }}:</span>
+                <span>{{
+                  !isNewThreatModel && threatModel.modified_at
+                    ? (threatModel.modified_at | date: 'short' : undefined : currentLocale)
+                    : '—'
+                }}</span>
+              </span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <!-- Panel body: 2fr 1fr grid -->
+          <div class="audit-grid" [dir]="currentDirection">
+            <!-- Row 1: ID + Last Modified -->
+            <div class="metadata-field">
+              <span class="info-label">{{ 'threatModels.idLabel' | transloco }}:</span>
+              <span class="info-value metadata-id">{{ threatModel.id || '—' }}</span>
+              @if (threatModel.id) {
+                <button
+                  mat-icon-button
+                  class="copy-id-button"
+                  (click)="copyThreatModelId()"
+                  [matTooltip]="'common.copyToClipboard' | transloco"
+                  [attr.aria-label]="'common.copyToClipboard' | transloco"
+                >
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              }
+            </div>
+            <div class="metadata-field">
+              <span class="info-label">{{ 'common.lastModified' | transloco }}:</span>
+              <span class="info-value">{{
+                !isNewThreatModel && threatModel.modified_at
+                  ? (threatModel.modified_at | date: 'short' : undefined : currentLocale)
+                  : '—'
+              }}</span>
+            </div>
+
+            <!-- Row 2: Created By + Created -->
+            <div class="metadata-field">
+              <span class="info-label">{{ 'threatModels.createdBy' | transloco }}:</span>
+              @if (threatModel.created_by) {
+                <span class="info-value"><app-user-display [user]="threatModel.created_by" /></span>
+              } @else {
+                <span class="info-value">—</span>
+              }
+            </div>
+            <div class="metadata-field">
+              <span class="info-label">{{ 'threatModels.created' | transloco }}:</span>
+              <span class="info-value">{{
+                !isNewThreatModel && threatModel.created_at
+                  ? (threatModel.created_at | date: 'short' : undefined : currentLocale)
+                  : '—'
+              }}</span>
+            </div>
+          </div>
+        </mat-expansion-panel>
       </mat-accordion>
 
       <!-- Inputs Section: Assets, Documents, Repositories -->
