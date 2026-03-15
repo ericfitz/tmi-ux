@@ -48,12 +48,11 @@ if echo "$COMMIT_MSG_FIRST_LINE" | grep -qE "^(feat|fix|docs|refactor|perf|test|
   COMMIT_TYPE=$(echo "$COMMIT_MSG_FIRST_LINE" | sed -E 's/^([a-z]+)(\(.+\))?\s*:.*/\1/')
 
   # Determine bump type
+  # All commit types get patch bumps on main. Minor version bumps only
+  # happen when a release branch (e.g. release/1.3.0) merges into main.
   BUMP_TYPE=""
   case "$COMMIT_TYPE" in
-    feat|refactor)
-      BUMP_TYPE="minor"
-      ;;
-    fix|chore|docs|perf|test|build|ci|deps|ops)
+    feat|refactor|fix|chore|docs|perf|test|build|ci|deps|ops)
       BUMP_TYPE="patch"
       ;;
   esac
