@@ -29,44 +29,6 @@
             <button
               mat-icon-button
               color="primary"
-              (click)="downloadToDesktop()"
-              [matTooltip]="'threatModels.export' | transloco"
-              [attr.aria-label]="'threatModels.export' | transloco"
-            >
-              <mat-icon>file_download</mat-icon>
-            </button>
-            @if (canEdit) {
-              <button
-                mat-icon-button
-                color="primary"
-                [matMenuTriggerFor]="detailsAddonsMenu"
-                [matTooltip]="'common.addons' | transloco"
-                [attr.aria-label]="'common.addons' | transloco"
-              >
-                <mat-icon>extension</mat-icon>
-              </button>
-            }
-            <button
-              mat-icon-button
-              color="primary"
-              (click)="openReport()"
-              [matTooltip]="'common.objectTypes.report' | transloco"
-              [attr.aria-label]="'common.objectTypes.report' | transloco"
-            >
-              <mat-icon fontSet="material-symbols-outlined">assignment</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              color="primary"
-              (click)="openAuditTrail()"
-              [matTooltip]="'auditTrail.title' | transloco"
-              [attr.aria-label]="'auditTrail.title' | transloco"
-            >
-              <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              color="primary"
               (click)="openMetadataDialog()"
               [matTooltip]="'common.manageMetadata' | transloco"
               [attr.aria-label]="'common.manageMetadata' | transloco"
@@ -75,13 +37,37 @@
             </button>
             <button
               mat-icon-button
-              color="primary"
-              (click)="openPermissionsDialog()"
-              [matTooltip]="'threatModels.permissionsTooltip' | transloco"
-              [attr.aria-label]="'common.permissions' | transloco"
+              [matMenuTriggerFor]="detailsKebabMenu"
+              [matTooltip]="'common.actions' | transloco"
+              [attr.aria-label]="'common.actions' | transloco"
+              (click)="$event.stopPropagation()"
             >
-              <mat-icon>lock</mat-icon>
+              <mat-icon>more_vert</mat-icon>
             </button>
+            <mat-menu #detailsKebabMenu="matMenu">
+              <button mat-menu-item (click)="downloadToDesktop()">
+                <mat-icon>file_download</mat-icon>
+                <span>{{ 'threatModels.export' | transloco }}</span>
+              </button>
+              @if (canEdit) {
+                <button mat-menu-item [matMenuTriggerFor]="detailsAddonsMenu">
+                  <mat-icon>extension</mat-icon>
+                  <span>{{ 'common.addons' | transloco }}</span>
+                </button>
+              }
+              <button mat-menu-item (click)="openReport()">
+                <mat-icon fontSet="material-symbols-outlined">assignment</mat-icon>
+                <span>{{ 'common.objectTypes.report' | transloco }}</span>
+              </button>
+              <button mat-menu-item (click)="openAuditTrail()">
+                <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+                <span>{{ 'auditTrail.title' | transloco }}</span>
+              </button>
+              <button mat-menu-item (click)="openPermissionsDialog()">
+                <mat-icon>lock</mat-icon>
+                <span>{{ 'common.permissions' | transloco }}</span>
+              </button>
+            </mat-menu>
             <button
               mat-icon-button
               color="warn"
@@ -426,13 +412,19 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
-                    color="primary"
-                    [matMenuTriggerFor]="assetsAddonsMenu"
-                    [matTooltip]="'common.addons' | transloco"
-                    [attr.aria-label]="'common.addons' | transloco"
+                    [matMenuTriggerFor]="assetsHeaderKebabMenu"
+                    [matTooltip]="'common.actions' | transloco"
+                    [attr.aria-label]="'common.actions' | transloco"
+                    (click)="$event.stopPropagation()"
                   >
-                    <mat-icon>extension</mat-icon>
+                    <mat-icon>more_vert</mat-icon>
                   </button>
+                  <mat-menu #assetsHeaderKebabMenu="matMenu">
+                    <button mat-menu-item [matMenuTriggerFor]="assetsAddonsMenu">
+                      <mat-icon>extension</mat-icon>
+                      <span>{{ 'common.addons' | transloco }}</span>
+                    </button>
+                  </mat-menu>
                   <button
                     mat-icon-button
                     color="primary"
@@ -546,29 +538,6 @@
                     </th>
                     <td mat-cell *matCellDef="let asset" class="column-actions">
                       <div class="action-buttons">
-                        @if (canEdit) {
-                          <button
-                            mat-icon-button
-                            color="primary"
-                            [matMenuTriggerFor]="assetRowAddonsMenu"
-                            [matTooltip]="'common.addons' | transloco"
-                            [attr.aria-label]="'common.addons' | transloco"
-                            (click)="
-                              $event.stopPropagation();
-                              setAddonRowContext('asset', asset.id, asset.name, asset.metadata)
-                            "
-                          >
-                            <mat-icon>extension</mat-icon>
-                          </button>
-                        }
-                        <button
-                          mat-icon-button
-                          (click)="openEntityAuditTrail('asset', asset.id, asset.name, $event)"
-                          [matTooltip]="'auditTrail.title' | transloco"
-                          [attr.aria-label]="'auditTrail.title' | transloco"
-                        >
-                          <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
-                        </button>
                         <button
                           mat-icon-button
                           (click)="openAssetMetadataDialog(asset, $event)"
@@ -585,17 +554,44 @@
                         >
                           <mat-icon>list</mat-icon>
                         </button>
-                        @if (canEdit) {
+                        <button
+                          mat-icon-button
+                          [matMenuTriggerFor]="assetRowKebabMenu"
+                          [matTooltip]="'common.actions' | transloco"
+                          [attr.aria-label]="'common.actions' | transloco"
+                          (click)="$event.stopPropagation()"
+                        >
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #assetRowKebabMenu="matMenu">
+                          @if (canEdit) {
+                            <button
+                              mat-menu-item
+                              [matMenuTriggerFor]="assetRowAddonsMenu"
+                              (click)="
+                                $event.stopPropagation();
+                                setAddonRowContext('asset', asset.id, asset.name, asset.metadata)
+                              "
+                            >
+                              <mat-icon>extension</mat-icon>
+                              <span>{{ 'common.addons' | transloco }}</span>
+                            </button>
+                          }
                           <button
-                            mat-icon-button
-                            color="warn"
-                            (click)="deleteAsset(asset, $event)"
-                            [matTooltip]="'common.delete' | transloco"
-                            [attr.aria-label]="'common.delete' | transloco"
+                            mat-menu-item
+                            (click)="openEntityAuditTrail('asset', asset.id, asset.name, $event)"
                           >
-                            <mat-icon>delete</mat-icon>
+                            <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+                            <span>{{ 'auditTrail.title' | transloco }}</span>
                           </button>
-                        }
+                          @if (canEdit) {
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item (click)="deleteAsset(asset, $event)">
+                              <mat-icon color="warn">delete</mat-icon>
+                              <span>{{ 'common.delete' | transloco }}</span>
+                            </button>
+                          }
+                        </mat-menu>
                       </div>
                     </td>
                   </ng-container>
@@ -646,13 +642,19 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
-                    color="primary"
-                    [matMenuTriggerFor]="documentsAddonsMenu"
-                    [matTooltip]="'common.addons' | transloco"
-                    [attr.aria-label]="'common.addons' | transloco"
+                    [matMenuTriggerFor]="documentsHeaderKebabMenu"
+                    [matTooltip]="'common.actions' | transloco"
+                    [attr.aria-label]="'common.actions' | transloco"
+                    (click)="$event.stopPropagation()"
                   >
-                    <mat-icon>extension</mat-icon>
+                    <mat-icon>more_vert</mat-icon>
                   </button>
+                  <mat-menu #documentsHeaderKebabMenu="matMenu">
+                    <button mat-menu-item [matMenuTriggerFor]="documentsAddonsMenu">
+                      <mat-icon>extension</mat-icon>
+                      <span>{{ 'common.addons' | transloco }}</span>
+                    </button>
+                  </mat-menu>
                   <button
                     mat-icon-button
                     color="primary"
@@ -730,36 +732,6 @@
                     </th>
                     <td mat-cell *matCellDef="let document" class="column-actions">
                       <div class="action-buttons">
-                        @if (canEdit) {
-                          <button
-                            mat-icon-button
-                            color="primary"
-                            [matMenuTriggerFor]="documentRowAddonsMenu"
-                            [matTooltip]="'common.addons' | transloco"
-                            [attr.aria-label]="'common.addons' | transloco"
-                            (click)="
-                              $event.stopPropagation();
-                              setAddonRowContext(
-                                'document',
-                                document.id,
-                                document.name,
-                                document.metadata
-                              )
-                            "
-                          >
-                            <mat-icon>extension</mat-icon>
-                          </button>
-                        }
-                        <button
-                          mat-icon-button
-                          (click)="
-                            openEntityAuditTrail('document', document.id, document.name, $event)
-                          "
-                          [matTooltip]="'auditTrail.title' | transloco"
-                          [attr.aria-label]="'auditTrail.title' | transloco"
-                        >
-                          <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
-                        </button>
                         <button
                           mat-icon-button
                           (click)="openDocumentMetadataDialog(document, $event)"
@@ -776,17 +748,51 @@
                         >
                           <mat-icon>list</mat-icon>
                         </button>
-                        @if (canEdit) {
+                        <button
+                          mat-icon-button
+                          [matMenuTriggerFor]="documentRowKebabMenu"
+                          [matTooltip]="'common.actions' | transloco"
+                          [attr.aria-label]="'common.actions' | transloco"
+                          (click)="$event.stopPropagation()"
+                        >
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #documentRowKebabMenu="matMenu">
+                          @if (canEdit) {
+                            <button
+                              mat-menu-item
+                              [matMenuTriggerFor]="documentRowAddonsMenu"
+                              (click)="
+                                $event.stopPropagation();
+                                setAddonRowContext(
+                                  'document',
+                                  document.id,
+                                  document.name,
+                                  document.metadata
+                                )
+                              "
+                            >
+                              <mat-icon>extension</mat-icon>
+                              <span>{{ 'common.addons' | transloco }}</span>
+                            </button>
+                          }
                           <button
-                            mat-icon-button
-                            color="warn"
-                            (click)="deleteDocument(document, $event)"
-                            [matTooltip]="'common.delete' | transloco"
-                            [attr.aria-label]="'common.delete' | transloco"
+                            mat-menu-item
+                            (click)="
+                              openEntityAuditTrail('document', document.id, document.name, $event)
+                            "
                           >
-                            <mat-icon>delete</mat-icon>
+                            <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+                            <span>{{ 'auditTrail.title' | transloco }}</span>
                           </button>
-                        }
+                          @if (canEdit) {
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item (click)="deleteDocument(document, $event)">
+                              <mat-icon color="warn">delete</mat-icon>
+                              <span>{{ 'common.delete' | transloco }}</span>
+                            </button>
+                          }
+                        </mat-menu>
                       </div>
                     </td>
                   </ng-container>
@@ -836,13 +842,19 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
-                    color="primary"
-                    [matMenuTriggerFor]="repositoriesAddonsMenu"
-                    [matTooltip]="'common.addons' | transloco"
-                    [attr.aria-label]="'common.addons' | transloco"
+                    [matMenuTriggerFor]="repositoriesHeaderKebabMenu"
+                    [matTooltip]="'common.actions' | transloco"
+                    [attr.aria-label]="'common.actions' | transloco"
+                    (click)="$event.stopPropagation()"
                   >
-                    <mat-icon>extension</mat-icon>
+                    <mat-icon>more_vert</mat-icon>
                   </button>
+                  <mat-menu #repositoriesHeaderKebabMenu="matMenu">
+                    <button mat-menu-item [matMenuTriggerFor]="repositoriesAddonsMenu">
+                      <mat-icon>extension</mat-icon>
+                      <span>{{ 'common.addons' | transloco }}</span>
+                    </button>
+                  </mat-menu>
                   <button
                     mat-icon-button
                     color="primary"
@@ -920,41 +932,6 @@
                     </th>
                     <td mat-cell *matCellDef="let repository" class="column-actions">
                       <div class="action-buttons">
-                        @if (canEdit) {
-                          <button
-                            mat-icon-button
-                            color="primary"
-                            [matMenuTriggerFor]="repositoryRowAddonsMenu"
-                            [matTooltip]="'common.addons' | transloco"
-                            [attr.aria-label]="'common.addons' | transloco"
-                            (click)="
-                              $event.stopPropagation();
-                              setAddonRowContext(
-                                'repository',
-                                repository.id,
-                                repository.name,
-                                repository.metadata
-                              )
-                            "
-                          >
-                            <mat-icon>extension</mat-icon>
-                          </button>
-                        }
-                        <button
-                          mat-icon-button
-                          (click)="
-                            openEntityAuditTrail(
-                              'repository',
-                              repository.id,
-                              repository.name,
-                              $event
-                            )
-                          "
-                          [matTooltip]="'auditTrail.title' | transloco"
-                          [attr.aria-label]="'auditTrail.title' | transloco"
-                        >
-                          <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
-                        </button>
                         <button
                           mat-icon-button
                           (click)="openRepositoryMetadataDialog(repository, $event)"
@@ -971,17 +948,56 @@
                         >
                           <mat-icon>list</mat-icon>
                         </button>
-                        @if (canEdit) {
+                        <button
+                          mat-icon-button
+                          [matMenuTriggerFor]="repositoryRowKebabMenu"
+                          [matTooltip]="'common.actions' | transloco"
+                          [attr.aria-label]="'common.actions' | transloco"
+                          (click)="$event.stopPropagation()"
+                        >
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #repositoryRowKebabMenu="matMenu">
+                          @if (canEdit) {
+                            <button
+                              mat-menu-item
+                              [matMenuTriggerFor]="repositoryRowAddonsMenu"
+                              (click)="
+                                $event.stopPropagation();
+                                setAddonRowContext(
+                                  'repository',
+                                  repository.id,
+                                  repository.name,
+                                  repository.metadata
+                                )
+                              "
+                            >
+                              <mat-icon>extension</mat-icon>
+                              <span>{{ 'common.addons' | transloco }}</span>
+                            </button>
+                          }
                           <button
-                            mat-icon-button
-                            color="warn"
-                            (click)="deleteRepository(repository, $event)"
-                            [matTooltip]="'common.delete' | transloco"
-                            [attr.aria-label]="'common.delete' | transloco"
+                            mat-menu-item
+                            (click)="
+                              openEntityAuditTrail(
+                                'repository',
+                                repository.id,
+                                repository.name,
+                                $event
+                              )
+                            "
                           >
-                            <mat-icon>delete</mat-icon>
+                            <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+                            <span>{{ 'auditTrail.title' | transloco }}</span>
                           </button>
-                        }
+                          @if (canEdit) {
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item (click)="deleteRepository(repository, $event)">
+                              <mat-icon color="warn">delete</mat-icon>
+                              <span>{{ 'common.delete' | transloco }}</span>
+                            </button>
+                          }
+                        </mat-menu>
                       </div>
                     </td>
                   </ng-container>
@@ -1056,13 +1072,19 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
-                    color="primary"
-                    [matMenuTriggerFor]="notesAddonsMenu"
-                    [matTooltip]="'common.addons' | transloco"
-                    [attr.aria-label]="'common.addons' | transloco"
+                    [matMenuTriggerFor]="notesHeaderKebabMenu"
+                    [matTooltip]="'common.actions' | transloco"
+                    [attr.aria-label]="'common.actions' | transloco"
+                    (click)="$event.stopPropagation()"
                   >
-                    <mat-icon>extension</mat-icon>
+                    <mat-icon>more_vert</mat-icon>
                   </button>
+                  <mat-menu #notesHeaderKebabMenu="matMenu">
+                    <button mat-menu-item [matMenuTriggerFor]="notesAddonsMenu">
+                      <mat-icon>extension</mat-icon>
+                      <span>{{ 'common.addons' | transloco }}</span>
+                    </button>
+                  </mat-menu>
                   <button
                     mat-icon-button
                     color="primary"
@@ -1123,37 +1145,6 @@
                       <div class="action-buttons">
                         <button
                           mat-icon-button
-                          (click)="downloadNote(note, $event)"
-                          [matTooltip]="'common.download' | transloco"
-                          [attr.aria-label]="'common.download' | transloco"
-                        >
-                          <mat-icon>download</mat-icon>
-                        </button>
-                        @if (canEdit) {
-                          <button
-                            mat-icon-button
-                            color="primary"
-                            [matMenuTriggerFor]="noteRowAddonsMenu"
-                            [matTooltip]="'common.addons' | transloco"
-                            [attr.aria-label]="'common.addons' | transloco"
-                            (click)="
-                              $event.stopPropagation();
-                              setAddonRowContext('note', note.id, note.name, note.metadata)
-                            "
-                          >
-                            <mat-icon>extension</mat-icon>
-                          </button>
-                        }
-                        <button
-                          mat-icon-button
-                          (click)="openEntityAuditTrail('note', note.id, note.name, $event)"
-                          [matTooltip]="'auditTrail.title' | transloco"
-                          [attr.aria-label]="'auditTrail.title' | transloco"
-                        >
-                          <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
-                        </button>
-                        <button
-                          mat-icon-button
                           (click)="openNoteMetadataDialog(note, $event)"
                           [matTooltip]="
                             canEdit
@@ -1168,17 +1159,48 @@
                         >
                           <mat-icon>list</mat-icon>
                         </button>
-                        @if (canEdit) {
-                          <button
-                            mat-icon-button
-                            color="warn"
-                            (click)="deleteNote(note, $event)"
-                            [matTooltip]="'common.delete' | transloco"
-                            [attr.aria-label]="'common.delete' | transloco"
-                          >
-                            <mat-icon>delete</mat-icon>
+                        <button
+                          mat-icon-button
+                          [matMenuTriggerFor]="noteRowKebabMenu"
+                          [matTooltip]="'common.actions' | transloco"
+                          [attr.aria-label]="'common.actions' | transloco"
+                          (click)="$event.stopPropagation()"
+                        >
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #noteRowKebabMenu="matMenu">
+                          <button mat-menu-item (click)="downloadNote(note, $event)">
+                            <mat-icon>download</mat-icon>
+                            <span>{{ 'common.download' | transloco }}</span>
                           </button>
-                        }
+                          @if (canEdit) {
+                            <button
+                              mat-menu-item
+                              [matMenuTriggerFor]="noteRowAddonsMenu"
+                              (click)="
+                                $event.stopPropagation();
+                                setAddonRowContext('note', note.id, note.name, note.metadata)
+                              "
+                            >
+                              <mat-icon>extension</mat-icon>
+                              <span>{{ 'common.addons' | transloco }}</span>
+                            </button>
+                          }
+                          <button
+                            mat-menu-item
+                            (click)="openEntityAuditTrail('note', note.id, note.name, $event)"
+                          >
+                            <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+                            <span>{{ 'auditTrail.title' | transloco }}</span>
+                          </button>
+                          @if (canEdit) {
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item (click)="deleteNote(note, $event)">
+                              <mat-icon color="warn">delete</mat-icon>
+                              <span>{{ 'common.delete' | transloco }}</span>
+                            </button>
+                          }
+                        </mat-menu>
                       </div>
                     </td>
                   </ng-container>
@@ -1229,13 +1251,19 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
-                    color="primary"
-                    [matMenuTriggerFor]="diagramsAddonsMenu"
-                    [matTooltip]="'common.addons' | transloco"
-                    [attr.aria-label]="'common.addons' | transloco"
+                    [matMenuTriggerFor]="diagramsHeaderKebabMenu"
+                    [matTooltip]="'common.actions' | transloco"
+                    [attr.aria-label]="'common.actions' | transloco"
+                    (click)="$event.stopPropagation()"
                   >
-                    <mat-icon>extension</mat-icon>
+                    <mat-icon>more_vert</mat-icon>
                   </button>
+                  <mat-menu #diagramsHeaderKebabMenu="matMenu">
+                    <button mat-menu-item [matMenuTriggerFor]="diagramsAddonsMenu">
+                      <mat-icon>extension</mat-icon>
+                      <span>{{ 'common.addons' | transloco }}</span>
+                    </button>
+                  </mat-menu>
                   <button
                     mat-icon-button
                     color="primary"
@@ -1334,36 +1362,6 @@
                     </th>
                     <td mat-cell *matCellDef="let diagram" class="column-actions">
                       <div class="action-buttons">
-                        @if (canEdit) {
-                          <button
-                            mat-icon-button
-                            color="primary"
-                            [matMenuTriggerFor]="diagramRowAddonsMenu"
-                            [matTooltip]="'common.addons' | transloco"
-                            [attr.aria-label]="'common.addons' | transloco"
-                            (click)="
-                              $event.stopPropagation();
-                              setAddonRowContext(
-                                'diagram',
-                                diagram.id,
-                                diagram.name,
-                                diagram.metadata
-                              )
-                            "
-                          >
-                            <mat-icon>extension</mat-icon>
-                          </button>
-                        }
-                        <button
-                          mat-icon-button
-                          (click)="
-                            openEntityAuditTrail('diagram', diagram.id, diagram.name, $event)
-                          "
-                          [matTooltip]="'auditTrail.title' | transloco"
-                          [attr.aria-label]="'auditTrail.title' | transloco"
-                        >
-                          <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
-                        </button>
                         <button
                           mat-icon-button
                           (click)="openDiagramMetadataDialog(diagram, $event)"
@@ -1382,13 +1380,53 @@
                         </button>
                         <button
                           mat-icon-button
-                          [matMenuTriggerFor]="downloadModelMenu"
-                          [matTooltip]="'threatModels.tooltips.downloadModel' | transloco"
-                          [attr.aria-label]="'threatModels.tooltips.downloadModel' | transloco"
+                          [matMenuTriggerFor]="diagramRowKebabMenu"
+                          [matTooltip]="'common.actions' | transloco"
+                          [attr.aria-label]="'common.actions' | transloco"
                           (click)="$event.stopPropagation()"
                         >
-                          <mat-icon class="download-icon">download</mat-icon>
+                          <mat-icon>more_vert</mat-icon>
                         </button>
+                        <mat-menu #diagramRowKebabMenu="matMenu">
+                          @if (canEdit) {
+                            <button
+                              mat-menu-item
+                              [matMenuTriggerFor]="diagramRowAddonsMenu"
+                              (click)="
+                                $event.stopPropagation();
+                                setAddonRowContext(
+                                  'diagram',
+                                  diagram.id,
+                                  diagram.name,
+                                  diagram.metadata
+                                )
+                              "
+                            >
+                              <mat-icon>extension</mat-icon>
+                              <span>{{ 'common.addons' | transloco }}</span>
+                            </button>
+                          }
+                          <button
+                            mat-menu-item
+                            (click)="
+                              openEntityAuditTrail('diagram', diagram.id, diagram.name, $event)
+                            "
+                          >
+                            <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+                            <span>{{ 'auditTrail.title' | transloco }}</span>
+                          </button>
+                          <button mat-menu-item [matMenuTriggerFor]="downloadModelMenu">
+                            <mat-icon>download</mat-icon>
+                            <span>{{ 'threatModels.tooltips.downloadModel' | transloco }}</span>
+                          </button>
+                          @if (canEdit) {
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item (click)="deleteDiagram(diagram, $event)">
+                              <mat-icon color="warn">delete</mat-icon>
+                              <span>{{ 'common.delete' | transloco }}</span>
+                            </button>
+                          }
+                        </mat-menu>
                         <mat-menu #downloadModelMenu="matMenu">
                           <button mat-menu-item (click)="downloadDiagramModel(diagram, 'json')">
                             JSON
@@ -1400,17 +1438,6 @@
                             GraphML
                           </button>
                         </mat-menu>
-                        @if (canEdit) {
-                          <button
-                            mat-icon-button
-                            color="warn"
-                            (click)="deleteDiagram(diagram, $event)"
-                            [matTooltip]="'common.delete' | transloco"
-                            [attr.aria-label]="'common.delete' | transloco"
-                          >
-                            <mat-icon>delete</mat-icon>
-                          </button>
-                        }
                       </div>
                     </td>
                   </ng-container>
@@ -1461,13 +1488,19 @@
                 <div class="action-buttons">
                   <button
                     mat-icon-button
-                    color="primary"
-                    [matMenuTriggerFor]="threatsAddonsMenu"
-                    [matTooltip]="'common.addons' | transloco"
-                    [attr.aria-label]="'common.addons' | transloco"
+                    [matMenuTriggerFor]="threatsHeaderKebabMenu"
+                    [matTooltip]="'common.actions' | transloco"
+                    [attr.aria-label]="'common.actions' | transloco"
+                    (click)="$event.stopPropagation()"
                   >
-                    <mat-icon>extension</mat-icon>
+                    <mat-icon>more_vert</mat-icon>
                   </button>
+                  <mat-menu #threatsHeaderKebabMenu="matMenu">
+                    <button mat-menu-item [matMenuTriggerFor]="threatsAddonsMenu">
+                      <mat-icon>extension</mat-icon>
+                      <span>{{ 'common.addons' | transloco }}</span>
+                    </button>
+                  </mat-menu>
                   <button
                     mat-icon-button
                     color="primary"
@@ -1744,29 +1777,6 @@
                     </th>
                     <td mat-cell *matCellDef="let threat" class="column-actions">
                       <div class="action-buttons">
-                        @if (canEdit) {
-                          <button
-                            mat-icon-button
-                            color="primary"
-                            [matMenuTriggerFor]="threatRowAddonsMenu"
-                            [matTooltip]="'common.addons' | transloco"
-                            [attr.aria-label]="'common.addons' | transloco"
-                            (click)="
-                              $event.stopPropagation();
-                              setAddonRowContext('threat', threat.id, threat.name, threat.metadata)
-                            "
-                          >
-                            <mat-icon>extension</mat-icon>
-                          </button>
-                        }
-                        <button
-                          mat-icon-button
-                          (click)="openEntityAuditTrail('threat', threat.id, threat.name, $event)"
-                          [matTooltip]="'auditTrail.title' | transloco"
-                          [attr.aria-label]="'auditTrail.title' | transloco"
-                        >
-                          <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
-                        </button>
                         <button
                           mat-icon-button
                           (click)="openThreatMetadataDialog(threat, $event)"
@@ -1783,17 +1793,49 @@
                         >
                           <mat-icon>list</mat-icon>
                         </button>
-                        @if (canEdit) {
+                        <button
+                          mat-icon-button
+                          [matMenuTriggerFor]="threatRowKebabMenu"
+                          [matTooltip]="'common.actions' | transloco"
+                          [attr.aria-label]="'common.actions' | transloco"
+                          (click)="$event.stopPropagation()"
+                        >
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #threatRowKebabMenu="matMenu">
+                          @if (canEdit) {
+                            <button
+                              mat-menu-item
+                              [matMenuTriggerFor]="threatRowAddonsMenu"
+                              (click)="
+                                $event.stopPropagation();
+                                setAddonRowContext(
+                                  'threat',
+                                  threat.id,
+                                  threat.name,
+                                  threat.metadata
+                                )
+                              "
+                            >
+                              <mat-icon>extension</mat-icon>
+                              <span>{{ 'common.addons' | transloco }}</span>
+                            </button>
+                          }
                           <button
-                            mat-icon-button
-                            color="warn"
-                            (click)="deleteThreat(threat, $event)"
-                            [matTooltip]="'common.delete' | transloco"
-                            [attr.aria-label]="'common.delete' | transloco"
+                            mat-menu-item
+                            (click)="openEntityAuditTrail('threat', threat.id, threat.name, $event)"
                           >
-                            <mat-icon>delete</mat-icon>
+                            <mat-icon fontSet="material-symbols-outlined">contract</mat-icon>
+                            <span>{{ 'auditTrail.title' | transloco }}</span>
                           </button>
-                        }
+                          @if (canEdit) {
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item (click)="deleteThreat(threat, $event)">
+                              <mat-icon color="warn">delete</mat-icon>
+                              <span>{{ 'common.delete' | transloco }}</span>
+                            </button>
+                          }
+                        </mat-menu>
                       </div>
                     </td>
                   </ng-container>
