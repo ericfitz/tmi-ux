@@ -213,17 +213,15 @@
       },
       "cancelTooltip": "Cancel editing",
       "columns": {
-        "description": "{{common.description}}",
         "key": "{{common.metadataKey}}",
-        "modified": "{{common.lastModified}}",
-        "type": "{{common.type}}",
-        "value": "{{common.metadataValue}}"
+        "value": "{{common.metadataValue}}",
+        "source": "Source"
       },
       "confirmDelete": "Are you sure you want to delete the setting \"{{key}}\"?",
       "deleteTooltip": "Delete setting",
       "editTooltip": "Edit setting",
       "filterLabel": "Filter",
-      "filterPlaceholder": "Filter by key, value, or description",
+      "filterPlaceholder": "Filter by key, value, description, or source",
       "listTitle": "System Settings",
       "migrateButton": "{{admin.settings.migrateDialog.title}}",
       "migrateDialog": {
@@ -236,6 +234,7 @@
         "title": "Migrate Settings"
       },
       "noSettings": "No settings found",
+      "readOnlyTooltip": "This setting is read-only and cannot be modified here",
       "saveTooltip": "Save changes",
       "subtitle": "View and manage system configuration settings",
       "title": "Manage Settings",
@@ -244,6 +243,13 @@
         "int": "Integer",
         "json": "JSON",
         "string": "String"
+      },
+      "sources": {
+        "database": "Database",
+        "config": "Configuration File",
+        "environment": "Environment",
+        "vault": "Vault",
+        "vault.comment": "Vault refers to a secure IT secret storage technology (e.g. HashiCorp Vault), not a physical vault."
       }
     },
     "subtitle": "Manage system settings and configurations",
