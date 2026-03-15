@@ -64,3 +64,6 @@ deliverables/**
 workspace/**
 outputs/**
 docs/superpowers/**
+.playwright-mcp/**
+.superpowers/**
+
