@@ -129,7 +129,7 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #draftResponseKebabMenu="matMenu">
-                <button mat-menu-item (click)="deleteDraft(row)">
+                <button mat-menu-item (click)="deleteDraft(row, $event)">
                   <mat-icon>delete</mat-icon>
                   <span>{{ 'surveys.list.deleteDraft' | transloco }}</span>
                 </button>

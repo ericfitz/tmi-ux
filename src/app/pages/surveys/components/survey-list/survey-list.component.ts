@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -50,6 +51,7 @@ export class SurveyListComponent implements OnInit {
   drafts: Map<string, SurveyResponseListItem[]> = new Map();
   loading = true;
   error: string | null = null;
+  private _deleteInProgress = false;
 
   constructor(
     private surveyService: SurveyService,
@@ -175,6 +177,9 @@ export class SurveyListComponent implements OnInit {
    * Continue an existing draft
    */
   continueDraft(draft: SurveyResponseListItem): void {
+    if (this._deleteInProgress) {
+      return;
+    }
     void this.router.navigate(['/intake', 'fill', draft.survey_id, draft.id]);
   }
 
@@ -183,16 +188,23 @@ export class SurveyListComponent implements OnInit {
    */
   deleteDraft(draft: SurveyResponseListItem, event: Event): void {
     event.stopPropagation();
+    this._deleteInProgress = true;
 
     this.responseService
       .deleteDraft(draft.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this._deleteInProgress = false;
+        }),
+      )
       .subscribe({
         next: () => {
           this.loadDrafts();
         },
         error: error => {
           this.logger.error('Failed to delete draft', error);
+          this.cdr.markForCheck();
         },
       });
   }
