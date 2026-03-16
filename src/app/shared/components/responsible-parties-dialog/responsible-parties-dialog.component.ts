@@ -2,14 +2,14 @@ import { Component, DestroyRef, inject, Inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { Observable } from 'rxjs';
 import {
   DIALOG_IMPORTS,
   FORM_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
 } from '@app/shared/imports';
-import { TeamService } from '@app/core/services/team.service';
 import { LoggerService } from '@app/core/services/logger.service';
-import { Team, ResponsibleParty, TEAM_MEMBER_ROLES, TeamMemberRole } from '@app/types/team.types';
+import { ResponsibleParty, TEAM_MEMBER_ROLES, TeamMemberRole } from '@app/types/team.types';
 import { User } from '@app/pages/tm/models/threat-model.model';
 import {
   UserPickerDialogComponent,
@@ -18,7 +18,10 @@ import {
 } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 
 export interface ResponsiblePartiesDialogData {
-  team: Team;
+  entityId: string;
+  entityType: 'team' | 'project';
+  parties: ResponsibleParty[];
+  patchFn: (id: string, parties: ResponsibleParty[]) => Observable<unknown>;
 }
 
 @Component({
@@ -31,13 +34,15 @@ export interface ResponsiblePartiesDialogData {
     TranslocoModule,
   ],
   template: `
-    <h2 mat-dialog-title [transloco]="'teams.responsiblePartiesDialog.title'">
+    <h2 mat-dialog-title [transloco]="i18nPrefix + '.responsiblePartiesDialog.title'">
       Manage Responsible Parties
     </h2>
     <mat-dialog-content>
       <div class="party-list">
         @if (parties.length === 0) {
-          <div class="no-items">{{ 'teams.responsiblePartiesDialog.noParties' | transloco }}</div>
+          <div class="no-items">
+            {{ i18nPrefix + '.responsiblePartiesDialog.noParties' | transloco }}
+          </div>
         }
         @for (party of parties; track party.user_id) {
           <div class="party-row">
@@ -58,7 +63,7 @@ export interface ResponsiblePartiesDialogData {
             <button
               mat-icon-button
               (click)="removeParty(party)"
-              [matTooltip]="'teams.responsiblePartiesDialog.removeParty' | transloco"
+              [matTooltip]="i18nPrefix + '.responsiblePartiesDialog.removeParty' | transloco"
             >
               <mat-icon>remove_circle_outline</mat-icon>
             </button>
@@ -68,7 +73,9 @@ export interface ResponsiblePartiesDialogData {
       <div class="add-button">
         <button mat-stroked-button (click)="addParty()">
           <mat-icon>person_add</mat-icon>
-          <span [transloco]="'teams.responsiblePartiesDialog.addParty'">Add Responsible Party</span>
+          <span [transloco]="i18nPrefix + '.responsiblePartiesDialog.addParty'">
+            Add Responsible Party
+          </span>
         </button>
       </div>
       @if (errorMessage) {
@@ -149,16 +156,17 @@ export class ResponsiblePartiesDialogComponent {
   dirty = false;
   saving = false;
   errorMessage = '';
+  i18nPrefix: string;
 
   constructor(
     private dialogRef: MatDialogRef<ResponsiblePartiesDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ResponsiblePartiesDialogData,
     private dialog: MatDialog,
-    private teamService: TeamService,
     private logger: LoggerService,
     private translocoService: TranslocoService,
   ) {
-    this.parties = [...(data.team.responsible_parties || [])];
+    this.parties = [...(data.parties || [])];
+    this.i18nPrefix = data.entityType === 'team' ? 'teams' : 'projects';
   }
 
   addParty(): void {
@@ -166,7 +174,9 @@ export class ResponsiblePartiesDialogComponent {
       width: '500px',
       maxWidth: '90vw',
       data: {
-        title: this.translocoService.translate('teams.responsiblePartiesDialog.addParty'),
+        title: this.translocoService.translate(
+          this.i18nPrefix + '.responsiblePartiesDialog.addParty',
+        ),
         showRoleSelector: true,
         roles: TEAM_MEMBER_ROLES,
         roleTranslocoPrefix: 'teams.roles.',
@@ -203,8 +213,8 @@ export class ResponsiblePartiesDialogComponent {
     this.saving = true;
     this.errorMessage = '';
 
-    this.teamService
-      .patch(this.data.team.id, { responsible_parties: this.parties })
+    this.data
+      .patchFn(this.data.entityId, this.parties)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {

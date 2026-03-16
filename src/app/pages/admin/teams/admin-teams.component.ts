@@ -17,7 +17,7 @@ import {
 } from '@app/shared/imports';
 import { TeamService } from '@app/core/services/team.service';
 import { LoggerService } from '@app/core/services/logger.service';
-import { TeamListItem } from '@app/types/team.types';
+import { TeamListItem, ResponsibleParty } from '@app/types/team.types';
 import { Metadata } from '@app/types/metadata.types';
 import {
   DEFAULT_PAGE_SIZE,
@@ -34,7 +34,10 @@ import { PaginatorIntlService } from '@app/shared/services/paginator-intl.servic
 import { CreateTeamDialogComponent } from '@app/shared/components/create-team-dialog/create-team-dialog.component';
 import { EditTeamDialogComponent } from './edit-team-dialog/edit-team-dialog.component';
 import { TeamMembersDialogComponent } from './team-members-dialog/team-members-dialog.component';
-import { ResponsiblePartiesDialogComponent } from './responsible-parties-dialog/responsible-parties-dialog.component';
+import {
+  ResponsiblePartiesDialogComponent,
+  ResponsiblePartiesDialogData,
+} from '@app/shared/components/responsible-parties-dialog/responsible-parties-dialog.component';
 import { RelatedTeamsDialogComponent } from './related-teams-dialog/related-teams-dialog.component';
 import {
   MetadataDialogComponent,
@@ -216,7 +219,13 @@ export class AdminTeamsComponent implements OnInit, AfterViewInit {
           const dialogRef = this.dialog.open(ResponsiblePartiesDialogComponent, {
             width: '600px',
             maxWidth: '90vw',
-            data: { team: fullTeam },
+            data: {
+              entityId: fullTeam.id,
+              entityType: 'team' as const,
+              parties: fullTeam.responsible_parties || [],
+              patchFn: (id: string, parties: ResponsibleParty[]) =>
+                this.teamService.patch(id, { responsible_parties: parties }),
+            } as ResponsiblePartiesDialogData,
           });
           dialogRef
             .afterClosed()
