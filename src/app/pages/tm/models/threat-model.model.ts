@@ -1,7 +1,6 @@
-export interface Metadata {
-  key: string;
-  value: string;
-}
+import type { Metadata } from '@app/types/metadata.types';
+// Re-export Metadata from shared types for backward compatibility
+export type { Metadata } from '@app/types/metadata.types';
 
 // Principal-based identity types
 export type PrincipalType = 'user' | 'group';

@@ -3,6 +3,9 @@
  * Types for teams used in team pickers and create/edit dialogs
  */
 
+import { User } from '@app/pages/tm/models/threat-model.model';
+import { Metadata } from '@app/types/metadata.types';
+
 /**
  * Summary of a team for list views and pickers
  */
@@ -41,16 +44,118 @@ export interface TeamInput {
   status?: string;
 }
 
+/** Team member roles */
+export type TeamMemberRole =
+  | 'engineering_lead'
+  | 'engineer'
+  | 'product_manager'
+  | 'business_leader'
+  | 'security_specialist'
+  | 'other';
+
+/** All valid TeamMemberRole values, for use in dropdowns */
+export const TEAM_MEMBER_ROLES: TeamMemberRole[] = [
+  'engineering_lead',
+  'engineer',
+  'product_manager',
+  'business_leader',
+  'security_specialist',
+  'other',
+];
+
+/** Relationship types between teams or projects */
+export type RelationshipType =
+  | 'parent'
+  | 'child'
+  | 'dependency'
+  | 'dependent'
+  | 'supersedes'
+  | 'superseded_by'
+  | 'related'
+  | 'other';
+
+/** All valid RelationshipType values, for use in dropdowns */
+export const RELATIONSHIP_TYPES: RelationshipType[] = [
+  'parent',
+  'child',
+  'dependency',
+  'dependent',
+  'supersedes',
+  'superseded_by',
+  'related',
+  'other',
+];
+
+/** Team lifecycle statuses */
+export type TeamStatus =
+  | 'active'
+  | 'on_hold'
+  | 'winding_down'
+  | 'archived'
+  | 'forming'
+  | 'merging'
+  | 'splitting';
+
+/** All valid TeamStatus values, for use in dropdowns */
+export const TEAM_STATUSES: TeamStatus[] = [
+  'active',
+  'on_hold',
+  'winding_down',
+  'archived',
+  'forming',
+  'merging',
+  'splitting',
+];
+
+/** A member of a team with their role */
+export interface TeamMember {
+  user_id: string;
+  readonly user?: User | null;
+  role?: TeamMemberRole;
+  custom_role?: string;
+}
+
+/** A responsible party for a team or project */
+export interface ResponsibleParty {
+  user_id: string;
+  readonly user?: User | null;
+  role?: TeamMemberRole;
+  custom_role?: string;
+}
+
+/** A relationship to another team */
+export interface RelatedTeam {
+  related_team_id: string;
+  relationship: RelationshipType;
+  custom_relationship?: string;
+}
+
+/** Patch input for partial team updates */
+export interface TeamPatch {
+  name?: string;
+  description?: string;
+  uri?: string;
+  email_address?: string;
+  status?: TeamStatus;
+  members?: TeamMember[];
+  responsible_parties?: ResponsibleParty[];
+  related_teams?: RelatedTeam[];
+  metadata?: Metadata[];
+}
+
 /**
- * Full team object returned from API
+ * Full team object returned from API (GET /teams/{id})
  */
 export interface Team extends TeamInput {
-  /** Unique identifier (UUID, readonly) */
   readonly id: string;
-  /** Creation timestamp (readonly) */
   readonly created_at: string;
-  /** Last modification timestamp (readonly) */
   readonly modified_at?: string;
+  readonly created_by?: User | null;
+  readonly modified_by?: User | null;
+  members?: TeamMember[];
+  responsible_parties?: ResponsibleParty[];
+  related_teams?: RelatedTeam[];
+  metadata?: Metadata[];
 }
 
 /**
