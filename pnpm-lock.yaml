@@ -164,6 +164,9 @@ importers:
       '@material/material-color-utilities':
         specifier: ^0.4.0
         version: 0.4.0
+      '@oxc-project/runtime':
+        specifier: ^0.119.0
+        version: 0.119.0
       '@playwright/test':
         specifier: ^1.58.2
         version: 1.58.2
@@ -2082,6 +2085,10 @@ packages:
 
   '@oxc-project/runtime@0.115.0':
     resolution: {integrity: sha512-Rg8Wlt5dCbXhQnsXPrkOjL1DTSvXLgb2R/KYfnf1/K+R0k6UMLEmbQXPM+kwrWqSmWA2t0B1EtHy2/3zikQpvQ==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+
+  '@oxc-project/runtime@0.119.0':
+    resolution: {integrity: sha512-ROvXzle4eIxmVEmPFKQBLmZrgHZt30I8mfkZBaPgmZMJbMx2mMha2KaT+0uokhQs1xogXYA2tzjcufvh3kmezQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
 
   '@oxc-project/types@0.113.0':
@@ -9008,6 +9015,8 @@ snapshots:
       - supports-color
 
   '@oxc-project/runtime@0.115.0': {}
+
+  '@oxc-project/runtime@0.119.0': {}
 
   '@oxc-project/types@0.113.0': {}
 
