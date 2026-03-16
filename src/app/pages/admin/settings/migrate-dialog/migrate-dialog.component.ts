@@ -108,7 +108,6 @@ import { MigrateSettingsResponse } from '@app/types/settings.types';
         flex-direction: column;
         gap: 16px;
         min-width: 350px;
-        padding: 8px 0;
       }
 
       .overwrite-warning {
