@@ -12,13 +12,16 @@ import { of, throwError } from 'rxjs';
 import { ProjectService } from './project.service';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
-import { ListProjectsResponse, Project } from '@app/types/project.types';
+import { ListProjectsResponse, Project, ProjectInput } from '@app/types/project.types';
 
 describe('ProjectService', () => {
   let service: ProjectService;
   let mockApiService: {
     get: ReturnType<typeof vi.fn>;
     post: ReturnType<typeof vi.fn>;
+    put: ReturnType<typeof vi.fn>;
+    patch: ReturnType<typeof vi.fn>;
+    delete: ReturnType<typeof vi.fn>;
   };
   let mockLoggerService: {
     debug: ReturnType<typeof vi.fn>;
@@ -65,6 +68,9 @@ describe('ProjectService', () => {
     mockApiService = {
       get: vi.fn(),
       post: vi.fn(),
+      put: vi.fn(),
+      patch: vi.fn(),
+      delete: vi.fn(),
     };
     mockLoggerService = {
       debug: vi.fn(),
@@ -160,6 +166,118 @@ describe('ProjectService', () => {
       service.create(input).subscribe({
         error: err => {
           expect(mockLoggerService.error).toHaveBeenCalledWith('Failed to create project', error);
+          expect(err).toBe(error);
+        },
+      });
+    });
+  });
+
+  describe('get()', () => {
+    it('should call API with correct endpoint', () => {
+      mockApiService.get.mockReturnValue(of(mockProject));
+      service.get('proj-new').subscribe(result => {
+        expect(result).toEqual(mockProject);
+      });
+      expect(mockApiService.get).toHaveBeenCalledWith('projects/proj-new');
+    });
+
+    it('should log debug message on success', () => {
+      mockApiService.get.mockReturnValue(of(mockProject));
+      service.get('proj-new').subscribe(() => {
+        expect(mockLoggerService.debug).toHaveBeenCalledWith('Project loaded', { id: 'proj-new' });
+      });
+    });
+
+    it('should handle errors', () => {
+      const error = new Error('Failed');
+      mockApiService.get.mockReturnValue(throwError(() => error));
+      service.get('proj-new').subscribe({
+        error: err => {
+          expect(mockLoggerService.error).toHaveBeenCalledWith('Failed to load project', error);
+          expect(err).toBe(error);
+        },
+      });
+    });
+  });
+
+  describe('update()', () => {
+    it('should call PUT with correct endpoint and body', () => {
+      mockApiService.put.mockReturnValue(of(mockProject));
+      const input: ProjectInput = { name: 'Updated', team_id: 'team-1' };
+      service.update('proj-new', input).subscribe(result => {
+        expect(result).toEqual(mockProject);
+      });
+      expect(mockApiService.put).toHaveBeenCalledWith('projects/proj-new', input);
+    });
+
+    it('should log info message on success', () => {
+      mockApiService.put.mockReturnValue(of(mockProject));
+      const input: ProjectInput = { name: 'Updated', team_id: 'team-1' };
+      service.update('proj-new', input).subscribe(() => {
+        expect(mockLoggerService.info).toHaveBeenCalledWith('Project updated', { id: 'proj-new' });
+      });
+    });
+
+    it('should handle errors', () => {
+      const error = new Error('Update failed');
+      mockApiService.put.mockReturnValue(throwError(() => error));
+      service.update('proj-new', { name: 'Updated', team_id: 'team-1' }).subscribe({
+        error: err => {
+          expect(mockLoggerService.error).toHaveBeenCalledWith('Failed to update project', error);
+          expect(err).toBe(error);
+        },
+      });
+    });
+  });
+
+  describe('patch()', () => {
+    it('should convert changes to JSON Patch operations', () => {
+      mockApiService.patch.mockReturnValue(of(mockProject));
+      service.patch('proj-new', { name: 'Patched' }).subscribe();
+      expect(mockApiService.patch).toHaveBeenCalledWith('projects/proj-new', [
+        { op: 'replace', path: '/name', value: 'Patched' },
+      ]);
+    });
+
+    it('should log info message on success', () => {
+      mockApiService.patch.mockReturnValue(of(mockProject));
+      service.patch('proj-new', { name: 'Patched' }).subscribe(() => {
+        expect(mockLoggerService.info).toHaveBeenCalledWith('Project patched', { id: 'proj-new' });
+      });
+    });
+
+    it('should handle errors', () => {
+      const error = new Error('Patch failed');
+      mockApiService.patch.mockReturnValue(throwError(() => error));
+      service.patch('proj-new', { name: 'Patched' }).subscribe({
+        error: err => {
+          expect(mockLoggerService.error).toHaveBeenCalledWith('Failed to patch project', error);
+          expect(err).toBe(error);
+        },
+      });
+    });
+  });
+
+  describe('delete()', () => {
+    it('should call DELETE with correct endpoint', () => {
+      mockApiService.delete.mockReturnValue(of(undefined));
+      service.delete('proj-new').subscribe();
+      expect(mockApiService.delete).toHaveBeenCalledWith('projects/proj-new');
+    });
+
+    it('should log info message on success', () => {
+      mockApiService.delete.mockReturnValue(of(undefined));
+      service.delete('proj-new').subscribe(() => {
+        expect(mockLoggerService.info).toHaveBeenCalledWith('Project deleted', { id: 'proj-new' });
+      });
+    });
+
+    it('should handle errors', () => {
+      const error = new Error('Delete failed');
+      mockApiService.delete.mockReturnValue(throwError(() => error));
+      service.delete('proj-new').subscribe({
+        error: err => {
+          expect(mockLoggerService.error).toHaveBeenCalledWith('Failed to delete project', error);
           expect(err).toBe(error);
         },
       });
