@@ -3,6 +3,10 @@
  * Types for projects used in project pickers and create/edit dialogs
  */
 
+import { User } from '@app/pages/tm/models/threat-model.model';
+import { Metadata } from '@app/types/metadata.types';
+import { ResponsibleParty, RelationshipType, Team } from '@app/types/team.types';
+
 /**
  * Summary of a project for list views and pickers
  */
@@ -41,6 +45,44 @@ export interface ProjectInput {
   status?: string;
 }
 
+/** Project lifecycle statuses */
+export type ProjectStatus =
+  | 'active'
+  | 'planning'
+  | 'on_hold'
+  | 'completed'
+  | 'archived'
+  | 'cancelled';
+
+/** All valid ProjectStatus values, for use in dropdowns */
+export const PROJECT_STATUSES: ProjectStatus[] = [
+  'active',
+  'planning',
+  'on_hold',
+  'completed',
+  'archived',
+  'cancelled',
+];
+
+/** A relationship to another project */
+export interface RelatedProject {
+  related_project_id: string;
+  relationship: RelationshipType;
+  custom_relationship?: string;
+}
+
+/** Patch input for partial project updates */
+export interface ProjectPatch {
+  name?: string;
+  description?: string;
+  team_id?: string;
+  uri?: string;
+  status?: ProjectStatus;
+  responsible_parties?: ResponsibleParty[];
+  related_projects?: RelatedProject[];
+  metadata?: Metadata[];
+}
+
 /**
  * Full project object returned from API
  */
@@ -51,6 +93,22 @@ export interface Project extends ProjectInput {
   readonly created_at: string;
   /** Last modification timestamp (readonly) */
   readonly modified_at?: string;
+  /** User who created the project */
+  created_by?: User | null;
+  /** User who last modified the project */
+  modified_by?: User | null;
+  /** Team associated with this project */
+  team?: Team | null;
+  /** User who reviewed this project */
+  reviewed_by?: User | null;
+  /** Timestamp of the last review */
+  reviewed_at?: string | null;
+  /** Responsible parties for this project */
+  responsible_parties?: ResponsibleParty[];
+  /** Related projects */
+  related_projects?: RelatedProject[];
+  /** Project metadata */
+  metadata?: Metadata[];
 }
 
 /**
