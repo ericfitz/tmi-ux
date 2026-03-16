@@ -67,3 +67,4 @@ docs/superpowers/**
 .playwright-mcp/**
 .superpowers/**
 
+src/build-info.json
