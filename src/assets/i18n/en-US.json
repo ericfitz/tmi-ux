@@ -176,7 +176,7 @@
       },
       "projects": {
         "description": "Manage projects, relationships, and metadata",
-        "title": "Projects"
+        "title": "{{teams.columns.projects}}"
       },
       "quotas": {
         "description": "Configure resource quotas and limits",
@@ -1136,9 +1136,9 @@
   },
   "projects": {
     "addButton": "Add Project",
-    "clearFilters": "Clear Filters",
+    "clearFilters": "{{auditTrail.filters.clear}}",
     "columns": {
-      "modified": "Modified",
+      "modified": "{{teams.columns.modified}}",
       "name": "{{common.name}}",
       "status": "{{common.status}}",
       "team": "{{common.team}}"
@@ -1164,7 +1164,7 @@
     "filterLabel": "Filter by Name",
     "kebab": {
       "delete": "{{common.delete}}",
-      "editDetails": "Edit Details",
+      "editDetails": "{{teams.kebab.editDetails}}",
       "metadata": "{{common.metadata}}",
       "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
       "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
@@ -1177,27 +1177,27 @@
     },
     "relatedProjectsDialog": {
       "addRelated": "Add Related Project",
-      "customRelationship": "Custom Relationship",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
       "noRelated": "No related projects",
-      "relationship": "Relationship",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
       "selectProject": "Select Project",
       "title": "Related Projects"
     },
     "responsiblePartiesDialog": {
-      "addParty": "Add Responsible Party",
-      "noParties": "No responsible parties",
-      "removeParty": "Remove Responsible Party",
-      "title": "Responsible Parties"
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
     },
     "status": {
       "active": "{{common.active}}",
-      "archived": "Archived",
+      "archived": "{{teams.status.archived}}",
       "cancelled": "Cancelled",
       "completed": "Completed",
-      "on_hold": "On Hold",
+      "on_hold": "{{teams.status.on_hold}}",
       "planning": "Planning"
     },
-    "statusAll": "All Statuses",
+    "statusAll": "{{common.allStatuses}}",
     "statusFilterLabel": "Filter by Status",
     "subtitle": "Create, edit, and manage projects, relationships, and metadata",
     "teamFilterLabel": "Filter by Team",
@@ -1287,7 +1287,7 @@
     "responses": {
       "continueEditing": "Continue editing",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "Filter by Status",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "You haven't completed any surveys. Start one from the surveys page.",
       "noResponsesTitle": "No Responses Yet",

@@ -46,6 +46,10 @@
   },
   "admin": {
     "sections": {
+      "projects": {
+        "description": "จัดการโครงการ ความสัมพันธ์ และข้อมูลเมตา",
+        "title": "{{teams.columns.projects}}"
+      },
       "teams": {
         "description": "จัดการทีมและการเป็นสมาชิกของทีม",
         "title": "ทีม"
@@ -835,6 +839,14 @@
     "userRightsTitle": "สิทธิของผู้ใช้"
   },
   "projects": {
+    "addButton": "เพิ่มโครงการ",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "กรอกคำอธิบายโปรเจกต์",
       "namePlaceholder": "กรอกชื่อโปรเจกต์",
@@ -846,10 +858,54 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "สร้างโปรเจกต์ใหม่",
+    "deleteDialog": {
+      "message": "คุณแน่ใจหรือไม่ว่าต้องการลบโครงการ \"{{name}}\"?"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "แก้ไขโครงการ"
+    },
+    "filterLabel": "ตัวกรองตามชื่อ",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "{{teams.kebab.editDetails}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "ไม่พบโครงการ",
     "picker": {
       "label": "{{common.project}}",
       "none": "ไม่มีโปรเจกต์"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "เพิ่มโครงการที่เกี่ยวข้อง",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "ไม่มีโครงการที่เกี่ยวข้อง",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "เลือกโครงการ",
+      "title": "โครงการที่เกี่ยวข้อง"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "ยกเลิก",
+      "completed": "เสร็จสิ้น",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "วางแผน"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "ตัวกรองตามสถานะ",
+    "subtitle": "สร้าง แก้ไข และจัดการโครงการ ความสัมพันธ์ และข้อมูลเมตา",
+    "teamFilterLabel": "ตัวกรองตามทีม",
+    "title": "จัดการโครงการ"
   },
   "report": {
     "cvss": "CVSS",
@@ -924,7 +980,7 @@
     "responses": {
       "continueEditing": "แก้ไขต่อ",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "กรองตามสถานะ",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "คุณยังไม่ได้ทำแบบสำรวจใดๆ เสร็จสิ้น เริ่มทำแบบสำรวจได้จากหน้าแบบสำรวจ",
       "noResponsesTitle": "ยังไม่มีคำตอบ",

@@ -165,6 +165,10 @@
         "description": "Benutzergruppen und Mitgliedschaften konfigurieren",
         "title": "{{admin.groups.title}}"
       },
+      "projects": {
+        "description": "Verwalten Sie Projekte, Beziehungen und Metadaten",
+        "title": "{{teams.columns.projects}}"
+      },
       "quotas": {
         "description": "Ressourcenkontingente und -limits konfigurieren",
         "title": "{{admin.quotas.title}}"
@@ -1100,6 +1104,14 @@
     "userRightsTitle": "Nutzerrechte"
   },
   "projects": {
+    "addButton": "Projekt hinzufügen",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Projektbeschreibung eingeben",
       "namePlaceholder": "Projektname eingeben",
@@ -1111,10 +1123,54 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "Neues Projekt erstellen",
+    "deleteDialog": {
+      "message": "Sind Sie sicher, dass Sie das Projekt \"{{name}}\" löschen möchten?"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Projekt bearbeiten"
+    },
+    "filterLabel": "Nach Name filtern",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "{{teams.kebab.editDetails}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "Keine Projekte gefunden",
     "picker": {
       "label": "{{common.project}}",
       "none": "Kein Projekt"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "Verwandtes Projekt hinzufügen",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "Keine verwandten Projekte",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "Projekt auswählen",
+      "title": "Verwandte Projekte"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "Abgebrochen",
+      "completed": "Abgeschlossen",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "Planung"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "Nach Status filtern",
+    "subtitle": "Erstellen, bearbeiten und verwalten Sie Projekte, Beziehungen und Metadaten",
+    "teamFilterLabel": "Nach Team filtern",
+    "title": "Projekte verwalten"
   },
   "report": {
     "cvss": "CVSS",
@@ -1189,7 +1245,7 @@
     "responses": {
       "continueEditing": "Bearbeitung fortsetzen",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "Nach Status filtern",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "Sie haben noch keine Umfragen abgeschlossen. Starten Sie eine auf der Umfragenseite.",
       "noResponsesTitle": "Noch keine Antworten",

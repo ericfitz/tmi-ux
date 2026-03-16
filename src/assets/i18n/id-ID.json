@@ -165,6 +165,10 @@
         "description": "Konfigurasikan grup pengguna dan keanggotaan",
         "title": "{{admin.groups.title}}"
       },
+      "projects": {
+        "description": "Kelola proyek, hubungan, dan metadata",
+        "title": "{{teams.columns.projects}}"
+      },
       "quotas": {
         "description": "Konfigurasikan kuota dan batas sumber daya",
         "title": "{{admin.quotas.title}}"
@@ -1100,6 +1104,14 @@
     "userRightsTitle": "Hak Pengguna"
   },
   "projects": {
+    "addButton": "Tambah Proyek",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Masukkan deskripsi proyek",
       "namePlaceholder": "Masukkan nama proyek",
@@ -1111,10 +1123,54 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "Buat Proyek Baru",
+    "deleteDialog": {
+      "message": "Apakah Anda yakin ingin menghapus proyek \"{{name}}\"?"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Edit Proyek"
+    },
+    "filterLabel": "Filter berdasarkan Nama",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "{{teams.kebab.editDetails}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "Tidak ada proyek yang ditemukan",
     "picker": {
       "label": "{{common.project}}",
       "none": "Tanpa Proyek"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "Tambah Proyek Terkait",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "Tidak ada proyek terkait",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "Pilih Proyek",
+      "title": "Proyek Terkait"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "Dibatalkan",
+      "completed": "Selesai",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "Perencanaan"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "Filter berdasarkan Status",
+    "subtitle": "Buat, edit, dan kelola proyek, hubungan, dan metadata",
+    "teamFilterLabel": "Filter berdasarkan Tim",
+    "title": "Kelola Proyek"
   },
   "report": {
     "cvss": "CVSS",
@@ -1189,7 +1245,7 @@
     "responses": {
       "continueEditing": "Lanjutkan mengedit",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "Filter berdasarkan Status",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "Anda belum menyelesaikan survei apa pun. Mulai dari halaman survei.",
       "noResponsesTitle": "Belum Ada Respons",

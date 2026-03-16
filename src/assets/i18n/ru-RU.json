@@ -165,6 +165,10 @@
         "description": "Настройка групп пользователей и членства",
         "title": "{{admin.groups.title}}"
       },
+      "projects": {
+        "description": "Управление проектами, связями и метаданными",
+        "title": "{{teams.columns.projects}}"
+      },
       "quotas": {
         "description": "Настройка квот и лимитов ресурсов",
         "title": "{{admin.quotas.title}}"
@@ -1100,6 +1104,14 @@
     "userRightsTitle": "Права Пользователей"
   },
   "projects": {
+    "addButton": "Добавить проект",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Введите описание проекта",
       "namePlaceholder": "Введите название проекта",
@@ -1111,10 +1123,54 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "Создать новый проект",
+    "deleteDialog": {
+      "message": "Вы уверены, что хотите удалить проект \"{{name}}\"?"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Редактировать проект"
+    },
+    "filterLabel": "Фильтровать по названию",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "{{teams.kebab.editDetails}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "Проектов не найдено",
     "picker": {
       "label": "{{common.project}}",
       "none": "Без проекта"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "Добавить связанный проект",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "Нет связанных проектов",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "Выбрать проект",
+      "title": "Связанные проекты"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "Отменено",
+      "completed": "Завершено",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "Планирование"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "Фильтровать по статусу",
+    "subtitle": "Создание, редактирование и управление проектами, связями и метаданными",
+    "teamFilterLabel": "Фильтровать по команде",
+    "title": "Управление проектами"
   },
   "report": {
     "cvss": "CVSS",
@@ -1189,7 +1245,7 @@
     "responses": {
       "continueEditing": "Продолжить редактирование",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "Фильтр по статусу",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "Вы еще не заполнили ни одного опроса. Начните с страницы опросов.",
       "noResponsesTitle": "Пока нет ответов",

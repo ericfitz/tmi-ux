@@ -165,6 +165,10 @@
         "description": "उपयोगकर्ता समूह और सदस्यताएं कॉन्फ़िगर करें",
         "title": "{{admin.groups.title}}"
       },
+      "projects": {
+        "description": "प्रकल्प, संबंध और मेटाडेटा प्रबंधित करें",
+        "title": "{{teams.columns.projects}}"
+      },
       "quotas": {
         "description": "संसाधन कोटा और सीमाएं कॉन्फ़िगर करें",
         "title": "{{admin.quotas.title}}"
@@ -1100,6 +1104,14 @@
     "userRightsTitle": "उपयोगकर्ता अधिकार"
   },
   "projects": {
+    "addButton": "प्रकल्प जोड़ें",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "प्रोजेक्ट विवरण दर्ज करें",
       "namePlaceholder": "प्रोजेक्ट का नाम दर्ज करें",
@@ -1111,10 +1123,54 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "नया प्रोजेक्ट बनाएं",
+    "deleteDialog": {
+      "message": "क्या आप सुनिश्चित हैं कि आप प्रकल्प \"{{name}}\" को हटाना चाहते हैं?"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "प्रकल्प संपादित करें"
+    },
+    "filterLabel": "नाम के अनुसार फ़िल्टर करें",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "{{teams.kebab.editDetails}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "कोई प्रकल्प नहीं मिला",
     "picker": {
       "label": "{{common.project}}",
       "none": "कोई प्रोजेक्ट नहीं"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "संबंधित प्रकल्प जोड़ें",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "कोई संबंधित प्रकल्प नहीं",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "प्रकल्प का चयन करें",
+      "title": "संबंधित प्रकल्प"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "रद्द किया गया",
+      "completed": "पूर्ण",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "योजना"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "स्थिति के अनुसार फ़िल्टर करें",
+    "subtitle": "प्रकल्प, संबंध और मेटाडेटा बनाएं, संपादित करें और प्रबंधित करें",
+    "teamFilterLabel": "टीम के अनुसार फ़िल्टर करें",
+    "title": "प्रकल्प प्रबंधित करें"
   },
   "report": {
     "cvss": "CVSS",
@@ -1189,7 +1245,7 @@
     "responses": {
       "continueEditing": "संपादन जारी रखें",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "स्थिति के अनुसार फ़िल्टर करें",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "आपने कोई सर्वेक्षण पूरा नहीं किया है। सर्वेक्षण पृष्ठ से एक शुरू करें।",
       "noResponsesTitle": "अभी तक कोई प्रतिक्रिया नहीं",

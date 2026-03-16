@@ -165,6 +165,10 @@
         "description": "صارف گروپس اور رکنیتیں ترتیب دیں",
         "title": "{{admin.groups.title}}"
       },
+      "projects": {
+        "description": "منصوبے، تعلقات اور میٹا ڈیٹا کا انتظام کریں",
+        "title": "{{teams.columns.projects}}"
+      },
       "quotas": {
         "description": "وسائل کے کوٹہ اور حدود ترتیب دیں",
         "title": "{{admin.quotas.title}}"
@@ -1100,6 +1104,14 @@
     "userRightsTitle": "صارف کے حقوق"
   },
   "projects": {
+    "addButton": "منصوبہ شامل کریں",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "پروجیکٹ کی تفصیل درج کریں",
       "namePlaceholder": "پروجیکٹ کا نام درج کریں",
@@ -1111,10 +1123,54 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "نیا پروجیکٹ بنائیں",
+    "deleteDialog": {
+      "message": "کیا آپ کو یقین ہے کہ آپ منصوبہ \"{{name}}\" کو حذف کرنا چاہتے ہیں؟"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "منصوبہ میں ترمیم کریں"
+    },
+    "filterLabel": "نام سے فلٹر کریں",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "{{teams.kebab.editDetails}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "کوئی منصوبہ نہیں ملا",
     "picker": {
       "label": "{{common.project}}",
       "none": "کوئی پروجیکٹ نہیں"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "متعلقہ منصوبہ شامل کریں",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "کوئی متعلقہ منصوبہ نہیں",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "منصوبہ منتخب کریں",
+      "title": "متعلقہ منصوبے"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "منسوخ",
+      "completed": "مکمل",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "منصوبہ بندی"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "حالت سے فلٹر کریں",
+    "subtitle": "منصوبے، تعلقات اور میٹا ڈیٹا بنائیں، ترمیم کریں اور منظم کریں",
+    "teamFilterLabel": "ٹیم سے فلٹر کریں",
+    "title": "منصوبے کا انتظام کریں"
   },
   "report": {
     "cvss": "CVSS",
@@ -1189,7 +1245,7 @@
     "responses": {
       "continueEditing": "ترمیم جاری رکھیں",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "حیثیت کے مطابق فلٹر کریں",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "آپ نے ابھی تک کوئی سروے مکمل نہیں کیا۔ سروے کے صفحے سے شروع کریں۔",
       "noResponsesTitle": "ابھی تک کوئی جواب نہیں",

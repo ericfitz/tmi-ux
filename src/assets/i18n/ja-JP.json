@@ -165,6 +165,10 @@
         "description": "ユーザーグループとメンバーシップの設定",
         "title": "{{admin.groups.title}}"
       },
+      "projects": {
+        "description": "プロジェクト、関連性、メタデータの管理",
+        "title": "{{teams.columns.projects}}"
+      },
       "quotas": {
         "description": "リソースクォータと制限の設定",
         "title": "{{admin.quotas.title}}"
@@ -1100,6 +1104,14 @@
     "userRightsTitle": "ユーザーの権利"
   },
   "projects": {
+    "addButton": "プロジェクトを追加",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "プロジェクトの説明を入力",
       "namePlaceholder": "プロジェクト名を入力",
@@ -1111,10 +1123,54 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "新しいプロジェクトを作成",
+    "deleteDialog": {
+      "message": "プロジェクト \"{{name}}\" を削除してもよろしいですか?"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "プロジェクトを編集"
+    },
+    "filterLabel": "名前でフィルタリング",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "{{teams.kebab.editDetails}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "プロジェクトが見つかりません",
     "picker": {
       "label": "{{common.project}}",
       "none": "プロジェクトなし"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "関連プロジェクトを追加",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "関連プロジェクトがありません",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "プロジェクトを選択",
+      "title": "関連プロジェクト"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "キャンセル済み",
+      "completed": "完了",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "計画中"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "ステータスでフィルタリング",
+    "subtitle": "プロジェクト、関連性、メタデータを作成、編集、管理します",
+    "teamFilterLabel": "チームでフィルタリング",
+    "title": "プロジェクト管理"
   },
   "report": {
     "cvss": "CVSS",
@@ -1189,7 +1245,7 @@
     "responses": {
       "continueEditing": "編集を続ける",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "ステータスでフィルタ",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "まだアンケートに回答していません。アンケートページから開始してください。",
       "noResponsesTitle": "回答がありません",

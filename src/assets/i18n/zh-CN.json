@@ -165,6 +165,10 @@
         "description": "配置用户组和成员资格",
         "title": "{{admin.groups.title}}"
       },
+      "projects": {
+        "description": "管理项目、关系和元数据",
+        "title": "{{teams.columns.projects}}"
+      },
       "quotas": {
         "description": "配置资源配额和限制",
         "title": "{{admin.quotas.title}}"
@@ -1100,6 +1104,14 @@
     "userRightsTitle": "用户权利"
   },
   "projects": {
+    "addButton": "添加项目",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "输入项目描述",
       "namePlaceholder": "输入项目名称",
@@ -1111,10 +1123,54 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "创建新项目",
+    "deleteDialog": {
+      "message": "您确定要删除项目 \"{{name}}\" 吗？"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "编辑项目"
+    },
+    "filterLabel": "按名称筛选",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "{{teams.kebab.editDetails}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "未找到项目",
     "picker": {
       "label": "{{common.project}}",
       "none": "无项目"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "添加相关项目",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "无相关项目",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "选择项目",
+      "title": "相关项目"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "已取消",
+      "completed": "已完成",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "规划中"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "按状态筛选",
+    "subtitle": "创建、编辑和管理项目、关系和元数据",
+    "teamFilterLabel": "按团队筛选",
+    "title": "管理项目"
   },
   "report": {
     "cvss": "CVSS",
@@ -1189,7 +1245,7 @@
     "responses": {
       "continueEditing": "继续编辑",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "按状态筛选",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "您还没有完成任何调查问卷。请从调查问卷页面开始。",
       "noResponsesTitle": "暂无回复",

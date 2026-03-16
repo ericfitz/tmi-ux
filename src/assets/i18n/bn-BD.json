@@ -165,6 +165,10 @@
         "description": "ব্যবহারকারী গ্রুপ এবং সদস্যপদ কনফিগার করুন",
         "title": "{{admin.groups.title}}"
       },
+      "projects": {
+        "description": "প্রকল্প, সম্পর্ক এবং মেটাডেটা পরিচালনা করুন",
+        "title": "{{teams.columns.projects}}"
+      },
       "quotas": {
         "description": "রিসোর্স কোটা এবং লিমিট কনফিগার করুন",
         "title": "{{admin.quotas.title}}"
@@ -1100,6 +1104,14 @@
     "userRightsTitle": "ব্যবহারকারীর অধিকার"
   },
   "projects": {
+    "addButton": "প্রকল্প যোগ করুন",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "প্রকল্পের বিবরণ লিখুন",
       "namePlaceholder": "প্রকল্পের নাম লিখুন",
@@ -1111,10 +1123,54 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "নতুন প্রকল্প তৈরি করুন",
+    "deleteDialog": {
+      "message": "আপনি কি নিশ্চিত যে আপনি \"{{name}}\" প্রকল্পটি মুছতে চান?"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "প্রকল্প সম্পাদনা করুন"
+    },
+    "filterLabel": "নাম দ্বারা ফিল্টার করুন",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "{{teams.kebab.editDetails}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "কোন প্রকল্প পাওয়া যায়নি",
     "picker": {
       "label": "{{common.project}}",
       "none": "কোনো প্রকল্প নেই"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "সম্পর্কিত প্রকল্প যোগ করুন",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "সম্পর্কিত প্রকল্প নেই",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "প্রকল্প নির্বাচন করুন",
+      "title": "সম্পর্কিত প্রকল্পসমূহ"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "বাতিল করা হয়েছে",
+      "completed": "সম্পন্ন",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "পরিকল্পনা"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "অবস্থা দ্বারা ফিল্টার করুন",
+    "subtitle": "প্রকল্প, সম্পর্ক এবং মেটাডেটা তৈরি, সম্পাদনা এবং পরিচালনা করুন",
+    "teamFilterLabel": "দল দ্বারা ফিল্টার করুন",
+    "title": "প্রকল্প পরিচালনা করুন"
   },
   "report": {
     "cvss": "CVSS",
@@ -1189,7 +1245,7 @@
     "responses": {
       "continueEditing": "সম্পাদনা চালিয়ে যান",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "স্ট্যাটাস অনুযায়ী ফিল্টার করুন",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "আপনি এখনো কোনো সমীক্ষা সম্পন্ন করেননি। সমীক্ষা পৃষ্ঠা থেকে একটি শুরু করুন।",
       "noResponsesTitle": "এখনো কোনো প্রতিক্রিয়া নেই",

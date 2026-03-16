@@ -165,6 +165,10 @@
         "description": "تكوين مجموعات المستخدمين والعضويات",
         "title": "{{admin.groups.title}}"
       },
+      "projects": {
+        "description": "إدارة المشاريع والعلاقات والبيانات الوصفية",
+        "title": "{{teams.columns.projects}}"
+      },
       "quotas": {
         "description": "تكوين حصص الموارد والحدود",
         "title": "{{admin.quotas.title}}"
@@ -1100,6 +1104,14 @@
     "userRightsTitle": "حقوق المستخدم"
   },
   "projects": {
+    "addButton": "إضافة مشروع",
+    "clearFilters": "{{auditTrail.filters.clear}}",
+    "columns": {
+      "modified": "{{teams.columns.modified}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}",
+      "team": "{{common.team}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "أدخل وصف المشروع",
       "namePlaceholder": "أدخل اسم المشروع",
@@ -1111,10 +1123,54 @@
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
     "createNew": "إنشاء مشروع جديد",
+    "deleteDialog": {
+      "message": "هل أنت متأكد من رغبتك في حذف المشروع \"{{name}}\"؟"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "تحرير المشروع"
+    },
+    "filterLabel": "التصفية حسب الاسم",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "{{teams.kebab.editDetails}}",
+      "metadata": "{{common.metadata}}",
+      "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
+      "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.projects.title}}",
+    "noProjects": "لم يتم العثور على مشاريع",
     "picker": {
       "label": "{{common.project}}",
       "none": "لا يوجد مشروع"
-    }
+    },
+    "relatedProjectsDialog": {
+      "addRelated": "إضافة مشروع ذي صلة",
+      "customRelationship": "{{teams.relatedTeamsDialog.customRelationship}}",
+      "noRelated": "لا توجد مشاريع ذات صلة",
+      "relationship": "{{teams.relatedTeamsDialog.relationship}}",
+      "selectProject": "اختر مشروعًا",
+      "title": "المشاريع ذات الصلة"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "{{teams.responsiblePartiesDialog.addParty}}",
+      "noParties": "{{teams.responsiblePartiesDialog.noParties}}",
+      "removeParty": "{{teams.responsiblePartiesDialog.removeParty}}",
+      "title": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "{{teams.status.archived}}",
+      "cancelled": "ملغى",
+      "completed": "مكتمل",
+      "on_hold": "{{teams.status.on_hold}}",
+      "planning": "التخطيط"
+    },
+    "statusAll": "{{common.allStatuses}}",
+    "statusFilterLabel": "التصفية حسب الحالة",
+    "subtitle": "إنشاء وتحرير وإدارة المشاريع والعلاقات والبيانات الوصفية",
+    "teamFilterLabel": "التصفية حسب الفريق",
+    "title": "إدارة المشاريع"
   },
   "report": {
     "cvss": "CVSS",
@@ -1189,7 +1245,7 @@
     "responses": {
       "continueEditing": "متابعة التحرير",
       "errorLoadingResponses": "{{triage.list.errorLoadingResponses}}",
-      "filterByStatus": "تصفية حسب الحالة",
+      "filterByStatus": "{{projects.statusFilterLabel}}",
       "loadingResponses": "{{triage.list.loadingResponses}}",
       "noResponsesMessage": "لم تكمل أي استبيانات بعد. ابدأ واحداً من صفحة الاستبيانات.",
       "noResponsesTitle": "لا توجد ردود بعد",
