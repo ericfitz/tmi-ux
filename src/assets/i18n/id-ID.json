@@ -108,7 +108,7 @@
       "filterPlaceholder": "Cari berdasarkan nama grup atau penyedia",
       "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
-        "addMember": "Tambah Anggota",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "Anggota Saat Ini",
         "noMembers": "Tidak ada anggota dalam grup ini",
         "removeTooltip": "Keluarkan dari grup",
@@ -176,6 +176,10 @@
       "surveys": {
         "description": "Buat dan kelola survei",
         "title": "Kelola Survei"
+      },
+      "teams": {
+        "description": "Kelola tim dan keanggotaan tim",
+        "title": "Tim"
       },
       "users": {
         "description": "Lihat dan kelola akun pengguna",
@@ -1205,13 +1209,21 @@
     "submitSurvey": "Kirim Survei",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "Diarsipkan",
+      "archived": "{{teams.status.archived}}",
       "inactive": "Tidak Aktif"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Lihat Respons"
   },
   "teams": {
+    "addButton": "Tambah Tim",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "Diubah",
+      "name": "{{common.name}}",
+      "projects": "Proyek",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Masukkan deskripsi tim",
       "emailAddress": "{{common.emailLabel}}",
@@ -1224,7 +1236,80 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "Buat Tim Baru"
+    "createNew": "Buat Tim Baru",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "Apakah Anda yakin ingin menghapus tim \"{{name}}\"?",
+      "projectWarning": "Tim ini memiliki {{count}} proyek. Menghapus tim mungkin mempengaruhi proyek-proyek ini.",
+      "title": "Hapus Tim"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Edit Tim"
+    },
+    "filterLabel": "Filter Tim",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "Edit Detail",
+      "members": "Anggota",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "Tambah Anggota",
+      "customRole": "Peran Kustom",
+      "noMembers": "Tidak ada anggota",
+      "removeMember": "Hapus Anggota",
+      "role": "Peran",
+      "title": "Anggota Tim"
+    },
+    "noTeams": "Tidak ada tim ditemukan",
+    "relatedTeamsDialog": {
+      "addRelated": "Tambah Tim Terkait",
+      "customRelationship": "Hubungan Kustom",
+      "noRelated": "Tidak ada tim terkait",
+      "relationship": "Hubungan",
+      "removeRelated": "Hapus Tim Terkait",
+      "selectTeam": "Pilih Tim",
+      "title": "Tim Terkait"
+    },
+    "relationships": {
+      "child": "Anak",
+      "dependency": "Ketergantungan",
+      "dependent": "Dependen",
+      "other": "{{common.other}}",
+      "parent": "Induk",
+      "related": "Terkait",
+      "superseded_by": "Digantikan Oleh",
+      "supersedes": "Menggantikan"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "Tambah Pihak Yang Bertanggung Jawab",
+      "noParties": "Tidak ada pihak yang bertanggung jawab",
+      "removeParty": "Hapus Pihak Yang Bertanggung Jawab",
+      "title": "Pihak Yang Bertanggung Jawab"
+    },
+    "roles": {
+      "business_leader": "Pemimpin Bisnis",
+      "engineer": "Insinyur",
+      "engineering_lead": "Pemimpin Teknik",
+      "other": "{{common.other}}",
+      "product_manager": "Manajer Produk",
+      "security_specialist": "Spesialis Keamanan"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "Diarsipkan",
+      "forming": "Membentuk",
+      "merging": "Menggabung",
+      "on_hold": "Ditahan",
+      "splitting": "Memisah",
+      "winding_down": "Ditutup Bertahap"
+    },
+    "subtitle": "Buat, edit, dan kelola tim, anggota, dan hubungan",
+    "title": "Kelola Tim"
   },
   "threatEditor": {
     "createNewThreat": "Buat Ancaman Baru",
@@ -1335,7 +1420,7 @@
     "noThreats": "Belum Ada Ancaman Ditambahkan",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "Peran",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "Kelola Izin",
     "rename": "Ubah Nama",

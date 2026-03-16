@@ -108,7 +108,7 @@
       "filterPlaceholder": "Buscar por nombre de grupo o proveedor",
       "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
-        "addMember": "Añadir Miembro",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "Miembros Actuales",
         "noMembers": "No hay miembros en este grupo",
         "removeTooltip": "Eliminar del grupo",
@@ -176,6 +176,10 @@
       "surveys": {
         "description": "Crear y gestionar encuestas",
         "title": "Gestionar encuestas"
+      },
+      "teams": {
+        "description": "Gestionar equipos y membresía de equipos",
+        "title": "Equipos"
       },
       "users": {
         "description": "Ver y gestionar cuentas de usuario",
@@ -1205,13 +1209,21 @@
     "submitSurvey": "Enviar Encuesta",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "Archivada",
+      "archived": "{{teams.status.archived}}",
       "inactive": "Inactiva"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Ver Respuesta"
   },
   "teams": {
+    "addButton": "Agregar Equipo",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "Modificado",
+      "name": "{{common.name}}",
+      "projects": "Proyectos",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Introduce la descripcion del equipo",
       "emailAddress": "{{common.emailLabel}}",
@@ -1224,7 +1236,80 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "Crear Nuevo Equipo"
+    "createNew": "Crear Nuevo Equipo",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "¿Está seguro de que desea eliminar el equipo \"{{name}}\"?",
+      "projectWarning": "Este equipo tiene {{count}} proyecto(s). Eliminar el equipo puede afectar a estos proyectos.",
+      "title": "Eliminar Equipo"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Editar Equipo"
+    },
+    "filterLabel": "Filtrar Equipos",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "Editar Detalles",
+      "members": "Miembros",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "Agregar Miembro",
+      "customRole": "Rol Personalizado",
+      "noMembers": "No hay miembros",
+      "removeMember": "Eliminar Miembro",
+      "role": "Rol",
+      "title": "Miembros del Equipo"
+    },
+    "noTeams": "No se encontraron equipos",
+    "relatedTeamsDialog": {
+      "addRelated": "Agregar Equipo Relacionado",
+      "customRelationship": "Relación Personalizada",
+      "noRelated": "No hay equipos relacionados",
+      "relationship": "Relación",
+      "removeRelated": "Eliminar Equipo Relacionado",
+      "selectTeam": "Seleccionar Equipo",
+      "title": "Equipos Relacionados"
+    },
+    "relationships": {
+      "child": "Hijo",
+      "dependency": "Dependencia",
+      "dependent": "Dependiente",
+      "other": "{{common.other}}",
+      "parent": "Padre",
+      "related": "Relacionado",
+      "superseded_by": "Reemplazado Por",
+      "supersedes": "Reemplaza"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "Agregar Parte Responsable",
+      "noParties": "No hay partes responsables",
+      "removeParty": "Eliminar Parte Responsable",
+      "title": "Partes Responsables"
+    },
+    "roles": {
+      "business_leader": "Líder Empresarial",
+      "engineer": "Ingeniero",
+      "engineering_lead": "Líder de Ingeniería",
+      "other": "{{common.other}}",
+      "product_manager": "Gerente de Producto",
+      "security_specialist": "Especialista en Seguridad"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "Archivado",
+      "forming": "En Formación",
+      "merging": "En Fusión",
+      "on_hold": "En Espera",
+      "splitting": "En División",
+      "winding_down": "En Cierre"
+    },
+    "subtitle": "Crear, editar y gestionar equipos, miembros y relaciones",
+    "title": "Gestionar Equipos"
   },
   "threatEditor": {
     "createNewThreat": "Crear Nueva Amenaza",
@@ -1335,7 +1420,7 @@
     "noThreats": "Aún No Se Han Añadido Amenazas",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "Rol",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "Gestionar Permisos",
     "rename": "Renombrar",

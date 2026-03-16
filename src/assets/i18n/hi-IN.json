@@ -108,7 +108,7 @@
       "filterPlaceholder": "समूह के नाम या प्रदाता द्वारा खोजें",
       "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
-        "addMember": "सदस्य जोड़ें",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "वर्तमान सदस्य",
         "noMembers": "इस समूह में कोई सदस्य नहीं",
         "removeTooltip": "समूह से हटाएं",
@@ -176,6 +176,10 @@
       "surveys": {
         "description": "सर्वेक्षण बनाएं और प्रबंधित करें",
         "title": "सर्वेक्षणों का प्रबंधन करें"
+      },
+      "teams": {
+        "description": "टीमों और टीम सदस्यता का प्रबंधन करें",
+        "title": "टीमें"
       },
       "users": {
         "description": "उपयोगकर्ता खातों को देखें और प्रबंधित करें",
@@ -1205,13 +1209,21 @@
     "submitSurvey": "सर्वेक्षण सबमिट करें",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "संग्रहित",
+      "archived": "{{teams.status.archived}}",
       "inactive": "निष्क्रिय"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "प्रतिक्रिया देखें"
   },
   "teams": {
+    "addButton": "टीम जोड़ें",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "संशोधित",
+      "name": "{{common.name}}",
+      "projects": "प्रोजेक्ट्स",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "टीम विवरण दर्ज करें",
       "emailAddress": "{{common.emailLabel}}",
@@ -1224,7 +1236,80 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "नई टीम बनाएं"
+    "createNew": "नई टीम बनाएं",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "क्या आप सुनिश्चित हैं कि आप \"{{name}}\" टीम को हटाना चाहते हैं?",
+      "projectWarning": "इस टीम के पास {{count}} प्रोजेक्ट हैं। टीम को हटाने से ये प्रोजेक्ट्स प्रभावित हो सकते हैं।",
+      "title": "टीम हटाएं"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "टीम संपादित करें"
+    },
+    "filterLabel": "टीमों को फ़िल्टर करें",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "विवरण संपादित करें",
+      "members": "सदस्य",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "सदस्य जोड़ें",
+      "customRole": "कस्टम भूमिका",
+      "noMembers": "कोई सदस्य नहीं",
+      "removeMember": "सदस्य हटाएं",
+      "role": "भूमिका",
+      "title": "टीम के सदस्य"
+    },
+    "noTeams": "कोई टीम नहीं मिली",
+    "relatedTeamsDialog": {
+      "addRelated": "संबंधित टीम जोड़ें",
+      "customRelationship": "कस्टम संबंध",
+      "noRelated": "कोई संबंधित टीम नहीं",
+      "relationship": "संबंध",
+      "removeRelated": "संबंधित टीम हटाएं",
+      "selectTeam": "टीम चुनें",
+      "title": "संबंधित टीमें"
+    },
+    "relationships": {
+      "child": "बाल",
+      "dependency": "निर्भरता",
+      "dependent": "आश्रित",
+      "other": "{{common.other}}",
+      "parent": "माता-पिता",
+      "related": "संबंधित",
+      "superseded_by": "द्वारा प्रतिस्थापित",
+      "supersedes": "प्रतिस्थापित करता है"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "जिम्मेदार पार्टी जोड़ें",
+      "noParties": "कोई जिम्मेदार पार्टी नहीं",
+      "removeParty": "जिम्मेदार पार्टी हटाएं",
+      "title": "जिम्मेदार पार्टियां"
+    },
+    "roles": {
+      "business_leader": "व्यावसायिक नेता",
+      "engineer": "इंजीनियर",
+      "engineering_lead": "इंजीनियरिंग लीड",
+      "other": "{{common.other}}",
+      "product_manager": "उत्पाद प्रबंधक",
+      "security_specialist": "सुरक्षा विशेषज्ञ"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "संग्रहीत",
+      "forming": "निर्माणाधीन",
+      "merging": "विलय हो रहा है",
+      "on_hold": "प्रतीक्षा में",
+      "splitting": "विभाजित हो रहा है",
+      "winding_down": "बंद हो रहा है"
+    },
+    "subtitle": "टीमों, सदस्यों और संबंधों को बनाएं, संपादित करें और प्रबंधित करें",
+    "title": "टीमों का प्रबंधन करें"
   },
   "threatEditor": {
     "createNewThreat": "नया खतरा बनाएं",
@@ -1335,7 +1420,7 @@
     "noThreats": "अभी तक कोई खतरा नहीं जोड़ा गया",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "भूमिका",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "अनुमतियां प्रबंधित करें",
     "rename": "नाम बदलें",

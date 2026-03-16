@@ -115,7 +115,7 @@
       "filterPlaceholder": "Search by group name or provider",
       "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
-        "addMember": "Add Member",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "Current Members",
         "noMembers": "No members in this group",
         "removeTooltip": "Remove from group",
@@ -1251,7 +1251,7 @@
     "submitSurvey": "Submit Survey",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "Archived",
+      "archived": "{{teams.status.archived}}",
       "inactive": "Inactive"
     },
     "title": "{{common.objectTypes.surveys}}",
@@ -1260,11 +1260,11 @@
   "teams": {
     "addButton": "Add Team",
     "columns": {
-      "members": "Members",
+      "members": "{{teams.kebab.members}}",
       "modified": "Modified",
-      "name": "Name",
+      "name": "{{common.name}}",
       "projects": "Projects",
-      "status": "Status"
+      "status": "{{common.status}}"
     },
     "createDialog": {
       "descriptionPlaceholder": "Enter team description",
@@ -1280,25 +1280,25 @@
     },
     "createNew": "Create New Team",
     "deleteDialog": {
-      "confirm": "Delete",
+      "confirm": "{{common.delete}}",
       "message": "Are you sure you want to delete team \"{{name}}\"?",
       "projectWarning": "This team has {{count}} project(s). Deleting the team may affect these projects.",
       "title": "Delete Team"
     },
     "editDialog": {
-      "save": "Save",
+      "save": "{{common.save}}",
       "title": "Edit Team"
     },
     "filterLabel": "Filter Teams",
     "kebab": {
-      "delete": "Delete",
+      "delete": "{{common.delete}}",
       "editDetails": "Edit Details",
       "members": "Members",
-      "metadata": "Metadata",
-      "relatedTeams": "Related Teams",
-      "responsibleParties": "Responsible Parties"
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
     },
-    "listTitle": "Teams",
+    "listTitle": "{{admin.sections.teams.title}}",
     "membersDialog": {
       "addMember": "Add Member",
       "customRole": "Custom Role",
@@ -1321,7 +1321,7 @@
       "child": "Child",
       "dependency": "Dependency",
       "dependent": "Dependent",
-      "other": "Other",
+      "other": "{{common.other}}",
       "parent": "Parent",
       "related": "Related",
       "superseded_by": "Superseded By",
@@ -1337,12 +1337,12 @@
       "business_leader": "Business Leader",
       "engineer": "Engineer",
       "engineering_lead": "Engineering Lead",
-      "other": "Other",
+      "other": "{{common.other}}",
       "product_manager": "Product Manager",
       "security_specialist": "Security Specialist"
     },
     "status": {
-      "active": "Active",
+      "active": "{{common.active}}",
       "archived": "Archived",
       "forming": "Forming",
       "merging": "Merging",
@@ -1474,7 +1474,7 @@
     "noThreats": "No Threats Added Yet",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "Role",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "Manage Permissions",
     "rename": "Rename",

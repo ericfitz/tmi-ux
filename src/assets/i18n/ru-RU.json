@@ -108,7 +108,7 @@
       "filterPlaceholder": "Поиск по названию группы или провайдеру",
       "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
-        "addMember": "Добавить участника",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "Текущие участники",
         "noMembers": "В этой группе нет участников",
         "removeTooltip": "Удалить из группы",
@@ -176,6 +176,10 @@
       "surveys": {
         "description": "Создание и управление опросами",
         "title": "Управление опросами"
+      },
+      "teams": {
+        "description": "Управление командами и членством в командах",
+        "title": "Команды"
       },
       "users": {
         "description": "Просмотр и управление учётными записями пользователей",
@@ -1205,13 +1209,21 @@
     "submitSurvey": "Отправить опрос",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "В архиве",
+      "archived": "{{teams.status.archived}}",
       "inactive": "Неактивный"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Просмотреть ответ"
   },
   "teams": {
+    "addButton": "Добавить команду",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "Изменено",
+      "name": "{{common.name}}",
+      "projects": "Проекты",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Введите описание команды",
       "emailAddress": "{{common.emailLabel}}",
@@ -1224,7 +1236,80 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "Создать новую команду"
+    "createNew": "Создать новую команду",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "Вы уверены, что хотите удалить команду \"{{name}}\"?",
+      "projectWarning": "Эта команда имеет {{count}} проект(ов). Удаление команды может повлиять на эти проекты.",
+      "title": "Удалить команду"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Редактировать команду"
+    },
+    "filterLabel": "Фильтр команд",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "Редактировать детали",
+      "members": "Участники",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "Добавить участника",
+      "customRole": "Пользовательская роль",
+      "noMembers": "Нет участников",
+      "removeMember": "Удалить участника",
+      "role": "Роль",
+      "title": "Участники команды"
+    },
+    "noTeams": "Команды не найдены",
+    "relatedTeamsDialog": {
+      "addRelated": "Добавить связанную команду",
+      "customRelationship": "Пользовательская связь",
+      "noRelated": "Нет связанных команд",
+      "relationship": "Связь",
+      "removeRelated": "Удалить связанную команду",
+      "selectTeam": "Выберите команду",
+      "title": "Связанные команды"
+    },
+    "relationships": {
+      "child": "Дочерняя",
+      "dependency": "Зависимость",
+      "dependent": "Зависимая",
+      "other": "{{common.other}}",
+      "parent": "Родительская",
+      "related": "Связанная",
+      "superseded_by": "Заменена на",
+      "supersedes": "Заменяет"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "Добавить ответственную сторону",
+      "noParties": "Нет ответственных сторон",
+      "removeParty": "Удалить ответственную сторону",
+      "title": "Ответственные стороны"
+    },
+    "roles": {
+      "business_leader": "Руководитель бизнеса",
+      "engineer": "Инженер",
+      "engineering_lead": "Руководитель инженеров",
+      "other": "{{common.other}}",
+      "product_manager": "Менеджер продукта",
+      "security_specialist": "Специалист по безопасности"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "Архивирована",
+      "forming": "Формируется",
+      "merging": "Объединяется",
+      "on_hold": "На паузе",
+      "splitting": "Разделяется",
+      "winding_down": "Завершается"
+    },
+    "subtitle": "Создание, редактирование и управление командами, участниками и связями",
+    "title": "Управление командами"
   },
   "threatEditor": {
     "createNewThreat": "Создать новую угрозу",
@@ -1335,7 +1420,7 @@
     "noThreats": "Угрозы ещё не добавлены",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "Роль",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "Управление разрешениями",
     "rename": "Переименовать",

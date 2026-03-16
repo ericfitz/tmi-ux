@@ -108,7 +108,7 @@
       "filterPlaceholder": "按组名或提供商搜索",
       "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
-        "addMember": "添加成员",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "当前成员",
         "noMembers": "此组中没有成员",
         "removeTooltip": "从组中移除",
@@ -176,6 +176,10 @@
       "surveys": {
         "description": "创建和管理调查问卷",
         "title": "管理调查问卷"
+      },
+      "teams": {
+        "description": "管理团队和团队成员",
+        "title": "团队"
       },
       "users": {
         "description": "查看和管理用户账户",
@@ -1205,13 +1209,21 @@
     "submitSurvey": "提交调查",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "已归档",
+      "archived": "{{teams.status.archived}}",
       "inactive": "未激活"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "查看回复"
   },
   "teams": {
+    "addButton": "添加团队",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "已修改",
+      "name": "{{common.name}}",
+      "projects": "项目",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "输入团队描述",
       "emailAddress": "{{common.emailLabel}}",
@@ -1224,7 +1236,80 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "创建新团队"
+    "createNew": "创建新团队",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "确定要删除团队 \"{{name}}\" 吗？",
+      "projectWarning": "此团队有 {{count}} 个项目。删除团队可能会影响这些项目。",
+      "title": "删除团队"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "编辑团队"
+    },
+    "filterLabel": "筛选团队",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "编辑详情",
+      "members": "成员",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "添加成员",
+      "customRole": "自定义角色",
+      "noMembers": "无成员",
+      "removeMember": "移除成员",
+      "role": "角色",
+      "title": "团队成员"
+    },
+    "noTeams": "未找到团队",
+    "relatedTeamsDialog": {
+      "addRelated": "添加相关团队",
+      "customRelationship": "自定义关系",
+      "noRelated": "无相关团队",
+      "relationship": "关系",
+      "removeRelated": "移除相关团队",
+      "selectTeam": "选择团队",
+      "title": "相关团队"
+    },
+    "relationships": {
+      "child": "子团队",
+      "dependency": "依赖",
+      "dependent": "依赖者",
+      "other": "{{common.other}}",
+      "parent": "父团队",
+      "related": "相关",
+      "superseded_by": "被取代",
+      "supersedes": "取代"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "添加负责方",
+      "noParties": "无负责方",
+      "removeParty": "移除负责方",
+      "title": "负责方"
+    },
+    "roles": {
+      "business_leader": "业务负责人",
+      "engineer": "工程师",
+      "engineering_lead": "工程主管",
+      "other": "{{common.other}}",
+      "product_manager": "产品经理",
+      "security_specialist": "安全专家"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "已归档",
+      "forming": "组建中",
+      "merging": "合并中",
+      "on_hold": "暂停",
+      "splitting": "分裂中",
+      "winding_down": "逐步关闭"
+    },
+    "subtitle": "创建、编辑和管理团队、成员和关系",
+    "title": "管理团队"
   },
   "threatEditor": {
     "createNewThreat": "创建新威胁",
@@ -1335,7 +1420,7 @@
     "noThreats": "尚未添加威胁",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "角色",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "管理权限",
     "rename": "重命名",

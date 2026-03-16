@@ -108,7 +108,7 @@
       "filterPlaceholder": "گروپ کے نام یا فراہم کنندہ سے تلاش کریں",
       "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
-        "addMember": "رکن شامل کریں",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "موجودہ اراکین",
         "noMembers": "اس گروپ میں کوئی اراکین نہیں",
         "removeTooltip": "گروپ سے ہٹائیں",
@@ -176,6 +176,10 @@
       "surveys": {
         "description": "سروے بنائیں اور ان کا نظم کریں",
         "title": "سروے کا نظم کریں"
+      },
+      "teams": {
+        "description": "ٹیموں اور ٹیم کی رکنیت کا انتظام",
+        "title": "ٹیمیں"
       },
       "users": {
         "description": "صارف اکاؤنٹس دیکھیں اور ان کا انتظام کریں",
@@ -1205,13 +1209,21 @@
     "submitSurvey": "سروے جمع کریں",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "آرکائیو شدہ",
+      "archived": "{{teams.status.archived}}",
       "inactive": "غیر فعال"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "جواب دیکھیں"
   },
   "teams": {
+    "addButton": "ٹیم شامل کریں",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "ترمیم شدہ",
+      "name": "{{common.name}}",
+      "projects": "منصوبے",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "ٹیم کی تفصیل درج کریں",
       "emailAddress": "{{common.emailLabel}}",
@@ -1224,7 +1236,80 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "نئی ٹیم بنائیں"
+    "createNew": "نئی ٹیم بنائیں",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "کیا آپ واقعی ٹیم \"{{name}}\" کو حذف کرنا چاہتے ہیں؟",
+      "projectWarning": "اس ٹیم کے {{count}} منصوبے ہیں۔ ٹیم کو حذف کرنے سے یہ منصوبے متاثر ہو سکتے ہیں۔",
+      "title": "ٹیم حذف کریں"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "ٹیم میں ترمیم کریں"
+    },
+    "filterLabel": "ٹیموں کو فلٹر کریں",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "تفصیلات میں ترمیم کریں",
+      "members": "اراکین",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "رکن شامل کریں",
+      "customRole": "حسب ضرورت کردار",
+      "noMembers": "کوئی رکن نہیں",
+      "removeMember": "رکن کو ہٹائیں",
+      "role": "کردار",
+      "title": "ٹیم کے اراکین"
+    },
+    "noTeams": "کوئی ٹیمیں نہیں ملے",
+    "relatedTeamsDialog": {
+      "addRelated": "متعلقہ ٹیم شامل کریں",
+      "customRelationship": "حسب ضرورت تعلق",
+      "noRelated": "کوئی متعلقہ ٹیمیں نہیں",
+      "relationship": "تعلق",
+      "removeRelated": "متعلقہ ٹیم کو ہٹائیں",
+      "selectTeam": "ٹیم منتخب کریں",
+      "title": "متعلقہ ٹیمیں"
+    },
+    "relationships": {
+      "child": "بچہ",
+      "dependency": "انحصار",
+      "dependent": "منحصر",
+      "other": "{{common.other}}",
+      "parent": "والد",
+      "related": "متعلقہ",
+      "superseded_by": "کی جانب سے منسوخ",
+      "supersedes": "منسوخ کرتا ہے"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "ذمہ دار فریق شامل کریں",
+      "noParties": "کوئی ذمہ دار فریق نہیں",
+      "removeParty": "ذمہ دار فریق کو ہٹائیں",
+      "title": "ذمہ دار فریق"
+    },
+    "roles": {
+      "business_leader": "کاروباری رہنما",
+      "engineer": "انجینئر",
+      "engineering_lead": "انجینئری رہنما",
+      "other": "{{common.other}}",
+      "product_manager": "مصنوعات کا منیجر",
+      "security_specialist": "سیکیورٹی کے ماہر"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "محفوظ شدہ",
+      "forming": "تشکیل پزیر",
+      "merging": "ملایا جا رہا ہے",
+      "on_hold": "تھام رکھا",
+      "splitting": "تقسیم ہو رہا ہے",
+      "winding_down": "ختم ہو رہا ہے"
+    },
+    "subtitle": "ٹیمیں، اراکین، اور تعلقات بنائیں، ترمیم کریں، اور منظم کریں",
+    "title": "ٹیموں کا انتظام"
   },
   "threatEditor": {
     "createNewThreat": "نیا خطرہ بنائیں",
@@ -1335,7 +1420,7 @@
     "noThreats": "ابھی تک کوئی خطرات شامل نہیں",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "کردار",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "اجازتوں کا انتظام کریں",
     "rename": "نام تبدیل کریں",

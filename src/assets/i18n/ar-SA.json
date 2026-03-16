@@ -108,7 +108,7 @@
       "filterPlaceholder": "البحث بالاسم أو المزود",
       "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
-        "addMember": "إضافة عضو",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "الأعضاء الحاليون",
         "noMembers": "لا يوجد أعضاء في هذه المجموعة",
         "removeTooltip": "إزالة من المجموعة",
@@ -176,6 +176,10 @@
       "surveys": {
         "description": "إنشاء وإدارة الاستبيانات",
         "title": "إدارة الاستبيانات"
+      },
+      "teams": {
+        "description": "إدارة الفرق وعضويات الفريق",
+        "title": "الفرق"
       },
       "users": {
         "description": "عرض وإدارة حسابات المستخدمين",
@@ -1205,13 +1209,21 @@
     "submitSurvey": "تقديم الاستبيان",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "مؤرشف",
+      "archived": "{{teams.status.archived}}",
       "inactive": "غير نشط"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "عرض الرد"
   },
   "teams": {
+    "addButton": "إضافة فريق",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "تم التعديل",
+      "name": "{{common.name}}",
+      "projects": "المشاريع",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "أدخل وصف الفريق",
       "emailAddress": "{{common.emailLabel}}",
@@ -1224,7 +1236,80 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "إنشاء فريق جديد"
+    "createNew": "إنشاء فريق جديد",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "هل أنت متأكد من رغبتك في حذف الفريق \"{{name}}\"؟",
+      "projectWarning": "يحتوي هذا الفريق على {{count}} مشروع(ات). قد يؤثر حذف الفريق على هذه المشاريع.",
+      "title": "حذف الفريق"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "تحرير الفريق"
+    },
+    "filterLabel": "تصفية الفرق",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "تحرير التفاصيل",
+      "members": "أعضاء الفريق",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "إضافة عضو",
+      "customRole": "دور مخصص",
+      "noMembers": "لا توجد أعضاء",
+      "removeMember": "إزالة عضو",
+      "role": "الدور",
+      "title": "أعضاء الفريق"
+    },
+    "noTeams": "لم يتم العثور على فرق",
+    "relatedTeamsDialog": {
+      "addRelated": "إضافة فريق ذي صلة",
+      "customRelationship": "علاقة مخصصة",
+      "noRelated": "لا توجد فرق ذات صلة",
+      "relationship": "العلاقة",
+      "removeRelated": "إزالة فريق ذي صلة",
+      "selectTeam": "اختر فريق",
+      "title": "الفرق ذات الصلة"
+    },
+    "relationships": {
+      "child": "تابع",
+      "dependency": "تابعية",
+      "dependent": "معتمد",
+      "other": "{{common.other}}",
+      "parent": "أب",
+      "related": "ذو صلة",
+      "superseded_by": "تم استبداله بـ",
+      "supersedes": "يستبدل"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "إضافة جهة مسؤولة",
+      "noParties": "لا توجد جهات مسؤولة",
+      "removeParty": "إزالة جهة مسؤولة",
+      "title": "الجهات المسؤولة"
+    },
+    "roles": {
+      "business_leader": "قائد الأعمال",
+      "engineer": "مهندس",
+      "engineering_lead": "رئيس الهندسة",
+      "other": "{{common.other}}",
+      "product_manager": "مدير المنتج",
+      "security_specialist": "متخصص الأمن"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "مؤرشف",
+      "forming": "قيد التشكيل",
+      "merging": "قيد الدمج",
+      "on_hold": "مع إيقاف",
+      "splitting": "قيد الانقسام",
+      "winding_down": "قيد الإغلاق"
+    },
+    "subtitle": "إنشاء وتحرير وإدارة الفرق والأعضاء والعلاقات",
+    "title": "إدارة الفرق"
   },
   "threatEditor": {
     "createNewThreat": "إنشاء تهديد جديد",
@@ -1335,7 +1420,7 @@
     "noThreats": "لم تتم إضافة أي تهديدات بعد",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "الدور",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "إدارة الأذونات",
     "rename": "إعادة تسمية",

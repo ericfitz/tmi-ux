@@ -108,7 +108,7 @@
       "filterPlaceholder": "חפש לפי שם קבוצה או ספק",
       "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
-        "addMember": "הוסף חבר",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "חברים נוכחיים",
         "noMembers": "אין חברים בקבוצה זו",
         "removeTooltip": "הסר מהקבוצה",
@@ -176,6 +176,10 @@
       "surveys": {
         "description": "יצירה וניהול של סקרים",
         "title": "ניהול סקרים"
+      },
+      "teams": {
+        "description": "Manage teams and team membership",
+        "title": "Teams"
       },
       "users": {
         "description": "צפה ונהל חשבונות משתמשים",
@@ -1205,13 +1209,21 @@
     "submitSurvey": "שלח סקר",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "בארכיון",
+      "archived": "{{teams.status.archived}}",
       "inactive": "לא פעיל"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "הצג תגובה"
   },
   "teams": {
+    "addButton": "Add Team",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "Modified",
+      "name": "{{common.name}}",
+      "projects": "Projects",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "הזן תיאור צוות",
       "emailAddress": "{{common.emailLabel}}",
@@ -1224,7 +1236,80 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "צור צוות חדש"
+    "createNew": "צור צוות חדש",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "Are you sure you want to delete team \"{{name}}\"?",
+      "projectWarning": "This team has {{count}} project(s). Deleting the team may affect these projects.",
+      "title": "Delete Team"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Edit Team"
+    },
+    "filterLabel": "Filter Teams",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "Edit Details",
+      "members": "Members",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "Add Member",
+      "customRole": "Custom Role",
+      "noMembers": "No members",
+      "removeMember": "Remove Member",
+      "role": "Role",
+      "title": "Team Members"
+    },
+    "noTeams": "No teams found",
+    "relatedTeamsDialog": {
+      "addRelated": "Add Related Team",
+      "customRelationship": "Custom Relationship",
+      "noRelated": "No related teams",
+      "relationship": "Relationship",
+      "removeRelated": "Remove Related Team",
+      "selectTeam": "Select Team",
+      "title": "Related Teams"
+    },
+    "relationships": {
+      "child": "Child",
+      "dependency": "Dependency",
+      "dependent": "Dependent",
+      "other": "{{common.other}}",
+      "parent": "Parent",
+      "related": "Related",
+      "superseded_by": "Superseded By",
+      "supersedes": "Supersedes"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "Add Responsible Party",
+      "noParties": "No responsible parties",
+      "removeParty": "Remove Responsible Party",
+      "title": "Responsible Parties"
+    },
+    "roles": {
+      "business_leader": "Business Leader",
+      "engineer": "Engineer",
+      "engineering_lead": "Engineering Lead",
+      "other": "{{common.other}}",
+      "product_manager": "Product Manager",
+      "security_specialist": "Security Specialist"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "Archived",
+      "forming": "Forming",
+      "merging": "Merging",
+      "on_hold": "On Hold",
+      "splitting": "Splitting",
+      "winding_down": "Winding Down"
+    },
+    "subtitle": "Create, edit, and manage teams, members, and relationships",
+    "title": "Manage Teams"
   },
   "threatEditor": {
     "createNewThreat": "צור איום חדש",
@@ -1335,7 +1420,7 @@
     "noThreats": "טרם נוספו איומים",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "תפקיד",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "נהל הרשאות",
     "rename": "שנה שם",

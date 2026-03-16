@@ -108,7 +108,7 @@
       "filterPlaceholder": "Pesquisar por nome do grupo ou provedor",
       "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
-        "addMember": "Adicionar Membro",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "Membros Atuais",
         "noMembers": "Nenhum membro neste grupo",
         "removeTooltip": "Remover do grupo",
@@ -176,6 +176,10 @@
       "surveys": {
         "description": "Criar e gerenciar pesquisas",
         "title": "Gerenciar Pesquisas"
+      },
+      "teams": {
+        "description": "Gerenciar equipes e membros da equipe",
+        "title": "Equipes"
       },
       "users": {
         "description": "Visualizar e gerenciar contas de usuarios",
@@ -1205,13 +1209,21 @@
     "submitSurvey": "Enviar Pesquisa",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "Arquivado",
+      "archived": "{{teams.status.archived}}",
       "inactive": "Inativo"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Ver Resposta"
   },
   "teams": {
+    "addButton": "Adicionar Equipe",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "name": "{{common.name}}",
+      "status": "{{common.status}}"
+    },
+    "columns.modified": "Modificado",
+    "columns.projects": "Projetos",
     "createDialog": {
       "descriptionPlaceholder": "Insira a descrição da equipe",
       "emailAddress": "{{common.emailLabel}}",
@@ -1224,7 +1236,74 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "Criar Nova Equipe"
+    "createNew": "Criar Nova Equipe",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}"
+    },
+    "deleteDialog.message": "Tem certeza que deseja deletar a equipe \"{{name}}\"?",
+    "deleteDialog.projectWarning": "Esta equipe possui {{count}} projeto(s). Deletar a equipe pode afetar esses projetos.",
+    "deleteDialog.title": "Deletar Equipe",
+    "editDialog": {
+      "save": "{{common.save}}"
+    },
+    "editDialog.title": "Editar Equipe",
+    "filterLabel": "Filtrar Equipes",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "kebab.editDetails": "Editar Detalhes",
+    "kebab.members": "Membros",
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog.addMember": "Adicionar Membro",
+    "membersDialog.customRole": "Função Personalizada",
+    "membersDialog.noMembers": "Sem membros",
+    "membersDialog.removeMember": "Remover Membro",
+    "membersDialog.role": "Função",
+    "membersDialog.title": "Membros da Equipe",
+    "noTeams": "Nenhuma equipe encontrada",
+    "relatedTeamsDialog.addRelated": "Adicionar Equipe Relacionada",
+    "relatedTeamsDialog.customRelationship": "Relacionamento Personalizado",
+    "relatedTeamsDialog.noRelated": "Nenhuma equipe relacionada",
+    "relatedTeamsDialog.relationship": "Relacionamento",
+    "relatedTeamsDialog.removeRelated": "Remover Equipe Relacionada",
+    "relatedTeamsDialog.selectTeam": "Selecionar Equipe",
+    "relatedTeamsDialog.title": "Equipes Relacionadas",
+    "relationships": {
+      "other": "{{common.other}}"
+    },
+    "relationships.child": "Filha",
+    "relationships.dependency": "Dependência",
+    "relationships.dependent": "Dependente",
+    "relationships.parent": "Pai",
+    "relationships.related": "Relacionada",
+    "relationships.superseded_by": "Substituída Por",
+    "relationships.supersedes": "Substitui",
+    "responsiblePartiesDialog.addParty": "Adicionar Parte Responsável",
+    "responsiblePartiesDialog.noParties": "Sem partes responsáveis",
+    "responsiblePartiesDialog.removeParty": "Remover Parte Responsável",
+    "responsiblePartiesDialog.title": "Partes Responsáveis",
+    "roles": {
+      "other": "{{common.other}}"
+    },
+    "roles.business_leader": "Líder de Negócios",
+    "roles.engineer": "Engenheiro",
+    "roles.engineering_lead": "Líder de Engenharia",
+    "roles.product_manager": "Gerente de Produto",
+    "roles.security_specialist": "Especialista em Segurança",
+    "status": {
+      "active": "{{common.active}}"
+    },
+    "status.archived": "Arquivada",
+    "status.forming": "Em Formação",
+    "status.merging": "Mesclando",
+    "status.on_hold": "Suspensa",
+    "status.splitting": "Dividindo",
+    "status.winding_down": "Encerrando",
+    "subtitle": "Criar, editar e gerenciar equipes, membros e relacionamentos",
+    "title": "Gerenciar Equipes"
   },
   "threatEditor": {
     "createNewThreat": "Criar Nova Ameaca",
@@ -1335,7 +1414,7 @@
     "noThreats": "Nenhuma Ameaca Adicionada Ainda",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "Funcao",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "Gerenciar Permissoes",
     "rename": "Renomear",

@@ -108,7 +108,7 @@
       "filterPlaceholder": "Nach Gruppenname oder Anbieter suchen",
       "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
-        "addMember": "Mitglied hinzufügen",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "Aktuelle Mitglieder",
         "noMembers": "Keine Mitglieder in dieser Gruppe",
         "removeTooltip": "Aus Gruppe entfernen",
@@ -176,6 +176,10 @@
       "surveys": {
         "description": "Umfragen erstellen und verwalten",
         "title": "Umfragen verwalten"
+      },
+      "teams": {
+        "description": "Teams und Teamzugehörigkeit verwalten",
+        "title": "Teams"
       },
       "users": {
         "description": "Benutzerkonten anzeigen und verwalten",
@@ -1205,13 +1209,21 @@
     "submitSurvey": "Umfrage absenden",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "Archiviert",
+      "archived": "{{teams.status.archived}}",
       "inactive": "Inaktiv"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "Antwort anzeigen"
   },
   "teams": {
+    "addButton": "Team hinzufügen",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "Geändert",
+      "name": "{{common.name}}",
+      "projects": "Projekte",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Teambeschreibung eingeben",
       "emailAddress": "{{common.emailLabel}}",
@@ -1224,7 +1236,80 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "Neues Team erstellen"
+    "createNew": "Neues Team erstellen",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "Sind Sie sicher, dass Sie das Team \"{{name}}\" löschen möchten?",
+      "projectWarning": "Dieses Team hat {{count}} Projekt(e). Das Löschen des Teams kann diese Projekte beeinflussen.",
+      "title": "Team löschen"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "Team bearbeiten"
+    },
+    "filterLabel": "Teams filtern",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "Details bearbeiten",
+      "members": "Mitglieder",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "Mitglied hinzufügen",
+      "customRole": "Benutzerdefinierte Rolle",
+      "noMembers": "Keine Mitglieder",
+      "removeMember": "Mitglied entfernen",
+      "role": "Rolle",
+      "title": "Teammitglieder"
+    },
+    "noTeams": "Keine Teams gefunden",
+    "relatedTeamsDialog": {
+      "addRelated": "Zugehöriges Team hinzufügen",
+      "customRelationship": "Benutzerdefinierte Beziehung",
+      "noRelated": "Keine zugehörigen Teams",
+      "relationship": "Beziehung",
+      "removeRelated": "Zugehöriges Team entfernen",
+      "selectTeam": "Team auswählen",
+      "title": "Zugehörige Teams"
+    },
+    "relationships": {
+      "child": "Kind",
+      "dependency": "Abhängigkeit",
+      "dependent": "Abhängig",
+      "other": "{{common.other}}",
+      "parent": "Übergeordnet",
+      "related": "Zugehörig",
+      "superseded_by": "Ersetzt durch",
+      "supersedes": "Ersetzt"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "Verantwortliche Partei hinzufügen",
+      "noParties": "Keine verantwortlichen Parteien",
+      "removeParty": "Verantwortliche Partei entfernen",
+      "title": "Verantwortliche Parteien"
+    },
+    "roles": {
+      "business_leader": "Geschäftsführer",
+      "engineer": "Ingenieur",
+      "engineering_lead": "Technischer Leiter",
+      "other": "{{common.other}}",
+      "product_manager": "Produktmanager",
+      "security_specialist": "Sicherheitsspezialist"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "Archiviert",
+      "forming": "Im Aufbau",
+      "merging": "Fusionierung",
+      "on_hold": "Ausgesetzt",
+      "splitting": "Aufspaltung",
+      "winding_down": "Auslauf"
+    },
+    "subtitle": "Teams, Mitglieder und Beziehungen erstellen, bearbeiten und verwalten",
+    "title": "Teams verwalten"
   },
   "threatEditor": {
     "createNewThreat": "Neue Bedrohung erstellen",
@@ -1335,7 +1420,7 @@
     "noThreats": "Noch keine Bedrohungen hinzugefügt",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "Rolle",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "Berechtigungen verwalten",
     "rename": "Umbenennen",

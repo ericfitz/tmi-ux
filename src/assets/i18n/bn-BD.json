@@ -108,7 +108,7 @@
       "filterPlaceholder": "গ্রুপের নাম বা প্রোভাইডার দিয়ে খুঁজুন",
       "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
-        "addMember": "সদস্য যোগ করুন",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "বর্তমান সদস্য",
         "noMembers": "এই গ্রুপে কোনো সদস্য নেই",
         "removeTooltip": "গ্রুপ থেকে সরান",
@@ -176,6 +176,10 @@
       "surveys": {
         "description": "জরিপ তৈরি এবং পরিচালনা করুন",
         "title": "জরিপ পরিচালনা করুন"
+      },
+      "teams": {
+        "description": "দল এবং দল সদস্যপদ পরিচালনা করুন",
+        "title": "দল"
       },
       "users": {
         "description": "ব্যবহারকারী অ্যাকাউন্ট দেখুন এবং পরিচালনা করুন",
@@ -1205,13 +1209,21 @@
     "submitSurvey": "জরিপ জমা দিন",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "আর্কাইভকৃত",
+      "archived": "{{teams.status.archived}}",
       "inactive": "নিষ্ক্রিয়"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "প্রতিক্রিয়া দেখুন"
   },
   "teams": {
+    "addButton": "দল যোগ করুন",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "সংশোধিত",
+      "name": "{{common.name}}",
+      "projects": "প্রকল্প",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "দলের বিবরণ লিখুন",
       "emailAddress": "{{common.emailLabel}}",
@@ -1224,7 +1236,80 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "নতুন দল তৈরি করুন"
+    "createNew": "নতুন দল তৈরি করুন",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "আপনি কি নিশ্চিত যে \"{{name}}\" দলটি মুছতে চান?",
+      "projectWarning": "এই দলের {{count}}টি প্রকল্প রয়েছে। দলটি মুছলে এই প্রকল্পগুলি প্রভাবিত হতে পারে।",
+      "title": "দল মুছুন"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "দল সম্পাদনা করুন"
+    },
+    "filterLabel": "দল ফিল্টার করুন",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "বিবরণ সম্পাদনা করুন",
+      "members": "সদস্য",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "সদস্য যোগ করুন",
+      "customRole": "কাস্টম ভূমিকা",
+      "noMembers": "কোনো সদস্য নেই",
+      "removeMember": "সদস্য সরান",
+      "role": "ভূমিকা",
+      "title": "দল সদস্য"
+    },
+    "noTeams": "কোনো দল পাওয়া যায়নি",
+    "relatedTeamsDialog": {
+      "addRelated": "সম্পর্কিত দল যোগ করুন",
+      "customRelationship": "কাস্টম সম্পর্ক",
+      "noRelated": "কোনো সম্পর্কিত দল নেই",
+      "relationship": "সম্পর্ক",
+      "removeRelated": "সম্পর্কিত দল সরান",
+      "selectTeam": "দল নির্বাচন করুন",
+      "title": "সম্পর্কিত দল"
+    },
+    "relationships": {
+      "child": "সন্তান",
+      "dependency": "নির্ভরতা",
+      "dependent": "নির্ভরযোগ্য",
+      "other": "{{common.other}}",
+      "parent": "অভিভাবক",
+      "related": "সম্পর্কিত",
+      "superseded_by": "দ্বারা অতিক্রম করা হয়েছে",
+      "supersedes": "অতিক্রম করা হয়"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "দায়িত্বশীল পক্ষ যোগ করুন",
+      "noParties": "কোনো দায়িত্বশীল পক্ষ নেই",
+      "removeParty": "দায়িত্বশীল পক্ষ সরান",
+      "title": "দায়িত্বশীল পক্ষ"
+    },
+    "roles": {
+      "business_leader": "ব্যবসায়িক নেতা",
+      "engineer": "প্রকৌশলী",
+      "engineering_lead": "প্রকৌশল নেতা",
+      "other": "{{common.other}}",
+      "product_manager": "পণ্য ব্যবস্থাপক",
+      "security_specialist": "নিরাপত্তা বিশেষজ্ঞ"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "সংরক্ষিত",
+      "forming": "গঠনশীল",
+      "merging": "একীভূতকরণ",
+      "on_hold": "অধরিত",
+      "splitting": "বিভাজন",
+      "winding_down": "সমাপ্তিশীল"
+    },
+    "subtitle": "দল, সদস্য এবং সম্পর্ক তৈরি, সম্পাদনা এবং পরিচালনা করুন",
+    "title": "দল পরিচালনা করুন"
   },
   "threatEditor": {
     "createNewThreat": "নতুন হুমকি তৈরি করুন",
@@ -1335,7 +1420,7 @@
     "noThreats": "এখনো কোনো হুমকি যোগ করা হয়নি",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "ভূমিকা",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "অনুমতি পরিচালনা করুন",
     "rename": "পুনঃনামকরণ",

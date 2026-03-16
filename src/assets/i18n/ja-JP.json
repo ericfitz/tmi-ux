@@ -108,7 +108,7 @@
       "filterPlaceholder": "グループ名またはプロバイダーで検索",
       "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
-        "addMember": "メンバーを追加",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "現在のメンバー",
         "noMembers": "このグループにメンバーはいません",
         "removeTooltip": "グループから削除",
@@ -176,6 +176,10 @@
       "surveys": {
         "description": "調査を作成および管理",
         "title": "調査を管理"
+      },
+      "teams": {
+        "description": "チームとチームメンバーシップの管理",
+        "title": "チーム"
       },
       "users": {
         "description": "ユーザーアカウントの表示と管理",
@@ -1205,13 +1209,21 @@
     "submitSurvey": "調査を送信",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "アーカイブ済み",
+      "archived": "{{teams.status.archived}}",
       "inactive": "無効"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "回答を表示"
   },
   "teams": {
+    "addButton": "チームを追加",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "更新日時",
+      "name": "{{common.name}}",
+      "projects": "プロジェクト",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "チームの説明を入力",
       "emailAddress": "{{common.emailLabel}}",
@@ -1224,7 +1236,80 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "新しいチームを作成"
+    "createNew": "新しいチームを作成",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "チーム「{{name}}」を削除してもよろしいですか？",
+      "projectWarning": "このチームは{{count}}個のプロジェクトを持っています。チームを削除するとこれらのプロジェクトに影響を与える可能性があります。",
+      "title": "チームを削除"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "チームを編集"
+    },
+    "filterLabel": "チームをフィルター",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "詳細を編集",
+      "members": "メンバー",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "メンバーを追加",
+      "customRole": "カスタムロール",
+      "noMembers": "メンバーなし",
+      "removeMember": "メンバーを削除",
+      "role": "ロール",
+      "title": "チームメンバー"
+    },
+    "noTeams": "チームが見つかりません",
+    "relatedTeamsDialog": {
+      "addRelated": "関連チームを追加",
+      "customRelationship": "カスタム関係",
+      "noRelated": "関連チームなし",
+      "relationship": "関係",
+      "removeRelated": "関連チームを削除",
+      "selectTeam": "チームを選択",
+      "title": "関連チーム"
+    },
+    "relationships": {
+      "child": "子",
+      "dependency": "依存関係",
+      "dependent": "依存",
+      "other": "{{common.other}}",
+      "parent": "親",
+      "related": "関連",
+      "superseded_by": "置き換え元",
+      "supersedes": "置き換え"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "責任者を追加",
+      "noParties": "責任者なし",
+      "removeParty": "責任者を削除",
+      "title": "責任者"
+    },
+    "roles": {
+      "business_leader": "ビジネスリーダー",
+      "engineer": "エンジニア",
+      "engineering_lead": "エンジニアリングリーダー",
+      "other": "{{common.other}}",
+      "product_manager": "プロダクトマネージャー",
+      "security_specialist": "セキュリティスペシャリスト"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "アーカイブ済み",
+      "forming": "形成中",
+      "merging": "マージ中",
+      "on_hold": "保留中",
+      "splitting": "分割中",
+      "winding_down": "終了中"
+    },
+    "subtitle": "チーム、メンバー、および関係を作成、編集、管理します",
+    "title": "チームを管理"
   },
   "threatEditor": {
     "createNewThreat": "新しい脅威を作成",
@@ -1335,7 +1420,7 @@
     "noThreats": "まだ脅威が追加されていません",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "ロール",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "権限を管理",
     "rename": "名前を変更",

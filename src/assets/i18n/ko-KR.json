@@ -108,7 +108,7 @@
       "filterPlaceholder": "그룹 이름 또는 공급자로 검색",
       "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
       "membersDialog": {
-        "addMember": "멤버 추가",
+        "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "현재 멤버",
         "noMembers": "이 그룹에 멤버가 없습니다",
         "removeTooltip": "그룹에서 제거",
@@ -176,6 +176,10 @@
       "surveys": {
         "description": "설문조사 생성 및 관리",
         "title": "설문조사 관리"
+      },
+      "teams": {
+        "description": "팀 및 팀 멤버십 관리",
+        "title": "팀"
       },
       "users": {
         "description": "사용자 계정 보기 및 관리",
@@ -1205,13 +1209,21 @@
     "submitSurvey": "설문 제출",
     "templateStatus": {
       "active": "{{common.active}}",
-      "archived": "보관됨",
+      "archived": "{{teams.status.archived}}",
       "inactive": "비활성"
     },
     "title": "{{common.objectTypes.surveys}}",
     "viewResponse": "응답 보기"
   },
   "teams": {
+    "addButton": "팀 추가",
+    "columns": {
+      "members": "{{teams.kebab.members}}",
+      "modified": "수정됨",
+      "name": "{{common.name}}",
+      "projects": "프로젝트",
+      "status": "{{common.status}}"
+    },
     "createDialog": {
       "descriptionPlaceholder": "팀 설명을 입력하세요",
       "emailAddress": "{{common.emailLabel}}",
@@ -1224,7 +1236,80 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "새 팀 생성"
+    "createNew": "새 팀 생성",
+    "deleteDialog": {
+      "confirm": "{{common.delete}}",
+      "message": "\"{{name}}\" 팀을 정말 삭제하시겠습니까?",
+      "projectWarning": "이 팀에는 {{count}}개의 프로젝트(들)이 있습니다. 팀을 삭제하면 이 프로젝트(들)에 영향을 미칠 수 있습니다.",
+      "title": "팀 삭제"
+    },
+    "editDialog": {
+      "save": "{{common.save}}",
+      "title": "팀 편집"
+    },
+    "filterLabel": "팀 필터",
+    "kebab": {
+      "delete": "{{common.delete}}",
+      "editDetails": "세부정보 편집",
+      "members": "멤버",
+      "metadata": "{{common.metadata}}",
+      "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
+      "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
+    },
+    "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "멤버 추가",
+      "customRole": "사용자 정의 역할",
+      "noMembers": "멤버 없음",
+      "removeMember": "멤버 제거",
+      "role": "역할",
+      "title": "팀 멤버"
+    },
+    "noTeams": "팀을 찾을 수 없습니다",
+    "relatedTeamsDialog": {
+      "addRelated": "관련 팀 추가",
+      "customRelationship": "사용자 정의 관계",
+      "noRelated": "관련 팀 없음",
+      "relationship": "관계",
+      "removeRelated": "관련 팀 제거",
+      "selectTeam": "팀 선택",
+      "title": "관련 팀"
+    },
+    "relationships": {
+      "child": "하위",
+      "dependency": "종속성",
+      "dependent": "종속된",
+      "other": "{{common.other}}",
+      "parent": "상위",
+      "related": "관련됨",
+      "superseded_by": "다음으로 대체됨",
+      "supersedes": "대체함"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "책임자 추가",
+      "noParties": "책임자 없음",
+      "removeParty": "책임자 제거",
+      "title": "책임자"
+    },
+    "roles": {
+      "business_leader": "비즈니스 리더",
+      "engineer": "엔지니어",
+      "engineering_lead": "엔지니어링 리더",
+      "other": "{{common.other}}",
+      "product_manager": "제품 관리자",
+      "security_specialist": "보안 전문가"
+    },
+    "status": {
+      "active": "{{common.active}}",
+      "archived": "보관됨",
+      "forming": "구성 중",
+      "merging": "병합 중",
+      "on_hold": "보류 중",
+      "splitting": "분할 중",
+      "winding_down": "종료 중"
+    },
+    "subtitle": "팀, 멤버 및 관계를 생성, 편집 및 관리",
+    "title": "팀 관리"
   },
   "threatEditor": {
     "createNewThreat": "새 위협 생성",
@@ -1335,7 +1420,7 @@
     "noThreats": "추가된 위협 없음",
     "pageTitle": "{{common.objectTypes.threatModels}}",
     "permissionsProvider": "{{common.provider}}",
-    "permissionsRole": "역할",
+    "permissionsRole": "{{teams.membersDialog.role}}",
     "permissionsSubject": "{{admin.administrators.addDialog.subject}}",
     "permissionsTooltip": "권한 관리",
     "rename": "이름 변경",
