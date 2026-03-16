@@ -120,7 +120,6 @@ export interface CreateTeamDialogResult {
         flex-direction: column;
         gap: 4px;
         min-width: 400px;
-        padding: 8px 0;
       }
 
       .full-width {

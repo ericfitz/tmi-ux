@@ -124,7 +124,6 @@ export interface UserPickerDialogResult {
 
       mat-dialog-content {
         min-width: 400px;
-        padding-top: 8px;
       }
 
       .user-option {
