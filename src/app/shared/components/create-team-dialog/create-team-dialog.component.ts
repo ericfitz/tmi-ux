@@ -141,7 +141,7 @@ export class CreateTeamDialogComponent {
       description: ['', [Validators.maxLength(2048)]],
       email_address: ['', [Validators.email]],
       uri: [''],
-      status: [''],
+      status: [null],
     });
   }
 
