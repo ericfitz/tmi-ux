@@ -905,7 +905,10 @@
     "statusFilterLabel": "ตัวกรองตามสถานะ",
     "subtitle": "สร้าง แก้ไข และจัดการโครงการ ความสัมพันธ์ และข้อมูลเมตา",
     "teamFilterLabel": "ตัวกรองตามทีม",
-    "title": "จัดการโครงการ"
+    "title": "จัดการโครงการ",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}"
   },
   "report": {
     "cvss": "CVSS",

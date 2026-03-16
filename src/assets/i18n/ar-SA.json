@@ -1170,7 +1170,10 @@
     "statusFilterLabel": "التصفية حسب الحالة",
     "subtitle": "إنشاء وتحرير وإدارة المشاريع والعلاقات والبيانات الوصفية",
     "teamFilterLabel": "التصفية حسب الفريق",
-    "title": "إدارة المشاريع"
+    "title": "إدارة المشاريع",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}"
   },
   "report": {
     "cvss": "CVSS",

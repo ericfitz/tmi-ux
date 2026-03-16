@@ -1170,7 +1170,10 @@
     "statusFilterLabel": "סנן לפי סטטוס",
     "subtitle": "צור, ערוך וניהל פרויקטים, קשרים ומטא-נתונים",
     "teamFilterLabel": "סנן לפי צוות",
-    "title": "ניהול פרויקטים"
+    "title": "ניהול פרויקטים",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}"
   },
   "report": {
     "cvss": "CVSS",

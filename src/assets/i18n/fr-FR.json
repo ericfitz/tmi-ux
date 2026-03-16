@@ -1170,7 +1170,10 @@
     "statusFilterLabel": "Filtrer par Statut",
     "subtitle": "Créer, modifier et gérer les projets, les relations et les métadonnées",
     "teamFilterLabel": "Filtrer par Équipe",
-    "title": "Gérer les Projets"
+    "title": "Gérer les Projets",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}"
   },
   "report": {
     "cvss": "CVSS",

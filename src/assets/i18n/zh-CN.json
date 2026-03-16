@@ -1170,7 +1170,10 @@
     "statusFilterLabel": "按状态筛选",
     "subtitle": "创建、编辑和管理项目、关系和元数据",
     "teamFilterLabel": "按团队筛选",
-    "title": "管理项目"
+    "title": "管理项目",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}"
   },
   "report": {
     "cvss": "CVSS",

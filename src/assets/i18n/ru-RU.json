@@ -1170,7 +1170,10 @@
     "statusFilterLabel": "Фильтровать по статусу",
     "subtitle": "Создание, редактирование и управление проектами, связями и метаданными",
     "teamFilterLabel": "Фильтровать по команде",
-    "title": "Управление проектами"
+    "title": "Управление проектами",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}"
   },
   "report": {
     "cvss": "CVSS",

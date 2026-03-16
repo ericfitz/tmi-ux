@@ -1170,7 +1170,10 @@
     "statusFilterLabel": "स्थिति के अनुसार फ़िल्टर करें",
     "subtitle": "प्रकल्प, संबंध और मेटाडेटा बनाएं, संपादित करें और प्रबंधित करें",
     "teamFilterLabel": "टीम के अनुसार फ़िल्टर करें",
-    "title": "प्रकल्प प्रबंधित करें"
+    "title": "प्रकल्प प्रबंधित करें",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}"
   },
   "report": {
     "cvss": "CVSS",

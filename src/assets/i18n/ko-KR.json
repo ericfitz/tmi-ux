@@ -1170,7 +1170,10 @@
     "statusFilterLabel": "상태로 필터링",
     "subtitle": "프로젝트, 관계 및 메타데이터 생성, 편집 및 관리",
     "teamFilterLabel": "팀으로 필터링",
-    "title": "프로젝트 관리"
+    "title": "프로젝트 관리",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}"
   },
   "report": {
     "cvss": "CVSS",

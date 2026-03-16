@@ -1170,7 +1170,10 @@
     "statusFilterLabel": "ステータスでフィルタリング",
     "subtitle": "プロジェクト、関連性、メタデータを作成、編集、管理します",
     "teamFilterLabel": "チームでフィルタリング",
-    "title": "プロジェクト管理"
+    "title": "プロジェクト管理",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}"
   },
   "report": {
     "cvss": "CVSS",

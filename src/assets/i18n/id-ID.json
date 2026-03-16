@@ -1170,7 +1170,10 @@
     "statusFilterLabel": "Filter berdasarkan Status",
     "subtitle": "Buat, edit, dan kelola proyek, hubungan, dan metadata",
     "teamFilterLabel": "Filter berdasarkan Tim",
-    "title": "Kelola Proyek"
+    "title": "Kelola Proyek",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}"
   },
   "report": {
     "cvss": "CVSS",

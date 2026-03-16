@@ -1170,7 +1170,10 @@
     "statusFilterLabel": "অবস্থা দ্বারা ফিল্টার করুন",
     "subtitle": "প্রকল্প, সম্পর্ক এবং মেটাডেটা তৈরি, সম্পাদনা এবং পরিচালনা করুন",
     "teamFilterLabel": "দল দ্বারা ফিল্টার করুন",
-    "title": "প্রকল্প পরিচালনা করুন"
+    "title": "প্রকল্প পরিচালনা করুন",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}"
   },
   "report": {
     "cvss": "CVSS",

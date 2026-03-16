@@ -1170,7 +1170,10 @@
     "statusFilterLabel": "حالت سے فلٹر کریں",
     "subtitle": "منصوبے، تعلقات اور میٹا ڈیٹا بنائیں، ترمیم کریں اور منظم کریں",
     "teamFilterLabel": "ٹیم سے فلٹر کریں",
-    "title": "منصوبے کا انتظام کریں"
+    "title": "منصوبے کا انتظام کریں",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}"
   },
   "report": {
     "cvss": "CVSS",

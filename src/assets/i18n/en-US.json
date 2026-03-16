@@ -1163,6 +1163,9 @@
       "title": "Edit Project"
     },
     "filterLabel": "Filter by Name",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
     "kebab": {
       "delete": "{{common.delete}}",
       "metadata": "{{common.metadata}}",
