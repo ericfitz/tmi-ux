@@ -1,12 +1,7 @@
 // This project uses vitest for all unit tests, with native vitest syntax
 // Do not use Jasmine or Jest
 import { describe, it, expect } from 'vitest';
-import {
-  PROJECT_STATUSES,
-  ProjectStatus,
-  RelatedProject,
-  ProjectPatch,
-} from './project.types';
+import { PROJECT_STATUSES, ProjectStatus, RelatedProject, ProjectPatch } from './project.types';
 import { ResponsibleParty, RelationshipType } from './team.types';
 
 describe('Project types', () => {
