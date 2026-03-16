@@ -186,6 +186,10 @@
         "description": "Create and manage surveys",
         "title": "Manage Surveys"
       },
+      "teams": {
+        "description": "Manage teams and team membership",
+        "title": "Teams"
+      },
       "users": {
         "description": "View and manage user accounts",
         "title": "{{admin.users.title}}"
@@ -1254,6 +1258,14 @@
     "viewResponse": "View Response"
   },
   "teams": {
+    "addButton": "Add Team",
+    "columns": {
+      "members": "Members",
+      "modified": "Modified",
+      "name": "Name",
+      "projects": "Projects",
+      "status": "Status"
+    },
     "createDialog": {
       "descriptionPlaceholder": "Enter team description",
       "emailAddress": "{{common.emailLabel}}",
@@ -1266,7 +1278,80 @@
       "uriPlaceholder": "https://wiki.example.com/teams/my-team",
       "uriPlaceholder.comment": "This is an example URL and should not be translated."
     },
-    "createNew": "Create New Team"
+    "createNew": "Create New Team",
+    "deleteDialog": {
+      "confirm": "Delete",
+      "message": "Are you sure you want to delete team \"{{name}}\"?",
+      "projectWarning": "This team has {{count}} project(s). Deleting the team may affect these projects.",
+      "title": "Delete Team"
+    },
+    "editDialog": {
+      "save": "Save",
+      "title": "Edit Team"
+    },
+    "filterLabel": "Filter Teams",
+    "kebab": {
+      "delete": "Delete",
+      "editDetails": "Edit Details",
+      "members": "Members",
+      "metadata": "Metadata",
+      "relatedTeams": "Related Teams",
+      "responsibleParties": "Responsible Parties"
+    },
+    "listTitle": "Teams",
+    "membersDialog": {
+      "addMember": "Add Member",
+      "customRole": "Custom Role",
+      "noMembers": "No members",
+      "removeMember": "Remove Member",
+      "role": "Role",
+      "title": "Team Members"
+    },
+    "noTeams": "No teams found",
+    "relatedTeamsDialog": {
+      "addRelated": "Add Related Team",
+      "customRelationship": "Custom Relationship",
+      "noRelated": "No related teams",
+      "relationship": "Relationship",
+      "removeRelated": "Remove Related Team",
+      "selectTeam": "Select Team",
+      "title": "Related Teams"
+    },
+    "relationships": {
+      "child": "Child",
+      "dependency": "Dependency",
+      "dependent": "Dependent",
+      "other": "Other",
+      "parent": "Parent",
+      "related": "Related",
+      "superseded_by": "Superseded By",
+      "supersedes": "Supersedes"
+    },
+    "responsiblePartiesDialog": {
+      "addParty": "Add Responsible Party",
+      "noParties": "No responsible parties",
+      "removeParty": "Remove Responsible Party",
+      "title": "Responsible Parties"
+    },
+    "roles": {
+      "business_leader": "Business Leader",
+      "engineer": "Engineer",
+      "engineering_lead": "Engineering Lead",
+      "other": "Other",
+      "product_manager": "Product Manager",
+      "security_specialist": "Security Specialist"
+    },
+    "status": {
+      "active": "Active",
+      "archived": "Archived",
+      "forming": "Forming",
+      "merging": "Merging",
+      "on_hold": "On Hold",
+      "splitting": "Splitting",
+      "winding_down": "Winding Down"
+    },
+    "subtitle": "Create, edit, and manage teams, members, and relationships",
+    "title": "Manage Teams"
   },
   "threatEditor": {
     "addCvssEntry": "Add CVSS entry",
