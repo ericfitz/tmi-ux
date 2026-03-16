@@ -81,7 +81,7 @@ export interface RelatedTeamsDialogData {
       @if (showAddForm) {
         <div class="add-form" [formGroup]="addForm">
           <mat-form-field class="full-width">
-            <mat-label [transloco]="'teams.relatedTeamsDialog.searchTeam'">Search Team</mat-label>
+            <mat-label [transloco]="'teams.relatedTeamsDialog.selectTeam'">Select Team</mat-label>
             <input matInput formControlName="teamSearch" [matAutocomplete]="teamAuto" />
             <mat-autocomplete
               #teamAuto="matAutocomplete"
@@ -144,7 +144,7 @@ export interface RelatedTeamsDialogData {
         @if (saving) {
           <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
         }
-        <span [transloco]="'teams.relatedTeamsDialog.save'">Save</span>
+        <span [transloco]="'common.save'">Save</span>
       </button>
     </mat-dialog-actions>
   `,

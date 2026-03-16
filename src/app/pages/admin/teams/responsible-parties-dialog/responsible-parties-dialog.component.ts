@@ -83,7 +83,7 @@ export interface ResponsiblePartiesDialogData {
         @if (saving) {
           <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
         }
-        <span [transloco]="'teams.membersDialog.save'">Save</span>
+        <span [transloco]="'common.save'">Save</span>
       </button>
     </mat-dialog-actions>
   `,

@@ -141,7 +141,13 @@ export class AdminTeamsComponent implements OnInit, AfterViewInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(result => {
         if (result) {
-          this.loadTeams();
+          this.teamService
+            .create(result)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: () => this.loadTeams(),
+              error: error => this.logger.error('Failed to create team', error),
+            });
         }
       });
   }
