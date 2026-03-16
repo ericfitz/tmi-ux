@@ -42,6 +42,12 @@ export class AdminComponent {
       action: 'teams',
     },
     {
+      title: 'admin.sections.projects.title',
+      description: 'admin.sections.projects.description',
+      icon: 'folder',
+      action: 'projects',
+    },
+    {
       title: 'admin.sections.quotas.title',
       description: 'admin.sections.quotas.description',
       icon: 'speed',

@@ -115,6 +115,14 @@ export const routes: Routes = [
         canActivate: [adminGuard],
       },
       {
+        path: 'projects',
+        loadComponent: () =>
+          import(
+            /* webpackChunkName: "admin-projects" */ './pages/admin/projects/admin-projects.component'
+          ).then(c => c.AdminProjectsComponent),
+        canActivate: [adminGuard],
+      },
+      {
         path: 'quotas',
         loadComponent: () =>
           import(
