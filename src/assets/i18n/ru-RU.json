@@ -159,11 +159,11 @@
     "sections": {
       "addons": {
         "description": "Установка и настройка дополнений приложения",
-        "title": "{{admin.addons.title}}"
+        "title": "Дополнения"
       },
       "groups": {
         "description": "Настройка групп пользователей и членства",
-        "title": "{{admin.groups.title}}"
+        "title": "Группы"
       },
       "projects": {
         "description": "Управление проектами, связями и метаданными",
@@ -171,11 +171,11 @@
       },
       "quotas": {
         "description": "Настройка квот и лимитов ресурсов",
-        "title": "{{admin.quotas.title}}"
+        "title": "Квоты"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "Настройки"
       },
       "surveys": {
         "description": "Создание и управление опросами",
@@ -187,11 +187,11 @@
       },
       "users": {
         "description": "Просмотр и управление учётными записями пользователей",
-        "title": "{{admin.users.title}}"
+        "title": "Пользователи"
       },
       "webhooks": {
         "description": "Установка и настройка интеграций вебхуков",
-        "title": "{{admin.webhooks.title}}"
+        "title": "Вебхуки"
       }
     },
     "settings": {
@@ -526,6 +526,7 @@
     "actions": "Действия",
     "activate": "Активировать",
     "active": "Активный",
+    "add": "Добавить",
     "addMetadata": "Добавить Метаданные",
     "addThreat": "Добавить Угрозу",
     "addons": "Дополнения",

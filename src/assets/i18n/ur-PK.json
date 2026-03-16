@@ -159,11 +159,11 @@
     "sections": {
       "addons": {
         "description": "ایپلیکیشن ایڈ آنز انسٹال اور ترتیب دیں",
-        "title": "{{admin.addons.title}}"
+        "title": "ایڈ آنز"
       },
       "groups": {
         "description": "صارف گروپس اور رکنیتیں ترتیب دیں",
-        "title": "{{admin.groups.title}}"
+        "title": "گروپس"
       },
       "projects": {
         "description": "منصوبے، تعلقات اور میٹا ڈیٹا کا انتظام کریں",
@@ -171,11 +171,11 @@
       },
       "quotas": {
         "description": "وسائل کے کوٹہ اور حدود ترتیب دیں",
-        "title": "{{admin.quotas.title}}"
+        "title": "کوٹہ"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "ترتیبات"
       },
       "surveys": {
         "description": "سروے بنائیں اور ان کا نظم کریں",
@@ -187,11 +187,11 @@
       },
       "users": {
         "description": "صارف اکاؤنٹس دیکھیں اور ان کا انتظام کریں",
-        "title": "{{admin.users.title}}"
+        "title": "صارفین"
       },
       "webhooks": {
         "description": "webhook انضمام انسٹال اور ترتیب دیں",
-        "title": "{{admin.webhooks.title}}"
+        "title": "ویب ہکس"
       }
     },
     "settings": {
@@ -526,6 +526,7 @@
     "actions": "کارروائیاں",
     "activate": "فعال کریں",
     "active": "فعال",
+    "add": "شامل کریں",
     "addMetadata": "میٹا ڈیٹا شامل کریں",
     "addThreat": "خطرہ شامل کریں",
     "addons": "ایڈ آنز",

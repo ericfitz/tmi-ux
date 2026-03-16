@@ -168,11 +168,11 @@
     "sections": {
       "addons": {
         "description": "Install and configure application addons",
-        "title": "{{admin.addons.title}}"
+        "title": "{{common.addons}}"
       },
       "groups": {
         "description": "Configure user groups and memberships",
-        "title": "{{admin.groups.title}}"
+        "title": "{{common.groups}}"
       },
       "projects": {
         "description": "Manage projects, relationships, and metadata",
@@ -180,15 +180,15 @@
       },
       "quotas": {
         "description": "Configure resource quotas and limits",
-        "title": "{{admin.quotas.title}}"
+        "title": "Quotas"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "Settings"
       },
       "surveys": {
         "description": "Create and manage surveys",
-        "title": "Manage Surveys"
+        "title": "Surveys"
       },
       "teams": {
         "description": "Manage teams and team membership",
@@ -196,11 +196,11 @@
       },
       "users": {
         "description": "View and manage user accounts",
-        "title": "{{admin.users.title}}"
+        "title": "Users"
       },
       "webhooks": {
         "description": "Install and configure webhook integrations",
-        "title": "{{admin.webhooks.title}}"
+        "title": "Webhooks"
       }
     },
     "settings": {
@@ -542,6 +542,7 @@
     "actions": "Actions",
     "activate": "Activate",
     "active": "Active",
+    "add": "Add",
     "addMetadata": "Add Metadata",
     "addThreat": "Add Threat",
     "addons": "Addons",

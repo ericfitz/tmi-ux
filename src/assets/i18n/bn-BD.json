@@ -159,11 +159,11 @@
     "sections": {
       "addons": {
         "description": "অ্যাপ্লিকেশন অ্যাডঅন ইনস্টল এবং কনফিগার করুন",
-        "title": "{{admin.addons.title}}"
+        "title": "অ্যাডঅন"
       },
       "groups": {
         "description": "ব্যবহারকারী গ্রুপ এবং সদস্যপদ কনফিগার করুন",
-        "title": "{{admin.groups.title}}"
+        "title": "গ্রুপ"
       },
       "projects": {
         "description": "প্রকল্প, সম্পর্ক এবং মেটাডেটা পরিচালনা করুন",
@@ -171,11 +171,11 @@
       },
       "quotas": {
         "description": "রিসোর্স কোটা এবং লিমিট কনফিগার করুন",
-        "title": "{{admin.quotas.title}}"
+        "title": "কোটা"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "সেটিংস"
       },
       "surveys": {
         "description": "জরিপ তৈরি এবং পরিচালনা করুন",
@@ -187,11 +187,11 @@
       },
       "users": {
         "description": "ব্যবহারকারী অ্যাকাউন্ট দেখুন এবং পরিচালনা করুন",
-        "title": "{{admin.users.title}}"
+        "title": "ব্যবহারকারী"
       },
       "webhooks": {
         "description": "ওয়েবহুক ইন্টিগ্রেশন ইনস্টল এবং কনফিগার করুন",
-        "title": "{{admin.webhooks.title}}"
+        "title": "ওয়েবহুক"
       }
     },
     "settings": {
@@ -526,6 +526,7 @@
     "actions": "ক্রিয়াকলাপ",
     "activate": "সক্রিয় করুন",
     "active": "সক্রিয়",
+    "add": "যোগ করুন",
     "addMetadata": "মেটাডেটা যোগ করুন",
     "addThreat": "হুমকি যোগ করুন",
     "addons": "অ্যাডঅন",

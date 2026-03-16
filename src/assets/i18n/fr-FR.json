@@ -159,11 +159,11 @@
     "sections": {
       "addons": {
         "description": "Installer et configurer les addons d'application",
-        "title": "{{admin.addons.title}}"
+        "title": "Extensions"
       },
       "groups": {
         "description": "Configurer les groupes d'utilisateurs et les appartenances",
-        "title": "{{admin.groups.title}}"
+        "title": "Groupes"
       },
       "projects": {
         "description": "Gérer les projets, les relations et les métadonnées",
@@ -171,11 +171,11 @@
       },
       "quotas": {
         "description": "Configurer les quotas et limites de ressources",
-        "title": "{{admin.quotas.title}}"
+        "title": "Quotas"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "Paramètres"
       },
       "surveys": {
         "description": "Créer et gérer des enquêtes",
@@ -187,11 +187,11 @@
       },
       "users": {
         "description": "Afficher et gerer les comptes utilisateurs",
-        "title": "{{admin.users.title}}"
+        "title": "Utilisateurs"
       },
       "webhooks": {
         "description": "Installer et configurer les integrations webhook",
-        "title": "{{admin.webhooks.title}}"
+        "title": "Webhooks"
       }
     },
     "settings": {
@@ -526,6 +526,7 @@
     "actions": "Actions",
     "activate": "Activer",
     "active": "Actif",
+    "add": "Ajouter",
     "addMetadata": "Ajouter des Metadonnees",
     "addThreat": "Ajouter une Menace",
     "addons": "Modules",

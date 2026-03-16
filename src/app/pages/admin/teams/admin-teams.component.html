@@ -97,41 +97,54 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>{{ 'common.actions' | transloco }}</th>
             <td mat-cell *matCellDef="let team" class="actions-column">
-              <button
-                mat-icon-button
-                [matMenuTriggerFor]="rowKebab"
-                [matTooltip]="'common.actions' | transloco"
-                [attr.aria-label]="'common.actions' | transloco"
-              >
-                <mat-icon>more_vert</mat-icon>
-              </button>
-              <mat-menu #rowKebab="matMenu">
-                <button mat-menu-item (click)="onEditDetails(team)">
+              <div class="action-buttons">
+                <button
+                  mat-icon-button
+                  (click)="onEditDetails(team)"
+                  [matTooltip]="'teams.kebab.editDetails' | transloco"
+                  [attr.aria-label]="'teams.kebab.editDetails' | transloco"
+                >
                   <mat-icon>edit</mat-icon>
-                  <span [transloco]="'teams.kebab.editDetails'">Edit Details</span>
                 </button>
-                <button mat-menu-item (click)="onMembers(team)">
+                <button
+                  mat-icon-button
+                  (click)="onMembers(team)"
+                  [matTooltip]="'teams.kebab.members' | transloco"
+                  [attr.aria-label]="'teams.kebab.members' | transloco"
+                >
                   <mat-icon>group</mat-icon>
-                  <span [transloco]="'teams.kebab.members'">Members</span>
                 </button>
-                <button mat-menu-item (click)="onResponsibleParties(team)">
-                  <mat-icon>supervisor_account</mat-icon>
-                  <span [transloco]="'teams.kebab.responsibleParties'">Responsible Parties</span>
+                <button
+                  mat-icon-button
+                  [matMenuTriggerFor]="rowKebab"
+                  [matTooltip]="'common.moreActions' | transloco"
+                  [attr.aria-label]="'common.moreActions' | transloco"
+                  (click)="$event.stopPropagation()"
+                >
+                  <mat-icon>more_vert</mat-icon>
                 </button>
-                <button mat-menu-item (click)="onRelatedTeams(team)">
-                  <mat-icon>link</mat-icon>
-                  <span [transloco]="'teams.kebab.relatedTeams'">Related Teams</span>
-                </button>
-                <button mat-menu-item (click)="onMetadata(team)">
-                  <mat-icon>list</mat-icon>
-                  <span [transloco]="'teams.kebab.metadata'">Metadata</span>
-                </button>
-                <mat-divider></mat-divider>
-                <button mat-menu-item (click)="onDelete(team)" class="delete-action">
-                  <mat-icon color="warn">delete</mat-icon>
-                  <span [transloco]="'teams.kebab.delete'">Delete</span>
-                </button>
-              </mat-menu>
+                <mat-menu #rowKebab="matMenu">
+                  <button mat-menu-item (click)="onResponsibleParties(team)">
+                    <mat-icon>supervisor_account</mat-icon>
+                    <span [transloco]="'teams.kebab.responsibleParties'">
+                      Responsible Parties
+                    </span>
+                  </button>
+                  <button mat-menu-item (click)="onRelatedTeams(team)">
+                    <mat-icon>link</mat-icon>
+                    <span [transloco]="'teams.kebab.relatedTeams'">Related Teams</span>
+                  </button>
+                  <button mat-menu-item (click)="onMetadata(team)">
+                    <mat-icon>list</mat-icon>
+                    <span [transloco]="'teams.kebab.metadata'">Metadata</span>
+                  </button>
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="onDelete(team)" class="delete-action">
+                    <mat-icon color="warn">delete</mat-icon>
+                    <span [transloco]="'teams.kebab.delete'">Delete</span>
+                  </button>
+                </mat-menu>
+              </div>
             </td>
           </ng-container>
 

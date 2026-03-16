@@ -80,7 +80,7 @@ export interface RelatedTeamsDialogData {
 
       @if (showAddForm) {
         <div class="add-form" [formGroup]="addForm">
-          <mat-form-field class="full-width">
+          <mat-form-field appearance="outline" class="full-width">
             <mat-label [transloco]="'teams.relatedTeamsDialog.selectTeam'">Select Team</mat-label>
             <input matInput formControlName="teamSearch" [matAutocomplete]="teamAuto" />
             <mat-autocomplete
@@ -94,7 +94,7 @@ export interface RelatedTeamsDialogData {
             </mat-autocomplete>
           </mat-form-field>
 
-          <mat-form-field class="full-width">
+          <mat-form-field appearance="outline" class="full-width">
             <mat-label [transloco]="'teams.relatedTeamsDialog.relationship'">
               Relationship
             </mat-label>
@@ -108,7 +108,7 @@ export interface RelatedTeamsDialogData {
           </mat-form-field>
 
           @if (addForm.get('relationship')?.value === 'other') {
-            <mat-form-field class="full-width">
+            <mat-form-field appearance="outline" class="full-width">
               <mat-label [transloco]="'teams.relatedTeamsDialog.customRelationship'">
                 Custom Relationship
               </mat-label>

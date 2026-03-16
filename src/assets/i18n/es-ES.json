@@ -159,11 +159,11 @@
     "sections": {
       "addons": {
         "description": "Instalar y configurar complementos de la aplicación",
-        "title": "{{admin.addons.title}}"
+        "title": "Complementos"
       },
       "groups": {
         "description": "Configurar grupos de usuarios y membresías",
-        "title": "{{admin.groups.title}}"
+        "title": "Grupos"
       },
       "projects": {
         "description": "Gestionar proyectos, relaciones y metadatos",
@@ -171,11 +171,11 @@
       },
       "quotas": {
         "description": "Configurar cuotas y límites de recursos",
-        "title": "{{admin.quotas.title}}"
+        "title": "Cuotas"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "Configuración"
       },
       "surveys": {
         "description": "Crear y gestionar encuestas",
@@ -187,11 +187,11 @@
       },
       "users": {
         "description": "Ver y gestionar cuentas de usuario",
-        "title": "{{admin.users.title}}"
+        "title": "Usuarios"
       },
       "webhooks": {
         "description": "Instalar y configurar integraciones de webhooks",
-        "title": "{{admin.webhooks.title}}"
+        "title": "Webhooks"
       }
     },
     "settings": {
@@ -526,6 +526,7 @@
     "actions": "Acciones",
     "activate": "Activar",
     "active": "Activo",
+    "add": "Añadir",
     "addMetadata": "Agregar Metadatos",
     "addThreat": "Agregar Amenaza",
     "addons": "Complementos",

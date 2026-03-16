@@ -159,11 +159,11 @@
     "sections": {
       "addons": {
         "description": "Anwendungserweiterungen installieren und konfigurieren",
-        "title": "{{admin.addons.title}}"
+        "title": "Erweiterungen"
       },
       "groups": {
         "description": "Benutzergruppen und Mitgliedschaften konfigurieren",
-        "title": "{{admin.groups.title}}"
+        "title": "Gruppen"
       },
       "projects": {
         "description": "Verwalten Sie Projekte, Beziehungen und Metadaten",
@@ -171,11 +171,11 @@
       },
       "quotas": {
         "description": "Ressourcenkontingente und -limits konfigurieren",
-        "title": "{{admin.quotas.title}}"
+        "title": "Kontingente"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "Einstellungen"
       },
       "surveys": {
         "description": "Umfragen erstellen und verwalten",
@@ -187,11 +187,11 @@
       },
       "users": {
         "description": "Benutzerkonten anzeigen und verwalten",
-        "title": "{{admin.users.title}}"
+        "title": "Benutzer"
       },
       "webhooks": {
         "description": "Webhook-Integrationen installieren und konfigurieren",
-        "title": "{{admin.webhooks.title}}"
+        "title": "Webhooks"
       }
     },
     "settings": {
@@ -526,6 +526,7 @@
     "actions": "Aktionen",
     "activate": "Aktivieren",
     "active": "Aktiv",
+    "add": "Hinzufügen",
     "addMetadata": "Metadaten hinzufügen",
     "addThreat": "Bedrohung hinzufügen",
     "addons": "Erweiterungen",

@@ -79,7 +79,7 @@ export interface RelatedProjectsDialogData {
 
       @if (showAddForm) {
         <div class="add-form" [formGroup]="addForm">
-          <mat-form-field class="full-width">
+          <mat-form-field appearance="outline" class="full-width">
             <mat-label [transloco]="'projects.relatedProjectsDialog.selectProject'">
               Select Project
             </mat-label>
@@ -95,7 +95,7 @@ export interface RelatedProjectsDialogData {
             </mat-autocomplete>
           </mat-form-field>
 
-          <mat-form-field class="full-width">
+          <mat-form-field appearance="outline" class="full-width">
             <mat-label [transloco]="'projects.relatedProjectsDialog.relationship'">
               Relationship
             </mat-label>
@@ -109,7 +109,7 @@ export interface RelatedProjectsDialogData {
           </mat-form-field>
 
           @if (addForm.get('relationship')?.value === 'other') {
-            <mat-form-field class="full-width">
+            <mat-form-field appearance="outline" class="full-width">
               <mat-label [transloco]="'projects.relatedProjectsDialog.customRelationship'">
                 Custom Relationship
               </mat-label>

@@ -159,11 +159,11 @@
     "sections": {
       "addons": {
         "description": "애플리케이션 애드온 설치 및 구성",
-        "title": "{{admin.addons.title}}"
+        "title": "애드온"
       },
       "groups": {
         "description": "사용자 그룹 및 멤버십 구성",
-        "title": "{{admin.groups.title}}"
+        "title": "그룹"
       },
       "projects": {
         "description": "프로젝트, 관계 및 메타데이터 관리",
@@ -171,11 +171,11 @@
       },
       "quotas": {
         "description": "리소스 할당량 및 제한 구성",
-        "title": "{{admin.quotas.title}}"
+        "title": "할당량"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "설정"
       },
       "surveys": {
         "description": "설문조사 생성 및 관리",
@@ -187,11 +187,11 @@
       },
       "users": {
         "description": "사용자 계정 보기 및 관리",
-        "title": "{{admin.users.title}}"
+        "title": "사용자"
       },
       "webhooks": {
         "description": "웹훅 통합 설치 및 구성",
-        "title": "{{admin.webhooks.title}}"
+        "title": "웹훅"
       }
     },
     "settings": {
@@ -526,6 +526,7 @@
     "actions": "작업",
     "activate": "활성화",
     "active": "활성",
+    "add": "추가",
     "addMetadata": "메타데이터 추가",
     "addThreat": "위협 추가",
     "addons": "애드온",

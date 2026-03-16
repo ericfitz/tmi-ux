@@ -159,11 +159,11 @@
     "sections": {
       "addons": {
         "description": "アプリケーションアドオンのインストールと設定",
-        "title": "{{admin.addons.title}}"
+        "title": "アドオン"
       },
       "groups": {
         "description": "ユーザーグループとメンバーシップの設定",
-        "title": "{{admin.groups.title}}"
+        "title": "グループ"
       },
       "projects": {
         "description": "プロジェクト、関連性、メタデータの管理",
@@ -171,11 +171,11 @@
       },
       "quotas": {
         "description": "リソースクォータと制限の設定",
-        "title": "{{admin.quotas.title}}"
+        "title": "クォータ"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "設定"
       },
       "surveys": {
         "description": "調査を作成および管理",
@@ -187,11 +187,11 @@
       },
       "users": {
         "description": "ユーザーアカウントの表示と管理",
-        "title": "{{admin.users.title}}"
+        "title": "ユーザー"
       },
       "webhooks": {
         "description": "Webhook統合のインストールと設定",
-        "title": "{{admin.webhooks.title}}"
+        "title": "Webhook"
       }
     },
     "settings": {
@@ -526,6 +526,7 @@
     "actions": "アクション",
     "activate": "有効化",
     "active": "アクティブ",
+    "add": "追加",
     "addMetadata": "メタデータを追加",
     "addThreat": "脅威を追加",
     "addons": "アドオン",

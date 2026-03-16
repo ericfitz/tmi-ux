@@ -87,8 +87,14 @@
   width: 100%;
 
   .actions-column {
-    width: 80px;
-    text-align: center;
+    width: 160px;
+    text-align: right;
+
+    .action-buttons {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
   }
 }
 

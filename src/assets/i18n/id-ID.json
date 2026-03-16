@@ -159,11 +159,11 @@
     "sections": {
       "addons": {
         "description": "Pasang dan konfigurasikan addon aplikasi",
-        "title": "{{admin.addons.title}}"
+        "title": "Pengaya"
       },
       "groups": {
         "description": "Konfigurasikan grup pengguna dan keanggotaan",
-        "title": "{{admin.groups.title}}"
+        "title": "Grup"
       },
       "projects": {
         "description": "Kelola proyek, hubungan, dan metadata",
@@ -171,11 +171,11 @@
       },
       "quotas": {
         "description": "Konfigurasikan kuota dan batas sumber daya",
-        "title": "{{admin.quotas.title}}"
+        "title": "Kuota"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "Pengaturan"
       },
       "surveys": {
         "description": "Buat dan kelola survei",
@@ -187,11 +187,11 @@
       },
       "users": {
         "description": "Lihat dan kelola akun pengguna",
-        "title": "{{admin.users.title}}"
+        "title": "Pengguna"
       },
       "webhooks": {
         "description": "Pasang dan konfigurasikan integrasi webhook",
-        "title": "{{admin.webhooks.title}}"
+        "title": "Webhook"
       }
     },
     "settings": {
@@ -526,6 +526,7 @@
     "actions": "Tindakan",
     "activate": "Aktifkan",
     "active": "Aktif",
+    "add": "Tambah",
     "addMetadata": "Tambah Metadata",
     "addThreat": "Tambah Ancaman",
     "addons": "Addon",

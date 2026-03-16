@@ -159,11 +159,11 @@
     "sections": {
       "addons": {
         "description": "تثبيت وتكوين الوظائف الإضافية للتطبيق",
-        "title": "{{admin.addons.title}}"
+        "title": "الإضافات"
       },
       "groups": {
         "description": "تكوين مجموعات المستخدمين والعضويات",
-        "title": "{{admin.groups.title}}"
+        "title": "المجموعات"
       },
       "projects": {
         "description": "إدارة المشاريع والعلاقات والبيانات الوصفية",
@@ -171,11 +171,11 @@
       },
       "quotas": {
         "description": "تكوين حصص الموارد والحدود",
-        "title": "{{admin.quotas.title}}"
+        "title": "الحصص"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "الإعدادات"
       },
       "surveys": {
         "description": "إنشاء وإدارة الاستبيانات",
@@ -187,11 +187,11 @@
       },
       "users": {
         "description": "عرض وإدارة حسابات المستخدمين",
-        "title": "{{admin.users.title}}"
+        "title": "المستخدمون"
       },
       "webhooks": {
         "description": "تثبيت وتكوين تكاملات الخطافات",
-        "title": "{{admin.webhooks.title}}"
+        "title": "خطافات الويب"
       }
     },
     "settings": {
@@ -526,6 +526,7 @@
     "actions": "الإجراءات",
     "activate": "تفعيل",
     "active": "نشط",
+    "add": "إضافة",
     "addMetadata": "إضافة بيانات وصفية",
     "addThreat": "إضافة تهديد",
     "addons": "الوظائف الإضافية",

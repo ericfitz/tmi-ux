@@ -159,11 +159,11 @@
     "sections": {
       "addons": {
         "description": "एप्लिकेशन ऐडऑन इंस्टॉल और कॉन्फ़िगर करें",
-        "title": "{{admin.addons.title}}"
+        "title": "ऐडऑन"
       },
       "groups": {
         "description": "उपयोगकर्ता समूह और सदस्यताएं कॉन्फ़िगर करें",
-        "title": "{{admin.groups.title}}"
+        "title": "समूह"
       },
       "projects": {
         "description": "प्रकल्प, संबंध और मेटाडेटा प्रबंधित करें",
@@ -171,11 +171,11 @@
       },
       "quotas": {
         "description": "संसाधन कोटा और सीमाएं कॉन्फ़िगर करें",
-        "title": "{{admin.quotas.title}}"
+        "title": "कोटा"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "सेटिंग्स"
       },
       "surveys": {
         "description": "सर्वेक्षण बनाएं और प्रबंधित करें",
@@ -187,11 +187,11 @@
       },
       "users": {
         "description": "उपयोगकर्ता खातों को देखें और प्रबंधित करें",
-        "title": "{{admin.users.title}}"
+        "title": "उपयोगकर्ता"
       },
       "webhooks": {
         "description": "Webhook एकीकरण इंस्टॉल और कॉन्फ़िगर करें",
-        "title": "{{admin.webhooks.title}}"
+        "title": "वेबहुक"
       }
     },
     "settings": {
@@ -526,6 +526,7 @@
     "actions": "कार्य",
     "activate": "सक्रिय करें",
     "active": "सक्रिय",
+    "add": "जोड़ें",
     "addMetadata": "मेटाडेटा जोड़ें",
     "addThreat": "खतरा जोड़ें",
     "addons": "ऐडऑन",

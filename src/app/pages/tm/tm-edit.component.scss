@@ -720,6 +720,12 @@ mat-card-header {
   min-width: 160px;
   text-align: right;
   padding-right: 8px !important;
+
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
 }
 
 // Hyperlink button in table

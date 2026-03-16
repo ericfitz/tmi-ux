@@ -159,11 +159,11 @@
     "sections": {
       "addons": {
         "description": "התקן והגדר תוספי יישום",
-        "title": "{{admin.addons.title}}"
+        "title": "תוספים"
       },
       "groups": {
         "description": "הגדר קבוצות משתמשים וחברויות",
-        "title": "{{admin.groups.title}}"
+        "title": "קבוצות"
       },
       "projects": {
         "description": "ניהול פרויקטים, קשרים ומטא-נתונים",
@@ -171,11 +171,11 @@
       },
       "quotas": {
         "description": "הגדר מכסות ומגבלות משאבים",
-        "title": "{{admin.quotas.title}}"
+        "title": "מכסות"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "הגדרות"
       },
       "surveys": {
         "description": "יצירה וניהול של סקרים",
@@ -187,11 +187,11 @@
       },
       "users": {
         "description": "צפה ונהל חשבונות משתמשים",
-        "title": "{{admin.users.title}}"
+        "title": "משתמשים"
       },
       "webhooks": {
         "description": "התקן והגדר שילובי webhook",
-        "title": "{{admin.webhooks.title}}"
+        "title": "ווב-הוקים"
       }
     },
     "settings": {
@@ -526,6 +526,7 @@
     "actions": "פעולות",
     "activate": "הפעלה",
     "active": "פעיל",
+    "add": "הוסף",
     "addMetadata": "הוסף מטא-נתונים",
     "addThreat": "הוסף איום",
     "addons": "תוספים",

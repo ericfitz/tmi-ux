@@ -159,11 +159,11 @@
     "sections": {
       "addons": {
         "description": "安装和配置应用程序插件",
-        "title": "{{admin.addons.title}}"
+        "title": "附加组件"
       },
       "groups": {
         "description": "配置用户组和成员资格",
-        "title": "{{admin.groups.title}}"
+        "title": "群组"
       },
       "projects": {
         "description": "管理项目、关系和元数据",
@@ -171,11 +171,11 @@
       },
       "quotas": {
         "description": "配置资源配额和限制",
-        "title": "{{admin.quotas.title}}"
+        "title": "配额"
       },
       "settings": {
         "description": "{{admin.settings.subtitle}}",
-        "title": "{{admin.settings.title}}"
+        "title": "设置"
       },
       "surveys": {
         "description": "创建和管理调查问卷",
@@ -187,11 +187,11 @@
       },
       "users": {
         "description": "查看和管理用户账户",
-        "title": "{{admin.users.title}}"
+        "title": "用户"
       },
       "webhooks": {
         "description": "安装和配置 webhook 集成",
-        "title": "{{admin.webhooks.title}}"
+        "title": "Webhook"
       }
     },
     "settings": {
@@ -526,6 +526,7 @@
     "actions": "操作",
     "activate": "激活",
     "active": "活跃",
+    "add": "添加",
     "addMetadata": "添加元数据",
     "addThreat": "添加威胁",
     "addons": "插件",
