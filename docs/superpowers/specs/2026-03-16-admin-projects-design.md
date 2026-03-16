@@ -167,7 +167,7 @@ Inline template, mirrors `EditTeamDialogComponent`. Used only for editing existi
 - `uri` (URL format)
 - `status` (dropdown from `PROJECT_STATUSES`)
 
-Saves via `ProjectService.patch()` with only changed fields.
+Saves via `ProjectService.update()` (full PUT replacement, same pattern as EditTeamDialogComponent).
 
 ## Dialog: ResponsiblePartiesDialogComponent (Refactored)
 
@@ -175,7 +175,7 @@ Move from `pages/admin/teams/responsible-parties-dialog/` to `shared/components/
 
 **Changes from current implementation:**
 - Remove `TeamService` dependency injection — the dialog no longer calls any service directly
-- Remove `TranslocoService` injection (was only used for the user picker title, which can use the pipe instead)
+- **Keep** `TranslocoService` — needed to programmatically translate the UserPickerDialog title string (`UserPickerDialogData.title` is a `string`, not a template)
 - Save logic delegated to caller via `patchFn` callback
 - Error handling remains in the dialog: the `patchFn` returns an Observable; the dialog subscribes with the same `error` handler pattern (extracts `error.error?.message` for display)
 
