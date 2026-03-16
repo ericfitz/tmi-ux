@@ -1165,7 +1165,6 @@
     "filterLabel": "Filter by Name",
     "kebab": {
       "delete": "{{common.delete}}",
-      "editDetails": "{{teams.kebab.editDetails}}",
       "metadata": "{{common.metadata}}",
       "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
       "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
@@ -1349,7 +1348,6 @@
     "filterLabel": "Filter Teams",
     "kebab": {
       "delete": "{{common.delete}}",
-      "editDetails": "Edit Details",
       "members": "Members",
       "metadata": "{{common.metadata}}",
       "relatedTeams": "{{teams.relatedTeamsDialog.title}}",

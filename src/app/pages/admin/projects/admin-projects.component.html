@@ -146,37 +146,46 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>{{ 'common.actions' | transloco }}</th>
             <td mat-cell *matCellDef="let project" class="actions-column">
-              <button
-                mat-icon-button
-                [matMenuTriggerFor]="rowKebab"
-                [matTooltip]="'common.actions' | transloco"
-                [attr.aria-label]="'common.actions' | transloco"
-              >
-                <mat-icon>more_vert</mat-icon>
-              </button>
-              <mat-menu #rowKebab="matMenu">
-                <button mat-menu-item (click)="onEditDetails(project)">
+              <div class="action-buttons">
+                <button
+                  mat-icon-button
+                  (click)="onEditDetails(project)"
+                  [matTooltip]="'common.edit' | transloco"
+                  [attr.aria-label]="'common.edit' | transloco"
+                >
                   <mat-icon>edit</mat-icon>
-                  <span [transloco]="'projects.kebab.editDetails'">Edit Details</span>
                 </button>
-                <button mat-menu-item (click)="onResponsibleParties(project)">
-                  <mat-icon>supervisor_account</mat-icon>
-                  <span [transloco]="'projects.kebab.responsibleParties'">Responsible Parties</span>
+                <button
+                  mat-icon-button
+                  [matMenuTriggerFor]="rowKebab"
+                  [matTooltip]="'common.moreActions' | transloco"
+                  [attr.aria-label]="'common.moreActions' | transloco"
+                  (click)="$event.stopPropagation()"
+                >
+                  <mat-icon>more_vert</mat-icon>
                 </button>
-                <button mat-menu-item (click)="onRelatedProjects(project)">
-                  <mat-icon>link</mat-icon>
-                  <span [transloco]="'projects.kebab.relatedProjects'">Related Projects</span>
-                </button>
-                <button mat-menu-item (click)="onMetadata(project)">
-                  <mat-icon>list</mat-icon>
-                  <span [transloco]="'projects.kebab.metadata'">Metadata</span>
-                </button>
-                <mat-divider></mat-divider>
-                <button mat-menu-item (click)="onDelete(project)" class="delete-action">
-                  <mat-icon color="warn">delete</mat-icon>
-                  <span [transloco]="'projects.kebab.delete'">Delete</span>
-                </button>
-              </mat-menu>
+                <mat-menu #rowKebab="matMenu">
+                  <button mat-menu-item (click)="onResponsibleParties(project)">
+                    <mat-icon>supervisor_account</mat-icon>
+                    <span [transloco]="'projects.kebab.responsibleParties'">
+                      Responsible Parties
+                    </span>
+                  </button>
+                  <button mat-menu-item (click)="onRelatedProjects(project)">
+                    <mat-icon>link</mat-icon>
+                    <span [transloco]="'projects.kebab.relatedProjects'">Related Projects</span>
+                  </button>
+                  <button mat-menu-item (click)="onMetadata(project)">
+                    <mat-icon>list</mat-icon>
+                    <span [transloco]="'projects.kebab.metadata'">Metadata</span>
+                  </button>
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="onDelete(project)" class="delete-action">
+                    <mat-icon color="warn">delete</mat-icon>
+                    <span [transloco]="'projects.kebab.delete'">Delete</span>
+                  </button>
+                </mat-menu>
+              </div>
             </td>
           </ng-container>
 

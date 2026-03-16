@@ -1134,7 +1134,6 @@
     "filterLabel": "Filtrar por Nome",
     "kebab": {
       "delete": "{{common.delete}}",
-      "editDetails": "{{teams.kebab.editDetails}}",
       "metadata": "{{common.metadata}}",
       "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
       "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"

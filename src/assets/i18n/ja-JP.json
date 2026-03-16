@@ -1134,7 +1134,6 @@
     "filterLabel": "名前でフィルタリング",
     "kebab": {
       "delete": "{{common.delete}}",
-      "editDetails": "{{teams.kebab.editDetails}}",
       "metadata": "{{common.metadata}}",
       "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
       "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
@@ -1307,7 +1306,6 @@
     "filterLabel": "チームをフィルター",
     "kebab": {
       "delete": "{{common.delete}}",
-      "editDetails": "詳細を編集",
       "members": "メンバー",
       "metadata": "{{common.metadata}}",
       "relatedTeams": "{{teams.relatedTeamsDialog.title}}",

@@ -1134,7 +1134,6 @@
     "filterLabel": "按名称筛选",
     "kebab": {
       "delete": "{{common.delete}}",
-      "editDetails": "{{teams.kebab.editDetails}}",
       "metadata": "{{common.metadata}}",
       "relatedProjects": "{{projects.relatedProjectsDialog.title}}",
       "responsibleParties": "{{projects.responsiblePartiesDialog.title}}"
@@ -1307,7 +1306,6 @@
     "filterLabel": "筛选团队",
     "kebab": {
       "delete": "{{common.delete}}",
-      "editDetails": "编辑详情",
       "members": "成员",
       "metadata": "{{common.metadata}}",
       "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
