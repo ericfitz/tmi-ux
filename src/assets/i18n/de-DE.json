@@ -179,7 +179,7 @@
       },
       "surveys": {
         "description": "Umfragen erstellen und verwalten",
-        "title": "Umfragen verwalten"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
         "description": "Teams und Teamzugehörigkeit verwalten",
@@ -265,7 +265,7 @@
       "filterLabel": "Benutzer filtern",
       "filterPlaceholder": "Nach E-Mail, Name, Anbieter oder Gruppenname suchen",
       "lastLogin": "Letzte Anmeldung",
-      "listTitle": "Benutzer",
+      "listTitle": "{{admin.sections.users.title}}",
       "never": "Nie",
       "noUsers": "Keine Benutzer gefunden",
       "subtitle": "Systembenutzer anzeigen und verwalten",
@@ -928,6 +928,7 @@
   "homeDescription": "TMI ist ein Tool, das die Sicherheitsüberprüfungs- und Threat-Modeling-Prozesse deiner Organisation optimiert. Es steuert Review-Workflows, organisiert wichtige Informationen und ermöglicht es Teams, gemeinsam Data-Flow-Diagramme zu erstellen. Es verbindet sich auch mit Automatisierungen und hilft, manuelle Arbeit zu reduzieren und Sicherheitsrisiken effizienter zu identifizieren.",
   "homeWelcomeTitle": "Willkommen bei TMI: Verbesserte Bedrohungsmodellierung",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -1132,6 +1133,9 @@
       "title": "Projekt bearbeiten"
     },
     "filterLabel": "Nach Name filtern",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
     "kebab": {
       "delete": "{{common.delete}}",
       "metadata": "{{common.metadata}}",
@@ -1170,10 +1174,7 @@
     "statusFilterLabel": "Nach Status filtern",
     "subtitle": "Erstellen, bearbeiten und verwalten Sie Projekte, Beziehungen und Metadaten",
     "teamFilterLabel": "Nach Team filtern",
-    "title": "Projekte verwalten",
-    "filterNameLabel": "{{projects.filterLabel}}",
-    "filterStatusLabel": "{{projects.statusFilterLabel}}",
-    "filterTeamLabel": "{{projects.teamFilterLabel}}"
+    "title": "Projekte verwalten"
   },
   "report": {
     "cvss": "CVSS",
@@ -1431,6 +1432,7 @@
     "changeSecurityReviewer": "Sicherheitsprüfer ändern",
     "clearSecurityReviewer": "Sicherheitsprüfer entfernen",
     "commit": "Commit",
+    "confidentialProject": "Vertrauliches Projekt",
     "createFirstButton": "Erstellen Sie Ihr erstes Bedrohungsmodell",
     "createNewDiagram": "Neues Diagramm erstellen",
     "createNewRepository": "Repository-Referenz hinzufügen",
@@ -1731,7 +1733,7 @@
   "userPreferences": {
     "colorBlindMode": "Farbenblindmodus aktivieren",
     "credentials": {
-      "add": "Hinzufügen",
+      "add": "{{common.add}}",
       "clientId": "Client-ID",
       "clientSecret": "Client-Geheimnis",
       "createDialog": {

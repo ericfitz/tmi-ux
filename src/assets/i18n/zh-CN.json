@@ -179,7 +179,7 @@
       },
       "surveys": {
         "description": "创建和管理调查问卷",
-        "title": "管理调查问卷"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
         "description": "管理团队和团队成员",
@@ -265,7 +265,7 @@
       "filterLabel": "筛选用户",
       "filterPlaceholder": "按电子邮件、姓名、提供商或组名搜索",
       "lastLogin": "最后登录",
-      "listTitle": "用户",
+      "listTitle": "{{admin.sections.users.title}}",
       "never": "从未",
       "noUsers": "未找到用户",
       "subtitle": "查看和管理系统用户",
@@ -928,6 +928,7 @@
   "homeDescription": "TMI 是一款简化组织安全审查和威胁建模流程的工具。它驱动审查工作流程，组织关键信息，并使团队能够协作构建数据流图。它还可以连接到自动化工具，帮助减少手动工作并更高效地发现安全威胁。",
   "homeWelcomeTitle": "欢迎使用 TMI: 威胁建模改进",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -1132,6 +1133,9 @@
       "title": "编辑项目"
     },
     "filterLabel": "按名称筛选",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
     "kebab": {
       "delete": "{{common.delete}}",
       "metadata": "{{common.metadata}}",
@@ -1170,10 +1174,7 @@
     "statusFilterLabel": "按状态筛选",
     "subtitle": "创建、编辑和管理项目、关系和元数据",
     "teamFilterLabel": "按团队筛选",
-    "title": "管理项目",
-    "filterNameLabel": "{{projects.filterLabel}}",
-    "filterStatusLabel": "{{projects.statusFilterLabel}}",
-    "filterTeamLabel": "{{projects.teamFilterLabel}}"
+    "title": "管理项目"
   },
   "report": {
     "cvss": "CVSS",
@@ -1431,6 +1432,7 @@
     "changeSecurityReviewer": "更换安全审查员",
     "clearSecurityReviewer": "清除安全审查员",
     "commit": "提交",
+    "confidentialProject": "机密项目",
     "createFirstButton": "创建您的第一个威胁模型",
     "createNewDiagram": "创建新图表",
     "createNewRepository": "添加仓库引用",
@@ -1731,7 +1733,7 @@
   "userPreferences": {
     "colorBlindMode": "启用色盲模式",
     "credentials": {
-      "add": "添加",
+      "add": "{{common.add}}",
       "clientId": "客户端ID",
       "clientSecret": "客户端密钥",
       "createDialog": {

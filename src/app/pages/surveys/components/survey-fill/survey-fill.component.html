@@ -106,6 +106,12 @@
             (projectChange)="onProjectChange($event)"
           />
         </div>
+        @if (showConfidential && response.is_confidential) {
+          <div class="confidential-indicator">
+            <mat-icon aria-hidden="true">warning</mat-icon>
+            <span>{{ 'intake.confidentialIndicator' | transloco }}</span>
+          </div>
+        }
       }
       @if (surveyModel) {
         <survey [model]="surveyModel"></survey>

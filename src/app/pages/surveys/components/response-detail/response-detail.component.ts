@@ -25,6 +25,7 @@ import { SurveyThemeService } from '../../services/survey-theme.service';
 import { SurveyResponse, SurveyJsonSchema, ResponseStatus } from '@app/types/survey.types';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import { ProjectPickerComponent } from '@app/shared/components/project-picker/project-picker.component';
+import { environment } from '../../../../../environments/environment';
 
 /**
  * Response detail component
@@ -51,6 +52,8 @@ export class ResponseDetailComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private themeService = inject(ThemeService);
   private surveyThemeService = inject(SurveyThemeService);
+
+  readonly showConfidential = environment.enableConfidentialThreatModels ?? false;
 
   surveyModel: Model | null = null;
   response: SurveyResponse | null = null;

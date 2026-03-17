@@ -179,7 +179,7 @@
       },
       "surveys": {
         "description": "سروے بنائیں اور ان کا نظم کریں",
-        "title": "سروے کا نظم کریں"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
         "description": "ٹیموں اور ٹیم کی رکنیت کا انتظام",
@@ -265,7 +265,7 @@
       "filterLabel": "صارفین فلٹر کریں",
       "filterPlaceholder": "ای میل، نام، فراہم کنندہ، یا گروپ کے نام سے تلاش کریں",
       "lastLogin": "آخری لاگ ان",
-      "listTitle": "صارفین",
+      "listTitle": "{{admin.sections.users.title}}",
       "never": "کبھی نہیں",
       "noUsers": "کوئی صارفین نہیں ملے",
       "subtitle": "سسٹم صارفین دیکھیں اور ان کا انتظام کریں",
@@ -928,6 +928,7 @@
   "homeDescription": "TMI ایک ایسا ٹول ہے جو آپ کی تنظیم کے سیکیورٹی ریویو اور ہماہنگی ماڈلنگ کے عمل کو سادہ بناتا ہے۔ یہ ریویو کے بہاؤ کو چلاتا ہے، اہم معلومات کو منظم کرتا ہے، اور ٹیموں کو ڈیٹا فلو ڈائاگرام بنانے میں تعاون کرتا ہے۔ یہ خودکار نظام سے بھی جڑا ہوتا ہے، جو دستی محنت کو کم کرنے اور سیکیورٹی کے خطرات کو زیادہ موثر انداز میں ظاہر کرنے میں مدد دیتا ہے۔",
   "homeWelcomeTitle": "TMI میں خوش آمدید: Threat Modeling Improved",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -1132,6 +1133,9 @@
       "title": "منصوبہ میں ترمیم کریں"
     },
     "filterLabel": "نام سے فلٹر کریں",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
     "kebab": {
       "delete": "{{common.delete}}",
       "metadata": "{{common.metadata}}",
@@ -1170,10 +1174,7 @@
     "statusFilterLabel": "حالت سے فلٹر کریں",
     "subtitle": "منصوبے، تعلقات اور میٹا ڈیٹا بنائیں، ترمیم کریں اور منظم کریں",
     "teamFilterLabel": "ٹیم سے فلٹر کریں",
-    "title": "منصوبے کا انتظام کریں",
-    "filterNameLabel": "{{projects.filterLabel}}",
-    "filterStatusLabel": "{{projects.statusFilterLabel}}",
-    "filterTeamLabel": "{{projects.teamFilterLabel}}"
+    "title": "منصوبے کا انتظام کریں"
   },
   "report": {
     "cvss": "CVSS",
@@ -1431,6 +1432,7 @@
     "changeSecurityReviewer": "سیکیورٹی جائزہ کار تبدیل کریں",
     "clearSecurityReviewer": "سیکیورٹی جائزہ کار صاف کریں",
     "commit": "کمٹ",
+    "confidentialProject": "خفیہ منصوبہ",
     "createFirstButton": "اپنا پہلا خطرے کا ماڈل بنائیں",
     "createNewDiagram": "نیا ڈایاگرام بنائیں",
     "createNewRepository": "ریپوزٹری حوالہ شامل کریں",
@@ -1731,7 +1733,7 @@
   "userPreferences": {
     "colorBlindMode": "کلر بلائنڈ موڈ فعال کریں",
     "credentials": {
-      "add": "شامل کریں",
+      "add": "{{common.add}}",
       "clientId": "کلائنٹ ID",
       "clientSecret": "کلائنٹ سیکریٹ",
       "createDialog": {

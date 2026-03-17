@@ -50,10 +50,16 @@
         "description": "จัดการโครงการ ความสัมพันธ์ และข้อมูลเมตา",
         "title": "{{teams.columns.projects}}"
       },
+      "surveys": {
+        "title": "{{common.objectTypes.surveys}}"
+      },
       "teams": {
         "description": "จัดการทีมและการเป็นสมาชิกของทีม",
         "title": "ทีม"
       }
+    },
+    "users": {
+      "listTitle": "{{admin.sections.users.title}}"
     }
   },
   "adminSurveys": {
@@ -663,6 +669,7 @@
   "homeDescription": "TMI เป็นเครื่องมือที่ช่วยให้องค์กรของคุณสามารถดำเนินการตรวจสอบความปลอดภัยและกระบวนการสร้างแบบจำลองภัยคุกคามได้อย่างมีประสิทธิภาพ มันช่วยขับเคลื่อนขั้นตอนการตรวจสอบ จัดระเบียบข้อมูลสำคัญ และอนุญาตให้ทีมสร้างแผนผังการไหลของข้อมูลแบบร่วมมือกัน นอกจากนี้ยังเชื่อมต่อกับระบบอัตโนมัติ ซึ่งช่วยลดงานที่ต้องทำด้วยตนเองและระบุภัยคุกคามด้านความปลอดภัยได้อย่างมีประสิทธิภาพมากขึ้น",
   "homeWelcomeTitle": "ยินดีต้อนรับสู่ TMI: การสร้างแบบจำลองภัยคุกคามที่ปรับปรุง",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -867,6 +874,9 @@
       "title": "แก้ไขโครงการ"
     },
     "filterLabel": "ตัวกรองตามชื่อ",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
     "kebab": {
       "delete": "{{common.delete}}",
       "metadata": "{{common.metadata}}",
@@ -905,10 +915,7 @@
     "statusFilterLabel": "ตัวกรองตามสถานะ",
     "subtitle": "สร้าง แก้ไข และจัดการโครงการ ความสัมพันธ์ และข้อมูลเมตา",
     "teamFilterLabel": "ตัวกรองตามทีม",
-    "title": "จัดการโครงการ",
-    "filterNameLabel": "{{projects.filterLabel}}",
-    "filterStatusLabel": "{{projects.statusFilterLabel}}",
-    "filterTeamLabel": "{{projects.teamFilterLabel}}"
+    "title": "จัดการโครงการ"
   },
   "report": {
     "cvss": "CVSS",
@@ -1153,6 +1160,7 @@
     "changeSecurityReviewer": "เปลี่ยนผู้ตรวจสอบความปลอดภัย",
     "clearSecurityReviewer": "ล้างผู้ตรวจสอบความปลอดภัย",
     "commit": "คอมมิต",
+    "confidentialProject": "โครงการลับ",
     "createFirstButton": "สร้างแบบจำลองภัยคุกคามแรกของคุณ",
     "createNewDiagram": "สร้างแผนภาพใหม่",
     "createNewRepository": "เพิ่มการอ้างอิงที่เก็บ",
@@ -1453,7 +1461,7 @@
   "userPreferences": {
     "colorBlindMode": "เปิดใช้งานโหมดตาบอดสี",
     "credentials": {
-      "add": "เพิ่ม",
+      "add": "{{common.add}}",
       "clientId": "Client ID",
       "clientSecret": "Client Secret",
       "createDialog": {

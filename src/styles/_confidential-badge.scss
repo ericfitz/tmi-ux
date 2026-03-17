@@ -1,0 +1,25 @@
+/// Shared styles for confidential indicator badges.
+/// Used by survey-fill, response-detail, and tm-edit components.
+@mixin confidential-badge(
+  $font-size: 13px,
+  $font-weight: 500,
+  $padding: 4px 12px,
+  $icon-size: 18px
+) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: $padding;
+  border-radius: 8px;
+  font-size: $font-size;
+  font-weight: $font-weight;
+  text-transform: uppercase;
+  background-color: var(--color-warning);
+  color: var(--color-text-primary);
+
+  mat-icon {
+    font-size: $icon-size;
+    width: $icon-size;
+    height: $icon-size;
+  }
+}

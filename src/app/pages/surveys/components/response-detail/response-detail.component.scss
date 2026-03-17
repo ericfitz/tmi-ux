@@ -1,3 +1,5 @@
+@use '../../../../../styles/confidential-badge' as badge;
+
 .response-detail-container {
   padding: 24px;
   max-width: 900px;
@@ -50,6 +52,10 @@
         font-size: 16px;
         width: 16px;
         height: 16px;
+      }
+
+      .confidential-indicator {
+        @include badge.confidential-badge;
       }
     }
   }

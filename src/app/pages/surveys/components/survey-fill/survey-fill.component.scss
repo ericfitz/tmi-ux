@@ -1,3 +1,5 @@
+@use '../../../../../styles/confidential-badge' as badge;
+
 .survey-fill-container {
   display: flex;
   flex-direction: column;
@@ -110,6 +112,13 @@
 // Project picker section (inside .survey-content, inherits its padding)
 .project-picker-section {
   max-width: 400px;
+  margin-bottom: 16px;
+}
+
+// Confidential submission indicator
+.confidential-indicator {
+  @include badge.confidential-badge;
+
   margin-bottom: 16px;
 }
 

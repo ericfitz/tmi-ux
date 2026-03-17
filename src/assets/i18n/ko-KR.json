@@ -179,7 +179,7 @@
       },
       "surveys": {
         "description": "설문조사 생성 및 관리",
-        "title": "설문조사 관리"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
         "description": "팀 및 팀 멤버십 관리",
@@ -265,7 +265,7 @@
       "filterLabel": "사용자 필터",
       "filterPlaceholder": "이메일, 이름, 공급자 또는 그룹 이름으로 검색",
       "lastLogin": "마지막 로그인",
-      "listTitle": "사용자",
+      "listTitle": "{{admin.sections.users.title}}",
       "never": "없음",
       "noUsers": "사용자를 찾을 수 없습니다",
       "subtitle": "시스템 사용자 보기 및 관리",
@@ -928,6 +928,7 @@
   "homeDescription": "TMI는 조직의 보안 검토 및 위협 모델링 프로세스를 간소화하는 도구입니다. 검토 워크플로우를 주도하고, 핵심 정보를 정리하며, 팀이 협력하여 데이터 흐름 다이어그램을 구축할 수 있도록 지원합니다. 또한 자동화와 연결되어 수동 작업을 줄이고 보안 위협을 보다 효율적으로 식별하는 데 도움이 됩니다.",
   "homeWelcomeTitle": "TMI에 오신 것을 환영합니다: 향상된 위협 모델링",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -1132,6 +1133,9 @@
       "title": "프로젝트 편집"
     },
     "filterLabel": "이름으로 필터링",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
     "kebab": {
       "delete": "{{common.delete}}",
       "metadata": "{{common.metadata}}",
@@ -1170,10 +1174,7 @@
     "statusFilterLabel": "상태로 필터링",
     "subtitle": "프로젝트, 관계 및 메타데이터 생성, 편집 및 관리",
     "teamFilterLabel": "팀으로 필터링",
-    "title": "프로젝트 관리",
-    "filterNameLabel": "{{projects.filterLabel}}",
-    "filterStatusLabel": "{{projects.statusFilterLabel}}",
-    "filterTeamLabel": "{{projects.teamFilterLabel}}"
+    "title": "프로젝트 관리"
   },
   "report": {
     "cvss": "CVSS",
@@ -1431,6 +1432,7 @@
     "changeSecurityReviewer": "보안 검토자 변경",
     "clearSecurityReviewer": "보안 검토자 해제",
     "commit": "커밋",
+    "confidentialProject": "기밀 프로젝트",
     "createFirstButton": "첫 번째 위협 모델 만들기",
     "createNewDiagram": "새 다이어그램 생성",
     "createNewRepository": "저장소 참조 추가",
@@ -1731,7 +1733,7 @@
   "userPreferences": {
     "colorBlindMode": "색맹 모드 활성화",
     "credentials": {
-      "add": "추가",
+      "add": "{{common.add}}",
       "clientId": "클라이언트 ID",
       "clientSecret": "클라이언트 시크릿",
       "createDialog": {

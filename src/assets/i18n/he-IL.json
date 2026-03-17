@@ -179,7 +179,7 @@
       },
       "surveys": {
         "description": "יצירה וניהול של סקרים",
-        "title": "ניהול סקרים"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
         "description": "Manage teams and team membership",
@@ -265,7 +265,7 @@
       "filterLabel": "סנן משתמשים",
       "filterPlaceholder": "חפש לפי דוא\"ל, שם, ספק או שם קבוצה",
       "lastLogin": "כניסה אחרונה",
-      "listTitle": "משתמשים",
+      "listTitle": "{{admin.sections.users.title}}",
       "never": "אף פעם",
       "noUsers": "לא נמצאו משתמשים",
       "subtitle": "צפה ונהל משתמשי מערכת",
@@ -928,6 +928,7 @@
   "homeDescription": "TMI הוא כלי שמייעל את תהליכי סקירת האבטחה ומידול האיומים בארגון שלך. הוא מניע תהליכי עבודה של סקירה, מארגן מידע מרכזי ומאפשר לצוותים לבנות בשיתוף פעולה דיאגרמות זרימת נתונים. הוא גם מתחבר לאוטומציה, ועוזר לצמצם עבודה ידנית ולזהות איומי אבטחה בצורה יעילה יותר.",
   "homeWelcomeTitle": "ברוכים הבאים ל-TMI: מידול איומים משופר",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -1132,6 +1133,9 @@
       "title": "ערוך פרויקט"
     },
     "filterLabel": "סנן לפי שם",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
     "kebab": {
       "delete": "{{common.delete}}",
       "metadata": "{{common.metadata}}",
@@ -1170,10 +1174,7 @@
     "statusFilterLabel": "סנן לפי סטטוס",
     "subtitle": "צור, ערוך וניהל פרויקטים, קשרים ומטא-נתונים",
     "teamFilterLabel": "סנן לפי צוות",
-    "title": "ניהול פרויקטים",
-    "filterNameLabel": "{{projects.filterLabel}}",
-    "filterStatusLabel": "{{projects.statusFilterLabel}}",
-    "filterTeamLabel": "{{projects.teamFilterLabel}}"
+    "title": "ניהול פרויקטים"
   },
   "report": {
     "cvss": "CVSS",
@@ -1431,6 +1432,7 @@
     "changeSecurityReviewer": "שינוי סוקר אבטחה",
     "clearSecurityReviewer": "ניקוי סוקר אבטחה",
     "commit": "קומיט",
+    "confidentialProject": "פרויקט חסוי",
     "createFirstButton": "צור את מודל האיומים הראשון שלך",
     "createNewDiagram": "צור דיאגרמה חדשה",
     "createNewRepository": "הוסף הפניה למאגר",
@@ -1731,7 +1733,7 @@
   "userPreferences": {
     "colorBlindMode": "הפעל מצב עיוורון צבעים",
     "credentials": {
-      "add": "הוסף",
+      "add": "{{common.add}}",
       "clientId": "מזהה לקוח",
       "clientSecret": "סוד לקוח",
       "createDialog": {

@@ -188,7 +188,7 @@
       },
       "surveys": {
         "description": "Create and manage surveys",
-        "title": "Surveys"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
         "description": "Manage teams and team membership",
@@ -274,7 +274,7 @@
       "filterLabel": "Filter Users",
       "filterPlaceholder": "Search by email, name, provider, or group name",
       "lastLogin": "Last Login",
-      "listTitle": "Users",
+      "listTitle": "{{admin.sections.users.title}}",
       "never": "Never",
       "noUsers": "No users found",
       "subtitle": "View and manage system users",
@@ -958,6 +958,7 @@
   "homeDescription": "TMI is a tool that streamlines your organization's security review and threat modeling processes. It drives review workflows, organizes key information, and enables teams to collaboratively build data flow diagrams. It also connects to automation, helping reduce manual toil and surface security threats more efficiently.",
   "homeWelcomeTitle": "Welcome to TMI: Threat Modeling Improved",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -1484,6 +1485,7 @@
     "clearSecurityReviewer": "Clear Security Reviewer",
     "commit": "Commit",
     "commit.comment": "This is used as a noun, representing the id value of a change in a source code management system.",
+    "confidentialProject": "Confidential Project",
     "createFirstButton": "Create Your First Threat Model",
     "createNewDiagram": "Create New Diagram",
     "createNewRepository": "Add Repository Reference",
@@ -1791,7 +1793,7 @@
   "userPreferences": {
     "colorBlindMode": "Enable Color Blind Mode",
     "credentials": {
-      "add": "Add",
+      "add": "{{common.add}}",
       "clientId": "Client ID",
       "clientSecret": "Client Secret",
       "createDialog": {

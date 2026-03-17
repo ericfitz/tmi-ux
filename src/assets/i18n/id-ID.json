@@ -179,7 +179,7 @@
       },
       "surveys": {
         "description": "Buat dan kelola survei",
-        "title": "Kelola Survei"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
         "description": "Kelola tim dan keanggotaan tim",
@@ -265,7 +265,7 @@
       "filterLabel": "Filter Pengguna",
       "filterPlaceholder": "Cari berdasarkan email, nama, penyedia, atau nama grup",
       "lastLogin": "Login Terakhir",
-      "listTitle": "Pengguna",
+      "listTitle": "{{admin.sections.users.title}}",
       "never": "Tidak Pernah",
       "noUsers": "Tidak ada pengguna ditemukan",
       "subtitle": "Lihat dan kelola pengguna sistem",
@@ -928,6 +928,7 @@
   "homeDescription": "TMI adalah alat yang menyederhanakan proses peninjauan keamanan dan pemodelan ancaman organisasi Anda. Ini mendorong alur kerja peninjauan, mengorganisir informasi penting, dan memungkinkan tim untuk secara kolaboratif membangun diagram alur data. Alat ini juga terhubung dengan otomasi, membantu mengurangi pekerjaan manual dan mengidentifikasi ancaman keamanan dengan lebih efisien.",
   "homeWelcomeTitle": "Selamat Datang di TMI: Threat Modeling Improved",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -1132,6 +1133,9 @@
       "title": "Edit Proyek"
     },
     "filterLabel": "Filter berdasarkan Nama",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
     "kebab": {
       "delete": "{{common.delete}}",
       "metadata": "{{common.metadata}}",
@@ -1170,10 +1174,7 @@
     "statusFilterLabel": "Filter berdasarkan Status",
     "subtitle": "Buat, edit, dan kelola proyek, hubungan, dan metadata",
     "teamFilterLabel": "Filter berdasarkan Tim",
-    "title": "Kelola Proyek",
-    "filterNameLabel": "{{projects.filterLabel}}",
-    "filterStatusLabel": "{{projects.statusFilterLabel}}",
-    "filterTeamLabel": "{{projects.teamFilterLabel}}"
+    "title": "Kelola Proyek"
   },
   "report": {
     "cvss": "CVSS",
@@ -1431,6 +1432,7 @@
     "changeSecurityReviewer": "Ubah Peninjau Keamanan",
     "clearSecurityReviewer": "Hapus Peninjau Keamanan",
     "commit": "Commit",
+    "confidentialProject": "Proyek Rahasia",
     "createFirstButton": "Buat Model Ancaman Pertama Anda",
     "createNewDiagram": "Buat Diagram Baru",
     "createNewRepository": "Tambah Referensi Repositori",
@@ -1731,7 +1733,7 @@
   "userPreferences": {
     "colorBlindMode": "Aktifkan Mode Buta Warna",
     "credentials": {
-      "add": "Tambah",
+      "add": "{{common.add}}",
       "clientId": "ID Klien",
       "clientSecret": "Rahasia Klien",
       "createDialog": {

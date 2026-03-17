@@ -121,6 +121,7 @@ import {
 import { AdminUser } from '@app/types/user.types';
 import { ProjectPickerComponent } from '@app/shared/components/project-picker/project-picker.component';
 import { ProjectService } from '@app/core/services/project.service';
+import { environment } from '../../../environments/environment';
 
 // Define form value interface
 interface ThreatModelFormValues {
@@ -183,6 +184,8 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   isEditingIssueUri = false;
   initialIssueUriValue = '';
   frameworks: FrameworkModel[] = [];
+
+  readonly showConfidential = environment.enableConfidentialThreatModels ?? false;
 
   // Permission properties
   canEdit = false;

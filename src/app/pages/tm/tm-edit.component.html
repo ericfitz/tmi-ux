@@ -25,6 +25,12 @@
       <mat-card class="details-card">
         <mat-card-header>
           <mat-card-title [transloco]="'threatModels.details'">Threat Model Details</mat-card-title>
+          @if (showConfidential && threatModel.is_confidential) {
+            <div class="confidential-project-badge">
+              <mat-icon aria-hidden="true">warning</mat-icon>
+              <span>{{ 'threatModels.confidentialProject' | transloco }}</span>
+            </div>
+          }
           <div class="action-buttons">
             <button
               mat-icon-button

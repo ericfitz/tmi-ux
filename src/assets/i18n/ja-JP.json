@@ -179,7 +179,7 @@
       },
       "surveys": {
         "description": "調査を作成および管理",
-        "title": "調査を管理"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
         "description": "チームとチームメンバーシップの管理",
@@ -265,7 +265,7 @@
       "filterLabel": "ユーザーをフィルター",
       "filterPlaceholder": "メール、名前、プロバイダー、またはグループ名で検索",
       "lastLogin": "最終ログイン",
-      "listTitle": "ユーザー",
+      "listTitle": "{{admin.sections.users.title}}",
       "never": "なし",
       "noUsers": "ユーザーが見つかりません",
       "subtitle": "システムユーザーの表示と管理",
@@ -928,6 +928,7 @@
   "homeDescription": "TMIは、組織のセキュリティレビューと脅威モデリングプロセスを効率化するツールです。レビューワークフローを推進し、重要な情報を整理し、チームが共同でデータフローダイアグラムを作成できるようにします。また、自動化と連携することで、手作業の負担を軽減し、セキュリティ上の脅威をより効率的に発見するのに役立ちます。",
   "homeWelcomeTitle": "TMIへようこそ: 脅威モデリング改善版",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -1132,6 +1133,9 @@
       "title": "プロジェクトを編集"
     },
     "filterLabel": "名前でフィルタリング",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
     "kebab": {
       "delete": "{{common.delete}}",
       "metadata": "{{common.metadata}}",
@@ -1170,10 +1174,7 @@
     "statusFilterLabel": "ステータスでフィルタリング",
     "subtitle": "プロジェクト、関連性、メタデータを作成、編集、管理します",
     "teamFilterLabel": "チームでフィルタリング",
-    "title": "プロジェクト管理",
-    "filterNameLabel": "{{projects.filterLabel}}",
-    "filterStatusLabel": "{{projects.statusFilterLabel}}",
-    "filterTeamLabel": "{{projects.teamFilterLabel}}"
+    "title": "プロジェクト管理"
   },
   "report": {
     "cvss": "CVSS",
@@ -1431,6 +1432,7 @@
     "changeSecurityReviewer": "セキュリティレビュアーを変更",
     "clearSecurityReviewer": "セキュリティレビュアーをクリア",
     "commit": "コミット",
+    "confidentialProject": "機密プロジェクト",
     "createFirstButton": "最初の脅威モデルを作成",
     "createNewDiagram": "新しいダイアグラムを作成",
     "createNewRepository": "リポジトリ参照を追加",
@@ -1731,7 +1733,7 @@
   "userPreferences": {
     "colorBlindMode": "色覚補助モードを有効にする",
     "credentials": {
-      "add": "追加",
+      "add": "{{common.add}}",
       "clientId": "クライアントID",
       "clientSecret": "クライアントシークレット",
       "createDialog": {

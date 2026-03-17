@@ -179,7 +179,7 @@
       },
       "surveys": {
         "description": "Создание и управление опросами",
-        "title": "Управление опросами"
+        "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
         "description": "Управление командами и членством в командах",
@@ -265,7 +265,7 @@
       "filterLabel": "Фильтр пользователей",
       "filterPlaceholder": "Поиск по email, имени, провайдеру или названию группы",
       "lastLogin": "Последний вход",
-      "listTitle": "Пользователи",
+      "listTitle": "{{admin.sections.users.title}}",
       "never": "Никогда",
       "noUsers": "Пользователи не найдены",
       "subtitle": "Просмотр и управление системными пользователями",
@@ -928,6 +928,7 @@
   "homeDescription": "TMI — это инструмент, который оптимизирует процессы проверки безопасности и моделирования угроз в вашей организации. Он управляет рабочими процессами проверки, организует ключевую информацию и позволяет командам совместно разрабатывать диаграммы потоков данных. Он также интегрируется с системами автоматизации, помогая снизить ручной труд и более эффективно выявлять угрозы безопасности.",
   "homeWelcomeTitle": "Добро Пожаловать в TMI: Улучшенное Моделирование Угроз",
   "intake": {
+    "confidentialIndicator": "{{triage.columns.confidentialTooltip}}",
     "fill": {
       "reviewedBy": "{{triage.detail.reviewedBy}}",
       "revisionNotesTitle": "{{triage.detail.revisionNotesTitle}}",
@@ -1132,6 +1133,9 @@
       "title": "Редактировать проект"
     },
     "filterLabel": "Фильтровать по названию",
+    "filterNameLabel": "{{projects.filterLabel}}",
+    "filterStatusLabel": "{{projects.statusFilterLabel}}",
+    "filterTeamLabel": "{{projects.teamFilterLabel}}",
     "kebab": {
       "delete": "{{common.delete}}",
       "metadata": "{{common.metadata}}",
@@ -1170,10 +1174,7 @@
     "statusFilterLabel": "Фильтровать по статусу",
     "subtitle": "Создание, редактирование и управление проектами, связями и метаданными",
     "teamFilterLabel": "Фильтровать по команде",
-    "title": "Управление проектами",
-    "filterNameLabel": "{{projects.filterLabel}}",
-    "filterStatusLabel": "{{projects.statusFilterLabel}}",
-    "filterTeamLabel": "{{projects.teamFilterLabel}}"
+    "title": "Управление проектами"
   },
   "report": {
     "cvss": "CVSS",
@@ -1431,6 +1432,7 @@
     "changeSecurityReviewer": "Изменить ревизора безопасности",
     "clearSecurityReviewer": "Убрать ревизора безопасности",
     "commit": "Коммит",
+    "confidentialProject": "Конфиденциальный проект",
     "createFirstButton": "Создайте Свою Первую Модель Угроз",
     "createNewDiagram": "Создать новую диаграмму",
     "createNewRepository": "Добавить ссылку на репозиторий",
@@ -1731,7 +1733,7 @@
   "userPreferences": {
     "colorBlindMode": "Включить режим для дальтоников",
     "credentials": {
-      "add": "Добавить",
+      "add": "{{common.add}}",
       "clientId": "Идентификатор клиента",
       "clientSecret": "Секретный ключ клиента",
       "createDialog": {

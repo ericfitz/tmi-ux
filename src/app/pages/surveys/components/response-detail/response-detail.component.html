@@ -23,6 +23,12 @@
             <mat-icon matChipIcon>{{ getStatusInfo(response.status).icon }}</mat-icon>
             {{ getStatusInfo(response.status).label }}
           </mat-chip>
+          @if (showConfidential && response.is_confidential) {
+            <div class="confidential-indicator">
+              <mat-icon aria-hidden="true">warning</mat-icon>
+              <span>{{ 'intake.confidentialIndicator' | transloco }}</span>
+            </div>
+          }
         </div>
       </div>
       <div class="action-buttons">
