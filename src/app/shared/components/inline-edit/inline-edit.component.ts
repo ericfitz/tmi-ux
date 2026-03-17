@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipAriaLabelDirective } from '@app/shared/imports';
 
 /**
  * Inline edit component for click-to-edit text fields.
@@ -21,7 +22,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 @Component({
   selector: 'app-inline-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatTooltipModule],
+  imports: [CommonModule, FormsModule, MatIconModule, MatTooltipModule, TooltipAriaLabelDirective],
   templateUrl: './inline-edit.component.html',
   styleUrl: './inline-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

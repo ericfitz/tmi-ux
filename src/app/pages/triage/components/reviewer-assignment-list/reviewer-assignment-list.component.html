@@ -97,7 +97,6 @@
                 mat-icon-button
                 (click)="openReviewerPicker(row.id); $event.stopPropagation()"
                 [matTooltip]="'triage.reviewerAssignment.selectReviewer' | transloco"
-                [attr.aria-label]="'triage.reviewerAssignment.selectReviewer' | transloco"
               >
                 <mat-icon>person_search</mat-icon>
               </button>
@@ -143,7 +142,6 @@
               mat-icon-button
               (click)="viewThreatModel(row); $event.stopPropagation()"
               [matTooltip]="'triage.viewDetails' | transloco"
-              [attr.aria-label]="'triage.viewDetails' | transloco"
             >
               <mat-icon>open_in_new</mat-icon>
             </button>

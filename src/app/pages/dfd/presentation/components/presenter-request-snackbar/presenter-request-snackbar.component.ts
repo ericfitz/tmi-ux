@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipAriaLabelDirective } from '@app/shared/imports';
 import { MAT_SNACK_BAR_DATA, MatSnackBarRef, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -26,6 +27,7 @@ export interface PresenterRequestSnackbarData {
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    TooltipAriaLabelDirective,
     MatSnackBarModule,
     TranslocoModule,
   ],

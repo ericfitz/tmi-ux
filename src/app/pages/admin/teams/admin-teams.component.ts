@@ -31,7 +31,10 @@ import {
   adjustPageAfterDeletion,
 } from '@app/shared/utils/pagination.util';
 import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
-import { CreateTeamDialogComponent } from '@app/shared/components/create-team-dialog/create-team-dialog.component';
+import {
+  CreateTeamDialogComponent,
+  CreateTeamDialogResult,
+} from '@app/shared/components/create-team-dialog/create-team-dialog.component';
 import { EditTeamDialogComponent } from './edit-team-dialog/edit-team-dialog.component';
 import { TeamMembersDialogComponent } from './team-members-dialog/team-members-dialog.component';
 import {
@@ -142,7 +145,7 @@ export class AdminTeamsComponent implements OnInit, AfterViewInit {
     dialogRef
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(result => {
+      .subscribe((result: CreateTeamDialogResult | undefined) => {
         if (result) {
           this.teamService
             .create(result)

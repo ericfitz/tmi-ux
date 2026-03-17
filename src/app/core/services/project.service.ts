@@ -106,7 +106,9 @@ export class ProjectService {
    * @param changes Partial project changes to apply as JSON Patch replace operations
    */
   patch(id: string, changes: ProjectPatch): Observable<Project> {
-    const operations = Object.entries(changes).map(([key, value]) => ({
+    const operations = (
+      Object.entries(changes) as [string, ProjectPatch[keyof ProjectPatch]][]
+    ).map(([key, value]) => ({
       op: 'replace' as const,
       path: `/${key}`,
       value,

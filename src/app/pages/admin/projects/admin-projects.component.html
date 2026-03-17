@@ -7,12 +7,7 @@
       </p>
     </div>
     <div class="action-buttons">
-      <button
-        mat-icon-button
-        (click)="onClose()"
-        [matTooltip]="'common.close' | transloco"
-        [attr.aria-label]="'common.close' | transloco"
-      >
+      <button mat-icon-button (click)="onClose()" [matTooltip]="'common.close' | transloco">
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -46,7 +41,6 @@
               mat-icon-button
               (click)="clearTeamFilter()"
               [matTooltip]="'common.clear' | transloco"
-              [attr.aria-label]="'common.clear' | transloco"
             >
               <mat-icon>close</mat-icon>
             </button>
@@ -151,7 +145,6 @@
                   mat-icon-button
                   (click)="onEditDetails(project)"
                   [matTooltip]="'common.edit' | transloco"
-                  [attr.aria-label]="'common.edit' | transloco"
                 >
                   <mat-icon>edit</mat-icon>
                 </button>
@@ -159,7 +152,6 @@
                   mat-icon-button
                   [matMenuTriggerFor]="rowKebab"
                   [matTooltip]="'common.moreActions' | transloco"
-                  [attr.aria-label]="'common.moreActions' | transloco"
                   (click)="$event.stopPropagation()"
                 >
                   <mat-icon>more_vert</mat-icon>

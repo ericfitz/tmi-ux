@@ -43,7 +43,6 @@
             [class.active]="!previewMode"
             (click)="previewMode = false"
             [matTooltip]="'noteEditor.editMode' | transloco"
-            [attr.aria-label]="'noteEditor.editMode' | transloco"
           >
             <mat-icon fontSet="material-symbols-outlined">edit_note</mat-icon>
           </button>
@@ -53,7 +52,6 @@
             [class.active]="previewMode"
             (click)="togglePreview()"
             [matTooltip]="'noteEditor.previewMode' | transloco"
-            [attr.aria-label]="'noteEditor.previewMode' | transloco"
           >
             <mat-icon fontSet="material-symbols-outlined">preview</mat-icon>
           </button>
@@ -64,7 +62,6 @@
             [disabled]="previewMode || !hasSelection"
             (click)="onCut()"
             [matTooltip]="'common.cut' | transloco"
-            [attr.aria-label]="'common.cut' | transloco"
           >
             <mat-icon fontSet="material-symbols-outlined">content_cut</mat-icon>
           </button>
@@ -74,7 +71,6 @@
             [disabled]="!previewMode && !hasSelection"
             (click)="onCopy()"
             [matTooltip]="'common.copy' | transloco"
-            [attr.aria-label]="'common.copy' | transloco"
           >
             <mat-icon fontSet="material-symbols-outlined">content_copy</mat-icon>
           </button>
@@ -84,7 +80,6 @@
             [disabled]="previewMode"
             (click)="onPaste()"
             [matTooltip]="'common.paste' | transloco"
-            [attr.aria-label]="'common.paste' | transloco"
           >
             <mat-icon fontSet="material-symbols-outlined">content_paste</mat-icon>
           </button>

@@ -23,7 +23,6 @@
         (click)="save()"
         [disabled]="isSaving"
         [matTooltip]="'common.save' | transloco"
-        [attr.aria-label]="'common.save' | transloco"
       >
         @if (isSaving) {
           <mat-spinner diameter="20"></mat-spinner>
@@ -36,7 +35,6 @@
         color="warn"
         (click)="goBack()"
         [matTooltip]="'common.close' | transloco"
-        [attr.aria-label]="'common.close' | transloco"
       >
         <mat-icon>close</mat-icon>
       </button>
@@ -391,9 +389,6 @@
                         class="condition-help-button"
                         (click)="openConditionHelp(); $event.stopPropagation()"
                         [matTooltip]="
-                          'adminSurveys.templateBuilder.conditionalLogicHelp' | transloco
-                        "
-                        [attr.aria-label]="
                           'adminSurveys.templateBuilder.conditionalLogicHelp' | transloco
                         "
                       >

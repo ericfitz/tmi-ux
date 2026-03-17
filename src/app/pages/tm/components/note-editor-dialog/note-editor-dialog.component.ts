@@ -20,6 +20,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipAriaLabelDirective } from '@app/shared/imports';
 import { Note } from '../../models/threat-model.model';
 
 export interface NoteEditorDialogData {
@@ -54,6 +55,7 @@ export interface NoteFormResult {
     MatIconModule,
     MatCheckboxModule,
     MatTooltipModule,
+    TooltipAriaLabelDirective,
     MatSnackBarModule,
     TranslocoModule,
     MarkdownModule,

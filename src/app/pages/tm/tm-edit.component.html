@@ -31,7 +31,6 @@
               color="primary"
               (click)="openMetadataDialog()"
               [matTooltip]="'common.manageMetadata' | transloco"
-              [attr.aria-label]="'common.manageMetadata' | transloco"
             >
               <mat-icon>list</mat-icon>
             </button>
@@ -39,7 +38,6 @@
               mat-icon-button
               [matMenuTriggerFor]="detailsKebabMenu"
               [matTooltip]="'common.actions' | transloco"
-              [attr.aria-label]="'common.actions' | transloco"
               (click)="$event.stopPropagation()"
             >
               <mat-icon>more_vert</mat-icon>
@@ -73,7 +71,6 @@
               color="warn"
               (click)="cancel()"
               [matTooltip]="'common.close' | transloco"
-              [attr.aria-label]="'common.close' | transloco"
             >
               <mat-icon>close</mat-icon>
             </button>
@@ -262,7 +259,6 @@
                     mat-icon-button
                     (click)="openSecurityReviewerPicker()"
                     [matTooltip]="'threatModels.changeSecurityReviewer' | transloco"
-                    [attr.aria-label]="'threatModels.changeSecurityReviewer' | transloco"
                   >
                     <mat-icon>edit</mat-icon>
                   </button>
@@ -271,7 +267,6 @@
                       mat-icon-button
                       (click)="clearSecurityReviewer()"
                       [matTooltip]="'threatModels.clearSecurityReviewer' | transloco"
-                      [attr.aria-label]="'threatModels.clearSecurityReviewer' | transloco"
                     >
                       <mat-icon>close</mat-icon>
                     </button>
@@ -388,7 +383,6 @@
                   class="copy-id-button"
                   (click)="copyThreatModelId()"
                   [matTooltip]="'common.copyToClipboard' | transloco"
-                  [attr.aria-label]="'common.copyToClipboard' | transloco"
                 >
                   <mat-icon>content_copy</mat-icon>
                 </button>
@@ -463,7 +457,6 @@
                     color="primary"
                     (click)="addAsset()"
                     [matTooltip]="'threatModels.tooltips.addAsset' | transloco"
-                    [attr.aria-label]="'threatModels.tooltips.addAsset' | transloco"
                   >
                     <mat-icon>add</mat-icon>
                   </button>
@@ -471,7 +464,6 @@
                     mat-icon-button
                     [matMenuTriggerFor]="assetsHeaderKebabMenu"
                     [matTooltip]="'common.actions' | transloco"
-                    [attr.aria-label]="'common.actions' | transloco"
                     (click)="$event.stopPropagation()"
                   >
                     <mat-icon>more_vert</mat-icon>
@@ -594,11 +586,6 @@
                               ? ('common.manageMetadata' | transloco)
                               : ('common.viewMetadata' | transloco)
                           "
-                          [attr.aria-label]="
-                            canEdit
-                              ? ('common.manageMetadata' | transloco)
-                              : ('common.viewMetadata' | transloco)
-                          "
                         >
                           <mat-icon>list</mat-icon>
                         </button>
@@ -606,7 +593,6 @@
                           mat-icon-button
                           [matMenuTriggerFor]="assetRowKebabMenu"
                           [matTooltip]="'common.actions' | transloco"
-                          [attr.aria-label]="'common.actions' | transloco"
                           (click)="$event.stopPropagation()"
                         >
                           <mat-icon>more_vert</mat-icon>
@@ -700,7 +686,6 @@
                     mat-icon-button
                     [matMenuTriggerFor]="documentsHeaderKebabMenu"
                     [matTooltip]="'common.actions' | transloco"
-                    [attr.aria-label]="'common.actions' | transloco"
                     (click)="$event.stopPropagation()"
                   >
                     <mat-icon>more_vert</mat-icon>
@@ -788,11 +773,6 @@
                               ? ('common.manageMetadata' | transloco)
                               : ('common.viewMetadata' | transloco)
                           "
-                          [attr.aria-label]="
-                            canEdit
-                              ? ('common.manageMetadata' | transloco)
-                              : ('common.viewMetadata' | transloco)
-                          "
                         >
                           <mat-icon>list</mat-icon>
                         </button>
@@ -800,7 +780,6 @@
                           mat-icon-button
                           [matMenuTriggerFor]="documentRowKebabMenu"
                           [matTooltip]="'common.actions' | transloco"
-                          [attr.aria-label]="'common.actions' | transloco"
                           (click)="$event.stopPropagation()"
                         >
                           <mat-icon>more_vert</mat-icon>
@@ -900,7 +879,6 @@
                     mat-icon-button
                     [matMenuTriggerFor]="repositoriesHeaderKebabMenu"
                     [matTooltip]="'common.actions' | transloco"
-                    [attr.aria-label]="'common.actions' | transloco"
                     (click)="$event.stopPropagation()"
                   >
                     <mat-icon>more_vert</mat-icon>
@@ -988,11 +966,6 @@
                               ? ('common.manageMetadata' | transloco)
                               : ('common.viewMetadata' | transloco)
                           "
-                          [attr.aria-label]="
-                            canEdit
-                              ? ('common.manageMetadata' | transloco)
-                              : ('common.viewMetadata' | transloco)
-                          "
                         >
                           <mat-icon>list</mat-icon>
                         </button>
@@ -1000,7 +973,6 @@
                           mat-icon-button
                           [matMenuTriggerFor]="repositoryRowKebabMenu"
                           [matTooltip]="'common.actions' | transloco"
-                          [attr.aria-label]="'common.actions' | transloco"
                           (click)="$event.stopPropagation()"
                         >
                           <mat-icon>more_vert</mat-icon>
@@ -1123,7 +1095,6 @@
                     color="primary"
                     (click)="addNote()"
                     [matTooltip]="'threatModels.tooltips.addNote' | transloco"
-                    [attr.aria-label]="'threatModels.tooltips.addNote' | transloco"
                   >
                     <mat-icon>add</mat-icon>
                   </button>
@@ -1131,7 +1102,6 @@
                     mat-icon-button
                     [matMenuTriggerFor]="notesHeaderKebabMenu"
                     [matTooltip]="'common.actions' | transloco"
-                    [attr.aria-label]="'common.actions' | transloco"
                     (click)="$event.stopPropagation()"
                   >
                     <mat-icon>more_vert</mat-icon>
@@ -1199,11 +1169,6 @@
                               ? ('common.manageMetadata' | transloco)
                               : ('common.viewMetadata' | transloco)
                           "
-                          [attr.aria-label]="
-                            canEdit
-                              ? ('common.manageMetadata' | transloco)
-                              : ('common.viewMetadata' | transloco)
-                          "
                         >
                           <mat-icon>list</mat-icon>
                         </button>
@@ -1211,7 +1176,6 @@
                           mat-icon-button
                           [matMenuTriggerFor]="noteRowKebabMenu"
                           [matTooltip]="'common.actions' | transloco"
-                          [attr.aria-label]="'common.actions' | transloco"
                           (click)="$event.stopPropagation()"
                         >
                           <mat-icon>more_vert</mat-icon>
@@ -1309,7 +1273,6 @@
                     mat-icon-button
                     [matMenuTriggerFor]="diagramsHeaderKebabMenu"
                     [matTooltip]="'common.actions' | transloco"
-                    [attr.aria-label]="'common.actions' | transloco"
                     (click)="$event.stopPropagation()"
                   >
                     <mat-icon>more_vert</mat-icon>
@@ -1418,11 +1381,6 @@
                               ? ('common.manageMetadata' | transloco)
                               : ('common.viewMetadata' | transloco)
                           "
-                          [attr.aria-label]="
-                            canEdit
-                              ? ('common.manageMetadata' | transloco)
-                              : ('common.viewMetadata' | transloco)
-                          "
                         >
                           <mat-icon>list</mat-icon>
                         </button>
@@ -1430,7 +1388,6 @@
                           mat-icon-button
                           [matMenuTriggerFor]="diagramRowKebabMenu"
                           [matTooltip]="'common.actions' | transloco"
-                          [attr.aria-label]="'common.actions' | transloco"
                           (click)="$event.stopPropagation()"
                         >
                           <mat-icon>more_vert</mat-icon>
@@ -1546,7 +1503,6 @@
                     mat-icon-button
                     [matMenuTriggerFor]="threatsHeaderKebabMenu"
                     [matTooltip]="'common.actions' | transloco"
-                    [attr.aria-label]="'common.actions' | transloco"
                     (click)="$event.stopPropagation()"
                   >
                     <mat-icon>more_vert</mat-icon>
@@ -1833,11 +1789,6 @@
                               ? ('common.manageMetadata' | transloco)
                               : ('common.viewMetadata' | transloco)
                           "
-                          [attr.aria-label]="
-                            canEdit
-                              ? ('common.manageMetadata' | transloco)
-                              : ('common.viewMetadata' | transloco)
-                          "
                         >
                           <mat-icon>list</mat-icon>
                         </button>
@@ -1845,7 +1796,6 @@
                           mat-icon-button
                           [matMenuTriggerFor]="threatRowKebabMenu"
                           [matTooltip]="'common.actions' | transloco"
-                          [attr.aria-label]="'common.actions' | transloco"
                           (click)="$event.stopPropagation()"
                         >
                           <mat-icon>more_vert</mat-icon>

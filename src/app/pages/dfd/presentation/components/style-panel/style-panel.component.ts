@@ -30,6 +30,7 @@ import { CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipAriaLabelDirective } from '@app/shared/imports';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSliderModule } from '@angular/material/slider';
 
@@ -78,6 +79,7 @@ export interface StyleChangeEvent {
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    TooltipAriaLabelDirective,
     MatTabsModule,
     MatSliderModule,
     TranslocoModule,

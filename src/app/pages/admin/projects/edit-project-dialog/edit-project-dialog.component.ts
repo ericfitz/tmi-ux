@@ -11,7 +11,7 @@ import {
 import { ProjectService } from '@app/core/services/project.service';
 import { TeamService } from '@app/core/services/team.service';
 import { LoggerService } from '@app/core/services/logger.service';
-import { Project, PROJECT_STATUSES } from '@app/types/project.types';
+import { Project, ProjectInput, PROJECT_STATUSES } from '@app/types/project.types';
 import { TeamListItem } from '@app/types/team.types';
 
 export interface EditProjectDialogData {
@@ -176,11 +176,19 @@ export class EditProjectDialogComponent implements OnInit {
     this.saving = true;
     this.errorMessage = '';
 
-    const input = {
-      ...this.form.value,
-      name: this.form.value.name?.trim(),
-      description: this.form.value.description?.trim() || undefined,
-      uri: this.form.value.uri?.trim() || undefined,
+    const formValue = this.form.value as {
+      name: string;
+      description: string;
+      team_id: string;
+      uri: string;
+      status: string | null;
+    };
+    const input: ProjectInput = {
+      ...formValue,
+      name: formValue.name?.trim(),
+      description: formValue.description?.trim() || undefined,
+      uri: formValue.uri?.trim() || undefined,
+      status: formValue.status || undefined,
     };
 
     this.projectService

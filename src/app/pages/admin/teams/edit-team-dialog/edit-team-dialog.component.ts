@@ -10,7 +10,7 @@ import {
 } from '@app/shared/imports';
 import { TeamService } from '@app/core/services/team.service';
 import { LoggerService } from '@app/core/services/logger.service';
-import { Team, TEAM_STATUSES } from '@app/types/team.types';
+import { Team, TeamInput, TEAM_STATUSES } from '@app/types/team.types';
 
 export interface EditTeamDialogData {
   team: Team;
@@ -149,12 +149,20 @@ export class EditTeamDialogComponent implements OnInit {
     this.saving = true;
     this.errorMessage = '';
 
-    const input = {
-      ...this.form.value,
-      name: this.form.value.name?.trim(),
-      description: this.form.value.description?.trim(),
-      email_address: this.form.value.email_address?.trim() || undefined,
-      uri: this.form.value.uri?.trim() || undefined,
+    const formValue = this.form.value as {
+      name: string;
+      description: string;
+      email_address: string;
+      uri: string;
+      status: string | null;
+    };
+    const input: TeamInput = {
+      ...formValue,
+      name: formValue.name?.trim(),
+      description: formValue.description?.trim(),
+      email_address: formValue.email_address?.trim() || undefined,
+      uri: formValue.uri?.trim() || undefined,
+      status: formValue.status || undefined,
     };
 
     this.teamService

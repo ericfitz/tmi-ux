@@ -36,7 +36,10 @@ import {
   adjustPageAfterDeletion,
 } from '@app/shared/utils/pagination.util';
 import { PaginatorIntlService } from '@app/shared/services/paginator-intl.service';
-import { CreateProjectDialogComponent } from '@app/shared/components/create-project-dialog/create-project-dialog.component';
+import {
+  CreateProjectDialogComponent,
+  CreateProjectDialogResult,
+} from '@app/shared/components/create-project-dialog/create-project-dialog.component';
 import { EditProjectDialogComponent } from './edit-project-dialog/edit-project-dialog.component';
 import {
   ResponsiblePartiesDialogComponent,
@@ -237,7 +240,7 @@ export class AdminProjectsComponent implements OnInit, AfterViewInit {
     dialogRef
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(result => {
+      .subscribe((result: CreateProjectDialogResult | undefined) => {
         if (result) {
           this.projectService
             .create(result)

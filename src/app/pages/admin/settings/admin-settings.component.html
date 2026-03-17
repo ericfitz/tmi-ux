@@ -7,12 +7,7 @@
       </p>
     </div>
     <div class="action-buttons">
-      <button
-        mat-icon-button
-        (click)="onClose()"
-        [attr.aria-label]="'common.close' | transloco"
-        [matTooltip]="'common.close' | transloco"
-      >
+      <button mat-icon-button (click)="onClose()" [matTooltip]="'common.close' | transloco">
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -179,7 +174,6 @@
                       mat-icon-button
                       [matMenuTriggerFor]="settingRowKebabMenu"
                       [matTooltip]="'common.actions' | transloco"
-                      [attr.aria-label]="'common.actions' | transloco"
                       (click)="$event.stopPropagation()"
                     >
                       <mat-icon>more_vert</mat-icon>

@@ -30,6 +30,7 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipAriaLabelDirective } from '@app/shared/imports';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
@@ -54,6 +55,7 @@ import {
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    TooltipAriaLabelDirective,
     MatFormFieldModule,
     MatInputModule,
     TranslocoModule,

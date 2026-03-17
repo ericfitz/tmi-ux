@@ -23,9 +23,6 @@
         [matTooltip]="
           canEdit ? ('common.manageMetadata' | transloco) : ('common.viewMetadata' | transloco)
         "
-        [attr.aria-label]="
-          canEdit ? ('common.manageMetadata' | transloco) : ('common.viewMetadata' | transloco)
-        "
       >
         <mat-icon>list</mat-icon>
       </button>
@@ -36,7 +33,6 @@
           [disabled]="threatForm.invalid || !threatForm.dirty || isSaving"
           (click)="save()"
           [matTooltip]="'common.save' | transloco"
-          [attr.aria-label]="'common.save' | transloco"
         >
           <mat-icon>save</mat-icon>
         </button>
@@ -46,17 +42,11 @@
           mat-icon-button
           [matMenuTriggerFor]="threatPageKebabMenu"
           [matTooltip]="'common.actions' | transloco"
-          [attr.aria-label]="'common.actions' | transloco"
         >
           <mat-icon>more_vert</mat-icon>
         </button>
       }
-      <button
-        mat-icon-button
-        (click)="cancel()"
-        [matTooltip]="'common.close' | transloco"
-        [attr.aria-label]="'common.close' | transloco"
-      >
+      <button mat-icon-button (click)="cancel()" [matTooltip]="'common.close' | transloco">
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -183,7 +173,6 @@
                 color="primary"
                 (click)="openCwePicker()"
                 [matTooltip]="'cwePicker.chooseCwe' | transloco"
-                [attr.aria-label]="'cwePicker.chooseCwe' | transloco"
               >
                 <mat-icon>add</mat-icon>
               </button>
@@ -317,7 +306,6 @@
                   class="external-edit-button"
                   (click)="editIssueUri()"
                   [matTooltip]="'common.edit' | transloco"
-                  [attr.aria-label]="'common.edit' | transloco"
                 >
                   <mat-icon>edit</mat-icon>
                 </button>

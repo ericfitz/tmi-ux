@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipAriaLabelDirective } from '@app/shared/imports';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -36,6 +37,7 @@ interface DiagramFormValues {
     MatInputModule,
     MatIconModule,
     MatTooltipModule,
+    TooltipAriaLabelDirective,
     ReactiveFormsModule,
     TranslocoModule,
   ],

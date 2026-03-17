@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipAriaLabelDirective } from '@app/shared/imports';
 import { ScrollIndicatorDirective } from '@app/shared/directives/scroll-indicator.directive';
 
 export interface TriageNoteEditorDialogData {
@@ -35,6 +36,7 @@ export interface TriageNoteEditorResult {
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    TooltipAriaLabelDirective,
     MatSnackBarModule,
     TranslocoModule,
     MarkdownModule,

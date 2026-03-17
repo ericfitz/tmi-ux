@@ -48,9 +48,10 @@ import { A11yModule } from '@angular/cdk/a11y';
 
 // Shared directives
 import { ScrollIndicatorDirective } from './directives/scroll-indicator.directive';
+import { TooltipAriaLabelDirective } from './directives/tooltip-aria-label.directive';
 
-// Export directive for direct use
-export { ScrollIndicatorDirective };
+// Export directives for direct use
+export { ScrollIndicatorDirective, TooltipAriaLabelDirective };
 
 /**
  * Common Angular imports used by most components
@@ -72,6 +73,7 @@ export const CORE_MATERIAL_IMPORTS = [
   MatMenuModule,
   MatTooltipModule,
   MatDividerModule,
+  TooltipAriaLabelDirective,
 ] as const;
 
 /**

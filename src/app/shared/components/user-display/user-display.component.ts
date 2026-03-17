@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipAriaLabelDirective } from '@app/shared/imports';
 
 import { AuthService } from '@app/auth/services/auth.service';
 import { BrandingConfigService } from '@app/core/services/branding-config.service';
@@ -29,7 +30,7 @@ export interface UserDisplayInput {
 @Component({
   selector: 'app-user-display',
   standalone: true,
-  imports: [CommonModule, MatTooltipModule],
+  imports: [CommonModule, MatTooltipModule, TooltipAriaLabelDirective],
   template: `
     @if (hyperlinkUrl) {
       <a

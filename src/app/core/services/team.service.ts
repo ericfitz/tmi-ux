@@ -98,11 +98,13 @@ export class TeamService {
    * @param changes Partial team changes to apply as JSON Patch replace operations
    */
   patch(id: string, changes: TeamPatch): Observable<Team> {
-    const operations = Object.entries(changes).map(([key, value]) => ({
-      op: 'replace' as const,
-      path: `/${key}`,
-      value,
-    }));
+    const operations = (Object.entries(changes) as [string, TeamPatch[keyof TeamPatch]][]).map(
+      ([key, value]) => ({
+        op: 'replace' as const,
+        path: `/${key}`,
+        value,
+      }),
+    );
     return this.apiService.patch<Team>(`teams/${id}`, operations).pipe(
       tap(result => this.logger.info('Team patched', { id: result.id })),
       catchError(error => {

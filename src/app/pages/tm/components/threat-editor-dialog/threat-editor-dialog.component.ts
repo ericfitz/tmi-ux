@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TooltipAriaLabelDirective } from '@app/shared/imports';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -99,6 +100,7 @@ export interface ThreatEditorDialogData {
     MatInputModule,
     MatIconModule,
     MatTooltipModule,
+    TooltipAriaLabelDirective,
     MatSelectModule,
     MatCheckboxModule,
     ReactiveFormsModule,
