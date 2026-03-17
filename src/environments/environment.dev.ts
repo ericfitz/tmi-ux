@@ -17,6 +17,7 @@ export const environment: Environment = {
   serverInterface: 'localhost',
   enableTLS: false,
   defaultAuthProvider: 'local',
+  enableConfidentialThreatModels: true,
   securityConfig: {
     enableHSTS: false, // Disabled in development (no TLS)
     hstsMaxAge: 300, // 5 minutes for testing
