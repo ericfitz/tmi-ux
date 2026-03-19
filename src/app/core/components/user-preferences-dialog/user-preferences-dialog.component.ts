@@ -336,43 +336,28 @@ interface CheckboxChangeEvent {
               </div>
             } @else {
               <div class="credentials-table-container">
-                <table mat-table [dataSource]="credentials" class="credentials-table">
-                  <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef [transloco]="'common.name'">Name</th>
-                    <td mat-cell *matCellDef="let credential">
-                      <div class="credential-name">{{ credential.name }}</div>
-                      @if (credential.description) {
-                        <div class="credential-description">{{ credential.description }}</div>
+                <table mat-table [dataSource]="credentialRows" class="credentials-table">
+                  <!-- Credential column (name + description + client ID) -->
+                  <ng-container matColumnDef="credential">
+                    <th
+                      mat-header-cell
+                      *matHeaderCellDef
+                      [transloco]="'userPreferences.credentials.credential'"
+                    >
+                      Credential
+                    </th>
+                    <td mat-cell *matCellDef="let row">
+                      <div class="credential-name">{{ row.credential.name }}</div>
+                      @if (row.credential.description) {
+                        <div class="credential-description">
+                          {{ row.credential.description }}
+                        </div>
                       }
+                      <div class="client-id">{{ row.credential.client_id }}</div>
                     </td>
                   </ng-container>
 
-                  <ng-container matColumnDef="clientId">
-                    <th
-                      mat-header-cell
-                      *matHeaderCellDef
-                      [transloco]="'userPreferences.credentials.clientId'"
-                    >
-                      Client ID
-                    </th>
-                    <td mat-cell *matCellDef="let credential">
-                      <span class="client-id">{{ credential.client_id }}</span>
-                    </td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="created">
-                    <th
-                      mat-header-cell
-                      *matHeaderCellDef
-                      [transloco]="'userPreferences.credentials.created'"
-                    >
-                      Created
-                    </th>
-                    <td mat-cell *matCellDef="let credential">
-                      {{ formatDate(credential.created_at) }}
-                    </td>
-                  </ng-container>
-
+                  <!-- Last Used column -->
                   <ng-container matColumnDef="lastUsed">
                     <th
                       mat-header-cell
@@ -381,30 +366,18 @@ interface CheckboxChangeEvent {
                     >
                       Last Used
                     </th>
-                    <td mat-cell *matCellDef="let credential">
-                      {{ formatLastUsed(credential.last_used_at) }}
+                    <td mat-cell *matCellDef="let row">
+                      {{ formatLastUsed(row.credential.last_used_at) }}
                     </td>
                   </ng-container>
 
-                  <ng-container matColumnDef="expires">
-                    <th
-                      mat-header-cell
-                      *matHeaderCellDef
-                      [transloco]="'userPreferences.credentials.expires'"
-                    >
-                      Expires
-                    </th>
-                    <td mat-cell *matCellDef="let credential">
-                      {{ formatExpires(credential.expires_at) }}
-                    </td>
-                  </ng-container>
-
+                  <!-- Actions column -->
                   <ng-container matColumnDef="actions">
                     <th mat-header-cell *matHeaderCellDef></th>
-                    <td mat-cell *matCellDef="let credential">
+                    <td mat-cell *matCellDef="let row">
                       <button
                         mat-icon-button
-                        (click)="onDeleteCredential(credential)"
+                        (click)="onDeleteCredential(row.credential)"
                         [matTooltip]="'common.delete' | transloco"
                         color="warn"
                       >
@@ -413,8 +386,51 @@ interface CheckboxChangeEvent {
                     </td>
                   </ng-container>
 
+                  <!-- Metadata column (spans full width) -->
+                  <ng-container matColumnDef="metadata">
+                    <td mat-cell *matCellDef="let row" [attr.colspan]="3">
+                      <div
+                        class="credential-metadata"
+                        [class.credential-metadata-last]="row.isLast"
+                      >
+                        <span [transloco]="'userPreferences.credentials.createdOn'">Created</span>
+                        {{ formatDate(row.credential.created_at) }}
+                        ·
+                        @if (row.credential.expires_at) {
+                          @if (isExpired(row.credential.expires_at)) {
+                            <span
+                              class="credential-expired"
+                              [transloco]="'userPreferences.credentials.expired'"
+                              >Expired</span
+                            >
+                          } @else {
+                            <span [transloco]="'userPreferences.credentials.expiresOn'"
+                              >Expires</span
+                            >
+                            {{ formatExpires(row.credential.expires_at) }}
+                          }
+                        } @else {
+                          <span [transloco]="'userPreferences.credentials.neverExpires'"
+                            >Never expires</span
+                          >
+                        }
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <!-- Header row -->
                   <tr mat-header-row *matHeaderRowDef="credentialColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: credentialColumns"></tr>
+                  <!-- Content row -->
+                  <tr
+                    mat-row
+                    *matRowDef="let row; columns: credentialColumns; when: isContentRow"
+                  ></tr>
+                  <!-- Metadata row -->
+                  <tr
+                    mat-row
+                    *matRowDef="let row; columns: credentialMetadataColumns; when: isMetadataRow"
+                    class="metadata-row"
+                  ></tr>
                 </table>
               </div>
             }
@@ -720,6 +736,26 @@ interface CheckboxChangeEvent {
         word-break: break-all;
       }
 
+      .credential-metadata {
+        font-size: 11px;
+        color: var(--theme-text-secondary);
+        padding: 2px 0 12px 0;
+        border-bottom: 1px solid var(--theme-divider);
+      }
+
+      .credential-metadata-last {
+        border-bottom: none;
+      }
+
+      .credential-expired {
+        color: var(--mat-warn-color, #f44336);
+      }
+
+      .metadata-row td {
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+
       .credentials-actions {
         margin-top: 16px;
       }
@@ -777,7 +813,13 @@ export class UserPreferencesDialogComponent implements OnInit {
   // Credentials tab
   credentials: ClientCredentialInfo[] = [];
   credentialsLoading = false;
-  credentialColumns = ['name', 'clientId', 'created', 'lastUsed', 'expires', 'actions'];
+  credentialColumns = ['credential', 'lastUsed', 'actions'];
+  credentialMetadataColumns = ['metadata'];
+  credentialRows: Array<{
+    type: 'content' | 'metadata';
+    credential: ClientCredentialInfo;
+    isLast: boolean;
+  }> = [];
 
   constructor(
     public dialogRef: MatDialogRef<UserPreferencesDialogComponent>,
@@ -947,6 +989,18 @@ export class UserPreferencesDialogComponent implements OnInit {
       .subscribe({
         next: credentials => {
           this.credentials = credentials;
+          this.credentialRows = credentials.flatMap((credential, index) => [
+            {
+              type: 'content' as const,
+              credential,
+              isLast: index === credentials.length - 1,
+            },
+            {
+              type: 'metadata' as const,
+              credential,
+              isLast: index === credentials.length - 1,
+            },
+          ]);
           this.credentialsLoading = false;
         },
         error: () => {
@@ -1007,9 +1061,16 @@ export class UserPreferencesDialogComponent implements OnInit {
     }
   }
 
+  isContentRow = (_index: number, row: { type: string }): boolean => row.type === 'content';
+  isMetadataRow = (_index: number, row: { type: string }): boolean => row.type === 'metadata';
+
+  isExpired(dateString: string): boolean {
+    return new Date(dateString) < new Date();
+  }
+
   formatDate(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
   formatLastUsed(dateString: string | null | undefined): string {
@@ -1029,19 +1090,19 @@ export class UserPreferencesDialogComponent implements OnInit {
     } else if (diffDays < 7) {
       return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
     } else {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
     }
   }
 
   formatExpires(dateString: string | null | undefined): string {
     if (!dateString) {
-      return 'Never';
+      return '';
     }
     const date = new Date(dateString);
-    const now = new Date();
-    if (date < now) {
-      return 'Expired';
-    }
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 }
