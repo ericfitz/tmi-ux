@@ -65,7 +65,7 @@ export interface CreateClientCredentialRequest {
  */
 export interface ListClientCredentialsResponse {
   /** Array of client credentials */
-  client_credentials: ClientCredentialInfo[];
+  credentials: ClientCredentialInfo[];
   /** Total number of credentials */
   total: number;
   /** Maximum items per page */
