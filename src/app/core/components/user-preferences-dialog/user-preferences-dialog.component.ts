@@ -939,10 +939,8 @@ export class UserPreferencesDialogComponent implements OnInit {
   }
 
   // Credentials methods
-  private loadCredentials(showLoading = true): void {
-    if (showLoading) {
-      this.credentialsLoading = true;
-    }
+  private loadCredentials(): void {
+    this.credentialsLoading = true;
     this.clientCredentialService
       .list()
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -970,24 +968,8 @@ export class UserPreferencesDialogComponent implements OnInit {
         if (result) {
           // Show the secret dialog
           this.showCredentialSecretDialog(result.client_id, result.client_secret);
-          // Optimistically add the new credential to the list so it's visible immediately,
-          // since loadCredentials() may race with the server's write commit
-          this.credentials = [
-            ...this.credentials,
-            {
-              id: result.id,
-              client_id: result.client_id,
-              name: result.name,
-              description: result.description,
-              is_active: true,
-              last_used_at: null,
-              created_at: result.created_at,
-              modified_at: result.created_at,
-              expires_at: result.expires_at ?? null,
-            },
-          ];
-          // Also reload from server for consistency (skip loading spinner to avoid flicker)
-          this.loadCredentials(false);
+          // Reload credentials list
+          this.loadCredentials();
         }
       });
   }
