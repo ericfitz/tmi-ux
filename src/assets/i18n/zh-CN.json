@@ -317,8 +317,11 @@
         "pending_delete": "待删除",
         "pending_verification": "待验证"
       },
+      "subscriptionId": "订阅 ID",
       "subtitle": "配置webhook订阅以接收事件通知",
-      "title": "管理Webhook"
+      "title": "管理Webhook",
+      "triggerEvents": "触发事件",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {

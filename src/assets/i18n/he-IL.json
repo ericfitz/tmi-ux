@@ -317,8 +317,11 @@
         "pending_delete": "ממתין למחיקה",
         "pending_verification": "ממתין לאימות"
       },
+      "subscriptionId": "מזהה מנוי",
       "subtitle": "הגדר מנויי webhook להודעות אירועים",
-      "title": "ניהול Webhooks"
+      "title": "ניהול Webhooks",
+      "triggerEvents": "אירועי הפעלה",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {

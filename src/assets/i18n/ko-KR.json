@@ -317,8 +317,11 @@
         "pending_delete": "삭제 대기 중",
         "pending_verification": "확인 대기 중"
       },
+      "subscriptionId": "구독 ID",
       "subtitle": "이벤트 알림을 위한 웹훅 구독 구성",
-      "title": "Webhooks 관리"
+      "title": "Webhooks 관리",
+      "triggerEvents": "트리거 이벤트",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {

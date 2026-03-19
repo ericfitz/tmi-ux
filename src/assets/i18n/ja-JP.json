@@ -317,8 +317,11 @@
         "pending_delete": "削除保留中",
         "pending_verification": "検証保留中"
       },
+      "subscriptionId": "サブスクリプションID",
       "subtitle": "イベント通知用のWebhookサブスクリプションを設定",
-      "title": "Webhooksの管理"
+      "title": "Webhooksの管理",
+      "triggerEvents": "トリガーイベント",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {

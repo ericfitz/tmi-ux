@@ -317,8 +317,11 @@
         "pending_delete": "মুছে ফেলা মুলতুবি",
         "pending_verification": "যাচাই মুলতুবি"
       },
+      "subscriptionId": "সাবস্ক্রিপশন আইডি",
       "subtitle": "ইভেন্ট বিজ্ঞপ্তির জন্য ওয়েবহুক সাবস্ক্রিপশন কনফিগার করুন",
-      "title": "Webhooks পরিচালনা করুন"
+      "title": "Webhooks পরিচালনা করুন",
+      "triggerEvents": "ট্রিগার ইভেন্ট",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {

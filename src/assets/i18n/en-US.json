@@ -330,8 +330,11 @@
         "pending_delete": "Pending Delete",
         "pending_verification": "Pending Verification"
       },
+      "subscriptionId": "Subscription ID",
       "subtitle": "Configure webhook subscriptions for event notifications",
-      "title": "Manage Webhooks"
+      "title": "Manage Webhooks",
+      "triggerEvents": "Trigger events",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {

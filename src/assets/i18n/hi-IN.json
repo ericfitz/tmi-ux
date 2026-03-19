@@ -317,8 +317,11 @@
         "pending_delete": "हटाने की प्रतीक्षा में",
         "pending_verification": "सत्यापन की प्रतीक्षा में"
       },
+      "subscriptionId": "सदस्यता आईडी",
       "subtitle": "इवेंट नोटिफिकेशन के लिए webhook सब्सक्रिप्शन कॉन्फ़िगर करें",
-      "title": "Webhooks प्रबंधित करें"
+      "title": "Webhooks प्रबंधित करें",
+      "triggerEvents": "ट्रिगर इवेंट",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {

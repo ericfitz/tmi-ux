@@ -317,8 +317,11 @@
         "pending_delete": "Suppression en attente",
         "pending_verification": "Verification en attente"
       },
+      "subscriptionId": "ID d'abonnement",
       "subtitle": "Configurer les abonnements webhook pour les notifications d'evenements",
-      "title": "Gerer les Webhooks"
+      "title": "Gerer les Webhooks",
+      "triggerEvents": "Événements déclencheurs",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {

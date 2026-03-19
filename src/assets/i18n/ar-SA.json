@@ -317,8 +317,11 @@
         "pending_delete": "في انتظار الحذف",
         "pending_verification": "في انتظار التحقق"
       },
+      "subscriptionId": "معرّف الاشتراك",
       "subtitle": "تكوين اشتراكات Webhook لإشعارات الأحداث",
-      "title": "إدارة Webhooks"
+      "title": "إدارة Webhooks",
+      "triggerEvents": "أحداث التشغيل",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {

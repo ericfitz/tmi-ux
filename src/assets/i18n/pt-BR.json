@@ -317,8 +317,11 @@
         "pending_delete": "Exclusao Pendente",
         "pending_verification": "Verificacao Pendente"
       },
+      "subscriptionId": "ID da assinatura",
       "subtitle": "Configure assinaturas de webhook para notificacoes de eventos",
-      "title": "Gerenciar Webhooks"
+      "title": "Gerenciar Webhooks",
+      "triggerEvents": "Eventos de acionamento",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {

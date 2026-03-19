@@ -2,6 +2,7 @@ import { Component, DestroyRef, inject, OnInit, ViewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Subject } from 'rxjs';
 import { debounceTime, take } from 'rxjs/operators';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -78,6 +79,7 @@ export class AdminWebhooksComponent implements OnInit {
     private dialog: MatDialog,
     private logger: LoggerService,
     private authService: AuthService,
+    private clipboard: Clipboard,
   ) {}
 
   ngOnInit(): void {
@@ -239,25 +241,15 @@ export class AdminWebhooksComponent implements OnInit {
     }
   }
 
-  getStatusColor(status: string): string {
-    switch (status) {
-      case 'active':
-        return 'success';
-      case 'pending_verification':
-        return 'warn';
-      case 'pending_delete':
-        return 'error';
-      default:
-        return '';
-    }
-  }
-
   getEventsTooltip(events: string[]): string {
     return events.join('\n');
   }
 
-  openWebhookUrl(url: string): void {
-    window.open(url, '_blank', 'noopener,noreferrer');
+  copyToClipboard(text: string): void {
+    const success = this.clipboard.copy(text);
+    if (!success) {
+      this.logger.error('Failed to copy to clipboard');
+    }
   }
 
   onClose(): void {

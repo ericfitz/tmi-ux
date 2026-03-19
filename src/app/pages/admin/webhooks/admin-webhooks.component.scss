@@ -82,7 +82,7 @@
 
 .webhook-item {
   display: grid;
-  grid-template-columns: 64px auto auto 1fr auto;
+  grid-template-columns: 64px 1fr auto;
   grid-template-rows: auto auto;
   gap: 12px 16px;
   padding: 16px;
@@ -114,64 +114,70 @@
     }
   }
 
-  // Row 1 columns
-  .webhook-status {
+  // Row 1: Status chip + name
+  .webhook-row1 {
     grid-column: 2;
     grid-row: 1;
     display: flex;
     align-items: center;
-  }
+    gap: 16px;
 
-  .webhook-url {
-    grid-column: 3;
-    grid-row: 1;
-    display: flex;
-    align-items: center;
-  }
-
-  .webhook-name {
-    grid-column: 4;
-    grid-row: 1;
-    font-size: 16px;
-    color: var(--theme-text-primary);
-    display: flex;
-    align-items: center;
+    .webhook-name {
+      font-size: 16px;
+      color: var(--theme-text-primary);
+    }
   }
 
   // Actions spanning both rows
   .webhook-actions {
-    grid-column: 5;
+    grid-column: 3;
     grid-row: 1 / 3;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  // Row 2 columns
-  .webhook-events {
+  // Row 2: Detail items in flex wrap
+  .webhook-row2 {
     grid-column: 2;
     grid-row: 2;
     display: flex;
     align-items: center;
-    gap: 8px;
+    flex-wrap: wrap;
+    gap: 8px 24px;
     font-size: 12px;
     color: var(--theme-text-secondary);
 
-    mat-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
+    .detail-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
     }
-  }
 
-  .webhook-created {
-    grid-column: 3 / 5;
-    grid-row: 2;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    color: var(--theme-text-secondary);
+    .detail-item-url {
+      min-width: 0;
+      white-space: normal;
+
+      .url-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 300px;
+      }
+    }
+
+    .copy-button {
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+
+      mat-icon {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+      }
+    }
   }
 
   .inline-icon {
@@ -221,17 +227,17 @@
     }
 
     &.status-active {
-      background-color: var(--theme-success-light, #4caf50);
+      background-color: var(--color-success);
       color: white;
     }
 
     &.status-pending_verification {
-      background-color: var(--theme-warn-light, #ff9800);
+      background-color: var(--color-warning);
       color: white;
     }
 
     &.status-pending_delete {
-      background-color: var(--theme-error-light, #f44336);
+      background-color: var(--color-error);
       color: white;
     }
   }
@@ -288,11 +294,11 @@
 
   .webhook-item {
     grid-template-columns: 48px 1fr auto;
-    grid-template-rows: auto auto auto auto;
+    grid-template-rows: auto auto;
     gap: 8px;
 
     .webhook-icon {
-      grid-row: 1 / 5;
+      grid-row: 1 / 3;
 
       mat-icon {
         font-size: 40px;
@@ -301,41 +307,22 @@
       }
     }
 
-    .webhook-status {
+    .webhook-row1 {
       grid-column: 2;
       grid-row: 1;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
-    .webhook-name {
+    .webhook-row2 {
       grid-column: 2;
       grid-row: 2;
-    }
-
-    .webhook-url {
-      grid-column: 2;
-      grid-row: 3;
-    }
-
-    .webhook-secret {
-      grid-column: 2;
-      grid-row: 3;
-      justify-self: end;
-    }
-
-    .webhook-events {
-      grid-column: 2;
-      grid-row: 4;
-    }
-
-    .webhook-created {
-      grid-column: 2;
-      grid-row: 4;
-      justify-self: end;
+      gap: 4px 16px;
     }
 
     .webhook-actions {
       grid-column: 3;
-      grid-row: 1 / 5;
+      grid-row: 1 / 3;
     }
   }
 }

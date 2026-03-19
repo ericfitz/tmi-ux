@@ -317,8 +317,11 @@
         "pending_delete": "Löschung ausstehend",
         "pending_verification": "Überprüfung ausstehend"
       },
+      "subscriptionId": "Abonnement-ID",
       "subtitle": "Webhook-Abonnements für Ereignisbenachrichtigungen konfigurieren",
-      "title": "Webhooks verwalten"
+      "title": "Webhooks verwalten",
+      "triggerEvents": "Auslösende Ereignisse",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {

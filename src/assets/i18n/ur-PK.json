@@ -317,8 +317,11 @@
         "pending_delete": "حذف زیر التواء",
         "pending_verification": "تصدیق زیر التواء"
       },
+      "subscriptionId": "سبسکرپشن آئی ڈی",
       "subtitle": "ایونٹ نوٹیفیکیشنز کے لیے webhook سبسکرپشنز ترتیب دیں",
-      "title": "Webhooks کا انتظام"
+      "title": "Webhooks کا انتظام",
+      "triggerEvents": "ٹرگر ایونٹس",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {

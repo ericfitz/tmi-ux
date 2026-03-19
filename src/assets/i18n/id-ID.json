@@ -317,8 +317,11 @@
         "pending_delete": "Menunggu Penghapusan",
         "pending_verification": "Menunggu Verifikasi"
       },
+      "subscriptionId": "ID Langganan",
       "subtitle": "Konfigurasikan langganan webhook untuk notifikasi peristiwa",
-      "title": "Kelola Webhook"
+      "title": "Kelola Webhook",
+      "triggerEvents": "Peristiwa pemicu",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {

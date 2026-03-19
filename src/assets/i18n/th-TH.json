@@ -60,6 +60,11 @@
     },
     "users": {
       "listTitle": "{{admin.sections.users.title}}"
+    },
+    "webhooks": {
+      "subscriptionId": "รหัสการสมัครสมาชิก",
+      "triggerEvents": "เหตุการณ์ทริกเกอร์",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {

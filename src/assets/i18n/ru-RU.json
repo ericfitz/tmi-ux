@@ -317,8 +317,11 @@
         "pending_delete": "Ожидает удаления",
         "pending_verification": "Ожидает подтверждения"
       },
+      "subscriptionId": "Идентификатор подписки",
       "subtitle": "Настройка подписок вебхуков для уведомлений о событиях",
-      "title": "Управление Webhooks"
+      "title": "Управление Webhooks",
+      "triggerEvents": "Триггерные события",
+      "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
   },
   "adminSurveys": {
