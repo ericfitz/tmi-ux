@@ -81,12 +81,12 @@
                       ></mat-slide-toggle>
                     }
                     @case ('int') {
-                      <mat-form-field class="setting-input">
+                      <mat-form-field class="setting-input" appearance="outline">
                         <input matInput type="number" [(ngModel)]="setting.editValues!.value" />
                       </mat-form-field>
                     }
                     @case ('json') {
-                      <mat-form-field class="setting-input json-input">
+                      <mat-form-field class="setting-input json-input" appearance="outline">
                         <textarea
                           matInput
                           [(ngModel)]="setting.editValues!.value"
@@ -96,7 +96,7 @@
                       </mat-form-field>
                     }
                     @default {
-                      <mat-form-field class="setting-input">
+                      <mat-form-field class="setting-input" appearance="outline">
                         <input matInput type="text" [(ngModel)]="setting.editValues!.value" />
                       </mat-form-field>
                     }
