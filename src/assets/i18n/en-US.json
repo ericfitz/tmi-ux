@@ -1794,8 +1794,9 @@
     "colorBlindMode": "Enable Color Blind Mode",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "Client ID",
       "clientSecret": "Client Secret",
+      "credential": "Credential",
+      "createdOn": "Created",
       "createDialog": {
         "create": "{{common.create}}",
         "description": "{{common.description}}",
@@ -1811,10 +1812,10 @@
         "nameTooLong": "Name must be 100 characters or less",
         "title": "Create Client Credential"
       },
-      "created": "{{common.created}}",
-      "expires": "Expires",
-      "expires.comment": "This is the date and time that the credential expires, e.g. it's no longer usable after this time.",
+      "expired": "Expired",
+      "expiresOn": "Expires",
       "lastUsed": "Last Used",
+      "neverExpires": "Never expires",
       "noCredentials": "No client credentials yet",
       "noCredentialsDescription": "Create credentials to access the TMI API programmatically.",
       "secretDialog": {
