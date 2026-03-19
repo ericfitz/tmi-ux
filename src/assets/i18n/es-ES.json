@@ -1734,7 +1734,6 @@
     "colorBlindMode": "Activar Modo para Daltonismo",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "ID de Cliente",
       "clientSecret": "Secreto de Cliente",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1751,9 +1750,12 @@
         "nameTooLong": "El nombre debe tener 100 caracteres o menos",
         "title": "Crear Credencial de Cliente"
       },
-      "created": "{{common.created}}",
-      "expires": "Caduca",
+      "createdOn": "{{common.created}}",
+      "credential": "Credencial",
+      "expired": "Expirado",
+      "expiresOn": "Caduca",
       "lastUsed": "Último Uso",
+      "neverExpires": "Nunca caduca",
       "noCredentials": "Aún no hay credenciales de cliente",
       "noCredentialsDescription": "Cree credenciales para acceder a la API de TMI programáticamente.",
       "secretDialog": {

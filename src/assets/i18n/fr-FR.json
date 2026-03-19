@@ -1734,7 +1734,6 @@
     "colorBlindMode": "Activer le mode daltonien",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "Identifiant client",
       "clientSecret": "Secret client",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1751,9 +1750,12 @@
         "nameTooLong": "Le nom doit contenir 100 caractères ou moins",
         "title": "Créer un identifiant client"
       },
-      "created": "{{common.created}}",
-      "expires": "Expire",
+      "createdOn": "{{common.created}}",
+      "credential": "Identifiant",
+      "expired": "Expiré",
+      "expiresOn": "Expire",
       "lastUsed": "Dernière utilisation",
+      "neverExpires": "N'expire jamais",
       "noCredentials": "Aucun identifiant client",
       "noCredentialsDescription": "Créez des identifiants pour accéder à l'API TMI de manière programmatique.",
       "secretDialog": {

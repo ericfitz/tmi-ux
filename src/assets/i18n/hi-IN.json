@@ -1734,7 +1734,6 @@
     "colorBlindMode": "कलर ब्लाइंड मोड सक्षम करें",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "क्लाइंट ID",
       "clientSecret": "क्लाइंट सीक्रेट",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1751,9 +1750,12 @@
         "nameTooLong": "नाम 100 अक्षर या उससे कम होना चाहिए",
         "title": "क्लाइंट क्रेडेंशियल बनाएं"
       },
-      "created": "{{common.created}}",
-      "expires": "समाप्ति",
+      "createdOn": "{{common.created}}",
+      "credential": "क्रेडेंशियल",
+      "expired": "समाप्त",
+      "expiresOn": "पर समाप्त होता है",
       "lastUsed": "अंतिम उपयोग",
+      "neverExpires": "कभी नहीं समाप्त होता",
       "noCredentials": "अभी कोई क्लाइंट क्रेडेंशियल नहीं है",
       "noCredentialsDescription": "TMI API को प्रोग्रामेटिक रूप से एक्सेस करने के लिए क्रेडेंशियल बनाएं।",
       "secretDialog": {

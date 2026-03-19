@@ -1734,7 +1734,6 @@
     "colorBlindMode": "کلر بلائنڈ موڈ فعال کریں",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "کلائنٹ ID",
       "clientSecret": "کلائنٹ سیکریٹ",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1751,9 +1750,12 @@
         "nameTooLong": "نام 100 حروف یا اس سے کم ہونا چاہیے",
         "title": "کلائنٹ اسناد بنائیں"
       },
-      "created": "{{common.created}}",
-      "expires": "میعاد ختم",
+      "createdOn": "{{common.created}}",
+      "credential": "اسناد",
+      "expired": "میعاد ختم ہو گئی",
+      "expiresOn": "میعاد ختم ہوگی",
       "lastUsed": "آخری استعمال",
+      "neverExpires": "کبھی میعاد ختم نہیں ہوگی",
       "noCredentials": "ابھی تک کوئی کلائنٹ اسناد نہیں",
       "noCredentialsDescription": "TMI API تک پروگرامی طور پر رسائی کے لیے اسناد بنائیں۔",
       "secretDialog": {

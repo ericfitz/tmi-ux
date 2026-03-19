@@ -1734,7 +1734,6 @@
     "colorBlindMode": "কালার ব্লাইন্ড মোড সক্রিয় করুন",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "ক্লায়েন্ট আইডি",
       "clientSecret": "ক্লায়েন্ট সিক্রেট",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1751,9 +1750,12 @@
         "nameTooLong": "নাম ১০০ অক্ষর বা তার কম হতে হবে",
         "title": "ক্লায়েন্ট ক্রেডেনশিয়াল তৈরি করুন"
       },
-      "created": "{{common.created}}",
-      "expires": "মেয়াদ শেষ",
+      "createdOn": "{{common.created}}",
+      "credential": "শংসাপত্র",
+      "expired": "মেয়াদ শেষ",
+      "expiresOn": "মেয়াদ শেষ",
       "lastUsed": "সর্বশেষ ব্যবহৃত",
+      "neverExpires": "কখনও মেয়াদ শেষ হয় না",
       "noCredentials": "এখনো কোনো ক্লায়েন্ট ক্রেডেনশিয়াল নেই",
       "noCredentialsDescription": "প্রোগ্রামগতভাবে TMI API অ্যাক্সেস করতে ক্রেডেনশিয়াল তৈরি করুন।",
       "secretDialog": {

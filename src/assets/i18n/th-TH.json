@@ -1462,7 +1462,6 @@
     "colorBlindMode": "เปิดใช้งานโหมดตาบอดสี",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "Client ID",
       "clientSecret": "Client Secret",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1479,9 +1478,12 @@
         "nameTooLong": "ชื่อต้องไม่เกิน 100 ตัวอักษร",
         "title": "สร้างข้อมูลรับรองไคลเอนต์"
       },
-      "created": "{{common.created}}",
-      "expires": "หมดอายุ",
+      "createdOn": "{{common.created}}",
+      "credential": "ข้อมูลรับรอง",
+      "expired": "หมดอายุแล้ว",
+      "expiresOn": "หมดอายุเมื่อ",
       "lastUsed": "ใช้ล่าสุด",
+      "neverExpires": "ไม่มีวันหมดอายุ",
       "noCredentials": "ยังไม่มีข้อมูลรับรองไคลเอนต์",
       "noCredentialsDescription": "สร้างข้อมูลรับรองเพื่อเข้าถึง TMI API ผ่านโปรแกรม",
       "secretDialog": {

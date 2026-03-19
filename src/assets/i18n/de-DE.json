@@ -1734,7 +1734,6 @@
     "colorBlindMode": "Farbenblindmodus aktivieren",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "Client-ID",
       "clientSecret": "Client-Geheimnis",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1751,9 +1750,12 @@
         "nameTooLong": "Der Name darf maximal 100 Zeichen lang sein",
         "title": "Client-Anmeldedaten erstellen"
       },
-      "created": "{{common.created}}",
-      "expires": "Läuft ab",
+      "createdOn": "{{common.created}}",
+      "credential": "Anmeldedaten",
+      "expired": "Abgelaufen",
+      "expiresOn": "Läuft ab",
       "lastUsed": "Zuletzt verwendet",
+      "neverExpires": "Läuft nie ab",
       "noCredentials": "Noch keine Client-Anmeldedaten",
       "noCredentialsDescription": "Erstellen Sie Anmeldedaten, um programmatisch auf die TMI-API zuzugreifen.",
       "secretDialog": {

@@ -1734,7 +1734,6 @@
     "colorBlindMode": "Включить режим для дальтоников",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "Идентификатор клиента",
       "clientSecret": "Секретный ключ клиента",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1751,9 +1750,12 @@
         "nameTooLong": "Название должно содержать не более 100 символов",
         "title": "Создать учётные данные клиента"
       },
-      "created": "{{common.created}}",
-      "expires": "Истекает",
+      "createdOn": "{{common.created}}",
+      "credential": "Учётные данные",
+      "expired": "Истёкший",
+      "expiresOn": "Истекает",
       "lastUsed": "Последнее использование",
+      "neverExpires": "Никогда не истекает",
       "noCredentials": "Учётные данные клиента отсутствуют",
       "noCredentialsDescription": "Создайте учётные данные для программного доступа к API TMI.",
       "secretDialog": {

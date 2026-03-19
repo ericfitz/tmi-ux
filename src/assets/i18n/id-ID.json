@@ -1734,7 +1734,6 @@
     "colorBlindMode": "Aktifkan Mode Buta Warna",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "ID Klien",
       "clientSecret": "Rahasia Klien",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1751,9 +1750,12 @@
         "nameTooLong": "Nama harus 100 karakter atau kurang",
         "title": "Buat Kredensial Klien"
       },
-      "created": "{{common.created}}",
-      "expires": "Kedaluwarsa",
+      "createdOn": "{{common.created}}",
+      "credential": "Kredensial",
+      "expired": "Kadaluarsa",
+      "expiresOn": "Kedaluwarsa pada",
       "lastUsed": "Terakhir Digunakan",
+      "neverExpires": "Tidak pernah kedaluwarsa",
       "noCredentials": "Belum ada kredensial klien",
       "noCredentialsDescription": "Buat kredensial untuk mengakses API TMI secara terprogram.",
       "secretDialog": {

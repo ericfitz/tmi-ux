@@ -1734,7 +1734,6 @@
     "colorBlindMode": "הפעל מצב עיוורון צבעים",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "מזהה לקוח",
       "clientSecret": "סוד לקוח",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1751,9 +1750,12 @@
         "nameTooLong": "השם חייב להיות 100 תווים או פחות",
         "title": "צור אישור לקוח"
       },
-      "created": "{{common.created}}",
-      "expires": "פג תוקף",
+      "createdOn": "{{common.created}}",
+      "credential": "אישור",
+      "expired": "פג תוקף",
+      "expiresOn": "תוקף בתאריך",
       "lastUsed": "שימוש אחרון",
+      "neverExpires": "לא מעולם פג",
       "noCredentials": "אין עדיין אישורי לקוח",
       "noCredentialsDescription": "צור אישורים לגישה ל-API של TMI באופן תכנותי.",
       "secretDialog": {

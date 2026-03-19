@@ -1795,8 +1795,6 @@
     "credentials": {
       "add": "{{common.add}}",
       "clientSecret": "Client Secret",
-      "credential": "Credential",
-      "createdOn": "Created",
       "createDialog": {
         "create": "{{common.create}}",
         "description": "{{common.description}}",
@@ -1812,6 +1810,8 @@
         "nameTooLong": "Name must be 100 characters or less",
         "title": "Create Client Credential"
       },
+      "createdOn": "{{common.created}}",
+      "credential": "Credential",
       "expired": "Expired",
       "expiresOn": "Expires",
       "lastUsed": "Last Used",

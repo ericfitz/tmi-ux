@@ -1734,7 +1734,6 @@
     "colorBlindMode": "색맹 모드 활성화",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "클라이언트 ID",
       "clientSecret": "클라이언트 시크릿",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1751,9 +1750,12 @@
         "nameTooLong": "이름은 100자 이하여야 합니다",
         "title": "클라이언트 자격 증명 생성"
       },
-      "created": "{{common.created}}",
-      "expires": "만료",
+      "createdOn": "{{common.created}}",
+      "credential": "자격 증명",
+      "expired": "만료됨",
+      "expiresOn": "만료 대상",
       "lastUsed": "마지막 사용",
+      "neverExpires": "만료되지 않음",
       "noCredentials": "클라이언트 자격 증명이 없습니다",
       "noCredentialsDescription": "TMI API에 프로그래밍 방식으로 접근하려면 자격 증명을 생성하세요.",
       "secretDialog": {

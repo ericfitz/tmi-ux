@@ -1734,7 +1734,6 @@
     "colorBlindMode": "启用色盲模式",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "客户端ID",
       "clientSecret": "客户端密钥",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1751,9 +1750,12 @@
         "nameTooLong": "名称不能超过100个字符",
         "title": "创建客户端凭证"
       },
-      "created": "{{common.created}}",
-      "expires": "到期",
+      "createdOn": "{{common.created}}",
+      "credential": "凭证",
+      "expired": "已过期",
+      "expiresOn": "过期于",
       "lastUsed": "上次使用",
+      "neverExpires": "永不过期",
       "noCredentials": "暂无客户端凭证",
       "noCredentialsDescription": "创建凭证以编程方式访问TMI API。",
       "secretDialog": {

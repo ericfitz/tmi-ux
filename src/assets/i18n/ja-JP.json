@@ -1734,7 +1734,6 @@
     "colorBlindMode": "色覚補助モードを有効にする",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "クライアントID",
       "clientSecret": "クライアントシークレット",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1751,9 +1750,12 @@
         "nameTooLong": "名前は100文字以内で入力してください",
         "title": "クライアント資格情報の作成"
       },
-      "created": "{{common.created}}",
-      "expires": "有効期限",
+      "createdOn": "{{common.created}}",
+      "credential": "認証情報",
+      "expired": "期限切れ",
+      "expiresOn": "有効期限",
       "lastUsed": "最終使用日時",
+      "neverExpires": "無期限",
       "noCredentials": "クライアント資格情報がありません",
       "noCredentialsDescription": "TMI APIにプログラムからアクセスするための資格情報を作成してください。",
       "secretDialog": {

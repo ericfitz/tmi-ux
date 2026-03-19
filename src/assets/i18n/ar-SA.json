@@ -1734,7 +1734,6 @@
     "colorBlindMode": "تفعيل وضع عمى الألوان",
     "credentials": {
       "add": "{{common.add}}",
-      "clientId": "معرف العميل",
       "clientSecret": "سر العميل",
       "createDialog": {
         "create": "{{common.create}}",
@@ -1751,9 +1750,12 @@
         "nameTooLong": "يجب أن يكون الاسم 100 حرف أو أقل",
         "title": "إنشاء بيانات اعتماد العميل"
       },
-      "created": "{{common.created}}",
-      "expires": "ينتهي",
+      "createdOn": "{{common.created}}",
+      "credential": "بيانات الاعتماد",
+      "expired": "انتهت صلاحيتها",
+      "expiresOn": "ينتهي في",
       "lastUsed": "آخر استخدام",
+      "neverExpires": "لا تنتهي الصلاحية أبداً",
       "noCredentials": "لا توجد بيانات اعتماد عميل حتى الآن",
       "noCredentialsDescription": "أنشئ بيانات اعتماد للوصول إلى TMI API برمجياً.",
       "secretDialog": {
