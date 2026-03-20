@@ -1801,6 +1801,7 @@
     "colorBlindMode": "Enable Color Blind Mode",
     "credentials": {
       "add": "{{common.add}}",
+      "clientId": "Client ID",
       "clientSecret": "Client Secret",
       "createDialog": {
         "create": "{{common.create}}",

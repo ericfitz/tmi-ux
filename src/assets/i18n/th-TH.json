@@ -45,24 +45,276 @@
     }
   },
   "admin": {
+    "addons": {
+      "addButton": "{{admin.addons.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "ส่วนเสริมนี้ทำอะไร?",
+        "descriptionPlaceholder": "อธิบายฟังก์ชันการทำงานของส่วนเสริม",
+        "icon": "ไอคอน",
+        "iconInvalid": "รูปแบบไอคอนไม่ถูกต้อง",
+        "name": "{{common.name}}",
+        "nameHint": "ชื่อที่แสดงสำหรับส่วนเสริมนี้",
+        "namePlaceholder": "ส่วนเสริมที่กำหนดเอง",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "objects": "ประเภทออบเจกต์",
+        "objectsHint": "เลือกประเภทออบเจกต์ TMI ที่ส่วนเสริมนี้สามารถดำเนินการได้",
+        "save": "สร้างส่วนเสริม",
+        "title": "เพิ่มส่วนเสริม",
+        "webhook": "Webhook",
+        "webhookHint": "การสมัครสมาชิก webhook ที่เกี่ยวข้อง",
+        "webhookRequired": "ต้องระบุ webhook"
+      },
+      "confirmDelete": "คุณแน่ใจหรือไม่ว่าต้องการลบส่วนเสริม \"{{name}}\"?",
+      "created": "{{common.created}}",
+      "deleteTooltip": "ลบส่วนเสริม",
+      "errorCreatingAddon": "ไม่สามารถสร้างส่วนเสริมได้ กรุณาลองอีกครั้ง",
+      "errorLoadingWebhooks": "ไม่สามารถโหลด webhook ที่มีอยู่ได้",
+      "filterLabel": "ค้นหาส่วนเสริม",
+      "filterPlaceholder": "ค้นหาตามชื่อหรือคำอธิบาย",
+      "listTitle": "ส่วนเสริมของระบบ",
+      "noAddons": "ไม่พบส่วนเสริม",
+      "objectTypesTooltip": "ใช้กับประเภทออบเจกต์เหล่านี้",
+      "subtitle": "กำหนดค่าส่วนเสริมสำหรับการขยายฟังก์ชันการทำงานของ TMI",
+      "title": "จัดการส่วนเสริม"
+    },
+    "groups": {
+      "addButton": "{{admin.groups.addDialog.title}}",
+      "addDialog": {
+        "description": "คำอธิบาย (ไม่บังคับ)",
+        "descriptionHint": "คำอธิบายเพิ่มเติมเกี่ยวกับวัตถุประสงค์ของกลุ่ม",
+        "descriptionPlaceholder": "คำอธิบายของกลุ่มนี้",
+        "displayName": "ชื่อที่แสดง",
+        "displayNameHint": "ชื่อกลุ่มที่อ่านได้",
+        "displayNamePlaceholder": "กลุ่มที่กำหนดเอง",
+        "displayNameRequired": "ต้องระบุชื่อที่แสดง",
+        "groupName": "ตัวระบุกลุ่ม",
+        "groupNameHint": "ตัวอักษรและตัวเลข เครื่องหมายยัติภังค์ และขีดล่างเท่านั้น",
+        "groupNamePattern": "อนุญาตเฉพาะตัวอักษรและตัวเลข เครื่องหมายยัติภังค์ และขีดล่างเท่านั้น",
+        "groupNamePlaceholder": "กลุ่ม-ที่กำหนดเอง",
+        "groupNameRequired": "ต้องระบุตัวระบุกลุ่ม",
+        "save": "สร้างกลุ่ม",
+        "title": "เพิ่มกลุ่ม"
+      },
+      "columns": {
+        "group": "{{common.subjectTypes.group}}",
+        "provider": "{{common.provider}}",
+        "usage": "การใช้งาน"
+      },
+      "deleteTooltip": "ลบกลุ่ม",
+      "filterLabel": "ค้นหากลุ่ม",
+      "filterPlaceholder": "ค้นหาตามชื่อกลุ่มหรือผู้ให้บริการ",
+      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "membersDialog": {
+        "addMember": "{{teams.membersDialog.addMember}}",
+        "currentMembers": "สมาชิกปัจจุบัน",
+        "noMembers": "ไม่มีสมาชิกในกลุ่มนี้",
+        "removeTooltip": "ลบออกจากกลุ่ม",
+        "searchHint": "พิมพ์อย่างน้อย 2 ตัวอักษรเพื่อค้นหา",
+        "searchPlaceholder": "{{transfer.userPicker.searchPlaceholder}}",
+        "searchUser": "ค้นหาผู้ใช้ตามอีเมล",
+        "subjectTypeGroup": "{{common.subjectTypes.group}}",
+        "subjectTypeUser": "{{common.subjectTypes.user}}"
+      },
+      "noGroups": "ไม่พบกลุ่ม",
+      "subtitle": "ดูและจัดการกลุ่มในระบบ",
+      "title": "จัดการกลุ่ม",
+      "viewMembersTooltip": "ดูและจัดการสมาชิกกลุ่ม"
+    },
+    "quotas": {
+      "addButton": "เพิ่มโควต้า",
+      "addDialog": {
+        "apiQuotas": "{{admin.quotas.userAPITitle}}",
+        "configureQuotas": "กำหนดค่าโควต้า",
+        "searchLabel": "ค้นหาผู้ใช้",
+        "searchPlaceholder": "พิมพ์อีเมลผู้ใช้เพื่อค้นหา",
+        "selectUser": "เลือกผู้ใช้",
+        "title": "เพิ่มโควต้าที่กำหนดเอง",
+        "webhookQuotas": "{{admin.quotas.webhookTitle}}"
+      },
+      "columns": {
+        "modified": "{{common.lastModified}}",
+        "provider": "{{common.provider}}",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "default": "ค่าเริ่มต้น",
+      "deleteTooltip": "ลบโควต้าที่กำหนดเอง (คืนค่าเริ่มต้น)",
+      "eventsPerMinute": "เหตุการณ์ต่อนาที",
+      "filterLabel": "ค้นหาโควต้า",
+      "filterPlaceholder": "ค้นหาตามอีเมล ชื่อ ผู้ให้บริการ หรือรหัสผู้ใช้",
+      "maxSubscriptions": "จำนวนการสมัครสมาชิกสูงสุด",
+      "noUserAPIQuotas": "ไม่พบโควต้า API ที่กำหนดเอง",
+      "noWebhookQuotas": "ไม่พบโควต้า webhook ที่กำหนดเอง",
+      "requestsPerHour": "คำขอต่อชั่วโมง",
+      "requestsPerMinute": "คำขอต่อนาที",
+      "subReqPerDay": "คำขอสมัครสมาชิกต่อวัน",
+      "subReqPerMinute": "คำขอสมัครสมาชิกต่อนาที",
+      "subtitle": "กำหนดค่าขีดจำกัดอัตราและโควต้าสำหรับผู้ใช้",
+      "title": "จัดการโควต้า",
+      "userAPITitle": "ขีดจำกัดอัตรา API",
+      "webhookTitle": "ขีดจำกัด Webhook"
+    },
     "sections": {
+      "addons": {
+        "description": "ติดตั้งและกำหนดค่าส่วนเสริมของแอปพลิเคชัน",
+        "title": "{{common.addons}}"
+      },
+      "groups": {
+        "description": "กำหนดค่ากลุ่มผู้ใช้และการเป็นสมาชิก",
+        "title": "{{common.groups}}"
+      },
       "projects": {
         "description": "จัดการโครงการ ความสัมพันธ์ และข้อมูลเมตา",
         "title": "{{teams.columns.projects}}"
       },
+      "quotas": {
+        "description": "กำหนดค่าโควต้าทรัพยากรและขีดจำกัด",
+        "title": "โควต้า"
+      },
+      "settings": {
+        "description": "{{admin.settings.subtitle}}",
+        "title": "การตั้งค่า"
+      },
       "surveys": {
+        "description": "สร้างและจัดการแบบสำรวจ",
         "title": "{{common.objectTypes.surveys}}"
       },
       "teams": {
         "description": "จัดการทีมและการเป็นสมาชิกของทีม",
         "title": "ทีม"
+      },
+      "users": {
+        "description": "ดูและจัดการบัญชีผู้ใช้",
+        "title": "ผู้ใช้"
+      },
+      "webhooks": {
+        "description": "ติดตั้งและกำหนดค่าการรวม webhook",
+        "title": "Webhooks"
       }
     },
+    "settings": {
+      "addButton": "{{admin.settings.addDialog.title}}",
+      "addDialog": {
+        "description": "{{common.description}}",
+        "descriptionHint": "คำอธิบายเพิ่มเติมของการตั้งค่านี้",
+        "key": "{{common.metadataKey}}",
+        "keyHint": "ตัวพิมพ์เล็กพร้อมจุดและขีดล่าง (เช่น rate_limit.max_rpm)",
+        "keyInvalid": "ต้องเริ่มต้นด้วยตัวอักษรพิมพ์เล็ก ใช้เฉพาะตัวอักษรพิมพ์เล็ก ตัวเลข จุด และขีดล่าง",
+        "keyRequired": "ต้องระบุคีย์",
+        "save": "สร้างการตั้งค่า",
+        "title": "เพิ่มการตั้งค่า",
+        "type": "{{common.type}}",
+        "typeRequired": "ต้องระบุประเภท",
+        "value": "{{common.metadataValue}}",
+        "valueRequired": "ต้องระบุค่า"
+      },
+      "cancelTooltip": "ยกเลิกการแก้ไข",
+      "columns": {
+        "key": "{{common.metadataKey}}",
+        "source": "แหล่งที่มา",
+        "value": "{{common.metadataValue}}"
+      },
+      "confirmDelete": "คุณแน่ใจหรือไม่ว่าต้องการลบการตั้งค่า \"{{key}}\"?",
+      "deleteTooltip": "ลบการตั้งค่า",
+      "editTooltip": "แก้ไขการตั้งค่า",
+      "filterLabel": "ค้นหา",
+      "filterPlaceholder": "ค้นหาตามคีย์ ค่า คำอธิบาย หรือแหล่งที่มา",
+      "listTitle": "การตั้งค่าระบบ",
+      "migrateButton": "{{admin.settings.migrateDialog.title}}",
+      "migrateDialog": {
+        "description": "นำเข้าการตั้งค่าจากไฟล์การกำหนดค่าของเซิร์ฟเวอร์หรือตัวแปรสภาพแวดล้อมลงในฐานข้อมูล",
+        "migrate": "ย้ายข้อมูล",
+        "overwriteLabel": "เขียนทับการตั้งค่าที่มีอยู่",
+        "overwriteWarning": "คำเตือน: การดำเนินการนี้จะแทนที่การตั้งค่าในฐานข้อมูลที่เคยปรับแต่งไว้ก่อนหน้านี้",
+        "resultMigrated": "ย้ายข้อมูล {{count}} การตั้งค่าแล้ว",
+        "resultSkipped": "ข้าม {{count}} การตั้งค่า",
+        "title": "ย้ายข้อมูลการตั้งค่า"
+      },
+      "noSettings": "ไม่พบการตั้งค่า",
+      "readOnlyTooltip": "การตั้งค่านี้เป็นแบบอ่านอย่างเดียวและไม่สามารถแก้ไขได้ที่นี่",
+      "saveTooltip": "บันทึกการเปลี่ยนแปลง",
+      "sources": {
+        "config": "ไฟล์การกำหนดค่า",
+        "database": "ฐานข้อมูล",
+        "environment": "สภาพแวดล้อม",
+        "vault": "Vault"
+      },
+      "subtitle": "ดูและจัดการการตั้งค่าการกำหนดค่าระบบ",
+      "title": "จัดการการตั้งค่า",
+      "types": {
+        "bool": "บูลีน",
+        "int": "จำนวนเต็ม",
+        "json": "JSON",
+        "string": "สตริง"
+      }
+    },
+    "subtitle": "จัดการการตั้งค่าและการกำหนดค่าระบบ",
+    "title": "การดูแลระบบ",
     "users": {
-      "listTitle": "{{admin.sections.users.title}}"
+      "administrator": "ผู้ดูแลระบบ",
+      "columns": {
+        "groups": "{{common.groups}}",
+        "provider": "{{common.provider}}",
+        "threatModels": "TMs",
+        "user": "{{common.subjectTypes.user}}"
+      },
+      "deleteTooltip": "ลบบัญชีผู้ใช้",
+      "filterLabel": "ค้นหาผู้ใช้",
+      "filterPlaceholder": "ค้นหาตามอีเมล ชื่อ ผู้ให้บริการ หรือชื่อกลุ่ม",
+      "lastLogin": "เข้าสู่ระบบล่าสุด",
+      "listTitle": "{{admin.sections.users.title}}",
+      "never": "ไม่เคย",
+      "noUsers": "ไม่พบผู้ใช้",
+      "subtitle": "ดูและจัดการผู้ใช้ในระบบ",
+      "title": "จัดการผู้ใช้",
+      "transferOwnership": {
+        "confirm": "คุณแน่ใจหรือไม่ว่าต้องการโอนข้อมูลทั้งหมดจาก {{source}} ไปยัง {{target}}?",
+        "dialogTitle": "โอนข้อมูลผู้ใช้",
+        "error": "ไม่สามารถโอนความเป็นเจ้าของได้ กรุณาลองอีกครั้ง",
+        "success": "{{userPreferences.transferData.success}}",
+        "tooltip": "โอนความเป็นเจ้าของ"
+      }
     },
     "webhooks": {
+      "addButton": "{{admin.webhooks.addDialog.title}}",
+      "addDialog": {
+        "events": "ประเภทเหตุการณ์ที่จะสมัครสมาชิก",
+        "eventsHint": "ประเภทเหตุการณ์ที่จะสมัครสมาชิก (เช่น threat_model.created)",
+        "eventsPlaceholder": "เลือกประเภทเหตุการณ์",
+        "eventsRequired": "ต้องระบุเหตุการณ์อย่างน้อยหนึ่งรายการ",
+        "name": "{{common.name}}",
+        "nameHint": "ชื่ออธิบายสำหรับ webhook นี้",
+        "namePlaceholder": "ชื่อ webhook",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "สร้าง Webhook",
+        "secret": "รหัสลับ HMAC",
+        "secretPlaceholder": "เว้นว่างเพื่อสร้างอัตโนมัติ",
+        "title": "เพิ่ม Webhook",
+        "url": "URL ของ Webhook",
+        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
+        "urlInvalid": "ต้องเป็น URL แบบ HTTPS",
+        "urlRequired": "ต้องระบุ URL"
+      },
+      "created": "{{common.created}}",
+      "deleteTooltip": "ลบ webhook",
+      "events": "เหตุการณ์",
+      "filterLabel": "ค้นหา Webhooks",
+      "filterPlaceholder": "ค้นหาตามชื่อหรือ URL",
+      "hmacSecretDialog": {
+        "title": "{{admin.webhooks.addDialog.secret}}",
+        "warning": "นี่เป็นครั้งเดียวที่คุณจะสามารถดูรหัสลับนี้ได้ กรุณาคัดลอกไว้ หากคุณทำหายหรือลืม คุณจะต้องลบและสร้าง webhook ใหม่"
+      },
+      "listTitle": "การสมัครสมาชิก Webhook",
+      "noWebhooks": "ไม่พบ webhook",
+      "secret": "รหัสลับ HMAC",
+      "status": {
+        "active": "{{common.active}}",
+        "pending_delete": "รอการลบ",
+        "pending_verification": "รอการยืนยัน"
+      },
       "subscriptionId": "รหัสการสมัครสมาชิก",
+      "subtitle": "กำหนดค่าการสมัครสมาชิก webhook สำหรับการแจ้งเตือนเหตุการณ์",
+      "title": "จัดการ Webhooks",
       "triggerEvents": "เหตุการณ์ทริกเกอร์",
       "webhookUrl": "{{admin.webhooks.addDialog.url}}"
     }
@@ -1032,6 +1284,15 @@
       "projects": "โครงการ",
       "status": "{{common.status}}"
     },
+    "createDialog": {
+      "descriptionPlaceholder": "ป้อนคำอธิบายทีม",
+      "emailAddress": "{{common.emailLabel}}",
+      "namePlaceholder": "ป้อนชื่อทีม",
+      "nameRequired": "ต้องระบุชื่อทีม",
+      "statusPlaceholder": "เช่น active, archived",
+      "title": "สร้างทีม"
+    },
+    "createNew": "สร้างทีมใหม่",
     "deleteDialog": {
       "confirm": "{{common.delete}}",
       "message": "คุณแน่ใจหรือไม่ว่าต้องการลบทีม \"{{name}}\"?",
@@ -1471,6 +1732,7 @@
     "colorBlindMode": "เปิดใช้งานโหมดตาบอดสี",
     "credentials": {
       "add": "{{common.add}}",
+      "clientId": "รหัสไคลเอนต์",
       "clientSecret": "Client Secret",
       "createDialog": {
         "create": "{{common.create}}",

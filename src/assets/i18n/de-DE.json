@@ -1741,6 +1741,7 @@
     "colorBlindMode": "Farbenblindmodus aktivieren",
     "credentials": {
       "add": "{{common.add}}",
+      "clientId": "Client-ID",
       "clientSecret": "Client-Geheimnis",
       "createDialog": {
         "create": "{{common.create}}",

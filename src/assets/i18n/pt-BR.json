@@ -1322,6 +1322,14 @@
     "kebab.editDetails": "Editar Detalhes",
     "kebab.members": "Membros",
     "listTitle": "{{admin.sections.teams.title}}",
+    "membersDialog": {
+      "addMember": "Adicionar Membro",
+      "customRole": "Função Personalizada",
+      "noMembers": "Sem membros",
+      "removeMember": "Remover Membro",
+      "role": "Função",
+      "title": "Membros da Equipe"
+    },
     "membersDialog.addMember": "Adicionar Membro",
     "membersDialog.customRole": "Função Personalizada",
     "membersDialog.noMembers": "Sem membros",
@@ -1329,6 +1337,15 @@
     "membersDialog.role": "Função",
     "membersDialog.title": "Membros da Equipe",
     "noTeams": "Nenhuma equipe encontrada",
+    "relatedTeamsDialog": {
+      "addRelated": "Adicionar Equipe Relacionada",
+      "customRelationship": "Relacionamento Personalizado",
+      "noRelated": "Sem equipes relacionadas",
+      "relationship": "Relacionamento",
+      "removeRelated": "Remover Equipe Relacionada",
+      "selectTeam": "Selecionar Equipe",
+      "title": "Equipes Relacionadas"
+    },
     "relatedTeamsDialog.addRelated": "Adicionar Equipe Relacionada",
     "relatedTeamsDialog.customRelationship": "Relacionamento Personalizado",
     "relatedTeamsDialog.noRelated": "Nenhuma equipe relacionada",
@@ -1346,6 +1363,12 @@
     "relationships.related": "Relacionada",
     "relationships.superseded_by": "Substituída Por",
     "relationships.supersedes": "Substitui",
+    "responsiblePartiesDialog": {
+      "addParty": "Adicionar Parte Responsável",
+      "noParties": "Sem partes responsáveis",
+      "removeParty": "Remover Parte Responsável",
+      "title": "Partes Responsáveis"
+    },
     "responsiblePartiesDialog.addParty": "Adicionar Parte Responsável",
     "responsiblePartiesDialog.noParties": "Sem partes responsáveis",
     "responsiblePartiesDialog.removeParty": "Remover Parte Responsável",
@@ -1736,6 +1759,7 @@
     "colorBlindMode": "Habilitar Modo para Daltonicos",
     "credentials": {
       "add": "{{common.add}}",
+      "clientId": "ID do cliente",
       "clientSecret": "Segredo do Cliente",
       "createDialog": {
         "create": "{{common.create}}",

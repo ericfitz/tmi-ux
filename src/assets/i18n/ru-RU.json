@@ -1741,6 +1741,7 @@
     "colorBlindMode": "Включить режим для дальтоников",
     "credentials": {
       "add": "{{common.add}}",
+      "clientId": "ID клиента",
       "clientSecret": "Секретный ключ клиента",
       "createDialog": {
         "create": "{{common.create}}",

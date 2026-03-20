@@ -1741,6 +1741,7 @@
     "colorBlindMode": "تفعيل وضع عمى الألوان",
     "credentials": {
       "add": "{{common.add}}",
+      "clientId": "معرّف العميل",
       "clientSecret": "سر العميل",
       "createDialog": {
         "create": "{{common.create}}",

@@ -1741,6 +1741,7 @@
     "colorBlindMode": "启用色盲模式",
     "credentials": {
       "add": "{{common.add}}",
+      "clientId": "客户端ID",
       "clientSecret": "客户端密钥",
       "createDialog": {
         "create": "{{common.create}}",

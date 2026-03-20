@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import {
   DIALOG_IMPORTS,
@@ -33,9 +33,9 @@ import {
     ...CORE_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
     MatDatepickerModule,
-    MatNativeDateModule,
     TranslocoModule,
   ],
+  providers: [provideNativeDateAdapter()],
   template: `
     <h2 mat-dialog-title [transloco]="'userPreferences.credentials.createDialog.title'">
       Create Client Credential

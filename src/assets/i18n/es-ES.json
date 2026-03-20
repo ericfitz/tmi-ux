@@ -1741,6 +1741,7 @@
     "colorBlindMode": "Activar Modo para Daltonismo",
     "credentials": {
       "add": "{{common.add}}",
+      "clientId": "ID de cliente",
       "clientSecret": "Secreto de Cliente",
       "createDialog": {
         "create": "{{common.create}}",

@@ -1741,6 +1741,7 @@
     "colorBlindMode": "کلر بلائنڈ موڈ فعال کریں",
     "credentials": {
       "add": "{{common.add}}",
+      "clientId": "کلائنٹ آئی ڈی",
       "clientSecret": "کلائنٹ سیکریٹ",
       "createDialog": {
         "create": "{{common.create}}",

@@ -1741,6 +1741,7 @@
     "colorBlindMode": "色覚補助モードを有効にする",
     "credentials": {
       "add": "{{common.add}}",
+      "clientId": "クライアントID",
       "clientSecret": "クライアントシークレット",
       "createDialog": {
         "create": "{{common.create}}",

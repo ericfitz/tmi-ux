@@ -1741,6 +1741,7 @@
     "colorBlindMode": "কালার ব্লাইন্ড মোড সক্রিয় করুন",
     "credentials": {
       "add": "{{common.add}}",
+      "clientId": "ক্লায়েন্ট আইডি",
       "clientSecret": "ক্লায়েন্ট সিক্রেট",
       "createDialog": {
         "create": "{{common.create}}",
