@@ -40,6 +40,7 @@ import {
   FORM_MATERIAL_IMPORTS,
   DATA_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
+  UrlDropZoneDirective,
 } from '@app/shared/imports';
 import { CreateDiagramDialogComponent } from './components/create-diagram-dialog/create-diagram-dialog.component';
 import {
@@ -169,6 +170,7 @@ interface RepositoryFormResult {
     TranslocoModule,
     UserDisplayComponent,
     ProjectPickerComponent,
+    UrlDropZoneDirective,
   ],
   templateUrl: './tm-edit.component.html',
   styleUrls: ['./tm-edit.component.scss'],
@@ -1407,7 +1409,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Opens a dialog to create a new document
    * If the user confirms, adds the new document to the threat model
    */
-  addDocument(): void {
+  addDocument(uri?: string): void {
     if (!this.canEdit) {
       this.logger.warn('Cannot add document - insufficient permissions');
       return;
@@ -1415,6 +1417,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     const dialogData: DocumentEditorDialogData = {
       mode: 'create',
       isReadOnly: !this.canEdit,
+      ...(uri ? { document: { uri } as Document } : {}),
     };
 
     const dialogRef = this.dialog.open(DocumentEditorDialogComponent, {
@@ -1448,6 +1451,15 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }),
     );
+  }
+
+  /**
+   * Handles a URL dropped onto the documents card.
+   * Opens the create document dialog with the URI pre-populated.
+   */
+  onDocumentUrlDropped(url: string): void {
+    if (!this.canEdit || this.dialog.openDialogs.length > 0) return;
+    this.addDocument(url);
   }
 
   /**
@@ -1577,7 +1589,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
    * Opens a dialog to create a new source code repository reference
    * If the user confirms, adds the new source code to the threat model
    */
-  addRepository(): void {
+  addRepository(uri?: string): void {
     if (!this.canEdit) {
       this.logger.warn('Cannot add repository - insufficient permissions');
       return;
@@ -1586,6 +1598,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     const dialogData: RepositoryEditorDialogData = {
       mode: 'create',
       isReadOnly: !this.canEdit,
+      ...(uri ? { repository: { uri } as Repository } : {}),
     };
 
     const dialogRef = this.dialog.open(RepositoryEditorDialogComponent, {
@@ -1623,6 +1636,15 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }),
     );
+  }
+
+  /**
+   * Handles a URL dropped onto the repositories card.
+   * Opens the create repository dialog with the URI pre-populated.
+   */
+  onRepositoryUrlDropped(url: string): void {
+    if (!this.canEdit || this.dialog.openDialogs.length > 0) return;
+    this.addRepository(url);
   }
 
   /**

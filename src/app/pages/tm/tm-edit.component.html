@@ -671,7 +671,12 @@
           </mat-card>
 
           <!-- Documents Card -->
-          <mat-card class="documents-card">
+          <mat-card
+            class="documents-card"
+            appUrlDropZone
+            (urlDropped)="onDocumentUrlDropped($event)"
+            [attr.data-drop-hint]="'threatModels.tooltips.dropToCreateDocument' | transloco"
+          >
             <mat-card-header>
               <mat-card-title
                 [transloco]="'common.objectTypes.documents'"
@@ -864,7 +869,12 @@
           </mat-card>
 
           <!-- Repositories Card -->
-          <mat-card class="repository-card">
+          <mat-card
+            class="repository-card"
+            appUrlDropZone
+            (urlDropped)="onRepositoryUrlDropped($event)"
+            [attr.data-drop-hint]="'threatModels.tooltips.dropToCreateRepository' | transloco"
+          >
             <mat-card-header>
               <mat-card-title
                 [transloco]="'common.objectTypes.repositories'"
