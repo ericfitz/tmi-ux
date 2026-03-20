@@ -350,6 +350,8 @@
       "versionRequired": "Version is required"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "Failed to delete survey: {{error}}",
+    "deleteTooltip": "Delete survey",
     "editTemplate": "Edit Survey",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

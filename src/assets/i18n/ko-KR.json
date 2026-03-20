@@ -337,6 +337,8 @@
       "versionRequired": "버전은 필수입니다"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "설문조사 삭제 실패: {{error}}",
+    "deleteTooltip": "설문조사 삭제",
     "editTemplate": "설문조사 편집",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

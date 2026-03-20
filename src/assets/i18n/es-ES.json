@@ -337,6 +337,8 @@
       "versionRequired": "La versión es obligatoria"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "Error al eliminar la encuesta: {{error}}",
+    "deleteTooltip": "Eliminar encuesta",
     "editTemplate": "Editar encuesta",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

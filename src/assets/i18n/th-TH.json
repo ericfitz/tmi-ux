@@ -80,6 +80,8 @@
       "versionRequired": "ต้องระบุเวอร์ชัน"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "ไม่สามารถลบแบบสำรวจ: {{error}}",
+    "deleteTooltip": "ลบแบบสำรวจ",
     "editTemplate": "แก้ไขแบบสำรวจ",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

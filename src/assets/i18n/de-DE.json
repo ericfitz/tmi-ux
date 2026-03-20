@@ -337,6 +337,8 @@
       "versionRequired": "Version ist erforderlich"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "Umfrage konnte nicht gelöscht werden: {{error}}",
+    "deleteTooltip": "Umfrage löschen",
     "editTemplate": "Umfrage bearbeiten",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

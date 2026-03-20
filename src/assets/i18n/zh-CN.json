@@ -337,6 +337,8 @@
       "versionRequired": "版本为必填项"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "删除问卷失败: {{error}}",
+    "deleteTooltip": "删除问卷",
     "editTemplate": "编辑调查问卷",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

@@ -337,6 +337,8 @@
       "versionRequired": "バージョンは必須です"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "アンケートの削除に失敗しました: {{error}}",
+    "deleteTooltip": "アンケートを削除",
     "editTemplate": "調査を編集",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

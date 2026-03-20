@@ -337,6 +337,8 @@
       "versionRequired": "גרסה נדרשת"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "מחיקת הסקר נכשלה: {{error}}",
+    "deleteTooltip": "מחק סקר",
     "editTemplate": "עריכת סקר",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

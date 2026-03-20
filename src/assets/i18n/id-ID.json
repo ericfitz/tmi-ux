@@ -337,6 +337,8 @@
       "versionRequired": "Versi wajib diisi"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "Gagal menghapus survei: {{error}}",
+    "deleteTooltip": "Hapus survei",
     "editTemplate": "Edit survei",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

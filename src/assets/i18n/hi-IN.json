@@ -337,6 +337,8 @@
       "versionRequired": "संस्करण आवश्यक है"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "सर्वेक्षण हटाने में विफल: {{error}}",
+    "deleteTooltip": "सर्वेक्षण हटाएं",
     "editTemplate": "सर्वेक्षण संपादित करें",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

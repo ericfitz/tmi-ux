@@ -337,6 +337,8 @@
       "versionRequired": "La version est requise"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "Échec de la suppression du sondage : {{error}}",
+    "deleteTooltip": "Supprimer le sondage",
     "editTemplate": "Modifier l'enquête",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

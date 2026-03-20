@@ -337,6 +337,8 @@
       "versionRequired": "Versão é obrigatória"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "Falha ao excluir a pesquisa: {{error}}",
+    "deleteTooltip": "Excluir pesquisa",
     "editTemplate": "Editar pesquisa",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

@@ -337,6 +337,8 @@
       "versionRequired": "Требуется указать версию"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "Не удалось удалить опрос: {{error}}",
+    "deleteTooltip": "Удалить опрос",
     "editTemplate": "Редактировать опрос",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

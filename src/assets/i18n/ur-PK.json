@@ -337,6 +337,8 @@
       "versionRequired": "ورژن ضروری ہے"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "سروے حذف کرنے میں ناکامی: {{error}}",
+    "deleteTooltip": "سروے حذف کریں",
     "editTemplate": "سروے میں ترمیم کریں",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

@@ -206,6 +206,11 @@
                   <span>{{ 'common.unarchive' | transloco }}</span>
                 </button>
               }
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="deleteTemplate(template)">
+                <mat-icon>delete</mat-icon>
+                <span>{{ 'common.delete' | transloco }}</span>
+              </button>
             </mat-menu>
           </td>
         </ng-container>

@@ -17,6 +17,16 @@
           'adminSurveys.templateBuilder.unsavedChanges' | transloco
         }}</span>
       }
+      @if (surveyId) {
+        <button
+          mat-icon-button
+          (click)="deleteSurvey()"
+          [disabled]="isSaving"
+          [matTooltip]="'adminSurveys.deleteTooltip' | transloco"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      }
       <button
         mat-icon-button
         color="primary"

@@ -337,6 +337,8 @@
       "versionRequired": "সংস্করণ প্রয়োজন"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "সমীক্ষা মুছতে ব্যর্থ: {{error}}",
+    "deleteTooltip": "সমীক্ষা মুছুন",
     "editTemplate": "জরিপ সম্পাদনা করুন",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",

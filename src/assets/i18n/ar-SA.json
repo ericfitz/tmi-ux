@@ -337,6 +337,8 @@
       "versionRequired": "الإصدار مطلوب"
     },
     "createSurvey": "{{adminSurveys.createDialog.title}}",
+    "deleteError": "فشل في حذف الاستبيان: {{error}}",
+    "deleteTooltip": "حذف الاستبيان",
     "editTemplate": "تحرير الاستبيان",
     "errorLoadingTemplates": "{{surveys.list.errorLoadingSurveys}}",
     "loadingTemplates": "{{surveys.list.loadingSurveys}}",
