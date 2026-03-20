@@ -54,6 +54,7 @@ import {
 } from '../../utils/cell-property-filter.util';
 import { extractCellsFromGraph } from '../../utils/cell-extraction.util';
 import { DFD_STYLING } from '../../constants/styling-constants';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 // Simple interfaces that match what the tests expect
 export interface DfdInitializationParams {
@@ -898,7 +899,7 @@ export class AppDfdOrchestrator {
         operationType: 'create-node' as const,
         affectedCellIds: [],
         timestamp: Date.now(),
-        error: `addNode failed: ${error instanceof Error ? error.message : String(error)}`,
+        error: `addNode failed: ${getErrorMessage(error)}`,
       });
     }
   }

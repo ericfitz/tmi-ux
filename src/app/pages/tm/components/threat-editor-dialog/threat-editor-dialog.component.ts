@@ -22,6 +22,7 @@ import {
   getFieldOptions,
   migrateFieldValue,
 } from '../../../../shared/utils/field-value-helpers';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 /**
  * Interface for threat form values
@@ -956,7 +957,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         });
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = getErrorMessage(error);
       this.logger.error(`Error translating key ${key}: ${errorMessage}`);
     }
   }

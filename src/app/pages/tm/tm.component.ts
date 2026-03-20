@@ -54,6 +54,7 @@ import {
   DeleteConfirmationDialogData,
   DeleteConfirmationDialogResult,
 } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 @Component({
   selector: 'app-tm',
@@ -307,7 +308,7 @@ export class TmComponent implements OnInit, OnDestroy {
             this.logger.error('Error deleting threat model', error);
             this.snackBar.open(
               this.transloco.translate('threatModels.deleteError', {
-                error: error instanceof Error ? error.message : String(error),
+                error: getErrorMessage(error),
               }),
               this.transloco.translate('common.close'),
               { duration: 5000 },
@@ -507,7 +508,7 @@ export class TmComponent implements OnInit, OnDestroy {
       this.logger.error('Failed to import threat model', error);
       this.showError(
         this.transloco.translate('threatModels.importError', {
-          error: error instanceof Error ? error.message : String(error),
+          error: getErrorMessage(error),
         }),
       );
     } finally {

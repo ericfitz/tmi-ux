@@ -21,6 +21,7 @@ import {
   CellPropertiesDialogComponent,
   CellPropertiesDialogData,
 } from '../../presentation/components/cell-properties-dialog/cell-properties-dialog.component';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 /**
  * Interface for label change events
@@ -453,7 +454,7 @@ export class AppEventHandlersService {
                       });
                     },
                     error: (error: unknown) => {
-                      const errorMessage = error instanceof Error ? error.message : String(error);
+                      const errorMessage = getErrorMessage(error);
                       this.logger.error('Failed to add threat from DFD', errorMessage);
                     },
                   });

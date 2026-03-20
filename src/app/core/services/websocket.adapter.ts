@@ -27,6 +27,7 @@ import { LoggerService } from './logger.service';
 import { redactSensitiveData } from '../utils/redact-sensitive-data.util';
 import { TMIWebSocketMessage, TMIMessageType } from '../types/websocket-message.types';
 import type { IAuthService } from '../interfaces/auth.interface';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 /**
  * WebSocket connection states
@@ -1008,7 +1009,7 @@ export class WebSocketAdapter {
    * Check if an error is retryable
    */
   private _isRetryableError(error: unknown): boolean {
-    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorMessage = getErrorMessage(error);
     return (
       !errorMessage.includes('401') && !errorMessage.includes('403') // && this._connectionHealth > 0 // COMMENTED OUT
     );

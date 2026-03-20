@@ -52,6 +52,7 @@ import type {
   ApiNoteInput,
   ApiAssetInput,
 } from '@app/generated/api-type-helpers';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 /**
  * User information from the API (Principal-based)
@@ -2060,7 +2061,7 @@ export class ThreatModelService implements OnDestroy {
         this.logger.warn(
           `Retrying ${operation} (attempt ${retryAttempt + 1}/${maxRetries}) after ${delayMs}ms delay`,
           {
-            error: error instanceof Error ? error.message : String(error),
+            error: getErrorMessage(error),
             delayMs,
           },
         );

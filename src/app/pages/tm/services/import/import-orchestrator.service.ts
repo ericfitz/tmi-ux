@@ -25,6 +25,7 @@ import { IdTranslationService } from './id-translation.service';
 import { ReadonlyFieldFilterService } from './readonly-field-filter.service';
 import { ReferenceRewriterService } from './reference-rewriter.service';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 /**
  * Result of importing a nested object
@@ -182,9 +183,7 @@ export class ImportOrchestratorService {
       }),
       catchError(error => {
         this._logger.error('Import orchestration failed', error);
-        summary.errors.push(
-          `Import failed: ${error instanceof Error ? error.message : String(error)}`,
-        );
+        summary.errors.push(`Import failed: ${getErrorMessage(error)}`);
         return of(summary);
       }),
     );
@@ -221,7 +220,7 @@ export class ImportOrchestratorService {
         this._logger.error('Failed to create threat model', error);
         return of({
           success: false,
-          error: `Failed to create threat model: ${error instanceof Error ? error.message : String(error)}`,
+          error: `Failed to create threat model: ${getErrorMessage(error)}`,
         });
       }),
     );
@@ -336,7 +335,7 @@ export class ImportOrchestratorService {
         this._logger.warn(`Failed to import asset ${originalId || 'unknown'}`, error);
         return of({
           success: false,
-          error: error instanceof Error ? error.message : String(error),
+          error: getErrorMessage(error),
           originalId,
         });
       }),
@@ -418,7 +417,7 @@ export class ImportOrchestratorService {
         this._logger.warn(`Failed to import note ${originalId || 'unknown'}`, error);
         return of({
           success: false,
-          error: error instanceof Error ? error.message : String(error),
+          error: getErrorMessage(error),
           originalId,
         });
       }),
@@ -495,7 +494,7 @@ export class ImportOrchestratorService {
         this._logger.warn(`Failed to import document ${originalId || 'unknown'}`, error);
         return of({
           success: false,
-          error: error instanceof Error ? error.message : String(error),
+          error: getErrorMessage(error),
           originalId,
         });
       }),
@@ -574,7 +573,7 @@ export class ImportOrchestratorService {
         this._logger.warn(`Failed to import repository ${originalId || 'unknown'}`, error);
         return of({
           success: false,
-          error: error instanceof Error ? error.message : String(error),
+          error: getErrorMessage(error),
           originalId,
         });
       }),
@@ -727,7 +726,7 @@ export class ImportOrchestratorService {
         this._logger.warn(`Failed to import diagram ${originalId || 'unknown'}`, error);
         return of({
           success: false,
-          error: error instanceof Error ? error.message : String(error),
+          error: getErrorMessage(error),
           originalId,
         });
       }),
@@ -805,7 +804,7 @@ export class ImportOrchestratorService {
         this._logger.warn(`Failed to import threat ${originalId || 'unknown'}`, error);
         return of({
           success: false,
-          error: error instanceof Error ? error.message : String(error),
+          error: getErrorMessage(error),
           originalId,
         });
       }),

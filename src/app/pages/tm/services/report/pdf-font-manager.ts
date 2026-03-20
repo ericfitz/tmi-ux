@@ -1,5 +1,6 @@
 import { PDFDocument, PDFFont, StandardFonts } from 'pdf-lib';
 import { FontVariant } from './pdf-stylesheet';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 /**
  * Configuration for a language-specific font family.
@@ -169,7 +170,7 @@ export class PdfFontManager {
       this.logger.debugComponent('PdfFontManager', `Embedded regular font: ${fontConfig.name}`);
     } catch (error) {
       this.logger.warn('Failed to load custom regular font, using Helvetica fallback', {
-        error: error instanceof Error ? error.message : String(error),
+        error: getErrorMessage(error),
       });
       const font = await this.doc.embedFont(StandardFonts.Helvetica);
       this.fonts.set('regular', font);
@@ -189,7 +190,7 @@ export class PdfFontManager {
         return;
       } catch (error) {
         this.logger.warn('Failed to load italic font, using HelveticaOblique fallback', {
-          error: error instanceof Error ? error.message : String(error),
+          error: getErrorMessage(error),
         });
       }
     }
@@ -203,7 +204,7 @@ export class PdfFontManager {
       this.fonts.set('bold', font);
     } catch (error) {
       this.logger.warn('Failed to load bold font, using regular as fallback', {
-        error: error instanceof Error ? error.message : String(error),
+        error: getErrorMessage(error),
       });
       // Fall back to regular if bold fails (should not happen with standard fonts)
       const regular = this.fonts.get('regular');
@@ -219,7 +220,7 @@ export class PdfFontManager {
       this.fonts.set('monospace', font);
     } catch (error) {
       this.logger.warn('Failed to load monospace font, using regular as fallback', {
-        error: error instanceof Error ? error.message : String(error),
+        error: getErrorMessage(error),
       });
       const regular = this.fonts.get('regular');
       if (regular) {

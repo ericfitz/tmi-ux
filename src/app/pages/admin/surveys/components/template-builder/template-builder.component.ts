@@ -14,6 +14,7 @@ import {
   QuestionType,
   TmFieldPath,
 } from '@app/types/survey.types';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 /**
  * Configuration for available question types in the palette
@@ -548,7 +549,7 @@ export class TemplateBuilderComponent implements OnInit, OnDestroy {
           void this.router.navigate(['/admin/surveys']);
         },
         error: (error: unknown) => {
-          const errorMessage = error instanceof Error ? error.message : String(error);
+          const errorMessage = getErrorMessage(error);
           this.snackBar.open(
             this.translocoService.translate('adminSurveys.deleteError', { error: errorMessage }),
             this.translocoService.translate('common.dismiss'),

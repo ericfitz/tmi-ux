@@ -32,6 +32,7 @@ import {
   CreateSurveyDialogComponent,
   CreateSurveyDialogResult,
 } from './components/create-survey-dialog/create-survey-dialog.component';
+import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 /**
  * Admin surveys component
@@ -411,7 +412,7 @@ export class AdminSurveysComponent implements OnInit, AfterViewInit, AfterViewCh
           this.loadTemplates();
         },
         error: (error: unknown) => {
-          const errorMessage = error instanceof Error ? error.message : String(error);
+          const errorMessage = getErrorMessage(error);
           this.snackBar.open(
             this.transloco.translate('adminSurveys.deleteError', { error: errorMessage }),
             this.transloco.translate('common.dismiss'),
