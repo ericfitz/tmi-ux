@@ -3,8 +3,19 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
-import { AdminUser, AdminUserFilter, ListAdminUsersResponse } from '@app/types/user.types';
+import {
+  AdminUser,
+  AdminUserFilter,
+  CreateAutomationAccountRequest,
+  CreateAutomationAccountResponse,
+  ListAdminUsersResponse,
+} from '@app/types/user.types';
 import { TransferOwnershipResult } from '@app/types/transfer.types';
+import {
+  ClientCredentialResponse,
+  CreateClientCredentialRequest,
+  ListClientCredentialsResponse,
+} from '@app/types/client-credential.types';
 import { buildHttpParams } from '@app/shared/utils/http-params.util';
 
 /**
@@ -60,6 +71,91 @@ export class UserAdminService {
         throw error;
       }),
     );
+  }
+
+  /**
+   * Create an automation (machine) user account with an initial client credential
+   */
+  public createAutomationUser(
+    request: CreateAutomationAccountRequest,
+  ): Observable<CreateAutomationAccountResponse> {
+    return this.apiService
+      .post<CreateAutomationAccountResponse>(
+        'admin/users/automation',
+        request as unknown as Record<string, unknown>,
+      )
+      .pipe(
+        tap(response => {
+          this.logger.info('Automation user created', { name: response.user.name });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to create automation user', error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * List all client credentials for a given user
+   */
+  public listUserCredentials(internalUuid: string): Observable<ListClientCredentialsResponse> {
+    return this.apiService
+      .get<ListClientCredentialsResponse>(`admin/users/${internalUuid}/client_credentials`)
+      .pipe(
+        tap(response => {
+          this.logger.debug('User credentials loaded', {
+            internalUuid,
+            count: response.credentials.length,
+          });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to list user credentials', error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Create a new client credential for a given user
+   */
+  public createUserCredential(
+    internalUuid: string,
+    input: CreateClientCredentialRequest,
+  ): Observable<ClientCredentialResponse> {
+    return this.apiService
+      .post<ClientCredentialResponse>(
+        `admin/users/${internalUuid}/client_credentials`,
+        input as unknown as Record<string, unknown>,
+      )
+      .pipe(
+        tap(response => {
+          this.logger.info('User credential created', {
+            internalUuid,
+            credentialId: response.id,
+          });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to create user credential', error);
+          throw error;
+        }),
+      );
+  }
+
+  /**
+   * Delete a client credential for a given user
+   */
+  public deleteUserCredential(internalUuid: string, credentialId: string): Observable<void> {
+    return this.apiService
+      .delete<void>(`admin/users/${internalUuid}/client_credentials/${credentialId}`)
+      .pipe(
+        tap(() => {
+          this.logger.info('User credential deleted', { internalUuid, credentialId });
+        }),
+        catchError(error => {
+          this.logger.error('Failed to delete user credential', error);
+          throw error;
+        }),
+      );
   }
 
   /**

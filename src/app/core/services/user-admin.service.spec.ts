@@ -11,12 +11,24 @@ import { of, throwError } from 'rxjs';
 import { UserAdminService } from './user-admin.service';
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
-import { AdminUser, AdminUserFilter, ListAdminUsersResponse } from '@app/types/user.types';
+import {
+  AdminUser,
+  AdminUserFilter,
+  CreateAutomationAccountRequest,
+  CreateAutomationAccountResponse,
+  ListAdminUsersResponse,
+} from '@app/types/user.types';
+import {
+  ClientCredentialResponse,
+  CreateClientCredentialRequest,
+  ListClientCredentialsResponse,
+} from '@app/types/client-credential.types';
 
 describe('UserAdminService', () => {
   let service: UserAdminService;
   let mockApiService: {
     get: ReturnType<typeof vi.fn>;
+    post: ReturnType<typeof vi.fn>;
     delete: ReturnType<typeof vi.fn>;
   };
   let mockLoggerService: {
@@ -52,6 +64,7 @@ describe('UserAdminService', () => {
     // Create mocks
     mockApiService = {
       get: vi.fn(),
+      post: vi.fn(),
       delete: vi.fn(),
     };
 
@@ -237,6 +250,236 @@ describe('UserAdminService', () => {
         error: () => {
           // list() should not be called since delete failed
           expect(mockApiService.get).not.toHaveBeenCalled();
+        },
+      });
+    });
+  });
+
+  describe('list() with automation filter', () => {
+    it('should pass automation=true filter to API', () => {
+      const filter: AdminUserFilter = { automation: true };
+      mockApiService.get.mockReturnValue(of(mockListResponse));
+
+      service.list(filter).subscribe(() => {
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/users', { automation: true });
+      });
+    });
+
+    it('should pass automation=false filter to API', () => {
+      const filter: AdminUserFilter = { automation: false };
+      mockApiService.get.mockReturnValue(of(mockListResponse));
+
+      service.list(filter).subscribe(() => {
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/users', { automation: false });
+      });
+    });
+  });
+
+  describe('createAutomationUser()', () => {
+    const mockRequest: CreateAutomationAccountRequest = {
+      name: 'my-automation-bot',
+    };
+
+    const mockResponse: CreateAutomationAccountResponse = {
+      user: {
+        internal_uuid: 'auto-uuid-123',
+        provider: 'automation',
+        provider_user_id: 'auto-uuid-123',
+        email: '',
+        name: 'my-automation-bot',
+        email_verified: false,
+        created_at: '2024-01-01T00:00:00Z',
+        modified_at: '2024-01-01T00:00:00Z',
+        last_login: '2024-01-01T00:00:00Z',
+        is_admin: false,
+        groups: [],
+        active_threat_models: 0,
+      },
+      client_credential: {
+        id: 'cred-abc-123',
+        client_id: 'tmi_cc_abc123',
+        client_secret: 'super-secret-value',
+        name: 'default',
+        created_at: '2024-01-01T00:00:00Z',
+      },
+    };
+
+    it('should POST to admin/users/automation', () => {
+      mockApiService.post.mockReturnValue(of(mockResponse));
+
+      service.createAutomationUser(mockRequest).subscribe(() => {
+        expect(mockApiService.post).toHaveBeenCalledWith('admin/users/automation', mockRequest);
+      });
+    });
+
+    it('should log info on success with user name', () => {
+      mockApiService.post.mockReturnValue(of(mockResponse));
+
+      service.createAutomationUser(mockRequest).subscribe(() => {
+        expect(mockLoggerService.info).toHaveBeenCalledWith('Automation user created', {
+          name: 'my-automation-bot',
+        });
+      });
+    });
+
+    it('should handle API errors and log them', () => {
+      const error = new Error('API Error');
+      mockApiService.post.mockReturnValue(throwError(() => error));
+
+      service.createAutomationUser(mockRequest).subscribe({
+        error: err => {
+          expect(mockLoggerService.error).toHaveBeenCalledWith(
+            'Failed to create automation user',
+            error,
+          );
+          expect(err).toBe(error);
+        },
+      });
+    });
+  });
+
+  describe('listUserCredentials()', () => {
+    const testUuid = '123e4567-e89b-12d3-a456-426614174000';
+
+    const mockCredentialsResponse: ListClientCredentialsResponse = {
+      credentials: [
+        {
+          id: 'cred-abc-123',
+          client_id: 'tmi_cc_abc123',
+          name: 'ci-token',
+          is_active: true,
+          created_at: '2024-01-01T00:00:00Z',
+          modified_at: '2024-01-01T00:00:00Z',
+        },
+      ],
+      total: 1,
+      limit: 50,
+      offset: 0,
+    };
+
+    it('should GET admin/users/{uuid}/client_credentials', () => {
+      mockApiService.get.mockReturnValue(of(mockCredentialsResponse));
+
+      service.listUserCredentials(testUuid).subscribe(() => {
+        expect(mockApiService.get).toHaveBeenCalledWith(
+          `admin/users/${testUuid}/client_credentials`,
+        );
+      });
+    });
+
+    it('should log debug on success with count', () => {
+      mockApiService.get.mockReturnValue(of(mockCredentialsResponse));
+
+      service.listUserCredentials(testUuid).subscribe(() => {
+        expect(mockLoggerService.debug).toHaveBeenCalledWith('User credentials loaded', {
+          internalUuid: testUuid,
+          count: 1,
+        });
+      });
+    });
+
+    it('should handle API errors and log them', () => {
+      const error = new Error('API Error');
+      mockApiService.get.mockReturnValue(throwError(() => error));
+
+      service.listUserCredentials(testUuid).subscribe({
+        error: err => {
+          expect(mockLoggerService.error).toHaveBeenCalledWith(
+            'Failed to list user credentials',
+            error,
+          );
+          expect(err).toBe(error);
+        },
+      });
+    });
+  });
+
+  describe('createUserCredential()', () => {
+    const testUuid = '123e4567-e89b-12d3-a456-426614174000';
+    const mockInput: CreateClientCredentialRequest = { name: 'my-ci-token' };
+
+    const mockCredentialResponse: ClientCredentialResponse = {
+      id: 'cred-abc-123',
+      client_id: 'tmi_cc_abc123',
+      client_secret: 'super-secret-value',
+      name: 'my-ci-token',
+      created_at: '2024-01-01T00:00:00Z',
+    };
+
+    it('should POST to admin/users/{uuid}/client_credentials', () => {
+      mockApiService.post.mockReturnValue(of(mockCredentialResponse));
+
+      service.createUserCredential(testUuid, mockInput).subscribe(() => {
+        expect(mockApiService.post).toHaveBeenCalledWith(
+          `admin/users/${testUuid}/client_credentials`,
+          mockInput,
+        );
+      });
+    });
+
+    it('should log info on success with internalUuid and credentialId', () => {
+      mockApiService.post.mockReturnValue(of(mockCredentialResponse));
+
+      service.createUserCredential(testUuid, mockInput).subscribe(() => {
+        expect(mockLoggerService.info).toHaveBeenCalledWith('User credential created', {
+          internalUuid: testUuid,
+          credentialId: 'cred-abc-123',
+        });
+      });
+    });
+
+    it('should handle API errors and log them', () => {
+      const error = new Error('API Error');
+      mockApiService.post.mockReturnValue(throwError(() => error));
+
+      service.createUserCredential(testUuid, mockInput).subscribe({
+        error: err => {
+          expect(mockLoggerService.error).toHaveBeenCalledWith(
+            'Failed to create user credential',
+            error,
+          );
+          expect(err).toBe(error);
+        },
+      });
+    });
+  });
+
+  describe('deleteUserCredential()', () => {
+    const testUuid = '123e4567-e89b-12d3-a456-426614174000';
+    const testCredId = 'cred-abc-123';
+
+    it('should DELETE admin/users/{uuid}/client_credentials/{credId}', () => {
+      mockApiService.delete.mockReturnValue(of(undefined));
+
+      service.deleteUserCredential(testUuid, testCredId).subscribe(() => {
+        expect(mockApiService.delete).toHaveBeenCalledWith(
+          `admin/users/${testUuid}/client_credentials/${testCredId}`,
+        );
+      });
+    });
+
+    it('should log info on success with internalUuid and credentialId', () => {
+      mockApiService.delete.mockReturnValue(of(undefined));
+
+      service.deleteUserCredential(testUuid, testCredId).subscribe(() => {
+        expect(mockLoggerService.info).toHaveBeenCalledWith('User credential deleted', {
+          internalUuid: testUuid,
+          credentialId: testCredId,
+        });
+      });
+    });
+
+    it('should handle API errors and log them', () => {
+      const error = new Error('API Error');
+      mockApiService.delete.mockReturnValue(throwError(() => error));
+
+      service.deleteUserCredential(testUuid, testCredId).subscribe({
+        error: err => {
+          expect(mockLoggerService.error).toHaveBeenCalledWith(
+            'Failed to delete user credential',
+            error,
+          );
+          expect(err).toBe(error);
         },
       });
     });
