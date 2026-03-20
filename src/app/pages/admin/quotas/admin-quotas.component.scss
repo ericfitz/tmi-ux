@@ -136,6 +136,16 @@
     margin-top: 2px;
     font-style: italic;
   }
+
+  .mat-column-actions {
+    text-align: center;
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
 }
 
 .no-items-message {

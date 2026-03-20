@@ -146,6 +146,16 @@
     font-family: monospace;
     font-size: 12px;
   }
+
+  .mat-column-actions {
+    text-align: center;
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
 }
 
 .no-items-message {

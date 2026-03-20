@@ -120,8 +120,13 @@
   .column-actions {
     width: 120px;
     min-width: 120px;
-    text-align: right;
-    padding-right: 8px !important;
+    text-align: center;
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 
   .subject-info {
