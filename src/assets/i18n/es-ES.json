@@ -1555,6 +1555,7 @@
       "downloadModel": "Descargar modelo",
       "dropToCreateDocument": "Soltar para crear",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "Soltar para establecer URI del issue",
       "import": "Importar",
       "notesCardTitle": "Las notas son texto en formato markdown que está completamente contenido dentro del modelo de amenazas, utilizado para capturar notas y anotaciones de analistas de seguridad y procesos de análisis automatizados.",
       "repositoriesCardTitle": "Los repositorios son enlaces a Repositorios de Código Fuente donde se gestiona el código fuente del sistema.",

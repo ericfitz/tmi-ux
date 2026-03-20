@@ -1555,6 +1555,7 @@
       "downloadModel": "ماڈل ڈاؤن لوڈ کریں",
       "dropToCreateDocument": "بنانے کے لیے چھوڑیں",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "مسئلے کا URI سیٹ کرنے کے لیے چھوڑیں",
       "import": "درآمد کریں",
       "notesCardTitle": "نوٹس مارک ڈاؤن فارمیٹ ٹیکسٹ ہیں جو مکمل طور پر خطرے کے ماڈل کے اندر موجود ہیں، سیکیورٹی تجزیہ کاروں اور خودکار تجزیہ کے عمل سے نوٹس اور تشریحات کو محفوظ کرنے کے لیے استعمال ہوتے ہیں۔",
       "repositoriesCardTitle": "ریپوزٹریز سورس کوڈ ریپوزٹریز کے لنکس ہیں جہاں سسٹم کا سورس کوڈ منظم کیا جاتا ہے۔",

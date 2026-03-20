@@ -1555,6 +1555,7 @@
       "downloadModel": "모델 다운로드",
       "dropToCreateDocument": "드롭하여 생성",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "이슈 URI를 설정하려면 놓기",
       "import": "가져오기",
       "notesCardTitle": "노트는 위협 모델 내에 완전히 포함된 마크다운 형식의 텍스트로, 보안 분석가 및 자동화된 분석 프로세스의 메모와 주석을 캡처하는 데 사용됩니다.",
       "repositoriesCardTitle": "저장소는 시스템의 소스 코드가 관리되는 소스 코드 저장소에 대한 링크입니다.",

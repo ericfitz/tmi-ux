@@ -1555,6 +1555,7 @@
       "downloadModel": "モデルをダウンロード",
       "dropToCreateDocument": "ドロップして作成",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "ドロップしてイシューURIを設定",
       "import": "インポート",
       "notesCardTitle": "ノートは脅威モデル内に完全に含まれるマークダウン形式のテキストで、セキュリティアナリストや自動分析プロセスからのノートや注釈を記録するために使用されます。",
       "repositoriesCardTitle": "リポジトリは、システムのソースコードが管理されているソースコードリポジトリへのリンクです。",

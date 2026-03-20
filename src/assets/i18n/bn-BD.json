@@ -1555,6 +1555,7 @@
       "downloadModel": "মডেল ডাউনলোড করুন",
       "dropToCreateDocument": "তৈরি করতে ড্রপ করুন",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "ইস্যু URI সেট করতে ড্রপ করুন",
       "import": "আমদানি",
       "notesCardTitle": "নোট হল মার্কডাউন ফরম্যাট টেক্সট যা সম্পূর্ণভাবে থ্রেট মডেলের মধ্যে থাকে, নিরাপত্তা বিশ্লেষক এবং স্বয়ংক্রিয় বিশ্লেষণ প্রক্রিয়া থেকে নোট এবং টীকা ক্যাপচার করতে ব্যবহৃত হয়।",
       "repositoriesCardTitle": "রিপোজিটরি হল সোর্স কোড রিপোজিটরির লিংক যেখানে সিস্টেমের সোর্স কোড পরিচালিত হয়।",

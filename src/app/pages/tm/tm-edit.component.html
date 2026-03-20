@@ -294,7 +294,13 @@
             <div></div>
 
             <!-- Row 3: Issue URI + Framework -->
-            <div class="issue-uri-container" [formGroup]="threatModelForm">
+            <div
+              class="issue-uri-container"
+              [formGroup]="threatModelForm"
+              appUrlDropZone
+              (urlDropped)="onIssueUriUrlDropped($event)"
+              [attr.data-drop-hint]="'threatModels.tooltips.dropToSetIssueUri' | transloco"
+            >
               <mat-form-field appearance="outline" class="issue-uri-field">
                 <mat-label [transloco]="'common.issueUri'">Issue URI</mat-label>
                 <input

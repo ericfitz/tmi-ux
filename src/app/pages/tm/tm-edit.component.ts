@@ -1050,6 +1050,18 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
+   * Handles a URL dropped onto the issue URI container.
+   * Sets the issue_uri form control value to the dropped URL.
+   */
+  onIssueUriUrlDropped(url: string): void {
+    if (!this.canEdit) return;
+    this.threatModelForm.get('issue_uri')?.setValue(url);
+    this.threatModelForm.get('issue_uri')?.markAsDirty();
+    this.initialIssueUriValue = url;
+    this.isEditingIssueUri = false;
+  }
+
+  /**
    * Opens a dialog to create a new threat
    * If the user confirms, adds the threat to the threat model
    */

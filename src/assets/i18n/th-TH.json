@@ -1546,6 +1546,7 @@
       "downloadModel": "ดาวน์โหลดโมเดล",
       "dropToCreateDocument": "วางเพื่อสร้าง",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "วางเพื่อกำหนด URI ของปัญหา",
       "import": "นำเข้า",
       "notesCardTitle": "หมายเหตุคือข้อความรูปแบบ markdown ที่อยู่ภายในโมเดลภัยคุกคามโดยสมบูรณ์ ใช้สำหรับบันทึกหมายเหตุและคำอธิบายประกอบจากนักวิเคราะห์ความปลอดภัยและกระบวนการวิเคราะห์อัตโนมัติ",
       "repositoriesCardTitle": "ที่เก็บคือลิงก์ไปยังที่เก็บโค้ดต้นฉบับที่จัดการโค้ดต้นฉบับสำหรับระบบ",

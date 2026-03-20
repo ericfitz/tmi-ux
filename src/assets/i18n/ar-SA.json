@@ -1555,6 +1555,7 @@
       "downloadModel": "تنزيل النموذج",
       "dropToCreateDocument": "إفلات للإنشاء",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "إفلات لتعيين رابط المشكلة",
       "import": "استيراد",
       "notesCardTitle": "الملاحظات هي نصوص بتنسيق markdown موجودة بالكامل داخل نموذج التهديد، وتستخدم لالتقاط الملاحظات والتعليقات التوضيحية من محللي الأمن وعمليات التحليل الآلي.",
       "repositoriesCardTitle": "المستودعات هي روابط لمستودعات الكود المصدري حيث تتم إدارة الكود المصدري للنظام.",

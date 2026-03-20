@@ -1555,6 +1555,7 @@
       "downloadModel": "下载模型",
       "dropToCreateDocument": "拖放以创建",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "拖放以设置问题URI",
       "import": "导入",
       "notesCardTitle": "笔记是完全包含在威胁模型中的markdown格式文本，用于捕获来自安全分析师和自动化分析流程的笔记和注释。",
       "repositoriesCardTitle": "代码仓库是指向源代码仓库的链接，这些仓库管理着系统的源代码。",

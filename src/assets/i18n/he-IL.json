@@ -1555,6 +1555,7 @@
       "downloadModel": "הורד מודל",
       "dropToCreateDocument": "שחרר ליצירה",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "שחרר כדי להגדיר URI של פנייה",
       "import": "ייבוא",
       "notesCardTitle": "הערות הן טקסט בפורמט markdown המוכל במלואו בתוך מודל האיומים, המשמש ללכידת הערות והערות מאנליסטי אבטחה ותהליכי ניתוח אוטומטיים.",
       "repositoriesCardTitle": "מאגרים הם קישורים למאגרי קוד מקור בהם מנוהל קוד המקור של המערכת.",

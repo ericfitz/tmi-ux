@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TooltipAriaLabelDirective } from '@app/shared/imports';
+import { TooltipAriaLabelDirective, UrlDropZoneDirective } from '@app/shared/imports';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -102,6 +102,7 @@ export interface ThreatEditorDialogData {
     MatIconModule,
     MatTooltipModule,
     TooltipAriaLabelDirective,
+    UrlDropZoneDirective,
     MatSelectModule,
     MatCheckboxModule,
     ReactiveFormsModule,
@@ -187,6 +188,18 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
         const errorMessage = err instanceof Error ? err.message : String(err);
         this.logger.error('Could not copy text: ', errorMessage);
       });
+  }
+
+  /**
+   * Handles a URL dropped onto the issue URI container.
+   * Sets the issue_uri form control value to the dropped URL.
+   */
+  onIssueUriUrlDropped(url: string): void {
+    if (this.isViewOnly) return;
+    this.threatForm.get('issue_uri')?.setValue(url);
+    this.threatForm.get('issue_uri')?.markAsDirty();
+    this.initialIssueUriValue = url;
+    this.isEditingIssueUri = false;
   }
 
   /**

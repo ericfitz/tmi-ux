@@ -1555,6 +1555,7 @@
       "downloadModel": "Unduh Model",
       "dropToCreateDocument": "Lepas untuk membuat",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "Lepas untuk mengatur URI isu",
       "import": "Impor",
       "notesCardTitle": "Catatan adalah teks format markdown yang sepenuhnya terkandung dalam model ancaman, digunakan untuk menangkap catatan dan anotasi dari analis keamanan dan proses analisis otomatis.",
       "repositoriesCardTitle": "Repositori adalah tautan ke Repositori Kode Sumber tempat kode sumber sistem dikelola.",

@@ -1555,6 +1555,7 @@
       "downloadModel": "Télécharger le modèle",
       "dropToCreateDocument": "Déposer pour créer",
       "dropToCreateRepository": "{{threatModels.tooltips.dropToCreateDocument}}",
+      "dropToSetIssueUri": "Déposer pour définir l'URI du ticket",
       "import": "Importer",
       "notesCardTitle": "Les notes sont du texte au format markdown entierement contenu dans le modele de menaces, utilise pour capturer les notes et annotations des analystes de securite et des processus d'analyse automatises.",
       "repositoriesCardTitle": "Les depots sont des liens vers des depots de code source ou le code source du systeme est gere.",
