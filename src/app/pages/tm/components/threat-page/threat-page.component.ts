@@ -618,30 +618,30 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
 
     return {
       name: formValues.name,
-      description: formValues.description || undefined,
-      severity: formValues.severity || undefined,
+      description: formValues.description || '',
+      severity: formValues.severity || '',
       threat_type: formValues.threat_type || [],
       asset_id:
         formValues.asset_id && formValues.asset_id !== this.NOT_ASSOCIATED_VALUE
           ? formValues.asset_id
-          : undefined,
+          : null,
       diagram_id:
         formValues.diagram_id && formValues.diagram_id !== this.NOT_ASSOCIATED_VALUE
           ? formValues.diagram_id
-          : undefined,
+          : null,
       cell_id:
         formValues.cell_id && formValues.cell_id !== this.NOT_ASSOCIATED_VALUE
           ? formValues.cell_id
-          : undefined,
-      score: formValues.score ?? undefined,
-      priority: formValues.priority || undefined,
+          : null,
+      score: formValues.score ?? undefined, // see ericfitz/tmi#208 for server-side clearing
+      priority: formValues.priority || '',
       mitigated: formValues.mitigated,
-      status: formValues.status || undefined,
-      mitigation: formValues.mitigation || undefined,
-      issue_uri: formValues.issue_uri || undefined,
+      status: formValues.status || '',
+      mitigation: formValues.mitigation || '',
+      issue_uri: formValues.issue_uri || '',
       include_in_report: formValues.include_in_report,
-      cwe_id: formValues.cwe_id?.length ? formValues.cwe_id : undefined,
-      cvss: formValues.cvss?.length ? formValues.cvss : undefined,
+      cwe_id: formValues.cwe_id || [],
+      cvss: formValues.cvss || [],
     };
   }
 

@@ -1231,8 +1231,8 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     const updatedThreatData: Partial<ApiThreatInput> = {
       name: result.name,
       description: result.description,
-      severity: result.severity || threat.severity,
-      threat_type: result.threat_type || threat.threat_type || [],
+      severity: result.severity ?? threat.severity,
+      threat_type: result.threat_type ?? threat.threat_type ?? [],
     };
 
     this._copyDefinedFields(result, updatedThreatData, [
