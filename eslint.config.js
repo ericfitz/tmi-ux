@@ -244,6 +244,7 @@ export default [
       'node_modules/**/*',
       '.angular/**/*',
       'src/testing/matchers/graph-matchers.d.ts',
+      'src/app/generated/**/*',
       'vitest.config.ts'
     ],
   },
