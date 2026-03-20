@@ -302,6 +302,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "Create automation user for this webhook",
         "events": "Event Types to Subscribe To",
         "eventsHint": "Event types to subscribe to (e.g., threat_model.created)",
         "eventsPlaceholder": "Select event types",
@@ -326,6 +327,20 @@
         "urlRequired": "URL is required"
       },
       "created": "{{common.created}}",
+      "createAutomationUserDialog": {
+        "email": "Email (Optional)",
+        "emailHint": "Optional — defaults to auto-generated @tmi.local address",
+        "emailPlaceholder": "user@example.com",
+        "name": "Name",
+        "nameHint": "2-64 characters, starts with letter",
+        "nameMaxLength": "Name must be at most 64 characters",
+        "nameMinLength": "Must be at least 2 characters",
+        "namePlaceholder": "automation-user",
+        "namePattern": "Must start with a letter and end with a letter or digit",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "Create Automation User",
+        "title": "Create Automation User"
+      },
       "deleteTooltip": "Delete webhook",
       "events": "events",
       "filterLabel": "Filter Webhooks",
@@ -1834,6 +1849,7 @@
       "createdOn": "{{common.created}}",
       "credential": "Credential",
       "expired": "Expired",
+      "expiresAt": "Expires",
       "expiresOn": "Expires",
       "lastUsed": "Last Used",
       "neverExpires": "Never expires",
