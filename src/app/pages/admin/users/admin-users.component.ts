@@ -25,6 +25,10 @@ import {
   UserPickerDialogData,
 } from '@app/shared/components/user-picker-dialog/user-picker-dialog.component';
 import { OAuthProviderInfo } from '@app/auth/models/auth.models';
+import {
+  ManageCredentialsDialogComponent,
+  ManageCredentialsDialogData,
+} from './manage-credentials-dialog/manage-credentials-dialog.component';
 import { ProviderDisplayComponent } from '@app/shared/components/provider-display/provider-display.component';
 import { UserDisplayComponent } from '@app/shared/components/user-display/user-display.component';
 import { LanguageService } from '@app/i18n/language.service';
@@ -215,7 +219,14 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
   }
 
   onManageCredentials(user: AdminUser): void {
-    this.logger.debug('Manage credentials clicked', { user: user.internal_uuid });
+    const dialogData: ManageCredentialsDialogData = {
+      internalUuid: user.internal_uuid,
+      userName: user.name || user.email,
+    };
+    this.dialog.open(ManageCredentialsDialogComponent, {
+      width: '800px',
+      data: dialogData,
+    });
   }
 
   onPageChange(event: PageEvent): void {
