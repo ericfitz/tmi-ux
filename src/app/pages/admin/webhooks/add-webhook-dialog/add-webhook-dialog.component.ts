@@ -107,6 +107,12 @@ import { LoggerService } from '@app/core/services/logger.service';
           >
         </mat-form-field>
 
+        <mat-checkbox formControlName="createAutomationUser" class="full-width">
+          <span [transloco]="'admin.webhooks.addDialog.createAutomationUser'">
+            Create automation user for this webhook
+          </span>
+        </mat-checkbox>
+
         @if (errorMessage) {
           <mat-error class="form-error">
             {{ errorMessage }}
@@ -218,6 +224,7 @@ export class AddWebhookDialogComponent implements OnInit {
       url: ['', [Validators.required, Validators.pattern(/^https:\/\/.+/)]],
       events: [[], Validators.required],
       secret: [''],
+      createAutomationUser: [false],
     });
   }
 
@@ -231,6 +238,7 @@ export class AddWebhookDialogComponent implements OnInit {
         url: string;
         events: string[];
         secret: string;
+        createAutomationUser: boolean;
       };
       const name = formValue.name;
       const url = formValue.url;
@@ -250,7 +258,10 @@ export class AddWebhookDialogComponent implements OnInit {
         .subscribe({
           next: webhook => {
             this.logger.info('Webhook created successfully');
-            this.dialogRef.close(webhook);
+            this.dialogRef.close({
+              webhook,
+              createAutomationUser: formValue.createAutomationUser,
+            });
           },
           error: (error: { error?: { message?: string } }) => {
             this.logger.error('Failed to create webhook', error);
