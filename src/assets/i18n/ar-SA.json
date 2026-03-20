@@ -254,6 +254,9 @@
     "subtitle": "إدارة إعدادات النظام والتكوينات",
     "title": "الإدارة",
     "users": {
+      "actions": {
+        "manageCredentials": "إدارة بيانات الاعتماد"
+      },
       "administrator": "مسؤول",
       "columns": {
         "groups": "{{common.groups}}",
@@ -262,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "حذف حساب المستخدم",
+      "filter": {
+        "automationOnly": "عرض حسابات الأتمتة فقط"
+      },
       "filterLabel": "تصفية المستخدمين",
       "filterPlaceholder": "البحث بالبريد الإلكتروني أو الاسم أو المزود أو اسم المجموعة",
       "lastLogin": "آخر تسجيل دخول",
       "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "إضافة بيانات اعتماد",
+        "deleteConfirm": "هل أنت متأكد من أنك تريد حذف بيانات الاعتماد \"{{name}}\"؟",
+        "noCredentials": "لم يتم العثور على بيانات اعتماد",
+        "title": "إدارة بيانات الاعتماد لـ {{userName}}"
+      },
       "never": "أبداً",
       "noUsers": "لم يتم العثور على مستخدمين",
       "subtitle": "عرض وإدارة مستخدمي النظام",
@@ -281,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "إنشاء مستخدم أتمتة لهذا الـ Webhook",
         "events": "أنواع الأحداث للاشتراك فيها",
         "eventsHint": "أنواع الأحداث للاشتراك فيها (مثال: threat_model.created)",
         "eventsPlaceholder": "اختر أنواع الأحداث",
@@ -299,6 +312,20 @@
         "urlInvalid": "يجب أن يكون رابط HTTPS",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "الرابط مطلوب"
+      },
+      "createAutomationUserDialog": {
+        "email": "البريد الإلكتروني (اختياري)",
+        "emailHint": "اختياري — الافتراضي هو عنوان @tmi.local المُنشأ تلقائياً",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2-64 حرفاً، يبدأ بحرف",
+        "nameMaxLength": "يجب ألا يتجاوز الاسم 64 حرفاً",
+        "nameMinLength": "يجب أن يكون على الأقل حرفين",
+        "namePattern": "يجب أن يبدأ بحرف وينتهي بحرف أو رقم",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "إنشاء مستخدم أتمتة",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "حذف Webhook",
@@ -1762,7 +1789,8 @@
       "createdOn": "{{common.created}}",
       "credential": "بيانات الاعتماد",
       "expired": "انتهت صلاحيتها",
-      "expiresOn": "ينتهي في",
+      "expiresAt": "تنتهي في",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "آخر استخدام",
       "neverExpires": "لا تنتهي الصلاحية أبداً",
       "noCredentials": "لا توجد بيانات اعتماد عميل حتى الآن",

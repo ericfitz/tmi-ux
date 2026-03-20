@@ -254,6 +254,9 @@
     "subtitle": "Systemeinstellungen und Konfigurationen verwalten",
     "title": "Verwaltung",
     "users": {
+      "actions": {
+        "manageCredentials": "Anmeldedaten verwalten"
+      },
       "administrator": "Administrator",
       "columns": {
         "groups": "{{common.groups}}",
@@ -262,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "Benutzerkonto löschen",
+      "filter": {
+        "automationOnly": "Nur Automatisierungskonten anzeigen"
+      },
       "filterLabel": "Benutzer filtern",
       "filterPlaceholder": "Nach E-Mail, Name, Anbieter oder Gruppenname suchen",
       "lastLogin": "Letzte Anmeldung",
       "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "Anmeldedaten hinzufügen",
+        "deleteConfirm": "Sind Sie sicher, dass Sie die Anmeldedaten \"{{name}}\" löschen möchten?",
+        "noCredentials": "Keine Anmeldedaten gefunden",
+        "title": "Anmeldedaten für {{userName}} verwalten"
+      },
       "never": "Nie",
       "noUsers": "Keine Benutzer gefunden",
       "subtitle": "Systembenutzer anzeigen und verwalten",
@@ -281,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "Automatisierungsbenutzer für diesen Webhook erstellen",
         "events": "Zu abonnierende Ereignistypen",
         "eventsHint": "Ereignistypen zum Abonnieren (z.B. threat_model.created)",
         "eventsPlaceholder": "Ereignistypen auswählen",
@@ -299,6 +312,20 @@
         "urlInvalid": "Muss eine HTTPS-URL sein",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL ist erforderlich"
+      },
+      "createAutomationUserDialog": {
+        "email": "E-Mail (Optional)",
+        "emailHint": "Optional — Standard ist eine automatisch generierte @tmi.local-Adresse",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2–64 Zeichen, beginnt mit einem Buchstaben",
+        "nameMaxLength": "Der Name darf maximal 64 Zeichen lang sein",
+        "nameMinLength": "Muss mindestens 2 Zeichen lang sein",
+        "namePattern": "Muss mit einem Buchstaben beginnen und mit einem Buchstaben oder einer Ziffer enden",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "Automatisierungsbenutzer erstellen",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Webhook löschen",
@@ -1762,7 +1789,8 @@
       "createdOn": "{{common.created}}",
       "credential": "Anmeldedaten",
       "expired": "Abgelaufen",
-      "expiresOn": "Läuft ab",
+      "expiresAt": "Läuft ab",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "Zuletzt verwendet",
       "neverExpires": "Läuft nie ab",
       "noCredentials": "Noch keine Client-Anmeldedaten",

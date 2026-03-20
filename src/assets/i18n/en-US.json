@@ -263,6 +263,9 @@
     "subtitle": "Manage system settings and configurations",
     "title": "Administration",
     "users": {
+      "actions": {
+        "manageCredentials": "Manage credentials"
+      },
       "administrator": "Administrator",
       "columns": {
         "groups": "{{common.groups}}",
@@ -271,26 +274,23 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "Delete user account",
+      "filter": {
+        "automationOnly": "Show automation accounts only"
+      },
       "filterLabel": "Filter Users",
       "filterPlaceholder": "Search by email, name, provider, or group name",
       "lastLogin": "Last Login",
       "listTitle": "{{admin.sections.users.title}}",
-      "never": "Never",
-      "noUsers": "No users found",
-      "subtitle": "View and manage system users",
-      "title": "Manage Users",
-      "actions": {
-        "manageCredentials": "Manage credentials"
-      },
-      "filter": {
-        "automationOnly": "Show automation accounts only"
-      },
       "manageCredentials": {
         "addCredential": "Add Credential",
         "deleteConfirm": "Are you sure you want to delete the credential \"{{name}}\"?",
         "noCredentials": "No credentials found",
         "title": "Manage Credentials for {{userName}}"
       },
+      "never": "Never",
+      "noUsers": "No users found",
+      "subtitle": "View and manage system users",
+      "title": "Manage Users",
       "transferOwnership": {
         "confirm": "Are you sure you want to transfer all data from {{source}} to {{target}}?",
         "dialogTitle": "Transfer User Data",
@@ -326,21 +326,21 @@
         "urlPlaceholder.comment": "This is a URL and should not be translated.",
         "urlRequired": "URL is required"
       },
-      "created": "{{common.created}}",
       "createAutomationUserDialog": {
         "email": "Email (Optional)",
         "emailHint": "Optional — defaults to auto-generated @tmi.local address",
         "emailPlaceholder": "user@example.com",
-        "name": "Name",
+        "name": "{{common.name}}",
         "nameHint": "2-64 characters, starts with letter",
         "nameMaxLength": "Name must be at most 64 characters",
         "nameMinLength": "Must be at least 2 characters",
-        "namePlaceholder": "automation-user",
         "namePattern": "Must start with a letter and end with a letter or digit",
+        "namePlaceholder": "automation-user",
         "nameRequired": "{{common.validation.nameRequired}}",
         "save": "Create Automation User",
-        "title": "Create Automation User"
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
+      "created": "{{common.created}}",
       "deleteTooltip": "Delete webhook",
       "events": "events",
       "filterLabel": "Filter Webhooks",
@@ -1850,7 +1850,7 @@
       "credential": "Credential",
       "expired": "Expired",
       "expiresAt": "Expires",
-      "expiresOn": "Expires",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "Last Used",
       "neverExpires": "Never expires",
       "noCredentials": "No client credentials yet",

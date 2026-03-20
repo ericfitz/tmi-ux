@@ -251,6 +251,9 @@
     "subtitle": "จัดการการตั้งค่าและการกำหนดค่าระบบ",
     "title": "การดูแลระบบ",
     "users": {
+      "actions": {
+        "manageCredentials": "จัดการข้อมูลรับรอง"
+      },
       "administrator": "ผู้ดูแลระบบ",
       "columns": {
         "groups": "{{common.groups}}",
@@ -259,10 +262,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "ลบบัญชีผู้ใช้",
+      "filter": {
+        "automationOnly": "แสดงเฉพาะบัญชีอัตโนมัติ"
+      },
       "filterLabel": "ค้นหาผู้ใช้",
       "filterPlaceholder": "ค้นหาตามอีเมล ชื่อ ผู้ให้บริการ หรือชื่อกลุ่ม",
       "lastLogin": "เข้าสู่ระบบล่าสุด",
       "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "เพิ่มข้อมูลรับรอง",
+        "deleteConfirm": "คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลรับรอง \"{{name}}\"?",
+        "noCredentials": "ไม่พบข้อมูลรับรอง",
+        "title": "จัดการข้อมูลรับรองสำหรับ {{userName}}"
+      },
       "never": "ไม่เคย",
       "noUsers": "ไม่พบผู้ใช้",
       "subtitle": "ดูและจัดการผู้ใช้ในระบบ",
@@ -278,6 +290,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "สร้างผู้ใช้อัตโนมัติสำหรับ webhook นี้",
         "events": "ประเภทเหตุการณ์ที่จะสมัครสมาชิก",
         "eventsHint": "ประเภทเหตุการณ์ที่จะสมัครสมาชิก (เช่น threat_model.created)",
         "eventsPlaceholder": "เลือกประเภทเหตุการณ์",
@@ -294,6 +307,20 @@
         "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
         "urlInvalid": "ต้องเป็น URL แบบ HTTPS",
         "urlRequired": "ต้องระบุ URL"
+      },
+      "createAutomationUserDialog": {
+        "email": "อีเมล (ไม่บังคับ)",
+        "emailHint": "ไม่บังคับ — ค่าเริ่มต้นคือที่อยู่ @tmi.local ที่สร้างอัตโนมัติ",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2-64 ตัวอักษร ขึ้นต้นด้วยตัวอักษร",
+        "nameMaxLength": "ชื่อต้องมีไม่เกิน 64 ตัวอักษร",
+        "nameMinLength": "ต้องมีอย่างน้อย 2 ตัวอักษร",
+        "namePattern": "ต้องขึ้นต้นด้วยตัวอักษรและลงท้ายด้วยตัวอักษรหรือตัวเลข",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "สร้างผู้ใช้อัตโนมัติ",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "ลบ webhook",
@@ -1753,7 +1780,8 @@
       "createdOn": "{{common.created}}",
       "credential": "ข้อมูลรับรอง",
       "expired": "หมดอายุแล้ว",
-      "expiresOn": "หมดอายุเมื่อ",
+      "expiresAt": "หมดอายุ",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "ใช้ล่าสุด",
       "neverExpires": "ไม่มีวันหมดอายุ",
       "noCredentials": "ยังไม่มีข้อมูลรับรองไคลเอนต์",

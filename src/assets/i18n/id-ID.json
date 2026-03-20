@@ -254,6 +254,9 @@
     "subtitle": "Kelola pengaturan dan konfigurasi sistem",
     "title": "Administrasi",
     "users": {
+      "actions": {
+        "manageCredentials": "Kelola Kredensial"
+      },
       "administrator": "Administrator",
       "columns": {
         "groups": "{{common.groups}}",
@@ -262,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "Hapus akun pengguna",
+      "filter": {
+        "automationOnly": "Tampilkan hanya akun otomasi"
+      },
       "filterLabel": "Filter Pengguna",
       "filterPlaceholder": "Cari berdasarkan email, nama, penyedia, atau nama grup",
       "lastLogin": "Login Terakhir",
       "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "Tambah Kredensial",
+        "deleteConfirm": "Apakah Anda yakin ingin menghapus kredensial \"{{name}}\"?",
+        "noCredentials": "Tidak ada kredensial ditemukan",
+        "title": "Kelola Kredensial untuk {{userName}}"
+      },
       "never": "Tidak Pernah",
       "noUsers": "Tidak ada pengguna ditemukan",
       "subtitle": "Lihat dan kelola pengguna sistem",
@@ -281,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "Buat pengguna otomasi untuk webhook ini",
         "events": "Jenis Peristiwa untuk Berlangganan",
         "eventsHint": "Jenis peristiwa untuk berlangganan (misalnya, threat_model.created)",
         "eventsPlaceholder": "Pilih jenis peristiwa",
@@ -299,6 +312,20 @@
         "urlInvalid": "Harus berupa URL HTTPS",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL wajib diisi"
+      },
+      "createAutomationUserDialog": {
+        "email": "Email (Opsional)",
+        "emailHint": "Opsional — default ke alamat @tmi.local yang dibuat otomatis",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2-64 karakter, diawali huruf",
+        "nameMaxLength": "Nama harus maksimal 64 karakter",
+        "nameMinLength": "Harus minimal 2 karakter",
+        "namePattern": "Harus diawali huruf dan diakhiri huruf atau angka",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "Buat Pengguna Otomasi",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Hapus webhook",
@@ -1762,7 +1789,8 @@
       "createdOn": "{{common.created}}",
       "credential": "Kredensial",
       "expired": "Kadaluarsa",
-      "expiresOn": "Kedaluwarsa pada",
+      "expiresAt": "Kedaluwarsa",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "Terakhir Digunakan",
       "neverExpires": "Tidak pernah kedaluwarsa",
       "noCredentials": "Belum ada kredensial klien",

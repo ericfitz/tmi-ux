@@ -254,6 +254,9 @@
     "subtitle": "נהל הגדרות מערכת ותצורות",
     "title": "ניהול",
     "users": {
+      "actions": {
+        "manageCredentials": "נהל אישורים"
+      },
       "administrator": "מנהל מערכת",
       "columns": {
         "groups": "{{common.groups}}",
@@ -262,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "מחק חשבון משתמש",
+      "filter": {
+        "automationOnly": "הצג חשבונות אוטומציה בלבד"
+      },
       "filterLabel": "סנן משתמשים",
       "filterPlaceholder": "חפש לפי דוא\"ל, שם, ספק או שם קבוצה",
       "lastLogin": "כניסה אחרונה",
       "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "הוסף אישור",
+        "deleteConfirm": "האם אתה בטוח שברצונך למחוק את האישור \"{{name}}\"?",
+        "noCredentials": "לא נמצאו אישורים",
+        "title": "נהל אישורים עבור {{userName}}"
+      },
       "never": "אף פעם",
       "noUsers": "לא נמצאו משתמשים",
       "subtitle": "צפה ונהל משתמשי מערכת",
@@ -281,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "צור משתמש אוטומציה עבור webhook זה",
         "events": "סוגי אירועים להרשמה",
         "eventsHint": "סוגי אירועים להרשמה (לדוגמה, threat_model.created)",
         "eventsPlaceholder": "בחר סוגי אירועים",
@@ -299,6 +312,20 @@
         "urlInvalid": "חייב להיות כתובת HTTPS",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "כתובת URL נדרשת"
+      },
+      "createAutomationUserDialog": {
+        "email": "דוא\"ל (אופציונלי)",
+        "emailHint": "אופציונלי — ברירת מחדל לכתובת @tmi.local שנוצרת אוטומטית",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2-64 תווים, מתחיל באות",
+        "nameMaxLength": "השם חייב להיות לכל היותר 64 תווים",
+        "nameMinLength": "חייב להיות לפחות 2 תווים",
+        "namePattern": "חייב להתחיל באות ולהסתיים באות או ספרה",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "צור משתמש אוטומציה",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "מחק webhook",
@@ -1762,7 +1789,8 @@
       "createdOn": "{{common.created}}",
       "credential": "אישור",
       "expired": "פג תוקף",
-      "expiresOn": "תוקף בתאריך",
+      "expiresAt": "פג תוקף",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "שימוש אחרון",
       "neverExpires": "לא מעולם פג",
       "noCredentials": "אין עדיין אישורי לקוח",

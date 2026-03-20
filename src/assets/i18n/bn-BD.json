@@ -254,6 +254,9 @@
     "subtitle": "সিস্টেম সেটিংস এবং কনফিগারেশন পরিচালনা করুন",
     "title": "প্রশাসন",
     "users": {
+      "actions": {
+        "manageCredentials": "ক্রেডেনশিয়াল পরিচালনা করুন"
+      },
       "administrator": "প্রশাসক",
       "columns": {
         "groups": "{{common.groups}}",
@@ -262,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "ব্যবহারকারী অ্যাকাউন্ট মুছুন",
+      "filter": {
+        "automationOnly": "শুধুমাত্র অটোমেশন অ্যাকাউন্ট দেখান"
+      },
       "filterLabel": "ব্যবহারকারী ফিল্টার করুন",
       "filterPlaceholder": "ইমেইল, নাম, প্রোভাইডার বা গ্রুপের নাম দিয়ে খুঁজুন",
       "lastLogin": "সর্বশেষ লগইন",
       "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "ক্রেডেনশিয়াল যোগ করুন",
+        "deleteConfirm": "আপনি কি নিশ্চিত যে আপনি \"{{name}}\" ক্রেডেনশিয়ালটি মুছতে চান?",
+        "noCredentials": "কোনো ক্রেডেনশিয়াল পাওয়া যায়নি",
+        "title": "{{userName}}-এর ক্রেডেনশিয়াল পরিচালনা করুন"
+      },
       "never": "কখনো না",
       "noUsers": "কোনো ব্যবহারকারী পাওয়া যায়নি",
       "subtitle": "সিস্টেম ব্যবহারকারী দেখুন এবং পরিচালনা করুন",
@@ -281,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "এই ওয়েবহুকের জন্য অটোমেশন ব্যবহারকারী তৈরি করুন",
         "events": "সাবস্ক্রাইব করার জন্য ইভেন্ট প্রকার",
         "eventsHint": "সাবস্ক্রাইব করার জন্য ইভেন্ট প্রকার (যেমন, threat_model.created)",
         "eventsPlaceholder": "ইভেন্ট প্রকার নির্বাচন করুন",
@@ -299,6 +312,20 @@
         "urlInvalid": "HTTPS URL হতে হবে",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL প্রয়োজন"
+      },
+      "createAutomationUserDialog": {
+        "email": "ইমেইল (ঐচ্ছিক)",
+        "emailHint": "ঐচ্ছিক — ডিফল্ট হলো স্বয়ংক্রিয়ভাবে তৈরি @tmi.local ঠিকানা",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "২-৬৪ অক্ষর, অক্ষর দিয়ে শুরু",
+        "nameMaxLength": "নাম সর্বোচ্চ ৬৪ অক্ষর হতে হবে",
+        "nameMinLength": "কমপক্ষে ২ অক্ষর হতে হবে",
+        "namePattern": "একটি অক্ষর দিয়ে শুরু এবং একটি অক্ষর বা সংখ্যা দিয়ে শেষ হতে হবে",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "অটোমেশন ব্যবহারকারী তৈরি করুন",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "ওয়েবহুক মুছুন",
@@ -1762,7 +1789,8 @@
       "createdOn": "{{common.created}}",
       "credential": "শংসাপত্র",
       "expired": "মেয়াদ শেষ",
-      "expiresOn": "মেয়াদ শেষ",
+      "expiresAt": "মেয়াদ শেষ হয়",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "সর্বশেষ ব্যবহৃত",
       "neverExpires": "কখনও মেয়াদ শেষ হয় না",
       "noCredentials": "এখনো কোনো ক্লায়েন্ট ক্রেডেনশিয়াল নেই",

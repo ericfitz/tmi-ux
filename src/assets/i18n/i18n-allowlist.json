@@ -143,6 +143,9 @@
   "userPreferences": {
     "sections": {
       "securityReviewer": "{{threatModels.securityReviewer}}"
+    },
+    "credentials": {
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}"
     }
   },
   "triage": {
@@ -159,5 +162,13 @@
   "report": {
     "summaryDescription": "{{common.description}}",
     "summarySecurityReviewer": "{{triage.reviewerAssignment.reviewer}}"
+  },
+  "admin": {
+    "webhooks": {
+      "createAutomationUserDialog": {
+        "name": "{{common.name}}",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
+      }
+    }
   }
 }

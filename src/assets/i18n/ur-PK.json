@@ -254,6 +254,9 @@
     "subtitle": "سسٹم کی ترتیبات اور تشکیلات کا انتظام کریں",
     "title": "انتظامیہ",
     "users": {
+      "actions": {
+        "manageCredentials": "اسناد منظم کریں"
+      },
       "administrator": "منتظم",
       "columns": {
         "groups": "{{common.groups}}",
@@ -262,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "صارف اکاؤنٹ حذف کریں",
+      "filter": {
+        "automationOnly": "صرف آٹومیشن اکاؤنٹس دکھائیں"
+      },
       "filterLabel": "صارفین فلٹر کریں",
       "filterPlaceholder": "ای میل، نام، فراہم کنندہ، یا گروپ کے نام سے تلاش کریں",
       "lastLogin": "آخری لاگ ان",
       "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "اسناد شامل کریں",
+        "deleteConfirm": "کیا آپ واقعی اسناد \"{{name}}\" حذف کرنا چاہتے ہیں؟",
+        "noCredentials": "کوئی اسناد نہیں ملی",
+        "title": "{{userName}} کے لیے اسناد منظم کریں"
+      },
       "never": "کبھی نہیں",
       "noUsers": "کوئی صارفین نہیں ملے",
       "subtitle": "سسٹم صارفین دیکھیں اور ان کا انتظام کریں",
@@ -281,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "اس webhook کے لیے آٹومیشن صارف بنائیں",
         "events": "سبسکرائب کرنے کے لیے ایونٹ کی اقسام",
         "eventsHint": "سبسکرائب کرنے کے لیے ایونٹ کی اقسام (مثلاً، threat_model.created)",
         "eventsPlaceholder": "ایونٹ کی اقسام منتخب کریں",
@@ -299,6 +312,20 @@
         "urlInvalid": "HTTPS URL ہونا ضروری ہے",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL ضروری ہے"
+      },
+      "createAutomationUserDialog": {
+        "email": "ای میل (اختیاری)",
+        "emailHint": "اختیاری — ڈیفالٹ خودکار پیدا شدہ @tmi.local پتہ ہے",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2-64 حروف، حرف سے شروع ہو",
+        "nameMaxLength": "نام زیادہ سے زیادہ 64 حروف کا ہونا چاہیے",
+        "nameMinLength": "کم از کم 2 حروف ہونے چاہئیں",
+        "namePattern": "حرف سے شروع ہو اور حرف یا ہندسے پر ختم ہو",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "آٹومیشن صارف بنائیں",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Webhook حذف کریں",
@@ -1762,7 +1789,8 @@
       "createdOn": "{{common.created}}",
       "credential": "اسناد",
       "expired": "میعاد ختم ہو گئی",
-      "expiresOn": "میعاد ختم ہوگی",
+      "expiresAt": "ختم ہوتا ہے",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "آخری استعمال",
       "neverExpires": "کبھی میعاد ختم نہیں ہوگی",
       "noCredentials": "ابھی تک کوئی کلائنٹ اسناد نہیں",

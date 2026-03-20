@@ -254,6 +254,9 @@
     "subtitle": "管理系统设置和配置",
     "title": "系统管理",
     "users": {
+      "actions": {
+        "manageCredentials": "管理凭证"
+      },
       "administrator": "管理员",
       "columns": {
         "groups": "{{common.groups}}",
@@ -262,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "删除用户账户",
+      "filter": {
+        "automationOnly": "仅显示自动化账户"
+      },
       "filterLabel": "筛选用户",
       "filterPlaceholder": "按电子邮件、姓名、提供商或组名搜索",
       "lastLogin": "最后登录",
       "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "添加凭证",
+        "deleteConfirm": "确定要删除凭证\"{{name}}\"吗？",
+        "noCredentials": "未找到凭证",
+        "title": "管理 {{userName}} 的凭证"
+      },
       "never": "从未",
       "noUsers": "未找到用户",
       "subtitle": "查看和管理系统用户",
@@ -281,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "为此 webhook 创建自动化用户",
         "events": "要订阅的事件类型",
         "eventsHint": "要订阅的事件类型（例如：threat_model.created）",
         "eventsPlaceholder": "选择事件类型",
@@ -299,6 +312,20 @@
         "urlInvalid": "必须是HTTPS URL",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL为必填项"
+      },
+      "createAutomationUserDialog": {
+        "email": "电子邮件（可选）",
+        "emailHint": "可选 — 默认为自动生成的 @tmi.local 地址",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2-64 个字符，以字母开头",
+        "nameMaxLength": "名称最多 64 个字符",
+        "nameMinLength": "至少需要 2 个字符",
+        "namePattern": "必须以字母开头，以字母或数字结尾",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "创建自动化用户",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "删除webhook",
@@ -1762,7 +1789,8 @@
       "createdOn": "{{common.created}}",
       "credential": "凭证",
       "expired": "已过期",
-      "expiresOn": "过期于",
+      "expiresAt": "到期",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "上次使用",
       "neverExpires": "永不过期",
       "noCredentials": "暂无客户端凭证",

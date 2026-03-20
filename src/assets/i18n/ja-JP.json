@@ -254,6 +254,9 @@
     "subtitle": "システム設定と構成の管理",
     "title": "管理",
     "users": {
+      "actions": {
+        "manageCredentials": "資格情報を管理"
+      },
       "administrator": "管理者",
       "columns": {
         "groups": "{{common.groups}}",
@@ -262,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "ユーザーアカウントを削除",
+      "filter": {
+        "automationOnly": "自動化アカウントのみ表示"
+      },
       "filterLabel": "ユーザーをフィルター",
       "filterPlaceholder": "メール、名前、プロバイダー、またはグループ名で検索",
       "lastLogin": "最終ログイン",
       "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "資格情報を追加",
+        "deleteConfirm": "資格情報「{{name}}」を削除してもよろしいですか？",
+        "noCredentials": "資格情報が見つかりません",
+        "title": "{{userName}} の資格情報を管理"
+      },
       "never": "なし",
       "noUsers": "ユーザーが見つかりません",
       "subtitle": "システムユーザーの表示と管理",
@@ -281,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "このWebhook用の自動化ユーザーを作成",
         "events": "サブスクライブするイベントタイプ",
         "eventsHint": "サブスクライブするイベントタイプ（例: threat_model.created）",
         "eventsPlaceholder": "イベントタイプを選択",
@@ -299,6 +312,20 @@
         "urlInvalid": "HTTPS URLである必要があります",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URLは必須です"
+      },
+      "createAutomationUserDialog": {
+        "email": "メール (任意)",
+        "emailHint": "任意 — デフォルトは自動生成された @tmi.local アドレス",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2〜64文字、文字で始まる",
+        "nameMaxLength": "名前は最大64文字である必要があります",
+        "nameMinLength": "最低2文字必要です",
+        "namePattern": "文字で始まり、文字または数字で終わる必要があります",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "自動化ユーザーを作成",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Webhookを削除",
@@ -1762,7 +1789,8 @@
       "createdOn": "{{common.created}}",
       "credential": "認証情報",
       "expired": "期限切れ",
-      "expiresOn": "有効期限",
+      "expiresAt": "有効期限",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "最終使用日時",
       "neverExpires": "無期限",
       "noCredentials": "クライアント資格情報がありません",

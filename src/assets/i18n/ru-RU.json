@@ -254,6 +254,9 @@
     "subtitle": "Управление системными настройками и конфигурациями",
     "title": "Администрирование",
     "users": {
+      "actions": {
+        "manageCredentials": "Управление учётными данными"
+      },
       "administrator": "Администратор",
       "columns": {
         "groups": "{{common.groups}}",
@@ -262,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "Удалить учётную запись пользователя",
+      "filter": {
+        "automationOnly": "Показать только учётные записи автоматизации"
+      },
       "filterLabel": "Фильтр пользователей",
       "filterPlaceholder": "Поиск по email, имени, провайдеру или названию группы",
       "lastLogin": "Последний вход",
       "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "Добавить учётные данные",
+        "deleteConfirm": "Вы уверены, что хотите удалить учётные данные \"{{name}}\"?",
+        "noCredentials": "Учётные данные не найдены",
+        "title": "Управление учётными данными для {{userName}}"
+      },
       "never": "Никогда",
       "noUsers": "Пользователи не найдены",
       "subtitle": "Просмотр и управление системными пользователями",
@@ -281,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "Создать пользователя автоматизации для этого вебхука",
         "events": "Типы событий для подписки",
         "eventsHint": "Типы событий для подписки (например, threat_model.created)",
         "eventsPlaceholder": "Выберите типы событий",
@@ -299,6 +312,20 @@
         "urlInvalid": "Должен быть HTTPS URL",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL обязателен"
+      },
+      "createAutomationUserDialog": {
+        "email": "Электронная почта (необязательно)",
+        "emailHint": "Необязательно — по умолчанию используется автоматически сгенерированный адрес @tmi.local",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "От 2 до 64 символов, начинается с буквы",
+        "nameMaxLength": "Имя должно содержать не более 64 символов",
+        "nameMinLength": "Должно содержать не менее 2 символов",
+        "namePattern": "Должно начинаться с буквы и заканчиваться буквой или цифрой",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "Создать пользователя автоматизации",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Удалить вебхук",
@@ -1762,7 +1789,8 @@
       "createdOn": "{{common.created}}",
       "credential": "Учётные данные",
       "expired": "Истёкший",
-      "expiresOn": "Истекает",
+      "expiresAt": "Истекает",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "Последнее использование",
       "neverExpires": "Никогда не истекает",
       "noCredentials": "Учётные данные клиента отсутствуют",

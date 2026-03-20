@@ -254,6 +254,9 @@
     "subtitle": "सिस्टम सेटिंग्स और कॉन्फ़िगरेशन प्रबंधित करें",
     "title": "प्रशासन",
     "users": {
+      "actions": {
+        "manageCredentials": "क्रेडेंशियल प्रबंधित करें"
+      },
       "administrator": "प्रशासक",
       "columns": {
         "groups": "{{common.groups}}",
@@ -262,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "उपयोगकर्ता खाता हटाएं",
+      "filter": {
+        "automationOnly": "केवल ऑटोमेशन खाते दिखाएं"
+      },
       "filterLabel": "उपयोगकर्ता फ़िल्टर करें",
       "filterPlaceholder": "ईमेल, नाम, प्रदाता या समूह के नाम से खोजें",
       "lastLogin": "अंतिम लॉगिन",
       "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "क्रेडेंशियल जोड़ें",
+        "deleteConfirm": "क्या आप वाकई क्रेडेंशियल \"{{name}}\" को हटाना चाहते हैं?",
+        "noCredentials": "कोई क्रेडेंशियल नहीं मिला",
+        "title": "{{userName}} के लिए क्रेडेंशियल प्रबंधित करें"
+      },
       "never": "कभी नहीं",
       "noUsers": "कोई उपयोगकर्ता नहीं मिला",
       "subtitle": "सिस्टम उपयोगकर्ताओं को देखें और प्रबंधित करें",
@@ -281,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "इस webhook के लिए ऑटोमेशन उपयोगकर्ता बनाएं",
         "events": "सब्सक्राइब करने के लिए इवेंट प्रकार",
         "eventsHint": "सब्सक्राइब करने के लिए इवेंट प्रकार (उदा., threat_model.created)",
         "eventsPlaceholder": "इवेंट प्रकार चुनें",
@@ -299,6 +312,20 @@
         "urlInvalid": "HTTPS URL होना चाहिए",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL आवश्यक है"
+      },
+      "createAutomationUserDialog": {
+        "email": "ईमेल (वैकल्पिक)",
+        "emailHint": "वैकल्पिक — स्वचालित रूप से उत्पन्न @tmi.local पते पर डिफ़ॉल्ट",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2-64 वर्ण, अक्षर से शुरू",
+        "nameMaxLength": "नाम अधिकतम 64 वर्णों का होना चाहिए",
+        "nameMinLength": "कम से कम 2 वर्ण होने चाहिए",
+        "namePattern": "एक अक्षर से शुरू होना चाहिए और एक अक्षर या अंक पर समाप्त होना चाहिए",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "ऑटोमेशन उपयोगकर्ता बनाएं",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "Webhook हटाएं",
@@ -1762,7 +1789,8 @@
       "createdOn": "{{common.created}}",
       "credential": "क्रेडेंशियल",
       "expired": "समाप्त",
-      "expiresOn": "पर समाप्त होता है",
+      "expiresAt": "समाप्त होता है",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "अंतिम उपयोग",
       "neverExpires": "कभी नहीं समाप्त होता",
       "noCredentials": "अभी कोई क्लाइंट क्रेडेंशियल नहीं है",

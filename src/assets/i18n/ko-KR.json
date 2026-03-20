@@ -254,6 +254,9 @@
     "subtitle": "시스템 설정 및 구성 관리",
     "title": "관리",
     "users": {
+      "actions": {
+        "manageCredentials": "자격 증명 관리"
+      },
       "administrator": "관리자",
       "columns": {
         "groups": "{{common.groups}}",
@@ -262,10 +265,19 @@
         "user": "{{common.subjectTypes.user}}"
       },
       "deleteTooltip": "사용자 계정 삭제",
+      "filter": {
+        "automationOnly": "자동화 계정만 표시"
+      },
       "filterLabel": "사용자 필터",
       "filterPlaceholder": "이메일, 이름, 공급자 또는 그룹 이름으로 검색",
       "lastLogin": "마지막 로그인",
       "listTitle": "{{admin.sections.users.title}}",
+      "manageCredentials": {
+        "addCredential": "자격 증명 추가",
+        "deleteConfirm": "자격 증명 \"{{name}}\"을(를) 삭제하시겠습니까?",
+        "noCredentials": "자격 증명을 찾을 수 없습니다",
+        "title": "{{userName}}의 자격 증명 관리"
+      },
       "never": "없음",
       "noUsers": "사용자를 찾을 수 없습니다",
       "subtitle": "시스템 사용자 보기 및 관리",
@@ -281,6 +293,7 @@
     "webhooks": {
       "addButton": "{{admin.webhooks.addDialog.title}}",
       "addDialog": {
+        "createAutomationUser": "이 웹훅을 위한 자동화 사용자 생성",
         "events": "구독할 이벤트 유형",
         "eventsHint": "구독할 이벤트 유형 (예: threat_model.created)",
         "eventsPlaceholder": "이벤트 유형 선택",
@@ -299,6 +312,20 @@
         "urlInvalid": "HTTPS URL이어야 합니다",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL은 필수입니다"
+      },
+      "createAutomationUserDialog": {
+        "email": "이메일 (선택 사항)",
+        "emailHint": "선택 사항 — 기본값은 자동 생성된 @tmi.local 주소",
+        "emailPlaceholder": "user@example.com",
+        "name": "{{common.name}}",
+        "nameHint": "2-64자, 문자로 시작",
+        "nameMaxLength": "이름은 최대 64자여야 합니다",
+        "nameMinLength": "최소 2자 이상이어야 합니다",
+        "namePattern": "문자로 시작하고 문자 또는 숫자로 끝나야 합니다",
+        "namePlaceholder": "automation-user",
+        "nameRequired": "{{common.validation.nameRequired}}",
+        "save": "자동화 사용자 생성",
+        "title": "{{admin.webhooks.createAutomationUserDialog.save}}"
       },
       "created": "{{common.created}}",
       "deleteTooltip": "웹훅 삭제",
@@ -1762,7 +1789,8 @@
       "createdOn": "{{common.created}}",
       "credential": "자격 증명",
       "expired": "만료됨",
-      "expiresOn": "만료 대상",
+      "expiresAt": "만료",
+      "expiresOn": "{{userPreferences.credentials.expiresAt}}",
       "lastUsed": "마지막 사용",
       "neverExpires": "만료되지 않음",
       "noCredentials": "클라이언트 자격 증명이 없습니다",
