@@ -49,9 +49,10 @@ import { A11yModule } from '@angular/cdk/a11y';
 // Shared directives
 import { ScrollIndicatorDirective } from './directives/scroll-indicator.directive';
 import { TooltipAriaLabelDirective } from './directives/tooltip-aria-label.directive';
+import { UrlDropZoneDirective } from './directives/url-drop-zone.directive';
 
 // Export directives for direct use
-export { ScrollIndicatorDirective, TooltipAriaLabelDirective };
+export { ScrollIndicatorDirective, TooltipAriaLabelDirective, UrlDropZoneDirective };
 
 /**
  * Common Angular imports used by most components
