@@ -13,16 +13,27 @@
 
   <mat-card class="filter-card">
     <mat-card-content>
-      <mat-form-field class="filter-field" appearance="outline">
-        <mat-label [transloco]="'admin.users.filterLabel'">Filter Users</mat-label>
-        <input
-          matInput
-          [value]="filterText"
-          (input)="onFilterChange($any($event.target).value)"
-          [placeholder]="'admin.users.filterPlaceholder' | transloco"
-        />
-        <mat-icon matPrefix>search</mat-icon>
-      </mat-form-field>
+      <div class="filter-row">
+        <mat-form-field class="filter-field" appearance="outline">
+          <mat-label [transloco]="'admin.users.filterLabel'">Filter Users</mat-label>
+          <input
+            matInput
+            [value]="filterText"
+            (input)="onFilterChange($any($event.target).value)"
+            [placeholder]="'admin.users.filterPlaceholder' | transloco"
+          />
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+        <mat-slide-toggle
+          [checked]="automationOnly"
+          (change)="onAutomationFilterChange($event.checked)"
+          class="automation-toggle"
+        >
+          <span [transloco]="'admin.users.filter.automationOnly'">
+            Show automation accounts only
+          </span>
+        </mat-slide-toggle>
+      </div>
     </mat-card-content>
   </mat-card>
 
@@ -119,6 +130,14 @@
               </th>
               <td mat-cell *matCellDef="let user" class="column-actions">
                 <div class="action-buttons">
+                  <button
+                    mat-icon-button
+                    [matTooltip]="'admin.users.actions.manageCredentials' | transloco"
+                    [disabled]="user.automation !== true"
+                    (click)="onManageCredentials(user); $event.stopPropagation()"
+                  >
+                    <mat-icon>vpn_key</mat-icon>
+                  </button>
                   <button
                     mat-icon-button
                     [matMenuTriggerFor]="userRowKebabMenu"

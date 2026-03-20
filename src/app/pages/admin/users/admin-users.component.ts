@@ -82,6 +82,7 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
   readonly pageSizeOptions = PAGE_SIZE_OPTIONS;
 
   filterText = '';
+  automationOnly = false;
   loading = false;
   currentLocale = 'en-US';
 
@@ -177,7 +178,11 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
     const offset = calculateOffset(this.pageIndex, this.pageSize);
 
     this.userAdminService
-      .list({ limit: this.pageSize, offset })
+      .list({
+        limit: this.pageSize,
+        offset,
+        ...(this.automationOnly && { automation: true }),
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: response => {
@@ -200,6 +205,17 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
 
   onFilterChange(value: string): void {
     this.filterSubject$.next(value);
+  }
+
+  onAutomationFilterChange(checked: boolean): void {
+    this.automationOnly = checked;
+    this.pageIndex = 0;
+    this.loadUsers();
+    this.updateUrl();
+  }
+
+  onManageCredentials(user: AdminUser): void {
+    this.logger.debug('Manage credentials clicked', { user: user.internal_uuid });
   }
 
   onPageChange(event: PageEvent): void {
