@@ -1319,7 +1319,6 @@
       "relatedTeams": "{{teams.relatedTeamsDialog.title}}",
       "responsibleParties": "{{teams.responsiblePartiesDialog.title}}"
     },
-    "kebab.editDetails": "Editar Detalhes",
     "kebab.members": "Membros",
     "listTitle": "{{admin.sections.teams.title}}",
     "membersDialog": {
