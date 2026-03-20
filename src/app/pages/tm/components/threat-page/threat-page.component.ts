@@ -26,6 +26,7 @@ import {
   FORM_MATERIAL_IMPORTS,
   DATA_MATERIAL_IMPORTS,
   FEEDBACK_MATERIAL_IMPORTS,
+  UrlDropZoneDirective,
 } from '@app/shared/imports';
 
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -113,6 +114,7 @@ interface ThreatFormValues {
     ...FORM_MATERIAL_IMPORTS,
     ...DATA_MATERIAL_IMPORTS,
     ...FEEDBACK_MATERIAL_IMPORTS,
+    UrlDropZoneDirective,
   ],
   templateUrl: './threat-page.component.html',
   styleUrls: ['./threat-page.component.scss'],
@@ -735,6 +737,18 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
         const errorMessage = err instanceof Error ? err.message : String(err);
         this.logger.error('Could not copy text: ', errorMessage);
       });
+  }
+
+  /**
+   * Handles a URL dropped onto the issue URI container.
+   * Sets the issue_uri form control value to the dropped URL.
+   */
+  onIssueUriUrlDropped(url: string): void {
+    if (!this.canEdit) return;
+    this.threatForm.get('issue_uri')?.setValue(url);
+    this.threatForm.get('issue_uri')?.markAsDirty();
+    this.initialIssueUriValue = url;
+    this.isEditingIssueUri = false;
   }
 
   /**
