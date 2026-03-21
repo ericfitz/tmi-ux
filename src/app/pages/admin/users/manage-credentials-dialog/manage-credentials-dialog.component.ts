@@ -250,7 +250,7 @@ export class ManageCredentialsDialogComponent implements OnInit {
     if (!confirm(message)) return;
 
     this.userAdminService
-      .deleteUserCredential(this.data.internalUuid, cred.client_id)
+      .deleteUserCredential(this.data.internalUuid, cred.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
