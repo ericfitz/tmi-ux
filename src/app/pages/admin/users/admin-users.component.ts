@@ -224,7 +224,8 @@ export class AdminUsersComponent implements OnInit, AfterViewInit {
       userName: user.name || user.email,
     };
     this.dialog.open(ManageCredentialsDialogComponent, {
-      width: '800px',
+      width: '90vw',
+      maxWidth: '1200px',
       data: dialogData,
     });
   }
