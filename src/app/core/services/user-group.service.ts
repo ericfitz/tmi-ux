@@ -8,7 +8,7 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
@@ -40,6 +40,9 @@ export class UserGroupService {
     return this.apiService
       .get<ListGroupMembersResponse>(`me/groups/${groupUuid}/members`, params)
       .pipe(
+        map(
+          response => response ?? { members: [], total: 0, limit: limit ?? 0, offset: offset ?? 0 },
+        ),
         tap(response => {
           this.logger.debug('User group members loaded', {
             groupUuid,
