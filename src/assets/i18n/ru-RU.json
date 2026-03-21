@@ -106,7 +106,7 @@
       "deleteTooltip": "Удалить группу",
       "filterLabel": "Фильтр групп",
       "filterPlaceholder": "Поиск по названию группы или провайдеру",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "Текущие участники",

@@ -106,7 +106,7 @@
       "deleteTooltip": "Gruppe löschen",
       "filterLabel": "Gruppen filtern",
       "filterPlaceholder": "Nach Gruppenname oder Anbieter suchen",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "Aktuelle Mitglieder",

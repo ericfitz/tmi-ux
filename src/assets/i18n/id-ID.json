@@ -106,7 +106,7 @@
       "deleteTooltip": "Hapus grup",
       "filterLabel": "Filter Grup",
       "filterPlaceholder": "Cari berdasarkan nama grup atau penyedia",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "Anggota Saat Ini",

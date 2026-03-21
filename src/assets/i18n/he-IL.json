@@ -106,7 +106,7 @@
       "deleteTooltip": "מחק קבוצה",
       "filterLabel": "סנן קבוצות",
       "filterPlaceholder": "חפש לפי שם קבוצה או ספק",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "חברים נוכחיים",

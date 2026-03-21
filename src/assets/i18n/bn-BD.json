@@ -106,7 +106,7 @@
       "deleteTooltip": "গ্রুপ মুছুন",
       "filterLabel": "গ্রুপ ফিল্টার করুন",
       "filterPlaceholder": "গ্রুপের নাম বা প্রোভাইডার দিয়ে খুঁজুন",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "বর্তমান সদস্য",

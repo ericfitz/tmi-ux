@@ -106,7 +106,7 @@
       "deleteTooltip": "گروپ حذف کریں",
       "filterLabel": "گروپس فلٹر کریں",
       "filterPlaceholder": "گروپ کے نام یا فراہم کنندہ سے تلاش کریں",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "موجودہ اراکین",

@@ -106,7 +106,7 @@
       "deleteTooltip": "그룹 삭제",
       "filterLabel": "그룹 필터",
       "filterPlaceholder": "그룹 이름 또는 공급자로 검색",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "현재 멤버",

@@ -106,7 +106,7 @@
       "deleteTooltip": "グループを削除",
       "filterLabel": "グループをフィルター",
       "filterPlaceholder": "グループ名またはプロバイダーで検索",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "現在のメンバー",

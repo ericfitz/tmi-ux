@@ -113,7 +113,7 @@
       "deleteTooltip": "Delete group",
       "filterLabel": "Filter Groups",
       "filterPlaceholder": "Search by group name or provider",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "Current Members",

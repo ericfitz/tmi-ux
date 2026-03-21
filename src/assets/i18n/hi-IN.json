@@ -106,7 +106,7 @@
       "deleteTooltip": "समूह हटाएं",
       "filterLabel": "समूह फ़िल्टर करें",
       "filterPlaceholder": "समूह के नाम या प्रदाता द्वारा खोजें",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "वर्तमान सदस्य",

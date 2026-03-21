@@ -104,7 +104,7 @@
       "deleteTooltip": "ลบกลุ่ม",
       "filterLabel": "ค้นหากลุ่ม",
       "filterPlaceholder": "ค้นหาตามชื่อกลุ่มหรือผู้ให้บริการ",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "สมาชิกปัจจุบัน",

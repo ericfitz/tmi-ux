@@ -106,7 +106,7 @@
       "deleteTooltip": "删除用户组",
       "filterLabel": "筛选用户组",
       "filterPlaceholder": "按组名或提供商搜索",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "当前成员",

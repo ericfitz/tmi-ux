@@ -106,7 +106,7 @@
       "deleteTooltip": "حذف المجموعة",
       "filterLabel": "تصفية المجموعات",
       "filterPlaceholder": "البحث بالاسم أو المزود",
-      "listTitle": "{{userPreferences.userProfile.groupMemberships}}",
+      "listTitle": "{{admin.sections.groups.title}}",
       "membersDialog": {
         "addMember": "{{teams.membersDialog.addMember}}",
         "currentMembers": "الأعضاء الحاليون",
