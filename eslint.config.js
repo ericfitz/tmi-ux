@@ -229,6 +229,22 @@ export default [
     },
   },
 
+  // ae-cvss-calculator library types don't resolve for ESLint's type checker
+  {
+    files: [
+      '**/cvss-calculator-dialog/*.ts',
+      '**/threat-page/threat-page.component.ts',
+    ],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-redundant-type-constituents': 'off',
+    },
+  },
+
   // Angular services and components - relax member ordering
   {
     files: ['**/services/*.ts', '**/components/*.ts', '**/**.component.ts', '**/i18n/*.ts'],
