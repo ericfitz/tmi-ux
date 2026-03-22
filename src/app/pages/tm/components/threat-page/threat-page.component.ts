@@ -409,7 +409,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       label: this.translocoService.translate('threatEditor.notAssociatedWithCell'),
     };
 
-    let filteredCells: CellOption[] = [];
+    let filteredCells: CellOption[];
 
     if (diagramId && diagramId !== this.NOT_ASSOCIATED_VALUE) {
       filteredCells = this.allCellOptions.filter(cell => cell.diagramId === diagramId);

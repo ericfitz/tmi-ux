@@ -1380,7 +1380,7 @@ export class AuthService {
       };
     } catch (error) {
       this.logger.error('Error extracting user profile from token', error);
-      throw new Error('Failed to extract user profile from token');
+      throw new Error('Failed to extract user profile from token', { cause: error });
     }
   }
 
@@ -2011,7 +2011,9 @@ export class AuthService {
       localStorage.setItem(this.tokenStorageKey, encryptedToken);
     } catch (error) {
       this.logger.error('Failed to encrypt token for storage', error);
-      throw new Error('Token encryption failed - cannot proceed without secure storage');
+      throw new Error('Token encryption failed - cannot proceed without secure storage', {
+        cause: error,
+      });
     }
   }
 

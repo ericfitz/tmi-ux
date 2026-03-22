@@ -142,7 +142,7 @@ export class HttpLoggingInterceptor implements HttpInterceptor {
    * Log and categorize HTTP errors based on status codes
    */
   private logAndCategorizeError(error: HttpErrorResponse, request: HttpRequest<unknown>): void {
-    let errorMessage = '';
+    let errorMessage: string;
 
     if (error.error instanceof ErrorEvent) {
       // Client-side error

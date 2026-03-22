@@ -986,7 +986,7 @@ export class AppDfdOrchestrator {
   loadDiagram(diagramId?: string, forceLoad?: boolean): Observable<any>;
   loadDiagram(diagramIdOrForceLoad?: string | boolean, forceLoad = false): Observable<any> {
     let targetDiagramId: string | undefined;
-    let shouldForceLoad = false;
+    let shouldForceLoad: boolean;
 
     if (typeof diagramIdOrForceLoad === 'boolean') {
       // Called as loadDiagram(forceLoad)
