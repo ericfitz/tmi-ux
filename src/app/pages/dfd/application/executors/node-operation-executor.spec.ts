@@ -2,6 +2,7 @@
  * Test suite for NodeOperationExecutor
  */
 
+import '@angular/compiler';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { NodeOperationExecutor } from './node-operation-executor';
