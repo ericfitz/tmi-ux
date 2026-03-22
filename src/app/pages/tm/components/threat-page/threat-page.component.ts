@@ -447,7 +447,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       label: this.translocoService.translate('threatEditor.notAssociatedWithCell'),
     };
 
-    let filteredCells: CellOption[] = [];
+    let filteredCells: CellOption[];
 
     if (diagramId && diagramId !== this.NOT_ASSOCIATED_VALUE) {
       filteredCells = this.allCellOptions.filter(cell => cell.diagramId === diagramId);
@@ -928,7 +928,7 @@ export class ThreatPageComponent implements OnInit, OnDestroy {
       if (!value) return null;
 
       // Check supported version prefix
-      let version: CvssVersion | null = null;
+      let version: CvssVersion;
       if (value.startsWith('CVSS:4.0')) {
         version = '4.0';
       } else if (value.startsWith('CVSS:3.1')) {

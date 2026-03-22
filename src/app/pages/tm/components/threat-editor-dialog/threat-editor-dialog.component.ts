@@ -451,7 +451,7 @@ export class ThreatEditorDialogComponent implements OnInit, OnDestroy, AfterView
       label: this.translocoService.translate('threatEditor.notAssociatedWithCell'),
     };
 
-    let filteredCells: CellOption[] = [];
+    let filteredCells: CellOption[];
 
     if (diagramId && diagramId !== this.NOT_ASSOCIATED_VALUE) {
       // Filter cells for the selected diagram
