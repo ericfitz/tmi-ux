@@ -125,7 +125,7 @@ export class LoggerService {
     const formattedMessage = `[${sanitizedComponent}] ${sanitizedMessage}`;
     this.bufferEntry(LogLevel.DEBUG, formattedMessage, redactedParams);
     if (this.shouldLogComponent(component, LogLevel.DEBUG)) {
-      // lgtm[js/log-injection] - inputs are sanitized above via sanitizeForLog()
+      // lgtm[js/log-injection] codeql[js/log-injection] - all inputs sanitized: strings via sanitizeForLog(), params via redactSensitiveData() which strips control characters recursively
       console.debug(this.formatMessage(LogLevel.DEBUG, formattedMessage), ...redactedParams);
     }
   }
@@ -318,10 +318,22 @@ export class LoggerService {
    */
   private redactSensitiveData(param: unknown): unknown {
     if (typeof param === 'string') {
-      // Check if it looks like a URL
-      if (param.startsWith('http://') || param.startsWith('https://')) {
-        return this.redactUrl(param);
+      // eslint-disable-next-line no-control-regex
+      const sanitized = param.replace(/[\u0000-\u001F\u007F]/g, '');
+      if (sanitized.startsWith('http://') || sanitized.startsWith('https://')) {
+        return this.redactUrl(sanitized);
       }
+      return sanitized;
+    }
+    if (Array.isArray(param)) {
+      return param.map(item => this.redactSensitiveData(item));
+    }
+    if (param !== null && typeof param === 'object') {
+      const sanitized: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(param)) {
+        sanitized[key] = this.redactSensitiveData(value);
+      }
+      return sanitized;
     }
     return param;
   }
