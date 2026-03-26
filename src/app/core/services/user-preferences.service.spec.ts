@@ -211,6 +211,21 @@ describe('UserPreferencesService', () => {
       expect(service.getPreferences().themeMode).toBe('light');
     });
 
+    it('should use server default theme when initialization fails completely', async () => {
+      Object.defineProperty(mockBrandingConfigService, 'defaultTheme', {
+        get: vi.fn().mockReturnValue('dark'),
+        configurable: true,
+      });
+      mockAuthService.isAuthenticated = true;
+      mockApiService.get.mockImplementation(() => {
+        throw new Error('Sync error');
+      });
+
+      await service.initialize();
+
+      expect(service.getPreferences().themeMode).toBe('dark');
+    });
+
     it('should not override server user preferences with server default theme', async () => {
       Object.defineProperty(mockBrandingConfigService, 'defaultTheme', {
         get: vi.fn().mockReturnValue('dark'),

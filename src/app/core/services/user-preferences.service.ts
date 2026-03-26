@@ -151,7 +151,7 @@ export class UserPreferencesService {
       this.logger.debug('UserPreferencesService: Initialized successfully');
     } catch (error) {
       this.logger.warn('UserPreferencesService: Initialization failed, using defaults', error);
-      this.preferencesSubject.next(DEFAULT_PREFERENCES);
+      this.preferencesSubject.next(this.applyServerDefaultTheme(DEFAULT_PREFERENCES));
     }
   }
 
