@@ -319,6 +319,18 @@ describe('UserPreferencesService', () => {
       expect(service.getPreferences().animations).toBe('yes');
     });
 
+    it('should not apply server default theme when legacy migration provides prefs', async () => {
+      Object.defineProperty(mockBrandingConfigService, 'defaultTheme', {
+        get: vi.fn().mockReturnValue('dark'),
+        configurable: true,
+      });
+      localStorage.setItem('tmi_user_preferences', JSON.stringify({ themeMode: 'light' }));
+
+      await service.initialize();
+
+      expect(service.getPreferences().themeMode).toBe('light');
+    });
+
     it('should not migrate when new storage key already exists', async () => {
       localStorage.setItem('tmi_preferences_v2', JSON.stringify({ animations: false }));
       localStorage.setItem('tmi_user_preferences', JSON.stringify({ animations: true }));

@@ -99,11 +99,11 @@ function initializeMaterialIcons(
 // User preferences initialization function
 function initializeUserPreferences(
   userPreferencesService: UserPreferencesService,
-  brandingConfigService: BrandingConfigService,
+  _brandingConfigService: BrandingConfigService,
 ): () => Promise<void> {
-  // BrandingConfigService dep ensures its APP_INITIALIZER completes first,
-  // so defaultTheme is available when UserPreferencesService initializes.
-  void brandingConfigService;
+  // BrandingConfigService is a dep so Angular constructs the singleton before this factory
+  // runs. Both initializers execute concurrently; defaultTheme will be null if branding init
+  // hasn't resolved yet, in which case UserPreferencesService falls back to 'automatic'.
   return () => userPreferencesService.initialize();
 }
 
