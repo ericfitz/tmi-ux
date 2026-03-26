@@ -20,6 +20,7 @@ import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
 import { ServerConfig } from '../interfaces/server-config.interface';
+import type { ThemeMode } from './theme.service';
 
 /** Default TMI logo path served from public/ */
 const DEFAULT_LOGO_PATH = '/TMI-FullLogo-Transparent-512x512.png';
@@ -101,6 +102,15 @@ export class BrandingConfigService {
 
   get userHyperlinkProvider(): string | null {
     return this.config$.value?.ui?.user_hyperlink_provider ?? null;
+  }
+
+  /** Server-configured default theme, mapped to client ThemeMode. Null if not set or invalid. */
+  get defaultTheme(): ThemeMode | null {
+    const raw = this.config$.value?.ui?.default_theme;
+    if (!raw) return null;
+    if (raw === 'auto') return 'automatic';
+    if (raw === 'light' || raw === 'dark') return raw;
+    return null;
   }
 
   /** Pre-validated PNG data ready for pdf-lib embedPng() */
