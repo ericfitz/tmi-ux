@@ -99,7 +99,11 @@ function initializeMaterialIcons(
 // User preferences initialization function
 function initializeUserPreferences(
   userPreferencesService: UserPreferencesService,
+  brandingConfigService: BrandingConfigService,
 ): () => Promise<void> {
+  // BrandingConfigService dep ensures its APP_INITIALIZER completes first,
+  // so defaultTheme is available when UserPreferencesService initializes.
+  void brandingConfigService;
   return () => userPreferencesService.initialize();
 }
 
@@ -233,7 +237,7 @@ export const appConfig: ApplicationConfig = {
     {
       provide: APP_INITIALIZER,
       useFactory: initializeUserPreferences,
-      deps: [UserPreferencesService],
+      deps: [UserPreferencesService, BrandingConfigService],
       multi: true,
     },
     // Initialize theme service
