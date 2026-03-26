@@ -15,6 +15,7 @@ import { UserPreferencesService, type UserPreferencesData } from './user-prefere
 import { ApiService } from './api.service';
 import { LoggerService } from './logger.service';
 import { AUTH_SERVICE } from '../interfaces';
+import { BrandingConfigService } from './branding-config.service';
 
 describe('UserPreferencesService', () => {
   let service: UserPreferencesService;
@@ -32,6 +33,7 @@ describe('UserPreferencesService', () => {
     warn: ReturnType<typeof vi.fn>;
     error: ReturnType<typeof vi.fn>;
   };
+  let mockBrandingConfigService: Record<string, unknown>;
 
   const DEFAULT_PREFERENCES: UserPreferencesData = {
     animations: true,
@@ -63,11 +65,18 @@ describe('UserPreferencesService', () => {
       error: vi.fn(),
     };
 
+    mockBrandingConfigService = {};
+    Object.defineProperty(mockBrandingConfigService, 'defaultTheme', {
+      get: vi.fn().mockReturnValue(null),
+      configurable: true,
+    });
+
     envInjector = createEnvironmentInjector(
       [
         { provide: ApiService, useValue: mockApiService },
         { provide: AUTH_SERVICE, useValue: mockAuthService },
         { provide: LoggerService, useValue: mockLogger },
+        { provide: BrandingConfigService, useValue: mockBrandingConfigService },
       ],
       {
         get: () => null,
@@ -164,6 +173,57 @@ describe('UserPreferencesService', () => {
 
       expect(service.getPreferences()).toEqual(DEFAULT_PREFERENCES);
       expect(mockLogger.warn).toHaveBeenCalled();
+    });
+  });
+
+  describe('server default theme', () => {
+    it('should use server default theme for new user with no localStorage and no server prefs', async () => {
+      Object.defineProperty(mockBrandingConfigService, 'defaultTheme', {
+        get: vi.fn().mockReturnValue('dark'),
+        configurable: true,
+      });
+
+      await service.initialize();
+
+      expect(service.getPreferences().themeMode).toBe('dark');
+    });
+
+    it('should use "automatic" when server default theme is null', async () => {
+      Object.defineProperty(mockBrandingConfigService, 'defaultTheme', {
+        get: vi.fn().mockReturnValue(null),
+        configurable: true,
+      });
+
+      await service.initialize();
+
+      expect(service.getPreferences().themeMode).toBe('automatic');
+    });
+
+    it('should not override existing localStorage preferences with server default', async () => {
+      Object.defineProperty(mockBrandingConfigService, 'defaultTheme', {
+        get: vi.fn().mockReturnValue('dark'),
+        configurable: true,
+      });
+      localStorage.setItem('tmi_preferences_v2', JSON.stringify({ themeMode: 'light' }));
+
+      await service.initialize();
+
+      expect(service.getPreferences().themeMode).toBe('light');
+    });
+
+    it('should not override server user preferences with server default theme', async () => {
+      Object.defineProperty(mockBrandingConfigService, 'defaultTheme', {
+        get: vi.fn().mockReturnValue('dark'),
+        configurable: true,
+      });
+      mockAuthService.isAuthenticated = true;
+      mockApiService.get.mockReturnValue(
+        of({ 'tmi-ux': { ...DEFAULT_PREFERENCES, themeMode: 'light' } }),
+      );
+
+      await service.initialize();
+
+      expect(service.getPreferences().themeMode).toBe('light');
     });
   });
 

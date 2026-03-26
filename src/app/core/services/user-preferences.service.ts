@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { catchError, debounceTime, map, takeUntil, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { AUTH_SERVICE } from '../interfaces';
+import { BrandingConfigService } from './branding-config.service';
 import { LoggerService } from './logger.service';
 import type { ThemeMode, PaletteType } from './theme.service';
 
@@ -95,6 +96,7 @@ export class UserPreferencesService {
   private readonly apiService = inject(ApiService);
   private readonly authService = inject(AUTH_SERVICE);
   private readonly logger = inject(LoggerService);
+  private readonly brandingConfigService = inject(BrandingConfigService);
 
   private readonly preferencesSubject = new BehaviorSubject<UserPreferencesData>(
     DEFAULT_PREFERENCES,
@@ -212,7 +214,19 @@ export class UserPreferencesService {
       this.logger.warn('UserPreferencesService: Failed to load from localStorage', error);
     }
 
-    return DEFAULT_PREFERENCES;
+    return this.applyServerDefaultTheme(DEFAULT_PREFERENCES);
+  }
+
+  /**
+   * Apply server-configured default theme when user has no saved preference.
+   * Only modifies the themeMode field; all other defaults remain unchanged.
+   */
+  private applyServerDefaultTheme(defaults: UserPreferencesData): UserPreferencesData {
+    const serverTheme = this.brandingConfigService.defaultTheme;
+    if (!serverTheme) {
+      return defaults;
+    }
+    return { ...defaults, themeMode: serverTheme };
   }
 
   /**
