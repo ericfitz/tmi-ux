@@ -14,7 +14,8 @@ export interface ServerConfig {
   };
   limits?: Record<string, number>;
   ui?: {
-    default_theme?: string;
+    /** Theme to apply for users with no saved preference: 'auto' follows system */
+    default_theme?: 'auto' | 'light' | 'dark';
     /** URL to a PNG logo image to replace the default TMI logo */
     logo_url?: string;
     /** Organization name displayed in the page footer */
