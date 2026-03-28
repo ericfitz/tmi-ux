@@ -308,8 +308,10 @@
         "secretPlaceholder": "স্বয়ংক্রিয়ভাবে তৈরি করতে খালি রেখে দিন",
         "title": "Webhook যোগ করুন",
         "url": "ওয়েবহুক URL",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "HTTPS URL হতে হবে",
+        "urlHint": "HTTPS প্রস্তাবিত",
+        "urlHttpWarning": "সতর্কতা: ওয়েবহুক এন্ডপয়েন্ট URL-এ HTTPS ব্যবহার করা উচিত। সার্ভার নন-TLS এন্ডপয়েন্ট নির্দিষ্ট করা ওয়েবহুক রেজিস্ট্রেশন প্রত্যাখ্যান করতে পারে।",
+        "urlHttpWarningTitle": "নন-HTTPS ওয়েবহুক URL",
+        "urlInvalid": "একটি বৈধ URL হতে হবে",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL প্রয়োজন"
       },

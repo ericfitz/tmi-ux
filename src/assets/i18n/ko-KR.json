@@ -308,8 +308,10 @@
         "secretPlaceholder": "비우면 자동 생성됩니다",
         "title": "Webhook 추가",
         "url": "웹훅 URL",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "HTTPS URL이어야 합니다",
+        "urlHint": "HTTPS 권장",
+        "urlHttpWarning": "경고: 웹훅 엔드포인트 URL은 HTTPS를 사용해야 합니다. 서버는 TLS가 아닌 엔드포인트를 지정하는 웹훅 등록을 거부할 수 있습니다.",
+        "urlHttpWarningTitle": "비HTTPS 웹훅 URL",
+        "urlInvalid": "유효한 URL이어야 합니다",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL은 필수입니다"
       },

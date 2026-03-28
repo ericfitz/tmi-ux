@@ -308,8 +308,10 @@
         "secretPlaceholder": "Deixe vazio para gerar automaticamente",
         "title": "Adicionar Webhook",
         "url": "URL do Webhook",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "Deve ser uma URL HTTPS",
+        "urlHint": "HTTPS recomendado",
+        "urlHttpWarning": "Aviso: A URL do endpoint do webhook deve usar HTTPS. O servidor pode rejeitar registros de webhook que especifiquem um endpoint sem TLS.",
+        "urlHttpWarningTitle": "URL de Webhook sem HTTPS",
+        "urlInvalid": "Deve ser uma URL válida",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL e obrigatoria"
       },

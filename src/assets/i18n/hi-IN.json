@@ -308,8 +308,10 @@
         "secretPlaceholder": "स्वचालित रूप से उत्पन्न करने के लिए खाली छोड़ें",
         "title": "Webhook जोड़ें",
         "url": "Webhook URL",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "HTTPS URL होना चाहिए",
+        "urlHint": "HTTPS अनुशंसित",
+        "urlHttpWarning": "चेतावनी: Webhook एंडपॉइंट URL को HTTPS का उपयोग करना चाहिए। सर्वर उन webhook पंजीकरणों को अस्वीकार कर सकता है जो गैर-TLS एंडपॉइंट निर्दिष्ट करते हैं।",
+        "urlHttpWarningTitle": "गैर-HTTPS Webhook URL",
+        "urlInvalid": "एक वैध URL होना चाहिए",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL आवश्यक है"
       },

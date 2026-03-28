@@ -308,8 +308,10 @@
         "secretPlaceholder": "اتركه فارغاً للإنشاء التلقائي",
         "title": "إضافة Webhook",
         "url": "رابط Webhook",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "يجب أن يكون رابط HTTPS",
+        "urlHint": "يُوصى باستخدام HTTPS",
+        "urlHttpWarning": "تحذير: يجب أن يستخدم رابط نقطة نهاية الـ Webhook بروتوكول HTTPS. قد يرفض الخادم تسجيلات Webhook التي تحدد نقطة نهاية بدون TLS.",
+        "urlHttpWarningTitle": "رابط Webhook بدون HTTPS",
+        "urlInvalid": "يجب أن يكون URL صالحاً",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "الرابط مطلوب"
       },

@@ -308,8 +308,10 @@
         "secretPlaceholder": "自動生成する場合は空のままにしてください",
         "title": "Webhookを追加",
         "url": "Webhook URL",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "HTTPS URLである必要があります",
+        "urlHint": "HTTPSを推奨",
+        "urlHttpWarning": "警告: WebhookエンドポイントURLはHTTPSを使用する必要があります。サーバーは非TLSエンドポイントを指定するWebhook登録を拒否する場合があります。",
+        "urlHttpWarningTitle": "非HTTPS Webhook URL",
+        "urlInvalid": "有効なURLである必要があります",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URLは必須です"
       },

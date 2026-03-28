@@ -308,8 +308,10 @@
         "secretPlaceholder": "השאר ריק לצורך יצירה אוטומטית",
         "title": "הוסף Webhook",
         "url": "כתובת URL של Webhook",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "חייב להיות כתובת HTTPS",
+        "urlHint": "מומלץ HTTPS",
+        "urlHttpWarning": "אזהרה: כתובת ה-URL של נקודת הקצה של ה-webhook צריכה להשתמש ב-HTTPS. השרת עשוי לדחות רישומי webhook שמציינים נקודת קצה ללא TLS.",
+        "urlHttpWarningTitle": "כתובת URL של Webhook ללא HTTPS",
+        "urlInvalid": "חייב להיות URL תקין",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "כתובת URL נדרשת"
       },

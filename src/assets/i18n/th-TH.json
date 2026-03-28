@@ -304,8 +304,10 @@
         "secretPlaceholder": "เว้นว่างเพื่อสร้างอัตโนมัติ",
         "title": "เพิ่ม Webhook",
         "url": "URL ของ Webhook",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "ต้องเป็น URL แบบ HTTPS",
+        "urlHint": "แนะนำให้ใช้ HTTPS",
+        "urlHttpWarning": "คำเตือน: URL ปลายทางของ webhook ควรใช้ HTTPS เซิร์ฟเวอร์อาจปฏิเสธการลงทะเบียน webhook ที่ระบุปลายทางที่ไม่ใช่ TLS",
+        "urlHttpWarningTitle": "URL ของ Webhook ที่ไม่ใช่ HTTPS",
+        "urlInvalid": "ต้องเป็น URL ที่ถูกต้อง",
         "urlRequired": "ต้องระบุ URL"
       },
       "createAutomationUserDialog": {
