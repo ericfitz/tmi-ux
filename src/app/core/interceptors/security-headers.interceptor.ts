@@ -81,11 +81,3 @@ export const securityHeadersInterceptor: HttpInterceptorFn = (req, next) => {
     }),
   );
 };
-
-export const provideSecurityHeadersInterceptor = (): HttpInterceptorFn | null => {
-  // This is a development-only interceptor
-  if (!environment.production) {
-    return securityHeadersInterceptor;
-  }
-  return null;
-};

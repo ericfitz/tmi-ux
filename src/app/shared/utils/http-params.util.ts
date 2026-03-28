@@ -6,7 +6,7 @@
 /**
  * Type for valid HTTP parameter values
  */
-export type HttpParamValue = string | number | boolean;
+type HttpParamValue = string | number | boolean;
 
 /**
  * Builds HTTP query parameters from a filter object.

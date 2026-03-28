@@ -5,7 +5,7 @@
  * by applying configurable limits and providing meaningful placeholders.
  */
 
-export interface SafeStringifyOptions {
+interface SafeStringifyOptions {
   maxArrayLength?: number;
   maxProperties?: number;
 }

@@ -9,7 +9,6 @@ export { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 export { Subscription } from 'rxjs/internal/Subscription';
 export { of } from 'rxjs/internal/observable/of';
 export { from } from 'rxjs/internal/observable/from';
-export { interval } from 'rxjs/internal/observable/interval';
 export { timer } from 'rxjs/internal/observable/timer';
 
 // Operators
@@ -19,7 +18,6 @@ export { tap } from 'rxjs/internal/operators/tap';
 export { catchError } from 'rxjs/internal/operators/catchError';
 export { switchMap } from 'rxjs/internal/operators/switchMap';
 export { take } from 'rxjs/internal/operators/take';
-export { takeUntil } from 'rxjs/internal/operators/takeUntil';
 export { throwError } from 'rxjs/internal/observable/throwError';
 export { shareReplay } from 'rxjs/internal/operators/shareReplay';
 

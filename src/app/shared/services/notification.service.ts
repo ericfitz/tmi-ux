@@ -8,23 +8,13 @@ import { extractHttpErrorMessage } from '../utils/http-error.utils';
 /**
  * Configuration for save error notifications
  */
-export interface SaveErrorNotification {
+interface SaveErrorNotification {
   title: string;
   message: string;
   statusCode?: number;
   retryAction?: () => void;
   duration?: number;
   actionLabel?: string;
-}
-
-/**
- * Configuration for connection error notifications
- */
-export interface ConnectionErrorNotification {
-  message: string;
-  duration?: number;
-  showRetry?: boolean;
-  retryAction?: () => void;
 }
 
 /**

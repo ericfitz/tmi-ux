@@ -66,7 +66,7 @@ interface StoredCell {
 /**
  * Interface for extracted cell data that includes both diagram and cell information
  */
-export interface DiagramCellData {
+interface DiagramCellData {
   diagrams: DiagramOption[];
   cells: CellOption[];
 }

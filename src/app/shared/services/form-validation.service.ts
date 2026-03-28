@@ -6,7 +6,7 @@ import { LoggerService } from '../../core/services/logger.service';
 /**
  * Validation result for a field or form
  */
-export interface ValidationResult {
+interface ValidationResult {
   isValid: boolean;
   errors: ValidationErrors | null;
   errorMessages: string[];
