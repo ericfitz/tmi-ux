@@ -308,8 +308,10 @@
         "secretPlaceholder": "Оставить пусто для автоматической генерации",
         "title": "Добавить Webhook",
         "url": "URL вебхука",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "Должен быть HTTPS URL",
+        "urlHint": "Рекомендуется HTTPS",
+        "urlHttpWarning": "Предупреждение: URL конечной точки вебхука должен использовать HTTPS. Сервер может отклонить регистрации вебхуков, указывающие конечную точку без TLS.",
+        "urlHttpWarningTitle": "URL вебхука без HTTPS",
+        "urlInvalid": "Должен быть действительный URL",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL обязателен"
       },

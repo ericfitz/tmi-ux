@@ -308,8 +308,10 @@
         "secretPlaceholder": "留空以自动生成",
         "title": "添加Webhook",
         "url": "Webhook URL",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "必须是HTTPS URL",
+        "urlHint": "建议使用HTTPS",
+        "urlHttpWarning": "警告：Webhook端点URL应使用HTTPS。服务器可能会拒绝指定非TLS端点的webhook注册。",
+        "urlHttpWarningTitle": "非HTTPS的Webhook URL",
+        "urlInvalid": "必须是有效的URL",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL为必填项"
       },

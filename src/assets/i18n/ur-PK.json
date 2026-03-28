@@ -308,8 +308,10 @@
         "secretPlaceholder": "خودکار پیدا کرنے کے لیے خالی چھوڑیں",
         "title": "Webhook شامل کریں",
         "url": "ویب ہک URL",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "HTTPS URL ہونا ضروری ہے",
+        "urlHint": "HTTPS تجویز کردہ ہے",
+        "urlHttpWarning": "انتباہ: ویب ہک اینڈ پوائنٹ URL کو HTTPS استعمال کرنا چاہیے۔ سرور ایسی ویب ہک رجسٹریشنز کو مسترد کر سکتا ہے جو غیر TLS اینڈ پوائنٹ کی وضاحت کرتی ہیں۔",
+        "urlHttpWarningTitle": "غیر HTTPS ویب ہک URL",
+        "urlInvalid": "ایک درست URL ہونا ضروری ہے",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL ضروری ہے"
       },

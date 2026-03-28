@@ -308,8 +308,10 @@
         "secretPlaceholder": "Biarkan kosong untuk dibuat otomatis",
         "title": "Tambah Webhook",
         "url": "URL Webhook",
-        "urlHint": "{{admin.webhooks.addDialog.urlInvalid}}",
-        "urlInvalid": "Harus berupa URL HTTPS",
+        "urlHint": "HTTPS disarankan",
+        "urlHttpWarning": "Peringatan: URL endpoint webhook harus menggunakan HTTPS. Server mungkin menolak pendaftaran webhook yang menggunakan endpoint non-TLS.",
+        "urlHttpWarningTitle": "URL Webhook Non-HTTPS",
+        "urlInvalid": "Harus berupa URL yang valid",
         "urlPlaceholder": "https://example.com/webhook",
         "urlRequired": "URL wajib diisi"
       },
