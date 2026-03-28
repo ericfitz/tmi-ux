@@ -238,31 +238,3 @@ export function createEmptyHistoryState(maxStackSize: number = 50): HistoryState
     currentIndex: -1,
   };
 }
-
-/**
- * Helper function to generate a human-readable description from operation type and cell count
- */
-export function generateHistoryDescription(
-  operationType: HistoryOperationType,
-  cellCount: number,
-): string {
-  const descriptions: Record<HistoryOperationType, (count: number) => string> = {
-    'add-node': count => (count === 1 ? 'Add Node' : `Add ${count} Nodes`),
-    'add-edge': count => (count === 1 ? 'Add Edge' : `Add ${count} Edges`),
-    'move-node': count => (count === 1 ? 'Move Node' : `Move ${count} Nodes`),
-    'resize-node': () => 'Resize Node',
-    'change-vertices': () => 'Change Edge Vertices',
-    'change-label': () => 'Change Label',
-    'change-properties': count => (count === 1 ? 'Change Properties' : `Change ${count} Cells`),
-    'change-edge-endpoint': () => 'Reconnect Edge',
-    'embed-node': () => 'Embed Node',
-    'unembed-node': () => 'Remove Node from Boundary',
-    delete: count => (count === 1 ? 'Delete Cell' : `Delete ${count} Cells`),
-    batch: count => `Batch Operation (${count} cells)`,
-    'remote-operation': count =>
-      count === 1 ? 'Remote Change' : `Remote Changes (${count} cells)`,
-  };
-
-  const generator = descriptions[operationType];
-  return generator ? generator(cellCount) : 'Unknown Operation';
-}

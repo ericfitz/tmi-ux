@@ -34,7 +34,10 @@ export function createDefaultThreatFilters(): ThreatFilters {
   };
 }
 
-/** Returns true if any primary (non-advanced) server-side filter is active */
+/**
+ * Returns true if any primary (non-advanced) server-side filter is active
+ * @public
+ */
 export function hasActiveThreatFilters(filters: ThreatFilters): boolean {
   return (
     filters.name.trim() !== '' ||

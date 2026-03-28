@@ -10,7 +10,7 @@ import { Diagram, Cell } from '../models/diagram.model';
 /**
  * Abstract base class for diagram validators
  */
-export abstract class BaseDiagramValidator extends BaseValidator implements DiagramValidator {
+abstract class BaseDiagramValidator extends BaseValidator implements DiagramValidator {
   abstract diagramType: string;
   abstract versionPattern: RegExp;
 

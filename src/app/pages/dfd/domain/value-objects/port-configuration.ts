@@ -94,7 +94,7 @@ export interface PortConfiguration {
 /**
  * Default port configuration for different node types
  */
-export const DEFAULT_PORT_CONFIGURATIONS: Record<string, PortConfiguration> = {
+const DEFAULT_PORT_CONFIGURATIONS: Record<string, PortConfiguration> = {
   actor: {
     groups: {
       in: {
@@ -218,20 +218,4 @@ export const DEFAULT_PORT_CONFIGURATIONS: Record<string, PortConfiguration> = {
  */
 export function createDefaultPortConfiguration(nodeType: string): PortConfiguration {
   return DEFAULT_PORT_CONFIGURATIONS[nodeType] || DEFAULT_PORT_CONFIGURATIONS['process'];
-}
-
-/**
- * Creates a simple port configuration with basic input/output ports
- */
-export function createSimplePortConfiguration(): PortConfiguration {
-  return {
-    groups: {
-      in: { position: 'left' },
-      out: { position: 'right' },
-    },
-    items: [
-      { id: 'left', group: 'in' },
-      { id: 'right', group: 'out' },
-    ],
-  };
 }

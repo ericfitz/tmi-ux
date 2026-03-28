@@ -5,7 +5,7 @@ import { PrincipalType } from '../../models/threat-model.model';
 /**
  * Provider-specific rule configuration
  */
-export interface ProviderRule {
+interface ProviderRule {
   /**
    * Whether this provider supports user-type principals
    */

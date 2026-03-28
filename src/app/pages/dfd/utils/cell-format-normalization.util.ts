@@ -73,6 +73,7 @@ export function normalizeCellFormat(cell: Cell): Cell {
  *
  * @param cells - Array of cells in either flat (X6 v1) or nested (X6 v2) format
  * @returns Array of cells in X6 v2 native nested format
+ * @public
  */
 export function normalizeCellsFormat(cells: Cell[]): Cell[] {
   if (!Array.isArray(cells)) {

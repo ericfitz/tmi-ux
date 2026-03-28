@@ -166,23 +166,6 @@ export interface PersistenceConfig {
 }
 
 /**
- * Default persistence configuration
- */
-export const DEFAULT_PERSISTENCE_CONFIG: PersistenceConfig = {
-  enableCaching: true,
-  cacheExpirationMs: 300000, // 5 minutes
-  maxCacheSize: 100, // 100 diagrams
-  enableOfflineMode: true,
-  autoSyncEnabled: true,
-  autoSyncIntervalMs: 30000, // 30 seconds
-  retryAttempts: 3,
-  retryDelayMs: 1000,
-  timeoutMs: 30000,
-  strategies: ['websocket', 'rest', 'cache-only'],
-  fallbackStrategy: 'rest',
-};
-
-/**
  * Statistics about persistence operations
  */
 export interface PersistenceStats {

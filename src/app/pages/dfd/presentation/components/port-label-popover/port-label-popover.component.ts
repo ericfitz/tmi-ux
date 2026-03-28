@@ -34,15 +34,6 @@ import { COMMON_IMPORTS } from '@app/shared/imports';
 /** Port label position options supported by X6 */
 export type PortLabelPosition = 'outside' | 'inside' | 'top' | 'bottom' | 'left' | 'right';
 
-export const PORT_LABEL_POSITIONS: PortLabelPosition[] = [
-  'outside',
-  'inside',
-  'top',
-  'bottom',
-  'left',
-  'right',
-];
-
 export const DEFAULT_PORT_LABEL_POSITION: PortLabelPosition = 'outside';
 
 /** Data representing the current state of a port label */

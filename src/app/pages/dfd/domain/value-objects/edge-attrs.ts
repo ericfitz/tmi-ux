@@ -1,5 +1,3 @@
-import { DFD_STYLING } from '../../constants/styling-constants';
-
 /**
  * Visual attributes for an edge
  * Matches the EdgeAttrs schema from the OpenAPI specification
@@ -100,19 +98,3 @@ export interface EdgeAttrs {
     fontFamily?: string;
   };
 }
-
-/**
- * Default edge attributes
- */
-export const DEFAULT_EDGE_ATTRS: EdgeAttrs = {
-  line: {
-    stroke: DFD_STYLING._COLORS.GRAY,
-    strokeWidth: DFD_STYLING._STROKE_WIDTHS.THIN,
-    targetMarker: {
-      name: DFD_STYLING.EDGES.TARGET_MARKER.NAME,
-      size: DFD_STYLING.EDGES.TARGET_MARKER.SIZE,
-      fill: DFD_STYLING._COLORS.GRAY,
-      stroke: DFD_STYLING._COLORS.GRAY,
-    },
-  },
-};

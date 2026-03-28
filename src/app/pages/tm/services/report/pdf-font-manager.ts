@@ -5,7 +5,7 @@ import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 /**
  * Configuration for a language-specific font family.
  */
-export interface FontConfig {
+interface FontConfig {
   name: string;
   fontPath: string;
   italicFontPath?: string;
@@ -14,7 +14,7 @@ export interface FontConfig {
 }
 
 /** Logger interface matching the subset used by the font manager */
-export interface FontManagerLogger {
+interface FontManagerLogger {
   info(message: string, context?: Record<string, unknown>): void;
   warn(message: string, context?: Record<string, unknown>): void;
   error(message: string, context?: unknown): void;
@@ -25,7 +25,7 @@ export interface FontManagerLogger {
  * Default font configurations keyed by language code.
  * Includes support for Latin, CJK, Arabic, Hebrew, and Thai scripts.
  */
-export const DEFAULT_FONT_CONFIGS: Map<string, FontConfig> = new Map([
+const DEFAULT_FONT_CONFIGS: Map<string, FontConfig> = new Map([
   [
     'en-US',
     {

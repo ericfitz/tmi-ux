@@ -125,24 +125,6 @@ export const ALL_MATERIAL_IMPORTS = [
 ] as const;
 
 /**
- * Common combination for basic components with forms
- */
-export const COMMON_STANDALONE_IMPORTS = [
-  ...COMMON_IMPORTS,
-  ...CORE_MATERIAL_IMPORTS,
-  ...FORM_MATERIAL_IMPORTS,
-] as const;
-
-/**
- * Common combination for data display components
- */
-export const DATA_DISPLAY_IMPORTS = [
-  ...COMMON_IMPORTS,
-  ...CORE_MATERIAL_IMPORTS,
-  ...DATA_MATERIAL_IMPORTS,
-] as const;
-
-/**
  * Common combination for dialog components
  */
 export const DIALOG_IMPORTS = [

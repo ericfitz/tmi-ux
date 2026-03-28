@@ -177,7 +177,7 @@ See the [Architecture and Design](https://github.com/ericfitz/tmi/wiki/Architect
 - Config: `vitest.config.ts`, mocks in `src/app/mocks/`, utilities in `src/testing/`
 - Tests alongside source: `*.spec.ts`
 
-**Integration Tests (Cypress):** E2E tests in `cypress/e2e/`, component tests enabled
+**E2E Tests (Playwright):** Config: `playwright.config.ts`
 
 ## Versioning
 

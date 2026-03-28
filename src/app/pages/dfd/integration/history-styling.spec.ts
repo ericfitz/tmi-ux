@@ -38,7 +38,7 @@ import { InfraX6EventLoggerAdapter } from '../infrastructure/adapters/infra-x6-e
 // import { AppEdgeService } from '../application/services/app-edge.service';
 // import { AppEventHandlersService } from '../application/services/app-event-handlers.service';
 import { AppOperationStateManager } from '../application/services/app-operation-state-manager.service';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { LoggerService } from '../../../core/services/logger.service';
 import { NodeInfo } from '../domain/value-objects/node-info';
 import { DiagramNode } from '../domain/value-objects/diagram-node';
 import { EdgeInfo } from '../domain/value-objects/edge-info';

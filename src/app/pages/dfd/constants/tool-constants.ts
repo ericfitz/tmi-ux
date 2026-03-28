@@ -9,7 +9,7 @@
 /**
  * Tool configuration for nodes when selected
  */
-export const NODE_TOOLS = [
+const NODE_TOOLS = [
   {
     name: 'button-remove',
     args: {
@@ -36,7 +36,7 @@ export const NODE_TOOLS = [
 /**
  * Tool configuration for edges when selected
  */
-export const EDGE_TOOLS = [
+const EDGE_TOOLS = [
   {
     name: 'vertices',
     args: {
