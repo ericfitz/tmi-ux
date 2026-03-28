@@ -163,7 +163,12 @@
       "picomatch@>=2": ">=2.3.2",
       "picomatch@>=4": ">=4.0.4",
       "postcss": "8.5.8",
-      "esbuild": "0.27.4"
+      "esbuild": "0.27.4",
+      "tslib": "^2.8.1",
+      "marked": "^17.0.5",
+      "pako": "^1.0.11",
+      "iconv-lite": "^0.7.2",
+      "cosmiconfig": "^9.0.1"
     },
     "peerDependencyRules": {
       "ignoreMissing": [
