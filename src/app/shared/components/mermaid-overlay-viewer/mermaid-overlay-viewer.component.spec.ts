@@ -164,5 +164,10 @@ describe('MermaidOverlayViewerComponent', () => {
       component.handleKeydown({ key: '0', preventDefault: vi.fn() } as never);
       expect(component.currentZoom).toBe(1);
     });
+
+    it('should close overlay on Escape key', () => {
+      component.handleKeydown({ key: 'Escape', preventDefault: vi.fn() } as never);
+      expect(mockOverlayRef.dispose).toHaveBeenCalled();
+    });
   });
 });
