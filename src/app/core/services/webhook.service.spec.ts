@@ -102,7 +102,7 @@ describe('WebhookService', () => {
       mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.list().subscribe(response => {
-        expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/webhooks/subscriptions', undefined);
         expect(response.subscriptions).toEqual([mockWebhook]);
       });
     });
@@ -133,7 +133,7 @@ describe('WebhookService', () => {
       mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.list(filter).subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', {
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/webhooks/subscriptions', {
           threat_model_id: 'tm-123',
         });
       });
@@ -148,7 +148,7 @@ describe('WebhookService', () => {
       mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.list(filter).subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', {
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/webhooks/subscriptions', {
           limit: 10,
           offset: 20,
         });
@@ -165,7 +165,7 @@ describe('WebhookService', () => {
       mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.list(filter).subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', {
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/webhooks/subscriptions', {
           threat_model_id: 'tm-123',
           limit: 10,
           offset: 20,
@@ -181,7 +181,7 @@ describe('WebhookService', () => {
       mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.list(filter).subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', {
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/webhooks/subscriptions', {
           limit: 0,
         });
       });
@@ -193,7 +193,7 @@ describe('WebhookService', () => {
       mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.list(filter).subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/webhooks/subscriptions', undefined);
       });
     });
 
@@ -217,7 +217,7 @@ describe('WebhookService', () => {
       mockApiService.get.mockReturnValue(of(mockWebhook));
 
       service.get(testId).subscribe(webhook => {
-        expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions/webhook-123');
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/webhooks/subscriptions/webhook-123');
         expect(webhook).toEqual(mockWebhook);
       });
     });
@@ -250,7 +250,7 @@ describe('WebhookService', () => {
 
       service.create(mockWebhookInput).subscribe(webhook => {
         expect(mockApiService.post).toHaveBeenCalledWith(
-          'webhooks/subscriptions',
+          'admin/webhooks/subscriptions',
           mockWebhookInput,
         );
         expect(webhook).toEqual(mockWebhook);
@@ -273,7 +273,7 @@ describe('WebhookService', () => {
       mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.create(mockWebhookInput).subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/webhooks/subscriptions', undefined);
       });
     });
 
@@ -310,7 +310,7 @@ describe('WebhookService', () => {
 
       service.update(testId, mockWebhookInput).subscribe(webhook => {
         expect(mockApiService.put).toHaveBeenCalledWith(
-          'webhooks/subscriptions/webhook-123',
+          'admin/webhooks/subscriptions/webhook-123',
           mockWebhookInput,
         );
         expect(webhook).toEqual(mockWebhook);
@@ -333,7 +333,7 @@ describe('WebhookService', () => {
       mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.update(testId, mockWebhookInput).subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/webhooks/subscriptions', undefined);
       });
     });
 
@@ -369,7 +369,9 @@ describe('WebhookService', () => {
       mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.delete(testId).subscribe(() => {
-        expect(mockApiService.delete).toHaveBeenCalledWith('webhooks/subscriptions/webhook-123');
+        expect(mockApiService.delete).toHaveBeenCalledWith(
+          'admin/webhooks/subscriptions/webhook-123',
+        );
       });
     });
 
@@ -387,7 +389,7 @@ describe('WebhookService', () => {
       mockApiService.get.mockReturnValue(of(mockResponse));
 
       service.delete(testId).subscribe(() => {
-        expect(mockApiService.get).toHaveBeenCalledWith('webhooks/subscriptions', undefined);
+        expect(mockApiService.get).toHaveBeenCalledWith('admin/webhooks/subscriptions', undefined);
       });
     });
 
@@ -423,7 +425,7 @@ describe('WebhookService', () => {
 
       service.test(testId).subscribe(() => {
         expect(mockApiService.post).toHaveBeenCalledWith(
-          'webhooks/subscriptions/webhook-123/test',
+          'admin/webhooks/subscriptions/webhook-123/test',
           {},
         );
       });

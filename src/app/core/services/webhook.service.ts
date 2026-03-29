@@ -23,7 +23,7 @@ export class WebhookService extends AdminServiceBase<WebhookSubscription, Webhoo
 
   constructor(apiService: ApiService, logger: LoggerService) {
     super(apiService, logger, {
-      endpoint: 'webhooks/subscriptions',
+      endpoint: 'admin/webhooks/subscriptions',
       entityName: 'webhook',
     });
   }
