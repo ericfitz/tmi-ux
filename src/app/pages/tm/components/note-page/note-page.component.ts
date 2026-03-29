@@ -48,6 +48,7 @@ import {
   DeleteConfirmationDialogData,
   DeleteConfirmationDialogResult,
 } from '@app/shared/components/delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { MermaidViewerService } from '../../../../shared/services/mermaid-viewer.service';
 
 /**
  * Interface for note form values
@@ -108,6 +109,8 @@ export class NotePageComponent implements OnInit, OnDestroy, AfterViewChecked {
   clipboardHasContent = false;
   private taskListCheckboxesInitialized = false;
   private anchorClickHandler?: (event: Event) => void;
+  private mermaidViewersInitialized = false;
+  private mermaidCleanup?: () => void;
 
   // Track if save is in progress
   isSaving = false;
@@ -133,6 +136,7 @@ export class NotePageComponent implements OnInit, OnDestroy, AfterViewChecked {
     private authorizationService: ThreatModelAuthorizationService,
     private addonService: AddonService,
     @Optional() destroyRef?: DestroyRef,
+    private mermaidViewerService?: MermaidViewerService,
   ) {
     this.destroyRef = destroyRef ?? null;
     this.noteForm = this.fb.group({
@@ -269,6 +273,15 @@ export class NotePageComponent implements OnInit, OnDestroy, AfterViewChecked {
     } else if (!this.previewMode) {
       this.taskListCheckboxesInitialized = false;
     }
+
+    // Initialize mermaid diagram viewers
+    if (this.previewMode && !this.mermaidViewersInitialized && this.markdownPreview) {
+      this.mermaidCleanup = this.mermaidViewerService?.initialize(this.markdownPreview);
+      this.mermaidViewersInitialized = true;
+    } else if (!this.previewMode && this.mermaidViewersInitialized) {
+      this.mermaidCleanup?.();
+      this.mermaidViewersInitialized = false;
+    }
   }
 
   ngOnDestroy(): void {
@@ -280,6 +293,8 @@ export class NotePageComponent implements OnInit, OnDestroy, AfterViewChecked {
         true,
       );
     }
+    // Clean up mermaid viewers
+    this.mermaidCleanup?.();
   }
 
   /**

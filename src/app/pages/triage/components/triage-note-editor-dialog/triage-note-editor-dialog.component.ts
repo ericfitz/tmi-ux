@@ -1,4 +1,12 @@
-import { Component, Inject, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  AfterViewChecked,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -12,6 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TooltipAriaLabelDirective } from '@app/shared/imports';
 import { ScrollIndicatorDirective } from '@app/shared/directives/scroll-indicator.directive';
+import { MermaidViewerService } from '../../../../shared/services/mermaid-viewer.service';
 
 export interface TriageNoteEditorDialogData {
   mode: 'create' | 'view';
@@ -45,7 +54,7 @@ export interface TriageNoteEditorResult {
   templateUrl: './triage-note-editor-dialog.component.html',
   styleUrls: ['./triage-note-editor-dialog.component.scss'],
 })
-export class TriageNoteEditorDialogComponent implements OnInit, AfterViewChecked {
+export class TriageNoteEditorDialogComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('contentTextarea') contentTextarea!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('markdownPreview') markdownPreview?: ElementRef<HTMLDivElement>;
 
@@ -59,6 +68,8 @@ export class TriageNoteEditorDialogComponent implements OnInit, AfterViewChecked
   hasSelection = false;
   private taskListCheckboxesInitialized = false;
   private anchorClickHandler?: (event: Event) => void;
+  private mermaidViewersInitialized = false;
+  private mermaidCleanup?: () => void;
 
   constructor(
     private fb: FormBuilder,
@@ -66,6 +77,7 @@ export class TriageNoteEditorDialogComponent implements OnInit, AfterViewChecked
     private snackBar: MatSnackBar,
     private translocoService: TranslocoService,
     @Inject(MAT_DIALOG_DATA) public data: TriageNoteEditorDialogData,
+    private mermaidViewerService?: MermaidViewerService,
   ) {
     this.mode = data.mode;
   }
@@ -96,6 +108,19 @@ export class TriageNoteEditorDialogComponent implements OnInit, AfterViewChecked
     } else if (!this.previewMode) {
       this.taskListCheckboxesInitialized = false;
     }
+
+    // Initialize mermaid diagram viewers
+    if (this.previewMode && !this.mermaidViewersInitialized && this.markdownPreview) {
+      this.mermaidCleanup = this.mermaidViewerService?.initialize(this.markdownPreview);
+      this.mermaidViewersInitialized = true;
+    } else if (!this.previewMode && this.mermaidViewersInitialized) {
+      this.mermaidCleanup?.();
+      this.mermaidViewersInitialized = false;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.mermaidCleanup?.();
   }
 
   get dialogTitle(): string {
