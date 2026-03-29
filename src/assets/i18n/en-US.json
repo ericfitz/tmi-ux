@@ -1030,6 +1030,13 @@
     },
     "unexpectedError": "An unexpected error occurred during OAuth."
   },
+  "mermaidViewer": {
+    "exportFailed": "Failed to export diagram",
+    "openInViewer": "Open in Viewer",
+    "resetZoom": "Reset Zoom",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out"
+  },
   "navbar": {
     "admin": "Admin",
     "appTitle": "TMI: Threat Modeling Improved",

@@ -261,6 +261,12 @@
       background-color: var(--theme-surface);
       border-radius: 6px;
       border: 1px solid var(--theme-divider);
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+
+      &:hover {
+        border-color: var(--theme-text-secondary);
+      }
     }
 
     // Override Prism theme colors for dark mode compatibility
