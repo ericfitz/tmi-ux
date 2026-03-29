@@ -125,8 +125,14 @@ export class LoggerService {
     const formattedMessage = `[${sanitizedComponent}] ${sanitizedMessage}`;
     this.bufferEntry(LogLevel.DEBUG, formattedMessage, redactedParams);
     if (this.shouldLogComponent(component, LogLevel.DEBUG)) {
-      // lgtm[js/log-injection] codeql[js/log-injection] - all inputs sanitized: strings via sanitizeForLog(), params via redactSensitiveData() which strips control characters recursively
-      console.debug(this.formatMessage(LogLevel.DEBUG, formattedMessage), ...redactedParams);
+      // Explicit sanitizeForLog() barrier for CodeQL js/log-injection: redactSensitiveData()
+      // already strips control characters, but CodeQL cannot trace through the recursive function.
+      // Only debugComponent needs this because it receives external (WebSocket) tainted data;
+      // the other log methods receive developer-authored string literals.
+      const safeParams = redactedParams.map(p =>
+        typeof p === 'string' ? this.sanitizeForLog(p) : p,
+      );
+      console.debug(this.formatMessage(LogLevel.DEBUG, formattedMessage), ...safeParams);
     }
   }
 
@@ -329,9 +335,11 @@ export class LoggerService {
       return param.map(item => this.redactSensitiveData(item));
     }
     if (param !== null && typeof param === 'object') {
-      const sanitized: Record<string, unknown> = {};
+      // Use Object.create(null) to prevent prototype pollution via user-controlled keys
+      const sanitized: Record<string, unknown> = Object.create(null) as Record<string, unknown>;
       for (const [key, value] of Object.entries(param)) {
-        sanitized[key] = this.redactSensitiveData(value);
+        const sanitizedKey = this.sanitizeForLog(key);
+        sanitized[sanitizedKey] = this.redactSensitiveData(value);
       }
       return sanitized;
     }

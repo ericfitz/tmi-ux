@@ -440,6 +440,33 @@ describe('LoggerService', () => {
       expect(list[1]).toBe('hasnewline');
     });
 
+    it('should produce null-prototype objects to prevent prototype pollution', () => {
+      const input = { constructor: 'evil', toString: 'overwritten', normal: 'good' };
+      service.debug('Message', input);
+
+      const calls = consoleSpy.debug.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      const sanitized = lastCall[1] as Record<string, unknown>;
+
+      expect(sanitized['normal']).toBe('good');
+      expect(sanitized['constructor']).toBe('evil');
+      expect(sanitized['toString']).toBe('overwritten');
+      expect(Object.getPrototypeOf(sanitized)).toBeNull();
+    });
+
+    it('should sanitize control characters in object keys', () => {
+      const obj = { safe: 'value', 'has\nnewline': 'value2' };
+      service.debug('Message', obj);
+
+      const calls = consoleSpy.debug.mock.calls;
+      const lastCall = calls[calls.length - 1];
+      const sanitized = lastCall[1] as Record<string, unknown>;
+
+      expect(sanitized['safe']).toBe('value');
+      expect(sanitized['hasnewline']).toBe('value2');
+      expect(Object.keys(sanitized)).not.toContain('has\nnewline');
+    });
+
     it('should pass through non-string non-object params unchanged', () => {
       service.debug('Message', 42, true, null);
 
