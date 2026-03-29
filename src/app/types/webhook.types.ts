@@ -1,6 +1,6 @@
 /**
  * Webhook subscription type definitions
- * Based on TMI API /webhooks/subscriptions endpoints
+ * Based on TMI API /admin/webhooks/subscriptions endpoints
  */
 
 import { PaginationMetadata } from './api-responses.types';
