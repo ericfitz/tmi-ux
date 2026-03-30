@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Subject, takeUntil } from 'rxjs';
 
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DIALOG_IMPORTS } from '@app/shared/imports';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { ThreatModel } from '../../models/threat-model.model';
@@ -16,7 +17,7 @@ type ExportState = 'loading' | 'ready' | 'error';
 @Component({
   selector: 'app-export-dialog',
   standalone: true,
-  imports: [...DIALOG_IMPORTS, TranslocoModule],
+  imports: [...DIALOG_IMPORTS, MatProgressSpinnerModule, TranslocoModule],
   templateUrl: './export-dialog.component.html',
   styleUrls: ['./export-dialog.component.scss'],
 })
