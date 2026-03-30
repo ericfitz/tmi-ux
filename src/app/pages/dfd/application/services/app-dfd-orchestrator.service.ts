@@ -51,6 +51,7 @@ import { normalizeCells } from '../../utils/cell-normalization.util';
 import {
   shouldTriggerHistoryOrPersistence,
   sanitizeCellForApi,
+  CANONICAL_EDGE_SHAPE,
 } from '../../utils/cell-property-filter.util';
 import { extractCellsFromGraph } from '../../utils/cell-extraction.util';
 import { DFD_STYLING } from '../../constants/styling-constants';
@@ -1499,8 +1500,8 @@ export class AppDfdOrchestrator {
       metadata: {
         affectedCellCount: result.affectedCellIds.length,
         affectedCellIds: result.affectedCellIds,
-        nodeIds: currentCells.filter(c => c.shape !== 'edge').map(c => c.id),
-        edgeIds: currentCells.filter(c => c.shape === 'edge').map(c => c.id),
+        nodeIds: currentCells.filter(c => c.shape !== CANONICAL_EDGE_SHAPE).map(c => c.id),
+        edgeIds: currentCells.filter(c => c.shape === CANONICAL_EDGE_SHAPE).map(c => c.id),
       },
     };
   }
@@ -1959,11 +1960,11 @@ export class AppDfdOrchestrator {
     const apiCells = normalizedCells.map(cell => sanitizeCellForApi(cell, this.logger));
 
     const nodes = apiCells
-      .filter((cell: any) => cell.shape !== 'edge')
+      .filter((cell: any) => cell.shape !== CANONICAL_EDGE_SHAPE)
       .map((cell: any) => ({ ...cell, type: 'node' }));
 
     const edges = apiCells
-      .filter((cell: any) => cell.shape === 'edge')
+      .filter((cell: any) => cell.shape === CANONICAL_EDGE_SHAPE)
       .map((cell: any) => ({ ...cell, type: 'edge' }));
 
     return { nodes, edges };

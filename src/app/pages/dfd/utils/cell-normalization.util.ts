@@ -11,7 +11,7 @@
  */
 
 import { Cell } from '../../../core/types/websocket-message.types';
-import { sanitizeCell } from './cell-property-filter.util';
+import { sanitizeCell, CANONICAL_EDGE_SHAPE } from './cell-property-filter.util';
 
 /**
  * Normalizes a single cell for persistence
@@ -39,7 +39,7 @@ export function normalizeCell(cell: Cell): Cell {
   }
 
   // For edges: keep only the first label
-  if (normalized.shape === 'edge' && Array.isArray(normalized['labels'])) {
+  if (normalized.shape === CANONICAL_EDGE_SHAPE && Array.isArray(normalized['labels'])) {
     if (normalized['labels'].length > 0) {
       normalized['labels'] = [normalized['labels'][0]];
     }

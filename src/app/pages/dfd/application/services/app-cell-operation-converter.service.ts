@@ -24,6 +24,7 @@ import {
 } from '../../types/graph-operation.types';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { normalizeCell } from '../../utils/cell-normalization.util';
+import { CANONICAL_EDGE_SHAPE } from '../../utils/cell-property-filter.util';
 
 @Injectable()
 export class AppCellOperationConverterService {
@@ -87,7 +88,7 @@ export class AppCellOperationConverterService {
       timestamp: Date.now(),
     };
 
-    const isNode = cell.shape !== 'edge';
+    const isNode = cell.shape !== CANONICAL_EDGE_SHAPE;
 
     // Determine operation type based on cell presence
     if (!previousCell) {
@@ -295,7 +296,7 @@ export class AppCellOperationConverterService {
       timestamp: Date.now(),
     };
 
-    const isNode = cell.shape !== 'edge';
+    const isNode = cell.shape !== CANONICAL_EDGE_SHAPE;
 
     if (isNode) {
       return {

@@ -33,6 +33,7 @@ import {
   NodeData,
 } from '../../types/graph-operation.types';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
+import { CANONICAL_EDGE_SHAPE } from '../../utils/cell-property-filter.util';
 
 @Injectable()
 export class AppRemoteOperationHandler implements OnDestroy {
@@ -308,7 +309,7 @@ export class AppRemoteOperationHandler implements OnDestroy {
     }
 
     const cellData = cellOp.data;
-    const isNode = cellData.shape !== 'edge';
+    const isNode = cellData.shape !== CANONICAL_EDGE_SHAPE;
 
     if (isNode) {
       return this._convertToCellNodeOperation(cellOp, cellData, baseOperation);
