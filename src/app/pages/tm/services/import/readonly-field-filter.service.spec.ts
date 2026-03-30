@@ -165,7 +165,7 @@ describe('ReadonlyFieldFilterService', () => {
       const mockMetadata: Metadata[] = [{ key: 'version', value: '1.0' }];
       const mockCells = [
         { id: 'cell-1', shape: 'node' },
-        { id: 'cell-2', shape: 'edge' },
+        { id: 'cell-2', shape: 'flow' },
       ];
 
       const data = {
@@ -477,7 +477,7 @@ describe('ReadonlyFieldFilterService', () => {
     it('should normalize edge shape to "flow"', () => {
       const edgeCell = {
         id: 'edge-1',
-        shape: 'edge', // Legacy shape
+        shape: 'flow', // Legacy shape
         source: { cell: 'node-1' },
         target: { cell: 'node-2' },
       };
@@ -527,7 +527,7 @@ describe('ReadonlyFieldFilterService', () => {
     it('should filter edge attrs to match EdgeAttrs schema', () => {
       const cell = {
         id: 'edge-1',
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: 'node-1', port: 'out' },
         target: { cell: 'node-2', port: 'in' },
         attrs: {
@@ -576,9 +576,9 @@ describe('ReadonlyFieldFilterService', () => {
   describe('filterCells()', () => {
     it('should filter array of cells and normalize edge shapes', () => {
       const cells = [
-        { id: 'edge-1', shape: 'edge', source: { cell: 'n1' }, target: { cell: 'n2' } },
+        { id: 'edge-1', shape: 'flow', source: { cell: 'n1' }, target: { cell: 'n2' } },
         { id: 'node-1', shape: 'process' },
-        { id: 'edge-2', shape: 'edge', source: { cell: 'n3' }, target: { cell: 'n4' } },
+        { id: 'edge-2', shape: 'flow', source: { cell: 'n3' }, target: { cell: 'n4' } },
       ];
 
       const filtered = service.filterCells(cells);

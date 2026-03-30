@@ -350,7 +350,7 @@ describe('Cell Relationship Validation', () => {
       const cells: Cell[] = [
         { id: 'node1', shape: 'process', parent: null },
         { id: 'node2', shape: 'process', parent: null },
-        { id: 'edge1', shape: 'edge', source: 'node1', target: 'node2' },
+        { id: 'edge1', shape: 'flow', source: 'node1', target: 'node2' },
       ];
 
       const result = validateAndFixParentChildRelationships(cells, mockLogger);

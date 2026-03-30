@@ -66,7 +66,7 @@ describe('InfraRestPersistenceStrategy', () => {
         threatModelId: 'tm-1',
         data: {
           nodes: [{ id: 'n1', shape: 'rect' }],
-          edges: [{ id: 'e1', shape: 'edge' }],
+          edges: [{ id: 'e1', shape: 'flow' }],
         },
       };
 
@@ -81,7 +81,7 @@ describe('InfraRestPersistenceStrategy', () => {
       // Verify cells were combined from nodes + edges
       expect(mockThreatModelService.patchDiagramCells).toHaveBeenCalledWith('tm-1', 'diagram-1', [
         { id: 'n1', shape: 'rect' },
-        { id: 'e1', shape: 'edge' },
+        { id: 'e1', shape: 'flow' },
       ]);
     });
 

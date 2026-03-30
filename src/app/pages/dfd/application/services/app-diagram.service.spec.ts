@@ -309,7 +309,7 @@ describe('AppDiagramService', () => {
         { id: 'node-1', shape: 'process', x: 100, y: 200 },
         {
           id: 'edge-1',
-          shape: 'edge',
+          shape: 'flow',
           source: { cell: 'node-1', port: 'right' },
           target: { cell: 'node-2', port: 'left' },
         },

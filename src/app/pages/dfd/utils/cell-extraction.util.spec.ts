@@ -84,7 +84,7 @@ function createMockEdge(
 
   return {
     id,
-    shape: 'edge',
+    shape: 'flow',
     isNode: () => false,
     isEdge: () => true,
     getAttrs: () => attrs,
@@ -158,7 +158,7 @@ describe('extractCellsFromGraph', () => {
     const result = extractCellsFromGraph(graph as any);
 
     expect(result).toHaveLength(1);
-    expect(result[0].shape).toBe('edge');
+    expect(result[0].shape).toBe('flow');
     expect(result[0].source).toEqual({ cell: 'a', port: 'p1' });
     expect(result[0].target).toEqual({ cell: 'b', port: 'p2' });
     expect(result[0].vertices).toEqual([{ x: 300, y: 150 }]);

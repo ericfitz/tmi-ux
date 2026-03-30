@@ -426,7 +426,7 @@ describe('NodeOperationExecutor', () => {
       mockConnectedEdges = [
         {
           id: 'edge-1',
-          shape: 'edge',
+          shape: 'flow',
           getAttrs: vi.fn().mockReturnValue({}),
           getSource: vi.fn().mockReturnValue({ cell: 'source-1' }),
           getTarget: vi.fn().mockReturnValue({ cell: 'target-1' }),
@@ -436,7 +436,7 @@ describe('NodeOperationExecutor', () => {
         },
         {
           id: 'edge-2',
-          shape: 'edge',
+          shape: 'flow',
           getAttrs: vi.fn().mockReturnValue({}),
           getSource: vi.fn().mockReturnValue({ cell: 'source-2' }),
           getTarget: vi.fn().mockReturnValue({ cell: 'target-2' }),

@@ -165,7 +165,7 @@ describe('EdgeInfo', () => {
       // Arrange
       const json = {
         id: 'edge-1',
-        shape: 'edge',
+        shape: 'flow',
         source: { cell: 'source', port: 'out-port' },
         target: { cell: 'target', port: 'in-port' },
         zIndex: 2,
@@ -184,7 +184,7 @@ describe('EdgeInfo', () => {
 
       // Assert
       expect(edgeInfo.id).toBe('edge-1');
-      expect(edgeInfo.shape).toBe('edge');
+      expect(edgeInfo.shape).toBe('flow');
       expect(edgeInfo.source.cell).toBe('source');
       expect(edgeInfo.target.cell).toBe('target');
       expect(edgeInfo.source.port).toBe('out-port');

@@ -187,7 +187,7 @@ describe('CellDataExtractionService', () => {
             cells: [
               {
                 id: 'edge1',
-                shape: 'edge',
+                shape: 'flow',
                 source: { cell: 'node1', port: 'out' },
                 target: { cell: 'node2', port: 'in' },
                 labels: [{ attrs: { text: { text: 'Data Flow' } }, position: 0.5 }],
@@ -213,7 +213,7 @@ describe('CellDataExtractionService', () => {
             cells: [
               {
                 id: 'edge1',
-                shape: 'edge',
+                shape: 'flow',
                 labels: [
                   { attrs: { text: { text: 'First Label' } } },
                   { attrs: { text: { text: 'Second Label' } } },
@@ -240,7 +240,7 @@ describe('CellDataExtractionService', () => {
             cells: [
               {
                 id: 'edge1',
-                shape: 'edge',
+                shape: 'flow',
                 labels: [],
               },
             ],
@@ -265,7 +265,7 @@ describe('CellDataExtractionService', () => {
             cells: [
               {
                 id: 'edge1',
-                shape: 'edge',
+                shape: 'flow',
                 labels: [{ attrs: { text: { text: 'Correct Edge Label' } } }],
                 attrs: { text: { text: 'Wrong Label' } },
               },
