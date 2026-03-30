@@ -1494,6 +1494,14 @@
     "documentName": "Nombre del Documento",
     "documentUrl": "URL del Documento",
     "export": "Exportar",
+    "exportDialog": {
+      "error": "Error al preparar datos de exportación. Por favor, inténtelo de nuevo.",
+      "preparing": "Preparando datos de exportación...",
+      "ready": "Exportación lista. Haga clic en Guardar para descargar.",
+      "retry": "Reintentar",
+      "save": "Guardar",
+      "title": "Exportar Modelo de Amenazas"
+    },
     "fileSizeExceeded": "El archivo excede el tamaño máximo de importación: {{maxSize}} MB",
     "frameworkDisabledHint": "No Se Puede Cambiar el Framework Cuando Existen Amenazas",
     "idLabel": "{{common.id}}",

@@ -1494,6 +1494,14 @@
     "documentName": "ドキュメント名",
     "documentUrl": "ドキュメントURL",
     "export": "エクスポート",
+    "exportDialog": {
+      "error": "エクスポートデータの準備に失敗しました。もう一度お試しください。",
+      "preparing": "エクスポートデータを準備しています...",
+      "ready": "エクスポートの準備ができました。保存をクリックしてダウンロードしてください。",
+      "retry": "再試行",
+      "save": "保存",
+      "title": "脅威モデルをエクスポート"
+    },
     "fileSizeExceeded": "ファイルが最大インポートサイズを超えています: {{maxSize}} MB",
     "frameworkDisabledHint": "脅威が存在する場合はフレームワークを変更できません",
     "idLabel": "{{common.id}}",
