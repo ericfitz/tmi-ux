@@ -531,6 +531,31 @@ const NODE_ATTRS_SCHEMA: Record<string, readonly string[]> = {
 };
 
 /**
+ * NodeAttrs text properties that the API schema requires to be numbers.
+ * X6 may export these as percentage strings (e.g. "50%") or numeric strings.
+ */
+const NODE_TEXT_NUMERIC_FIELDS = ['refX', 'refY', 'refDx', 'refDy', 'fontSize'] as const;
+
+/**
+ * Coerce a value to a number if the API schema requires it.
+ * Handles percentage strings ("50%" → 0.5) and numeric strings ("14" → 14).
+ * Returns the original value if conversion is not possible.
+ */
+function coerceToNumber(value: unknown): unknown {
+  if (typeof value === 'number') return value;
+  if (typeof value !== 'string') return value;
+
+  const trimmed = value.trim();
+  if (trimmed.endsWith('%')) {
+    const parsed = parseFloat(trimmed.slice(0, -1));
+    return isNaN(parsed) ? value : parsed / 100;
+  }
+
+  const parsed = parseFloat(trimmed);
+  return isNaN(parsed) ? value : parsed;
+}
+
+/**
  * Allowed properties within EdgeAttrs per OpenAPI schema.
  * EdgeAttrs has additionalProperties: false
  */
@@ -581,7 +606,15 @@ function filterNodeAttrs(
 
     for (const [propKey, propValue] of Object.entries(selectorValue as Record<string, unknown>)) {
       if (allowedProps.includes(propKey)) {
-        filteredSelector[propKey] = propValue;
+        // Coerce numeric fields (e.g. refX: "50%" → 0.5) for text selector
+        if (
+          selectorKey === 'text' &&
+          (NODE_TEXT_NUMERIC_FIELDS as readonly string[]).includes(propKey)
+        ) {
+          filteredSelector[propKey] = coerceToNumber(propValue);
+        } else {
+          filteredSelector[propKey] = propValue;
+        }
       } else if (propKey !== 'filter') {
         // 'filter' is silently removed (known transient), others get warnings
         if (logger) {

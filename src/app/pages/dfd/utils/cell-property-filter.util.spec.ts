@@ -720,6 +720,49 @@ describe('Cell Property Filter Utility', () => {
         expect(sanitized.attrs?.text?.textAnchor).toBe('middle');
         expect(sanitized.attrs?.text?.textVerticalAnchor).toBe('top');
       });
+
+      it('should coerce percentage strings to numbers for text positioning fields', () => {
+        const node: Cell = {
+          id: 'node-1',
+          shape: 'process',
+          attrs: {
+            text: {
+              text: 'Label',
+              refX: '50%' as unknown as number,
+              refY: '100%' as unknown as number,
+              refDx: '0' as unknown as number,
+              refDy: '10' as unknown as number,
+              fontSize: '14' as unknown as number,
+            },
+          },
+        };
+
+        const sanitized = sanitizeCellForApi(node);
+
+        expect(sanitized.attrs?.text?.refX).toBe(0.5);
+        expect(sanitized.attrs?.text?.refY).toBe(1);
+        expect(sanitized.attrs?.text?.refDx).toBe(0);
+        expect(sanitized.attrs?.text?.refDy).toBe(10);
+        expect(sanitized.attrs?.text?.fontSize).toBe(14);
+      });
+
+      it('should preserve numeric values for text positioning fields', () => {
+        const node: Cell = {
+          id: 'node-1',
+          shape: 'process',
+          attrs: {
+            text: {
+              refX: 0.5,
+              refY: 1,
+            },
+          },
+        };
+
+        const sanitized = sanitizeCellForApi(node);
+
+        expect(sanitized.attrs?.text?.refX).toBe(0.5);
+        expect(sanitized.attrs?.text?.refY).toBe(1);
+      });
     });
 
     describe('edge filtering', () => {
