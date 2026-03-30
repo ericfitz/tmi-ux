@@ -19,8 +19,18 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, BehaviorSubject, throwError, timer } from 'rxjs';
-import { catchError, switchMap, map, tap, retryWhen, mergeMap, take } from 'rxjs/operators';
+import { Observable, of, BehaviorSubject, throwError, timer, forkJoin, EMPTY } from 'rxjs';
+import {
+  catchError,
+  switchMap,
+  map,
+  tap,
+  retryWhen,
+  mergeMap,
+  take,
+  expand,
+  reduce,
+} from 'rxjs/operators';
 
 import {
   ThreatModel,
@@ -52,6 +62,7 @@ import type {
   ApiNoteInput,
   ApiAssetInput,
 } from '@app/generated/api-type-helpers';
+import { PaginationMetadata } from '@app/types/api-responses.types';
 import { getErrorMessage } from '@app/shared/utils/http-error.utils';
 
 /**
@@ -315,6 +326,138 @@ export class ThreatModelService implements OnDestroy {
       catchError(error => {
         this.logger.error(`Error fetching threat model with ID: ${id}`, error);
         return of(undefined);
+      }),
+    );
+  }
+
+  /**
+   * Fetch a complete threat model with all sub-entities for export.
+   *
+   * GET /threat_models/{id} only includes diagrams and threats inline.
+   * Notes, documents, repositories, and assets require separate paginated
+   * endpoint calls. This method fetches everything and assembles a complete
+   * ThreatModel object suitable for JSON serialization.
+   */
+  exportThreatModel(id: string): Observable<ThreatModel | undefined> {
+    return this.getThreatModelById(id, true).pipe(
+      switchMap(threatModel => {
+        if (!threatModel) {
+          return of(undefined);
+        }
+
+        return forkJoin({
+          notes: this.fetchAllPages<Note>(`threat_models/${id}/notes`, 'notes'),
+          documents: this.fetchAllPages<TMDocument>(`threat_models/${id}/documents`, 'documents'),
+          repositories: this.fetchAllPages<Repository>(
+            `threat_models/${id}/repositories`,
+            'repositories',
+          ),
+          assets: this.fetchAllPages<Asset>(`threat_models/${id}/assets`, 'assets'),
+          diagrams: this.fetchAllDiagrams(id),
+          // fetchAllThreats delegates to getThreatsForThreatModel which
+          // already applies migrateLegacyThreatFieldValues per-threat
+          threats: this.fetchAllThreats(id),
+        }).pipe(
+          map(subEntities => ({
+            ...threatModel,
+            ...subEntities,
+          })),
+        );
+      }),
+      catchError(error => {
+        this.logger.error(`Error exporting threat model with ID: ${id}`, error);
+        return of(undefined);
+      }),
+    );
+  }
+
+  /**
+   * Fetch all pages of a paginated list endpoint, accumulating results.
+   * @param endpoint API path (e.g. `threat_models/{id}/notes`)
+   * @param itemsKey The key in the response that holds the array of items
+   * @param pageSize Number of items to request per page
+   */
+  private fetchAllPages<T>(endpoint: string, itemsKey: string, pageSize = 100): Observable<T[]> {
+    return this.apiService
+      .get<PaginationMetadata & Record<string, unknown>>(endpoint, {
+        limit: pageSize.toString(),
+        offset: '0',
+      })
+      .pipe(
+        expand(response => {
+          const items = (response[itemsKey] as T[]) || [];
+          const nextOffset = response.offset + items.length;
+          if (nextOffset >= response.total) {
+            return EMPTY;
+          }
+          return this.apiService.get<PaginationMetadata & Record<string, unknown>>(endpoint, {
+            limit: pageSize.toString(),
+            offset: nextOffset.toString(),
+          });
+        }),
+        map(response => (response[itemsKey] as T[]) || []),
+        reduce((all: T[], page: T[]) => all.concat(page), []),
+        catchError(error => {
+          this.logger.error(`Error fetching all pages from ${endpoint}`, error);
+          return of([] as T[]);
+        }),
+      );
+  }
+
+  /**
+   * Fetch all diagrams with full cell data.
+   * The list endpoint returns DiagramListItem which excludes cells for
+   * performance. We fetch the list to get all IDs, then fetch each diagram
+   * individually via getDiagramById to get complete data including cells.
+   */
+  private fetchAllDiagrams(threatModelId: string): Observable<Diagram[]> {
+    return this.fetchAllPages<{ id: string }>(
+      `threat_models/${threatModelId}/diagrams`,
+      'diagrams',
+    ).pipe(
+      switchMap(listItems => {
+        if (listItems.length === 0) {
+          return of([] as Diagram[]);
+        }
+        return forkJoin(listItems.map(item => this.getDiagramById(threatModelId, item.id))).pipe(
+          map(diagrams => diagrams.filter((d): d is Diagram => d !== undefined)),
+        );
+      }),
+      catchError(error => {
+        this.logger.error(
+          `Error fetching all diagrams for threat model ID: ${threatModelId}`,
+          error,
+        );
+        return of([] as Diagram[]);
+      }),
+    );
+  }
+
+  /**
+   * Fetch all threats across all pages.
+   * Threats use a different query-param shape (ThreatListParams) so they
+   * cannot go through the generic fetchAllPages helper.
+   */
+  private fetchAllThreats(threatModelId: string, pageSize = 100): Observable<Threat[]> {
+    return this.getThreatsForThreatModel(threatModelId, { limit: pageSize, offset: 0 }).pipe(
+      expand(response => {
+        const nextOffset = response.offset + response.threats.length;
+        if (nextOffset >= response.total) {
+          return EMPTY;
+        }
+        return this.getThreatsForThreatModel(threatModelId, {
+          limit: pageSize,
+          offset: nextOffset,
+        });
+      }),
+      map(response => response.threats),
+      reduce((all: Threat[], page: Threat[]) => all.concat(page), []),
+      catchError(error => {
+        this.logger.error(
+          `Error fetching all threats for threat model ID: ${threatModelId}`,
+          error,
+        );
+        return of([] as Threat[]);
       }),
     );
   }

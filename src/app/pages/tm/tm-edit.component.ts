@@ -2595,10 +2595,10 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     try {
-      // Re-fetch the full threat model to get complete sub-entity data
-      // (paginated loads replace notes with NoteListItem and diagrams with DiagramListItem)
+      // Fetch the threat model with all sub-entities (notes, documents,
+      // repositories, assets, diagrams, threats) via paginated API calls
       const fullThreatModel = await firstValueFrom(
-        this.threatModelService.getThreatModelById(this.threatModel.id, true),
+        this.threatModelService.exportThreatModel(this.threatModel.id),
       );
 
       if (!fullThreatModel) {
