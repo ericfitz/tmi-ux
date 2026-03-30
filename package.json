@@ -83,7 +83,7 @@
     "@antv/x6-plugin-transform": "^2.1.8",
     "@jsverse/transloco": "^8.2.1",
     "@types/prismjs": "^1.26.6",
-    "ae-cvss-calculator": "^1.0.11",
+    "ae-cvss-calculator": "^1.0.12",
     "clipboard": "^2.0.11",
     "dompurify": "^3.3.3",
     "express": "^5.2.1",
