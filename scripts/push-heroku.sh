@@ -20,7 +20,7 @@ HEROKU_IMAGE="registry.heroku.com/tmi-ux/web"
 sh scripts/generate-build-info.sh
 
 echo "🐳 Building Docker container (version: ${APP_VERSION})..."
-docker build --platform linux/amd64 --provenance=false --build-arg APP_VERSION="${APP_VERSION}" -t "${HEROKU_IMAGE}" .
+docker build --platform linux/amd64 --build-arg APP_VERSION="${APP_VERSION}" -t "${HEROKU_IMAGE}" .
 
 echo ""
 echo "📤 Pushing Docker container to Heroku registry..."
