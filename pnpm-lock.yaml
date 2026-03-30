@@ -88,8 +88,8 @@ importers:
         specifier: ^1.26.6
         version: 1.26.6
       ae-cvss-calculator:
-        specifier: ^1.0.11
-        version: 1.0.11
+        specifier: ^1.0.12
+        version: 1.0.12
       clipboard:
         specifier: ^2.0.11
         version: 2.0.11
@@ -3278,8 +3278,8 @@ packages:
     resolution: {integrity: sha512-OXwN5b9pCUXNQHJpwwD2qP40byEmSgzj8B4ydSN0uMNYWiFmJ6x6KwUllMmfk8Rwu/HJDFR7U8ubsWBoN0Xp0A==}
     engines: {node: '>=8.9'}
 
-  ae-cvss-calculator@1.0.11:
-    resolution: {integrity: sha512-Rhe/7hJ+9rFmDvcoIg2vNva1Lzm1gHZC5GJzhT6RceoCl9ZCK+fOl1cqKrvQsxSWoUITrt+ew73WPKpoDyilBQ==}
+  ae-cvss-calculator@1.0.12:
+    resolution: {integrity: sha512-YVO+dhb8sZubNeL9pqSlN5hyZGC8hkAwnThnd3EimUGZtJEMeuy4kMb7zMCAsBiMr/RxklH0oY7DCsFV/B7peg==}
 
   agent-base@7.1.4:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
@@ -9892,7 +9892,7 @@ snapshots:
       loader-utils: 2.0.4
       regex-parser: 2.3.1
 
-  ae-cvss-calculator@1.0.11: {}
+  ae-cvss-calculator@1.0.12: {}
 
   agent-base@7.1.4: {}
 
