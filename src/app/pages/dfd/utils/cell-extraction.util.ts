@@ -14,6 +14,7 @@
 
 import { Graph } from '@antv/x6';
 import { Cell } from '../../../core/types/websocket-message.types';
+import { CANONICAL_EDGE_SHAPE } from './cell-property-filter.util';
 
 /**
  * Extract all cells from an X6 graph with complete attrs.
@@ -91,7 +92,7 @@ function extractEdge(cell: any): Cell {
 
   const edgeCell: Cell = {
     id: cell.id,
-    shape: 'edge',
+    shape: CANONICAL_EDGE_SHAPE,
     source: {
       cell: source?.cell,
       port: source?.port,

@@ -102,7 +102,7 @@ const MOCK_DIAGRAMS: Diagram[] = [
       },
       {
         id: 'edge-web-db',
-        shape: 'edge',
+        shape: 'flow',
         parent: null,
         source: 'cell-web-server',
         target: 'cell-database',
@@ -139,7 +139,7 @@ const MOCK_DIAGRAMS: Diagram[] = [
       },
       {
         id: 'edge-user-auth',
-        shape: 'edge',
+        shape: 'flow',
         parent: null,
         source: 'cell-user-actor',
         target: 'cell-auth-service',

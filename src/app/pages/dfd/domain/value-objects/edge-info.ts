@@ -9,6 +9,7 @@ import {
   validateCellTools,
   hybridDataEquals,
 } from '../utils/x6-validation.util';
+import { CANONICAL_EDGE_SHAPE } from '../../utils/cell-property-filter.util';
 
 /**
  * Edge info value object representing the domain model for diagram edges
@@ -18,7 +19,7 @@ import {
 export class EdgeInfo {
   constructor(
     public readonly id: string,
-    public readonly shape: string = 'edge',
+    public readonly shape: string = CANONICAL_EDGE_SHAPE,
     public readonly source: EdgeTerminal,
     public readonly target: EdgeTerminal,
     public readonly zIndex: number = 1,
@@ -122,7 +123,7 @@ export class EdgeInfo {
 
     return new EdgeInfo(
       data.id,
-      data.shape || 'edge',
+      data.shape || CANONICAL_EDGE_SHAPE,
       source,
       target,
       data.zIndex || 1,
@@ -188,7 +189,7 @@ export class EdgeInfo {
 
     return new EdgeInfo(
       data.id,
-      'edge',
+      CANONICAL_EDGE_SHAPE,
       source,
       target,
       1,
@@ -238,7 +239,7 @@ export class EdgeInfo {
     // Assign default ports for simple edges
     const source: EdgeTerminal = { cell: sourceNodeId, port: 'right' };
     const target: EdgeTerminal = { cell: targetNodeId, port: 'left' };
-    return new EdgeInfo(id, 'edge', source, target, 1, true, {}, labels);
+    return new EdgeInfo(id, CANONICAL_EDGE_SHAPE, source, target, 1, true, {}, labels);
   }
 
   /**
@@ -256,7 +257,7 @@ export class EdgeInfo {
     const target: EdgeTerminal = { cell: targetNodeId, port: targetPortId };
     // Use labels array for edge labels (X6 native format)
     const labels: EdgeLabel[] = label ? [EdgeInfo.createDefaultLabel(label)] : [];
-    return new EdgeInfo(id, 'edge', source, target, 1, true, {}, labels);
+    return new EdgeInfo(id, CANONICAL_EDGE_SHAPE, source, target, 1, true, {}, labels);
   }
 
   /**

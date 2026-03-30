@@ -14,7 +14,7 @@ import { createDefaultNodeAttrs } from '../../domain/value-objects/node-attrs';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
 import { DFD_STYLING } from '../../constants/styling-constants';
 import { normalizeCellsFormatAndValidateRelationships } from '../../utils/cell-format-normalization.util';
-import { isEdgeShape } from '../../utils/cell-property-filter.util';
+import { isEdgeShape, CANONICAL_EDGE_SHAPE } from '../../utils/cell-property-filter.util';
 
 /**
  * Interface for diagram data
@@ -610,7 +610,7 @@ export class AppDiagramService {
     // Create edge configuration
     const edgeConfig: any = {
       id: mockCell.id,
-      shape: 'edge',
+      shape: CANONICAL_EDGE_SHAPE,
       source,
       target,
       zIndex: mockCell.zIndex || 1,

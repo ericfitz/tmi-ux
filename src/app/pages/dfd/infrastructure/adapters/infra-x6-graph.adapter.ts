@@ -50,6 +50,7 @@ import { InfraX6SelectionAdapter } from './infra-x6-selection.adapter';
 import { InfraX6EventLoggerAdapter } from './infra-x6-event-logger.adapter';
 import { X6TooltipAdapter } from './infra-x6-tooltip.adapter';
 import { normalizeCell } from '../../utils/cell-normalization.util';
+import { CANONICAL_EDGE_SHAPE } from '../../utils/cell-property-filter.util';
 import { Cell as WebSocketCell } from '../../../../core/types/websocket-message.types';
 import { InfraDfdValidationService } from '../services/infra-dfd-validation.service';
 import {
@@ -473,7 +474,7 @@ export class InfraX6GraphAdapter implements IGraphAdapter {
         createEdge: () => {
           const defaultLabel = this._dfdValidation.getLocalizedFlowLabel();
           return this._graph!.createEdge({
-            shape: 'edge', // Use standard X6 edge shape
+            shape: CANONICAL_EDGE_SHAPE, // Use API-canonical edge shape
             connector: DFD_STYLING.EDGES.CONNECTOR,
             router: DFD_STYLING.EDGES.ROUTER,
             attrs: {
