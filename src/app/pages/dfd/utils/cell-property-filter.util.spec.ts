@@ -765,6 +765,86 @@ describe('Cell Property Filter Utility', () => {
       });
     });
 
+    describe('port filtering', () => {
+      it('should strip attrs from port groups (additionalProperties: false)', () => {
+        const node: Cell = {
+          id: 'node-1',
+          shape: 'process',
+          ports: {
+            groups: {
+              top: {
+                position: 'top',
+                attrs: { circle: { fill: '#fff', r: 5, stroke: '#000' } },
+              },
+              bottom: {
+                position: 'bottom',
+                attrs: { circle: { fill: '#fff', r: 5, stroke: '#000' } },
+              },
+            },
+            items: [
+              { id: 'port-1', group: 'top' },
+              { id: 'port-2', group: 'bottom' },
+            ],
+          },
+        };
+
+        const sanitized = sanitizeCellForApi(node);
+
+        const ports = sanitized['ports'] as Record<string, unknown>;
+        const groups = ports['groups'] as Record<string, Record<string, unknown>>;
+        expect(groups['top']).toEqual({ position: 'top' });
+        expect(groups['bottom']).toEqual({ position: 'bottom' });
+      });
+
+      it('should strip extra properties from port items', () => {
+        const node: Cell = {
+          id: 'node-1',
+          shape: 'process',
+          ports: {
+            groups: { left: { position: 'left' } },
+            items: [{ id: 'port-1', group: 'left', attrs: { circle: { fill: '#fff' } } } as any],
+          },
+        };
+
+        const sanitized = sanitizeCellForApi(node);
+
+        const ports = sanitized['ports'] as Record<string, unknown>;
+        const items = ports['items'] as Record<string, unknown>[];
+        expect(items[0]).toEqual({ id: 'port-1', group: 'left' });
+      });
+
+      it('should preserve valid port structure', () => {
+        const node: Cell = {
+          id: 'node-1',
+          shape: 'process',
+          ports: {
+            groups: {
+              in: { position: 'left' },
+              out: { position: 'right' },
+            },
+            items: [
+              { id: 'port-in-1', group: 'in' },
+              { id: 'port-out-1', group: 'out' },
+            ],
+          },
+        };
+
+        const sanitized = sanitizeCellForApi(node);
+
+        const ports = sanitized['ports'] as Record<string, unknown>;
+        expect(ports).toEqual({
+          groups: {
+            in: { position: 'left' },
+            out: { position: 'right' },
+          },
+          items: [
+            { id: 'port-in-1', group: 'in' },
+            { id: 'port-out-1', group: 'out' },
+          ],
+        });
+      });
+    });
+
     describe('edge filtering', () => {
       it('should keep allowed edge properties', () => {
         const edge: Cell = {
