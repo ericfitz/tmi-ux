@@ -1,0 +1,54 @@
+.export-dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 20px 24px;
+
+  mat-icon {
+    color: var(--color-primary);
+  }
+}
+
+.export-dialog-content {
+  padding: 0 24px 20px;
+
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: var(--color-surface-container);
+
+    &.ready mat-icon {
+      color: var(--color-success, #4caf50);
+    }
+
+    &.error mat-icon {
+      color: var(--color-error-dark);
+    }
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  margin: 0;
+
+  button {
+    margin-left: 8px;
+
+    [dir='rtl'] & {
+      margin-left: 0;
+      margin-right: 8px;
+    }
+
+    &:first-child {
+      margin-left: 0;
+
+      [dir='rtl'] & {
+        margin-right: 0;
+      }
+    }
+  }
+}
