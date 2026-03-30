@@ -715,48 +715,6 @@ function filterEdgeAttrs(
 }
 
 /**
- * Filter a ports object to match PortConfiguration schema.
- *
- * Port groups only accept 'position' (additionalProperties: false).
- * Port items only accept 'id' and 'group' (additionalProperties: false).
- */
-function filterPorts(ports: Record<string, unknown>): Record<string, unknown> {
-  const filtered: Record<string, unknown> = {};
-
-  // Filter groups: only keep 'position' in each group
-  const groups = ports['groups'];
-  if (groups && typeof groups === 'object') {
-    const filteredGroups: Record<string, unknown> = {};
-    for (const [groupName, groupValue] of Object.entries(groups as Record<string, unknown>)) {
-      if (typeof groupValue === 'object' && groupValue !== null) {
-        const group = groupValue as Record<string, unknown>;
-        const filteredGroup: Record<string, unknown> = {};
-        if (group['position'] !== undefined) {
-          filteredGroup['position'] = group['position'];
-        }
-        filteredGroups[groupName] = filteredGroup;
-      }
-    }
-    filtered['groups'] = filteredGroups;
-  }
-
-  // Filter items: only keep 'id' and 'group' in each item
-  const items = ports['items'];
-  if (Array.isArray(items)) {
-    filtered['items'] = items
-      .filter((item): item is Record<string, unknown> => typeof item === 'object' && item !== null)
-      .map(item => {
-        const filteredItem: Record<string, unknown> = {};
-        if (item['id'] !== undefined) filteredItem['id'] = item['id'];
-        if (item['group'] !== undefined) filteredItem['group'] = item['group'];
-        return filteredItem;
-      });
-  }
-
-  return filtered;
-}
-
-/**
  * Sanitize a single cell for API submission.
  *
  * This function:
@@ -764,7 +722,6 @@ function filterPorts(ports: Record<string, unknown>): Record<string, unknown> {
  * 2. Silently removes known-transient properties (tools, type, children, etc.)
  * 3. Logs warnings for unknown properties being removed
  * 4. Deep-filters attrs to match NodeAttrs/EdgeAttrs schema
- * 5. Deep-filters ports to match PortConfiguration schema
  *
  * @param cell The cell to sanitize
  * @param logger Optional logger for warning about unknown properties
@@ -789,9 +746,6 @@ export function sanitizeCellForApi(cell: Cell, logger?: ApiSanitizationLogger): 
         if (Object.keys(filteredAttrs).length > 0) {
           sanitized[key] = filteredAttrs;
         }
-      } else if (key === 'ports' && typeof value === 'object' && value !== null) {
-        // Special handling for ports - deep filter to match PortConfiguration schema
-        sanitized[key] = filterPorts(value as Record<string, unknown>);
       } else {
         sanitized[key] = value;
       }
