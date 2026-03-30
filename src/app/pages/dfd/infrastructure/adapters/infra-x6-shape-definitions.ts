@@ -247,6 +247,24 @@ export function registerCustomShapes(): void {
     });
   }
 
+  // Register custom flow edge shape (canonical DFD data flow edge)
+  if (!registeredShapes.has('flow')) {
+    registeredShapes.add('flow');
+    Shape.Edge.define({
+      shape: 'flow',
+      attrs: {
+        line: {
+          stroke: DFD_STYLING.EDGES.DEFAULT_STROKE,
+          strokeWidth: DFD_STYLING.EDGES.DEFAULT_STROKE_WIDTH,
+          targetMarker: {
+            name: DFD_STYLING.EDGES.TARGET_MARKER.NAME,
+            size: DFD_STYLING.EDGES.TARGET_MARKER.SIZE,
+          },
+        },
+      },
+    });
+  }
+
   // Register custom text-box shape (transparent background, text only)
   if (!registeredShapes.has('text-box')) {
     registeredShapes.add('text-box');

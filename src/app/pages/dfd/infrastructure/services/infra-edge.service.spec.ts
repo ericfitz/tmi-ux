@@ -13,7 +13,9 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { InfraPortStateService } from './infra-port-state.service';
 import { InfraX6CoreOperationsService } from './infra-x6-core-operations.service';
 import { EdgeInfo } from '../../domain/value-objects/edge-info';
+import { CANONICAL_EDGE_SHAPE } from '../../utils/cell-property-filter.util';
 import { initializeX6CellExtensions } from '../../utils/x6-cell-extensions';
+import { registerCustomShapes } from '../adapters/infra-x6-shape-definitions';
 import { createTypedMockLoggerService, type MockLoggerService } from '../../../../../testing/mocks';
 import { expect, beforeEach, afterEach, describe, it } from 'vitest';
 
@@ -30,8 +32,9 @@ describe('InfraEdgeService - X6 Integration Tests', () => {
   let mockLogger: MockLoggerService;
 
   beforeEach(() => {
-    // Initialize X6 cell extensions
+    // Initialize X6 cell extensions and custom shapes
     initializeX6CellExtensions();
+    registerCustomShapes();
 
     // Create mock for LoggerService (cross-cutting concern)
     mockLogger = createTypedMockLoggerService();
@@ -113,7 +116,7 @@ describe('InfraEdgeService - X6 Integration Tests', () => {
       expect(x6Edge.id).toBe('edge-1');
       expect(x6Edge.getSource()).toEqual({ cell: 'source-1', port: 'right' });
       expect(x6Edge.getTarget()).toEqual({ cell: 'target-1', port: 'left' });
-      expect(x6Edge.shape).toBe('edge');
+      expect(x6Edge.shape).toBe(CANONICAL_EDGE_SHAPE);
 
       // Validate edge visual properties
       expect(x6Edge.getAttrByPath('line/stroke')).toBe('#000000');
