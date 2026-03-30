@@ -1551,12 +1551,12 @@
     "documentUrl": "Document URL",
     "export": "Export",
     "exportDialog": {
-      "title": "Export Threat Model",
+      "error": "Failed to prepare export data. Please try again.",
       "preparing": "Preparing export data...",
       "ready": "Export ready. Click Save to download.",
-      "error": "Failed to prepare export data. Please try again.",
+      "retry": "Retry",
       "save": "Save",
-      "retry": "Retry"
+      "title": "Export Threat Model"
     },
     "fileSizeExceeded": "File exceeds maximum import size: {{maxSize}} MB",
     "frameworkDisabledHint": "Cannot Change Framework When Threats Exist",

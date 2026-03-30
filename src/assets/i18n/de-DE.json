@@ -1494,6 +1494,14 @@
     "documentName": "Dokumentname",
     "documentUrl": "Dokument-URL",
     "export": "Exportieren",
+    "exportDialog": {
+      "error": "Exportdaten konnten nicht vorbereitet werden. Bitte versuchen Sie es erneut.",
+      "preparing": "Exportdaten werden vorbereitet...",
+      "ready": "Export bereit. Klicken Sie auf Speichern zum Herunterladen.",
+      "retry": "Wiederholen",
+      "save": "Speichern",
+      "title": "Bedrohungsmodell exportieren"
+    },
     "fileSizeExceeded": "Datei überschreitet die maximale Importgröße: {{maxSize}} MB",
     "frameworkDisabledHint": "Framework kann nicht geändert werden, wenn Bedrohungen vorhanden sind",
     "idLabel": "{{common.id}}",

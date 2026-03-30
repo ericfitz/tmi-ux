@@ -1494,6 +1494,14 @@
     "documentName": "文档名称",
     "documentUrl": "文档链接",
     "export": "导出",
+    "exportDialog": {
+      "error": "导出数据准备失败。请重试。",
+      "preparing": "正在准备导出数据...",
+      "ready": "导出已准备就绪。点击保存以下载。",
+      "retry": "重试",
+      "save": "保存",
+      "title": "导出威胁模型"
+    },
     "fileSizeExceeded": "文件超出最大导入大小限制：{{maxSize}} MB",
     "frameworkDisabledHint": "存在威胁时无法更改框架",
     "idLabel": "{{common.id}}",

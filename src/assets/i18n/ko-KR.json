@@ -1494,6 +1494,14 @@
     "documentName": "문서 이름",
     "documentUrl": "문서 URL",
     "export": "내보내기",
+    "exportDialog": {
+      "error": "내보내기 데이터 준비에 실패했습니다. 다시 시도하세요.",
+      "preparing": "내보내기 데이터 준비 중...",
+      "ready": "내보내기 준비 완료. 다운로드하려면 저장을 클릭하세요.",
+      "retry": "다시 시도",
+      "save": "저장",
+      "title": "위협 모델 내보내기"
+    },
     "fileSizeExceeded": "파일이 최대 가져오기 크기를 초과합니다: {{maxSize}} MB",
     "frameworkDisabledHint": "위협이 있을 때는 프레임워크를 변경할 수 없습니다",
     "idLabel": "{{common.id}}",

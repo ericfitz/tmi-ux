@@ -1494,6 +1494,14 @@
     "documentName": "שם המסמך",
     "documentUrl": "כתובת URL של המסמך",
     "export": "ייצוא",
+    "exportDialog": {
+      "error": "הכנת נתוני הייצוא נכשלה. אנא נסה שוב.",
+      "preparing": "הכנת נתוני ייצוא...",
+      "ready": "הייצוא מוכן. לחץ על שמור כדי להוריד.",
+      "retry": "נסה שוב",
+      "save": "שמור",
+      "title": "ייצא מודל איומים"
+    },
     "fileSizeExceeded": "הקובץ חורג מגודל הייבוא המרבי: {{maxSize}} MB",
     "frameworkDisabledHint": "לא ניתן לשנות מסגרת כאשר קיימים איומים",
     "idLabel": "{{common.id}}",

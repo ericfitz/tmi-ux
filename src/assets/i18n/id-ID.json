@@ -1494,6 +1494,14 @@
     "documentName": "Nama Dokumen",
     "documentUrl": "URL Dokumen",
     "export": "Ekspor",
+    "exportDialog": {
+      "error": "Gagal menyiapkan data ekspor. Silakan coba lagi.",
+      "preparing": "Menyiapkan data ekspor...",
+      "ready": "Ekspor siap. Klik Simpan untuk mengunduh.",
+      "retry": "Coba Lagi",
+      "save": "Simpan",
+      "title": "Ekspor Model Ancaman"
+    },
     "fileSizeExceeded": "File melebihi ukuran impor maksimum: {{maxSize}} MB",
     "frameworkDisabledHint": "Tidak Dapat Mengubah Framework Ketika Ancaman Ada",
     "idLabel": "{{common.id}}",
