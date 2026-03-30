@@ -10,7 +10,7 @@ echo "🚀 Starting Heroku deployment process..."
 echo ""
 
 echo "🔐 Authenticating with Heroku container registry..."
-docker login --username=_ --password=$(heroku auth:token) registry.heroku.com 2>&1 | grep -v "WARNING"
+docker login --username=_ --password=$(heroku auth:token) registry.heroku.com
 echo ""
 
 APP_VERSION=$(node -p "require('./package.json').version")
