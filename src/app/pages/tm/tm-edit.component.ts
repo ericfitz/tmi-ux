@@ -23,7 +23,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ThreatModelAuthorizationService } from './services/threat-model-authorization.service';
 import { AuthorizationPrepareService } from './services/providers/authorization-prepare.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { Subscription, Subject, firstValueFrom } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 import { debounceTime, filter, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { LanguageService } from '../../i18n/language.service';
 import { LoggerService } from '../../core/services/logger.service';
@@ -77,6 +77,12 @@ import {
   InvokeAddonDialogData,
   InvokeAddonDialogResult,
 } from './components/invoke-addon-dialog/invoke-addon-dialog.component';
+import {
+  ExportDialogComponent,
+  ExportDialogData,
+  ExportDialogResult,
+} from './components/export-dialog/export-dialog.component';
+
 import { Diagram, DIAGRAMS_BY_ID } from './models/diagram.model';
 import {
   Authorization,
@@ -2578,183 +2584,45 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  /**
-   * Downloads the threat model as a JSON file to the desktop.
-   * Re-fetches the full threat model from the API to ensure all sub-entity
-   * data is complete (paginated loads strip note content and diagram cells).
-   */
-  async downloadToDesktop(): Promise<void> {
+  downloadToDesktop(): void {
     if (!this.threatModel) {
       this.logger.warn('Cannot download threat model: no threat model loaded');
       return;
     }
 
-    this.logger.info('Downloading threat model to desktop', {
+    this.logger.info('Opening export dialog for threat model', {
       threatModelId: this.threatModel.id,
       threatModelName: this.threatModel.name,
     });
 
-    try {
-      // Re-fetch the full threat model to get complete sub-entity data
-      // (paginated loads replace notes with NoteListItem and diagrams with DiagramListItem)
-      const fullThreatModel = await firstValueFrom(
-        this.threatModelService.getThreatModelById(this.threatModel.id, true),
-      );
+    const dialogRef = this.dialog.open<ExportDialogComponent, ExportDialogData, ExportDialogResult>(
+      ExportDialogComponent,
+      {
+        width: '450px',
+        data: {
+          threatModelName: this.threatModel.name,
+          fetchObservable: this.threatModelService.getThreatModelById(this.threatModel.id, true),
+        },
+        disableClose: true,
+      },
+    );
 
-      if (!fullThreatModel) {
-        this.logger.error('Failed to fetch full threat model for export');
-        return;
-      }
-
-      // Generate filename: threat model name (truncated to 63 chars) + "-threat-model.json"
-      const filename = this.generateThreatModelFilename(fullThreatModel.name);
-
-      // Normalize the threat model to ensure consistent date formats
-      const normalizedThreatModel = this.normalizeThreatModelForExport(fullThreatModel);
-
-      // Serialize the complete threat model as JSON
-      const jsonContent = JSON.stringify(normalizedThreatModel, null, 2);
-      const blob = new Blob([jsonContent], { type: 'application/json' });
-
-      // Use the same file picker pattern as DFD exports
-      await this.handleThreatModelExport(blob, filename);
-    } catch (error) {
-      this.logger.error('Error preparing threat model download', error);
-    }
+    this._subscriptions.add(
+      dialogRef.afterClosed().subscribe(result => {
+        if (!result) return;
+        void this.triggerDownload(result.blob, result.filename);
+      }),
+    );
   }
 
   /**
-   * Normalize threat model data for export to ensure consistent formats
-   * - Converts dates to ISO 8601 format (YYYY-MM-DDTHH:mm:ss.sssZ)
-   * - Ensures all required fields are present
+   * Trigger a file download using the File System Access API with fallback.
+   * Must be called within a user activation context (e.g., from a dialog
+   * afterClosed callback triggered by a user click).
    */
-  private normalizeThreatModelForExport(threatModel: ThreatModel): ThreatModel {
-    const normalized = { ...threatModel };
-
-    // Normalize top-level dates
-    normalized.created_at = this.normalizeDate(threatModel.created_at);
-    normalized.modified_at = this.normalizeDate(threatModel.modified_at);
-
-    // Normalize dates for all sub-entity types
-    if (normalized.diagrams) {
-      normalized.diagrams = normalized.diagrams.map(diagram => ({
-        ...diagram,
-        created_at: this.normalizeDate(diagram.created_at),
-        modified_at: this.normalizeDate(diagram.modified_at),
-      }));
-    }
-
-    if (normalized.threats) {
-      normalized.threats = normalized.threats.map(threat => ({
-        ...threat,
-        created_at: this.normalizeDate(threat.created_at),
-        modified_at: this.normalizeDate(threat.modified_at),
-      }));
-    }
-
-    if (normalized.notes) {
-      normalized.notes = normalized.notes.map(note => ({
-        ...note,
-        created_at: this.normalizeDate(note.created_at),
-        modified_at: this.normalizeDate(note.modified_at),
-      }));
-    }
-
-    if (normalized.assets) {
-      normalized.assets = normalized.assets.map(asset => ({
-        ...asset,
-        created_at: this.normalizeDate(asset.created_at),
-        modified_at: this.normalizeDate(asset.modified_at),
-      }));
-    }
-
-    if (normalized.documents) {
-      normalized.documents = normalized.documents.map(doc => ({
-        ...doc,
-        created_at: this.normalizeDate(doc.created_at),
-        modified_at: this.normalizeDate(doc.modified_at),
-      }));
-    }
-
-    if (normalized.repositories) {
-      normalized.repositories = normalized.repositories.map(repo => ({
-        ...repo,
-        created_at: this.normalizeDate(repo.created_at),
-        modified_at: this.normalizeDate(repo.modified_at),
-      }));
-    }
-
-    return normalized;
-  }
-
-  /**
-   * Normalize a date string to ISO 8601 format
-   * Handles various input formats and ensures output is YYYY-MM-DDTHH:mm:ss.sssZ
-   */
-  private normalizeDate(dateString: string): string {
-    if (!dateString) {
-      return new Date().toISOString();
-    }
-
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        this.logger.warn('Invalid date encountered, using current date', { dateString });
-        return new Date().toISOString();
-      }
-      return date.toISOString();
-    } catch (error) {
-      this.logger.error('Error normalizing date', { dateString, error });
-      return new Date().toISOString();
-    }
-  }
-
-  /**
-   * Generate filename for threat model download
-   * Format: "{threatModelName}-threat-model.json" (name truncated to 63 chars)
-   */
-  private generateThreatModelFilename(threatModelName: string): string {
-    // Helper function to sanitize and truncate names for filenames
-    const sanitizeAndTruncate = (name: string, maxLength: number): string => {
-      // Remove or replace characters that are invalid in filenames
-      const sanitized = name
-        .replace(/[<>:"/\\|?*]/g, '-') // Replace invalid filename characters with dash
-        .replace(/\s+/g, '-') // Replace spaces with dashes
-        .replace(/-+/g, '-') // Replace multiple dashes with single dash
-        .replace(/^-|-$/g, ''); // Remove leading/trailing dashes
-
-      // Truncate to max length
-      return sanitized.length > maxLength ? sanitized.substring(0, maxLength) : sanitized;
-    };
-
-    // Sanitize and truncate the threat model name
-    const sanitizedName = sanitizeAndTruncate(threatModelName.trim(), 63);
-
-    // If sanitization resulted in an empty string, use default with timestamp
-    if (!sanitizedName) {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      return `threat-model-${timestamp}.json`;
-    }
-
-    const filename = `${sanitizedName}-threat-model.json`;
-
-    this.logger.debugComponent('TmEdit', 'Generated threat model filename', {
-      originalName: threatModelName,
-      sanitizedName,
-      filename,
-    });
-
-    return filename;
-  }
-
-  /**
-   * Handle threat model export using File System Access API with fallback
-   */
-  private async handleThreatModelExport(blob: Blob, filename: string): Promise<void> {
-    // Check if File System Access API is supported
+  private async triggerDownload(blob: Blob, filename: string): Promise<void> {
     if ('showSaveFilePicker' in window) {
       try {
-        this.logger.debugComponent('TmEdit', 'Using File System Access API for threat model save');
         const fileHandle = await window.showSaveFilePicker({
           suggestedName: filename,
           types: [
@@ -2769,42 +2637,27 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         await writable.write(blob);
         await writable.close();
 
-        this.logger.info('Threat model saved successfully using File System Access API', {
-          filename,
-        });
-        return; // Success, exit early
+        this.logger.info('Threat model saved via File System Access API', { filename });
+        return;
       } catch (error) {
-        // Handle File System Access API errors
         if (error instanceof DOMException && error.name === 'AbortError') {
-          this.logger.debugComponent('TmEdit', 'Threat model save cancelled by user');
-          return; // User cancelled, exit without fallback
-        } else {
-          this.logger.warn('File System Access API failed, falling back to download method', error);
-          // Continue to fallback method below
+          this.logger.debugComponent('TmEdit', 'Save cancelled by user');
+          return;
         }
+        this.logger.warn('File System Access API failed, using fallback', error);
       }
-    } else {
-      this.logger.debugComponent(
-        'TmEdit',
-        'File System Access API not supported, using fallback download method',
-      );
     }
 
-    // Fallback method for unsupported browsers or API failures
-    try {
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      this.logger.info('Threat model downloaded successfully using fallback method', { filename });
-    } catch (fallbackError) {
-      this.logger.error('Both File System Access API and fallback method failed', fallbackError);
-      throw fallbackError;
-    }
+    // Fallback: anchor element download
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    this.logger.info('Threat model downloaded via fallback method', { filename });
   }
 
   /**
