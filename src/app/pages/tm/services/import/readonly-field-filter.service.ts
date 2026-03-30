@@ -51,26 +51,11 @@ export class ReadonlyFieldFilterService {
   ] as const;
 
   /**
-   * Read-only fields on Diagram that should be stripped before POST/PUT.
-   * @see ApiDfdDiagramInput, ApiBaseDiagramInput in @app/generated/api-type-helpers
+   * Fields accepted by CreateDiagramRequest (POST).
+   * Uses an allow-list because CreateDiagramRequest has additionalProperties: false.
+   * @see ApiCreateDiagramRequest in @app/generated/api-type-helpers
    */
-  private readonly _diagramReadOnlyFields = ['id', 'update_vector'] as const;
-
-  /**
-   * Fields that should be stripped before POST (create) but allowed in PUT (update).
-   * ApiCreateDiagramRequest only accepts 'name' and 'type' fields.
-   * These fields are extracted and sent via a subsequent PUT using ApiDfdDiagramInput.
-   * @see ApiCreateDiagramRequest, ApiDfdDiagramInput in @app/generated/api-type-helpers
-   */
-  private readonly _diagramCreateOnlyFields = [
-    'cells',
-    'description',
-    'image',
-    'include_in_report',
-    'created_at',
-    'modified_at',
-    'metadata',
-  ] as const;
+  private readonly _diagramCreateAllowedFields = ['name', 'type'] as const;
 
   /**
    * Read-only fields on Note that should be stripped before POST/PUT.
@@ -154,10 +139,10 @@ export class ReadonlyFieldFilterService {
   }
 
   /**
-   * Filters read-only fields from a Diagram object for CREATE operations.
-   * Extracts metadata, cells, description, and image for separate handling.
-   * CreateDiagramRequest only accepts 'name' and 'type' fields.
-   * Other fields must be added via a subsequent PUT/PATCH operation.
+   * Filters a Diagram object for CREATE operations.
+   * Uses an allow-list for the create payload (CreateDiagramRequest has
+   * additionalProperties: false). Extracts fields that belong in the
+   * subsequent PUT (BaseDiagramInput / DfdDiagramInput) for separate handling.
    */
   filterDiagram(data: Record<string, unknown>): {
     filtered: Record<string, unknown>;
@@ -166,18 +151,30 @@ export class ReadonlyFieldFilterService {
     description: string | undefined;
     includeInReport: boolean | undefined;
     image: Record<string, unknown> | undefined;
+    colorPalette: unknown[] | undefined;
+    timmyEnabled: boolean | undefined;
   } {
     const metadata = data['metadata'] as Metadata[] | undefined;
     const cells = data['cells'] as unknown[] | undefined;
     const description = data['description'] as string | undefined;
     const includeInReport = data['include_in_report'] as boolean | undefined;
     const image = data['image'] as Record<string, unknown> | undefined;
+    const colorPalette = data['color_palette'] as unknown[] | undefined;
+    const timmyEnabled = data['timmy_enabled'] as boolean | undefined;
 
-    // Combine both readonly and create-only fields for filtering
-    const allFieldsToFilter = [...this._diagramReadOnlyFields, ...this._diagramCreateOnlyFields];
-    const filtered = this._filterFields(data, allFieldsToFilter);
+    // Allow-list: only pass fields accepted by CreateDiagramRequest
+    const filtered = this._pickFields(data, this._diagramCreateAllowedFields);
 
-    return { filtered, metadata, cells, description, includeInReport, image };
+    return {
+      filtered,
+      metadata,
+      cells,
+      description,
+      includeInReport,
+      image,
+      colorPalette,
+      timmyEnabled,
+    };
   }
 
   /**
@@ -295,7 +292,7 @@ export class ReadonlyFieldFilterService {
   }
 
   /**
-   * Generic field filtering helper
+   * Generic field filtering helper (block-list)
    */
   private _filterFields(
     data: Record<string, unknown>,
@@ -310,5 +307,23 @@ export class ReadonlyFieldFilterService {
     }
 
     return filtered;
+  }
+
+  /**
+   * Generic field picking helper (allow-list)
+   */
+  private _pickFields(
+    data: Record<string, unknown>,
+    fieldsToKeep: readonly string[],
+  ): Record<string, unknown> {
+    const picked: Record<string, unknown> = {};
+
+    for (const field of fieldsToKeep) {
+      if (field in data) {
+        picked[field] = data[field];
+      }
+    }
+
+    return picked;
   }
 }

@@ -136,7 +136,7 @@ describe('ReadonlyFieldFilterService', () => {
   });
 
   describe('filterDiagram()', () => {
-    it('should filter read-only and create-only fields from diagram', () => {
+    it('should only include name and type in filtered output (allow-list)', () => {
       const data = {
         id: 'diagram-123',
         name: 'System Architecture',
@@ -185,12 +185,49 @@ describe('ReadonlyFieldFilterService', () => {
       expect(cells).toEqual(mockCells);
     });
 
-    it('should filter both readonly and create-only fields for POST', () => {
+    it('should exclude unknown fields not in CreateDiagramRequest', () => {
       const data = {
         id: 'diagram-123',
         name: 'My Diagram',
         type: 'dfd',
-        description: 'This should be filtered',
+        color_palette: [{ name: 'red', value: '#ff0000' }],
+        deleted_at: '2024-06-01',
+        some_future_field: 'unexpected',
+      };
+
+      const { filtered, colorPalette } = service.filterDiagram(data);
+
+      expect(filtered).toEqual({
+        name: 'My Diagram',
+        type: 'dfd',
+      });
+      expect(colorPalette).toEqual([{ name: 'red', value: '#ff0000' }]);
+    });
+
+    it('should extract color_palette and timmy_enabled for PUT', () => {
+      const data = {
+        name: 'My Diagram',
+        type: 'dfd',
+        color_palette: [{ name: 'blue', value: '#0000ff' }],
+        timmy_enabled: false,
+      };
+
+      const { filtered, colorPalette, timmyEnabled } = service.filterDiagram(data);
+
+      expect(filtered).toEqual({
+        name: 'My Diagram',
+        type: 'dfd',
+      });
+      expect(colorPalette).toEqual([{ name: 'blue', value: '#0000ff' }]);
+      expect(timmyEnabled).toBe(false);
+    });
+
+    it('should filter all non-allowed fields for POST', () => {
+      const data = {
+        id: 'diagram-123',
+        name: 'My Diagram',
+        type: 'dfd',
+        description: 'This should be extracted',
         include_in_report: false,
         cells: [],
         image: {},
@@ -199,7 +236,6 @@ describe('ReadonlyFieldFilterService', () => {
 
       const { filtered, includeInReport } = service.filterDiagram(data);
 
-      // Only name and type should remain for CreateDiagramRequest
       expect(filtered).toEqual({
         name: 'My Diagram',
         type: 'dfd',

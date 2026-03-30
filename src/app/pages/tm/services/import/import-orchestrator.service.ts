@@ -623,8 +623,16 @@ export class ImportOrchestratorService {
     deps: ImportDependencies,
   ): Observable<ImportResult<Diagram>> {
     const originalId = diagram['id'] as string | undefined;
-    const { filtered, metadata, cells, description, includeInReport, image } =
-      this._fieldFilter.filterDiagram(diagram);
+    const {
+      filtered,
+      metadata,
+      cells,
+      description,
+      includeInReport,
+      image,
+      colorPalette,
+      timmyEnabled,
+    } = this._fieldFilter.filterDiagram(diagram);
     const rewritten = this._referenceRewriter.rewriteDiagramReferences(filtered);
 
     return deps.createDiagram(threatModelId, rewritten as unknown as ApiCreateDiagramRequest).pipe(
@@ -635,13 +643,22 @@ export class ImportOrchestratorService {
         }
 
         // Determine if we need to update the diagram with additional fields
-        // (cells, description, include_in_report, image) that couldn't be set in the CREATE request
+        // that couldn't be set in the CREATE request (which only accepts name + type)
         const hasCells = cells && cells.length > 0;
         const hasDescription = description !== undefined;
         const hasIncludeInReport = includeInReport !== undefined;
         const hasImage = image !== undefined;
+        const hasColorPalette = colorPalette && colorPalette.length > 0;
+        const hasTimmyEnabled = timmyEnabled !== undefined;
 
-        if (hasCells || hasDescription || hasIncludeInReport || hasImage) {
+        if (
+          hasCells ||
+          hasDescription ||
+          hasIncludeInReport ||
+          hasImage ||
+          hasColorPalette ||
+          hasTimmyEnabled
+        ) {
           // Build update payload with all available fields
           // DfdDiagramInput requires cells — default to empty array
           const diagramUpdate: Record<string, unknown> = {
@@ -676,6 +693,14 @@ export class ImportOrchestratorService {
 
           if (hasImage) {
             diagramUpdate['image'] = image;
+          }
+
+          if (hasColorPalette) {
+            diagramUpdate['color_palette'] = colorPalette;
+          }
+
+          if (hasTimmyEnabled) {
+            diagramUpdate['timmy_enabled'] = timmyEnabled;
           }
 
           return deps
