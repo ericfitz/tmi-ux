@@ -2,7 +2,9 @@
 # Uses hosted-container configuration (environment.hosted-container.ts)
 
 # Stage 1: Build the Angular application
-FROM node:22-alpine AS builder
+# Use the host's native architecture for the build stage — the output is
+# static JS/CSS/HTML so it doesn't matter what arch compiles it.
+FROM --platform=$BUILDPLATFORM node:22-alpine AS builder
 
 # Set working directory
 WORKDIR /app
