@@ -81,3 +81,6 @@ deliverables
 deliverables/**
 workspace
 workspace/**
+.playwright-mcp/**
+.superpowers/**
+docs/superpowers/**
