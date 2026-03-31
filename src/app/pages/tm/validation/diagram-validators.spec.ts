@@ -114,7 +114,7 @@ describe('DfdDiagramValidator', () => {
       }
     });
 
-    it('should accept edge shape', () => {
+    it('should accept flow shape', () => {
       const node1 = validNodeCell(validUUID);
       const node2 = validNodeCell(validUUID2);
       const edge = validEdgeCell(validUUID3, validUUID, validUUID2);
@@ -124,6 +124,18 @@ describe('DfdDiagramValidator', () => {
 
     it('should reject invalid cell shape', () => {
       const cell: Cell = { id: validUUID, shape: 'hexagon' };
+      const errors = validator.validateCells([cell], baseContext);
+      expect(hasError(errors, 'INVALID_CELL_TYPE')).toBe(true);
+    });
+
+    it('should reject legacy "edge" shape as INVALID_CELL_TYPE', () => {
+      const cell: Cell = { id: validUUID, shape: 'edge' };
+      const errors = validator.validateCells([cell], baseContext);
+      expect(hasError(errors, 'INVALID_CELL_TYPE')).toBe(true);
+    });
+
+    it('should reject legacy "textbox" shape (no hyphen) as INVALID_CELL_TYPE', () => {
+      const cell: Cell = { id: validUUID, shape: 'textbox' };
       const errors = validator.validateCells([cell], baseContext);
       expect(hasError(errors, 'INVALID_CELL_TYPE')).toBe(true);
     });

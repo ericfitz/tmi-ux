@@ -1134,4 +1134,372 @@ describe('ThreatModelService', () => {
       });
     }));
   });
+
+  describe('exportThreatModel', () => {
+    const tmId = '550e8400-e29b-41d4-a716-446655440000';
+
+    it('should fetch the threat model and all sub-entities', () =>
+      waitForAsync(async () => {
+        const baseTm = {
+          ...testThreatModel1,
+          authorization: [],
+          diagrams: [],
+          threats: [],
+        };
+
+        const mockNote = {
+          id: 'n1',
+          name: 'Note 1',
+          content: 'content',
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+        };
+        const mockDoc = {
+          id: 'd1',
+          name: 'Doc 1',
+          uri: 'https://example.com',
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+        };
+        const mockRepo = {
+          id: 'r1',
+          name: 'Repo 1',
+          type: 'git',
+          uri: 'https://git.example.com',
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+        };
+        const mockAsset = {
+          id: 'a1',
+          name: 'Asset 1',
+          type: 'data',
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+        };
+        // List item (no cells) vs full diagram (with cells)
+        const mockDiagramListItem = {
+          id: 'dg1',
+          name: 'DFD 1',
+          type: 'DFD-1.0.0',
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+        };
+        const mockDiagramFull = {
+          ...mockDiagramListItem,
+          cells: [{ id: 'cell1', type: 'node' }],
+        };
+        const mockThreat = {
+          id: 't1',
+          name: 'Threat 1',
+          severity: 'high',
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+        };
+
+        vi.mocked(apiService.get).mockImplementation((url: string) => {
+          if (url === `threat_models/${tmId}`) {
+            return of(baseTm);
+          }
+          if (url === `threat_models/${tmId}/notes`) {
+            return of({ notes: [mockNote], total: 1, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/documents`) {
+            return of({ documents: [mockDoc], total: 1, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/repositories`) {
+            return of({ repositories: [mockRepo], total: 1, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/assets`) {
+            return of({ assets: [mockAsset], total: 1, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/diagrams`) {
+            return of({ diagrams: [mockDiagramListItem], total: 1, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/diagrams/dg1`) {
+            return of(mockDiagramFull);
+          }
+          if (url === `threat_models/${tmId}/threats`) {
+            return of({ threats: [mockThreat], total: 1, limit: 100, offset: 0 });
+          }
+          return of(undefined);
+        });
+
+        return new Promise<void>((resolve, reject) => {
+          service.exportThreatModel(tmId).subscribe({
+            next: result => {
+              try {
+                expect(result).toBeDefined();
+                expect(result!.notes).toEqual([mockNote]);
+                expect(result!.documents).toEqual([mockDoc]);
+                expect(result!.repositories).toEqual([mockRepo]);
+                expect(result!.assets).toEqual([mockAsset]);
+                // Diagrams should be the full version with cells
+                expect(result!.diagrams).toEqual([mockDiagramFull]);
+                expect(result!.diagrams![0].cells).toEqual([{ id: 'cell1', type: 'node' }]);
+                expect(result!.threats).toEqual([mockThreat]);
+                resolve();
+              } catch (e) {
+                reject(e instanceof Error ? e : new Error(String(e)));
+              }
+            },
+            error: err => reject(err instanceof Error ? err : new Error(String(err))),
+          });
+        });
+      }));
+
+    it('should paginate through multiple pages of sub-entities', () =>
+      waitForAsync(async () => {
+        const baseTm = {
+          ...testThreatModel1,
+          authorization: [],
+          diagrams: [],
+          threats: [],
+        };
+
+        const notes = Array.from({ length: 3 }, (_, i) => ({
+          id: `n${i}`,
+          name: `Note ${i}`,
+          content: `content ${i}`,
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+        }));
+
+        vi.mocked(apiService.get).mockImplementation(
+          (url: string, params?: Record<string, string>) => {
+            if (url === `threat_models/${tmId}`) {
+              return of(baseTm);
+            }
+            if (url === `threat_models/${tmId}/notes`) {
+              const offset = parseInt(params?.['offset'] || '0', 10);
+              const limit = parseInt(params?.['limit'] || '100', 10);
+              // Simulate pages of size 2 with 3 total items
+              const page = notes.slice(offset, offset + Math.min(limit, 2));
+              return of({ notes: page, total: 3, limit: Math.min(limit, 2), offset });
+            }
+            // Single-page responses for other sub-entities
+            if (url === `threat_models/${tmId}/documents`) {
+              return of({ documents: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/repositories`) {
+              return of({ repositories: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/assets`) {
+              return of({ assets: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/diagrams`) {
+              return of({ diagrams: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/threats`) {
+              return of({ threats: [], total: 0, limit: 100, offset: 0 });
+            }
+            return of(undefined);
+          },
+        );
+
+        return new Promise<void>((resolve, reject) => {
+          service.exportThreatModel(tmId).subscribe({
+            next: result => {
+              try {
+                expect(result).toBeDefined();
+                expect(result!.notes).toHaveLength(3);
+                expect(result!.notes![0].id).toBe('n0');
+                expect(result!.notes![2].id).toBe('n2');
+                resolve();
+              } catch (e) {
+                reject(e instanceof Error ? e : new Error(String(e)));
+              }
+            },
+            error: err => reject(err instanceof Error ? err : new Error(String(err))),
+          });
+        });
+      }));
+
+    it('should terminate when server returns empty items despite total suggesting more pages', () =>
+      waitForAsync(async () => {
+        const baseTm = {
+          ...testThreatModel1,
+          authorization: [],
+          diagrams: [],
+          threats: [],
+        };
+
+        const notes = [
+          {
+            id: 'n0',
+            name: 'Note 0',
+            content: 'content',
+            created_at: new Date().toISOString(),
+            modified_at: new Date().toISOString(),
+          },
+          {
+            id: 'n1',
+            name: 'Note 1',
+            content: 'content',
+            created_at: new Date().toISOString(),
+            modified_at: new Date().toISOString(),
+          },
+          {
+            id: 'n2',
+            name: 'Note 2',
+            content: 'content',
+            created_at: new Date().toISOString(),
+            modified_at: new Date().toISOString(),
+          },
+        ];
+
+        vi.mocked(apiService.get).mockImplementation(
+          (url: string, params?: Record<string, string>) => {
+            if (url === `threat_models/${tmId}`) {
+              return of(baseTm);
+            }
+            if (url === `threat_models/${tmId}/notes`) {
+              const offset = parseInt(params?.['offset'] || '0', 10);
+              if (offset === 0) {
+                // First page: returns all 3 notes
+                return of({ notes, total: 3, limit: 100, offset: 0 });
+              }
+              // Second page: server returns empty items but broken total/offset
+              // This previously caused an infinite loop
+              return of({ notes: [], total: 3, limit: 100, offset });
+            }
+            if (url === `threat_models/${tmId}/documents`) {
+              return of({ documents: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/repositories`) {
+              return of({ repositories: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/assets`) {
+              return of({ assets: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/diagrams`) {
+              return of({ diagrams: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/threats`) {
+              return of({ threats: [], total: 0, limit: 100, offset: 0 });
+            }
+            return of(undefined);
+          },
+        );
+
+        return new Promise<void>((resolve, reject) => {
+          service.exportThreatModel(tmId).subscribe({
+            next: result => {
+              try {
+                expect(result).toBeDefined();
+                expect(result!.notes).toHaveLength(3);
+                resolve();
+              } catch (e) {
+                reject(e instanceof Error ? e : new Error(String(e)));
+              }
+            },
+            error: err => reject(err instanceof Error ? err : new Error(String(err))),
+          });
+        });
+      }));
+
+    it('should terminate when server omits pagination total field', () =>
+      waitForAsync(async () => {
+        const baseTm = {
+          ...testThreatModel1,
+          authorization: [],
+          diagrams: [],
+          threats: [],
+        };
+
+        const mockNote = {
+          id: 'n1',
+          name: 'Note 1',
+          content: 'content',
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+        };
+
+        vi.mocked(apiService.get).mockImplementation(
+          (url: string, params?: Record<string, string>) => {
+            if (url === `threat_models/${tmId}`) {
+              return of(baseTm);
+            }
+            if (url === `threat_models/${tmId}/notes`) {
+              const offset = parseInt(params?.['offset'] || '0', 10);
+              if (offset === 0) {
+                // Server returns items but no total field
+                return of({ notes: [mockNote], limit: 100, offset: 0 } as any);
+              }
+              // Subsequent page: empty
+              return of({ notes: [], limit: 100, offset } as any);
+            }
+            if (url === `threat_models/${tmId}/documents`) {
+              return of({ documents: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/repositories`) {
+              return of({ repositories: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/assets`) {
+              return of({ assets: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/diagrams`) {
+              return of({ diagrams: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/threats`) {
+              return of({ threats: [], total: 0, limit: 100, offset: 0 });
+            }
+            return of(undefined);
+          },
+        );
+
+        return new Promise<void>((resolve, reject) => {
+          service.exportThreatModel(tmId).subscribe({
+            next: result => {
+              try {
+                expect(result).toBeDefined();
+                expect(result!.notes).toHaveLength(1);
+                expect(result!.notes![0].id).toBe('n1');
+                resolve();
+              } catch (e) {
+                reject(e instanceof Error ? e : new Error(String(e)));
+              }
+            },
+            error: err => reject(err instanceof Error ? err : new Error(String(err))),
+          });
+        });
+      }));
+
+    it('should return undefined when the threat model is not found', () =>
+      waitForAsync(async () => {
+        vi.mocked(apiService.get).mockReturnValue(of(undefined));
+
+        return new Promise<void>((resolve, reject) => {
+          service.exportThreatModel('nonexistent-id').subscribe({
+            next: result => {
+              try {
+                expect(result).toBeUndefined();
+                resolve();
+              } catch (e) {
+                reject(e instanceof Error ? e : new Error(String(e)));
+              }
+            },
+            error: err => reject(err instanceof Error ? err : new Error(String(err))),
+          });
+        });
+      }));
+
+    it('should return undefined when an API error occurs', () =>
+      waitForAsync(async () => {
+        vi.mocked(apiService.get).mockReturnValue(throwError(() => new Error('Network error')));
+
+        return new Promise<void>((resolve, reject) => {
+          service.exportThreatModel(tmId).subscribe({
+            next: result => {
+              try {
+                expect(result).toBeUndefined();
+                resolve();
+              } catch (e) {
+                reject(e instanceof Error ? e : new Error(String(e)));
+              }
+            },
+            error: err => reject(err instanceof Error ? err : new Error(String(err))),
+          });
+        });
+      }));
+  });
 });

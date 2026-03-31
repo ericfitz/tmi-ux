@@ -2601,7 +2601,7 @@ export class TmEditComponent implements OnInit, OnDestroy, AfterViewInit {
         width: '450px',
         data: {
           threatModelName: this.threatModel.name,
-          fetchObservable: this.threatModelService.getThreatModelById(this.threatModel.id, true),
+          fetchObservable: this.threatModelService.exportThreatModel(this.threatModel.id),
         },
         disableClose: true,
       },

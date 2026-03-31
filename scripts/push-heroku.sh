@@ -10,7 +10,7 @@ echo "🚀 Starting Heroku deployment process..."
 echo ""
 
 echo "🔐 Authenticating with Heroku container registry..."
-docker login --username=_ --password=$(heroku auth:token) registry.heroku.com 2>&1 | grep -v "WARNING"
+docker login --username=_ --password=$(heroku auth:token) registry.heroku.com
 echo ""
 
 APP_VERSION=$(node -p "require('./package.json').version")
@@ -20,7 +20,7 @@ HEROKU_IMAGE="registry.heroku.com/tmi-ux/web"
 sh scripts/generate-build-info.sh
 
 echo "🐳 Building Docker container (version: ${APP_VERSION})..."
-docker build --platform linux/amd64 --provenance=false --build-arg APP_VERSION="${APP_VERSION}" -t "${HEROKU_IMAGE}" .
+docker build --no-cache --platform linux/amd64 --provenance=false --sbom=false --build-arg APP_VERSION="${APP_VERSION}" -t "${HEROKU_IMAGE}" .
 
 echo ""
 echo "📤 Pushing Docker container to Heroku registry..."
