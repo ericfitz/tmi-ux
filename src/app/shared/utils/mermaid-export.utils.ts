@@ -29,6 +29,39 @@ export function cloneSvgForExport(svgElement: SVGSVGElement): SVGSVGElement {
 }
 
 /**
+ * Replace <foreignObject> elements with <text> elements containing the same
+ * text content. Browsers refuse to render SVGs with <foreignObject> when loaded
+ * as an Image source (security restriction), so this is required for PNG export.
+ */
+function replaceForeignObjects(svg: SVGSVGElement): void {
+  const foreignObjects = Array.from(svg.querySelectorAll('foreignObject'));
+  for (const fo of foreignObjects) {
+    const x = fo.getAttribute('x') || '0';
+    const y = fo.getAttribute('y') || '0';
+    const width = parseFloat(fo.getAttribute('width') || '0');
+    const height = parseFloat(fo.getAttribute('height') || '0');
+    const textContent = fo.textContent?.trim() || '';
+
+    if (!textContent) {
+      fo.remove();
+      continue;
+    }
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', String(parseFloat(x) + width / 2));
+    text.setAttribute('y', String(parseFloat(y) + height / 2));
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dominant-baseline', 'central');
+    text.setAttribute('font-size', '14');
+    text.setAttribute('font-family', 'trebuchet ms, verdana, arial, sans-serif');
+    text.setAttribute('fill', '#333');
+    text.textContent = textContent;
+
+    fo.parentElement?.replaceChild(text, fo);
+  }
+}
+
+/**
  * Get the intrinsic dimensions of an SVG element.
  * Prefers viewBox, falls back to width/height attributes, then getBoundingClientRect.
  */
@@ -70,28 +103,64 @@ function svgToBlob(svg: SVGSVGElement): Blob {
 }
 
 /**
- * Trigger a file download from a Blob.
+ * Save a Blob to a file. Uses the File System Access API (showSaveFilePicker)
+ * when available for a native save dialog, falls back to <a download>.
+ *
+ * For the picker path, the caller must invoke this during a user gesture
+ * (synchronously from a click handler) before any async work, otherwise the
+ * browser rejects with SecurityError.
  */
-function downloadBlob(blob: Blob, filename: string): void {
+async function saveBlob(blob: Blob, filename: string, mimeType: string): Promise<void> {
+  if (typeof window.showSaveFilePicker === 'function') {
+    try {
+      const extensionMap: Record<string, string> = {
+        'image/svg+xml': '.svg',
+        'image/png': '.png',
+      };
+      const extension = extensionMap[mimeType] || '';
+
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [
+          {
+            description: `${extension.slice(1).toUpperCase()} file`,
+            accept: { [mimeType]: [extension] },
+          },
+        ],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return;
+    } catch (err: unknown) {
+      // AbortError = user cancelled — not an error
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+      // SecurityError = gesture expired — fall through to <a download>
+      if (err instanceof DOMException && err.name === 'SecurityError') {
+        // fall through
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  // Fallback: <a download> (Firefox, Safari, or gesture-expired)
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 
 /**
- * Export an SVG element as an SVG file download.
- */
-export function exportAsSvg(svgElement: SVGSVGElement): void {
-  const clone = cloneSvgForExport(svgElement);
-  const blob = svgToBlob(clone);
-  downloadBlob(blob, generateFilename('svg'));
-}
-
-/**
- * Render an SVG to a canvas and return the canvas.
+ * Render an SVG to a canvas.
+ * Replaces <foreignObject> elements with <text> before rendering,
+ * since browsers block <foreignObject> in Image-loaded SVGs.
  * Scale factor: max(2, 2 * currentZoom) for retina quality.
  */
 function renderSvgToCanvas(
@@ -100,6 +169,8 @@ function renderSvgToCanvas(
 ): Promise<HTMLCanvasElement> {
   return new Promise((resolve, reject) => {
     const clone = cloneSvgForExport(svgElement);
+    replaceForeignObjects(clone);
+
     const { width, height } = getSvgDimensions(clone);
     const scale = Math.max(2, 2 * currentZoom);
 
@@ -148,18 +219,27 @@ function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
 }
 
 /**
- * Export an SVG element as a PNG file download.
+ * Export an SVG element as an SVG file.
+ */
+export async function exportAsSvg(svgElement: SVGSVGElement): Promise<void> {
+  const clone = cloneSvgForExport(svgElement);
+  const blob = svgToBlob(clone);
+  await saveBlob(blob, generateFilename('svg'), 'image/svg+xml');
+}
+
+/**
+ * Export an SVG element as a PNG file.
  * @param svgElement - The SVG element to export.
  * @param currentZoom - Current zoom level (1.0 = 100%). PNG scale = max(2, 2 * currentZoom).
  */
 export async function exportAsPng(svgElement: SVGSVGElement, currentZoom: number): Promise<void> {
   const canvas = await renderSvgToCanvas(svgElement, currentZoom);
   const blob = await canvasToBlob(canvas);
-  downloadBlob(blob, generateFilename('png'));
+  await saveBlob(blob, generateFilename('png'), 'image/png');
 }
 
 /**
- * Copy a diagram to the clipboard as both PNG and SVG (if supported), or PNG only.
+ * Copy a diagram to the clipboard as a PNG image.
  * @param svgElement - The SVG element to copy.
  * @param currentZoom - Current zoom level for PNG resolution.
  */
@@ -170,22 +250,9 @@ export async function copyDiagramToClipboard(
   const canvas = await renderSvgToCanvas(svgElement, currentZoom);
   const pngBlob = await canvasToBlob(canvas);
 
-  // Try to write both SVG and PNG; fall back to PNG only
-  try {
-    const clone = cloneSvgForExport(svgElement);
-    const svgBlob = svgToBlob(clone);
-    await navigator.clipboard.write([
-      new ClipboardItem({
-        'image/svg+xml': svgBlob,
-        'image/png': pngBlob,
-      }),
-    ]);
-  } catch {
-    // SVG clipboard not supported in this browser; fall back to PNG only
-    await navigator.clipboard.write([
-      new ClipboardItem({
-        'image/png': pngBlob,
-      }),
-    ]);
-  }
+  await navigator.clipboard.write([
+    new ClipboardItem({
+      'image/png': pngBlob,
+    }),
+  ]);
 }

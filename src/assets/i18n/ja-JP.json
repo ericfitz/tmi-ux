@@ -606,6 +606,8 @@
     "email": "メールアドレス",
     "emailLabel": "メールアドレス",
     "error": "エラー",
+    "exportAsPng": "PNGでエクスポート",
+    "exportAsSvg": "SVGでエクスポート",
     "false": "偽",
     "fonts": "フォント",
     "groups": "グループ",
@@ -930,9 +932,7 @@
     "pageTitle": "データフローダイアグラムエディター",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "JPEGでエクスポート",
-        "exportAsPng": "PNGでエクスポート",
-        "exportAsSvg": "SVGでエクスポート"
+        "exportAsJpeg": "JPEGでエクスポート"
       },
       "tooltips": {
         "addActor": "アクターを追加",

@@ -276,8 +276,11 @@ export class NotePageComponent implements OnInit, OnDestroy, AfterViewChecked {
 
     // Initialize mermaid diagram viewers
     if (this.previewMode && !this.mermaidViewersInitialized && this.markdownPreview) {
-      this.mermaidCleanup = this.mermaidViewerService?.initialize(this.markdownPreview);
-      this.mermaidViewersInitialized = true;
+      const cleanup = this.mermaidViewerService?.initialize(this.markdownPreview);
+      if (cleanup) {
+        this.mermaidCleanup = cleanup;
+        this.mermaidViewersInitialized = true;
+      }
     } else if (!this.previewMode && this.mermaidViewersInitialized) {
       this.mermaidCleanup?.();
       this.mermaidViewersInitialized = false;

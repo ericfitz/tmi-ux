@@ -17,7 +17,7 @@
     <button
       mat-icon-button
       (click)="fitToView()"
-      [matTooltip]="'dfd.toolbar.tooltips.zoomToFit' | transloco"
+      [matTooltip]="'mermaidViewer.fitToScreen' | transloco"
     >
       <mat-icon>zoom_out_map</mat-icon>
     </button>
@@ -45,11 +45,11 @@
   <mat-menu #exportMenu="matMenu">
     <button mat-menu-item (click)="onExportSvg()">
       <mat-icon>image</mat-icon>
-      <span>{{ 'dfd.toolbar.exportMenu.exportAsSvg' | transloco }}</span>
+      <span>{{ 'common.exportAsSvg' | transloco }}</span>
     </button>
     <button mat-menu-item (click)="onExportPng()">
       <mat-icon>image</mat-icon>
-      <span>{{ 'dfd.toolbar.exportMenu.exportAsPng' | transloco }}</span>
+      <span>{{ 'common.exportAsPng' | transloco }}</span>
     </button>
   </mat-menu>
 

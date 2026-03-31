@@ -627,6 +627,8 @@
     "email": "Email",
     "emailLabel": "Email Address",
     "error": "Error",
+    "exportAsPng": "Export as PNG",
+    "exportAsSvg": "Export as SVG",
     "false": "False",
     "fonts": "Fonts",
     "groups": "Groups",
@@ -962,9 +964,7 @@
     "pageTitle": "Data Flow Diagram Editor",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "Export as JPEG",
-        "exportAsPng": "Export as PNG",
-        "exportAsSvg": "Export as SVG"
+        "exportAsJpeg": "Export as JPEG"
       },
       "tooltips": {
         "addActor": "Add Actor",
@@ -1032,6 +1032,7 @@
   },
   "mermaidViewer": {
     "exportFailed": "Failed to export diagram",
+    "fitToScreen": "Fit to Screen",
     "openInViewer": "Open in Viewer",
     "resetZoom": "Reset Zoom",
     "zoomIn": "Zoom In",

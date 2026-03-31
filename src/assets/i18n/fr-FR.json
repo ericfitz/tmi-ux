@@ -606,6 +606,8 @@
     "email": "E-mail",
     "emailLabel": "Adresse E-mail",
     "error": "Erreur",
+    "exportAsPng": "Exporter en PNG",
+    "exportAsSvg": "Exporter en SVG",
     "false": "Faux",
     "fonts": "Polices",
     "groups": "Groupes",
@@ -930,9 +932,7 @@
     "pageTitle": "Editeur de Diagrammes de Flux de Donnees",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "Exporter en JPEG",
-        "exportAsPng": "Exporter en PNG",
-        "exportAsSvg": "Exporter en SVG"
+        "exportAsJpeg": "Exporter en JPEG"
       },
       "tooltips": {
         "addActor": "Ajouter un acteur",

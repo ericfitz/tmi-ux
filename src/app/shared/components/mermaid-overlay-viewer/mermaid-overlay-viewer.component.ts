@@ -168,9 +168,9 @@ export class MermaidOverlayViewerComponent implements AfterViewInit, OnDestroy {
   }
 
   /** Export the diagram as an SVG file. */
-  onExportSvg(): void {
+  async onExportSvg(): Promise<void> {
     try {
-      exportAsSvg(this.svgElement);
+      await exportAsSvg(this.svgElement);
     } catch (err) {
       this.logger.error('Failed to export SVG', err);
       this.showError();

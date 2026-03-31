@@ -606,6 +606,8 @@
     "email": "ای میل",
     "emailLabel": "ای میل ایڈریس",
     "error": "خرابی",
+    "exportAsPng": "PNG کے طور پر برآمد کریں",
+    "exportAsSvg": "SVG کے طور پر برآمد کریں",
     "false": "غلط",
     "fonts": "فونٹس",
     "groups": "گروپس",
@@ -930,9 +932,7 @@
     "pageTitle": "ڈیٹا فلو ڈایاگرام ایڈیٹر",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "JPEG کے طور پر برآمد کریں",
-        "exportAsPng": "PNG کے طور پر برآمد کریں",
-        "exportAsSvg": "SVG کے طور پر برآمد کریں"
+        "exportAsJpeg": "JPEG کے طور پر برآمد کریں"
       },
       "tooltips": {
         "addActor": "ایکٹر شامل کریں",

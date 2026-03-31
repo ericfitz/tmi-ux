@@ -606,6 +606,8 @@
     "email": "ইমেইল",
     "emailLabel": "ইমেল ঠিকানা",
     "error": "ত্রুটি",
+    "exportAsPng": "PNG হিসাবে এক্সপোর্ট করুন",
+    "exportAsSvg": "SVG হিসাবে এক্সপোর্ট করুন",
     "false": "মিথ্যা",
     "fonts": "ফন্ট",
     "groups": "গ্রুপ",
@@ -930,9 +932,7 @@
     "pageTitle": "ডেটা ফ্লো ডায়াগ্রাম এডিটর",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "JPEG হিসাবে এক্সপোর্ট করুন",
-        "exportAsPng": "PNG হিসাবে এক্সপোর্ট করুন",
-        "exportAsSvg": "SVG হিসাবে এক্সপোর্ট করুন"
+        "exportAsJpeg": "JPEG হিসাবে এক্সপোর্ট করুন"
       },
       "tooltips": {
         "addActor": "অ্যাক্টর যোগ করুন",

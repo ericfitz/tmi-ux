@@ -1,10 +1,4 @@
-import {
-  Component,
-  Injector,
-  ViewChild,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-} from '@angular/core';
+import { Component, ElementRef, Injector, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { MatMenuTrigger } from '@angular/material/menu';
@@ -24,6 +18,10 @@ const ZOOM_STEP = 0.25;
 /**
  * Inline mermaid diagram viewer with hover toolbar and context menu.
  * Attached to each .mermaid element by MermaidViewerService.
+ *
+ * The SVG element is looked up dynamically from mermaidElement rather than
+ * stored as a reference, because mermaid.run() replaces the .mermaid element's
+ * innerHTML asynchronously, which invalidates any previously stored SVG reference.
  */
 @Component({
   selector: 'app-mermaid-viewer',
@@ -39,16 +37,10 @@ export class MermaidViewerComponent {
   /** The .mermaid container element. Set by MermaidViewerService. */
   mermaidElement!: HTMLElement;
 
-  /** The SVG element inside .mermaid. Set by MermaidViewerService. */
-  svgElement!: SVGSVGElement;
-
-  showToolbar = false;
   currentZoom = 1;
-  contextMenuPosition = { x: '0px', y: '0px' };
-
-  private cdr?: ChangeDetectorRef;
 
   constructor(
+    private elementRef: ElementRef<HTMLElement>,
     private overlay: Overlay,
     private injector: Injector,
     private translocoService: TranslocoService,
@@ -56,25 +48,37 @@ export class MermaidViewerComponent {
     private logger: LoggerService,
   ) {}
 
-  /** Inject ChangeDetectorRef after creation (set by service). */
-  setChangeDetectorRef(cdr: ChangeDetectorRef): void {
-    this.cdr = cdr;
+  /** Get the toolbar element from this component's DOM. */
+  private get toolbarElement(): HTMLElement | null {
+    return this.elementRef.nativeElement.querySelector('.mermaid-toolbar');
+  }
+
+  /**
+   * Get the current SVG element from the mermaid container.
+   * Looked up dynamically because mermaid.run() may replace the innerHTML.
+   */
+  private get svgElement(): SVGSVGElement | null {
+    return this.mermaidElement?.querySelector('svg') ?? null;
   }
 
   onMouseEnter(): void {
-    this.showToolbar = true;
-    this.cdr?.markForCheck();
+    this.toolbarElement?.classList.add('mermaid-toolbar-visible');
   }
 
   onMouseLeave(): void {
-    this.showToolbar = false;
-    this.cdr?.markForCheck();
+    this.toolbarElement?.classList.remove('mermaid-toolbar-visible');
   }
 
   onContextMenu(event: MouseEvent): void {
     event.preventDefault();
-    this.contextMenuPosition = { x: `${event.clientX}px`, y: `${event.clientY}px` };
-    this.cdr?.detectChanges();
+    // Update context menu trigger position via direct DOM (Angular bindings
+    // don't work for dynamically created components attached to appRef)
+    const triggerContainer =
+      this.elementRef.nativeElement.querySelector<HTMLElement>('.context-menu-anchor');
+    if (triggerContainer) {
+      triggerContainer.style.left = `${event.clientX}px`;
+      triggerContainer.style.top = `${event.clientY}px`;
+    }
     this.contextMenuTrigger?.openMenu();
   }
 
@@ -98,6 +102,9 @@ export class MermaidViewerComponent {
   }
 
   openOverlay(): void {
+    const svg = this.svgElement;
+    if (!svg) return;
+
     const previouslyFocused = document.activeElement as HTMLElement | null;
 
     const config = new OverlayConfig({
@@ -112,7 +119,7 @@ export class MermaidViewerComponent {
     const portal = new ComponentPortal(MermaidOverlayViewerComponent, null, this.injector);
     const componentRef = overlayRef.attach(portal);
 
-    componentRef.instance.svgElement = this.svgElement;
+    componentRef.instance.svgElement = svg;
     componentRef.instance.overlayRef = overlayRef;
     componentRef.instance.onClose = (): void => previouslyFocused?.focus();
 
@@ -132,9 +139,11 @@ export class MermaidViewerComponent {
     });
   }
 
-  onExportSvg(): void {
+  async onExportSvg(): Promise<void> {
+    const svg = this.svgElement;
+    if (!svg) return;
     try {
-      exportAsSvg(this.svgElement);
+      await exportAsSvg(svg);
     } catch (err) {
       this.logger.error('Failed to export SVG', err);
       this.showExportError();
@@ -142,8 +151,10 @@ export class MermaidViewerComponent {
   }
 
   async onExportPng(): Promise<void> {
+    const svg = this.svgElement;
+    if (!svg) return;
     try {
-      await exportAsPng(this.svgElement, this.currentZoom);
+      await exportAsPng(svg, this.currentZoom);
     } catch (err) {
       this.logger.error('Failed to export PNG', err);
       this.showExportError();
@@ -151,8 +162,10 @@ export class MermaidViewerComponent {
   }
 
   async copyToClipboard(): Promise<void> {
+    const svg = this.svgElement;
+    if (!svg) return;
     try {
-      await copyDiagramToClipboard(this.svgElement, this.currentZoom);
+      await copyDiagramToClipboard(svg, this.currentZoom);
       this.snackBar.open(this.translocoService.translate('common.copiedToClipboard'), '', {
         duration: 2000,
       });
@@ -163,11 +176,11 @@ export class MermaidViewerComponent {
   }
 
   private applyInlineZoom(): void {
-    if (this.svgElement) {
-      this.svgElement.style.transform = `scale(${this.currentZoom})`;
-      this.svgElement.style.transformOrigin = 'center center';
+    const svg = this.svgElement;
+    if (svg) {
+      svg.style.transform = `scale(${this.currentZoom})`;
+      svg.style.transformOrigin = 'center center';
     }
-    this.cdr?.markForCheck();
   }
 
   private showExportError(): void {

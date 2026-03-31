@@ -9,6 +9,7 @@ import { MermaidViewerComponent } from './mermaid-viewer.component';
 
 describe('MermaidViewerComponent', () => {
   let component: MermaidViewerComponent;
+  let hostElement: HTMLElement;
   let mockOverlay: { create: ReturnType<typeof vi.fn> };
   let mockInjector: Record<string, unknown>;
   let mockTranslocoService: { translate: ReturnType<typeof vi.fn> };
@@ -41,7 +42,11 @@ describe('MermaidViewerComponent', () => {
       debugComponent: vi.fn(),
     };
 
+    hostElement = document.createElement('app-mermaid-viewer');
+    document.body.appendChild(hostElement);
+
     component = new MermaidViewerComponent(
+      { nativeElement: hostElement } as never,
       mockOverlay as never,
       mockInjector as never,
       mockTranslocoService as never,
@@ -59,7 +64,6 @@ describe('MermaidViewerComponent', () => {
     document.body.appendChild(container);
 
     component.mermaidElement = container;
-    component.svgElement = svg;
   });
 
   describe('inline zoom', () => {
@@ -98,15 +102,24 @@ describe('MermaidViewerComponent', () => {
   });
 
   describe('toolbar visibility', () => {
-    it('should show toolbar on mouse enter', () => {
-      component.onMouseEnter();
-      expect(component.showToolbar).toBe(true);
+    beforeEach(() => {
+      // Create a toolbar element inside the host element (simulating rendered template)
+      const toolbar = document.createElement('div');
+      toolbar.className = 'mermaid-toolbar';
+      hostElement.appendChild(toolbar);
     });
 
-    it('should hide toolbar on mouse leave', () => {
+    it('should add visible class on mouse enter', () => {
+      component.onMouseEnter();
+      const toolbar = hostElement.querySelector('.mermaid-toolbar');
+      expect(toolbar?.classList.contains('mermaid-toolbar-visible')).toBe(true);
+    });
+
+    it('should remove visible class on mouse leave', () => {
       component.onMouseEnter();
       component.onMouseLeave();
-      expect(component.showToolbar).toBe(false);
+      const toolbar = hostElement.querySelector('.mermaid-toolbar');
+      expect(toolbar?.classList.contains('mermaid-toolbar-visible')).toBe(false);
     });
   });
 

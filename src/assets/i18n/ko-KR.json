@@ -606,6 +606,8 @@
     "email": "이메일",
     "emailLabel": "이메일 주소",
     "error": "오류",
+    "exportAsPng": "PNG로 내보내기",
+    "exportAsSvg": "SVG로 내보내기",
     "false": "거짓",
     "fonts": "글꼴",
     "groups": "그룹",
@@ -930,9 +932,7 @@
     "pageTitle": "데이터 흐름 다이어그램 편집기",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "JPEG로 내보내기",
-        "exportAsPng": "PNG로 내보내기",
-        "exportAsSvg": "SVG로 내보내기"
+        "exportAsJpeg": "JPEG로 내보내기"
       },
       "tooltips": {
         "addActor": "액터 추가",

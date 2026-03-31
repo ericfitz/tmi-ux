@@ -7,9 +7,6 @@ import { vi, expect, beforeEach, afterEach, describe, it } from 'vitest';
 import { ElementRef } from '@angular/core';
 
 // Mock createComponent from @angular/core before importing the service.
-// The factory returns a vi.fn() placeholder; each test sets the mock return value
-// in beforeEach so a fresh DOM element is used per test, preventing shared-element
-// fragility across test runs.
 vi.mock('@angular/core', async importOriginal => {
   const actual = await importOriginal<typeof import('@angular/core')>();
   return {
@@ -51,20 +48,16 @@ describe('MermaidViewerService', () => {
     mockInjector = { get: vi.fn() };
     mockLogger = { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() };
 
-    // Reset createComponent mock with a fresh DOM element each test to avoid
-    // shared-element fragility from module-level mock factory.
     vi.mocked(createComponent).mockReturnValue({
       instance: {
         mermaidElement: null,
-        svgElement: null,
-        setChangeDetectorRef: vi.fn(),
+
         onMouseEnter: vi.fn(),
         onMouseLeave: vi.fn(),
         onContextMenu: vi.fn(),
         onDoubleClick: vi.fn(),
       },
-      hostView: { detectChanges: vi.fn() },
-      changeDetectorRef: { detectChanges: vi.fn(), markForCheck: vi.fn() },
+      hostView: {},
       location: { nativeElement: document.createElement('div') },
       destroy: vi.fn(),
     } as never);
@@ -84,112 +77,83 @@ describe('MermaidViewerService', () => {
     document.body.removeChild(previewDiv);
   });
 
-  it('should find and initialize mermaid elements with existing SVG', () => {
-    const mermaidDiv = document.createElement('div');
-    mermaidDiv.classList.add('mermaid');
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    mermaidDiv.appendChild(svg);
-    previewDiv.appendChild(mermaidDiv);
-
+  it('should return null when no mermaid elements found', () => {
     const cleanup = service.initialize(previewElement);
-
-    // The standalone createComponent function from @angular/core is called
-    expect(createComponent).toHaveBeenCalled();
-    expect(typeof cleanup).toBe('function');
+    expect(cleanup).toBeNull();
   });
 
-  it('should handle zero mermaid elements', () => {
-    const cleanup = service.initialize(previewElement);
-    expect(typeof cleanup).toBe('function');
-  });
-
-  it('should observe mermaid elements without SVG and attach when SVG appears', async () => {
+  it('should wrap .mermaid element and attach viewer component', () => {
     const mermaidDiv = document.createElement('div');
     mermaidDiv.classList.add('mermaid');
     previewDiv.appendChild(mermaidDiv);
 
     service.initialize(previewElement);
 
-    // createComponent should not be called yet — no SVG
-    expect(createComponent).not.toHaveBeenCalled();
+    // .mermaid should now be wrapped
+    const wrapper = mermaidDiv.parentElement;
+    expect(wrapper).not.toBe(previewDiv);
+    expect(wrapper?.className).toBe('mermaid-viewer-wrapper');
+    expect(wrapper?.style.position).toBe('relative');
+    expect(wrapper?.parentElement).toBe(previewDiv);
 
-    // Simulate mermaid rendering: insert an SVG
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    mermaidDiv.appendChild(svg);
-
-    // MutationObserver fires asynchronously — flush microtasks
-    await new Promise(resolve => setTimeout(resolve, 0));
-
-    // Now the viewer should have been attached
+    // Component should be created and attached
     expect(createComponent).toHaveBeenCalled();
-    expect(mermaidDiv.style.position).toBe('relative');
+    expect(mockApplicationRef.attachView).toHaveBeenCalled();
   });
 
-  it('should clean up observer when cleanup called before SVG appears', () => {
-    const mermaidDiv = document.createElement('div');
-    mermaidDiv.classList.add('mermaid');
-    previewDiv.appendChild(mermaidDiv);
-
-    const cleanup = service.initialize(previewElement);
-
-    // No SVG yet, observer is active
-    expect(createComponent).not.toHaveBeenCalled();
-
-    // Cleanup should not throw
-    cleanup();
-  });
-
-  it('should clean up on cleanup call', () => {
+  it('should survive mermaid innerHTML replacement', () => {
     const mermaidDiv = document.createElement('div');
     mermaidDiv.classList.add('mermaid');
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     mermaidDiv.appendChild(svg);
     previewDiv.appendChild(mermaidDiv);
 
-    const cleanup = service.initialize(previewElement);
-    cleanup();
+    service.initialize(previewElement);
 
-    // After cleanup, mermaid element styles should be reset
-    expect(mermaidDiv.style.position).toBe('');
-    expect(mermaidDiv.style.overflow).toBe('');
+    const wrapper = mermaidDiv.parentElement!;
+    const viewerHostEl = vi.mocked(createComponent).mock.results[0].value.location.nativeElement;
+
+    // Verify viewer is in the wrapper
+    expect(wrapper.contains(viewerHostEl)).toBe(true);
+
+    // Simulate mermaid.run() replacing innerHTML
+    mermaidDiv.innerHTML = '<svg id="new-svg"></svg>';
+
+    // Viewer should still be in the wrapper (sibling, not child)
+    expect(wrapper.contains(viewerHostEl)).toBe(true);
+    expect(wrapper.children.length).toBe(2); // .mermaid + viewer
+  });
+
+  it('should unwrap .mermaid and remove wrapper on cleanup', () => {
+    const mermaidDiv = document.createElement('div');
+    mermaidDiv.classList.add('mermaid');
+    previewDiv.appendChild(mermaidDiv);
+
+    const cleanup = service.initialize(previewElement);
+    cleanup!();
+
+    // .mermaid should be back in previewDiv, wrapper removed
+    expect(mermaidDiv.parentElement).toBe(previewDiv);
+    expect(previewDiv.querySelector('.mermaid-viewer-wrapper')).toBeNull();
   });
 
   it('should detach and destroy component refs on cleanup', () => {
     const mermaidDiv = document.createElement('div');
     mermaidDiv.classList.add('mermaid');
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    mermaidDiv.appendChild(svg);
     previewDiv.appendChild(mermaidDiv);
 
     const cleanup = service.initialize(previewElement);
-
-    // Get the mock component ref returned by createComponent
     const mockRef = vi.mocked(createComponent).mock.results[0].value;
 
-    cleanup();
+    cleanup!();
 
     expect(mockApplicationRef.detachView).toHaveBeenCalledWith(mockRef.hostView);
     expect(mockRef.destroy).toHaveBeenCalled();
   });
 
-  it('should set position and overflow styles on mermaid elements with SVG', () => {
+  it('should attach view to appRef for each mermaid element', () => {
     const mermaidDiv = document.createElement('div');
     mermaidDiv.classList.add('mermaid');
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    mermaidDiv.appendChild(svg);
-    previewDiv.appendChild(mermaidDiv);
-
-    service.initialize(previewElement);
-
-    expect(mermaidDiv.style.position).toBe('relative');
-    expect(mermaidDiv.style.overflow).toBe('auto');
-  });
-
-  it('should attach view to appRef for each mermaid element with SVG', () => {
-    const mermaidDiv = document.createElement('div');
-    mermaidDiv.classList.add('mermaid');
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    mermaidDiv.appendChild(svg);
     previewDiv.appendChild(mermaidDiv);
 
     service.initialize(previewElement);
@@ -198,24 +162,17 @@ describe('MermaidViewerService', () => {
     expect(mockApplicationRef.attachView).toHaveBeenCalledWith(mockRef.hostView);
   });
 
-  it('should detach and destroy observer-attached component on cleanup', async () => {
-    const mermaidDiv = document.createElement('div');
-    mermaidDiv.classList.add('mermaid');
-    previewDiv.appendChild(mermaidDiv);
+  it('should handle multiple .mermaid elements', () => {
+    const mermaid1 = document.createElement('div');
+    mermaid1.classList.add('mermaid');
+    const mermaid2 = document.createElement('div');
+    mermaid2.classList.add('mermaid');
+    previewDiv.appendChild(mermaid1);
+    previewDiv.appendChild(mermaid2);
 
-    const cleanup = service.initialize(previewElement);
+    service.initialize(previewElement);
 
-    // Insert SVG to trigger observer
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    mermaidDiv.appendChild(svg);
-    await new Promise(resolve => setTimeout(resolve, 0));
-
-    const mockRef = vi.mocked(createComponent).mock.results[0].value;
-
-    cleanup();
-
-    expect(mockApplicationRef.detachView).toHaveBeenCalledWith(mockRef.hostView);
-    expect(mockRef.destroy).toHaveBeenCalled();
-    expect(mermaidDiv.style.position).toBe('');
+    expect(createComponent).toHaveBeenCalledTimes(2);
+    expect(previewDiv.querySelectorAll('.mermaid-viewer-wrapper').length).toBe(2);
   });
 });

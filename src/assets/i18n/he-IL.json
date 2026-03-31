@@ -606,6 +606,8 @@
     "email": "דוא\"ל",
     "emailLabel": "כתובת דוא\"ל",
     "error": "שגיאה",
+    "exportAsPng": "ייצא כ-PNG",
+    "exportAsSvg": "ייצא כ-SVG",
     "false": "שקר",
     "fonts": "גופנים",
     "groups": "קבוצות",
@@ -930,9 +932,7 @@
     "pageTitle": "עורך דיאגרמת זרימת נתונים",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "ייצא כ-JPEG",
-        "exportAsPng": "ייצא כ-PNG",
-        "exportAsSvg": "ייצא כ-SVG"
+        "exportAsJpeg": "ייצא כ-JPEG"
       },
       "tooltips": {
         "addActor": "הוסף שחקן",

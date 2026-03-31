@@ -606,6 +606,8 @@
     "email": "E-Mail",
     "emailLabel": "E-Mail-Adresse",
     "error": "Fehler",
+    "exportAsPng": "Als PNG exportieren",
+    "exportAsSvg": "Als SVG exportieren",
     "false": "Falsch",
     "fonts": "Schriftarten",
     "groups": "Gruppen",
@@ -930,9 +932,7 @@
     "pageTitle": "Datenflussdiagramm-Editor",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "Als JPEG exportieren",
-        "exportAsPng": "Als PNG exportieren",
-        "exportAsSvg": "Als SVG exportieren"
+        "exportAsJpeg": "Als JPEG exportieren"
       },
       "tooltips": {
         "addActor": "Akteur hinzufügen",

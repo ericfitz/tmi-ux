@@ -606,6 +606,8 @@
     "email": "Email",
     "emailLabel": "Alamat Email",
     "error": "Kesalahan",
+    "exportAsPng": "Ekspor sebagai PNG",
+    "exportAsSvg": "Ekspor sebagai SVG",
     "false": "Salah",
     "fonts": "Font",
     "groups": "Grup",
@@ -930,9 +932,7 @@
     "pageTitle": "Editor Diagram Aliran Data",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "Ekspor sebagai JPEG",
-        "exportAsPng": "Ekspor sebagai PNG",
-        "exportAsSvg": "Ekspor sebagai SVG"
+        "exportAsJpeg": "Ekspor sebagai JPEG"
       },
       "tooltips": {
         "addActor": "Tambah Aktor",

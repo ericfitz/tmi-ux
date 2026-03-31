@@ -606,6 +606,8 @@
     "email": "ईमेल",
     "emailLabel": "ईमेल पता",
     "error": "त्रुटि",
+    "exportAsPng": "PNG के रूप में निर्यात करें",
+    "exportAsSvg": "SVG के रूप में निर्यात करें",
     "false": "असत्य",
     "fonts": "फ़ॉन्ट्स",
     "groups": "समूह",
@@ -930,9 +932,7 @@
     "pageTitle": "डेटा फ्लो डायग्राम एडिटर",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "JPEG के रूप में निर्यात करें",
-        "exportAsPng": "PNG के रूप में निर्यात करें",
-        "exportAsSvg": "SVG के रूप में निर्यात करें"
+        "exportAsJpeg": "JPEG के रूप में निर्यात करें"
       },
       "tooltips": {
         "addActor": "एक्टर जोड़ें",

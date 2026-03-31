@@ -1,57 +1,51 @@
 <!-- Hover Toolbar -->
-@if (showToolbar) {
-  <div class="mermaid-toolbar" (click)="$event.stopPropagation()">
-    <button mat-icon-button (click)="zoomIn()" [matTooltip]="'mermaidViewer.zoomIn' | transloco">
-      <mat-icon>zoom_in</mat-icon>
-    </button>
-    <button mat-icon-button (click)="zoomOut()" [matTooltip]="'mermaidViewer.zoomOut' | transloco">
-      <mat-icon>zoom_out</mat-icon>
-    </button>
-    <button
-      mat-icon-button
-      (click)="resetZoom()"
-      [matTooltip]="'mermaidViewer.resetZoom' | transloco"
-    >
-      <mat-icon>fit_screen</mat-icon>
-    </button>
-    <button mat-icon-button [matMenuTriggerFor]="saveMenu" [matTooltip]="'common.save' | transloco">
-      <mat-icon>save_alt</mat-icon>
-    </button>
-    <button
-      mat-icon-button
-      (click)="copyToClipboard()"
-      [matTooltip]="'common.copyToClipboard' | transloco"
-    >
-      <mat-icon>content_copy</mat-icon>
-    </button>
-    <button
-      mat-icon-button
-      (click)="openOverlay()"
-      [matTooltip]="'mermaidViewer.openInViewer' | transloco"
-    >
-      <mat-icon>open_in_full</mat-icon>
-    </button>
-  </div>
-}
+<div class="mermaid-toolbar" (click)="$event.stopPropagation()">
+  <button mat-icon-button (click)="zoomIn()" [matTooltip]="'mermaidViewer.zoomIn' | transloco">
+    <mat-icon>zoom_in</mat-icon>
+  </button>
+  <button mat-icon-button (click)="zoomOut()" [matTooltip]="'mermaidViewer.zoomOut' | transloco">
+    <mat-icon>zoom_out</mat-icon>
+  </button>
+  <button
+    mat-icon-button
+    (click)="resetZoom()"
+    [matTooltip]="'mermaidViewer.resetZoom' | transloco"
+  >
+    <mat-icon>fit_screen</mat-icon>
+  </button>
+  <button mat-icon-button [matMenuTriggerFor]="saveMenu" [matTooltip]="'common.save' | transloco">
+    <mat-icon>save_alt</mat-icon>
+  </button>
+  <button
+    mat-icon-button
+    (click)="copyToClipboard()"
+    [matTooltip]="'common.copyToClipboard' | transloco"
+  >
+    <mat-icon>content_copy</mat-icon>
+  </button>
+  <button
+    mat-icon-button
+    (click)="openOverlay()"
+    [matTooltip]="'mermaidViewer.openInViewer' | transloco"
+  >
+    <mat-icon>open_in_full</mat-icon>
+  </button>
+</div>
 
 <!-- Save Menu (hover toolbar) -->
 <mat-menu #saveMenu="matMenu">
   <button mat-menu-item (click)="onExportSvg()">
     <mat-icon>image</mat-icon>
-    <span>{{ 'dfd.toolbar.exportMenu.exportAsSvg' | transloco }}</span>
+    <span>{{ 'common.exportAsSvg' | transloco }}</span>
   </button>
   <button mat-menu-item (click)="onExportPng()">
     <mat-icon>image</mat-icon>
-    <span>{{ 'dfd.toolbar.exportMenu.exportAsPng' | transloco }}</span>
+    <span>{{ 'common.exportAsPng' | transloco }}</span>
   </button>
 </mat-menu>
 
 <!-- Context Menu (hidden trigger) -->
-<div
-  style="visibility: hidden; position: fixed"
-  [style.left]="contextMenuPosition.x"
-  [style.top]="contextMenuPosition.y"
->
+<div class="context-menu-anchor" style="visibility: hidden; position: fixed; left: 0; top: 0">
   <button
     mat-icon-button
     [matMenuTriggerFor]="contextMenu"
@@ -61,11 +55,11 @@
 <mat-menu #contextMenu="matMenu">
   <button mat-menu-item (click)="onExportSvg()">
     <mat-icon>image</mat-icon>
-    <span>{{ 'dfd.toolbar.exportMenu.exportAsSvg' | transloco }}</span>
+    <span>{{ 'common.exportAsSvg' | transloco }}</span>
   </button>
   <button mat-menu-item (click)="onExportPng()">
     <mat-icon>image</mat-icon>
-    <span>{{ 'dfd.toolbar.exportMenu.exportAsPng' | transloco }}</span>
+    <span>{{ 'common.exportAsPng' | transloco }}</span>
   </button>
   <button mat-menu-item (click)="copyToClipboard()">
     <mat-icon>content_copy</mat-icon>

@@ -606,6 +606,8 @@
     "email": "البريد الإلكتروني",
     "emailLabel": "عنوان البريد الإلكتروني",
     "error": "خطأ",
+    "exportAsPng": "تصدير كـ PNG",
+    "exportAsSvg": "تصدير كـ SVG",
     "false": "خطأ",
     "fonts": "الخطوط",
     "groups": "المجموعات",
@@ -930,9 +932,7 @@
     "pageTitle": "محرر مخطط تدفق البيانات",
     "toolbar": {
       "exportMenu": {
-        "exportAsJpeg": "تصدير كـ JPEG",
-        "exportAsPng": "تصدير كـ PNG",
-        "exportAsSvg": "تصدير كـ SVG"
+        "exportAsJpeg": "تصدير كـ JPEG"
       },
       "tooltips": {
         "addActor": "إضافة ممثل",
