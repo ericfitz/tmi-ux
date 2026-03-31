@@ -1314,6 +1314,156 @@ describe('ThreatModelService', () => {
         });
       }));
 
+    it('should terminate when server returns empty items despite total suggesting more pages', () =>
+      waitForAsync(async () => {
+        const baseTm = {
+          ...testThreatModel1,
+          authorization: [],
+          diagrams: [],
+          threats: [],
+        };
+
+        const notes = [
+          {
+            id: 'n0',
+            name: 'Note 0',
+            content: 'content',
+            created_at: new Date().toISOString(),
+            modified_at: new Date().toISOString(),
+          },
+          {
+            id: 'n1',
+            name: 'Note 1',
+            content: 'content',
+            created_at: new Date().toISOString(),
+            modified_at: new Date().toISOString(),
+          },
+          {
+            id: 'n2',
+            name: 'Note 2',
+            content: 'content',
+            created_at: new Date().toISOString(),
+            modified_at: new Date().toISOString(),
+          },
+        ];
+
+        vi.mocked(apiService.get).mockImplementation(
+          (url: string, params?: Record<string, string>) => {
+            if (url === `threat_models/${tmId}`) {
+              return of(baseTm);
+            }
+            if (url === `threat_models/${tmId}/notes`) {
+              const offset = parseInt(params?.['offset'] || '0', 10);
+              if (offset === 0) {
+                // First page: returns all 3 notes
+                return of({ notes, total: 3, limit: 100, offset: 0 });
+              }
+              // Second page: server returns empty items but broken total/offset
+              // This previously caused an infinite loop
+              return of({ notes: [], total: 3, limit: 100, offset });
+            }
+            if (url === `threat_models/${tmId}/documents`) {
+              return of({ documents: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/repositories`) {
+              return of({ repositories: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/assets`) {
+              return of({ assets: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/diagrams`) {
+              return of({ diagrams: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/threats`) {
+              return of({ threats: [], total: 0, limit: 100, offset: 0 });
+            }
+            return of(undefined);
+          },
+        );
+
+        return new Promise<void>((resolve, reject) => {
+          service.exportThreatModel(tmId).subscribe({
+            next: result => {
+              try {
+                expect(result).toBeDefined();
+                expect(result!.notes).toHaveLength(3);
+                resolve();
+              } catch (e) {
+                reject(e instanceof Error ? e : new Error(String(e)));
+              }
+            },
+            error: err => reject(err instanceof Error ? err : new Error(String(err))),
+          });
+        });
+      }));
+
+    it('should terminate when server omits pagination total field', () =>
+      waitForAsync(async () => {
+        const baseTm = {
+          ...testThreatModel1,
+          authorization: [],
+          diagrams: [],
+          threats: [],
+        };
+
+        const mockNote = {
+          id: 'n1',
+          name: 'Note 1',
+          content: 'content',
+          created_at: new Date().toISOString(),
+          modified_at: new Date().toISOString(),
+        };
+
+        vi.mocked(apiService.get).mockImplementation(
+          (url: string, params?: Record<string, string>) => {
+            if (url === `threat_models/${tmId}`) {
+              return of(baseTm);
+            }
+            if (url === `threat_models/${tmId}/notes`) {
+              const offset = parseInt(params?.['offset'] || '0', 10);
+              if (offset === 0) {
+                // Server returns items but no total field
+                return of({ notes: [mockNote], limit: 100, offset: 0 } as any);
+              }
+              // Subsequent page: empty
+              return of({ notes: [], limit: 100, offset } as any);
+            }
+            if (url === `threat_models/${tmId}/documents`) {
+              return of({ documents: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/repositories`) {
+              return of({ repositories: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/assets`) {
+              return of({ assets: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/diagrams`) {
+              return of({ diagrams: [], total: 0, limit: 100, offset: 0 });
+            }
+            if (url === `threat_models/${tmId}/threats`) {
+              return of({ threats: [], total: 0, limit: 100, offset: 0 });
+            }
+            return of(undefined);
+          },
+        );
+
+        return new Promise<void>((resolve, reject) => {
+          service.exportThreatModel(tmId).subscribe({
+            next: result => {
+              try {
+                expect(result).toBeDefined();
+                expect(result!.notes).toHaveLength(1);
+                expect(result!.notes![0].id).toBe('n1');
+                resolve();
+              } catch (e) {
+                reject(e instanceof Error ? e : new Error(String(e)));
+              }
+            },
+            error: err => reject(err instanceof Error ? err : new Error(String(err))),
+          });
+        });
+      }));
+
     it('should return undefined when the threat model is not found', () =>
       waitForAsync(async () => {
         vi.mocked(apiService.get).mockReturnValue(of(undefined));

@@ -376,8 +376,15 @@ export class ThreatModelService implements OnDestroy {
    * @param endpoint API path (e.g. `threat_models/{id}/notes`)
    * @param itemsKey The key in the response that holds the array of items
    * @param pageSize Number of items to request per page
+   * @param maxPages Safety bound to prevent infinite loops from broken pagination metadata
    */
-  private fetchAllPages<T>(endpoint: string, itemsKey: string, pageSize = 100): Observable<T[]> {
+  private fetchAllPages<T>(
+    endpoint: string,
+    itemsKey: string,
+    pageSize = 100,
+    maxPages = 100,
+  ): Observable<T[]> {
+    let pageCount = 1; // counts the initial request
     return this.apiService
       .get<PaginationMetadata & Record<string, unknown>>(endpoint, {
         limit: pageSize.toString(),
@@ -386,8 +393,16 @@ export class ThreatModelService implements OnDestroy {
       .pipe(
         expand(response => {
           const items = (response[itemsKey] as T[]) || [];
-          const nextOffset = response.offset + items.length;
-          if (nextOffset >= response.total) {
+          if (items.length === 0) {
+            return EMPTY;
+          }
+          if (pageCount >= maxPages) {
+            this.logger.warn(`fetchAllPages: hit max page limit (${maxPages}) for ${endpoint}`);
+            return EMPTY;
+          }
+          pageCount++;
+          const nextOffset = (response.offset ?? 0) + items.length;
+          if (response.total != null && nextOffset >= response.total) {
             return EMPTY;
           }
           return this.apiService.get<PaginationMetadata & Record<string, unknown>>(endpoint, {
@@ -437,12 +452,30 @@ export class ThreatModelService implements OnDestroy {
    * Fetch all threats across all pages.
    * Threats use a different query-param shape (ThreatListParams) so they
    * cannot go through the generic fetchAllPages helper.
+   * @param threatModelId ID of the threat model
+   * @param pageSize Number of items to request per page
+   * @param maxPages Safety bound to prevent infinite loops from broken pagination metadata
    */
-  private fetchAllThreats(threatModelId: string, pageSize = 100): Observable<Threat[]> {
+  private fetchAllThreats(
+    threatModelId: string,
+    pageSize = 100,
+    maxPages = 100,
+  ): Observable<Threat[]> {
+    let pageCount = 1; // counts the initial request
     return this.getThreatsForThreatModel(threatModelId, { limit: pageSize, offset: 0 }).pipe(
       expand(response => {
-        const nextOffset = response.offset + response.threats.length;
-        if (nextOffset >= response.total) {
+        if (response.threats.length === 0) {
+          return EMPTY;
+        }
+        if (pageCount >= maxPages) {
+          this.logger.warn(
+            `fetchAllThreats: hit max page limit (${maxPages}) for threat model ${threatModelId}`,
+          );
+          return EMPTY;
+        }
+        pageCount++;
+        const nextOffset = (response.offset ?? 0) + response.threats.length;
+        if (response.total != null && nextOffset >= response.total) {
           return EMPTY;
         }
         return this.getThreatsForThreatModel(threatModelId, {
