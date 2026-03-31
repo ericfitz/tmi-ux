@@ -346,7 +346,7 @@ export class ThreatModelService implements OnDestroy {
         }
 
         return forkJoin({
-          notes: this.fetchAllPages<Note>(`threat_models/${id}/notes`, 'notes'),
+          notes: this.fetchAllNotes(id),
           documents: this.fetchAllPages<TMDocument>(`threat_models/${id}/documents`, 'documents'),
           repositories: this.fetchAllPages<Repository>(
             `threat_models/${id}/repositories`,
@@ -417,6 +417,29 @@ export class ThreatModelService implements OnDestroy {
           return of([] as T[]);
         }),
       );
+  }
+
+  /**
+   * Fetch all notes with full content.
+   * The list endpoint returns NoteListItem which excludes content for
+   * performance. We fetch the list to get all IDs, then fetch each note
+   * individually via getNoteById to get complete data including content.
+   */
+  private fetchAllNotes(threatModelId: string): Observable<Note[]> {
+    return this.fetchAllPages<{ id: string }>(`threat_models/${threatModelId}/notes`, 'notes').pipe(
+      switchMap(listItems => {
+        if (listItems.length === 0) {
+          return of([] as Note[]);
+        }
+        return forkJoin(listItems.map(item => this.getNoteById(threatModelId, item.id))).pipe(
+          map(notes => notes.filter((n): n is Note => n !== undefined)),
+        );
+      }),
+      catchError(error => {
+        this.logger.error(`Error fetching all notes for threat model ID: ${threatModelId}`, error);
+        return of([] as Note[]);
+      }),
+    );
   }
 
   /**

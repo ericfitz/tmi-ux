@@ -1147,12 +1147,16 @@ describe('ThreatModelService', () => {
           threats: [],
         };
 
-        const mockNote = {
+        // List item (no content) vs full note (with content)
+        const mockNoteListItem = {
           id: 'n1',
           name: 'Note 1',
-          content: 'content',
           created_at: new Date().toISOString(),
           modified_at: new Date().toISOString(),
+        };
+        const mockNoteFull = {
+          ...mockNoteListItem,
+          content: 'full note content',
         };
         const mockDoc = {
           id: 'd1',
@@ -1201,7 +1205,10 @@ describe('ThreatModelService', () => {
             return of(baseTm);
           }
           if (url === `threat_models/${tmId}/notes`) {
-            return of({ notes: [mockNote], total: 1, limit: 100, offset: 0 });
+            return of({ notes: [mockNoteListItem], total: 1, limit: 100, offset: 0 });
+          }
+          if (url === `threat_models/${tmId}/notes/n1`) {
+            return of(mockNoteFull);
           }
           if (url === `threat_models/${tmId}/documents`) {
             return of({ documents: [mockDoc], total: 1, limit: 100, offset: 0 });
@@ -1229,7 +1236,9 @@ describe('ThreatModelService', () => {
             next: result => {
               try {
                 expect(result).toBeDefined();
-                expect(result!.notes).toEqual([mockNote]);
+                // Notes should be the full version with content
+                expect(result!.notes).toEqual([mockNoteFull]);
+                expect(result!.notes![0].content).toBe('full note content');
                 expect(result!.documents).toEqual([mockDoc]);
                 expect(result!.repositories).toEqual([mockRepo]);
                 expect(result!.assets).toEqual([mockAsset]);
@@ -1256,12 +1265,15 @@ describe('ThreatModelService', () => {
           threats: [],
         };
 
-        const notes = Array.from({ length: 3 }, (_, i) => ({
+        const noteListItems = Array.from({ length: 3 }, (_, i) => ({
           id: `n${i}`,
           name: `Note ${i}`,
-          content: `content ${i}`,
           created_at: new Date().toISOString(),
           modified_at: new Date().toISOString(),
+        }));
+        const notesFull = noteListItems.map(item => ({
+          ...item,
+          content: `content ${item.id}`,
         }));
 
         vi.mocked(apiService.get).mockImplementation(
@@ -1273,8 +1285,13 @@ describe('ThreatModelService', () => {
               const offset = parseInt(params?.['offset'] || '0', 10);
               const limit = parseInt(params?.['limit'] || '100', 10);
               // Simulate pages of size 2 with 3 total items
-              const page = notes.slice(offset, offset + Math.min(limit, 2));
+              const page = noteListItems.slice(offset, offset + Math.min(limit, 2));
               return of({ notes: page, total: 3, limit: Math.min(limit, 2), offset });
+            }
+            // Individual note fetches return full objects with content
+            const noteMatch = url.match(new RegExp(`threat_models/${tmId}/notes/(n\\d+)`));
+            if (noteMatch) {
+              return of(notesFull.find(n => n.id === noteMatch[1]));
             }
             // Single-page responses for other sub-entities
             if (url === `threat_models/${tmId}/documents`) {
@@ -1303,7 +1320,9 @@ describe('ThreatModelService', () => {
                 expect(result).toBeDefined();
                 expect(result!.notes).toHaveLength(3);
                 expect(result!.notes![0].id).toBe('n0');
+                expect(result!.notes![0].content).toBe('content n0');
                 expect(result!.notes![2].id).toBe('n2');
+                expect(result!.notes![2].content).toBe('content n2');
                 resolve();
               } catch (e) {
                 reject(e instanceof Error ? e : new Error(String(e)));
@@ -1323,25 +1342,22 @@ describe('ThreatModelService', () => {
           threats: [],
         };
 
-        const notes = [
+        const noteListItems = [
           {
             id: 'n0',
             name: 'Note 0',
-            content: 'content',
             created_at: new Date().toISOString(),
             modified_at: new Date().toISOString(),
           },
           {
             id: 'n1',
             name: 'Note 1',
-            content: 'content',
             created_at: new Date().toISOString(),
             modified_at: new Date().toISOString(),
           },
           {
             id: 'n2',
             name: 'Note 2',
-            content: 'content',
             created_at: new Date().toISOString(),
             modified_at: new Date().toISOString(),
           },
@@ -1356,11 +1372,17 @@ describe('ThreatModelService', () => {
               const offset = parseInt(params?.['offset'] || '0', 10);
               if (offset === 0) {
                 // First page: returns all 3 notes
-                return of({ notes, total: 3, limit: 100, offset: 0 });
+                return of({ notes: noteListItems, total: 3, limit: 100, offset: 0 });
               }
               // Second page: server returns empty items but broken total/offset
               // This previously caused an infinite loop
               return of({ notes: [], total: 3, limit: 100, offset });
+            }
+            // Individual note fetches
+            const noteMatch = url.match(new RegExp(`threat_models/${tmId}/notes/(n\\d+)`));
+            if (noteMatch) {
+              const item = noteListItems.find(n => n.id === noteMatch[1]);
+              return of(item ? { ...item, content: 'content' } : undefined);
             }
             if (url === `threat_models/${tmId}/documents`) {
               return of({ documents: [], total: 0, limit: 100, offset: 0 });
@@ -1387,6 +1409,7 @@ describe('ThreatModelService', () => {
               try {
                 expect(result).toBeDefined();
                 expect(result!.notes).toHaveLength(3);
+                expect(result!.notes![0].content).toBe('content');
                 resolve();
               } catch (e) {
                 reject(e instanceof Error ? e : new Error(String(e)));
@@ -1406,12 +1429,15 @@ describe('ThreatModelService', () => {
           threats: [],
         };
 
-        const mockNote = {
+        const mockNoteListItem = {
           id: 'n1',
           name: 'Note 1',
-          content: 'content',
           created_at: new Date().toISOString(),
           modified_at: new Date().toISOString(),
+        };
+        const mockNoteFull = {
+          ...mockNoteListItem,
+          content: 'content',
         };
 
         vi.mocked(apiService.get).mockImplementation(
@@ -1423,10 +1449,13 @@ describe('ThreatModelService', () => {
               const offset = parseInt(params?.['offset'] || '0', 10);
               if (offset === 0) {
                 // Server returns items but no total field
-                return of({ notes: [mockNote], limit: 100, offset: 0 } as any);
+                return of({ notes: [mockNoteListItem], limit: 100, offset: 0 } as any);
               }
               // Subsequent page: empty
               return of({ notes: [], limit: 100, offset } as any);
+            }
+            if (url === `threat_models/${tmId}/notes/n1`) {
+              return of(mockNoteFull);
             }
             if (url === `threat_models/${tmId}/documents`) {
               return of({ documents: [], total: 0, limit: 100, offset: 0 });
@@ -1454,6 +1483,7 @@ describe('ThreatModelService', () => {
                 expect(result).toBeDefined();
                 expect(result!.notes).toHaveLength(1);
                 expect(result!.notes![0].id).toBe('n1');
+                expect(result!.notes![0].content).toBe('content');
                 resolve();
               } catch (e) {
                 reject(e instanceof Error ? e : new Error(String(e)));
