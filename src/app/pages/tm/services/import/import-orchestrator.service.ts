@@ -198,7 +198,7 @@ export class ImportOrchestratorService {
   ): Observable<ImportResult<ThreatModel>> {
     const { filtered, metadata } = this._fieldFilter.filterThreatModel(importedData);
 
-    return deps.createThreatModel(filtered as unknown as ApiThreatModelInput).pipe(
+    return deps.createThreatModel(filtered).pipe(
       switchMap(threatModel => {
         // Update metadata if present
         if (metadata && metadata.length > 0) {
@@ -311,7 +311,7 @@ export class ImportOrchestratorService {
     const { filtered, metadata } = this._fieldFilter.filterAsset(asset);
     const rewritten = this._referenceRewriter.rewriteAssetReferences(filtered);
 
-    return deps.createAsset(threatModelId, rewritten as unknown as ApiAssetInput).pipe(
+    return deps.createAsset(threatModelId, rewritten).pipe(
       switchMap(created => {
         // Track ID translation
         if (originalId) {
@@ -389,11 +389,11 @@ export class ImportOrchestratorService {
     const rewritten = this._referenceRewriter.rewriteNoteReferences(filtered);
 
     // Ensure required 'content' field is present (API requires minLength: 1)
-    if (!rewritten['content']) {
-      rewritten['content'] = '(imported note)';
+    if (!rewritten.content) {
+      rewritten.content = '(imported note)';
     }
 
-    return deps.createNote(threatModelId, rewritten as unknown as ApiNoteInput).pipe(
+    return deps.createNote(threatModelId, rewritten).pipe(
       switchMap(created => {
         // Track ID translation
         if (originalId) {
@@ -470,7 +470,7 @@ export class ImportOrchestratorService {
     const { filtered, metadata } = this._fieldFilter.filterDocument(document);
     const rewritten = this._referenceRewriter.rewriteDocumentReferences(filtered);
 
-    return deps.createDocument(threatModelId, rewritten as unknown as ApiDocumentInput).pipe(
+    return deps.createDocument(threatModelId, rewritten).pipe(
       switchMap(created => {
         // Track ID translation
         if (originalId) {
@@ -549,7 +549,7 @@ export class ImportOrchestratorService {
     const { filtered, metadata } = this._fieldFilter.filterRepository(repository);
     const rewritten = this._referenceRewriter.rewriteRepositoryReferences(filtered);
 
-    return deps.createRepository(threatModelId, rewritten as unknown as ApiRepositoryInput).pipe(
+    return deps.createRepository(threatModelId, rewritten).pipe(
       switchMap(created => {
         // Track ID translation
         if (originalId) {
@@ -633,9 +633,7 @@ export class ImportOrchestratorService {
       colorPalette,
       timmyEnabled,
     } = this._fieldFilter.filterDiagram(diagram);
-    const rewritten = this._referenceRewriter.rewriteDiagramReferences(filtered);
-
-    return deps.createDiagram(threatModelId, rewritten as unknown as ApiCreateDiagramRequest).pipe(
+    return deps.createDiagram(threatModelId, filtered).pipe(
       switchMap(created => {
         // Track ID translation
         if (originalId) {
@@ -661,16 +659,18 @@ export class ImportOrchestratorService {
         ) {
           // Build update payload with all available fields
           // DfdDiagramInput requires cells — default to empty array
-          const diagramUpdate: Record<string, unknown> = {
+          const diagramUpdate: ApiDfdDiagramInput = {
             name: created.name,
-            type: created.type,
+            type: 'DFD-1.0.0',
             cells: [],
+            include_in_report: created.include_in_report ?? true,
+            timmy_enabled: true,
           };
 
           if (hasCells) {
             // Filter cells to match API schema and rewrite data asset references
             const filteredCells = this._fieldFilter.filterCells(cells) as Record<string, unknown>[];
-            diagramUpdate['cells'] = filteredCells.map(cell => {
+            diagramUpdate.cells = filteredCells.map(cell => {
               if (cell['data'] && typeof cell['data'] === 'object') {
                 return {
                   ...cell,
@@ -680,58 +680,49 @@ export class ImportOrchestratorService {
                 };
               }
               return cell;
-            });
+            }) as ApiDfdDiagramInput['cells'];
           }
 
           if (hasDescription) {
-            diagramUpdate['description'] = description;
+            diagramUpdate.description = description;
           }
 
           if (hasIncludeInReport) {
-            diagramUpdate['include_in_report'] = includeInReport;
+            diagramUpdate.include_in_report = includeInReport;
           }
 
           if (hasImage) {
-            diagramUpdate['image'] = image;
+            diagramUpdate.image = image as ApiDfdDiagramInput['image'];
           }
 
           if (hasColorPalette) {
-            diagramUpdate['color_palette'] = colorPalette;
+            diagramUpdate.color_palette = colorPalette as ApiDfdDiagramInput['color_palette'];
           }
 
           if (hasTimmyEnabled) {
-            diagramUpdate['timmy_enabled'] = timmyEnabled;
+            diagramUpdate.timmy_enabled = timmyEnabled;
           }
 
-          return deps
-            .updateDiagram(
-              threatModelId,
-              created.id,
-              diagramUpdate as unknown as ApiDfdDiagramInput,
-            )
-            .pipe(
-              switchMap(updatedDiagram => {
-                // Update metadata if present
-                if (metadata && metadata.length > 0) {
-                  return deps.updateDiagramMetadata(threatModelId, created.id, metadata).pipe(
-                    map(() => ({ success: true, data: updatedDiagram, originalId })),
-                    catchError(error => {
-                      this._logger.warn(
-                        `Failed to update diagram metadata for ${created.id}`,
-                        error,
-                      );
-                      return of({ success: true, data: updatedDiagram, originalId });
-                    }),
-                  );
-                }
-                return of({ success: true, data: updatedDiagram, originalId });
-              }),
-              catchError(error => {
-                this._logger.warn(`Failed to update diagram for ${created.id}`, error);
-                // Still consider it a success since diagram was created, just without additional fields
-                return of({ success: true, data: created, originalId });
-              }),
-            );
+          return deps.updateDiagram(threatModelId, created.id, diagramUpdate).pipe(
+            switchMap(updatedDiagram => {
+              // Update metadata if present
+              if (metadata && metadata.length > 0) {
+                return deps.updateDiagramMetadata(threatModelId, created.id, metadata).pipe(
+                  map(() => ({ success: true, data: updatedDiagram, originalId })),
+                  catchError(error => {
+                    this._logger.warn(`Failed to update diagram metadata for ${created.id}`, error);
+                    return of({ success: true, data: updatedDiagram, originalId });
+                  }),
+                );
+              }
+              return of({ success: true, data: updatedDiagram, originalId });
+            }),
+            catchError(error => {
+              this._logger.warn(`Failed to update diagram for ${created.id}`, error);
+              // Still consider it a success since diagram was created, just without additional fields
+              return of({ success: true, data: created, originalId });
+            }),
+          );
         }
 
         // No additional fields to add, just update metadata if present
@@ -805,7 +796,7 @@ export class ImportOrchestratorService {
     // Rewrite references (diagram_id, asset_id) - cell_id is preserved
     const rewritten = this._referenceRewriter.rewriteThreatReferences(filtered);
 
-    return deps.createThreat(threatModelId, rewritten as unknown as ApiThreatInput).pipe(
+    return deps.createThreat(threatModelId, rewritten).pipe(
       switchMap(created => {
         // Track ID translation
         if (originalId) {
